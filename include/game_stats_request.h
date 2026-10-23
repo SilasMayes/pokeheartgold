@@ -16,6 +16,13 @@ typedef enum GameStatsRequestState {
     GAME_STATS_STATE_DONE,
 } GameStatsRequestState;
 
+// GameStats_PrepareRequest
+enum GameStatsPrepareResult {
+    GAME_STATS_PREPARE_OK,
+    GAME_STATS_PREPARE_NOT_STARTED,
+    GAME_STATS_PREPARE_NO_MEMORY,
+};
+
 typedef struct GameStatsRequest {
     int state;     // GameStatsRequestState
     int requestId; // HTTP library request handle, -1 when none
@@ -36,7 +43,7 @@ extern GameStatsRequest gGameStatsRequest;
 extern u32 gGameStatsRandState;
 
 void GameStats_Start(void);
-int GameStats_PrepareRequest(char *url, int pid, void *payload, int payloadSize, void *response, int responseCapacity);
+int GameStats_PrepareRequest(const char *url, int pid, void *payload, int payloadSize, void *response, int responseCapacity);
 int GameStats_Update(void);
 void GameStats_Shutdown(void);
 int GameStats_GetError(void);

@@ -6,6 +6,7 @@
 #include "bg_cell_manager.h"
 #include "bg_window.h"
 #include "filesystem.h"
+#include "gf_gfx_planes.h"
 #include "message_format.h"
 #include "message_printer.h"
 #include "msgdata.h"
@@ -14,6 +15,7 @@
 #include "pokepic.h"
 #include "sprite.h"
 #include "sprite_system.h"
+#include "touchscreen.h"
 
 // Pokemon summary screen work.
 
@@ -43,6 +45,28 @@ enum PokemonSummaryState {
     POKEMON_SUMMARY_STATE_CHANGE_MON_BY_BUTTON,
     POKEMON_SUMMARY_STATE_START_FADE_OUT,
     POKEMON_SUMMARY_STATE_WAIT_FADE_OUT,
+};
+
+// What args->party holds (args->monDataType).
+enum PokemonSummaryMonDataType {
+    POKEMON_SUMMARY_MON_ARRAY,
+    POKEMON_SUMMARY_PARTY,
+    POKEMON_SUMMARY_BOX_MON_ARRAY,
+};
+
+// args->mode
+enum PokemonSummaryMode {
+    POKEMON_SUMMARY_MODE_NORMAL,
+    POKEMON_SUMMARY_MODE_NO_MOVE_SWAP,
+    POKEMON_SUMMARY_MODE_FORGET_MOVE,
+    POKEMON_SUMMARY_MODE_CONDITION,
+    POKEMON_SUMMARY_MODE_UPDATE_CONDITION,
+};
+
+enum PokemonSummaryPokerus {
+    POKEMON_SUMMARY_POKERUS_NONE,
+    POKEMON_SUMMARY_POKERUS_INFECTED,
+    POKEMON_SUMMARY_POKERUS_CURED,
 };
 
 // The shown Pokemon, read once from the Pokemon or box Pokemon (PokemonSummary_ReadMon).
@@ -175,7 +199,7 @@ void PokemonSummary_PrintConditionChangeMessage(PokemonSummary *summary, int res
 int PokemonSummary_FlashButton(PokemonSummary *summary);
 void PokemonSummary_ReadMon(PokemonSummary *summary, Pokemon *mon, PokemonSummaryMon *out);
 
-void *PokemonSummary_GetShownMon(PokemonSummary *summary); // Pokemon or BoxPokemon (args->unk11 == 2)
+void *PokemonSummary_GetShownMon(PokemonSummary *summary); // Pokemon, or BoxPokemon for POKEMON_SUMMARY_BOX_MON_ARRAY
 
 void PokemonSummary_DrawPokepic(PokemonSummary *);
 void PokemonSummary_FreePokepicAndCamera(PokemonSummary *);
@@ -192,5 +216,22 @@ BOOL PokemonSummary_Main(OverlayManager *manager, int *state);
 BOOL PokemonSummary_Exit(OverlayManager *manager, int *state);
 
 int PokemonSummary_GetPokeathlonStarStates(u8 *states, int maxStars, int baseStars, int color, int modifier);
+
+extern const GraphicsBanks gPokemonSummaryGraphicsBanks;
+extern const GraphicsModes gPokemonSummaryGraphicsModes;
+extern const BgTemplate gPokemonSummaryBgTemplate1;
+extern const BgTemplate gPokemonSummaryBgTemplate2;
+extern const BgTemplate gPokemonSummaryBgTemplate3;
+extern const BgTemplate gPokemonSummaryBgTemplate4;
+extern const BgTemplate gPokemonSummaryBgTemplate5;
+extern const BgTemplate gPokemonSummaryBgTemplate6;
+
+extern const TouchscreenHitbox gPokemonSummaryCancelButtonHitbox[];
+extern const TouchscreenHitbox gPokemonSummarySwapButtonHitbox[];
+extern const TouchscreenHitbox gPokemonSummaryConfirmButtonHitbox[];
+extern const TouchscreenHitbox gPokemonSummaryMonButtonHitboxes[];
+extern const TouchscreenHitbox gPokemonSummaryMoveHitboxes[];
+extern const u32 gPokemonSummaryPageScreens[][3];
+extern const TouchscreenHitbox gPokemonSummaryRibbonHitboxes[];
 
 #endif // POKEHEARTGOLD_POKEMON_SUMMARY_INTERNAL_H

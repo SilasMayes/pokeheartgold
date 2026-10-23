@@ -3,7 +3,6 @@
 #include "dwc/net_common_internal.h"
 #include "dwc/stats_upload_internal.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 #include <string.h>
 
@@ -39,7 +38,7 @@ extern const char gStatsUploadEmptyString[];                       // ""
 static BOOL StatsUpload_CheckResponseHash(const char *response, int length);
 static void StatsUpload_OnRequestProgress(void);
 static void StatsUpload_OnRequestCompleted(char *response, int length, int error);
-static int StatsUpload_EncodeData(char *out, const u8 *first, int firstLength, const u8 *second, volatile int secondLength);
+static int StatsUpload_EncodeData(char *out, const u8 *first, int firstLength, const u8 *second, int secondLength);
 static void StatsUpload_SetFailed(void);
 static int StatsUpload_PrepareUpload(char *name, int pid, const void *data, int size, StatsUploadResponseFunc callback, BOOL useLastHash);
 
@@ -218,7 +217,7 @@ static void StatsUpload_OnRequestCompleted(char *response, int length, int error
 // Writes the base64 encoding of [checksum][first][second] to out (NUL terminated). The data bytes are xored
 // with the random number generator seeded with their sum; the checksum (big endian) is that sum xored with
 // checksumKey. Returns 0, or 2 when out of memory.
-static int StatsUpload_EncodeData(char *out, const u8 *first, int firstLength, const u8 *second, volatile int secondLength) {
+static int StatsUpload_EncodeData(char *out, const u8 *first, int firstLength, const u8 *second, int secondLength) {
     u8 *buf;
     u32 sum = 0;
     int length = secondLength + firstLength;

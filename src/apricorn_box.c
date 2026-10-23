@@ -294,8 +294,8 @@ void ApricornJuice_RankFlavors(ApricornJuice *juice, ApricornJuiceRanking *out) 
         }
     }
     if (count) {
-        for (i = 0; i < 5; i++) {
-            for (j = i + 1; j < 5; j++) {
+        for (i = 0; i < APRICORN_JUICE_FLAVOR_COUNT; i++) {
+            for (j = i + 1; j < APRICORN_JUICE_FLAVOR_COUNT; j++) {
                 u8 b = pairs[j].value, a = pairs[i].value;
                 if (a > b) {
                     continue;
@@ -309,8 +309,8 @@ void ApricornJuice_RankFlavors(ApricornJuice *juice, ApricornJuiceRanking *out) 
             }
         }
     }
-    minimum = pairs[4].value;
-    for (i = 0; i < 5; i++) {
+    minimum = pairs[APRICORN_JUICE_FLAVOR_COUNT - 1].value;
+    for (i = 0; i < APRICORN_JUICE_FLAVOR_COUNT; i++) {
         out->order[i] = pairs[i].id;
         if (minimum == pairs[i].value) {
             out->ties++;
@@ -563,14 +563,14 @@ static void ApricornBox_AddJuiceMildness(SaveApricornBox *box, u8 amount) {
 }
 
 static void ApricornBox_MixQueuedApricorns(SaveApricornBox *box) {
-    s8 values[5], order[5];
+    s8 values[APRICORN_JUICE_FLAVOR_COUNT], order[APRICORN_JUICE_FLAVOR_COUNT];
     int n;
     u8 total, action, max, index;
     u16 actions = box->queuedApricorns;
     int i, j;
     u8 reduce;
     ApricornJuice_GetFlavors(&box->juice, (u8 *)values);
-    for (n = 0; n < 5; n++) {
+    for (n = 0; n < APRICORN_QUEUE_SLOT_COUNT; n++) {
         reduce = 0;
         action = actions & APRICORN_QUEUE_SLOT_MASK;
         if (action == 0) {
@@ -580,11 +580,11 @@ static void ApricornBox_MixQueuedApricorns(SaveApricornBox *box) {
         index = 0;
         max = 0;
         action--;
-        for (i = 0; i < 5; i++) {
+        for (i = 0; i < APRICORN_JUICE_FLAVOR_COUNT; i++) {
             order[i] = i;
         }
         for (i = 0; i < 2; i++) {
-            for (j = i + 1; j < 5; j++) {
+            for (j = i + 1; j < APRICORN_JUICE_FLAVOR_COUNT; j++) {
                 s8 tmp;
                 if (values[order[i]] > values[order[j]] || (values[order[i]] == values[order[j]] && order[i] < order[j])) {
                     continue;
@@ -602,7 +602,7 @@ static void ApricornBox_MixQueuedApricorns(SaveApricornBox *box) {
             s8 old;
             row = sApricornFlavorDeltas[action];
             v = &values[0];
-            for (i = 0; i < 5; i++) {
+            for (i = 0; i < APRICORN_JUICE_FLAVOR_COUNT; i++) {
                 change = *row;
                 old = *v;
                 value = old + change;

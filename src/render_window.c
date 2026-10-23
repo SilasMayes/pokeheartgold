@@ -9,9 +9,9 @@
 
 void LoadUserFrameGfx1Tiles(BgConfig *bgConfig, u32 layer, u32 baseTile, BOOL frame, u32 heapId) {
     if (frame == 0) {
-        GfGfxLoader_LoadCharData((NarcId)0x26, 0, bgConfig, (GFBgLayer)layer, baseTile, 0, FALSE, (enum HeapID)heapId);
+        GfGfxLoader_LoadCharData(NARC_a_0_3_8, 0, bgConfig, (GFBgLayer)layer, baseTile, 0, FALSE, (enum HeapID)heapId);
     } else {
-        GfGfxLoader_LoadCharData((NarcId)0x26, 1, bgConfig, (GFBgLayer)layer, baseTile, 0, FALSE, (enum HeapID)heapId);
+        GfGfxLoader_LoadCharData(NARC_a_0_3_8, 1, bgConfig, (GFBgLayer)layer, baseTile, 0, FALSE, (enum HeapID)heapId);
     }
 }
 
@@ -26,17 +26,17 @@ void LoadUserFrameGfx1(BgConfig *bgConfig, enum GFBgLayer layer, u32 baseTile, u
     } else {
         member = 0;
     }
-    GfGfxLoader_LoadCharData((NarcId)0x26, member, bgConfig, layer, baseTile, 0, FALSE, heapId);
+    GfGfxLoader_LoadCharData(NARC_a_0_3_8, member, bgConfig, layer, baseTile, 0, FALSE, heapId);
     if (frame == 2) {
         member = 0x2E;
     } else {
         member = 0x19;
     }
     if ((u32)layer < GF_BG_LYR_SUB_FIRST) {
-        GfGfxLoader_GXLoadPal((NarcId)0x26, member, GF_PAL_LOCATION_MAIN_BG, (enum GFPalSlotOffset)(paletteNum << 5), 32, heapId);
+        GfGfxLoader_GXLoadPal(NARC_a_0_3_8, member, GF_PAL_LOCATION_MAIN_BG, (enum GFPalSlotOffset)(paletteNum << 5), 32, heapId);
         return;
     }
-    GfGfxLoader_GXLoadPal((NarcId)0x26, member, GF_PAL_LOCATION_SUB_BG, (enum GFPalSlotOffset)(paletteNum << 5), 32, heapId);
+    GfGfxLoader_GXLoadPal(NARC_a_0_3_8, member, GF_PAL_LOCATION_SUB_BG, (enum GFPalSlotOffset)(paletteNum << 5), 32, heapId);
 }
 
 void DrawFrame1Tilemap(BgConfig *bgConfig, u8 bgId, u8 x, u8 y, u8 width, u8 height, u8 paletteNum, u16 baseTile) {
@@ -79,11 +79,11 @@ u32 GetUserFrameGfx2PaletteMember(u32 frame) {
 }
 
 void LoadUserFrameGfx2(BgConfig *bgConfig, u32 layer, u32 baseTile, u32 paletteNum, u8 frame, enum HeapID heapId) {
-    GfGfxLoader_LoadCharData((NarcId)0x26, GetUserFrameGfx2TilesMember(frame), bgConfig, (GFBgLayer)layer, baseTile, 0, FALSE, heapId);
+    GfGfxLoader_LoadCharData(NARC_a_0_3_8, GetUserFrameGfx2TilesMember(frame), bgConfig, (GFBgLayer)layer, baseTile, 0, FALSE, heapId);
     if (layer < GF_BG_LYR_SUB_FIRST) {
-        GfGfxLoader_GXLoadPal((NarcId)0x26, GetUserFrameGfx2PaletteMember(frame), GF_PAL_LOCATION_MAIN_BG, (enum GFPalSlotOffset)(paletteNum * 0x20), 0x20, heapId);
+        GfGfxLoader_GXLoadPal(NARC_a_0_3_8, GetUserFrameGfx2PaletteMember(frame), GF_PAL_LOCATION_MAIN_BG, (enum GFPalSlotOffset)(paletteNum * 0x20), 0x20, heapId);
     } else {
-        GfGfxLoader_GXLoadPal((NarcId)0x26, GetUserFrameGfx2PaletteMember(frame), GF_PAL_LOCATION_SUB_BG, (enum GFPalSlotOffset)(paletteNum * 0x20), 0x20, heapId);
+        GfGfxLoader_GXLoadPal(NARC_a_0_3_8, GetUserFrameGfx2PaletteMember(frame), GF_PAL_LOCATION_SUB_BG, (enum GFPalSlotOffset)(paletteNum * 0x20), 0x20, heapId);
     }
 }
 

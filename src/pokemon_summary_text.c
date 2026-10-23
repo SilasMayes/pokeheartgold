@@ -26,7 +26,6 @@
 
 // Pokemon summary screen text: the screen's windows and the text of each page.
 
-extern const s8 gNatureStatMods[][5];
 
 #define PokemonSummary_NewTrainerMemo(mon, isMine, heapID) ((TrainerMemo * (*)(void *, int, enum HeapID)) TrainerMemo_New)(mon, isMine, heapID)
 
@@ -158,7 +157,7 @@ void PokemonSummary_AddPageWindows(PokemonSummary *summary) {
         summary->numPageWindows = 8;
         break;
     case 3:
-        if (summary->args->mode != 3 && summary->args->mode != 4) {
+        if (summary->args->mode != POKEMON_SUMMARY_MODE_CONDITION && summary->args->mode != POKEMON_SUMMARY_MODE_UPDATE_CONDITION) {
             return;
         }
         summary->numPageWindows = 3;
@@ -186,7 +185,7 @@ void PokemonSummary_RemovePageWindows(PokemonSummary *summary) {
         ClearWindowTilemapAndCopyToVram(summary->pageWindows);
         break;
     case 3:
-        if (summary->args->mode != 3 && summary->args->mode != 4) {
+        if (summary->args->mode != POKEMON_SUMMARY_MODE_CONDITION && summary->args->mode != POKEMON_SUMMARY_MODE_UPDATE_CONDITION) {
             return;
         }
         break;
@@ -514,7 +513,7 @@ static void PokemonSummary_PrintMemo(PokemonSummary *summary) {
     FillWindowPixelBuffer(&summary->pageWindows[6], 0);
     boxMon = PokemonSummary_GetShownMon(summary);
     isMine = PokemonSummary_IsPlayersMon(summary);
-    if (summary->args->monDataType == 2) {
+    if (summary->args->monDataType == POKEMON_SUMMARY_BOX_MON_ARRAY) {
         mon = AllocMonZeroed(HEAP_ID_19);
         CopyBoxPokemonToPokemon(boxMon, mon);
         PokemonSummary_PrintTrainerMemo(&summary->pageWindows[6], mon, isMine);
@@ -588,7 +587,7 @@ static void PokemonSummary_PrintStats(PokemonSummary *summary) {
 }
 
 static void PokemonSummary_PrintMoves(PokemonSummary *summary) {
-    if (summary->args->mode != 2) {
+    if (summary->args->mode != POKEMON_SUMMARY_MODE_FORGET_MOVE) {
         ScheduleWindowCopyToVram(&summary->windows[4]);
     }
     FillWindowPixelBuffer(&summary->pageWindows[8], 0);
@@ -645,8 +644,8 @@ static void PokemonSummary_PrintRibbonCount(PokemonSummary *summary) {
 
 static void PokemonSummary_PrintFlavorPreference(PokemonSummary *summary) {
     u8 mode = summary->args->mode;
-    if (mode == 3) {
-    } else if (mode != 4) {
+    if (mode == POKEMON_SUMMARY_MODE_CONDITION) {
+    } else if (mode != POKEMON_SUMMARY_MODE_UPDATE_CONDITION) {
         return;
     }
     {

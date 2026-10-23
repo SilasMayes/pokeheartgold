@@ -13,6 +13,10 @@
 #include "heap.h"
 #include "message_format.h"
 #include "nintendo_wfc_connect_unused.h"
+
+#include <dwc/dwc_account_internal.h>
+#include <dwc/dwc_main_internal.h>
+#include <dwc/stats_upload_internal.h>
 #include "options.h"
 #include "palette.h"
 #include "pm_string.h"
@@ -505,7 +509,7 @@ static int NintendoWfcUnused_HandleLogOutChoice(NintendoWfcUnused *wfc) {
 }
 
 static int NintendoWfcUnused_StartConnect(NintendoWfcUnused *wfc) {
-    DWC_InitInetEx(wfc->connection, 2, 1, 20);
+    DWC_InitInetEx(&wfc->connection, 2, 1, 20);
     DWC_SetAuthServer(2);
     DWC_ConnectInetAsync();
     wfc->state = NINTENDO_WFC_UNUSED_STATE_WAIT_CONNECT;
@@ -514,7 +518,7 @@ static int NintendoWfcUnused_StartConnect(NintendoWfcUnused *wfc) {
 
 static int NintendoWfcUnused_WaitConnect(NintendoWfcUnused *wfc) {
     int errorCode, ignored;
-    u8 info[60];
+    NetApInfo apInfo;
 
     DWC_ProcessInet();
     if (DWC_CheckInet()) {
@@ -541,7 +545,7 @@ static int NintendoWfcUnused_WaitConnect(NintendoWfcUnused *wfc) {
             wfc->httpResult = -2;
             break;
         case 4:
-            DWC_GetApInfo(info);
+            DWC_GetApInfo(&apInfo);
             wfc->state = NINTENDO_WFC_UNUSED_STATE_START_AUTH;
             break;
         }
@@ -605,7 +609,7 @@ static int NintendoWfcUnused_InitHttp(NintendoWfcUnused *wfc) {
     }
     u32 profileId = Save_SysInfo_GetDwcProfileId(wfc->args->sysInfo);
     u64 friendKey = DWC_CreateFriendKey(wfc->args->dwcUserData);
-    NintendoWfcHttp_Init(profileId, (u32)friendKey, (u32)(friendKey >> 32));
+    NintendoWfcHttp_Init(profileId, friendKey);
     wfc->state = NINTENDO_WFC_UNUSED_STATE_REQUEST_INFO;
     return NINTENDO_WFC_UNUSED_MAIN_SESSION_MAIN;
 }
@@ -836,8 +840,8 @@ static int NintendoWfcUnused_StartChallengeRoomInput(NintendoWfcUnused *wfc) {
 
 // Chooses the room with UP/DOWN; A: download it (or show it if it was downloaded already), B: back.
 static int NintendoWfcUnused_HandleChallengeRoomInput(NintendoWfcUnused *wfc) {
-    u32 time[3];
-    u32 date[4];
+    RTCTime time;
+    RTCDate date;
 
     if (gSystem.newAndRepeatedKeys & PAD_KEY_UP) {
         wfc->room++;
@@ -854,8 +858,8 @@ static int NintendoWfcUnused_HandleChallengeRoomInput(NintendoWfcUnused *wfc) {
         NintendoWfcUnused_PrintNumber(&wfc->roomWindow, wfc->roomString, wfc->room, 3);
         PlaySE(SEQ_SE_DP_SELECT);
     } else if (gSystem.newKeys & PAD_BUTTON_A) {
-        DWC_GetDateTime(date, time);
-        if (BattleRoomDownload_IsRoomMarked((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, date)) {
+        DWC_GetDateTime(&date, &time);
+        if (BattleRoomDownload_IsRoomMarked((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, (u32 *)&date)) {
             wfc->state = NINTENDO_WFC_UNUSED_STATE_PRINT_ROOM_UNAVAILABLE;
         } else {
             wfc->state = NINTENDO_WFC_UNUSED_STATE_PRINT_RECEIVING_TRAINERS;
@@ -895,8 +899,8 @@ static int NintendoWfcUnused_RequestTrainersDownload(NintendoWfcUnused *wfc) {
 
 static int NintendoWfcUnused_WaitTrainersDownload(NintendoWfcUnused *wfc) {
     int result;
-    u32 time[3];
-    u32 date[4];
+    RTCTime time;
+    RTCDate date;
 
     if (NintendoWfcHttp_IsDone()) {
         result = NintendoWfcHttp_GetResult();
@@ -905,8 +909,8 @@ static int NintendoWfcUnused_WaitTrainersDownload(NintendoWfcUnused *wfc) {
         case 0:
             BattleRoomDownload_SetTrainers((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer, (u8)wfc->ownRank, (u8)wfc->room);
             NintendoWfcUnused_SetState(wfc, NINTENDO_WFC_UNUSED_STATE_START_SAVE, NINTENDO_WFC_UNUSED_STATE_PRINT_TRAINERS_RECEIVED);
-            DWC_GetDateTime(date, time);
-            BattleRoomDownload_MarkRoom((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, date);
+            DWC_GetDateTime(&date, &time);
+            BattleRoomDownload_MarkRoom((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, (u32 *)&date);
             break;
         case -1:
             wfc->httpResult = result;

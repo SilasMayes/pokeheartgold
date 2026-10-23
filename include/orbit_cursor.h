@@ -48,21 +48,21 @@ typedef struct OrbitCursor {
 } OrbitCursor;
 
 OrbitCursor *OrbitCursor_New(OrbitCursorArgs args, SpriteSystem *spriteSys, SpriteManager *spriteMan, PaletteData *plttData);
-void OrbitCursor_ReloadPalette(OrbitCursor *p, int palette);
-void OrbitCursor_LoadResources(OrbitCursor *p, int palette);
-void OrbitCursor_CreateSprites(OrbitCursor *p);
-void OrbitCursor_DeleteSprites(OrbitCursor *p);
-BOOL OrbitCursor_Start(OrbitCursor *p, int palette);
-BOOL OrbitCursor_SetActive(OrbitCursor *p, int active);
-BOOL OrbitCursor_SetTarget(OrbitCursor *p, int x, int y);
-BOOL OrbitCursor_MoveTarget(OrbitCursor *p, int x, int y);
-BOOL OrbitCursor_IsNewTarget(OrbitCursor *p, int x, int y);
-BOOL OrbitCursor_SetPosition(OrbitCursor *p, s16 x, s16 y);
-BOOL OrbitCursor_Delete(OrbitCursor *p);
-BOOL OrbitCursor_SetVisible(OrbitCursor *p, int flag);
-void OrbitCursor_SetRadius(OrbitCursor *p, int radiusX, int radiusY);
-void OrbitCursor_SetAltAnim(OrbitCursor *p);
-void OrbitCursor_SetDefaultAnim(OrbitCursor *p);
+void OrbitCursor_ReloadPalette(OrbitCursor *cursor, int palette);
+void OrbitCursor_LoadResources(OrbitCursor *cursor, int palette);
+void OrbitCursor_CreateSprites(OrbitCursor *cursor);
+void OrbitCursor_DeleteSprites(OrbitCursor *cursor);
+BOOL OrbitCursor_Start(OrbitCursor *cursor, int palette);
+BOOL OrbitCursor_SetActive(OrbitCursor *cursor, int active);
+BOOL OrbitCursor_SetTarget(OrbitCursor *cursor, int x, int y);
+BOOL OrbitCursor_MoveTarget(OrbitCursor *cursor, int x, int y);
+BOOL OrbitCursor_IsNewTarget(OrbitCursor *cursor, int x, int y);
+BOOL OrbitCursor_SetPosition(OrbitCursor *cursor, s16 x, s16 y);
+BOOL OrbitCursor_Delete(OrbitCursor *cursor);
+BOOL OrbitCursor_SetVisible(OrbitCursor *cursor, int flag);
+void OrbitCursor_SetRadius(OrbitCursor *cursor, int radiusX, int radiusY);
+void OrbitCursor_SetAltAnim(OrbitCursor *cursor);
+void OrbitCursor_SetDefaultAnim(OrbitCursor *cursor);
 extern void OrbitCursor_Task(SysTask *task, void *data);
 
 extern const int gOrbitCursorPaletteMembers[];

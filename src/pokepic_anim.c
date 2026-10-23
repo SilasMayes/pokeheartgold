@@ -581,42 +581,42 @@ static void PokepicScriptAnimCmd_CopyVar(PokepicScriptAnim *anim) {
 
 static void PokepicScriptAnimCmd_AddVar(PokepicScriptAnim *anim) {
     u8 dest;
-    s32 a, b;
-    PokepicScriptAnim_ReadDestVarAndOperands(anim, &dest, &a, &b);
-    anim->vars[dest] = a + b;
+    s32 lhs, rhs;
+    PokepicScriptAnim_ReadDestVarAndOperands(anim, &dest, &lhs, &rhs);
+    anim->vars[dest] = lhs + rhs;
 }
 
 static void PokepicScriptAnimCmd_MulVar(PokepicScriptAnim *anim) {
     u8 dest;
-    s32 a, b;
-    PokepicScriptAnim_ReadDestVarAndOperands(anim, &dest, &a, &b);
-    anim->vars[dest] = a * b;
+    s32 lhs, rhs;
+    PokepicScriptAnim_ReadDestVarAndOperands(anim, &dest, &lhs, &rhs);
+    anim->vars[dest] = lhs * rhs;
 }
 
 static void PokepicScriptAnimCmd_SubVar(PokepicScriptAnim *anim) {
     u8 dest;
-    s32 a, b;
-    PokepicScriptAnim_ReadDestAndOperands(anim, &dest, &a, &b);
-    anim->vars[dest] = a - b;
+    s32 lhs, rhs;
+    PokepicScriptAnim_ReadDestAndOperands(anim, &dest, &lhs, &rhs);
+    anim->vars[dest] = lhs - rhs;
 }
 
 static void PokepicScriptAnimCmd_DivVar(PokepicScriptAnim *anim) {
     u8 dest;
-    s32 a, b;
-    PokepicScriptAnim_ReadDestAndOperands(anim, &dest, &a, &b);
-    anim->vars[dest] = a / b;
+    s32 lhs, rhs;
+    PokepicScriptAnim_ReadDestAndOperands(anim, &dest, &lhs, &rhs);
+    anim->vars[dest] = lhs / rhs;
 }
 
 static void PokepicScriptAnimCmd_ModVar(PokepicScriptAnim *anim) {
     u8 dest;
-    s32 a, b;
-    PokepicScriptAnim_ReadDestAndOperands(anim, &dest, &a, &b);
-    anim->vars[dest] = a % b;
+    s32 lhs, rhs;
+    PokepicScriptAnim_ReadDestAndOperands(anim, &dest, &lhs, &rhs);
+    anim->vars[dest] = lhs % rhs;
 }
 
 static void PokepicScriptAnimCmd_SetVarIfCompare(PokepicScriptAnim *anim) {
-    s32 b;
-    s32 a;
+    s32 lhs;
+    s32 rhs;
     s32 newValue;
     u8 args[4];
     int result;
@@ -624,18 +624,18 @@ static void PokepicScriptAnimCmd_SetVarIfCompare(PokepicScriptAnim *anim) {
     PokepicScriptAnim_ReadArgByte(anim, &args[0]);
     if (args[0] == POKEPIC_ANIM_OPERAND_CONST) {
         PokepicScriptAnim_ReadVarIndex(anim, &args[3]);
-        b = anim->vars[args[3]];
-        PokepicScriptAnim_ReadArg(anim, &a);
+        lhs = anim->vars[args[3]];
+        PokepicScriptAnim_ReadArg(anim, &rhs);
     } else if (args[0] == POKEPIC_ANIM_OPERAND_VAR) {
         PokepicScriptAnim_ReadVarIndexPair(anim, &args[3], &args[2]);
-        b = anim->vars[args[3]];
-        a = anim->vars[args[2]];
+        lhs = anim->vars[args[3]];
+        rhs = anim->vars[args[2]];
     } else {
         GF_ASSERT(FALSE);
     }
     PokepicScriptAnim_ReadArgByte(anim, &args[1]);
     GF_ASSERT(args[1] <= POKEPIC_ANIM_COMPARE_EQUAL);
-    result = PokepicScriptAnim_Compare(&b, &a);
+    result = PokepicScriptAnim_Compare(&lhs, &rhs);
     PokepicScriptAnim_ReadArgByte(anim, &args[0]);
     if (args[0] == POKEPIC_ANIM_OPERAND_CONST) {
         PokepicScriptAnim_ReadVarIndex(anim, &args[3]);

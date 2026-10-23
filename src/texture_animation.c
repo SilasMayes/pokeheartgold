@@ -12,8 +12,8 @@
 struct TextureAnimation {
     const BillboardGfxSequence *gfxSequence;
     NNSG3dResTex *texture;
-    u32 textureKey;
-    u32 paletteKey;
+    NNSGfdTexKey textureKey;
+    NNSGfdPlttKey paletteKey;
     u8 textureIndex;
     u8 paletteIndex;
 };
@@ -100,14 +100,14 @@ static void TextureAnimation_SetFrameIndex(TextureAnimation *animation, u16 fram
 }
 static void TextureAnimation_LoadTexture(TextureAnimation *animation, const BillboardTexPlttIndex *indices) {
     void *data = TextureAnimation_GetTextureData(animation, indices);
-    u32 key = animation->textureKey;
-    GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_VRAM, (key & 0xFFFF) << 3, data, ((key & 0x7FFF0000) >> 16) << 4);
+    NNSGfdTexKey key = animation->textureKey;
+    GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_VRAM, NNS_GfdGetTexKeyAddr(key), data, ((key & 0x7FFF0000) >> 16) << 4);
     animation->textureIndex = indices->textureIdx;
 }
 static void TextureAnimation_LoadPalette(TextureAnimation *animation, const BillboardTexPlttIndex *indices) {
     void *data = TextureAnimation_GetPaletteData(animation, indices);
-    u32 key = animation->paletteKey;
-    GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, (key & 0xFFFF) << 3, data, ((key & 0xFFFF0000) >> 16) << 3);
+    NNSGfdPlttKey key = animation->paletteKey;
+    GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, NNS_GfdGetPlttKeyAddr(key), data, ((key & 0xFFFF0000) >> 16) << 3);
     animation->paletteIndex = indices->plttIdx;
 }
 static void *TextureAnimation_GetTextureData(TextureAnimation *animation, const BillboardTexPlttIndex *indices) {

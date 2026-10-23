@@ -8,9 +8,6 @@
 #include "math_util.h"
 #include "string_util.h"
 
-BOOL FriendGroup_IsEmpty(FRIEND_GROUP *group);
-BOOL FriendGroup_Equals(FRIEND_GROUP *a, FRIEND_GROUP *b);
-
 static SAV_FRIEND_GRP *sFriendGroupSave;
 
 u32 Save_FriendGroup_sizeof(void) {

@@ -245,7 +245,7 @@ void PokemonSummary_CreatePokepic(PokemonSummary *summary) {
 
     summary->pokepicManager = PokepicManager_Create(HEAP_ID_19);
     mon = PokemonSummary_GetShownMon(summary);
-    if (summary->args->monDataType == 2) {
+    if (summary->args->monDataType == POKEMON_SUMMARY_BOX_MON_ARRAY) {
         GetBoxmonSpriteCharAndPlttNarcIds(&pokepicTemplate, mon, 2, FALSE);
     } else {
         GetPokemonSpriteCharAndPlttNarcIds(&pokepicTemplate, mon, 2);
@@ -307,7 +307,7 @@ static int PokemonSummary_GetTouchedButton(PokemonSummary *summary) {
     if (summary->unk7BF_0 == 0xF) {
         return -1;
     }
-    if (summary->args->monDataType != 2) {
+    if (summary->args->monDataType != POKEMON_SUMMARY_BOX_MON_ARRAY) {
         button = TouchscreenHitbox_FindRectAtTouchNew(sTouchButtonHitboxes);
         if (button != -1) {
             button = gTouchButtons[button][0];

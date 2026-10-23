@@ -45,7 +45,6 @@ static void StartFanfareWaitTimer(u16 unused);
 static BOOL Sound_StartSeq(enum SoundHandleNo handleNo, int playerNo, int bankNo, int playerPrio, u16 seqNo, u8 useGBSounds);
 
 // NitroSystem
-int GF_NNS_SndPlayerGetSeqNo(NNSSndHandle *handle);
 
 BOOL PlayBGMDirect(u16 seqNo) {
     BOOL success;

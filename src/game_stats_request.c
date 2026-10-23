@@ -259,14 +259,14 @@ void GameStats_Start(void) {
     }
 }
 
-int GameStats_PrepareRequest(char *url, int pid, void *payload, int payloadSize, void *response, int responseCapacity) {
+int GameStats_PrepareRequest(const char *url, int pid, void *payload, int payloadSize, void *response, int responseCapacity) {
     int total;
     int len;
     int n;
     char *p;
 
     if (gGameStatsRequest.state != GAME_STATS_STATE_STARTED) {
-        return 1;
+        return GAME_STATS_PREPARE_NOT_STARTED;
     }
     gGameStatsRequest.pid = pid;
     gGameStatsRequest.payload = payload;
@@ -278,7 +278,7 @@ int GameStats_PrepareRequest(char *url, int pid, void *payload, int payloadSize,
     n = GameStats_GetBase64Length(total);
     gGameStatsRequest.url = DWC_Alloc(10, len + 69 + n);
     if (gGameStatsRequest.url == NULL) {
-        return 2;
+        return GAME_STATS_PREPARE_NO_MEMORY;
     }
     sprintf(gGameStatsRequest.url, "%s?pid=%d", url, pid);
     p = gGameStatsRequest.url;
@@ -289,7 +289,7 @@ int GameStats_PrepareRequest(char *url, int pid, void *payload, int payloadSize,
     gGameStatsRequest.dataText = gGameStatsRequest.hashText + 40 + n;
     gGameStatsRequest.dataTextSize = GameStats_GetBase64Length(total) + 1;
     gGameStatsRequest.state = GAME_STATS_STATE_PREPARED;
-    return 0;
+    return GAME_STATS_PREPARE_OK;
 }
 
 GameStatsRequest gGameStatsRequest = { GAME_STATS_STATE_IDLE };

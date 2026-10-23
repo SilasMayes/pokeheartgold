@@ -1,6 +1,10 @@
 #ifndef POKEHEARTGOLD_NINTENDO_WFC_CONNECT_UNUSED_H
 #define POKEHEARTGOLD_NINTENDO_WFC_CONNECT_UNUSED_H
 
+#include <nitro.h>
+
+#include <dwc/net_common_internal.h>
+
 #include "global.h"
 
 #include "frontier_wifi_upload_record.h"
@@ -94,7 +98,7 @@ typedef struct NintendoWfcUnused {
     int nextState;
     void *heapMem;
     NNSFndHeapHandle expHeap;
-    u8 connection[0x64]; // passed to DWC_InitInetEx
+    NetConnection connection;
     u32 ownRank;
     int rank;
     int roomCount;
@@ -155,49 +159,11 @@ typedef struct NintendoWfcUnusedModeRow {
     NintendoWfcUnusedModeFunc exit;
 } NintendoWfcUnusedModeRow;
 
-int DWC_GetLastError(void *code);
-int DWC_GetLastErrorEx(int *code, int *category);
-void DWC_ClearError(void);
-void DWC_SetMemFunc(void *(*alloc)(void *, u32, int), void (*freeFunc)(void *, void *));
-void DWC_InitInetEx(void *connection, int priority, int unused, int sslPriority);
-void DWC_SetAuthServer(int server);
-void DWC_ConnectInetAsync(void);
-int DWC_CheckInet(void);
-void DWC_ProcessInet(void);
-int DWC_GetInetStatus(void);
-void DWC_CleanupInet(void);
-int DWC_GetLinkLevel(void);
-void DWC_GetApInfo(void *info);
-void DWC_UpdateConnection(void);
-void DWC_GetDateTime(void *date, void *time);
-void DWC_NASLoginAsync(void);
-int DWC_NASLoginProcess(void);
-void DWC_ShutdownFriendsMatch(void);
-void DWC_ShutdownGHTTP(void);
+extern const u16 gNintendoWfcUnusedArrowPositions[2][2];
 
-void NintendoWfcHttp_Update(void);
-BOOL NintendoWfcHttp_IsDone(void);
-s32 NintendoWfcHttp_GetResult(void);
-void NintendoWfcHttp_RequestRoomCount(int rank);
-void NintendoWfcHttp_RequestDownload(int rank, int room, void *buffer);
-void NintendoWfcHttp_RequestUpload(int rank, int room, int winCount, FrontierWifiUploadRecord *record);
-void NintendoWfcHttp_RequestInfo(void);
-void NintendoWfcHttp_RequestSetProfile(WifiServerProfile *profile, u32 *response);
-void NintendoWfcHttp_Init(u32 profileId, u32 friendKeyLo, u32 friendKeyHi);
-
-BOOL LoadOVY38(void);
-void UnloadOVY38(void);
-void CommWireless_Terminate(void);
 void CommState_InitWfcSession(SaveData *saveData);
 void CommState_FreeWfcSession(void);
 void CommState_ShowRestartErrorAndHalt(void);
-u64 DWC_CreateFriendKey(const void *data);
-u8 FrontierData_GetWifiWinCount(FrontierData *data);
-void BattleRoomDownload_MarkRoom(BattleRoomDownload *data, u32 group, u32 entry, u32 *date);
-BOOL BattleRoomDownload_IsRoomMarked(BattleRoomDownload *data, u32 group, u32 entry, u32 *date);
-void BattleRoomDownload_SetTrainers(BattleRoomDownload *data, void *records, u32 a, u32 b);
-void BattleRoomDownload_GetTrainersRoom(BattleRoomDownload *data, u8 *out);
-void BattleRoomDownload_SetLeaders(BattleRoomDownload *data, void *records, u32 a, u32 b);
 int RecordMixing_State_AbortLeave(int errorCode, int errorType);
 
 int NintendoWfcUnused_SessionInit(NintendoWfcUnused *wfc, int state);

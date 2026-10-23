@@ -1,5 +1,9 @@
 #include "nintendo_wfc_connect_unused.h"
 
+#include <dwc/dwc_account_internal.h>
+#include <dwc/dwc_main_internal.h>
+#include <dwc/stats_upload_internal.h>
+
 #include "constants/sndseq.h"
 
 #include "msgdata/msg.naix"
@@ -28,8 +32,6 @@
 // An older version of the Nintendo WFC connection app, with a scrolling number instead of the touch number pad and a
 // Yes/No prompt instead of the touch YES/NO menu. Nothing in the game launches it.
 
-extern const u16 gNintendoWfcUnusedArrowPositions[2][2];
-
 enum NintendoWfcUnusedInitState {
     NINTENDO_WFC_UNUSED_INIT_SETUP,
     NINTENDO_WFC_UNUSED_INIT_START_WIRELESS,
@@ -43,8 +45,8 @@ static void NintendoWfcUnused_InitObjTransfer(void);
 static void NintendoWfcUnused_InitSpriteResources(NintendoWfcUnused *wfc);
 static void NintendoWfcUnused_InitSpriteTemplate(SpriteTemplate *template, NintendoWfcUnused *wfc, SpriteResourcesHeader *header, u32 whichScreen);
 static void NintendoWfcUnused_CreateSprites(NintendoWfcUnused *wfc);
-static void *NintendoWfcUnused_Alloc(void *unused, u32 size, int alignment);
-static void NintendoWfcUnused_Free(void *unused, void *ptr);
+static void *NintendoWfcUnused_Alloc(int heap, u32 size, int alignment);
+static void NintendoWfcUnused_Free(int heap, void *ptr, u32 size);
 static void NintendoWfcUnused_InitGraphics(NintendoWfcUnused *wfc);
 static void NintendoWfcUnused_FreeGraphics(NintendoWfcUnused *wfc);
 
@@ -300,14 +302,14 @@ void NintendoWfcUnused_SetState(NintendoWfcUnused *wfc, int state, int nextState
     wfc->nextState = nextState;
 }
 
-static void *NintendoWfcUnused_Alloc(void *unused, u32 size, int alignment) {
+static void *NintendoWfcUnused_Alloc(int heap, u32 size, int alignment) {
     OSIntrMode enabled = OS_DisableInterrupts();
     void *result = NNS_FndAllocFromExpHeapEx(sNintendoWfcUnusedGlobal.heap, size, alignment);
     OS_RestoreInterrupts(enabled);
     return result;
 }
 
-static void NintendoWfcUnused_Free(void *unused, void *ptr) {
+static void NintendoWfcUnused_Free(int heap, void *ptr, u32 size) {
     if (ptr) {
         OSIntrMode enabled = OS_DisableInterrupts();
         NNS_FndFreeToExpHeap(sNintendoWfcUnusedGlobal.heap, ptr);
