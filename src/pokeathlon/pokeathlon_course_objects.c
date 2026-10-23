@@ -169,17 +169,14 @@ PokeathlonCourseSpritePool *PokeathlonCourseSpritePool_New(enum HeapID heapId, P
 }
 
 void PokeathlonCourseSpritePool_Free(PokeathlonCourseSpritePool *pool) {
-    u8 i = 0;
-    if (pool->template.resourceCount > 0) {
-        do {
-            if (pool->resources[i].objects[0]) {
-                SpriteTransfer_DeleteCharTransferTask(pool->resources[i].objects[0]);
-            }
-            if (pool->resources[i].objects[1]) {
-                SpriteTransfer_DeletePlttTransferTask(pool->resources[i].objects[1]);
-            }
-            i++;
-        } while (i < pool->template.resourceCount);
+    u8 i;
+    for (i = 0; i < pool->template.resourceCount; i++) {
+        if (pool->resources[i].objects[0]) {
+            SpriteTransfer_DeleteCharTransferTask(pool->resources[i].objects[0]);
+        }
+        if (pool->resources[i].objects[1]) {
+            SpriteTransfer_DeletePlttTransferTask(pool->resources[i].objects[1]);
+        }
     }
     for (i = 0; i < 4; i++) {
         Destroy2DGfxResObjMan(pool->resMans[i]);
@@ -216,17 +213,14 @@ void PokeathlonCourseSpritePool_LoadAnim(PokeathlonCourseSpritePool *pool, NarcI
 }
 
 void PokeathlonCourseSpritePool_TransferResources(PokeathlonCourseSpritePool *pool) {
-    int i = 0;
-    if (pool->template.resourceCount > 0) {
-        do {
-            if (pool->resources[i].objects[0]) {
-                SpriteTransfer_CreateCharTransferTask_AllocAtEnd(pool->resources[i].objects[0]);
-            }
-            if (pool->resources[i].objects[1]) {
-                SpriteTransfer_CreateExtPlttTransferTask(pool->resources[i].objects[1]);
-            }
-            i++;
-        } while (i < pool->template.resourceCount);
+    int i;
+    for (i = 0; i < pool->template.resourceCount; i++) {
+        if (pool->resources[i].objects[0]) {
+            SpriteTransfer_CreateCharTransferTask_AllocAtEnd(pool->resources[i].objects[0]);
+        }
+        if (pool->resources[i].objects[1]) {
+            SpriteTransfer_CreateExtPlttTransferTask(pool->resources[i].objects[1]);
+        }
     }
 }
 

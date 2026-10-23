@@ -1416,13 +1416,11 @@ static void PokeathlonCourse_SaveFriendshipStatues(PokeathlonCourseData *course)
     PokeathlonSave_FriendshipRecords *records = Save_Pokeathlon_FriendshipRecords_Get(layout->args->saveData);
     u8 netId = (u8)PokeathlonCourse_GetNetId(course);
     PokeathlonCourseMon *mons = layout->participants[netId].mons;
-    i = 0;
-    do {
+    for (i = 0; i < 3; i++) {
         records->friendshipRoomStatues[i].species = mons[i].species;
         records->friendshipRoomStatues[i].form = (u8)mons[i].form;
         records->friendshipRoomStatues[i].gender = mons[i].gender;
-        i++;
-    } while (i < 3);
+    }
 }
 
 void PokeathlonCourse_AddCapped(s32 frameCount, u32 maxValue, PokeathlonStatistics *result) {
@@ -1472,23 +1470,21 @@ static void PokeathlonCourse_SetCourseMedals(PokeathlonCourseData *course) {
 static void PokeathlonCourse_SetMonMedals(PokeathlonCourseData *course, u32 medals) {
     PokeathlonCourseLayout *layout = (PokeathlonCourseLayout *)course;
     PokeathlonSave *pokeathlon = Save_Pokeathlon_Get(layout->args->saveData);
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 3; i++) {
         PokeathlonSave_AddMonMedals(pokeathlon, medals, layout->localParticipant.mons[i].species);
-        i++;
-    } while (i < 3);
+    }
 }
 
 // Whether every one of the first 5 courses has a saved record.
 static BOOL PokeathlonCourse_HasAllCourseRecords(PokeathlonSave *pokeathlon) {
     PokeathlonCourseBestRecord *records = (PokeathlonCourseBestRecord *)pokeathlon;
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 5; i++) {
         if (records[i].totalPoints == 0) {
             return FALSE;
         }
-        i++;
-    } while (i < 5);
+    }
     return TRUE;
 }
 
@@ -1496,15 +1492,14 @@ static BOOL PokeathlonCourse_HasAllCourseRecords(PokeathlonSave *pokeathlon) {
 static BOOL PokeathlonCourse_HasAllMedalsOfAMon(PokeathlonCourseData *course) {
     PokeathlonCourseLayout *layout = (PokeathlonCourseLayout *)course;
     PokeathlonSave *pokeathlon = Save_Pokeathlon_Get(layout->args->saveData);
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 3; i++) {
         u32 index = layout->localParticipant.mons[i].species - 1;
         u8 *medals = PokeathlonSave_GetMonMedals(pokeathlon);
         if (medals[index] == POKEATHLON_MEDALS_ALL) {
             return TRUE;
         }
-        i++;
-    } while (i < 3);
+    }
     return FALSE;
 }
 
@@ -1512,8 +1507,7 @@ static BOOL PokeathlonCourse_HasAllMedalsOfAMon(PokeathlonCourseData *course) {
 static BOOL PokeathlonCourse_BeatsAllEventTargets(PokeathlonCourseData *course) {
     u8 i;
     Pokeathlon_RecordsSolo *records = PokeathlonSave_GetRecordsSolo2(Save_Pokeathlon_Get(((PokeathlonCourseLayout *)course)->args->saveData));
-    i = 0;
-    do {
+    for (i = 0; i < 10; i++) {
         u16 record = records[i].entries[0].score;
         if (record == POKEATHLON_NO_RECORD) {
             return FALSE;
@@ -1521,8 +1515,7 @@ static BOOL PokeathlonCourse_BeatsAllEventTargets(PokeathlonCourseData *course) 
         if (!PokeathlonCourse_BeatsRecordInOrder(gPokeathlonEventTargetScores[i], record, gPokeathlonEventScoreOrders[i])) {
             return FALSE;
         }
-        i++;
-    } while (i < 10);
+    }
     return TRUE;
 }
 

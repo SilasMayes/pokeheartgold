@@ -180,14 +180,12 @@ void PokeathlonHurdleDashTrack_CreateHurdleSprites(PokeathlonHurdleDashTrack *tr
     int i = 0;
     int j;
     do {
-        j = 0;
-        do {
+        for (j = 0; j < 4; j++) {
             PokeathlonHurdle *hurdle = PokeathlonHurdleDash_GetHurdle(lane->hurdles, j);
             PokeathlonCourseSpritePoolSprite *standing = PokeathlonCourseSpritePool_Take(spritePool, 101, 2);
             PokeathlonCourseSpritePoolSprite *knocked = PokeathlonCourseSpritePool_Take(spritePool, 103, 6);
             PokeathlonHurdle_SetSprites(hurdle, standing, knocked);
-            j++;
-        } while (j < 4);
+        }
         lane++;
         i++;
     } while (i < 3);
@@ -352,7 +350,7 @@ static void PokeathlonHurdleDashStandings_CreateSprites(PokeathlonHurdleDashStan
         Sprite_SetAnimActiveFlag(standings->mons[i].icon, TRUE);
         Sprite_SetAnimCtrlSeq(standings->mons[i].icon, i);
         standings->mons[i].frame = Sprite_CreateAffine(&template);
-        Sprite_SetAnimCtrlSeq(standings->mons[i].frame, i / 3 + 12);
+        Sprite_SetAnimCtrlSeq(standings->mons[i].frame, i / POKEATHLON_TEAM_SIZE + 12);
         standings->mons[i].rank = Sprite_CreateAffine(&template);
         if (i < 8) {
             Sprite_SetAnimCtrlSeq(standings->mons[i].rank, i + 16);

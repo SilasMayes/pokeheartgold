@@ -400,15 +400,14 @@ static void PokeathlonEventRecord_LoadSpriteResources(PokeathlonEventRecord *wor
 
 static void PokeathlonEventRecord_CreateUiSprites(PokeathlonEventRecord *work) {
     const ManagedSpriteTemplate *spriteTemplate = gPokeathlonEventRecordUiSpriteTemplates;
-    int i = 0;
+    int i;
 
-    do {
+    for (i = 0; i < 2; i++) {
         ManagedSprite *sprite = PokeathlonUtil_NewSprite(work->spriteContext, spriteTemplate);
         work->sprites[i] = sprite;
         ManagedSprite_SetAnimateFlag(sprite, TRUE);
         spriteTemplate++;
-        i++;
-    } while (i < 2);
+    }
 }
 
 static void PokeathlonEventRecord_CreateEventSprites(PokeathlonEventRecord *work) {

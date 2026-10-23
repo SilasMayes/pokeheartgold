@@ -61,13 +61,12 @@ u32 PokeathlonUtil_GetCourseMedal(u32 value) {
 }
 
 u8 PokeathlonUtil_GetMedalistTrophyCount(s32 value) {
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 10; i++) {
         if (sPokeathlonMedalistTrophyThresholds[i] <= value) {
             break;
         }
-        i++;
-    } while (i < 10);
+    }
     return 10 - i;
 }
 

@@ -48,11 +48,9 @@ PokeathlonResultsAnnouncementPlates *PokeathlonResults_NewPlates(enum HeapID hea
     plates->fontSystem = FontSystem_NewInit(10, heapId);
     plates->bgConfig = bgConfig;
     plates->course = course;
-    i = 0;
-    do {
+    for (i = 0; i < 5; i++) {
         plates->plates[i].index = i;
-        i++;
-    } while (i < 5);
+    }
     return plates;
 }
 

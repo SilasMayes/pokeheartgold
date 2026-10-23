@@ -120,12 +120,10 @@ static void PokeathlonMedals_ShowSpeciesMedals(PokeathlonMedals *work, u16 speci
     u8 i;
     u8 medals = PokeathlonMedals_GetSpeciesMedals(work, species);
 
-    i = 0;
-    do {
+    for (i = 0; i < 5; i++) {
         ManagedSprite_SetDrawFlag(work->sprites[15 + i], medals & 1);
         medals = (u8)(medals >> 1);
-        i++;
-    } while (i < 5);
+    }
 }
 
 static u16 *PokeathlonMedals_LoadSpeciesOrder(PokeathlonMedals *work, u32 *count) {
@@ -185,12 +183,11 @@ static void PokeathlonMedals_DrawMedalistMark(PokeathlonMedals *work, int slot, 
 }
 
 static void PokeathlonMedals_SetIconsVisible(PokeathlonMedals *work, BOOL visible) {
-    int i = 0;
+    int i;
 
-    do {
+    for (i = 0; i < 30; i++) {
         ManagedSprite_SetDrawFlag(MEDALS_SPRITE(work, i + 20), visible);
-        i++;
-    } while (i < 30);
+    }
 }
 
 static void PokeathlonMedals_ShowPage(PokeathlonMedals *work) {
@@ -546,13 +543,11 @@ static void PokeathlonMedals_InitBgs(PokeathlonMedals *work) {
     modes = gPokeathlonMedalsGraphicsModes;
     SetBothScreensModesAndDisable(&modes);
     templates = gPokeathlonMedalsBgTemplates;
-    i = 0;
-    do {
+    for (i = 0; i < 7; i++) {
         InitBgFromTemplate(work->bgConfig, gPokeathlonMedalsBgLayers[i], &templates.templates[i], GF_BG_TYPE_TEXT);
         BgClearTilemapBufferAndCommit(work->bgConfig, gPokeathlonMedalsBgLayers[i]);
         BG_ClearCharDataRange(gPokeathlonMedalsBgLayers[i], 32, 0, work->heapId);
-        i++;
-    } while (i < 7);
+    }
 }
 
 static void PokeathlonMedals_LoadBgGraphics(PokeathlonMedals *work) {
@@ -620,14 +615,13 @@ static void PokeathlonMedals_LoadSpriteResources(PokeathlonMedals *work) {
 
 static void PokeathlonMedals_CreateUiSprites(PokeathlonMedals *work) {
     const ManagedSpriteTemplate *spriteTemplate = gPokeathlonMedalsUiSpriteTemplates;
-    int i = 0;
+    int i;
 
-    do {
+    for (i = 0; i < 4; i++) {
         work->sprites[i] = PokeathlonUtil_NewSprite(work->spriteContext, spriteTemplate);
         ManagedSprite_SetAnimateFlag(work->sprites[i], TRUE);
         spriteTemplate++;
-        i++;
-    } while (i < 4);
+    }
 }
 
 static void PokeathlonMedals_CreateMedalSprites(PokeathlonMedals *work) {

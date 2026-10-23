@@ -331,8 +331,8 @@ static void PokeathlonDiscCatchMon_Respawn(PokeathlonDiscCatchMon *mon) {
     VecFx32 zero;
 
     index = mon->index;
-    member = index % 3;
-    participant = index / 3;
+    member = index % DISC_CATCH_TEAM_SIZE;
+    participant = index / DISC_CATCH_TEAM_SIZE;
     PokeathlonCourseObject_GroundToCenter(mon->monPic, gPokeathlonDiscCatchMonStartPositions[participant][member][0], gPokeathlonDiscCatchMonStartPositions[participant][member][1], &x, &y);
     mon->position.x = x << FX32_SHIFT;
     mon->position.y = y << FX32_SHIFT;
@@ -633,8 +633,8 @@ void PokeathlonDiscCatch_UpdateMonSprites(PokeathlonDiscCatchSprites *sprites, P
             if ((frame->jumped >> i) & 1) {
                 PokeathlonDiscCatchStats *stats;
                 int participant;
-                participant = i / 3;
-                stats = PokeathlonDiscCatch_GetStats(course, (u8)participant, (u8)(i % 3));
+                participant = i / DISC_CATCH_TEAM_SIZE;
+                stats = PokeathlonDiscCatch_GetStats(course, (u8)participant, (u8)(i % DISC_CATCH_TEAM_SIZE));
                 if (participant == (int)PokeathlonCourse_GetNetId(course) && mon->jumping == 0 && mon->squashed == 0) {
                     if (stats->jump == 0) {
                         PlaySE(SEQ_SE_DP_BOX03);
@@ -654,7 +654,7 @@ void PokeathlonDiscCatch_UpdateMonSprites(PokeathlonDiscCatchSprites *sprites, P
             if (mon->jumping) {
                 PokeathlonDiscCatchStats *stats;
                 u32 frames;
-                stats = PokeathlonDiscCatch_GetStats(course, (u8)(i / 3), (u8)(i % 3));
+                stats = PokeathlonDiscCatch_GetStats(course, (u8)(i / DISC_CATCH_TEAM_SIZE), (u8)(i % DISC_CATCH_TEAM_SIZE));
                 PokeathlonCourseObject_SetCenterPosition(monPic, x, y + PokeathlonDiscCatch_GetJumpOffset(stats, mon->jumpFrame, &scale), 0);
                 PokeathlonCourseObject_SetScale(monPic, scale, scale);
                 frames = PokeathlonDiscCatchStats_GetJumpDuration(stats);

@@ -112,8 +112,8 @@ void PokeathlonRingDrop_CreateMonObjects(PokeathlonRingDrop *ringDrop, Pokeathlo
         PokeathlonCourseMonGfxTemplate template = { 0 };
         int i;
         for (i = 0; i < 12; i++) {
-            int member = i % 3;
-            int participant = i / 3;
+            int member = i % RING_DROP_TEAM_SIZE;
+            int participant = i / RING_DROP_TEAM_SIZE;
             PokeathlonCourse_GetMonInfo(course, participant, member, &infos[i]);
             template.sizeTypes[i] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, participant, member));
         }
@@ -147,8 +147,8 @@ void PokeathlonRingDrop_InitMons(PokeathlonRingDrop *ringDrop, PokeathlonCourseD
     PokeathlonRingDrop_InitMemberParams(course);
     for (i = 0; i < 12; i++) {
         int size;
-        participant = i / 3;
-        member = i % 3;
+        participant = i / RING_DROP_TEAM_SIZE;
+        member = i % RING_DROP_TEAM_SIZE;
         teamMember = &ringDrop->players[participant].mon.members[member];
         object = PokeathlonCourseMonObjects_Get(ringDrop->monObjects, i);
         PokeathlonCourseMonObject_SetDrawFlag(object, member == 0);
@@ -482,8 +482,8 @@ void PokeathlonRingDrop_BuildFramePacket(u8 (*contacts)[RING_DROP_PARTICIPANTS],
     marks->raw = (marks->raw & ~0x80) | (((u32)bumped << 31) >> 24);
     marks->raw = (u8)marks->raw;
     for (i = 0; i < 12; i++) {
-        int participant = i / 3;
-        int member = i % 3;
+        int participant = i / RING_DROP_TEAM_SIZE;
+        int member = i % RING_DROP_TEAM_SIZE;
         s32 stamina = *(fx32 *)((u8 *)contacts + participant * sizeof(PokeathlonRingDropPlayer) + member * sizeof(PokeathlonRingDropMember) + RING_DROP_CONTACTS_TO(players[0].mon.members[0].stamina)) >> FX32_SHIFT;
         int mark;
         if (stamina == 0) {

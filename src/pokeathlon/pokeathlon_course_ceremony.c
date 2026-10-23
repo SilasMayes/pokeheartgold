@@ -1050,7 +1050,7 @@ static void PokeathlonCourseCeremony_LoadWinnerMonPics(PokeathlonCourseData *cou
         PokeathlonCourse_LoadMonPicWithPalette(ceremony->monPicSprites[i], &info, TRUE, FALSE, ceremony->heapId, FALSE);
         GetMonSpriteCharAndPlttNarcIdsEx(&template, info.species, info.gender, 2, info.isShiny, info.form, info.personality);
         file = GfGfxLoader_GetPlttData((NarcId) template.narcID, template.palDataID, &palette, ceremony->heapId);
-        PokeathlonCourseMonObjects_SetPalette(ceremony->objects, i * 3 + 1, 1, palette->pRawData);
+        PokeathlonCourseMonObjects_SetPalette(ceremony->objects, i * POKEATHLON_TEAM_SIZE + 1, 1, palette->pRawData);
         Heap_Free(file);
     }
 }
@@ -1505,8 +1505,8 @@ static BOOL PokeathlonCourseCeremony_Init(PokeathlonCourseData *course) {
         PokeathlonCourseMonGfxTemplate template = { 0 };
         ceremony->objects = PokeathlonCourseMonObjects_Create(ceremony->heapId, 12, 3, ceremony->spriteResources, SpriteManager_GetSpriteList(ceremony->spriteManager));
         for (i = 0; i < POKEATHLON_MONS; i++) {
-            int member = i % 3;
-            int team = i / 3;
+            int member = i % POKEATHLON_TEAM_SIZE;
+            int team = i / POKEATHLON_TEAM_SIZE;
             PokeathlonCourse_GetMonInfo(course, team, member, &infos[i]);
             template.sizeTypes[i] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, team, member));
         }
@@ -1542,8 +1542,8 @@ static BOOL PokeathlonCourseCeremony_Init(PokeathlonCourseData *course) {
             PokeathlonCourseMonObject_SetDrawFlag(object, TRUE);
             Sprite_GetCellAnim(PokeathlonCourseMonGfx_GetSprite(PokeathlonCourseMonObject_GetGfx(object)))->animCtrl.currentTime = (i * 3) << FX32_SHIFT;
             PokeathlonCourseMonObject_SetAnimState(object, 1);
-            team = i / 3;
-            member = i % 3;
+            team = i / POKEATHLON_TEAM_SIZE;
+            member = i % POKEATHLON_TEAM_SIZE;
             PokeathlonCourseObject_SetGroundPosition(object, 32 + (team << 6), 48 * (member + 1));
         }
         PokeathlonCourseCeremony_InitBgs(ceremony->bgConfig);
@@ -1981,7 +1981,7 @@ static BOOL PokeathlonCourseCeremony_AwardNextMon(PokeathlonCourseData *course, 
         }
     } while (!PokeathlonCourseCeremony_NextMon(ceremony));
     if (ceremony->team < 4) {
-        index = ceremony->team * 3 + ceremony->member;
+        index = ceremony->team * POKEATHLON_TEAM_SIZE + ceremony->member;
         ceremony->awardCounts[ceremony->team]++;
         ceremony->counter++;
         PokeathlonCourseCeremony_BufferTeamMon(course, ceremony->team, ceremony->member);

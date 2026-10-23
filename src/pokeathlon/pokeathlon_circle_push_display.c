@@ -303,7 +303,7 @@ void PokeathlonCirclePushDisplay_LoadMonPics(PokeathlonCirclePushDisplay *displa
     PokeathlonCourseMonInfo view;
 
     for (i = 0; i < POKEATHLON_MONS; i++) {
-        PokeathlonCourse_GetMonInfo(display->course, i / 3, i % 3, &view);
+        PokeathlonCourse_GetMonInfo(display->course, i / POKEATHLON_TEAM_SIZE, i % POKEATHLON_TEAM_SIZE, &view);
         GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, view.species, view.gender, 2, view.isShiny, (u8)view.form, view.personality);
         display->anim.monPics[i].charData = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, display->heapId, view.personality, FALSE, 2, view.species);
         display->anim.monPics[i].paletteData = AllocAndLoadPltt16FromNarc((NarcId)pokepic.narcID, pokepic.palDataID, display->heapId);
@@ -629,14 +629,12 @@ static void PokeathlonCirclePushDisplayAnim_SetupMatchup(PokeathlonCirclePushDis
 
     // two Pokemon of different teams
     first = (s32)LCRandom() % 4;
-    tries = 0;
-    do {
+    for (tries = 0; tries < 10; tries++) {
         second = (s32)LCRandom() % 4;
         if (first != second) {
             break;
         }
-        tries++;
-    } while (tries < 10);
+    }
     if (tries == 10) {
         second = (first + 1) % 4;
     }

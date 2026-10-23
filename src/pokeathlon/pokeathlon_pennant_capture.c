@@ -41,7 +41,7 @@ static void PokeathlonPennantCapture_SetGfxBanks(void);
 
 // The performance of Pokemon i (team i / 3, member i % 3).
 static inline PokeathlonCoursePerformance *PokeathlonPennantCapture_GetPerformance(PokeathlonCourseData *course, int i) {
-    return PokeathlonCourse_GetPerformance(course, i / 3, i % 3);
+    return PokeathlonCourse_GetPerformance(course, i / POKEATHLON_TEAM_SIZE, i % POKEATHLON_TEAM_SIZE);
 }
 
 // Puts a Pokemon at its team's start: the four teams start side by side, 32 units apart, facing down; on the touch
@@ -144,8 +144,8 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
     case PENNANT_CAPTURE_INIT_LOAD_MONS: {
         int i;
         for (i = 0; i < POKEATHLON_MONS; i++) {
-            member = i % 3;
-            participant = i / 3;
+            member = i % POKEATHLON_TEAM_SIZE;
+            participant = i / POKEATHLON_TEAM_SIZE;
             PokeathlonCourse_GetMonInfo(course, participant, member, &infos[i]);
             template.sizeTypes[i] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, participant, member));
             icons[i].species = infos[i].species;
@@ -178,7 +178,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
         int j;
         for (i = 0; i < POKEATHLON_MONS; i++) {
             PokeathlonCourseMonObject *object = PokeathlonCourseMonObjects_Get(work->monObjects, i);
-            memberOnField = i % 3;
+            memberOnField = i % POKEATHLON_TEAM_SIZE;
             if (memberOnField == 0) {
                 PokeathlonCourseMonObject_SetDrawFlag(object, TRUE);
             }
@@ -187,7 +187,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
                 PokeathlonCourseObject_SetCollision(object, collision[-1].offsetY, collision[-1].radius);
             }
             object = PokeathlonCourseMonObjects_Get(work->monObjects, i & 0xFF);
-            teamId = i / 3;
+            teamId = i / POKEATHLON_TEAM_SIZE;
             PokeathlonPennantCapturePlayer *player = &work->players[teamId];
             player->monObjects[memberOnField] = object;
             PokeathlonPennantCapture_PlaceAtStart(player, object, teamId * 32, teamId * 32, teamId, own, memberOnField, &ownPosition, &centerX, &centerY);

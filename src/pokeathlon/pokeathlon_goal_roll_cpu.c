@@ -100,7 +100,7 @@ PokeathlonGoalRollCpu *PokeathlonGoalRollCpu_New(enum HeapID heapId, u8 cpuCount
 }
 
 void PokeathlonGoalRollCpu_SetMon(PokeathlonGoalRollCpuTeam *teams, s32 index, PokeathlonGoalRollMon *mon) {
-    teams[(u8)(index / 3)].mons[(u8)(index % 3)] = mon;
+    teams[(u8)(index / GOAL_ROLL_TEAM_SIZE)].mons[(u8)(index % GOAL_ROLL_TEAM_SIZE)] = mon;
 }
 
 void PokeathlonGoalRollCpu_ChooseAllRoles(PokeathlonGoalRollCpuTeam *teams) {

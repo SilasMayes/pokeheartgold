@@ -114,7 +114,7 @@ void PokeathlonGoalRoll_MoveMons(PokeathlonCourseData *course) {
     VecFx32 position;
 
     for (i = 0; i < GOAL_ROLL_MONS; i++) {
-        mon = &goalRoll->mons[i / 3][i % 3];
+        mon = &goalRoll->mons[i / GOAL_ROLL_TEAM_SIZE][i % GOAL_ROLL_TEAM_SIZE];
         mon->direction = zero;
         previous[i] = mon->position;
         position = mon->position;
@@ -195,7 +195,7 @@ void PokeathlonGoalRoll_MoveMons(PokeathlonCourseData *course) {
         PokeathlonGoalRollMon *moved;
         VecFx32 *from;
         for (i = 0, from = previous; i < GOAL_ROLL_MONS; i++, from++) {
-            moved = &goalRoll->mons[i / 3][i % 3];
+            moved = &goalRoll->mons[i / GOAL_ROLL_TEAM_SIZE][i % GOAL_ROLL_TEAM_SIZE];
             if (moved->position.x != from->x || moved->position.y != from->y) {
                 VecFx32 out;
 
@@ -244,8 +244,8 @@ void PokeathlonGoalRoll_CollideBalls(PokeathlonCourseData *course) {
             VecFx32 center = { 0, 0, 0 };
             VecFx32 normal;
             int monRadius;
-            member = i % 3;
-            participant = i / 3;
+            member = i % GOAL_ROLL_TEAM_SIZE;
+            participant = i / GOAL_ROLL_TEAM_SIZE;
             mon = &teams[participant][member];
             PokeathlonCourseObject_GetCollisionCircle(mon->object, mon->position.x, mon->position.y, &center.x, &center.y, &monRadius);
             if (PokeathlonGoalRoll_CirclesOverlap(&center, monRadius * FX32_ONE, ballPosition, ballRadius)) {
@@ -585,20 +585,20 @@ void PokeathlonGoalRoll_CheckGoals(PokeathlonCourseData *course) {
             if (index == GOAL_ROLL_NO_MON) {
                 continue;
             }
-            participant = index / 3;
-            member = index % 3;
+            participant = index / GOAL_ROLL_TEAM_SIZE;
+            member = index % GOAL_ROLL_TEAM_SIZE;
             kicker = &teams[participant][member];
             if (goal == participant) {
                 if (kicker->goals) {
                     kicker->goals--;
                 }
-                if (goalRoll->scores[ball->lastKicker / 3]) {
-                    goalRoll->scores[ball->lastKicker / 3]--;
+                if (goalRoll->scores[ball->lastKicker / GOAL_ROLL_TEAM_SIZE]) {
+                    goalRoll->scores[ball->lastKicker / GOAL_ROLL_TEAM_SIZE]--;
                 }
                 index = ball->lastKicker;
-                PokeathlonCourse_AddMonCounter(course, index / 3, index % 3, POKEATHLON_COUNTER_SELF_IMPEDES, 1);
+                PokeathlonCourse_AddMonCounter(course, index / GOAL_ROLL_TEAM_SIZE, index % GOAL_ROLL_TEAM_SIZE, POKEATHLON_COUNTER_SELF_IMPEDES, 1);
                 index = ball->lastKicker;
-                PokeathlonCourse_AddMonCounter(course, index / 3, index % 3, POKEATHLON_COUNTER_FAILURES, 1);
+                PokeathlonCourse_AddMonCounter(course, index / GOAL_ROLL_TEAM_SIZE, index % GOAL_ROLL_TEAM_SIZE, POKEATHLON_COUNTER_FAILURES, 1);
             } else {
                 points = 0;
                 if (ball->kind == GOAL_ROLL_BALL_SMALL) {
@@ -611,14 +611,14 @@ void PokeathlonGoalRoll_CheckGoals(PokeathlonCourseData *course) {
                 if (kicker->goals + points <= 99) {
                     kicker->goals += points;
                 }
-                if (points + goalRoll->scores[ball->lastKicker / 3] <= 99) {
-                    goalRoll->scores[ball->lastKicker / 3] += points;
+                if (points + goalRoll->scores[ball->lastKicker / GOAL_ROLL_TEAM_SIZE] <= 99) {
+                    goalRoll->scores[ball->lastKicker / GOAL_ROLL_TEAM_SIZE] += points;
                 }
                 if (goalRoll->scores[goal]) {
                     goalRoll->scores[goal]--;
                 }
                 index = ball->lastKicker;
-                PokeathlonCourse_AddMonCounter(course, index / 3, index % 3, POKEATHLON_COUNTER_POINTS, 1);
+                PokeathlonCourse_AddMonCounter(course, index / GOAL_ROLL_TEAM_SIZE, index % GOAL_ROLL_TEAM_SIZE, POKEATHLON_COUNTER_POINTS, 1);
             }
         }
     }
@@ -631,8 +631,8 @@ void PokeathlonGoalRoll_UpdateTiredMons(PokeathlonCourseData *course) {
     int tired = GOAL_ROLL_MODE_TIRED;
 
     for (i = 0; i < GOAL_ROLL_MONS; i++) {
-        int participant = i / 3;
-        int member = i % 3;
+        int participant = i / GOAL_ROLL_TEAM_SIZE;
+        int member = i % GOAL_ROLL_TEAM_SIZE;
         PokeathlonGoalRollMon *mon = &goalRoll->mons[participant][member];
         u32 mode = mon->mode;
         if (mode != GOAL_ROLL_MODE_STUNNED) {
@@ -1142,7 +1142,7 @@ u8 PokeathlonGoalRoll_EncodeBallY(PokeathlonGoalRollBall *ball) {
             result = y / FX32_ONE;
         } else {
             u32 goal = PokeathlonGoalRoll_GetBallQuadrant(ball);
-            result = PokeathlonGoalRoll_GetGoalCode(goal, (u8)(ball->lastKicker / 3));
+            result = PokeathlonGoalRoll_GetGoalCode(goal, (u8)(ball->lastKicker / GOAL_ROLL_TEAM_SIZE));
         }
     } else {
         y = ball->position.y;
@@ -1269,8 +1269,8 @@ void PokeathlonGoalRoll_FreeStrings(PokeathlonCourseData *course) {
 }
 
 void PokeathlonGoalRoll_CreatePlateTasks(PokeathlonGoalRoll *goalRoll) {
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 4; i++) {
         PokeathlonGoalRollPlate *plate = &goalRoll->plates[i];
         plate->state = 0;
         plate->id = i;
@@ -1278,14 +1278,12 @@ void PokeathlonGoalRoll_CreatePlateTasks(PokeathlonGoalRoll *goalRoll) {
         plate->unk03 = -1;
         plate->owner = goalRoll;
         plate->task = SysTask_CreateOnMainQueue((SysTaskFunc)PokeathlonGoalRoll_PlateTask, plate, 1);
-        i++;
-    } while (i < 4);
+    }
 }
 
 void PokeathlonGoalRoll_DestroyPlateTasks(PokeathlonGoalRoll *goalRoll) {
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 4; i++) {
         SysTask_Destroy(goalRoll->plates[i].task);
-        i++;
-    } while (i < 4);
+    }
 }

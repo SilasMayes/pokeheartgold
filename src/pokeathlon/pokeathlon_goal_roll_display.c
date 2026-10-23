@@ -201,13 +201,12 @@ void PokeathlonGoalRoll_UpdateLeaders(PokeathlonGoalRoll *goalRoll) {
 }
 
 void PokeathlonGoalRoll_RefreshPlates(PokeathlonGoalRoll *goalRoll) {
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 4; i++) {
         if (goalRoll->plates[i].state == PLATE_STATE_IDLE) {
             PokeathlonGoalRoll_PrintPlate(goalRoll, i, 0);
         }
-        i++;
-    } while (i < 4);
+    }
 }
 
 typedef struct PokeathlonGoalRollDrawOrder {
@@ -281,7 +280,7 @@ void PokeathlonGoalRoll_SortOtherMonsOrder(PokeathlonGoalRoll *goalRoll, Pokeath
     u8 i, count = 0;
     i = count;
     for (; i < GOAL_ROLL_MONS; i++) {
-        if (i / 3 != own) {
+        if (i / GOAL_ROLL_TEAM_SIZE != own) {
             mons[count].index = i;
             mons[count].y = frame->monY[i];
             count++;
@@ -292,8 +291,8 @@ void PokeathlonGoalRoll_SortOtherMonsOrder(PokeathlonGoalRoll *goalRoll, Pokeath
         u8 j;
         for (j = 0; j < 9; j++) {
             u8 index = mons[j].index;
-            int participant = index / 3;
-            int member = index % 3;
+            int participant = index / GOAL_ROLL_TEAM_SIZE;
+            int member = index % GOAL_ROLL_TEAM_SIZE;
             PokeathlonCourseMonObject_SetDrawPriority(goalRoll->mons[participant][member].object, j + 16);
         }
     }

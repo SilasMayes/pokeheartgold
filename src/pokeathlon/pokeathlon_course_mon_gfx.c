@@ -363,11 +363,11 @@ static u8 PokeathlonCourseMonGfx_FindTopRow(PokeathlonCourseMonGfx *mon) {
 
 // Returns the first pixel row of the 8x8 tile at data + offset that is not transparent, 0xFF if none.
 static u8 PokeathlonCourseMonGfx_FindTopRowInTile(const u8 *data, u32 offset) {
-    u8 row = 0;
+    u8 row;
     u8 result = 0xFF;
 
     data += offset;
-    do {
+    for (row = 0; row < 8; row++) {
         u8 column = 0;
         do {
             if (*data != 0) {
@@ -380,8 +380,7 @@ static u8 PokeathlonCourseMonGfx_FindTopRowInTile(const u8 *data, u32 offset) {
         if (column != 4) {
             break;
         }
-        row++;
-    } while (row < 8);
+    }
     return result;
 }
 

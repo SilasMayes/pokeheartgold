@@ -604,14 +604,13 @@ static u16 PokeathlonTrophies_GetCourseScore(PokeathlonTrophiesSummary *summary,
 
 static u8 PokeathlonTrophies_CountFriendshipTrophies(int totalPoints) {
     const int *thresholds = sPokeathlonTrophiesFriendshipThresholds;
-    u8 i = 0;
+    u8 i;
 
-    do {
+    for (i = 0; i < 10; i++) {
         if (thresholds[i] <= totalPoints) {
             break;
         }
-        i++;
-    } while (i < 10);
+    }
     return 10 - i;
 }
 

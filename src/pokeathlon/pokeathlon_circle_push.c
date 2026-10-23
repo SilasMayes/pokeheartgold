@@ -372,12 +372,12 @@ static s32 sPokeathlonCirclePushBounceOffsets[5] = { -4, -2, 0, 2, 4 };
 static s32 sPokeathlonCirclePushShakeOffsets[18] = { -3, -2, -1, 1, 2, 3, -3, -2, -1, 1, 2, 3, -3, -2, -1, 1, 2, 3 };
 
 static inline u32 GetMonSizeType(PokeathlonCourseData *course, int mon) {
-    return PokeathlonCourse_GetCollisionSizeClass(PokeathlonCourse_GetPerformance(course, mon / 3, mon % 3));
+    return PokeathlonCourse_GetCollisionSizeClass(PokeathlonCourse_GetPerformance(course, mon / POKEATHLON_TEAM_SIZE, mon % POKEATHLON_TEAM_SIZE));
 }
 
 static inline u32 LoadMonInfo(PokeathlonCourseData *course, int mon, PokeathlonCourseMonInfo *infos) {
-    int member = mon % 3;
-    int team = mon / 3;
+    int member = mon % POKEATHLON_TEAM_SIZE;
+    int team = mon / POKEATHLON_TEAM_SIZE;
     PokeathlonCourse_GetMonInfo(course, team, member, &infos[mon]);
     return PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, team, member));
 }
@@ -464,7 +464,7 @@ BOOL PokeathlonCirclePush_Init(PokeathlonCourseData *course) {
         }
         PokeathlonCirclePushZoneMarkers_CreateSprites(circlePush->zoneMarkers, circlePush->spritePool);
         for (i = 0; i < POKEATHLON_MONS; i++) {
-            PokeathlonCirclePush *view = (PokeathlonCirclePush *)&((PokeathlonCirclePushMon(*)[3])circlePush)[i / 3][i % 3];
+            PokeathlonCirclePush *view = (PokeathlonCirclePush *)&((PokeathlonCirclePushMon(*)[3])circlePush)[i / POKEATHLON_TEAM_SIZE][i % POKEATHLON_TEAM_SIZE];
             view->mons[0][0].effectSprite = PokeathlonCourseSpritePool_Take(circlePush->spritePool, 104, 4);
             Sprite_SetDrawPriority(PokeathlonCourseSpritePoolSprite_GetSprite(view->mons[0][0].effectSprite), 2);
             view->mons[0][0].tiredSprite = PokeathlonCourseSpritePool_Take(circlePush->spritePool, 104, 7);
@@ -484,7 +484,7 @@ BOOL PokeathlonCirclePush_Init(PokeathlonCourseData *course) {
         for (i = 0; i < POKEATHLON_MONS; i++) {
             PokeathlonCirclePushMon *mon;
             template.sizeTypes[i] = LoadMonInfo(course, i, infos);
-            mon = &circlePush->mons[i / 3][i % 3];
+            mon = &circlePush->mons[i / POKEATHLON_TEAM_SIZE][i % POKEATHLON_TEAM_SIZE];
             PokeathlonCourseMonGfx_LoadPalette(&infos[i], circlePush->heapId, mon->palette);
             MI_CpuCopy8(mon->palette, mon->grayPalette, 32);
             TintPalette_GrayScale(mon->grayPalette, 16);
@@ -537,8 +537,8 @@ BOOL PokeathlonCirclePush_Init(PokeathlonCourseData *course) {
             scalePtr->x = 0;
             scalePtr->y = 0;
             scalePtr->z = 0;
-            team = i / 3;
-            member = i % 3;
+            team = i / POKEATHLON_TEAM_SIZE;
+            member = i % POKEATHLON_TEAM_SIZE;
             mon = &circlePush->mons[team][member];
             mon->object = object;
             mon->state = CIRCLE_PUSH_MON_IN_RING;
@@ -841,7 +841,7 @@ static void PokeathlonCirclePush_MakePacket(PokeathlonCirclePush *circlePush, Po
     i = 0;
     mons = circlePush->mons;
     for (; i < POKEATHLON_MONS; i++) {
-        PokeathlonCirclePushMon *mon = &mons[(int)i / 3][(int)i % 3];
+        PokeathlonCirclePushMon *mon = &mons[(int)i / POKEATHLON_TEAM_SIZE][(int)i % POKEATHLON_TEAM_SIZE];
 
         x = mon->position.x / FX32_ONE;
         y = mon->position.y / FX32_ONE;
@@ -994,12 +994,12 @@ static void PokeathlonCirclePush_RunHost(PokeathlonCourseData *course) {
                 } else {
                     circlePush->scoringMon = circlePush->scoringMons[circlePush->scoringIndex];
                     circlePush->scoringEffect = PokeathlonCirclePush_GetPointsEffect(circlePush->scoringPoints[circlePush->scoringIndex]);
-                    u8 team = circlePush->scoringMon / 3;
+                    u8 team = circlePush->scoringMon / POKEATHLON_TEAM_SIZE;
                     int *scores = circlePush->scores;
                     scores[team] += circlePush->scoringPoints[circlePush->scoringIndex];
                     circlePush->scoringIndex++;
                     circlePush->scoringTimer = 6;
-                    PokeathlonCourse_AddMonCounter(course, team, circlePush->scoringMon % 3, POKEATHLON_COUNTER_POINTS, 1);
+                    PokeathlonCourse_AddMonCounter(course, team, circlePush->scoringMon % POKEATHLON_TEAM_SIZE, POKEATHLON_COUNTER_POINTS, 1);
                 }
             } else {
                 circlePush->scoringTimer--;
@@ -1030,7 +1030,7 @@ static void PokeathlonCirclePush_RunHost(PokeathlonCourseData *course) {
                     circlePush->heldMons[i] = CIRCLE_PUSH_NO_MON;
                 }
                 for (i = 0; i < POKEATHLON_MONS; i++) {
-                    PokeathlonCirclePushMon *mon = &circlePush->mons[i / 3][i % 3];
+                    PokeathlonCirclePushMon *mon = &circlePush->mons[i / POKEATHLON_TEAM_SIZE][i % POKEATHLON_TEAM_SIZE];
                     mon->target = mon->position;
                     mon->velocity.x = 0;
                     mon->velocity.y = 0;
@@ -1073,7 +1073,7 @@ static void PokeathlonCirclePush_RunHost(PokeathlonCourseData *course) {
                 if (!PokeathlonCirclePush_IsTeamOut(circlePush, player)) {
                     int mon = PokeathlonCirclePush_FindTouchedMon(circlePush, (u8)player, input->x, input->y);
                     if (mon != CIRCLE_PUSH_NO_MON) {
-                        PokeathlonCirclePushMon *touched = &teamMons[mon % 3];
+                        PokeathlonCirclePushMon *touched = &teamMons[mon % POKEATHLON_TEAM_SIZE];
                         circlePush->heldMons[player] = mon;
                         touched->boost = 2;
                         touched->boostTimer = 3;
@@ -1081,7 +1081,7 @@ static void PokeathlonCirclePush_RunHost(PokeathlonCourseData *course) {
                 }
             } else if (view->touches[0].held) {
                 if (circlePush->heldMons[player] != CIRCLE_PUSH_NO_MON) {
-                    u8 member = (u8)(circlePush->heldMons[player] % 3);
+                    u8 member = (u8)(circlePush->heldMons[player] % POKEATHLON_TEAM_SIZE);
                     frame.ptr.mon = &teamMons[member];
                     PokeathlonCirclePush_SetTarget(input->x, input->y, &frame.ptr.mon->position, 0, &frame.ptr.mon->target);
                     if (PokeathlonCirclePush_IsOutOfRing(frame.ptr.mon->object, frame.ptr.mon->target.x, frame.ptr.mon->target.y)) {
@@ -1096,9 +1096,9 @@ static void PokeathlonCirclePush_RunHost(PokeathlonCourseData *course) {
         }
         int mon = PokeathlonCirclePushAi_Update(circlePush->ai, (u8)circlePush->nextLayout);
         if (mon != CIRCLE_PUSH_NO_MON) {
-            u8 team = (u8)(mon / 3);
+            u8 team = (u8)(mon / POKEATHLON_TEAM_SIZE);
             if (team >= PokeathlonCourse_GetParticipantCount(course)) {
-                PokeathlonCirclePushMon *cpuMon = &circlePush->mons[team][mon % 3];
+                PokeathlonCirclePushMon *cpuMon = &circlePush->mons[team][mon % POKEATHLON_TEAM_SIZE];
                 cpuMon->boost = 2;
                 cpuMon->boostTimer = 3;
             } else {
@@ -1115,7 +1115,7 @@ static void PokeathlonCirclePush_RunHost(PokeathlonCourseData *course) {
 static inline void SetMonAnim(PokeathlonCourseData *course, PokeathlonCirclePush *circlePush, PokeathlonCirclePushMon *mon, int index, int team, u8 own, int anim, int x, int y, VecFx32 *pos, u8 scoring, Sprite *sprite) {
     PokeathlonCourseMonObject *object;
 
-    switch (PokeathlonCourse_GetPerformance(course, index / 3, index % 3)->heightClass) {
+    switch (PokeathlonCourse_GetPerformance(course, index / POKEATHLON_TEAM_SIZE, index % POKEATHLON_TEAM_SIZE)->heightClass) {
     case 1:
         pos->y -= FX32_CONST(8);
         break;
@@ -1133,7 +1133,7 @@ static inline void SetMonAnim(PokeathlonCourseData *course, PokeathlonCirclePush
     object = PokeathlonCourseMonObjects_Get(circlePush->objects, index);
     PokeathlonCourseMonObject_SetAnimState(object, anim);
     PokeathlonCourseObject_SetCenterPosition(object, x, y, 1);
-    if (team == own && PokeathlonCourse_GetMonStats(course, own, index % 3)[2]) {
+    if (team == own && PokeathlonCourse_GetMonStats(course, own, index % POKEATHLON_TEAM_SIZE)[2]) {
         PokeathlonCourseMonObject_Move(object, 0, circlePush->effects.shakeOffset, anim, 0);
     }
     if (scoring) {
@@ -1229,8 +1229,8 @@ static void PokeathlonCirclePush_UpdateScreen(PokeathlonCourseData *course) {
 
     for (i = 0; i < POKEATHLON_MONS; i++) {
         PokeathlonCirclePushMon *mon;
-        member = i % 3;
-        mon = &circlePush->mons[(i / 3)][member];
+        member = i % POKEATHLON_TEAM_SIZE;
+        mon = &circlePush->mons[(i / POKEATHLON_TEAM_SIZE)][member];
         sprite = PokeathlonCourseMonGfx_GetSprite(PokeathlonCourseMonObject_GetGfx(mon->object));
         state = (packet->stateBits >> (i * 2)) & 3;
         exhausted = (packet->flagBits >> i) & 1;
@@ -1274,7 +1274,7 @@ static void PokeathlonCirclePush_UpdateScreen(PokeathlonCourseData *course) {
             PokeathlonCourseMonObject_SetAffineOverwriteMode(mon->object, NNS_G2D_RND_AFFINE_OVERWRITE_NONE);
             if (exhausted) {
                 PokeathlonCourseSpritePoolSprite_Show(mon->tiredSprite, TRUE, TRUE);
-                if ((i / 3) == own && !IsSEPlaying(SEQ_SE_GS_W146)) {
+                if ((i / POKEATHLON_TEAM_SIZE) == own && !IsSEPlaying(SEQ_SE_GS_W146)) {
                     PlaySE(SEQ_SE_GS_W146);
                 }
             } else {
@@ -1302,7 +1302,7 @@ static void PokeathlonCirclePush_UpdateScreen(PokeathlonCourseData *course) {
             VecFx32 tiredPos = { 0, 0, 0 };
             tiredPos.x = mon->x;
             tiredPos.y = mon->y;
-            SetMonAnim(course, circlePush, mon, i, (i / 3), own, (u8)(direction + 1), x, y, &tiredPos, scoring, sprite);
+            SetMonAnim(course, circlePush, mon, i, (i / POKEATHLON_TEAM_SIZE), own, (u8)(direction + 1), x, y, &tiredPos, scoring, sprite);
             if (scoringMon == i) {
                 if (effect >= 1 && effect <= 4) {
                     Sprite *effectSprite = PokeathlonCourseSpritePoolSprite_GetSprite(mon->effectSprite);
@@ -1315,13 +1315,13 @@ static void PokeathlonCirclePush_UpdateScreen(PokeathlonCourseData *course) {
                     } else {
                         PlaySE(SEQ_SE_GS_POINT3);
                     }
-                    PokeathlonCirclePushDisplay_ShowPlayerEvent(circlePush->display, (u8)(i / 3), effect);
+                    PokeathlonCirclePushDisplay_ShowPlayerEvent(circlePush->display, (u8)(i / POKEATHLON_TEAM_SIZE), effect);
                     PokeathlonCirclePush_StartBounce(&circlePush->effects, i);
                 } else {
                     GF_ASSERT(FALSE);
                 }
             }
-            if ((i / 3) == own) {
+            if ((i / POKEATHLON_TEAM_SIZE) == own) {
                 int groundX;
                 int groundY;
                 u8 zone;
@@ -1349,8 +1349,8 @@ static void PokeathlonCirclePush_MoveMons(PokeathlonCourseData *course) {
     int i;
 
     for (i = 0; i < POKEATHLON_MONS; i++) {
-        int member = i % 3;
-        int team = i / 3;
+        int member = i % POKEATHLON_TEAM_SIZE;
+        int team = i / POKEATHLON_TEAM_SIZE;
         PokeathlonCirclePushMon *mon = &circlePush->mons[team][member];
 
         if (mon->boost != 0) {
@@ -1373,8 +1373,8 @@ static void PokeathlonCirclePush_MoveMons(PokeathlonCourseData *course) {
     }
 
     for (i = 0; i < POKEATHLON_MONS; i++) {
-        int team = i / 3;
-        int member = i % 3;
+        int team = i / POKEATHLON_TEAM_SIZE;
+        int member = i % POKEATHLON_TEAM_SIZE;
         PokeathlonCirclePushMon *mon = &circlePush->mons[team][member];
 
         if (mon->state == CIRCLE_PUSH_MON_AT_START) {
@@ -1387,8 +1387,8 @@ static void PokeathlonCirclePush_MoveMons(PokeathlonCourseData *course) {
                 if (i == j) {
                     continue;
                 }
-                otherTeam = j / 3;
-                otherMember = j % 3;
+                otherTeam = j / POKEATHLON_TEAM_SIZE;
+                otherMember = j % POKEATHLON_TEAM_SIZE;
                 other = &circlePush->mons[otherTeam][otherMember];
                 if (other->state != CIRCLE_PUSH_MON_OUT && PokeathlonCirclePush_MonsCollide(mon, other)) {
                     clear = FALSE;
@@ -1402,8 +1402,8 @@ static void PokeathlonCirclePush_MoveMons(PokeathlonCourseData *course) {
     }
 
     for (i = 0; i < POKEATHLON_MONS; i++) {
-        int team = i / 3;
-        int member = i % 3;
+        int team = i / POKEATHLON_TEAM_SIZE;
+        int member = i % POKEATHLON_TEAM_SIZE;
         PokeathlonCirclePushMon *mon = &circlePush->mons[team][member];
         VecFx32 delta;
         VecFx32 direction;
@@ -1535,7 +1535,7 @@ static u8 PokeathlonCirclePush_FindTouchedMon(PokeathlonCirclePush *circlePush, 
         GF_ASSERT(FALSE);
         return CIRCLE_PUSH_NO_MON;
     }
-    return team * 3 + found;
+    return team * POKEATHLON_TEAM_SIZE + found;
 }
 
 static BOOL PokeathlonCirclePush_MonsCollide(PokeathlonCirclePushMon *a, PokeathlonCirclePushMon *b) {
@@ -1566,8 +1566,8 @@ static void PokeathlonCirclePush_UpdateContacts(PokeathlonCirclePush *circlePush
                 gPokeathlonCirclePushContacts[i][j].touching = FALSE;
                 gPokeathlonCirclePushContacts[i][j].other = NULL;
             } else if (j >= i) {
-                PokeathlonCirclePushMon *a = &circlePush->mons[i / 3][i % 3];
-                PokeathlonCirclePushMon *b = &circlePush->mons[j / 3][j % 3];
+                PokeathlonCirclePushMon *a = &circlePush->mons[i / POKEATHLON_TEAM_SIZE][i % POKEATHLON_TEAM_SIZE];
+                PokeathlonCirclePushMon *b = &circlePush->mons[j / POKEATHLON_TEAM_SIZE][j % POKEATHLON_TEAM_SIZE];
                 if (a->state != CIRCLE_PUSH_MON_IN_RING || b->state != CIRCLE_PUSH_MON_IN_RING) {
                     gPokeathlonCirclePushContacts[i][j].touching = FALSE;
                     gPokeathlonCirclePushContacts[j][i].touching = FALSE;
@@ -1630,7 +1630,7 @@ static void PokeathlonCirclePush_PushMons(PokeathlonCirclePush *circlePush) {
     BOOL entered;
     CirclePushPushNode *node;
     for (i = 0; i < POKEATHLON_MONS; i++) {
-        mon = &circlePush->mons[i / 3][i % 3];
+        mon = &circlePush->mons[i / POKEATHLON_TEAM_SIZE][i % POKEATHLON_TEAM_SIZE];
         if (mon->pushing && mon->state == CIRCLE_PUSH_MON_IN_RING) {
             pushers[count++] = i;
         }
@@ -1648,11 +1648,11 @@ static void PokeathlonCirclePush_PushMons(PokeathlonCirclePush *circlePush) {
             nodes[i].push = &pushes[pusher][i];
         }
         MI_CpuFill8(visited, 0, sizeof(visited));
-        push = circlePush->mons[current / 3][current % 3].velocity;
+        push = circlePush->mons[current / POKEATHLON_TEAM_SIZE][current % POKEATHLON_TEAM_SIZE].velocity;
         entered = TRUE;
         do {
-            int team = current / 3;
-            int member = current % 3;
+            int team = current / POKEATHLON_TEAM_SIZE;
+            int member = current % POKEATHLON_TEAM_SIZE;
             VecFx32 *position = &circlePush->mons[team][member].position;
             visited[current] = 1;
             if (entered) {
@@ -1697,14 +1697,14 @@ static void PokeathlonCirclePush_PushMons(PokeathlonCirclePush *circlePush) {
     for (pusher = 0; pusher < count; pusher++) {
         for (j = 0; j < POKEATHLON_MONS; j++) {
             int offset = j * sizeof(VecFx32);
-            mon = &circlePush->mons[j / 3][j % 3];
+            mon = &circlePush->mons[j / POKEATHLON_TEAM_SIZE][j % POKEATHLON_TEAM_SIZE];
             VEC_Add(&mon->position, (VecFx32 *)((u8 *)pushes[pusher] + offset), &mon->position);
             if (VEC_Mag((VecFx32 *)((u8 *)pushes[pusher] + offset)) != 0 && !mon->pushing) {
                 mon->target = mon->position;
             }
         }
         current = pushers[pusher];
-        mon = &circlePush->mons[current / 3][current % 3];
+        mon = &circlePush->mons[current / POKEATHLON_TEAM_SIZE][current % POKEATHLON_TEAM_SIZE];
         if (mon->stamina == 0) {
             int team;
             for (team = 0; team < POKEATHLON_PARTICIPANTS; team++) {
@@ -1723,7 +1723,7 @@ static void PokeathlonCirclePush_PushMons(PokeathlonCirclePush *circlePush) {
         }
     }
     for (k = 0; k < POKEATHLON_MONS; k++) {
-        mon = &circlePush->mons[k / 3][k % 3];
+        mon = &circlePush->mons[k / POKEATHLON_TEAM_SIZE][k % POKEATHLON_TEAM_SIZE];
         VEC_Subtract(&mon->target, &mon->position, &last);
         if (VEC_DotProduct(&moved[k], &last) < 0) {
             mon->target = mon->position;
@@ -1798,7 +1798,7 @@ static void PokeathlonCirclePush_ScoreZones(PokeathlonCirclePush *circlePush) {
     circlePush->scoringCount = 0;
     circlePush->scoringIndex = 0;
     for (i = 0; i < POKEATHLON_MONS; i++) {
-        PokeathlonCirclePushMon *mon = &circlePush->mons[i / 3][i % 3];
+        PokeathlonCirclePushMon *mon = &circlePush->mons[i / POKEATHLON_TEAM_SIZE][i % POKEATHLON_TEAM_SIZE];
         if (mon->state == CIRCLE_PUSH_MON_IN_RING) {
             PokeathlonCourseObject_CenterToGround(mon->object, mon->position.x / FX32_ONE, mon->position.y / FX32_ONE, &groundX, &groundY);
             points = PokeathlonCirclePush_GetZonePoints((u8)circlePush->layout, (u16)groundX, (u16)groundY, &zone);
@@ -2093,8 +2093,8 @@ static void PokeathlonCirclePush_BounceTask(SysTask *task, void *data) {
 
 static void PokeathlonCirclePush_ApplyBounce(PokeathlonCourseData *course, PokeathlonCirclePushEffects *effects, PokeathlonCourseMonObject *object, u8 mon, int anim) {
     if (effects->bounceMon == mon) {
-        s32 team = mon / 3;
-        s32 member = mon % 3;
+        s32 team = mon / POKEATHLON_TEAM_SIZE;
+        s32 member = mon % POKEATHLON_TEAM_SIZE;
 
         if (PokeathlonCourse_GetMonStats(course, team, member)[2] != 0) {
             PokeathlonCourseMonObject_Move(object, 0, effects->bounceOffset, anim, 0);
@@ -2164,14 +2164,14 @@ static void PokeathlonCirclePush_SortByDepth(PokeathlonCirclePush *circlePush, P
     u8 i;
     for (i = 0; i < POKEATHLON_MONS; i++) {
         depths[i].mon = i;
-        PokeathlonCourseObject_CenterToGround(circlePush->mons[i / 3][i % 3].object, packet->x[i], packet->y[i], &groundX, &groundY);
+        PokeathlonCourseObject_CenterToGround(circlePush->mons[i / POKEATHLON_TEAM_SIZE][i % POKEATHLON_TEAM_SIZE].object, packet->x[i], packet->y[i], &groundX, &groundY);
         depths[i].y = groundY;
     }
     MATH_QSort(depths, NELEMS(depths), sizeof(CirclePushDepth), PokeathlonCirclePush_CompareDepth, circlePush->sortBuffer);
     for (i = 0; i < POKEATHLON_MONS; i++) {
         u8 mon = depths[i].mon;
-        int team = mon / 3;
-        int member = mon % 3;
+        int team = mon / POKEATHLON_TEAM_SIZE;
+        int member = mon % POKEATHLON_TEAM_SIZE;
         PokeathlonCourseMonObject_SetDrawPriority(circlePush->mons[team][member].object, i + 6);
     }
 }

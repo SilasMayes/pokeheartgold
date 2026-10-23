@@ -406,7 +406,7 @@ void PokeathlonCirclePushAi_SetMon(PokeathlonCirclePushAi *ai, u8 slot, u16 spee
     mons[slot].cell = -1;
     mons[slot].slot = slot;
     mons[slot].object = object;
-    if (slot / 3 >= ai->firstTeam) {
+    if (slot / POKEATHLON_TEAM_SIZE >= ai->firstTeam) {
         mons[slot].target = target;
     } else {
         mons[slot].target = NULL;
@@ -438,7 +438,7 @@ int PokeathlonCirclePushAi_Update(PokeathlonCirclePushAi *ai, u8 layout) {
     if (ai->moving) {
         u8 firstTeam = ai->firstTeam;
         mon = 2 - ai->member + (firstTeam + ai->team) * 3;
-        GF_ASSERT(mon / 3 >= firstTeam);
+        GF_ASSERT(mon / POKEATHLON_TEAM_SIZE >= firstTeam);
         PokeathlonCirclePushAi_ChooseTarget(ai, (u8)mon, layout);
         result = (u8)mon;
         ai->team++;
@@ -669,7 +669,7 @@ static int PokeathlonCirclePushAi_CountRivals(const PokeathlonCirclePushAiMon *m
     for (i = 0; i < POKEATHLON_MONS; i++, mons++) {
         if (i != slot && cell == mons->cell) {
             if (mon->speed < mons->speed) {
-                if (slot / 3 == mons->slot / 3) {
+                if (slot / POKEATHLON_TEAM_SIZE == mons->slot / POKEATHLON_TEAM_SIZE) {
                     result--;
                 } else {
                     result -= 2;
