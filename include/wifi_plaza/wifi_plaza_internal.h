@@ -402,7 +402,7 @@ typedef struct WiFiPlazaLobbyEntryTime {
 // What the lobby keeps per player.
 typedef struct WiFiPlazaLobbyPlayerRecord {
     WiFiPlazaLobbyEntryTime entryTime;
-    u32 channel; // lobby library channel, 5 = none
+    u32 channel; // lobby library channel, WIFI_PLAZA_LOBBY_LIB_CHANNEL_NONE = none
 } WiFiPlazaLobbyPlayerRecord;
 
 // The ids of the players in the lobby (list 0) and in the own channel (list 1), -1 = free.
@@ -539,6 +539,14 @@ typedef struct WiFiPlazaSpriteConfig {
 #define WIFI_PLAZA_LOBBY_STATE_CLOSING      3
 #define WIFI_PLAZA_LOBBY_STATE_ERROR        4
 
+// gWiFiPlazaLobbyClient->channel when in no channel, and the lobby library's channel number for no channel
+#define WIFI_PLAZA_LOBBY_CHANNEL_NONE     4
+#define WIFI_PLAZA_LOBBY_LIB_CHANNEL_NONE 5
+
+// gWiFiPlazaLobbyClient->matches; currentMatch is WIFI_PLAZA_LOBBY_MATCH_NONE when in no match
+#define WIFI_PLAZA_LOBBY_MATCH_COUNT 3
+#define WIFI_PLAZA_LOBBY_MATCH_NONE  WIFI_PLAZA_LOBBY_MATCH_COUNT
+
 // gWiFiPlazaLobbyClient->channelState
 #define WIFI_PLAZA_CHANNEL_STATE_NONE    0
 #define WIFI_PLAZA_CHANNEL_STATE_JOINING 1
@@ -569,7 +577,7 @@ typedef struct WiFiPlazaLobbyClient {
     WiFiPlazaLobbyPlayerRecord records[WIFI_PLAZA_MAX_PLAYERS];
     WiFiPlazaLobbyIdList idLists[2];
     u8 state;        // WIFI_PLAZA_LOBBY_STATE_*
-    u8 channel;      // 4 = none
+    u8 channel;      // WIFI_PLAZA_LOBBY_CHANNEL_NONE = none
     u8 channelState; // WIFI_PLAZA_CHANNEL_STATE_*
     u8 joinChannelResult;
     u8 addingLocation;
@@ -582,8 +590,8 @@ typedef struct WiFiPlazaLobbyClient {
     u8 padding_1A4[0x10];
     WiFiPlazaLobbySchedule schedule; // received with PPW_LobbyGetSchedule
     u32 scheduleSize;
-    WiFiPlazaLobbyMatch matches[3];
-    u16 currentMatch; // 3 = none
+    WiFiPlazaLobbyMatch matches[WIFI_PLAZA_LOBBY_MATCH_COUNT];
+    u16 currentMatch; // WIFI_PLAZA_LOBBY_MATCH_NONE = none
     u8 isMatchHost;
     u8 matchCancelled;
     WiFiPlazaLobbyIdValueList specialVisitors;
