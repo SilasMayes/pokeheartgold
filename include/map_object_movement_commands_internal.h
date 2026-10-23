@@ -175,4 +175,12 @@ BOOL MapObjectMovementCmd111_Step16(LocalMapObject *object);
 BOOL MapObjectMovementCmd111_Step18(LocalMapObject *object);
 BOOL MapObjectMovementCmd112_Step0(LocalMapObject *object);
 
+extern const u32 _020FDA28[4];
+extern const u32 *const gMovementsByDirection[];
+extern const MovementCommandFunc *const gMovementCmdTable[];
+extern const fx32 *gJumpHeightTables[];
+extern const u32 gVariableSpeedWalk_Cmd082[];
+extern const u32 gVariableSpeedWalk_Cmd076[];
+extern const u32 gVariableSpeedWalk_Cmd098[];
+
 #endif // POKEHEARTGOLD_MAP_OBJECT_MOVEMENT_COMMANDS_INTERNAL_H

@@ -7,6 +7,17 @@
 
 // The map slots of the map load manager, for the terrain and collision queries.
 
+// The quarter of its map a tile is in (TileIndex_GetQuadrant).
+enum MapQuadrant {
+    MAP_QUADRANT_TOP_LEFT,
+    MAP_QUADRANT_TOP_RIGHT,
+    MAP_QUADRANT_BOTTOM_LEFT,
+    MAP_QUADRANT_BOTTOM_RIGHT,
+};
+
+// The 2x2 window of loaded maps; MapLoadManager_GetMapSlotOfMatrixIndex returns this for a map that is not loaded.
+#define MAP_LOAD_NUM_SLOTS 4
+
 int TileIndex_GetQuadrant(int, int);
 u8 MapLoadManager_GetMapSlotOfMatrixIndex(int, int, MapLoadManager *);
 int MapLoadManager_GetMapMatrixIndex(MapLoadManager *, u8);

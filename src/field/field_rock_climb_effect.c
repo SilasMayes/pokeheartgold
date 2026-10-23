@@ -88,7 +88,7 @@ static void RockClimb_Release(RockClimb *rockClimb) {
 }
 
 static void RockClimb_LoadGfx(RockClimb *rockClimb) {
-    if (rockClimb->loaded == FALSE) {
+    if (!rockClimb->loaded) {
         FieldEffectManager_LoadRenderModel(rockClimb->manager, &rockClimb->model, 0, 0x57, TRUE);
         RenderObj_InitFromModel(&rockClimb->renderObj, &rockClimb->model);
         rockClimb->loaded = TRUE;
@@ -125,7 +125,7 @@ FieldEffect *RockClimbEffect_Create(LocalMapObject *mapObject, int x, int z, int
     args.fieldSystem = MapObject_GetFieldSystem(mapObject);
     args.rockClimb = FieldEffectManager_GetRendererData(manager, FIELD_EFFECT_RENDERER_ROCK_CLIMB);
     args.mapObject = mapObject;
-    if (follow == FALSE) {
+    if (!follow) {
         position.x = (x << 16) + 0x8000;
         position.z = (z << 16) + 0x8000;
         FieldSystem_SnapToTerrainHeight(args.fieldSystem, &position);

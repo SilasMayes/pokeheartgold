@@ -22,7 +22,6 @@ typedef struct LegendaryBirdObject {
 
 typedef void (*LegendaryBirdAnimateFunc)(LocalMapObject *object, BillboardObject *billboard, LegendaryBirdObject *work);
 
-
 static BOOL FollowMonBillboard_IsBobFrame(u8 direction, LocalMapObject *object, BillboardObject *billboard);
 static void LegendaryBirdObject_CreateBillboard(LocalMapObject *object);
 static void LegendaryBirdObject_AnimateIdle(LocalMapObject *object, BillboardObject *billboard, LegendaryBirdObject *work);
@@ -32,8 +31,6 @@ static void LegendaryBirdObject_DeleteBillboard(LocalMapObject *object);
 
 // Per sprite id: the graphics info (terminated by spriteId 0xFFFF) and the effect flags
 // its effectFlagsIdx field selects.
-extern ObjectEventGraphicsInfo gObjectEventGraphicsInfos[];
-extern const MapObjectEffectFlags gSpriteEffectFlags[];
 
 static const LegendaryBirdAnimateFunc sLegendaryBirdAnimateFuncs[] = {
     LegendaryBirdObject_AnimateIdle,
@@ -57,7 +54,7 @@ void FollowMonBillboard_Update(LocalMapObject *object, BillboardObject *billboar
         MapObject_CopyFacingVector(object, &offset);
         offset.y = billboardWork->height << 12;
     } else {
-        if (paused != FALSE || flag4 != FALSE || hasFollowMonSprite != 0) {
+        if (paused || flag4 || hasFollowMonSprite != 0) {
             MapObject_CopyFacingVector(object, &offset);
             offset.x = 0;
             offset.z = 0;
@@ -76,7 +73,7 @@ void FollowMonBillboard_Update(LocalMapObject *object, BillboardObject *billboar
         BillboardObject_SetSequenceFrame(billboard, 0);
         billboardWork->bobbing = 0;
     }
-    if (paused == FALSE && flag4 == FALSE) {
+    if (!paused && !flag4) {
         BillboardObject_AdvanceFrame(billboard, FX32_ONE);
         if (FollowMonBillboard_IsBobFrame((u8)direction, object, billboard)) {
             offset.y -= 2 * FX32_ONE;
@@ -293,7 +290,7 @@ static void LegendaryBirdObject_UpdateVisibility(LocalMapObject *object, Billboa
     if (MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) == TRUE) {
         visible = FALSE;
     }
-    if (MapObject_TestFlagsBits(object, MAPOBJECTFLAG_UNK12) == TRUE && MapObject_TestFlagsBits(object, MAPOBJECTFLAG_UNK13) == FALSE) {
+    if (MapObject_TestFlagsBits(object, MAPOBJECTFLAG_UNK12) == TRUE && !MapObject_TestFlagsBits(object, MAPOBJECTFLAG_UNK13)) {
         visible = FALSE;
     }
     BillboardObject_SetVisible(billboard, visible);
@@ -343,7 +340,7 @@ void MapObject_TryUpdateDraw(LocalMapObject *object) {
     if (MapObject_GetFlagsBitsMask(object, MAPOBJECTFLAG_UNK14) == 0) {
         return;
     }
-    if (MapObject_CheckMovementPaused(object) == FALSE || MapObject_CheckFlag4(object) != FALSE) {
+    if (!MapObject_CheckMovementPaused(object) || MapObject_CheckFlag4(object)) {
         MapObject_CallDrawUpdate(object);
     }
 }
@@ -382,7 +379,7 @@ static const MapObjectEffectFlags *SpriteId_GetEffectFlags(u32 spriteId) {
 }
 
 BOOL MapObject_IsBillboardAnimPaused(LocalMapObject *object) {
-    if (MapObject_CheckMovementPaused(object) == TRUE && MapObject_CheckFlag4(object) == FALSE) {
+    if (MapObject_CheckMovementPaused(object) == TRUE && !MapObject_CheckFlag4(object)) {
         return TRUE;
     }
     if (MapObject_GetFlagsBitsMask(object, MAPOBJECTFLAG_UNK8) != 0) {

@@ -217,7 +217,7 @@ static void ReflectionEffect_Update(FieldEffect *effect, void *state) {
     }
     ReflectionEffect_CalcPosition(work, mapObject, &position);
     FieldEffect_SetPosition(effect, &position);
-    if (work->hasBillboard == FALSE) {
+    if (!work->hasBillboard) {
         ReflectionEffect_CreateBillboard(effect, work);
     }
 }
@@ -234,7 +234,7 @@ static void ReflectionEffect_Draw(FieldEffect *effect, void *state) {
         FieldEffectManager_DestroyEffect((int)effect);
         return;
     }
-    if (work->hasBillboard == FALSE) {
+    if (!work->hasBillboard) {
         return;
     }
     MapObject_CopyFacingVector(work->args.mapObject, &facing);
@@ -295,7 +295,7 @@ static void ReflectionEffect_CalcPosition(ReflectionEffect *work, LocalMapObject
     onGround = FieldSystem_SnapToTerrainHeight(work->args.fieldSystem, position);
     position->x += xOffset;
     position->z += zOffset - 7 * FX32_ONE;
-    if (onGround == FALSE) {
+    if (!onGround) {
         position->y = 0;
     } else {
         position->y -= depthTable.depth[work->kind];
@@ -337,7 +337,7 @@ static void BillboardReflectionEffect_CalcPosition(BillboardReflectionEffect *wo
     *position = work->position;
     onGround = FieldSystem_SnapToTerrainHeight(work->args.fieldSystem, position);
     position->z -= 7 * FX32_ONE;
-    if (onGround == FALSE) {
+    if (!onGround) {
         position->y = 0;
     } else {
         position->y -= depths.depth[work->kind];
@@ -447,7 +447,7 @@ static void FollowerReflectionEffect_Update(FieldEffect *effect, void *state) {
     ReflectionEffect_CalcPosition(work, mapObject, &position);
     position.y -= 0x514;
     FieldEffect_SetPosition(effect, &position);
-    if (work->hasBillboard == FALSE) {
+    if (!work->hasBillboard) {
         FollowerReflectionEffect_CreateBillboard(effect, work);
     }
 }
@@ -462,7 +462,7 @@ static void FollowerReflectionEffect_Draw(FieldEffect *effect, void *state) {
         FieldEffectManager_DestroyEffect((int)effect);
         return;
     }
-    if (work->hasBillboard == FALSE) {
+    if (!work->hasBillboard) {
         return;
     }
     if (MapObject_CheckVisible(mapObject) == TRUE) {

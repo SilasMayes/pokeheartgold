@@ -77,7 +77,7 @@ BOOL Field3dObjectList_ReleaseInstance(Field3dRenderObjManager *renderObjManager
         return FALSE;
     }
 
-    if (Field3dObjectList_IsShared(renderObjManager, object->index) == FALSE) {
+    if (!Field3dObjectList_IsShared(renderObjManager, object->index)) {
         Field3dObjectList_ReturnObject(renderObjManager, object);
         return TRUE;
     }
@@ -325,7 +325,7 @@ void MapPropAnimation_SetPaused(MapPropAnimation *animation, BOOL paused) {
 }
 
 BOOL MapPropAnimation_IsLoopFinished(MapPropAnimation *animation) {
-    return animation->looping == FALSE;
+    return !animation->looping;
 }
 
 void MapPropAnimation_GoToLastFrame(MapPropAnimation *animation) {

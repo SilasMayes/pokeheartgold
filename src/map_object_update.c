@@ -1,5 +1,8 @@
 #include "global.h"
 
+#include "constants/scrcmd.h"
+
+#include "field/field_follow_mon.h"
 #include "field/map_object_models.h"
 
 #include "comm_state.h"
@@ -22,8 +25,6 @@
 #include "map_object_movement_utilities_internal.h"
 #include "metatile_behavior.h"
 #include "overlay_01.h"
-
-u32 MapObject_GetAdjacentTileBehavior(LocalMapObject *object, u32 direction);
 
 static BOOL MapObject_CanUpdateMovement(LocalMapObject *object);
 static void MapObject_UpdateHeightIfFlagged(LocalMapObject *object);
@@ -258,7 +259,7 @@ static void MapObject_SpawnTallGrassStanding(LocalMapObject *object, u8 behavior
             return;
         }
     }
-    if (MapObject_GetID(object) != 0xFD || FollowMonObject_IsLarge(object) == FALSE) {
+    if (MapObject_GetID(object) != obj_partner_poke || !FollowMonObject_IsLarge(object)) {
         return;
     }
     facing = MapObject_GetFacingDirection(object);
@@ -292,7 +293,7 @@ static void MapObject_SpawnTallGrassOnStep(LocalMapObject *object, u8 behavior, 
             return;
         }
     }
-    if (MapObject_GetID(object) != 0xFD || FollowMonObject_IsLarge(object) == FALSE) {
+    if (MapObject_GetID(object) != obj_partner_poke || !FollowMonObject_IsLarge(object)) {
         return;
     }
     facing = MapObject_GetFacingDirection(object);
@@ -363,12 +364,12 @@ static void MapObject_CreateShadowWithSavedBehavior(LocalMapObject *object, u8 b
     (MetatileBehavior_IsTallGrass(behavior) == TRUE || MetatileBehavior_IsVeryTallGrass(behavior) == TRUE             \
         || MapObject_CheckWaterBehavior(object, behavior) == TRUE || MetatileBehavior_IsPuddle(behavior) == TRUE      \
         || MetatileBehavior_IsShallowWater(behavior) == TRUE || MapObject_CheckSnowBehavior(object, behavior) == TRUE \
-        || MetatileBehavior_IsMud(behavior) == TRUE || MetatileBehavior_IsReflective(behavior) != FALSE)
+        || MetatileBehavior_IsMud(behavior) == TRUE || MetatileBehavior_IsReflective(behavior))
 
 static void MapObject_CreateShadow(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags) {
     u32 state;
 
-    if (MapObjectManager_NotEndMovement(MapObject_GetManager(object)) == FALSE) {
+    if (!MapObjectManager_NotEndMovement(MapObject_GetManager(object))) {
         return;
     }
     state = flags->shadow;
@@ -385,7 +386,7 @@ static void MapObject_CreateShadow(LocalMapObject *object, u8 behavior, u8 prevB
             || MetatileBehavior_IsShallowWater(behavior) == TRUE
             || MapObject_CheckSnowBehavior(object, behavior) == TRUE
             || MetatileBehavior_IsMud(behavior) == TRUE
-            || MetatileBehavior_IsReflective(behavior) != FALSE) {
+            || MetatileBehavior_IsReflective(behavior)) {
             MapObject_SetFlagsBits(object, MAPOBJECTFLAG_UNK20);
             return;
         }
@@ -435,7 +436,7 @@ static void MapObject_SpawnGroundDust(LocalMapObject *object, u8 behavior, u8 pr
         || MetatileBehavior_IsIce(behavior) == TRUE
         || MetatileBehavior_IsMud(behavior) == TRUE
         || MapObject_CheckSnowBehavior(object, behavior) == TRUE
-        || MapObject_CheckVisible(object) != FALSE) {
+        || MapObject_CheckVisible(object)) {
         return;
     }
     GroundDust_Spawn(object);
@@ -504,7 +505,7 @@ static void MapObject_CreateReflection(LocalMapObject *object, u8 behavior, u8 p
         if (MapObject_CheckFlag24(object) != TRUE) {
             selected = GetMetatileBehavior_None();
 
-            if (MapObject_GetID(object) == 0xFD) {
+            if (MapObject_GetID(object) == obj_partner_poke) {
                 if (FollowMonObject_IsLarge(object) != 0) {
                     u8 foundBehavior;
                     u8 first;
@@ -515,7 +516,7 @@ static void MapObject_CreateReflection(LocalMapObject *object, u8 behavior, u8 p
                     int found;
                     int kind;
 
-                    if (MapObject_CheckFlag24(object) != FALSE) {
+                    if (MapObject_CheckFlag24(object)) {
                         return;
                     }
                     if (MetatileBehavior_HasReflectiveSurface(behavior) == TRUE) {
@@ -561,7 +562,7 @@ static void MapObject_CreateReflection(LocalMapObject *object, u8 behavior, u8 p
                     Reflection_SpawnForFollower(object, kind);
                 } else {
                     int kind;
-                    if (MapObject_CheckFlag24(object) != FALSE) {
+                    if (MapObject_CheckFlag24(object)) {
                         return;
                     }
                     if (MetatileBehavior_HasReflectiveSurface(behavior) == TRUE) {
@@ -587,7 +588,7 @@ static void MapObject_CreateReflection(LocalMapObject *object, u8 behavior, u8 p
                 }
             } else {
                 int kind;
-                if (MapObject_CheckFlag24(object) != FALSE) {
+                if (MapObject_CheckFlag24(object)) {
                     return;
                 }
                 if (MetatileBehavior_HasReflectiveSurface(behavior) == TRUE) {
@@ -616,10 +617,10 @@ static void MapObject_CreateReflection(LocalMapObject *object, u8 behavior, u8 p
 }
 
 static void MapObject_UpdateReflection(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags) {
-    if (flags->reflection == 0 || MapObject_CheckFlag24(object) == FALSE) {
+    if (flags->reflection == 0 || !MapObject_CheckFlag24(object)) {
         return;
     }
-    if (MapObject_GetID(object) == 0xFD && FollowMonObject_IsLarge(object) != 0) {
+    if (MapObject_GetID(object) == obj_partner_poke && FollowMonObject_IsLarge(object) != 0) {
         u8 first = MapObject_GetMetatileBehaviorInDirection(object, DIR_SOUTH);
         u8 second = MapObject_GetMetatileBehaviorInDirection(object, DIR_EAST);
         u8 third = MapObject_GetMetatileBehaviorInDirection(object, DIR_WEST);
@@ -638,12 +639,12 @@ static void MapObject_UpdateReflection(LocalMapObject *object, u8 behavior, u8 p
         } else if (MetatileBehavior_HasReflectiveSurface(fifth) == TRUE) {
             found = TRUE;
         }
-        if (found == FALSE) {
+        if (!found) {
             MapObject_SetFlag24(object, FALSE);
         }
     } else {
         u8 adjacent = MapObject_GetMetatileBehaviorInDirection(object, DIR_SOUTH);
-        if (MetatileBehavior_HasReflectiveSurface(adjacent) == FALSE) {
+        if (!MetatileBehavior_HasReflectiveSurface(adjacent)) {
             MapObject_SetFlag24(object, FALSE);
         }
     }

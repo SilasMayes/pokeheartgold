@@ -5,14 +5,13 @@
 #include "bg_window.h"
 #include "gf_gfx_planes.h"
 #include "heap.h"
+#include "screen_fade_internal.h"
 
 typedef struct KimonoGirlEffectWork {
     EncounterEffectQuadInterp scroll;
     u32 holdFrames;
     BOOL scrolling;
 } KimonoGirlEffectWork;
-
-extern void SetBothScreensBrightnessByColor();
 
 // BgTemplates for BG1 and BG3: 512x256, 16 colors, priority 0 / 1.
 const u8 gKimonoGirlEffectBg1Template[sizeof(BgTemplate)] __attribute__((aligned(4))) = {
@@ -105,7 +104,7 @@ void EncounterEffect_KimonoGirl(SysTask *task, EncounterEffectTask *effect) {
         break;
     case KIMONO_GIRL_STATE_END:
         work->scrolling = FALSE;
-        SetBothScreensBrightnessByColor();
+        SetBothScreensBrightnessByColor(RGB_BLACK);
         if (effect->done) {
             *effect->done = TRUE;
         }

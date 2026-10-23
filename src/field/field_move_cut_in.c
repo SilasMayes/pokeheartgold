@@ -33,7 +33,6 @@
 // A step of the cut-in's step table: TRUE to run the next step in the same frame.
 typedef BOOL (*FieldMoveCutInStep)(FieldMoveCutIn *cutIn);
 
-
 static FieldMoveCutIn *FieldMoveCutIn_New(FieldSystem *fieldSystem);
 static void FieldMoveCutIn_Free(FieldMoveCutIn *cutIn);
 static void Task_FieldMoveCutIn(SysTask *task, void *data);
@@ -73,16 +72,6 @@ static void FieldMoveCutIn_DestroyWindowTask(FieldMoveCutIn *cutIn);
 extern const FieldMoveCutInStep gFieldMoveCutInSteps[];
 extern const FieldMoveCutInStep gFieldMoveCutInFlySteps[];
 extern const FieldMoveCutInStep gFieldMoveCutInFlyWithObjectSteps[];
-extern const VecFx32 gCutInTrainerPos;
-extern const VecFx32 gCutInMonPos;
-extern const VecFx32 gCutInFlyTrainerPos;
-extern const VecFx32 gCutInFlyMonPos;
-extern const VecFx32 gCutInFlyWithObjectTrainerPos;
-extern const VecFx32 gCutInFlyerScale;
-extern const u16 gCutInTrainerCharFiles[];
-extern const u16 gCutInTrainerAnimFiles[];
-extern const u16 gCutInTrainerCellFiles[];
-extern const u16 gCutInTrainerPlttFiles[];
 
 // The trainer graphics are the gender's.
 SysTask *FieldMoveCutIn_Start(FieldSystem *fieldSystem, int kind, Pokemon *mon, int gender) {
@@ -174,7 +163,7 @@ BOOL FieldMoveCutIn_StepCreateSprites(FieldMoveCutIn *cutIn) {
     VecFx32 trainerPos;
     VecFx32 monPos;
 
-    if (cutIn->transferDone == FALSE) {
+    if (!cutIn->transferDone) {
         return FALSE;
     }
     trainerPos = gCutInTrainerPos;
@@ -380,7 +369,7 @@ BOOL FieldMoveCutIn_StepCreateFlySprites(FieldMoveCutIn *cutIn) {
     VecFx32 trainerPos;
     VecFx32 monPos;
 
-    if (cutIn->transferDone == FALSE) {
+    if (!cutIn->transferDone) {
         return FALSE;
     }
     trainerPos = gCutInFlyTrainerPos;
@@ -397,7 +386,7 @@ BOOL FieldMoveCutIn_StepCreateFlySprites(FieldMoveCutIn *cutIn) {
 BOOL FieldMoveCutIn_StepCreateFlyTrainerSprite(FieldMoveCutIn *cutIn) {
     VecFx32 pos;
 
-    if (cutIn->transferDone == FALSE) {
+    if (!cutIn->transferDone) {
         return FALSE;
     }
     pos = gCutInFlyWithObjectTrainerPos;
@@ -499,7 +488,7 @@ BOOL FieldMoveCutIn_StepCloseFlyWindow(FieldMoveCutIn *cutIn) {
     }
     FieldMoveCutIn_SetWindowRect(cutIn, cutIn->windowLeft, cutIn->windowTop, cutIn->windowRight, cutIn->windowBottom);
     cutIn->windowUpdate = TRUE;
-    if (cutIn->fadeStarted == FALSE && FieldMoveCutIn_GetFlyerStatus(cutIn) == 4) {
+    if (!cutIn->fadeStarted && FieldMoveCutIn_GetFlyerStatus(cutIn) == 4) {
         cutIn->fadeStarted = TRUE;
         FieldMove_FadeOutToWhite();
     }
@@ -519,14 +508,14 @@ BOOL FieldMoveCutIn_StepWaitFlyEnd(FieldMoveCutIn *cutIn) {
         }
         return FALSE;
     }
-    if (cutIn->fadeStarted == FALSE && FieldMoveCutIn_GetFlyerStatus(cutIn) == 4) {
+    if (!cutIn->fadeStarted && FieldMoveCutIn_GetFlyerStatus(cutIn) == 4) {
         cutIn->fadeStarted = TRUE;
         FieldMove_FadeOutToWhite();
     }
     if (FieldMoveCutIn_GetFlyerStatus(cutIn) != 2) {
         return FALSE;
     }
-    if (cutIn->fadeStarted == FALSE) {
+    if (!cutIn->fadeStarted) {
         cutIn->fadeStarted = TRUE;
         FieldMove_FadeOutToWhite();
     }

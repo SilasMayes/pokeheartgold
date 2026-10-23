@@ -28,7 +28,23 @@ enum BottomScreenAppState {
     BOTTOM_SCREEN_APP_STATE_FADE_IN,
 };
 
-void FieldSystem_SendBottomScreenEvent(FieldSystem *fieldSystem, int event, int a2);
+// The choice menu app's states (FieldSystem_SetTouchscreenChoiceMenuState / GetTouchscreenChoiceMenuState).
+enum TouchscreenChoiceMenuState {
+    TOUCHSCREEN_CHOICE_MENU_STATE_INIT,
+    TOUCHSCREEN_CHOICE_MENU_STATE_IDLE,
+    TOUCHSCREEN_CHOICE_MENU_STATE_WAIT_RETURN,
+    TOUCHSCREEN_CHOICE_MENU_STATE_SHOW_YES_NO,
+    TOUCHSCREEN_CHOICE_MENU_STATE_YES_NO_INPUT,
+    TOUCHSCREEN_CHOICE_MENU_STATE_YES_NO_END,
+    TOUCHSCREEN_CHOICE_MENU_STATE_DONE,
+    TOUCHSCREEN_CHOICE_MENU_STATE_SHOW_LIST,
+    TOUCHSCREEN_CHOICE_MENU_STATE_LIST_INPUT,
+    TOUCHSCREEN_CHOICE_MENU_STATE_LIST_END,
+    TOUCHSCREEN_CHOICE_MENU_STATE_LIST_WRITE_RESULT,
+    TOUCHSCREEN_CHOICE_MENU_STATE_CANCEL_YES_NO,
+};
+
+void FieldSystem_SendBottomScreenEvent(FieldSystem *fieldSystem, int event, int unused);
 void BottomScreen_TouchSave_Init(FieldSystem *fieldSystem);
 void BottomScreen_TouchSave_End(FieldSystem *fieldSystem);
 BOOL BottomScreen_TouchSave_IsDone(FieldSystem *fieldSystem);

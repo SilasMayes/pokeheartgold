@@ -4,6 +4,7 @@
 
 #include "constants/sprites.h"
 
+#include "field/field_hook_unused.h"
 #include "field/pal_pad_registration.h"
 
 #include "assert.h"
@@ -85,7 +86,6 @@ void UnionChatLog_Exit(void *data);
 void TouchscreenChoiceMenu_SetCallback(void *app, void *callback, void *arg);
 void TouchscreenMenu_RequestSelectedIconAnim(void *app);
 void TouchscreenMenu_RequestRegisteredItemAnim(void *app, int item);
-void FieldHookUnused_OnEvent(void *, int, int);
 
 void FieldSystem_SwitchBottomScreenApp(FieldSystem *fieldSystem, int appId, void *args);
 void FieldSystem_SetTouchscreenChoiceMenuState(FieldSystem *fieldSystem, int appId, int state, void *result);
@@ -165,10 +165,10 @@ static const BottomScreenAppTemplate sBottomScreenApps[] = {
     [BOTTOM_SCREEN_APP_UNION_CHAT_LOG] = { UnionChatLogApp_Init,         UnionChatLogApp_Exit,          UnionChatLogApp_IsExitDone,       FS_OVERLAY_ID(OVY_34)         },
 };
 
-void FieldSystem_SendBottomScreenEvent(FieldSystem *fieldSystem, int event, int a2) {
-    void *state = (void *)fieldSystem->mapSystems->unk14;
+void FieldSystem_SendBottomScreenEvent(FieldSystem *fieldSystem, int event, int unused) {
+    FieldHookState *state = (FieldHookState *)fieldSystem->mapSystems->unk14;
     if (state != NULL) {
-        FieldHookUnused_OnEvent(state, event, a2);
+        FieldHookUnused_OnEvent(state, event);
     }
 }
 
@@ -299,7 +299,7 @@ void FieldSystem_SwitchBottomScreenApp(FieldSystem *fieldSystem, int appId, void
     }
 }
 
-// The choice menu app: state 3 shows YES/NO, 7 the list; the answer is written to *result.
+// The choice menu app: TOUCHSCREEN_CHOICE_MENU_STATE_SHOW_YES_NO / SHOW_LIST; the answer is written to *result.
 void FieldSystem_SetTouchscreenChoiceMenuState(FieldSystem *fieldSystem, int appId, int state, void *result) {
     BottomScreenAppManager *manager = SysTask_GetData(fieldSystem->bottomScreenTask);
     TouchscreenChoiceMenuView *menu = SysTask_GetData(manager->app);
@@ -403,8 +403,7 @@ static BOOL PalPadRegistration_TryShowTouchYesNo(PalPadRegistration *registratio
     u8 appId = FieldSystem_GetBottomScreenAppId(registration->fieldSystem);
     u8 state = FieldSystem_GetBottomScreenAppState(registration->fieldSystem);
     if (appId == BOTTOM_SCREEN_APP_CHOICE_MENU && state == BOTTOM_SCREEN_APP_STATE_RUNNING) {
-        // 3: show the YES/NO buttons
-        FieldSystem_SetTouchscreenChoiceMenuState(registration->fieldSystem, BOTTOM_SCREEN_APP_CHOICE_MENU, 3, &registration->yesNoAnswer);
+        FieldSystem_SetTouchscreenChoiceMenuState(registration->fieldSystem, BOTTOM_SCREEN_APP_CHOICE_MENU, TOUCHSCREEN_CHOICE_MENU_STATE_SHOW_YES_NO, &registration->yesNoAnswer);
         return TRUE;
     }
     return FALSE;
@@ -413,7 +412,7 @@ static BOOL PalPadRegistration_TryShowTouchYesNo(PalPadRegistration *registratio
 static BOOL PalPadRegistration_IsTouchYesNoDone(PalPadRegistration *registration) {
     u8 appId = FieldSystem_GetBottomScreenAppId(registration->fieldSystem);
     u32 state = FieldSystem_GetTouchscreenChoiceMenuState(registration->fieldSystem);
-    if (appId == BOTTOM_SCREEN_APP_CHOICE_MENU && state == 6) { // 6: answered
+    if (appId == BOTTOM_SCREEN_APP_CHOICE_MENU && state == TOUCHSCREEN_CHOICE_MENU_STATE_DONE) {
         return TRUE;
     }
     return FALSE;

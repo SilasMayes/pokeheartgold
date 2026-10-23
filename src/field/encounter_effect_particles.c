@@ -9,6 +9,7 @@
 #include "gf_gfx_planes.h"
 #include "heap.h"
 #include "particle_system.h"
+#include "particle_system_internal.h"
 #include "scanline_effect.h"
 #include "sys_task.h"
 #include "sys_task_api.h"
@@ -35,14 +36,7 @@ struct EncounterEffectParticles {
     u32 plttOffset; // next free palette VRAM offset
 };
 
-void ParticleSystem_FreeAll(void);
-
 void MTX_Identity22_(MtxFx22 *mtx);
-
-extern const VecFx32 gParticleBaseScale;
-extern const GraphicsModes gParticleGraphicsModes;
-extern const BgTemplate gParticleCaptureBgTemplate;
-extern const GraphicsBanks gParticleGraphicsBanks;
 
 static void Task_ParticleSetup_VWait(SysTask *task, void *data);
 static void Task_ParticleSetup_Main(SysTask *task, void *data);

@@ -48,7 +48,6 @@ FS_EXTERN_OVERLAY(OVY_25);
 #define BILLBOARD_SEQUENCE_FOLLOW_MON     21
 #define BILLBOARD_SEQUENCE_FOLLOW_MON_ALT 22
 
-
 // A billboard sequence from the sequence bank: count frames, then count u8s, then count u8 flags.
 typedef struct BillboardSequenceData {
     int count;
@@ -111,8 +110,6 @@ extern const MovementTable gFollowMonStepMovements;
 extern const MovementTable gFollowMonRunMovements;
 extern const HopHeightTable gFollowMonHopHeights;
 extern const HopOffsets gFollowMonHopIntoBallZOffsets;
-extern const VecFx32 gFollowMonRecallScale;
-extern const VecFx32 gFollowMonHopIntoBallScale;
 
 const HopTable sFollowMonHopIntoBallTable = {
     { 1, 2, 2, 3, 3, 2, 2, 0 },
@@ -276,7 +273,7 @@ void MapObject_GetPreviousCoordsBehind(LocalMapObject *object, int *x, int *z) {
 
 // The metatile behavior of a tile next to the object: 0/1 the tile north/south of it, 2/3 east/west of it,
 // 4/5 south-east/south-west of it.
-u8 MapObject_GetAdjacentTileBehavior(LocalMapObject *object, u32 direction) {
+u32 MapObject_GetAdjacentTileBehavior(LocalMapObject *object, u32 direction) {
     FieldSystem *fieldSystem = MapObject_GetFieldSystem(object);
     int x = MapObject_GetXCoord(object);
     int z = MapObject_GetZCoord(object);
@@ -428,7 +425,7 @@ void FollowMon_QueuePlayerStep(int movement, int x, int z, FollowMon *followMon)
 // On entering a map: re-creates the following Pokemon next to the player, or removes it where it may not follow.
 void FollowMon_RecreateForMap(FieldSystem *fieldSystem) {
     if (fieldSystem->followMon.recreatePending) {
-        if (fieldSystem->followMon.active == FALSE) {
+        if (!fieldSystem->followMon.active) {
             int x = PlayerAvatar_GetXCoord(fieldSystem->playerAvatar);
             int z = PlayerAvatar_GetZCoord(fieldSystem->playerAvatar);
             u32 direction = PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar);

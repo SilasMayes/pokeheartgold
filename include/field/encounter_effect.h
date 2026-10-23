@@ -192,4 +192,24 @@ void EncounterEffect_RocketBoss(SysTask *task, EncounterEffectTask *effect);
 void EncounterEffect_KimonoGirl(SysTask *task, EncounterEffectTask *effect);
 void EncounterEffect_PkmnTrainerRed(SysTask *task, EncounterEffectTask *effect);
 
+extern const u32 gRedEffectSpriteResources[];
+extern const u32 gRedEffectAnimMembers[];
+extern const u32 gRedEffectCellMembers[];
+extern const u32 gRedEffectPlttMembers[];
+extern const BgTemplate gWildEffectWaveBgTemplate_Main1;
+extern const BgTemplate gWildEffectWaveBgTemplate_Main3;
+extern const u8 gWildEffectCellGridDiagonalsB[];
+extern const u8 gWildEffectCellGridRows[];
+extern const u8 gWildEffectCellGridDiagonalsA[];
+extern const u8 gWildEffectCellGridRowsReverse[];
+
+extern const VecFx32 gParticleBaseScale;
+extern const GraphicsModes gParticleGraphicsModes;
+extern const BgTemplate gParticleCaptureBgTemplate;
+extern const GraphicsBanks gParticleGraphicsBanks;
+
+extern u8 gBlockWipeColumnOrder[];
+
+extern void (*const gEncounterEffectFuncs[])(SysTask *task, EncounterEffectTask *effect);
+
 #endif // POKEHEARTGOLD_FIELD_ENCOUNTER_EFFECT_H

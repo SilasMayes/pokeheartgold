@@ -118,7 +118,7 @@ static void GroundDustEffect_Destroy(FieldEffect *effect, void *state) {
 
 static void GroundDustEffect_Update(FieldEffect *effect, void *state) {
     GroundDustEffect *work = state;
-    if (work->paused == FALSE) {
+    if (!work->paused) {
         fx32 frame;
         BillboardObject_AdvanceFrame(work->billboard, FX32_ONE);
         frame = BillboardObject_GetSequenceFrame(work->billboard);

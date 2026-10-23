@@ -854,7 +854,7 @@ BOOL Task_StairsFadeToWhite(TaskManager *taskman) {
         }
         break;
     }
-    if (work->adjustCamera != FALSE) {
+    if (work->adjustCamera) {
         DoorTransition_StepCameraZoomIn(fieldSystem->camera, &work->cameraStep);
     }
     return FALSE;
@@ -879,7 +879,7 @@ BOOL Task_StairsFadeOut(TaskManager *taskman) {
         }
         break;
     }
-    if (work->adjustCamera != FALSE) {
+    if (work->adjustCamera) {
         DoorTransition_StepCameraZoomIn(fieldSystem->camera, &work->cameraStep);
     }
     return FALSE;

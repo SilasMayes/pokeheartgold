@@ -552,7 +552,7 @@ static void SysTask_DoSpinarakRide(SysTask *sysTask, void *taskData) {
             VecFx32 zero = { 0, 0, 0 };
             VEC_MultAdd(FX32_CONST(2), &localData->moveVector, &zero, &localData->moveVector);
 
-            if (localData->mustResetTargetTrack == FALSE && xComponent != 0 && xComponent != FX32_ONE) {
+            if (!localData->mustResetTargetTrack && xComponent != 0 && xComponent != FX32_ONE) {
                 localData->mustResetTargetTrack = TRUE;
                 MapLoadManager_ForgetTrackedTarget(fieldSystem->mapLoadManager);
             } else if (localData->mustResetTargetTrack == TRUE) {

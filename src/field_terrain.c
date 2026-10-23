@@ -58,7 +58,6 @@ static int Terrain_AbsDiff(int lhs, int rhs) {
 #define MAP_TILES_COUNT_X    32
 #define MAP_TILES_COUNT_Z    32
 #define MAP_OBJECT_TILE_SIZE FX32_CONST(16)
-#define QUADRANT_COUNT       4
 
 enum CalculatedHeightSource {
     CALCULATED_HEIGHT_SOURCE_NONE = 0,
@@ -106,7 +105,7 @@ static int Terrain_CalcHeight(FieldSystem *fieldSystem, int objectHeightMode, in
     int tileMapQuadrant = TileIndex_GetQuadrant(tileIndex, mapMatrixWidthTiles);
     u32 loadedMapIndex = MapLoadManager_GetMapSlotOfMatrixIndex(mapMatrixIndex, tileMapQuadrant, landDataMan);
 
-    if (loadedMapIndex > QUADRANT_COUNT - 1) {
+    if (loadedMapIndex > MAP_LOAD_NUM_SLOTS - 1) {
         bdhcHeightValid = FALSE;
     } else {
         Bdhc *bdhc = MapLoadManager_GetBdhc(landDataMan, loadedMapIndex);

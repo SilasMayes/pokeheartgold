@@ -147,7 +147,7 @@ static void EmoteMark_Release(EmoteMark *emoteMark, int kind) {
 }
 
 static void EmoteMark_LoadExclamationGfx(EmoteMark *emoteMark) {
-    if (emoteMark->exclamationGfxLoaded == FALSE) {
+    if (!emoteMark->exclamationGfxLoaded) {
         emoteMark->exclamationGfxLoaded = TRUE;
         FieldEffectManager_LoadBillboardResource(emoteMark->manager, EMOTE_MARK_EXCLAMATION_RESOURCE, 0x76);
         FieldEffectManager_LoadBillboardSequence(emoteMark->manager, EMOTE_MARK_EXCLAMATION_SEQUENCE, 0x8C);
@@ -157,7 +157,7 @@ static void EmoteMark_LoadExclamationGfx(EmoteMark *emoteMark) {
 }
 
 static void EmoteMark_LoadQuestionGfx(EmoteMark *emoteMark) {
-    if (emoteMark->questionGfxLoaded == FALSE) {
+    if (!emoteMark->questionGfxLoaded) {
         emoteMark->questionGfxLoaded = TRUE;
         FieldEffectManager_LoadBillboardResource(emoteMark->manager, EMOTE_MARK_QUESTION_RESOURCE, 0x7D);
         FieldEffectManager_LoadBillboardSequence(emoteMark->manager, EMOTE_MARK_QUESTION_SEQUENCE, 0x8C);
@@ -346,7 +346,7 @@ BOOL MapObjectEmoteMarkEffect_Init(FieldEffect *effect, EmoteMarkEffect *work) {
 void MapObjectEmoteMarkEffect_Update(FieldEffect *effect, EmoteMarkEffect *work) {
     VecFx32 position;
     LocalMapObject *mapObject = work->args.mapObject;
-    if (MapObject_CheckIDAndMap(mapObject, work->objectId, work->mapId) == FALSE) {
+    if (!MapObject_CheckIDAndMap(mapObject, work->objectId, work->mapId)) {
         GF_ASSERT(FALSE);
     }
     MapObject_GetDrawPosition(mapObject, &position);

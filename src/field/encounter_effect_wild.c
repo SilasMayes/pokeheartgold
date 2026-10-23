@@ -7,6 +7,7 @@
 #include "gf_gfx_planes.h"
 #include "heap.h"
 #include "math_util.h"
+#include "screen_fade_internal.h"
 #include "screen_fade_legacy.h"
 #include "sprite.h"
 #include "sys_task_api.h"
@@ -165,19 +166,6 @@ static void WildEffectBgLoader_Start(WildEffectBgLoader *loader, EncounterEffect
 static BOOL WildEffectBgLoader_IsDone(WildEffectBgLoader *loader);
 static void WildEffect_RunWave(SysTask *task, EncounterEffectTask *effect, BOOL white);
 
-void SetBothScreensBrightnessByColor(u16 color);
-
-extern const u32 gRedEffectSpriteResources[];
-extern const u32 gRedEffectAnimMembers[];
-extern const u32 gRedEffectCellMembers[];
-extern const u32 gRedEffectPlttMembers[];
-extern const BgTemplate gWildEffectWaveBgTemplate_Main1;
-extern const BgTemplate gWildEffectWaveBgTemplate_Main3;
-extern const u8 gWildEffectCellGridDiagonalsB[];
-extern const u8 gWildEffectCellGridRows[];
-extern const u8 gWildEffectCellGridDiagonalsA[];
-extern const u8 gWildEffectCellGridRowsReverse[];
-
 enum WildEffectState {
     WILD_EFFECT_STATE_INIT,
     WILD_EFFECT_STATE_START_FLASH,
@@ -232,7 +220,7 @@ static BOOL WildEffectCell_Update(WildEffectCell *cell) {
     int x;
     int y;
 
-    if (cell->active == FALSE) {
+    if (!cell->active) {
         return TRUE;
     }
     done = EncounterEffectInterp_Update(&cell->width);
@@ -273,7 +261,7 @@ static BOOL WildEffectRandomFill_Update(WildEffectRandomFill *fill) {
     s16 y;
 
     GF_ASSERT(fill != NULL);
-    if (fill->active == FALSE) {
+    if (!fill->active) {
         return TRUE;
     }
     if (fill->filled < CELL_GRID_SIZE) {
@@ -375,7 +363,7 @@ static BOOL WildEffectCellGrid_UpdateRows(WildEffectCellGrid *grid) {
     int mirror;
 
     GF_ASSERT(grid != NULL);
-    if (grid->active == FALSE) {
+    if (!grid->active) {
         return TRUE;
     }
     if (grid->started < CELL_GRID_SIZE / 2) {
@@ -427,7 +415,7 @@ static BOOL WildEffectCellGrid_UpdateDiagonals(WildEffectCellGrid *grid) {
     int other;
 
     GF_ASSERT(grid != NULL);
-    if (grid->active == FALSE) {
+    if (!grid->active) {
         return TRUE;
     }
     if (grid->started < CELL_GRID_SIZE / 2) {
@@ -541,7 +529,7 @@ void EncounterEffect_PkmnTrainerRed(SysTask *task, EncounterEffectTask *effect) 
         }
         break;
     case WILD_EFFECT_STATE_END:
-        SetBothScreensBrightnessByColor(0);
+        SetBothScreensBrightnessByColor(RGB_BLACK);
         if (effect->done) {
             *effect->done = TRUE;
         }
@@ -697,7 +685,7 @@ static void WildEffect_RunCellGridRows(SysTask *task, EncounterEffectTask *effec
         }
         break;
     case WILD_EFFECT_STATE_END:
-        SetBothScreensBrightnessByColor(0);
+        SetBothScreensBrightnessByColor(RGB_BLACK);
         if (effect->done) {
             *effect->done = TRUE;
         }
@@ -769,7 +757,7 @@ static void WildEffect_RunCellGridDiagonals(SysTask *task, EncounterEffectTask *
         }
         break;
     case WILD_EFFECT_STATE_END:
-        SetBothScreensBrightnessByColor(0);
+        SetBothScreensBrightnessByColor(RGB_BLACK);
         if (effect->done) {
             *effect->done = TRUE;
         }
@@ -951,7 +939,7 @@ static void WildEffect_RunWave(SysTask *task, EncounterEffectTask *effect, BOOL 
         }
         break;
     case WAVE_EFFECT_STATE_END:
-        SetBothScreensBrightnessByColor(0);
+        SetBothScreensBrightnessByColor(RGB_BLACK);
         if (effect->done) {
             *effect->done = TRUE;
         }

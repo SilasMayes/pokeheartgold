@@ -66,7 +66,7 @@ BOOL ScaleSprites_Update(ScaleSprites *scaleSprites) {
         EncounterEffect_SetVecFx32(&scale, scaleSprites->scale[i].value, scaleSprites->scale[i].value, scaleSprites->scale[i].value);
         Sprite_SetAffineScale(scaleSprites->sprites[i], &scale);
         Sprite_SetDrawFlag(scaleSprites->sprites[i], TRUE);
-        if (finished == FALSE) {
+        if (!finished) {
             done = FALSE;
         } else if (i != SCALE_SPRITE_COUNT - 1) {
             Sprite_SetDrawFlag(scaleSprites->sprites[i], FALSE);

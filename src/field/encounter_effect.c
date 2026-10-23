@@ -50,8 +50,6 @@ typedef struct EncounterEffectFlash {
 
 void GXx_SetMasterBrightness_(vu16 *reg, s32 brightness);
 
-extern void (*const gEncounterEffectFuncs[])(SysTask *task, EncounterEffectTask *effect);
-
 static void Task_EncounterEffectFlash(SysTask *task, void *data);
 static void EncounterEffect_SetMasterBrightness(int screen, s32 brightness);
 static void BrightnessInterp_Init(BrightnessInterp *interp, s32 start, s32 end, int screen, s32 duration);

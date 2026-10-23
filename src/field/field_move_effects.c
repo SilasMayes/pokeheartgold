@@ -170,22 +170,7 @@ typedef struct RideEffectFileIds {
     u16 whirlpoolAngles[4];     // by facing direction
 } RideEffectFileIds;
 
-extern const VecFx32 gHallOfFameBallOffsets[];
 extern RideEffectFileIds gRideEffectFileIds;
-extern const Field3dObjectTaskTemplate gRockSmashEffectAtPlayerTemplate;
-extern const Field3dObjectTaskTemplate gWhirlpoolEffectTemplate;
-extern const Field3dObjectTaskTemplate gHeadbuttEffectAtFollowerTemplate;
-extern const Field3dObjectTaskTemplate gWaterfallEffectTemplate;
-extern const Field3dObjectTaskTemplate gRockClimbDebrisTemplate;
-extern const Field3dObjectTaskTemplate gCutEffectAtPlayerTemplate;
-extern const Field3dObjectTaskTemplate gRockSmashEffectAtFollowerTemplate;
-extern const Field3dObjectTaskTemplate gHeadbuttEffectAtPlayerTemplate;
-extern const Field3dObjectTaskTemplate gCutEffectAtFollowerTemplate;
-extern const Field3dObjectTaskTemplate gRockDebrisTemplate;
-extern const Field3dObjectTaskTemplate gRockDebrisWithFollowerTemplate;
-extern void (*const gScriptFieldMoveEffectDeleteFuncs[])(Field3dObjectTask *task);
-extern Field3dObjectTask *(*const gScriptFieldMoveEffectCreateFuncs[])(FieldSystem *fieldSystem);
-extern BOOL (*const gScriptFieldMoveEffectIsFinishedFuncs[])(Field3dObjectTask *task);
 
 NNSG3dResFileHeader **AreaDataManager_GetMapPropModel(u32 mapPropId, AreaDataManager *areaDataManager);
 void Field3dObject_SetXRotation(Field3dObject *object, u16 angle, int axis);

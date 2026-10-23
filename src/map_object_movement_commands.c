@@ -95,15 +95,7 @@ enum MovementScriptMachineState {
     MOVEMENT_SCRIPT_DONE,
 };
 
-
 extern const MovementScriptStateFunc gMovementScriptMachineStateFuncs[];
-extern const u32 _020FDA28[4];
-extern const u32 *const gMovementsByDirection[];
-extern const MovementCommandFunc *const gMovementCmdTable[];
-extern const fx32 *gJumpHeightTables[];
-extern const u32 gVariableSpeedWalk_Cmd082[];
-extern const u32 gVariableSpeedWalk_Cmd076[];
-extern const u32 gVariableSpeedWalk_Cmd098[];
 
 static void MapObject_StartWalkMovement(LocalMapObject *object, u32 direction, u32 distance, s32 duration, u16 animation);
 static void MapObject_StartWalkInPlaceMovement(LocalMapObject *object, int direction, int duration, int animation);
@@ -338,7 +330,7 @@ void MapObject_ExecuteMovementCommand(LocalMapObject *object) {
         if (command == MOVEMENT_NONE) {
             break;
         }
-    } while (MapObject_RunMovementCommand(object, command, MapObject_GetMovementStep(object)) != FALSE);
+    } while (MapObject_RunMovementCommand(object, command, MapObject_GetMovementStep(object)));
 }
 
 BOOL MapObject_RunForcedMovement(LocalMapObject *object) {

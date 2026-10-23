@@ -70,8 +70,6 @@ static const FieldEffectBasicTemplate sVeryTallGrassEffectTemplate = {
     VeryTallGrassEffect_Draw,
 };
 
-extern const u32 gVeryTallGrassRecordParams[6];
-
 VeryTallGrass *VeryTallGrass_New(FieldEffectManager *manager) {
     VeryTallGrass *grass = FieldEffectManager_HeapAllocAndFill(manager, sizeof(VeryTallGrass), FALSE, 0);
     grass->manager = manager;
@@ -159,7 +157,7 @@ static BOOL VeryTallGrassEffect_Init(FieldEffect *effect, void *state) {
     if (MapObject_TestFlagsBits(work->args.mapObject, MAPOBJECTFLAG_VISIBLE) == TRUE) {
         BillboardObject_SetVisible(work->billboard, FALSE);
     }
-    if (FieldEffect_GetParam(effect) == FALSE) {
+    if (!FieldEffect_GetParam(effect)) {
         BillboardObject_SetFrame(work->billboard, 12 * FX32_ONE);
         BillboardObject_AdvanceFrame(work->billboard, 0);
         work->state = VERY_TALL_GRASS_STATE_WAIT;
@@ -187,7 +185,7 @@ static void VeryTallGrassEffect_Update(FieldEffect *effect, void *state) {
     } else {
         BillboardObject_SetVisible(work->billboard, TRUE);
     }
-    if (work->onGround == FALSE) {
+    if (!work->onGround) {
         FieldEffect_GetPosition(effect, &current);
         position.x = work->args.x << 16;
         position.z = work->args.z << 16;

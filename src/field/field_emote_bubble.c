@@ -17,15 +17,11 @@
 #include "overlay_01.h"
 #include "sound_playback.h"
 #include "task.h"
+#include "texture_animation.h"
 #include "vram_transfer_manager.h"
 
 // The emote bubble that pops up above a map object: one billboard that rises into place,
 // then plays one of 14 texture animations by streaming frames into its VRAM slot.
-
-void *Texture_GetImageData(NNSG3dResTex *tex, int index);
-void *Texture_GetPaletteData(NNSG3dResTex *tex, int index);
-u32 Texture_GetImageVramOffsetByIndex(NNSG3dResTex *tex, int index);
-u32 Texture_GetImageSizeByIndex(NNSG3dResTex *tex, int index);
 
 #define EMOTE_BUBBLE_RECORD   0xE
 #define EMOTE_BUBBLE_RESOURCE 0xC

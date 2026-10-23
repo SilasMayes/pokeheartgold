@@ -293,7 +293,7 @@ static void FootprintEffect_Draw(FieldEffect *effect, void *state) {
     FootprintEffect *work = state;
     VecFx32 position;
 
-    if (work->hidden == FALSE) {
+    if (!work->hidden) {
         FieldEffect_GetPosition(effect, &position);
         NNSi_G3dModifyPolygonAttrMask(work->model->model, TRUE, 0x1F << 16);
         NNS_G3dMdlSetMdlAlphaAll(work->model->model, work->alpha);

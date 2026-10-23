@@ -1156,7 +1156,7 @@ void PlayerDraw_UpdateUseHmOrSaving(LocalMapObject *object) {
     if (MapObject_IsBillboardPending(object) != TRUE && billboard != NULL) {
         work->facing = MapObject_GetFacingDirection(object);
         work->movement = MapObject_GetAnimation(object);
-        if (BillboardObject_GetSequence(billboard) != FALSE) {
+        if (BillboardObject_GetSequence(billboard)) {
             BillboardObject_SetSequence(billboard, 0);
             BillboardObject_SetSequenceFrame(billboard, 0);
         }
@@ -1296,7 +1296,7 @@ static void MapObject_UpdateBillboardVisibility(LocalMapObject *object, Billboar
     if (MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) == TRUE) {
         visible = FALSE;
     }
-    if (MapObject_TestFlagsBits(object, MAPOBJECTFLAG_UNK12) == TRUE && MapObject_TestFlagsBits(object, MAPOBJECTFLAG_UNK13) == FALSE) {
+    if (MapObject_TestFlagsBits(object, MAPOBJECTFLAG_UNK12) == TRUE && !MapObject_TestFlagsBits(object, MAPOBJECTFLAG_UNK13)) {
         visible = FALSE;
     }
     BillboardObject_SetVisible(billboard, visible);

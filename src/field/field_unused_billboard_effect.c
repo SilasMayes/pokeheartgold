@@ -134,7 +134,7 @@ void UnusedBillboardEffect_Update(FieldEffect *effect, UnusedBillboardEffect *wo
     } else {
         BillboardObject_SetVisible(work->billboard, TRUE);
     }
-    if (work->onGround == FALSE) {
+    if (!work->onGround) {
         FieldEffect_GetPosition(effect, &vecs.current);
         vecs.target.x = work->args.x << 16;
         vecs.target.z = work->args.z << 16;

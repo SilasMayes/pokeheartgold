@@ -87,7 +87,7 @@ static void ApricornRegrowth_Release(ApricornRegrowth *regrowth) {
 }
 
 static void ApricornRegrowth_LoadGfx(ApricornRegrowth *regrowth) {
-    if (regrowth->gfxLoaded == FALSE) {
+    if (!regrowth->gfxLoaded) {
         regrowth->gfxLoaded = TRUE;
         FieldEffectManager_LoadBillboardResource(regrowth->manager, APRICORN_REGROWTH_RESOURCE, 0x80);
         FieldEffectManager_LoadBillboardSequence(regrowth->manager, APRICORN_REGROWTH_SEQUENCE, 0x95);

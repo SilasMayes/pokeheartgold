@@ -346,7 +346,7 @@ static void FieldShadowEffect_DrawFollowMon(FieldEffect *effect, void *state) {
     object = work->args.mapObject;
     renderObj = &shadow->renderObjs[0];
     FieldShadow_GetScale(shadow, &scale);
-    if (FollowMonBillboard_IsShadowFollowing(object) != FALSE) {
+    if (FollowMonBillboard_IsShadowFollowing(object)) {
         FieldEffect_GetPosition(effect, &pos);
         pos.x -= 0x800;
         pos.y -= 0x4000;

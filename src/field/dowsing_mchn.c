@@ -429,10 +429,10 @@ static void DowsingMchn_Task(SysTask *task, void *taskData) {
     if (dowsing->fieldSystem->suppressBottomScreenDim && FieldSystem_IsPlayerMovementAllowed(dowsing->fieldSystem)) {
         dowsing->fieldSystem->suppressBottomScreenDim = FALSE;
     }
-    if (dowsing->touchActive == FALSE && TouchscreenHitbox_FindHitboxAtTouchNew(gDowsingMchnSearchAreaHitbox) != -1) {
+    if (!dowsing->touchActive && TouchscreenHitbox_FindHitboxAtTouchNew(gDowsingMchnSearchAreaHitbox) != -1) {
         dowsing->touchActive = TRUE;
     }
-    if (FieldSystem_TaskIsRunning(dowsing->fieldSystem) == TRUE || TouchscreenHitbox_FindHitboxAtTouchHeld(gDowsingMchnSearchAreaHitbox) == -1 || dowsing->touchActive == FALSE) {
+    if (FieldSystem_TaskIsRunning(dowsing->fieldSystem) == TRUE || TouchscreenHitbox_FindHitboxAtTouchHeld(gDowsingMchnSearchAreaHitbox) == -1 || !dowsing->touchActive) {
         DowsingMchn_UpdateSignal(dowsing, -1);
         DowsingMchn_UpdateGrid(dowsing, FALSE);
         dowsing->anglesInitialized = FALSE;
@@ -478,7 +478,7 @@ static void DowsingMchn_FindNearestHiddenItem(DowsingMchn *dowsing) {
         if (item->unk4 == 0xFF) {
             break;
         }
-        if (dowsing->itemFound == FALSE) {
+        if (!dowsing->itemFound) {
             s16 x = item->x;
             minDistance = abs(x) + abs(item->y);
             dowsing->itemX = x;
@@ -595,7 +595,7 @@ static void DowsingMchn_UpdateTargetAngles(DowsingMchn *dowsing) {
     s16 y;
 
     DowsingMchn_FindNearestHiddenItem(dowsing);
-    if (dowsing->itemFound == FALSE) {
+    if (!dowsing->itemFound) {
         DowsingMchn_SetTargetAnglesLevel0(dowsing);
         dowsing->level = 0;
     } else {

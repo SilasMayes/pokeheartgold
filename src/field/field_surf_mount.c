@@ -94,7 +94,7 @@ FieldEffect *SurfMountEffect_Create(LocalMapObject *mapObject, u32 x, u32 z, u32
     args.manager = FieldEffectManager_GetFromMapObject(mapObject);
     args.mount = FieldEffectManager_GetRendererData(args.manager, FIELD_EFFECT_RENDERER_SURF_MOUNT);
     args.mapObject = mapObject;
-    if (bobbing == FALSE) {
+    if (!bobbing) {
         FieldSystem *fieldSystem = MapObject_GetFieldSystem(mapObject);
         position.x = (x << 16) + (2 << 14);
         position.z = (z << 16) + (2 << 14);

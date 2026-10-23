@@ -64,8 +64,6 @@ struct ZigzagWipe {
     BOOL *done;
 };
 
-extern u8 gBlockWipeColumnOrder[];
-
 static FilledRect *MovingRect_New(enum HeapID heapID);
 static void MovingRect_Free(FilledRect *rect);
 static void MovingRect_Start(FilledRect *rect, int startX, int endX, int startY, int endY, s32 duration, Window *window, int width, int height, u8 fill);
@@ -156,7 +154,7 @@ void RectTrail_Start(FilledRect *rect, int startX, int endX, int startY, int end
 
 // Draws the rectangle at its new position without clearing the old one, leaving a trail.
 BOOL RectTrail_Update(FilledRect *rect) {
-    if (rect->active == FALSE) {
+    if (!rect->active) {
         return TRUE;
     }
     BOOL done = EncounterEffectInterp_Update(&rect->x);
@@ -194,7 +192,7 @@ static void MovingRect_Start(FilledRect *rect, int startX, int endX, int startY,
 
 // Clears the rectangle (colour 0) at its old position, then draws it at the new one.
 static BOOL MovingRect_Update(FilledRect *rect) {
-    if (rect->active == FALSE) {
+    if (!rect->active) {
         return TRUE;
     }
     u32 width = rect->width;

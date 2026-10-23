@@ -14,7 +14,7 @@ u8 FollowMon_GetShapeParamLow(LocalMapObject *object);
 u8 FollowMonObject_IsLarge(LocalMapObject *object);
 void MapObject_GetCoordsBehind(LocalMapObject *object, int *x, int *z);
 void MapObject_GetPreviousCoordsBehind(LocalMapObject *object, int *x, int *z);
-u8 MapObject_GetAdjacentTileBehavior(LocalMapObject *object, u32 direction);
+u32 MapObject_GetAdjacentTileBehavior(LocalMapObject *object, u32 direction);
 void MapObject_SetPositionNextTo(LocalMapObject *anchor, LocalMapObject *object, int direction, int facing);
 void FollowMon_SpawnReleaseBall(LocalMapObject *object);
 void FollowMon_MoveToPlayer(FieldSystem *fieldSystem, u8 direction);
@@ -35,5 +35,8 @@ void FollowMon_SetFacingDirection(FieldSystem *fieldSystem, u32 direction);
 BOOL FollowMon_StartFlash(FieldSystem *fieldSystem, u8 step, u8 period);
 BOOL FollowMon_IsNextToPlayer(FieldSystem *fieldSystem);
 u8 FieldSystem_GetLeadMonIndex(FieldSystem *fieldSystem);
+
+extern const VecFx32 gFollowMonRecallScale;
+extern const VecFx32 gFollowMonHopIntoBallScale;
 
 #endif // POKEHEARTGOLD_FIELD_FIELD_FOLLOW_MON_H

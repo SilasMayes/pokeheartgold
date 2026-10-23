@@ -135,10 +135,10 @@ static void ShallowWaterRippleEffect_Update(FieldEffect *effect, void *state) {
     } else {
         BillboardObject_SetVisible(work->billboard, TRUE);
     }
-    if (work->paused == FALSE) {
+    if (!work->paused) {
         BillboardObject_AdvanceFrame(work->billboard, FX32_ONE);
         if (BillboardObject_GetSequenceFrame(work->billboard) / FX32_ONE >= 12) {
-            if (loop == FALSE) {
+            if (!loop) {
                 FieldEffectManager_DestroyEffect((int)effect);
                 return;
             }

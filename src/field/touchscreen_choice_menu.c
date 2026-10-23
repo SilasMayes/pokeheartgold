@@ -4,6 +4,7 @@
 
 #include "constants/sndseq.h"
 
+#include "field/bottom_screen_app.h"
 #include "field/script_menu.h"
 #include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0191.h"
@@ -35,24 +36,9 @@
 #include "touchscreen.h"
 
 // The touch YES/NO buttons of ScrCmd_GetMenuChoice and the touch multichoice list of ScrCmd_MenuExec. Scripts wait
-// for state 6 or for *result != 0xEEEE.
+// for TOUCHSCREEN_CHOICE_MENU_STATE_DONE or for *result != 0xEEEE.
 
 #define TOUCHSCREEN_CHOICE_MENU_MAX_ITEMS 28
-
-enum TouchscreenChoiceMenuState {
-    TOUCHSCREEN_CHOICE_MENU_STATE_INIT,
-    TOUCHSCREEN_CHOICE_MENU_STATE_IDLE,
-    TOUCHSCREEN_CHOICE_MENU_STATE_WAIT_RETURN,
-    TOUCHSCREEN_CHOICE_MENU_STATE_SHOW_YES_NO,
-    TOUCHSCREEN_CHOICE_MENU_STATE_YES_NO_INPUT,
-    TOUCHSCREEN_CHOICE_MENU_STATE_YES_NO_END,
-    TOUCHSCREEN_CHOICE_MENU_STATE_DONE,
-    TOUCHSCREEN_CHOICE_MENU_STATE_SHOW_LIST,
-    TOUCHSCREEN_CHOICE_MENU_STATE_LIST_INPUT,
-    TOUCHSCREEN_CHOICE_MENU_STATE_LIST_END,
-    TOUCHSCREEN_CHOICE_MENU_STATE_LIST_WRITE_RESULT,
-    TOUCHSCREEN_CHOICE_MENU_STATE_CANCEL_YES_NO,
-};
 
 typedef struct TouchscreenChoiceMenuData {
     u32 state;

@@ -18,15 +18,7 @@
 
 typedef BOOL (*FlyLandingStepFunc)(FlyLandingEffect *effect);
 
-
-extern const VecFx32 gFlyLandingFlyerScale;
-extern const FieldEffectBasicTemplate gFlyLandingEffectTemplate;
 extern const FlyLandingStepFunc *const gFlyLandingPhases[];
-extern const VecFx32 gFlyLandingSwoopCenter;
-extern const VecFx32 gFlyLandingSwoopScale;
-extern const VecFx32 gFlyLandingTrainerScale;
-extern const VecFx32 gFlyLandingFlyAwayCenter;
-extern const VecFx32 gFlyLandingFlyAwayScale;
 
 static Sprite *FlyLanding_CreateFlyerSprite(SpriteGfxManager *gfxManager);
 static void FieldMove_FadeInFromWhite(void);

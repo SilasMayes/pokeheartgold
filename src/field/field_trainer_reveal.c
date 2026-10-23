@@ -111,7 +111,7 @@ static void TrainerRevealEffect_Destroy(FieldEffect *effect, void *state) {
 
 static void TrainerRevealEffect_Update(FieldEffect *effect, void *state) {
     TrainerRevealEffect *work = state;
-    if (work->paused == FALSE) {
+    if (!work->paused) {
         BillboardObject_AdvanceFrame(work->billboard, FX32_ONE);
         if (BillboardObject_GetSequenceFrame(work->billboard) / FX32_ONE >= 7) {
             FieldEffectManager_DestroyEffect((int)effect);

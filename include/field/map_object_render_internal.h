@@ -39,4 +39,7 @@ struct MapObjectRender {
 
 BOOL MapObjectRender_GetBillboardResource(MapObjectManager *manager, u32 spriteId, BillboardResource *dest);
 
+extern const u32 gResidentBillboardModelIds[];
+extern const u32 gResidentBillboardSequenceIds[];
+
 #endif // POKEHEARTGOLD_FIELD_MAP_OBJECT_RENDER_INTERNAL_H

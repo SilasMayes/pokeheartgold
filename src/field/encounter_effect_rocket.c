@@ -166,7 +166,7 @@ void EncounterEffect_TeamRocket(SysTask *task, EncounterEffectTask *effect) {
         }
         break;
     case TEAM_ROCKET_STATE_WAIT_SPRITES:
-        if (work->active[ROCKET_EFFECT_SPRITE_COUNT - 1] == FALSE) {
+        if (!work->active[ROCKET_EFFECT_SPRITE_COUNT - 1]) {
             effect->state++;
         }
         break;

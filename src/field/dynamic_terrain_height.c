@@ -11,7 +11,7 @@ BOOL DynamicTerrainHeightPlate_Contains(s32 x, s32 z, const DynamicTerrainHeight
     s32 minZ;
     s32 maxZ;
 
-    if (plate->active == FALSE) {
+    if (!plate->active) {
         return FALSE;
     }
     minX = plate->x;
@@ -68,7 +68,7 @@ BOOL DynamicTerrainHeightManager_FindPlate(s32 x, s32 z, DynamicTerrainHeightMan
 
 fx32 DynamicTerrainHeightManager_GetPlateHeight(s32 index, DynamicTerrainHeightManager *manager) {
     GF_ASSERT(index < manager->count);
-    GF_ASSERT(manager->plates[index].active != FALSE);
+    GF_ASSERT(manager->plates[index].active);
     return manager->plates[index].height;
 }
 

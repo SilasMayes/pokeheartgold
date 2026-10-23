@@ -99,7 +99,7 @@ static void HBlankTask_Dummy(HBlankTask *task, void *arg) {
 static HBlankTask *HBlankSystem_GetFreeTask(HBlankSystem *system) {
     s32 i;
     for (i = 0; i < 2; i++) {
-        if (system->tasks[i].active == FALSE) {
+        if (!system->tasks[i].active) {
             return &system->tasks[i];
         }
     }

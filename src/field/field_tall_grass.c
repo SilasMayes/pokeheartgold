@@ -80,9 +80,6 @@ BOOL TallGrassUnusedEffect_Destroy(FieldEffect *effect, TallGrassUnusedEffect *w
 void TallGrassUnusedEffect_Update(FieldEffect *effect, TallGrassUnusedEffect *work);
 void TallGrassUnusedEffect_Draw(FieldEffect *effect, TallGrassUnusedEffect *work);
 
-extern const FieldEffectBasicTemplate gTallGrassEffectTemplate;
-extern const FieldEffectBasicTemplate gTallGrassUnusedEffectTemplate; // created nowhere
-
 static const u32 sTallGrassRecord5Params[6] = { 0, 40, 1, 0, 0, 2 };
 
 static const u32 sTallGrassRecordParams[6] = { 0, 12, 0, 0, 0, 2 };
@@ -197,7 +194,7 @@ BOOL TallGrassEffect_Init(FieldEffect *effect, TallGrassEffect *work) {
     if (MapObject_TestFlagsBits(work->args.mapObject, MAPOBJECTFLAG_VISIBLE) == TRUE) {
         BillboardObject_SetVisible(work->billboard, FALSE);
     }
-    if (FieldEffect_GetParam(effect) == FALSE) {
+    if (!FieldEffect_GetParam(effect)) {
         BillboardObject_SetFrame(work->billboard, 12 * FX32_ONE);
         work->state = TALL_GRASS_STATE_WAIT;
     }
@@ -224,7 +221,7 @@ void TallGrassEffect_Update(FieldEffect *effect, TallGrassEffect *work) {
     } else {
         BillboardObject_SetVisible(work->billboard, TRUE);
     }
-    if (work->onGround == FALSE) {
+    if (!work->onGround) {
         FieldEffect_GetPosition(effect, &current);
         position.x = work->args.x << 16;
         position.z = work->args.z << 16;

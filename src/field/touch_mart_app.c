@@ -361,7 +361,7 @@ static void TouchMartApp_PrintCancel(TouchMartAppData *data, int leftAligned) {
     String *string = NewString_ReadMsgData(data->msgData, msg_0435_00017);
     ClearWindowTilemapAndCopyToVram(&data->cancelWindow);
     FillWindowPixelBuffer(&data->cancelWindow, 0);
-    if (leftAligned == FALSE) {
+    if (!leftAligned) {
         u32 width = FontID_String_GetWidth(0, string, 0);
         AddTextPrinterParameterizedWithColor(&data->cancelWindow, 0, string, ((48 - width) >> 1) + 8, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
     } else {

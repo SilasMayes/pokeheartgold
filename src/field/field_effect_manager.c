@@ -10,11 +10,8 @@
 #include "field_system.h"
 #include "gf_3d_render.h"
 #include "map_object.h"
-
-void RenderModel_LoadFromNarc(void *model, int index, NARC *narc, int fileId, enum HeapID heapID, BOOL atEnd);
-void RenderModel_BindTexturesOnVBlank(void *model);
-void RenderAnimation_LoadFromNarc(void *animation, int unused, NARC *narc, int fileId, enum HeapID heapID, BOOL atEnd);
-void RenderAnimation_InitForModel(void *animation, void *model, void *source, int unused, enum HeapID heapID);
+#include "render_animation.h"
+#include "render_model.h"
 
 static const VecFx32 sBillboardDefaultScale = { FX32_ONE, FX32_ONE, FX32_ONE };
 

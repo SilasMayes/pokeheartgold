@@ -549,7 +549,7 @@ static BOOL Field_TryDropBoulderIntoHole(FieldSystem *fieldSystem, LocalMapObjec
 }
 
 static BOOL PushBoulder_Finish(TaskManager *taskManager, FieldSystem *fieldSystem, LocalMapObject *boulder) {
-    if (Field_TryDropBoulderIntoHole(fieldSystem, boulder) == FALSE) {
+    if (!Field_TryDropBoulderIntoHole(fieldSystem, boulder)) {
         return TRUE;
     }
     StartScriptFromMenu(taskManager, std_boulder_fell_down, NULL);
@@ -574,7 +574,7 @@ void CallFieldTask_Surf(TaskManager *taskManager, int direction, int partySlot) 
     state = PlayerAvatar_GetState(fieldSystem->playerAvatar);
     if (state - 1 <= 1) {
         anim.useCutIn = TRUE;
-    } else if (FollowMon_IsNextToPlayer(fieldSystem) != FALSE && partySlot == FieldSystem_GetLeadMonIndex(fieldSystem)) {
+    } else if (FollowMon_IsNextToPlayer(fieldSystem) && partySlot == FieldSystem_GetLeadMonIndex(fieldSystem)) {
         anim.useCutIn = FALSE;
     }
     Field_StartSurfTask(fieldSystem, direction, &anim);
@@ -815,7 +815,7 @@ void CallFieldTask_RockClimb(TaskManager *taskManager, int direction, int partyS
     state = PlayerAvatar_GetState(fieldSystem->playerAvatar);
     if (state - 1 <= 1) {
         anim.useCutIn = TRUE;
-    } else if (FollowMon_IsNextToPlayer(fieldSystem) != FALSE && partySlot == FieldSystem_GetLeadMonIndex(fieldSystem)) {
+    } else if (FollowMon_IsNextToPlayer(fieldSystem) && partySlot == FieldSystem_GetLeadMonIndex(fieldSystem)) {
         anim.useCutIn = FALSE;
     }
     Field_StartRockClimbTask(fieldSystem, direction, &anim);
@@ -1247,7 +1247,7 @@ static int Whirlpool_StartStep(WaterfallWork *work) {
 }
 
 static int Whirlpool_CheckNextTile(WaterfallWork *work) {
-    if (MapObject_IsMovementPaused(work->mapObject) == FALSE) {
+    if (!MapObject_IsMovementPaused(work->mapObject)) {
         return FIELD_MOVE_TASK_STEP_WAIT;
     }
     MapObject_GetNextFacingDirection(work->mapObject);
@@ -1264,7 +1264,7 @@ static int Whirlpool_CheckNextTile(WaterfallWork *work) {
 void Field_PlayerAvatar_TryEnterPoketchPose(PlayerAvatar *playerAvatar) {
     u32 flags;
     LocalMapObject *mapObject = PlayerAvatar_GetMapObject(playerAvatar);
-    if (MapObject_IsDrawInitialized(mapObject) != FALSE && PlayerAvatar_GetState(playerAvatar) == PLAYER_STATE_WALKING && MapObject_GetSpriteID(mapObject) - SPRITE_POKEHERO > 1) {
+    if (MapObject_IsDrawInitialized(mapObject) && PlayerAvatar_GetState(playerAvatar) == PLAYER_STATE_WALKING && MapObject_GetSpriteID(mapObject) - SPRITE_POKEHERO > 1) {
         flags = PlayerAvatar_GetTransitionFlags(playerAvatar);
         Field_PlayerAvatar_OrrTransitionFlags(playerAvatar, PLAYER_TRANSITION_POKETCH);
         Field_PlayerAvatar_ApplyTransitionFlags(playerAvatar);
@@ -1275,7 +1275,7 @@ void Field_PlayerAvatar_TryEnterPoketchPose(PlayerAvatar *playerAvatar) {
 void Field_PlayerAvatar_TryLeavePoketchPose(PlayerAvatar *playerAvatar) {
     u32 flags;
     LocalMapObject *mapObject = PlayerAvatar_GetMapObject(playerAvatar);
-    if (MapObject_IsDrawInitialized(mapObject) != FALSE && PlayerAvatar_GetState(playerAvatar) == PLAYER_STATE_WALKING) {
+    if (MapObject_IsDrawInitialized(mapObject) && PlayerAvatar_GetState(playerAvatar) == PLAYER_STATE_WALKING) {
         switch (MapObject_GetSpriteID(mapObject)) {
         case SPRITE_POKEHERO:
         case SPRITE_POKEHEROINE:

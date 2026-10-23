@@ -225,7 +225,7 @@ static void FollowMonBallEffect_UpdateRelease(FieldEffect *effect, void *state) 
         FieldEffectManager_DestroyEffect((int)effect);
         return;
     }
-    if (work->onGround == FALSE) {
+    if (!work->onGround) {
         FieldEffect_GetPosition(effect, &position);
         ground = work->args.position;
         work->onGround = FieldSystem_SnapToTerrainHeight(work->args.fieldSystem, &ground);
@@ -275,7 +275,7 @@ static void FollowMonBallEffect_UpdateBurst(FieldEffect *effect, void *state) {
         FieldEffectManager_DestroyEffect((int)effect);
         return;
     }
-    if (work->onGround == FALSE) {
+    if (!work->onGround) {
         FieldEffect_GetPosition(effect, &position);
         ground = work->args.position;
         work->onGround = FieldSystem_SnapToTerrainHeight(work->args.fieldSystem, &ground);
@@ -342,7 +342,7 @@ static void FollowMonBallEffect_UpdateRecallWhite(FieldEffect *effect, void *sta
         FieldEffectManager_DestroyEffect((int)effect);
         return;
     }
-    if (work->onGround == FALSE) {
+    if (!work->onGround) {
         FieldEffect_GetPosition(effect, &position);
         ground = work->args.position;
         work->onGround = FieldSystem_SnapToTerrainHeight(work->args.fieldSystem, &ground);

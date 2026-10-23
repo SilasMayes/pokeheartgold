@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "gf_gfx_planes.h"
 #include "heap.h"
+#include "screen_fade_internal.h"
 #include "screen_fade_legacy.h"
 #include "sprite.h"
 
@@ -95,8 +96,6 @@ typedef struct BallFallEffectWork {
     EncounterEffectQuadInterp cameraDistance;
     s16 timer;
 } BallFallEffectWork;
-
-void SetBothScreensBrightnessByColor(u16 color);
 
 enum SpinZoomState {
     SPIN_ZOOM_STATE_INIT,
@@ -394,7 +393,7 @@ void EncounterEffect_TrainerFadeSpin(SysTask *task, EncounterEffectTask *effect)
         done = EncounterEffectInterp_Update(&work->blend);
         reg_G2_BLDALPHA = (u16)(work->blend.value | ((16 - work->blend.value) << 8));
         angle = (u16)work->rotation.value;
-        if (EncounterEffectInterp_Update(&work->rotation) == FALSE) {
+        if (!EncounterEffectInterp_Update(&work->rotation)) {
             Sprite_SetAffineZRotation(work->sprites[0], (u16)work->rotation.value);
             Sprite_SetAffineZRotation(work->sprites[1], (u32)(angle << 16) >> 16);
         } else {
@@ -561,7 +560,7 @@ void EncounterEffect_TrainerBallDrop(SysTask *task, EncounterEffectTask *effect)
     case BALL_DROP_STATE_WAIT_TRAILS:
         EncounterEffectQuadInterp_Update(&work->cameraDistance);
         Camera_SetDistance(work->cameraDistance.value, work->camera);
-        if (work->active[0] == FALSE && work->active[1] == FALSE && work->active[2] == FALSE) {
+        if (!work->active[0] && !work->active[1] && !work->active[2]) {
             effect->state++;
         }
         break;
@@ -802,7 +801,7 @@ void EncounterEffect_TrainerBallFall(SysTask *task, EncounterEffectTask *effect)
         }
         break;
     case BALL_FALL_STATE_WAIT_BALLS:
-        if (work->active[0] == FALSE && work->active[1] == FALSE && work->active[2] == FALSE) {
+        if (!work->active[0] && !work->active[1] && !work->active[2]) {
             for (i = 0; i < BALL_DROP_SPRITE_COUNT; i++) {
                 Sprite_SetDrawFlag(work->sprites[i], FALSE);
             }

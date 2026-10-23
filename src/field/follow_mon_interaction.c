@@ -866,7 +866,7 @@ static int FollowMonInteraction_Run(FieldSystem *fieldSystem, FollowMonInteracti
     u16 movement;
     u32 index = interaction->stepIndex;
 
-    if (index >= 5) {
+    if (index >= NELEMS(interaction->steps)) {
         return FollowMonInteraction_Finish(fieldSystem, interaction);
     }
     step = &interaction->steps[index];
@@ -941,7 +941,7 @@ static BOOL FollowMonInteraction_StepHasMovement(FollowMonInteraction *interacti
 
 static BOOL FollowMonInteraction_TryShowEmote(FieldSystem *fieldSystem, FollowMonInteraction *interaction, FollowMonInteractionStep *step) {
     u8 emote;
-    if (MetatileBehavior_Is113Or114Or46((u8)fieldSystem->followMonInteraction->metatileBehavior) != FALSE) {
+    if (MetatileBehavior_Is113Or114Or46((u8)fieldSystem->followMonInteraction->metatileBehavior)) {
         return FALSE;
     }
     emote = step->emote;
@@ -1217,7 +1217,7 @@ static BOOL Task_FollowMonInteract(TaskManager *taskManager) {
             int a = FieldSystem_GetBottomScreenAppId(fieldSystem);
             int b = FieldSystem_GetBottomScreenAppState(fieldSystem);
             if (a == BOTTOM_SCREEN_APP_CHOICE_MENU && b == BOTTOM_SCREEN_APP_STATE_RUNNING) {
-                FieldSystem_SetTouchscreenChoiceMenuState(fieldSystem, 3, 3, &fieldSystem->followMonInteraction->answer);
+                FieldSystem_SetTouchscreenChoiceMenuState(fieldSystem, BOTTOM_SCREEN_APP_CHOICE_MENU, TOUCHSCREEN_CHOICE_MENU_STATE_SHOW_YES_NO, &fieldSystem->followMonInteraction->answer);
                 fieldSystem->followMonInteraction->state = INTERACTION_STATE_WAIT_ANSWER;
             }
             break;
@@ -1225,7 +1225,7 @@ static BOOL Task_FollowMonInteract(TaskManager *taskManager) {
         case INTERACTION_STATE_WAIT_ANSWER: {
             int a = FieldSystem_GetBottomScreenAppId(fieldSystem);
             int b = FieldSystem_GetTouchscreenChoiceMenuState(fieldSystem);
-            if (a == BOTTOM_SCREEN_APP_CHOICE_MENU && b == 6) {
+            if (a == BOTTOM_SCREEN_APP_CHOICE_MENU && b == TOUCHSCREEN_CHOICE_MENU_STATE_DONE) {
                 FieldSystem_SwitchBottomScreenApp(fieldSystem, BOTTOM_SCREEN_APP_TOUCHSCREEN_MENU, 0);
                 fieldSystem->followMonInteraction->state = INTERACTION_STATE_CLOSE_CHOICE;
             }
@@ -1346,8 +1346,8 @@ static void FollowMon_ApplyInteractionEffects(FieldSystem *fieldSystem, FollowMo
     FollowMonMood_Set(fieldSystem->followMonMood, (s8)value);
     value = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
     value += fieldSystem->followMonInteraction->friendshipChange;
-    if (value > 255) {
-        value = 255;
+    if (value > FRIENDSHIP_MAX) {
+        value = FRIENDSHIP_MAX;
     } else if (value < 0) {
         value = 0;
     }
@@ -1357,7 +1357,7 @@ static void FollowMon_ApplyInteractionEffects(FieldSystem *fieldSystem, FollowMo
 BOOL FollowMonRule_CheckFriendship(int rule, int friendship) {
     switch (rule) {
     case 1:
-        if (friendship != 255) {
+        if (friendship != FRIENDSHIP_MAX) {
             break;
         }
         return TRUE;
@@ -1365,7 +1365,7 @@ BOOL FollowMonRule_CheckFriendship(int rule, int friendship) {
         if (friendship < 200) {
             break;
         }
-        if (friendship >= 255) {
+        if (friendship >= FRIENDSHIP_MAX) {
             break;
         }
         return TRUE;

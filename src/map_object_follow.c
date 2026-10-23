@@ -272,7 +272,7 @@ static BOOL FollowPlayerMovement_CheckPlayer(LocalMapObject *object, FollowPlaye
         state->playerKnown = FALSE;
         return FALSE;
     }
-    if (state->playerKnown == FALSE) {
+    if (!state->playerKnown) {
         FollowPlayerMovement_RecordPlayer(object, state);
     }
     return TRUE;
@@ -437,7 +437,7 @@ void FollowPartnerMovement_Init(LocalMapObject *object) {
 void FollowPartnerMovement_Update(LocalMapObject *object) {
     FollowPartnerMovementState *state = (FollowPartnerMovementState *)MapObject_GetMovementData(object);
 
-    if (FollowPartnerMovement_FindPartner(object, state) != FALSE) {
+    if (FollowPartnerMovement_FindPartner(object, state)) {
         while (gFollowPartnerStates[state->state](object, state) == TRUE) {
         }
     }
@@ -514,7 +514,7 @@ static BOOL FollowPartnerMovement_FindPartner(LocalMapObject *object, FollowPart
     if (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &other, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
         do {
             if (object != other && mapId == MapObject_GetMapID(other) && trainerNum == MapObjectBehavior_GetTrainerNum(other)) {
-                if (state->partnerKnown == FALSE) {
+                if (!state->partnerKnown) {
                     FollowPartnerMovement_SetPartner(object, state, other);
                 }
                 return TRUE;
@@ -611,7 +611,7 @@ void HiddenObjectMovement_Resume(LocalMapObject *object) {
 
     state->state = 0;
     HiddenObjectMovement_SetCoverEffect(object, 0);
-    if (state->revealed == FALSE) {
+    if (!state->revealed) {
         VecFx32 offset = gHiddenObjectResumeOffset;
         MapObject_SetFacingVector(object, &offset);
         MapObject_SetFlagsBits(object, MAPOBJECTFLAG_UNK20);
@@ -619,7 +619,7 @@ void HiddenObjectMovement_Resume(LocalMapObject *object) {
 }
 
 static BOOL HiddenObjectState_CreateCover(LocalMapObject *object, HiddenObjectMovementState *state) {
-    if (state->revealed == FALSE) {
+    if (!state->revealed) {
         HiddenObjectMovement_SetCoverEffect(object, HiddenObjectCover_Spawn(object, state->coverType));
     }
     MapObject_ClearSingleMovement(object);
@@ -629,7 +629,7 @@ static BOOL HiddenObjectState_CreateCover(LocalMapObject *object, HiddenObjectMo
 }
 
 static BOOL HiddenObjectState_Wait(LocalMapObject *object, HiddenObjectMovementState *state) {
-    if (state->revealed == FALSE) {
+    if (!state->revealed) {
         if (HiddenObjectMovement_GetCoverEffect(object) == 0 && MapObject_IsDrawInitialized(object) == TRUE) {
             HiddenObjectMovement_SetCoverEffect(object, HiddenObjectCover_Spawn(object, state->coverType));
         }
@@ -690,7 +690,7 @@ static void FollowMon_SpawnGrassEffects(LocalMapObject *object) {
         VeryTallGrass_Spawn(object, 0);
     }
 
-    if (FollowMonObject_IsLarge(object) != FALSE) {
+    if (FollowMonObject_IsLarge(object)) {
         u8 direction = MapObject_GetFacingDirection(object);
         if (direction == DIR_WEST || direction == DIR_EAST) {
             MapObject_GetCoordsBehind(object, &x, &z);

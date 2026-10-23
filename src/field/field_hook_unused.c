@@ -1,3 +1,5 @@
+#include "field/field_hook_unused.h"
+
 #include "global.h"
 
 // The field hook kept in the field map systems: it receives the bottom screen app events and tells the field
@@ -5,7 +7,7 @@
 
 typedef void (*FieldHookCallback)(void *arg);
 
-typedef struct FieldHookState {
+struct FieldHookState {
     u8 unk_00[2];
     u8 unk_02; // the callback only runs when this is 2
     u8 movementAllowed;
@@ -13,10 +15,7 @@ typedef struct FieldHookState {
     u8 unk_05[0x3F];
     FieldHookCallback callback;
     void *callbackArg;
-} FieldHookState;
-
-void FieldHookUnused_OnEvent(FieldHookState *state, u32 event);
-u8 FieldHookUnused_IsMovementAllowed(FieldHookState *state);
+};
 
 void FieldHookUnused_OnEvent(FieldHookState *state, u32 event) {
     switch (event) {

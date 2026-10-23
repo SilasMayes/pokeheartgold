@@ -180,7 +180,7 @@ BOOL Bdhc_GetHeight(int mode, fx32 currentY, fx32 x, fx32 z, Bdhc *bdhc, fx32 *y
     u16 k;
     fx32 bestVal;
 
-    if (bdhc->loaded == FALSE) {
+    if (!bdhc->loaded) {
         return FALSE;
     }
     point.x = x;

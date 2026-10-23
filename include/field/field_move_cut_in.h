@@ -151,4 +151,28 @@ BOOL FieldMoveCutIn_StepWaitPaletteFade(FieldMoveCutIn *cutIn);
 // Allocates a zeroed block at the end of the heap.
 void *FlyLanding_AllocZeroed(enum HeapID heapID, u32 size);
 
+extern const FieldEffectBasicTemplate gCutInScrollSpriteEffectTemplate;
+extern const FieldEffectBasicTemplate gCutInFlyerEffectTemplate;
+extern const FieldEffectBasicTemplate gTrainerJumpEffectTemplate;
+extern const FieldEffectBasicTemplate gTrainerClipEffectTemplate;
+extern const FieldEffectBasicTemplate gCutInModelEffectTemplate;
+extern const VecFx32 gCutInFlyerTakeOffOrigin;
+extern const VecFx32 gCutInFlyerTakeOffScale;
+extern const VecFx32 gCutInFlyerPickUpPos;
+extern const VecFx32 gCutInFlyerPickUpScale;
+extern const VecFx32 gCutInFlyerTrainerScale;
+extern const fx32 gTrainerJumpOffsets[12];
+extern const fx32 gTrainerHopOffsets[4];
+
+extern const VecFx32 gCutInTrainerPos;
+extern const VecFx32 gCutInMonPos;
+extern const VecFx32 gCutInFlyTrainerPos;
+extern const VecFx32 gCutInFlyMonPos;
+extern const VecFx32 gCutInFlyWithObjectTrainerPos;
+extern const VecFx32 gCutInFlyerScale;
+extern const u16 gCutInTrainerCharFiles[];
+extern const u16 gCutInTrainerAnimFiles[];
+extern const u16 gCutInTrainerCellFiles[];
+extern const u16 gCutInTrainerPlttFiles[];
+
 #endif // POKEHEARTGOLD_FIELD_FIELD_MOVE_CUT_IN_H

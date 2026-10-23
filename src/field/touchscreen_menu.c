@@ -726,7 +726,7 @@ static void TouchscreenMenu_ShowNewIcons(TouchscreenMenuData *data) {
     iconAnim = gTouchscreenMenuIconAnims;
     i = 0;
     while (i < TOUCHSCREEN_MENU_NUM_ICONS) {
-        if (FieldSystem_ShouldDrawStartMenuIcon(data->fieldSystem, (StartMenuIcon)i) == TRUE && data->iconShown[i] == FALSE) {
+        if (FieldSystem_ShouldDrawStartMenuIcon(data->fieldSystem, (StartMenuIcon)i) == TRUE && !data->iconShown[i]) {
             Sprite_SetDrawFlag(data->sprites[iconAnim->sprite], TRUE);
             Sprite_SetAnimCtrlSeq(data->sprites[iconAnim->sprite], iconAnim->anim);
             CopyWindowToVram(&data->iconWindows[iconAnim->window]);
@@ -747,7 +747,7 @@ static void TouchscreenMenu_ShowNewIcons(TouchscreenMenuData *data) {
         data->selection = TouchscreenMenu_GetSlotFromMenuIndex(data, data->fieldSystem->startMenuCursorPos);
         TouchscreenMenu_ValidateSelection(data);
     }
-    if (TouchscreenMenu_HasRunningShoes(data) == TRUE && data->runningShoesShown == FALSE) {
+    if (TouchscreenMenu_HasRunningShoes(data) == TRUE && !data->runningShoesShown) {
         Sprite_SetDrawFlag(data->sprites[TOUCHSCREEN_MENU_SPRITE_SHOES], TRUE);
         Sprite_SetDrawFlag(data->sprites[TOUCHSCREEN_MENU_SPRITE_SHOES_LABEL], TRUE);
         Sprite_SetAnimCtrlSeq(data->sprites[TOUCHSCREEN_MENU_SPRITE_SHOES], 10);
@@ -990,7 +990,7 @@ static int TouchscreenMenu_FindNeighborIcon(int selection, int dir, const Touchs
 
     for (i = 0; i < 3; i++) {
         u8 icon = gTouchscreenMenuIconNeighbors[selection][dir][i];
-        if (icons[icon].shown != FALSE) {
+        if (icons[icon].shown) {
             ret = icon;
             break;
         }
@@ -1082,7 +1082,7 @@ static BOOL TouchscreenMenu_HandleTouchInput(TouchscreenMenuData *data) {
     }
     hit = TouchscreenHitbox_FindRectAtTouchNew(gTouchscreenMenuIconHitboxes);
     if (hit > 0 && hit < 8) {
-        if (data->icons[hit - 1].shown == FALSE) {
+        if (!data->icons[hit - 1].shown) {
             return FALSE;
         }
     }
@@ -1301,8 +1301,8 @@ static void TouchscreenMenu_InitPhoneRing(TouchscreenMenuPhoneRing *phoneRing, T
 static void TouchscreenMenu_UpdatePhoneRing(TouchscreenMenuPhoneRing *phoneRing) {
     BOOL ringing = GearPhoneRingManager_IsRinging(phoneRing->phoneRingManager);
 
-    if (phoneRing->shown == FALSE) {
-        if (ringing == TRUE && phoneRing->shown == FALSE) {
+    if (!phoneRing->shown) {
+        if (ringing == TRUE && !phoneRing->shown) {
             String *name = GetPhoneBookEntryName(phoneRing->phoneRingManager, HEAP_ID_8);
             int width = (int)FontID_String_GetWidth(0, name, 0) / 8 + 2;
             if (width > 9) {
@@ -1325,7 +1325,7 @@ static void TouchscreenMenu_UpdatePhoneRing(TouchscreenMenuPhoneRing *phoneRing)
 }
 
 static void TouchscreenMenu_HidePhoneCaller(TouchscreenMenuPhoneRing *phoneRing) {
-    if (phoneRing->shown != FALSE) {
+    if (phoneRing->shown) {
         TouchscreenMenu_DrawWindowFrame(&phoneRing->callerWindow, 2);
         ClearWindowTilemapAndCopyToVram(&phoneRing->callerWindow);
         RemoveWindow(&phoneRing->callerWindow);
@@ -1426,7 +1426,7 @@ static int TouchscreenMenu_GetMenuIndex(TouchscreenMenuData *data, int slot) {
         return slot;
     }
     for (i = 0; i < slot + 1; i++) {
-        if (data->icons[i].shown != FALSE) {
+        if (data->icons[i].shown) {
             menuIndex++;
         }
     }

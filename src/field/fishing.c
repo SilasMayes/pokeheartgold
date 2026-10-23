@@ -358,7 +358,7 @@ static int FishingRodState_ShowLanded(FishingRod *rod, PlayerAvatar *avatar, Loc
 }
 
 static int FishingRodState_WaitLandedMessage(FishingRod *rod, PlayerAvatar *avatar, LocalMapObject *object) {
-    if (FishingRod_IsMessageDismissed(rod) == FALSE) {
+    if (!FishingRod_IsMessageDismissed(rod)) {
         return 0;
     }
     rod->state = FISHING_ROD_STATE_LANDED;
@@ -416,7 +416,7 @@ static int FishingRodState_WaitFailMessage(FishingRod *rod, PlayerAvatar *avatar
         return 0;
     }
     rod->timer = 16;
-    if (FishingRod_IsMessageDismissed(rod) == FALSE) {
+    if (!FishingRod_IsMessageDismissed(rod)) {
         return 0;
     }
     rod->state = FISHING_ROD_STATE_PUT_AWAY;

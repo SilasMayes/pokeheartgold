@@ -178,7 +178,7 @@ static BOOL ElevatorAnimRun(TaskManager *taskManager) {
         NNSG3dResMdl *model = MapPropModel_Get(fieldSystem->areaDataManager, MAP_PROP_ELEVATOR);
         NNSG3dRenderObj *renderObj;
         NNSG3dResTex *texture;
-        if (FieldSystem_FindMapProp(fieldSystem, MAP_PROP_ELEVATOR, &elevator, NULL) == FALSE) {
+        if (!FieldSystem_FindMapProp(fieldSystem, MAP_PROP_ELEVATOR, &elevator, NULL)) {
             GF_ASSERT(FALSE);
         }
         renderObj = MapProp_GetRenderSurface(elevator);

@@ -72,4 +72,7 @@ void CameraFocusObject_Delete(LocalMapObject *object);
 void CameraFocusObject_Pause(LocalMapObject *object);
 void CameraFocusObject_Resume(LocalMapObject *object);
 
+extern ObjectEventGraphicsInfo gObjectEventGraphicsInfos[];
+extern const MapObjectEffectFlags gSpriteEffectFlags[];
+
 #endif // POKEHEARTGOLD_FIELD_MAP_OBJECT_MODELS_H

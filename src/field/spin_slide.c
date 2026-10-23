@@ -82,7 +82,7 @@ static BOOL Task_SpinSlide(TaskManager *taskManager) {
         task->state++;
         break;
     case SPIN_SLIDE_STATE_STEP:
-        if (PlayerAvatar_IsReadyForMovement(task->avatar) == FALSE) {
+        if (!PlayerAvatar_IsReadyForMovement(task->avatar)) {
             break;
         }
         PlayerAvatar_SetMovement(task->avatar, GetMovementForDirection(task->direction, MOVEMENT_STEP_UP));
@@ -122,7 +122,7 @@ static BOOL Task_SpinSlide(TaskManager *taskManager) {
         } else {
             task->direction = SpinSlide_RotateDirection(task->direction);
         }
-        if (PlayerAvatar_CheckCollision(task->avatar, mapObject, task->direction) == FALSE) {
+        if (!PlayerAvatar_CheckCollision(task->avatar, mapObject, task->direction)) {
             task->state = SPIN_SLIDE_STATE_STEP;
             break;
         }

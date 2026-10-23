@@ -70,4 +70,12 @@ BOOL FlyLandingEffect_FlyAway(FlyLandingEffect *landing);
 BOOL FlyLandingEffect_ShowPlayer(FlyLandingEffect *landing);
 BOOL FlyLandingEffect_Done(FlyLandingEffect *landing);
 
+extern const VecFx32 gFlyLandingFlyerScale;
+extern const FieldEffectBasicTemplate gFlyLandingEffectTemplate;
+extern const VecFx32 gFlyLandingSwoopCenter;
+extern const VecFx32 gFlyLandingSwoopScale;
+extern const VecFx32 gFlyLandingTrainerScale;
+extern const VecFx32 gFlyLandingFlyAwayCenter;
+extern const VecFx32 gFlyLandingFlyAwayScale;
+
 #endif // POKEHEARTGOLD_FIELD_FLY_LANDING_EFFECT_H

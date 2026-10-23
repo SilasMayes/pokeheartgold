@@ -1,5 +1,7 @@
 #include "global.h"
 
+#include "constants/scrcmd.h"
+
 #include "field/field_follow_mon.h"
 
 #include "field_system.h"
@@ -76,7 +78,7 @@ BOOL MapObject_IsTileOccupied(LocalMapObject *self, int x, int y, int z) {
                     return TRUE;
                 }
             }
-            if (MapObject_GetID(object) == 0xFD && FollowMonObject_IsLarge(object) != 0 && MapObject_CheckVisible(object) == FALSE) {
+            if (MapObject_GetID(object) == obj_partner_poke && FollowMonObject_IsLarge(object) != 0 && !MapObject_CheckVisible(object)) {
                 MapObject_GetPreviousCoordsBehind(object, &objectX, &objectZ);
                 if (objectX == x && objectZ == z) {
                     int delta = MapObject_GetYCoord(object) - y;
@@ -120,7 +122,7 @@ BOOL MapObject_IsOutsideMovementRange(LocalMapObject *object, int x, int y, int 
 }
 
 BOOL MapObject_IsMoveBlockedByBehavior(LocalMapObject *object, int x, int z, int direction) {
-    if (MapObject_CheckIgnoreMetatileBehaviors(object) == FALSE) {
+    if (!MapObject_CheckIgnoreMetatileBehaviors(object)) {
         FieldSystem *fieldSystem = MapObject_GetFieldSystem(object);
         u8 objectBehavior = MapObject_GetCurrentMetatileBehavior(object);
         u8 behavior = GetMetatileBehavior(fieldSystem, x, z);
@@ -346,7 +348,7 @@ BOOL FieldSystem_SnapToTerrainHeightEx(FieldSystem *fieldSystem, VecFx32 *positi
     if (behavior == 0) {
         return FALSE;
     }
-    if (behavior == 2 && allowType2 == FALSE) {
+    if (behavior == 2 && !allowType2) {
         return FALSE;
     }
     position->y = y;

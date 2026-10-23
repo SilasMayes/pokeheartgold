@@ -11,4 +11,7 @@ TallGrass *TallGrass_New(FieldEffectManager *manager);
 void TallGrass_Free(TallGrass *grass);
 void TallGrass_Spawn(LocalMapObject *mapObject, BOOL animate);
 
+extern const FieldEffectBasicTemplate gTallGrassEffectTemplate;
+extern const FieldEffectBasicTemplate gTallGrassUnusedEffectTemplate; // created nowhere
+
 #endif // POKEHEARTGOLD_FIELD_TALL_GRASS_H

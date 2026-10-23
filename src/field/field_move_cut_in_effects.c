@@ -36,7 +36,6 @@
 // The effects drawn in the field move cut-in (banner sprites, the Pokemon flying off with the trainer, the trainer's
 // jump, the 3D model at a second map object), the Fly landing task, and the roamer updates after a battle.
 
-
 // Effect state of the sprites scrolling across the banner, one row of the template table (two copies 256 px apart).
 typedef struct CutInScrollSpriteTemplate {
     fx32 x;
@@ -153,20 +152,8 @@ typedef struct FlyLanding {
 typedef BOOL (*FlyLandingStep)(FlyLanding *landing);
 
 extern const CutInScrollSpriteTemplate gCutInScrollSpriteTemplates[];
-extern const FieldEffectBasicTemplate gCutInScrollSpriteEffectTemplate;
-extern const FieldEffectBasicTemplate gCutInFlyerEffectTemplate;
-extern const FieldEffectBasicTemplate gTrainerJumpEffectTemplate;
-extern const FieldEffectBasicTemplate gTrainerClipEffectTemplate;
-extern const FieldEffectBasicTemplate gCutInModelEffectTemplate;
 extern CutInFlyerStep *const gCutInFlyerModeSteps[3];
 extern FlyLandingStep const gFlyLandingTaskSteps[6];
-extern const VecFx32 gCutInFlyerTakeOffOrigin;
-extern const VecFx32 gCutInFlyerTakeOffScale;
-extern const VecFx32 gCutInFlyerPickUpPos;
-extern const VecFx32 gCutInFlyerPickUpScale;
-extern const VecFx32 gCutInFlyerTrainerScale;
-extern const fx32 gTrainerJumpOffsets[12];
-extern const fx32 gTrainerHopOffsets[4];
 
 static void Task_FlyLanding(SysTask *task, void *data);
 static Roamer *Roamers_GetActiveRoamerBySpecies(RoamerSaveData *roamerSave, u32 species);
@@ -217,17 +204,17 @@ void Task_FieldMoveCutIn_UpdateWindow(SysTask *task, void *data) {
     int winin;
     int winout;
 
-    if (cutIn->windowUpdate == FALSE) {
+    if (!cutIn->windowUpdate) {
         return;
     }
     reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xFFFF1FFF) | (cutIn->windowEnabled << 13);
     winin = (reg_G2_WININ & ~0x3f) | cutIn->windowInsidePlanes;
-    if (cutIn->windowInsideEffects != FALSE) {
+    if (cutIn->windowInsideEffects) {
         winin |= 0x20;
     }
     reg_G2_WININ = winin;
     winout = (reg_G2_WINOUT & ~0x3f) | cutIn->windowOutsidePlanes;
-    if (cutIn->windowOutsideEffects != FALSE) {
+    if (cutIn->windowOutsideEffects) {
         winout |= 0x20;
     }
     reg_G2_WINOUT = winout;
@@ -814,7 +801,7 @@ static void Task_FlyLanding(SysTask *task, void *data) {
     FlyLandingStep const *steps = gFlyLandingTaskSteps;
     while (steps[landing->state](landing) == TRUE) {
     }
-    if (landing->drawSprites != FALSE) {
+    if (landing->drawSprites) {
         if (landing->effectPool != NULL) {
             FieldEffectPool_DrawAll(landing->effectPool);
         }
@@ -917,7 +904,7 @@ void TrainerClipEffect_Update(FieldEffect *effect, TrainerClip *clip) {
     FieldMoveCutIn *cutIn = clip->cutIn;
     fx32 top = cutIn->windowTop;
     fx32 bottom = cutIn->windowBottom;
-    if (cutIn->flyStarted == FALSE) {
+    if (!cutIn->flyStarted) {
         if (y - 0x8000 >= top && y + 0x8000 <= bottom) {
             Sprite_SetDrawFlag(clip->sprite, TRUE);
         } else {

@@ -7,6 +7,8 @@
 #include "msgdata/msg/msg_0779.h"
 
 #include "bag.h"
+#include "comm_state.h"
+#include "communication_core.h"
 #include "communication_player_state.h"
 #include "dialog_box.h"
 #include "friend_roster.h"
@@ -14,18 +16,13 @@
 #include "gf_gfx_planes.h"
 #include "heap.h"
 #include "options.h"
+#include "overlay_01.h"
 #include "player_data.h"
 #include "render_window.h"
 #include "task.h"
 #include "text.h"
 
-void *FriendRoster_GetDwcFriendData(FriendRoster *roster, int slot);
-BOOL FriendRoster_IsFriendValid(FriendRoster *roster, int slot);
-void FriendRoster_RemoveFriend(FriendRoster *roster, int slot);
-int Comm_CountConnected(void);
-BOOL Comm_RegisterLinkedFriends(SaveData *saveData, u32 *requests, enum HeapID heapID);
 void Comm_StoreFriendFromPlayer(SaveData *saveData, u32 netId, int slot, enum HeapID heapID, int mode);
-void FieldSystem_SwitchBottomScreenApp(FieldSystem *fieldSystem, int appId, void *args);
 
 enum PalPadRegistrationState {
     PAL_PAD_REGISTRATION_STATE_START,
