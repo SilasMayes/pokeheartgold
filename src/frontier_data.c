@@ -82,7 +82,7 @@ typedef struct BattleTowerOpponent {
 } BattleTowerOpponent;
 
 static void BattleRoomDownload_ClearRoomMarks(BattleRoomDownload *download);
-static BOOL BattleRoomDownload_IsDateNewer(u32 *date, u32 *stored);
+static BOOL BattleRoomDownload_IsDateNewer(const RTCDate *date, const RTCDate *stored);
 
 static const MailMessageTemplate sTowerMessageTemplates[4] = {
     { 0, 0, { 4, -1 }, { 7, 0 }  },
@@ -420,7 +420,7 @@ MailMessage *Save_Frontier_GetTowerMessage(SaveData *save, u32 index) {
     return &messages[index];
 }
 
-void BattleRoomDownload_MarkRoom(BattleRoomDownload *download, u32 rank, u32 room, u32 *date) {
+void BattleRoomDownload_MarkRoom(BattleRoomDownload *download, u32 rank, u32 room, const RTCDate *date) {
     u8 mask = 1;
     if (room != 0 && room <= 200 && rank != 0 && rank <= 10) {
         u16 index = (room - 1) + (rank - 1) * 200;
@@ -428,7 +428,7 @@ void BattleRoomDownload_MarkRoom(BattleRoomDownload *download, u32 rank, u32 roo
         u8 byte = index / 8;
         mask <<= bit;
         download->roomMarks[byte] |= mask;
-        download->markDate = (date[0] << 24) | ((date[1] << 24) >> 8) | ((date[2] << 24) >> 16) | date[3];
+        download->markDate = (date->year << 24) | ((date->month << 24) >> 8) | ((date->day << 24) >> 16) | date->week;
     }
 }
 
@@ -438,22 +438,22 @@ static void BattleRoomDownload_ClearRoomMarks(BattleRoomDownload *download) {
 }
 
 // BUG: year, month and day are compared one by one, so a later month or day of an earlier year counts as newer.
-static BOOL BattleRoomDownload_IsDateNewer(u32 *date, u32 *stored) {
-    if (date[0] > stored[0]) {
+static BOOL BattleRoomDownload_IsDateNewer(const RTCDate *date, const RTCDate *stored) {
+    if (date->year > stored->year) {
         return TRUE;
     }
-    if (date[1] > stored[1]) {
+    if (date->month > stored->month) {
         return TRUE;
     }
-    if (date[2] > stored[2]) {
+    if (date->day > stored->day) {
         return TRUE;
     }
     return FALSE;
 }
 
-BOOL BattleRoomDownload_IsRoomMarked(BattleRoomDownload *download, u32 rank, u32 room, u32 *date) {
+BOOL BattleRoomDownload_IsRoomMarked(BattleRoomDownload *download, u32 rank, u32 room, const RTCDate *date) {
     u8 mask = 1;
-    u32 stored[4];
+    RTCDate stored;
     u16 index;
     u8 bit;
     u8 byte;
@@ -463,11 +463,11 @@ BOOL BattleRoomDownload_IsRoomMarked(BattleRoomDownload *download, u32 rank, u32
         return FALSE;
     }
     u32 markDate = download->markDate;
-    stored[0] = (u8)(markDate >> 24);
-    stored[1] = (u8)(markDate >> 16);
-    stored[2] = (u8)(markDate >> 8);
-    stored[3] = (u8)markDate;
-    if (BattleRoomDownload_IsDateNewer(date, stored)) {
+    stored.year = (u8)(markDate >> 24);
+    stored.month = (u8)(markDate >> 16);
+    stored.day = (u8)(markDate >> 8);
+    stored.week = (RTCWeek)(u8)markDate;
+    if (BattleRoomDownload_IsDateNewer(date, &stored)) {
         BattleRoomDownload_ClearRoomMarks(download);
         return FALSE;
     }

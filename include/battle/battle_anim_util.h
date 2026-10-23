@@ -210,8 +210,4 @@ BattleAnimFunc BattleAnimSystem_GetFunc(u32 id);
 BattleAnimSpriteFunc BattleAnimSystem_GetSpriteFunc(u32 id);
 void BattleAnimFunc_None(BattleAnimSystem *system);
 
-// position: any motion (s16 x, y first)
-
-fx32 FX_Sqrt(fx32 x);
-
 #endif // POKEHEARTGOLD_BATTLE_BATTLE_ANIM_UTIL_H

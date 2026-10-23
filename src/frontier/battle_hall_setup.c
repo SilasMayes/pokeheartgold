@@ -15,6 +15,7 @@
 #include "communication_core.h"
 #include "communication_player_state.h"
 #include "frontier_save_access.h"
+#include "geometry_math.h"
 #include "heap.h"
 #include "math_util.h"
 #include "party.h"
@@ -37,7 +38,6 @@ static u32 BattleHall_ClampRank(u32 rank);
 #define HALL_TRAINER_COUNT_TOTAL 300
 #define HALL_SET_COUNT           477
 
-fx32 FX_Sqrt(fx32 x);
 u8 BattleHall_GetLevelRank(BattleHallData *data);
 
 // Picks a trainer class for each of the count trainers of the battle: from the classes of the rank (2 in 3) or of the

@@ -14,6 +14,7 @@
 
 #include "camera.h"
 #include "filesystem.h"
+#include "geometry_math.h"
 #include "heap.h"
 #include "math_util.h"
 #include "overlay_07.h"

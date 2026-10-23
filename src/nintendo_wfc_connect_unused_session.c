@@ -859,7 +859,7 @@ static int NintendoWfcUnused_HandleChallengeRoomInput(NintendoWfcUnused *wfc) {
         PlaySE(SEQ_SE_DP_SELECT);
     } else if (gSystem.newKeys & PAD_BUTTON_A) {
         DWC_GetDateTime(&date, &time);
-        if (BattleRoomDownload_IsRoomMarked((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, (u32 *)&date)) {
+        if (BattleRoomDownload_IsRoomMarked((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, &date)) {
             wfc->state = NINTENDO_WFC_UNUSED_STATE_PRINT_ROOM_UNAVAILABLE;
         } else {
             wfc->state = NINTENDO_WFC_UNUSED_STATE_PRINT_RECEIVING_TRAINERS;
@@ -910,7 +910,7 @@ static int NintendoWfcUnused_WaitTrainersDownload(NintendoWfcUnused *wfc) {
             BattleRoomDownload_SetTrainers((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer, (u8)wfc->ownRank, (u8)wfc->room);
             NintendoWfcUnused_SetState(wfc, NINTENDO_WFC_UNUSED_STATE_START_SAVE, NINTENDO_WFC_UNUSED_STATE_PRINT_TRAINERS_RECEIVED);
             DWC_GetDateTime(&date, &time);
-            BattleRoomDownload_MarkRoom((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, (u32 *)&date);
+            BattleRoomDownload_MarkRoom((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, &date);
             break;
         case -1:
             wfc->httpResult = result;
