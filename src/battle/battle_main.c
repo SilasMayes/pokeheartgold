@@ -93,12 +93,8 @@ typedef struct BattlerInitData {
 // The overlay 5 link battle screen arguments, held by the battle system while that screen runs.
 #define LINK_SCREEN_ARGS(battleSystem) ((LinkBattleScreenArgs *)(battleSystem)->linkScreenArgs)
 
-extern const u32 gBattleBgFillColors[23][3];
-extern const u8 gDoublesBattlerTypes[4];
-
-extern void Comm_SetWifiContinuousSendAndMuteVoice(int mode);
-extern void CommState_FrameDummy(int heapId, BgConfig *bgConfig);
-extern void WirelessStatusIcon_SetLevel(int linkLevel);
+void Comm_SetWifiContinuousSendAndMuteVoice(int value);
+void CommState_FrameDummy(int heapId, BgConfig *bgConfig);
 
 const BattleBgTemplateSet gBattleReinitBgTemplates = {
     .templates = {
@@ -284,7 +280,7 @@ void Battle_BattleInit(OverlayManager *manager) {
     PaletteData_AllocBuffers(battleSystem->palette, PLTTBUF_SUB_OBJ, 512, HEAP_ID_BATTLE);
     battleSystem->bgConfig = BgConfig_Alloc(HEAP_ID_BATTLE);
     battleSystem->window = AllocWindows(HEAP_ID_BATTLE, 3);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < BATTLER_MAX; i++) {
         battleSystem->monPicData[i].charBuffer = Heap_Alloc(HEAP_ID_BATTLE, 3200);
     }
     GF_CreateVramTransferManager(64, HEAP_ID_BATTLE);
@@ -417,7 +413,7 @@ void Battle_BattleExit(OverlayManager *man) {
     if (battleSystem->battleOutcomeFlag != 4) {
         BattleSystem_EmptyMonFunc(battleSystem, Party_GetMonByIndex(battleSystem->trainerParty[1], 0));
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < BATTLER_MAX; i++) {
         Party_Copy(battleSystem->trainerParty[i], setup->party[i]);
         Heap_Free(battleSystem->trainerParty[i]);
         PlayerProfile_Copy(battleSystem->playerProfile[i], setup->profile[i]);
@@ -442,7 +438,7 @@ void Battle_BattleExit(OverlayManager *man) {
     setup->battleTotals.totalDamage += BattleContext_Get(battleSystem, battleSystem->ctx, 7, 0) + BattleContext_Get(battleSystem, battleSystem->ctx, 7, 2);
     setup->totalTurns = BattleContext_Get(battleSystem, battleSystem->ctx, 3, 0);
     setup->isRecordingPaused = battleSystem->isRecordingPaused;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < BATTLER_MAX; i++) {
         Heap_Free(battleSystem->monPicData[i].charBuffer);
     }
     Heap_Free(battleSystem->msgBuffer);
@@ -977,11 +973,6 @@ static void Battle_ReserveTexAndPlttVram(void) {
     ParticleSystem_ZeroAll();
 }
 
-// Sets bits of the IRQ check flag in the DTCM system area.
-static inline void SetIrqCheckFlag(u8 *dtcm, u32 mask) {
-    *(volatile u32 *)(dtcm + 0x3FF8) |= mask;
-}
-
 void Battle_VBlankCallback(void *data) {
     BattleSystem *battleSystem = data;
     GraphicsBanks banks;
@@ -1007,7 +998,7 @@ void Battle_VBlankCallback(void *data) {
     SpriteSystem_TransferOam();
     PaletteData_PushTransparentBuffers(battleSystem->palette);
     DoScheduledBgGpuUpdates(battleSystem->bgConfig);
-    SetIrqCheckFlag((u8 *)0x027E0000, OS_IE_VBLANK);
+    OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
 
 static void Battle_LinkVBlankCallback(void *data) {
@@ -1016,7 +1007,7 @@ static void Battle_LinkVBlankCallback(void *data) {
     PaletteData_PushTransparentBuffers(work->palette);
     GF_RunVramTransferTasks();
     DoScheduledBgGpuUpdates(work->bgConfig);
-    SetIrqCheckFlag((u8 *)0x027E0000, OS_IE_VBLANK);
+    OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
 
 static void Task_DrawBattleGraphics(SysTask *task, void *data) {
@@ -1502,7 +1493,7 @@ BOOL Battle_VsScreenInit(OverlayManager *man) {
     battleSystem->linkScreenArgs = Heap_Alloc(HEAP_ID_BATTLE, sizeof(LinkBattleScreenArgs));
     MI_CpuClearFast(battleSystem->linkScreenArgs, sizeof(LinkBattleScreenArgs));
     if (battleSystem->battleType & BATTLE_TYPE_MULTI) {
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             LINK_SCREEN_ARGS(battleSystem)->parties[Comm_GetBattleSlot(i)] = battleSystem->trainerParty[i];
             slot = Comm_GetBattleSlot(i);
             LINK_SCREEN_ARGS(battleSystem)->names[slot] = PlayerProfile_GetPlayerName_NewString(battleSystem->playerProfile[i], HEAP_ID_BATTLE);
@@ -1589,7 +1580,7 @@ BOOL Battle_EndInit(OverlayManager *man) {
         break;
     }
     if (setup->battleType & BATTLE_TYPE_MULTI) {
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             args->parties[Comm_GetBattleSlot(i)] = setup->party[i];
             slot = Comm_GetBattleSlot(i);
             args->names[slot] = PlayerProfile_GetPlayerName_NewString(setup->profile[i], HEAP_ID_BATTLE);

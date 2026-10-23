@@ -177,5 +177,7 @@ FrontierMapObject *Frontier_GetMapObjects(FrontierWork *frontier);
 FrontierMapObject *Frontier_GetMapObject(FrontierWork *frontier, int index);
 FrontierMapSpriteState *Frontier_GetMapSpriteState(FrontierWork *frontier);
 void Frontier_ResetMapSpriteState(FrontierWork *frontier);
+ManagedSprite *FrontierMap_CreateSprite(FrontierMap *map, u16 index, u16 resourceId);
+void FrontierMap_SetSpriteAnimActive(FrontierMap *map, u16 index, u32 active);
 
 #endif

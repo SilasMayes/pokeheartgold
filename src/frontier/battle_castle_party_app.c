@@ -213,46 +213,6 @@ FS_EXTERN_OVERLAY(OVY_80);
 #define CASTLE_PARTY_NARC_ITEM_GRID_SCREEN   38
 #define CASTLE_PARTY_NARC_ITEM_DETAIL_SCREEN 39
 
-// Entry of the HEAL / RENTAL list menus
-typedef struct BattleCastleMenuOption {
-    u32 minRank; // required rank for RESTORE / rental options
-    int msgId;
-    int value;
-} BattleCastleMenuOption;
-
-// Entry of the main (HEAL / RENTAL / CANCEL) list menu
-typedef struct BattleCastleMenuItem {
-    int msgId;
-    int value;
-} BattleCastleMenuItem;
-
-extern const u16 gBattleCastlePartyAppHealMessages[];         // heal result messages, by action - 1
-extern const u16 gBattleCastlePartyAppBerryCounts[];          // number of rentable berries, by rental rank - 1
-extern const u16 gBattleCastlePartyAppHealCosts[];            // CP cost of RESTORE HP / PP / ALL
-extern const u16 gBattleCastlePartyAppMainMenuHelpMessages[]; // main menu help messages, by cursor position
-extern const u16 gBattleCastlePartyAppItemCounts[];           // number of rentable items, by rental rank - 1
-extern const u16 gBattleCastlePartyAppRankUpCosts[2][3];      // CP cost of the next rank, by rank kind (CASTLE_RANK_*) and rank
-extern const u16 gBattleCastlePartyAppRentalRankUpCosts[];    // = gBattleCastlePartyAppRankUpCosts[CASTLE_RANK_RENTAL]
-extern const u16 gBattleCastlePartyAppRankUpMessages[2][3];   // "gained the ability to..." messages, by rank kind and rank
-extern const BattleCastleMenuItem gBattleCastlePartyAppMainMenuItems[];
-extern const BattleCastleMenuOption gBattleCastlePartyAppRentalMenuOptions[]; // BERRIES / ITEMS / RANK UP / CANCEL
-extern const u16 gBattleCastleRentalItems[];                                  // rentable items
-extern const u16 gBattleCastleRentalItemCosts[];                              // item costs in CP
-extern const BattleCastleMenuOption gBattleCastlePartyAppHealMenuOptions[];   // RESTORE HP / PP / ALL / RANK UP / CANCEL
-extern const u16 gBattleCastleRentalBerries[];                                // rentable berries
-extern const u16 gBattleCastleRentalBerryCosts[];                             // berry costs in CP
-extern const u8 gBattleCastlePartyAppListMenuY[];                             // list menu y, by number of entries
-extern const GraphicsModes gBattleCastlePartyAppGraphicsModes;
-extern const BgTemplate gBattleCastlePartyAppBgTemplate_Sub2;
-extern const BgTemplate gBattleCastlePartyAppBgTemplate_Main1;
-extern const BgTemplate gBattleCastlePartyAppBgTemplate_Main0;
-extern const BgTemplate gBattleCastlePartyAppBgTemplate_Sub3;
-extern const BgTemplate gBattleCastlePartyAppBgTemplate_Main2;
-extern const BgTemplate gBattleCastlePartyAppBgTemplate_Main3;
-extern const BgTemplate gBattleCastlePartyAppBgTemplate_Sub0;
-extern const BgTemplate gBattleCastlePartyAppBgTemplate_Sub1;
-extern const GraphicsBanks gBattleCastlePartyAppGraphicsBanks;
-
 static void BattleCastlePartyApp_ReloadBgPalette(void);
 
 static BOOL BattleCastlePartyApp_FadeIn(BattleCastlePartyApp *app);
@@ -1389,8 +1349,6 @@ static void BattleCastlePartyApp_FreeBgLayers(BgConfig *bgConfig) {
 }
 
 static void BattleCastlePartyApp_VBlankCallback(void *arg) {
-    // OS_SetIrqCheckFlag(OS_IE_V_BLANK)
-    vu32 *dtcm = (vu32 *)0x027E0000;
     BattleCastlePartyApp *app = arg;
 
     if (app->paletteData != NULL) {
@@ -1400,7 +1358,7 @@ static void BattleCastlePartyApp_VBlankCallback(void *arg) {
     BattleCastle_ApplyBgToggleRequests(&app->bgToggleRequests);
     GF_RunVramTransferTasks();
     OamManager_ApplyAndResetBuffers();
-    dtcm[0x3FF8 / 4] |= OS_IE_V_BLANK;
+    OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
 
 static void BattleCastlePartyApp_SetGraphicsBanks(void) {
@@ -2802,7 +2760,7 @@ static void BattleCastlePartyApp_LoadMonSummary(BattleCastlePartyApp *app) {
         app->summary.hideGender = 1;
     }
     app->summary.gender = GetMonGender(mon);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < MAX_MON_MOVES; i++) {
         app->summary.moves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, NULL);
         app->summary.pp[i] = GetMonData(mon, MON_DATA_MOVE1_PP + i, NULL);
         {

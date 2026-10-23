@@ -16,6 +16,9 @@
 typedef struct BattleAnimSpritePopWork BattleAnimSpritePopWork;
 typedef struct BattleAnimEmitterMotionWork BattleAnimEmitterMotionWork;
 
+// X steps of the sprite of BattleAnimTask_SpriteOrbit (0: switch its priority, 255: end)
+extern const s16 gBattleAnimSpriteOrbitStepX[];
+
 void BattleAnimFunc_OneFrameTask(BattleAnimSystem *system);
 void BattleAnimFunc_OneFrameSoundTask(BattleAnimSystem *system);
 void BattleAnimFunc_OneFrameUncountedTask(BattleAnimSystem *system);
@@ -58,26 +61,5 @@ void BattleAnimSpriteFunc_SpriteAboveDefender(BattleAnimSystem *system, SpriteSy
 void BattleAnimSpriteFunc_SpriteArc(BattleAnimSystem *system, SpriteSystem *spriteSystem, SpriteManager *spriteManager, ManagedSprite *sprite);
 
 // Battle animation system tasks and accessors
-SysTask *BattleAnimSystem_CreateTask(BattleAnimSystem *system, SysTaskFunc func, void *data, u32 priority);
-SysTask *BattleAnimSystem_CreateTaskDefaultPriority(BattleAnimSystem *system, SysTaskFunc func, void *data);
-SysTask *BattleAnimSystem_CreateSoundTask(BattleAnimSystem *system, SysTaskFunc func, void *data, u32 priority);
-void BattleAnimSystem_DestroyTask(BattleAnimSystem *system, SysTask *task);
-void BattleAnimSystem_DestroySoundTask(BattleAnimSystem *system, SysTask *task);
-SPLEmitter *BattleAnimSystem_GetParticleSystem(BattleAnimSystem *system, int index);
-SPLEmitter *BattleAnimSystem_GetEmitter(BattleAnimSystem *system, int index);
-u32 BattleAnimSystem_GetArg(BattleAnimSystem *system, int index);
-u32 BattleAnimSystem_GetBattleBgPaletteMask(BattleAnimSystem *system);
-void BattleAnimBackground_LoadBattleBgToLayerDefault(BattleAnimSystem *system, GFBgLayer layer);
-void BattleAnimBackground_ResetLayer(BattleAnimSystem *system, GFBgLayer layer);
-void BattleAnimSystem_GetSpriteTemplate(ManagedSpriteTemplate *template, BattleAnimSystem *system);
-int BattleAnimSystem_GetBattlerHeight(BattleAnimSystem *system, int battler);
-BOOL BattleAnimSystem_IsBattlerSemiInvulnerable(BattleAnimSystem *system, int battler);
-int BattleAnimSystem_GetBasePriority(BattleAnimSystem *system);
-int BattleAnimSystem_GetBgPriority(BattleAnimSystem *system, int kind);
-BOOL BattleAnimSystem_ShouldFlipSide(BattleAnimSystem *system, int side);
-u32 BattleAnimSystem_GetBackgroundFile(u32 bgId, int file);
-void BattleAnimSystem_GetBattlerScreenPos(BattleAnimSystem *system, int battler, s16 *x, s16 *y);
-s16 BattleAnimSystem_GetBattlerScreenCoord(BattleAnimSystem *system, int battler, u32 coord);
-int BattleAnimUtil_GetBattlerSideSignByMode(BattleAnimSystem *system, int battler);
 
 #endif // POKEHEARTGOLD_BATTLE_BATTLE_ANIM_FUNCS_H

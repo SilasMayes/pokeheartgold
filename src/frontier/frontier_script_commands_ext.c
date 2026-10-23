@@ -158,7 +158,6 @@ typedef struct FrontierCameraPos {
     s16 x;
 } FrontierCameraPos;
 
-void FrontierMap_SetSpriteAnimActive(FrontierMap *map, u32 idx, u32 on);
 static BOOL FrontierScriptNative_WaitSpriteAnim(FrontierScriptContext *ctx);
 static void FrontierScript_SetObjectMovement(FrontierScriptContext *ctx, int unused, int count);
 static void FrontierScript_FreeNamingScreenArgs(void *args);
@@ -552,7 +551,7 @@ static BOOL FrontierScriptNative_WaitSaveBattleRecord(FrontierScriptContext *ctx
     FrontierSystem *system = ctx->frontierSystem;
     FrontierLaunchArgs *args = Frontier_GetLaunchArgs(system->frontierWork);
     int result = BattleRecord_Save(args->saveData, system->recordType, system->recordAmount, 0, &system->recordSaveState, &system->recordWriteState);
-    if ((u32)(result - 2) <= 1) {
+    if (result == WRITE_STATUS_SUCCESS || result == WRITE_STATUS_TOTAL_FAIL) {
         *system->recordResult = result == WRITE_STATUS_SUCCESS;
         return TRUE;
     }

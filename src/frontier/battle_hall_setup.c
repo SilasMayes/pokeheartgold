@@ -36,29 +36,6 @@ static u32 BattleHall_ClampRank(u32 rank);
 
 #define HALL_TRAINER_COUNT_TOTAL 300
 #define HALL_SET_COUNT           477
-#define HALL_MATRON_SILVER       307 // trainer ids of the Hall Matron, battles 50 and 170 of the single battle streak
-#define HALL_MATRON_GOLD         308
-#define IS_HALL_MATRON(trainerId) ((trainerId) == HALL_MATRON_SILVER || (trainerId) == HALL_MATRON_GOLD)
-
-typedef struct BattleHallSetRange {
-    u16 min;
-    u16 max;
-} BattleHallSetRange;
-
-typedef struct BattleHallSetTypes {
-    u16 type1;
-    u16 type2;
-} BattleHallSetTypes;
-
-extern const BattleHallSetRange gBattleHallMatronSetRanges[];
-extern const BattleHallSetRange gBattleHallGoldMatronSetRange;
-extern const u8 gBattleHallRankIVs[];
-extern const BattleHallSetRange gBattleHallRankSetRanges[];
-extern const u16 gBattleHallCellTrainerClasses[];
-extern const u16 gBattleHallRankTrainerClasses[];
-extern const u16 gBattleHallTrainerClasses[];
-extern const u16 gBattleHallSetSpecies[];
-extern const BattleHallSetTypes gBattleHallSetTypes[];
 
 fx32 FX_Sqrt(fx32 x);
 u8 BattleHall_GetLevelRank(BattleHallData *data);
@@ -78,11 +55,11 @@ void BattleHall_PickTrainerClasses(u32 cell, int count, u32 rank, u32 battleNo, 
     rankClasses = &gBattleHallRankTrainerClasses[(u8)clampedRank * 8];
     cellClasses = &gBattleHallCellTrainerClasses[cell * 4];
     do {
-        u16 r = LCRandom() % 12;
-        if (r < 8) {
-            *dst = rankClasses[r];
+        u16 roll = LCRandom() % 12;
+        if (roll < 8) {
+            *dst = rankClasses[roll];
         } else {
-            *dst = cellClasses[r - 8];
+            *dst = cellClasses[roll - 8];
         }
         i++;
         dst++;
@@ -102,11 +79,11 @@ void BattleHall_PickTrainerIds(int type, int count, int round, u32 rank, u8 batt
     index = (battleNo & 0x7F) * 2;
     clampedRank = BattleHall_ClampRank(rank);
     if (type == FRONTIER_CHALLENGE_SINGLE) {
-        if (battleNo + 1 + round * 10 == 50) {
+        if (battleNo + 1 + round * 10 == HALL_MATRON_BATTLE_SILVER) {
             trainerIds[index] = HALL_MATRON_SILVER;
             return;
         }
-        if (battleNo + 1 + round * 10 == 170) {
+        if (battleNo + 1 + round * 10 == HALL_MATRON_BATTLE_GOLD) {
             trainerIds[index] = HALL_MATRON_GOLD;
             return;
         }

@@ -13,7 +13,6 @@
 #include "sys_task_api.h"
 
 // The battle overlay's main module.
-// (Kept apart from battle_022378C0.h: more declarations there renumber function-local statics in its includers.)
 
 FS_EXTERN_OVERLAY(OVY_7);
 FS_EXTERN_OVERLAY(OVY_10);
@@ -24,6 +23,8 @@ typedef struct BattleBgTemplateSet {
 
 extern const BattleBgTemplateSet gBattleReinitBgTemplates;
 extern const BattleBgTemplateSet gBattleBgTemplates;
+extern const u32 gBattleBgFillColors[23][3];
+extern const u8 gDoublesBattlerTypes[4];
 
 void BattleSystem_InitTerrainsAndBalls(BattleSystem *battleSystem);
 void Battle_VBlankCallback(void *data);

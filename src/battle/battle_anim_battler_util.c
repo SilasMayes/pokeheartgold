@@ -4,21 +4,10 @@
 
 #include "constants/battle.h"
 
+#include "battle/battle_anim_internal.h"
+
 #include "heap.h"
 #include "particle_system_internal.h"
-
-typedef struct BattleAnimBattlerTypePositions {
-    BattleAnimPosition positions[6];
-} BattleAnimBattlerTypePositions;
-
-// [battler type][kind * 2 + particle perspective type]
-typedef struct BattleAnimEmitterPositions {
-    VecFx32 positions[8][24];
-} BattleAnimEmitterPositions;
-
-extern const VecFx32 gBattleAnimFlippedCameraUp;
-extern const BattleAnimBattlerTypePositions gBattleAnimBattlerTypePositions;
-extern const BattleAnimEmitterPositions gBattleAnimEmitterPositions;
 
 int BattleAnimUtil_GetBattlerType(BattleAnimSystem *system, int battler) {
     return BattleAnimSystem_GetBattlerType(system, battler);

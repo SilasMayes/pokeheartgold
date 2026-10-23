@@ -6,6 +6,7 @@
 
 #include "constants/battle.h"
 
+#include "battle/battle_anim_internal.h"
 #include "library/spl_emitter.h"
 
 #include "assert.h"
@@ -37,11 +38,6 @@ typedef struct BattleAnimMotionOffset {
     s16 x;
     s16 y;
 } BattleAnimMotionOffset;
-
-// Emitter offsets by attacker type and defender type (units of 172)
-typedef struct BattleAnimEmitterOffsetTable {
-    s16 values[6][6];
-} BattleAnimEmitterOffsetTable;
 
 enum BattleAnimEmitterTargetMode {
     BATTLE_ANIM_EMITTER_TARGET_MODE_NONE,
@@ -79,78 +75,6 @@ typedef struct BattleAnimEmitterOffsetArgs {
     BOOL ignoreSide;
     VecFx32 offset;
 } BattleAnimEmitterOffsetArgs;
-
-// Screen positions (x, y) per battler type
-typedef struct BattleAnimScreenPosTable6 {
-    struct {
-        int x, y;
-    } pos[6];
-} BattleAnimScreenPosTable6;
-
-typedef struct BattleAnimScreenPosTable7 {
-    struct {
-        int x, y;
-    } pos[7];
-} BattleAnimScreenPosTable7;
-
-typedef struct BattleAnimEmitterAxisRow {
-    int v[4]; // x, y, z, [3] == 1: not negated
-} BattleAnimEmitterAxisRow;
-
-typedef struct BattleAnimEmitterAxisRows {
-    BattleAnimEmitterAxisRow rows[7];
-} BattleAnimEmitterAxisRows;
-
-typedef struct BattleAnimEmitterAxisPositions {
-    int pos[6][2];
-} BattleAnimEmitterAxisPositions;
-
-// One VecFx32 per (attacker type, defender type)
-typedef struct BattleAnimEmitterAxisEntry {
-    int v[3];
-} BattleAnimEmitterAxisEntry;
-
-typedef struct BattleAnimEmitterFlagMasks {
-    int masks[15];
-} BattleAnimEmitterFlagMasks;
-
-extern const BattleAnimEmitterOffsetTable gBattleAnimEmitterOffsetsX;
-extern const BattleAnimEmitterOffsetTable gBattleAnimEmitterOffsetsY;
-extern const BattleAnimEmitterAxisRow gBattleAnimEmitterAxisBase;
-extern const BattleAnimScreenPosTable6 gBattleAnimEmitterPositions_Mode31;
-extern const BattleAnimEmitterAxisPositions gBattleAnimEmitterAxisPositions;
-extern const BattleAnimScreenPosTable7 gBattleAnimEmitterPositions_Mode32;
-extern const BattleAnimScreenPosTable7 gBattleAnimEmitterPositions_Mode30;
-extern const BattleAnimEmitterAxisRows gBattleAnimEmitterAxisRows;
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode1[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode1Y[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode1Z[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode8[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode8Y[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode8Z[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode10[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode12[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode12Y[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode12Z[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode14[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode14Y[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode14Z[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode16[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode16Y[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode16Z[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode18[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode18Y[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode18Z[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode20[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode20Y[6][6];
-extern const BattleAnimEmitterAxisEntry gBattleAnimEmitterAxes_Mode20Z[6][6];
-extern BattleAnimEmitterConfigCb gBattleAnimEmitterFlagCallbacks[];
-extern const BattleAnimEmitterFlagMasks gBattleAnimEmitterFlagMasks; // terminated
-extern CameraAngle gBattleAnimEmitterCameraAngles[];
-extern BattleAnimEmitterConfigCb gBattleAnimEmitterCameraCallbacks[];
-// (x, y) per battler slot: set 0 singles, set 1 doubles
-extern const s16 gBattleAnimBattlerScreenPositions[][12];
-extern const s16 gBattleAnimBattlerScreenPositionsY[][12];
 
 void BattleAnimEmitterCb_SetPositionAtFirstOpponent(SPLEmitter *emitter) {
     CameraAngle angle;

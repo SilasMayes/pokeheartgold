@@ -171,23 +171,6 @@ FS_EXTERN_OVERLAY(OVY_80);
 #define CASTLE_OPP_TEXT_COLOR_FEMALE    MAKE_TEXT_COLOR(3, 4, 0) // female symbol and names
 #define CASTLE_OPP_TEXT_COLOR_MALE_NAME MAKE_TEXT_COLOR(7, 8, 0)
 
-extern const u8 gBattleCastlePartyAppButtonRects[][4]; // party app button rects (x, y, width, height in tiles)
-extern const u8 gBattleCastleOpponentAppListMenuY[];   // list menu y, by number of entries
-extern const TouchscreenListMenuTemplate gBattleCastleOpponentAppListMenuTemplate;
-extern const u16 gBattleCastleOpponentAppStatsHelpMessages[2]; // SUMMARY menu help messages, by "moves can be bought" (0) or not (1)
-extern const u16 gBattleCastleOpponentAppMovesHelpMessages[2];
-extern const u16 gBattleCastleOpponentAppRankUpHelpMessages[2];
-extern const u16 gBattleCastleOpponentAppCancelHelpMessages[2];
-extern const GraphicsModes gBattleCastleOpponentAppGraphicsModes;
-extern const u16 gBattleCastleOpponentAppRankUpMessages[][3]; // "gained the ability to..." messages, by rank kind and rank
-extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Main1;
-extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Main0;
-extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Main2;
-extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Main3;
-extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Sub0;
-extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Sub1;
-extern const GraphicsBanks gBattleCastleOpponentAppGraphicsBanks;
-
 enum {
     CASTLE_OPP_FADE_IN_START_SYNC,
     CASTLE_OPP_FADE_IN_WAIT_SYNC,
@@ -1197,8 +1180,6 @@ static void BattleCastleOpponentApp_FreeBgLayers(BgConfig *bgConfig) {
 }
 
 static void BattleCastleOpponentApp_VBlankCallback(void *arg) {
-    // OS_SetIrqCheckFlag(OS_IE_V_BLANK)
-    vu32 *dtcm = (vu32 *)0x027E0000;
     BattleCastleOpponentApp *app = arg;
 
     if (app->paletteData != NULL) {
@@ -1207,7 +1188,7 @@ static void BattleCastleOpponentApp_VBlankCallback(void *arg) {
     DoScheduledBgGpuUpdates(app->bgConfig);
     GF_RunVramTransferTasks();
     OamManager_ApplyAndResetBuffers();
-    dtcm[0x3FF8 / 4] |= OS_IE_V_BLANK;
+    OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
 
 static void BattleCastleOpponentApp_SetGraphicsBanks(void) {
@@ -2218,7 +2199,7 @@ static void BattleCastleOpponentApp_LoadMonSummary(BattleCastleOpponentApp *app)
         app->summary.hideGender = 1;
     }
     app->summary.gender = GetMonGender(mon);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < MAX_MON_MOVES; i++) {
         app->summary.moves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, NULL);
         app->summary.pp[i] = GetMonData(mon, MON_DATA_MOVE1_PP + i, NULL);
         {
@@ -2343,7 +2324,7 @@ static void BattleCastleOpponentApp_PrintMonSummary(BattleCastleOpponentApp *app
     if (infoRank == 1) {
         BattleCastle_PrintMsg(&app->windows[CASTLE_OPP_WIN_MOVES], app->msgData, msg_0033_00076, 0, 0, 0, CASTLE_OPP_TEXT_COLOR, CASTLE_ALIGN_LEFT);
     } else if (app->movesBought[index] == FALSE) {
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < MAX_MON_MOVES; i++) {
             BattleCastle_PrintMsg(&app->windows[CASTLE_OPP_WIN_MOVES], app->msgData, msg_0033_00075, 0, i * 16, 0, CASTLE_OPP_TEXT_COLOR, CASTLE_ALIGN_LEFT);
             string = NewString_ReadMsgData(app->msgData, msg_0033_00068);
             halfSlashWidth = (u8)(FontID_String_GetWidth(0, string, 0) >> 1);
@@ -2356,7 +2337,7 @@ static void BattleCastleOpponentApp_PrintMonSummary(BattleCastleOpponentApp *app
             BattleCastle_PrintMsg(&app->windows[CASTLE_OPP_WIN_MOVES], app->msgData, msg_0033_00073, 120 + halfSlashWidth, i * 16, 0, CASTLE_OPP_TEXT_COLOR, CASTLE_ALIGN_LEFT);
         }
     } else {
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < MAX_MON_MOVES; i++) {
             BufferMoveName(app->msgFormat, i, app->summary.moves[i]);
             BattleCastleOpponentApp_PrintExpandedMessage(app, &app->windows[CASTLE_OPP_WIN_MOVES], app->msgData, msg_0033_00084 + i, 0, i * 16, 0, CASTLE_OPP_TEXT_COLOR, CASTLE_ALIGN_LEFT);
             if (app->summary.moves[i] == MOVE_NONE) {

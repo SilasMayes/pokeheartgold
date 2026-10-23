@@ -43,6 +43,56 @@ typedef struct BallBurstEffect BallBurstEffect;
 typedef struct BattleAnimEmitter BattleAnimEmitter;
 typedef struct BattleAnimEmitterManager BattleAnimEmitterManager;
 
+typedef BOOL (*BallThrowFunc)(BallThrow *data);
+
+typedef struct BallThrowSpinningKinds {
+    u32 kinds[11];
+} BallThrowSpinningKinds;
+
+typedef struct BallThrowFlashingKinds {
+    u32 kinds[6];
+} BallThrowFlashingKinds;
+
+typedef struct BallThrowStaticSpriteKinds {
+    u32 kinds[3];
+} BallThrowStaticSpriteKinds;
+
+typedef struct BallThrowBounceSound {
+    int frame;
+    int seqNo;
+} BallThrowBounceSound;
+
+typedef struct BallSealEmitDelays {
+    u8 delays[7];
+} BallSealEmitDelays;
+
+typedef struct BattleAnimEmitterCounts {
+    u32 counts[22];
+} BattleAnimEmitterCounts;
+
+extern const BallThrowStaticSpriteKinds gBallThrowStaticSpriteKinds;
+extern const BallThrowFlashingKinds gBallThrowFlashingKinds;
+extern const BallThrowFunc gBallThrowModeFuncs[];
+extern const BallThrowFunc gBallThrowBallAnimFuncs[];
+extern const BallThrowBounceSound gBallThrowBounceSounds[];
+extern const BallThrowSpinningKinds gBallThrowSpinningKinds;
+extern const s16 gBallThrowShakeOffsets[];
+extern const BallThrowFunc gBallThrowCaptureStateFuncs[];
+extern const s16 gBallThrowBounceSteps[]; // bounce steps: y offset, then the animation frame
+extern const u16 gBallThrowBounceFrames[];
+// Per ball (BallAnim_GetBallTableIndex) tables
+extern const u32 gBallAnimSealParticles[][2]; // seal particle resource
+extern const u32 gBallAnimSealEmitterCounts[][2];
+extern const u32 gBallAnimBurstParticles[][3]; // burst particle resource
+extern const u32 gBallAnimBurstSkippedEmitters[][3];
+extern const u32 gBallAnimBurstEmitterCounts[][3];
+extern const u32 gBallSpriteResources[][4];
+extern const BallSealEmitDelays gBallSealEmitDelays;
+extern const BattleAnimEmitterCounts gBattleAnimEmitterCounts;
+extern const s16 gBattlerSlideInTargetX[][2];
+// Pokemon/trainer positions (x, y, z) by battler type: [0] on the field, [1] off screen where a slide-in starts.
+extern const s16 gBattlerPokepicPositions[2][6][3];
+
 BallSealEffect *BallSealEffect_New(enum HeapID heapId, const BallSealEffectTemplate *template);
 void BallSealEffect_LoadResources(BallSealEffect *effect);
 BOOL BallSealEffect_IsLoaded(BallSealEffect *effect);

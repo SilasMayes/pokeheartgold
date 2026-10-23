@@ -4,6 +4,9 @@
 
 #include "constants/battle.h"
 
+#include "battle/battle_anim_emitter.h"
+#include "battle/battle_anim_internal.h"
+
 #include "assert.h"
 #include "bg_window.h"
 #include "brightness.h"
@@ -473,17 +476,6 @@ struct BattleAnimObjWindowBgWork {
     ManagedSprite *sprites[3];
     u8 timer;
 };
-
-extern const u16 gBattleAnimDarkSpriteDrawFlags[6];
-// NARC members of each background the object window effect can show
-typedef struct BattleAnimObjWindowBgFiles {
-    u32 graphics;
-    u32 palette;
-    u32 screen;
-    u32 unk_0C;
-} BattleAnimObjWindowBgFiles;
-
-extern const BattleAnimObjWindowBgFiles gBattleAnimObjWindowBgFiles[];
 
 static void BattleAnimTask_SkewSlideAttackerBgResetScroll(BattleAnimSkewSlideWork *work, u32 *buffer) {
     u32 value = ((u32)-work->y << 16) | (u16)-work->x;
@@ -1469,7 +1461,7 @@ static void BattleAnimTask_ZigzagSlash(SysTask *task, void *data) {
             work->state++;
             ManagedSprite_SetOamMode(work->sprite, GX_OAM_MODE_XLU);
             BattleAnimUtil_StartBlendAlphaMotion(&work->blend, 16, 0, 0, 16, 16);
-            Pokepic_StartPaletteFade(work->pokepic, 0, 10, 0, 0x7FFF);
+            Pokepic_StartPaletteFade(work->pokepic, 0, 10, 0, RGB_WHITE);
         }
         break;
     case ZIGZAG_SLASH_STATE_FADE_OUT:
@@ -1478,7 +1470,7 @@ static void BattleAnimTask_ZigzagSlash(SysTask *task, void *data) {
         }
         if (!Pokepic_ResumePaletteFade(work->pokepic)) {
             work->state++;
-            Pokepic_StartPaletteFade(work->pokepic, 10, 0, 0, 0x7FFF);
+            Pokepic_StartPaletteFade(work->pokepic, 10, 0, 0, RGB_WHITE);
         }
         break;
     case ZIGZAG_SLASH_STATE_RESTORE_PIC:
@@ -1632,7 +1624,7 @@ void BattleAnimSpriteFunc_ZigzagFlash(BattleAnimSystem *system, SpriteSystem *sp
     work->spriteSystem = spriteSystem;
     work->spriteManager = spriteManager;
     work->pokepic = BattleAnimSystem_GetBattlerPokepic(work->system, BattleAnimSystem_GetDefender(system));
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < BATTLER_MAX; i++) {
         work->pokepics[i] = BattleAnimSystem_GetBattlerPokepic(work->system, i);
     }
     work->sprite = sprite;

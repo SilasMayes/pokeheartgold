@@ -100,8 +100,10 @@ void BattleTowerChallenge_Clear(u32 challenge) {
 }
 
 void FrontierData_Reset(void *data) {
-    MI_CpuFill8(data, 0, sizeof(FrontierData));
-    ((FrontierData *)data)->wifiRank = 1;
+    FrontierData *frontierData = data;
+
+    MI_CpuFill8(frontierData, 0, sizeof(FrontierData));
+    frontierData->wifiRank = 1;
 }
 
 void TowerMessages_Init(void *data) {
@@ -117,72 +119,72 @@ void BattleRoomDownload_Init(void *data) {
 }
 
 u32 BattleTowerChallenge_GetField(u32 challenge, u32 field, void *out) {
-    BattleTowerChallenge *c = (BattleTowerChallenge *)challenge;
+    BattleTowerChallenge *tower = (BattleTowerChallenge *)challenge;
     switch (field) {
     case TOWER_CHALLENGE_MODE:
-        return c->towerMode;
+        return tower->towerMode;
     case TOWER_CHALLENGE_BATTLE_NO:
-        return c->battleNumber;
+        return tower->battleNumber;
     case TOWER_CHALLENGE_TIMES_FAINTED:
-        return c->totalTimesFainted;
+        return tower->totalTimesFainted;
     case TOWER_CHALLENGE_TURNS:
-        return c->totalTurns;
+        return tower->totalTurns;
     case TOWER_CHALLENGE_DAMAGE:
-        return c->totalDamage;
+        return tower->totalDamage;
     case TOWER_CHALLENGE_PARTY_SLOTS:
-        MI_CpuCopy8(c->partySlots, out, 4);
+        MI_CpuCopy8(tower->partySlots, out, sizeof(tower->partySlots));
         return 0;
     case TOWER_CHALLENGE_ALLY_DATA:
-        MI_CpuCopy8(c->multiAllyData, out, 16);
+        MI_CpuCopy8(tower->multiAllyData, out, sizeof(tower->multiAllyData));
         return 0;
     case TOWER_CHALLENGE_ALLY_REPLACE_ITEM:
-        return c->allyReplaceItem;
+        return tower->allyReplaceItem;
     case TOWER_CHALLENGE_TRAINERS:
-        MI_CpuCopy8(c->trainers, out, 28);
+        MI_CpuCopy8(tower->trainers, out, sizeof(tower->trainers));
         return 0;
     case TOWER_CHALLENGE_ALLY_ID:
-        return c->multiAllyId;
+        return tower->multiAllyId;
     case TOWER_CHALLENGE_RANDOM_STATE:
-        return c->randomState;
+        return tower->randomState;
     }
     return 0;
 }
 
 void BattleTowerChallenge_SetField(u32 challenge, u32 field, void *value) {
-    BattleTowerChallenge *c = (BattleTowerChallenge *)challenge;
+    BattleTowerChallenge *tower = (BattleTowerChallenge *)challenge;
     switch (field) {
     case TOWER_CHALLENGE_MODE:
-        c->towerMode = *(u8 *)value;
+        tower->towerMode = *(u8 *)value;
         break;
     case TOWER_CHALLENGE_BATTLE_NO:
-        c->battleNumber = *(u8 *)value;
+        tower->battleNumber = *(u8 *)value;
         break;
     case TOWER_CHALLENGE_TIMES_FAINTED:
-        c->totalTimesFainted = *(u8 *)value;
+        tower->totalTimesFainted = *(u8 *)value;
         break;
     case TOWER_CHALLENGE_TURNS:
-        c->totalTurns = *(u16 *)value;
+        tower->totalTurns = *(u16 *)value;
         break;
     case TOWER_CHALLENGE_DAMAGE:
-        c->totalDamage = *(u16 *)value;
+        tower->totalDamage = *(u16 *)value;
         break;
     case TOWER_CHALLENGE_PARTY_SLOTS:
-        MI_CpuCopy8(value, c->partySlots, 4);
+        MI_CpuCopy8(value, tower->partySlots, sizeof(tower->partySlots));
         break;
     case TOWER_CHALLENGE_ALLY_DATA:
-        MI_CpuCopy8(value, c->multiAllyData, 16);
+        MI_CpuCopy8(value, tower->multiAllyData, sizeof(tower->multiAllyData));
         break;
     case TOWER_CHALLENGE_ALLY_REPLACE_ITEM:
-        c->allyReplaceItem = *(u8 *)value;
+        tower->allyReplaceItem = *(u8 *)value;
         break;
     case TOWER_CHALLENGE_TRAINERS:
-        MI_CpuCopy8(value, c->trainers, 28);
+        MI_CpuCopy8(value, tower->trainers, sizeof(tower->trainers));
         break;
     case TOWER_CHALLENGE_RANDOM_STATE:
-        c->randomState = *(u32 *)value;
+        tower->randomState = *(u32 *)value;
         break;
     case TOWER_CHALLENGE_ALLY_ID:
-        c->multiAllyId = *(u8 *)value;
+        tower->multiAllyId = *(u8 *)value;
         break;
     }
 }
@@ -315,21 +317,21 @@ void FrontierData_GetWifiTeam(FrontierData *data, s32 index, FrontierWifiUploadR
 }
 
 u16 FrontierData_CalcWifiScore(FrontierData *data, u32 challenge) {
-    BattleTowerChallenge *c = (BattleTowerChallenge *)challenge;
-    u16 base = 1000 * (c->battleNumber - 1);
-    u16 a = 10 * c->totalTurns;
-    u16 b = 20 * c->totalTimesFainted;
+    BattleTowerChallenge *tower = (BattleTowerChallenge *)challenge;
+    u16 base = 1000 * (tower->battleNumber - 1);
+    u16 turnsPenalty = 10 * tower->totalTurns;
+    u16 faintPenalty = 20 * tower->totalTimesFainted;
     u16 score;
     u16 time;
-    if (a + b > 950) {
+    if (turnsPenalty + faintPenalty > 950) {
         score = 0;
     } else {
-        score = 950 - (a + b);
+        score = 950 - (turnsPenalty + faintPenalty);
     }
-    if (c->totalDamage > 970) {
+    if (tower->totalDamage > 970) {
         time = 0;
     } else {
-        time = (1000 - c->totalDamage) / 30;
+        time = (1000 - tower->totalDamage) / 30;
     }
     u16 result = (u16)(base + score + time);
     data->wifiScore = result;

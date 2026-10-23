@@ -2,6 +2,9 @@
 
 #include "global.h"
 
+#include "battle/battle_anim_emitter.h"
+#include "battle/battle_anim_internal.h"
+
 #include "geometry_math.h"
 #include "heap.h"
 #include "palette.h"
@@ -10,9 +13,6 @@
 #include "sprite_system.h"
 #include "sys_task.h"
 #include "sys_task_api.h"
-
-extern const BattleAnimFunc gBattleAnimFuncTable[];
-extern const BattleAnimSpriteFunc gBattleAnimSpriteFuncTable[];
 
 void BattleAnimUtil_InitSinMotionFromStep(BattleAnimSinMotion *motion, u32 startX, u32 endX, u32 startY, u16 endY, fx32 ampX, fx32 ampY, u16 step) {
     s16 signedStep;

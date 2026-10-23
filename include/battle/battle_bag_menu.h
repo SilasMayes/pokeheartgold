@@ -4,7 +4,11 @@
 #include "battle/battle.h"
 
 #include "bag.h"
+#include "bg_window.h"
+#include "dpad_menu_box.h"
 #include "player_data.h"
+#include "sprite_system.h"
+#include "touchscreen.h"
 
 // Arguments of the in-battle bag screen, filled by the battle controller before
 // BattleBagMenu_Create and read back once `done` is set.
@@ -28,6 +32,35 @@ typedef struct BattleBagContext {
     u8 pocketPositions[5];     // selected slot on the page, per battle pocket
     u8 pocketPages[5];         // item list page, per battle pocket
 } BattleBagContext;
+
+typedef struct BattleBagButtonRect {
+    u8 x;
+    u8 y;
+    u8 width;
+    u8 height;
+} BattleBagButtonRect;
+
+extern const GraphicsModes gBattleBagGraphicsModes;
+extern const BgTemplate gBattleBagBgTemplateSub0;
+extern const BgTemplate gBattleBagBgTemplateSub1;
+extern const BgTemplate gBattleBagBgTemplateSub2;
+extern const TouchscreenHitbox gBattleBagPocketMenuHitboxes[];
+extern const TouchscreenHitbox gBattleBagItemListHitboxes[];
+extern const TouchscreenHitbox gBattleBagUseItemHitboxes[];
+extern const WindowTemplate gBattleBagMessageWindowTemplate;
+extern const WindowTemplate gBattleBagPocketMenuWindows[];
+extern const WindowTemplate gBattleBagItemListWindows[];
+extern const WindowTemplate gBattleBagUseItemWindows[];
+extern const u32 gBattleBagItemEntryMsgIds[][2];
+extern const u32 gBattleBagItemEntryQuantityMsgIds[][2];
+extern const SpriteResourceCountsListUnion gBattleBagSpriteCapacities;
+extern const int gBattleBagSpriteTemplates[][5];
+extern const u8 gBattleBagPocketOrder[];
+extern const s32 gBattleBagItemListIconPos[][2];
+extern const DpadMenuBox *const gBattleBagPageCursorBoxes[];
+extern const s32 gBattleBagTutorialFingerPos[][2];
+extern const BattleBagButtonRect gBattleBagButtonRects[];
+extern const u8 *const gBattleBagButtonWindowLists[];
 
 void BattleBagMenu_Create(BattleBagContext *context);
 

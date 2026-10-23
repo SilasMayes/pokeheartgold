@@ -55,17 +55,6 @@ struct BattleTowerTrainerSets {
     u16 setIds[1];
 };
 
-// A sample room trainer: a FrontierTrainer field and the indexes of its four Pokemon.
-typedef struct BattleTowerSampleTrainer {
-    u16 unk_00;
-    u8 monIndexes[4];
-} BattleTowerSampleTrainer;
-
-extern const u16 gBattleTowerReplacementItems[];
-extern const BattleTowerSampleTrainer gBattleTowerSampleTrainers[];
-extern const u8 gBattleTowerSampleTrainerHeaders[];
-extern const FrontierMon gBattleTowerSampleMons[];
-
 u32 BattleTower_GenerateTrainerMons(FrontierFieldSystem *tower, FrontierTrainer *trainer, u16 trainerId, u32 count, u16 *partySpecies, u16 *partyItems, FrontierMultiBattleAllyData *allyData, enum HeapID heapID) {
     BattleTowerTrainerSets *sets;
     u32 replaceItem;
@@ -79,7 +68,7 @@ u32 BattleTower_GenerateTrainerMons(FrontierFieldSystem *tower, FrontierTrainer 
 static u32 BattleTower_PickTrainerMonSets(FrontierFieldSystem *tower, BattleTowerTrainerSets *sets, u16 trainerId, FrontierMon *mons, u8 count, u16 *partySpecies, u16 *partyItems, FrontierMultiBattleAllyData *allyData, enum HeapID heapID) {
     int i;
     int j;
-    int n;
+    int numMons;
     u8 iv;
     u32 otId;
     u32 setId;
@@ -94,9 +83,9 @@ static u32 BattleTower_PickTrainerMonSets(FrontierFieldSystem *tower, BattleTowe
 
     replaceItem = FALSE;
     GF_ASSERT(count <= 4);
-    n = count;
+    numMons = count;
     i = failedItemAttempts = 0;
-    if (n != 0) {
+    if (numMons != 0) {
         cursor = setIds;
         do {
             setId = sets->setIds[(u8)(FrontierFieldSystem_NextRandom(tower) % sets->numSets)];
@@ -111,12 +100,12 @@ static u32 BattleTower_PickTrainerMonSets(FrontierFieldSystem *tower, BattleTowe
                 continue;
             }
             if (partySpecies != NULL) {
-                for (j = 0; j < n; j++) {
+                for (j = 0; j < numMons; j++) {
                     if (candidate.species == partySpecies[j]) {
                         break;
                     }
                 }
-                if (j != n) {
+                if (j != numMons) {
                     continue;
                 }
             }
@@ -132,12 +121,12 @@ static u32 BattleTower_PickTrainerMonSets(FrontierFieldSystem *tower, BattleTowe
                     continue;
                 }
                 if (partyItems != NULL) {
-                    for (j = 0; j < n; j++) {
+                    for (j = 0; j < numMons; j++) {
                         if (candidate.item == partyItems[j] && partyItems[j] != ITEM_NONE) {
                             break;
                         }
                     }
-                    if (j != n) {
+                    if (j != numMons) {
                         failedItemAttempts++;
                         continue;
                     }
@@ -145,7 +134,7 @@ static u32 BattleTower_PickTrainerMonSets(FrontierFieldSystem *tower, BattleTowe
             }
             i++;
             *cursor++ = setId;
-        } while (i != n);
+        } while (i != numMons);
     }
     iv = GetFrontierTrainerIVs(trainerId);
     otId = FrontierFieldSystem_NextRandom(tower) | (FrontierFieldSystem_NextRandom(tower) << 16);

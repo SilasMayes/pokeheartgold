@@ -4,6 +4,8 @@
 
 #include "constants/battle.h"
 
+#include "battle/battle_anim_emitter.h"
+#include "battle/battle_anim_internal.h"
 #include "library/spl_emitter.h"
 
 #include "assert.h"
@@ -389,9 +391,6 @@ typedef struct BattleAnimSpriteArcWork {
     BattleAnimLinearMotion linear;
     BattleAnimSinMotion sin;
 } BattleAnimSpriteArcWork;
-
-// X steps of the sprite of BattleAnimTask_SpriteOrbit (0: switch its priority, 255: end)
-extern const s16 gBattleAnimSpriteOrbitStepX[];
 
 enum {
     ONE_FRAME_STATE_WAIT,
@@ -1152,7 +1151,7 @@ void BattleAnimFunc_BattlerPaletteFade(BattleAnimSystem *system) {
         break;
     case 0x800 | BATTLE_ANIM_ROLE_ATTACKER:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             int type = BattleAnimSystem_GetBattlerType(system, i);
             if (type == BATTLER_TYPE_SOLO_PLAYER || type == BATTLER_TYPE_PLAYER_SIDE_SLOT_1) {
                 battler = i;
@@ -1166,7 +1165,7 @@ void BattleAnimFunc_BattlerPaletteFade(BattleAnimSystem *system) {
         break;
     case 0x800 | BATTLE_ANIM_ROLE_ATTACKER_PARTNER:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             if (BattleAnimSystem_GetBattlerType(system, i) == BATTLER_TYPE_PLAYER_SIDE_SLOT_2) {
                 battler = i;
                 break;
@@ -1179,7 +1178,7 @@ void BattleAnimFunc_BattlerPaletteFade(BattleAnimSystem *system) {
         break;
     case 0x800 | BATTLE_ANIM_ROLE_DEFENDER:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             int type = BattleAnimSystem_GetBattlerType(system, i);
             if (type == BATTLER_TYPE_SOLO_ENEMY || type == BATTLER_TYPE_ENEMY_SIDE_SLOT_1) {
                 battler = i;
@@ -1193,7 +1192,7 @@ void BattleAnimFunc_BattlerPaletteFade(BattleAnimSystem *system) {
         break;
     case 0x800 | BATTLE_ANIM_ROLE_DEFENDER_PARTNER:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             if (BattleAnimSystem_GetBattlerType(system, i) == BATTLER_TYPE_ENEMY_SIDE_SLOT_2) {
                 battler = i;
                 break;
@@ -1391,7 +1390,7 @@ void BattleAnimFunc_StretchBattler(BattleAnimSystem *system) {
         break;
     case 0x800 | BATTLE_ANIM_ROLE_ATTACKER:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             int type = BattleAnimSystem_GetBattlerType(system, i);
             if (type == BATTLER_TYPE_SOLO_PLAYER || type == BATTLER_TYPE_PLAYER_SIDE_SLOT_1) {
                 battler = i;
@@ -1405,7 +1404,7 @@ void BattleAnimFunc_StretchBattler(BattleAnimSystem *system) {
         break;
     case 0x800 | BATTLE_ANIM_ROLE_ATTACKER_PARTNER:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             if (BattleAnimSystem_GetBattlerType(system, i) == BATTLER_TYPE_PLAYER_SIDE_SLOT_2) {
                 battler = i;
                 break;
@@ -1418,7 +1417,7 @@ void BattleAnimFunc_StretchBattler(BattleAnimSystem *system) {
         break;
     case 0x800 | BATTLE_ANIM_ROLE_DEFENDER:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             int type = BattleAnimSystem_GetBattlerType(system, i);
             if (type == BATTLER_TYPE_SOLO_ENEMY || type == BATTLER_TYPE_ENEMY_SIDE_SLOT_1) {
                 battler = i;
@@ -1432,7 +1431,7 @@ void BattleAnimFunc_StretchBattler(BattleAnimSystem *system) {
         break;
     case 0x800 | BATTLE_ANIM_ROLE_DEFENDER_PARTNER:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             if (BattleAnimSystem_GetBattlerType(system, i) == BATTLER_TYPE_ENEMY_SIDE_SLOT_2) {
                 battler = i;
                 break;

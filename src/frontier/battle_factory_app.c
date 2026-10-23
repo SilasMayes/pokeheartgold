@@ -3009,9 +3009,9 @@ static void BattleFactoryApp_UpdateOrderSprites(BattleFactoryApp *app) {
     u16 i = 3;
 
     do {
-        u8 n = (u8)(i - 3);
-        if (n < app->numPicked) {
-            VecFx32 pos = *BattleFactoryBall_GetPosition(app->balls[app->picked[n]]);
+        u8 slot = (u8)(i - 3);
+        if (slot < app->numPicked) {
+            VecFx32 pos = *BattleFactoryBall_GetPosition(app->balls[app->picked[slot]]);
             pos.x -= 4 * FX32_ONE;
             pos.y += 4 * FX32_ONE;
             BattleFactorySprite_SetMatrix(app->orderSprites[i], &pos);

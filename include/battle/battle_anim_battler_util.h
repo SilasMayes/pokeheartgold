@@ -49,6 +49,19 @@ typedef struct BattleAnimTarget {
     int battler;
 } BattleAnimTarget;
 
+typedef struct BattleAnimBattlerTypePositions {
+    BattleAnimPosition positions[6];
+} BattleAnimBattlerTypePositions;
+
+// [battler type][kind * 2 + particle perspective type]
+typedef struct BattleAnimEmitterPositions {
+    VecFx32 positions[8][24];
+} BattleAnimEmitterPositions;
+
+extern const VecFx32 gBattleAnimFlippedCameraUp;
+extern const BattleAnimBattlerTypePositions gBattleAnimBattlerTypePositions;
+extern const BattleAnimEmitterPositions gBattleAnimEmitterPositions;
+
 int BattleAnimUtil_GetBattlerType(BattleAnimSystem *system, int battler);
 int BattleAnimUtil_GetBattlerSide(BattleAnimSystem *system, int battler);
 int BattleAnimUtil_GetPartnerBattler(BattleAnimSystem *system, int battler);
@@ -93,20 +106,6 @@ void BattleAnimUtil_CollectSpritesByFlags(BattleAnimSystem *system, u32 flags, B
 void *BattleAnimUtil_AllocWork(BattleAnimSystem *system, u32 size);
 void BattleAnimUtil_FreeWork(void *work);
 
-BOOL BattleAnimSystem_IsContest(BattleAnimSystem *system);
 enum HeapID BattleAnimSystem_GetHeapID(BattleAnimSystem *system);
-u16 BattleAnimSystem_GetAttacker(BattleAnimSystem *system);
-u16 BattleAnimSystem_GetDefender(BattleAnimSystem *system);
-SPLEmitter *BattleAnimSystem_GetCurrentParticleSystem(BattleAnimSystem *system);
-BgConfig *BattleAnimSystem_GetBgConfig(BattleAnimSystem *system);
-ManagedSprite *BattleAnimSystem_GetBattlerSprite(BattleAnimSystem *system, int index);
-SpriteManager *BattleAnimSystem_GetBattlerSpriteManager(BattleAnimSystem *system);
-SpriteManager *BattleAnimSystem_GetFirstSpriteManager(BattleAnimSystem *system);
-SpriteSystem *BattleAnimSystem_GetSpriteSystem(BattleAnimSystem *system);
-u8 BattleAnimSystem_GetBattlerType(BattleAnimSystem *system, int battler);
-Pokepic *BattleAnimSystem_GetBattlerPokepic(BattleAnimSystem *system, int battler);
-PaletteData *BattleAnimSystem_GetPaletteData(BattleAnimSystem *system);
-BOOL BattleAnimSystem_IsDoubleBattle(BattleAnimSystem *system);
-u32 BattleAnimSystem_GetBgMaskLayer(BattleAnimSystem *system, int index);
 
 #endif // POKEHEARTGOLD_BATTLE_BATTLE_ANIM_BATTLER_UTIL_H

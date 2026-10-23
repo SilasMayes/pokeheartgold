@@ -17,6 +17,21 @@ typedef struct BattleFactorySetRange {
     u8 hasNextTier;
 } BattleFactorySetRange;
 
+// Trainer ids of a round: regular trainers, and the 7th battle of a round.
+typedef struct BattleFactoryTrainerRange {
+    u16 min;
+    u16 max;
+    u16 lastBattleMin;
+    u16 lastBattleMax;
+} BattleFactoryTrainerRange;
+
+extern const int gBattleFactoryTradeCountTiers[5];
+extern const BattleFactoryTrainerRange gBattleFactoryRoundTrainerRanges[];
+extern const BattleFactorySetRange gBattleFactoryOpenLevelRentalRanges[];
+extern const BattleFactorySetRange gBattleFactoryLevel50SetRanges[];
+extern const BattleFactorySetRange gBattleFactoryOpenLevelTrainerSetRanges[];
+extern const BattleFactorySetRange *gBattleFactoryTrainerSetRanges;
+
 void BattleFactory_GetRoundTrainerIds(int type, int round, u16 *trainerIds, int count);
 const BattleFactorySetRange *BattleFactory_GetTrainerSetRange(int trainerId, int levelMode);
 int BattleFactory_PickSetIds(const u16 *excludedSpecies, const u16 *excludedItems, int numExcluded, int count, u16 *setIds, enum HeapID heapID, const BattleFactorySetRange *range, u16 tradeCount, u8 *ivs);

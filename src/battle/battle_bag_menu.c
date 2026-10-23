@@ -52,13 +52,6 @@ enum BattleBagPage {
     BATTLE_BAG_PAGE_USE_ITEM,
 };
 
-typedef struct BattleBagButtonRect {
-    u8 x;
-    u8 y;
-    u8 width;
-    u8 height;
-} BattleBagButtonRect;
-
 typedef struct BattleBagMenu {
     BattleBagContext *context;
     BgConfig *bgConfig;
@@ -185,28 +178,6 @@ static void BattleBagMenu_OffsetButtonSprite(BattleBagMenu *menu, u32 button, u3
 static void BattleBagMenu_StartButtonAnim(BattleBagMenu *menu, u8 button, u8 mode);
 static void BattleBagMenu_UpdateButtonAnim(BattleBagMenu *menu);
 static void BattleBagMenu_DrawPageButtons(BattleBagMenu *menu, u8 page);
-
-extern const GraphicsModes gBattleBagGraphicsModes;
-extern const BgTemplate gBattleBagBgTemplateSub0;
-extern const BgTemplate gBattleBagBgTemplateSub1;
-extern const BgTemplate gBattleBagBgTemplateSub2;
-extern const TouchscreenHitbox gBattleBagPocketMenuHitboxes[];
-extern const TouchscreenHitbox gBattleBagItemListHitboxes[];
-extern const TouchscreenHitbox gBattleBagUseItemHitboxes[];
-extern const WindowTemplate gBattleBagMessageWindowTemplate;
-extern const WindowTemplate gBattleBagPocketMenuWindows[];
-extern const WindowTemplate gBattleBagItemListWindows[];
-extern const WindowTemplate gBattleBagUseItemWindows[];
-extern const u32 gBattleBagItemEntryMsgIds[][2];
-extern const u32 gBattleBagItemEntryQuantityMsgIds[][2];
-extern const SpriteResourceCountsListUnion gBattleBagSpriteCapacities;
-extern const int gBattleBagSpriteTemplates[][5];
-extern const u8 gBattleBagPocketOrder[];
-extern const s32 gBattleBagItemListIconPos[][2];
-extern const DpadMenuBox *const gBattleBagPageCursorBoxes[];
-extern const s32 gBattleBagTutorialFingerPos[][2];
-extern const BattleBagButtonRect gBattleBagButtonRects[];
-extern const u8 *const gBattleBagButtonWindowLists[];
 
 void BattleBagMenu_Create(BattleBagContext *context) {
     BattleBagMenu *menu;

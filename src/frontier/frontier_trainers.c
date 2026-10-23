@@ -124,7 +124,7 @@ static u32 FrontierMon_Generate(FrontierMon *mon, u32 setId, u32 otId, u32 pid, 
         mon->item = set.item;
     }
     friendship = 255;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < MAX_MON_MOVES; i++) {
         mon->moves[i] = set.moves[i];
         if (set.moves[i] == MOVE_FRUSTRATION) {
             friendship = 0;

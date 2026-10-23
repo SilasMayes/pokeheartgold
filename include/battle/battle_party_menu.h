@@ -3,7 +3,10 @@
 
 #include "battle/battle.h"
 
+#include "bg_window.h"
+#include "dpad_menu_box.h"
 #include "party.h"
+#include "sprite_system.h"
 
 enum BattlePartyMode {
     BATTLE_PARTY_MODE_SWITCH,
@@ -38,6 +41,44 @@ typedef struct BattlePartyContext {
     u8 mode;          // enum BattlePartyMode
     u8 done;          // set when the screen has closed
 } BattlePartyContext;
+
+typedef struct BattlePartyMenuPos {
+    int x;
+    int y;
+} BattlePartyMenuPos;
+
+extern const u32 gBattlePartyMoveNameMsgIds[];
+extern const u32 gBattlePartyMonNameMsgIds[];
+extern const WindowTemplate gBattlePartyMonMenuWindows[];
+extern const WindowTemplate gBattlePartyRestorePPWindows[];
+extern const WindowTemplate gBattlePartyLearnMoveWindows[];
+extern const WindowTemplate gBattlePartyWindowTemplates[];
+extern const WindowTemplate gBattlePartyContestForgetMoveWindows[];
+extern const WindowTemplate gBattlePartyCheckMovesWindows[];
+extern const WindowTemplate gBattlePartyForgetMoveWindows[];
+extern const WindowTemplate gBattlePartyMoveDetailWindows[];
+extern const WindowTemplate gBattlePartyPartyListWindows[];
+extern const WindowTemplate gBattlePartySummaryWindows[];
+extern const BattlePartyMenuPos gBattlePartyForgetMoveTypeIconPos[];
+extern const BattlePartyMenuPos gBattlePartyLearnMoveTypeIconPos[];
+extern const BattlePartyMenuPos gBattlePartyCheckMovesTypeIconPos[];
+extern const BattlePartyMenuPos gBattlePartyMoveDetailTypeIconPos[];
+extern const BattlePartyMenuPos gBattlePartySummaryTypeIconPos[];
+extern const BattlePartyMenuPos gBattlePartyCheckMovesMoveIconPos[];
+extern const BattlePartyMenuPos gBattlePartyLearnMoveMoveIconPos[];
+extern const BattlePartyMenuPos gBattlePartyListIconPos[];
+extern const BattlePartyMenuPos gBattlePartyListStatusIconPos[];
+extern const SpriteResourceCountsListUnion gBattlePartySpriteCapacities;
+// {char, palette, cell, anim, draw priority} per sprite
+extern const int gBattlePartySpriteTemplates[][5];
+extern const u8 gBattlePartyButtonScrollAmounts[];
+extern const u8 gBattlePartySlotButtonScrollAmounts[];
+extern const s16 gBattlePartyButtonSpriteOffsets[];
+extern const s16 gBattlePartySlotButtonSpriteOffsets[];
+extern const u8 *const gBattlePartyButtonWindowLists[];
+// {x, y, width, height} of each button on the bottom screen tilemap
+extern const u8 gBattlePartyButtonRects[][4];
+extern const DpadMenuBox *const gBattlePartyPageCursorBoxes[];
 
 void BattlePartyMenu_Create(BattlePartyContext *context);
 

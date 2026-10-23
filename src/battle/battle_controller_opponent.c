@@ -366,10 +366,6 @@ enum {
 // The OAM copy of the battler's pokepic
 #define OPPONENT_SPRITE_OAM(opponentData) (*(void **)&(opponentData)->unk8C[0x00])
 
-extern const s16 gBattlerSlideInTargetX[][2];
-// Pokemon/trainer positions (x, y, z) by battler type: [0] on the field, [1] off screen where a slide-in starts.
-extern const s16 gBattlerPokepicPositions[2][6][3];
-
 typedef void (*OpponentCommandHandler)(BattleSystem *battleSystem, OpponentData *opponentData);
 
 typedef struct OpponentBallKindTable {
@@ -4224,7 +4220,7 @@ static void Task_PlayerSelectCommand(SysTask *task, void *data) {
     case SELECT_COMMAND_STATE_INIT: {
         BattleInputMove moveDisplay;
         int i;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < MAX_MON_MOVES; i++) {
             moveDisplay.moveNo[i] = work->moves[i];
             moveDisplay.pp[i] = work->movePPCur[i];
             moveDisplay.ppMax[i] = work->movePP[i];
@@ -4516,7 +4512,7 @@ static void Task_PlayerSelectMove(SysTask *task, void *data) {
             BattleInput_EnableBallGauge(battleInput);
             narc0 = NARC_New(NARC_a_0_0_7, HEAP_ID_BATTLE);
             narc1 = NARC_New(NARC_a_0_0_8, HEAP_ID_BATTLE);
-            for (i = 0; i < 4; i++) {
+            for (i = 0; i < MAX_MON_MOVES; i++) {
                 menu.moveNo[i] = work->moves[i];
                 menu.pp[i] = work->movePPCur[i];
                 menu.ppMax[i] = work->movePP[i];
@@ -4582,7 +4578,7 @@ static void Task_AISelectMove(SysTask *task, void *data) {
         int *choice = choices;
         int moveTarget;
 
-        for (; i < 4; i++) {
+        for (; i < MAX_MON_MOVES; i++) {
             if (!(MaskOfFlagNo(i) & work->unusableMovesMask)) {
                 *choice++ = i + 1;
                 count++;
@@ -4647,7 +4643,7 @@ static void Task_PlayerSelectTarget(SysTask *task, void *data) {
             BattleInputTargetMenu menu;
             int i;
 
-            for (i = 0; i < 4; i++) {
+            for (i = 0; i < BATTLER_MAX; i++) {
                 menu.targetMons[i] = work->targetMons[i];
             }
             menu.battlerType = work->battlerType;
@@ -6080,9 +6076,9 @@ static void Task_PlayEncounterAnimation(SysTask *task, void *data) {
         work->state++;
     case ENCOUNTER_ANIM_STATE_RESET_PALETTES:
         RESTORE_BG_PALETTES();
-        PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_BG_F, 0xFFFF, 0, 0, 0, 0x7FFF);
+        PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_BG_F, 0xFFFF, 0, 0, 0, RGB_WHITE);
         PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_OBJ_F, 0x3FFF, 0, 0, 0, 0xFFFF);
-        PaletteData_BeginPaletteFade(palette, PLTTBUF_SUB_BG_F | PLTTBUF_SUB_OBJ_F, 0xFFFF, 0, 0, 0, 0x7FFF);
+        PaletteData_BeginPaletteFade(palette, PLTTBUF_SUB_BG_F | PLTTBUF_SUB_OBJ_F, 0xFFFF, 0, 0, 0, RGB_WHITE);
         work->state = ENCOUNTER_ANIM_STATE_END;
         break;
     }

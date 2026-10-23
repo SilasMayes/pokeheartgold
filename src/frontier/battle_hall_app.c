@@ -1386,7 +1386,7 @@ static u8 BattleHallApp_GetRecordIndex(u8 index) {
 // The Hall Matron appears in the 50th and 170th single battles
 static BOOL BattleHallApp_IsMatronBattle(BattleHallApp *app) {
     if (app->mode == 0) {
-        if (app->battleNo == 50 || app->battleNo == 170) {
+        if (app->battleNo == HALL_MATRON_BATTLE_SILVER || app->battleNo == HALL_MATRON_BATTLE_GOLD) {
             return TRUE;
         }
     }

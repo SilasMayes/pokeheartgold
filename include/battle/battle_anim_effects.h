@@ -50,6 +50,17 @@ typedef struct BattleAnimFloatingSpritesWork BattleAnimFloatingSpritesWork;
 typedef struct BattleAnimWobbleOnBgWork BattleAnimWobbleOnBgWork;
 typedef struct BattleAnimObjWindowBgWork BattleAnimObjWindowBgWork;
 
+// NARC members of each background the object window effect can show
+typedef struct BattleAnimObjWindowBgFiles {
+    u32 graphics;
+    u32 palette;
+    u32 screen;
+    u32 unk_0C;
+} BattleAnimObjWindowBgFiles;
+
+extern const u16 gBattleAnimDarkSpriteDrawFlags[6];
+extern const BattleAnimObjWindowBgFiles gBattleAnimObjWindowBgFiles[];
+
 void BattleAnimFunc_SkewSlideAttackerBg(BattleAnimSystem *system);
 void BattleAnimFunc_FadeInShrinkSprite(BattleAnimSystem *system);
 void BattleAnimFunc_ShakeDefenderBlackFlash(BattleAnimSystem *system);
@@ -90,9 +101,5 @@ void BattleAnimFunc_ObjWindowBgScrollUpAlt(BattleAnimSystem *system);
 void BattleAnimFunc_ObjWindowBgScrollDownFast(BattleAnimSystem *system);
 
 // Battle animation system accessors
-ManagedSprite *BattleAnimSystem_GetSprite(BattleAnimSystem *system, int index);
-u32 BattleAnimSystem_GetBgLayer(BattleAnimSystem *system, int index);
-u8 BattleAnimUtil_GetSpritePaletteSlot(ManagedSprite *sprite);
-int BattleAnimUtil_GetBattlerSideSign(BattleAnimSystem *system, int battler);
 
 #endif // POKEHEARTGOLD_BATTLE_BATTLE_ANIM_EFFECTS_H

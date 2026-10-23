@@ -316,7 +316,7 @@ static BOOL BattleRecord_IsValid(SaveData *save, BattleRecord *record) {
             if (mon->heldItem > ITEM_MAX) {
                 return FALSE;
             }
-            for (int k = 0; k < 4; k++) {
+            for (int k = 0; k < MAX_MON_MOVES; k++) {
                 if (mon->moves[k] > NUM_MOVES) {
                     return FALSE;
                 }
@@ -383,7 +383,7 @@ void BattleRecord_StoreSetup(BattleSetup *setup) {
         data->positions[i] = setup->linkPositions[i];
         data->chatot[i] = setup->chatotVoiceParam[i];
     }
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < BATTLER_MAX; i++) {
         BattleRecordParty_FromParty(setup->party[i], &data->parties[i]);
         PlayerProfile_Copy(setup->profile[i], &data->profiles[i]);
         data->chatot[i] = Chatot_GetVoiceParam(setup->chatot[i]);

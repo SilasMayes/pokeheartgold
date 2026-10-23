@@ -214,9 +214,9 @@ BOOL FrtCmd_CompareVarToValue(FrontierScriptContext *ctx) {
 }
 
 BOOL FrtCmd_CompareVarToVar(FrontierScriptContext *ctx) {
-    u16 *a = FrontierScript_ReadVarPtr(ctx);
-    u16 *b = FrontierScript_ReadVarPtr(ctx);
-    ctx->comparisonResult = FrontierScript_Compare(*a, *b);
+    u16 *lhs = FrontierScript_ReadVarPtr(ctx);
+    u16 *rhs = FrontierScript_ReadVarPtr(ctx);
+    ctx->comparisonResult = FrontierScript_Compare(*lhs, *rhs);
     return FALSE;
 }
 

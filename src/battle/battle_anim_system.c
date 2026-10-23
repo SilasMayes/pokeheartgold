@@ -3,6 +3,8 @@
 #include "constants/battle.h"
 #include "constants/moves.h"
 
+#include "battle/battle_anim_ball.h"
+#include "battle/battle_anim_emitter.h"
 #include "battle/battle_anim_internal.h"
 #include "battle/battle_controller.h"
 #include "battle/battle_system.h"
@@ -21,6 +23,7 @@
 #include "pokemon.h"
 #include "pokepic.h"
 #include "sound_playback.h"
+#include "sound_playback_internal.h"
 #include "sprite.h"
 #include "sprite_resource_header.h"
 #include "sprite_system.h"
@@ -28,6 +31,10 @@
 #include "sys_task_api.h"
 #include "system.h"
 #include "vram_transfer_manager.h"
+
+// The particle systems are held as SPLEmitter handles (see BattleAnimContext)
+void ParticleSystem_GetCameraUp(SPLEmitter *particleSystem, VecFx32 *out);
+void ParticleSystem_SetCameraUp(SPLEmitter *particleSystem, VecFx32 *up);
 
 // What a battle animation task is counted as (BattleAnimSystem.taskCount / soundTaskCount)
 enum BattleAnimTaskKind {
@@ -288,12 +295,6 @@ struct BattleAnimBattlerSprites {
     u8 battlerTypes[4];
     Pokepic *pokepics[4];
 };
-
-extern void (*const gBattleAnimEmitterCallbackTable[])(SPLEmitter *);
-// assert messages; GF_ASSERT(message == NULL) is an assert that always fails
-extern const char gStr_HaikeiSubSystemLaunchLimit[];
-extern const char gBattleAnimNoBgPaletteAnimMsg[];
-extern const char gBattleAnimInvalidExFlagMsg[];
 
 static const u32 sBattleAnimBgMaskLayers[] = { 1, 2, 3 };
 
@@ -1565,7 +1566,7 @@ static int BattleAnimSystem_GetBattlerByRole(BattleAnimSystem *system, u32 role)
         break;
     case 4:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             int type = BattleAnimSystem_GetBattlerType(system, i);
             if (type == BATTLER_TYPE_SOLO_PLAYER || type == BATTLER_TYPE_PLAYER_SIDE_SLOT_1) {
                 battler = i;
@@ -1578,7 +1579,7 @@ static int BattleAnimSystem_GetBattlerByRole(BattleAnimSystem *system, u32 role)
         break;
     case 5:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             int type = BattleAnimSystem_GetBattlerType(system, i);
             if (type == BATTLER_TYPE_SOLO_ENEMY || type == BATTLER_TYPE_ENEMY_SIDE_SLOT_1) {
                 battler = i;
@@ -1591,7 +1592,7 @@ static int BattleAnimSystem_GetBattlerByRole(BattleAnimSystem *system, u32 role)
         break;
     case 6:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             if (BattleAnimSystem_GetBattlerType(system, i) == BATTLER_TYPE_PLAYER_SIDE_SLOT_2) {
                 battler = i;
                 break;
@@ -1603,7 +1604,7 @@ static int BattleAnimSystem_GetBattlerByRole(BattleAnimSystem *system, u32 role)
         break;
     case 7:
         battler = 0xFF;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             if (BattleAnimSystem_GetBattlerType(system, i) == BATTLER_TYPE_ENEMY_SIDE_SLOT_2) {
                 battler = i;
                 break;
@@ -3376,7 +3377,7 @@ BattleAnimBattlerSprites *BattleAnimBattlerSprites_New(BattleSystem *battleSyste
     BattleSystem_GetBattlerTypes(battleSystem, sprites->battlerTypes);
     BattleSystem_GetPokepics(battleSystem, (void **)sprites->pokepics);
     narc = NARC_New(NARC_a_0_0_8, heapId);
-    for (i = 0; i < 4; ++i) {
+    for (i = 0; i < BATTLER_MAX; ++i) {
         if ((i == sprites->battler || sprites->battler == 0xFF) && sprites->pokepics[i] != NULL) {
             resId = i + 55555 + 5000 * sprites->battler;
             SpriteSystem_LoadCharResObjFromOpenNarc(sprites->spriteSystem, sprites->spriteManager, narc, 76, FALSE, 1, resId);

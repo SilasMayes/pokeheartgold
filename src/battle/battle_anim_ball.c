@@ -49,8 +49,6 @@ static void *BattleAnimEmitter_GetEmitterParam(void);
 static int BattleAnimEmitter_GetEmitterCount(int resourceId);
 static void BattleAnimUtil_LoadMonIntoPic(BattleAnimBattlerPicParams *params, int target, BOOL oppositeFacing, enum HeapID heapId);
 
-fx32 FX_Sqrt(fx32 x);
-
 #define BALL_ROTATION(data)     ((BattleAnimValueMotion *)&(data)->throwMotions[0]) // value motion of the rotation
 #define BALL_ARC_MOTION(data)   ((void *)&(data)->throwMotions[20])                 // linear part of the throw arc
 #define BALL_ARC_MOTION2(data)  ((void *)&(data)->throwMotions[56])                 // height part of the throw arc
@@ -59,8 +57,6 @@ fx32 FX_Sqrt(fx32 x);
 #define BALL_TARGET_X(data)     (*(s16 *)&(data)->throwCoords[4]) // end of the throw arc
 #define BALL_TARGET_Y(data)     (*(s16 *)&(data)->throwCoords[6])
 #define BALL_ARC_DURATION(data) (*(int *)&(data)->throwCoords[8])
-
-typedef BOOL (*BallThrowFunc)(BallThrow *data);
 
 struct BallSealEffect {
     enum HeapID heapId;
@@ -116,38 +112,6 @@ struct BattleAnimEmitterManager {
     BattleAnimEmitter *emitters[16];
 };
 
-typedef struct BallThrowSpinningKinds {
-    u32 kinds[11];
-} BallThrowSpinningKinds;
-
-typedef struct BallThrowFlashingKinds {
-    u32 kinds[6];
-} BallThrowFlashingKinds;
-
-typedef struct BallThrowStaticSpriteKinds {
-    u32 kinds[3];
-} BallThrowStaticSpriteKinds;
-
-typedef struct BallThrowBounceSound {
-    int frame;
-    int seqNo;
-} BallThrowBounceSound;
-
-typedef struct BallSealEmitDelays {
-    u8 delays[7];
-} BallSealEmitDelays;
-
-typedef struct BattleAnimEmitterCounts {
-    u32 counts[22];
-} BattleAnimEmitterCounts;
-
-extern const BallThrowStaticSpriteKinds gBallThrowStaticSpriteKinds;
-extern const BallThrowFlashingKinds gBallThrowFlashingKinds;
-extern const BallThrowFunc gBallThrowModeFuncs[];
-extern const BallThrowFunc gBallThrowBallAnimFuncs[];
-extern const BallThrowBounceSound gBallThrowBounceSounds[];
-extern const BallThrowSpinningKinds gBallThrowSpinningKinds;
-extern const s16 gBallThrowShakeOffsets[];
 enum BallCaptureState {
     BALL_CAPTURE_STATE_IDLE,
     BALL_CAPTURE_STATE_THROW,
@@ -178,21 +142,6 @@ enum BallCaptureState {
     BALL_CAPTURE_STATE_GO_TO_END,
     BALL_CAPTURE_STATE_END,
 };
-
-extern const BallThrowFunc gBallThrowCaptureStateFuncs[];
-extern const s16 gBallThrowBounceSteps[]; // bounce steps: y offset, then the animation frame
-extern const u16 gBallThrowBounceFrames[];
-// Per ball (BallAnim_GetBallTableIndex) tables
-extern const u32 gBallAnimSealParticles[][2]; // seal particle resource
-extern const u32 gBallAnimSealEmitterCounts[][2];
-extern const u32 gBallAnimBurstParticles[][3]; // burst particle resource
-extern const u32 gBallAnimBurstSkippedEmitters[][3];
-extern const u32 gBallAnimBurstEmitterCounts[][3];
-extern const u32 gBallSpriteResources[][4];
-extern const BallSealEmitDelays gBallSealEmitDelays;
-extern const BattleAnimEmitterCounts gBattleAnimEmitterCounts;
-extern const s16 gBattlerSlideInTargetX[][2];
-extern const s16 gBattlerPokepicPositions[][3];
 
 static int BallAnim_GetBallTableIndex(int ball) {
     if (ball >= 1 && ball <= 24) {
@@ -1988,5 +1937,5 @@ s16 BattleAnimUtil_GetBattlerTypeCoord(u32 battlerType, u32 index) {
     if (index == 0) {
         return gBattlerSlideInTargetX[battlerType][0];
     }
-    return gBattlerPokepicPositions[battlerType][index];
+    return gBattlerPokepicPositions[0][battlerType][index];
 }

@@ -158,6 +158,63 @@ typedef struct BattleCastlePartyApp {
     u32 bgToggleRequests; // 4 bits per BG layer, applied in VBlank
 } BattleCastlePartyApp;
 
+// Entry of the HEAL / RENTAL list menus
+typedef struct BattleCastleMenuOption {
+    u32 minRank; // required rank for RESTORE / rental options
+    int msgId;
+    int value;
+} BattleCastleMenuOption;
+
+// Entry of the main (HEAL / RENTAL / CANCEL) list menu
+typedef struct BattleCastleMenuItem {
+    int msgId;
+    int value;
+} BattleCastleMenuItem;
+
+extern const u16 gBattleCastlePartyAppHealMessages[];         // heal result messages, by action - 1
+extern const u16 gBattleCastlePartyAppBerryCounts[];          // number of rentable berries, by rental rank - 1
+extern const u16 gBattleCastlePartyAppHealCosts[];            // CP cost of RESTORE HP / PP / ALL
+extern const u16 gBattleCastlePartyAppMainMenuHelpMessages[]; // main menu help messages, by cursor position
+extern const u16 gBattleCastlePartyAppItemCounts[];           // number of rentable items, by rental rank - 1
+extern const u16 gBattleCastlePartyAppRankUpCosts[2][3];      // CP cost of the next rank, by rank kind (CASTLE_RANK_*) and rank
+extern const u16 gBattleCastlePartyAppRentalRankUpCosts[];    // = gBattleCastlePartyAppRankUpCosts[CASTLE_RANK_RENTAL]
+extern const u16 gBattleCastlePartyAppRankUpMessages[2][3];   // "gained the ability to..." messages, by rank kind and rank
+extern const BattleCastleMenuItem gBattleCastlePartyAppMainMenuItems[];
+extern const BattleCastleMenuOption gBattleCastlePartyAppRentalMenuOptions[]; // BERRIES / ITEMS / RANK UP / CANCEL
+extern const u16 gBattleCastleRentalItems[];                                  // rentable items
+extern const u16 gBattleCastleRentalItemCosts[];                              // item costs in CP
+extern const BattleCastleMenuOption gBattleCastlePartyAppHealMenuOptions[];   // RESTORE HP / PP / ALL / RANK UP / CANCEL
+extern const u16 gBattleCastleRentalBerries[];                                // rentable berries
+extern const u16 gBattleCastleRentalBerryCosts[];                             // berry costs in CP
+extern const u8 gBattleCastlePartyAppListMenuY[];                             // list menu y, by number of entries
+extern const GraphicsModes gBattleCastlePartyAppGraphicsModes;
+extern const BgTemplate gBattleCastlePartyAppBgTemplate_Sub2;
+extern const BgTemplate gBattleCastlePartyAppBgTemplate_Main1;
+extern const BgTemplate gBattleCastlePartyAppBgTemplate_Main0;
+extern const BgTemplate gBattleCastlePartyAppBgTemplate_Sub3;
+extern const BgTemplate gBattleCastlePartyAppBgTemplate_Main2;
+extern const BgTemplate gBattleCastlePartyAppBgTemplate_Main3;
+extern const BgTemplate gBattleCastlePartyAppBgTemplate_Sub0;
+extern const BgTemplate gBattleCastlePartyAppBgTemplate_Sub1;
+extern const GraphicsBanks gBattleCastlePartyAppGraphicsBanks;
+
+extern const u8 gBattleCastlePartyAppButtonRects[][4]; // party app button rects (x, y, width, height in tiles)
+extern const u8 gBattleCastleOpponentAppListMenuY[];   // list menu y, by number of entries
+extern const TouchscreenListMenuTemplate gBattleCastleOpponentAppListMenuTemplate;
+extern const u16 gBattleCastleOpponentAppStatsHelpMessages[2]; // SUMMARY menu help messages, by "moves can be bought" (0) or not (1)
+extern const u16 gBattleCastleOpponentAppMovesHelpMessages[2];
+extern const u16 gBattleCastleOpponentAppRankUpHelpMessages[2];
+extern const u16 gBattleCastleOpponentAppCancelHelpMessages[2];
+extern const GraphicsModes gBattleCastleOpponentAppGraphicsModes;
+extern const u16 gBattleCastleOpponentAppRankUpMessages[][3]; // "gained the ability to..." messages, by rank kind and rank
+extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Main1;
+extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Main0;
+extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Main2;
+extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Main3;
+extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Sub0;
+extern const BgTemplate gBattleCastleOpponentAppBgTemplate_Sub1;
+extern const GraphicsBanks gBattleCastleOpponentAppGraphicsBanks;
+
 BOOL BattleCastlePartyApp_AnimatePressedButton(BattleCastlePartyApp *app);
 void BattleCastle_InitSpriteGfx(BattleCastleSpriteGfx *gfx, Party *party, u8 isLink);
 void BattleCastle_FreeSpriteGfx(BattleCastleSpriteGfx *gfx);

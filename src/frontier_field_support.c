@@ -1,3 +1,5 @@
+#include "frontier_field_support.h"
+
 #include "global.h"
 
 #include "constants/maps.h"
@@ -57,23 +59,11 @@ static u32 FrontierPartySelect_WaitPartyMenu(FrontierPartySelectEnv *env, FieldS
 static u32 FrontierPartySelect_LaunchSummary(FrontierPartySelectEnv *env, FieldSystem *fieldSystem, enum HeapID heapId);
 static u32 FrontierPartySelect_WaitSummary(FrontierPartySelectEnv *env, FieldSystem *fieldSystem);
 static BOOL Task_FrontierPartySelect(TaskManager *taskManager);
-void TaskManager_CallFrontierPartySelect(TaskManager *taskManager, void **runningApp, u8 context, u8 summaryMode, u8 minMons, u8 maxMons, u8 maxLevel, u8 partySlot);
 static u32 FrontierWifiConnection_Launch(FrontierWifiConnectionEnv *env, FieldSystem *fieldSystem);
 static u32 FrontierWifiConnection_Wait(FrontierWifiConnectionEnv *env, FieldSystem *fieldSystem);
 static BOOL Task_FrontierWifiConnection(TaskManager *taskManager);
-void TaskManager_CallFrontierWifiConnection(TaskManager *taskManager, u16 mode, u16 outputVar, u16 connectNow);
 static BOOL Task_FrontierLinkPartnerCheck(TaskManager *taskManager);
-void TaskManager_CallFrontierLinkPartnerCheck(TaskManager *taskManager, u16 kind, u16 outputVar);
-u32 BattleTower_ClaimRecordMilestone(SaveData *saveData);
-u32 BattleTower_GetRecordMilestone(SaveData *saveData);
-void FrontierFieldSystem_AddBattleTotals(FieldSystem *fieldSystem, const int *delta);
-u32 BattleTower_NextRandom(u32 value);
 static u32 BattleTower_NextSeed(u32 value);
-u32 BattleTower_InitSeed(SaveData *saveData);
-u32 BattleTower_AdvanceSeed(SaveData *saveData);
-u32 BattleTower_RestoreRandom(SaveData *saveData);
-BOOL FieldSystem_MapIsBattleTowerMultiPartnerSelectRoom(FieldSystem *fieldSystem);
-void Save_DullBadges(SaveData *saveData, int days);
 
 enum {
     PARTY_SELECT_LAUNCH_PARTY_MENU,
@@ -377,11 +367,11 @@ u32 BattleTower_GetRecordMilestone(SaveData *saveData) {
     return 3;
 }
 
-void FrontierFieldSystem_AddBattleTotals(FieldSystem *fieldSystem, const int *delta) {
+void FrontierFieldSystem_AddBattleTotals(FieldSystem *fieldSystem, struct BattleSetupSub_138 *totals) {
     FrontierFieldSystem *frontierFsys = fieldSystem->frontierFsys;
-    frontierFsys->totalTurns += delta[0];
-    frontierFsys->totalTimesFainted += delta[1];
-    frontierFsys->totalDamage += delta[2];
+    frontierFsys->totalTurns += totals->totalTurns;
+    frontierFsys->totalTimesFainted += totals->totalTimesFainted;
+    frontierFsys->totalDamage += totals->totalDamage;
 }
 
 u32 BattleTower_NextRandom(u32 value) {

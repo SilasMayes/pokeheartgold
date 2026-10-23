@@ -167,13 +167,13 @@ static void BattleHallData_GenerateOpponents(BattleHallData *data) {
     BattleHall_PickTrainerIds(data->type, count, data->round, rank, data->battleNo, data->trainerIds);
     battles = (BattleHallTrainerPair *)data->trainerIds;
     battleNo = data->battleNo & 0x7F;
-    if ((u16)(battles[battleNo].trainerId + 0xFECD) <= 1) {
+    if (IS_HALL_MATRON(battles[battleNo].trainerId)) {
         rank = (u8)BattleHall_GetLevelRank(data);
     }
-    if (battles[battleNo].trainerId == 307) {
+    if (battles[battleNo].trainerId == HALL_MATRON_SILVER) {
         matron = 1;
     }
-    if (battles[battleNo].trainerId == 308) {
+    if (battles[battleNo].trainerId == HALL_MATRON_GOLD) {
         matron = 2;
     }
     BattleHall_PickSetIds(1, data->cellType, rank, data->battleNo, (u16)GetMonData(Party_GetMonByIndex(data->party, 0), MON_DATA_SPECIES, NULL), data->setIds, matron);

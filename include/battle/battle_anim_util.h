@@ -147,6 +147,9 @@ typedef struct BattleAnimPaletteBlend {
     PaletteData *paletteData;
 } BattleAnimPaletteBlend;
 
+extern const BattleAnimFunc gBattleAnimFuncTable[];
+extern const BattleAnimSpriteFunc gBattleAnimSpriteFuncTable[];
+
 void BattleAnimUtil_InitSinMotionFromStep(BattleAnimSinMotion *motion, u32 startX, u32 endX, u32 startY, u16 endY, fx32 ampX, fx32 ampY, u16 step);
 BOOL BattleAnimUtil_UpdateSinMotion(BattleAnimSinMotion *motion);
 BOOL BattleAnimUtil_UpdateSinMotionSprite(BattleAnimSinMotion *motion, s16 x, s16 y, ManagedSprite *sprite);
@@ -208,15 +211,6 @@ BattleAnimSpriteFunc BattleAnimSystem_GetSpriteFunc(u32 id);
 void BattleAnimFunc_None(BattleAnimSystem *system);
 
 // position: any motion (s16 x, y first)
-BOOL BattleAnimSystem_IsContest(BattleAnimSystem *system);
-PaletteData *BattleAnimSystem_GetPaletteData(BattleAnimSystem *system);
-fx32 BattleAnimUtil_CalcStep(fx32 start, fx32 end, int duration);
-int BattleAnimUtil_CalcStepCount(fx32 start, fx32 end, fx32 step);
-void BattleAnimUtil_SetSpritePosWithOffset(void *position, ManagedSprite *sprite, s16 x, s16 y);
-void BattleAnimUtil_SetSpriteScale(BattleAnimLinearMotion *scale, ManagedSprite *sprite);
-void BattleAnimUtil_SetPokepicPosWithOffset(void *position, Pokepic *pokepic, int x, int y);
-void BattleAnimUtil_SetPokepicScale(BattleAnimLinearMotion *scale, Pokepic *pokepic);
-void BattleAnimUtil_InitSinMotion(BattleAnimSinMotion *motion, int startX, int endX, int startY, u16 endY, fx32 ampX, fx32 ampY, int duration);
 
 fx32 FX_Sqrt(fx32 x);
 

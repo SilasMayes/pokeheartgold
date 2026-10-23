@@ -31,8 +31,8 @@ static int BattleFactory_GetAppResult(BattleFactoryAppLaunchArgs *args, u32 inde
 
 BattleFactoryData *gBattleFactoryData;
 
-u32 BattleFactory_GetBestStreakStat(u8 type, u8 levelMode);
-u32 BattleFactory_GetBestTradeCountStat(u8 type, u8 levelMode);
+u32 BattleFactory_GetBestStreakStat(u8 levelMode, u8 type);
+u32 BattleFactory_GetBestTradeCountStat(u8 levelMode, u8 type);
 // opponent Pokemon count of a type
 
 static const u8 sBattleFactoryBattlePoints[12] = { 0, 5, 5, 5, 5, 7, 7, 8, 9 };

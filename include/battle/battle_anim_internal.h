@@ -144,6 +144,12 @@ typedef struct BattleAnimBattlerPicParams {
     u8 battlerTypes[4];
 } BattleAnimBattlerPicParams;
 
+extern void (*const gBattleAnimEmitterCallbackTable[])(SPLEmitter *);
+// assert messages; GF_ASSERT(message == NULL) is an assert that always fails
+extern const char gStr_HaikeiSubSystemLaunchLimit[];
+extern const char gBattleAnimNoBgPaletteAnimMsg[];
+extern const char gBattleAnimInvalidExFlagMsg[];
+
 BOOL BattleAnimSystem_IsContest(BattleAnimSystem *system);
 SysTask *BattleAnimSystem_CreateTask(BattleAnimSystem *system, SysTaskFunc func, void *data, u32 priority);
 SysTask *BattleAnimSystem_CreateTaskDefaultPriority(BattleAnimSystem *system, SysTaskFunc func, void *data);
@@ -196,19 +202,5 @@ SPLEmitter *BattleAnimSystem_NewParticleSystemFromOpenNarc(NARC *narc, enum Heap
 void BattleAnimSystem_FreeParticleSystem(SPLEmitter *particleSystem);
 int BattleAnimSystem_GetSideSign(BattleAnimSystem *system, int battlerA, int battlerB);
 void BattleAnimEmitterCb_Dummy(void);
-
-s16 BattleAnimSystem_GetBattlerScreenCoord(BattleAnimSystem *system, int battler, u32 coord);
-void BattleAnimUtil_LoadSubstituteIntoPic(BattleAnimBattlerPicParams *params, enum HeapID heapId);
-void BattleAnimUtil_LoadMonIntoPicSameFacing(BattleAnimBattlerPicParams *params, enum HeapID heapId);
-void BattleAnimUtil_LoadMonIntoPicOppositeFacing(BattleAnimBattlerPicParams *params, enum HeapID heapId);
-void BattleAnimUtil_RestorePic(BattleAnimBattlerPicParams *params, enum HeapID heapId);
-
-// Sound effect panning
-void SetSeqTrackPan(u16 seqNo, u32 trackMask, int pan);
-void SetAllSEPan(int pan);
-
-// Particle system camera
-void ParticleSystem_GetCameraUp(SPLEmitter *particleSystem, VecFx32 *out);
-void ParticleSystem_SetCameraUp(SPLEmitter *particleSystem, VecFx32 *up);
 
 #endif // POKEHEARTGOLD_BATTLE_BATTLE_ANIM_INTERNAL_H
