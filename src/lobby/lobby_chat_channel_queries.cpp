@@ -11,7 +11,6 @@
 extern "C" const u32 gLobbyChatNextRequestId;
 
 
-extern "C" Str LobbyChat_GetFullChannelName(LobbyChatManager *m, const Str &s);
 extern "C" void chatGetChannelKeysA(void *chat, const char *channel, const char *nick, int count, const char **keys, void (*callback)(), u32 param, u32 blocking);
 extern "C" void chatEnumChannelsA(void *chat, const char *filter, void (*callbackEach)(), void (*callbackAll)(), u32 param, u32 blocking);
 extern "C" void chatEnumUsersA(void *chat, const char *channel, void (*callback)(), u32 param, u32 blocking);
@@ -22,7 +21,6 @@ extern "C" void LobbyChat_OnEnumChannels();
 extern "C" void LobbyChat_OnEnumUsers();
 extern "C" unsigned long strlen(const char *);
 extern "C" const char gLobbyStr_Empty_17[];
-extern "C" Str LobbyChat_GetUserNick(LobbyChatManager *m, int idx);
 
 inline bool StrEquals(const Str *s, const char *cstr) {
     return LobbyString_CompareCStr(s, cstr) == 0;
@@ -56,7 +54,6 @@ inline LobbyCallbackRequest *NewHandler(LobbyRequestVtable *vtable, u32 callback
     return p;
 }
 
-extern "C" int LobbyChat_GetChannelKeysAsync(const char *name, int userId, const char *key, u32 callback, u32 param);
 extern "C" int LobbyChat_EnumChannelsAsync(const char *name, u32 callback, u32 param);
 extern "C" int LobbyChat_EnumUsersAsync(const char *name, u32 callback, u32 param);
 
@@ -68,7 +65,7 @@ inline u32 GetId(LobbyCallbackRequest *h, IdTag, IdTag) {
 
 #pragma opt_common_subs off
 
-extern "C" int LobbyChat_GetChannelKeysAsync(const char *name, int userId, const char *key, u32 callback, u32 param) {
+int LobbyChat_GetChannelKeysAsync(const char *name, int userId, const char *key, LobbyGetChannelKeysCallback callback, u32 param) {
     LobbyChatManager *m = gLobbyChatManager;
     if (m == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
@@ -79,7 +76,7 @@ extern "C" int LobbyChat_GetChannelKeysAsync(const char *name, int userId, const
     if (m != NULL && GetMgr()->state != LOBBY_CHAT_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (strlen(key) + 1 > 20) {
+    if (strlen(key) + 1 > LOBBY_CHAT_KEY_SIZE) {
         return PPW_LOBBY_RESULT_ERROR_PARAM;
     }
     Str nick;
@@ -97,7 +94,7 @@ extern "C" int LobbyChat_GetChannelKeysAsync(const char *name, int userId, const
     }
     m = GetMgr();
     LobbyRequestMapInsertResult res;
-    LobbyCallbackRequest *h = NewHandler(&gLobbyGetChannelKeysRequestVtable, callback, param);
+    LobbyCallbackRequest *h = NewHandler(&gLobbyGetChannelKeysRequestVtable, (u32)callback, param);
     LobbyRequestMap_Insert(&res, &m->requestMap, &h);
     u32 id = GetId(h, IdTag(), IdTag());
     Str s;

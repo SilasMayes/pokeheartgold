@@ -22,7 +22,7 @@ void *LobbyChatManager_Destroy(LobbyChatManager *manager) {
     return manager;
 }
 
-int LobbyChat_GetFullChannelName(Str *out, LobbyChatManager *manager, Str *name) {
+void LobbyChat_GetFullChannelName(Str *out, LobbyChatManager *manager, Str *name) {
     LobbyString_Concat(out, &manager->channelPrefix, name);
 }
 

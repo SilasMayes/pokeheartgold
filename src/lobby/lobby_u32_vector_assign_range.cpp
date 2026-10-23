@@ -4,11 +4,7 @@
 
 #include <nitro/code32.h>
 
-struct Tag {};
-
 extern "C" void *memmove(void *, const void *, u32);
-extern "C" u32 LobbyU32Vector_RecommendSize(LobbyU32Vector *v, u32 n);
-extern "C" void LobbyU32Vector_Reallocate(LobbyU32Vector *v, u32 n, u32 cap);
 
 struct Rec {
     u32 recommend(LobbyU32Vector *v, u32 n) {

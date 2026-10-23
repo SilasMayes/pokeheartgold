@@ -99,7 +99,7 @@ void LobbyString_AssignCStr(Str *s, const char *arg) {
 
 #pragma warn_uninitializedvar off
 void LobbyString_ReplaceCStr(Str *s, u32 a, u32 b, const char *str) {
-    Tag x;
+    LobbyTag x;
     LobbyString_ReplaceRange(s, a, b, str, str + strlen(str), x);
 }
 

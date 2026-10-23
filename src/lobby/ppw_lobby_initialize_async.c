@@ -8,7 +8,6 @@
 
 #include "ppw_lobby_work.h"
 
-int PPW_LobbyInitializeAsync(const char *gameName, const char *secretKey, int prefix, const PPWLobbyCallbacks *callbacks, const DwcUserData *userData, const void *playerData, u32 playerDataSize);
 
 int PPW_LobbyInitializeAsync(const char *gameName, const char *secretKey, int prefix, const PPWLobbyCallbacks *callbacks, const DwcUserData *userData, const void *playerData, u32 playerDataSize) {
     if (!DWC_CheckUserData(userData) || !DWC_CheckHasProfile(userData)) {

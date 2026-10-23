@@ -222,7 +222,7 @@ void LobbyChat_OnTopicChanged(void *chat, char *channel, void *topic) {
     LobbyString_Destroy(&fullName);
 }
 
-void LobbyChat_OnChannelModeChanged(void) {
+void LobbyChat_OnChannelModeChanged(void *chat, const char *channel, u32 mode, u32 id) {
     if (gLobbyChatManager && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
     }

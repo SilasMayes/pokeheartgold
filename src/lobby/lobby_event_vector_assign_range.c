@@ -4,42 +4,34 @@
 
 #include "ppw_lobby_work.h"
 
-#define W(p, n) (*(u32 *)((u8 *)(p) + (n)))
-#define P(p, n) (*(void **)((u8 *)(p) + (n)))
+// The buffer the stable sort merges through: as many events as could be allocated.
+typedef struct LobbySortTemporaryBuffer {
+    LobbyEvent *data;
+    int count;
+} LobbySortTemporaryBuffer;
 
-typedef struct {
-    int a, b;
-} Pair;
-
-typedef struct {
-    Pair *data;
-    u32 size, capacity;
-} Vec;
-
-extern u32 gLobbySortEmptyBuffer[];
+extern LobbySortTemporaryBuffer gLobbySortEmptyBuffer;
 extern char _ZSt7nothrow[];
 void *_ZnamRKSt9nothrow_t(u32, void *);
-void LobbySort_GetTemporaryBuffer(void *, int);
-u32 LobbyEventVector_RecommendSize(Vec *, u32);
-void LobbyEventVector_AssignRange(Vec *, Pair *, Pair *);
-void LobbyEventVector_Reallocate(Vec *, u32, u32);
+void LobbySort_GetTemporaryBuffer(LobbySortTemporaryBuffer *buffer, int n);
 
-void LobbySort_GetTemporaryBuffer(void *p, int n) {
-    P(p, 0) = 0;
-    W(p, 4) = gLobbySortEmptyBuffer[1];
+void LobbySort_GetTemporaryBuffer(LobbySortTemporaryBuffer *buffer, int n) {
+    buffer->data = NULL;
+    buffer->count = gLobbySortEmptyBuffer.count;
     while (n > 0) {
-        P(p, 0) = _ZnamRKSt9nothrow_t(n * 8, _ZSt7nothrow);
-        if (P(p, 0)) {
-            W(p, 4) = n;
+        buffer->data = _ZnamRKSt9nothrow_t(n * sizeof(LobbyEvent), _ZSt7nothrow);
+        if (buffer->data) {
+            buffer->count = n;
             return;
         }
         n /= 2;
     }
 }
 
-void LobbyEventVector_AssignRange(Vec *p, Pair *first, Pair *last) {
+void LobbyEventVector_AssignRange(LobbyEventVector *p, const LobbyEvent *first, const LobbyEvent *last, LobbyTag tag) {
     u32 n = last - first, growth;
-    Pair *end, *dest;
+    const LobbyEvent *end;
+    LobbyEvent *dest;
     volatile u8 a, c, d, b;
     if (p->capacity < n) {
         a = 0;
@@ -49,8 +41,8 @@ void LobbyEventVector_AssignRange(Vec *p, Pair *first, Pair *last) {
         end += *(p->size < n ? &p->size : &n);
         dest = p->data;
         while (first < end) {
-            dest->a = first->a;
-            dest->b = first->b;
+            dest->key = first->key;
+            dest->payload = first->payload;
             ++first;
             ++dest;
         }
@@ -64,7 +56,7 @@ void LobbyEventVector_AssignRange(Vec *p, Pair *first, Pair *last) {
             return;
         }
         d = 0;
-        dest = *(Pair *volatile *)&p->data + *(volatile u32 *)&p->size;
+        dest = *(LobbyEvent *volatile *)&p->data + *(volatile u32 *)&p->size;
         while (end != last) {
             if (dest) {
                 *dest = *end;

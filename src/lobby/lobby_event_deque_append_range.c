@@ -1,65 +1,34 @@
 #include "global.h"
 
+#include "lobby_event_deque.h"
+
 #include <nitro/code32.h>
 
-typedef struct {
-    u8 unused;
-} Tag;
-
-typedef struct {
-    u32 a, b;
-} Entry;
-
-typedef struct {
-    Entry *p;
-} Iter;
-
-static inline int Equal(const Iter *first, Entry *last) {
+static inline int Equal(const LobbyEventVectorIterator *first, const LobbyEvent *last) {
     return first->p == last;
 }
 
-static inline long Distance(Iter first, Iter last) {
-    Iter *a = &first, *b = &last;
+static inline long Distance(LobbyEventVectorIterator first, LobbyEventVectorIterator last) {
+    LobbyEventVectorIterator *a = &first, *b = &last;
     return b->p - a->p;
 }
 
-typedef struct {
-    u32 start, size, field8, fieldC;
-    int capacity;
-} Vector;
-
-static inline u32 End(Vector *v) {
-    if (v->capacity) {
-        return (v->capacity - 1) << 7;
-    }
-    return 0;
-}
-
-typedef struct {
-    u32 x[5];
-} Position;
-
-void LobbyEventDeque_AddBackCapacity(Vector *, u32);
-Position LobbyEventDeque_IteratorAt(Vector *, u32);
-Position LobbyEventDeque_UninitializedCopy(Iter, Iter, Position *, u32 *, u32 *);
-void LobbyEventDeque_AppendRange(Vector *, Iter *, Iter *, Tag);
-
-void LobbyEventDeque_AppendRange(Vector *v, Iter *first, Iter *last, Tag tag) {
-    Position result, pos;
+void LobbyEventDeque_AppendRange(LobbyEventDeque *deque, LobbyEventVectorIterator *first, LobbyEventVectorIterator *last, LobbyTag tag) {
+    LobbyEventDequeIterator result, pos;
     u32 count, available;
     if (Equal(first, last->p)) {
         return;
     }
     count = Distance(*first, *last);
-    if (v->capacity == 0) {
+    if (deque->map.size == 0) {
         available = 0;
     } else {
-        available = (v->capacity - 1) << 7;
+        available = (deque->map.size - 1) * LOBBY_EVENT_BLOCK_SIZE;
     }
-    available -= v->start + v->size;
+    available -= deque->start + deque->size;
     if (count > available) {
-        LobbyEventDeque_AddBackCapacity(v, count - available);
+        LobbyEventDeque_AddBackCapacity(deque, count - available);
     }
-    pos = LobbyEventDeque_IteratorAt(v, v->size);
-    result = LobbyEventDeque_UninitializedCopy(*first, *last, &pos, &v->field8, &v->size);
+    LobbyEventDeque_IteratorAt(&pos, deque, deque->size);
+    LobbyEventDeque_UninitializedCopy(&result, *first, *last, &pos, &deque->map.blocks, &deque->size);
 }

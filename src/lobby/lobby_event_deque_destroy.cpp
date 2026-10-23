@@ -6,8 +6,6 @@
 
 extern "C" void DWC_Free(int, void *, u32);
 
-extern "C" void LobbyEventDequeMap_Destroy(LobbyEventDequeMap *map);
-
 struct Del {
     void operator()(void *p) const {
         if (p) {
@@ -24,9 +22,7 @@ inline u32 EndIndex(const LobbyEventDequeMap *map) {
     return e;
 }
 
-extern "C" LobbyEventDeque *LobbyEventDeque_Destroy2(LobbyEventDeque *deque);
-
-extern "C" LobbyEventDeque *LobbyEventDeque_Destroy2(LobbyEventDeque *deque) {
+LobbyEventDeque *LobbyEventDeque_Destroy2(LobbyEventDeque *deque) {
     Del d = Del();
     deque->size = 0;
     if (deque->map.size != 0) {

@@ -32,8 +32,8 @@ BOOL PPWLobbyPlayers_Add(SessionMgr *m, int id) {
     Session *s;
     volatile InsertResult res2;
     InsertResult res;
-    volatile Tag t1;
-    volatile Tag t0;
+    volatile LobbyTag t1;
+    volatile LobbyTag t0;
     Session *n = LobbyMem_Alloc(sizeof(Session));
     if (n != NULL) {
         n->vt = &gPPWLobbyPlayerVtable;
@@ -55,9 +55,9 @@ BOOL PPWLobbyPlayers_Add(SessionMgr *m, int id) {
     }
     s = n;
     PPWLobbyPlayerSet_Insert(&res, &m->list, &s);
-    t1.c = 0;
+    t1.unused = 0;
     res2.current = res.current;
-    t0.c = 0;
+    t0.unused = 0;
     res2.inserted = res.inserted;
     if ((res.inserted & 0xFF) == 0) {
         if (s != NULL) {

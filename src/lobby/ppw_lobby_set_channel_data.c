@@ -6,7 +6,6 @@
 #include "ppw_lobby_internal.h"
 #include "ppw_lobby_state.h"
 
-int PPW_LobbySetChannelData(int userId, int channel, const char *key, const void *data, u32 size);
 
 int PPW_LobbySetChannelData(int userId, int channel, const char *key, const void *data, u32 size) {
     PPWLobbyWork *work = gPPWLobbyWork;

@@ -10,6 +10,10 @@
 #include "lobby_timer.h"
 #include "lobby_tree.h"
 
+// The longest channel key and key value SetChannelKey and GetChannelKeysAsync accept, terminator included.
+#define LOBBY_CHAT_KEY_SIZE   20
+#define LOBBY_CHAT_VALUE_SIZE 400
+
 enum LobbyChatState {
     LOBBY_CHAT_STATE_INIT,
     LOBBY_CHAT_STATE_CONNECTING,
@@ -105,6 +109,33 @@ void LobbyChannelMap_Find(Iterator *, LobbyChannelMap *, Str *);
 LobbyChannelMapNode *LobbyChannelMap_FindInsertPos(LobbyChannelMap *, Str *, LobbyChannelMapNode **, u8 *, u8 *);
 void LobbyChannelMap_Insert(LobbyChannelMapInsertResult *, LobbyChannelMap *, LobbyChannelMapEntry *);
 LobbyChannelMapNode *LobbyChannelMap_InsertNode(LobbyChannelMap *, LobbyChannelMapNode *, u8, u8, LobbyChannelMapEntry *);
+
+void LobbyChatManager_GetNick(Str *out, LobbyChatManager *manager);
+int LobbyChat_FindUserIdByNick(LobbyChatManager *manager, const Str *nick);
+void LobbyChat_StripChannelPrefix(Str *out, LobbyChatManager *manager, Str *name);
+LobbyChannelCallbacks *LobbyChat_GetChannelCallbacks(LobbyChatManager *manager, Str *key);
+int LobbyChat_SetChannelUsersEnumerated(LobbyChatManager *manager, Str *channel);
+int LobbyChat_GetChannelUserLimit(LobbyChatManager *manager, Str *channel);
+int LobbyChat_AddChannelUser(LobbyChatManager *manager, Str *nick, Str *channel);
+int LobbyChat_LeaveChannel(const char *channel);
+int LobbyChat_Process(void);
+int LobbyChat_Shutdown(void);
+int LobbyChat_GetLastError(void);
+int LobbyChat_ToErrorCode(int error);
+int LobbyChat_IsInChannel(char *channel);
+int LobbyChat_SendChannelMessage(const char *channel, const char *message);
+int LobbyChat_SendUserMessage(int userId, const char *message);
+int LobbyChat_SetChannelKey(const char *channel, int userId, const char *key, const char *value);
+int LobbyChat_GetChannelKeysAsync(const char *channel, int userId, const char *key, LobbyGetChannelKeysCallback callback, u32 param);
+
+// The C++ code takes the strings these return by value.
+#ifdef __cplusplus
+Str LobbyChat_GetFullChannelName(LobbyChatManager *manager, const Str &name);
+Str LobbyChat_GetUserNick(LobbyChatManager *manager, int userId);
+#else
+void LobbyChat_GetFullChannelName(Str *out, LobbyChatManager *manager, Str *name);
+void LobbyChat_GetUserNick(Str *out, LobbyChatManager *manager, int userId);
+#endif
 
 #ifdef __cplusplus
 }

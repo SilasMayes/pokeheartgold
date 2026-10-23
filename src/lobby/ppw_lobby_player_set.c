@@ -49,7 +49,7 @@ Node *PPWLobbyPlayerSet_InsertNode(List *l, Node *parent, u8 left, u8 flag, Sess
         abort();
     }
     {
-        Tag t = { 0 };
+        LobbyTag t = { 0 };
     }
     n = LobbyMem_Alloc(sizeof(Node));
     h.c = &l->root;
@@ -84,37 +84,41 @@ Node *PPWLobbyPlayerSet_InsertNode(List *l, Node *parent, u8 left, u8 flag, Sess
     return n;
 }
 
-void LobbyU32Vector_Reserve(Vec *v, u32 n) {
-    Vec b;
+static inline int Distance(const u32 *first, const u32 *last) {
+    return last - first;
+}
+
+void LobbyU32Vector_Reserve(LobbyU32Vector *v, u32 n) {
+    LobbyU32Vector b;
     u32 *first;
     int cnt;
-    b.ptr = NULL;
+    b.data = NULL;
     b.size = 0;
-    b.cap = 0;
+    b.capacity = 0;
     {
-        Tag ta = { 0 };
+        LobbyTag ta = { 0 };
         LobbyU32Vector_Allocate(&b, n, ta);
     }
-    first = v->ptr;
-    cnt = (first + v->size) - v->ptr;
+    first = v->data;
+    cnt = Distance(v->data, first + v->size);
     TouchTag();
-    memcpy((u32 *)b.ptr + b.size, first, cnt * 4);
-    memset(first, 0, cnt * 4);
+    memcpy(b.data + b.size, first, cnt * sizeof(u32));
+    memset(first, 0, cnt * sizeof(u32));
     b.size += cnt;
     TouchTag();
     v->size = 0;
     {
-        u32 *pcap = &b.cap;
-        u32 t = v->cap;
-        v->cap = *pcap;
+        u32 *pcap = &b.capacity;
+        u32 t = v->capacity;
+        v->capacity = *pcap;
         *pcap = t;
     }
-    SwapPtr(&v->ptr, &b.ptr);
+    SwapPtr((void **)&v->data, (void **)&b.data);
     SwapU32(&v->size, &b.size);
     LobbyU32Vector_Destroy2(&b);
 }
 
-void LobbyU32Vector_PushBackSlow(Vec *v, u32 *x, Tag unused) {
+void LobbyU32Vector_PushBackSlow(LobbyU32Vector *v, u32 *x, LobbyTag unused) {
     TouchTag();
     LobbyU32Vector_RecommendSize(v, 1);
     LobbyU32Vector_AppendFillSlow(v, 1, x);
@@ -143,28 +147,28 @@ Node *PPWLobbyPlayerSet_FindInsertPos(List *l, Session **key, Node **parent, u8 
     return y;
 }
 
-Vec *LobbyU32Vector_Destroy2(Vec *v) {
-    if (v->ptr != NULL) {
+LobbyU32Vector *LobbyU32Vector_Destroy2(LobbyU32Vector *v) {
+    if (v->data != NULL) {
         u32 n = v->size;
-        Tag a = { 0 };
+        LobbyTag a = { 0 };
         v->size -= n;
-        if (v->ptr != NULL) {
-            DWC_Free(0, v->ptr, 0);
+        if (v->data != NULL) {
+            DWC_Free(0, v->data, 0);
         }
     }
     return v;
 }
 
-void LobbyU32Vector_Allocate(Vec *v, u32 n, Tag unused) {
+void LobbyU32Vector_Allocate(LobbyU32Vector *v, u32 n, LobbyTag unused) {
     if (n > 0x3FFFFFFF) {
         _ZNSt15__vector_commonILb1EE18throw_length_errorEv();
     }
-    v->ptr = LobbyMem_Alloc(n * 4);
-    v->cap = n;
+    v->data = LobbyMem_Alloc(n * sizeof(u32));
+    v->capacity = n;
 }
 
-u32 LobbyU32Vector_RecommendSize(Vec *v, u32 n) {
-    u32 cap = v->cap;
+u32 LobbyU32Vector_RecommendSize(LobbyU32Vector *v, u32 n) {
+    u32 cap = v->capacity;
     u32 g1;
     u32 g2;
     if (n > 0x3FFFFFFF - cap) {
@@ -181,26 +185,26 @@ u32 LobbyU32Vector_RecommendSize(Vec *v, u32 n) {
     return 0x3FFFFFFF;
 }
 
-void LobbyU32Vector_AppendFillSlow(Vec *v, u32 n, u32 *x) {
-    volatile Tag t4;
-    SplitBuf b;
+void LobbyU32Vector_AppendFillSlow(LobbyU32Vector *v, u32 n, u32 *x) {
+    volatile LobbyTag t4;
+    LobbyU32VectorBuffer b;
     u32 *first;
     int cnt;
-    b.ptr = NULL;
+    b.data = NULL;
     b.size = 0;
-    b.cap = 0;
+    b.capacity.value = 0;
     b.start = 0;
-    b.alloc = &v->cap;
+    b.capacity.allocator = &v->capacity;
     {
-        u32 rec = LobbyU32Vector_RecommendSize(v, v->size + n - v->cap);
-        Tag t3 = { 0 };
-        t4.c = 0;
+        u32 rec = LobbyU32Vector_RecommendSize(v, v->size + n - v->capacity);
+        LobbyTag t3 = { 0 };
+        t4.unused = 0;
         LobbyU32VectorBuffer_Allocate(&b, rec, t3);
     }
     b.start = v->size;
     TouchTag();
     {
-        u32 *p = b.ptr + b.start + b.size;
+        u32 *p = b.data + b.start + b.size;
         u32 i = n;
         while (i != 0) {
             *p++ = *x;
@@ -208,22 +212,22 @@ void LobbyU32Vector_AppendFillSlow(Vec *v, u32 n, u32 *x) {
         }
     }
     b.size += n;
-    first = v->ptr;
-    cnt = (first + v->size) - v->ptr;
+    first = v->data;
+    cnt = Distance(v->data, first + v->size);
     TouchTag();
     b.start -= cnt;
-    memcpy(b.ptr + b.start, first, cnt * 4);
-    memset(first, 0, cnt * 4);
+    memcpy(b.data + b.start, first, cnt * sizeof(u32));
+    memset(first, 0, cnt * sizeof(u32));
     b.size += cnt;
     TouchTag();
     v->size = 0;
     {
-        u32 *pcap = &b.cap;
-        u32 t = v->cap;
-        v->cap = *pcap;
+        u32 *pcap = &b.capacity.value;
+        u32 t = v->capacity;
+        v->capacity = *pcap;
         *pcap = t;
     }
-    SwapPtr(&v->ptr, (void **)&b.ptr);
+    SwapPtr((void **)&v->data, (void **)&b.data);
     SwapU32(&v->size, &b.size);
     LobbyU32VectorBuffer_Destroy(&b);
 }

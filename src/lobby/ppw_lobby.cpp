@@ -22,7 +22,7 @@ extern "C" {
 
 #include "overlay45_format_buffer_private.h"
 #include "overlay45_string_search.h"
-#include "lobby_chat_request.h"
+#include "lobby_chat_manager.h"
 #include "lobby_cpp_types.h"
 #include "ppw_lobby_work.h"
 
@@ -49,9 +49,7 @@ int printf(const char *, ...);
 void abort(void);
 void DWC_Free(int, void *, u32);
 
-int LobbyChat_GetChannelKeysAsync(const char *, int, const char *, LobbyGetChannelKeysCallback, u32);
 int LobbyString_CompareChars(const Str *, u32, u32, const void *, u32);
-u32 LobbyString_FindChars(const StringSearch *, const s8 *, u32, u32);
 void LobbyTreeIterator_Advance(Iterator *);
 }
 
@@ -387,7 +385,6 @@ extern "C" int PPW_LobbySubmitQuestionnaire(int mode) {
 }
 
 extern "C" {
-extern int LobbyChat_ToErrorCode(int error);
 
 int PPW_LobbyGetLastError(void) {
     PPWLobbyWork *work = gPPWLobbyWork;
@@ -422,8 +419,6 @@ int PPW_LobbyInitResultToLastError(int result) {
 
 extern "C" char gLobbyStr_Empty_15[];
 extern "C" int PPWLobby_EncodeMessage(int, int, int, const void *, u32, Str *);
-extern "C" int LobbyChat_SendUserMessage(int, const char *);
-extern "C" int LobbyChat_SendChannelMessage(const char *, const char *);
 
 inline bool IsEmptyChannelName(const Str &name) {
     return LobbyString_CompareCStr(&name, gLobbyStr_Empty_15) == 0;
@@ -471,8 +466,6 @@ extern "C" int PPWLobby_SendMessage(int id, int key, int a, int b, int c, const 
 
 extern "C" {
 extern char gLobbyStr_Empty_15[];
-extern int LobbyChat_SetChannelKey(const char *, int, const char *, const char *);
-extern void LobbyCharVector_Grow(LobbyCharVector *, u32);
 extern int DWC_Base64Encode(const void *, u32, char *, u32);
 
 int PPWLobby_SetChannelData(int id, int key, const char *name, const void *data, u32 length) {
@@ -777,7 +770,7 @@ inline void SetSelfChannel(const PPWString &n) {
 extern "C" int PPWLobby_EnterMainChannel(void) {
     Callbacks cb(PPWLobby_OnPlayerJoined, PPWLobby_OnPlayerLeft, PPWLobby_OnMessage, PPWLobby_OnChannelDataChanged, PPWLobby_OnTopicChanged);
     PPWString name = MakeMainChannelName(PPWLobby_GetChannelBaseName(gPPWLobbyWork, 0));
-    int result = LobbyChat_EnterChannelAsync(name.CStr(), 0, 0x14, &cb, PPWLobby_OnEnterMainChannel, 0);
+    int result = LobbyChat_EnterChannelAsync(name.CStr(), 0, PPW_LOBBY_MAX_PLAYERS, &cb, PPWLobby_OnEnterMainChannel, 0);
     {
         PPWLobbyWork *w = gPPWLobbyWork;
         int error = PPWLobbyErrorMap().Map(result);
@@ -1245,7 +1238,7 @@ done:
 }
 
 extern "C" {
-extern int LobbyChat_IsInChannel(char *), PPWLobbyPlayers_AllHaveProfiles(void *);
+extern int PPWLobbyPlayers_AllHaveProfiles(void *);
 
 static inline int enough(s32 n) {
     int result;
@@ -2567,7 +2560,6 @@ extern "C" Vec LobbyString_Split(const Str &s, const Str &delim, int max) {
 }
 
 extern "C" {
-void LobbyString_Substr(Str *, Str *, u32, u32);
 
 void LobbyString_Substr(Str *a, Str *b, u32 c, u32 d) {
     Str *volatile copy = b;
@@ -2647,7 +2639,7 @@ void PPWLobby_OnGetChannelMode(int a, int b, u32 *c) {
     if (!a) {
         return;
     }
-    if (c[7] == 20) {
+    if (c[7] == PPW_LOBBY_MAX_PLAYERS) {
         gPPWLobbyWork->mainChannel.modeReady = 1;
         timerId = 4;
         LobbyTimerMap_EraseKey(&gPPWLobbyWork->timers, &timerId);
@@ -2732,7 +2724,6 @@ void PPWLobby_OnGetLobbyData(BOOL success, const char *channel, int userId, cons
 
 extern "C" {
 extern u8 gPPWLobbyPlayersVtable[];
-void PPWLobby_OnTopicChanged(void);
 
 void PPWLobby_OnTopicChanged(void) {
 }
@@ -2764,31 +2755,20 @@ void *PPWLobbyPlayer_Delete(PPWLobbyPlayer *player) {
 }
 }
 
-extern "C" {
-typedef struct Queue {
-    u32 a;
-    volatile u32 b;
-    void **base;
-    u32 start;
-    u32 count, capacity;
-} Queue;
-
-extern void LobbyEventDequeMap_Destroy(void *);
-Queue *LobbyEventDeque_Destroy(Queue *);
-
-Queue *LobbyEventDeque_Destroy(Queue *p) {
-    void **end, **cursor, **base, **limit;
+LobbyEventDeque *LobbyEventDeque_Destroy(LobbyEventDeque *deque) {
+    LobbyEvent **end, **cursor, **base, **limit;
     u32 capacity, start;
     u32 index = 0;
     volatile u8 tag = 0;
-    p->b = 0;
-    if (p->count) {
-        if (p->capacity) {
-            index = (p->start + ((volatile Queue *)p)->count) % p->capacity;
+    volatile LobbyEventDeque *live = deque;
+    live->size = 0;
+    if (deque->map.size) {
+        if (deque->map.capacity) {
+            index = (deque->map.start + live->map.size) % deque->map.capacity;
         }
-        base = p->base;
-        start = p->start;
-        capacity = ((volatile Queue *)p)->capacity;
+        base = deque->map.blocks;
+        start = deque->map.start;
+        capacity = live->map.capacity;
         end = base + index;
         cursor = base + start;
         limit = base + capacity;
@@ -2801,9 +2781,8 @@ Queue *LobbyEventDeque_Destroy(Queue *p) {
             }
         }
     }
-    LobbyEventDequeMap_Destroy(&p->base);
-    return p;
-}
+    LobbyEventDequeMap_Destroy(&deque->map);
+    return deque;
 }
 
 extern "C" {

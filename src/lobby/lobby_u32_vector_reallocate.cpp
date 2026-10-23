@@ -4,10 +4,7 @@
 
 #include <nitro/code32.h>
 
-struct Tag {};
-
 extern "C" void DWC_Free(int, void *, u32);
-extern "C" void LobbyU32Vector_Allocate(LobbyU32Vector *v, u32 n, Tag t);
 
 struct Alloc {
     void release(u32 *p) {
@@ -17,9 +14,7 @@ struct Alloc {
     }
 };
 
-extern "C" void LobbyU32Vector_Reallocate(LobbyU32Vector *v, u32 size, u32 cap);
-
-extern "C" void LobbyU32Vector_Reallocate(LobbyU32Vector *v, u32 size, u32 cap) {
+void LobbyU32Vector_Reallocate(LobbyU32Vector *v, u32 unused, u32 cap) {
     u32 n = v->size;
     Alloc a = Alloc();
     v->size -= n;
@@ -28,5 +23,5 @@ extern "C" void LobbyU32Vector_Reallocate(LobbyU32Vector *v, u32 size, u32 cap) 
         v->data = 0;
         v->capacity = 0;
     }
-    LobbyU32Vector_Allocate(v, cap, Tag(Tag()));
+    LobbyU32Vector_Allocate(v, cap, LobbyTag(LobbyTag()));
 }

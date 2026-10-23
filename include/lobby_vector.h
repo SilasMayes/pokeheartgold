@@ -50,6 +50,13 @@ typedef struct LobbyCharVectorBuffer {
     u32 start;
 } LobbyCharVectorBuffer;
 
+typedef struct LobbyU32VectorBuffer {
+    u32 *data;
+    u32 size;
+    LobbyVectorBufferCapacity capacity;
+    u32 start;
+} LobbyU32VectorBuffer;
+
 typedef struct LobbyStringVectorBuffer {
     Str *data;
     u32 size;
@@ -66,6 +73,17 @@ char *LobbyCharVector_Data(LobbyCharVector *);
 char *LobbyByteVector_Data(LobbyCharVector *);
 void LobbyCharVector_Grow(LobbyCharVector *, u32);
 u32 LobbyCharVector_RecommendSize(LobbyCharVector *, u32);
+LobbyU32Vector *LobbyU32Vector_Destroy(LobbyU32Vector *vector);
+LobbyU32Vector *LobbyU32Vector_Destroy2(LobbyU32Vector *vector);
+void LobbyU32Vector_Allocate(LobbyU32Vector *vector, u32 capacity, LobbyTag tag);
+void LobbyU32Vector_Reallocate(LobbyU32Vector *vector, u32 unused, u32 capacity);
+u32 LobbyU32Vector_RecommendSize(LobbyU32Vector *vector, u32 extra);
+void LobbyU32Vector_Reserve(LobbyU32Vector *vector, u32 capacity);
+void LobbyU32Vector_PushBackSlow(LobbyU32Vector *vector, u32 *value, LobbyTag tag);
+void LobbyU32Vector_AppendFillSlow(LobbyU32Vector *vector, u32 count, u32 *value);
+u32 *LobbyU32Vector_Data2(LobbyU32Vector *vector);
+void LobbyU32VectorBuffer_Allocate(LobbyU32VectorBuffer *buffer, u32 capacity, LobbyTag tag);
+LobbyU32VectorBuffer *LobbyU32VectorBuffer_Destroy(LobbyU32VectorBuffer *buffer);
 LobbyStringVector *LobbyStringVector_Destroy(LobbyStringVector *);
 LobbyCharVectorBuffer *LobbyCharVectorBuffer_Destroy(LobbyCharVectorBuffer *);
 void LobbyCharVectorBuffer_Allocate(LobbyCharVectorBuffer *, u32, LobbyTag);

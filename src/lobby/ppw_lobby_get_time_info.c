@@ -8,16 +8,6 @@
 #include "ppw_lobby_internal.h"
 #include "ppw_lobby_state.h"
 
-// What PPW_LobbyGetTimeInfo reports: the current time, the channel time and the schedule's start time, in seconds.
-typedef struct PPWLobbyTimeInfo {
-    s64 currentTime;
-    PPWLobbyTime channelTime;
-    s64 startTime;
-} PPWLobbyTimeInfo;
-
-int PPW_LobbyGetTimeInfo(PPWLobbyTimeInfo *out);
-int PPW_LobbyGetSchedule(PPWLobbyScheduleRecord *records, u32 *size);
-
 void PPWLobbyChannel_GetName(Str *out, PPWLobbyChannel *channel) {
     LobbyString_InitCopy(out, &channel->name);
 }

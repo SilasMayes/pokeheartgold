@@ -6,6 +6,8 @@
 
 #include <nitro/types.h>
 
+#include "lobby_vector.h"
+
 #define LOBBY_EVENT_BLOCK_SIZE 128
 
 typedef struct LobbyEvent {
@@ -132,11 +134,10 @@ typedef struct LobbyEventDequeIterator {
 #endif
 } LobbyEventDequeIterator;
 
-#ifdef __cplusplus
 // A position in a vector of events, the source of the deque's range operations.
-struct LobbyEventVectorIterator {
+typedef struct LobbyEventVectorIterator {
     LobbyEvent *p;
-
+#ifdef __cplusplus
     LobbyEventVectorIterator() {
     }
 
@@ -166,7 +167,69 @@ struct LobbyEventVectorIterator {
         t.p += n;
         return t;
     }
-};
+#endif
+} LobbyEventVectorIterator;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern u32 gLobbyDequeMaxSizeInit;
+extern u32 gLobbyDequeMaxSize;
+extern u32 gLobbyEventDequeMapMaxSizeSet;
+extern u32 gLobbyEventDequeMapMaxSize;
+extern u32 gLobbyEventDequeMapBufferMaxSizeSet;
+extern u32 gLobbyEventDequeMapBufferMaxSize;
+extern char gLobbyStr_DequeLengthError[];
+extern char gLobbyStr_CdequeLengthError[];
+
+LobbyEventDeque *LobbyEventDeque_Destroy(LobbyEventDeque *deque);
+LobbyEventDeque *LobbyEventDeque_Destroy2(LobbyEventDeque *deque);
+void LobbyEventDeque_AddBackCapacity(LobbyEventDeque *deque, u32 count);
+void LobbyEventDeque_EraseAtBegin(LobbyEventDeque *deque, u32 count, LobbyTag tag);
+void LobbyEventDeque_EraseAtEnd(LobbyEventDeque *deque, u32 count, LobbyTag tag);
+void LobbyEventDeque_LengthError(const char *message);
+LobbyEventDequeMap *LobbyEventDequeMap_Destroy(LobbyEventDequeMap *map);
+void LobbyEventDequeMap_Allocate(LobbyEventDequeMap *map, u32 capacity, LobbyTag tag);
+LobbyEventDequeMapIterator *LobbyEventDequeMapIterator_Advance2(LobbyEventDequeMapIterator *it, int n);
+int LobbyEventDequeMapIterator_Distance2(const LobbyEventDequeMapIterator *a, const LobbyEventDequeMapIterator *b);
+void LobbyEventDequeMap_Reserve(LobbyEventDequeMap *map, u32 size);
+u32 LobbyEventDequeMap_RecommendSize(LobbyEventDequeMap *map, u32 extra);
+void LobbyEventDequeMap_LengthError(void);
+LobbyEventDequeMapBuffer *LobbyEventDequeMapBuffer_Destroy(LobbyEventDequeMapBuffer *buffer);
+void LobbyEventDequeMapBuffer_Allocate(LobbyEventDequeMapBuffer *buffer, u32 capacity, LobbyTag tag);
+void LobbyEventVector_Allocate(LobbyEventVector *vector, u32 capacity, LobbyTag tag);
+void LobbyEventVector_Reallocate(LobbyEventVector *vector, u32 unused, u32 capacity);
+u32 LobbyEventVector_RecommendSize(LobbyEventVector *vector, u32 extra);
+void LobbyEventVector_AssignRange(LobbyEventVector *vector, const LobbyEvent *first, const LobbyEvent *last, LobbyTag tag);
+
+// The C code passes the iterators by pointer and returns them through a pointer to the result; the C++ code
+// passes them by reference and returns them by value.
+#ifdef __cplusplus
+LobbyEventDequeIterator LobbyEventDeque_IteratorAt(LobbyEventDeque *deque, u32 index);
+void LobbyEventDeque_AppendRange(LobbyEventDeque *deque, LobbyEventVectorIterator *first, const LobbyEventVectorIterator &last, LobbyTag tag);
+void LobbyEventDeque_Assign(LobbyEventDeque *deque, LobbyEventVectorIterator first, const LobbyEventVectorIterator &last, LobbyTag tag);
+LobbyEventDequeIterator LobbyEventDeque_Copy(LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEventDequeIterator result);
+LobbyEventDequeIterator LobbyEventDeque_UninitializedCopy(LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEventDequeIterator result, LobbyTag tag, u32 *count);
+void LobbyEventDequeMapBuffer_AppendRange(LobbyEventDequeMapBuffer *buffer, const LobbyEventDequeMapIterator &first, const LobbyEventDequeMapIterator &last, LobbyTag tag);
+void LobbyEventDequeMapBuffer_PrependRange(LobbyEventDequeMapBuffer *buffer, const LobbyEventDequeMapIterator &first, const LobbyEventDequeMapIterator &last, LobbyTag tag);
+#else
+void LobbyEventDeque_IteratorAt(LobbyEventDequeIterator *out, LobbyEventDeque *deque, u32 index);
+void LobbyEventDequeMapIterator_Advance(LobbyEventDequeMapIterator *it, int n);
+int LobbyEventDequeMapIterator_Distance(const LobbyEventDequeMapIterator *a, const LobbyEventDequeMapIterator *b);
+void LobbyEventDequeMap_InitCopy(LobbyEventDequeMap *map, LobbyEventDequeMapIterator first, const LobbyEventDequeMapIterator *last);
+void LobbyEventDequeMap_AppendRange(LobbyEventDequeMap *map, const LobbyEventDequeMapIterator *first, const LobbyEventDequeMapIterator *last, LobbyTag tag);
+LobbyEvent **LobbyEventDequeMap_CopyToArray(LobbyEventDequeMapIterator first, LobbyEventDequeMapIterator last, LobbyEvent **dest);
+void LobbyEventDequeMapBuffer_AppendRange(LobbyEventDequeMapBuffer *buffer, const LobbyEventDequeMapIterator *first, const LobbyEventDequeMapIterator *last, LobbyTag tag);
+void LobbyEventDequeMapBuffer_PrependRange(LobbyEventDequeMapBuffer *buffer, const LobbyEventDequeMapIterator *first, const LobbyEventDequeMapIterator *last, LobbyTag tag);
+void LobbyEventDeque_AppendRange(LobbyEventDeque *deque, LobbyEventVectorIterator *first, LobbyEventVectorIterator *last, LobbyTag tag);
+void LobbyEventDeque_UninitializedCopy(LobbyEventDequeIterator *out, LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEventDequeIterator *result, void *unused, u32 *count);
+void LobbyEventDequeMap_Copy(LobbyEventDequeMapIterator *out, LobbyEventDequeMapIterator *first, LobbyEventDequeMapIterator *last, LobbyEventDequeMapIterator *dest);
+void LobbyEventDequeMap_CopyBackward(LobbyEventDequeMapIterator *out, LobbyEventDequeMapIterator *first, LobbyEventDequeMapIterator *last, LobbyEventDequeMapIterator *dest);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif // POKEHEARTGOLD_LOBBY_EVENT_DEQUE_H

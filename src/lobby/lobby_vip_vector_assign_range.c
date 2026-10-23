@@ -4,13 +4,10 @@
 
 #include "ppw_lobby_work.h"
 
-u32 LobbyVipVector_RecommendSize(PPWLobbyVipVector *, u32);
-void LobbyVipVector_AssignRange(PPWLobbyVipVector *, PPWLobbyVipRecord *, PPWLobbyVipRecord *);
-void LobbyVipVector_Reallocate(PPWLobbyVipVector *, u32, u32);
-
-void LobbyVipVector_AssignRange(PPWLobbyVipVector *p, PPWLobbyVipRecord *first, PPWLobbyVipRecord *last) {
+void LobbyVipVector_AssignRange(PPWLobbyVipVector *p, const PPWLobbyVipRecord *first, const PPWLobbyVipRecord *last, LobbyTag tag) {
     u32 n = last - first, growth;
-    PPWLobbyVipRecord *end, *dest;
+    const PPWLobbyVipRecord *end;
+    PPWLobbyVipRecord *dest;
     volatile u8 a, c, d, b;
     if (p->capacity < n) {
         a = 0;

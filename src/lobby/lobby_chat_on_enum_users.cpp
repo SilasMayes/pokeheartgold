@@ -5,8 +5,6 @@
 #include "lobby_chat_manager.h"
 
 
-extern "C" int LobbyChat_FindUserIdByNick(LobbyChatManager *m, Str *s);
-extern "C" void LobbyChat_StripChannelPrefix(Str *dst, LobbyChatManager *m, Str *s);
 
 inline void KeyInit(LobbyRequest *k, u32 id) {
     k->vtable = &gLobbyRequestVtable;

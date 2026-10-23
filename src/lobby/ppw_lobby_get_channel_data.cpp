@@ -4,12 +4,10 @@
 
 #include <nitro/code32.h>
 
-#include "lobby_chat_request.h"
+#include "lobby_chat_manager.h"
 #include "ppw_lobby_work.h"
 
 extern "C" char gLobbyStr_Empty_15[];
-extern "C" int LobbyChat_GetChannelKeysAsync(const char *, int, const char *, LobbyGetChannelKeysCallback, u32);
-extern "C" int PPW_LobbyGetChannelDataAsync(int, int, const char *, u32);
 
 inline bool IsEmptyChannelName(const Str &name) {
     return LobbyString_CompareCStr(&name, gLobbyStr_Empty_15) == 0;
@@ -17,7 +15,7 @@ inline bool IsEmptyChannelName(const Str &name) {
 
 #pragma opt_common_subs off
 
-extern "C" int PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 param) {
+int PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 param) {
     PPWLobbyWork *w = gPPWLobbyWork;
     if (w == 0) {
         return PPW_LOBBY_RESULT_ERROR_STATE;

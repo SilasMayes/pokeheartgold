@@ -4,10 +4,9 @@
 
 #include <nitro/code32.h>
 
+#include "lobby_chat_manager.h"
 #include "ppw_lobby_work.h"
 
-extern int LobbyChat_Shutdown(void);
-int PPW_LobbyShutdownAsync(void);
 
 int PPW_LobbyShutdownAsync(void) {
     int result, error;

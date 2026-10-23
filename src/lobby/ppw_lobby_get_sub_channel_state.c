@@ -1,17 +1,16 @@
 #include "global.h"
 
+#include "lobby_chat_manager.h"
 #include "ppw_lobby_internal.h"
 #include "ppw_lobby_state.h"
 
 #include <nitro/code32.h>
 
-extern int LobbyChat_IsInChannel(char *);
 
 static inline BOOL active(PPWLobbyWork *w) {
     return w->subChannel.kind == 5 ? FALSE : TRUE;
 }
 
-int PPW_LobbyGetSubChannelState(void);
 #pragma opt_propagation off
 
 int PPW_LobbyGetSubChannelState(void) {

@@ -8,28 +8,15 @@ inline void *operator new(unsigned long, void *p) {
     return p;
 }
 
-struct Tag {};
-
 extern "C" {
 void DWC_Free(int, void *, u32);
 int printf(const char *, ...);
 void abort(void);
 
-extern u32 gLobbyEventDequeMapMaxSizeSet;
-extern u32 gLobbyEventDequeMapMaxSize;
-extern char gLobbyStr_CdequeLengthError[];
-
-void LobbyEventDeque_EraseAtEnd(LobbyEventDeque *d, u32 n);
-void LobbyEventDeque_EraseAtBegin(LobbyEventDeque *d, u32 n);
-void LobbyEventDeque_LengthError(const char *s);
-void LobbyEventDequeMap_Reserve(LobbyEventDequeMap *map, u32 n);
+void LobbyEventDequeMapBuffer_Allocate(LobbyEventDequeMapBuffer *buffer, u32 n, LobbyTag);
+void LobbyEventDequeMapBuffer_AppendRange(LobbyEventDequeMapBuffer *buffer, const LobbyEventDequeMapIterator &first, const LobbyEventDequeMapIterator &last, LobbyTag);
+void LobbyEventDequeMapBuffer_PrependRange(LobbyEventDequeMapBuffer *buffer, const LobbyEventDequeMapIterator &first, const LobbyEventDequeMapIterator &last, LobbyTag);
 void LobbyEventDequeMap_PushBack(LobbyEventDequeMap *map, LobbyEvent *const &block);
-u32 LobbyEventDequeMap_RecommendSize(LobbyEventDequeMap *map, u32 n);
-void LobbyEventDequeMap_LengthError(void);
-void LobbyEventDequeMapBuffer_Allocate(LobbyEventDequeMapBuffer *buffer, u32 n, Tag);
-void LobbyEventDequeMapBuffer_AppendRange(LobbyEventDequeMapBuffer *buffer, const LobbyEventDequeMapIterator &first, const LobbyEventDequeMapIterator &last, Tag);
-void LobbyEventDequeMapBuffer_PrependRange(LobbyEventDequeMapBuffer *buffer, const LobbyEventDequeMapIterator &first, const LobbyEventDequeMapIterator &last, Tag);
-void LobbyEventDequeMapBuffer_Destroy(LobbyEventDequeMapBuffer *buffer);
 }
 
 struct BlockAlloc {
@@ -79,7 +66,7 @@ inline void InitBuffer(LobbyEventDequeMapBuffer *buffer, u32 *allocator) {
     buffer->map.capacity = 0;
 }
 
-inline void Allocate(LobbyEventDequeMapBuffer *buffer, u32 n, Tag t) {
+inline void Allocate(LobbyEventDequeMapBuffer *buffer, u32 n, LobbyTag t) {
     LobbyEventDequeMapBuffer_Allocate(buffer, n, t);
 }
 
@@ -100,7 +87,7 @@ inline const u32 *Max(const u32 *a, const u32 *b) {
     return *a > *b ? a : b;
 }
 
-extern "C" void LobbyEventDeque_EraseAtEnd(LobbyEventDeque *d, u32 n) {
+void LobbyEventDeque_EraseAtEnd(LobbyEventDeque *d, u32 n, LobbyTag) {
     if (n == 0) {
         return;
     }
@@ -120,7 +107,7 @@ extern "C" void LobbyEventDeque_EraseAtEnd(LobbyEventDeque *d, u32 n) {
     } while (extra >= 2 * LOBBY_EVENT_BLOCK_SIZE);
 }
 
-extern "C" void LobbyEventDeque_EraseAtBegin(LobbyEventDeque *d, u32 n) {
+void LobbyEventDeque_EraseAtBegin(LobbyEventDeque *d, u32 n, LobbyTag) {
     volatile u8 a;
     if (!n) {
         return;
@@ -148,19 +135,19 @@ extern "C" void LobbyEventDeque_EraseAtBegin(LobbyEventDeque *d, u32 n) {
     }
 }
 
-extern "C" void LobbyEventDeque_LengthError(const char *s) {
+void LobbyEventDeque_LengthError(const char *s) {
     printf(s);
     abort();
 }
 
-extern "C" void LobbyEventDequeMap_Reserve(LobbyEventDequeMap *map, u32 n) {
+void LobbyEventDequeMap_Reserve(LobbyEventDequeMap *map, u32 n) {
     if (n <= Capacity(map)) {
         return;
     }
     LobbyEventDequeMapBuffer tmp;
     InitBuffer(&tmp, &map->capacity);
-    LobbyEventDequeMapBuffer_Allocate(&tmp, n, Tag());
-    LobbyEventDequeMapBuffer_AppendRange(&tmp, Begin(map), End(map), Tag());
+    LobbyEventDequeMapBuffer_Allocate(&tmp, n, LobbyTag());
+    LobbyEventDequeMapBuffer_AppendRange(&tmp, Begin(map), End(map), LobbyTag());
     Alloc a = Alloc();
     a.destroy(map->blocks, map->size);
     map->size = 0;
@@ -186,11 +173,11 @@ extern "C" void LobbyEventDequeMap_PushBack(LobbyEventDequeMap *map, LobbyEvent 
     tmp.map.capacity = 0;
     tmp.allocator = &map->capacity;
     u32 n = LobbyEventDequeMap_RecommendSize(map, 1);
-    Allocate(&tmp, n, Tag(Tag()));
+    Allocate(&tmp, n, LobbyTag(LobbyTag()));
     tmp.map.start = map->size;
     new (tmp.map.blocks + tmp.map.start) LobbyEvent *(block);
     ++tmp.map.size;
-    LobbyEventDequeMapBuffer_PrependRange(&tmp, Begin(map), End(map), Tag());
+    LobbyEventDequeMapBuffer_PrependRange(&tmp, Begin(map), End(map), LobbyTag());
     Alloc a = Alloc();
     a.destroy(map->blocks, map->size);
     map->size = 0;
@@ -202,7 +189,7 @@ extern "C" void LobbyEventDequeMap_PushBack(LobbyEventDequeMap *map, LobbyEvent 
     LobbyEventDequeMapBuffer_Destroy(&tmp);
 }
 
-extern "C" u32 LobbyEventDequeMap_RecommendSize(LobbyEventDequeMap *map, u32 extra) {
+u32 LobbyEventDequeMap_RecommendSize(LobbyEventDequeMap *map, u32 extra) {
     u32 size, limit, first, second;
     limit = MaxSize();
     size = Capacity(map);
@@ -219,7 +206,7 @@ extern "C" u32 LobbyEventDequeMap_RecommendSize(LobbyEventDequeMap *map, u32 ext
     return limit;
 }
 
-extern "C" void LobbyEventDequeMap_LengthError(void) {
+void LobbyEventDequeMap_LengthError(void) {
     printf(gLobbyStr_CdequeLengthError);
     abort();
 }

@@ -1,10 +1,11 @@
 #include "global.h"
 
 #include "ppw_lobby_internal.h"
+#include "lobby_event_deque.h"
 
 #include <nitro/code32.h>
 
-void LobbyEventDequeMap_Allocate(DequeBuf *d, u32 n, Tag unused) {
+void LobbyEventDequeMap_Allocate(LobbyEventDequeMap *map, u32 n, LobbyTag unused) {
     if (!(gLobbyEventDequeMapMaxSizeSet & 1)) {
         gLobbyEventDequeMapMaxSize = 0x3FFFFFFE;
         gLobbyEventDequeMapMaxSizeSet |= 1;
@@ -12,11 +13,11 @@ void LobbyEventDequeMap_Allocate(DequeBuf *d, u32 n, Tag unused) {
     if (n > gLobbyEventDequeMapMaxSize) {
         LobbyEventDequeMap_LengthError();
     }
-    d->ptr = LobbyMem_Alloc((n + 1) * 4);
-    d->cap = n + 1;
+    map->blocks = LobbyMem_Alloc((n + 1) * sizeof(LobbyEvent *));
+    map->capacity = n + 1;
 }
 
-Iter *LobbyEventDequeMapIterator_Advance2(Iter *it, int n) {
+LobbyEventDequeMapIterator *LobbyEventDequeMapIterator_Advance2(LobbyEventDequeMapIterator *it, int n) {
     int size = it->last - it->first;
     n += it->cur - it->first;
     if (n < 0) {
@@ -28,9 +29,9 @@ Iter *LobbyEventDequeMapIterator_Advance2(Iter *it, int n) {
     return it;
 }
 
-int LobbyEventDequeMapIterator_Distance2(Iter *x, Iter *y) {
+int LobbyEventDequeMapIterator_Distance2(const LobbyEventDequeMapIterator *x, const LobbyEventDequeMapIterator *y) {
     int n;
-    u32 *m = x->mid;
+    LobbyEvent **m = x->mid;
     n = x->cur - y->cur;
     if (x->cur >= m) {
         if (y->cur < m) {

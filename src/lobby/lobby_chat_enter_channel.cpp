@@ -13,7 +13,6 @@ extern "C" void MI_CpuFill8(void *, u8, u32);
 extern "C" const u32 gLobbyChatNextRequestId;
 
 
-extern "C" Str LobbyChat_GetFullChannelName(LobbyChatManager *m, const Str &s);
 
 extern "C" void LobbyChat_AddChannel(LobbyChatManager *m, const Str &s, LobbyChannelCallbacks *callbacks, u32 limit);
 

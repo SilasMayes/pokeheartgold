@@ -6,9 +6,6 @@
 #include "ppw_lobby_internal.h"
 #include "ppw_lobby_state.h"
 
-int PPW_LobbySendChannelBinaryMessage(int channel, int type, const void *data, int size);
-int PPW_LobbySendPlayerBinaryMessage(int userId, int type, const void *data, int size);
-int PPW_LobbyGetMyUserId(void);
 
 void PPWLobby_GetChannelName(Str *out, PPWLobbyChannel *channels, int subChannel) {
     volatile Str copy;

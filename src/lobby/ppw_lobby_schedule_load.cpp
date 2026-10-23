@@ -4,41 +4,29 @@
 
 #include "ppw_lobby_work.h"
 
-struct EventIterator {
-    LobbyEvent *p;
-
-    EventIterator(LobbyEvent *q)
-        : p(q) {
-    }
-};
-
-class Tag {};
-
 class Less {};
 
-extern "C" void LobbyEventVector_AssignRange(LobbyEventVector *, const LobbyEvent *, const LobbyEvent *, Tag);
-extern "C" void LobbySort_StableSort(EventIterator, EventIterator, Less);
-extern "C" void LobbyEventDeque_Assign(LobbyEventDeque *, EventIterator, const EventIterator &, Tag);
+extern "C" void LobbySort_StableSort(LobbyEventVectorIterator, LobbyEventVectorIterator, Less);
 
-inline EventIterator Begin(LobbyEventVector *events) {
-    return EventIterator(events->data);
+inline LobbyEventVectorIterator Begin(LobbyEventVector *events) {
+    return LobbyEventVectorIterator(events->data);
 }
 
-inline EventIterator End(LobbyEventVector *events) {
-    return EventIterator(events->data + events->size);
+inline LobbyEventVectorIterator End(LobbyEventVector *events) {
+    return LobbyEventVectorIterator(events->data + events->size);
 }
 
-inline void Sort(EventIterator first, EventIterator last, Less c) {
+inline void Sort(LobbyEventVectorIterator first, LobbyEventVectorIterator last, Less c) {
     LobbySort_StableSort(first, last, c);
 }
 
-inline void Assign(LobbyEventDeque *deque, EventIterator first, EventIterator last) {
-    Tag t;
+inline void Assign(LobbyEventDeque *deque, LobbyEventVectorIterator first, LobbyEventVectorIterator last) {
+    LobbyTag t;
     LobbyEventDeque_Assign(deque, first, last, t);
 }
 
 // Takes over a schedule record from the server: its header, and its events sorted by time.
-extern "C" BOOL PPWLobbySchedule_Load(PPWLobbySchedule *schedule, const void *data, u32 size) {
+BOOL PPWLobbySchedule_Load(PPWLobbySchedule *schedule, const void *data, u32 size) {
     const PPWLobbyScheduleRecord *record = (const PPWLobbyScheduleRecord *)data;
     Less c;
     if (!PPWLobbySchedule_IsSizeValid(schedule, data, size)) {
@@ -51,7 +39,7 @@ extern "C" BOOL PPWLobbySchedule_Load(PPWLobbySchedule *schedule, const void *da
     schedule->roomFlag = record->roomFlag;
     {
         u32 n = record->eventCount;
-        LobbyEventVector_AssignRange(&schedule->events, record->events, record->events + n, Tag());
+        LobbyEventVector_AssignRange(&schedule->events, record->events, record->events + n, LobbyTag());
     }
     Sort(Begin(&schedule->events), End(&schedule->events), c);
     Assign(&schedule->pendingEvents, Begin(&schedule->events), End(&schedule->events));

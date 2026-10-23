@@ -71,7 +71,7 @@ int LobbyChat_SetChannelKey(const char *channel, int userId, const char *key, co
     Str fullName;
     LobbyChatManager *manager = gLobbyChatManager;
     CTX_CHECK(manager);
-    if (strlen(value) + 1 > 400 || strlen(key) + 1 > 20) {
+    if (strlen(value) + 1 > LOBBY_CHAT_VALUE_SIZE || strlen(key) + 1 > LOBBY_CHAT_KEY_SIZE) {
         return PPW_LOBBY_RESULT_ERROR_PARAM;
     }
     LobbyString_InitFromCStr(&nick, gLobbyStr_Empty_17);

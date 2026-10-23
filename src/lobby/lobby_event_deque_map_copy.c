@@ -4,9 +4,6 @@
 
 #include <nitro/code32.h>
 
-void LobbyEventDequeMap_CopyBackward(LobbyEventDequeMapIterator *, LobbyEventDequeMapIterator *, LobbyEventDequeMapIterator *, LobbyEventDequeMapIterator *);
-void LobbyEventDequeMap_Copy(LobbyEventDequeMapIterator *, LobbyEventDequeMapIterator *, LobbyEventDequeMapIterator *, LobbyEventDequeMapIterator *);
-
 static inline const int *Minimum(const int *a, const int *b) {
     return *a < *b ? a : b;
 }

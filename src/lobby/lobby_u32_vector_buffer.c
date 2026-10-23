@@ -5,24 +5,24 @@
 
 #include <nitro/code32.h>
 
-static SplitBuf *LobbyU32VectorBuffer_Deallocate(SplitBuf *b);
+static LobbyU32VectorBuffer *LobbyU32VectorBuffer_Deallocate(LobbyU32VectorBuffer *b);
 
-SplitBuf *LobbyU32VectorBuffer_Destroy(SplitBuf *b) {
+LobbyU32VectorBuffer *LobbyU32VectorBuffer_Destroy(LobbyU32VectorBuffer *b) {
     b->size = 0;
     LobbyU32VectorBuffer_Deallocate(b);
     return b;
 }
 
-void LobbyU32VectorBuffer_Allocate(SplitBuf *b, u32 cap, Tag unused) {
+void LobbyU32VectorBuffer_Allocate(LobbyU32VectorBuffer *b, u32 cap, LobbyTag unused) {
     if (cap > 0x3fffffff) {
         _ZNSt15__vector_commonILb1EE18throw_length_errorEv();
     }
-    b->ptr = LobbyMem_Alloc(cap * 4);
-    b->cap = cap;
+    b->data = LobbyMem_Alloc(cap * sizeof(u32));
+    b->capacity.value = cap;
 }
 
-static SplitBuf *LobbyU32VectorBuffer_Deallocate(SplitBuf *b) {
-    if (b->ptr) {
+static LobbyU32VectorBuffer *LobbyU32VectorBuffer_Deallocate(LobbyU32VectorBuffer *b) {
+    if (b->data) {
         u32 old = b->size;
 
         struct {
@@ -30,8 +30,8 @@ static SplitBuf *LobbyU32VectorBuffer_Deallocate(SplitBuf *b) {
         } init = { 0 };
 
         b->size -= old;
-        if (b->ptr) {
-            DWC_Free(0, b->ptr, 0);
+        if (b->data) {
+            DWC_Free(0, b->data, 0);
         }
     }
     return b;

@@ -11,7 +11,6 @@
 extern "C" const u32 gLobbyChatNextRequestId;
 
 
-extern "C" Str LobbyChat_GetFullChannelName(LobbyChatManager *m, const Str &s);
 extern "C" void chatGetChannelModeA(void *chat, const char *channel, void (*callback)(), u32 param, u32 blocking);
 extern "C" void LobbyChat_OnGetChannelMode();
 

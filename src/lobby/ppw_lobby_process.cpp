@@ -83,16 +83,11 @@ extern "C" char gLobbyStr_Star[];
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 extern "C" {
-int LobbyChat_Process(void);
-int PPW_LobbyShutdownAsync(void);
-LobbyEventDeque *LobbyEventDeque_Destroy(LobbyEventDeque *);
-int LobbyChat_GetLastError(void);
 void LobbyTreeIterator_Advance(Iterator *);
 void LobbyTimerMap_Erase(Iterator *, LobbyTimerMap *, Iterator);
 void LobbyChat_EnumChannelsAsync(const char *, void (*)(int, int, char **, int, int *), int);
 }
 
-extern "C" int PPW_LobbyProcess(void);
 
 static inline char *StrCStr(Str *s) {
     return !s->l.isLong ? s->s.buf : s->l.ptr;

@@ -45,6 +45,9 @@ typedef struct PPWLobbySystemProfile {
     u32 unk_0C;
 } PPWLobbySystemProfile;
 
+// The players a lobby channel holds, the own player included.
+#define PPW_LOBBY_MAX_PLAYERS 20
+
 typedef struct PPWLobbyPlayer {
     const void *vtable;
     PPWLobbySystemProfile systemProfile;
@@ -133,6 +136,13 @@ typedef struct PPWLobbyWork {
     PPWLobbySchedule schedule;
 } PPWLobbyWork;
 
+// What PPW_LobbyGetTimeInfo reports: the current time, the channel time and the schedule's start time, in seconds.
+typedef struct PPWLobbyTimeInfo {
+    s64 currentTime;
+    PPWLobbyTime channelTime;
+    s64 startTime;
+} PPWLobbyTimeInfo;
+
 // A web request of the lobby (schedule, VIP list, profile check, questionnaire), sent through the stats upload
 // client (key and server for StatsUpload_Start; page, pid and body for the upload). It is retried up to retries
 // times and reports its answer to callback.
@@ -158,6 +168,8 @@ struct PPWLobbyWebRequest {
     void *param;
     BOOL useLastHash;
 };
+
+struct DwcUserData;
 
 #ifdef __cplusplus
 extern "C" {
@@ -204,9 +216,23 @@ int PPWLobby_TimerRequestLobbyData(void);
 int PPWLobby_TimerSendRecruitInfo(void);
 int PPWLobby_TimerUploadSystemProfile(void);
 int PPWLobby_TimerUploadUserProfile(void);
+int PPW_LobbyInitializeAsync(const char *gameName, const char *secretKey, int prefix, const PPWLobbyCallbacks *callbacks, const struct DwcUserData *userData, const void *playerData, u32 playerDataSize);
+int PPW_LobbyShutdownAsync(void);
+int PPW_LobbyProcess(void);
+int PPW_LobbyJoinSubChannelAsync(int channel);
+int PPW_LobbyLeaveSubChannel(void);
+int PPW_LobbyGetSubChannelState(void);
+int PPW_LobbyGetMyUserId(void);
+int PPW_LobbySendChannelBinaryMessage(int channel, int type, const void *data, int size);
+int PPW_LobbySendPlayerBinaryMessage(int userId, int type, const void *data, int size);
+int PPW_LobbySetChannelData(int userId, int channel, const char *key, const void *data, u32 size);
+int PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 param);
+int PPW_LobbyUpdateMyProfile(const u8 *data, u32 size, int force);
+int PPW_LobbyGetTimeInfo(PPWLobbyTimeInfo *timeInfo);
+int PPW_LobbyGetSchedule(PPWLobbyScheduleRecord *records, u32 *size);
+int PPW_LobbySubmitQuestionnaire(int);
 int PPW_LobbyGetLastError(void);
 int PPW_LobbyInitResultToLastError(int);
-int PPW_LobbySubmitQuestionnaire(int);
 int PPW_LobbyToErrorCode(int);
 int PPWLobby_SendMessage(int, int, int, int, int, const void *, u32);
 BOOL PPWLobbySchedule_GetQuestionnaire(PPWLobbySchedule *, void *);
@@ -220,6 +246,10 @@ void PPWLobbySchedule_CopyToVector(LobbyCharVector *, PPWLobbySchedule *);
 LobbyEvent *LobbyEventVector_Data(LobbyEventVector *);
 LobbyEventVector *LobbyEventVector_Destroy(LobbyEventVector *);
 PPWLobbyVipVector *LobbyVipVector_Destroy(PPWLobbyVipVector *);
+void LobbyVipVector_Allocate(PPWLobbyVipVector *vector, u32 capacity, LobbyTag tag);
+void LobbyVipVector_Reallocate(PPWLobbyVipVector *vector, u32 unused, u32 capacity);
+void LobbyVipVector_AssignRange(PPWLobbyVipVector *vector, const PPWLobbyVipRecord *first, const PPWLobbyVipRecord *last, LobbyTag tag);
+u32 LobbyVipVector_RecommendSize(PPWLobbyVipVector *vector, u32 extra);
 BOOL PPWLobbySchedule_IsSizeValid(PPWLobbySchedule *, const void *, u32);
 BOOL PPWLobbySchedule_Load(PPWLobbySchedule *, const void *, u32);
 BOOL PPWLobbySchedule_ValidateVipRecords(PPWLobbySchedule *, const void *, u32);

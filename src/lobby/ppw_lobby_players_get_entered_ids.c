@@ -5,13 +5,13 @@
 #include "ppw_lobby_internal.h"
 
 BOOL PPWLobbyPlayers_IsFull(SessionMgr *m) {
-    Vec v;
+    LobbyU32Vector v;
     BOOL made = FALSE;
     BOOL res = FALSE;
-    if (m->list.count + 1 == 20) {
+    if (m->list.count + 1 == PPW_LOBBY_MAX_PLAYERS) {
         PPWLobbyPlayers_GetEnteredIds(&v, m);
         made = TRUE;
-        if (v.size + 1 == 20) {
+        if (v.size + 1 == PPW_LOBBY_MAX_PLAYERS) {
             res = TRUE;
         }
     }
@@ -21,13 +21,13 @@ BOOL PPWLobbyPlayers_IsFull(SessionMgr *m) {
     return res;
 }
 
-void PPWLobbyPlayers_GetEnteredIds(Vec *out, SessionMgr *m) {
+void PPWLobbyPlayers_GetEnteredIds(LobbyU32Vector *out, SessionMgr *m) {
     NodeIter it;
     u32 id;
     Node *hdr;
-    out->ptr = NULL;
+    out->data = NULL;
     out->size = 0;
-    out->cap = 0;
+    out->capacity = 0;
     VecReserve(out, m->list.count);
     hdr = (Node *)&m->list.root;
     it.current = m->list.leftmost;
@@ -36,11 +36,11 @@ void PPWLobbyPlayers_GetEnteredIds(Vec *out, SessionMgr *m) {
         if (s->entered != 0) {
             id = s->id;
             TouchTag();
-            if (out->size < out->cap) {
+            if (out->size < out->capacity) {
                 out->size++;
-                ((u32 *)out->ptr)[out->size - 1] = id;
+                out->data[out->size - 1] = id;
             } else {
-                Tag t2 = { 0 };
+                LobbyTag t2 = { 0 };
                 LobbyU32Vector_PushBackSlow(out, &id, t2);
             }
         }

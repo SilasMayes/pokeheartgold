@@ -11,8 +11,6 @@ typedef struct {
 } Iter;
 
 void LobbyTreeIterator_Advance(Iterator *);
-u32 LobbyU32Vector_RecommendSize(LobbyU32Vector *, u32);
-void LobbyU32Vector_Reallocate(LobbyU32Vector *, u32, u32);
 void LobbyU32Vector_AssignFromSet(LobbyU32Vector *, Iter, Iter);
 
 typedef struct {

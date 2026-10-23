@@ -5,9 +5,6 @@
 #include "lobby_chat_manager.h"
 
 
-extern "C" int LobbyChat_FindUserIdByNick(LobbyChatManager *m, Str *s);
-extern "C" void LobbyChat_StripChannelPrefix(Str *dst, LobbyChatManager *m, Str *s);
-extern "C" LobbyChannelCallbacks *LobbyChat_GetChannelCallbacks(LobbyChatManager *manager, Str *key);
 extern "C" void LobbyChat_OnChannelModeChanged(void *chat, const char *name, u32 mode, u32 id);
 
 inline void KeyInit(LobbyRequest *k, u32 id) {
@@ -57,11 +54,6 @@ struct Vec {
 };
 
 extern "C" Vec LobbyChat_AddChannelUsers(LobbyChatManager *map, int count, const char **names, const Str &key);
-extern "C" void LobbyChat_SetChannelUsersEnumerated(LobbyChatManager *m, Str *s);
-extern "C" void LobbyChat_LeaveChannel(const char *s);
-extern "C" void LobbyChatManager_GetNick(Str *dst, LobbyChatManager *m);
-extern "C" void LobbyChat_AddChannelUser(LobbyChatManager *m, Str *a, Str *b);
-extern "C" int LobbyChat_GetChannelUserLimit(LobbyChatManager *m, Str *s);
 extern "C" int chatGetChannelNumUsersA(void *chat, const char *channel);
 extern "C" void chatSetChannelLimitA(void *chat, const char *channel, int limit);
 extern "C" void chatEnumUsersA(void *chat, const char *channel, void *callback, u32 param, u32 blocking);

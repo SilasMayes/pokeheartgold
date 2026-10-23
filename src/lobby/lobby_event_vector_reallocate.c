@@ -7,15 +7,11 @@
 #include <nitro/code32.h>
 
 void _ZNSt15__vector_commonILb1EE18throw_length_errorEv(void);
-extern void LobbyEventVector_Allocate(LobbyEventVector *, u32, LobbyTag);
-void LobbyEventVector_Reallocate(LobbyEventVector *, LobbyTag, u32);
-u32 LobbyEventVector_RecommendSize(LobbyEventVector *, u32);
 
-void LobbyEventVector_Reallocate(LobbyEventVector *v, LobbyTag incoming, u32 n) {
+void LobbyEventVector_Reallocate(LobbyEventVector *v, u32 unused, u32 n) {
     u32 size = v->size;
     LobbyTag old = { 0 };
     volatile LobbyTag copy;
-    (void)incoming;
     (void)old;
     v->size -= size;
     if (v->data) {

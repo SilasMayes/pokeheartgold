@@ -7,7 +7,6 @@
 
 extern "C" void LobbyChat_StripChannelPrefixes(LobbyU32Vector *dst, LobbyChatManager *mgr, u32 a, u32 b);
 extern "C" const char *LobbyU32Vector_Data(LobbyU32Vector *s);
-extern "C" void LobbyU32Vector_Destroy(LobbyU32Vector *s);
 
 inline void KeyInit(LobbyRequest *k, u32 id) {
     k->vtable = &gLobbyRequestVtable;

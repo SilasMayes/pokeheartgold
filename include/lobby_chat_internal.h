@@ -48,7 +48,6 @@ int LobbyChat_GetUserIdFromNick(const Str *s);
 
 LobbyUserMapEntry *LobbyUserMap_GetOrInsert(LobbyUserMap *map, int *key);
 
-int LobbyChat_GetFullChannelName(Str *out, LobbyChatManager *manager, Str *name);
 
 void *LobbyChatManager_Destroy(LobbyChatManager *manager);
 
@@ -75,7 +74,6 @@ static inline void TagTemp(void) {
     t = (LobbyTag) { 0 };
 }
 
-void LobbyU32Vector_PushBackSlow(LobbyU32Vector *v, u32 *val, LobbyTag t);
 void *LobbyU32Vector_Data(LobbyU32Vector *vector);
 
 static inline BOOL StrEqC(Str *a, const char *b) {
@@ -98,7 +96,6 @@ extern struct {
     void *buf;
 } gLobbyMemReserve;
 
-void LobbyChat_StripChannelPrefix(Str *out, LobbyChatManager *manager, Str *name);
 void LobbyChat_StripChannelPrefixes(LobbyU32Vector *out, LobbyChatManager *manager, int n, u32 *arr);
 void LobbyChat_FormatNick(Str *out, int userId);
 
@@ -115,20 +112,10 @@ LobbyChannelMapNode *LobbyChannelMap_LowerBound(LobbyChannelMap *map, Str *key, 
 void LobbyChannelMap_MakeEntry(LobbyChannelMapEntry *dst, Str *name, LobbyChannel *src);
 void LobbyChatManager_GetGameKey(Str *out, LobbyChatManager *manager);
 int LobbyChat_AreChannelUsersEnumerated(LobbyChatManager *manager, Str *channel);
-int LobbyChat_SetChannelUsersEnumerated(LobbyChatManager *manager, Str *channel);
-int LobbyChat_GetChannelUserLimit(LobbyChatManager *manager, Str *channel);
-int LobbyChat_AddChannelUser(LobbyChatManager *manager, Str *nick, Str *channel);
-LobbyChannelCallbacks *LobbyChat_GetChannelCallbacks(LobbyChatManager *manager, Str *key);
-void LobbyChat_GetUserNick(Str *out, LobbyChatManager *manager, int userId, ...);
-int LobbyChat_LeaveChannel(const char *channel);
 void LobbyChat_RemoveChannel(LobbyChatManager *manager, Str *channel);
 BOOL LobbyChat_RemoveChannelUser(LobbyChatManager *manager, Str *nick, Str *channel);
 BOOL LobbyChat_RemoveUserIfUnused(LobbyChatManager *manager, int id);
-int LobbyChat_SendChannelMessage(const char *channel, const char *message);
-int LobbyChat_SendUserMessage(int userId, const char *message);
-int LobbyChat_SetChannelKey(const char *channel, int userId, const char *key, const char *value);
 int LobbyChat_SetChannelMode(const char *channel, int mode);
-int LobbyChat_Shutdown(void);
 LobbyRequest *LobbyEnterChannelRequest_Delete(LobbyRequest *request);
 void LobbyEnterChannelRequest_Destroy(void);
 LobbyRequest *LobbyEnumChannelsRequest_Delete(LobbyRequest *request);
@@ -169,16 +156,12 @@ void chatSetChannelKeysA(void *h, const char *name, const char *who, int x, cons
 void chatSetChannelModeA(void *h, const char *name, int arg);
 
 void LobbyChatManager_GetGameName(Str *out, LobbyChatManager *manager);
-void LobbyChatManager_GetNick(Str *out, LobbyChatManager *manager);
 void LobbyChatManager_GetRealName(Str *out, LobbyChatManager *manager);
 void LobbyChatManager_GetUser(Str *out, LobbyChatManager *manager);
-int LobbyChat_FindUserIdByNick(LobbyChatManager *manager, const Str *nick);
-int LobbyChat_GetLastError(void);
-int LobbyChat_IsInChannel(char *channel);
 void LobbyChat_OnEnumChannelsEach(void *chat, int success);
 void LobbyChat_OnBroadcastKeyChanged(void *chat, char *channel, char *nick, void *key, void *value);
 void LobbyChat_OnChannelMessage(void *chat, char *channel, char *nick, void *message, int type);
-void LobbyChat_OnChannelModeChanged(void);
+void LobbyChat_OnChannelModeChanged(void *chat, const char *channel, u32 mode, u32 id);
 void LobbyChat_OnConnected(void *chat, int success);
 void LobbyChat_OnDisconnected(void);
 void LobbyChat_OnFillInUser(void *chat, void *param, char *user);
@@ -194,7 +177,6 @@ void LobbyChat_OnUserModeChanged(int chat, int channel, int nick, int mode);
 void LobbyChat_OnUserParted(int chat, char *channel, char *nick);
 int LobbyChat_RenameUser(LobbyChatManager *manager, const Str *oldNick, const Str *newNick);
 int LobbyChat_TimerConnectTimeout(void);
-int LobbyChat_ToErrorCode(int error);
 BOOL chatInChannelA(void *chat, const char *channel);
 
 #endif // POKEHEARTGOLD_LOBBY_CHAT_INTERNAL_H

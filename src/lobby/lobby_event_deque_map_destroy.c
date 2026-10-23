@@ -2,29 +2,23 @@
 
 #include "dwc/net_common_internal.h"
 
+#include "lobby_event_deque.h"
+
 #include <nitro/code32.h>
 
-typedef struct {
-    void *allocator;
-    u32 unused;
-    u32 size;
-} Container;
-
-Container *LobbyEventDequeMap_Destroy(Container *);
-
-Container *LobbyEventDequeMap_Destroy(Container *s) {
-    if (s->allocator) {
-        u32 start = s->size;
+LobbyEventDequeMap *LobbyEventDequeMap_Destroy(LobbyEventDequeMap *map) {
+    if (map->blocks) {
+        u32 size = map->size;
 
         struct {
             u8 control;
         } local = { 0 };
 
-        s->size = s->size - start;
+        map->size = map->size - size;
         (void)local;
-        if (s->allocator) {
-            DWC_Free(0, s->allocator, 0);
+        if (map->blocks) {
+            DWC_Free(0, map->blocks, 0);
         }
     }
-    return s;
+    return map;
 }

@@ -6,20 +6,12 @@
 
 #include <nitro/code32.h>
 
-typedef struct {
-    u8 byte;
-} Allocator;
-
-extern void LobbyVipVector_Allocate(PPWLobbyVipVector *, u32, Allocator);
 void _ZNSt15__vector_commonILb1EE18throw_length_errorEv(void);
-void LobbyVipVector_Reallocate(PPWLobbyVipVector *, Allocator, u32);
-u32 LobbyVipVector_RecommendSize(PPWLobbyVipVector *, u32);
 
-void LobbyVipVector_Reallocate(PPWLobbyVipVector *b, Allocator incoming, u32 n) {
+void LobbyVipVector_Reallocate(PPWLobbyVipVector *b, u32 unused, u32 n) {
     u32 size = b->size;
-    Allocator old = { 0 };
-    volatile Allocator copy;
-    (void)incoming;
+    LobbyTag old = { 0 };
+    volatile LobbyTag copy;
     (void)old;
     b->size -= size;
     if (b->data) {
@@ -29,8 +21,8 @@ void LobbyVipVector_Reallocate(PPWLobbyVipVector *b, Allocator incoming, u32 n) 
         b->data = 0;
         b->capacity = 0;
     }
-    Allocator fresh = { 0 };
-    copy.byte = 0;
+    LobbyTag fresh = { 0 };
+    copy.unused = 0;
     LobbyVipVector_Allocate(b, n, fresh);
 }
 

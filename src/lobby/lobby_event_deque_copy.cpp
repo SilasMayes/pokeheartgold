@@ -14,10 +14,6 @@ inline const T &Min(const T &a, const T &b) {
     return b < a ? b : a;
 }
 
-struct FalseType {};
-
-extern "C" LobbyEventDequeIterator LobbyEventDeque_UninitializedCopy(LobbyEventVectorIterator, LobbyEventVectorIterator, LobbyEventDequeIterator, FalseType, u32 *);
-extern "C" LobbyEventDequeIterator LobbyEventDeque_Copy(LobbyEventVectorIterator, LobbyEventVectorIterator, LobbyEventDequeIterator);
 
 inline LobbyEvent *UninitCopy(LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEvent *out, u32 *count) {
     for (; first != last; ++first.p, ++out) {
@@ -41,7 +37,7 @@ inline LobbyEvent *Copy(LobbyEventVectorIterator first, LobbyEventVectorIterator
     return CopyRange(first, last, out);
 }
 
-extern "C" LobbyEventDequeIterator LobbyEventDeque_UninitializedCopy(LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEventDequeIterator result, FalseType, u32 *count) {
+LobbyEventDequeIterator LobbyEventDeque_UninitializedCopy(LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEventDequeIterator result, LobbyTag, u32 *count) {
     if (first != last) {
         int n = last - first;
         for (;;) {
@@ -62,7 +58,7 @@ extern "C" LobbyEventDequeIterator LobbyEventDeque_UninitializedCopy(LobbyEventV
     return result;
 }
 
-extern "C" LobbyEventDequeIterator LobbyEventDeque_Copy(LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEventDequeIterator result) {
+LobbyEventDequeIterator LobbyEventDeque_Copy(LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEventDequeIterator result) {
     if (first != last) {
         int n = last - first;
         for (;;) {
