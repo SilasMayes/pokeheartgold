@@ -1216,7 +1216,7 @@ static void SafariAreaCustomizer_LoadBgGraphics(SafariAreaCustomizer *s) {
     BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 10, GF_BG_LYR_MAIN_2, GF_BG_GFX_TYPE_SCRN, 0, 0);
     BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 7, GF_BG_LYR_MAIN_3, GF_BG_GFX_TYPE_SCRN, 0, 0);
     BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 4, GF_BG_LYR_SUB_2, GF_BG_GFX_TYPE_SCRN, 0, 0);
-    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, (s->objectsUnlocked == FALSE) + 2, GF_BG_LYR_SUB_3, GF_BG_GFX_TYPE_SCRN, 0, 0);
+    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, (!s->objectsUnlocked) + 2, GF_BG_LYR_SUB_3, GF_BG_GFX_TYPE_SCRN, 0, 0);
     s->pageScreenFile = GfGfxLoader_GetScrnDataFromOpenNarc(narc, 8, FALSE, &s->pageScreen, s->heapId);
     s->selectFrameScreenFile = GfGfxLoader_GetScrnDataFromOpenNarc(narc, 9, FALSE, &s->selectFrameScreen, s->heapId);
     NARC_Delete(narc);
@@ -1485,7 +1485,7 @@ static void SafariAreaCustomizer_PrintPageNumber(SafariAreaCustomizer *s) {
 }
 
 static void SafariAreaCustomizer_SetCursorAnim(SafariAreaCustomizer *s, u32 index, u32 anim, BOOL draw) {
-    if (draw == FALSE) {
+    if (!draw) {
         Sprite_SetDrawFlag(s->sprites[index], FALSE);
     } else {
         Sprite_SetDrawFlag(s->sprites[index], TRUE);

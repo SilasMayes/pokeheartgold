@@ -876,7 +876,7 @@ static int WonderCardAlbum_FindNextCard(WonderCardAlbum *album, int index, int s
         if (start == index) {
             break;
         }
-    } while (SaveMysteryGift_CardTagIsValid(album->mysteryGift, index) == FALSE);
+    } while (!SaveMysteryGift_CardTagIsValid(album->mysteryGift, index));
     return index;
 }
 
@@ -1037,7 +1037,7 @@ static BOOL WonderCardAlbum_UpdateFlipEffect(WonderCardAlbum *album) {
     int x;
     u16 *buffer;
 
-    if (effect->active == FALSE) {
+    if (!effect->active) {
         return TRUE;
     }
     if (effect->mode == 1) {

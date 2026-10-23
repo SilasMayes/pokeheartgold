@@ -112,7 +112,7 @@ static int HoOhCinematic_WaitFade(LegendaryCinematic *cinematic) {
 
 static int HoOhCinematic_PlayFirstScene(LegendaryCinematic *cinematic) {
     u32 frame;
-    if (LegendaryCinematic_AreModelsAnimating(cinematic) == FALSE && IsPaletteFadeFinished() == TRUE) {
+    if (!LegendaryCinematic_AreModelsAnimating(cinematic) && IsPaletteFadeFinished() == TRUE) {
         cinematic->frame = 0;
         return 4;
     }
@@ -144,7 +144,7 @@ static int HoOhCinematic_LoadSecondScene(LegendaryCinematic *cinematic) {
 }
 
 static int HoOhCinematic_PlaySecondScene(LegendaryCinematic *cinematic) {
-    if (LegendaryCinematic_AreModelsAnimating(cinematic) == FALSE && IsPaletteFadeFinished() == TRUE) {
+    if (!LegendaryCinematic_AreModelsAnimating(cinematic) && IsPaletteFadeFinished() == TRUE) {
         cinematic->frame = 0;
         return 1;
     }

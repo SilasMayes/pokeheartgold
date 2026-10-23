@@ -288,7 +288,7 @@ static void WobbuffetPopApp_InitRoster(WobbuffetPopApp *app, PlazaGameArgs *args
 }
 
 static BOOL WobbuffetPopApp_CheckConnectionLost(WobbuffetPopApp *app) {
-    if (app->connectionLost == FALSE) {
+    if (!app->connectionLost) {
         if (PlazaGameRoster_CheckConnectionLost(&app->roster) == TRUE) {
             app->connectionLost = TRUE;
         }
@@ -1367,7 +1367,7 @@ static BOOL WobbuffetPop_UpdateSync(WobbuffetPop *game) {
         }
         break;
     case WOBBUFFET_POP_SYNC_POP:
-        if (game->confetti.active == FALSE) {
+        if (!game->confetti.active) {
             ready = TRUE;
         }
         break;
@@ -1505,7 +1505,7 @@ BOOL WobbuffetPop_HostFinishGame(WobbuffetPop *game, WobbuffetPopSequence *seque
 static BOOL WobbuffetPop_RunHostSteps(WobbuffetPop *game) {
     WobbuffetPopSequence *sequence;
 
-    if (WobbuffetPop_IsHost(game) == FALSE) {
+    if (!WobbuffetPop_IsHost(game)) {
         return FALSE;
     }
     sequence = &game->sequence;
@@ -1573,7 +1573,7 @@ static void WobbuffetPopBalloon_Update(WobbuffetPop *game, WobbuffetPopBalloon *
         balloon->touch[1] = game->demo.touch[1];
         balloon->touch[2] = game->demo.touch[2];
         balloon->touch[3] = game->demo.touch[3];
-    } else if (game->started == FALSE || game->gameOver == TRUE) {
+    } else if (!game->started || game->gameOver == TRUE) {
         balloon->touch[0] = 0;
         balloon->touch[1] = 0;
         balloon->touch[2] = 0;
@@ -1603,7 +1603,7 @@ static void WobbuffetPopBalloon_Update(WobbuffetPop *game, WobbuffetPopBalloon *
         }
         WobbuffetPopBalloon_UpdateFlash(balloon);
     }
-    if (game->gameOver == FALSE && game->started == TRUE && balloon->pumpStrength > 0) {
+    if (!game->gameOver && game->started == TRUE && balloon->pumpStrength > 0) {
         int bonus = 0;
         int amount;
         if (balloon->air < 800) {

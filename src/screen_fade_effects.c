@@ -1076,7 +1076,7 @@ void ScreenWipeScanlines_CommitTask(SysTask *task, void *data) {
 // At the end of a wipe: either window 0 shrunk to nothing with only the backdrop outside it, so the whole screen
 // shows the fade color, or the windows switched off
 void ScreenFade_SetEndWindows(BOOL cover, WindowRegisterQueue *regQueue, int screen) {
-    if (cover == FALSE) {
+    if (!cover) {
         ScreenWindow_QueueSetVisible(regQueue, 0, screen);
         return;
     }
@@ -1087,7 +1087,7 @@ void ScreenFade_SetEndWindows(BOOL cover, WindowRegisterQueue *regQueue, int scr
 }
 
 void ScreenFade_SetWindow(WindowRegisterQueue *regQueue, int insideMask, int outsideMask, int window, int screen, int left, int top, int right, int bottom, BOOL queued) {
-    if (queued == FALSE) {
+    if (!queued) {
         ScreenWindow_SetInside(insideMask, FALSE, window, screen);
         ScreenWindow_SetOutside(outsideMask, FALSE, screen);
         ScreenWindow_SetRect(left, top, right, bottom, window, screen);
@@ -1106,7 +1106,7 @@ void ScreenFade_SwapWindowMasks(WindowRegisterQueue *regQueue, int window, int s
     planes[3] = planes[1];
     planes[0] = ScreenWindow_GetOutside(screen);
     planes[2] = planes[0];
-    if (queued == FALSE) {
+    if (!queued) {
         ScreenWindow_SetInside((u32)(planes[2] << 27) >> 27, FALSE, window, screen);
         ScreenWindow_SetOutside((u32)(planes[3] << 27) >> 27, FALSE, screen);
         return;
@@ -1116,7 +1116,7 @@ void ScreenFade_SwapWindowMasks(WindowRegisterQueue *regQueue, int window, int s
 }
 
 void ScreenFade_SetWindowVisible(WindowRegisterQueue *regQueue, u32 mask, int screen, BOOL queued) {
-    if (queued == FALSE) {
+    if (!queued) {
         ScreenWindow_SetVisible(mask, screen);
     } else {
         ScreenWindow_QueueSetVisible(regQueue, mask, screen);

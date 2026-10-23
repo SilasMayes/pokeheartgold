@@ -1270,7 +1270,7 @@ static BOOL WiiMessageSettingsScreen_ConfirmConnect(WiiMessageSettingsScreen *sc
         }
         break;
     case 4:
-        if (Comm_HasWifiProfile(screen->app->saveData) == FALSE) {
+        if (!Comm_HasWifiProfile(screen->app->saveData)) {
             WiiMessageSettings_SetNextApp(screen->app, WII_MESSAGE_SETTINGS_APP_OV44, 0);
             WiiMessageSettings_SetScreenStartState(screen->app, WMS_STATE_START_CONNECT);
             screen->state = WMS_STATE_FADE_OUT;
@@ -1336,7 +1336,7 @@ static BOOL WiiMessageSettingsScreen_StartConnect(WiiMessageSettingsScreen *scre
         screen->subState++;
         break;
     case 1:
-        if (WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId) == FALSE) {
+        if (!WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId)) {
             screen->subState++;
         }
         break;
@@ -1803,7 +1803,7 @@ static BOOL WiiMessageSettingsScreen_SaveGame(WiiMessageSettingsScreen *screen) 
         screen->subState++;
         break;
     case 2:
-        if (WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId) == FALSE) {
+        if (!WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId)) {
             screen->subState++;
         }
         break;
@@ -1840,13 +1840,13 @@ static BOOL WiiMessageSettingsScreen_DisconnectAndWait(WiiMessageSettingsScreen 
         screen->subState++;
         break;
     case 2:
-        if (WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId) == FALSE) {
+        if (!WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId)) {
             WiiMessageSettingsScreen_PrintMessage(screen, screen->msgData, msg_0188_00016, 1, 0xF0F);
             screen->subState++;
         }
         break;
     case 3:
-        if (WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId) == FALSE) {
+        if (!WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId)) {
             screen->subState++;
         }
         break;
@@ -2003,7 +2003,7 @@ static BOOL WiiMessageSettingsScreen_DisconnectAndQuit(WiiMessageSettingsScreen 
 }
 
 static BOOL WiiMessageSettingsScreen_WaitMessage(WiiMessageSettingsScreen *screen) {
-    if (WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId) == FALSE) {
+    if (!WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId)) {
         screen->state = screen->nextState;
     }
     return FALSE;
@@ -2020,7 +2020,7 @@ static BOOL WiiMessageSettingsScreen_WaitMessageAndDelay(WiiMessageSettingsScree
 }
 
 static BOOL WiiMessageSettingsScreen_WaitMessageAndShowYesNo(WiiMessageSettingsScreen *screen) {
-    if (WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId) == FALSE) {
+    if (!WiiMessageSettingsScreen_IsPrinterActive(screen->textPrinterId)) {
         screen->yesNoPrompt = WiiMessageSettingsScreen_CreateYesNoPrompt(screen->bgConfig, 0x234, 0);
         screen->state = screen->nextState;
     }
@@ -2041,7 +2041,7 @@ static void WiiMessageSettingsScreen_PrintMessage(WiiMessageSettingsScreen *scre
 }
 
 static BOOL WiiMessageSettingsScreen_IsPrinterActive(u32 printerId) {
-    if (printerId == WII_MESSAGE_SETTINGS_TEXT_PRINTER_NONE || TextPrinterCheckActive(printerId) == FALSE) {
+    if (printerId == WII_MESSAGE_SETTINGS_TEXT_PRINTER_NONE || !TextPrinterCheckActive(printerId)) {
         return FALSE;
     }
     return TRUE;
@@ -2138,13 +2138,13 @@ static void WiiMessageSettingsScreen_PrintErrorCode(WiiMessageSettingsScreen *sc
 }
 
 static void WiiMessageSettingsScreen_RegisteredMenuMoveCursor(ListMenu *menu, s32 index, BOOL onInit) {
-    if (onInit == FALSE) {
+    if (!onInit) {
         PlaySE(SEQ_SE_DP_SELECT);
     }
 }
 
 static void WiiMessageSettingsScreen_UnregisteredMenuMoveCursor(ListMenu *menu, s32 index, BOOL onInit) {
-    if (onInit == FALSE) {
+    if (!onInit) {
         PlaySE(SEQ_SE_DP_SELECT);
     }
 }

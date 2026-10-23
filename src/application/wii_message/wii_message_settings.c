@@ -165,7 +165,7 @@ static BOOL WiiMessageSettings_Exit(OverlayManager *man, int *state) {
 }
 
 static void WiiMessageSettings_LoadNetworkOverlays(WiiMessageSettings *app) {
-    if (app->networkLoaded == FALSE) {
+    if (!app->networkLoaded) {
         HandleLoadOverlay(FS_OVERLAY_ID(OVY_70), OVY_LOAD_ASYNC);
         LoadDwcOverlay();
         LoadOVY38();

@@ -1546,7 +1546,7 @@ static void DressUp_InitCanvas(DressUpWork *work, Pokemon *mon, int limit, BOOL 
     template.slotList = work->slotList;
     template.nodePool = &work->nodePool;
     DressUpCanvas_Init(&work->canvas, &template);
-    if (altMonPic == FALSE) {
+    if (!altMonPic) {
         DressUpCanvas_CreateMonPic(&work->canvas, mon, &pokepicTemplate, HEAP_ID_14);
     } else {
         DressUpCanvas_CreateMonPicEx(&work->canvas, mon, &pokepicTemplate, HEAP_ID_14);
@@ -2629,7 +2629,7 @@ static void DressUpTray_RefreshPriorities(DressUpTray *tray) {
 }
 
 static BOOL DressUpTray_AnimateToPage(DressUpTray *tray, int group, int page) {
-    if (tray->pageSwapActive == FALSE) {
+    if (!tray->pageSwapActive) {
         int oldGroup = tray->group;
         DressUpTray_StartPageSwapTask(tray, oldGroup, tray->groups[oldGroup].curPage, group, page);
         tray->group = group;
@@ -2646,7 +2646,7 @@ static int DressUpTray_CyclePage(DressUpTray *tray, int group, BOOL reverse) {
     int i;
     for (i = 1; i < tray->groups[group].pageCount; i++) {
         int page;
-        if (reverse == FALSE) {
+        if (!reverse) {
             page = (i + start) % tray->groups[group].pageCount;
         } else {
             page = start - i;
@@ -2773,7 +2773,7 @@ static void DressUpTray_MovePageObjects(DressUpTray *tray, int group, int page, 
 }
 
 static BOOL DressUpTray_IsIdle(DressUpTray *tray) {
-    return tray->pageSwapActive == FALSE;
+    return !tray->pageSwapActive;
 }
 
 // page lists per group: accessories, backdrops, group 2, group 3 (the empty tray while DONE)
@@ -3330,7 +3330,7 @@ static void DressUpDrag_BeginDrag(DressUpDrag *drag, DressUpNode *node, BOOL fro
     drag->fromCanvas = fromCanvas;
     drag->grabX = grabX;
     drag->grabY = grabY;
-    if (fromCanvas == FALSE) {
+    if (!fromCanvas) {
         drag->trayPage = DressUpTray_GetGroupPage(drag->tray, drag->selected->mode);
     } else {
         drag->trayPage = 0;
@@ -3518,7 +3518,7 @@ static void DressUpMon_GetSize(DressUpMonPic *monPic, int *width, int *height) {
 // the touch is on an opaque pixel of the mon; (x, y) = touch position within the picture
 static BOOL DressUpMon_HitTestTouch(DressUpMonPic *monPic, int *x, int *y, NNSG2dCharacterData *hitMap) {
     int width, height, left, top;
-    if (DressUpMon_IsTouchHeldIn(monPic) == FALSE) {
+    if (!DressUpMon_IsTouchHeldIn(monPic)) {
         return FALSE;
     }
     DressUpMon_GetCenterPos(monPic, &left, &top);
@@ -3841,7 +3841,7 @@ static void DressUpBgScreen_UpdateAltAnim(DressUpBgScreenAnim *anim, int ticks) 
         void *buffer;
         DressUpBgScreen *screen;
         anim->ticks = 0;
-        if (anim->showingAlt == FALSE) {
+        if (!anim->showingAlt) {
             fileId = anim->altScreenFileId;
             anim->showingAlt = TRUE;
         } else {
@@ -4507,7 +4507,7 @@ static void DressUpHud_AddWindow(Window **window, BgConfig *bgConfig, int x, int
     InitWindow(*window);
     AddWindowParameterized(bgConfig, *window, GF_BG_LYR_SUB_1, x, y, width, height, 2, baseTile);
     FillWindowPixelBuffer(*window, 15);
-    if (drawFrame != FALSE) {
+    if (drawFrame) {
         DrawFrameAndWindow2(*window, FALSE, 1, 1);
     }
     CopyWindowToVram(*window);
@@ -4724,7 +4724,7 @@ static void DressUpCountdown_DrawDigits(DressUpCountdown *countdown) {
         Sprite_SetAnimCtrlSeq(countdown->digits[i], digit);
         value -= digit * divisor;
         divisor /= 10;
-        if (countdown->warning == FALSE && countdown->value <= 10) {
+        if (!countdown->warning && countdown->value <= 10) {
             Sprite_SetPalIndexRespectVramOffset(countdown->digits[i], 1);
             if (i == 1) {
                 countdown->warning = TRUE;
@@ -4795,7 +4795,7 @@ static void DressUpCountdown_UpdatePulse(DressUpCountdownPulse *pulse) {
     VecFx32 scale;
     VecFx32 pos;
     BOOL done;
-    if (pulse->active == FALSE) {
+    if (!pulse->active) {
         return;
     }
     done = DressUpTween_Step(&pulse->scale);

@@ -1380,7 +1380,7 @@ static BOOL MigrateFromAgb_Init(OverlayManager *man, int *state) {
     app->string = String_New(384, HEAP_ID_76);
     app->rawString = String_New(384, HEAP_ID_76);
     Sound_SetSceneAndPlayBGM(9, SEQ_GS_WIFI_PRESENT, 1);
-    if (OS_IsTickAvailable() == FALSE) {
+    if (!OS_IsTickAvailable()) {
         OS_InitTick();
     }
     MainMenuUtil_IgnoreCartridgeIrq();

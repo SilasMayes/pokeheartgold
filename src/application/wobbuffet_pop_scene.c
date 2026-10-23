@@ -490,7 +490,7 @@ static BOOL WobbuffetPopInflation_StepAir(WobbuffetPopInflation *inflation) {
 }
 
 void WobbuffetPop_UpdateInflation(WobbuffetPop *game, BgConfig *bgConfig, WobbuffetPopInflation *inflation) {
-    if (game->balloonInPlay != FALSE) {
+    if (game->balloonInPlay) {
         WobbuffetPopInflation_StepAir(inflation);
         WobbuffetPopInflation_UpdateBg(bgConfig, inflation, game->app->playerCount);
     }
@@ -521,7 +521,7 @@ static u32 WobbuffetPopPuff_Init(WobbuffetPop *game, const WobbuffetPopPump *pum
     const u8 *config;
     s32 distance;
 
-    GF_ASSERT(puff->active == FALSE);
+    GF_ASSERT(!puff->active);
     MI_CpuFill8(puff, 0, sizeof(*puff));
     config = sWobbuffetPopPuffConfigs + (game->app->playerCount * 40) + WobbuffetPop_GetPlayerSeat(game, pump->netId) * 10;
     puff->netId = pump->netId;
@@ -567,7 +567,7 @@ void WobbuffetPop_UpdatePuffs(WobbuffetPop *game) {
                     ManagedSprite_SetDrawFlag(puff->sprite, TRUE);
                 }
             } else if (WobbuffetPopPuff_Move(game, puff) == TRUE) {
-                if (game->balloonInPlay == TRUE && game->gameOver == FALSE) {
+                if (game->balloonInPlay == TRUE && !game->gameOver) {
                     WobbuffetPopInflation_AddAir(game, &game->inflation, puff->amount, puff->netId, puff->bonus);
                 }
                 Sprite_DeleteAndFreeResources(puff->sprite);
@@ -977,7 +977,7 @@ static void WobbuffetPopBalloonIcon_Update(WobbuffetPop *game, WobbuffetPopBallo
         if (state != 3) {
             return;
         }
-        if (ManagedSprite_IsAnimated(icon->sprite) != FALSE) {
+        if (ManagedSprite_IsAnimated(icon->sprite)) {
             return;
         }
         icon->number += 5;

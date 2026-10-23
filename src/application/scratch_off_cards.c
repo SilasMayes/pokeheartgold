@@ -1539,7 +1539,7 @@ static int ScratchOffCards_CheckCellRevealed(ScratchOffCardsWork *work, u8 cellN
         }
     }
     if (count >= 380) {
-        if (work->cellRevealed[cellNo] == FALSE) {
+        if (!work->cellRevealed[cellNo]) {
             PlaySE(SEQ_SE_DP_PIRORIRO);
             work->revealed[work->revealedCount] = cellNo;
             work->revealedCount++;
@@ -1655,7 +1655,7 @@ static int ScratchOffCards_UpdateWildcardMosaic(ScratchOffCardsWork *work, int f
     if (i == 3) {
         return FALSE;
     }
-    if (fadeOut == FALSE) {
+    if (!fadeOut) {
         if (work->mosaic == 0) {
             PlaySE(SEQ_SE_PL_W100);
         }
@@ -1829,7 +1829,7 @@ static Sprite *ScratchOffCardsSpriteGfx_CreateSprite(ScratchOffCardsSpriteGfx *g
     template.rotation = 0;
     template.drawPriority = drawPriority;
     template.heapID = HEAP_ID_122;
-    if (isSubScreen == FALSE) {
+    if (!isSubScreen) {
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
     } else {
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DSUB;

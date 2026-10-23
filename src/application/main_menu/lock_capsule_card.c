@@ -602,7 +602,7 @@ static BOOL LockCapsuleCard_UpdateFlipEffect(LockCapsuleCardView *view) {
     int x;
     u16 *buffer;
 
-    if (effect->active == FALSE) {
+    if (!effect->active) {
         return TRUE;
     }
     if (effect->mode == 1) {
@@ -887,10 +887,10 @@ int MysteryGift_CheckCanReceive(SaveData *saveData, WonderCardInfo *header) {
     if (header->unique == TRUE && SaveMysteryGift_ReceivedFlagTest(mg, header->id) == TRUE) {
         return 2;
     }
-    if (header->unk8E_2 == TRUE && SaveMysteryGift_CardFindAvailable(mg) == FALSE) {
+    if (header->unk8E_2 == TRUE && !SaveMysteryGift_CardFindAvailable(mg)) {
         return 4;
     }
-    if (SaveMysteryGift_FindAvailable(mg) == FALSE) {
+    if (!SaveMysteryGift_FindAvailable(mg)) {
         return 3;
     }
     if (header->unk8E_5 == TRUE) {

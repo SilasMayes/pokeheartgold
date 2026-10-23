@@ -85,7 +85,7 @@ void AccessoryPortrait_Draw(AccessoryPortrait *portrait) {
 }
 
 void AccessoryPortrait_Destroy(AccessoryPortrait *portrait) {
-    if (portrait->bgEnabled != FALSE) {
+    if (portrait->bgEnabled) {
         AccessoryPortrait_ClearBackground(portrait);
     }
     AccessoryPortrait_FreeCanvas(portrait);
@@ -107,7 +107,7 @@ void AccessoryPortrait_SetMonVisible(AccessoryPortrait *portrait, BOOL visible) 
 
 static void AccessoryPortrait_SetPosition(AccessoryPortrait *portrait, int x, int y) {
     DressUpCanvas_SetOrigin(&portrait->canvas, portrait->x, portrait->y, x, y);
-    if (portrait->bgEnabled != FALSE) {
+    if (portrait->bgEnabled) {
         BgSetPosTextAndCommit(portrait->gfx.bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_X, 0x88 - x);
         BgSetPosTextAndCommit(portrait->gfx.bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_Y, 0x10 - y);
     }
@@ -155,7 +155,7 @@ static void AccessoryPortrait_DrawMon(AccessoryPortrait *portrait) {
 static void AccessoryPortrait_FreeGfx(AccessoryPortrait *portrait) {
     DressUpGfx_FreeAllTexAndPltt(&portrait->gfx);
     AccessoryPortrait_FreeGfxCore(&portrait->gfx);
-    if (portrait->bgEnabled != FALSE) {
+    if (portrait->bgEnabled) {
         AccessoryPortrait_FreeBg(&portrait->gfx);
     }
     NARC_Delete(portrait->gfx.narc);

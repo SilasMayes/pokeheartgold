@@ -1308,7 +1308,7 @@ static int MoveRelearner_OnTeachYes(MoveRelearner *relearner) {
 
 static int MoveRelearner_OnTeachNo(MoveRelearner *relearner) {
     MoveRelearner_ClearMessage(relearner);
-    if (relearner->learnButtonActive == FALSE) {
+    if (!relearner->learnButtonActive) {
         MoveRelearner_DrawListRows(relearner, 5);
     }
     return MOVE_RELEARNER_STATE_INPUT;

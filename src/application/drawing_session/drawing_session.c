@@ -1395,7 +1395,7 @@ static void DrawingSession_DrawStrokes(Window *window, DrawingSessionStroke *str
             }
         }
     }
-    if (drew != FALSE && copyToVram != FALSE) {
+    if (drew && copyToVram) {
         CopyWindowToVram(window);
     }
     DrawingSession_SaveLastPoints(strokes, points);
@@ -1659,7 +1659,7 @@ static void DrawingSession_ApplyNextSubState(DrawingSessionWork *work, int mainS
 }
 
 static BOOL DrawingSession_ShowYesNo(DrawingSessionWork *work, const YesNoPromptTemplate *template) {
-    if (work->yesNoActive == FALSE) {
+    if (!work->yesNoActive) {
         YesNoPrompt_InitFromTemplate(work->yesNoPrompt, template);
         work->yesNoActive = TRUE;
         return TRUE;
@@ -1668,7 +1668,7 @@ static BOOL DrawingSession_ShowYesNo(DrawingSessionWork *work, const YesNoPrompt
 }
 
 static void DrawingSession_HideYesNo(DrawingSessionWork *work) {
-    if (work->yesNoActive != FALSE) {
+    if (work->yesNoActive) {
         YesNoPrompt_Reset(work->yesNoPrompt);
         work->yesNoActive = FALSE;
     }

@@ -1488,7 +1488,7 @@ static void FootprintStampBoard_ResolveChains(FootprintStampBoard *board) {
     if (board->pendingCameraEffect != FOOTPRINT_STAMP_EFFECT_NONE && board->flashDone == TRUE) {
         for (i = 0; i < FOOTPRINT_STAMP_STAMPS_MAX; i++) {
             stamp = board->stamps[i];
-            if (stamp != NULL && stamp->effectId != board->pendingCameraEffect && stamp->pendingEffect != board->pendingCameraEffect && FootprintStamp_SetEffect(stamp, board->pendingCameraEffect) == FALSE) {
+            if (stamp != NULL && stamp->effectId != board->pendingCameraEffect && stamp->pendingEffect != board->pendingCameraEffect && !FootprintStamp_SetEffect(stamp, board->pendingCameraEffect)) {
                 FootprintStampBoard_RemoveStamp(board, stamp, i);
             }
         }
@@ -1509,7 +1509,7 @@ static void FootprintStampBoard_VBlank(FootprintStampBoard *board, int phase) {
             *texture = NULL;
         }
     }
-    if (board->brightnessChanged != FALSE && phase != 3) {
+    if (board->brightnessChanged && phase != 3) {
         SetMasterBrightness(PM_LCD_TOP, board->brightness);
         board->brightnessChanged = FALSE;
     }

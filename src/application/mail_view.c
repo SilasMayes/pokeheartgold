@@ -626,7 +626,7 @@ static BOOL MailView_ConfirmQuit(MailView *mailView) {
         ClearFrameAndWindow2(&mailView->windows[5], TRUE);
         ClearWindowTilemapAndCopyToVram(&mailView->windows[5]);
         mailView->subState = MAIL_VIEW_CONFIRM_QUIT_PRINT;
-        if (answer != FALSE) {
+        if (answer) {
             mailView->args->screenOrResult = 0xFFFF;
             return TRUE;
         }

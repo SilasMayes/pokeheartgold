@@ -121,7 +121,7 @@ static BOOL MysteryGiftBeacon_StartScan(void) {
     *(u16 *)&gMysteryGiftBeacon.work->scanParam.address[4] = 0xFFFF;
     *(u16 *)&gMysteryGiftBeacon.work->scanParam.address[2] = 0xFFFF;
     *(u16 *)&gMysteryGiftBeacon.work->scanParam.address[0] = 0xFFFF;
-    if (MysteryGiftBeacon_ScanChannel() == FALSE) {
+    if (!MysteryGiftBeacon_ScanChannel()) {
         MysteryGiftBeacon_SetState(MYSTERY_GIFT_BEACON_STATE_ERROR);
         void (*callback)(int) = gMysteryGiftBeacon.work->callback;
         if (callback != NULL) {
@@ -200,7 +200,7 @@ static void MysteryGiftBeacon_ScanCallback(void *arg) {
         return;
     }
     if (gMysteryGiftBeacon.work->state != MYSTERY_GIFT_BEACON_STATE_SCANNING) {
-        if (MysteryGiftBeacon_EndScan() == FALSE) {
+        if (!MysteryGiftBeacon_EndScan()) {
             MysteryGiftBeacon_SetState(MYSTERY_GIFT_BEACON_STATE_ERROR);
             if (gMysteryGiftBeacon.work->callback != NULL) {
                 gMysteryGiftBeacon.work->callback(MYSTERY_GIFT_BEACON_EVENT_ERROR);
@@ -282,7 +282,7 @@ static void MysteryGiftBeacon_EndCallback(void *arg) {
 
 static BOOL MysteryGiftBeacon_Start(void) {
     gMysteryGiftBeacon.work->error = 0;
-    if (MysteryGiftBeacon_Initialize() != FALSE) {
+    if (MysteryGiftBeacon_Initialize()) {
         return TRUE;
     }
     return FALSE;
@@ -438,7 +438,7 @@ static BOOL MysteryGiftBeacon_ReceivePacket(MysteryGiftBeaconPacket *packet) {
         work = gMysteryGiftBeacon.work;
         {
             u8 *received = work->packetReceived;
-            if (received[packet->index] == FALSE) {
+            if (!received[packet->index]) {
                 received[packet->index] = TRUE;
                 work = gMysteryGiftBeacon.work;
                 if (packet->index == work->packetCount - 1) {

@@ -197,7 +197,7 @@ BOOL MailboxApp_Init(OverlayManager *man, int *state) {
 
 BOOL MailboxApp_Main(OverlayManager *man, int *state) {
     MailboxApp *app = OverlayManager_GetData(man);
-    if (MailboxApp_RunState(app, state) == FALSE) {
+    if (!MailboxApp_RunState(app, state)) {
         return TRUE;
     }
     return FALSE;

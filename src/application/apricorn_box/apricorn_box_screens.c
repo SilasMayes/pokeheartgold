@@ -196,7 +196,7 @@ BOOL ApricornBoxScreen_Main(OverlayManager *man, int *state) {
 BOOL ApricornBoxScreen_Exit(OverlayManager *man, int *state) {
     ApricornBoxScreen *screen;
     screen = OverlayManager_GetData(man);
-    if (ApricornBoxScreen_Teardown(screen) == FALSE) {
+    if (!ApricornBoxScreen_Teardown(screen)) {
         return FALSE;
     }
     ApricornBoxScreen_RestoreMenuInputState(screen);

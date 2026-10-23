@@ -208,8 +208,8 @@ static int MailboxApp_State_WaitFade(MailboxApp *app) {
 }
 
 static int MailboxApp_State_WaitText(MailboxApp *app) {
-    if (TextPrinterCheckActive(app->data->printerId) == FALSE) {
-        if (app->data->waitForInput == FALSE) {
+    if (!TextPrinterCheckActive(app->data->printerId)) {
+        if (!app->data->waitForInput) {
             return app->nextState;
         }
         if (System_GetTouchNew() == TRUE) {
@@ -250,7 +250,7 @@ static int MailboxApp_State_StartSubApp(MailboxApp *app) {
 }
 
 static int MailboxApp_State_RunSubApp(MailboxApp *app) {
-    if (OverlayManager_Run(app->subApp) == FALSE) {
+    if (!OverlayManager_Run(app->subApp)) {
         return MAILBOX_STATE_RUN_SUB_APP;
     }
     OverlayManager_Delete(app->subApp);
@@ -663,7 +663,7 @@ static int MailboxApp_SelectMonToHoldMail(MailboxApp *app) {
 }
 
 static int MailboxApp_PrintMailToBagResult(MailboxApp *app) {
-    if (app->bagFull == FALSE) {
+    if (!app->bagFull) {
         MailboxApp_PrintMessage(app, 3);
     } else {
         MailboxApp_PrintMessage(app, 4);

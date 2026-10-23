@@ -119,13 +119,13 @@ static int MainMenuUtil_CheckGiftCartridgeSignature(void) {
 
 static BOOL MainMenuUtil_IsGiftCartridgeInserted(void) {
     CTRDG_Init();
-    if (CTRDG_IsAgbCartridge() == FALSE) {
+    if (!CTRDG_IsAgbCartridge()) {
         return FALSE;
     }
     if (CTRDG_GetAgbMakerCode() != 0x3130) { // "01"
         return FALSE;
     }
-    if (MainMenuUtil_CheckGiftCartridgeSignature() == FALSE) {
+    if (!MainMenuUtil_CheckGiftCartridgeSignature()) {
         return FALSE;
     }
     return TRUE;
@@ -134,7 +134,7 @@ static BOOL MainMenuUtil_IsGiftCartridgeInserted(void) {
 // Size of the gift on the cartridge (0: no gift cartridge)
 u32 MainMenuUtil_GetCartridgeGiftSize(void) {
     u32 size;
-    if (MainMenuUtil_IsGiftCartridgeInserted() == FALSE) {
+    if (!MainMenuUtil_IsGiftCartridgeInserted()) {
         return 0;
     }
     CTRDG_Enable(TRUE);
@@ -145,7 +145,7 @@ u32 MainMenuUtil_GetCartridgeGiftSize(void) {
 
 BOOL MainMenuUtil_ReadCartridgeGift(void *dest, int size) {
     BOOL success;
-    if (MainMenuUtil_IsGiftCartridgeInserted() == FALSE) {
+    if (!MainMenuUtil_IsGiftCartridgeInserted()) {
         return FALSE;
     }
     if (size == 0) {
@@ -154,7 +154,7 @@ BOOL MainMenuUtil_ReadCartridgeGift(void *dest, int size) {
     CTRDG_Enable(TRUE);
     success = CTRDG_CpuCopy16((void *)0x08100100, dest, size);
     CTRDG_Enable(FALSE);
-    if (CTRDG_IsExisting() == FALSE) {
+    if (!CTRDG_IsExisting()) {
         return FALSE;
     }
     return success;
@@ -205,7 +205,7 @@ void MainMenuUtil_SetFadeWhite(u32 fadeWhite) {
 
 void MainMenuUtil_StartFade(u32 fadeType, u32 nextState, int *state, u32 waitingState) {
     MainMenuUtilWork *work = (MainMenuUtilWork *)(&gMainMenuUtilCryptoHeapId + 1);
-    if (gMainMenuUtilWork.fadeWhite == FALSE) {
+    if (!gMainMenuUtilWork.fadeWhite) {
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, (enum FadeType)fadeType, (enum FadeType)fadeType, RGB_BLACK, 6, 1, work->heapId);
     } else {
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, (enum FadeType)fadeType, (enum FadeType)fadeType, RGB_WHITE, 6, 1, work->heapId);
@@ -278,7 +278,7 @@ static int MainMenuTextPrinter_Print(MainMenuTextPrinter *printer, int msgId) {
                 msgFormat = MessageFormat_New(work->heapId);
             }
             string = ReadMsgData_ExpandPlaceholders(msgFormat, msgData, printer->msgId, work->heapId);
-            if (printer->rightAlign == FALSE) {
+            if (!printer->rightAlign) {
                 printerId = AddTextPrinterParameterizedWithColor(printer->window, printer->fontId, string, printer->textX, printer->textY, printer->speed, printer->color, NULL);
             } else {
                 int width = FontID_String_GetWidth(printer->fontId, string, GetFontAttribute(printer->fontId, 2));
@@ -411,7 +411,7 @@ void MainMenuUtil_UpdateGiftSprite(int hideGiftSprite) {
     if (gMainMenuUtilGiftSpriteWork[2]) {
         if (work->giftSpriteDelay == 0) {
             VecFx32 *pos;
-            if (!Sprite_GetDrawFlag(work->giftSprite) && hideGiftSprite == FALSE) {
+            if (!Sprite_GetDrawFlag(work->giftSprite) && !hideGiftSprite) {
                 Sprite_SetDrawFlag(work->giftSprite, TRUE);
             }
             pos = Sprite_GetMatrixPtr(work->giftSprite);

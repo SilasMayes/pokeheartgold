@@ -294,7 +294,7 @@ int MysteryGiftWfc_Run(OverlayManager *manager, int *state) {
         } else {
             if (gMysteryGiftWfcStatus.requestError) {
                 *state = MysteryGiftWfc_HandleError(data);
-            } else if (data->wfcCancel == FALSE) {
+            } else if (!data->wfcCancel) {
                 MysteryGiftWfc_StartCleanup(data, MYSTERY_GIFT_WFC_RESULT_RECEIVED, state, WFC_STATE_DISCONNECT, WFC_STATE_DISCONNECT);
             } else {
                 MysteryGiftWfc_StartCleanup(data, MYSTERY_GIFT_WFC_RESULT_CANCELLED, state, WFC_STATE_DISCONNECT, WFC_STATE_DISCONNECT);

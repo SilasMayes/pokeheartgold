@@ -512,7 +512,7 @@ BOOL BallCapsuleEditor_Init(OverlayManager *manager, int *state) {
 BOOL BallCapsuleEditor_Main(OverlayManager *manager, int *state) {
     BallCapsuleEditor *editor = OverlayManager_GetData(manager);
 
-    if (BallCapsuleEditor_RunMode(editor) == FALSE) {
+    if (!BallCapsuleEditor_RunMode(editor)) {
         return TRUE;
     }
     PokepicManager_DrawAll(editor->display.pokepicManager);
@@ -905,7 +905,7 @@ static void BallCapsuleEditor_SortSeals(BallCapsuleEditor *editor) {
     s32 i;
     s32 j;
 
-    if (editor->sortSeals == FALSE) {
+    if (!editor->sortSeals) {
         return;
     }
     editor->sortSeals = FALSE;
@@ -1546,10 +1546,10 @@ static void BallCapsuleEditor_InitSpriteSystem(BallCapsuleEditorDisplay *display
     SpriteSystem_Init(display->spriteSystem, &oamManagerParam, &oamCharTransferParam, 32);
     resourceCounts = gBallCapsuleEditorSpriteResourceCounts;
     display->spriteManager = SpriteManager_New(display->spriteSystem);
-    if (SpriteSystem_InitSprites(display->spriteSystem, display->spriteManager, 128) == FALSE) {
+    if (!SpriteSystem_InitSprites(display->spriteSystem, display->spriteManager, 128)) {
         GF_ASSERT(FALSE);
     }
-    if (SpriteSystem_InitManagerWithCapacities(display->spriteSystem, display->spriteManager, &resourceCounts) == FALSE) {
+    if (!SpriteSystem_InitManagerWithCapacities(display->spriteSystem, display->spriteManager, &resourceCounts)) {
         GF_ASSERT(FALSE);
     }
     display->menuSpawner = TouchscreenListMenuSpawner_Create(HEAP_ID_52, display->paletteData);
@@ -1598,7 +1598,7 @@ static void BallCapsuleEditor_CreateArrows(BallCapsuleEditor *editor) {
 }
 
 static void BallCapsuleEditor_TickArrows(BallCapsuleEditor *editor) {
-    if (editor->display.inputEnabled != FALSE) {
+    if (editor->display.inputEnabled) {
         s32 i;
         for (i = 0; i < 4; i++) {
             ManagedSprite_TickFrame(editor->arrows[i]);
@@ -2060,7 +2060,7 @@ static int BallCapsuleEditor_GetMenuKind(BallCapsuleEditor *editor, int capsule)
     u32 partySlot = editor->capsuleIcons[capsule].partySlot;
     u32 hasSeals = editor->capsuleIcons[capsule].hasSeals;
 
-    if (partySlot == BALL_CAPSULE_EDITOR_NO_MON && hasSeals == FALSE) {
+    if (partySlot == BALL_CAPSULE_EDITOR_NO_MON && !hasSeals) {
         return BALL_CAPSULE_MENU_EMPTY;
     }
     if (partySlot == BALL_CAPSULE_EDITOR_NO_MON && hasSeals == TRUE) {
@@ -2238,7 +2238,7 @@ BOOL BallCapsuleEditor_ModeEdit(BallCapsuleEditor *editor) {
             } else {
                 onCapsule = BallCapsuleEditor_IsSealOnCapsule(editor, i);
                 BallCapsuleEditor_UpdateSealHitbox(editor->seals[i].hitbox, editor->seals[i].sprite, FALSE);
-                if (onCapsule == FALSE) {
+                if (!onCapsule) {
                     GiveOrTakeSeal2(editor->args->sealCase, editor->seals[i].seal.kind, 1);
                     BallCapsuleEditor_PrintSealCounts(editor);
                     BallCapsuleEditor_RemoveSeal(editor, i);
@@ -2567,7 +2567,7 @@ static int BallCapsuleEditor_PreviewCapsule(BallCapsuleEditor *editor) {
         break;
     case 4:
         result = BallCapsuleEditor_GrowPreviewPokepic(editor);
-        if (BallThrow_IsActive(editor->ballData) == FALSE && result == FALSE) {
+        if (!BallThrow_IsActive(editor->ballData) && !result) {
             BallThrow_Delete(editor->ballData);
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_OFF);
             BallCapsuleEditor_StartPreviewPokepicAnim(editor);
@@ -2576,7 +2576,7 @@ static int BallCapsuleEditor_PreviewCapsule(BallCapsuleEditor *editor) {
         }
         break;
     case 5:
-        if (BallSealEffect_IsActive(editor->pokepicEffect) == FALSE && PokepicAnimManager_GetAnimState(editor->pokepicAnim, 0) == TRUE && Pokepic_IsAnimFinished(editor->display.pokepic) == FALSE) {
+        if (!BallSealEffect_IsActive(editor->pokepicEffect) && PokepicAnimManager_GetAnimState(editor->pokepicAnim, 0) == TRUE && !Pokepic_IsAnimFinished(editor->display.pokepic)) {
             BallSealEffect_Free(editor->pokepicEffect);
             editor->subState++;
         }
@@ -2602,7 +2602,7 @@ static int BallCapsuleEditor_PreviewCapsule(BallCapsuleEditor *editor) {
         break;
     case 7:
         result = BallCapsuleEditor_ShrinkPreviewPokepic(editor);
-        if (BallThrow_IsActive(editor->ballData) == FALSE && result == FALSE) {
+        if (!BallThrow_IsActive(editor->ballData) && !result) {
             PaletteData_BeginPaletteFade(editor->display.paletteData, 2, 0x80B, 0, 10, 0, RGB_BLACK);
             PaletteData_BeginPaletteFade(editor->display.paletteData, 8, 0xFFFF, 0, 10, 0, RGB_BLACK);
             BallCapsuleEditor_SetPreviewPokepicHidden(editor, TRUE);
@@ -3108,7 +3108,7 @@ static void BallCapsuleEditor_CopyPreviewMon(BallCapsuleEditor *editor) {
     }
     for (i = 0; i < editor->args->partyCount; i++) {
         Pokemon *mon = editor->args->mons[i];
-        if (GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE) {
+        if (!GetMonData(mon, MON_DATA_IS_EGG, NULL)) {
             CopyPokemonToPokemon(mon, editor->previewMon);
             return;
         }

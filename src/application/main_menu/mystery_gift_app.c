@@ -528,7 +528,7 @@ static void MysteryGiftApp_SaveReceivedGift(OverlayManager *manager) {
     SaveMysteryGift_ReceivedFlagSet(mysteryGift, header->id);
     if (header->unk8E_2 == 1 && card->tag == MG_TAG_ITEM && card->data.item == ITEM_LOCK_CAPSULE) {
         SaveMysteryGift_TrySetSpecialCard(mysteryGift, card);
-    } else if (isCard == FALSE) {
+    } else if (!isCard) {
         SaveMysteryGift_TryInsertGift(mysteryGift, (MysteryGift *)card, 3);
     } else {
         SaveMysteryGift_TryInsertCard(mysteryGift, card);

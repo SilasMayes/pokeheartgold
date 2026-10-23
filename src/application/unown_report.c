@@ -589,7 +589,7 @@ static int UnownReport_FadeIn(UnownReportApp *app) {
 static int UnownReport_FadeOut(UnownReportApp *app) {
     switch (app->subState) {
     case UNOWN_REPORT_FADE_START:
-        if (UnownReport_IsBookAnimating(app) == FALSE) {
+        if (!UnownReport_IsBookAnimating(app)) {
             BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, app->heapID);
             app->subState++;
         }

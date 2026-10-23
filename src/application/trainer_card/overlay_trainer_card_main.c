@@ -321,7 +321,7 @@ int TrainerCardMainApp_Init(OverlayManager *manager, int *state) {
     } else {
         cardMain->showKantoBadges = FALSE;
     }
-    if (cardMain->isConnected == TRUE && cardMain->args->settings.gameCleared == FALSE) {
+    if (cardMain->isConnected == TRUE && !cardMain->args->settings.gameCleared) {
         cardMain->showKantoBadges = FALSE;
     }
     if (cardMain->card->version == VERSION_HEARTGOLD || cardMain->card->version == VERSION_SOULSILVER) {
@@ -671,7 +671,7 @@ static void TrainerCardMain_FreeBgLayers(BgConfig *bgConfig) {
 }
 
 static void TrainerCardMain_LoadSideLayout(TrainerCardMain *cardMain) {
-    if (cardMain->showingBack == FALSE) {
+    if (!cardMain->showingBack) {
         GfGfxLoader_LoadScrnData(NARC_a_0_4_9, 0x2f, cardMain->bgConfig, GF_BG_LYR_SUB_2, 0, 0, FALSE, HEAP_ID_25);
         TrainerCardMain_ClearWindows(cardMain->windows, 7, 10);
         BgClearTilemapBufferAndCommit(cardMain->bgConfig, GF_BG_LYR_SUB_3);
@@ -688,7 +688,7 @@ static void TrainerCardMain_DrawCard(TrainerCardMain *cardMain) {
 
     TrainerCardMain_LoadSideLayout(cardMain);
     TrainerCardMain_SetButtonSpriteAnim(&cardMain->sprites, 0, 0, 1);
-    if (cardMain->showingBack == FALSE) {
+    if (!cardMain->showingBack) {
         TrainerCardMain_DrawFrontPicture(cardMain);
         TrainerCardMain_PrintActionButton(cardMain, 1);
     } else {
@@ -789,12 +789,12 @@ static int TrainerCardMain_RunFlip(TrainerCardMain *cardMain) {
         cardMain->subState++;
         break;
     case TRAINER_CARD_FLIP_DRAW_SIDE:
-        if (cardMain->showingBack == FALSE) {
+        if (!cardMain->showingBack) {
             TrainerCardMain_DrawFrontPicture(cardMain);
             TrainerCardMain_PrintActionButton(cardMain, 1);
         } else {
             TrainerCardMain_DrawSignature(cardMain->bgConfig, 7, cardMain->signaturePixels);
-            if (cardMain->isConnected == FALSE) {
+            if (!cardMain->isConnected) {
                 TrainerCardMain_PrintActionButton(cardMain, 0);
             }
         }
@@ -837,7 +837,7 @@ static void TrainerCardMain_ApplyFlipScale(TrainerCardMain *cardMain) {
 
 static int TrainerCardMain_HandleKeys(TrainerCardMain *cardMain) {
     if (gSystem.newKeys & PAD_BUTTON_A) {
-        if (cardMain->showingBack != FALSE && cardMain->isConnected == FALSE) {
+        if (cardMain->showingBack && !cardMain->isConnected) {
             PlaySE(SEQ_SE_DP_SELECT);
             return TRAINER_CARD_INPUT_SIGN;
         }
@@ -860,7 +860,7 @@ static int TrainerCardMain_HandleTouch(TrainerCardMain *cardMain, int *touched) 
         PlaySE(SEQ_SE_GS_GEARCANCEL);
         return TRAINER_CARD_INPUT_EXIT;
     }
-    if (cardMain->showingBack != FALSE && cardMain->isConnected == FALSE && TouchscreenHitbox_TouchNewIsIn(&sTrainerCardSignHitbox)) {
+    if (cardMain->showingBack && !cardMain->isConnected && TouchscreenHitbox_TouchNewIsIn(&sTrainerCardSignHitbox)) {
         *touched = 1;
         PlaySE(SEQ_SE_DP_SELECT);
         return TRAINER_CARD_INPUT_SIGN;
@@ -968,7 +968,7 @@ static void TrainerCardMain_DrawSignature(BgConfig *bgConfig, int bgId, u8 *pixe
 
 static void TrainerCardMain_UpdatePlayTime(TrainerCardMain *cardMain, int update) {
     if (update != 0) {
-        if (cardMain->showingBack == FALSE) {
+        if (!cardMain->showingBack) {
             if (cardMain->colonBlinkTimer == 0) {
                 TrainerCardMain_PrintLivePlayTime(cardMain->windows, cardMain->card, cardMain->unk_33C8);
                 TrainerCardMain_DrawPlayTimeColon(&cardMain->windows[5], TRUE, cardMain->colonString);
@@ -1075,7 +1075,7 @@ static void TrainerCardMain_PrintFront(TrainerCardMain *cardMain, Window *window
 
 static void TrainerCardMain_CopySideWindowsToVram(TrainerCardMain *cardMain, Window *windows) {
     int i;
-    if (cardMain->showingBack != FALSE) {
+    if (cardMain->showingBack) {
         for (i = 7; i < 11; i++) {
             CopyWindowToVram(&windows[i]);
         }
@@ -1188,7 +1188,7 @@ static void TrainerCardMain_PrintLivePlayTime(Window *windows, TrainerCardMainCa
 }
 
 static void TrainerCardMain_DrawPlayTimeColon(Window *window, BOOL show, String *string) {
-    if (show != FALSE) {
+    if (show) {
         AddTextPrinterParameterizedWithColor(window, 0, string, 0xcd, 0, TEXT_SPEED_INSTANT, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     } else {
         FillWindowPixelRect(window, 0, 0xcd, 0, 5, 0x10);

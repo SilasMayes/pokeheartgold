@@ -88,7 +88,7 @@ static int LugiaCinematic_WaitFade(LegendaryCinematic *cinematic) {
 }
 
 static int LugiaCinematic_Play(LegendaryCinematic *cinematic) {
-    if (LegendaryCinematic_AreModelsAnimating(cinematic) == FALSE && IsPaletteFadeFinished() == TRUE) {
+    if (!LegendaryCinematic_AreModelsAnimating(cinematic) && IsPaletteFadeFinished() == TRUE) {
         cinematic->frame = 0;
         StopSE(SEQ_SE_GS_TAKI_RUGIADEMO, 0);
         LegendaryCinematic_StopMotionBlur(cinematic->capture);

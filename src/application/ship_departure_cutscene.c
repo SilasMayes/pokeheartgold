@@ -260,14 +260,14 @@ static void ShipDepartureCutscene_LoadModel(ShipDepartureCutscene *cutscene) {
     narc = NARC_New(NARC_a_2_3_8, HEAP_ID_151);
     HeapExp_FndInitAllocator(&cutscene->allocator, HEAP_ID_151, 4);
     if (cutscene->port == 0) {
-        if (cutscene->isNight == FALSE) {
+        if (!cutscene->isNight) {
             files = &sShipDepartureCutscenePort0DayFiles;
         } else {
             files = &sShipDepartureCutscenePort0NightFiles;
         }
         cutscene->sceneSE = sShipDepartureCutscenePort0SceneSE;
     } else {
-        if (cutscene->isNight == FALSE) {
+        if (!cutscene->isNight) {
             files = &sShipDepartureCutscenePort1DayFiles;
         } else {
             files = &sShipDepartureCutscenePort1NightFiles;

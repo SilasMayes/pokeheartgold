@@ -529,7 +529,7 @@ static void ConnectToRanger_LoadSubScreenBg(ConnectToRangerApp *app) {
 // Shows "you need a Pokedex" until A or B is pressed. Returns FALSE once the message is closed.
 static BOOL ConnectToRanger_ShowPokedexRequiredMessage(ConnectToRangerApp *app) {
     MainMenuTextPrinter printer;
-    if (WindowIsInUse(&app->messageWindow) == FALSE) {
+    if (!WindowIsInUse(&app->messageWindow)) {
         MainMenuTextPrinter_Init(&printer, &app->messageWindow, 0, NARC_msg_msg_0017_bin, 1, 1);
         MainMenuTextPrinter_SetSize(&printer, 22, 16, app->nextFreeTile);
         MainMenuTextPrinter_AddWindowAndPrint(app->bgConfig, &printer, 5, 4, msg_0017_00002);

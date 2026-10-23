@@ -99,7 +99,7 @@ void FootprintStamp_DeleteStamp(FootprintStampObj *stamp) {
 }
 
 void FootprintStampBoard_RemoveStamp(FootprintStampBoard *board, FootprintStampObj *stamp, int slot) {
-    if (stamp->ready == FALSE || stamp->textureChanged == TRUE) {
+    if (!stamp->ready || stamp->textureChanged == TRUE) {
         FootprintStampBoard_UnqueueTexture(board, stamp->model.texture);
     }
     FootprintStampBoard_ReleaseChain(board, stamp->chain);
@@ -266,7 +266,7 @@ void FootprintStampBoard_StartCameraEffect(FootprintStampBoard *board) {
 }
 
 BOOL FootprintStamp_SetEffect(FootprintStampObj *stamp, int effect) {
-    if (stamp->effectId != FOOTPRINT_STAMP_EFFECT_NONE || stamp->pendingEffect != FOOTPRINT_STAMP_EFFECT_NONE || stamp->ready == FALSE) {
+    if (stamp->effectId != FOOTPRINT_STAMP_EFFECT_NONE || stamp->pendingEffect != FOOTPRINT_STAMP_EFFECT_NONE || !stamp->ready) {
         return FALSE;
     }
     stamp->pendingEffect = effect;
@@ -1388,7 +1388,7 @@ static BOOL FootprintStamp_IsFromOtherPlayer(u32 playerId, const FootprintStampL
     if (filter->myId == playerId) {
         return FALSE;
     }
-    if (filter->active == FALSE) {
+    if (!filter->active) {
         return FALSE;
     }
     index = WiFiPlazaLobbyClient_IdToChannelSlot(playerId);

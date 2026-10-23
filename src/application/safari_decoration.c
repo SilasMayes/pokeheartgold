@@ -585,7 +585,7 @@ static void SafariDecorationModelView_Draw(SafariDecorationModelView *view) {
 }
 
 static void SafariDecorationModelView_Free(SafariDecorationModelView *view) {
-    if (view->model.loaded != FALSE) {
+    if (view->model.loaded) {
         SafariDecorationModelView_UnloadObject(view, &view->model);
     }
     Camera_Delete(view->camera);
@@ -597,7 +597,7 @@ static void SafariDecorationModelView_Free(SafariDecorationModelView *view) {
 }
 
 static void SafariDecorationModelView_SetObject(SafariDecorationModelView *view, u16 objectId, const SafariObjectConfig *config) {
-    if (view->model.loaded != FALSE) {
+    if (view->model.loaded) {
         SafariDecorationModelView_UnloadObject(view, &view->model);
     }
     view->visible = TRUE;
@@ -608,7 +608,7 @@ static void SafariDecorationModelView_SetObject(SafariDecorationModelView *view,
 
 static void SafariDecorationModelView_SetVisible(SafariDecorationModelView *view, u8 visible) {
     view->visible = visible;
-    if (view->visible == FALSE) {
+    if (!view->visible) {
         Thunk_G3X_Reset();
         Camera_PushLookAtToNNSGlb();
         NNS_G3dGeFlushBuffer();
@@ -786,7 +786,7 @@ static int SafariDecoration_HandleListInput(SafariDecoration *decor) {
     u32 touched = FALSE;
     int result = SafariDecoration_HandleListTouch(decor, &touched);
 
-    if (touched == FALSE) {
+    if (!touched) {
         result = SafariDecoration_HandleListButtons(decor);
     }
     return result;
@@ -998,7 +998,7 @@ static int SafariDecoration_HandleListTouch(SafariDecoration *decor, u32 *touche
 static void SafariDecoration_VBlankCB(void *cbArg) {
     SafariDecoration *decor = cbArg;
 
-    if (decor->modelUpdatePending != FALSE) {
+    if (decor->modelUpdatePending) {
         u8 index = decor->cursorPos + NUM_OBJECTS_PER_PAGE * decor->page;
         if (decor->cursorPos >= NUM_OBJECTS_PER_PAGE || index >= decor->numObjects) {
             SafariDecorationModelView_SetObject(&decor->modelView, 24, NULL);
@@ -1220,7 +1220,7 @@ static void SafariDecoration_SetBackButtonState(SafariDecoration *decor, int sta
 }
 
 static void SafariDecoration_DrawSubScreen(SafariDecoration *decor, int confirm) {
-    NNSG2dScreenData *screen = confirm == FALSE ? decor->listScreen : decor->confirmScreen;
+    NNSG2dScreenData *screen = !confirm ? decor->listScreen : decor->confirmScreen;
 
     FillBgTilemapRect(decor->bgConfig, GF_BG_LYR_SUB_1, 0, 0, 5, 32, 14, TILEMAP_FILL_OVWT_PAL);
     FillBgTilemapRect(decor->bgConfig, GF_BG_LYR_SUB_2, 0, 0, 5, 32, 14, TILEMAP_FILL_OVWT_PAL);

@@ -241,13 +241,13 @@ static void HandleEndFade(PaletteFade *fade) {
     fade->color = PaletteFade_GetEndColor(fade);
     if (fade->mainEnabled != 0) {
         ScreenFade_HoldFadeColor(&fade->main);
-        if (fade->main.fadeOut == FALSE) {
+        if (!fade->main.fadeOut) {
             sPaletteFade.mainFaded = 0;
         }
     }
     if (fade->subEnabled != 0) {
         ScreenFade_HoldFadeColor(&fade->sub);
-        if (fade->main.fadeOut == FALSE) { // the main screen's, even for the sub screen
+        if (!fade->main.fadeOut) { // the main screen's, even for the sub screen
             sPaletteFade.subFaded = 0;
         }
     }
@@ -439,7 +439,7 @@ static void ScreenFade_ResetBrightnessTask(SysTask *task, void *data) {
 
 // A fade in from black or white done by a window wipe: the master brightness goes back to neutral on the next VBlank.
 static void ScreenFade_QueueBrightnessReset(ScreenFade *fade) {
-    if (fade->fadeOut == FALSE && (fade->color == RGB_WHITE || fade->color == RGB_BLACK) && !fade->isBrightnessFade) {
+    if (!fade->fadeOut && (fade->color == RGB_WHITE || fade->color == RGB_BLACK) && !fade->isBrightnessFade) {
         SysTask_CreateOnVWaitQueue(ScreenFade_ResetBrightnessTask, fade, 0x400);
     }
 }

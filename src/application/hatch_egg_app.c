@@ -218,27 +218,27 @@ static BOOL HatchEggApp_RunEggScene(HatchEggApp *app) {
         }
         break;
     case HATCH_EGG_SCENE_WAIT_BEFORE_SHAKE:
-        if (HatchEggApp_WaitBeforeShake(app) == FALSE) {
+        if (!HatchEggApp_WaitBeforeShake(app)) {
             app->state++;
         }
         break;
     case HATCH_EGG_SCENE_SHAKE_ONCE:
-        if (HatchEggApp_ShakeEggOnce(app) == FALSE) {
+        if (!HatchEggApp_ShakeEggOnce(app)) {
             app->state++;
         }
         break;
     case HATCH_EGG_SCENE_SHAKE_TWICE:
-        if (HatchEggApp_ShakeEggTwice(app) == FALSE) {
+        if (!HatchEggApp_ShakeEggTwice(app)) {
             app->state++;
         }
         break;
     case HATCH_EGG_SCENE_SHAKE_CRACK:
-        if (HatchEggApp_ShakeEggCrack(app) == FALSE) {
+        if (!HatchEggApp_ShakeEggCrack(app)) {
             app->state++;
         }
         break;
     case HATCH_EGG_SCENE_HATCH:
-        if (HatchEggApp_HatchEgg(app) == FALSE) {
+        if (!HatchEggApp_HatchEgg(app)) {
             HatchEggApp_StartPokepicAnim(app);
             PlayCry(GetMonData(app->args->args.mon, MON_DATA_SPECIES, NULL), GetMonData(app->args->args.mon, MON_DATA_FORM, NULL));
             app->gfx.printerId = HatchEggApp_PrintMessage(&app->gfx.window, msg_0187_00000, app->args->args.mon, app->gfx.textSpeed);
@@ -345,7 +345,7 @@ static BOOL HatchEggApp_RunManaphyEggScene(HatchEggApp *app) {
         }
         break;
     case 3:
-        if (HatchEggApp_HatchManaphyEgg(app) == FALSE) {
+        if (!HatchEggApp_HatchManaphyEgg(app)) {
             HatchEggApp_StartPokepicAnim(app);
             PlayCry(GetMonData(app->args->args.mon, MON_DATA_SPECIES, NULL), GetMonData(app->args->args.mon, MON_DATA_FORM, NULL));
             app->gfx.printerId = HatchEggApp_PrintMessage(&app->gfx.window, msg_0187_00000, app->args->args.mon, app->gfx.textSpeed);
@@ -589,7 +589,7 @@ static BOOL HatchEggApp_HatchEgg(HatchEggApp *app) {
         } else {
             done++;
         }
-        if (PaletteData_GetSelectedBuffersBitmask(app->gfx.paletteData) != 0 || done != 2 || Pokepic_ResumePaletteFade(app->pokepic) != FALSE) {
+        if (PaletteData_GetSelectedBuffersBitmask(app->gfx.paletteData) != 0 || done != 2 || Pokepic_ResumePaletteFade(app->pokepic)) {
             break;
         }
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
@@ -611,7 +611,7 @@ static BOOL HatchEggApp_HatchEgg(HatchEggApp *app) {
         app->subState++;
         break;
     case 5:
-        if (PaletteData_GetSelectedBuffersBitmask(app->gfx.paletteData) != 0 || Pokepic_ResumePaletteFade(app->pokepic) != FALSE) {
+        if (PaletteData_GetSelectedBuffersBitmask(app->gfx.paletteData) != 0 || Pokepic_ResumePaletteFade(app->pokepic)) {
             break;
         }
         app->subState++;
@@ -680,7 +680,7 @@ static BOOL HatchEggApp_HatchManaphyEgg(HatchEggApp *app) {
         } else {
             done++;
         }
-        if (PaletteData_GetSelectedBuffersBitmask(app->gfx.paletteData) != 0 || done != 2 || Pokepic_ResumePaletteFade(app->pokepic) != FALSE) {
+        if (PaletteData_GetSelectedBuffersBitmask(app->gfx.paletteData) != 0 || done != 2 || Pokepic_ResumePaletteFade(app->pokepic)) {
             break;
         }
         HatchEggApp_SetPokepicVanished(app, FALSE);
@@ -702,7 +702,7 @@ static BOOL HatchEggApp_HatchManaphyEgg(HatchEggApp *app) {
         app->subState++;
         break;
     case 4:
-        if (PaletteData_GetSelectedBuffersBitmask(app->gfx.paletteData) != 0 || Pokepic_ResumePaletteFade(app->pokepic) != FALSE) {
+        if (PaletteData_GetSelectedBuffersBitmask(app->gfx.paletteData) != 0 || Pokepic_ResumePaletteFade(app->pokepic)) {
             break;
         }
         app->subState++;
@@ -767,7 +767,7 @@ BOOL HatchEggApp_Main(OverlayManager *man, int *state) {
         break;
     }
     case HATCH_EGG_APP_STATE_RUN_SCENE:
-        if (HatchEggApp_RunScene(app) == FALSE) {
+        if (!HatchEggApp_RunScene(app)) {
             (*state)++;
         } else {
             PokepicManager_DrawAll(app->gfx.pokepicManager);
@@ -1036,5 +1036,5 @@ static BOOL HatchEggYesNoMenu_HandleInput(HatchEggYesNoMenu *menu) {
 
 static BOOL HatchEggYesNoMenu_IsPressAnimFinished(HatchEggYesNoMenu *menu) {
     GF_ASSERT(ManagedSprite_GetActiveAnim(menu->cursor) == 3);
-    return ManagedSprite_IsAnimated(menu->cursor) == FALSE;
+    return !ManagedSprite_IsAnimated(menu->cursor);
 }
