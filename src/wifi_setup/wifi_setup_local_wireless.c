@@ -9,7 +9,6 @@
 #include "wifi_setup/wifi_setup_ui.h"
 #include "wifi_setup/wifi_setup_ui_parts.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 // Local wireless: sound player controls, title banner, dialog window, Wi-Fi USB connector scan and
@@ -26,27 +25,6 @@ typedef struct WifiSetupMbParentData {
 } WifiSetupMbParentData;
 
 extern void *ov13_0224F5B0[];
-
-extern const u8 gWifiSetupBannerLetterTemplates[][WIFI_SETUP_BANNER_NUM_LETTERS]; // per kind
-extern const u8 gWifiSetupBannerLetterPalettes[][WIFI_SETUP_BANNER_NUM_LETTERS];  // per kind
-extern WifiSetupPoint gWifiSetupBannerLetterPositions[WIFI_SETUP_BANNER_NUM_LETTERS];
-extern u8 gWifiSetupUsbScanEmptyBssid[6];
-extern u8 gWifiSetupUsbApSsid[]; // "NWCUSBAP"
-extern WmScanExParam gWifiSetupUsbScanParam;
-extern u8 gWifiSetupDialogWindowPlanes[];
-extern WifiSetupRect gWifiSetupDialogWindowRect;
-extern u8 gWifiSetupDialogButtonPositions[][2];
-extern s8 gWifiSetupDialogAButtonChoice[][2];
-extern s8 gWifiSetupDialogBButtonChoice[][2];
-extern u8 gWifiSetupDialogButtonTemplates[][2];
-extern WifiSetupPoint gWifiSetupDialogButtonSizes[];
-extern WifiSetupPoint gWifiSetupDialogTextSizes[];
-extern WifiSetupPoint gWifiSetupDialogFramePositions[];
-extern WifiSetupPoint gWifiSetupDialogFrameSizes[];
-extern WifiSetupPoint gWifiSetupDialogButtonPos[][2];
-extern u8 gWifiSetupDialogFrameTemplates[];
-extern u8 gWifiSetupDialogButtonCounts[];
-extern char *gWifiSetupBannerScreenPaths[];
 
 static inline void WifiSetupMbParent_ClearChild(u16 aid);
 static inline void WifiSetupMbParent_DisconnectChild(u16 aid);
@@ -2712,7 +2690,7 @@ void WifiSetupDialog_Open(int message, int kind, u8 fade, int digitPos, int digi
     text = WifiSetupText_GetStringWithDigit(gWifiSetupTextBank, message, digitPos, digit);
     gWifiSetupDialog = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupDialog), 4);
     gWifiSetupDialog->kind = kind;
-    gWifiSetupDialog->selected = -2;
+    gWifiSetupDialog->selected = WIFI_SETUP_SELECTED_NOT_SHOWN;
     gWifiSetupDialog->fade = fade;
     G2_SetBlendBrightness(GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ, 0);
     gWifiSetupDialog->frame = WifiSetupOamTemplate_AllocBlock(0, gWifiSetupDialogFrameTemplates[kind], 0);
@@ -2803,11 +2781,11 @@ static void WifiSetupDialog_InputTask(WifiSetupTask *task, void *arg) {
             return;
         }
     }
-    gWifiSetupDialog->selected = -1;
+    gWifiSetupDialog->selected = WIFI_SETUP_SELECTED_NONE;
 }
 
 static void WifiSetupDialog_TimerTask(WifiSetupTask *task, void *arg) {
-    gWifiSetupDialog->selected = -1;
+    gWifiSetupDialog->selected = WIFI_SETUP_SELECTED_NONE;
     gWifiSetupDialog->timer++;
     if (gWifiSetupDialog->timer < 0x78) {
         return;

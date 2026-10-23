@@ -2,26 +2,19 @@
 
 #include "wifi_setup/wifi_setup.h"
 
-extern WifiSetupWpaKeyRecord ov13_0224D8C0;
-extern WifiSetupWpaKeyRecord ov13_0224D930;
-extern WifiSetupKeyRecord gWifiSetupWep64Record;
-extern WifiSetupKeyRecord gWifiSetupWep128Record;
-
-int WifiSetup_CheckPrintable(const void *str, int length);
-
 // Copy the keys of the requested settings that were received into the result.
 int WifiSetup_StoreAossResult(WifiSetupRequest *request) {
-    WifiSetupWpaKeyRecord *a = &ov13_0224D8C0;
+    WifiSetupWpaKeyRecord *wpaTkip = &gWifiSetupSecurityRecords[0].wpaTkip;
     u8 *dst = request->result;
-    WifiSetupKeyRecord *wep64 = &gWifiSetupWep64Record;
-    WifiSetupKeyRecord *wep128 = &gWifiSetupWep128Record;
-    WifiSetupWpaKeyRecord *b = &ov13_0224D930;
+    WifiSetupKeyRecord *wep64 = &gWifiSetupSecurityRecords[0].wep64;
+    WifiSetupKeyRecord *wep128 = &gWifiSetupSecurityRecords[0].wep128;
+    WifiSetupWpaKeyRecord *wpaAes = &gWifiSetupSecurityRecords[0].wpaAes;
 
     if (dst == NULL) {
         return -1;
     }
     request->requestMask = gWifiSetupState.requestedMask & gWifiSetupState.receivedMask;
-    WifiSetup_MemFill(dst, 0, 0x154);
+    WifiSetup_MemFill(dst, 0, sizeof(request->result));
     if (request->requestMask & 1) {
         WifiSetup_MemCopy(dst, wep64->fields[0], wep64->length);
         WifiSetup_MemCopy(dst + 6, wep64->fields[1], wep64->length);
@@ -43,28 +36,28 @@ int WifiSetup_StoreAossResult(WifiSetupRequest *request) {
         WifiSetup_MemCopy(dst + 0x71, wep128->text, WifiSetup_StrLen(wep128->text));
     }
     if (request->requestMask & 4) {
-        if (WifiSetup_CheckPrintable(a->key, a->length - 1)) {
+        if (WifiSetup_CheckPrintable(wpaTkip->key, wpaTkip->length - 1)) {
             goto fail;
         }
-        WifiSetup_MemCopy(dst + 0x92, a->key, a->length);
-        if (WifiSetup_CheckPrintable(a->text, WifiSetup_StrLen(a->text))) {
+        WifiSetup_MemCopy(dst + 0x92, wpaTkip->key, wpaTkip->length);
+        if (WifiSetup_CheckPrintable(wpaTkip->text, WifiSetup_StrLen(wpaTkip->text))) {
             goto fail;
         }
-        WifiSetup_MemCopy(dst + 0xD2, a->text, WifiSetup_StrLen(a->text));
+        WifiSetup_MemCopy(dst + 0xD2, wpaTkip->text, WifiSetup_StrLen(wpaTkip->text));
     }
     if (request->requestMask & 8) {
-        if (WifiSetup_CheckPrintable(b->key, b->length - 1)) {
+        if (WifiSetup_CheckPrintable(wpaAes->key, wpaAes->length - 1)) {
             goto fail;
         }
-        WifiSetup_MemCopy(dst + 0xF3, b->key, b->length);
-        if (WifiSetup_CheckPrintable(b->text, WifiSetup_StrLen(b->text))) {
+        WifiSetup_MemCopy(dst + 0xF3, wpaAes->key, wpaAes->length);
+        if (WifiSetup_CheckPrintable(wpaAes->text, WifiSetup_StrLen(wpaAes->text))) {
             goto fail;
         }
-        WifiSetup_MemCopy(dst + 0x133, b->text, WifiSetup_StrLen(b->text));
+        WifiSetup_MemCopy(dst + 0x133, wpaAes->text, WifiSetup_StrLen(wpaAes->text));
     }
     request->error = 0;
     return 0;
 fail:
-    WifiSetup_MemFill(dst, 0, 0x154);
+    WifiSetup_MemFill(dst, 0, sizeof(request->result));
     return -1;
 }

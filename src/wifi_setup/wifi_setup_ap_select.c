@@ -4,8 +4,6 @@
 
 #include "wifi_setup/wifi_setup_internal.h"
 
-extern char sWifiSetupSetupApSsid[]; // SSID of the setup access point
-
 static inline int NameEqual(const char *name, const char *wanted) {
     return strlen(name) == strlen(wanted) && !memcmp(name, wanted, strlen(wanted));
 }

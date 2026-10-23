@@ -7,7 +7,6 @@
 #include "wifi_setup/wifi_setup_local_wireless.h"
 #include "wifi_setup/wifi_setup_ui.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 // Access-point data: the scan for access points over WM, the saved connection settings (written back with a CRC per
@@ -16,13 +15,6 @@
 typedef struct WifiSetupConnectionBody {
     u8 bytes[0xF0];
 } WifiSetupConnectionBody;
-
-extern u8 gWifiSetupWpaVendorPrefix[]; // vendor element prefix that marks WPA
-extern u8 gWifiSetupApScanEmptyBssid[];
-extern WmScanExParam gWifiSetupApScanParam;
-extern u8 gWifiSetupZeroAddress[]; // address 0.0.0.0
-extern u8 gWifiSetupConnectionsAddressFormat[];
-extern u8 gWifiSetupSoundArchivePath[];
 
 extern long atol(const char *);
 
@@ -33,17 +25,17 @@ static void WifiSetupConnections_WritePage(int index);
 static int WifiSetup_HexDigitValue(u8 c);
 
 int WifiSetupApScan_Start(void) {
-    WifiSetupApScan *w;
+    WifiSetupApScan *scan;
     MIi_CpuClear16(0, (u16 *)gWifiSetupApScan->entries, sizeof(gWifiSetupApScan->entries));
     if (WM_Initialize(gWifiSetupApScan, WifiSetupApScan_Callback, 3) != WM_ERRCODE_OPERATING) {
         return 0;
     }
     do {
         WM_ReadStatus(&gWifiSetupApScan->status);
-        w = gWifiSetupApScan;
-    } while (w->status.state != 2);
-    w->param = gWifiSetupApScanParam;
-    w->param.buffer = w->scanBuf;
+        scan = gWifiSetupApScan;
+    } while (scan->status.state != 2);
+    scan->param = gWifiSetupApScanParam;
+    scan->param.buffer = scan->scanBuf;
     gWifiSetupApScan->param.dwell = WM_GetDispersionScanPeriod();
     return WifiSetupApScan_Continue() ? 1 : 0;
 }
@@ -70,12 +62,12 @@ int WifiSetupApScan_End(void) {
 }
 
 int WifiSetupApScan_GetEntries(WifiSetupScanEntry **out) {
-    WifiSetupScanEntry *e;
+    WifiSetupScanEntry *entries;
     int count = 0;
     int i;
-    *out = e = gWifiSetupApScan->entries;
+    *out = entries = gWifiSetupApScan->entries;
     for (i = 0; i < WIFI_SETUP_NUM_SCAN_ENTRIES; i++) {
-        if (memcmp(e[i].bssid, gWifiSetupApScanEmptyBssid, 6) != 0) {
+        if (memcmp(entries[i].bssid, gWifiSetupApScanEmptyBssid, 6) != 0) {
             count++;
         }
     }
@@ -111,7 +103,7 @@ static void WifiSetupApScan_StoreResults(WMStartScanExCallback *cb) {
     int i;
     int j;
     int k;
-    int n;
+    int count;
 
     entries = gWifiSetupApScan->entries;
     DC_InvalidateRange(gWifiSetupApScan->scanBuf, 0x400);
@@ -144,8 +136,8 @@ static void WifiSetupApScan_StoreResults(WMStartScanExCallback *cb) {
         }
         entries[j].security = 1;
         elems = WM_GetOtherElements(desc);
-        n = elems.count;
-        for (k = 0; k < n; k++) {
+        count = elems.count;
+        for (k = 0; k < count; k++) {
             if (elems.element[k].id == 0x30) {
                 entries[j].security = 2;
                 break;
@@ -161,9 +153,9 @@ static void WifiSetupApScan_StoreResults(WMStartScanExCallback *cb) {
 }
 
 void WifiSetupConnections_Load(void) {
-    WifiSetupConnections *d = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupConnections), 0x20);
-    gWifiSetupConnections = d;
-    MATHi_CRC16InitTableRev(&d->crcTable, 0xA001);
+    WifiSetupConnections *connections = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupConnections), 0x20);
+    gWifiSetupConnections = connections;
+    MATHi_CRC16InitTableRev(&connections->crcTable, 0xA001);
     DWCi_BACKUPlRead(gWifiSetupConnections);
 }
 
@@ -193,7 +185,7 @@ void WifiSetupConnections_SetSsid(const void *ssid) {
 void WifiSetupConnections_SetWepKey(const char *key) {
     int i;
     int len;
-    u8 *p;
+    u8 *dst;
     int hi;
 
     MI_CpuFill8(gWifiSetupConnections->edit.wepKeys[0], 0, 0x10);
@@ -204,10 +196,10 @@ void WifiSetupConnections_SetWepKey(const char *key) {
     case 26:
     case 32:
         gWifiSetupConnections->edit.keyFormat = 0;
-        p = gWifiSetupConnections->edit.wepKeys[0];
+        dst = gWifiSetupConnections->edit.wepKeys[0];
         for (i = 0; i < len; i += 2) {
             hi = WifiSetup_HexDigitValue(key[i]);
-            *p++ = WifiSetup_HexDigitValue(key[i + 1]) + (hi << 4);
+            *dst++ = WifiSetup_HexDigitValue(key[i + 1]) + (hi << 4);
         }
         break;
     default:
@@ -260,31 +252,31 @@ void WifiSetupConnections_GetSsid(void *dst) {
 }
 
 void WifiSetupConnections_FormatIpAddress(char *buf) {
-    WifiSetupConnections *d = gWifiSetupConnections;
-    OS_SPrintf(buf, (char *)gWifiSetupConnectionsAddressFormat, d->edit.ip[0], d->edit.ip[1], d->edit.ip[2], d->edit.ip[3]);
+    WifiSetupConnections *connections = gWifiSetupConnections;
+    OS_SPrintf(buf, gWifiSetupConnectionsAddressFormat, connections->edit.ip[0], connections->edit.ip[1], connections->edit.ip[2], connections->edit.ip[3]);
 }
 
 void WifiSetupConnections_FormatSubnetMask(char *buf) {
-    WifiSetupConnections *d = gWifiSetupConnections;
-    OS_SPrintf(buf, (char *)gWifiSetupConnectionsAddressFormat, d->edit.mask[0], d->edit.mask[1], d->edit.mask[2], d->edit.mask[3]);
+    WifiSetupConnections *connections = gWifiSetupConnections;
+    OS_SPrintf(buf, gWifiSetupConnectionsAddressFormat, connections->edit.mask[0], connections->edit.mask[1], connections->edit.mask[2], connections->edit.mask[3]);
 }
 
 void WifiSetupConnections_FormatGateway(char *buf) {
-    WifiSetupConnections *d = gWifiSetupConnections;
-    u8 *a = d->edit.gateway;
-    OS_SPrintf(buf, (char *)gWifiSetupConnectionsAddressFormat, a[0], a[1], a[2], a[3]);
+    WifiSetupConnections *connections = gWifiSetupConnections;
+    u8 *address = connections->edit.gateway;
+    OS_SPrintf(buf, gWifiSetupConnectionsAddressFormat, address[0], address[1], address[2], address[3]);
 }
 
 void WifiSetupConnections_FormatPrimaryDns(char *buf) {
-    WifiSetupConnections *d = gWifiSetupConnections;
-    u8 *a = d->edit.dns1;
-    OS_SPrintf(buf, (char *)gWifiSetupConnectionsAddressFormat, a[0], a[1], a[2], a[3]);
+    WifiSetupConnections *connections = gWifiSetupConnections;
+    u8 *address = connections->edit.dns1;
+    OS_SPrintf(buf, gWifiSetupConnectionsAddressFormat, address[0], address[1], address[2], address[3]);
 }
 
 void WifiSetupConnections_FormatSecondaryDns(char *buf) {
-    WifiSetupConnections *d = gWifiSetupConnections;
-    u8 *a = d->edit.dns2;
-    OS_SPrintf(buf, (char *)gWifiSetupConnectionsAddressFormat, a[0], a[1], a[2], a[3]);
+    WifiSetupConnections *connections = gWifiSetupConnections;
+    u8 *address = connections->edit.dns2;
+    OS_SPrintf(buf, gWifiSetupConnectionsAddressFormat, address[0], address[1], address[2], address[3]);
 }
 
 u8 WifiSetupConnections_GetSetupMethod(int idx) {
@@ -292,10 +284,10 @@ u8 WifiSetupConnections_GetSetupMethod(int idx) {
 }
 
 void WifiSetupConnections_Edit(int idx) {
-    WifiSetupConnections *d = gWifiSetupConnections;
-    WifiSetupConnectionPage *page = &d->pages[idx];
-    *(WifiSetupConnectionBody *)&d->edit = *(WifiSetupConnectionBody *)page;
-    d->edit.index = idx;
+    WifiSetupConnections *connections = gWifiSetupConnections;
+    WifiSetupConnectionPage *page = &connections->pages[idx];
+    *(WifiSetupConnectionBody *)&connections->edit = *(WifiSetupConnectionBody *)page;
+    connections->edit.index = idx;
     if (memcmp(page->ip, gWifiSetupZeroAddress, 4) != 0) {
         gWifiSetupConnections->edit.autoAddress = 0;
     } else {
@@ -310,9 +302,9 @@ void WifiSetupConnections_Edit(int idx) {
 }
 
 void WifiSetupConnections_SaveEdit(void) {
-    WifiSetupConnections *d = gWifiSetupConnections;
-    WifiSetupConnection *work = &d->edit;
-    WifiSetupConnectionPage *page = &d->pages[work->index];
+    WifiSetupConnections *connections = gWifiSetupConnections;
+    WifiSetupConnection *work = &connections->edit;
+    WifiSetupConnectionPage *page = &connections->pages[work->index];
     int cidr;
     *(WifiSetupConnectionBody *)page = *(WifiSetupConnectionBody *)work;
     if (work->autoAddress) {
@@ -334,38 +326,38 @@ void WifiSetupConnections_SaveEdit(void) {
 }
 
 void WifiSetupConnections_SetFromClientResult(WifiSetupResult *src) {
-    WifiSetupConnections *d = gWifiSetupConnections;
-    WifiSetupConnection *w = &d->edit;
+    WifiSetupConnections *connections = gWifiSetupConnections;
+    WifiSetupConnection *work = &connections->edit;
     u32 len;
     int i;
-    MI_CpuFill8(w, 0, offsetof(WifiSetupConnection, usedMask));
-    MI_CpuCopy8(src, w->ssid, 0x20);
+    MI_CpuFill8(work, 0, offsetof(WifiSetupConnection, usedMask));
+    MI_CpuCopy8(src, work->ssid, 0x20);
     switch (src->keyType) {
     case WM_WEPMODE_40BIT:
-        w->keyType = WM_WEPMODE_40BIT;
+        work->keyType = WM_WEPMODE_40BIT;
         len = 5;
         break;
     case WM_WEPMODE_104BIT:
-        w->keyType = WM_WEPMODE_104BIT;
+        work->keyType = WM_WEPMODE_104BIT;
         len = 13;
         break;
     case WM_WEPMODE_128BIT:
-        w->keyType = WM_WEPMODE_128BIT;
+        work->keyType = WM_WEPMODE_128BIT;
         len = 16;
         break;
     default:
-        w->keyType = WM_WEPMODE_NO;
+        work->keyType = WM_WEPMODE_NO;
         len = 0;
         break;
     }
-    w->keyFormat = 0;
+    work->keyFormat = 0;
     for (i = 0; i < 4; i++) {
-        MI_CpuCopy8(src->wepKeys[i], w->wepKeys[i], len);
+        MI_CpuCopy8(src->wepKeys[i], work->wepKeys[i], len);
     }
-    w->setupMethod = WIFI_SETUP_METHOD_AUTO;
-    MI_CpuFill8(w->mask, 0, 4);
-    w->autoAddress = 1;
-    w->autoDns = 1;
+    work->setupMethod = WIFI_SETUP_METHOD_AUTO;
+    MI_CpuFill8(work->mask, 0, 4);
+    work->autoAddress = 1;
+    work->autoDns = 1;
     WifiSetupConnections_SaveEdit();
 }
 

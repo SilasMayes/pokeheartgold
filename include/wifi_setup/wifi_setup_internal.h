@@ -86,6 +86,32 @@ typedef struct WifiSetupMd5Context {
     u8 buffer[64];
 } WifiSetupMd5Context;
 
+// Socket address
+typedef struct WifiSetupSockAddr {
+    u8 len;
+    u8 family;
+    u16 port;
+    u32 addr;
+} WifiSetupSockAddr;
+
+// The two MAC addresses (the smaller one first) and "WARP": the seed of the session key
+typedef struct WifiSetupMacPair {
+    u8 first[6];
+    u8 second[6];
+    u8 prefix[4];
+} WifiSetupMacPair;
+
+// WPA key of the result
+typedef struct WifiSetupSettings64 {
+    u64 words[8];
+} WifiSetupSettings64;
+
+// gWifiSetupClientSettings, followed by the SSID received from the setup access point
+typedef struct WifiSetupClientSettings {
+    u8 padding_00[20];
+    s8 ssid[32];
+} WifiSetupClientSettings;
+
 extern WifiSetupWork gWifiSetupWork;
 extern WifiSetupConfig gWifiSetupConfig;
 extern OSThread gWifiSetupThread;
@@ -103,6 +129,32 @@ typedef struct WifiSetupResult {
 extern WifiSetupResult gWifiSetupResult;
 
 extern const u8 sWifiSetupMd5Padding[];
+extern char sWifiSetupSetupApSsid[]; // SSID of the setup access point
+
+extern void (*gWifiSetupLinkEventCallback)(u32 event, int arg);
+extern u32 gWifiSetupLinkEventQueue[4];
+extern OSMutex gWifiSetupLinkMutex;
+extern u8 gWifiSetupLinkSearchBssid[6];
+extern u8 gWifiSetupLinkSearchSsid[32];
+
+extern char gWifiSetupApSsid[];       // SSID of the chosen access point
+extern u8 gWifiSetupApBssid[6];       // BSSID of the chosen access point
+extern u8 gWifiSetupOwnMacAddress[6]; // own MAC address
+extern u8 sStr_WARP[4];
+extern int gWifiSetupExtendedRequest[];
+extern u8 gWifiSetupSessionKey[16];
+extern u8 gWifiSetupSettingsKey[8];
+extern u8 gWifiSetupTimestampDigest[24];
+extern u8 gWifiSetupPacketBuffer[2048];
+extern u8 gWifiSetupRecordBuffer[2048];
+extern WifiSetupClientSettings gWifiSetupClientSettings;
+extern u32 gWifiSetupRecvSsid[8];
+extern u32 gWifiSetupRecvSecurity[];
+extern u8 gWifiSetupRecvWepKeys[][40];
+extern u32 gWifiSetupRecvWpaKey[18];
+extern u8 ov13_0224E0B0[];
+extern u8 gWifiSetupResultWepKeys[];
+extern WifiSetupSettings64 gWifiSetupResultWpaKey;
 
 // Connection manager events
 int WifiSetupLink_CopyApList(WifiSetupApInfo *dst, int max);
@@ -119,6 +171,19 @@ void WifiSetupLink_DisconnectAp(void);
 
 // Worker thread
 int WifiSetup_RunSession(void);
+
+// Setup packets
+int WifiSetup_FindSetupAccessPoint(void);
+int WifiSetup_SendSetupPacket(int socket, const WifiSetupSockAddr *to, const void *data, int length);
+u8 *WifiSetup_FirstRecord(u8 *data, u32 *type, u32 *length);
+u32 WifiSetup_BuildPacket(u8 *dest, u32 type, u8 *data, u32 length, const void *key);
+u32 WifiSetup_BuildSingleRecordList(u8 *dst, u16 type, const void *src, u32 length);
+int WifiSetup_CheckVersionReply(void *data, int *extended);
+int WifiSetup_ReadPacket(u8 *data, u32 expectedType, void *dst, const u8 *key);
+u32 WifiSetup_BuildVersionRequest(void *dst);
+BOOL WifiSetup_BuildMacPair(WifiSetupMacPair *pair, void *unused);
+int WifiSetup_ParseSettingsRecords(const u8 *data);
+int WifiSetup_StoreSimpleStartResult(void);
 
 // Access point choice
 int WifiSetup_PickSetupAccessPoint(const WifiSetupApEntryList *current, const WifiSetupApEntryList *previous, u32 *selected);

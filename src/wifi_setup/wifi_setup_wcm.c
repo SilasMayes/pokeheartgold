@@ -4,9 +4,6 @@
 
 #include "wifi_setup/wifi_setup.h"
 
-extern WifiSetupWcm gWifiSetupWcm;
-extern u8 gWifiSetupWcmSearchBssid[6];
-extern u8 gWifiSetupWcmSearchSsid[32];
 extern u8 WCM_Bssid_Any[]; // BSSID ff:ff:ff:ff:ff:ff (any)
 extern u8 WCM_Essid_Any[]; // SSID of 0xFF bytes (any)
 

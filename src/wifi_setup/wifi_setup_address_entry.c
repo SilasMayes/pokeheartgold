@@ -16,13 +16,6 @@
 // Address entry screen: the digits are typed on the numeric keypad; OK checks the address and asks for
 // confirmation before it is stored.
 
-typedef void (*WifiSetupAddressFunc)(u8 *digits);
-
-// store functions per address kind, indexed by the first value of WifiSetupApp_GetScreenArgs
-typedef struct WifiSetupAddressFuncs {
-    WifiSetupAddressFunc funcs[5];
-} WifiSetupAddressFuncs;
-
 // largest value of a field ("255")
 typedef struct WifiSetupFieldLimit {
     u8 digits[4];
@@ -32,13 +25,6 @@ extern void *gWifiSetupTextEntry[];
 
 // Screen layout: starts with the field limit; the u16 at index 7 and 8 are the position of the digits.
 extern const WifiSetupFieldLimit gWifiSetupAddressLayout;
-extern WifiSetupAddressFuncs gWifiSetupAddressEntryFuncs;
-extern const u8 gWifiSetupAddressEntryDigitX[]; // x of every digit
-extern u8 gWifiSetupAddressEntryYbObjKbNclPath[];
-extern u8 gWifiSetupAddressEntryJbBgStep3NcgPath[];
-extern u8 gWifiSetupAddressEntryYbBgStep3NclPath[];
-extern u8 gWifiSetupAddressEntryXb4EditAddrNscPath[];
-extern char gWifiSetupAddressEntryYbObjMainNclPath[];
 
 extern long atol(const char *);
 

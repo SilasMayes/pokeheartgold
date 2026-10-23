@@ -50,6 +50,13 @@ extern WifiSetupApScan *gWifiSetupApScan;
 extern WifiSetupConnections *gWifiSetupConnections;
 extern WifiSetupSound *gWifiSetupSound;
 
+extern u8 gWifiSetupWpaVendorPrefix[]; // vendor element prefix that marks WPA
+extern u8 gWifiSetupApScanEmptyBssid[];
+extern WmScanExParam gWifiSetupApScanParam;
+extern u8 gWifiSetupZeroAddress[]; // address 0.0.0.0
+extern char gWifiSetupConnectionsAddressFormat[];
+extern char gWifiSetupSoundArchivePath[];
+
 int WifiSetupApScan_Start(void);
 int WifiSetupApScan_End(void);
 int WifiSetupApScan_GetEntries(WifiSetupScanEntry **out);

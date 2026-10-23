@@ -7,12 +7,10 @@
 #include "wifi_setup/wifi_setup_local_wireless.h"
 #include "wifi_setup/wifi_setup_ui.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 // Vertical scroll bar.
 
-extern u8 gWifiSetupScrollBarThumbLengths[]; // thumb length per kind
 extern s32 FX_DivS32(s32, s32);
 
 static void WifiSetupScrollBar_Drag(void);
@@ -111,26 +109,26 @@ void WifiSetupScrollBar_Task(WifiSetupTask *task, void *arg) {
 }
 
 static void WifiSetupScrollBar_Drag(void) {
-    WifiSetupPoint p;
-    WifiSetupScrollBar *s;
-    int v;
+    WifiSetupPoint touch;
+    WifiSetupScrollBar *bar;
+    int pos;
     int max;
 
     if (WifiSetupInput_IsTouchHeld(&gWifiSetupInputPanelRect)) {
-        WifiSetupInput_GetTouchPos(&p);
-        s = gWifiSetupScrollBar;
-        if (p.x >= s->pos.x - 0x1e) {
-            v = s->dragStart + (p.y - s->touchStart.y);
-            if (v < 0) {
-                v = 0;
+        WifiSetupInput_GetTouchPos(&touch);
+        bar = gWifiSetupScrollBar;
+        if (touch.x >= bar->pos.x - 0x1e) {
+            pos = bar->dragStart + (touch.y - bar->touchStart.y);
+            if (pos < 0) {
+                pos = 0;
             } else {
-                max = s->length - gWifiSetupScrollBarThumbLengths[s->kind];
-                if (v >= max) {
-                    v = max;
+                max = bar->length - gWifiSetupScrollBarThumbLengths[bar->kind];
+                if (pos >= max) {
+                    pos = max;
                 }
             }
-            WifiSetupScrollBar_PlayDragSound(v);
-            WifiSetupScrollBar_SetThumbPos(v);
+            WifiSetupScrollBar_PlayDragSound(pos);
+            WifiSetupScrollBar_SetThumbPos(pos);
             gWifiSetupScrollBar->event = WIFI_SETUP_SCROLL_BAR_EVENT_DRAGGED;
             return;
         }
@@ -141,27 +139,27 @@ static void WifiSetupScrollBar_Drag(void) {
 }
 
 static void WifiSetupScrollBar_PlayDragSound(int value) {
-    int d = gWifiSetupScrollBar->value - value;
-    int a;
-    if (d < 0) {
-        d = -d;
+    int delta = gWifiSetupScrollBar->value - value;
+    int level;
+    if (delta < 0) {
+        delta = -delta;
     }
-    if (d < 2) {
-        a = 0;
-    } else if (d >= 6) {
-        a = 0x7f;
+    if (delta < 2) {
+        level = 0;
+    } else if (delta >= 6) {
+        level = 0x7f;
     } else {
-        a = FX_DivS32(0x7f, 6 - d);
+        level = FX_DivS32(0x7f, 6 - delta);
     }
-    WifiSetupSound_SetVolume(a);
-    if (d < 2) {
-        a = -0x100;
-    } else if (d >= 6) {
-        a = 0x100;
+    WifiSetupSound_SetVolume(level);
+    if (delta < 2) {
+        level = -0x100;
+    } else if (delta >= 6) {
+        level = 0x100;
     } else {
-        a = FX_DivS32(0x200, 6 - d) - 0x100;
+        level = FX_DivS32(0x200, 6 - delta) - 0x100;
     }
-    WifiSetupSound_SetTrackPitch(0xFFFF, a);
+    WifiSetupSound_SetTrackPitch(0xFFFF, level);
 }
 
 static void WifiSetupScrollBar_PressArrow(int state) {
@@ -170,82 +168,82 @@ static void WifiSetupScrollBar_PressArrow(int state) {
 }
 
 static void WifiSetupScrollBar_JumpToTouch(void) {
-    WifiSetupPoint p;
-    WifiSetupScrollBar *s;
-    u32 w;
-    int v;
+    WifiSetupPoint touch;
+    WifiSetupScrollBar *bar;
+    u32 thumbLength;
+    int pos;
     int max;
 
-    WifiSetupInput_GetTouchPos(&p);
-    s = gWifiSetupScrollBar;
-    w = gWifiSetupScrollBarThumbLengths[s->kind];
-    v = p.y - s->pos.y - (w >> 1);
-    if (v < 0) {
-        v = 0;
+    WifiSetupInput_GetTouchPos(&touch);
+    bar = gWifiSetupScrollBar;
+    thumbLength = gWifiSetupScrollBarThumbLengths[bar->kind];
+    pos = touch.y - bar->pos.y - (thumbLength >> 1);
+    if (pos < 0) {
+        pos = 0;
     } else {
-        max = s->length - w;
-        if (v >= max) {
-            v = max;
+        max = bar->length - thumbLength;
+        if (pos >= max) {
+            pos = max;
         }
     }
-    WifiSetupScrollBar_SetThumbPos(v);
+    WifiSetupScrollBar_SetThumbPos(pos);
     gWifiSetupScrollBar->event = WIFI_SETUP_SCROLL_BAR_EVENT_RELEASED;
 }
 
 static int WifiSetupScrollBar_GetTouchedPart(void) {
-    WifiSetupRect r;
+    WifiSetupRect rect;
     int i;
-    WifiSetupScrollBar_GetPartRect(WIFI_SETUP_SCROLL_BAR_THUMB, &r);
-    if (WifiSetupInput_IsTouchRepeated(&r)) {
+    WifiSetupScrollBar_GetPartRect(WIFI_SETUP_SCROLL_BAR_THUMB, &rect);
+    if (WifiSetupInput_IsTouchRepeated(&rect)) {
         return WIFI_SETUP_SCROLL_BAR_THUMB;
     }
-    for (i = 2; i <= 3; i++) {
-        WifiSetupScrollBar_GetPartRect(i, &r);
-        if (WifiSetupInput_IsTouchRepeated(&r)) {
+    for (i = WIFI_SETUP_SCROLL_BAR_UP; i <= WIFI_SETUP_SCROLL_BAR_DOWN; i++) {
+        WifiSetupScrollBar_GetPartRect(i, &rect);
+        if (WifiSetupInput_IsTouchRepeated(&rect)) {
             return i;
         }
     }
-    WifiSetupScrollBar_GetPartRect(WIFI_SETUP_SCROLL_BAR_TRACK, &r);
-    if (WifiSetupInput_IsTouchPressed(&r)) {
+    WifiSetupScrollBar_GetPartRect(WIFI_SETUP_SCROLL_BAR_TRACK, &rect);
+    if (WifiSetupInput_IsTouchPressed(&rect)) {
         return WIFI_SETUP_SCROLL_BAR_TRACK;
     }
     return 0;
 }
 
 static int WifiSetupScrollBar_GetHeldArrow(int part) {
-    WifiSetupRect r;
+    WifiSetupRect rect;
     int i;
-    for (i = 2; i <= 3; i++) {
-        WifiSetupScrollBar_GetPartRect(i, &r);
-        if (WifiSetupInput_IsTouchHeld(&r)) {
+    for (i = WIFI_SETUP_SCROLL_BAR_UP; i <= WIFI_SETUP_SCROLL_BAR_DOWN; i++) {
+        WifiSetupScrollBar_GetPartRect(i, &rect);
+        if (WifiSetupInput_IsTouchHeld(&rect)) {
             return i;
         }
     }
     return 0;
 }
 
-void WifiSetupScrollBar_GetPartRect(int part, WifiSetupRect *r) {
+void WifiSetupScrollBar_GetPartRect(int part, WifiSetupRect *rect) {
     u16 x = gWifiSetupScrollBar->pos.x;
     u16 y;
-    r->left = x;
-    r->right = x + 12;
+    rect->left = x;
+    rect->right = x + 12;
     switch (part) {
     case WIFI_SETUP_SCROLL_BAR_THUMB:
-        r->top = gWifiSetupScrollBar->pos.y + gWifiSetupScrollBar->value;
-        r->bottom = r->top + gWifiSetupScrollBarThumbLengths[gWifiSetupScrollBar->kind];
+        rect->top = gWifiSetupScrollBar->pos.y + gWifiSetupScrollBar->value;
+        rect->bottom = rect->top + gWifiSetupScrollBarThumbLengths[gWifiSetupScrollBar->kind];
         break;
     case WIFI_SETUP_SCROLL_BAR_UP:
-        r->top = gWifiSetupScrollBar->pos.y - 13;
-        r->bottom = gWifiSetupScrollBar->pos.y;
+        rect->top = gWifiSetupScrollBar->pos.y - 13;
+        rect->bottom = gWifiSetupScrollBar->pos.y;
         break;
     case WIFI_SETUP_SCROLL_BAR_DOWN:
-        r->top = gWifiSetupScrollBar->pos.y + gWifiSetupScrollBar->length;
-        r->bottom = r->top + 13;
+        rect->top = gWifiSetupScrollBar->pos.y + gWifiSetupScrollBar->length;
+        rect->bottom = rect->top + 13;
         break;
     case WIFI_SETUP_SCROLL_BAR_TRACK:
         y = gWifiSetupScrollBar->pos.y;
-        r->top = y;
-        r->bottom = y + gWifiSetupScrollBar->length;
+        rect->top = y;
+        rect->bottom = y + gWifiSetupScrollBar->length;
         break;
     }
 }

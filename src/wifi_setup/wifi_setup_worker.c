@@ -4,54 +4,21 @@
 
 #include "wifi_setup/wifi_setup_internal.h"
 
-// Socket address
-typedef struct WifiSetupSockAddr {
-    u8 len;
-    u8 family;
-    u16 port;
-    u32 addr;
-} WifiSetupSockAddr;
-
 typedef struct Id8 {
     u8 b[8];
 } Id8;
-
-// gWifiSetupClientSettings, followed by the SSID received from the setup access point
-typedef struct WifiSetupClientSettings {
-    u8 padding_00[20];
-    s8 ssid[32];
-} WifiSetupClientSettings;
 
 // gWifiSetupReply
 typedef struct WifiSetupReply {
     u32 words[149];
 } WifiSetupReply;
 
-extern u8 gWifiSetupWcmSearchSsid[];
-extern int gWifiSetupExtendedRequest[];
-extern u8 gWifiSetupSessionKey[16];
-extern u8 gWifiSetupPacketBuffer[2048];
-extern u8 gWifiSetupRecordBuffer[2048];
-extern u8 gWifiSetupSettingsKey[8];
-extern u8 gWifiSetupTimestampDigest[24];
 extern WifiSetupReply gWifiSetupReply;
-extern WifiSetupClientSettings gWifiSetupClientSettings;
 
 int SOC_Socket(int domain, int type, int protocol);
 int SOC_Bind(int socket, void *addr);
 int SOC_Close(int socket);
 int SOC_RecvFrom(int socket, void *buf, int len, int flags, void *from);
-int WifiSetup_FindSetupAccessPoint(void);
-int WifiSetup_StoreSimpleStartResult(void);
-BOOL WifiSetup_BuildMacPair(u8 *pair, void *unused);
-int WifiSetup_CheckVersionReply(void *buf, int *out);
-u32 WifiSetup_BuildVersionRequest(void *dst);
-int WifiSetup_SendSetupPacket(int socket, WifiSetupSockAddr *to, const void *buf, int len);
-int WifiSetup_ReadPacket(u8 *buf, u32 type, void *out, const u8 *key);
-u8 *WifiSetup_FirstRecord(u8 *buf, u32 *type, u32 *size);
-u32 WifiSetup_BuildSingleRecordList(u8 *buf, u16 type, const void *data, u32 len);
-u32 WifiSetup_BuildPacket(u8 *out, u32 type, u8 *buf, u32 len, const u8 *key);
-int WifiSetup_ParseSettingsRecords(void *buf);
 
 // WifiSetup_RunSession steps (WifiSetupWork.step)
 enum WifiSetupSessionStep {
@@ -142,7 +109,7 @@ int WifiSetup_RunSession(void) {
                 break;
             }
             recv.len = 8;
-            WifiSetup_BuildMacPair(gWifiSetupSessionKey, &recv);
+            WifiSetup_BuildMacPair((WifiSetupMacPair *)gWifiSetupSessionKey, &recv);
             if (SOC_RecvFrom(sock, gWifiSetupPacketBuffer, 2048, 4, &recv) > 0 && WifiSetup_CheckVersionReply(gWifiSetupPacketBuffer, gWifiSetupExtendedRequest)) {
                 gWifiSetupConfig.deadline = WifiSetup_GetMilliseconds() + 30000;
                 gWifiSetupWork.step = SESSION_STEP_SEND_VERSION_REQUEST;

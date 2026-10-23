@@ -22,7 +22,7 @@ typedef struct WifiSetupButtonBar {
     void *task;
     void *pressTask;
     u16 timer;
-    s8 selected; // -1: none, -2: not yet shown
+    s8 selected; // button index or WIFI_SETUP_SELECTED_*
     u8 type;
     u8 locked;
     u8 closing;
@@ -38,6 +38,30 @@ typedef struct WifiSetupSignalIcon {
 extern WifiSetupBusyIcon *gWifiSetupBusyIcon;
 extern WifiSetupSignalIcon *gWifiSetupSignalIcon;
 extern const u8 gWifiSetupBusyIconPalettes[];
+
+extern WifiSetupButtonBar *gWifiSetupButtonBar;
+extern u8 gWifiSetupMessageShown;
+extern char gWifiSetupLocalizedPath[];
+extern WifiSetupOamBlock **gWifiSetupCursorBlocks;
+extern void *gWifiSetupBackgroundScreen;
+extern u16 gWifiSetupButtonBarButtonSize[];
+extern u16 gWifiSetupButtonBarButtonX[];
+extern u16 gWifiSetupButtonBarButtonY[];
+extern u8 gWifiSetupButtonBarTemplates[];
+extern u8 gWifiSetupButtonBarPositions[];
+extern u8 gWifiSetupButtonBarButtonCounts[];
+extern u32 gWifiSetupTextFlagsByLanguage[];
+extern u16 gWifiSetupMessageTextX[];
+extern u16 gWifiSetupMessageTextY[];
+extern u8 gWifiSetupLanguageLetters[];
+extern u8 gWifiSetupCursorPairTemplates[];
+extern const u8 gWifiSetupSignalIconTemplates[][4];
+extern u8 gWifiSetupKeyboardButtonTemplates[];
+extern u8 gWifiSetupKeyboardExtraKeyTemplates[];
+extern char sStr_CharJtNullNscL[];
+extern char *gWifiSetupBackgroundScreenPaths[];
+extern char sStr_CharJbBgHlNcgL[];
+extern u16 *gWifiSetupKeyboardPageLabels[];
 
 void WifiSetupBusyIcon_Create(u8 style);
 void WifiSetupBusyIcon_Destroy(void);

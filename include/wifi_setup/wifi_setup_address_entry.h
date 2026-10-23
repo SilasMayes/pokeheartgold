@@ -24,8 +24,39 @@ typedef struct WifiSetupAddressEntry {
     u8 result;               // WIFI_SETUP_ADDRESS_*; answer of the confirmation dialog
 } WifiSetupAddressEntry;
 
+// formats the stored address of one kind (IP address, subnet mask, gateway, primary/secondary DNS)
+typedef void (*WifiSetupAddressLoadFunc)(char *buf);
+
+typedef struct WifiSetupAddressLoadFuncs {
+    WifiSetupAddressLoadFunc funcs[5];
+} WifiSetupAddressLoadFuncs;
+
+// stores the typed address of one kind
+typedef void (*WifiSetupAddressFunc)(u8 *digits);
+
+// indexed by the first value of WifiSetupApp_GetScreenArgs
+typedef struct WifiSetupAddressFuncs {
+    WifiSetupAddressFunc funcs[5];
+} WifiSetupAddressFuncs;
+
 extern WifiSetupAddressEntry *gWifiSetupAddressEntry;
 extern int gWifiSetupErrorCode;
+
+extern const u8 gWifiSetupAddressEntryUnsetAddress[]; // stored address of an unset entry
+extern const WifiSetupAddressLoadFuncs gWifiSetupAddressFormatFuncs;
+extern WifiSetupAddressFuncs gWifiSetupAddressEntryFuncs;
+extern const u8 gWifiSetupAddressEntryDigitX[]; // x of every digit
+extern char gWifiSetupAddressEntryYbObjKbNclPath[];
+extern char gWifiSetupAddressEntryJbBgStep3NcgPath[];
+extern char gWifiSetupAddressEntryYbBgStep3NclPath[];
+extern char gWifiSetupAddressEntryXb4EditAddrNscPath[];
+extern char gWifiSetupAddressEntryYbObjMainNclPath[];
+
+extern const u8 gWifiSetupErrorScreenFonts[]; // font per language
+extern const u16 gWifiSetupErrorCodeX[];      // x, y of the code per language
+extern const u16 gWifiSetupErrorCodeY[];
+extern char gWifiSetupErrorScreenJb4ErrorNscPath[];
+extern const u16 gWifiSetupErrorCodeFormat[];
 
 void WifiSetupAddressEntry_Init(void);
 void WifiSetupAddressEntry_LoadGraphics(void);

@@ -5,124 +5,9 @@
 #include "wifi_setup/wifi_setup_app.h"
 #include "wifi_setup/wifi_setup_ui.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
-typedef struct WifiSetupOamBlockManager {
-    WifiSetupOamBlock blocks[32];
-    WifiSetupOamBlock first;
-    WifiSetupOamBlock last;
-    WifiSetupList *list;
-    WifiSetupPool *pool;
-} WifiSetupOamBlockManager;
-
-// Header of one template in an OAM template file: count entries of 6 bytes at data + offset.
-typedef struct WifiSetupOamTemplateHeader {
-    u16 count;
-    u16 unk_02;
-    u32 offset;
-} WifiSetupOamTemplateHeader;
-
-typedef struct WifiSetupFade {
-    void *task;
-    s16 counter;
-    u16 duration;
-    u8 kind;
-    u8 active;
-} WifiSetupFade;
-
-typedef struct WifiSetupBrightnessTable {
-    s8 values[4];
-} WifiSetupBrightnessTable;
-
-typedef struct WifiSetupTextDirection {
-    s8 x;
-    s8 y;
-} WifiSetupTextDirection;
-
-typedef struct WifiSetupTextState {
-    WifiSetupFont fonts[2];
-    WifiSetupCanvas objCanvases[32];
-    WifiSetupCanvas bgCanvases[2];
-    WifiSetupPool *objCanvasPool;
-    void *fontData[2];
-    u8 bgDirty[2];
-} WifiSetupTextState;
-
-typedef struct WifiSetupOamBuffer {
-    GXOamAttr oam[2][128];
-    WifiSetupPool *pools[2];
-    void *task;
-} WifiSetupOamBuffer;
-
-typedef struct WifiSetupCharBlock {
-    WifiSetupListNode node;
-    u16 start;
-    u16 size;
-} WifiSetupCharBlock;
-
-typedef struct WifiSetupCharVramManager {
-    WifiSetupCharBlock blocks[32];
-    WifiSetupCharBlock first;
-    WifiSetupCharBlock last;
-    WifiSetupList *list;
-    WifiSetupPool *pool;
-} WifiSetupCharVramManager;
-
-typedef struct WifiSetupVramBanks {
-    GXVRamBG bg;
-    GXVRamOBJ obj;
-    GXVRamBGExtPltt bgExtPltt;
-    GXVRamOBJExtPltt objExtPltt;
-    GXVRamTex tex;
-    GXVRamTexPltt texPltt;
-    GXVRamClearImage clearImage;
-    GXVRamSubBG subBg;
-    GXVRamSubOBJ subObj;
-    GXVRamSubBGExtPltt subBgExtPltt;
-    GXVRamSubOBJExtPltt subObjExtPltt;
-    int arm7;
-    GXVRamLCDC lcdc;
-} WifiSetupVramBanks;
-
-typedef struct WifiSetupTaskQueue {
-    WifiSetupPool *taskPool;
-    WifiSetupPool *destroyQueue;
-    WifiSetupList *list;
-    WifiSetupTask head;
-    WifiSetupTask tail;
-    int capacity;
-    u8 enabled;
-    void *taskBuf;
-} WifiSetupTaskQueue;
-
-typedef struct WifiSetupInputState {
-    TPData samples[5];
-    WifiSetupPoint touch;
-    WifiSetupPoint prevTouch;
-    u16 cont;
-    u16 trig;
-    u16 repeat;
-    u16 release;
-    u8 touching : 1;
-    u8 touchTrig : 1;
-    u8 touchRepeat : 1;
-    u8 touchRelease : 1;
-} WifiSetupInputState;
-
-typedef struct WifiSetupInput {
-    u8 lcdOff;
-    u8 touchHoldFrames;
-    u8 unk_02[2];
-    WifiSetupInputState *state;
-} WifiSetupInput;
-
-typedef struct WifiSetupIrqSave {
-    OSIrqFunction vblankFunc;
-    OSIrqMask mask;
-} WifiSetupIrqSave;
-
-#define MODULE_BSS_ADDR(addr) ((void *)(gWifiSetupShare + ((addr) - 0x0224F5C8)))
+#define MODULE_BSS_ADDR(addr) (&gWifiSetupShare + ((addr) - 0x0224F5C8) / 4)
 
 static inline int GX_GetVisiblePlane13(void);
 static inline int GXS_GetVisiblePlane13(void);
@@ -172,29 +57,6 @@ static inline void OamGetPosition(const GXOamAttr *oam, s32 *x, s32 *y) {
     *y = oam->attr01 & 0xFF;
 }
 
-extern char gWifiSetupShare[];
-extern WifiSetupArchiveState *gWifiSetupArchive;
-extern WifiSetupOamBlockManager *gWifiSetupOamBlockManager;
-extern void *gWifiSetupOamTemplateFiles[];
-extern WifiSetupFade *gWifiSetupFades;
-extern WifiSetupTextState *gWifiSetupText;
-extern NNSFndHeapHandle gWifiSetupHeap;
-extern WifiSetupInput gWifiSetupInput;
-extern u8 gWifiSetupInputHoldFrames[];
-extern WifiSetupIrqSave gWifiSetupIrqSave;
-extern WifiSetupOamBuffer *gWifiSetupOamBuffer;
-extern WifiSetupCharVramManager *gWifiSetupCharVram;
-extern WifiSetupVramBanks gWifiSetupSavedVramBanks;
-extern WifiSetupTaskQueue *gWifiSetupTaskQueues;
-extern u8 gWifiSetupFadeTables[];
-extern const u16 gWifiSetupTextScreenCharBases[];
-extern const u16 gWifiSetupTextScreenWidths[];
-extern const u16 gWifiSetupTextScreenHeights[];
-extern u8 gWifiSetupTaskQueueCapacities[];
-extern char gWifiSetupRomPrefix[];
-extern char gWifiSetupCompressedSuffix[];
-extern char *gWifiSetupFontPathsKorean[];
-extern char *gWifiSetupFontPaths[];
 
 fx32 FX_DivS32(fx32 a, fx32 b);
 int GX_DisableBankForARM7(void);
@@ -219,10 +81,6 @@ void NNS_G2dCharCanvasInitForOBJ1D(void *charCanvas, void *charBase, int width, 
 void NNS_G2dCharCanvasInitForBG(void *charCanvas, void *charBase, u32 width, u32 height, int colorMode);
 void NNS_G2dMapScrToCharText(void *screen, u32 width, u32 height, u32 left, u32 top, u32 screenWidth, u32 charNo, u32 palette);
 
-int WifiSetupArchive_Proc(FSArchive *arc, int command);
-int WifiSetupArchive_Read(FSArchive *arc, void *dst, u32 pos, u32 len);
-int WifiSetupArchive_Write(void);
-void WifiSetupText_FreeCanvas(WifiSetupCanvas *canvas);
 
 void WifiSetupArchive_Unload(void) {
     FS_ChangeDir(gWifiSetupRomPrefix);
@@ -236,32 +94,32 @@ void WifiSetupArchive_Unload(void) {
     WifiSetupHeap_FreeAndClear(MODULE_BSS_ADDR(0x0224F5CC));
 }
 
-int WifiSetupArchive_Proc(FSArchive *arc, int command) {
+FSResult WifiSetupArchive_Proc(FSFile *file, FSCommandType command) {
     switch (command) {
-    case 9:
+    case FS_COMMAND_ACTIVATE:
         CARD_LockRom(gWifiSetupArchive->lockId);
-        return 0;
-    case 10:
+        return FS_RESULT_SUCCESS;
+    case FS_COMMAND_IDLE:
         CARD_UnlockRom(gWifiSetupArchive->lockId);
-        return 0;
-    case 1:
-        return 4;
+        return FS_RESULT_SUCCESS;
+    case FS_COMMAND_WRITEFILE:
+        return FS_RESULT_UNSUPPORTED;
     default:
-        return 8;
+        return FS_RESULT_PROC_UNKNOWN;
     }
 }
 
-int WifiSetupArchive_Read(FSArchive *arc, void *dst, u32 pos, u32 len) {
+FSResult WifiSetupArchive_Read(FSArchive *arc, void *dst, u32 pos, u32 len) {
     CARDi_ReadRom((u32)-1, (const void *)(pos + arc->base), dst, len, WifiSetupArchive_ReadDone, arc, TRUE);
-    return 6;
+    return FS_RESULT_PROC_ASYNC;
 }
 
 static void WifiSetupArchive_ReadDone(void *arg) {
     FS_NotifyArchiveAsyncEnd(arg, FS_RESULT_SUCCESS);
 }
 
-int WifiSetupArchive_Write(void) {
-    return 1;
+FSResult WifiSetupArchive_Write(FSArchive *arc, const void *src, u32 pos, u32 len) {
+    return FS_RESULT_FAILURE;
 }
 
 void *WifiSetupFile_Load(const char *path, u32 *outSize, int align) {

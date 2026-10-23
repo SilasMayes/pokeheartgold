@@ -14,6 +14,10 @@ enum WifiSetupCursorDirection {
     WIFI_SETUP_CURSOR_DOWN,
 };
 
+// Selection of the button bar and of the dialog besides a button index
+#define WIFI_SETUP_SELECTED_NONE      (-1)
+#define WIFI_SETUP_SELECTED_NOT_SHOWN (-2) // still sliding in
+
 typedef struct WifiSetupListNode {
     struct WifiSetupListNode *prev;
     struct WifiSetupListNode *next;
@@ -51,6 +55,23 @@ typedef struct WifiSetupRect {
     u16 right;
     u16 bottom;
 } WifiSetupRect;
+
+// Copies of path strings (the path is localised in place).
+typedef struct WifiSetupPath21 {
+    char text[21];
+} WifiSetupPath21;
+
+typedef struct WifiSetupPath22 {
+    char text[22];
+} WifiSetupPath22;
+
+typedef struct WifiSetupPath23 {
+    char text[23];
+} WifiSetupPath23;
+
+typedef struct WifiSetupPath25 {
+    char text[25];
+} WifiSetupPath25;
 
 // Position of a key row of the software keyboard or the numeric keypad while it slides in or out.
 typedef struct WifiSetupKeyRowPosition {
@@ -138,8 +159,148 @@ typedef struct WifiSetupArchiveState {
     u16 lockId;
 } WifiSetupArchiveState;
 
+typedef struct WifiSetupOamBlockManager {
+    WifiSetupOamBlock blocks[32];
+    WifiSetupOamBlock first;
+    WifiSetupOamBlock last;
+    WifiSetupList *list;
+    WifiSetupPool *pool;
+} WifiSetupOamBlockManager;
+
+// Header of one template in an OAM template file: count entries of 6 bytes at data + offset.
+typedef struct WifiSetupOamTemplateHeader {
+    u16 count;
+    u16 unk_02;
+    u32 offset;
+} WifiSetupOamTemplateHeader;
+
+typedef struct WifiSetupFade {
+    void *task;
+    s16 counter;
+    u16 duration;
+    u8 kind;
+    u8 active;
+} WifiSetupFade;
+
+typedef struct WifiSetupBrightnessTable {
+    s8 values[4];
+} WifiSetupBrightnessTable;
+
+typedef struct WifiSetupTextDirection {
+    s8 x;
+    s8 y;
+} WifiSetupTextDirection;
+
+typedef struct WifiSetupTextState {
+    WifiSetupFont fonts[2];
+    WifiSetupCanvas objCanvases[32];
+    WifiSetupCanvas bgCanvases[2];
+    WifiSetupPool *objCanvasPool;
+    void *fontData[2];
+    u8 bgDirty[2];
+} WifiSetupTextState;
+
+typedef struct WifiSetupOamBuffer {
+    GXOamAttr oam[2][128];
+    WifiSetupPool *pools[2];
+    void *task;
+} WifiSetupOamBuffer;
+
+typedef struct WifiSetupCharBlock {
+    WifiSetupListNode node;
+    u16 start;
+    u16 size;
+} WifiSetupCharBlock;
+
+typedef struct WifiSetupCharVramManager {
+    WifiSetupCharBlock blocks[32];
+    WifiSetupCharBlock first;
+    WifiSetupCharBlock last;
+    WifiSetupList *list;
+    WifiSetupPool *pool;
+} WifiSetupCharVramManager;
+
+typedef struct WifiSetupVramBanks {
+    GXVRamBG bg;
+    GXVRamOBJ obj;
+    GXVRamBGExtPltt bgExtPltt;
+    GXVRamOBJExtPltt objExtPltt;
+    GXVRamTex tex;
+    GXVRamTexPltt texPltt;
+    GXVRamClearImage clearImage;
+    GXVRamSubBG subBg;
+    GXVRamSubOBJ subObj;
+    GXVRamSubBGExtPltt subBgExtPltt;
+    GXVRamSubOBJExtPltt subObjExtPltt;
+    int arm7;
+    GXVRamLCDC lcdc;
+} WifiSetupVramBanks;
+
+typedef struct WifiSetupTaskQueue {
+    WifiSetupPool *taskPool;
+    WifiSetupPool *destroyQueue;
+    WifiSetupList *list;
+    WifiSetupTask head;
+    WifiSetupTask tail;
+    int capacity;
+    u8 enabled;
+    void *taskBuf;
+} WifiSetupTaskQueue;
+
+typedef struct WifiSetupInputState {
+    TPData samples[5];
+    WifiSetupPoint touch;
+    WifiSetupPoint prevTouch;
+    u16 cont;
+    u16 trig;
+    u16 repeat;
+    u16 release;
+    u8 touching : 1;
+    u8 touchTrig : 1;
+    u8 touchRepeat : 1;
+    u8 touchRelease : 1;
+} WifiSetupInputState;
+
+typedef struct WifiSetupInput {
+    u8 lcdOff;
+    u8 touchHoldFrames;
+    u8 unk_02[2];
+    WifiSetupInputState *state;
+} WifiSetupInput;
+
+typedef struct WifiSetupIrqSave {
+    OSIrqFunction vblankFunc;
+    OSIrqMask mask;
+} WifiSetupIrqSave;
+
+extern WifiSetupArchiveState *gWifiSetupArchive;
+extern WifiSetupOamBlockManager *gWifiSetupOamBlockManager;
+extern void *gWifiSetupOamTemplateFiles[];
+extern WifiSetupFade *gWifiSetupFades;
+extern WifiSetupTextState *gWifiSetupText;
+extern NNSFndHeapHandle gWifiSetupHeap;
+extern WifiSetupInput gWifiSetupInput;
+extern u8 gWifiSetupInputHoldFrames[];
+extern WifiSetupIrqSave gWifiSetupIrqSave;
+extern WifiSetupOamBuffer *gWifiSetupOamBuffer;
+extern WifiSetupCharVramManager *gWifiSetupCharVram;
+extern WifiSetupVramBanks gWifiSetupSavedVramBanks;
+extern WifiSetupTaskQueue *gWifiSetupTaskQueues;
+extern u8 gWifiSetupFadeTables[];
+extern const u16 gWifiSetupTextScreenCharBases[];
+extern const u16 gWifiSetupTextScreenWidths[];
+extern const u16 gWifiSetupTextScreenHeights[];
+extern u8 gWifiSetupTaskQueueCapacities[];
+extern char gWifiSetupRomPrefix[];
+extern char gWifiSetupCompressedSuffix[];
+extern char *gWifiSetupFontPathsKorean[];
+extern char *gWifiSetupFontPaths[];
+
 void WifiSetupArchive_Load(void);
 void WifiSetupArchive_Unload(void);
+FSResult WifiSetupArchive_Proc(FSFile *file, FSCommandType command);
+FSResult WifiSetupArchive_Read(FSArchive *arc, void *dst, u32 pos, u32 len);
+FSResult WifiSetupArchive_Write(FSArchive *arc, const void *src, u32 pos, u32 len);
 void *WifiSetupFile_Load(const char *path, u32 *outSize, int align);
 void WifiSetupFile_Free(void *data);
 
@@ -175,6 +336,7 @@ void WifiSetupText_Init(void);
 void WifiSetupText_Free(void);
 WifiSetupCanvas *WifiSetupText_AllocObjCanvas(int screen, int width, int height, int fromFront, u32 *numObjs, int font);
 void WifiSetupText_FreeObjCanvas(WifiSetupCanvas *canvas);
+void WifiSetupText_FreeCanvas(WifiSetupCanvas *canvas);
 WifiSetupCanvas *WifiSetupText_InitBgCanvas(int screen, int font);
 void WifiSetupText_FreeBgCanvas(int screen);
 void WifiSetupText_Draw(WifiSetupCanvas *canvas, int x, int y, int color, u32 flags, const u16 *text);

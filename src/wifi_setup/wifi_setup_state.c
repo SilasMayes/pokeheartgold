@@ -2,10 +2,6 @@
 
 #include "wifi_setup/wifi_setup.h"
 
-extern u8 gWifiSetupPeerAddress[];
-extern u8 ov13_0224CFBC[];
-extern u8 ov13_0224CFB8[];
-
 u32 WifiSetup_NextHostAddress(u32 value, u32 mask) {
     u32 common = value & mask;
     mask = ~mask;

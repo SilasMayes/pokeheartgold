@@ -2,6 +2,7 @@
 #define POKEHEARTGOLD_WIFI_SETUP_APP_H
 
 #include "wifi_setup/wifi_setup.h"
+#include "wifi_setup/wifi_setup_share.h"
 #include "wifi_setup/wifi_setup_ui.h"
 
 // Access-point setup screens, application core: the entry point the game calls, the per-frame main loop, the setup
@@ -57,25 +58,13 @@ typedef struct WifiSetupTextBanks {
 typedef void (*WifiSetupSessionCallback)(int event);
 
 typedef struct WifiSetupSession {
-    u8 share[0x1E280]; // WifiSetupShare
+    WifiSetupShare share;
     u8 childUser[0x18];
     WifiSetupSessionCallback callback;
     void *task;
     u8 missedEvent; // an event arrived while there was no callback
     u8 cancelled;
 } WifiSetupSession;
-
-// Parameters of the session (WifiSetupShare_Init); the first part is also the Download Play parent's
-// file description (WifiSetupMbParentFile).
-typedef struct WifiSetupSessionParams {
-    const char *filePath;
-    const u16 *title;
-    const u16 *description;
-    int iconCharPath;
-    int iconPalettePath;
-    u32 ggid;
-    u8 languageCode; // the session's copy holds 2 here
-} WifiSetupSessionParams;
 
 extern WifiSetupClient gWifiSetupClient;
 extern WifiSetupRequest *ov13_0224F4C8;

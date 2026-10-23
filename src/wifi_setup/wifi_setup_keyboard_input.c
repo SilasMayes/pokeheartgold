@@ -2,7 +2,6 @@
 
 #include "wifi_setup/wifi_setup_keyboard.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 static void WifiSetupKeyboard_SlideInButtonsTask(WifiSetupTask *task, void *arg);
@@ -117,7 +116,7 @@ static void WifiSetupKeyboard_HandleTouchRelease(void) {
     WifiSetupRect rect;
     int i;
     const WifiSetupPoint *pos, *size;
-    gWifiSetupKeyboard->input = 0;
+    gWifiSetupKeyboard->input = WIFI_SETUP_KEYBOARD_INPUT_NONE;
     if (!WifiSetupInput_IsTouchReleased(&gWifiSetupInputPanelRect)) {
         return;
     }

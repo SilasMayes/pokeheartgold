@@ -2,7 +2,6 @@
 
 #include "global.h"
 
-extern int gWifiSetupSocket;
 
 void *WifiSetup_Alloc(int size) {
     return gWifiSetupRuntime.alloc(size);
@@ -38,8 +37,8 @@ int WifiSetup_RunAoss(WifiSetupRequest *request) {
     int result = WifiSetup_RunAossSession(request);
     WifiSetup_Free(gWifiSetupState.data);
     WifiSetup_FreeWorkBuffers();
-    if (gWifiSetupSocket != -1) {
-        WifiSetup_Close(gWifiSetupSocket);
+    if (gWifiSetupSocket.socket != -1) {
+        WifiSetup_Close(gWifiSetupSocket.socket);
     }
     return result;
 }

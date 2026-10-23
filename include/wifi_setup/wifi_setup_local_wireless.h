@@ -56,7 +56,7 @@ typedef struct WifiSetupDialog {
     void *task;
     u16 timer;     // kind 5: frames shown
     s8 brightness; // fade
-    s8 selected;   // button index, -1 none, -2 not yet shown
+    s8 selected;   // button index or WIFI_SETUP_SELECTED_*
     u8 kind;
     u8 closeDelay;
     u8 fade; // fade the screen in and out
@@ -111,6 +111,27 @@ extern WifiSetupBannerState gWifiSetupBanner;
 extern WifiSetupUsbScan *gWifiSetupUsbScan;
 extern WifiSetupDialog *gWifiSetupDialog;
 extern WifiSetupMbParent *gWifiSetupMbParent;
+
+extern const u8 gWifiSetupBannerLetterTemplates[][WIFI_SETUP_BANNER_NUM_LETTERS]; // per kind
+extern const u8 gWifiSetupBannerLetterPalettes[][WIFI_SETUP_BANNER_NUM_LETTERS];  // per kind
+extern WifiSetupPoint gWifiSetupBannerLetterPositions[WIFI_SETUP_BANNER_NUM_LETTERS];
+extern u8 gWifiSetupUsbScanEmptyBssid[6];
+extern u8 gWifiSetupUsbApSsid[]; // "NWCUSBAP"
+extern WmScanExParam gWifiSetupUsbScanParam;
+extern u8 gWifiSetupDialogWindowPlanes[];
+extern WifiSetupRect gWifiSetupDialogWindowRect;
+extern u8 gWifiSetupDialogButtonPositions[][2];
+extern s8 gWifiSetupDialogAButtonChoice[][2];
+extern s8 gWifiSetupDialogBButtonChoice[][2];
+extern u8 gWifiSetupDialogButtonTemplates[][2];
+extern WifiSetupPoint gWifiSetupDialogButtonSizes[];
+extern WifiSetupPoint gWifiSetupDialogTextSizes[];
+extern WifiSetupPoint gWifiSetupDialogFramePositions[];
+extern WifiSetupPoint gWifiSetupDialogFrameSizes[];
+extern WifiSetupPoint gWifiSetupDialogButtonPos[][2];
+extern u8 gWifiSetupDialogFrameTemplates[];
+extern u8 gWifiSetupDialogButtonCounts[];
+extern char *gWifiSetupBannerScreenPaths[];
 
 void WifiSetupSound_Play(int seq);
 void WifiSetupSound_SetVolume(int volume);

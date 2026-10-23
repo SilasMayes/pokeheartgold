@@ -30,16 +30,7 @@ typedef struct AossSession {
     WifiSetupAossPacketParams params;
 } AossSession;
 
-extern void *ov13_0224CF9C;
-extern s8 ov13_0224CFB8[];
-extern int gWifiSetupSocket;
-
-void WifiSetup_InitPacketAddresses(int, WifiSetupAossPacketParams *, void *);
-int WifiSetup_FindAossAccessPoint(void *);
-int WifiSetup_InitAossConnectInfo(WifiSetupAossConnectInfo *);
 int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *, int *);
-int WifiSetup_SendRequest(int, WifiSetupAossAddresses *, WifiSetupAossPacketParams *, int);
-int WifiSetup_HandlePacket(int, WifiSetupAossReceived *, int *, WifiSetupAossPacketParams *, int);
 
 static const WifiSetupAossRetry sWifiSetupUnsetConnection = {
     .max = -1,
@@ -187,13 +178,13 @@ int WifiSetup_RunAossSession(WifiSetupRequest *request) {
     }
     WifiSetup_FreeWorkBuffers();
     WifiSetup_InitPacketAddresses(3, &session.params, request->macAddress);
-    gWifiSetupSocket = WifiSetup_Socket(2, 2, 0);
-    if (gWifiSetupSocket < 0) {
+    gWifiSetupSocket.socket = WifiSetup_Socket(2, 2, 0);
+    if (gWifiSetupSocket.socket < 0) {
         request->error = 15;
         WifiSetup_FreeWorkBuffers();
         return -1;
     }
-    if (WifiSetup_SetSockOpt(gWifiSetupSocket, 65535, 1, &session.option, 4) < 0) {
+    if (WifiSetup_SetSockOpt(gWifiSetupSocket.socket, 65535, 1, &session.option, 4) < 0) {
         WifiSetup_SetError(11);
         request->error = 15;
         WifiSetup_FreeWorkBuffers();
@@ -203,7 +194,7 @@ int WifiSetup_RunAossSession(WifiSetupRequest *request) {
     session.address.family = 2;
     session.address.ip = WifiSetup_HostToNet32(0xc0a80b65);
     PutPort(&session.address, WifiSetup_HostToNet16(0x5790));
-    if (WifiSetup_Bind(gWifiSetupSocket, &session.address, 8) < 0) {
+    if (WifiSetup_Bind(gWifiSetupSocket.socket, &session.address, 8) < 0) {
         request->error = 15;
         WifiSetup_FreeWorkBuffers();
         return -1;
@@ -218,10 +209,10 @@ restart:
     limit = session.connection.max;
     for (;;) {
         if (mode == 1 && ov13_0224CFB8[28] != 1) {
-            if (gWifiSetupSocket != -1) {
-                WifiSetup_Close(gWifiSetupSocket);
+            if (gWifiSetupSocket.socket != -1) {
+                WifiSetup_Close(gWifiSetupSocket.socket);
             }
-            gWifiSetupSocket = -1;
+            gWifiSetupSocket.socket = -1;
             if (WifiSetup_CleanupSocket()) {
                 request->error = 15;
                 WifiSetup_FreeWorkBuffers();
@@ -301,13 +292,13 @@ restart:
             }
             ov13_0224CFB8[28] = 1;
             WifiSetup_FreeWorkBuffers();
-            gWifiSetupSocket = WifiSetup_Socket(2, 2, 0);
-            if (gWifiSetupSocket < 0) {
+            gWifiSetupSocket.socket = WifiSetup_Socket(2, 2, 0);
+            if (gWifiSetupSocket.socket < 0) {
                 request->error = 15;
                 WifiSetup_FreeWorkBuffers();
                 return -1;
             }
-            if (WifiSetup_SetSockOpt(gWifiSetupSocket, 65535, 1, &session.option, 4) < 0) {
+            if (WifiSetup_SetSockOpt(gWifiSetupSocket.socket, 65535, 1, &session.option, 4) < 0) {
                 WifiSetup_SetError(11);
                 request->error = 15;
                 WifiSetup_FreeWorkBuffers();
@@ -317,13 +308,13 @@ restart:
             session.address.family = 2;
             session.address.ip = WifiSetup_HostToNet32(ip);
             PutPort(&session.address, WifiSetup_HostToNet16(0x5790));
-            if (WifiSetup_Bind(gWifiSetupSocket, &session.address, 8) < 0) {
+            if (WifiSetup_Bind(gWifiSetupSocket.socket, &session.address, 8) < 0) {
                 request->error = 15;
                 WifiSetup_FreeWorkBuffers();
                 return -1;
             }
         }
-        if (WifiSetup_SendRequest(mode, &session.config, &session.params, gWifiSetupSocket) == -1) {
+        if (WifiSetup_SendRequest(mode, &session.config, &session.params, gWifiSetupSocket.socket) == -1) {
             {
                 int current = mode;
                 WifiSetup_SetError(current + 0x1000);
@@ -334,10 +325,10 @@ restart:
         }
         WifiSetup_MemFill(data, 0, 0x5f8);
         WifiSetup_ClearPollSet(&session.set);
-        WifiSetup_AddToPollSet(gWifiSetupSocket, &session.set);
+        WifiSetup_AddToPollSet(gWifiSetupSocket.socket, &session.set);
         session.time.seconds = seconds;
         session.time.microseconds = microseconds;
-        if (WifiSetup_Poll(gWifiSetupSocket + 1, &session.set, 0, 0, &session.time) <= 0) {
+        if (WifiSetup_Poll(gWifiSetupSocket.socket + 1, &session.set, 0, 0, &session.time) <= 0) {
             session.attempts++;
             if (session.attempts > session.retry.max) {
                 int current = mode;
@@ -355,10 +346,10 @@ restart:
             continue;
         }
         session.length = 8;
-        tmp = WifiSetup_RecvFrom(gWifiSetupSocket, &data->packet, sizeof(WifiSetupAossPacket), 0, &session.remote, &session.length);
-        data->socket = gWifiSetupSocket;
+        tmp = WifiSetup_RecvFrom(gWifiSetupSocket.socket, &data->packet, sizeof(WifiSetupAossPacket), 0, &session.remote, &session.length);
+        data->socket = gWifiSetupSocket.socket;
         data->length = WifiSetup_NetToHost16((u16)tmp);
-        nextMode = WifiSetup_HandlePacket(mode, data, &session.attempts, &session.params, gWifiSetupSocket);
+        nextMode = WifiSetup_HandlePacket(mode, data, &session.attempts, &session.params, gWifiSetupSocket.socket);
         if (nextMode == 100) {
             result = 0;
             break;
@@ -369,10 +360,10 @@ restart:
         }
         if (mode != nextMode) {
             if (nextMode == 2) {
-                if (gWifiSetupSocket != -1) {
-                    WifiSetup_Close(gWifiSetupSocket);
+                if (gWifiSetupSocket.socket != -1) {
+                    WifiSetup_Close(gWifiSetupSocket.socket);
                 }
-                gWifiSetupSocket = -1;
+                gWifiSetupSocket.socket = -1;
                 if (WifiSetup_CleanupSocket()) {
                     request->error = 15;
                     WifiSetup_FreeWorkBuffers();
@@ -442,13 +433,13 @@ restart:
                     return -1;
                 }
                 WifiSetup_FreeWorkBuffers();
-                gWifiSetupSocket = WifiSetup_Socket(2, 2, 0);
-                if (gWifiSetupSocket < 0) {
+                gWifiSetupSocket.socket = WifiSetup_Socket(2, 2, 0);
+                if (gWifiSetupSocket.socket < 0) {
                     request->error = 15;
                     WifiSetup_FreeWorkBuffers();
                     return -1;
                 }
-                if (WifiSetup_SetSockOpt(gWifiSetupSocket, 65535, 1, &session.option, 4) < 0) {
+                if (WifiSetup_SetSockOpt(gWifiSetupSocket.socket, 65535, 1, &session.option, 4) < 0) {
                     WifiSetup_SetError(11);
                     request->error = 15;
                     WifiSetup_FreeWorkBuffers();
@@ -458,7 +449,7 @@ restart:
                 session.address.family = 2;
                 session.address.ip = WifiSetup_HostToNet32(ip);
                 PutPort(&session.address, WifiSetup_HostToNet16(0x5790));
-                if (WifiSetup_Bind(gWifiSetupSocket, &session.address, 8) < 0) {
+                if (WifiSetup_Bind(gWifiSetupSocket.socket, &session.address, 8) < 0) {
                     request->error = 15;
                     WifiSetup_FreeWorkBuffers();
                     return -1;
@@ -483,10 +474,10 @@ restart:
         WifiSetup_Sleep(session.retry.delay);
         goto restart;
     }
-    if (gWifiSetupSocket != -1) {
-        WifiSetup_Close(gWifiSetupSocket);
+    if (gWifiSetupSocket.socket != -1) {
+        WifiSetup_Close(gWifiSetupSocket.socket);
     }
-    gWifiSetupSocket = -1;
+    gWifiSetupSocket.socket = -1;
     if (WifiSetup_CleanupSocket()) {
         request->error = 15;
         WifiSetup_FreeWorkBuffers();

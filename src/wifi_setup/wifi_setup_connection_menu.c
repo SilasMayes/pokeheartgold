@@ -12,61 +12,10 @@
 #include "wifi_setup/wifi_setup_ui.h"
 #include "wifi_setup/wifi_setup_ui_parts.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 // Access-point setup: the screen of the three connection slots, the menu of the four setup methods, the connection
 // test, and the screens before and after the Wi-Fi USB connector screen.
-
-typedef struct WifiSetupPaletteRows {
-    u8 rows[4];
-} WifiSetupPaletteRows;
-
-// dialog message per connection test mode
-typedef struct WifiSetupTestPromptMessages {
-    u32 messages[3];
-} WifiSetupTestPromptMessages;
-
-// parameters of the connection test (DWC_AC_Create)
-typedef struct WifiSetupConnectionTestParams {
-    void *(*alloc)(int heap, int size);
-    void (*free)(int heap, void *ptr, int size);
-    u8 dmaNo;
-    u8 powerMode;
-    u8 slot; // 1-3, 4 for the Wi-Fi USB connector
-    u8 skipNetCheck;
-} WifiSetupConnectionTestParams;
-
-extern u8 gWifiSetupConnectionListSlotIconTemplates[];              // slot icon template per setup method (3 = empty)
-extern WifiSetupPaletteRows gWifiSetupConnectionListPaletteRows[2]; // palette row per slot, icon palette per setup method
-extern WifiSetupPoint gWifiSetupConnectionListIconPositions[];      // slot icons 0-2, erase buttons 3-5
-extern WifiSetupRect gWifiSetupConnectionListTouchRects[];          // touch rects of the 7 selections
-extern WifiSetupRect gWifiSetupConnectionListCursorRects[];         // cursor rects of the 7 selections
-extern s8 gWifiSetupConnectionListEraseDigitPositions[];            // digit position of the erase dialog per language
-extern WifiSetupPaletteRows gWifiSetupMethodMenuPaletteRows;        // palette row per setup method
-extern WifiSetupPath22 gWifiSetupMethodMenuYbBgStep21NclPath;
-extern s8 gWifiSetupMethodMenuCursorMoves[][4][4];         // next method per method and direction, -1 none, -2 last
-extern WifiSetupRect gWifiSetupMethodMenuTouchRects[][4];  // touch rects of the methods
-extern WifiSetupRect gWifiSetupMethodMenuCursorRects[][4]; // cursor rects of the methods
-extern s8 gWifiSetupMethodMenuDigitPositions[];            // digit position of the method menu message per language
-extern WifiSetupConnectionTestParams gWifiSetupConnectionTestParams;
-extern WifiSetupTestPromptMessages gWifiSetupTestPromptMessages;
-extern char gWifiSetupConnectionListYbObjMainNclPath[];
-extern char gWifiSetupMethodMenuJbBgStep2NcgPath[];
-extern char gWifiSetupMethodMenuYbBgStep2NclPath[];
-extern char gWifiSetupMethodMenuJb3WayNscPath[];
-extern char gWifiSetupConnectionTestJbBgStep3NcgPath[];
-extern char gWifiSetupConnectionTestYbBgStep3NclPath[];
-extern char gWifiSetupConnectionTestXb4MultiNscPath[];
-extern char gWifiSetupConnectionOkXb4MultiNscPath[];
-extern char gWifiSetupTestPromptXb4NoneNscPath[];
-extern char gWifiSetupUsbConnectorDoneXb4MultiNscPath[];
-extern char gWifiSetupUsbConnectorIntroJbBgStep2NcgPath[];
-extern char gWifiSetupUsbConnectorIntroYbBgStep2NclPath[];
-extern char gWifiSetupUsbConnectorIntroXb3MultiNscPath[];
-extern char gWifiSetupUsbConnectorJbBgStep3NcgPath[];
-extern char gWifiSetupUsbConnectorYbBgStep3NclPath[];
-extern char gWifiSetupUsbConnectorJb4UsbNscPath[];
 
 extern BOOL DWC_AC_Create(WifiSetupConnectionTestParams *params);
 extern int DWC_AC_Process(void);
@@ -192,7 +141,7 @@ static void WifiSetupConnectionList_WaitFadeIn(void) {
 }
 
 static void WifiSetupConnectionList_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     if (WifiSetupBanner_IsMoving() == 1) {
@@ -590,7 +539,7 @@ static void WifiSetupMethodMenu_WaitFadeIn(void) {
 }
 
 static void WifiSetupMethodMenu_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -1169,7 +1118,7 @@ static void WifiSetupUsbConnectorIntro_WaitFadeIn(void) {
 }
 
 static void WifiSetupUsbConnectorIntro_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();

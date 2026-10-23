@@ -11,40 +11,10 @@
 #include "wifi_setup/wifi_setup_ui.h"
 #include "wifi_setup/wifi_setup_ui_parts.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 // Access-point setup: the rest of the connection settings screen, the "settings saved" screen, the four screens of
 // the automatic setup (search, connect, receive the settings, done) and the access-point scan screen.
-
-// rect index in gWifiSetupSettingsCursorPairRects per cursor item
-typedef struct WifiSetupSettingsCursorRects {
-    u8 rects[14];
-} WifiSetupSettingsCursorRects;
-
-extern u8 gWifiSetupSettingsButtonPaletteRows[]; // palette row per button item 11-13
-extern u8 gWifiSetupSettingsRowItems[];          // item per list row
-extern u8 gWifiSetupSettingsScrollOffsets[];     // BG 2 offset per first visible item
-extern u8 gWifiSetupSettingsItemRows[];          // list row per item
-extern WifiSetupRect gWifiSetupSettingsCursorPairRects[];
-extern WifiSetupSettingsCursorRects gWifiSetupSettingsCursorRects;
-extern WifiSetupPath22 gWifiSetupConnectionListYbBgStep11NclPath;
-extern char gWifiSetupSaveScreenJbBgStep3NcgPath[];
-extern char gWifiSetupSaveScreenYbBgStep3NclPath[];
-extern char gWifiSetupSaveScreenXb4NoneNscPath[];
-extern char gWifiSetupAutoConnectXb4MultiNscPath[];
-extern char gWifiSetupAutoReceiveXb4MultiNscPath[];
-extern char gWifiSetupAutoDoneXb4MultiNscPath[];
-extern char gWifiSetupAutoSearchJbBgStep3NcgPath[];
-extern char gWifiSetupAutoSearchYbBgStep3NclPath[];
-extern char gWifiSetupAutoSearchXb4MultiNscPath[];
-extern char gWifiSetupApScanScreenJbBgStep3NcgPath[];
-extern char gWifiSetupApScanScreenYbBgStep3NclPath[];
-extern char gWifiSetupApScanScreenXb4MultiNscPath[];
-extern char gWifiSetupConnectionListYbObjWayNclPath[];
-extern char gWifiSetupConnectionListJbBgStep1NcgPath[];
-extern char gWifiSetupConnectionListJbBgStep1NclPath[];
-extern char gWifiSetupConnectionListJb2ApNscPath[];
 
 extern s32 FX_DivS32(s32 n, s32 d);
 
@@ -552,7 +522,7 @@ static void WifiSetupAutoConnect_WaitFadeIn(void) {
 }
 
 static void WifiSetupAutoConnect_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -708,7 +678,7 @@ static void WifiSetupAutoReceive_WaitFadeIn(void) {
 }
 
 static void WifiSetupAutoReceive_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -950,7 +920,7 @@ static void WifiSetupAutoSearch_WaitFadeIn(void) {
 }
 
 static void WifiSetupAutoSearch_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -1115,7 +1085,7 @@ static void WifiSetupApScanScreen_WaitFadeIn(void) {
 }
 
 static void WifiSetupApScanScreen_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();

@@ -14,137 +14,15 @@
 #include "wifi_setup/wifi_setup_ui.h"
 #include "wifi_setup/wifi_setup_ui_parts.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 // Access-point setup screens: setup client start/stop and status, the top menu, the message screens that follow
 // it, the list screen and the text entry screen.
 
-// Status copied from the setup client's status callback.
-typedef struct WifiSetupClientStatus {
-    int state; // 0 idle .. 7, see WifiSetupClient_GetResult
-    int timeLeft;
-    int error;
-} WifiSetupClientStatus;
-
-typedef struct WifiSetupBytePair {
-    u8 values[2];
-} WifiSetupBytePair;
-
-// Top menu: two choices, the screen's graphics file.
-typedef struct WifiSetupTopMenu {
-    u8 selected;
-    void *graphics;
-} WifiSetupTopMenu;
-
-typedef struct WifiSetupMenu3 {
-    u8 selected;
-    u8 confirmed;
-    void *graphics;
-    GXOamAttr *oam;
-} WifiSetupMenu3;
-
-typedef struct WifiSetupWaitScreen {
-    u8 flag;
-    u16 counter;
-    void *task;
-} WifiSetupWaitScreen;
-
 typedef struct WifiSetupBox {
     u16 x, y, width, height;
 } WifiSetupBox;
 
-extern WifiSetupClientStatus *gWifiSetupClientStatus;
-extern WifiSetupTopMenu gWifiSetupTopMenu;
-extern u8 gWifiSetupEraseConfirmed;
-extern WifiSetupMenu3 gWifiSetupOptions;
-extern u8 gWifiSetupTransferResult;
-extern u8 gWifiSetupTransferIntroProceed;
-extern u8 gWifiSetupTransferCancelledTimer;
-extern u8 gWifiSetupTransferFailed[];
-extern u8 gWifiSetupTransferConfirm[];
-extern u8 gWifiSetupTransferWaitResult;
-extern WifiSetupWaitScreen gWifiSetupAoss;
-extern u8 gWifiSetupAossDoneTimer;
-extern u8 ov13_0224F53C[];
-
-extern const WifiSetupBytePair gWifiSetupTopMenuPaletteRows;
-extern WifiSetupRect gWifiSetupTopMenuTouchRects[];
-extern u16 gWifiSetupTopMenuCursorLeft[];
-extern u16 gWifiSetupTopMenuCursorTop[];
-extern u16 gWifiSetupTopMenuCursorRight[];
-extern u16 gWifiSetupTopMenuCursorBottom[];
-extern const WifiSetupPath22 gWifiSetupTopMenuYbBgStep11NclPath;
-extern u8 gWifiSetupOptionsPaletteRows[];
-extern const WifiSetupPath22 gWifiSetupOptionsYbBgOptionNclPath;
-extern const WifiSetupPath23 gWifiSetupOptionsYbBgOption1NclPath;
-extern WifiSetupRect gWifiSetupOptionsTouchRects[];
-extern u16 gWifiSetupOptionsCursorLeft[];
-extern u16 gWifiSetupOptionsCursorTop[];
-extern u16 gWifiSetupOptionsCursorRight[];
-extern u16 gWifiSetupOptionsCursorBottom[];
-extern const WifiSetupPath22 gWifiSetupListScreenYbBgStep31NclPath;
-extern const WifiSetupPath25 gWifiSetupListScreenXb4ApListBackNscPath;
-extern WifiSetupRect gWifiSetupListScreenTouchRects[];
-extern u16 gWifiSetupListScreenCursorLeft[];
-extern u16 gWifiSetupListScreenCursorTop[];
-extern u16 gWifiSetupListScreenCursorRight[];
-extern u32 gWifiSetupTextEntryParams[];
-extern char *gWifiSetupMessageBankPaths[];
-
-// graphics and text bank paths
-extern char gWifiSetupListScreenJb4ApListNscPath[];
-extern u8 gWifiSetupListScreenRowTemplates[];
-extern u8 gWifiSetupListScreenIconTemplates[];
-extern char gWifiSetupAossJbBgStep3NcgPath[];
-extern char gWifiSetupAossYbBgStep3NclPath[];
-extern char gWifiSetupAossXb4MultiNscPath[];
-extern char gWifiSetupAossDoneXb4MultiNscPath[];
-extern char gWifiSetupTransferConfirmJb5MoveNscPath[];
-extern char gWifiSetupTransferWaitYb5MultiNscPath[];
-extern char gWifiSetupTransferIntroYb5MultiNscPath[];
-extern char gWifiSetupTransferCancelledYb5MultiNscPath[];
-extern char gWifiSetupTransferFailedYb5MultiNscPath[];
-extern char sStr_MsgUsaBmgL[];
-extern char sStr_CharJtMainNceL[];
-extern char sStr_CharJbMainNceL[];
-extern char sStr_CharJtBgMainNcgL[];
-extern char sStr_CharJtBgMainNclL[];
-extern char sStr_CharJtObjMainNcgL[];
-extern char sStr_CharXtObjMainNclL[];
-extern char sStr_CharJbBgStep1_NcgL[];
-extern char sStr_CharJbBgStep1_NclL[];
-extern char sStr_CharJbObjMainNcgL[];
-extern char sStr_CharYbObjMainNclL[];
-extern char sStr_CharJtTopNscL[];
-extern char sStr_CharJtStep1_NscL[];
-extern char sStr_CharJbBgStep1_NcgL_2[];
-extern char sStr_CharJbBgStep1_NclL_2[];
-extern char sStr_CharJb2MenuNscL[];
-extern char sStr_CharYb5MultiNscL[];
-extern char sStr_CharYb5MultiNscL_2[];
-extern char sStr_CharJb5InfoNscL[];
-extern char gWifiSetupOptionsJbBgOptionNcgPath[];
-extern char gWifiSetupOptionsJb5OptMenuNscPath[];
-extern char gWifiSetupTransferringYb5MultiNscPath[];
-typedef struct WifiSetupPaletteRow {
-    u8 row;
-} WifiSetupPaletteRow;
-
-extern const WifiSetupPaletteRow gWifiSetupListScreenRescanPaletteRow;
-extern u8 gWifiSetupTextEntryCursorRowY[];
-extern u8 gWifiSetupTextEntryColumnX[];
-extern char gWifiSetupTextEntryYbObjKbNclPath[];
-extern char gWifiSetupTextEntryJbBgStep3NcgPath[];
-extern char gWifiSetupTextEntryYbBgStep3NclPath[];
-extern char gWifiSetupTextEntryXb4EditNscPath[];
-extern char gWifiSetupTextEntryYbObjMainNclPath[];
-
-extern u16 gWifiSetupSystemInfoMacFormat[];
-extern u16 gWifiSetupSystemInfoIdFormat[];
-extern u16 gWifiSetupSystemInfoNoIdText[];
-
-extern void WifiSetupText_FreeCanvas(void *);
 extern s32 FX_DivS32(s32 a, s32 b);
 extern int swprintf(u16 *buf, u32 n, const u16 *fmt, ...);
 
@@ -354,7 +232,7 @@ static void WifiSetupListScreen_WaitFadeOut(void);
 static void WifiSetupListScreen_End(void);
 static void WifiSetupListScreen_DrawRows(void);
 static void WifiSetupListScreen_DrawRowText(int index, int row);
-static void WifiSetupListScreen_SetRowIcons(int a, int b);
+static void WifiSetupListScreen_SetRowIcons(int entry, int row);
 static void WifiSetupListScreen_PositionRows(void);
 static void WifiSetupListScreen_ScrollUpTask(WifiSetupTask *task, void *arg);
 static void WifiSetupListScreen_ScrollDownTask(WifiSetupTask *task, void *arg);
@@ -576,7 +454,7 @@ static void WifiSetupTopMenu_WaitFadeIn(void) {
 }
 
 static void WifiSetupTopMenu_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -737,7 +615,7 @@ static void WifiSetupEraseConfirm_WaitFadeIn(void) {
 }
 
 static void WifiSetupEraseConfirm_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -823,9 +701,9 @@ static void WifiSetupEraseConfirm_End(void) {
 }
 
 static void WifiSetupEraseConfirm_WaitDialog(void) {
-    int r = WifiSetupDialog_GetSelected();
-    if (r != 0) {
-        if (r != 1) {
+    int selected = WifiSetupDialog_GetSelected();
+    if (selected != 0) {
+        if (selected != 1) {
             return;
         }
         WifiSetupSound_Play(0xe);
@@ -875,7 +753,7 @@ static void WifiSetupEraseDone_WaitFadeIn(void) {
 }
 
 static void WifiSetupEraseDone_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -996,7 +874,7 @@ static void WifiSetupSystemInfo_WaitFadeIn(void) {
 }
 
 static void WifiSetupSystemInfo_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -1128,7 +1006,7 @@ static void WifiSetupOptions_WaitFadeIn(void) {
 }
 
 static void WifiSetupOptions_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -1386,7 +1264,7 @@ static void WifiSetupTransferDone_WaitFadeIn(void) {
 }
 
 static void WifiSetupTransferDone_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -1474,7 +1352,7 @@ static void WifiSetupTransferInfo_WaitFadeIn(void) {
 }
 
 static void WifiSetupTransferInfo_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -1567,7 +1445,7 @@ static void WifiSetupTransferIntro_WaitFadeIn(void) {
 }
 
 static void WifiSetupTransferIntro_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -1757,7 +1635,7 @@ static void WifiSetupTransferFailed_WaitFadeIn(void) {
 }
 
 static void WifiSetupTransferFailed_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     if (WifiSetupTransfer_IsFinished() == 0) {
@@ -1786,9 +1664,9 @@ static void WifiSetupTransferFailed_Update(void) {
 }
 
 static void WifiSetupTransferFailed_CheckButtons(void) {
-    int r = WifiSetupButtonBar_GetSelected();
-    if (r != 0) {
-        if (r != 1) {
+    int selected = WifiSetupButtonBar_GetSelected();
+    if (selected != 0) {
+        if (selected != 1) {
             return;
         }
         gWifiSetupTransferFailed[1] = 1;
@@ -1882,7 +1760,7 @@ static void WifiSetupTransferConfirm_WaitFadeIn(void) {
 }
 
 static void WifiSetupTransferConfirm_WaitDialog(void) {
-    if (WifiSetupDialog_GetSelected() == -2) {
+    if (WifiSetupDialog_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupApp_SetStateFunc(WifiSetupTransferConfirm_Main);
@@ -2005,7 +1883,7 @@ static void WifiSetupTransferWait_WaitFadeIn(void) {
 }
 
 static void WifiSetupTransferWait_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupApp_SetStateFunc(WifiSetupTransferWait_Main);
@@ -2162,7 +2040,7 @@ static void WifiSetupAoss_WaitFadeIn(void) {
 }
 
 static void WifiSetupAoss_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     gWifiSetupAoss.task = WifiSetupTask_Create(1, WifiSetupAoss_InputTask, 0, 0x78);
@@ -2449,12 +2327,12 @@ static void WifiSetupListScreen_CreateScrollBar(void) {
 }
 
 static void WifiSetupListScreen_CreateRowObjects(void) {
-    int n = gWifiSetupListScreen.work->count;
-    if (n > 5) {
-        n = 5;
+    int count = gWifiSetupListScreen.work->count;
+    if (count > 5) {
+        count = 5;
     }
     int i = 0;
-    for (; i < n; i++) {
+    for (; i < count; i++) {
         gWifiSetupListScreen.work->rowOams[i] = WifiSetupOamTemplate_AllocOam(0, 46);
         gWifiSetupListScreen.work->iconOams[i] = WifiSetupOamTemplate_AllocOam(0, 24);
     }
@@ -2466,7 +2344,7 @@ static void WifiSetupListScreen_CreateRowObjects(void) {
         WifiSetupOamTemplate_Copy(0, gWifiSetupListScreenIconTemplates[i], gWifiSetupListScreen.work->iconOams[0]);
         gWifiSetupListScreen.work->iconChars[i] = gWifiSetupListScreen.work->iconOams[0]->attr2 & 1023;
     }
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < count; i++) {
         gWifiSetupListScreen.work->rowOams[i]->attr2 = (gWifiSetupListScreen.work->rowOams[i]->attr2 & ~0xC00) | 0xC00;   // priority 3
         gWifiSetupListScreen.work->iconOams[i]->attr2 = (gWifiSetupListScreen.work->iconOams[i]->attr2 & ~0xC00) | 0xC00; // priority 3
     }
@@ -2492,7 +2370,7 @@ static void WifiSetupListScreen_WaitFadeIn(void) {
 }
 
 static void WifiSetupListScreen_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();
@@ -2658,7 +2536,7 @@ static void WifiSetupListScreen_HandleScrollBar(void) {
 
 static void WifiSetupListScreen_CheckButtons(void) {
     int result, index;
-    WifiSetupListWork *s;
+    WifiSetupListWork *work;
     if (gWifiSetupListScreen.work->task || gWifiSetupListScreen.work->draggingScrollBar) {
         return;
     }
@@ -2674,8 +2552,8 @@ static void WifiSetupListScreen_CheckButtons(void) {
             WifiSetupListScreen_HighlightRescanButton();
         } else {
             index = FX_DivS32(gWifiSetupListScreen.position, 28) + gWifiSetupListScreen.selected;
-            s = gWifiSetupListScreen.work;
-            if (s->entries[index].security == 2) {
+            work = gWifiSetupListScreen.work;
+            if (work->entries[index].security == 2) {
                 WifiSetupSound_Play(9);
                 WifiSetupScrollBar_Disable();
                 WifiSetupButtonBar_Lock();
@@ -2683,7 +2561,7 @@ static void WifiSetupListScreen_CheckButtons(void) {
                 WifiSetupApp_SetStateFunc(WifiSetupListScreen_WaitErrorDialog);
                 return;
             }
-            s->confirmed = 1;
+            work->confirmed = 1;
             gWifiSetupListScreen.work->index = index;
             WifiSetupSound_Play(6);
         }
@@ -2824,27 +2702,27 @@ static void WifiSetupListScreen_DrawRowText(int index, int row) {
     WifiSetupText_DrawMonospace(gWifiSetupListScreen.work->buffer, 10, y + 12, 2, 10, text, 1);
 }
 
-static void WifiSetupListScreen_SetRowIcons(int a, int b) {
-    GXOamAttr *p;
-    if (a >= gWifiSetupListScreen.work->count) {
+static void WifiSetupListScreen_SetRowIcons(int entry, int row) {
+    GXOamAttr *oam;
+    if (entry >= gWifiSetupListScreen.work->count) {
         return;
     }
-    p = gWifiSetupListScreen.work->rowOams[b];
-    p->attr2 = (p->attr2 & ~0x3ff) | gWifiSetupListScreen.work->rowKindChars[gWifiSetupListScreen.work->entries[a].security];
-    p = gWifiSetupListScreen.work->iconOams[b];
-    p->attr2 = (p->attr2 & ~0x3ff) | gWifiSetupListScreen.work->iconChars[gWifiSetupListScreen.work->entries[a].linkLevel];
+    oam = gWifiSetupListScreen.work->rowOams[row];
+    oam->attr2 = (oam->attr2 & ~0x3ff) | gWifiSetupListScreen.work->rowKindChars[gWifiSetupListScreen.work->entries[entry].security];
+    oam = gWifiSetupListScreen.work->iconOams[row];
+    oam->attr2 = (oam->attr2 & ~0x3ff) | gWifiSetupListScreen.work->iconChars[gWifiSetupListScreen.work->entries[entry].linkLevel];
 }
 
 static void WifiSetupListScreen_PositionRows(void) {
-    int y = 54 - FX_ModS32(gWifiSetupListScreen.position, 28), n = gWifiSetupListScreen.work->count, i;
-    if (n > 5) {
-        n = 5;
+    int y = 54 - FX_ModS32(gWifiSetupListScreen.position, 28), count = gWifiSetupListScreen.work->count, i;
+    if (count > 5) {
+        count = 5;
     }
-    for (i = 0; i < n; i++, y += 28) {
-        GXOamAttr *p = gWifiSetupListScreen.work->rowOams[i];
-        p->attr01 = (p->attr01 & 0xfe00ff00) | ((y - 2) & 255) | 0xb30000;
-        p = gWifiSetupListScreen.work->iconOams[i];
-        p->attr01 = (p->attr01 & 0xfe00ff00) | ((y + 1) & 255) | 0xd20000;
+    for (i = 0; i < count; i++, y += 28) {
+        GXOamAttr *oam = gWifiSetupListScreen.work->rowOams[i];
+        oam->attr01 = (oam->attr01 & 0xfe00ff00) | ((y - 2) & 255) | 0xb30000;
+        oam = gWifiSetupListScreen.work->iconOams[i];
+        oam->attr01 = (oam->attr01 & 0xfe00ff00) | ((y + 1) & 255) | 0xd20000;
     }
     gWifiSetupListScreen.work->bgScrollDirty = 1;
 }
@@ -3027,7 +2905,7 @@ static void WifiSetupListScreen_WaitErrorDialogClosed(void) {
 }
 
 void WifiSetupTextEntry_Init(void) {
-    WifiSetupBytePair p = *(const WifiSetupBytePair *)gWifiSetupTextEntryParams;
+    WifiSetupBytePair messages = *(const WifiSetupBytePair *)gWifiSetupTextEntryParams;
     int a, b;
     gWifiSetupTextEntry = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupTextEntry), 4);
     WifiSetupApp_GetScreenArgs(&a, &b);
@@ -3040,14 +2918,14 @@ void WifiSetupTextEntry_Init(void) {
     if (b == 1) {
         WifiSetupMessage_Show(53, -1, 0);
     } else {
-        WifiSetupMessage_Show(p.values[a], -1, 0);
+        WifiSetupMessage_Show(messages.values[a], -1, 0);
     }
     WifiSetupBanner_Show(2);
     gWifiSetupTextEntry->canvas = WifiSetupText_InitBgCanvas(0, 0);
     gWifiSetupTextEntry->cursor = WifiSetupOamTemplate_AllocOam(0, 62);
     {
-        GXOamAttr *q = gWifiSetupTextEntry->cursor;
-        q->attr2 = (q->attr2 & ~0xc00) | 0xc00;
+        GXOamAttr *cursor = gWifiSetupTextEntry->cursor;
+        cursor->attr2 = (cursor->attr2 & ~0xc00) | 0xc00;
     }
     WifiSetupTextEntry_UpdateCursor();
     WifiSetupTextEntry_DrawText();
@@ -3086,14 +2964,14 @@ static void WifiSetupTextEntry_WaitFadeIn(void) {
     if (gWifiSetupTextEntry->length == 0) {
         WifiSetupKeyboard_SetCanDelete(0);
     }
-    if (gWifiSetupTextEntry->length == 32) {
+    if (gWifiSetupTextEntry->length == WIFI_SETUP_TEXT_ENTRY_MAX_LENGTH) {
         WifiSetupKeyboard_SetCanType(0);
     }
     WifiSetupApp_SetStateFunc(WifiSetupTextEntry_WaitKeyboard);
 }
 
 static void WifiSetupTextEntry_WaitKeyboard(void) {
-    if (WifiSetupKeyboard_GetInput() == 255) {
+    if (WifiSetupKeyboard_GetInput() == WIFI_SETUP_KEYBOARD_INPUT_BUSY) {
         return;
     }
     WifiSetupApp_SetStateFunc(WifiSetupTextEntry_Main);
@@ -3107,9 +2985,9 @@ static void WifiSetupTextEntry_Main(void) {
 static void WifiSetupTextEntry_HandleInput(void) {
     int x = WifiSetupKeyboard_GetInput();
     switch (x) {
-    case 0:
+    case WIFI_SETUP_KEYBOARD_INPUT_NONE:
         break;
-    case 128:
+    case WIFI_SETUP_KEYBOARD_INPUT_DELETE:
         if (gWifiSetupTextEntry->length == 0) {
             break;
         }
@@ -3121,12 +2999,12 @@ static void WifiSetupTextEntry_HandleInput(void) {
         }
         WifiSetupKeyboard_SetCanType(1);
         break;
-    case 130:
+    case WIFI_SETUP_KEYBOARD_INPUT_BACK:
         WifiSetupSound_Play(7);
         gWifiSetupTextEntry->flag = 0;
         WifiSetupApp_SetStateFunc(WifiSetupTextEntry_Exit);
         return;
-    case 131:
+    case WIFI_SETUP_KEYBOARD_INPUT_OK:
         if (WifiSetupTextEntry_IsTextValid()) {
             WifiSetupSound_Play(6);
             gWifiSetupTextEntry->flag = 1;
@@ -3139,14 +3017,14 @@ static void WifiSetupTextEntry_HandleInput(void) {
         return;
     case 57373:
     default:
-        if (gWifiSetupTextEntry->length == 32) {
+        if (gWifiSetupTextEntry->length == WIFI_SETUP_TEXT_ENTRY_MAX_LENGTH) {
             break;
         }
         WifiSetupSound_Play(1);
         gWifiSetupTextEntry->text[gWifiSetupTextEntry->length] = x;
         gWifiSetupTextEntry->length++;
         WifiSetupKeyboard_SetCanDelete(1);
-        if (gWifiSetupTextEntry->length == 32) {
+        if (gWifiSetupTextEntry->length == WIFI_SETUP_TEXT_ENTRY_MAX_LENGTH) {
             WifiSetupKeyboard_SetCanType(0);
         }
         break;
@@ -3230,14 +3108,14 @@ static void WifiSetupTextEntry_DrawText(void) {
     tile[1] = 0;
     i = 0;
     j = 0;
-    for (; i < 32; i++, j++) {
+    for (; i < WIFI_SETUP_TEXT_ENTRY_MAX_LENGTH; i++, j++) {
         u8 c;
         if (i == 16) {
             j = 0;
             rect.y = 49;
         }
         c = gWifiSetupTextEntry->text[i];
-        if (c == 32) {
+        if (c == ' ') {
             tile[0] = 0xe01d;
         } else {
             tile[0] = c;
@@ -3250,13 +3128,13 @@ static void WifiSetupTextEntry_DrawText(void) {
 
 static void WifiSetupTextEntry_UpdateCursor(void) {
     unsigned x = gWifiSetupTextEntry->length;
-    GXOamAttr *p = gWifiSetupTextEntry->cursor;
+    GXOamAttr *cursor = gWifiSetupTextEntry->cursor;
     int col = x & 15, row = (int)x >> 4;
     if (x >= 32) {
         row = 1;
         col = 15;
     }
-    p->attr01 = (p->attr01 & 0xfe00ff00) | gWifiSetupTextEntryCursorRowY[row] | ((u32)gWifiSetupTextEntryColumnX[col] << 23 >> 7);
+    cursor->attr01 = (cursor->attr01 & 0xfe00ff00) | gWifiSetupTextEntryCursorRowY[row] | ((u32)gWifiSetupTextEntryColumnX[col] << 23 >> 7);
 }
 
 static void WifiSetupTextEntry_WaitConfirmDialog(void) {
@@ -3306,7 +3184,7 @@ static int WifiSetupTextEntry_IsTextValid(void) {
     if (b == 1 && gWifiSetupTextEntry->text[0] == 0) {
         return 0;
     }
-    len = WifiSetup_StrNLen(gWifiSetupTextEntry->text, 32);
+    len = WifiSetup_StrNLen(gWifiSetupTextEntry->text, WIFI_SETUP_TEXT_ENTRY_MAX_LENGTH);
     switch (len) {
     case 0:
     case 5:
@@ -3319,13 +3197,13 @@ static int WifiSetupTextEntry_IsTextValid(void) {
         int i;
         for (i = 0; i < len; i++) {
             unsigned int c = gWifiSetupTextEntry->text[i];
-            if (c >= 48 && c <= 57) {
+            if (c >= '0' && c <= '9') {
                 continue;
             }
-            if (c >= 65 && c <= 70) {
+            if (c >= 'A' && c <= 'F') {
                 continue;
             }
-            if (c >= 97 && c <= 102) {
+            if (c >= 'a' && c <= 'f') {
                 continue;
             }
             return 0;

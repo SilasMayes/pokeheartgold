@@ -152,16 +152,48 @@ typedef struct WifiSetupAossKeyRecords {
     u8 padding_348[8];
 } WifiSetupAossKeyRecords;
 
+// Access point found by the AOSS scan
+typedef struct WifiSetupAossApEntry {
+    u32 length;
+    u8 data[76];
+    u32 flags;
+} WifiSetupAossApEntry;
+
+typedef struct WifiSetupAossApList {
+    u32 count;
+    WifiSetupAossApEntry entries[64];
+} WifiSetupAossApList;
+
 typedef struct WifiSetupPollTime {
     int seconds;
     int microseconds;
 } WifiSetupPollTime;
 
+// The UDP socket of the AOSS exchange and the socket library configuration it is started with
+typedef struct WifiSetupSocketState {
+    int socket;     // -1 while closed
+    int lastStatus; // last status reported by WifiSetup_SetStatus, -1 for none
+    SocConfig config;
+} WifiSetupSocketState;
+
 extern WifiSetupState gWifiSetupState;
+extern void *ov13_0224CF9C;
+extern s8 ov13_0224CFB8[];
+extern u8 ov13_0224CFBC[];
+extern u8 gWifiSetupPeerAddress[8];
+extern WifiSetupSocketState gWifiSetupSocket;
+extern WifiSetupAossKeyRecords gWifiSetupSecurityRecords[2];
 extern WifiSetupRuntime gWifiSetupRuntime;
 extern WifiSetupFreeFunc gWifiSetupFreeHook;
 extern OSMessage gWifiSetupMessages[4];
 extern OSMessageQueue gWifiSetupMessageQueue;
+extern u32 gWifiSetupCrc32Table[256];
+extern char sStr_ESSID_AOSS[];
+extern char sStr_MELCO[];
+extern u8 gWifiSetupJoinReply[];
+extern u8 sWifiSetupSecurityRecordTypes[];
+extern u8 gWifiSetupCipherSeed[];
+extern u8 gWifiSetupCipherKey[];
 
 void *WifiSetup_Alloc(int size);
 void WifiSetup_Free(void *ptr);
@@ -202,5 +234,11 @@ BOOL WifiSetup_OnTimeoutAlarm(void *message);
 int WifiSetup_Startup(WifiSetupAllocFunc alloc, WifiSetupFreeFunc free);
 int WifiSetup_Cleanup(void);
 int WifiSetup_SearchAccessPoints(void **output);
+int WifiSetup_CheckPrintable(const u8 *data, int length);
+int WifiSetup_FindAossAccessPoint(WifiSetupAossApList *list);
+int WifiSetup_InitAossConnectInfo(WifiSetupAossConnectInfo *info);
+void WifiSetup_InitPacketAddresses(int count, WifiSetupAossPacketParams *params, const void *mac);
+int WifiSetup_HandlePacket(int state, WifiSetupAossReceived *received, int *counter, WifiSetupAossPacketParams *params, int socket);
+int WifiSetup_SendRequest(int which, void *unused, WifiSetupAossPacketParams *params, int socket);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_H

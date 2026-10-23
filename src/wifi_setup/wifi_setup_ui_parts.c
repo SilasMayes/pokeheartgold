@@ -10,7 +10,6 @@
 #include "wifi_setup/wifi_setup_local_wireless.h"
 #include "wifi_setup/wifi_setup_ui.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 typedef struct WifiSetupTextBox {
@@ -19,30 +18,6 @@ typedef struct WifiSetupTextBox {
     u16 width;
     u16 height;
 } WifiSetupTextBox;
-
-extern WifiSetupButtonBar *gWifiSetupButtonBar;
-extern u8 gWifiSetupMessageShown;
-extern char gWifiSetupLocalizedPath[];
-extern WifiSetupOamBlock **gWifiSetupCursorBlocks;
-extern void *gWifiSetupBackgroundScreen;
-extern u16 gWifiSetupButtonBarButtonSize[];
-extern u16 gWifiSetupButtonBarButtonX[];
-extern u16 gWifiSetupButtonBarButtonY[];
-extern u8 gWifiSetupButtonBarTemplates[];
-extern u8 gWifiSetupButtonBarPositions[];
-extern u8 gWifiSetupButtonBarButtonCounts[];
-extern u32 gWifiSetupTextFlagsByLanguage[];
-extern u16 gWifiSetupMessageTextX[];
-extern u16 gWifiSetupMessageTextY[];
-extern u8 gWifiSetupLanguageLetters[];
-extern u8 gWifiSetupCursorPairTemplates[];
-extern const u8 gWifiSetupSignalIconTemplates[][4];
-extern u8 gWifiSetupKeyboardButtonTemplates[];
-extern u8 gWifiSetupKeyboardExtraKeyTemplates[];
-extern char sStr_CharJtNullNscL[];
-extern char *gWifiSetupBackgroundScreenPaths[];
-extern char sStr_CharJbBgHlNcgL[];
-extern u16 *gWifiSetupKeyboardPageLabels[];
 
 extern s32 FX_DivS32(s32, s32);
 
@@ -78,7 +53,7 @@ void WifiSetupBusyIcon_Task(WifiSetupTask *task, void *arg) {
 static void WifiSetupButtonBar_Create(int type) {
     int count = gWifiSetupButtonBarButtonCounts[type], i;
     gWifiSetupButtonBar = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupButtonBar), 4);
-    gWifiSetupButtonBar->selected = -2;
+    gWifiSetupButtonBar->selected = WIFI_SETUP_SELECTED_NOT_SHOWN;
     gWifiSetupButtonBar->type = type;
     for (i = 0; i < count; i++) {
         gWifiSetupButtonBar->buttons[i] = WifiSetupOamTemplate_AllocBlock(0, gWifiSetupButtonBarTemplates[type * 2 + i], 1);
@@ -100,7 +75,7 @@ int WifiSetupButtonBar_GetSelected(void) {
 }
 
 void WifiSetupButtonBar_SelectIfNone(int button) {
-    if (gWifiSetupButtonBar->selected == -1) {
+    if (gWifiSetupButtonBar->selected == WIFI_SETUP_SELECTED_NONE) {
         gWifiSetupButtonBar->selected = button;
     }
 }
@@ -148,7 +123,7 @@ static void WifiSetupButtonBar_SlideInTask(WifiSetupTask *task, void *arg) {
 }
 
 static void WifiSetupButtonBar_WaitTask(WifiSetupTask *task, void *arg) {
-    gWifiSetupButtonBar->selected = -1;
+    gWifiSetupButtonBar->selected = WIFI_SETUP_SELECTED_NONE;
     gWifiSetupButtonBar->timer++;
     if (gWifiSetupButtonBar->timer < 4) {
         return;
@@ -161,7 +136,7 @@ static void WifiSetupButtonBar_InputTask(WifiSetupTask *task, void *arg) {
     WifiSetupRect rect;
     int count = gWifiSetupButtonBarButtonCounts[gWifiSetupButtonBar->type], i;
     if (gWifiSetupButtonBar->locked == 0) {
-        if (gWifiSetupButtonBar->selected != -1) {
+        if (gWifiSetupButtonBar->selected != WIFI_SETUP_SELECTED_NONE) {
             return;
         }
         for (i = 0; i < count; i++) {
@@ -184,7 +159,7 @@ static void WifiSetupButtonBar_InputTask(WifiSetupTask *task, void *arg) {
             }
         }
     }
-    gWifiSetupButtonBar->selected = -1;
+    gWifiSetupButtonBar->selected = WIFI_SETUP_SELECTED_NONE;
 }
 
 static void WifiSetupButtonBar_SlideOutTask(WifiSetupTask *task, void *arg) {
@@ -229,7 +204,7 @@ static void WifiSetupButtonBar_PressTask(WifiSetupTask *task, void *arg) {
     }
     WifiSetupButtonBar_SetY(168);
     gWifiSetupButtonBar->timer = 0;
-    gWifiSetupButtonBar->selected = -1;
+    gWifiSetupButtonBar->selected = WIFI_SETUP_SELECTED_NONE;
     if (!gWifiSetupButtonBar->pressTask) {
         return;
     }
@@ -482,7 +457,7 @@ void WifiSetupKeyboard_Create(void) {
     box.width = 17;
     box.height = 18;
     gWifiSetupKeyboard = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupKeyboard), 4);
-    gWifiSetupKeyboard->input = 255;
+    gWifiSetupKeyboard->input = WIFI_SETUP_KEYBOARD_INPUT_BUSY;
     gWifiSetupKeyboard->cursorKey = 0;
     gWifiSetupKeyboard->canDelete = 1;
     gWifiSetupKeyboard->canType = 1;

@@ -6,12 +6,6 @@
 // Swaps the two bytes of a 16-bit value (network byte order).
 #define Swap16(value) ((u16)((u8)((value) >> 8) | (((value) << 8) & 0xff00)))
 
-typedef struct WifiSetupMacPair {
-    u8 first[6];
-    u8 second[6];
-    u8 prefix[4];
-} WifiSetupMacPair;
-
 typedef struct WifiSetupSocketAddress {
     u8 host[4];
     u8 size;
@@ -29,23 +23,7 @@ typedef struct WifiSetupVersionRecord {
     WifiSetupVersion version;
 } WifiSetupVersionRecord;
 
-typedef struct WifiSetupSettings64 {
-    u64 words[8];
-} WifiSetupSettings64;
-
-extern char gWifiSetupApSsid[];       // SSID of the chosen access point
-extern u8 gWifiSetupApBssid[6];       // BSSID of the chosen access point
-extern u8 gWifiSetupOwnMacAddress[6]; // own MAC address
-extern u8 gWifiSetupRecordBuffer[];
-extern u8 sStr_WARP[4];
-extern u32 gWifiSetupRecvSsid[8];
-extern u32 gWifiSetupRecvSecurity[];
 extern u8 gWifiSetupReply[];
-extern u8 gWifiSetupRecvWepKeys[][40];
-extern u32 gWifiSetupRecvWpaKey[18];
-extern u8 ov13_0224E0B0[];
-extern u8 gWifiSetupResultWepKeys[];
-extern WifiSetupSettings64 gWifiSetupResultWpaKey;
 
 static int WifiSetup_SendDatagram(int socket, const void *address, const void *unused, const void *data, int length);
 static int WifiSetup_BroadcastDatagram(int socket, const void *data, int length);
@@ -54,19 +32,6 @@ static u8 *WifiSetup_NextRecord(u8 **cursor, u8 *end, u32 *type, u32 *length);
 static u8 *WifiSetup_AppendRecord(u8 *out, int tag, const void *source, int size);
 static BOOL WifiSetup_GetOwnMacAddress(u8 *mac);
 static int WifiSetup_HexToBytes(u8 *dst, const char *src, int length);
-
-
-int WifiSetup_FindSetupAccessPoint(void);
-int WifiSetup_SendSetupPacket(int socket, int unused, const void *data, int length);
-u8 *WifiSetup_FirstRecord(u8 *data, u32 *type, u32 *length);
-u32 WifiSetup_BuildPacket(u8 *dest, u32 type, u8 *data, u32 length, const void *key);
-u32 WifiSetup_BuildSingleRecordList(u8 *dst, u16 type, const void *src, u32 length);
-int WifiSetup_CheckVersionReply(void *data, int *extended);
-int WifiSetup_ReadPacket(u8 *data, u32 expectedType, void *dst, int key);
-u32 WifiSetup_BuildVersionRequest(void *dst);
-BOOL WifiSetup_BuildMacPair(WifiSetupMacPair *pair, void *unused);
-int WifiSetup_ParseSettingsRecords(const u8 *data);
-int WifiSetup_StoreSimpleStartResult(void);
 
 #pragma optimization_level 3
 
@@ -225,7 +190,7 @@ static int WifiSetup_BroadcastDatagram(int socket, const void *data, int length)
     return WifiSetup_SendDatagram(socket, &address.size, address.host, data, length);
 }
 
-int WifiSetup_SendSetupPacket(int socket, int unused, const void *data, int length) {
+int WifiSetup_SendSetupPacket(int socket, const WifiSetupSockAddr *to, const void *data, int length) {
     return WifiSetup_BroadcastDatagram(socket, data, length);
 }
 
@@ -386,7 +351,7 @@ int WifiSetup_CheckVersionReply(void *data, int *extended) {
 }
 
 // Copies the payload of a packet of `expectedType`, AES-key-unwrapped when `key` is given.
-int WifiSetup_ReadPacket(u8 *data, u32 expectedType, void *dst, int key) {
+int WifiSetup_ReadPacket(u8 *data, u32 expectedType, void *dst, const u8 *key) {
     u32 type, length;
     u8 *payload = WifiSetup_GetPacketPayload(data, &type, &length);
     if (payload == NULL) {
@@ -396,7 +361,7 @@ int WifiSetup_ReadPacket(u8 *data, u32 expectedType, void *dst, int key) {
         return 0;
     }
     if (key) {
-        WifiSetup_AesKeyUnwrap(dst, payload, length, (const void *)key, 16);
+        WifiSetup_AesKeyUnwrap(dst, payload, length, key, 16);
         length -= 8;
     } else {
         memcpy(dst, payload, length);

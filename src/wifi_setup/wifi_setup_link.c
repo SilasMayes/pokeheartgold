@@ -1,19 +1,15 @@
 #include "global.h"
 
+#include "nitrowifi/socl_internal.h"
 #include "wifi_setup/wifi_setup_internal.h"
 #include "wifi_setup/wifi_setup_wcm.h"
 
 // The WCM wrapper on the worker's state, and the worker's link steps: open, connect to the chosen access point and
 // start the socket library, disconnect, close. WCM events are queued and polled by the worker.
 
-extern void (*gWifiSetupLinkEventCallback)(u32 event, int arg);
-extern u32 gWifiSetupLinkEventQueue[4];
-extern OSMutex gWifiSetupLinkMutex;
-extern u8 gWifiSetupLinkSearchBssid[6];
-extern u8 gWifiSetupLinkSearchSsid[32];
-extern u8 sWifiSetupLinkSocConfig[]; // socket library configuration
-extern u8 WCM_Bssid_Any[];           // BSSID ff:ff:ff:ff:ff:ff (any)
-extern u8 WCM_Essid_Any[];           // SSID of 0xFF bytes (any)
+extern SocConfig sWifiSetupLinkSocConfig;
+extern u8 WCM_Bssid_Any[]; // BSSID ff:ff:ff:ff:ff:ff (any)
+extern u8 WCM_Essid_Any[]; // SSID of 0xFF bytes (any)
 
 static void WifiSetupLink_HandleEvent(WifiSetupWcmEvent *event);
 static int WifiSetupLink_ReturnToIdle(void);
@@ -25,8 +21,6 @@ static void WifiSetupLink_ClearEvents(void);
 static void WifiSetupLink_PushEvent(u32 event, int unused);
 static inline u32 AlignDown32(u32 value);
 
-int SOC_Startup(void *config);
-void SOC_Cleanup(void);
 
 static void WifiSetupLink_HandleEvent(WifiSetupWcmEvent *event) {
     if (!event) {
@@ -616,7 +610,7 @@ int WifiSetupLink_ConnectSelectedAp(void) {
     while (WifiSetupLink_PopEvent()) {}
     if (result > 0) {
         gWifiSetupWork.connected = 1;
-        if (SOC_Startup(sWifiSetupLinkSocConfig) < 0) {
+        if (SOC_Startup(&sWifiSetupLinkSocConfig) < 0) {
             result = -2;
         } else {
             gWifiSetupWork.socketStarted = 1;

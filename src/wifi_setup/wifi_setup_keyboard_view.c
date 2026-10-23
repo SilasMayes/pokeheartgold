@@ -2,7 +2,6 @@
 
 #include "wifi_setup/wifi_setup_keyboard.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 static inline void SetKeyPalette(GXOamAttr *oam, u32 palette);

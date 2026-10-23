@@ -6,7 +6,6 @@
 #include "wifi_setup/wifi_setup_access_points.h"
 #include "wifi_setup/wifi_setup_screens.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 // Access-point setup screens, application core: the setup client request, the entry point and its main loop, text
@@ -20,13 +19,6 @@ typedef struct WifiSetupRequestKey {
     u8 data[256];
 } WifiSetupRequestKey;
 
-extern void WifiSetupShare_Init(WifiSetupSession *session, WifiSetupSessionParams *params);
-extern int WifiSetupShare_Start(void);
-extern int WifiSetupShare_Cancel(void);
-extern void WifiSetupShare_StartDownload(void);
-extern void WifiSetupShare_Update(void *task);
-extern void WifiSetupShare_GetState(u8 *event, u8 *ok);
-extern u16 *WifiSetupShare_GetChildUser(void);
 extern void GXx_SetMasterBrightness_(vu16 *reg, int brightness);
 
 static void *WifiSetupApp_AossClientAlloc(u32 size);
@@ -365,7 +357,7 @@ void WifiSetupTransfer_Start(WifiSetupSessionCallback callback) {
     params.title = WifiSetupText_GetString(gWifiSetupTextBank, 0);
     params.description = WifiSetupText_GetString(gWifiSetupTextBank, 1);
     params.languageCode = WifiSetupApp_GetLanguageCode();
-    WifiSetupShare_Init(gWifiSetupSession, &params);
+    WifiSetupShare_Init(&gWifiSetupSession->share, &params);
     if (WifiSetupShare_Start() == 0) {
         OS_Terminate();
     }
@@ -406,7 +398,7 @@ static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg) {
     u8 event;
     u8 ok;
 
-    WifiSetupShare_Update(task);
+    WifiSetupShare_Update();
     if (gWifiSetupSession->missedEvent && !gWifiSetupSession->cancelled) {
         if (gWifiSetupSession->callback != NULL) {
             gWifiSetupSession->callback(0);

@@ -62,6 +62,8 @@ typedef struct WifiSetupScrollBar {
 
 extern WifiSetupBgScreenState gWifiSetupBgScreen;
 extern WifiSetupScrollBar *gWifiSetupScrollBar;
+extern u8 gWifiSetupScrollBarThumbLengths[];   // thumb length per kind
+extern u8 gWifiSetupScrollBarThumbTemplates[]; // thumb template per kind
 
 void WifiSetupBgScreen_Create(void *src);
 void WifiSetupBgScreen_Destroy(void);

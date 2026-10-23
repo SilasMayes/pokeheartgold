@@ -4,7 +4,6 @@
 
 #include "wifi_setup/wifi_setup_keyboard.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 static void WifiSetupKeypad_SlideInRow0Task(WifiSetupTask *task, void *arg);

@@ -19,40 +19,10 @@
 
 #include "WM.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 // Connection settings screen: loading, fading and the item list. The item handlers, scroll tasks and
 // drawing tasks are with the automatic setup screens.
-
-typedef struct WifiSetupGraphicsPath21 {
-    char text[21];
-} WifiSetupGraphicsPath21;
-
-typedef struct WifiSetupGraphicsPath22 {
-    char text[22];
-} WifiSetupGraphicsPath22;
-
-typedef struct WifiSetupGraphicsPath23 {
-    char text[23];
-} WifiSetupGraphicsPath23;
-
-extern const WifiSetupGraphicsPath21 gWifiSetupSettingsYbBgStep2NclPath;
-extern const WifiSetupGraphicsPath22 gWifiSetupSettingsYbBgStep21NclPath;
-extern const WifiSetupGraphicsPath23 gWifiSetupSettingsJb3ListBackNscPath;
-extern u8 gWifiSetupSettingsButtonTemplates[][3]; // OAM template per button type and option
-extern u16 gWifiSetupSettingsRowTileOffsets[];    // top screen tile offset per first visible item
-extern WifiSetupRect gWifiSetupSettingsTouchRects[];
-extern s8 gWifiSetupSettingsDigitPositions[];
-extern u8 gWifiSetupSettingsRowItems[]; // item per row touched
-extern u8 gWifiSetupSettingsItemRows[];
-extern u8 gWifiSetupSettingsYbObjKbNclPath[];
-extern u8 gWifiSetupSettingsJbBgStep2NcgPath[];
-extern u8 gWifiSetupSettingsJbBgStep21NcgPath[];
-extern u8 gWifiSetupSettingsJb3ListNscPath[];
-extern u8 gWifiSetupSettingsYbObjMainNclPath[];
-extern u16 gWifiSetupSettingsAddressFormat[];
-extern u32 ov13_0224F554[];
 
 extern int swprintf(u16 *, u32, const u16 *, ...);
 extern s32 FX_DivS32(s32, s32);
@@ -116,11 +86,10 @@ void WifiSetupSettings_Init(void) {
     WifiSetupApp_SetStateFunc(WifiSetupSettings_FadeIn);
 }
 
-
 static void WifiSetupSettings_LoadGraphics(void) {
-    WifiSetupGraphicsPath23 scrName;
-    WifiSetupGraphicsPath21 plttName;
-    WifiSetupGraphicsPath22 charName;
+    WifiSetupPath23 scrName;
+    WifiSetupPath21 plttName;
+    WifiSetupPath22 charName;
     scrName = gWifiSetupSettingsJb3ListBackNscPath;
     plttName = gWifiSetupSettingsYbBgStep2NclPath;
     charName = gWifiSetupSettingsYbBgStep21NclPath;

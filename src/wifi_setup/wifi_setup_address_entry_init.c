@@ -11,13 +11,6 @@
 // Start of the address entry screen: fills the digits with the stored address of the kind given by the screen
 // arguments (an unset address is cleared and the cursor starts on the first field, else on the last).
 
-typedef void (*WifiSetupAddressLoadFunc)(char *buf);
-
-// stored-address formatters per address kind (IP address, subnet mask, gateway, primary/secondary DNS)
-typedef struct WifiSetupAddressLoadFuncs {
-    WifiSetupAddressLoadFunc funcs[5];
-} WifiSetupAddressLoadFuncs;
-
 typedef struct WifiSetupAddressMessages {
     u8 messages[5];
 } WifiSetupAddressMessages;
@@ -30,9 +23,7 @@ typedef struct WifiSetupAddressLayout {
     u8 unk_0D[11];
 } WifiSetupAddressLayout;
 
-extern const u8 gWifiSetupAddressEntryUnsetAddress[]; // stored address of an unset entry
 extern const WifiSetupAddressLayout gWifiSetupAddressLayout;
-extern const WifiSetupAddressLoadFuncs gWifiSetupAddressFormatFuncs;
 
 void WifiSetupAddressEntry_Init(void) {
     WifiSetupAddressLoadFuncs funcs = gWifiSetupAddressFormatFuncs;

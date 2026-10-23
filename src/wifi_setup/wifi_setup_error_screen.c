@@ -13,12 +13,6 @@
 // The end of the address entry (the "invalid address" message) and the error screen: shows the error code with the
 // message for its range and waits for the button.
 
-extern const u8 gWifiSetupErrorScreenFonts[]; // font per language
-extern const u16 gWifiSetupErrorCodeX[];      // x, y of the code per language
-extern const u16 gWifiSetupErrorCodeY[];
-extern char gWifiSetupErrorScreenJb4ErrorNscPath[];
-extern const u16 gWifiSetupErrorCodeFormat[];
-
 extern int swprintf(u16 *, int, const u16 *, ...);
 
 static void WifiSetupAddressEntry_FinishInvalidMessage(void);
@@ -178,7 +172,7 @@ static void WifiSetupErrorScreen_WaitFadeIn(void) {
 }
 
 static void WifiSetupErrorScreen_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();

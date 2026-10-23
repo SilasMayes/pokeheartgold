@@ -5,7 +5,6 @@
 
 #include "global.h"
 
-#include "wifi_setup/wifi_setup_app.h"
 #include "wifi_setup/wifi_setup_local_wireless.h"
 #include "wifi_setup/wifi_setup_ui.h"
 
@@ -131,6 +130,18 @@ typedef struct WifiSetupSharePacket {
     u8 data[0x40];
 } WifiSetupSharePacket;
 
+// Parameters of the session (WifiSetupShare_Init); the first part is also the Download Play parent's
+// file description (WifiSetupMbParentFile).
+typedef struct WifiSetupSessionParams {
+    const char *filePath;
+    const u16 *title;
+    const u16 *description;
+    int iconCharPath;
+    int iconPalettePath;
+    u32 ggid;
+    u8 languageCode; // the session's copy holds 2 here
+} WifiSetupSessionParams;
+
 // Session work: the start of WifiSetupSession (wifi_setup_app.h).
 typedef struct WifiSetupShare {
     union {
@@ -171,6 +182,27 @@ typedef struct WifiSetupShare {
 
 extern WifiSetupWh gWifiSetupWh;
 extern WifiSetupShare *gWifiSetupShare;
+
+extern char *gWifiSetupWhStateNames[];                   // state names, see WIFI_SETUP_WH_STATE_*
+extern char gWifiSetupWhFmt_StateFrom[];                 // "%s -> "
+extern char gWifiSetupWhFmt_StateTo[];                   // "%s\n"
+extern char gWifiSetupWhStr_ChildConnected[];            // "StartParent - new child (aid %x) connected\n"
+extern char gWifiSetupWhStr_ChildDisconnected[];         // "StartParent - child (aid %x) disconnected\n"
+extern char gWifiSetupWhStr_UnknownIndicate[];           // "unknown indicate, state = %d\n"
+extern char gWifiSetupWhStr_StartParentKeyShareFailed[]; // "DWCi_MOV_WH_StateInStartParentKeyShare failed\n"
+extern char gWifiSetupWhStr_EndParentFailed[];           // "DWCi_MOV_WH_StateInEndParent failed\n"
+extern char gWifiSetupWhStr_RecvBufferSize[];            // "recv buffer size = %d\n"
+extern char gWifiSetupWhStr_SendBufferSize[];            // "send buffer size = %d\n"
+extern char gWifiSetupWhStr_ChannelBratio[];             // "channel %d bratio = %x\n"
+extern char gWifiSetupWhStr_DecidedChannel[];            // "decided channel = %d\n"
+extern char gWifiSetupWhStr_UnknownConnectMode[];        // "unknown connect mode %d\n"
+extern char gWifiSetupWhStr_StepNoChild[];               // "DWCi_MOV_WH_StepDataSharing - Warning No Child\n"
+extern char gWifiSetupWhStr_StepNoDataSet[];             // "DWCi_MOV_WH_StepDataSharing - Warning No DataSet\n"
+extern char gWifiSetupWhStr_AlreadyIdle[];               // "already DWCi_MOV_WH_SYSSTATE_IDLE\n"
+extern char gWifiSetupWhStr_Finalize[];                  // "DWCi_MOV_WH_Finalize, state = %d\n"
+extern char gWifiSetupArchivePath[];                     // "rom:/dwc/utility.bin"
+extern char gWifiSetupArchivePrefixFormat[];             // "%s:/"
+extern char gWifiSetupArchiveName[];
 
 int WifiSetupMbParent_GetChildState(int aid);
 

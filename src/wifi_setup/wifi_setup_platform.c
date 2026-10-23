@@ -4,8 +4,6 @@
 #include "wifi_setup/wifi_setup_wcm.h"
 
 extern int RTC_GetTime(void *time);
-extern u8 gWifiSetupSocket[];
-extern SocConfig sWifiSetupSocConfig;
 
 typedef struct RateMask {
     u16 mask;
@@ -64,10 +62,10 @@ void *WifiSetup_SocketFree(s32 unused, s32 ptr) {
 }
 
 int WifiSetup_StartupSocket(u32 address, u32 netmask, u32 gateway) {
-    *(u32 *)(gWifiSetupSocket + 0x18) = WifiSetup_HostToNet32(address);
-    *(u32 *)(gWifiSetupSocket + 0x1C) = WifiSetup_HostToNet32(netmask);
-    *(u32 *)(gWifiSetupSocket + 0x20) = WifiSetup_HostToNet32(gateway);
-    if (SOC_Startup(&sWifiSetupSocConfig) < 0) {
+    gWifiSetupSocket.config.hostIp = WifiSetup_HostToNet32(address);
+    gWifiSetupSocket.config.netmask = WifiSetup_HostToNet32(netmask);
+    gWifiSetupSocket.config.gateway = WifiSetup_HostToNet32(gateway);
+    if (SOC_Startup(&gWifiSetupSocket.config) < 0) {
         return -1;
     }
     while (gSoclHostAddress == 0) {

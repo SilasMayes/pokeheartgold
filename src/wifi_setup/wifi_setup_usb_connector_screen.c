@@ -34,7 +34,6 @@ static void WifiSetupUsbConnector_WaitNotFoundClosed(void);
 static void WifiSetupUsbConnector_WaitChoice(void);
 static void WifiSetupUsbConnector_WaitChoiceClosed(void);
 
-
 void WifiSetupUsbConnector_Start(void) {
     WifiSetupFade_Start(2, 0, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
     WifiSetupDisplay_ShowPlanes(0, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
@@ -50,7 +49,7 @@ static void WifiSetupUsbConnector_WaitFadeIn(void) {
 }
 
 static void WifiSetupUsbConnector_WaitButtonBar(void) {
-    if (WifiSetupButtonBar_GetSelected() == -2) {
+    if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
     WifiSetupButtonBar_Unlock();

@@ -26,6 +26,11 @@ typedef struct WifiSetupSettingsSwitchItems {
     u8 items[4];
 } WifiSetupSettingsSwitchItems;
 
+// rect index in gWifiSetupSettingsCursorPairRects per cursor item
+typedef struct WifiSetupSettingsCursorRects {
+    u8 rects[14];
+} WifiSetupSettingsCursorRects;
+
 typedef struct WifiSetupSettingsWork {
     void *task;         // queue 0
     u8 buttonStates[4]; // press timers of the switch buttons
@@ -61,6 +66,27 @@ typedef struct WifiSetupSettings {
 
 extern WifiSetupSettings gWifiSetupSettings;
 extern const WifiSetupSettingsSwitchItems gWifiSetupSettingsSwitchItems;
+
+extern const WifiSetupPath21 gWifiSetupSettingsYbBgStep2NclPath;
+extern const WifiSetupPath22 gWifiSetupSettingsYbBgStep21NclPath;
+extern const WifiSetupPath23 gWifiSetupSettingsJb3ListBackNscPath;
+extern u8 gWifiSetupSettingsButtonTemplates[][3]; // OAM template per button type and option
+extern u16 gWifiSetupSettingsRowTileOffsets[];    // top screen tile offset per first visible item
+extern WifiSetupRect gWifiSetupSettingsTouchRects[];
+extern s8 gWifiSetupSettingsDigitPositions[];
+extern u8 gWifiSetupSettingsRowItems[]; // item per list row
+extern u8 gWifiSetupSettingsItemRows[]; // list row per item
+extern char gWifiSetupSettingsYbObjKbNclPath[];
+extern char gWifiSetupSettingsJbBgStep2NcgPath[];
+extern char gWifiSetupSettingsJbBgStep21NcgPath[];
+extern char gWifiSetupSettingsJb3ListNscPath[];
+extern char gWifiSetupSettingsYbObjMainNclPath[];
+extern u16 gWifiSetupSettingsAddressFormat[];
+extern u32 ov13_0224F554[];
+extern u8 gWifiSetupSettingsButtonPaletteRows[]; // palette row per button item 11-13
+extern u8 gWifiSetupSettingsScrollOffsets[];     // BG 2 offset per first visible item
+extern WifiSetupRect gWifiSetupSettingsCursorPairRects[];
+extern WifiSetupSettingsCursorRects gWifiSetupSettingsCursorRects;
 
 void WifiSetupSettings_Init(void);
 void WifiSetupSettings_Main(void);

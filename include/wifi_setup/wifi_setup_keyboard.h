@@ -15,7 +15,12 @@
 #define WIFI_SETUP_KEY_DELETE   50
 #define WIFI_SETUP_KEY_BUTTON_0 51
 
-#define WIFI_SETUP_KEYBOARD_INPUT_DELETE 128 // input code of the delete key and of the B button
+// input codes besides the characters
+#define WIFI_SETUP_KEYBOARD_INPUT_NONE   0
+#define WIFI_SETUP_KEYBOARD_INPUT_DELETE 128 // the delete key and the B button
+#define WIFI_SETUP_KEYBOARD_INPUT_BACK   130
+#define WIFI_SETUP_KEYBOARD_INPUT_OK     131
+#define WIFI_SETUP_KEYBOARD_INPUT_BUSY   255 // opening, or a page key the keyboard handles itself
 
 typedef struct WifiSetupKeyboard {
     WifiSetupCanvas *rows[3][4]; // text of the four key rows of each page
@@ -25,7 +30,7 @@ typedef struct WifiSetupKeyboard {
     WifiSetupOamBlock *rowBlocks[4]; // objects showing the current page's rows
     WifiSetupOamBlock *cursor;
     void *task;
-    u8 input;      // code of the key typed this frame, 0 if none
+    u8 input;      // WIFI_SETUP_KEYBOARD_INPUT_* or the character typed this frame
     u8 page;       // 0: normal, 1: shifted (one character), 2: alternate
     s8 pressedKey; // key the stylus went down on, -1 if none
     s8 hoveredKey; // key drawn highlighted, -1 if none

@@ -58,6 +58,10 @@ typedef struct WifiSetupWcm {
     void *connectKey; // key description
 } WifiSetupWcm;
 
+extern WifiSetupWcm gWifiSetupWcm;
+extern u8 gWifiSetupWcmSearchBssid[6];
+extern u8 gWifiSetupWcmSearchSsid[32];
+
 void WifiSetup_Sleep(s32 ticks);
 
 int WCM_Init(void *work, u32 size);

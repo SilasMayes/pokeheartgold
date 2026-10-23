@@ -5,12 +5,9 @@
 #include "wifi_setup/wifi_setup_scroll_bar.h"
 #include "wifi_setup/wifi_setup_ui.h"
 
-// The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
 
 // BG 2 screen copy and palette uploads, scroll bar creation.
-
-extern u8 gWifiSetupScrollBarThumbTemplates[]; // thumb template per kind
 
 static void WifiSetupPalette_LoadRowTask(WifiSetupTask *task, void *arg);
 static void WifiSetupPalette_LoadTask(WifiSetupTask *task, void *arg);
