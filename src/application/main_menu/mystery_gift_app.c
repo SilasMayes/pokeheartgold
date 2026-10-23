@@ -148,16 +148,12 @@ typedef struct MysteryGiftLinkState {
 
 BOOL CTRDG_IsExisting(void);
 extern fx32 FX_Sqrt(fx32 value);
-extern void WirelessStatusIcon_SetLevel(int level);
 extern void CommState_StartBeaconWatch(SaveData *saveData);
 extern void CommState_StopBeaconWatch(void);
 extern u32 CommState_GetSeenGames(void);
 extern void CommState_SetErrorWatch(s8 watchMembers, s8 reportErrors);
 
 static MysteryGiftLinkState sMysteryGiftLinkState;
-
-extern const OverlayManagerTemplate sWonderCardAlbumOverlayTemplate;
-extern const OverlayManagerTemplate sLockCapsuleCardOverlayTemplate;
 
 #define MYSTERY_GIFT_PARTICLE_COUNT 80
 

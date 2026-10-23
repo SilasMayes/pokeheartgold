@@ -3,6 +3,7 @@
 #include "constants/sndseq.h"
 
 #include "application/vs_recorder/vs_recorder_internal.h"
+#include "application/vs_recorder/vs_recorder_screens.h"
 #include "global_terminal/global_terminal_net.h"
 #include "msgdata/msg/msg_0013.h"
 
@@ -20,8 +21,6 @@
 
 // VS Recorder box data view (VS_RECORDER_SCREEN_BOX_DATA_VIEW), after the category is chosen: receive the latest boxes
 // of the category, the box list (box name and sender), the sender's profile, the chosen box, and the way back to the menu.
-
-extern const VsRecorderListConfig gVsRecorderBoxListConfig; // box list
 
 // substates of viewing box data (gVsRecorderBoxDataViewSubStates)
 #define BOX_DATA_VIEW_SELECT_CATEGORY 3
@@ -265,7 +264,7 @@ BOOL VsRecorder_BoxListMain(VsRecorderWork *work) {
     VsRecorderBoxData *boxData;
 
     boxData = work->screenWork;
-    if (boxData->showProfile == FALSE) {
+    if (!boxData->showProfile) {
         VsRecorder_UpdateTouchScroll(&work->touchScroll);
         VsRecorder_ListMoveCursor(&work->listWindow, work->touchScroll.direction);
         VsRecorder_RedrawPairList(&work->listWindow, work, boxData->listItems[0]);
@@ -283,7 +282,7 @@ BOOL VsRecorder_BoxListBack(VsRecorderWork *work) {
     case BOX_LIST_BACK_STEP_FREE_LIST:
         VsRecorder_FreeBoxListItems(work);
         VsRecorder_RemoveBoxListButtons(work);
-        if (boxData->showProfile == FALSE) {
+        if (!boxData->showProfile) {
             VsRecorder_RemoveBoxListTitle(work);
             VsRecorder_SetVBlankPaused(work, TRUE);
             VsRecorder_FreeTouchScroll(&work->touchScroll);
@@ -340,7 +339,7 @@ BOOL VsRecorder_BoxDataViewOpenBox(VsRecorderWork *work) {
     switch (work->step) {
     case BOX_DATA_VIEW_OPEN_BOX_STEP_REMOVE_LIST:
         VsRecorder_RemoveBoxListButtons(work);
-        if (boxData->showProfile == FALSE) {
+        if (!boxData->showProfile) {
             VsRecorder_RemoveBoxListTitle(work);
             VsRecorder_SetVBlankPaused(work, TRUE);
             VsRecorder_FreeTouchScroll(&work->touchScroll);
@@ -467,7 +466,7 @@ BOOL VsRecorder_BoxDataViewCloseBox(VsRecorderWork *work) {
         VsRecorder_PlaceOrbitCursor(work, work->orbitCursors[0], 16, (s16)(work->listWindow.cursorRow * 24 + 68));
         OrbitCursor_SetVisible(work->orbitCursors[0], TRUE);
         OrbitCursor_SetRadius(work->orbitCursors[0], 12, 12);
-        if (boxData->showProfile == FALSE) {
+        if (!boxData->showProfile) {
             VsRecorder_UpdateTouchScroll(&work->touchScroll);
             VsRecorder_ListMoveCursor(&work->listWindow, work->touchScroll.direction);
             VsRecorder_RedrawPairList(&work->listWindow, work, boxData->listItems[0]);
@@ -489,7 +488,7 @@ BOOL VsRecorder_BoxListShowProfile(VsRecorderWork *work) {
     switch (work->step) {
     case BOX_LIST_SHOW_PROFILE_STEP_REMOVE_LIST:
         OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
-        if (boxData->showProfile == FALSE) {
+        if (!boxData->showProfile) {
             VsRecorder_RemoveBoxListTitle(work);
         }
         VsRecorder_FreeTouchScroll(&work->touchScroll);
@@ -566,7 +565,7 @@ BOOL VsRecorder_BoxListHideProfile(VsRecorderWork *work) {
         VsRecorder_TouchScrollSetEnabled(&work->touchScroll, &work->listWindow);
         VsRecorder_CreateListArrows(&work->listWindow, work, NNS_G2D_VRAM_TYPE_2DMAIN);
         VsRecorder_SetListArrowsY(&work->listWindow, 56, 176);
-        if (boxData->showProfile == FALSE) {
+        if (!boxData->showProfile) {
             VsRecorder_UpdateTouchScroll(&work->touchScroll);
             VsRecorder_ListMoveCursor(&work->listWindow, work->touchScroll.direction);
             VsRecorder_RedrawPairList(&work->listWindow, work, boxData->listItems[0]);
@@ -614,7 +613,7 @@ BOOL VsRecorder_BoxDataViewExit(VsRecorderWork *work) {
         }
         break;
     default:
-        if (VsRecorder_StepFade(&boxData->fade, 0) != FALSE) {
+        if (VsRecorder_StepFade(&boxData->fade, 0)) {
             VsRecorder_ClearPaletteBlend(work);
             VsRecorder_ResetFade(&boxData->fade);
             PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, (u16)work->blendColor);

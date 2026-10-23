@@ -19,27 +19,6 @@
 #include "touch_hitbox_controller.h"
 #include "touchscreen.h"
 
-// x of the first digit of each group: [0] the first group has 4 digits, [1] otherwise
-typedef struct VsRecorderNumberPadStartX {
-    int x[2][3];
-} VsRecorderNumberPadStartX;
-
-// keys 0-9 (centre and half size); the last two entries are replaced by back and OK
-typedef struct VsRecorderNumberPadKey {
-    s16 x;
-    s16 y;
-    s16 halfWidth;
-    s16 halfHeight;
-} VsRecorderNumberPadKey;
-
-typedef struct VsRecorderNumberPadKeys {
-    VsRecorderNumberPadKey keys[12];
-} VsRecorderNumberPadKeys;
-
-extern const VsRecorderNumberPadFunc gVsRecorderNumberPadStates[];
-extern const VsRecorderNumberPadStartX gVsRecorderNumberPadStartX;
-extern const VsRecorderNumberPadKeys gVsRecorderNumberPadKeys;
-
 // VsRecorderNumberPad.hitboxes: digits 0-11, then the keys
 #define NUMBER_PAD_KEY_0    12
 #define NUMBER_PAD_KEY_9    21
@@ -113,7 +92,7 @@ void VsRecorder_PrintVideoNumber(VsRecorderVideoSearch *search, VsRecorderWork *
     MessageFormat_Delete(msgFmt);
 }
 
-VsRecorderNumberPadConfig *VsRecorder_NewNumberPadConfig(enum HeapID heapID, u32 length, const int *groupLengths, void *options) {
+VsRecorderNumberPadConfig *VsRecorder_NewNumberPadConfig(enum HeapID heapID, u32 length, const int *groupLengths, Options *options) {
     VsRecorderNumberPadConfig *config;
     int i;
     const int *src;
@@ -335,7 +314,7 @@ BOOL VsRecorder_NumberPadSwitchGroup(VsRecorderNumberPad *pad) {
 BOOL VsRecorder_NumberPadMain(VsRecorderNumberPad *pad) {
     BOOL result = gVsRecorderNumberPadStates[pad->state](pad);
 
-    if (result == FALSE) {
+    if (!result) {
         VsRecorder_NumberPadUpdateCursors(pad);
     }
     return result;
@@ -772,7 +751,7 @@ static void VsRecorder_NumberPadUpdateCursors(VsRecorderNumberPad *pad) {
     for (i = 1; i < 3; i++) {
         u32 anim = ManagedSprite_GetActiveAnim(pad->cursors[i].sprite);
         if (anim == 3) {
-            if (ManagedSprite_IsAnimated(pad->cursors[i].sprite) == FALSE) {
+            if (!ManagedSprite_IsAnimated(pad->cursors[i].sprite)) {
                 ManagedSprite_SetAnim(pad->cursors[i].sprite, pad->cursors[i].value);
                 if (pad->touchInput == TRUE) {
                     VsRecorder_NumberPadSetCursorDrawFlag(pad, 1, FALSE);
@@ -799,7 +778,7 @@ static void VsRecorder_NumberPadUpdateCursors(VsRecorderNumberPad *pad) {
 // digits outside the current group use the small frames (anims from 11)
 static int VsRecorder_GetDigitAnim(int value, BOOL enabled) {
     int anim = 0;
-    if (enabled == FALSE) {
+    if (!enabled) {
         anim = 11;
     }
     return anim + value;

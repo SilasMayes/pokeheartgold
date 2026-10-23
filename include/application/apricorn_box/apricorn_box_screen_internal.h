@@ -101,4 +101,31 @@ int ApricornBoxScreen_HandleDrag(ApricornBoxScreen *screen);
 int ApricornBoxScreen_HandleKurtInput(ApricornBoxScreen *screen);
 int ApricornBoxScreen_HandleQuantityInput(ApricornBoxScreen *screen);
 
+typedef struct ApricornBoxListDesc {
+    u16 count;
+    u8 x;
+    u8 y;
+    const u8 *messages;
+} ApricornBoxListDesc;
+
+extern const u8 gApricornBoxQuantityDigitX[];
+extern const TouchscreenListMenuTemplate gApricornBoxListMenuTemplates[2];
+extern const ResdatIdList gApricornBoxSpriteResources;
+extern const GraphicsModes gApricornBoxGraphicsModes;
+extern const u8 gApricornBoxListMenu0Messages[3];
+extern const u8 gApricornBoxListMenu1Messages[2];
+extern const ApricornBoxListDesc gApricornBoxListMenus[2];
+extern const OamCharTransferParam gApricornBoxOamCharTransferParam;
+extern const BgTemplate gApricornBoxBgTemplate_Sub3;
+extern const BgTemplate gApricornBoxBgTemplate_Main0;
+extern const u16 gApricornBoxApricornPositions[7][2];
+extern const BgTemplate gApricornBoxBgTemplate_Main3;
+extern const BgTemplate gApricornBoxBgTemplate_Main1;
+extern const BgTemplate gApricornBoxBgTemplate_Sub0;
+extern const BgTemplate gApricornBoxBgTemplate_Main2;
+extern const OamManagerParam gApricornBoxOamManagerParam;
+extern const GraphicsBanks gApricornBoxGraphicsBanks;
+extern const WindowTemplate gApricornBoxWindowTemplates[];
+extern const UnmanagedSpriteTemplate gApricornBoxSpriteTemplates[7];
+
 #endif // POKEHEARTGOLD_APPLICATION_APRICORN_BOX_APRICORN_BOX_SCREEN_INTERNAL_H

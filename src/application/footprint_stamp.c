@@ -36,9 +36,6 @@
 
 int GetUserFrameGfx2PaletteMember(int frame);
 
-extern const FootprintStampEffectFuncs gFootprintStampEffectFuncs[];
-extern BOOL (*const gFootprintStampCameraEffectFuncs[])(FootprintStampBoard *unused, FootprintStampBoard *board, Camera *camera);
-
 typedef struct FootprintStampBgTemplates {
     BgTemplate items[3];
 } FootprintStampBgTemplates;

@@ -567,7 +567,7 @@ void PCBox_DrawWallpaperName(PCBoxWork *work) {
 }
 
 static void PCBox_DrawButtonWindow(PCBoxWork *work, u32 win, u32 msgId, u32 style) {
-    Window *w = &work->view->windows[win];
+    Window *window = &work->view->windows[win];
     void *buf;
     u32 color;
     u16 offset;
@@ -576,66 +576,66 @@ static void PCBox_DrawButtonWindow(PCBoxWork *work, u32 win, u32 msgId, u32 styl
     u8 *pix;
     u8 i;
     String *str;
-    bg = GetWindowBgId(w);
-    x = GetWindowX(w);
-    y = GetWindowY(w);
-    width = GetWindowWidth(w);
-    height = GetWindowHeight(w);
+    bg = GetWindowBgId(window);
+    x = GetWindowX(window);
+    y = GetWindowY(window);
+    width = GetWindowWidth(window);
+    height = GetWindowHeight(window);
     if (style == 1) {
-        FillWindowPixelBuffer(w, 11);
+        FillWindowPixelBuffer(window, 11);
         color = MAKE_TEXT_COLOR(14, 15, 0);
         offset = 0x180;
     } else {
-        FillWindowPixelBuffer(w, 4);
+        FillWindowPixelBuffer(window, 4);
         color = MAKE_TEXT_COLOR(14, 15, 0);
         offset = 0;
     }
     buf = GfGfxLoader_GetCharData(NARC_a_0_1_9, 64, TRUE, &chr, HEAP_ID_10);
     pix = chr->pRawData;
-    BlitBitmapRect(w, pix + offset, 0, 0, 8, 8, 0, 0, 8, 8, 0xFF);
-    BlitBitmapRect(w, pix + (offset + 0x40), 0, 0, 8, 8, (width - 1) * 8, 0, 8, 8, 0xFF);
-    BlitBitmapRect(w, pix + (offset + 0x120), 0, 0, 8, 8, 0, (height - 1) * 8, 8, 8, 0xFF);
-    BlitBitmapRect(w, pix + (offset + 0x160), 0, 0, 8, 8, (width - 1) * 8, (height - 1) * 8, 8, 8, 0xFF);
+    BlitBitmapRect(window, pix + offset, 0, 0, 8, 8, 0, 0, 8, 8, 0xFF);
+    BlitBitmapRect(window, pix + (offset + 0x40), 0, 0, 8, 8, (width - 1) * 8, 0, 8, 8, 0xFF);
+    BlitBitmapRect(window, pix + (offset + 0x120), 0, 0, 8, 8, 0, (height - 1) * 8, 8, 8, 0xFF);
+    BlitBitmapRect(window, pix + (offset + 0x160), 0, 0, 8, 8, (width - 1) * 8, (height - 1) * 8, 8, 8, 0xFF);
     for (i = 1; i < height - 1; i++) {
-        BlitBitmapRect(w, pix + (offset + 0x60), 0, 0, 8, 8, 0, i * 8, 8, 8, 0xFF);
-        BlitBitmapRect(w, pix + (offset + 0xA0), 0, 0, 8, 8, (width - 1) * 8, i * 8, 8, 8, 0xFF);
+        BlitBitmapRect(window, pix + (offset + 0x60), 0, 0, 8, 8, 0, i * 8, 8, 8, 0xFF);
+        BlitBitmapRect(window, pix + (offset + 0xA0), 0, 0, 8, 8, (width - 1) * 8, i * 8, 8, 8, 0xFF);
     }
     for (i = 1; i < width - 1; i++) {
-        BlitBitmapRect(w, pix + (offset + 0x20), 0, 0, 8, 8, i * 8, 0, 8, 8, 0xFF);
-        BlitBitmapRect(w, pix + (offset + 0x140), 0, 0, 8, 8, i * 8, (height - 1) * 8, 8, 8, 0xFF);
+        BlitBitmapRect(window, pix + (offset + 0x20), 0, 0, 8, 8, i * 8, 0, 8, 8, 0xFF);
+        BlitBitmapRect(window, pix + (offset + 0x140), 0, 0, 8, 8, i * 8, (height - 1) * 8, 8, 8, 0xFF);
     }
     Heap_Free(buf);
     str = NewString_ReadMsgData(work->view->msgData, msgId);
-    PCBox_PrintAligned(w, str, width * 8 / 2, 4, 4, color, 2);
+    PCBox_PrintAligned(window, str, width * 8 / 2, 4, 4, color, 2);
     String_Delete(str);
-    CopyWindowPixelsToVram_TextMode(w);
+    CopyWindowPixelsToVram_TextMode(window);
 }
 
 static void PCBox_PrintWindowMessage(PCBoxWork *work, u32 win, u32 msgId, u32 style, u8 align) {
-    Window *w = &work->view->windows[win];
+    Window *window = &work->view->windows[win];
     u8 bg, x, y, width, height;
     String *str;
     u32 color;
-    bg = GetWindowBgId(w);
-    x = GetWindowX(w);
-    y = GetWindowY(w);
-    width = GetWindowWidth(w);
-    height = GetWindowHeight(w);
+    bg = GetWindowBgId(window);
+    x = GetWindowX(window);
+    y = GetWindowY(window);
+    width = GetWindowWidth(window);
+    height = GetWindowHeight(window);
     if (style == 1) {
-        FillWindowPixelBuffer(w, 11);
+        FillWindowPixelBuffer(window, 11);
         color = MAKE_TEXT_COLOR(14, 15, 0);
     } else {
-        FillWindowPixelBuffer(w, 4);
+        FillWindowPixelBuffer(window, 4);
         color = MAKE_TEXT_COLOR(14, 15, 0);
     }
     str = NewString_ReadMsgData(work->view->msgData, msgId);
     if (align == 2 || align == 3) {
-        PCBox_PrintAligned(w, str, width * 8 / 2, 0, 4, color, align);
+        PCBox_PrintAligned(window, str, width * 8 / 2, 0, 4, color, align);
     } else {
-        PCBox_PrintAligned(w, str, 0, 0, 4, color, align);
+        PCBox_PrintAligned(window, str, 0, 0, 4, color, align);
     }
     String_Delete(str);
-    CopyWindowPixelsToVram_TextMode(w);
+    CopyWindowPixelsToVram_TextMode(window);
 }
 
 void PCBox_DrawPartyButton(PCBoxWork *work, u32 style) {
@@ -643,32 +643,32 @@ void PCBox_DrawPartyButton(PCBoxWork *work, u32 style) {
 }
 
 static void PCBox_DrawTabWindow(PCBoxWork *work, u32 win, u32 msgId) {
-    Window *w = &work->view->windows[win];
+    Window *window = &work->view->windows[win];
     u8 width;
     NNSG2dCharacterData *chr;
     void *buf;
     u8 *pix;
     u8 i;
     String *str;
-    width = GetWindowWidth(w);
+    width = GetWindowWidth(window);
     buf = GfGfxLoader_GetCharData(NARC_a_0_1_9, 14, TRUE, &chr, HEAP_ID_10);
     pix = chr->pRawData;
-    BlitBitmapRect(w, pix + 0xAE0, 0, 0, 24, 8, 0, 0, 24, 8, 0xFF);
-    BlitBitmapRect(w, pix + 0xB60, 0, 0, 24, 8, 0, 8, 24, 8, 0xFF);
-    BlitBitmapRect(w, pix + 0xB20, 0, 0, 24, 8, 0, 16, 24, 8, 0xFF);
-    BlitBitmapRect(w, pix + 0xD60, 0, 0, 8, 8, (width - 1) * 8, 0, 8, 8, 0xFF);
-    BlitBitmapRect(w, pix + 0xD20, 0, 0, 8, 8, (width - 1) * 8, 8, 8, 8, 0xFF);
-    BlitBitmapRect(w, pix + 0xD40, 0, 0, 8, 8, (width - 1) * 8, 16, 8, 8, 0xFF);
+    BlitBitmapRect(window, pix + 0xAE0, 0, 0, 24, 8, 0, 0, 24, 8, 0xFF);
+    BlitBitmapRect(window, pix + 0xB60, 0, 0, 24, 8, 0, 8, 24, 8, 0xFF);
+    BlitBitmapRect(window, pix + 0xB20, 0, 0, 24, 8, 0, 16, 24, 8, 0xFF);
+    BlitBitmapRect(window, pix + 0xD60, 0, 0, 8, 8, (width - 1) * 8, 0, 8, 8, 0xFF);
+    BlitBitmapRect(window, pix + 0xD20, 0, 0, 8, 8, (width - 1) * 8, 8, 8, 8, 0xFF);
+    BlitBitmapRect(window, pix + 0xD40, 0, 0, 8, 8, (width - 1) * 8, 16, 8, 8, 0xFF);
     for (i = 1; i < width - 1; i++) {
-        BlitBitmapRect(w, pix + 0xB00, 0, 0, 8, 8, i * 8, 0, 8, 8, 0xFF);
-        BlitBitmapRect(w, pix + 0xB80, 0, 0, 8, 8, i * 8, 8, 8, 8, 0xFF);
-        BlitBitmapRect(w, pix + 0xB40, 0, 0, 8, 8, i * 8, 16, 8, 8, 0xFF);
+        BlitBitmapRect(window, pix + 0xB00, 0, 0, 8, 8, i * 8, 0, 8, 8, 0xFF);
+        BlitBitmapRect(window, pix + 0xB80, 0, 0, 8, 8, i * 8, 8, 8, 8, 0xFF);
+        BlitBitmapRect(window, pix + 0xB40, 0, 0, 8, 8, i * 8, 16, 8, 8, 0xFF);
     }
     Heap_Free(buf);
     str = NewString_ReadMsgData(work->view->msgData, msgId);
-    PCBox_PrintAligned(w, str, width * 8 / 2, 4, 4, 0x90A00, 2);
+    PCBox_PrintAligned(window, str, width * 8 / 2, 4, 4, 0x90A00, 2);
     String_Delete(str);
-    CopyWindowPixelsToVram_TextMode(w);
+    CopyWindowPixelsToVram_TextMode(window);
 }
 
 void PCBox_DrawTrayTab(PCBoxWork *work, u32 unused) {
@@ -695,15 +695,15 @@ void PCBox_DrawActionMenu(PCBoxWork *work, const PCBoxMenuEntry *list, u32 count
     u16 v[2];
     u32 i;
 
-    BgCellManager_GetCellSize(work->view->panels, 3, &v[1], &v[0]);
+    BgCellManager_GetCellSize(work->view->panels, PC_BOX_PANEL_MENU_ROW_0, &v[1], &v[0]);
     for (i = 0; i < count; i++) {
-        const PCBoxMenuEntry *e = &list[count - 1 - i];
-        if (e->kind == 0) {
-            PCBox_DrawButtonWindow(work, 0x21 - i, e->msgId, 0);
-            BgCellManager_SetCellPalette(work->view->panels, 7 - i, 0, 0, (u8)v[1], (u8)v[0], 0xc);
+        const PCBoxMenuEntry *entry = &list[count - 1 - i];
+        if (entry->kind == 0) {
+            PCBox_DrawButtonWindow(work, 0x21 - i, entry->msgId, 0);
+            BgCellManager_SetCellPalette(work->view->panels, PC_BOX_PANEL_MENU_ROW_4 - i, 0, 0, (u8)v[1], (u8)v[0], 0xc);
         } else {
-            PCBox_DrawTabWindow(work, 0x21 - i, e->msgId);
-            BgCellManager_SetCellPalette(work->view->panels, 7 - i, 0, 0, (u8)v[1], (u8)v[0], 2);
+            PCBox_DrawTabWindow(work, 0x21 - i, entry->msgId);
+            BgCellManager_SetCellPalette(work->view->panels, PC_BOX_PANEL_MENU_ROW_4 - i, 0, 0, (u8)v[1], (u8)v[0], 2);
         }
     }
     for (; count < 5; count++) {
@@ -794,32 +794,32 @@ static void PCBox_AttachWindowToPanel(BgCellManager *mgr, int id, Window *window
 }
 
 void PCBox_AttachPanelWindows(PCBoxView *view) {
-    PCBox_AttachWindowToPanel(view->panels, 3, &view->windows[29]);
-    PCBox_AttachWindowToPanel(view->panels, 4, &view->windows[30]);
-    PCBox_AttachWindowToPanel(view->panels, 5, &view->windows[31]);
-    PCBox_AttachWindowToPanel(view->panels, 6, &view->windows[32]);
-    PCBox_AttachWindowToPanel(view->panels, 7, &view->windows[33]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_MENU_ROW_0, &view->windows[29]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_MENU_ROW_1, &view->windows[30]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_MENU_ROW_2, &view->windows[31]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_MENU_ROW_3, &view->windows[32]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_MENU_ROW_4, &view->windows[33]);
     PCBox_SetPanelWindowFrame(view->panels, 0xc, &view->windows[41]);
-    PCBox_AttachWindowToPanel(view->panels, 0xe, &view->windows[42]);
-    PCBox_AttachWindowToPanel(view->panels, 0xf, &view->windows[43]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_CHANGE_BOX_BUTTON, &view->windows[42]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_SUMMARY_BUTTON, &view->windows[43]);
 }
 
 void PCBox_AttachPartyButtonWindow(PCBoxView *view) {
-    PCBox_AttachWindowToPanel(view->panels, 8, &view->windows[24]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_PARTY_BUTTON, &view->windows[24]);
 }
 
 void PCBox_AttachTrayTabWindow(PCBoxView *view) {
-    PCBox_AttachWindowToPanel(view->panels, 9, &view->windows[25]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_TRAY_TAB, &view->windows[25]);
 }
 
 void PCBox_AttachReturnButtonWindow(PCBoxView *view) {
-    PCBox_AttachWindowToPanel(view->panels, 0xa, &view->windows[26]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_RETURN_BUTTON, &view->windows[26]);
 }
 
 void PCBox_AttachMenuExitButtonWindow(PCBoxWork *work) {
     PCBoxView *view = work->view;
 
-    PCBox_AttachWindowToPanel(view->panels, 11, &view->windows[28]);
+    PCBox_AttachWindowToPanel(view->panels, PC_BOX_PANEL_MENU_EXIT_BUTTON, &view->windows[28]);
     PCBox_DrawMenuExitButton(work, 0);
 }
 
@@ -847,12 +847,12 @@ void PCBox_PrintPartyPanelExitLabel(PCBoxView *view) {
 }
 
 void PCBox_AttachMarkingMenuWindows(PCBoxView *view) {
-    BgCellManager_PutWindowTiles(view->panels, 2, &view->windows[34]);
-    BgCellManager_PutWindowTiles(view->panels, 2, &view->windows[35]);
+    BgCellManager_PutWindowTiles(view->panels, PC_BOX_PANEL_MARKING_MENU, &view->windows[34]);
+    BgCellManager_PutWindowTiles(view->panels, PC_BOX_PANEL_MARKING_MENU, &view->windows[35]);
 }
 
 void PCBox_AttachPartyPanelLabelWindow(PCBoxView *view) {
-    BgCellManager_PutWindowTiles(view->panels, 1, &view->windows[36]);
+    BgCellManager_PutWindowTiles(view->panels, PC_BOX_PANEL_PARTY, &view->windows[36]);
 }
 
 void PCBox_DrawSummaryButton(PCBoxWork *work, u32 unused) {

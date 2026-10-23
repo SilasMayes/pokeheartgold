@@ -322,7 +322,7 @@ static BOOL VsRecorder_SavedVideoToggleProfile(VsRecorderWork *work) {
     VsRecorderSavedVideo *savedVideo = work->screenWork;
     switch (work->step) {
     case SAVED_VIDEO_TOGGLE_PROFILE_STEP_FREE:
-        if (savedVideo->showProfile == FALSE) {
+        if (!savedVideo->showProfile) {
             VsRecorder_FreeVideoInfo(&savedVideo->info, work);
         } else {
             VsRecorder_FreeProfile(&savedVideo->profile, work);
@@ -337,7 +337,7 @@ static BOOL VsRecorder_SavedVideoToggleProfile(VsRecorderWork *work) {
         break;
     case SAVED_VIDEO_TOGGLE_PROFILE_STEP_CREATE:
         VsRecorder_SetVBlankPaused(work, TRUE);
-        if (savedVideo->showProfile == FALSE) {
+        if (!savedVideo->showProfile) {
             VsRecorder_CreateProfile(&savedVideo->profile, work);
             VsRecorder_SetProfileDrawFlag(&savedVideo->profile, FALSE);
             VsRecorder_LoadScreen(work, 0x50, GF_BG_LYR_MAIN_3);
@@ -351,7 +351,7 @@ static BOOL VsRecorder_SavedVideoToggleProfile(VsRecorderWork *work) {
         break;
     case SAVED_VIDEO_TOGGLE_PROFILE_STEP_BLEND_IN:
         if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, FALSE, 1)) {
-            if (savedVideo->showProfile == FALSE) {
+            if (!savedVideo->showProfile) {
                 VsRecorder_SetProfileDrawFlag(&savedVideo->profile, TRUE);
             } else {
                 VsRecorder_SetVideoPartyIconsDrawFlag(&savedVideo->info, TRUE);
@@ -409,7 +409,7 @@ static BOOL VsRecorder_SavedVideoSavePrompt(VsRecorderWork *work) {
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
         VsRecorder_SetVBlankPaused(work, TRUE);
-        if (savedVideo->showProfile == FALSE) {
+        if (!savedVideo->showProfile) {
             VsRecorder_FreeVideoInfo(&savedVideo->info, work);
         } else {
             VsRecorder_FreeProfile(&savedVideo->profile, work);
@@ -447,7 +447,7 @@ static BOOL VsRecorder_SavedVideoSavePrompt(VsRecorderWork *work) {
         PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)savedVideo->fade, (u16)work->blendColor);
         break;
     case SAVED_VIDEO_SAVE_PROMPT_STEP_INPUT:
-        if (TouchscreenHitbox_TouchNewIsIn(&sVsRecorderSaveYesHitbox) != FALSE) {
+        if (TouchscreenHitbox_TouchNewIsIn(&sVsRecorderSaveYesHitbox)) {
             savedVideo->exitMode = 1;
             VsRecorder_OnTouchConfirm(work);
             if (Save_NumModifiedPCBoxesIsMany(work->saveData)) {
@@ -456,7 +456,7 @@ static BOOL VsRecorder_SavedVideoSavePrompt(VsRecorderWork *work) {
                 VsRecorder_SetMessageText(work, msg_0013_00299);
             }
             work->step++;
-        } else if (TouchscreenHitbox_TouchNewIsIn(&sVsRecorderSaveNoHitbox) != FALSE) {
+        } else if (TouchscreenHitbox_TouchNewIsIn(&sVsRecorderSaveNoHitbox)) {
             savedVideo->exitMode = 2;
             VsRecorder_OnTouchConfirm(work);
             work->step = SAVED_VIDEO_SAVE_PROMPT_STEP_HIDE_PROMPT;
@@ -541,7 +541,7 @@ static BOOL VsRecorder_SavedVideoPlay(VsRecorderWork *work) {
     case SAVED_VIDEO_PLAY_STEP_FREE:
         if (savedVideo->exitMode == 0) {
             VsRecorder_SetVBlankPaused(work, TRUE);
-            if (savedVideo->showProfile == FALSE) {
+            if (!savedVideo->showProfile) {
                 VsRecorder_FreeVideoInfo(&savedVideo->info, work);
             } else {
                 VsRecorder_FreeProfile(&savedVideo->profile, work);
@@ -573,7 +573,7 @@ static BOOL VsRecorder_SavedVideoExit(VsRecorderWork *work) {
         TouchHitboxController_Destroy(savedVideo->hitboxes);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
-        if (savedVideo->showProfile == FALSE) {
+        if (!savedVideo->showProfile) {
             VsRecorder_FreeVideoInfo(&savedVideo->info, work);
         } else {
             VsRecorder_FreeProfile(&savedVideo->profile, work);

@@ -315,8 +315,6 @@ typedef struct DressUpPlttUpload {
     u32 size;
 } DressUpPlttUpload;
 
-extern const u8 gDressUpKeyPressTouchStates[2];
-
 static DressUpSlot *DressUpGfx_AddSlotObject(DressUpSlotTemplate *template);
 static BOOL DressUpGfx_IsTouchHeldOnSlot(DressUpSlot *slot);
 static BOOL DressUpGfx_HitTestSlotPixels(DressUpSlot *slot, int *x, int *y, NNSG2dCharacterData *hitMap);

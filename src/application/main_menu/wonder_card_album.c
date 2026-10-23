@@ -103,7 +103,6 @@ extern u8 AddTextPrinterParameterizedWithColor(Window *window, u32 fontId, Strin
 
 extern void RTC_ConvertDayToDate(RTCDate *date, s32 day);
 
-extern const OverlayManagerTemplate gApp_MainMenu_SelectOption_MysteryGift;
 static u32 sWonderCardAlbumMenuInput;
 
 enum {

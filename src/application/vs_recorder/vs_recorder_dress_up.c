@@ -6,6 +6,7 @@
 
 #include "application/dress_up/accessory_portrait.h"
 #include "application/vs_recorder/vs_recorder_internal.h"
+#include "application/vs_recorder/vs_recorder_screens.h"
 #include "global_terminal/global_terminal_net.h"
 #include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0013.h"
@@ -143,8 +144,6 @@ enum VsRecorderDressUpViewChangePhotoStep {
     DRESS_UP_VIEW_CHANGE_PHOTO_STEP_BLEND_IN,
     DRESS_UP_VIEW_CHANGE_PHOTO_STEP_DONE,
 };
-
-extern const TouchscreenHitbox gVsRecorderSpeciesGroupHitboxes[]; // species groups (9)
 
 // substates of sending a Dress-Up photo (gVsRecorderDressUpSendSubStates)
 #define DRESS_UP_SEND_MAIN   3
@@ -479,7 +478,7 @@ static BOOL VsRecorder_DressUpSendUpload(VsRecorderWork *work) {
     VsRecorderDressUp *dressUp = work->screenWork;
     GlobalTerminalNetError *error;
 
-    if (VsRecorder_IsNetIdle(work) == FALSE) {
+    if (!VsRecorder_IsNetIdle(work)) {
         return FALSE;
     }
     switch (work->step) {
@@ -609,7 +608,7 @@ static BOOL VsRecorder_DressUpSendExit(VsRecorderWork *work) {
         break;
     case DRESS_UP_SEND_EXIT_STEP_FADE_OUT:
         VsRecorder_StepFade(&dressUp->fade, 1);
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 0) != FALSE) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 0)) {
             VsRecorder_SetVBlankPaused(work, TRUE);
             VsRecorder_FreeDressUpButtons(work);
             VsRecorder_SetVBlankPaused(work, FALSE);
@@ -632,8 +631,8 @@ static BOOL VsRecorder_DressUpSendExit(VsRecorderWork *work) {
         work->step++;
         break;
     default:
-        if (VsRecorder_IsFlipScreensDone(work) != FALSE) {
-            if (VsRecorder_StepFade(&dressUp->fade, 0) != FALSE) {
+        if (VsRecorder_IsFlipScreensDone(work)) {
+            if (VsRecorder_StepFade(&dressUp->fade, 0)) {
                 VsRecorder_SetVBlankPaused(work, TRUE);
                 if (dressUp->portrait != NULL) {
                     AccessoryPortrait_Destroy(dressUp->portrait);
@@ -1032,7 +1031,7 @@ static BOOL VsRecorder_DressUpViewClosePhoto(VsRecorderWork *work) {
 
     switch (work->step) {
     case DRESS_UP_VIEW_CLOSE_PHOTO_STEP_REMOVE_CAPTION:
-        if (dressUp->showProfile == FALSE) {
+        if (!dressUp->showProfile) {
             BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
             BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
             VsRecorder_RemovePhotoCaption(work);
@@ -1075,7 +1074,7 @@ static BOOL VsRecorder_DressUpViewToggleProfile(VsRecorderWork *work) {
 
     switch (work->step) {
     case DRESS_UP_VIEW_TOGGLE_PROFILE_STEP_REMOVE_CAPTION:
-        if (dressUp->showProfile == FALSE) {
+        if (!dressUp->showProfile) {
             VsRecorder_RemovePhotoCaption(work);
             BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
         } else {
@@ -1087,7 +1086,7 @@ static BOOL VsRecorder_DressUpViewToggleProfile(VsRecorderWork *work) {
         break;
     case DRESS_UP_VIEW_TOGGLE_PROFILE_STEP_BLEND_OUT:
         if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 1)) {
-            if (dressUp->showProfile == FALSE) {
+            if (!dressUp->showProfile) {
                 if (dressUp->portrait != NULL) {
                     AccessoryPortrait_Destroy(dressUp->portrait);
                     VsRecorder_ResetBg2(work);
@@ -1103,7 +1102,7 @@ static BOOL VsRecorder_DressUpViewToggleProfile(VsRecorderWork *work) {
         }
         break;
     case DRESS_UP_VIEW_TOGGLE_PROFILE_STEP_CREATE:
-        if (dressUp->showProfile == FALSE) {
+        if (!dressUp->showProfile) {
             VsRecorder_SetVBlankPaused(work, TRUE);
             GlobalTerminalNet_CopyRequestHeader(dressUp->downloads[dressUp->photoIndex], dressUp->profile.card);
             VsRecorder_CreateProfile(&dressUp->profile, work);
@@ -1124,14 +1123,14 @@ static BOOL VsRecorder_DressUpViewToggleProfile(VsRecorderWork *work) {
         work->step++;
         break;
     case DRESS_UP_VIEW_TOGGLE_PROFILE_STEP_LOAD_PALETTE:
-        if (dressUp->showProfile != FALSE) {
+        if (dressUp->showProfile) {
             PaletteData_LoadPaletteSlotFromHardware(work->plttData, PLTTBUF_MAIN_BG, 0, 0x200);
         }
         work->step++;
         break;
     case DRESS_UP_VIEW_TOGGLE_PROFILE_STEP_BLEND_IN:
         if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, 1)) {
-            if (dressUp->showProfile == FALSE) {
+            if (!dressUp->showProfile) {
                 VsRecorder_SetProfileDrawFlag(&dressUp->profile, TRUE);
                 GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             } else {
@@ -1158,7 +1157,7 @@ static BOOL VsRecorder_DressUpViewChangePhoto(VsRecorderWork *work) {
 
     switch (work->step) {
     case DRESS_UP_VIEW_CHANGE_PHOTO_STEP_REMOVE_CAPTION:
-        if (dressUp->showProfile == FALSE) {
+        if (!dressUp->showProfile) {
             VsRecorder_RemovePhotoCaption(work);
             BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
         } else {
@@ -1170,7 +1169,7 @@ static BOOL VsRecorder_DressUpViewChangePhoto(VsRecorderWork *work) {
         break;
     case DRESS_UP_VIEW_CHANGE_PHOTO_STEP_BLEND_OUT:
         if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 1)) {
-            if (dressUp->showProfile == FALSE) {
+            if (!dressUp->showProfile) {
                 if (dressUp->portrait != NULL) {
                     AccessoryPortrait_Destroy(dressUp->portrait);
                     VsRecorder_ResetBg2(work);
@@ -1187,7 +1186,7 @@ static BOOL VsRecorder_DressUpViewChangePhoto(VsRecorderWork *work) {
         break;
     case DRESS_UP_VIEW_CHANGE_PHOTO_STEP_CREATE_PHOTO:
         VsRecorder_SetVBlankPaused(work, TRUE);
-        if (dressUp->showProfile == FALSE) {
+        if (!dressUp->showProfile) {
             GlobalTerminalNet_UnpackDressUpPhoto(&dressUp->downloads[dressUp->photoIndex]->form, (GlobalTerminalNetDressUpRecord *)dressUp->photo);
             dressUp->portrait = AccessoryPortrait_Create(&dressUp->portraitConfig, dressUp->photo);
             AccessoryPortrait_SetMonVisible(dressUp->portrait, FALSE);
@@ -1208,14 +1207,14 @@ static BOOL VsRecorder_DressUpViewChangePhoto(VsRecorderWork *work) {
         work->step++;
         break;
     case DRESS_UP_VIEW_CHANGE_PHOTO_STEP_LOAD_PALETTE:
-        if (dressUp->showProfile == FALSE) {
+        if (!dressUp->showProfile) {
             PaletteData_LoadPaletteSlotFromHardware(work->plttData, PLTTBUF_MAIN_BG, 0, 0x200);
         }
         work->step++;
         break;
     case DRESS_UP_VIEW_CHANGE_PHOTO_STEP_BLEND_IN:
         if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, 1)) {
-            if (dressUp->showProfile == FALSE) {
+            if (!dressUp->showProfile) {
                 VsRecorder_PrintPhotoCaption(work, dressUp->photoIndex);
                 AccessoryPortrait_SetMonVisible(dressUp->portrait, TRUE);
                 GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
@@ -1284,7 +1283,7 @@ static void VsRecorder_DisablePhotoWindow(void) {
 // send screen: EXIT on the left and SEND on the right; view screens: SEND hidden, EXIT centred
 static void VsRecorder_SetDressUpSendButtonHidden(VsRecorderWork *work, BOOL hidden) {
     VsRecorderDressUp *dressUp = work->screenWork;
-    if (hidden == FALSE) {
+    if (!hidden) {
         ManagedSprite_SetDrawFlag(dressUp->sendButton.sprite, TRUE);
         TextOBJ_SetSpritesDrawFlag(dressUp->sendButton.text, TRUE);
         ManagedSprite_SetPositionXY(dressUp->exitButton.sprite, 32, 232);

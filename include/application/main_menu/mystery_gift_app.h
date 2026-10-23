@@ -12,6 +12,8 @@ typedef struct MysteryGiftAppData MysteryGiftAppData;
 typedef struct MysteryGiftAnimData MysteryGiftAnimData;
 typedef struct MysteryGiftParticle MysteryGiftParticle;
 
+extern const OverlayManagerTemplate gApp_MainMenu_SelectOption_MysteryGift;
+
 typedef int (*MysteryGiftMenuFunc)(OverlayManager *manager);
 
 typedef struct MysteryGiftMenuItem {

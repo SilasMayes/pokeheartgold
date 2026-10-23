@@ -8,11 +8,12 @@
 
 typedef int (*PokewalkerAppStateFunc)(PokewalkerApp *app);
 
-// Mode table: {enter, update, exit} for each mode.
-typedef struct PokewalkerAppModeEntry {
-    PokewalkerAppStateFunc func;
-    PokewalkerAppStateFunc other[2];
-} PokewalkerAppModeEntry;
+// The functions of one mode of the app (PokewalkerApp_Main runs them).
+typedef struct PokewalkerAppModeFuncs {
+    PokewalkerAppStateFunc enter;
+    PokewalkerAppStateFunc update;
+    PokewalkerAppStateFunc exit;
+} PokewalkerAppModeFuncs;
 
 // Pixel positions of one of Spinda's four spots, terminated by x = 0xFF.
 typedef struct PokewalkerSpotPixel {
@@ -20,9 +21,7 @@ typedef struct PokewalkerSpotPixel {
     u8 y;
 } PokewalkerSpotPixel;
 
-extern const PokewalkerAppModeEntry gPokewalkerAppModeEnter[];  // enter
-extern const PokewalkerAppModeEntry gPokewalkerAppModeUpdate[]; // update
-extern const PokewalkerAppModeEntry gPokewalkerAppModeExit[];   // exit
+extern const PokewalkerAppModeFuncs gPokewalkerAppModes[];
 extern const GraphicsModes gPokewalkerAppGraphicsModes;
 extern const GraphicsBanks gPokewalkerAppGraphicsBanks;
 extern const BgTemplate gPokewalkerAppBgTemplate_Main1;

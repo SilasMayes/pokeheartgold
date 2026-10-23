@@ -261,6 +261,28 @@ enum PCBoxItemMessage {
 typedef struct PCBoxWork PCBoxWork;
 
 // Run each vblank by PCBox_VBlankCallback until it returns FALSE.
+// Cells of PCBoxView.panels (BgCellManager)
+enum PCBoxPanel {
+    PC_BOX_PANEL_BOX_TRAY,
+    PC_BOX_PANEL_PARTY,
+    PC_BOX_PANEL_MARKING_MENU,
+    PC_BOX_PANEL_MENU_ROW_0, // the five rows of the action menu and the box menu
+    PC_BOX_PANEL_MENU_ROW_1,
+    PC_BOX_PANEL_MENU_ROW_2,
+    PC_BOX_PANEL_MENU_ROW_3,
+    PC_BOX_PANEL_MENU_ROW_4,
+    PC_BOX_PANEL_PARTY_BUTTON,
+    PC_BOX_PANEL_TRAY_TAB,
+    PC_BOX_PANEL_RETURN_BUTTON,
+    PC_BOX_PANEL_MENU_EXIT_BUTTON,
+    PC_BOX_PANEL_TITLE,
+    PC_BOX_PANEL_WALLPAPER_LIST,
+    PC_BOX_PANEL_CHANGE_BOX_BUTTON,
+    PC_BOX_PANEL_SUMMARY_BUTTON,
+    PC_BOX_PANEL_INFO, // moves or held item
+    PC_BOX_PANEL_COUNT,
+};
+
 typedef BOOL (*PCBoxUpdateFunc)(PCBoxWork *work);
 
 // Info about the mon in a slot, shown on the top screen (PCBox_CreateMonInfo).

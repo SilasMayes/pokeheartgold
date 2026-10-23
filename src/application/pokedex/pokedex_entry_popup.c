@@ -290,7 +290,7 @@ static void PokedexEntryPopup_Task(SysTask *task, void *data) {
         popup->state = POKEDEX_ENTRY_POPUP_STATE_WAIT_CRY;
         break;
     case POKEDEX_ENTRY_POPUP_STATE_WAIT_CRY:
-        if (IsCryFinished() == FALSE) {
+        if (!IsCryFinished()) {
             popup->done = 1;
             popup->state = POKEDEX_ENTRY_POPUP_STATE_DONE;
         }
@@ -341,7 +341,7 @@ static void PokedexEntryPopup_StartFadeIn(PokedexEntryPopup *popup) {
 }
 
 static BOOL PokedexEntryPopup_IsFadeDone(PokedexEntryPopup *popup) {
-    if (PaletteData_GetSelectedBuffersBitmask(popup->paletteData) == 0 && Pokepic_ResumePaletteFade(popup->pokepic) == FALSE) {
+    if (PaletteData_GetSelectedBuffersBitmask(popup->paletteData) == 0 && !Pokepic_ResumePaletteFade(popup->pokepic)) {
         return TRUE;
     }
     return FALSE;

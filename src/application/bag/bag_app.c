@@ -1423,7 +1423,7 @@ static int BagApp_State_EndMoveItem(BagApp *app) {
 static void BagApp_UpdateMoveMarker(BagApp *app) {
     BagView *bagView = app->bagView;
     BagViewPocket *pocket = &bagView->pockets[bagView->pocketIndex];
-    if (app->isMovingItem != FALSE) {
+    if (app->isMovingItem) {
         ManagedSprite_SetPositionXY(app->sprites[0], 177, (pocket->position - 1) * 16 + 16);
     }
 }
@@ -1754,7 +1754,7 @@ static BOOL BagApp_TryUseItemInPlace(BagApp *app, u16 itemId) {
 }
 
 static String *BagApp_TryUseRepel(BagApp *app, u16 itemId) {
-    if (RoamerSave_RepelNotInUse(BagApp_GetSaveRoamers(app)) == FALSE) {
+    if (!RoamerSave_RepelNotInUse(BagApp_GetSaveRoamers(app))) {
         app->quantity = 0;
         return NewString_ReadMsgData(app->msgData, msg_0010_00063);
     }
@@ -2841,7 +2841,7 @@ static int BagApp_State_ButtonFeedback(BagApp *app) {
     BagAppButtonFeedback *feedback = &app->buttonFeedback;
 
     if (feedback->isAnim == TRUE) {
-        if (ManagedSprite_IsAnimated(app->sprites[feedback->sprite]) == FALSE) {
+        if (!ManagedSprite_IsAnimated(app->sprites[feedback->sprite])) {
             return feedback->nextState;
         }
     } else {

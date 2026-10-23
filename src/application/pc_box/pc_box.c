@@ -79,7 +79,7 @@ BOOL PCBox_Init(OverlayManager *manager, int *state) {
 BOOL PCBox_Main(OverlayManager *manager, int *state) {
     PCBoxWork *work = OverlayManager_GetData(manager);
 
-    if (PCBox_RunStateMachine(work, state) == FALSE) {
+    if (!PCBox_RunStateMachine(work, state)) {
         return TRUE;
     }
     return FALSE;
@@ -97,7 +97,7 @@ BOOL PCBox_Exit(OverlayManager *manager, int *state) {
 void PCBox_VBlankCallback(SysTask *task, void *data) {
     PCBoxWork *work = data;
 
-    if (work->view->updateFunc != NULL && work->view->updateFunc(work) == FALSE) {
+    if (work->view->updateFunc != NULL && !work->view->updateFunc(work)) {
         work->view->updateFunc = NULL;
     }
     PCBox_UpdateDetailPanel(work);
@@ -113,10 +113,10 @@ void PCBox_VBlankCallback(SysTask *task, void *data) {
 
 static void PCBox_UpdateDetailPanel(PCBoxWork *work) {
     if (work->args->mode != PC_BOX_MODE_MOVE_ITEMS) {
-        BgCellManager_UpdateCellMove(work->view->panels, 0x10);
+        BgCellManager_UpdateCellMove(work->view->panels, PC_BOX_PANEL_INFO);
         return;
     }
-    BgCellManager_UpdateCellMove(work->view->panels, 0x10);
+    BgCellManager_UpdateCellMove(work->view->panels, PC_BOX_PANEL_INFO);
     PCBox_UpdateInfoItemIconPosition(work->view);
 }
 
@@ -275,33 +275,33 @@ void PCBox_ShowYesNoPrompt(PCBoxWork *work, u32 cursorPos) {
 
 u32 PCBox_AnimatePaletteFlash(PCBoxWork *work) {
     PCBoxView *view = work->view;
-    PCBoxPaletteFlash *f = &view->paletteFlash;
-    switch (f->state) {
+    PCBoxPaletteFlash *flash = &view->paletteFlash;
+    switch (flash->state) {
     case 0:
-        if (f->isBg == 0) {
-            ManagedSprite_SetPaletteOverride(view->sprites[f->index], f->palA);
+        if (flash->isBg == 0) {
+            ManagedSprite_SetPaletteOverride(view->sprites[flash->index], flash->palA);
         } else {
-            BgTilemapRectChangePalette(view->bgConfig, f->index, f->x, f->y, f->w, f->h, f->palA);
-            ScheduleBgTilemapBufferTransfer(work->view->bgConfig, f->index);
+            BgTilemapRectChangePalette(view->bgConfig, flash->index, flash->x, flash->y, flash->w, flash->h, flash->palA);
+            ScheduleBgTilemapBufferTransfer(work->view->bgConfig, flash->index);
         }
-        f->state++;
+        flash->state++;
         break;
     case 1:
-        f->timer++;
-        if (f->timer == 4) {
-            if (f->isBg == 0) {
-                ManagedSprite_SetPaletteOverride(work->view->sprites[f->index], f->palB);
+        flash->timer++;
+        if (flash->timer == 4) {
+            if (flash->isBg == 0) {
+                ManagedSprite_SetPaletteOverride(work->view->sprites[flash->index], flash->palB);
             } else {
-                BgTilemapRectChangePalette(work->view->bgConfig, f->index, f->x, f->y, f->w, f->h, f->palB);
-                ScheduleBgTilemapBufferTransfer(work->view->bgConfig, f->index);
+                BgTilemapRectChangePalette(work->view->bgConfig, flash->index, flash->x, flash->y, flash->w, flash->h, flash->palB);
+                ScheduleBgTilemapBufferTransfer(work->view->bgConfig, flash->index);
             }
-            f->timer = 0;
-            f->state++;
+            flash->timer = 0;
+            flash->state++;
         }
         break;
     case 2:
-        f->timer++;
-        if (f->timer == 2) {
+        flash->timer++;
+        if (flash->timer == 2) {
             return 0;
         }
         break;
@@ -445,39 +445,39 @@ static void PCBox_MovePartyMonToOtherBox(PCBoxWork *work, PCBoxMoveEntry *e) {
 }
 
 void PCBox_ApplyMonMove(PCBoxWork *work) {
-    PCBoxMoveWork *w = work->view->temp;
+    PCBoxMoveWork *moveWork = work->view->temp;
     u32 count;
-    if (w->from == 0xFF) {
+    if (moveWork->from == 0xFF) {
         return;
     }
     count = Party_GetCount(work->party);
-    if ((w->to & 0x80) != 0) {
-        PCBox_GetTargetBoxId(work, w->to);
-        if (w->from < PC_BOX_SLOT_PARTY_START) {
-            PCBox_MoveBoxMonToOtherBox(work, &w->entries[0]);
+    if ((moveWork->to & 0x80) != 0) {
+        PCBox_GetTargetBoxId(work, moveWork->to);
+        if (moveWork->from < PC_BOX_SLOT_PARTY_START) {
+            PCBox_MoveBoxMonToOtherBox(work, &moveWork->entries[0]);
         } else {
-            PCBox_MovePartyMonToOtherBox(work, &w->entries[w->from - PC_BOX_SLOT_PARTY_START]);
+            PCBox_MovePartyMonToOtherBox(work, &moveWork->entries[moveWork->from - PC_BOX_SLOT_PARTY_START]);
         }
-    } else if (w->from < PC_BOX_SLOT_PARTY_START) {
-        if (w->to < PC_BOX_SLOT_PARTY_START) {
-            PCStorage_SwapMonsInBoxByIndexPair(work->storage, work->activeBox, w->from, w->to);
+    } else if (moveWork->from < PC_BOX_SLOT_PARTY_START) {
+        if (moveWork->to < PC_BOX_SLOT_PARTY_START) {
+            PCStorage_SwapMonsInBoxByIndexPair(work->storage, work->activeBox, moveWork->from, moveWork->to);
             PCBox_DrawBoxThumbnail(work, work->activeBox);
             PCBox_RefreshTrayBoxThumbnail(work, work->activeBox);
-        } else if (w->to - PC_BOX_SLOT_PARTY_START < count) {
-            PCBox_SwapBoxAndPartyMon(work, &w->entries[0], &w->entries[1]);
+        } else if (moveWork->to - PC_BOX_SLOT_PARTY_START < count) {
+            PCBox_SwapBoxAndPartyMon(work, &moveWork->entries[0], &moveWork->entries[1]);
         } else {
-            PCBox_MoveBoxMonToParty(work, &w->entries[0]);
+            PCBox_MoveBoxMonToParty(work, &moveWork->entries[0]);
         }
-    } else if (w->to < PC_BOX_SLOT_PARTY_START) {
-        if (PCBox_GetSlotMonData(work, w->to, MON_DATA_SPECIES_EXISTS, NULL) != 0) {
-            PCBox_SwapBoxAndPartyMon(work, &w->entries[1], &w->entries[0]);
+    } else if (moveWork->to < PC_BOX_SLOT_PARTY_START) {
+        if (PCBox_GetSlotMonData(work, moveWork->to, MON_DATA_SPECIES_EXISTS, NULL) != 0) {
+            PCBox_SwapBoxAndPartyMon(work, &moveWork->entries[1], &moveWork->entries[0]);
         } else {
-            PCBox_MovePartyMonToBox(work, &w->entries[w->from - PC_BOX_SLOT_PARTY_START]);
+            PCBox_MovePartyMonToBox(work, &moveWork->entries[moveWork->from - PC_BOX_SLOT_PARTY_START]);
         }
-    } else if (w->to - PC_BOX_SLOT_PARTY_START < count) {
-        PCBox_SwapPartyMons(work, &w->entries[0]);
+    } else if (moveWork->to - PC_BOX_SLOT_PARTY_START < count) {
+        PCBox_SwapPartyMons(work, &moveWork->entries[0]);
     } else {
-        PCBox_MovePartyMonToEnd(work, &w->entries[w->from - PC_BOX_SLOT_PARTY_START]);
+        PCBox_MovePartyMonToEnd(work, &moveWork->entries[moveWork->from - PC_BOX_SLOT_PARTY_START]);
     }
 }
 
@@ -524,7 +524,7 @@ u32 PCBox_UpdateArceusGiratinaForm(BoxPokemon *boxmon) {
 }
 
 void PCBox_RevertShayminFormOnMove(PCBoxWork *work, u32 a, u32 b) {
-    PCBoxView *q;
+    PCBoxView *view;
     if (a < PC_BOX_SLOT_PARTY_START && b < PC_BOX_SLOT_PARTY_START) {
         return;
     }
@@ -541,8 +541,8 @@ void PCBox_RevertShayminFormOnMove(PCBoxWork *work, u32 a, u32 b) {
         return;
     }
     BoxMon_UpdateShayminForm(PCBox_GetSlotBoxMon(work, work->activeBox, a), 0);
-    q = work->view;
-    PCBox_RefreshSlotIcon(work, work->activeBox, a, q->slotIcons[a]);
+    view = work->view;
+    PCBox_RefreshSlotIcon(work, work->activeBox, a, view->slotIcons[a]);
     if (work->selectedSlot == a) {
         PCBox_ShowSlotMonInfo(work, a);
     }
@@ -553,18 +553,18 @@ u32 PCBox_AnimateMonMove(PCBoxWork *work) {
     u32 j;
     u32 i;
     u32 s;
-    PCBoxMoveWork *w = work->view->temp;
-    if (w->timer == 8) {
+    PCBoxMoveWork *moveWork = work->view->temp;
+    if (moveWork->timer == 8) {
         for (i = 0; i < 7; i++) {
-            if (w->entries[i].active != 0) {
-                s = work->view->slotIcons[w->entries[i].from];
-                if ((w->entries[i].to & 0x80) == 0) {
-                    PCBox_GetSlotPosition(w->entries[i].to, &pos[1], &pos[0], work->partyLayout);
+            if (moveWork->entries[i].active != 0) {
+                s = work->view->slotIcons[moveWork->entries[i].from];
+                if ((moveWork->entries[i].to & 0x80) == 0) {
+                    PCBox_GetSlotPosition(moveWork->entries[i].to, &pos[1], &pos[0], work->partyLayout);
                 } else {
-                    if (w->entries[i].from >= PC_BOX_SLOT_PARTY_START) {
+                    if (moveWork->entries[i].from >= PC_BOX_SLOT_PARTY_START) {
                         PCBox_GetSlotPosition(0x23, &pos[1], &pos[0], work->partyLayout);
                     } else {
-                        PCBox_GetSlotPosition(w->entries[i].from, &pos[1], &pos[0], work->partyLayout);
+                        PCBox_GetSlotPosition(moveWork->entries[i].from, &pos[1], &pos[0], work->partyLayout);
                     }
                     PCBox_SetSpriteVisible(work->view, s, 0);
                 }
@@ -573,14 +573,14 @@ u32 PCBox_AnimateMonMove(PCBoxWork *work) {
         }
         return 0;
     }
-    w->timer++;
+    moveWork->timer++;
     for (j = 0; j < 7; j++) {
-        if (w->entries[j].active != 0) {
-            s = work->view->slotIcons[w->entries[j].from];
-            pos[1] = w->entries[j].px + (w->entries[j].dx * w->timer >> 16) * w->entries[j].sx;
-            pos[0] = w->entries[j].py + (w->entries[j].dy * w->timer >> 16) * w->entries[j].sy;
+        if (moveWork->entries[j].active != 0) {
+            s = work->view->slotIcons[moveWork->entries[j].from];
+            pos[1] = moveWork->entries[j].px + (moveWork->entries[j].dx * moveWork->timer >> 16) * moveWork->entries[j].sx;
+            pos[0] = moveWork->entries[j].py + (moveWork->entries[j].dy * moveWork->timer >> 16) * moveWork->entries[j].sy;
             ManagedSprite_SetPositionXY(work->view->sprites[s], pos[1], pos[0]);
-            PCBox_SetIconLayer(work->view, w->entries[j].from, 0);
+            PCBox_SetIconLayer(work->view, moveWork->entries[j].from, 0);
         }
     }
     return 1;
@@ -590,13 +590,13 @@ u32 PCBox_AnimateSelectedSlotMoveEntry(PCBoxWork *work) {
     s16 pos[2];
     u32 i;
     u32 s;
-    PCBoxMoveWork *w = work->view->temp;
-    if (w->timer == 8) {
+    PCBoxMoveWork *moveWork = work->view->temp;
+    if (moveWork->timer == 8) {
         for (i = 0; i < 7; i++) {
-            if (w->entries[i].active != 0) {
-                s = work->view->slotIcons[w->entries[i].from];
-                PCBox_GetSlotPosition(w->entries[i].to, &pos[1], &pos[0], work->partyLayout);
-                if (work->selectedSlot != w->entries[i].to) {
+            if (moveWork->entries[i].active != 0) {
+                s = work->view->slotIcons[moveWork->entries[i].from];
+                PCBox_GetSlotPosition(moveWork->entries[i].to, &pos[1], &pos[0], work->partyLayout);
+                if (work->selectedSlot != moveWork->entries[i].to) {
                     pos[0] += 0x90;
                 }
                 ManagedSprite_SetPositionXY(work->view->sprites[s], pos[1], pos[0]);
@@ -604,14 +604,14 @@ u32 PCBox_AnimateSelectedSlotMoveEntry(PCBoxWork *work) {
         }
         return 0;
     }
-    w->timer++;
+    moveWork->timer++;
     for (i = 0; i < 7; i++) {
-        if (w->entries[i].active != 0 && work->selectedSlot == w->entries[i].to) {
-            s = work->view->slotIcons[w->entries[i].from];
-            pos[1] = w->entries[i].px + (w->entries[i].dx * w->timer >> 16) * w->entries[i].sx;
-            pos[0] = w->entries[i].py + (w->entries[i].dy * w->timer >> 16) * w->entries[i].sy;
+        if (moveWork->entries[i].active != 0 && work->selectedSlot == moveWork->entries[i].to) {
+            s = work->view->slotIcons[moveWork->entries[i].from];
+            pos[1] = moveWork->entries[i].px + (moveWork->entries[i].dx * moveWork->timer >> 16) * moveWork->entries[i].sx;
+            pos[0] = moveWork->entries[i].py + (moveWork->entries[i].dy * moveWork->timer >> 16) * moveWork->entries[i].sy;
             ManagedSprite_SetPositionXY(work->view->sprites[s], pos[1], pos[0]);
-            PCBox_SetIconLayer(work->view, w->entries[i].from, 0);
+            PCBox_SetIconLayer(work->view, moveWork->entries[i].from, 0);
             break;
         }
     }
@@ -623,25 +623,25 @@ u32 PCBox_AnimateMoveEntries(PCBoxWork *work) {
     u32 j;
     u32 i;
     u32 s;
-    PCBoxMoveWork *w = work->view->temp;
-    if (w->timer == 8) {
+    PCBoxMoveWork *moveWork = work->view->temp;
+    if (moveWork->timer == 8) {
         for (i = 0; i < 7; i++) {
-            if (w->entries[i].active != 0) {
-                s = work->view->slotIcons[w->entries[i].from];
-                PCBox_GetSlotPosition(w->entries[i].to, &pos[1], &pos[0], work->partyLayout);
+            if (moveWork->entries[i].active != 0) {
+                s = work->view->slotIcons[moveWork->entries[i].from];
+                PCBox_GetSlotPosition(moveWork->entries[i].to, &pos[1], &pos[0], work->partyLayout);
                 ManagedSprite_SetPositionXY(work->view->sprites[s], pos[1], pos[0]);
             }
         }
         return 0;
     }
-    w->timer++;
+    moveWork->timer++;
     for (j = 0; j < 7; j++) {
-        if (w->entries[j].active != 0) {
-            s = work->view->slotIcons[w->entries[j].from];
-            pos[1] = w->entries[j].px + (w->entries[j].dx * w->timer >> 16) * w->entries[j].sx;
-            pos[0] = w->entries[j].py + (w->entries[j].dy * w->timer >> 16) * w->entries[j].sy;
+        if (moveWork->entries[j].active != 0) {
+            s = work->view->slotIcons[moveWork->entries[j].from];
+            pos[1] = moveWork->entries[j].px + (moveWork->entries[j].dx * moveWork->timer >> 16) * moveWork->entries[j].sx;
+            pos[0] = moveWork->entries[j].py + (moveWork->entries[j].dy * moveWork->timer >> 16) * moveWork->entries[j].sy;
             ManagedSprite_SetPositionXY(work->view->sprites[s], pos[1], pos[0]);
-            PCBox_SetMovingIconPriority(work->view, w->entries[j].from, w->entries[j].to);
+            PCBox_SetMovingIconPriority(work->view, moveWork->entries[j].from, moveWork->entries[j].to);
         }
     }
     return 1;
@@ -789,15 +789,15 @@ static void PCBox_SetupMoveEntryToSprite(PCBoxWork *work, PCBoxMoveEntry *e) {
 }
 
 static void PCBox_SetupMonSwapEntries(PCBoxWork *work, u32 a, u32 b) {
-    PCBoxMoveWork *w = work->view->temp;
-    w->entries[0].from = a;
-    w->entries[0].to = b;
-    w->entries[0].active = 1;
-    PCBox_SetupMoveEntryToSlot(work, &w->entries[0]);
-    w->entries[1].from = b;
-    w->entries[1].to = a;
-    w->entries[1].active = 1;
-    PCBox_SetupMoveEntryToSlot(work, &w->entries[1]);
+    PCBoxMoveWork *moveWork = work->view->temp;
+    moveWork->entries[0].from = a;
+    moveWork->entries[0].to = b;
+    moveWork->entries[0].active = 1;
+    PCBox_SetupMoveEntryToSlot(work, &moveWork->entries[0]);
+    moveWork->entries[1].from = b;
+    moveWork->entries[1].to = a;
+    moveWork->entries[1].active = 1;
+    PCBox_SetupMoveEntryToSlot(work, &moveWork->entries[1]);
 }
 
 void PCBox_SetupMonMove(PCBoxWork *work, u32 a, u32 b) {
@@ -947,57 +947,57 @@ void PCBox_SetupDepositMoveEntries(PCBoxWork *work, u32 a, u32 b) {
 
 void PCBox_SetupMonMoveToPartyEnd(PCBoxWork *work, u32 a, u32 b) {
     PCBoxView *view = work->view;
-    PCBoxMoveWork *w = view->temp;
+    PCBoxMoveWork *moveWork = view->temp;
     u32 i;
     view->showOutlineAfterMove = 1;
     for (i = 0; i < 7; i++) {
-        w->entries[i].from = 0;
-        w->entries[i].to = 0;
-        w->entries[i].active = 0;
+        moveWork->entries[i].from = 0;
+        moveWork->entries[i].to = 0;
+        moveWork->entries[i].active = 0;
     }
     if (b == 0xFF || PCBox_GetSlotMonData(work, b, MON_DATA_SPECIES_EXISTS, NULL) != 0) {
-        w->from = 0xFF;
-        w->to = 0xFF;
-        w->entries[0].from = a;
-        w->entries[0].to = a;
-        w->entries[0].active = 1;
-        PCBox_SetupMoveEntryToSlot(work, &w->entries[0]);
+        moveWork->from = 0xFF;
+        moveWork->to = 0xFF;
+        moveWork->entries[0].from = a;
+        moveWork->entries[0].to = a;
+        moveWork->entries[0].active = 1;
+        PCBox_SetupMoveEntryToSlot(work, &moveWork->entries[0]);
     } else {
-        w->from = a;
-        w->to = b;
+        moveWork->from = a;
+        moveWork->to = b;
         PCBox_SetupMonSwapEntries(work, a, Party_GetCount(work->party) + PC_BOX_SLOT_PARTY_START);
     }
 }
 
 u32 PCBox_GetMoveEntryTarget(PCBoxWork *work, u32 v) {
-    PCBoxMoveWork *w = work->view->temp;
+    PCBoxMoveWork *moveWork = work->view->temp;
     u32 i;
     for (i = 0; i < 7; i++) {
-        if (w->entries[i].active == 1 && w->entries[i].from == v) {
-            return w->entries[i].to;
+        if (moveWork->entries[i].active == 1 && moveWork->entries[i].from == v) {
+            return moveWork->entries[i].to;
         }
     }
     return 0xFF;
 }
 
 void PCBox_SetupPartyShiftAfterRelease(PCBoxWork *work, u32 a) {
-    PCBoxMoveWork *w = work->view->temp;
+    PCBoxMoveWork *moveWork = work->view->temp;
     u32 i;
     u32 slot = a - PC_BOX_SLOT_PARTY_START;
     for (i = 0; i < PARTY_SIZE; i++) {
-        w->entries[i].from = i + PC_BOX_SLOT_PARTY_START;
-        w->entries[i].to = i + PC_BOX_SLOT_PARTY_START;
-        w->entries[i].active = 0;
+        moveWork->entries[i].from = i + PC_BOX_SLOT_PARTY_START;
+        moveWork->entries[i].to = i + PC_BOX_SLOT_PARTY_START;
+        moveWork->entries[i].active = 0;
     }
-    w->entries[i].active = 0;
+    moveWork->entries[i].active = 0;
     for (i = slot + 1; i < PARTY_SIZE; i++) {
-        w->entries[i].to = i + 29;
-        w->entries[i].active = 1;
-        PCBox_SetupMoveEntryToSlot(work, &w->entries[i]);
+        moveWork->entries[i].to = i + 29;
+        moveWork->entries[i].active = 1;
+        PCBox_SetupMoveEntryToSlot(work, &moveWork->entries[i]);
     }
-    w->entries[slot].to = 0x23;
-    w->entries[slot].active = 1;
-    PCBox_SetupMoveEntryToSlot(work, &w->entries[slot]);
+    moveWork->entries[slot].to = 0x23;
+    moveWork->entries[slot].active = 1;
+    PCBox_SetupMoveEntryToSlot(work, &moveWork->entries[slot]);
 }
 
 void PCBox_ApplyMoveEntryIcons(PCBoxWork *work, PCBoxMoveEntry *e) {
@@ -1034,22 +1034,22 @@ static s32 PCBox_GetReleaseCheckMoveIndex(u16 v) {
 }
 
 void PCBox_StartReleaseMoveCheck(PCBoxWork *work) {
-    PCBoxView *q;
-    PCBoxReleaseWork *r;
+    PCBoxView *view;
+    PCBoxReleaseWork *releaseWork;
     BoxPokemon *boxmon;
     u32 i;
     s32 idx;
     work->view->releaseWork = Heap_AllocAtEnd(HEAP_ID_10, sizeof(PCBoxReleaseWork));
-    q = work->view;
-    r = q->releaseWork;
-    r->sprite = q->sprites[q->slotIcons[work->selectedSlot]];
-    r->scanIndex = 0;
-    r->moveFlags = 0;
+    view = work->view;
+    releaseWork = view->releaseWork;
+    releaseWork->sprite = view->sprites[view->slotIcons[work->selectedSlot]];
+    releaseWork->scanIndex = 0;
+    releaseWork->moveFlags = 0;
     boxmon = PCBox_GetSlotBoxMon(work, work->activeBox, work->selectedSlot);
     for (i = 0; i < MAX_MON_MOVES; i++) {
         idx = PCBox_GetReleaseCheckMoveIndex((u16)GetBoxMonData(boxmon, MON_DATA_MOVE1 + i, NULL));
         if (idx != -1) {
-            r->moveFlags |= 1 << idx;
+            releaseWork->moveFlags |= 1 << idx;
             return;
         }
     }
@@ -1060,7 +1060,7 @@ void PCBox_FreeReleaseMoveCheck(PCBoxWork *work) {
 }
 
 u32 PCBox_RunReleaseMoveCheck(PCBoxWork *work) {
-    PCBoxReleaseWork *r;
+    PCBoxReleaseWork *releaseWork;
     u16 idx;
     u32 count;
     BoxPokemon *boxmon;
@@ -1069,8 +1069,8 @@ u32 PCBox_RunReleaseMoveCheck(PCBoxWork *work) {
     u32 boxId;
     u32 slot;
 
-    r = work->view->releaseWork;
-    idx = r->scanIndex;
+    releaseWork = work->view->releaseWork;
+    idx = releaseWork->scanIndex;
     if (idx == NUM_BOXES * MONS_PER_BOX + PARTY_SIZE) {
         return 0;
     }
@@ -1096,12 +1096,12 @@ u32 PCBox_RunReleaseMoveCheck(PCBoxWork *work) {
             for (i = 0; i < MAX_MON_MOVES; i++) {
                 bit = PCBox_GetReleaseCheckMoveIndex((u16)GetBoxMonData(boxmon, MON_DATA_MOVE1 + i, NULL));
                 if (bit != -1) {
-                    r->moveFlags &= 0xFF ^ (1 << bit);
+                    releaseWork->moveFlags &= 0xFF ^ (1 << bit);
                 }
             }
         }
-        r->scanIndex++;
-        idx = r->scanIndex;
+        releaseWork->scanIndex++;
+        idx = releaseWork->scanIndex;
         if (idx == NUM_BOXES * MONS_PER_BOX + PARTY_SIZE) {
             return 0;
         }
@@ -1151,7 +1151,7 @@ static void PCBox_DrawMonInfo(PCBoxWork *work, PCBoxMonInfo *monInfo) {
     u32 i;
 
     for (i = 0; i < 4; i++) {
-        BgCellManager_PutWindowTiles(work->view->panels, 0x10, &work->view->windows[base + i]);
+        BgCellManager_PutWindowTiles(work->view->panels, PC_BOX_PANEL_INFO, &work->view->windows[base + i]);
     }
     PCBox_HideMovesPanel(work->view->panels);
     PCBox_ShowMonPic(work, monInfo, 2);
@@ -1167,8 +1167,8 @@ static void PCBox_DrawMonItemInfo(PCBoxWork *work, PCBoxMonInfo *monInfo) {
 
     if (monInfo->heldItem != ITEM_NONE) {
         base = PCBox_PrintItemNameAndDesc(work, monInfo->heldItem);
-        BgCellManager_PutWindowTiles(work->view->panels, 0x10, &work->view->windows[base]);
-        BgCellManager_PutWindowTiles(work->view->panels, 0x10, &work->view->windows[base + 1]);
+        BgCellManager_PutWindowTiles(work->view->panels, PC_BOX_PANEL_INFO, &work->view->windows[base]);
+        BgCellManager_PutWindowTiles(work->view->panels, PC_BOX_PANEL_INFO, &work->view->windows[base + 1]);
         PCBox_LoadInfoItemIcon(work->view, monInfo->heldItem);
     }
     PCBox_HideItemInfoPanel(work->view->panels);

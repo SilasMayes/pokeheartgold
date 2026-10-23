@@ -6,6 +6,7 @@
 #include "constants/species.h"
 
 #include "application/vs_recorder/vs_recorder_internal.h"
+#include "application/vs_recorder/vs_recorder_screens.h"
 #include "global_terminal/global_terminal_net.h"
 #include "msgdata/msg/msg_0013.h"
 
@@ -100,27 +101,9 @@ enum VsRecorderBoxDataViewShowStep {
     BOX_DATA_VIEW_SHOW_STEP_FADE_IN,
 };
 
-// window position and size in tiles
-typedef struct VsRecorderBoxWindowRect {
-    u8 x;
-    u8 y;
-    u8 width;
-    u8 height;
-} VsRecorderBoxWindowRect;
-
 typedef struct VsRecorderMsgIdPair {
     u32 msgIds[2];
 } VsRecorderMsgIdPair;
-
-extern const VsRecorderBoxWindowRect gVsRecorderBoxListTitleWindows[];          // the box list buttons' message ids follow it
-extern const TouchscreenHitbox gVsRecorderBoxDataHitboxes[];                    // box: next Pokemon, back
-extern const VsRecorderBoxWindowRect sVsRecorderBoxListButtonWindows[];         // box list buttons (2)
-extern const TouchscreenHitbox gVsRecorderBoxListHitboxes[];                    // box list: profile button, list, back
-extern const u32 gVsRecorderBoxDataWindowFillColors[];                          // fill colours of VsRecorderBoxData.windows
-extern const VsRecorderBoxWindowRect gVsRecorderBoxDataWindows[];               // VsRecorderBoxData.windows
-extern const TouchscreenHitbox gVsRecorderBoxDataSendHitboxes[];                // send: previous box, next box, exit, send
-extern const VsRecorderBoxWindowRect sVsRecorderBoxDataCategoryButtonWindows[]; // category buttons (6)
-extern const TouchscreenHitbox sVsRecorderBoxDataCategoryHitboxes[];            // categories (6) and cancel
 
 // substates of sending box data (gVsRecorderBoxDataSendSubStates)
 #define BOX_DATA_SEND_MAIN            3
@@ -313,7 +296,7 @@ static void VsRecorder_OnBoxListTouch(u32 index, u32 event, void *arg) {
         case 0:
         default:
             VsRecorder_OnTouchConfirm(work);
-            if (boxData->showProfile == FALSE) {
+            if (!boxData->showProfile) {
                 VsRecorder_SetSubState(work, BOX_DATA_VIEW_BOX_LIST_SHOW_PROFILE);
             } else {
                 VsRecorder_SetSubState(work, BOX_DATA_VIEW_BOX_LIST_HIDE_PROFILE);
@@ -509,7 +492,7 @@ BOOL VsRecorder_BoxDataSendChangeBox(VsRecorderWork *work) {
 static void VsRecorder_SetBoxDataSendButtonHidden(VsRecorderWork *work, BOOL hidden) {
     VsRecorderBoxData *boxData = work->screenWork;
 
-    if (hidden == FALSE) {
+    if (!hidden) {
         ManagedSprite_SetDrawFlag(boxData->sendButton.sprite, TRUE);
         TextOBJ_SetSpritesDrawFlag(boxData->sendButton.text, TRUE);
         ManagedSprite_SetPositionXY(boxData->exitButton.sprite, 32, 232);

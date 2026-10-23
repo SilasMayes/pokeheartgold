@@ -45,21 +45,21 @@ u32 PCBox_GetDepositMenuInput(PCBoxWork *work) {
 }
 
 void PCBox_DepositGridOnButton(PCBoxWork *work, u32 newTarget, u32 prevTarget) {
-    u32 v = newTarget;
+    u32 target = newTarget;
     if (prevTarget != -1) {
         if (PCBox_IsActionMenuOpen(work->view->panels) == 0) {
-            v = work->selectedSlot;
-            if (v != PC_BOX_SLOT_NONE && v >= PC_BOX_SLOT_PARTY_START) {
-                v -= PC_BOX_SLOT_PARTY_START;
+            target = work->selectedSlot;
+            if (target != PC_BOX_SLOT_NONE && target >= PC_BOX_SLOT_PARTY_START) {
+                target -= PC_BOX_SLOT_PARTY_START;
             } else {
-                v = 0;
+                target = 0;
             }
-        } else if (v != 8 && v != 9 && v != 10) {
-            v = 7;
+        } else if (target != 8 && target != 9 && target != 10) {
+            target = 7;
         }
     }
-    GridInputHandler_SetNextInput(work->view->gridInput, (u8)v);
-    PCBox_PlaceCursorOnGridInput(work, v);
+    GridInputHandler_SetNextInput(work->view->gridInput, (u8)target);
+    PCBox_PlaceCursorOnGridInput(work, target);
 }
 
 void PCBox_DepositBoxGridOnButton(PCBoxWork *work, u32 newTarget) {
@@ -162,23 +162,23 @@ u32 PCBox_GetWithdrawMenuInput(PCBoxWork *work) {
 }
 
 void PCBox_WithdrawGridOnButton(PCBoxWork *work, u32 newTarget, u32 prevTarget) {
-    u32 v = newTarget;
+    u32 target = newTarget;
     if (prevTarget != -1) {
         if (PCBox_IsActionMenuOpen(work->view->panels) == 0) {
-            if (v - 31 <= 1) {
-                v = 30;
-            } else if (v != 30 && v != 33) {
-                v = work->selectedSlot;
-                if (v == PC_BOX_SLOT_NONE || v >= PC_BOX_SLOT_PARTY_START) {
-                    v = 0;
+            if (target - 31 <= 1) {
+                target = 30;
+            } else if (target != 30 && target != 33) {
+                target = work->selectedSlot;
+                if (target == PC_BOX_SLOT_NONE || target >= PC_BOX_SLOT_PARTY_START) {
+                    target = 0;
                 }
             }
-        } else if (v != 35 && v != 36 && v != 37) {
-            v = 34;
+        } else if (target != 35 && target != 36 && target != 37) {
+            target = 34;
         }
     }
-    GridInputHandler_SetNextInput(work->view->gridInput, (u8)v);
-    PCBox_PlaceCursorOnGridInput(work, v);
+    GridInputHandler_SetNextInput(work->view->gridInput, (u8)target);
+    PCBox_PlaceCursorOnGridInput(work, target);
 }
 
 void PCBox_WithdrawGridOnTouch(PCBoxWork *work, u32 newTarget) {
@@ -211,13 +211,13 @@ u32 PCBox_GetMoveModeMenuInput(PCBoxWork *work) {
 }
 
 void PCBox_MoveModeGridOnButton(PCBoxWork *work, u32 newTarget, u32 prevTarget) {
-    u32 v = newTarget;
+    u32 target = newTarget;
     if (prevTarget != -1) {
         if (PCBox_IsActionMenuOpen(work->view->panels) == 0) {
-            switch (v) {
+            switch (target) {
             case 31:
             case 32:
-                v = 30;
+                target = 30;
                 break;
             case 30:
             case 33:
@@ -225,18 +225,18 @@ void PCBox_MoveModeGridOnButton(PCBoxWork *work, u32 newTarget, u32 prevTarget) 
             case 35:
                 break;
             default:
-                v = work->selectedSlot;
-                if (v >= PC_BOX_SLOT_PARTY_START) {
-                    v = 0;
+                target = work->selectedSlot;
+                if (target >= PC_BOX_SLOT_PARTY_START) {
+                    target = 0;
                 }
                 break;
             }
-        } else if (v != 36 || v != 37 || v != 38 || v != 39 || v != 40) {
-            v = 36;
+        } else if (target != 36 || target != 37 || target != 38 || target != 39 || target != 40) {
+            target = 36;
         }
     }
-    GridInputHandler_SetNextInput(work->view->gridInput, (u8)v);
-    PCBox_PlaceCursorOnGridInput(work, v);
+    GridInputHandler_SetNextInput(work->view->gridInput, (u8)target);
+    PCBox_PlaceCursorOnGridInput(work, target);
 }
 
 void PCBox_MoveModeGridOnKeyMove(PCBoxWork *work, u32 newTarget, u32 prevTarget) {
@@ -371,23 +371,23 @@ u32 PCBox_GetMoveModePartyMenuInput(PCBoxWork *work) {
 }
 
 void PCBox_MoveModePartyGridOnButton(PCBoxWork *work, u32 newTarget, u32 prevTarget) {
-    u32 v = newTarget;
+    u32 target = newTarget;
     if (prevTarget != -1) {
         if (PCBox_IsActionMenuOpen(work->view->panels) == 0) {
-            if ((s32)v >= 8) {
-                v = work->selectedSlot;
-                if (v >= PC_BOX_SLOT_PARTY_START) {
-                    v -= PC_BOX_SLOT_PARTY_START;
+            if ((s32)target >= 8) {
+                target = work->selectedSlot;
+                if (target >= PC_BOX_SLOT_PARTY_START) {
+                    target -= PC_BOX_SLOT_PARTY_START;
                 } else {
-                    v = 0;
+                    target = 0;
                 }
             }
-        } else if (v != 8 || v != 9 || v != 10 || v != 11 || v != 12) {
-            v = 8;
+        } else if (target != 8 || target != 9 || target != 10 || target != 11 || target != 12) {
+            target = 8;
         }
     }
-    GridInputHandler_SetNextInput(work->view->gridInput, (u8)v);
-    PCBox_PlaceCursorOnGridInput(work, v);
+    GridInputHandler_SetNextInput(work->view->gridInput, (u8)target);
+    PCBox_PlaceCursorOnGridInput(work, target);
 }
 
 void PCBox_MoveModePartyGridOnKeyMove(PCBoxWork *work, u32 newTarget, u32 prevTarget) {
@@ -429,13 +429,13 @@ u32 PCBox_GetItemModeMenuInput(PCBoxWork *work) {
 }
 
 void PCBox_ItemModeGridOnButton(PCBoxWork *work, u32 newTarget, u32 prevTarget) {
-    u32 v = newTarget;
+    u32 target = newTarget;
     if (prevTarget != -1) {
         if (PCBox_IsActionMenuOpen(work->view->panels) == 0) {
-            switch (v) {
+            switch (target) {
             case 31:
             case 32:
-                v = 30;
+                target = 30;
                 break;
             case 30:
             case 33:
@@ -443,18 +443,18 @@ void PCBox_ItemModeGridOnButton(PCBoxWork *work, u32 newTarget, u32 prevTarget) 
             case 35:
                 break;
             default:
-                v = work->selectedSlot;
-                if (v >= PC_BOX_SLOT_PARTY_START) {
-                    v = 0;
+                target = work->selectedSlot;
+                if (target >= PC_BOX_SLOT_PARTY_START) {
+                    target = 0;
                 }
                 break;
             }
-        } else if (v != 36) {
-            v = 36;
+        } else if (target != 36) {
+            target = 36;
         }
     }
-    GridInputHandler_SetNextInput(work->view->gridInput, (u8)v);
-    PCBox_PlaceCursorOnGridInput(work, v);
+    GridInputHandler_SetNextInput(work->view->gridInput, (u8)target);
+    PCBox_PlaceCursorOnGridInput(work, target);
 }
 
 void PCBox_ItemModeGridOnKeyMove(PCBoxWork *work, u32 newTarget, u32 prevTarget) {
@@ -483,23 +483,23 @@ u32 PCBox_GetItemModePartyMenuInput(PCBoxWork *work) {
 }
 
 void PCBox_ItemModePartyGridOnButton(PCBoxWork *work, u32 newTarget, u32 prevTarget) {
-    u32 v = newTarget;
+    u32 target = newTarget;
     if (prevTarget != -1) {
         if (PCBox_IsActionMenuOpen(work->view->panels) == 0) {
-            if ((s32)v >= 8) {
-                v = work->selectedSlot;
-                if (v >= PC_BOX_SLOT_PARTY_START) {
-                    v -= PC_BOX_SLOT_PARTY_START;
+            if ((s32)target >= 8) {
+                target = work->selectedSlot;
+                if (target >= PC_BOX_SLOT_PARTY_START) {
+                    target -= PC_BOX_SLOT_PARTY_START;
                 } else {
-                    v = 0;
+                    target = 0;
                 }
             }
-        } else if (v != 8) {
-            v = 8;
+        } else if (target != 8) {
+            target = 8;
         }
     }
-    GridInputHandler_SetNextInput(work->view->gridInput, (u8)v);
-    PCBox_PlaceCursorOnGridInput(work, v);
+    GridInputHandler_SetNextInput(work->view->gridInput, (u8)target);
+    PCBox_PlaceCursorOnGridInput(work, target);
 }
 
 void PCBox_ItemModePartyGridOnKeyMove(PCBoxWork *work, u32 newTarget, u32 prevTarget) {

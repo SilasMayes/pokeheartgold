@@ -152,23 +152,6 @@ enum VsRecorderVideoListResumeStep {
     VIDEO_LIST_RESUME_STEP_DONE,
 };
 
-typedef struct VsRecorderTitleMsgIds {
-    u32 msgIds[3];
-} VsRecorderTitleMsgIds;
-
-extern const TouchscreenHitbox gVsRecorderVideoListOpenHitbox;
-extern const TouchscreenHitbox gVsRecorderVideoListExitHitbox;
-extern const TouchscreenHitbox gVsRecorderOverwriteHitboxes[2];
-extern const VsRecorderTitleMsgIds gVsRecorderVideoListTitleMsgIds;
-extern const TouchscreenHitbox gVsRecorderSaveSlotHitboxes[4];
-extern const VsRecorderSlotButtonTable gVsRecorderSaveSlotMsgIds;
-extern const VsRecorderSlotButtonTable gVsRecorderSaveSlotAnims;
-extern const TouchscreenHitbox gVsRecorderVideoDetailHitboxes[4];
-extern const VsRecorderListConfig gVsRecorderVideoListConfig;
-extern const VsRecorderPartyIconOrder gVsRecorderScrollIconOrder;
-extern const VsRecorderPartyIconOrder gVsRecorderListIconOrder;
-extern const VsRecorderIconPositions gVsRecorderVideoListIconPositions;
-
 // the list entries are video headers; the icons read their party part
 #define VIDEO_PARTY(work, i) ((VsRecorderVideoParty *)(work)->net.videoList.headers[i])
 
@@ -895,7 +878,7 @@ static void VsRecorder_FreeVideoListButtons(VsRecorderWork *work) {
 static void VsRecorder_SetVideoListButtonsMode(VsRecorderWork *work, int backOnly) {
     VsRecorderVideoListScreen *listWork = work->screenWork;
 
-    if (backOnly == FALSE) {
+    if (!backOnly) {
         ManagedSprite_SetDrawFlag(listWork->buttons[1].sprite, TRUE);
         TextOBJ_SetSpritesDrawFlag(listWork->buttons[1].text, TRUE);
         ManagedSprite_SetPositionXY(listWork->buttons[0].sprite, 32, 232);

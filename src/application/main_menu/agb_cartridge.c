@@ -113,14 +113,9 @@ typedef union AgbBoxMonSubstruct {
     } condition;
 } AgbBoxMonSubstruct;
 
-extern PmAgbCartridge gPmAgbCartridgeSpec;
-extern PmAgbCartridgeSpec gPmAgbRomCodeMappings[];
-extern const u8 gAgbCartNintendoLogo[];
 extern u32 gMigrateFromAgbIcons;
 extern u32 gPmAgbSaveCounter;
 extern PmAgbRomHeader gPmAgbRomHeader;
-extern const u16 gAgbKeepFirstAbilitySpecies[];
-extern u16 gAgbSpeciesMap[144][2]; // GBA species index, national dex number
 
 static void *AGB_GetBoxMonSubstruct(AgbBoxMon *mon, u32 personality, u32 which);
 

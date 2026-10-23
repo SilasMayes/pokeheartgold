@@ -23,6 +23,7 @@
 #include "overlay_manager.h"
 #include "pm_string.h"
 #include "pokemon.h"
+#include "save_fashion.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
 #include "sprite.h"
@@ -33,8 +34,6 @@
 
 // Accessory Portrait: the renderer of a saved dress-up design (also used by the VS Recorder) and the app that shows
 // one design with its caption until a key or the touch screen is pressed.
-
-typedef struct SaveFashionMon SaveFashionMon;
 
 enum AccessoryPortraitState {
     ACCESSORY_PORTRAIT_STATE_INIT,
@@ -68,21 +67,6 @@ static void AccessoryPortrait_CreateCaptionWindow(AccessoryPortraitAppWork *work
 static void AccessoryPortrait_FreeCaptionWindow(AccessoryPortraitAppWork *work);
 static void AccessoryPortrait_DrawCaption(AccessoryPortraitAppWork *work);
 static void AccessoryPortrait_PrintCaption(AccessoryPortraitAppWork *work);
-
-BOOL FashionEntry_IsItemPlaced(SaveFashionDataSub *entry, int index);
-SaveFashionMon *FashionEntry_GetMon(SaveFashionDataSub *entry);
-u8 *FashionEntry_GetItem(SaveFashionDataSub *entry, int index);
-void FashionEntry_GetMonSecondText(SaveFashionDataSub *entry, String *string);
-u8 FashionEntry_GetBackdrop(SaveFashionDataSub *entry);
-u16 FashionEntry_GetMailMessageWord(SaveFashionDataSub *entry);
-s8 FashionMon_GetZ(SaveFashionMon *mon);
-u8 FashionMon_GetX(SaveFashionMon *mon);
-u8 FashionMon_GetY(SaveFashionMon *mon);
-void FashionMon_ToPokemon(SaveFashionMon *mon, Pokemon *pokemon);
-u8 FashionItem_GetId(u8 *data);
-u8 FashionItem_GetX(u8 *data);
-u8 FashionItem_GetY(u8 *data);
-s8 FashionItem_GetZ(s8 *data);
 
 AccessoryPortrait *AccessoryPortrait_Create(const AccessoryPortraitConfig *config, SaveFashionDataSub *fashionData) {
     AccessoryPortraitArgs args;

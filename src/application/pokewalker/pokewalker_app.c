@@ -90,29 +90,29 @@ void PokewalkerApp_Teardown(PokewalkerApp *app) {
 BOOL PokewalkerApp_Main(OverlayManager *manager, int *state) {
     PokewalkerApp *app = OverlayManager_GetData(manager);
     switch (*state) {
-    case 0:
+    case POKEWALKER_APP_STATE_FADE_IN:
         if (IsPaletteFadeFinished() == TRUE) {
-            *state = 1;
+            *state = POKEWALKER_APP_STATE_ENTER;
         }
         break;
-    case 1:
-        *state = gPokewalkerAppModeEnter[app->mode].func(app);
+    case POKEWALKER_APP_STATE_ENTER:
+        *state = gPokewalkerAppModes[app->mode].enter(app);
         break;
-    case 2:
-        *state = gPokewalkerAppModeUpdate[app->mode].func(app);
+    case POKEWALKER_APP_STATE_UPDATE:
+        *state = gPokewalkerAppModes[app->mode].update(app);
         BgSetPosTextAndCommit(app->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_X, app->subBgScrollX);
         break;
-    case 3:
-        *state = gPokewalkerAppModeExit[app->mode].func(app);
-        if (app->nextMode == 11) {
+    case POKEWALKER_APP_STATE_EXIT:
+        *state = gPokewalkerAppModes[app->mode].exit(app);
+        if (app->nextMode == POKEWALKER_APP_MODE_EXIT) {
             BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_WHITE, 6, 1, HEAP_ID_154);
-            *state = 4;
+            *state = POKEWALKER_APP_STATE_FADE_OUT;
         } else {
             app->mode = app->nextMode;
             PokewalkerApp_OnModeChangeDummy(app);
         }
         break;
-    case 4:
+    case POKEWALKER_APP_STATE_FADE_OUT:
         if (IsPaletteFadeFinished() == TRUE) {
             return TRUE;
         }
@@ -257,7 +257,7 @@ void PokewalkerApp_BuildSendStrollData(PokewalkerApp *app) {
 
 static void PokewalkerApp_BuildOwnRecord(PokewalkerApp *app) {
     void *p;
-    PokewalkerApp_BuildTrainerHouseData(app->saveData, app->ownTrainerHouseData);
+    PokewalkerApp_BuildTrainerHouseData(app->saveData, &app->ownTrainerHouseData);
     app->unk_F1D0 = 1;
     app->ownRecordVersion = GAME_VERSION;
     p = Pokewalker_GetIrClock(app->pokewalker);

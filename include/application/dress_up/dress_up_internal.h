@@ -532,4 +532,6 @@ void DressUpNodePool_Free(DressUpNodePool *pool);
 void DressUp_StartBackdropAnim(DressUpBackdropAnim *anim, DressUpCanvas *canvas, enum HeapID heapID);
 void DressUp_UpdateBackdropAnim(DressUpBackdropAnim *anim);
 
+extern const u8 gDressUpKeyPressTouchStates[2];
+
 #endif // POKEHEARTGOLD_APPLICATION_DRESS_UP_DRESS_UP_INTERNAL_H

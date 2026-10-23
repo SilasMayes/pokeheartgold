@@ -478,7 +478,7 @@ void VsRecorder_InitBgBlend(int *eva, int *evb, int mode) {
 // one step of the alpha fade in (or out when reverse); TRUE when done
 BOOL VsRecorder_StepBlend(int *eva, int *evb, BOOL reverse, int mode) {
     BOOL done = TRUE;
-    if (reverse == FALSE) {
+    if (!reverse) {
         if (*eva < 8) {
             ++*eva;
             done = FALSE;
@@ -635,7 +635,7 @@ void VsRecorder_ShowNotice(VsRecorderWork *work, int msgId) {
 }
 
 void VsRecorder_HideNotice(VsRecorderWork *work) {
-    if (work->messageShown != FALSE) {
+    if (work->messageShown) {
         work->messageShown = FALSE;
         ClearWindowTilemapAndCopyToVram(&work->messageWindow);
         RemoveWindow(&work->messageWindow);
@@ -676,7 +676,7 @@ void VsRecorder_SetMessageText(VsRecorderWork *work, int msgId) {
     Window *window = &work->messageWindow;
     String *str;
 
-    if (work->messageShown != FALSE) {
+    if (work->messageShown) {
         str = NewString_ReadMsgData(work->msgData, msgId);
         FillWindowPixelBuffer(window, 0xCC);
         AddTextPrinterParameterizedWithColor(window, 0, str, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 13, 12), NULL);
@@ -686,7 +686,7 @@ void VsRecorder_SetMessageText(VsRecorderWork *work, int msgId) {
 }
 
 void VsRecorder_HideTopMessage(VsRecorderWork *work) {
-    if (work->messageShown != FALSE) {
+    if (work->messageShown) {
         work->messageShown = FALSE;
         ClearWindowTilemapAndCopyToVram(&work->messageWindow);
         RemoveWindow(&work->messageWindow);
@@ -1805,11 +1805,11 @@ void VsRecorder_UpdateTouchScroll(VsRecorderTouchScroll *scroll) {
     BOOL held;
     int hit = 0;
     held = System_GetTouchHeldCoords(&x, &y);
-    if (scroll->enabled != FALSE) {
+    if (scroll->enabled) {
         ManagedSprite_TickTwoFrames(scroll->sprites[0]);
         ManagedSprite_TickTwoFrames(scroll->sprites[1]);
     }
-    if (scroll->held == FALSE && held == FALSE) {
+    if (!scroll->held && !held) {
         scroll->held = FALSE;
         scroll->timer = 0;
         scroll->startX = 0;
@@ -1821,7 +1821,7 @@ void VsRecorder_UpdateTouchScroll(VsRecorderTouchScroll *scroll) {
         hit = 1;
     }
     if (hit) {
-        if (scroll->held == FALSE) {
+        if (!scroll->held) {
             scroll->held = TRUE;
             scroll->startX = x;
             scroll->lastY = y;
@@ -1830,7 +1830,7 @@ void VsRecorder_UpdateTouchScroll(VsRecorderTouchScroll *scroll) {
             scroll->timer--;
             VsRecorder_TouchScrollTrack(scroll, y);
         }
-    } else if (scroll->held != FALSE) {
+    } else if (scroll->held) {
         scroll->held = FALSE;
         scroll->timer = 0;
         scroll->startX = 0;

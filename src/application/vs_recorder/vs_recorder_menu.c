@@ -298,7 +298,7 @@ static BOOL VsRecorder_MenuSelect(VsRecorderWork *work) {
         }
         if (menuMove->arrived == TRUE) {
             i = 0;
-            if (menuMove->started == FALSE) {
+            if (!menuMove->started) {
                 menuMove->started = TRUE;
                 do {
                     move = Heap_Alloc(HEAP_ID_109, sizeof(VsRecorderRowMove));
@@ -341,7 +341,7 @@ static BOOL VsRecorder_MenuSelect(VsRecorderWork *work) {
                 i++;
             } while (i < work->menuDepth);
         }
-        if (menuMove->busy == FALSE) {
+        if (!menuMove->busy) {
             work->step++;
         }
         menuMove->busy = FALSE;
@@ -439,7 +439,7 @@ static BOOL VsRecorder_MenuBack(VsRecorderWork *work) {
             menuMove->blend = menuMove->blend + 2;
             PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, menuMove->blend, work->blendColor);
         }
-        if (menuMove->busy == FALSE) {
+        if (!menuMove->busy) {
             work->step++;
         }
         menuMove->busy = FALSE;

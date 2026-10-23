@@ -5,6 +5,7 @@
 #include "battle/battle_setup.h"
 
 #include "battle_recording.h"
+#include "options.h"
 
 // VS Recorder: the Global Terminal screens (video lists, video search, video number keypad, delete)
 // and the battle video helpers used outside the app.
@@ -86,7 +87,7 @@ typedef struct VsRecorderNumberPadConfig {
     int groupLengths[4]; // the last one repeats the third
     u32 unk_14;
     String *text; // the digits entered
-    void *options;
+    Options *options;
 } VsRecorderNumberPadConfig;
 
 // VsRecorderNumberPad.state
@@ -197,7 +198,7 @@ typedef struct VsRecorderVideoSearch {
 BOOL VsRecorder_IsNetIdle(VsRecorderWork *work);
 
 void VsRecorder_PrintVideoNumber(VsRecorderVideoSearch *search, VsRecorderWork *work);
-VsRecorderNumberPadConfig *VsRecorder_NewNumberPadConfig(enum HeapID heapID, u32 length, const int *groupLengths, void *options);
+VsRecorderNumberPadConfig *VsRecorder_NewNumberPadConfig(enum HeapID heapID, u32 length, const int *groupLengths, Options *options);
 void VsRecorder_FreeNumberPadConfig(VsRecorderNumberPadConfig *config);
 BOOL VsRecorder_NumberPadInit(VsRecorderNumberPad *pad);
 BOOL VsRecorder_NumberPadFree(VsRecorderNumberPad *pad);
@@ -325,5 +326,143 @@ void VsRecorder_SanitizeBattleSetupNames(BattleRecord *record, BattleSetup *setu
 void VsRecorder_LoadPlaceholderTrainerName(String *str, enum HeapID heapID);
 void VsRecorder_EncryptRecord(SaveData *saveData);
 int VsRecorder_SaveRecordNumber(SaveData *saveData, u32 numberLow, u32 numberHigh, u16 *state, u16 *writeState);
+
+// per-screen step tables, indexed by VsRecorderWork.subState
+typedef struct VsRecorderWindowTemplate {
+    int x;
+    int y;
+    int width;
+    int height;
+} VsRecorderWindowTemplate;
+
+// keys 0-9 (centre and half size); the last two entries are replaced by back and OK
+typedef struct VsRecorderNumberPadKey {
+    s16 x;
+    s16 y;
+    s16 halfWidth;
+    s16 halfHeight;
+} VsRecorderNumberPadKey;
+
+typedef struct VsRecorderTitleMsgIds {
+    u32 msgIds[3];
+} VsRecorderTitleMsgIds;
+
+typedef struct VsRecorderSearchButtonMsgIds {
+    u32 msgIds[3];
+} VsRecorderSearchButtonMsgIds;
+
+typedef struct VsRecorderConditionMsgIds {
+    u32 msgIds[6];
+} VsRecorderConditionMsgIds;
+
+typedef struct VsRecorderSearchButtonWindows {
+    VsRecorderWindowTemplate windows[3];
+} VsRecorderSearchButtonWindows;
+
+typedef struct VsRecorderConditionWindows {
+    VsRecorderWindowTemplate windows[6];
+} VsRecorderConditionWindows;
+
+// window position and size in tiles
+typedef struct VsRecorderBoxWindowRect {
+    u8 x;
+    u8 y;
+    u8 width;
+    u8 height;
+} VsRecorderBoxWindowRect;
+
+typedef struct VsRecorderRankingTeamCounts {
+    int counts[3];
+} VsRecorderRankingTeamCounts;
+
+// window position and size in tiles
+typedef struct VsRecorderRankingsWindowRect {
+    u32 x;
+    u32 y;
+    u32 width;
+    u32 height;
+} VsRecorderRankingsWindowRect;
+
+// x of the first digit of each group: [0] the first group has 4 digits, [1] otherwise
+typedef struct VsRecorderNumberPadStartX {
+    int x[2][3];
+} VsRecorderNumberPadStartX;
+
+typedef struct VsRecorderNumberPadKeys {
+    VsRecorderNumberPadKey keys[12];
+} VsRecorderNumberPadKeys;
+
+extern VsRecorderScreenFunc gVsRecorderBoxDataSendSubStates[];
+extern VsRecorderScreenFunc gVsRecorderBoxDataViewSubStates[];
+extern VsRecorderScreenFunc gVsRecorderRankingsSubStates[];
+extern VsRecorderScreenFunc gVsRecorderVideoListSubStates[];
+extern VsRecorderScreenFunc gVsRecorderVideoSearchSubStates[];
+extern VsRecorderScreenFunc gVsRecorderNumberSearchSubStates[];
+extern VsRecorderScreenFunc gVsRecorderSendVideoSubStates[];
+extern VsRecorderScreenFunc gVsRecorderDeleteSubStates[];
+
+extern const TouchscreenHitbox gVsRecorderVideoListOpenHitbox;
+extern const TouchscreenHitbox gVsRecorderVideoListExitHitbox;
+extern const TouchscreenHitbox gVsRecorderOverwriteHitboxes[2];
+extern const VsRecorderTitleMsgIds gVsRecorderVideoListTitleMsgIds;
+extern const TouchscreenHitbox gVsRecorderSaveSlotHitboxes[4];
+extern const VsRecorderSlotButtonTable gVsRecorderSaveSlotMsgIds;
+extern const VsRecorderSlotButtonTable gVsRecorderSaveSlotAnims;
+extern const TouchscreenHitbox gVsRecorderVideoDetailHitboxes[4];
+extern const VsRecorderListConfig gVsRecorderVideoListConfig;
+extern const VsRecorderPartyIconOrder gVsRecorderScrollIconOrder;
+extern const VsRecorderPartyIconOrder gVsRecorderListIconOrder;
+extern const VsRecorderIconPositions gVsRecorderVideoListIconPositions;
+
+extern const TouchscreenHitbox gVsRecorderSearchResultOpenHitbox;
+extern const TouchscreenHitbox gVsRecorderSearchBackHitbox;
+extern const VsRecorderSearchButtonMsgIds gVsRecorderSearchButtonMsgIds;
+extern const TouchscreenHitbox gVsRecorderSearchSaveSlotHitboxes[4];
+extern const TouchscreenHitbox gVsRecorderSearchOverwriteHitboxes[2];
+extern const TouchscreenHitbox gVsRecorderSearchDetailHitboxes[4];
+extern const TouchscreenHitbox gVsRecorderSearchConditionHitboxes[5];
+extern const VsRecorderConditionMsgIds gVsRecorderSearchConditionMsgIds;
+extern const TouchscreenHitbox gVsRecorderSpeciesGroupHitboxes[9];
+extern const VsRecorderListConfig gVsRecorderSearchLocationListConfig;
+extern const VsRecorderListConfig gVsRecorderSearchFacilityListConfig;
+extern const VsRecorderListConfig gVsRecorderSearchFacilityListConfigLong;
+extern const VsRecorderListConfig gVsRecorderSearchResultListConfig;
+extern const VsRecorderListConfig gVsRecorderSearchSpeciesListConfig;
+extern const VsRecorderPartyIconOrder gVsRecorderSearchListIconOrder;
+extern const VsRecorderPartyIconOrder gVsRecorderSearchScrollIconOrder;
+extern const VsRecorderSearchButtonWindows gVsRecorderSearchButtonWindows;
+extern const VsRecorderConditionWindows gVsRecorderSearchConditionWindows;
+extern const VsRecorderIconPositions gVsRecorderSearchResultIconPositions;
+
+extern const VsRecorderSlotButtonTable gVsRecorderSearchSlotMsgIds;
+extern const VsRecorderSlotButtonTable gVsRecorderSearchSlotAnims;
+
+extern const VsRecorderBoxWindowRect gVsRecorderBoxListTitleWindows[];          // the box list buttons' message ids follow it
+extern const TouchscreenHitbox gVsRecorderBoxDataHitboxes[];                    // box: next Pokemon, back
+extern const VsRecorderBoxWindowRect sVsRecorderBoxListButtonWindows[];         // box list buttons (2)
+extern const TouchscreenHitbox gVsRecorderBoxListHitboxes[];                    // box list: profile button, list, back
+extern const u32 gVsRecorderBoxDataWindowFillColors[];                          // fill colours of VsRecorderBoxData.windows
+extern const VsRecorderBoxWindowRect gVsRecorderBoxDataWindows[];               // VsRecorderBoxData.windows
+extern const TouchscreenHitbox gVsRecorderBoxDataSendHitboxes[];                // send: previous box, next box, exit, send
+extern const VsRecorderBoxWindowRect sVsRecorderBoxDataCategoryButtonWindows[]; // category buttons (6)
+extern const TouchscreenHitbox sVsRecorderBoxDataCategoryHitboxes[];            // categories (6) and cancel
+
+extern const VsRecorderListConfig gVsRecorderBoxListConfig; // box list
+
+extern const VsRecorderRankingTeamCounts gVsRecorderRankingTeamCounts;             // teams per kind: 16 trainer types, 12 months, 20 species
+extern const TouchscreenHitbox gVsRecorderRankingsHitboxes[];                      // SWITCH RANKINGS, SWITCH TEAMS, exit
+extern const VsRecorderRankingsWindowRect gVsRecorderRankingsButtonLabelWindows[]; // VsRecorderRankings.buttonLabels
+extern const VsRecorderRankingsWindowRect gVsRecorderRankingsThisWeekWindows[];    // VsRecorderRankings.windows, this week
+extern const VsRecorderRankingsWindowRect gVsRecorderRankingsLastWeekWindows[];    // VsRecorderRankings.windows, last week
+extern const VsRecorderListConfig gVsRecorderRankingsThisWeekListConfig;           // this week's ranking list
+extern const VsRecorderListConfig gVsRecorderRankingsLastWeekListConfig;           // last week's results list
+
+extern const VsRecorderNumberPadFunc gVsRecorderNumberPadStates[];
+extern const VsRecorderNumberPadStartX gVsRecorderNumberPadStartX;
+extern const VsRecorderNumberPadKeys gVsRecorderNumberPadKeys;
+
+// YES / NO of the delete prompt
+extern const TouchscreenHitbox gVsRecorderDeleteYesHitbox;
+extern const TouchscreenHitbox gVsRecorderDeleteNoHitbox;
 
 #endif // POKEHEARTGOLD_APPLICATION_VS_RECORDER_VS_RECORDER_SCREENS_H

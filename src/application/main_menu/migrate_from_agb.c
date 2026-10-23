@@ -56,7 +56,6 @@ BOOL CTRDG_IsExisting(void);
 void CTRDG_ReadAgbFlash(u16 sector, u32 offset, void *dest, u32 size);
 
 extern int gAgbCartridgePulledOutInSleep;
-extern MigrateFromAgbIcon *gMigrateFromAgbIcons;
 
 enum {
     MIGRATE_STATE_READ_CARTRIDGE,

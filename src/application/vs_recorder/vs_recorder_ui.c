@@ -13,6 +13,7 @@
 #include "obj_char_transfer.h"
 #include "orbit_cursor.h"
 #include "palette.h"
+#include "save_fashion.h"
 #include "sound_playback.h"
 #include "sprite_system.h"
 #include "sys_task_api.h"
@@ -51,9 +52,6 @@ enum VsRecorderDecorState {
     VS_RECORDER_DECOR_SLIDE,
     VS_RECORDER_DECOR_SWAY,
 };
-
-BOOL FashionEntry_IsSaved(SaveFashionDataSub *entry);
-void TextOBJ_SetParentSprite(TextOBJ *textOBJ, const Sprite *sprite);
 
 static void VsRecorder_SetStep(VsRecorderWork *work, u32 step);
 static void VsRecorder_RefreshMenu(VsRecorderWork *work);
@@ -393,7 +391,7 @@ void VsRecorder_LoadMessageBg(VsRecorderWork *work, GFBgLayer layer, BOOL altern
     BgConfig *bgConfig = work->bgConfig;
     int screen = 2;
 
-    if (alternate != FALSE) {
+    if (alternate) {
         screen = 0;
     }
 

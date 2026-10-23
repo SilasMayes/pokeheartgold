@@ -742,7 +742,7 @@ static BOOL PokewalkerEventLog_LoadMonSpriteResources(PokewalkerEventLog *eventL
 
 // Diglett and Dugtrio have no shadow.
 static void PokewalkerEventLog_SetMonSpriteVisible(PokewalkerEventLogMonSprite *monSprite, BOOL visible) {
-    if (visible == FALSE) {
+    if (!visible) {
         ManagedSprite_SetDrawFlag(monSprite->sprites[MON_SPRITE_LARGE], visible);
         ManagedSprite_SetDrawFlag(monSprite->sprites[MON_SPRITE_SMALL], visible);
     } else if (monSprite->isLarge) {
@@ -764,7 +764,7 @@ static void PokewalkerEventLog_SetMonSpriteAnim(PokewalkerEventLogMonSprite *mon
 static void PokewalkerEventLog_SetMonSpritePosition(PokewalkerEventLogMonSprite *monSprite, s16 x, s16 y, BOOL keepShadow) {
     ManagedSprite_SetPositionXY(monSprite->sprites[MON_SPRITE_LARGE], x, y);
     ManagedSprite_SetPositionXY(monSprite->sprites[MON_SPRITE_SMALL], x, y);
-    if (keepShadow == FALSE) {
+    if (!keepShadow) {
         ManagedSprite_SetPositionXY(monSprite->shadowSprite, x, y);
     }
 }
@@ -1336,7 +1336,7 @@ static void PokewalkerEventLog_StartPageTurn(PokewalkerEventLog *eventLog) {
 
 // Fades both screens to white, shows the new page and fades back; TRUE when not turning a page.
 static BOOL PokewalkerEventLog_UpdatePageTurn(PokewalkerEventLog *eventLog) {
-    if (eventLog->pageTurnActive == FALSE) {
+    if (!eventLog->pageTurnActive) {
         return TRUE;
     }
     switch (eventLog->pageTurnState) {

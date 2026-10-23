@@ -4,8 +4,6 @@
 
 // Conversion of Ruby/Sapphire/Emerald/FireRed/LeafGreen strings to this game's characters (Migrate from GBA).
 
-extern const u16 sAgbToDpCharMap[][2]; // GBA character -> character of this game (Japanese, other languages)
-
 static u32 AgbString_GetSpaceChar(u32 language);
 static u16 AgbString_GetOpenQuoteChar(u32 language);
 static u16 AgbString_GetCloseQuoteChar(u32 language);

@@ -138,49 +138,6 @@ enum VsRecorderVideoSearchBackToResultsStep {
     SEARCH_BACK_TO_RESULTS_STEP_DONE,
 };
 
-typedef struct VsRecorderWindowTemplate {
-    int x;
-    int y;
-    int width;
-    int height;
-} VsRecorderWindowTemplate;
-
-typedef struct VsRecorderConditionWindows {
-    VsRecorderWindowTemplate windows[6];
-} VsRecorderConditionWindows;
-
-typedef struct VsRecorderConditionMsgIds {
-    u32 msgIds[6];
-} VsRecorderConditionMsgIds;
-
-typedef struct VsRecorderSearchButtonWindows {
-    VsRecorderWindowTemplate windows[3];
-} VsRecorderSearchButtonWindows;
-
-typedef struct VsRecorderSearchButtonMsgIds {
-    u32 msgIds[3];
-} VsRecorderSearchButtonMsgIds;
-
-extern const TouchscreenHitbox gVsRecorderSearchResultOpenHitbox;
-extern const TouchscreenHitbox gVsRecorderSearchBackHitbox;
-extern const VsRecorderSearchButtonMsgIds gVsRecorderSearchButtonMsgIds;
-extern const TouchscreenHitbox gVsRecorderSearchSaveSlotHitboxes[4];
-extern const TouchscreenHitbox gVsRecorderSearchOverwriteHitboxes[2];
-extern const TouchscreenHitbox gVsRecorderSearchDetailHitboxes[4];
-extern const TouchscreenHitbox gVsRecorderSearchConditionHitboxes[5];
-extern const VsRecorderConditionMsgIds gVsRecorderSearchConditionMsgIds;
-extern const TouchscreenHitbox gVsRecorderSpeciesGroupHitboxes[9];
-extern const VsRecorderListConfig gVsRecorderSearchLocationListConfig;
-extern const VsRecorderListConfig gVsRecorderSearchFacilityListConfig;
-extern const VsRecorderListConfig gVsRecorderSearchFacilityListConfigLong;
-extern const VsRecorderListConfig gVsRecorderSearchResultListConfig;
-extern const VsRecorderListConfig gVsRecorderSearchSpeciesListConfig;
-extern const VsRecorderPartyIconOrder gVsRecorderSearchListIconOrder;
-extern const VsRecorderPartyIconOrder gVsRecorderSearchScrollIconOrder;
-extern const VsRecorderSearchButtonWindows gVsRecorderSearchButtonWindows;
-extern const VsRecorderConditionWindows gVsRecorderSearchConditionWindows;
-extern const VsRecorderIconPositions gVsRecorderSearchResultIconPositions;
-
 // the result list entries are video headers; the icons read their party part
 #define VIDEO_PARTY(work, i) ((VsRecorderVideoParty *)(work)->net.videoList.headers[i])
 

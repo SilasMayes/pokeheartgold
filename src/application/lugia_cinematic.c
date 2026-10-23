@@ -8,8 +8,8 @@
 #include "legendary_cinematic_internal.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
+#include "sound_playback_internal.h"
 
-BOOL PlaySE_SetVolume(u16 seqNo, u16 volume);
 void GF_SetVolumeBySeqNo(u16 seqNo, int volume);
 
 static int LugiaCinematic_Init(LegendaryCinematic *cinematic);

@@ -241,7 +241,7 @@ BOOL PokedexApp_RunWeightCheckAnim(PokedexWeightCheckAnim *anim) {
 
 // Rotation speed and acceleration, signed by which side is heavier.
 void PokedexApp_SetBeamRotation(PokedexWeightCheckAnim *anim, s32 speed, s32 accel) {
-    if (anim->monLighter == FALSE) {
+    if (!anim->monLighter) {
         anim->rotationSpeed = -speed;
         anim->rotationAccel = accel;
     } else {
@@ -252,7 +252,7 @@ void PokedexApp_SetBeamRotation(PokedexWeightCheckAnim *anim, s32 speed, s32 acc
 
 // Rotation speed, acceleration and the speed at which the swing stops, signed by which side is heavier.
 void PokedexApp_SetBeamSwing(PokedexWeightCheckAnim *anim, s32 speed, s32 accel, s32 endSpeed) {
-    if (anim->monLighter == FALSE) {
+    if (!anim->monLighter) {
         anim->rotationSpeed = -speed;
         anim->rotationAccel = -accel;
         anim->rotationEndSpeed = -endSpeed;
@@ -461,7 +461,7 @@ BOOL PokedexApp_WeightAnim_TipToStop(PokedexWeightCheckAnim *anim) {
         rotation = ManagedSprite_GetRotation(anim->pokedexApp->sprites[7]);
         PokedexApp_UpdateScalePans(anim->pokedexApp, rotation);
         anim->rotationSpeed += anim->rotationAccel;
-        if (anim->monLighter == FALSE) {
+        if (!anim->monLighter) {
             if (rotation > 0xF600) {
                 break;
             }
@@ -493,7 +493,7 @@ BOOL PokedexApp_WeightAnim_Throw1(PokedexWeightCheckAnim *anim) {
         rotation = ManagedSprite_GetRotation(anim->pokedexApp->sprites[7]);
         PokedexApp_UpdateScalePans(anim->pokedexApp, rotation);
         anim->rotationSpeed += anim->rotationAccel;
-        if (anim->monLighter == FALSE) {
+        if (!anim->monLighter) {
             if (rotation > 0xF600) {
                 break;
             }
@@ -512,7 +512,7 @@ BOOL PokedexApp_WeightAnim_Throw1(PokedexWeightCheckAnim *anim) {
         PokedexApp_StartFigureThrow(anim, -4, 1);
         anim->step++;
     case POKEDEX_WEIGHT_ANIM_THROW:
-        if (PokedexApp_UpdateThrownFigure(anim) == FALSE) {
+        if (!PokedexApp_UpdateThrownFigure(anim)) {
             return FALSE;
         }
         break;
@@ -533,7 +533,7 @@ BOOL PokedexApp_WeightAnim_Throw2(PokedexWeightCheckAnim *anim) {
         rotation = ManagedSprite_GetRotation(anim->pokedexApp->sprites[7]);
         PokedexApp_UpdateScalePans(anim->pokedexApp, rotation);
         anim->rotationSpeed += anim->rotationAccel;
-        if (anim->monLighter == FALSE) {
+        if (!anim->monLighter) {
             if (rotation > 0xF600) {
                 break;
             }
@@ -552,7 +552,7 @@ BOOL PokedexApp_WeightAnim_Throw2(PokedexWeightCheckAnim *anim) {
         PokedexApp_StartFigureThrow(anim, -8, 1);
         anim->step++;
     case POKEDEX_WEIGHT_ANIM_THROW:
-        if (PokedexApp_UpdateThrownFigure(anim) == FALSE) {
+        if (!PokedexApp_UpdateThrownFigure(anim)) {
             return FALSE;
         }
         break;
@@ -573,7 +573,7 @@ BOOL PokedexApp_WeightAnim_Throw3(PokedexWeightCheckAnim *anim) {
         rotation = ManagedSprite_GetRotation(anim->pokedexApp->sprites[7]);
         PokedexApp_UpdateScalePans(anim->pokedexApp, rotation);
         anim->rotationSpeed += anim->rotationAccel;
-        if (anim->monLighter == FALSE) {
+        if (!anim->monLighter) {
             if (rotation > 0xF600) {
                 break;
             }
@@ -592,7 +592,7 @@ BOOL PokedexApp_WeightAnim_Throw3(PokedexWeightCheckAnim *anim) {
         PokedexApp_StartFigureThrow(anim, -12, 1);
         anim->step++;
     case POKEDEX_WEIGHT_ANIM_THROW:
-        if (PokedexApp_UpdateThrownFigure(anim) == FALSE) {
+        if (!PokedexApp_UpdateThrownFigure(anim)) {
             return FALSE;
         }
         break;
@@ -613,7 +613,7 @@ BOOL PokedexApp_WeightAnim_Throw4(PokedexWeightCheckAnim *anim) {
         rotation = ManagedSprite_GetRotation(anim->pokedexApp->sprites[7]);
         PokedexApp_UpdateScalePans(anim->pokedexApp, rotation);
         anim->rotationSpeed += anim->rotationAccel;
-        if (anim->monLighter == FALSE) {
+        if (!anim->monLighter) {
             if (rotation > 0xF600) {
                 break;
             }
@@ -632,7 +632,7 @@ BOOL PokedexApp_WeightAnim_Throw4(PokedexWeightCheckAnim *anim) {
         PokedexApp_StartFigureThrow(anim, -14, 1);
         anim->step++;
     case POKEDEX_WEIGHT_ANIM_THROW:
-        if (PokedexApp_UpdateThrownFigure(anim) == FALSE) {
+        if (!PokedexApp_UpdateThrownFigure(anim)) {
             return FALSE;
         }
         break;
@@ -653,7 +653,7 @@ BOOL PokedexApp_WeightAnim_Throw5(PokedexWeightCheckAnim *anim) {
         rotation = ManagedSprite_GetRotation(anim->pokedexApp->sprites[7]);
         PokedexApp_UpdateScalePans(anim->pokedexApp, rotation);
         anim->rotationSpeed += anim->rotationAccel;
-        if (anim->monLighter == FALSE) {
+        if (!anim->monLighter) {
             if (rotation > 0xF600) {
                 break;
             }
@@ -672,7 +672,7 @@ BOOL PokedexApp_WeightAnim_Throw5(PokedexWeightCheckAnim *anim) {
         PokedexApp_StartFigureThrow(anim, -18, 1);
         anim->step++;
     case POKEDEX_WEIGHT_ANIM_THROW:
-        if (PokedexApp_UpdateThrownFigure(anim) == FALSE) {
+        if (!PokedexApp_UpdateThrownFigure(anim)) {
             return FALSE;
         }
         break;
@@ -693,7 +693,7 @@ BOOL PokedexApp_WeightAnim_Throw6(PokedexWeightCheckAnim *anim) {
         rotation = ManagedSprite_GetRotation(anim->pokedexApp->sprites[7]);
         PokedexApp_UpdateScalePans(anim->pokedexApp, rotation);
         anim->rotationSpeed += anim->rotationAccel;
-        if (anim->monLighter == FALSE) {
+        if (!anim->monLighter) {
             if (rotation > 0xF600) {
                 break;
             }
@@ -712,7 +712,7 @@ BOOL PokedexApp_WeightAnim_Throw6(PokedexWeightCheckAnim *anim) {
         PokedexApp_StartFigureThrow(anim, -21, 1);
         anim->step++;
     case POKEDEX_WEIGHT_ANIM_THROW:
-        if (PokedexApp_UpdateThrownFigure(anim) == FALSE) {
+        if (!PokedexApp_UpdateThrownFigure(anim)) {
             return FALSE;
         }
         break;
@@ -733,7 +733,7 @@ BOOL PokedexApp_WeightAnim_Throw7(PokedexWeightCheckAnim *anim) {
         rotation = ManagedSprite_GetRotation(anim->pokedexApp->sprites[7]);
         PokedexApp_UpdateScalePans(anim->pokedexApp, rotation);
         anim->rotationSpeed += anim->rotationAccel;
-        if (anim->monLighter == FALSE) {
+        if (!anim->monLighter) {
             if (rotation > 0xF600) {
                 break;
             }
@@ -752,7 +752,7 @@ BOOL PokedexApp_WeightAnim_Throw7(PokedexWeightCheckAnim *anim) {
         PokedexApp_StartFigureThrow(anim, -24, 1);
         anim->step++;
     case POKEDEX_WEIGHT_ANIM_THROW:
-        if (PokedexApp_UpdateThrownFigure(anim) == FALSE) {
+        if (!PokedexApp_UpdateThrownFigure(anim)) {
             return FALSE;
         }
         break;
@@ -775,7 +775,7 @@ BOOL PokedexApp_WeightAnim_Throw8(PokedexWeightCheckAnim *anim) {
         rotation = ManagedSprite_GetRotation(anim->pokedexApp->sprites[7]);
         PokedexApp_UpdateScalePans(anim->pokedexApp, rotation);
         anim->rotationSpeed += anim->rotationAccel;
-        if (anim->monLighter == FALSE) {
+        if (!anim->monLighter) {
             if (rotation > 0xF600) {
                 break;
             }
@@ -794,7 +794,7 @@ BOOL PokedexApp_WeightAnim_Throw8(PokedexWeightCheckAnim *anim) {
         PokedexApp_StartFigureThrow(anim, -24, 0);
         anim->step++;
     case POKEDEX_WEIGHT_ANIM_THROW:
-        if (PokedexApp_UpdateThrownFigure(anim) == FALSE) {
+        if (!PokedexApp_UpdateThrownFigure(anim)) {
             return FALSE;
         }
         PokedexApp_GetSpritePos(anim->pokedexApp, anim->dropSprite, &pos.x, &pos.y, 1);

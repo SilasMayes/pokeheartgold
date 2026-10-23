@@ -1,6 +1,7 @@
 #include "global.h"
 
 #include "application/vs_recorder/vs_recorder_internal.h"
+#include "application/vs_recorder/vs_recorder_screens.h"
 #include "msgdata/msg.naix"
 
 #include "assert.h"
@@ -27,18 +28,6 @@
 #include "wireless_status_icon.h"
 
 // VS Recorder app core: resources, BG / sprite setup, V-blank and the screen dispatcher.
-
-void VsRecorderApp_CountMenuChoices(VsRecorderWork *work);
-
-// per-screen step tables, indexed by VsRecorderWork.subState
-extern VsRecorderScreenFunc gVsRecorderBoxDataSendSubStates[];
-extern VsRecorderScreenFunc gVsRecorderBoxDataViewSubStates[];
-extern VsRecorderScreenFunc gVsRecorderRankingsSubStates[];
-extern VsRecorderScreenFunc gVsRecorderVideoListSubStates[];
-extern VsRecorderScreenFunc gVsRecorderVideoSearchSubStates[];
-extern VsRecorderScreenFunc gVsRecorderNumberSearchSubStates[];
-extern VsRecorderScreenFunc gVsRecorderSendVideoSubStates[];
-extern VsRecorderScreenFunc gVsRecorderDeleteSubStates[];
 
 static void VsRecorder_InitBgLayers(BgConfig *bgConfig);
 static void VsRecorder_InitSpriteSystem(VsRecorderWork *work);
@@ -407,7 +396,7 @@ BOOL VsRecorder_Main(VsRecorderWork *work, int *screen) {
     case VS_RECORDER_SCREEN_TITLE:
         done = gVsRecorderTitleSubStates[work->subState](work);
         VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, done, screen);
-        if (done == FALSE) {
+        if (!done) {
             break;
         }
         if (work->cursorHidden == 1) {

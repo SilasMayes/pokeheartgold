@@ -152,6 +152,13 @@ BOOL PmAgbCartridge_StartSave(void);
 int PmAgbCartridge_ContinueSave(void);
 int PmAgbCartridge_GetSaveStatus(void);
 AgbPokemonStorage *PmAgbCartridge_GetPCStorage(void);
+extern PmAgbCartridge gPmAgbCartridgeSpec;
+extern PmAgbCartridgeSpec gPmAgbRomCodeMappings[];
+extern const u8 gAgbCartNintendoLogo[];
+extern const u16 gAgbKeepFirstAbilitySpecies[];
+extern u16 gAgbSpeciesMap[144][2];     // GBA species index, national dex number
+extern const u16 sAgbToDpCharMap[][2]; // GBA character -> character of this game (Japanese, other languages)
+
 u32 PmAgbCartridge_GetTrainerId(void);
 void *PmAgbCartridge_GetPlayerName(void *unused);
 u32 AGB_GetBoxMonData(AgbBoxMon *mon, int field, u8 *dest);

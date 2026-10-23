@@ -451,9 +451,7 @@
 	.public gSpindaSpotPixels
 	.public gTouchButtons
 	.public gPokewalkerRouteImages
-	.public gPokewalkerAppModeEnter
-	.public gPokewalkerAppModeUpdate
-	.public gPokewalkerAppModeExit
+	.public gPokewalkerAppModes
 	.public gWindowBank2Templates
 	.public gWindowBank1Templates
 	.public gWindowBank7Templates
@@ -4456,13 +4454,9 @@ gPokewalkerRouteImages:
 	.word sPokewalkerRouteImage7
 	.word sPokewalkerRouteImage8
 
-gPokewalkerAppModeEnter:
+gPokewalkerAppModes:
 	.word PokewalkerApp_MainMenu_Enter
-
-gPokewalkerAppModeUpdate:
 	.word PokewalkerApp_MainMenu_Update
-
-gPokewalkerAppModeExit:
 	.word PokewalkerApp_MainMenu_Exit
 	.word PokewalkerApp_QuitMessage_Enter
 	.word PokewalkerApp_QuitMessage_Update

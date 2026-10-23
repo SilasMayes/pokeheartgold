@@ -6,6 +6,7 @@
 #include "constants/pokemon.h"
 #include "constants/species.h"
 
+#include "application/main_menu/agb_cartridge.h"
 #include "application/main_menu/main_menu_internal.h"
 #include "msgdata/msg.naix"
 
@@ -63,18 +64,15 @@ typedef struct MainMenuUtilGift {
     u8 mon[1];
 } MainMenuUtilGift;
 
-extern enum HeapID gMainMenuUtilCryptoHeapId; // heap of the crypto library
 extern MainMenuUtilWork gMainMenuUtilWork;
 extern MainMenuUtilSprites gMainMenuUtilSprites;
 extern G2dRenderer gMainMenuUtilRenderer;
 extern u32 gMainMenuUtilGiftSpriteWork[];
-extern u32 gMainMenuUtilVBlankWork[];
 extern const u8 gGiftCartridgePublicKey[];
 extern const ObjCharTransferTemplate gMainMenuUtilObjCharTransferTemplate;
 extern const BgTemplate gMainMenuUtilBgTemplate;
 extern const MainMenuUtilGiftPalettes gMainMenuUtilGiftPalettes;
 extern u32 gGiftCartridgeGameCodes[];
-extern u16 gAgbSpeciesMap[144][2];
 
 static void *MainMenuUtil_CryptoAlloc(u32 size);
 static int MainMenuUtil_CheckGiftCartridgeSignature(void);

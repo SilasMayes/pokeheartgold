@@ -41,10 +41,6 @@ enum VsRecorderDeleteExitStep {
     DELETE_EXIT_STEP_FADE_IN_MENU,
 };
 
-// YES / NO of the delete prompt
-extern const TouchscreenHitbox gVsRecorderDeleteYesHitbox;
-extern const TouchscreenHitbox gVsRecorderDeleteNoHitbox;
-
 // substates of the delete screen (gVsRecorderDeleteSubStates)
 #define DELETE_ENTER 1
 #define DELETE_MAIN  2

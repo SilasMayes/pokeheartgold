@@ -12,6 +12,10 @@
 
 typedef struct LockCapsuleCardView LockCapsuleCardView;
 
+extern const OverlayManagerTemplate sWonderCardAlbumOverlayTemplate;
+extern const OverlayManagerTemplate sLockCapsuleCardOverlayTemplate;
+extern const WonderCardTextBox gLockCapsuleCardTextBoxes[11];
+
 BOOL LockCapsuleCard_PrintMessageOnly(void);
 BOOL LockCapsuleCard_PrintCardTitle(LockCapsuleCardView *view, Window *window, u32 color);
 BOOL LockCapsuleCard_PrintStatus(LockCapsuleCardView *view, Window *window, u32 color);

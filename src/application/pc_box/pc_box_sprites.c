@@ -445,7 +445,7 @@ void PCBox_UpdatePartyIconPositions(PCBoxWork *work) {
     s16 x, y;
     u16 i;
 
-    BgCellManager_GetCellPosition(work->view->panels, 1, &cell[1], &cell[0]);
+    BgCellManager_GetCellPosition(work->view->panels, PC_BOX_PANEL_PARTY, &cell[1], &cell[0]);
     y = cell[0] * 8;
     x = cell[1] * 8;
     for (i = 0; i < 6; i++) {
@@ -708,7 +708,7 @@ void PCBox_UpdateHeldItemIconOutline(PCBoxView *view) {
 void PCBox_UpdateInfoItemIconPosition(PCBoxView *view) {
     s8 cell[2];
 
-    BgCellManager_GetCellPosition(view->panels, 16, &cell[1], &cell[0]);
+    BgCellManager_GetCellPosition(view->panels, PC_BOX_PANEL_INFO, &cell[1], &cell[0]);
     ManagedSprite_SetPositionXY(view->sprites[12], 18, cell[0] * 8 + 360);
     ManagedSprite_SetDrawFlag(view->sprites[12], TRUE);
 }

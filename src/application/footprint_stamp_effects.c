@@ -16,25 +16,6 @@
 
 s64 _ll_mul(s64 a, s64 b);
 
-// Footprint of a species (by species number).
-typedef struct FootprintStampSpeciesFootprint {
-    u8 type;
-    u8 size;
-    u8 padding[2];
-} FootprintStampSpeciesFootprint;
-
-// Board position of the touch grid lines (x every 16 pixels, y every 16 pixels).
-extern const fx32 gFootprintStampBoardXs[17];
-extern const fx32 gFootprintStampBoardYs[11];
-// Bounds of the three footprint sizes, relative to the stamp position.
-extern const FootprintStampBounds gFootprintStampSizeBounds[3];
-extern const s16 gFootprintStampCameraChainLengths[]; // chain length that moves the camera, by player count
-extern const u8 gFootprintStampNatureEffects[];       // enum FootprintStampEffect by nature
-extern const u16 gFootprintStampInkColors[][2];       // ink colors by OT id % 9, two columns
-extern const TouchscreenHitbox gFootprintStampPartyHitboxes[];
-extern const FootprintStampSpeciesFootprint gFootprintStampSpeciesFootprints[];
-extern const u8 gFootprintStampLinkCommands[]; // link command table: player joined, player left, stamp received
-
 enum FootprintStampAnimState {
     FOOTPRINT_STAMP_ANIM_START,
     FOOTPRINT_STAMP_ANIM_RUN,

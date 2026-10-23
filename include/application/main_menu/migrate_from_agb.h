@@ -71,6 +71,8 @@ typedef struct MigrateFromAgbIcon {
     u32 charData[0x80];
 } MigrateFromAgbIcon;
 
+extern MigrateFromAgbIcon *gMigrateFromAgbIcons;
+
 typedef struct MigrateFromAgbSave {
     u32 state; // MigrateFromAgb_RunTransfer (3 and 4: the DS save is being written)
     u32 delay;
@@ -117,6 +119,5 @@ typedef struct MigrateFromAgbApp {
     String *string;
     String *rawString;
 } MigrateFromAgbApp;
-
 
 #endif // POKEHEARTGOLD_APPLICATION_MAIN_MENU_MIGRATE_FROM_AGB_H

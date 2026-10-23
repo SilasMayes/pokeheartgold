@@ -6,7 +6,7 @@
 #include "filesystem.h"
 #include "geometry_math.h"
 #include "sound_playback.h"
-#include "wobbuffet_pop.h"
+#include "wobbuffet_pop_internal.h"
 
 // The code below is compiled as ARM (32-bit) code.
 #include <nitro/code32.h>
@@ -14,17 +14,6 @@
 #define WOBBUFFET_POP_PACK_TEXCOORD(s, t) ((u16)(fx16)((s) >> (FX32_SHIFT - 4)) | ((u32)(u16)(fx16)((t) >> (FX32_SHIFT - 4)) << 16))
 #define WOBBUFFET_POP_PACK_VTX16_XY(x, y) ((u32)(u16)(x) | ((u32)(u16)(y) << 16))
 #define WOBBUFFET_POP_NORMAL_FRONT        0x1FF00000
-
-// Area the handle can be grabbed in, per balloon selection
-typedef struct WobbuffetPopTouchArea {
-    u8 left;
-    u8 right;
-    u8 top;
-    u8 bottom;
-} WobbuffetPopTouchArea;
-
-extern const WobbuffetPopTouchArea gWobbuffetPopBalloonTouchAreas[];
-extern const ManagedSpriteTemplate gWobbuffetPopHandleSpriteTemplate;
 
 static void WobbuffetPopBalloon_ToVtx16(s32 x, s32 y, s16 *outX, s16 *outY);
 static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode, fx32 amount);

@@ -53,6 +53,9 @@ typedef struct MainMenuUtilWork {
     void (*vblankCallback)(struct MainMenuUtilWork *work); // run once by the VBlank callback
 } MainMenuUtilWork;
 
+extern enum HeapID gMainMenuUtilCryptoHeapId; // heap of the crypto library
+extern u32 gMainMenuUtilVBlankWork[];
+
 void MainMenuUtil_SetCryptoHeap(enum HeapID heapID);
 u32 MainMenuUtil_GetCartridgeGiftSize(void);
 BOOL MainMenuUtil_ReadCartridgeGift(void *dest, int size);

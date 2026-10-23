@@ -48,7 +48,7 @@ static void BagApp_UpdatePageArrows(BagApp *app);
 static void BagApp_DrawRegisteredItemIcon(BagApp *app, Window *window, int y, BOOL secondSlot) {
     NNSG2dCharacterData *charData;
     void *buffer = BagApp_LoadListIconChars(app, &charData);
-    if (secondSlot == FALSE) {
+    if (!secondSlot) {
         BlitBitmapRectToWindow(window, charData->pRawData, 24, 0, 104, 16, 0, (u16)y, 40, 16);
     } else {
         BlitBitmapRectToWindow(window, charData->pRawData, 64, 0, 104, 16, 0, (u16)y, 40, 16);
@@ -96,7 +96,7 @@ void BagApp_PrintItemSelectedMessage(BagApp *app, const u8 *actions, int count) 
     DrawFrameAndWindow2(&app->windows[2], TRUE, 0x3E2, 12);
     FillWindowPixelBuffer(&app->windows[2], 15);
     pocket = &app->bagView->pockets[app->bagView->pocketIndex];
-    if (app->bagView->mode == 6 && BagApp_IsBerryOrMulch(pocket->pocketId, app->bagView->itemId) == FALSE) {
+    if (app->bagView->mode == 6 && !BagApp_IsBerryOrMulch(pocket->pocketId, app->bagView->itemId)) {
         template = NewString_ReadMsgData(app->msgData, msg_0010_00106);
     } else {
         template = NewString_ReadMsgData(app->msgData, msg_0010_00043);
@@ -200,7 +200,7 @@ void BagApp_PrintTrashConfirmMessage(BagApp *app) {
 
 u8 BagApp_PrintMessage(BagApp *app, BOOL wide) {
     Window *window;
-    if (wide == FALSE) {
+    if (!wide) {
         window = &app->windows[3];
     } else {
         GF_ASSERT(app->dynWindows[21].bgConfig != NULL);
@@ -267,7 +267,7 @@ void BagApp_PrintSellPrice(BagApp *app) {
 void BagApp_PrintMoney(BagApp *app, BOOL skipLabel) {
     String *string = String_New(0x100, HEAP_ID_6);
     Window *window = &app->dynWindows[22];
-    if (skipLabel == FALSE) {
+    if (!skipLabel) {
         FillWindowPixelBuffer(window, 0);
         String *label = NewString_ReadMsgData(app->msgData, msg_0010_00080);
         AddTextPrinterParameterizedWithColor(window, 0, label, 4, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
@@ -305,7 +305,7 @@ void BagApp_PrintMsg115And116(BagApp *app) {
 void BagApp_PrintCancelButton(BagApp *app, BOOL left) {
     String *string = NewString_ReadMsgData(app->msgData, msg_0010_00008);
     FillWindowPixelBuffer(&app->windows[7], 0);
-    if (left == FALSE) {
+    if (!left) {
         u32 width = FontID_String_GetWidth(0, string, 0);
         AddTextPrinterParameterizedWithColor(&app->windows[7], 0, string, ((48 - width) / 2) + 8, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
     } else {
@@ -359,7 +359,7 @@ void BagApp_DrawItemList(BagApp *app, int scroll, int unused, BOOL dim) {
     k = BagApp_GetNthItemSlotIndex(pocket, app->bagView->pocketIndex, scroll);
     for (; k < gListPocketCapacities[app->bagView->pocketIndex]; k++) {
         if (pocket->slots[k].id != ITEM_NONE && pocket->slots[k].quantity != 0) {
-            if (dim == FALSE) {
+            if (!dim) {
                 BagApp_PrintItemListEntry(app, &app->dynWindows[first + count], app->itemNames[k], pocket, k);
             } else if (k == app->moveSource) {
                 BagApp_PrintItemListEntry(app, &app->dynWindows[first + count], app->itemNames[k], pocket, k);
@@ -542,7 +542,7 @@ static void BagApp_ShowTMHMTypeIcons(BagApp *app, u16 itemId, BOOL show) {
 
     ManagedSprite_SetDrawFlag(app->sprites[7], show);
     ManagedSprite_SetDrawFlag(app->sprites[8], show);
-    if (show != FALSE) {
+    if (show) {
         move = TMHMGetMove(itemId);
         type = GetMoveAttr(move, MOVEATTR_TYPE);
         category = GetMoveAttr(move, MOVEATTR_CLASS);

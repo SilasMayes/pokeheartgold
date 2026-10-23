@@ -27,12 +27,6 @@
 
 // VS Recorder video transfers: downloading a found video, the video number search and sending the own video.
 
-extern const VsRecorderSlotButtonTable gVsRecorderSearchSlotMsgIds;
-extern const VsRecorderSlotButtonTable gVsRecorderSearchSlotAnims;
-extern const TouchscreenHitbox gVsRecorderSearchSaveSlotHitboxes[4];
-extern const TouchscreenHitbox gVsRecorderSearchOverwriteHitboxes[2];
-extern const TouchscreenHitbox gVsRecorderSearchDetailHitboxes[4];
-
 // flag byte of the video found by number (VsRecorderVideoList.flags of a listed video)
 #define NUMBER_SEARCH_VIDEO_FLAG(work) ((work)->net.videoBuffer[0x1D4C])
 
@@ -1511,7 +1505,7 @@ void VsRecorder_OnSearchConditionTouch(u32 index, u32 event, void *arg) {
         break;
     case 4:
         VsRecorder_OnTouchConfirm(work);
-        if (VsRecorder_HasSearchConditions(work) == FALSE) {
+        if (!VsRecorder_HasSearchConditions(work)) {
             PlaySE(SEQ_SE_PL_BREC58);
             VsRecorder_SetMessageText(work, msg_0013_00116);
         } else {
@@ -1528,7 +1522,7 @@ void VsRecorder_OnSpeciesGroupTouch(u32 index, u32 event, void *arg) {
     if (event != 0) {
         return;
     }
-    if (VsRecorder_SearchCategoryHasSeen(work, index) == FALSE) {
+    if (!VsRecorder_SearchCategoryHasSeen(work, index)) {
         PlaySE(SEQ_SE_PL_BREC58);
     } else {
         VsRecorder_BuildSearchSpeciesList(work, index);
@@ -1623,7 +1617,7 @@ void VsRecorder_OnSearchOverwriteTouch(u32 index, u32 event, void *arg) {
 static void VsRecorder_SetNumberPadButtonsMode(VsRecorderWork *work, int backOnly) {
     VsRecorderVideoSearch *search = work->screenWork;
 
-    if (backOnly == FALSE) {
+    if (!backOnly) {
         ManagedSprite_SetDrawFlag(search->buttons[0].sprite, TRUE);
         TextOBJ_SetSpritesDrawFlag(search->buttons[0].text, TRUE);
         ManagedSprite_SetPositionXY(search->buttons[1].sprite, 128, 168);
@@ -1672,7 +1666,7 @@ static void VsRecorder_FreeNumberPadButtons(VsRecorderWork *work) {
 void VsRecorder_SetSearchButtonsMode(VsRecorderWork *work, int backOnly) {
     VsRecorderVideoSearch *search = work->screenWork;
 
-    if (backOnly == FALSE) {
+    if (!backOnly) {
         ManagedSprite_SetDrawFlag(search->buttons[1].sprite, TRUE);
         TextOBJ_SetSpritesDrawFlag(search->buttons[1].text, TRUE);
         ManagedSprite_SetPositionXY(search->buttons[0].sprite, 32, 232);

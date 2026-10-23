@@ -51,8 +51,7 @@ BOOL PokewalkerApp_IsEventLogInvalid(PokewalkerIrRecord *records) {
     return FALSE;
 }
 
-void PokewalkerApp_BuildTrainerHouseData(SaveData *saveData, void *dst) {
-    PokewalkerTrainerHouseData *data = dst;
+void PokewalkerApp_BuildTrainerHouseData(SaveData *saveData, PokewalkerTrainerHouseData *data) {
     PlayerProfile *profile = Save_PlayerData_GetProfile(saveData);
     Party *party = SaveArray_Party_Get(saveData);
 

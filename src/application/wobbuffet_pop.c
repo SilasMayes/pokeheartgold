@@ -23,6 +23,7 @@
 #include "render_text.h"
 #include "render_window.h"
 #include "screen_fade.h"
+#include "screen_fade_internal.h"
 #include "sound_playback.h"
 #include "swap_3d_buffers.h"
 #include "system.h"
@@ -31,12 +32,12 @@
 #include "vram_transfer_manager.h"
 #include "wifi_connection.h"
 #include "wireless_status_icon.h"
+#include "wobbuffet_pop_internal.h"
 
 void GX_BeginLoadTexPltt(void);
 void GX_LoadTexPltt(const void *src, u32 destSlotAddr, u32 size);
 void GX_EndLoadTexPltt(void);
 void CommState_FrameDummy(enum HeapID heapId, BgConfig *bgConfig);
-void SetBothScreensBrightnessByColor(u16 color);
 
 static BOOL WobbuffetPop_Init(OverlayManager *man, int *state);
 static BOOL WobbuffetPop_Main(OverlayManager *man, int *state);
@@ -44,29 +45,6 @@ static BOOL WobbuffetPop_Exit(OverlayManager *man, int *state);
 BOOL WobbuffetPop_HostStartGame(WobbuffetPop *game, WobbuffetPopSequence *sequence);
 BOOL WobbuffetPop_HostPlayGame(WobbuffetPop *game, WobbuffetPopSequence *sequence);
 BOOL WobbuffetPop_HostFinishGame(WobbuffetPop *game, WobbuffetPopSequence *sequence);
-
-typedef struct WobbuffetPopModelFiles {
-    int files[5];
-} WobbuffetPopModelFiles;
-
-extern const CameraAngle gWobbuffetPopCameraAngle;
-extern BOOL (*const gWobbuffetPopHostSteps[])(WobbuffetPop *game, WobbuffetPopSequence *sequence);
-extern const VecFx32 gWobbuffetPopCameraTarget;
-extern const GraphicsModes gWobbuffetPopGraphicsModes;
-extern const u8 gWobbuffetPopSeatOrders[][4];
-extern const u8 gWobbuffetPopNameWindowIndices[];
-extern const OamCharTransferParam gWobbuffetPopOamCharTransfer;
-extern const SpriteResourceCountsListUnion gWobbuffetPopSpriteResourceCounts;
-extern const OamManagerParam gWobbuffetPopOamManagerParam;
-extern const GraphicsBanks gWobbuffetPopBanks;
-extern const WobbuffetPopModelFiles gWobbuffetPopLocalModelFiles[];
-extern const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles0[];
-extern const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles1[];
-extern const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles2[];
-extern const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles3[];
-extern const BgTemplate gWobbuffetPopMainBgTemplates[3];
-extern const BgTemplate gWobbuffetPopSubBgTemplates[4];
-extern const s32 gWobbuffetPopBalloonAirRates[];
 
 enum WobbuffetPopAppState {
     WOBBUFFET_POP_APP_START_PLAYER_LIST,

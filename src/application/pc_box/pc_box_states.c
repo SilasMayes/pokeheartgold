@@ -345,7 +345,7 @@ u32 PCBox_State_MoveModeInput(PCBoxWork *work) {
         return PCBox_StartCellPaletteFlash(work, 9, PC_BOX_STATE_CHOOSE_TRAY_TAB);
     case 36:
         PlaySE(SEQ_SE_DP_DECIDE);
-        if (System_GetTouchNew() == FALSE) {
+        if (!System_GetTouchNew()) {
             work->moveWithButtons = 1;
         }
         work->moveFromSlot = work->selectedSlot;
@@ -797,15 +797,15 @@ u32 PCBox_State_TryRelease(PCBoxWork *work) {
 }
 
 u32 PCBox_State_ReleaseMoveCheck(PCBoxWork *work) {
-    PCBoxReleaseWork *x;
+    PCBoxReleaseWork *releaseWork;
     PCBox_RunReleaseMoveCheck(work);
-    x = work->view->releaseWork;
-    if (PCBox_UpdateReleaseShrink(x) == FALSE) {
-        x = work->view->releaseWork;
-        if (x->moveFlags != 0) {
+    releaseWork = work->view->releaseWork;
+    if (!PCBox_UpdateReleaseShrink(releaseWork)) {
+        releaseWork = work->view->releaseWork;
+        if (releaseWork->moveFlags != 0) {
             return PC_BOX_STATE_RELEASE_CAME_BACK;
         }
-        PCBox_EndReleaseShrink(x);
+        PCBox_EndReleaseShrink(releaseWork);
         PCBox_FreeReleaseMoveCheck(work);
         return PC_BOX_STATE_PRINT_RELEASED;
     }
@@ -875,10 +875,10 @@ u32 PCBox_State_EndPartyReleaseShift(PCBoxWork *work) {
 }
 
 u32 PCBox_State_ReleaseCameBack(PCBoxWork *work) {
-    PCBoxReleaseWork *x = work->view->releaseWork;
-    if (PCBox_UpdateReleaseGrow(x) == FALSE) {
-        x = work->view->releaseWork;
-        PCBox_ResetSpriteAffine(x);
+    PCBoxReleaseWork *releaseWork = work->view->releaseWork;
+    if (!PCBox_UpdateReleaseGrow(releaseWork)) {
+        releaseWork = work->view->releaseWork;
+        PCBox_ResetSpriteAffine(releaseWork);
         PCBox_FreeReleaseMoveCheck(work);
         PCBox_CreateSelectedIconOutline(work);
         PCBox_PrintReleaseMessage(work, PC_BOX_RELEASE_MSG_CAME_BACK, 0x25);
@@ -2854,7 +2854,7 @@ u32 PCBox_State_ApplyItemTrayDrop(PCBoxWork *work) {
     PCBoxHeldItemMove *blk = work->view->temp;
     u16 prev;
     u16 held;
-    if (BgCellManager_IsCellMoving(work->view->panels, 0x10) != FALSE) {
+    if (BgCellManager_IsCellMoving(work->view->panels, PC_BOX_PANEL_INFO)) {
         return PC_BOX_STATE_APPLY_ITEM_TRAY_DROP;
     }
     if (blk->toSlot == work->selectedSlot) {
@@ -2989,8 +2989,8 @@ u32 PCBox_State_ApplyItemTrayHoldingDrop(PCBoxWork *work) {
     PCBox_PlaceHeldItemIconAtSlot(work->view, work->view->dropTarget, 2);
     PCBox_LoadHeldItemIcon(work->view, work->view->heldItem);
     n = PCBox_PrintItemNameAndDesc(work, work->view->heldItem);
-    BgCellManager_PutWindowTiles(work->view->panels, 0x10, &work->view->windows[n]);
-    BgCellManager_PutWindowTiles(work->view->panels, 0x10, &work->view->windows[n + 1]);
+    BgCellManager_PutWindowTiles(work->view->panels, PC_BOX_PANEL_INFO, &work->view->windows[n]);
+    BgCellManager_PutWindowTiles(work->view->panels, PC_BOX_PANEL_INFO, &work->view->windows[n + 1]);
     PCBox_LoadInfoItemIcon(work->view, work->view->heldItem);
     PCBox_SlideInItemInfoPanel(work->view->panels);
     return PCBox_WaitForUpdateFunc(work, PCBox_AnimateTrayItemPickUp, PC_BOX_STATE_ITEM_TRAY_HOLDING_INPUT);
@@ -3090,7 +3090,7 @@ u32 PCBox_State_EndItemModePartyDrag(PCBoxWork *work) {
         if (work->view->partyPanelLowered == 0) {
             if (ItemIdIsMail(work->view->heldItem) == TRUE && prev != work->selectedSlot) {
                 PlaySE(SEQ_SE_DP_BOX03);
-                BgCellManager_EraseCell(work->view->panels, 7);
+                BgCellManager_EraseCell(work->view->panels, PC_BOX_PANEL_MENU_ROW_4);
                 PCBox_SetSlotIconTranslucent(work->view, work->selectedSlot, 0);
                 PCBox_PrintItemActionMessage(work, PC_BOX_ITEM_MSG_MAIL_CANT_BE_MOVED, 0x28);
                 work->nextState = PC_BOX_STATE_RESUME_ITEM_MODE_PARTY_AFTER_MAIL;
@@ -3195,7 +3195,7 @@ u32 PCBox_State_FinishPartyItemSwap(PCBoxWork *work) {
 
 u32 PCBox_State_ResumeItemModePartyAfterMail(PCBoxWork *work) {
     PCBox_CloseMessageWindow(work->view, 0x28);
-    BgCellManager_DrawCell(work->view->panels, 7);
+    BgCellManager_DrawCell(work->view->panels, PC_BOX_PANEL_MENU_ROW_4);
     GridInputHandler_SetNextInput(work->view->gridInput, 8);
     GridInputHandler_SetButtonInputMode(work->view->gridInput, TRUE);
     return PC_BOX_STATE_ITEM_MODE_PARTY_INPUT;
@@ -3852,7 +3852,7 @@ static void PCBox_SelectWallpaperInPage(PCBoxWork *work, u32 delta) {
 
 static u32 PCBox_ConfirmWallpaperChoice(PCBoxWork *work) {
     if (work->view->wallpaperSelection >= 0x10
-        && PCStorage_IsBonusWallpaperUnlocked(work->storage, work->view->wallpaperSelection - 0x10) == FALSE) {
+        && !PCStorage_IsBonusWallpaperUnlocked(work->storage, work->view->wallpaperSelection - 0x10)) {
         PlaySE(SEQ_SE_DP_BOX03);
         return PCBox_FlashPanel(work, 0xc, PC_BOX_STATE_WALLPAPER_MENU_INPUT);
     }
@@ -3894,7 +3894,7 @@ static u32 PCBox_SelectDepositBox(PCBoxWork *work, s32 delta) {
     u8 x;
     u8 y;
     work->trayBox = delta + work->trayBox / 6 * 6;
-    if (System_GetTouchNew() == FALSE) {
+    if (!System_GetTouchNew()) {
         if (PCStorage_CountMonsAndEggsInBox(work->storage, work->trayBox) == MONS_PER_BOX) {
             PlaySE(SEQ_SE_DP_BOX03);
         } else {
@@ -4258,7 +4258,7 @@ u32 PCBox_State_BoxTrayHoldingInput(PCBoxWork *work) {
         return PCBox_StartCellPaletteFlash(work, 0xf, PC_BOX_STATE_CHOOSE_SUMMARY);
     }
     v = PCBox_GetTrayHoldingInput(work);
-    if (GridInputHandler_IsButtonInputMode(work->view->gridInput) == FALSE) {
+    if (!GridInputHandler_IsButtonInputMode(work->view->gridInput)) {
         v = (u32)-2;
     }
     switch (v) {
@@ -4319,7 +4319,7 @@ u32 PCBox_ConfirmRelease(PCBoxWork *work) {
 
 u32 PCBox_PutAwayHeldItem(PCBoxWork *work) {
     u16 v;
-    if (Bag_AddItem(Save_Bag_Get(work->args->saveData), work->view->heldItem, 1, HEAP_ID_10) == FALSE) {
+    if (!Bag_AddItem(Save_Bag_Get(work->args->saveData), work->view->heldItem, 1, HEAP_ID_10)) {
         PlaySE(SEQ_SE_DP_BOX03);
         PCBox_PrintItemActionMessage(work, PC_BOX_ITEM_MSG_BAG_FULL, 0x25);
         work->nextState = PC_BOX_STATE_CANCEL_PUT_AWAY_ITEM;
@@ -4414,7 +4414,7 @@ static u32 PCBox_StartCellPaletteFlash(PCBoxWork *work, u32 panelIndex, u32 next
 
 static u32 PCBox_FlashMarkingMenuButton(PCBoxWork *work, u32 button, u32 nextState) {
     work->view->paletteFlash.isBg = 1;
-    work->view->paletteFlash.index = BgCellManager_GetCellBgId(work->view->panels, 2);
+    work->view->paletteFlash.index = BgCellManager_GetCellBgId(work->view->panels, PC_BOX_PANEL_MARKING_MENU);
     work->view->paletteFlash.palA = 3;
     work->view->paletteFlash.palB = 2;
     work->view->paletteFlash.state = 0;
@@ -4433,7 +4433,7 @@ static u32 PCBox_FlashMarkingMenuButton(PCBoxWork *work, u32 button, u32 nextSta
 
 static u32 PCBox_FlashPartyPanelButton(PCBoxWork *work, u32 button, u32 nextState) {
     work->view->paletteFlash.isBg = 1;
-    work->view->paletteFlash.index = BgCellManager_GetCellBgId(work->view->panels, 1);
+    work->view->paletteFlash.index = BgCellManager_GetCellBgId(work->view->panels, PC_BOX_PANEL_PARTY);
     work->view->paletteFlash.palA = 3;
     work->view->paletteFlash.palB = 2;
     work->view->paletteFlash.state = 0;

@@ -729,7 +729,7 @@ static int PokewalkerApp_FindFreeParticle(PokewalkerAppParticle *particles) {
     int i = 0;
     PokewalkerAppParticle *particle = particles;
     while (i < 100) {
-        if (particle->active == FALSE) {
+        if (!particle->active) {
             return i;
         }
         i++;

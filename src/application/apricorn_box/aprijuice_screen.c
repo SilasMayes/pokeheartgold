@@ -8,6 +8,7 @@
 #include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0022.h"
 
+#include "apricorn_internal.h"
 #include "bg_window.h"
 #include "camera.h"
 #include "font.h"
@@ -38,7 +39,6 @@
 #include "vram_transfer_manager.h"
 #include "yes_no_prompt.h"
 
-int ApricornBox_UseJuiceServing(SaveApricornBox *box);
 void ParticleSystem_DeleteAllEmitters(SPLEmitter *emitter);
 
 // A party Pokemon that can drink the juice.

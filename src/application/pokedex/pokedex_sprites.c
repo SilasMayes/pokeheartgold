@@ -132,7 +132,7 @@ void PokedexApp_MoveSprite(PokedexAppData *pokedexApp, int index, int dx, int dy
     s16 x;
     s16 y;
 
-    if (subscreen == FALSE) {
+    if (!subscreen) {
         ManagedSprite_GetPositionXY(pokedexApp->sprites[index], &x, &y);
         ManagedSprite_SetPositionXY(pokedexApp->sprites[index], x + dx, y + dy);
     } else {
@@ -142,7 +142,7 @@ void PokedexApp_MoveSprite(PokedexAppData *pokedexApp, int index, int dx, int dy
 }
 
 void PokedexApp_SetSpritePos(PokedexAppData *pokedexApp, int index, s16 x, s16 y, int subscreen) {
-    if (subscreen == FALSE) {
+    if (!subscreen) {
         ManagedSprite_SetPositionXY(pokedexApp->sprites[index], x, y);
     } else {
         ManagedSprite_SetPositionXYWithSubscreenOffset(pokedexApp->sprites[index], x, y, FX32_CONST(512));
@@ -150,7 +150,7 @@ void PokedexApp_SetSpritePos(PokedexAppData *pokedexApp, int index, s16 x, s16 y
 }
 
 void PokedexApp_GetSpritePos(PokedexAppData *pokedexApp, int index, s16 *x, s16 *y, int subscreen) {
-    if (subscreen == FALSE) {
+    if (!subscreen) {
         ManagedSprite_GetPositionXY(pokedexApp->sprites[index], x, y);
     } else {
         ManagedSprite_GetPositionXYWithSubscreenOffset(pokedexApp->sprites[index], x, y, FX32_CONST(512));
@@ -628,7 +628,7 @@ void PokedexApp_CreateLanguageIconSprites(PokedexAppData *pokedexApp) {
 }
 
 void PokedexApp_UpdateCurrentLanguageIcon(PokedexAppData *pokedexApp, u32 species, int sprite) {
-    if (species == SPECIES_NONE || Pokedex_GetInternationalViewFlag(pokedexApp->args->pokedex) == FALSE) {
+    if (species == SPECIES_NONE || !Pokedex_GetInternationalViewFlag(pokedexApp->args->pokedex)) {
         ManagedSprite_SetDrawFlag(pokedexApp->sprites[sprite], FALSE);
     } else {
         PokedexApp_SetSpriteAnim(pokedexApp, sprite, LanguageToDexFlag(pokedexApp->language));
@@ -1185,7 +1185,7 @@ void PokedexApp_SetSliderSpritesVisible(PokedexAppData *pokedexApp, int visible)
 
 // Places the slider's two handles (5: max, 11: min) and their digits (6-10, 12-16).
 void PokedexApp_UpdateSliderSprites(PokedexAppData *pokedexApp, u32 min, u32 max, int weight) {
-    if (weight == FALSE) {
+    if (!weight) {
         PokedexApp_SetHeightSliderX(pokedexApp, PokedexApp_SliderValueToX(pokedexApp, max), 5, TRUE);
         PokedexApp_SetHeightSliderX(pokedexApp, PokedexApp_SliderValueToX(pokedexApp, min), 11, FALSE);
         PokedexApp_DrawHeightDigits(pokedexApp, 6, pokedexApp->sliderValues[max].height);

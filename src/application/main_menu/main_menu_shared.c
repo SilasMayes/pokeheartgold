@@ -22,9 +22,6 @@ u8 *CommWireless_GetParentInfo(int index);
 BOOL CTRDG_IsAgbCartridge(void);
 void CTRDG_TerminateForPulledOut(void);
 
-extern enum HeapID gMainMenuUtilCryptoHeapId;
-extern u32 gMainMenuUtilVBlankWork[];
-
 u32 gMainMenuUtilWork[13];
 
 #define sMainMenuUtilWork ((MainMenuUtilWork *)gMainMenuUtilWork)

@@ -27,20 +27,32 @@ static void PokewalkerApp_CreateWalkerMon(Pokemon *mon, u32 otId, const Pokewalk
 static void PokewalkerApp_CreateWalkerMonWithOT(Pokemon *mon, PlayerProfile *profile, const PokewalkerMon *walkerMon, u32 nature, BOOL genMode);
 static void PokewalkerApp_ReceiveGifts(PokewalkerApp *app);
 
+enum StartStrollState {
+    START_STROLL_PRINT_SAVING,
+    START_STROLL_WAIT_SAVING,
+    START_STROLL_SAVE,
+    START_STROLL_END_SAVE,
+    START_STROLL_CHECK_FIRST_STROLL,
+    START_STROLL_PRINT_REGISTERED,
+    START_STROLL_WAIT_REGISTERED,
+    START_STROLL_END,
+    START_STROLL_DONE,
+};
+
 int PokewalkerApp_WaitKeyToSave_Enter(PokewalkerApp *app) {
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_WaitKeyToSave_Update(PokewalkerApp *app) {
     if (gSystem.newKeys & PAD_KEY_DOWN) {
-        app->nextMode = 6;
-        return 3;
+        app->nextMode = POKEWALKER_APP_MODE_LINK_SAVE;
+        return POKEWALKER_APP_STATE_EXIT;
     }
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_WaitKeyToSave_Exit(PokewalkerApp *app) {
-    return 1;
+    return POKEWALKER_APP_STATE_ENTER;
 }
 
 int PokewalkerApp_StartStroll_Enter(PokewalkerApp *app) {
@@ -52,73 +64,73 @@ int PokewalkerApp_StartStroll_Enter(PokewalkerApp *app) {
     Pokewalker_SetBoxMon(app->pokewalker, PCStorage_GetMonByIndexPair(pcStorage, box, slot));
     PCStorage_DeleteBoxMonByIndexPair(pcStorage, box, slot);
     PokewalkerApp_ReceiveGifts(app);
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_StartStroll_Update(PokewalkerApp *app) {
     app->state = gStartStrollStates[app->state](app);
-    if (app->state == 8) {
+    if (app->state == START_STROLL_DONE) {
         app->state = 0;
-        return 3;
+        return POKEWALKER_APP_STATE_EXIT;
     }
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_StartStroll_Exit(PokewalkerApp *app) {
-    return 1;
+    return POKEWALKER_APP_STATE_ENTER;
 }
 
 int PokewalkerApp_StartStroll_PrintSaving(PokewalkerApp *app) {
     app->textPrinterId = PokewalkerApp_StartMessageBox(app, 2, msg_0274_00013);
     PokewalkerApp_ShowConnectionSprites(app, 0);
-    return 1;
+    return START_STROLL_WAIT_SAVING;
 }
 
 int PokewalkerApp_StartStroll_WaitSaving(PokewalkerApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId)) {
         PokewalkerApp_CreateWaitingIcon(app);
-        return 2;
+        return START_STROLL_SAVE;
     }
-    return 1;
+    return START_STROLL_WAIT_SAVING;
 }
 
 int PokewalkerApp_StartStroll_Save(PokewalkerApp *app) {
     SaveGameNormal(app->saveData);
     Save_ClearStatusFlags(app->saveData);
-    return 3;
+    return START_STROLL_END_SAVE;
 }
 
 int PokewalkerApp_StartStroll_EndSave(PokewalkerApp *app) {
     PokewalkerApp_DeleteWaitingIcon(app);
-    return 4;
+    return START_STROLL_CHECK_FIRST_STROLL;
 }
 
 int PokewalkerApp_StartStroll_CheckFirstStroll(PokewalkerApp *app) {
     if (Pokewalker_GetLinkCount(app->pokewalker) == 1) {
-        return 5;
+        return START_STROLL_PRINT_REGISTERED;
     }
-    app->nextMode = 10;
+    app->nextMode = POKEWALKER_APP_MODE_STROLL_REPORT;
     app->linkAction = 3;
-    return 7;
+    return START_STROLL_END;
 }
 
 int PokewalkerApp_StartStroll_PrintRegistered(PokewalkerApp *app) {
     app->textPrinterId = PokewalkerApp_StartMessageBox(app, 2, msg_0274_00025);
-    return 6;
+    return START_STROLL_WAIT_REGISTERED;
 }
 
 int PokewalkerApp_StartStroll_WaitRegistered(PokewalkerApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId)) {
-        app->nextMode = 11;
-        return 7;
+        app->nextMode = POKEWALKER_APP_MODE_EXIT;
+        return START_STROLL_END;
     }
-    return 6;
+    return START_STROLL_WAIT_REGISTERED;
 }
 
 int PokewalkerApp_StartStroll_End(PokewalkerApp *app) {
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_1);
-    return 8;
+    return START_STROLL_DONE;
 }
 
 #pragma opt_propagation off

@@ -54,33 +54,6 @@ typedef struct ApricornBoxMoveTask {
     Sprite *sprite;
 } ApricornBoxMoveTask;
 
-typedef struct ApricornBoxListDesc {
-    u16 count;
-    u8 x;
-    u8 y;
-    const u8 *messages;
-} ApricornBoxListDesc;
-
-extern const u8 gApricornBoxQuantityDigitX[];
-extern const TouchscreenListMenuTemplate gApricornBoxListMenuTemplates[2];
-extern const ResdatIdList gApricornBoxSpriteResources;
-extern const GraphicsModes gApricornBoxGraphicsModes;
-extern const u8 gApricornBoxListMenu0Messages[3];
-extern const u8 gApricornBoxListMenu1Messages[2];
-extern const ApricornBoxListDesc gApricornBoxListMenus[2];
-extern const OamCharTransferParam gApricornBoxOamCharTransferParam;
-extern const BgTemplate gApricornBoxBgTemplate_Sub3;
-extern const BgTemplate gApricornBoxBgTemplate_Main0;
-extern const u16 gApricornBoxApricornPositions[7][2];
-extern const BgTemplate gApricornBoxBgTemplate_Main3;
-extern const BgTemplate gApricornBoxBgTemplate_Main1;
-extern const BgTemplate gApricornBoxBgTemplate_Sub0;
-extern const BgTemplate gApricornBoxBgTemplate_Main2;
-extern const OamManagerParam gApricornBoxOamManagerParam;
-extern const GraphicsBanks gApricornBoxGraphicsBanks;
-extern const WindowTemplate gApricornBoxWindowTemplates[];
-extern const UnmanagedSpriteTemplate gApricornBoxSpriteTemplates[7];
-
 static void ApricornBoxScreen_InitFromArgs(ApricornBoxScreen *screen);
 static void ApricornBoxScreen_RestoreMenuInputState(ApricornBoxScreen *screen);
 static BOOL ApricornBoxScreen_Setup(ApricornBoxScreen *screen);

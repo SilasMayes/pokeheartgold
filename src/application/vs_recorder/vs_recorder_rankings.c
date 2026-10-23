@@ -6,6 +6,7 @@
 #include "constants/species.h"
 
 #include "application/vs_recorder/vs_recorder_internal.h"
+#include "application/vs_recorder/vs_recorder_screens.h"
 #include "global_terminal/global_terminal_net.h"
 #include "msgdata/msg/msg_0013.h"
 
@@ -69,26 +70,6 @@ enum VsRecorderRankingsSwitchStep {
     RANKINGS_SWITCH_STEP_DONE,
 };
 
-// window position and size in tiles
-typedef struct VsRecorderRankingsWindowRect {
-    u32 x;
-    u32 y;
-    u32 width;
-    u32 height;
-} VsRecorderRankingsWindowRect;
-
-typedef struct VsRecorderRankingTeamCounts {
-    int counts[3];
-} VsRecorderRankingTeamCounts;
-
-extern const VsRecorderRankingTeamCounts gVsRecorderRankingTeamCounts;             // teams per kind: 16 trainer types, 12 months, 20 species
-extern const TouchscreenHitbox gVsRecorderRankingsHitboxes[];                      // SWITCH RANKINGS, SWITCH TEAMS, exit
-extern const VsRecorderRankingsWindowRect gVsRecorderRankingsButtonLabelWindows[]; // VsRecorderRankings.buttonLabels
-extern const VsRecorderRankingsWindowRect gVsRecorderRankingsThisWeekWindows[];    // VsRecorderRankings.windows, this week
-extern const VsRecorderRankingsWindowRect gVsRecorderRankingsLastWeekWindows[];    // VsRecorderRankings.windows, last week
-extern const VsRecorderListConfig gVsRecorderRankingsThisWeekListConfig;           // this week's ranking list
-extern const VsRecorderListConfig gVsRecorderRankingsLastWeekListConfig;           // last week's results list
-
 // ranking list entry kinds (VsRecorderListEntry.msgId)
 #define RANKING_ENTRY_TRAINER_TYPE       10000
 #define RANKING_ENTRY_TRAINER_TYPE_SCORE 20000
@@ -147,7 +128,7 @@ void VsRecorder_OnBoxListReceived(void *arg, GlobalTerminalNetError *error) {
 static void VsRecorder_InitRankingsList(VsRecorderWork *work) {
     VsRecorderRankings *rankings = work->screenWork;
 
-    if (rankings->lastWeek == FALSE) {
+    if (!rankings->lastWeek) {
         rankings->listConfig = gVsRecorderRankingsThisWeekListConfig;
         rankings->valueTemplate = NULL;
     } else {
@@ -175,7 +156,7 @@ static void VsRecorder_FillRankingEntries(VsRecorderWork *work) {
     switch (rankings->team) {
     case VS_RECORDER_RANKING_TEAM_TRAINER_TYPE:
         for (i = 0; i < 16; i++) {
-            if (rankings->lastWeek == FALSE) {
+            if (!rankings->lastWeek) {
                 rankings->entries[rankings->ranking][i].msgId = RANKING_ENTRY_TRAINER_TYPE;
                 rankings->entries[rankings->ranking][i].value = VsRecorder_GetAvatarFileId(rankings->standings[rankings->ranking].trainerTypes[i], 4);
                 rankings->entries[rankings->ranking][i].time = (s64)i;
@@ -191,7 +172,7 @@ static void VsRecorder_FillRankingEntries(VsRecorderWork *work) {
         break;
     case VS_RECORDER_RANKING_TEAM_BIRTH_MONTH:
         for (i = 0; i < 12; i++) {
-            if (rankings->lastWeek == FALSE) {
+            if (!rankings->lastWeek) {
                 rankings->entries[rankings->ranking][i].msgId = RANKING_ENTRY_BIRTH_MONTH;
                 rankings->entries[rankings->ranking][i].value = rankings->standings[rankings->ranking].birthMonths[i];
                 rankings->entries[rankings->ranking][i].time = (s64)i;
@@ -207,7 +188,7 @@ static void VsRecorder_FillRankingEntries(VsRecorderWork *work) {
         break;
     case VS_RECORDER_RANKING_TEAM_SPECIES:
         for (i = 0; i < 20; i++) {
-            if (rankings->lastWeek == FALSE) {
+            if (!rankings->lastWeek) {
                 rankings->entries[rankings->ranking][i].msgId = RANKING_ENTRY_SPECIES;
                 rankings->entries[rankings->ranking][i].value = rankings->standings[rankings->ranking].species[i];
                 rankings->entries[rankings->ranking][i].time = (s64)i;
@@ -267,7 +248,7 @@ static void VsRecorder_CreateRankingsWindows(VsRecorderWork *work) {
 
     for (i = 0, window = rankings->windows; i < 2; i++) {
         InitWindow(window);
-        if (rankings->lastWeek == FALSE) {
+        if (!rankings->lastWeek) {
             AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_MAIN_2, rect->x, rect->y, rect->width, rect->height, 14, baseTile);
             baseTile += rect->width * rect->height;
         } else {
@@ -387,7 +368,7 @@ static void VsRecorder_PrintRankingsInfo(VsRecorderWork *work) {
 static void VsRecorder_SetRankingsSendButtonHidden(VsRecorderWork *work, BOOL hidden) {
     VsRecorderRankings *rankings = work->screenWork;
 
-    if (hidden == FALSE) {
+    if (!hidden) {
         ManagedSprite_SetDrawFlag(rankings->sendButton.sprite, TRUE);
         TextOBJ_SetSpritesDrawFlag(rankings->sendButton.text, TRUE);
         ManagedSprite_SetPositionXY(rankings->exitButton.sprite, 128, 232);
@@ -583,7 +564,7 @@ BOOL VsRecorder_RankingsDownload(VsRecorderWork *work) {
         }
         {
             int missing = FALSE;
-            if (rankings->lastWeek == FALSE) {
+            if (!rankings->lastWeek) {
                 VsRecorderRankingStandings *standings = rankings->standings;
                 if (!standings[0].recordId || !standings[1].recordId || !standings[2].recordId) {
                     missing = TRUE;

@@ -19,6 +19,31 @@
 #include "sprite_system.h"
 #include "sys_task_api.h"
 
+// Modes of the app (gPokewalkerAppModes).
+enum PokewalkerAppMode {
+    POKEWALKER_APP_MODE_MAIN_MENU,
+    POKEWALKER_APP_MODE_QUIT_MESSAGE,
+    POKEWALKER_APP_MODE_ERASE_RECORDS,
+    POKEWALKER_APP_MODE_LINK,
+    POKEWALKER_APP_MODE_WAIT_KEY_TO_SAVE,
+    POKEWALKER_APP_MODE_START_STROLL,
+    POKEWALKER_APP_MODE_LINK_SAVE,
+    POKEWALKER_APP_MODE_SELECT_MON,
+    POKEWALKER_APP_MODE_EVENT_LOG,
+    POKEWALKER_APP_MODE_WAIT_KEY,
+    POKEWALKER_APP_MODE_STROLL_REPORT,
+    POKEWALKER_APP_MODE_EXIT, // leaves the app
+};
+
+// States of PokewalkerApp_Main; the mode functions return the next one.
+enum PokewalkerAppState {
+    POKEWALKER_APP_STATE_FADE_IN,
+    POKEWALKER_APP_STATE_ENTER,
+    POKEWALKER_APP_STATE_UPDATE,
+    POKEWALKER_APP_STATE_EXIT,
+    POKEWALKER_APP_STATE_FADE_OUT,
+};
+
 // A Pokemon that can be found on a Pokewalker course.
 typedef struct PokewalkerRouteMon {
     u16 species;
@@ -128,7 +153,7 @@ typedef struct PokewalkerAppMotion {
 // Work of the Pokewalker connection app (main menu option).
 typedef struct PokewalkerApp {
     int mode;      // index into the mode table (enter/update/exit functions)
-    int nextMode;  // 11 = leave the app
+    int nextMode;
     int state;     // state of the current mode
     int nextState; // state to go to after a message or the cursor animation
     int linkAction;
@@ -151,8 +176,9 @@ typedef struct PokewalkerApp {
     u32 unk_F1D0;
     u16 ownRecordVersion;
     u8 unk_F1D6[2];
-    PokewalkerIrClock ownRecordClock;    // copied from the Pokewalker save data
-    u8 ownTrainerHouseData[0x1634];      // filled by PokewalkerApp_BuildTrainerHouseData
+    PokewalkerIrClock ownRecordClock;               // copied from the Pokewalker save data
+    PokewalkerTrainerHouseData ownTrainerHouseData; // filled by PokewalkerApp_BuildTrainerHouseData
+    u8 unk_F3F4[0x1440];
     u8 irCompressBuffer[0xCF1C];
     SaveData *eventLogSaveData; // arguments of the Pokewalker event log app (mode 8)
     PokewalkerIrRecord *eventLogRecords;
@@ -506,6 +532,5 @@ void PokewalkerApp_AddStrollToEventLog(PokewalkerApp *app);
 void PokewalkerEventLog_InitStrollEndRecord(PokewalkerIrRecord *record, PokewalkerEventLogParams *params);
 void PokewalkerEventLog_SetGiftMon(PokewalkerIrRecord *records, PokewalkerEventLogMon *mon);
 BOOL PokewalkerEventLog_HasGiftMon(PokewalkerIrRecord *records);
-void PokewalkerApp_BuildTrainerHouseData(SaveData *saveData, void *dst);
 
 #endif // POKEHEARTGOLD_APPLICATION_POKEWALKER_POKEWALKER_APP_H

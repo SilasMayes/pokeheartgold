@@ -110,6 +110,21 @@ static void PokewalkerBoxDisplay_ShowMon(PokewalkerBoxDisplay *display, Pokewalk
 static void PokewalkerBoxDisplay_ShowMonSprites(PokewalkerBoxDisplay *display, PokewalkerSelectMonInfo *info);
 static void PokewalkerBoxDisplay_Update(PokewalkerBoxDisplay *display);
 
+enum LinkSaveState {
+    LINK_SAVE_PRINT_SAVING,
+    LINK_SAVE_WAIT_SAVING,
+    LINK_SAVE_SAVE,
+    LINK_SAVE_END_SAVE,
+    LINK_SAVE_SET_NEXT_MODE,
+    LINK_SAVE_PRINT_SAVING2,
+    LINK_SAVE_WAIT_SAVING2,
+    LINK_SAVE_SAVE2,
+    LINK_SAVE_END_SAVE2,
+    LINK_SAVE_GO_TO_STROLL_REPORT,
+    LINK_SAVE_END,
+    LINK_SAVE_DONE,
+};
+
 int PokewalkerApp_LinkSave_Enter(PokewalkerApp *app) {
     app->strollMon = NULL;
     if (app->linkAction == 1) {
@@ -144,90 +159,90 @@ int PokewalkerApp_LinkSave_Enter(PokewalkerApp *app) {
         Pokewalker_SetStrollState(app->pokewalker, 1, 0);
     }
     app->peerIdentity.hasWalkerMon = 0;
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_LinkSave_Update(PokewalkerApp *app) {
     int state = gLinkSaveStates[app->state](app);
     app->state = state;
-    if (state == 11) {
+    if (state == LINK_SAVE_DONE) {
         app->state = 0;
-        return 3;
+        return POKEWALKER_APP_STATE_EXIT;
     }
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_LinkSave_Exit(PokewalkerApp *app) {
     PokewalkerApp_HideSprite(app, 8);
-    return 1;
+    return POKEWALKER_APP_STATE_ENTER;
 }
 
 int PokewalkerApp_LinkSave_PrintSaving(PokewalkerApp *app) {
     app->textPrinterId = PokewalkerApp_StartMessageBox(app, 2, msg_0274_00013);
     PokewalkerApp_ShowConnectionSprites(app, 0);
-    return 1;
+    return LINK_SAVE_WAIT_SAVING;
 }
 
 int PokewalkerApp_LinkSave_WaitSaving(PokewalkerApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId) && app->monPicAlpha == 31 && !IsFanfarePlayingOrWaiting()) {
         IsFanfarePlaying();
         PokewalkerApp_CreateWaitingIcon(app);
-        return 2;
+        return LINK_SAVE_SAVE;
     }
-    return 1;
+    return LINK_SAVE_WAIT_SAVING;
 }
 
 int PokewalkerApp_LinkSave_Save(PokewalkerApp *app) {
     SaveGameNormal(app->saveData);
     Save_ClearStatusFlags(app->saveData);
-    return 3;
+    return LINK_SAVE_END_SAVE;
 }
 
 int PokewalkerApp_LinkSave_EndSave(PokewalkerApp *app) {
     PokewalkerApp_DeleteWaitingIcon(app);
-    return 4;
+    return LINK_SAVE_SET_NEXT_MODE;
 }
 
 int PokewalkerApp_LinkSave_SetNextMode(PokewalkerApp *app) {
-    app->nextMode = app->linkAction == 4 ? 0 : 8;
-    return 10;
+    app->nextMode = app->linkAction == 4 ? POKEWALKER_APP_MODE_MAIN_MENU : POKEWALKER_APP_MODE_EVENT_LOG;
+    return LINK_SAVE_END;
 }
 
 int PokewalkerApp_LinkSave_PrintSaving2(PokewalkerApp *app) {
     app->textPrinterId = PokewalkerApp_StartMessageBox(app, 2, msg_0274_00013);
     PokewalkerApp_ShowConnectionSprites(app, 0);
-    return 6;
+    return LINK_SAVE_WAIT_SAVING2;
 }
 
 int PokewalkerApp_LinkSave_WaitSaving2(PokewalkerApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId)) {
         PokewalkerApp_CreateWaitingIcon(app);
-        return 7;
+        return LINK_SAVE_SAVE2;
     }
-    return 6;
+    return LINK_SAVE_WAIT_SAVING2;
 }
 
 int PokewalkerApp_LinkSave_Save2(PokewalkerApp *app) {
     SaveGameNormal(app->saveData);
     Save_ClearStatusFlags(app->saveData);
-    return 8;
+    return LINK_SAVE_END_SAVE2;
 }
 
 int PokewalkerApp_LinkSave_EndSave2(PokewalkerApp *app) {
     PokewalkerApp_DeleteWaitingIcon(app);
-    return 9;
+    return LINK_SAVE_GO_TO_STROLL_REPORT;
 }
 
 int PokewalkerApp_LinkSave_GoToStrollReport(PokewalkerApp *app) {
-    app->nextMode = 10;
-    return 10;
+    app->nextMode = POKEWALKER_APP_MODE_STROLL_REPORT;
+    return LINK_SAVE_END;
 }
 
 int PokewalkerApp_LinkSave_End(PokewalkerApp *app) {
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_1);
     PokewalkerApp_HideSprite(app, 6);
-    return 11;
+    return LINK_SAVE_DONE;
 }
 
 #define SELECT_MON_WORK(app, member) ((u8 *)(app) + 0x1D764 + offsetof(PokewalkerSelectMonWork, member))
@@ -256,9 +271,9 @@ int PokewalkerApp_SelectMon_Enter(PokewalkerApp *app) {
         PokewalkerBoxDisplay_Init(*(void **)SELECT_MON_WORK(app, boxDisplay), app->bgConfig);
         Main_SetVBlankIntrCB((GFIntrCB)PokewalkerApp_SelectMon_VBlankCB, (PokewalkerSelectMonWork *)&app->selectMonState);
         *(int *)SELECT_MON_WORK(app, state) = 0;
-        return 2;
+        return POKEWALKER_APP_STATE_UPDATE;
     }
-    return 1;
+    return POKEWALKER_APP_STATE_ENTER;
 }
 
 #undef SELECT_MON_WORK
@@ -297,14 +312,14 @@ int PokewalkerApp_SelectMon_Update(PokewalkerApp *app) {
     case 5:
         if (IsPaletteFadeFinished()) {
             PokewalkerApp_SelectMon_StoreSelection(work, app);
-            return 3;
+            return POKEWALKER_APP_STATE_EXIT;
         }
         break;
     }
 
     BoxMonSelector_RenderSprites(work->boxSelector);
     PokewalkerBoxDisplay_Update(work->boxDisplay);
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_SelectMon_Exit(PokewalkerApp *app) {
@@ -317,8 +332,8 @@ int PokewalkerApp_SelectMon_Exit(PokewalkerApp *app) {
     ObjPlttTransfer_Destroy();
     Heap_Free(app->bgConfig);
     PokewalkerApp_Setup(app);
-    app->nextMode = app->selectMonCancelled == TRUE ? 0 : 3;
-    return 1;
+    app->nextMode = app->selectMonCancelled == TRUE ? POKEWALKER_APP_MODE_MAIN_MENU : POKEWALKER_APP_MODE_LINK;
+    return POKEWALKER_APP_STATE_ENTER;
 }
 
 static void PokewalkerApp_SelectMon_SetGxBanks(void) {
@@ -409,7 +424,7 @@ static void PokewalkerApp_SelectMon_VBlankCB(PokewalkerSelectMonWork *work) {
 }
 
 static void PokewalkerApp_SelectMon_StoreSelection(PokewalkerSelectMonWork *work, PokewalkerApp *app) {
-    if (work->cancelled == FALSE) {
+    if (!work->cancelled) {
         u32 box = work->box;
         if (box == 18) {
             Pokemon *mon = Party_GetMonByIndex(SaveArray_Party_Get(app->saveData), work->slot);
@@ -501,7 +516,7 @@ int PokewalkerApp_EventLog_Enter(PokewalkerApp *app) {
     app->eventLogRecords = app->irStatus.records;
     BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_WHITE, 6, 1, HEAP_ID_154);
     GF_SndStartFadeOutBGM(0, 16);
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_EventLog_Update(PokewalkerApp *app) {
@@ -510,7 +525,7 @@ int PokewalkerApp_EventLog_Update(PokewalkerApp *app) {
         if (IsPaletteFadeFinished() == TRUE) {
             PokewalkerApp_Teardown(app);
             if (PokewalkerApp_IsEventLogInvalid(app->irStatus.records)) {
-                return 3;
+                return POKEWALKER_APP_STATE_EXIT;
             }
             app->state = 1;
         }
@@ -526,38 +541,38 @@ int PokewalkerApp_EventLog_Update(PokewalkerApp *app) {
         }
         break;
     case 3:
-        return 3;
+        return POKEWALKER_APP_STATE_EXIT;
     }
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_EventLog_Exit(PokewalkerApp *app) {
     PokewalkerApp_Setup(app);
     app->state = 0;
-    app->nextMode = 10;
-    return 1;
+    app->nextMode = POKEWALKER_APP_MODE_STROLL_REPORT;
+    return POKEWALKER_APP_STATE_ENTER;
 }
 
 int PokewalkerApp_WaitKey_Enter(PokewalkerApp *app) {
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_WaitKey_Update(PokewalkerApp *app) {
     if (gSystem.newKeys & PAD_KEY_DOWN) {
-        app->nextMode = 3;
-        return 3;
+        app->nextMode = POKEWALKER_APP_MODE_LINK;
+        return POKEWALKER_APP_STATE_EXIT;
     }
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_WaitKey_Exit(PokewalkerApp *app) {
-    return 1;
+    return POKEWALKER_APP_STATE_ENTER;
 }
 
 int PokewalkerApp_StrollReport_Enter(PokewalkerApp *app) {
     PokewalkerApp_RemoveWindowBank(app, 1);
     PokewalkerApp_AddWindowBank(app, 4);
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_StrollReport_Update(PokewalkerApp *app) {
@@ -565,9 +580,9 @@ int PokewalkerApp_StrollReport_Update(PokewalkerApp *app) {
     app->state = state;
     if (state == STROLL_REPORT_DONE) {
         app->state = 0;
-        return 3;
+        return POKEWALKER_APP_STATE_EXIT;
     }
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_StrollReport_Exit(PokewalkerApp *app) {
@@ -577,7 +592,7 @@ int PokewalkerApp_StrollReport_Exit(PokewalkerApp *app) {
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_2);
     PokewalkerApp_RemoveWindowBank(app, 6);
     PokewalkerApp_AddWindowBank(app, 1);
-    return 1;
+    return POKEWALKER_APP_STATE_ENTER;
 }
 
 int PokewalkerApp_StrollReport_Start(PokewalkerApp *app) {
@@ -646,7 +661,7 @@ int PokewalkerApp_StrollReport_PrintMonArrived(PokewalkerApp *app) {
 }
 
 int PokewalkerApp_StrollReport_PrintLevelUp(PokewalkerApp *app) {
-    if (app->strollMonLeveledUp == FALSE) {
+    if (!app->strollMonLeveledUp) {
         return STROLL_REPORT_PRINT_WATTS;
     }
     app->textPrinterId = PokewalkerApp_StartMessageBox(app, 0, msg_0274_00052);
@@ -1044,7 +1059,7 @@ int PokewalkerApp_StrollReport_PrintRecords(PokewalkerApp *app) {
 }
 
 int PokewalkerApp_StrollReport_WaitMessage(PokewalkerApp *app) {
-    if (TextPrinterCheckActive(app->textPrinterId) == FALSE && IsFanfarePlaying() == FALSE) {
+    if (!TextPrinterCheckActive(app->textPrinterId) && !IsFanfarePlaying()) {
         u32 state = app->nextState;
         app->state = state;
         return state;
@@ -1053,7 +1068,7 @@ int PokewalkerApp_StrollReport_WaitMessage(PokewalkerApp *app) {
 }
 
 int PokewalkerApp_StrollReport_End(PokewalkerApp *app) {
-    app->nextMode = 0;
+    app->nextMode = POKEWALKER_APP_MODE_MAIN_MENU;
     return STROLL_REPORT_DONE;
 }
 

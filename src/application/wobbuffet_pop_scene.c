@@ -16,10 +16,11 @@
 #include "overlay_manager.h"
 #include "palette.h"
 #include "screen_fade.h"
+#include "screen_fade_internal.h"
 #include "sound_playback.h"
 #include "sprite_system.h"
 #include "text.h"
-#include "wobbuffet_pop.h"
+#include "wobbuffet_pop_internal.h"
 
 typedef struct WobbuffetPopRingSpeed {
     u8 steps;
@@ -88,9 +89,6 @@ enum WobbuffetPopBonusTargetHitStep {
     WOBBUFFET_POP_BONUS_TARGET_HIT_HOP,
 };
 
-extern const u32 gWobbuffetPopCommands[];
-extern void (*const gWobbuffetPopEventFuncs[])(WobbuffetPop *game, WobbuffetPopEvent *event);
-
 static void WobbuffetPopInflation_Start(BgConfig *bgConfig, int playerCount, int size, WobbuffetPopInflation *inflation);
 static void WobbuffetPopInflation_Stop(BgConfig *bgConfig, WobbuffetPopInflation *inflation);
 static void WobbuffetPopInflation_UpdateBg(BgConfig *bgConfig, WobbuffetPopInflation *inflation, int playerCount);
@@ -129,8 +127,6 @@ static void WobbuffetPopDust_Free(WobbuffetPop *game, WobbuffetPopDust *dust);
 static void WobbuffetPopDust_Start(WobbuffetPop *game, WobbuffetPopBonusTarget *target, WobbuffetPopDust *dust);
 static void WobbuffetPopDust_Update(WobbuffetPop *game, WobbuffetPopBonusTarget *target, WobbuffetPopDust *dust);
 static void WobbuffetPop_QueuePumpEvent(WobbuffetPop *game, const WobbuffetPopPump *pump);
-
-void SetBothScreensBrightnessByColor(u16 color);
 
 static u32 WobbuffetPopBonusTarget_Idle(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
 static u32 WobbuffetPopBonusTarget_Enter(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);

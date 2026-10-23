@@ -14,8 +14,7 @@ typedef struct PokewalkerTrainerHouseData {
 
 extern const u16 gTrainerHouseDailyFlags[MAX_NUM_TRAINER_HOUSE_SETS];
 
-// dst: PokewalkerTrainerHouseData
-void PokewalkerApp_BuildTrainerHouseData(SaveData *saveData, void *dst);
+void PokewalkerApp_BuildTrainerHouseData(SaveData *saveData, PokewalkerTrainerHouseData *data);
 void PokewalkerApp_SaveTrainerHouseData(SaveData *saveData, PokewalkerTrainerHouseData *data);
 
 #endif // POKEHEARTGOLD_APPLICATION_POKEWALKER_POKEWALKER_TRAINER_HOUSE_H
