@@ -225,6 +225,14 @@ typedef struct PokeathlonCirclePush {
     void *sortBuffer;
 } PokeathlonCirclePush;
 
+// Contacts between the Pokemon of this frame.
+typedef struct PokeathlonCirclePushContact {
+    BOOL touching;
+    int unk04;
+    PokeathlonCirclePushMon *other;
+    int unk0C;
+} PokeathlonCirclePushContact;
+
 BOOL PokeathlonCirclePush_Init(PokeathlonCourseData *course);
 BOOL PokeathlonCirclePush_Main(PokeathlonCourseData *course);
 BOOL PokeathlonCirclePush_CalcResults(PokeathlonCourseData *course);
@@ -250,5 +258,7 @@ void PokeathlonCirclePushDisplay_Free(PokeathlonCirclePushDisplay *display);
 void PokeathlonCirclePushDisplay_LoadScreens(PokeathlonCirclePushDisplay *display);
 void PokeathlonCirclePushDisplay_LoadPics(PokeathlonCirclePushDisplay *display);
 void PokeathlonCirclePushDisplay_LoadSpriteResources(PokeathlonCourseSpritePool *pool, PokeathlonCirclePushDisplay *display);
+
+extern PokeathlonCirclePushContact gPokeathlonCirclePushContacts[12][12];
 
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_CIRCLE_PUSH_H

@@ -45,8 +45,6 @@ enum PokeathlonRingDropInitState {
     RING_DROP_INIT_START,
 };
 
-extern const GraphicsBanks gPokeathlonRingDropGraphicsBanks;
-
 static void PokeathlonRingDrop_SetGfxBanks(void);
 static void PokeathlonRingDrop_Update(PokeathlonCourseData *course);
 static BOOL PokeathlonRingDrop_ReadInput(PokeathlonCourseData *course);

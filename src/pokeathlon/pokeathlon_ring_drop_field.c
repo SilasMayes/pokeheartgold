@@ -16,21 +16,6 @@ typedef struct PokeathlonRingDropCollision {
     s32 radius;
 } PokeathlonRingDropCollision;
 
-// The Pokemon start positions (ground x, y) and the switch spots: x, y, radius.
-extern const s16 gPokeathlonRingDropMonStartPositions[RING_DROP_PARTICIPANTS][2];
-
-typedef struct PokeathlonRingDropSwitchSpot {
-    s16 x;
-    s16 y;
-    s16 radius;
-} PokeathlonRingDropSwitchSpot;
-
-extern const PokeathlonRingDropSwitchSpot gPokeathlonRingDropSwitchSpots[RING_DROP_PARTICIPANTS];
-// The direction 4 (PokeathlonRingDrop_GetDirection measures the angle from it).
-extern VecFx32 gPokeathlonRingDropDirectionReference;
-// The ring's edge: two lines (x, y pairs) the Pokemon must stay right of between y 64 and 160.
-extern const s16 gPokeathlonRingDropRingEdge[4][2];
-
 static BOOL PokeathlonRingDropMon_Collide(PokeathlonRingDropMon *a, PokeathlonRingDropMon *b);
 static BOOL PokeathlonRingDropMon_CanCollide(PokeathlonRingDropMon *mon);
 

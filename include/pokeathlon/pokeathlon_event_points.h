@@ -7,6 +7,8 @@
 
 // The course points of an event.
 
+typedef u32 (*PokeathlonEventPointsFunc)(u32 score);
+
 void PokeathlonEvent_CalcPoints(PokeathlonCourseScoreList *list, int event);
 void PokeathlonEvent_CalcPointsFromScores(PokeathlonCourseScoreList *list, int event);
 void PokeathlonEvent_CalcPointsFromRanks(PokeathlonCourseScoreList *list, int event);
@@ -21,5 +23,9 @@ u8 PokeathlonEvent_RingDropPoints(u32 score);
 u8 PokeathlonEvent_SnowThrowPoints(int score);
 
 void PokeathlonEvent_CalcRankPoints(PokeathlonCourseScoreList *list);
+
+extern void (*const gPokeathlonEventPointsCalcFuncs[])(PokeathlonCourseScoreList *list, int event);
+extern const PokeathlonEventPointsFunc gPokeathlonEventScorePointsFuncs[];
+extern const u8 gPokeathlonEventRankPoints[4];
 
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_EVENT_POINTS_H

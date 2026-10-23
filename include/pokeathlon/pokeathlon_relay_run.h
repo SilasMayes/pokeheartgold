@@ -346,4 +346,7 @@ void PokeathlonRelayRunCpu_SetObstacles(struct PokeathlonRelayRunCpu *cpu, s32 *
 void PokeathlonRelayRunCpu_Delete(struct PokeathlonRelayRunCpu *cpu);
 u8 PokeathlonRelayRunCpu_Update(PokeathlonCourseData *course, struct PokeathlonRelayRunCpu *cpu, s32 timer);
 
+extern const VecFx32 gRelayRunMapStartOffset; // track map: offset of the start from its centre
+extern const VecFx32 gRelayRunMapCenter;      // track map: centre
+
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_RELAY_RUN_H

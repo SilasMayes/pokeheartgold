@@ -42,17 +42,6 @@ void PokeathlonCourseSpritePoolSprite_SetPosition(PokeathlonCourseSpritePoolSpri
 VecFx32 *PokeathlonCourseSpritePoolSprite_GetPosition(PokeathlonCourseSpritePoolSprite *sprite);
 void PokeathlonCourseSpritePoolSprite_SetDrawPriority(PokeathlonCourseSpritePoolSprite *sprite, int priority);
 
-extern const WindowTemplate gPennantCaptureScoreWindowTemplate;
-extern const VecFx32 gPennantCaptureReferenceVector;
-
-// The sides of an obstacle a path enters through (edge and corner hit codes; 9-12 = from inside).
-typedef struct PokeathlonPennantCaptureHitCodes {
-    int sides[4];
-} PokeathlonPennantCaptureHitCodes;
-
-extern const PokeathlonPennantCaptureHitCodes gPennantCaptureEdgeHits;   // edge hits
-extern const PokeathlonPennantCaptureHitCodes gPennantCaptureCornerHits; // corner hits
-
 typedef struct PokeathlonPennantCaptureCollisionFrame {
     int bY;
     int bX;

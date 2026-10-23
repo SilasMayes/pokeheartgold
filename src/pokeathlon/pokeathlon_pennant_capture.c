@@ -21,9 +21,6 @@
 #include "system.h"
 #include "wireless_status_icon.h"
 
-extern const GraphicsBanks gPennantCaptureGraphicsBanks;
-extern const PokeathlonCourseSpritePoolTemplate gPennantCaptureSpritePoolTemplate;
-
 enum PokeathlonPennantCaptureInitState {
     PENNANT_CAPTURE_INIT_CREATE,
     PENNANT_CAPTURE_INIT_CREATE_DISPLAY,

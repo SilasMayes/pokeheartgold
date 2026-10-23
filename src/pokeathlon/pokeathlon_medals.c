@@ -20,23 +20,6 @@ FS_EXTERN_OVERLAY(OVY_98);
 
 #define MEDALS_SPRITE(work, index) (((PokeathlonMedals *)((u8 *)(work) + (index) * sizeof(ManagedSprite *)))->sprites[0])
 
-extern const s32 gPokeathlonMedalsSpeciesOrderFiles[];
-extern const TouchscreenHitbox gPokeathlonMedalsHitboxes[];
-extern const int gPokeathlonMedalsTrustTrophyResIds[];
-extern const int gPokeathlonMedalsMonPicResIds[];
-extern const GraphicsModes gPokeathlonMedalsGraphicsModes;
-extern const int gPokeathlonMedalsMonIconResIds[];
-extern const GridCallbacks gPokeathlonMedalsGridCallbacks;
-extern const int gPokeathlonMedalsMedalColumns[5];
-extern const SpriteResourceCountsListUnion gPokeathlonMedalsSpriteResourceCounts;
-extern const WindowTemplate gPokeathlonMedalsWindowTemplates[12];
-extern const TouchscreenHitbox gPokeathlonMedalsGridHitboxes[];
-extern const PokeathlonMedalsBgTemplates gPokeathlonMedalsBgTemplates;
-extern const ManagedSpriteTemplate gPokeathlonMedalsUiSpriteTemplates[4];
-extern const DpadMenuBox gPokeathlonMedalsGridMenuBoxes[];
-extern const u8 gPokeathlonMedalsBgLayers[7];
-extern const char sStr_SeqError_3[]; // "seq error!"
-
 static void PokeathlonMedals_ShowSelectedSpecies(PokeathlonMedals *work);
 static void PokeathlonMedals_HideSelectedSpecies(PokeathlonMedals *work);
 static void PokeathlonMedals_VBlankCallback(PokeathlonMedals *work);

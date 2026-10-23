@@ -16,21 +16,6 @@ FS_EXTERN_OVERLAY(OVY_98);
 
 #define EVENT_RECORD_SPRITE(work, index) (((PokeathlonEventRecord *)((u8 *)(work) + (index) * sizeof(ManagedSprite *)))->sprites[0])
 
-extern const WindowTemplate gPokeathlonEventRecordWindowTemplates[19];
-extern const char sStr_SeqError_4[]; // "seq error!"
-extern const GraphicsModes gPokeathlonEventRecordGraphicsModes;
-extern const PokeathlonEventRecordBgTemplates gPokeathlonEventRecordBgTemplates;
-extern const u8 gPokeathlonEventRecordBgLayers[6];
-extern const u8 gPokeathlonEventRecordWindowY[5][2];
-extern const u32 gPokeathlonEventRecordModeTitleMsgIds[2];
-extern const u32 gPokeathlonEventRecordModeSubtitleMsgIds[2];
-extern const SpriteResourceCountsListUnion gPokeathlonEventRecordSpriteResourceCounts;
-extern const int gPokeathlonEventRecordMonIconResIds[];
-extern const ManagedSpriteTemplate gPokeathlonEventRecordUiSpriteTemplates[2];
-extern const int gPokeathlonEventRecordEventSpriteResIds[GF_GFX_RES_TYPE_MAX];
-extern const TouchscreenHitbox gPokeathlonEventRecordHitboxes[];
-extern const PokeathlonEventRecordDefaultEntry gPokeathlonEventRecordDefaultEntry;
-
 static void PokeathlonEventRecord_VBlankCallback(PokeathlonEventRecord *work);
 static void PokeathlonEventRecord_InitBgs(PokeathlonEventRecord *work);
 static void PokeathlonEventRecord_LoadBgGraphics(PokeathlonEventRecord *work);

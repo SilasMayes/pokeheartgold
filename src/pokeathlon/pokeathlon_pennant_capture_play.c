@@ -28,13 +28,6 @@ enum PokeathlonPennantCaptureSetupState {
     PENNANT_CAPTURE_SETUP_WAIT_FADE_IN,
 };
 
-extern const GraphicsModes gPennantCaptureGraphicsModes;
-extern const BgTemplate gPennantCaptureBgTemplate_Sub0;
-extern const BgTemplate gPennantCaptureBgTemplate_Sub1;
-extern const BgTemplate gPennantCaptureBgTemplate_Sub2;
-extern const BgTemplate gPennantCaptureBgTemplate_Main0;
-extern const BgTemplate gPennantCaptureBgTemplate_Main3;
-
 // One link entry: [0] own input, [1] own frame (host), [2-5] the participants' inputs, [6] the host's frame.
 typedef struct PokeathlonPennantCaptureLinkEntry {
     u8 data[0x28];

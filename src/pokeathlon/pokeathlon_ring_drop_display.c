@@ -20,23 +20,11 @@
 #include "sound_playback.h"
 #include "sprite_system.h"
 
-typedef struct PokeathlonRingDropBgTemplates {
-    BgTemplate templates[7];
-} PokeathlonRingDropBgTemplates;
-
 // A Pokemon's screen y, to sort the Pokemon by depth.
 typedef struct PokeathlonRingDropDepth {
     u8 y;
     PokeathlonCourseMonObject *monObject;
 } PokeathlonRingDropDepth;
-
-extern const GraphicsModes gPokeathlonRingDropGraphicsModes;
-extern const OamCharTransferParam gPokeathlonRingDropOamCharTransferParam;
-extern const SpriteResourceCountsListUnion gPokeathlonRingDropSpriteResourceCounts;
-extern const u32 gPokeathlonRingDropBgLayers[7];
-extern const OamManagerParam gPokeathlonRingDropOamManagerParam;
-extern const ManagedSpriteTemplate gPokeathlonRingDropSpriteTemplate;
-extern const PokeathlonRingDropBgTemplates gPokeathlonRingDropBgTemplates;
 
 BOOL PlaySE_SetVolume(u16 seqNo, int volume);
 

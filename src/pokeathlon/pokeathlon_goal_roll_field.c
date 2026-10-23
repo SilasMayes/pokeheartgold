@@ -17,14 +17,6 @@
 #include "sound_playback.h"
 #include "text.h"
 
-extern const VecFx32 gPokeathlonGoalRollNormalTopLeft;
-extern const VecFx32 gPokeathlonGoalRollNormalBottomRight;
-extern const VecFx32 gPokeathlonGoalRollNormalBottomLeft;
-extern const VecFx32 gPokeathlonGoalRollUp;
-extern const VecFx32 gPokeathlonGoalRollFrameLeft;
-extern const VecFx32 gPokeathlonGoalRollNormalTopRight;
-extern const VecFx32 gPokeathlonGoalRollFrameRight;
-extern const WindowTemplate gPokeathlonGoalRollNameWindowTemplates[];
 // PokeathlonGoalRoll_CollideWithWalls: the wall or corner that was hit
 enum PokeathlonGoalRollWall {
     GOAL_ROLL_WALL_NONE,
@@ -37,21 +29,6 @@ enum PokeathlonGoalRollWall {
     GOAL_ROLL_WALL_BOTTOM_LEFT,
     GOAL_ROLL_WALL_BOTTOM_RIGHT,
 };
-
-typedef struct PokeathlonGoalRollSpawnPoint {
-    s16 x;
-    s16 y;
-} PokeathlonGoalRollSpawnPoint;
-
-extern const PokeathlonGoalRollSpawnPoint gPokeathlonGoalRollBallSpawnPoints[];
-extern const Point2D gPokeathlonGoalRollGoalLines[4][2]; // the goal line of each corner
-extern const VecFx32 gPokeathlonGoalRollGoalPosts[4][2];
-extern const u8 gPokeathlonGoalRollBallSpeedsA[][30];
-extern const u8 gPokeathlonGoalRollBallSpeedsB[][30];
-extern const u8 gPokeathlonGoalRollKickSpeeds[];
-extern const u8 gPokeathlonGoalRollBounceOffsets[];
-
-extern const PokeathlonGoalRollWindowData gPokeathlonGoalRollWindowData;
 
 static void PokeathlonGoalRoll_CollideBallPair(PokeathlonGoalRollBall *first, PokeathlonGoalRollBall *second);
 static void PokeathlonGoalRoll_BounceBallOff(PokeathlonGoalRollBall *ball, const PokeathlonGoalRollBall *other, int side);

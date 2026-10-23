@@ -49,25 +49,6 @@ s32 _s32_div_f(s32 dividend, s32 divisor);
 
 void MATH_QSort(void *head, u32 num, u32 size, s32 (*compare)(const void *, const void *), void *work);
 
-extern const VecFx32 gPokeathlonDiscCatchTouchDistances;
-extern const VecFx32 gPokeathlonDiscCatchFacingReference;
-extern const GraphicsModes gPokeathlonDiscCatchGraphicsModes;
-extern const SpriteResourceCountsListUnion gPokeathlonDiscCatchSpriteResourceCounts;
-extern const OamManagerParam gPokeathlonDiscCatchOamManagerParam;
-extern const OamCharTransferParam gPokeathlonDiscCatchOamCharTransferParam;
-extern const u32 gPokeathlonDiscCatchBgLayers[7];
-extern const GraphicsBanks gPokeathlonDiscCatchGraphicsBanks;
-extern const s16 gPokeathlonDiscCatchMonStartPositions[DISC_CATCH_PARTICIPANTS][DISC_CATCH_TEAM_SIZE][2]; // where the Pokemon start
-extern const ManagedSpriteTemplate gPokeathlonDiscCatchDiscTopSpriteTemplate;
-extern const ManagedSpriteTemplate gPokeathlonDiscCatchDiscTouchSpriteTemplate;
-extern const ManagedSpriteTemplate gPokeathlonDiscCatchEffectSpriteTemplate;
-
-typedef struct PokeathlonDiscCatchBgTemplates {
-    BgTemplate templates[7];
-} PokeathlonDiscCatchBgTemplates;
-
-extern const PokeathlonDiscCatchBgTemplates gPokeathlonDiscCatchBgTemplates;
-
 #define NEXT_TEAM_RESULT(result) ((PokeathlonDiscCatchResult *)((u8 *)(result) + sizeof(PokeathlonDiscCatchTeam)))
 
 // A Pokemon sprite and the y its draw order goes by.

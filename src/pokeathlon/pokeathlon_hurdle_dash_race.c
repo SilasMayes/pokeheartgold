@@ -45,15 +45,6 @@ void SetPlayerPan(u32 playerNo, s32 pan);
 
 s32 _s32_div_f(s32 num, s32 den);
 
-extern const s8 gHurdleDashRisingJumpHeights[][9];            // height of a rising jump per frame, by jump stat
-extern const s8 gHurdleDashFallingJumpHeights[][9];           // height of a falling jump per frame, by jump stat
-extern u8 gPokeathlonHurdleDashLaneSoundPlayers[];            // sound player of each lane
-extern const s8 gPokeathlonHurdleDashLanePans[];              // pan of each lane
-extern const PokeathlonHurdleDashLaneX gHurdleDashTouchLaneX; // x of each lane (touch)
-extern const PokeathlonHurdleDashLaneX gHurdleDashDustLaneX;  // x of each lane (dust)
-extern const WindowTemplate gHurdleDashTimeWindowTemplate;    // the time window
-extern const f32 gHurdleDashBoostSpeeds[];                    // speed above the top speed by boost level
-
 static void PokeathlonHurdleDashMon_StartJump(PokeathlonCourseData *course, u32 unused, u8 lane, PokeathlonHurdleDashMon *mon);
 static void PokeathlonHurdleDashMon_Update(int lane, PokeathlonHurdleDashMon *mon, f32 *speed);
 static BOOL PokeathlonHurdleDash_IsTouchingHurdle(s32 y, s32 radius, const PokeathlonHurdleDashRect *rect);

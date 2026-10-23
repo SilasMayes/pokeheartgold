@@ -261,6 +261,16 @@ typedef struct PokeathlonRingDrop {
     PokeathlonScreenShake shake;
 } PokeathlonRingDrop;
 
+typedef struct PokeathlonRingDropSwitchSpot {
+    s16 x;
+    s16 y;
+    s16 radius;
+} PokeathlonRingDropSwitchSpot;
+
+typedef struct PokeathlonRingDropBgTemplates {
+    BgTemplate templates[7];
+} PokeathlonRingDropBgTemplates;
+
 void PokeathlonScreenShake_Start(PokeathlonScreenShake *shake, int magnitude, int duration);
 BOOL PokeathlonRingDrop_IsOnSwitchButton(int x, int y);
 BOOL PokeathlonRingDrop_IsWithinDistance(VecFx32 *a, VecFx32 *b, fx32 distance);
@@ -340,5 +350,25 @@ u16 PokeathlonRingDropUi_GetScore(PokeathlonRingDropUi *ui);
 BOOL PokeathlonRingDropUi_RunSwitch(PokeathlonRingDropUi *ui, u8 participant, u8 member);
 BOOL PokeathlonRingDropUi_WaitSwitch(PokeathlonRingDropUi *ui, u8 participant, u8 member);
 void PokeathlonRingDropUi_SetSwitching(PokeathlonRingDropUi *ui, u8 participant, u32 member, BOOL switching);
+
+// The Pokemon start positions (ground x, y) and the switch spots: x, y, radius.
+extern const s16 gPokeathlonRingDropMonStartPositions[RING_DROP_PARTICIPANTS][2];
+extern const PokeathlonRingDropSwitchSpot gPokeathlonRingDropSwitchSpots[RING_DROP_PARTICIPANTS];
+// The direction 4 (PokeathlonRingDrop_GetDirection measures the angle from it).
+extern const VecFx32 gPokeathlonRingDropDirectionReference;
+// The ring's edge: two lines (x, y pairs) the Pokemon must stay right of between y 64 and 160.
+extern const s16 gPokeathlonRingDropRingEdge[4][2];
+// Jump heights by frame (jump type, frame) and fall speeds by jump type.
+extern const s16 gPokeathlonRingDropJumpHeights[5][10];
+extern const u8 gPokeathlonRingDropFallSpeeds[8];
+extern const WindowTemplate gPokeathlonRingDropScoreWindowTemplate;
+extern const GraphicsModes gPokeathlonRingDropGraphicsModes;
+extern const OamCharTransferParam gPokeathlonRingDropOamCharTransferParam;
+extern const SpriteResourceCountsListUnion gPokeathlonRingDropSpriteResourceCounts;
+extern const u32 gPokeathlonRingDropBgLayers[7];
+extern const OamManagerParam gPokeathlonRingDropOamManagerParam;
+extern const ManagedSpriteTemplate gPokeathlonRingDropSpriteTemplate;
+extern const PokeathlonRingDropBgTemplates gPokeathlonRingDropBgTemplates;
+extern const GraphicsBanks gPokeathlonRingDropGraphicsBanks;
 
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_RING_DROP_H

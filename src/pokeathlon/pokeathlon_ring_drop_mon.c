@@ -18,12 +18,6 @@
 
 BOOL PlaySEOnPlayer(u16 seqNo, int player);
 
-extern const s16 gPokeathlonRingDropMonStartPositions[][2];
-// Jump heights by frame (jump type, frame) and fall speeds by jump type.
-extern const s16 gPokeathlonRingDropJumpHeights[5][10];
-extern const u8 gPokeathlonRingDropFallSpeeds[8];
-extern const WindowTemplate gPokeathlonRingDropScoreWindowTemplate;
-
 static void PokeathlonRingDropMon_StartDash(PokeathlonRingDropMon *mon, const s16 *target);
 static void PokeathlonRingDropMon_EndDash(PokeathlonRingDropMon *mon);
 static void PokeathlonRingDropMon_UpdateDash(PokeathlonRingDropMon *mon);

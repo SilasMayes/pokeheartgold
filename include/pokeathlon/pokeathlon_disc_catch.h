@@ -220,6 +220,10 @@ typedef struct PokeathlonDiscCatch {
     PokeathlonDiscCatchShake shake;
 } PokeathlonDiscCatch;
 
+typedef struct PokeathlonDiscCatchBgTemplates {
+    BgTemplate templates[7];
+} PokeathlonDiscCatchBgTemplates;
+
 void PokeathlonDiscCatch_SetMonScaleCenter(PokeathlonCourseMonObject *monPic, int falling);
 BOOL PokeathlonDiscCatchMon_IsTouching(PokeathlonDiscCatchMon *mon, PokeathlonDiscCatchMon *other);
 void PokeathlonDiscCatchMon_Jump(PokeathlonDiscCatchMon *mon);
@@ -251,5 +255,25 @@ void PokeathlonDiscCatch_ClampVelocity(VecFx32 *velocity, fx32 limit);
 void PokeathlonDiscCatch_StopAnims(PokeathlonDiscCatch *work);
 ManagedSprite *PokeathlonDiscCatch_NewDiscSprite(SpriteSystem *spriteSystem, SpriteManager *spriteManager, u16 x, u16 y, u16 anim, u16 priority, BOOL onTouchScreen);
 ManagedSprite *PokeathlonDiscCatch_NewEffectSprite(SpriteSystem *spriteSystem, SpriteManager *spriteManager, u16 x, u16 y, u16 anim, u16 priority);
+
+extern const VecFx32 gPokeathlonDiscCatchTouchDistances;
+extern const VecFx32 gPokeathlonDiscCatchFacingReference;
+extern const GraphicsModes gPokeathlonDiscCatchGraphicsModes;
+extern const SpriteResourceCountsListUnion gPokeathlonDiscCatchSpriteResourceCounts;
+extern const OamManagerParam gPokeathlonDiscCatchOamManagerParam;
+extern const OamCharTransferParam gPokeathlonDiscCatchOamCharTransferParam;
+extern const u32 gPokeathlonDiscCatchBgLayers[7];
+extern const GraphicsBanks gPokeathlonDiscCatchGraphicsBanks;
+extern const s16 gPokeathlonDiscCatchMonStartPositions[DISC_CATCH_PARTICIPANTS][DISC_CATCH_TEAM_SIZE][2]; // where the Pokemon start
+extern const ManagedSpriteTemplate gPokeathlonDiscCatchDiscTopSpriteTemplate;
+extern const ManagedSpriteTemplate gPokeathlonDiscCatchDiscTouchSpriteTemplate;
+extern const ManagedSpriteTemplate gPokeathlonDiscCatchEffectSpriteTemplate;
+extern const PokeathlonDiscCatchBgTemplates gPokeathlonDiscCatchBgTemplates;
+extern const u32 gPokeathlonDiscCatchPhaseSeconds[4];
+extern const WindowTemplate gPokeathlonDiscCatchScoreWindowTemplate;
+extern const u8 gPokeathlonDiscCatchCpuHomeRowStarts[];                                                  // per member: first home row (tiles) of its band ...
+extern const u8 gPokeathlonDiscCatchCpuHomeRowCounts[];                                                  // ... and the band's rows
+extern const int gPokeathlonDiscCatchCpuJumpChances[DISC_CATCH_TEAM_SIZE];                               // per member: chance (%) to jump at a disc in reach
+extern const s16 gPokeathlonDiscCatchCpuHomePositions[DISC_CATCH_PARTICIPANTS][DISC_CATCH_TEAM_SIZE][2]; // home x
 
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_DISC_CATCH_H

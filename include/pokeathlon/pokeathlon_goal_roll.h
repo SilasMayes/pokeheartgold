@@ -261,6 +261,11 @@ typedef struct PokeathlonGoalRoll {
     void *sortWork;
 } PokeathlonGoalRoll;
 
+typedef struct PokeathlonGoalRollSpawnPoint {
+    s16 x;
+    s16 y;
+} PokeathlonGoalRollSpawnPoint;
+
 BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course);
 BOOL PokeathlonGoalRoll_Draw(PokeathlonCourseData *course);
 BOOL PokeathlonGoalRoll_ShowResults(PokeathlonCourseData *course);
@@ -317,5 +322,43 @@ void PokeathlonGoalRollCpu_Free(PokeathlonGoalRollCpu *cpu);
 void PokeathlonGoalRollCpu_Update(PokeathlonCourseData *course, PokeathlonGoalRollCpu *cpu);
 BOOL PokeathlonGoalRollCpu_IsNearPoint(int x, int y, const u16 (*points)[2]);
 void PokeathlonScreenShake_Task(SysTask *task, PokeathlonScreenShake *shake);
+
+extern const VecFx32 gPokeathlonGoalRollWallPost;
+extern const VecFx32 gPokeathlonGoalRollWallNormal;
+extern const PokeathlonCourseSpritePoolTemplate gPokeathlonGoalRollSpritePoolConfig;
+extern const VecFx32 gPokeathlonGoalRollWallCorner;
+extern const GraphicsModes gPokeathlonGoalRollGraphicsModes;
+extern const BgTemplate gPokeathlonGoalRollBgTemplate_Main3;
+extern const BgTemplate gPokeathlonGoalRollBgTemplate_Sub0;
+extern const BgTemplate gPokeathlonGoalRollBgTemplate_Sub1;
+extern const BgTemplate gPokeathlonGoalRollBgTemplate_Sub2;
+extern const BgTemplate gPokeathlonGoalRollBgTemplate_Main0;
+extern const BgTemplate gPokeathlonGoalRollBgTemplate_Main1;
+extern const BgTemplate gPokeathlonGoalRollBgTemplate_Main2;
+extern const GraphicsBanks gPokeathlonGoalRollGraphicsBanks;
+extern const VecFx32 gPokeathlonGoalRollLabelPositions[4];
+extern const VecFx32 gPokeathlonGoalRollGoalPositions[4];
+extern const u16 gPokeathlonGoalRollMonStartPositions[GOAL_ROLL_PARTICIPANTS][GOAL_ROLL_TEAM_SIZE][2];
+extern const VecFx32 gPokeathlonGoalRollGoalPosts[4][2];
+extern const VecFx32 gPokeathlonGoalRollNormalTopLeft;
+extern const VecFx32 gPokeathlonGoalRollNormalBottomRight;
+extern const VecFx32 gPokeathlonGoalRollNormalBottomLeft;
+extern const VecFx32 gPokeathlonGoalRollUp;
+extern const VecFx32 gPokeathlonGoalRollFrameLeft;
+extern const VecFx32 gPokeathlonGoalRollNormalTopRight;
+extern const VecFx32 gPokeathlonGoalRollFrameRight;
+extern const WindowTemplate gPokeathlonGoalRollNameWindowTemplates[];
+extern const PokeathlonGoalRollSpawnPoint gPokeathlonGoalRollBallSpawnPoints[];
+extern const Point2D gPokeathlonGoalRollGoalLines[4][2]; // the goal line of each corner
+extern const u8 gPokeathlonGoalRollBallSpeedsA[][30];
+extern const u8 gPokeathlonGoalRollBallSpeedsB[][30];
+extern const u8 gPokeathlonGoalRollKickSpeeds[];
+extern u8 gPokeathlonGoalRollBounceOffsets[];
+extern const PokeathlonGoalRollWindowData gPokeathlonGoalRollWindowData;
+// Per goal (indexed by participant - 1 or by 3 - quadrant): three guard points (x, y) in front of it.
+extern const u16 gPokeathlonGoalRollCpuGuardPoints[][3][2];
+extern const u16 gPokeathlonGoalRollCpuGuardPointsY[][3][2];
+extern const u16 gPokeathlonGoalRollCpuGuardPoints1[][3][2];
+extern const u16 gPokeathlonGoalRollCpuGuardPoints2[][3][2];
 
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_GOAL_ROLL_H

@@ -6,8 +6,6 @@
 
 // Points by rank (100, 80, 70, 60); tied participants get the points of the lowest of their places. Every point
 // of the event score adds 5. At most 200.
-extern const u8 gPokeathlonEventRankPoints[4];
-
 void PokeathlonEvent_CalcRankPoints(PokeathlonCourseScoreList *list) {
     u8 ranks[4];
     u8 ties[4];

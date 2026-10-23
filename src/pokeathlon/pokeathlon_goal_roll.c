@@ -40,24 +40,6 @@ enum PokeathlonGoalRollInitState {
     GOAL_ROLL_INIT_WAIT_FADE_IN,
 };
 
-extern const VecFx32 gPokeathlonGoalRollWallPost;
-extern const VecFx32 gPokeathlonGoalRollWallNormal;
-extern const PokeathlonCourseSpritePoolTemplate gPokeathlonGoalRollSpritePoolConfig;
-extern const VecFx32 gPokeathlonGoalRollWallCorner;
-extern const GraphicsModes gPokeathlonGoalRollGraphicsModes;
-extern const BgTemplate gPokeathlonGoalRollBgTemplate_Main3;
-extern const BgTemplate gPokeathlonGoalRollBgTemplate_Sub0;
-extern const BgTemplate gPokeathlonGoalRollBgTemplate_Sub1;
-extern const BgTemplate gPokeathlonGoalRollBgTemplate_Sub2;
-extern const BgTemplate gPokeathlonGoalRollBgTemplate_Main0;
-extern const BgTemplate gPokeathlonGoalRollBgTemplate_Main1;
-extern const BgTemplate gPokeathlonGoalRollBgTemplate_Main2;
-extern const GraphicsBanks gPokeathlonGoalRollGraphicsBanks;
-extern const VecFx32 gPokeathlonGoalRollLabelPositions[4];
-extern const VecFx32 gPokeathlonGoalRollGoalPositions[4];
-extern const u16 gPokeathlonGoalRollMonStartPositions[GOAL_ROLL_PARTICIPANTS][GOAL_ROLL_TEAM_SIZE][2];
-extern const VecFx32 gPokeathlonGoalRollGoalPosts[4][2];
-
 extern const PokeathlonGoalRollPaletteData gPokeathlonGoalRollPaletteData;
 
 typedef struct PokeathlonGoalRollModelSize {

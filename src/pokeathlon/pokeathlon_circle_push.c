@@ -98,16 +98,6 @@ typedef struct CirclePushFallOffsets {
     int offsets[6];
 } CirclePushFallOffsets;
 
-// Contacts between the Pokemon of this frame.
-typedef struct PokeathlonCirclePushContact {
-    BOOL touching;
-    int unk04;
-    PokeathlonCirclePushMon *other;
-    int unk0C;
-} PokeathlonCirclePushContact;
-
-extern PokeathlonCirclePushContact gPokeathlonCirclePushContacts[12][12];
-
 // Collision circle of a Pokemon size (NARC a/1/7/0 #11).
 typedef struct CirclePushCollision {
     s32 offsetY;

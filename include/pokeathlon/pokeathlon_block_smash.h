@@ -13,6 +13,7 @@
 #include "pm_string.h"
 #include "sprite_system.h"
 #include "sys_task_api.h"
+#include "touchscreen.h"
 
 // Block Smash: every participant breaks stacks of ten blocks by tapping them; each hit takes the active Pokemon's
 // power off the top block's health, more when the weak spot marked on the block is tapped.
@@ -173,5 +174,7 @@ BOOL PokeathlonBlockSmashBlocks_IsSpotTouched(PokeathlonBlockSmashBlocks *blocks
 BOOL PokeathlonBlockSmashBlocks_IsTopBlockTouched(PokeathlonBlockSmashBlocks *blocks);
 u32 PokeathlonBlockSmashBlocks_GetState(PokeathlonBlockSmashBlocks *blocks);
 u16 PokeathlonBlockSmashBlocks_GetScore(PokeathlonBlockSmashBlocks *blocks);
+
+extern const TouchscreenHitbox *gPokeathlonBlockSmashSpotHitboxes[3];
 
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_BLOCK_SMASH_H

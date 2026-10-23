@@ -168,4 +168,13 @@ void PokeathlonHurdleDashDust_Spawn(PokeathlonHurdleDashDustLane *lanes, u32 lan
 void PokeathlonHurdleDashDust_Scroll(PokeathlonHurdleDashDustLane *lanes, u32 lane, u32 distance);
 void PokeathlonHurdleDashRunner_Init(PokeathlonCourseData *, const PokeathlonHurdleDashTable *, const PokeathlonHurdleDashParams *, PokeathlonHurdleDashTrack *, PokeathlonCourseSpritePool *, PokeathlonCourseMonObjects *, u8, PokeathlonHurdleDashRunner *);
 
+extern const s8 gHurdleDashRisingJumpHeights[][9];            // height of a rising jump per frame, by jump stat
+extern const s8 gHurdleDashFallingJumpHeights[][9];           // height of a falling jump per frame, by jump stat
+extern u8 gPokeathlonHurdleDashLaneSoundPlayers[];            // sound player of each lane
+extern const s8 gPokeathlonHurdleDashLanePans[];              // pan of each lane
+extern const PokeathlonHurdleDashLaneX gHurdleDashTouchLaneX; // x of each lane (touch)
+extern const PokeathlonHurdleDashLaneX gHurdleDashDustLaneX;  // x of each lane (dust)
+extern const WindowTemplate gHurdleDashTimeWindowTemplate;    // the time window
+extern const f32 gHurdleDashBoostSpeeds[];                    // speed above the top speed by boost level
+
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_HURDLE_DASH_RACE_H

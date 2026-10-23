@@ -317,6 +317,11 @@ typedef struct PokeathlonPennantCaptureSpriteIds {
     u32 ids[2];
 } PokeathlonPennantCaptureSpriteIds;
 
+// The sides of an obstacle a path enters through (edge and corner hit codes; 9-12 = from inside).
+typedef struct PokeathlonPennantCaptureHitCodes {
+    int sides[4];
+} PokeathlonPennantCaptureHitCodes;
+
 BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course);
 BOOL PokeathlonPennantCapture_Draw(PokeathlonCourseData *course);
 BOOL PokeathlonPennantCapture_ShowResults(PokeathlonCourseData *course);
@@ -373,5 +378,20 @@ BOOL PokeathlonPennantCaptureCpu_IsCellTargetOnField(PokeathlonPennantCaptureCpu
 
 // The Pokemon picture sprites of the display.
 void PokeathlonPennantCaptureDisplay_CreatePicSprites(PokeathlonCourseSpritePool *pool, PokeathlonPennantCaptureDisplay *display);
+
+extern const GraphicsBanks gPennantCaptureGraphicsBanks;
+extern const PokeathlonCourseSpritePoolTemplate gPennantCaptureSpritePoolTemplate;
+extern const GraphicsModes gPennantCaptureGraphicsModes;
+extern const BgTemplate gPennantCaptureBgTemplate_Sub0;
+extern const BgTemplate gPennantCaptureBgTemplate_Sub1;
+extern const BgTemplate gPennantCaptureBgTemplate_Sub2;
+extern const BgTemplate gPennantCaptureBgTemplate_Main0;
+extern const BgTemplate gPennantCaptureBgTemplate_Main3;
+extern const u8 gPennantCaptureTimerDigitX[];
+extern const u8 gPennantCaptureTimerDigitAnims[];
+extern const WindowTemplate gPennantCaptureScoreWindowTemplate;
+extern const VecFx32 gPennantCaptureReferenceVector;
+extern const PokeathlonPennantCaptureHitCodes gPennantCaptureEdgeHits;   // edge hits
+extern const PokeathlonPennantCaptureHitCodes gPennantCaptureCornerHits; // corner hits
 
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_PENNANT_CAPTURE_H

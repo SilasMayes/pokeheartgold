@@ -24,8 +24,6 @@
 #include "sprite.h"
 #include "text.h"
 
-extern const u8 gPennantCaptureTimerDigitX[];
-extern const u8 gPennantCaptureTimerDigitAnims[];
 extern const PokeathlonPennantCaptureSpriteIds gPokeathlonPennantCaptureSpriteIds[];
 
 #define DISPLAY_CURSOR_STEP(cursor, size) ((PokeathlonPennantCaptureDisplay *)((u8 *)(cursor) + (size)))

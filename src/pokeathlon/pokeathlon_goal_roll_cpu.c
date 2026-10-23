@@ -11,12 +11,6 @@
 #include "sprite_resource_header.h"
 #include "sprite_system.h"
 
-// Per goal (indexed by participant - 1 or by 3 - quadrant): three guard points (x, y) in front of it.
-extern const u16 gPokeathlonGoalRollCpuGuardPoints[][3][2];
-extern const u16 gPokeathlonGoalRollCpuGuardPointsY[][3][2];
-extern const u16 gPokeathlonGoalRollCpuGuardPoints1[][3][2];
-extern const u16 gPokeathlonGoalRollCpuGuardPoints2[][3][2];
-
 // The roles of a CPU team's Pokemon, in the order they move (PokeathlonGoalRollCpuTeam.order).
 enum PokeathlonGoalRollCpuRole {
     GOAL_ROLL_CPU_ROLE_GUARD,

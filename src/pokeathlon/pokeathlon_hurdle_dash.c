@@ -36,21 +36,6 @@ enum PokeathlonHurdleDashPlayState {
     HURDLE_DASH_PLAY_END,
 };
 
-extern const PokeathlonCourseSpritePoolTemplate gHurdleDashSceneConfig;
-extern const PokeathlonHurdleDashNumberX gHurdleDashNumberX;
-extern const u8 gHurdleDashTimerDigitX[8];
-extern const u8 gHurdleDashTimerDigitAnims[8];
-extern const GraphicsModes gHurdleDashGraphicsModes;
-extern const BgTemplate gHurdleDashBgTemplate_Sub0;
-extern const BgTemplate gHurdleDashBgTemplate_Sub1;
-extern const BgTemplate gHurdleDashBgTemplate_Main0;
-extern const BgTemplate gHurdleDashBgTemplate_Main1;
-extern const BgTemplate gHurdleDashBgTemplate_Main2;
-extern const BgTemplate gHurdleDashBgTemplate_Main3;
-extern const BgTemplate gHurdleDashBgTemplate_Sub3;
-extern const BgTemplate gHurdleDashBgTemplate_Sub2;
-extern const GraphicsBanks gHurdleDashGraphicsBanks;
-
 static void PokeathlonHurdleDash_SetGfxBanks(void);
 static void PokeathlonHurdleDash_InitBgs(BgConfig *bgConfig);
 static void PokeathlonHurdleDash_LoadBgTiles(BgConfig *bgConfig, enum HeapID heapId);

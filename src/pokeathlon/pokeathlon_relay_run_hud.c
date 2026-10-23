@@ -25,9 +25,7 @@
 #include "string_util.h"
 #include "text.h"
 
-extern const u32 gPokeathlonRelayRunPicIds[];              // touch screen sprite resource ids
-extern const VecFx32 gRelayRunMapStartOffset;              // track map: offset of the start from its centre
-extern const VecFx32 gRelayRunMapCenter;                   // track map: centre
+extern const u32 gPokeathlonRelayRunPicIds[]; // touch screen sprite resource ids
 
 static void PokeathlonRelayRunHud_SetMonIcon(PokeathlonRelayRunHud *hud, u8 teamId, int member);
 static void PokeathlonRelayRunHud_PrintMonName(PokeathlonRelayRunHud *hud, s32 member);

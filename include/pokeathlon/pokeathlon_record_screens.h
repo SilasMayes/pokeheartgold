@@ -186,4 +186,35 @@ typedef struct PokeathlonEventRecord {
     BOOL noRecord[10];
 } PokeathlonEventRecord;
 
+extern const WindowTemplate gPokeathlonEventRecordWindowTemplates[19];
+extern const char sStr_SeqError_4[]; // "seq error!"
+extern const GraphicsModes gPokeathlonEventRecordGraphicsModes;
+extern const PokeathlonEventRecordBgTemplates gPokeathlonEventRecordBgTemplates;
+extern const u8 gPokeathlonEventRecordBgLayers[6];
+extern const u8 gPokeathlonEventRecordWindowY[5][2];
+extern const u32 gPokeathlonEventRecordModeTitleMsgIds[2];
+extern const u32 gPokeathlonEventRecordModeSubtitleMsgIds[2];
+extern const SpriteResourceCountsListUnion gPokeathlonEventRecordSpriteResourceCounts;
+extern const int gPokeathlonEventRecordMonIconResIds[];
+extern const ManagedSpriteTemplate gPokeathlonEventRecordUiSpriteTemplates[2];
+extern const int gPokeathlonEventRecordEventSpriteResIds[GF_GFX_RES_TYPE_MAX];
+extern const TouchscreenHitbox gPokeathlonEventRecordHitboxes[];
+extern const PokeathlonEventRecordDefaultEntry gPokeathlonEventRecordDefaultEntry;
+extern const s32 gPokeathlonMedalsSpeciesOrderFiles[];
+extern const TouchscreenHitbox gPokeathlonMedalsHitboxes[];
+extern const int gPokeathlonMedalsTrustTrophyResIds[];
+extern const int gPokeathlonMedalsMonPicResIds[];
+extern const GraphicsModes gPokeathlonMedalsGraphicsModes;
+extern const int gPokeathlonMedalsMonIconResIds[];
+extern const GridCallbacks gPokeathlonMedalsGridCallbacks;
+extern const int gPokeathlonMedalsMedalColumns[5];
+extern const SpriteResourceCountsListUnion gPokeathlonMedalsSpriteResourceCounts;
+extern const WindowTemplate gPokeathlonMedalsWindowTemplates[12];
+extern const TouchscreenHitbox gPokeathlonMedalsGridHitboxes[];
+extern const PokeathlonMedalsBgTemplates gPokeathlonMedalsBgTemplates;
+extern const ManagedSpriteTemplate gPokeathlonMedalsUiSpriteTemplates[4];
+extern const DpadMenuBox gPokeathlonMedalsGridMenuBoxes[];
+extern const u8 gPokeathlonMedalsBgLayers[7];
+extern const char sStr_SeqError_3[]; // "seq error!"
+
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_RECORD_SCREENS_H

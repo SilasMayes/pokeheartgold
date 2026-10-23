@@ -174,4 +174,6 @@ PokeathlonLampJumpCpuPlayers *PokeathlonLampJump_NewCpuPlayers(enum HeapID heapI
 void PokeathlonLampJump_FreeCpuPlayers(PokeathlonLampJumpCpuPlayers *cpu);
 int PokeathlonLampJump_UpdateCpuPlayers(PokeathlonCourseData *course, PokeathlonLampJumpCpuPlayers *cpu);
 
+extern u8 gPokeathlonLampJumpSoundPlayers[]; // sound player of each Pokemon
+
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_LAMP_JUMP_H

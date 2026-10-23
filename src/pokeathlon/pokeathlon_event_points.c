@@ -10,10 +10,6 @@
 // The course points (at most 200) every participant gets for an event: events 0-8 convert each participant's
 // event score (gPokeathlonEventScorePointsFuncs[event]), event 9 (Goal Roll) gives points by rank.
 
-typedef u32 (*PokeathlonEventPointsFunc)(u32 score);
-extern void (*const gPokeathlonEventPointsCalcFuncs[])(PokeathlonCourseScoreList *list, int event);
-extern const PokeathlonEventPointsFunc gPokeathlonEventScorePointsFuncs[];
-
 void PokeathlonEvent_CalcPoints(PokeathlonCourseScoreList *list, int event) {
     gPokeathlonEventPointsCalcFuncs[event](list, event);
 }

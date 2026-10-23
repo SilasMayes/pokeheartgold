@@ -81,7 +81,6 @@ static void PokeathlonLampJump_Init3D(PokeathlonLampJump *lampJump);
 void GF_SndSetTrackPitchByPlayerNo(int playerNo, u32 tracks, int pitch);
 
 extern int gPokeathlonLampJumpTrampolineRed; // red of the next trampoline vertex
-extern u8 gPokeathlonLampJumpSoundPlayers[]; // sound player of each Pokemon
 
 static void PokeathlonLampJump_CalcLine(PokeathlonLampJumpTrampoline *trampoline, int line, u8 monA, u8 monB);
 static void PokeathlonLampJump_UpdateJump(PokeathlonCourseData *course, PokeathlonLampJump *lampJump, u8 mon);

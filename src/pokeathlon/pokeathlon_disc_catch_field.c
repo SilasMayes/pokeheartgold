@@ -14,10 +14,6 @@
 #include "system.h"
 #include "touchscreen.h"
 
-extern const u32 gPokeathlonDiscCatchPhaseSeconds[4];
-extern const s16 gPokeathlonDiscCatchMonStartPositions[DISC_CATCH_PARTICIPANTS][DISC_CATCH_TEAM_SIZE][2];
-extern const WindowTemplate gPokeathlonDiscCatchScoreWindowTemplate;
-
 // Each frame (every participant): sends the own touch and shows the host's frame packet; returns TRUE
 // once the host reports the end.
 BOOL PokeathlonDiscCatch_UpdateFrame(PokeathlonCourseData *course) {
