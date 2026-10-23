@@ -7,58 +7,6 @@
 #include <stdarg.h>
 #include <string.h>
 
-extern const char gChatStr_ciParseUser[];
-extern const char gChatStr_ciSocketSend[];
-extern const char gChatStr_ciParseParam[];
-extern const char gChatStr_ciSocketSendf[];
-extern const char gChatStr_ciSocketThink[];
-extern const char gChatStr_ciParseMessage[];
-extern const char gChatStr_ciSocketConnect[];
-extern const char gChatStr_ciSocketThinkSend[];
-extern const char gChatStr_ciSocketThinkRecv[];
-extern const char gChatStr_ciSocketDisconnect[];
-extern const char gChatStr_ciBufferInit[];
-extern const char gChatStr_ciSocketInit[];
-extern const char gChatStr_ciBufferPreAppend[];
-extern const char gChatStr_ciBufferClipFront[];
-extern const char gChatStr_ciSocketRecv[];
-extern const char gChatStr_BufferNeNULL_2[];
-extern const char gChatStr_ChatSocketC[];
-extern const char gChatStr_BufferNeNULL_3[];
-extern const char gChatStr_BufferSizeGe0[];
-extern const char gChatStr_BufferSizeBUFFER_INC_Eq0[];
-extern const char gChatStr_BufferLengthGe0[];
-extern const char gChatStr_BufferLengthLeBufferSize[];
-extern const char gChatStr_LenGe0_2[];
-extern const char gChatStr_LenLeSHRT_MAX[];
-extern const char gChatStr_LenLeBufferLength[];
-extern const char gChatStr_SockNeNULL[];
-extern const char gChatStr_SockNeNULL_2[];
-extern const char gChatStr_SockConnectStateEqCiNotConnectedOrSock[];
-extern const char gChatStr_SockInputQueueNeNULL[];
-extern const char gChatStr_SockInputQueueSizeGe0[];
-extern const char gChatStr_SockInputQueueSizeBUFFER_INC_Eq0[];
-extern const char gChatStr_SockInputQueueLengthGe0[];
-extern const char gChatStr_SockInputQueueLengthLeSockInputQueueSize[];
-extern const char gChatStr_SockOutputQueueNeNULL[];
-extern const char gChatStr_SockOutputQueueSizeGe0[];
-extern const char gChatStr_SockOutputQueueSizeBUFFER_INC_Eq0[];
-extern const char gChatStr_SockOutputQueueLengthGe0[];
-extern const char gChatStr_SockOutputQueueLengthLeSockOutputQueueSize[];
-extern const char gChatStr_ServerAddressNeNULL_2[];
-extern const char gChatStr_PortGe0[];
-extern const char gChatStr_PortLeUSHRT_MAX[];
-extern const char gChatStr_SockConnectStateEqCiNotConnected[];
-extern const char gChatStr_SockConnectStateEqCiConnected[];
-extern const char gChatStr_0_12[];
-extern const char gChatStr_PTextNeNULL[];
-extern const char gChatStr_MessageNeNULL_3[];
-extern const char gChatStr_SpaceColon_2[];
-extern const char gChatStr_Space_4[];
-
-// Line buffer of ciSocketSendf (4096 bytes).
-extern char ciSendfBuffer[];
-
 #define ASSERT(cond, message, func, line)                                  \
     do {                                                                   \
         if (!(cond)) {                                                     \

@@ -4,36 +4,6 @@
 
 #include <nitro/code32.h>
 
-extern const char gLobbyStr_DataNeNULL[];
-extern const char gLobbyStr_ChatCallbacksC[];
-extern const char gChatStr_DataTypeGe0[];
-extern const char gChatStr_DataTypeLtCALLBACK_NUM[];
-extern const char gChatStr_DataCallbackNeNULL[];
-extern const char gChatStr_DataCallbackParamsNeNULL[];
-extern const char gChatStr_DataID_Ge0[];
-extern const char gChatStr_ciAddCallback_[];
-extern const char gChatStr_ciCallCallback[];
-extern const char gChatStr_ciCallCallbacks[];
-extern const char gChatStr_ciFreeCallbackData[];
-extern const char gChatStr_ciCleanupCallbacks[];
-extern const char gChatStr_ciGetCallbackIndexByID[];
-extern const char gChatStr_0_8[];
-extern const char gChatStr_ChatNeNULL[];
-extern const char gChatStr_TypeGe0[];
-extern const char gChatStr_TypeLtCALLBACK_NUM[];
-extern const char gChatStr_ConnectionCallbackListNeNULL[];
-extern const char gChatStr_CallbackNeNULL_2[];
-extern const char gChatStr_CallbackParamsNeNULL[];
-extern const char gChatStr_CallbackParamsSizeGt0[];
-extern const char gChatStr_ID_Ge0[];
-extern const char gChatStr_SrcParamsNumChannelsGe0[];
-extern const char gChatStr_SrcParamsNumUsersNeNULL[];
-extern const char gChatStr_SrcParamsNumUsersGe0[];
-extern const char gChatStr_SrcParamsModesNeNULL[];
-extern const char gChatStr_SrcParamsNumBansGe0[];
-extern const char gChatStr_SrcParamsNumSuggestedNicksGe0[];
-extern const char gChatStr_SrcParamsNumGe0[];
-
 #define ASSERT_CHAT(chat, func, line)                                                 \
     do {                                                                              \
         if (!(chat)) {                                                                \
