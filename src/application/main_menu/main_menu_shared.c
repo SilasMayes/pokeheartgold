@@ -8,6 +8,7 @@
 #include "library/nitrocrypto_rc4.h"
 
 #include "bg_window.h"
+#include "comm_wireless.h"
 #include "gf_gfx_loader.h"
 #include "gf_gfx_planes.h"
 #include "heap.h"
@@ -18,7 +19,6 @@
 #include "system.h"
 
 u16 MATH_CalcCRC16(const MATHCRC16Table *table, const void *data, u32 dataLength);
-u8 *CommWireless_GetParentInfo(int index);
 BOOL CTRDG_IsAgbCartridge(void);
 void CTRDG_TerminateForPulledOut(void);
 

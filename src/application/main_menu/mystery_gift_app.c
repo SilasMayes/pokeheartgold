@@ -147,7 +147,6 @@ typedef struct MysteryGiftLinkState {
 } MysteryGiftLinkState;
 
 BOOL CTRDG_IsExisting(void);
-extern fx32 FX_Sqrt(fx32 value);
 extern void CommState_StartBeaconWatch(SaveData *saveData);
 extern void CommState_StopBeaconWatch(void);
 extern u32 CommState_GetSeenGames(void);

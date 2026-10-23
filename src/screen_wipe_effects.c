@@ -4,14 +4,13 @@
 #include <string.h>
 
 #include "assert.h"
+#include "geometry_math.h"
 
 enum RectShutterWipePhase {
     RECT_SHUTTER_WIPE_FIRST,
     RECT_SHUTTER_WIPE_SECOND,
     RECT_SHUTTER_WIPE_DONE,
 };
-
-u32 FX_Sqrt(u32 value);
 
 static void CircleWipe_BuildScanlines(CircleWipe *wipe);
 static BOOL CircleWipe_Step(CircleWipe *wipe);

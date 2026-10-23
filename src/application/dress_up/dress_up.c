@@ -39,6 +39,7 @@
 #include "pokepic.h"
 #include "render_text.h"
 #include "render_window.h"
+#include "save_fashion.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
 #include "sound_system.h"
@@ -192,13 +193,6 @@ static const GraphicsBanks sDressUpGraphicsBanks = {
     .texpltt = GX_VRAM_TEXPLTT_0123_E,
 };
 
-void FashionEntry_MarkSaved(SaveFashionDataSub *entry);
-void FashionEntry_Clear(SaveFashionDataSub *entry);
-void FashionEntry_SetMon(SaveFashionDataSub *entry, Pokemon *mon, DressUpMonPic *monPic);
-void FashionEntry_PlaceItem(SaveFashionDataSub *entry, DressUpSlot *slot, int index);
-void FashionEntry_SetBackdrop(SaveFashionDataSub *entry, int value);
-void FashionEntry_SetMonSecondText(SaveFashionDataSub *entry, String *string, u32 gender);
-
 typedef struct DressUpTransition {
     DressUpWork *work;
     u32 *done;
@@ -270,8 +264,6 @@ enum DressUpPageSwapState {
     DRESS_UP_PAGE_SWAP_WAIT_TAB,
     DRESS_UP_PAGE_SWAP_FINISH,
 };
-
-int FashionCase_GetWallpaperOrder(FashionCase *fashionCase, int index);
 
 // object tween back into the tray
 typedef struct DressUpTrayTween {
