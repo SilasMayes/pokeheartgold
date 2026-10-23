@@ -16,6 +16,7 @@
 #include "communication_player_state.h"
 #include "filesystem.h"
 #include "font.h"
+#include "geometry_math.h"
 #include "gf_3d_vramman.h"
 #include "gf_gfx_loader.h"
 #include "gf_gfx_planes.h"
@@ -47,7 +48,6 @@
 #include "wireless_status_icon.h"
 
 void MTX_MultVec43(const VecFx32 *vec, const MtxFx43 *mtx, VecFx32 *dst);
-fx32 FX_Sqrt(fx32 x);
 fx64c FX_SinFx64c(fx32 x);
 fx64c FX_CosFx64c(fx32 x);
 f32 _f_lltof(s64 value);

@@ -364,9 +364,9 @@ static BOOL UnionChatLogApp_IsExitDone(BgConfig *bgConfig) {
 
 BOOL IsSpriteIdWithoutTalkAction(int spriteId) {
     u32 i;
-    const u16 *p = sSpriteIdsWithoutTalkAction;
-    for (i = 0; i < NELEMS(sSpriteIdsWithoutTalkAction); i++, p++) {
-        if (spriteId == *p) {
+    const u16 *entry = sSpriteIdsWithoutTalkAction;
+    for (i = 0; i < NELEMS(sSpriteIdsWithoutTalkAction); i++, entry++) {
+        if (spriteId == *entry) {
             return TRUE;
         }
     }

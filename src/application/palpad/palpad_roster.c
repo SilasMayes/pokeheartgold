@@ -590,7 +590,7 @@ static void PalPadRoster_OpenFriendMenu(PalPadRoster *roster, PalPadShared *shar
     wifiList = Save_FriendRoster_Get(shared->saveData);
     index = PalPadRoster_GetSelectedIndex(roster);
     slots = shared->friends.slots;
-    codeState = FriendRoster_GetEntryField(wifiList, slots[index], 8);
+    codeState = FriendRoster_GetEntryField(wifiList, slots[index], FRIEND_ROSTER_FIELD_GENDER);
     MI_CpuFill8(&header, 0, sizeof(header));
     header.template = sPalPadRosterFriendMenuTemplate.template;
     if (codeState == 2) {
@@ -913,8 +913,8 @@ static void PalPadRosterPage_DrawFriend(PalPadRosterPage *page, CharSpriteManage
     String *string;
     u8 *owner = (u8 *)page;
 
-    avatar = FriendRoster_GetEntryField(wifiList, friendSlot, 7);
-    gender = FriendRoster_GetEntryField(wifiList, friendSlot, 8);
+    avatar = FriendRoster_GetEntryField(wifiList, friendSlot, FRIEND_ROSTER_FIELD_AVATAR);
+    gender = FriendRoster_GetEntryField(wifiList, friendSlot, FRIEND_ROSTER_FIELD_GENDER);
     if (gender == 2) {
         PalPadRosterPage_DrawEmptySlot(page, gfx, screens, slot);
     } else {

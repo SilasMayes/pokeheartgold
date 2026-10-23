@@ -100,7 +100,6 @@ enum PalPadDetailsState {
     PALPAD_DETAILS_STATE_EXIT,
 };
 
-#define PALPAD_FRIEND_MAX       32
 #define PALPAD_ROSTER_PAGE_MAX  4
 #define PALPAD_ROSTER_PAGE_SLOT 8
 
@@ -141,8 +140,8 @@ typedef struct PalPadGfx {
 typedef struct PalPadFriendList {
     u32 count;
     int numberedCount;
-    u8 slots[PALPAD_FRIEND_MAX];   // friend list slot of each listed friend
-    u8 numbers[PALPAD_FRIEND_MAX]; // 0xFF = friend code not confirmed yet
+    u8 slots[FRIEND_ROSTER_MAX];   // friend list slot of each listed friend
+    u8 numbers[FRIEND_ROSTER_MAX]; // 0xFF = friend code not confirmed yet
 } PalPadFriendList;
 
 // State shared by the screens (friend list snapshot, strings handed between screens).

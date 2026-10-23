@@ -568,16 +568,16 @@ void WaterfallEffect_Destroy(Field3dObjectTask *task, FieldSystem *fieldSystem, 
 void WaterfallEffect_Update(Field3dObjectTask *task, FieldSystem *fieldSystem, WaterfallEffect *effect) {
     FileIdPair modelFileIds;
     FileIdPair animFileIds;
-    u8 n;
+    u8 slot;
     BOOL finished;
 
     switch (effect->state) {
     case WATERFALL_EFFECT_STATE_LOAD: // one model per frame
         modelFileIds = gRideEffectFileIds.waterfallModels;
         animFileIds = gRideEffectFileIds.waterfallAnims;
-        n = effect->numLoaded;
-        FieldMoveEffectModel_Load(&effect->models[n], modelFileIds.ids[n], animFileIds.ids[n], 2, &effect->allocator);
-        Field3dObject_SetPosAtPlayer(fieldSystem->playerAvatar, &effect->models[n].object);
+        slot = effect->numLoaded;
+        FieldMoveEffectModel_Load(&effect->models[slot], modelFileIds.ids[slot], animFileIds.ids[slot], 2, &effect->allocator);
+        Field3dObject_SetPosAtPlayer(fieldSystem->playerAvatar, &effect->models[slot].object);
         effect->numLoaded++;
         if (effect->numLoaded >= 2) {
             effect->state++;

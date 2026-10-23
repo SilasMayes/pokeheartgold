@@ -279,14 +279,14 @@ void EncounterEffect_LoadBgGraphicsMirrored(NARC *narc, int screenMember, int ch
     tilemap = GetBgTilemapBuffer(bgConfig, mirrorBgId);
     for (row = 0, left = 0, right = 15; row < 24; left += 16, right += 16, row++) {
         for (i = 0; i < 8; i++) {
-            u16 a = i + left;
-            u16 b = right - i;
-            tile = tilemap[a];
-            tilemap[a] = tilemap[b];
-            tilemap[b] = tile;
+            u16 leftIndex = i + left;
+            u16 rightIndex = right - i;
+            tile = tilemap[leftIndex];
+            tilemap[leftIndex] = tilemap[rightIndex];
+            tilemap[rightIndex] = tile;
             // toggle the horizontal flip bit
-            tilemap[a] = (tilemap[a] & 0xFBFF) | (((tilemap[a] >> 10) ^ 1) << 10);
-            tilemap[b] = (tilemap[b] & 0xFBFF) | (((tilemap[b] >> 10) ^ 1) << 10);
+            tilemap[leftIndex] = (tilemap[leftIndex] & 0xFBFF) | (((tilemap[leftIndex] >> 10) ^ 1) << 10);
+            tilemap[rightIndex] = (tilemap[rightIndex] & 0xFBFF) | (((tilemap[rightIndex] >> 10) ^ 1) << 10);
         }
     }
     ScheduleBgTilemapBufferTransfer(bgConfig, mirrorBgId);

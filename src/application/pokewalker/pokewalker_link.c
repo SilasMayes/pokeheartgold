@@ -58,22 +58,22 @@ int PokewalkerApp_Link_Enter(PokewalkerApp *app) {
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_1);
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_2);
     app->subBgScrollX = 0;
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_Link_Update(PokewalkerApp *app) {
     app->state = gLinkStates[app->state](app);
     if (app->state == 67) {
         app->state = 0;
-        return 3;
+        return POKEWALKER_APP_STATE_EXIT;
     }
     PokewalkerApp_UpdateParticles(app);
-    return 2;
+    return POKEWALKER_APP_STATE_UPDATE;
 }
 
 int PokewalkerApp_Link_Exit(PokewalkerApp *app) {
     app->subBgScrollX = 0;
-    return 1;
+    return POKEWALKER_APP_STATE_ENTER;
 }
 
 int PokewalkerApp_Link_Start(PokewalkerApp *app) {
@@ -124,7 +124,7 @@ int PokewalkerApp_Link_FadeOutToSelectMon(PokewalkerApp *app) {
 
 int PokewalkerApp_Link_WaitFadeOutToSelectMon(PokewalkerApp *app) {
     if (IsPaletteFadeFinished() == TRUE) {
-        app->nextMode = 7;
+        app->nextMode = POKEWALKER_APP_MODE_SELECT_MON;
         return 66;
     }
     return 4;
@@ -1068,7 +1068,7 @@ int PokewalkerApp_Link_RetryPointAtCardForGifts(PokewalkerApp *app) {
 int PokewalkerApp_Link_WaitError(PokewalkerApp *app) {
     int next;
     if (!TextPrinterCheckActive(app->textPrinterId)) {
-        app->nextMode = 0;
+        app->nextMode = POKEWALKER_APP_MODE_MAIN_MENU;
         FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_2, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
         BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_2);
         next = app->nextState;
@@ -1101,7 +1101,7 @@ int PokewalkerApp_Link_PrintWentToWalker(PokewalkerApp *app) {
 int PokewalkerApp_Link_WaitWentToWalker(PokewalkerApp *app) {
     PokewalkerApp_UpdateMotion(app, LINK_MOTION(app));
     if (!TextPrinterCheckActive(app->textPrinterId) && !PokewalkerApp_AgeParticles(app) && !IsFanfarePlaying()) {
-        app->nextMode = 5;
+        app->nextMode = POKEWALKER_APP_MODE_START_STROLL;
         return 66;
     }
     return 36;
@@ -1157,7 +1157,7 @@ int PokewalkerApp_Link_WaitReturned(PokewalkerApp *app) {
                 app->irBlocks.flags.hasGiftMon = FALSE;
             }
             if (PokewalkerApp_IsWalkerMonInSave(app) || app->irBlocks.flags.hasGiftMon || app->irBlocks.flags.hasGiftItem || app->peerIdentity.hasWalkerMon) {
-                app->nextMode = 6;
+                app->nextMode = POKEWALKER_APP_MODE_LINK_SAVE;
                 return 66;
             }
             return 39;
@@ -1186,7 +1186,7 @@ int PokewalkerApp_Link_PrintReceivedGifts(PokewalkerApp *app) {
 
 int PokewalkerApp_Link_WaitReceivedGifts(PokewalkerApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId) && !IsFanfarePlaying()) {
-        app->nextMode = 6;
+        app->nextMode = POKEWALKER_APP_MODE_LINK_SAVE;
         return 66;
     }
     return 42;
@@ -1221,7 +1221,7 @@ int PokewalkerApp_Link_HandleSendBackYesNo(PokewalkerApp *app) {
         ClearWindowTilemapAndCopyToVram(&app->windows[3]);
         ClearWindowTilemapAndCopyToVram(&app->windows[4]);
         PokewalkerApp_HideCursor(app);
-        app->nextMode = 0;
+        app->nextMode = POKEWALKER_APP_MODE_MAIN_MENU;
         return 66;
     default:
         return 46;
@@ -1288,7 +1288,7 @@ int PokewalkerApp_Link_EndSendBackMenu(PokewalkerApp *app) {
         app->strollSteps = 0;
         return 52;
     }
-    app->nextMode = 11;
+    app->nextMode = POKEWALKER_APP_MODE_EXIT;
     return 66;
 }
 
@@ -1330,7 +1330,7 @@ int PokewalkerApp_Link_PrintArrived(PokewalkerApp *app) {
 }
 
 int PokewalkerApp_Link_EndSendBack(PokewalkerApp *app) {
-    app->nextMode = 6;
+    app->nextMode = POKEWALKER_APP_MODE_LINK_SAVE;
     return 66;
 }
 
@@ -1342,7 +1342,7 @@ int PokewalkerApp_Link_FadeOut(PokewalkerApp *app) {
 int PokewalkerApp_Link_WaitFadeOut(PokewalkerApp *app) {
     if (IsPaletteFadeFinished() == TRUE) {
         PokewalkerApp_HideMotionSprites(app);
-        app->nextMode = 0;
+        app->nextMode = POKEWALKER_APP_MODE_MAIN_MENU;
         return 66;
     }
     return 63;

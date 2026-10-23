@@ -30,6 +30,9 @@
 #include "system.h"
 #include "text.h"
 
+#define SCRIPT_MENU_MAX_ITEMS   28
+#define SCRIPT_MENU_NO_HELP_MSG 0xFF
+
 typedef struct ScriptMenuItem {
     String *text;
     u32 value;
@@ -42,7 +45,7 @@ struct ScriptMenu {
     SysTask *task;
     Window window;
     Window *printWindow;
-    String *strbufs[28];
+    String *strbufs[SCRIPT_MENU_MAX_ITEMS];
     MsgData *msgData;
     MessageFormat *msgFmt;
     u8 delay;
@@ -63,13 +66,13 @@ struct ScriptMenu {
     u16 *row_p;
     struct ListMenu2DTemplate menu2d;
     struct ListMenu2D *menu2dPtr;
-    ScriptMenuItem entries[28];
+    ScriptMenuItem entries[SCRIPT_MENU_MAX_ITEMS];
     ListMenuTemplate listTemplate;
     ListMenu *listMenu;
     u16 unk_1C0;
     u16 cursorPos;
-    ListMenuItem items[28];
-    u16 msgIds[28];
+    ListMenuItem items[SCRIPT_MENU_MAX_ITEMS];
+    u16 msgIds[SCRIPT_MENU_MAX_ITEMS];
     u16 lastRow;
     u16 unk_2DE;
 };
@@ -120,16 +123,16 @@ static void ScriptMenu_Init(FieldSystem *fieldSystem, ScriptMenu *menu, u8 x, u8
     menu->printWindow = window;
     menu->delay = 3;
     menu->lastRow = initCursorPos;
-    for (i = 0; i < 28; i++) {
+    for (i = 0; i < SCRIPT_MENU_MAX_ITEMS; i++) {
         menu->entries[i].text = NULL;
         menu->entries[i].value = 0;
     }
-    for (i = 0; i < 28; i++) {
+    for (i = 0; i < SCRIPT_MENU_MAX_ITEMS; i++) {
         menu->items[i].text = NULL;
         menu->items[i].value = 0;
-        menu->msgIds[i] = 0xFF;
+        menu->msgIds[i] = SCRIPT_MENU_NO_HELP_MSG;
     }
-    for (i = 0; i < 28; i++) {
+    for (i = 0; i < SCRIPT_MENU_MAX_ITEMS; i++) {
         menu->strbufs[i] = String_New(80, HEAP_ID_FIELD1);
     }
     *menu->ret_p = 0xEEEE;
@@ -244,7 +247,7 @@ static void ScriptMenu_MultichoiceTask(SysTask *task, void *data) {
 void ScriptMenu_Free(ScriptMenu *menu) {
     int i;
 
-    for (i = 0; i < 28; i++) {
+    for (i = 0; i < SCRIPT_MENU_MAX_ITEMS; i++) {
         String_Delete(menu->strbufs[i]);
     }
     if (menu->ownMsgData == 1) {
@@ -350,7 +353,7 @@ static void ScriptMenu_AppendListItem(ScriptMenu *menu, int msgId, int helpMsgId
     menu->items[menu->count].text = menu->strbufs[menu->count];
     String_Delete(tmp);
     if (value == 0xFA) {
-        menu->items[menu->count].value = -3;
+        menu->items[menu->count].value = LIST_HEADER;
     } else {
         menu->items[menu->count].value = value;
     }
@@ -399,7 +402,7 @@ static void ScriptMenu_SetupListTemplate(ScriptMenu *menu) {
 }
 
 static void ScriptMenu_ListItemPrintCallback(ScriptMenu *menu, s32 itemId, u8 onInit) {
-    if (itemId == -3) {
+    if (itemId == LIST_HEADER) {
         ListMenuOverrideSetColors((ListMenu *)menu, 3, 15, 4);
     } else {
         ListMenuOverrideSetColors((ListMenu *)menu, 1, 15, 2);
@@ -466,7 +469,7 @@ static void ScriptMenu_CloseList(ScriptMenu *menu) {
     DestroyListMenu(menu->listMenu, NULL, NULL);
     EraseFrameAndWindow1(menu->listTemplate.window, FALSE);
     RemoveWindow(&menu->window);
-    for (i = 0; i < 28; i++) {
+    for (i = 0; i < SCRIPT_MENU_MAX_ITEMS; i++) {
         String_Delete(menu->strbufs[i]);
     }
     if (menu->ownMsgData == 1) {
@@ -489,7 +492,7 @@ static void ScriptMenu_PrintHelpMessage(ScriptMenu *menu, u32 msgId, u32 textSpe
 
 static void ScriptMenu_PrintCursorHelpMessage(ScriptMenu *menu) {
     ListMenuGetCurrentItemArrayId(menu->listMenu, &menu->cursorPos);
-    if (menu->msgIds[menu->cursorPos] != 0xFF) {
+    if (menu->msgIds[menu->cursorPos] != SCRIPT_MENU_NO_HELP_MSG) {
         ScriptMenu_PrintHelpMessage(menu, menu->msgIds[menu->cursorPos], 0);
     }
 }
@@ -545,7 +548,7 @@ static void ScriptMenu_FloorWindowTask(SysTask *task, void *data) {
     }
     EraseFrameAndWindow1(menu->menu2d.window, FALSE);
     RemoveWindow(menu->menu2d.window);
-    for (i = 0; i < 28; i++) {
+    for (i = 0; i < SCRIPT_MENU_MAX_ITEMS; i++) {
         String_Delete(menu->strbufs[i]);
     }
     if (menu->ownMsgData == 1) {
@@ -842,7 +845,7 @@ void ScriptMenu_PrintItemHelpMessage(ScriptMenu *menu, int idx) {
     String *tmp;
     String *dest;
 
-    if (menu->msgIds[idx] == 0xFF) {
+    if (menu->msgIds[idx] == SCRIPT_MENU_NO_HELP_MSG) {
         return;
     }
     tmp = String_New(90, HEAP_ID_FIELD1);

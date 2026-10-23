@@ -13,15 +13,7 @@
 #include "map_matrix.h"
 #include "terrain_attributes.h"
 
-// Field terrain queries: heights from the loaded maps' BDHC data, or none for maps with simple terrain collisions.
 // Attribute bits: 0-7 metatile behavior, 15 collision.
-
-typedef struct FieldTerrainQueries {
-    int (*getHeight)(FieldSystem *fieldSystem, int height, fx32 x, fx32 z, u8 *outSource);
-    BOOL (*getAttributes)(FieldSystem *fieldSystem, int x, int z, u16 *outAttributes);
-} FieldTerrainQueries;
-
-#define FS_TERRAIN_QUERIES(fieldSystem) ((const FieldTerrainQueries *)(fieldSystem)->terrainQueries)
 
 static int Terrain_AbsDiff(int lhs, int rhs);
 static int FieldSystem_GetHeightStep(FieldSystem *fieldSystem, VecFx32 *playerPos, int x, int z, u8 *outKind);
@@ -242,13 +234,13 @@ int FieldSystem_GetTerrainHeight(FieldSystem *fieldSystem, int objectHeight, fx3
 static int FieldSystem_GetHeightStep(FieldSystem *fieldSystem, VecFx32 *playerPos, int x, int z, u8 *outKind) {
     int dir;
     fx32 hi, lo;
-    fx32 h = FieldSystem_GetTerrainHeight(fieldSystem, playerPos->y, (x << 16) + 0x8000, (z << 16) + 0x8000, outKind);
-    if (h < playerPos->y) {
+    fx32 height = FieldSystem_GetTerrainHeight(fieldSystem, playerPos->y, (x << 16) + 0x8000, (z << 16) + 0x8000, outKind);
+    if (height < playerPos->y) {
         hi = playerPos->y;
-        lo = h;
+        lo = height;
         dir = -1;
-    } else if (h > playerPos->y) {
-        hi = h;
+    } else if (height > playerPos->y) {
+        hi = height;
         lo = playerPos->y;
         dir = 1;
     } else {
@@ -494,28 +486,28 @@ void Terrain_GetChunkOrigin(int idx, int width, VecFx32 *pos) {
 
 static BOOL MapModelNo_IsInTableD0ToD3(u16 modelNo) {
     int i;
-    const u16 *p = sMapModelsD0ToD3;
+    const u16 *entry = sMapModelsD0ToD3;
     for (i = 0; i < 4; i++) {
-        if (modelNo == *p) {
+        if (modelNo == *entry) {
             return TRUE;
         }
-        p++;
+        entry++;
     }
     return FALSE;
 }
 
 BOOL MapModelNo_HasNoAreaMapAnimation(u16 modelNo) {
     int i;
-    const u16 *p;
+    const u16 *entry;
     if (!MapModelNo_IsInTableD0ToD3(modelNo)) {
         return FALSE;
     }
-    p = sMapModelsWithoutAreaMapAnimation;
+    entry = sMapModelsWithoutAreaMapAnimation;
     for (i = 0; i < 3; i++) {
-        if (modelNo == *p) {
+        if (modelNo == *entry) {
             return TRUE;
         }
-        p++;
+        entry++;
     }
     return FALSE;
 }

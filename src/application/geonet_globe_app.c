@@ -11,6 +11,7 @@
 #include "camera.h"
 #include "filesystem.h"
 #include "font.h"
+#include "geometry_math.h"
 #include "gf_3d_render.h"
 #include "gf_gfx_loader.h"
 #include "gf_gfx_planes.h"
@@ -57,7 +58,6 @@ enum GeonetGlobeState {
     GEONET_GLOBE_STATE_WAIT_FADE_OUT,
 };
 
-fx32 FX_Sqrt(fx32 x);
 
 enum GeonetGlobeWindow {
     GEONET_GLOBE_WINDOW_MESSAGE,

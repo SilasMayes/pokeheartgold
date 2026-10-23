@@ -13,12 +13,13 @@
 #include "field_terrain.h"
 #include "gymmick_collision.h"
 
-// The terrain query functions of the current map kind (FieldSystem.terrainQueries).
-typedef struct FieldAttrVTable {
-    int (*getHeight)(FieldSystem *fieldSystem, int a1, fx32 x, fx32 z, u8 *outKind);
-    BOOL (*getAttr)(FieldSystem *fieldSystem, int x, int z, u16 *outAttr);
-} FieldAttrVTable;
+// The terrain query functions of the current map kind (FieldSystem.terrainQueries): heights from the loaded maps'
+// BDHC data, or none for maps with simple terrain collisions.
+typedef struct FieldTerrainQueries {
+    int (*getHeight)(FieldSystem *fieldSystem, int objectHeight, fx32 x, fx32 z, u8 *outKind);
+    BOOL (*getAttributes)(FieldSystem *fieldSystem, int x, int z, u16 *outAttributes);
+} FieldTerrainQueries;
 
-#define FS_VT(fieldSystem) ((const FieldAttrVTable *)(fieldSystem)->terrainQueries)
+#define FS_TERRAIN_QUERIES(fieldSystem) ((const FieldTerrainQueries *)(fieldSystem)->terrainQueries)
 
 #endif

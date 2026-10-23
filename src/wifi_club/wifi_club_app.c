@@ -1730,8 +1730,8 @@ s32 WifiClub_UpdateFriendStatuses(WifiClubApp *app) {
                 }
                 app->friendStatuses[i] = friendStatus;
                 app->friendVoiceChat[i] = friendStatusData->voiceChat;
-                FriendRoster_SetEntryField(app->friendRoster, i, 7, friendStatusData->trainerInfo[1]);
-                FriendRoster_SetEntryField(app->friendRoster, i, 8, friendStatusData->trainerInfo[2]);
+                FriendRoster_SetEntryField(app->friendRoster, i, FRIEND_ROSTER_FIELD_AVATAR, friendStatusData->trainerInfo[1]);
+                FriendRoster_SetEntryField(app->friendRoster, i, FRIEND_ROSTER_FIELD_GENDER, friendStatusData->trainerInfo[2]);
                 counter += 1;
             }
         }
@@ -2069,7 +2069,7 @@ void WifiClub_PrintOwnStatus(WifiClubApp *app) {
         if (WifiConnection_GetTargetFriendIndex() == -1) {
             ReadMsgDataIntoString(app->msgData, statusMsgId, app->msgRaw);
         } else {
-            s32 gender = FriendRoster_GetEntryField(app->friendRoster, WifiConnection_GetTargetFriendIndex(), 8);
+            s32 gender = FriendRoster_GetEntryField(app->friendRoster, WifiConnection_GetTargetFriendIndex(), FRIEND_ROSTER_FIELD_GENDER);
             if (gender == 0) {
                 color = MAKE_TEXT_COLOR(5, 6, 0);
             } else if (gender == 1) {
@@ -4410,7 +4410,7 @@ void WifiClub_DrawRosterPage(WifiClubApp *app) {
     for (s32 i = 0; i < 8; i++) {
         s32 friendId = i + (app->roster.page * 8) + 1;
         if (app->roster.slotStates[friendId - 1] != 0) {
-            if (FriendRoster_GetEntryField(app->friendRoster, friendId - 1, 8) == 0) {
+            if (FriendRoster_GetEntryField(app->friendRoster, friendId - 1, FRIEND_ROSTER_FIELD_GENDER) == 0) {
                 frameStyle = 1;
             } else {
                 frameStyle = 0;
@@ -4454,7 +4454,7 @@ void WifiClub_DrawRosterPage(WifiClubApp *app) {
 
 void WifiClub_DrawProfilePage(WifiClubApp *app, enum HeapID heapID) {
     s32 palette;
-    if (FriendRoster_GetEntryField(app->friendRoster, app->roster.selectedFriend - 1, 8) == 1) {
+    if (FriendRoster_GetEntryField(app->friendRoster, app->roster.selectedFriend - 1, FRIEND_ROSTER_FIELD_GENDER) == 1) {
         palette = 7;
     } else {
         palette = 8;
@@ -4477,7 +4477,7 @@ void WifiClub_DrawProfilePage(WifiClubApp *app, enum HeapID heapID) {
 void WifiClub_DrawProfileSummary(WifiClubApp *app, enum HeapID heapID) {
     u32 color;
     s32 friendIndex = app->roster.selectedFriend - 1;
-    if (FriendRoster_GetEntryField(app->friendRoster, friendIndex, 8) == 0) {
+    if (FriendRoster_GetEntryField(app->friendRoster, friendIndex, FRIEND_ROSTER_FIELD_GENDER) == 0) {
         color = MAKE_TEXT_COLOR(5, 6, 0);
     } else {
         color = MAKE_TEXT_COLOR(3, 4, 0);
@@ -4507,12 +4507,12 @@ void WifiClub_DrawProfileSummary(WifiClubApp *app, enum HeapID heapID) {
     // BATTLE RECORD
     ReadMsgDataIntoString(app->msgData, msg_0778_00044, app->tmpString);
     AddTextPrinterParameterizedWithColor(&app->roster.profileWindow, 0, app->tmpString, 8, 56, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
-    BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, 1), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
+    BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, FRIEND_ROSTER_FIELD_WINS), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     // W: {STRVAR_1 53, 0, 0}
     ReadMsgDataIntoString(app->msgData, msg_0778_00045, app->msgRaw);
     StringExpandPlaceholders(app->roster.msgFormat, app->tmpString, app->msgRaw);
     AddTextPrinterParameterizedWithColor(&app->roster.profileWindow, 0, app->tmpString, 120, 56, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
-    BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, 2), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
+    BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, FRIEND_ROSTER_FIELD_LOSSES), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     // L: {STRVAR_1 53, 0, 0}
     ReadMsgDataIntoString(app->msgData, msg_0778_00046, app->msgRaw);
     StringExpandPlaceholders(app->roster.msgFormat, app->tmpString, app->msgRaw);
@@ -4522,7 +4522,7 @@ void WifiClub_DrawProfileSummary(WifiClubApp *app, enum HeapID heapID) {
     // POKéMON TRADES
     ReadMsgDataIntoString(app->msgData, msg_0778_00047, app->tmpString);
     AddTextPrinterParameterizedWithColor(&app->roster.profileWindow, 0, app->tmpString, 8, 80, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
-    BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, 3), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
+    BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, FRIEND_ROSTER_FIELD_TRADES), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     // {STRVAR_1 53, 0, 0}
     ReadMsgDataIntoString(app->msgData, msg_0778_00048, app->msgRaw);
     StringExpandPlaceholders(app->roster.msgFormat, app->tmpString, app->msgRaw);
@@ -4533,7 +4533,7 @@ void WifiClub_DrawProfileSummary(WifiClubApp *app, enum HeapID heapID) {
         // POFFIN SESSIONS
         ReadMsgDataIntoString(app->msgData, msg_0778_00049, app->tmpString);
         AddTextPrinterParameterizedWithColor(&app->roster.profileWindow, 0, app->tmpString, 8, 104, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
-        BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, 9), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
+        BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, FRIEND_ROSTER_FIELD_POFFIN_SESSIONS), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
         // {STRVAR_1 53, 0, 0}
         ReadMsgDataIntoString(app->msgData, msg_0778_00050, app->msgRaw);
         StringExpandPlaceholders(app->roster.msgFormat, app->tmpString, app->msgRaw);
@@ -4544,11 +4544,11 @@ void WifiClub_DrawProfileSummary(WifiClubApp *app, enum HeapID heapID) {
     // DATE LAST PLAYED
     ReadMsgDataIntoString(app->msgData, msg_0778_00051, app->tmpString);
     AddTextPrinterParameterizedWithColor(&app->roster.profileWindow, 0, app->tmpString, 8, 128, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
-    s32 day = FriendRoster_GetEntryField(app->friendRoster, friendIndex, 6);
+    s32 day = FriendRoster_GetEntryField(app->friendRoster, friendIndex, FRIEND_ROSTER_FIELD_DAY);
     if (day != 0) {
         BufferIntegerAsString(app->roster.msgFormat, 2, day, 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
-        BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, 4), 4, PRINTING_MODE_LEFT_ALIGN, TRUE);
-        BufferMonthNameAbbr(app->roster.msgFormat, 1, FriendRoster_GetEntryField(app->friendRoster, friendIndex, 5));
+        BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, FRIEND_ROSTER_FIELD_YEAR), 4, PRINTING_MODE_LEFT_ALIGN, TRUE);
+        BufferMonthNameAbbr(app->roster.msgFormat, 1, FriendRoster_GetEntryField(app->friendRoster, friendIndex, FRIEND_ROSTER_FIELD_MONTH));
         // {STRVAR_34 16, 1, 0} {STRVAR_1 51, 2, 0}, {STRVAR_1 53, 0, 0}
         ReadMsgDataIntoString(app->msgData, msg_0778_00074, app->msgRaw);
         StringExpandPlaceholders(app->roster.msgFormat, app->tmpString, app->msgRaw);
@@ -4688,21 +4688,21 @@ void WifiClub_DrawProfilePlazaGames(WifiClubApp *app, enum HeapID heapID) {
     StringExpandPlaceholders(app->roster.msgFormat, app->tmpString, app->msgRaw);
     AddTextPrinterParameterizedWithColor(&app->roster.profileWindow, 0, app->tmpString, 8, 24, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     // {STRVAR_1 53, 0, 0}
-    WifiClub_PrintCenteredNumber(app, msg_0778_00072, FriendRoster_GetEntryField(friendRoster, friendIndex, 10), 164, 24);
+    WifiClub_PrintCenteredNumber(app, msg_0778_00072, FriendRoster_GetEntryField(friendRoster, friendIndex, FRIEND_ROSTER_FIELD_PLAZA_GAME0_PLAYS), 164, 24);
     BufferWiFiPlazaActivityName(app->roster.msgFormat, 0, 1);
     // {STRVAR_3 0, 0, 0}
     ReadMsgDataIntoString(app->msgData, msg_0778_00071, app->msgRaw);
     StringExpandPlaceholders(app->roster.msgFormat, app->tmpString, app->msgRaw);
     AddTextPrinterParameterizedWithColor(&app->roster.profileWindow, 0, app->tmpString, 8, 48, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     // {STRVAR_1 53, 0, 0}
-    WifiClub_PrintCenteredNumber(app, msg_0778_00072, FriendRoster_GetEntryField(friendRoster, friendIndex, 11), 164, 48);
+    WifiClub_PrintCenteredNumber(app, msg_0778_00072, FriendRoster_GetEntryField(friendRoster, friendIndex, FRIEND_ROSTER_FIELD_PLAZA_GAME1_PLAYS), 164, 48);
     BufferWiFiPlazaActivityName(app->roster.msgFormat, 0, 2);
     // {STRVAR_3 0, 0, 0}
     ReadMsgDataIntoString(app->msgData, msg_0778_00071, app->msgRaw);
     StringExpandPlaceholders(app->roster.msgFormat, app->tmpString, app->msgRaw);
     AddTextPrinterParameterizedWithColor(&app->roster.profileWindow, 0, app->tmpString, 8, 72, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     // {STRVAR_1 53, 0, 0}
-    WifiClub_PrintCenteredNumber(app, msg_0778_00072, FriendRoster_GetEntryField(friendRoster, friendIndex, 12), 164, 72);
+    WifiClub_PrintCenteredNumber(app, msg_0778_00072, FriendRoster_GetEntryField(friendRoster, friendIndex, FRIEND_ROSTER_FIELD_PLAZA_GAME2_PLAYS), 164, 72);
 }
 
 void WifiClub_CoverFrontierPageTabs(WifiClubApp *app) {
@@ -4830,7 +4830,7 @@ void WifiClub_PrintRosterSlotName(WifiClubApp *app, Window *window, s32 friendId
     u8 textY = sRosterSlotTextY[animStep];
     s32 friendIndex = friendId - 1;
     s32 color;
-    if (FriendRoster_GetEntryField(app->friendRoster, friendIndex, 8) == 0) {
+    if (FriendRoster_GetEntryField(app->friendRoster, friendIndex, FRIEND_ROSTER_FIELD_GENDER) == 0) {
         color = MAKE_TEXT_COLOR(5, 6, 0);
     } else {
         color = MAKE_TEXT_COLOR(3, 4, 0);

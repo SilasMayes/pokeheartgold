@@ -617,12 +617,12 @@ void GtsServer_RequestSetProfile(WifiServerProfile *profile, void *response) {
 }
 
 static BOOL GtsServer_StartRequest(const char *url, void *payload, int payloadSize, void *response, int responseCapacity) {
-    switch (GameStats_PrepareRequest((char *)url, gGtsServer.pid, payload, payloadSize, response, responseCapacity)) {
-    case 0:
+    switch (GameStats_PrepareRequest(url, gGtsServer.pid, payload, payloadSize, response, responseCapacity)) {
+    case GAME_STATS_PREPARE_OK:
         return TRUE;
-    case 1:
+    case GAME_STATS_PREPARE_NOT_STARTED:
         break;
-    case 2:
+    case GAME_STATS_PREPARE_NO_MEMORY:
         break;
     }
     return FALSE;

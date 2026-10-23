@@ -221,7 +221,7 @@ int PalPadShared_RegisterFriendCode(PalPadShared *shared, String *code, String *
 
     wifiList = Save_FriendRoster_Get(shared->saveData);
     ownKey = DWC_CreateFriendKey(FriendRoster_GetUserData(wifiList));
-    for (i = 0; i < PALPAD_FRIEND_MAX; i++) {
+    for (i = 0; i < FRIEND_ROSTER_MAX; i++) {
         if (FriendRoster_IsFriendValid(wifiList, i) == 0) {
             u64 key = String_atoi(code, &valid);
             if (valid == TRUE && key != ownKey) {
@@ -233,7 +233,7 @@ int PalPadShared_RegisterFriendCode(PalPadShared *shared, String *code, String *
                 }
                 DWC_CreateFriendKeyToken(FriendRoster_GetDwcFriendData(wifiList, i), key);
                 FriendRoster_SetPlayerName(wifiList, i, name);
-                FriendRoster_SetEntryField(wifiList, i, 8, 2);
+                FriendRoster_SetEntryField(wifiList, i, FRIEND_ROSTER_FIELD_GENDER, FRIEND_ROSTER_GENDER_UNKNOWN);
                 return 0;
             }
             return 1;
@@ -259,10 +259,10 @@ void PalPadShared_ReadFriendList(PalPadShared *shared) {
     memset(&shared->friends, 0, sizeof(shared->friends));
     wifiList = Save_FriendRoster_Get(shared->saveData);
     shared->friends.count = 0;
-    for (i = 0; i < PALPAD_FRIEND_MAX; i++) {
+    for (i = 0; i < FRIEND_ROSTER_MAX; i++) {
         if (FriendRoster_IsFriendValid(wifiList, i) == 1) {
             shared->friends.slots[shared->friends.count] = i;
-            if (FriendRoster_GetEntryField(wifiList, i, 8) == 2) {
+            if (FriendRoster_GetEntryField(wifiList, i, FRIEND_ROSTER_FIELD_GENDER) == FRIEND_ROSTER_GENDER_UNKNOWN) {
                 shared->friends.numbers[shared->friends.count] = 0xFF;
             } else {
                 shared->friends.numbers[shared->friends.count] = shared->friends.numberedCount++;
@@ -494,14 +494,14 @@ void PalPadGfx_BufferFriendGroupName(PalPadGfx *gfx, SaveData *saveData, int slo
 BOOL PalPadGfx_BufferLastDate(PalPadGfx *gfx, SaveData *saveData, int slot) {
     FriendRoster *wifiList = Save_FriendRoster_Get(saveData);
     BOOL met = TRUE;
-    int day = FriendRoster_GetEntryField(wifiList, slot, 6);
+    int day = FriendRoster_GetEntryField(wifiList, slot, FRIEND_ROSTER_FIELD_DAY);
 
     if (!day) {
         met = FALSE;
     }
     BufferIntegerAsString(gfx->msgFormat, 2, day, 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
-    BufferIntegerAsString(gfx->msgFormat, 0, FriendRoster_GetEntryField(wifiList, slot, 4), 4, PRINTING_MODE_LEFT_ALIGN, TRUE);
-    BufferMonthNameAbbr(gfx->msgFormat, 1, FriendRoster_GetEntryField(wifiList, slot, 5));
+    BufferIntegerAsString(gfx->msgFormat, 0, FriendRoster_GetEntryField(wifiList, slot, FRIEND_ROSTER_FIELD_YEAR), 4, PRINTING_MODE_LEFT_ALIGN, TRUE);
+    BufferMonthNameAbbr(gfx->msgFormat, 1, FriendRoster_GetEntryField(wifiList, slot, FRIEND_ROSTER_FIELD_MONTH));
     return met;
 }
 

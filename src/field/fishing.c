@@ -176,17 +176,17 @@ static int (*const sFishingRodStates[])(FishingRod *, PlayerAvatar *, LocalMapOb
 
 struct FishingRodWork *CreateFishingRodTaskEnv(FieldSystem *fieldSystem, enum HeapID heapID, int rod) {
     struct FishingRodWork *work;
-    u32 n;
-    u8 *p;
+    u32 size;
+    u8 *byte;
 
     work = Heap_AllocAtEnd(heapID, sizeof(struct FishingRodWork));
-    p = (u8 *)work;
-    n = sizeof(struct FishingRodWork);
+    byte = (u8 *)work;
+    size = sizeof(struct FishingRodWork);
     do {
-        *p = 0;
-        p++;
-        n--;
-    } while (n != 0);
+        *byte = 0;
+        byte++;
+        size--;
+    } while (size != 0);
     work->rodType = rod;
     work->rodItemId = GetRodItemId(rod);
     return work;

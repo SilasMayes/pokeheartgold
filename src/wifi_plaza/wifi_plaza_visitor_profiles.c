@@ -12,6 +12,7 @@
 #include "camera.h"
 #include "filesystem.h"
 #include "font.h"
+#include "geometry_math.h"
 #include "gf_3d_vramman.h"
 #include "gf_gfx_loader.h"
 #include "gf_gfx_planes.h"
@@ -441,8 +442,6 @@ static void VisitorProfilesMsg_Read(VisitorProfilesMsg *msg, s32 msgId, String *
 static String *VisitorProfilesMsg_GetCountryName(VisitorProfilesMsg *msg, u32 country);
 static String *VisitorProfilesMsg_GetRegionName(VisitorProfilesMsg *msg, u32 country, u32 region);
 static s32 VisitorProfiles_FindFirstVisitor(void *visitors);
-
-fx32 FX_Sqrt(fx32 x);
 
 
 static const u8 sVisitorProfilesBgAnimPeriods[VISITOR_PROFILES_NUM_BG_ANIMS] = { 30, 30, 30, 30, 30 };

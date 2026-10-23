@@ -404,7 +404,7 @@ static void PalPadDetails_HideForFriendChange(PalPadDetails *details, PalPadGfx 
 static void PalPadDetails_DrawProfile(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId) {
     TrainerPicFileIds avatar;
     FriendRoster *wifiList = Save_FriendRoster_Get(shared->saveData);
-    int gender = FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], 8);
+    int gender = FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], FRIEND_ROSTER_FIELD_GENDER);
     u32 i;
     u32 color;
     void *bitmap;
@@ -431,7 +431,7 @@ static void PalPadDetails_DrawProfile(PalPadDetails *details, PalPadShared *shar
     if (PalPadGfx_BufferLastDate(gfx, shared->saveData, shared->friends.slots[shared->selectedFriend])) {
         PalPadDetails_PrintProfileText(&details->profileWindows[4], shared, gfx, msg_0779_00028, 0, 0, MAKE_TEXT_COLOR(1, 2, 0));
     }
-    GetTrainerPicFileIdsNoLink(GetUnionRoomAvatarAttrBySprite(gender, FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], 7), 1), 2, &avatar);
+    GetTrainerPicFileIdsNoLink(GetUnionRoomAvatarAttrBySprite(gender, FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], FRIEND_ROSTER_FIELD_AVATAR), 1), 2, &avatar);
     bitmap = Heap_Alloc(heapId, 80 * 80 / 2);
     CharTiles_LoadRectFromNarc(avatar.narcId, avatar.ncbr_id, heapId, 0, 0, 10, 10, bitmap);
     BlitBitmapRectToWindow(&details->profileWindows[5], bitmap, 0, 0, 80, 80, 0, 0, 80, 80);
@@ -518,7 +518,7 @@ static BOOL PalPadDetails_SelectNextFriend(PalPadShared *shared, int direction) 
             if (current < 0) {
                 current += shared->friends.count;
             }
-            if (FriendRoster_GetEntryField(wifiList, shared->friends.slots[current], 8) != 2) {
+            if (FriendRoster_GetEntryField(wifiList, shared->friends.slots[current], FRIEND_ROSTER_FIELD_GENDER) != FRIEND_ROSTER_GENDER_UNKNOWN) {
                 shared->selectedFriend = current;
                 return TRUE;
             }
@@ -526,7 +526,7 @@ static BOOL PalPadDetails_SelectNextFriend(PalPadShared *shared, int direction) 
     } else {
         for (i = 0; i < shared->friends.count - 1; i++) {
             current = (current + 1) % shared->friends.count;
-            if (FriendRoster_GetEntryField(wifiList, shared->friends.slots[current], 8) != 2) {
+            if (FriendRoster_GetEntryField(wifiList, shared->friends.slots[current], FRIEND_ROSTER_FIELD_GENDER) != FRIEND_ROSTER_GENDER_UNKNOWN) {
                 shared->selectedFriend = current;
                 return TRUE;
             }
@@ -675,7 +675,7 @@ void PalPadDetails_PrintUnionRoomPage(PalPadDetailsSlot *slot, PalPadShared *sha
         i++;
     } while (i < 2);
     PalPadDetailsSlot_Print(slot, 0, 1, shared, gfx, msg_0779_00023, 0, 0, 0x10200, gfx->pageText, gfx->pageBuffer, 0);
-    PalPadGfx_BufferNumber(gfx, FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], 3));
+    PalPadGfx_BufferNumber(gfx, FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], FRIEND_ROSTER_FIELD_TRADES));
     PalPadDetailsSlot_Print(slot, 0, 3, shared, gfx, msg_0779_00024, 0, 0, 0x10200, gfx->pageText, gfx->pageBuffer, 0);
     PalPadDetailsSlot_CopyWindowsToVram(slot, 0);
 }
@@ -820,15 +820,15 @@ void PalPadDetails_PrintWiFiPlazaPage(PalPadDetailsSlot *slot, PalPadShared *sha
     PalPadDetailsSlot_Print(slot, 1, 0, shared, gfx, msg_0779_00047, 0, 0, 0x10200, raw, expanded, 0);
     PalPadGfx_BufferActivityName(gfx, 0);
     PalPadDetailsSlot_Print(slot, 1, 0, shared, gfx, msg_0779_00048, 0, 0x18, 0x10200, raw, expanded, 0);
-    PalPadGfx_BufferNumber(gfx, FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], 10));
+    PalPadGfx_BufferNumber(gfx, FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], FRIEND_ROSTER_FIELD_PLAZA_GAME0_PLAYS));
     PalPadDetailsSlot_Print(slot, 1, 0, shared, gfx, msg_0779_00049, 0x78, 0x18, 0x10200, raw, expanded, 0);
     PalPadGfx_BufferActivityName(gfx, 1);
     PalPadDetailsSlot_Print(slot, 1, 0, shared, gfx, msg_0779_00048, 0, 0x30, 0x10200, raw, expanded, 0);
-    PalPadGfx_BufferNumber(gfx, FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], 11));
+    PalPadGfx_BufferNumber(gfx, FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], FRIEND_ROSTER_FIELD_PLAZA_GAME1_PLAYS));
     PalPadDetailsSlot_Print(slot, 1, 0, shared, gfx, msg_0779_00049, 0x78, 0x30, 0x10200, raw, expanded, 0);
     PalPadGfx_BufferActivityName(gfx, 2);
     PalPadDetailsSlot_Print(slot, 1, 0, shared, gfx, msg_0779_00048, 0, 0x48, 0x10200, raw, expanded, 0);
-    PalPadGfx_BufferNumber(gfx, FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], 12));
+    PalPadGfx_BufferNumber(gfx, FriendRoster_GetEntryField(wifiList, shared->friends.slots[shared->selectedFriend], FRIEND_ROSTER_FIELD_PLAZA_GAME2_PLAYS));
     PalPadDetailsSlot_Print(slot, 1, 0, shared, gfx, msg_0779_00049, 0x78, 0x48, 0x10200, raw, expanded, 0);
     PalPadDetailsSlot_CopyWindowsToVram(slot, 1);
     String_Delete(raw);

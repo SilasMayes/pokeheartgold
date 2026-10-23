@@ -353,7 +353,7 @@ static BOOL PalPadMenu_CanSelect(u32 *selection, PalPadShared *shared) {
 
     if (*selection == PALPAD_MENU_REGISTER) {
         wifiList = Save_FriendRoster_Get(shared->saveData);
-        for (i = 0; i < PALPAD_FRIEND_MAX; i++) {
+        for (i = 0; i < FRIEND_ROSTER_MAX; i++) {
             if (FriendRoster_IsFriendValid(wifiList, i) == 0) {
                 return TRUE;
             }

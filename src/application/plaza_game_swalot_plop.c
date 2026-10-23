@@ -53,7 +53,6 @@
 BOOL GF_TouchpadStartRecording(TPData *data, u32 capacity, u32 frequency);
 int GF_TouchpadUpdate(SwalotPlopTouch *out, int mode, u32 threshold);
 int MTX_Inverse33(const MtxFx33 *src, MtxFx33 *dst);
-fx32 FX_Sqrt(fx32 x);
 
 enum SwalotPlopState {
     SWALOT_PLOP_STATE_CREATE_ENTRY,
