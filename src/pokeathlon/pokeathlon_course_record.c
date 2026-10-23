@@ -650,7 +650,7 @@ BOOL PokeathlonCourseRecord_Main(OverlayManager *man, int *state) {
         }
         break;
     case RECORD_SCREEN_STATE_INPUT:
-        if (PokeathlonCourseRecord_HandleInput(work) && work->selection.scrolling == FALSE) {
+        if (PokeathlonCourseRecord_HandleInput(work) && !work->selection.scrolling) {
             PlaySE(SEQ_SE_DP_SELECT);
             BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, work->heapId);
             *state = RECORD_SCREEN_STATE_WAIT_FADE_OUT;
@@ -806,7 +806,7 @@ static void PokeathlonCourseRecord_UpdatePageScroll(PokeathlonCourseRecord *work
     s32 x;
     u8 i;
 
-    if (work->selection.scrolling == FALSE) {
+    if (!work->selection.scrolling) {
         return;
     }
     xpos = Bg_GetXpos(work->bgConfig, GF_BG_LYR_MAIN_2);
@@ -1047,7 +1047,7 @@ static BOOL PokeathlonCourseRecord_HandleInput(PokeathlonCourseRecord *work) {
     }
     if (gSystem.touchNew) {
         int hit = TouchscreenHitbox_FindHitboxAtTouchNew(sPokeathlonCourseRecordHitboxes);
-        if (hit != -1) {
+        if (hit != TOUCH_MENU_NO_INPUT) {
             if (hit == 5) {
                 exit = TRUE;
             } else {

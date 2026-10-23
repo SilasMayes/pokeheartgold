@@ -18,6 +18,7 @@
 #include "math_util.h"
 #include "palette.h"
 #include "sound_playback.h"
+#include "sound_playback_internal.h"
 #include "sprite_system.h"
 
 // A Pokemon's screen y, to sort the Pokemon by depth.
@@ -26,14 +27,10 @@ typedef struct PokeathlonRingDropDepth {
     PokeathlonCourseMonObject *monObject;
 } PokeathlonRingDropDepth;
 
-BOOL PlaySE_SetVolume(u16 seqNo, int volume);
-
 void MATH_QSort(void *base, u32 count, u32 width, int (*compare)(const void *, const void *), void *context);
 
 #define PokeathlonRingDropUi_SetMemberSwitching(ui, participant, member, switching) (((void (*)(PokeathlonRingDropUi *, u8, int, int))PokeathlonRingDropUi_SetSwitching)((ui), (participant), (member), (switching)))
 #define PokeathlonRingDrop_GetTeamMemberParams(course, participant, member)         (((PokeathlonRingDropMemberParams * (*)(PokeathlonCourseData *, u8, int)) PokeathlonRingDrop_GetMemberParams)((course), (participant), (member)))
-
-void PokeathlonCourseMonObjects_SetPalette(PokeathlonCourseMonObjects *monObjects, u8 index, int vram, u16 *palette);
 
 void PokeathlonRingDrop_InitSprites(PokeathlonRingDrop *ringDrop) {
     SpriteResourceCountsListUnion counts = gPokeathlonRingDropSpriteResourceCounts;
@@ -207,7 +204,7 @@ static void PokeathlonRingDropDisplay_SwitchOut(PokeathlonRingDropMonSprites *mo
 }
 
 // Switch mode 2: the ball comes down to the Pokemon's position.
-static void PokeathlonRingDropDisplay_SwitchIn(PokeathlonRingDropMonSprites *mon, s16 *position, void *ui, u8 participant, PokeathlonRingDropInput *input, BOOL report, BOOL own) {
+static void PokeathlonRingDropDisplay_SwitchIn(PokeathlonRingDropMonSprites *mon, s16 *position, PokeathlonRingDropUi *ui, u8 participant, PokeathlonRingDropInput *input, BOOL report, BOOL own) {
     s16 x, y;
 
     switch (mon->switchStep) {
@@ -253,7 +250,7 @@ static void PokeathlonRingDropDisplay_EndSwitch(PokeathlonRingDropMonSprites *mo
     }
 }
 
-static void PokeathlonRingDropDisplay_UpdateSwitch(PokeathlonRingDropMonPacket *packet, PokeathlonRingDropMonSprites *mon, void *ui, PokeathlonCourseData *course, u8 participant) {
+static void PokeathlonRingDropDisplay_UpdateSwitch(PokeathlonRingDropMonPacket *packet, PokeathlonRingDropMonSprites *mon, PokeathlonRingDropUi *ui, PokeathlonCourseData *course, u8 participant) {
     PokeathlonRingDropInput *input;
     BOOL cpu;
     BOOL changed;
@@ -336,7 +333,7 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
     PokeathlonRingDropMonSprites *mon;
     PokeathlonRingDropDepth depths[RING_DROP_PARTICIPANTS] = { 0 };
     PokeathlonRingDrop *ringDrop;
-    void *monObject;
+    PokeathlonCourseMonObject *monObject;
     BOOL showHit;
     f32 scaleX;
     BOOL hostCpu;
@@ -651,7 +648,7 @@ void PokeathlonRingDropDisplay_Update(PokeathlonRingDropDisplay *display, Pokeat
     u32 anim;
     int i;
 
-    packet = (PokeathlonRingDropFramePacket *)(void *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_IN);
+    packet = (PokeathlonRingDropFramePacket *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_IN);
     ringDrop = PokeathlonCourse_GetWork(course);
     PokeathlonRingDropDisplay_ApplyFramePacket(display, packet, course);
     PokeathlonCourse_UpdateTimeUpCountdown(course, packet->timer);

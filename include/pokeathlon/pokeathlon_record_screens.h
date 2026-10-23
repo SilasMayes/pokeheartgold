@@ -7,6 +7,7 @@
 
 #include "pokeathlon/pokeathlon_util.h"
 
+#include "MATH_pop.h"
 #include "bg_window.h"
 #include "filesystem.h"
 #include "grid_input_handler.h"
@@ -25,8 +26,6 @@ enum PokeathlonRecordScreenState {
     RECORD_SCREEN_STATE_WAIT_FADE_OUT,
     RECORD_SCREEN_STATE_EXIT,
 };
-
-u32 MATH_CountPopulation(u32 value);
 
 // Course record app
 

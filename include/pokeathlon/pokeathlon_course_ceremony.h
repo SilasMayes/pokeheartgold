@@ -24,7 +24,7 @@ typedef struct PokeathlonCourseCeremonyIntro {
 
 // What the host sends for the opening.
 typedef struct PokeathlonCourseCeremonyOpeningData {
-    PokeathlonCourseCeremonyIntro intros[4];
+    PokeathlonCourseCeremonyIntro intros[POKEATHLON_PARTICIPANTS];
     u8 messageCount; // how far the host's text is
     u8 waiting : 1;  // a player is behind the host
     u8 allFinished : 1;
@@ -33,7 +33,7 @@ typedef struct PokeathlonCourseCeremonyOpeningData {
 
 // What the host sends for the closing.
 typedef struct PokeathlonCourseCeremonyClosingData {
-    u8 challengeBonus[4];      // per team
+    u8 challengeBonus[POKEATHLON_PARTICIPANTS]; // per team
     u32 effortPrizeKind : 3;   // statistic of the prize for effort (4: none)
     u32 effortPrizeMons : 12;  // bit per Pokemon (team * 3 + member)
     u32 noMissMons : 12;       // Pokemon that did not miss
@@ -44,7 +44,7 @@ typedef struct PokeathlonCourseCeremonyClosingData {
     u32 allFinished : 1;
     u32 unk08_30 : 2;
     u8 messageCount;   // how far the host's text is
-    u8 drawingLots[4]; // tie-break order of the teams
+    u8 drawingLots[POKEATHLON_PARTICIPANTS]; // tie-break order of the teams
 } PokeathlonCourseCeremonyClosingData;
 
 // What every player sends back.
@@ -137,7 +137,7 @@ typedef struct PokeathlonCourseConfetti {
 typedef struct PokeathlonCourseCeremonyCryTask {
     u16 state;
     s32 timer;
-    void *object;
+    PokeathlonCourseMonObject *object;
     BOOL *active;
 } PokeathlonCourseCeremonyCryTask;
 
@@ -156,8 +156,8 @@ typedef struct PokeathlonCourseCeremony {
 
         struct {
             ManagedSprite *trainerSprites[5]; // four teams and the host of the ceremony
-            ManagedSprite *scoreSprites[4][4];
-            ManagedSprite *monPicSprites[3]; // the winning team
+            ManagedSprite *scoreSprites[POKEATHLON_PARTICIPANTS][4];
+            ManagedSprite *monPicSprites[POKEATHLON_TEAM_SIZE]; // the winning team
             ManagedSprite *medalSprites[2];
         };
     };
@@ -167,7 +167,7 @@ typedef struct PokeathlonCourseCeremony {
     PokeathlonCourseConfetti *confetti;
     int timer;
     BOOL cryActive;
-    PokeathlonCourseCeremonyRank ranks[4];
+    PokeathlonCourseCeremonyRank ranks[POKEATHLON_PARTICIPANTS];
     u8 awardCounts[4];
     u8 cheering;
     u8 course;

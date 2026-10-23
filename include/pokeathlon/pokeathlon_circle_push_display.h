@@ -13,6 +13,8 @@
 // Circle Push: the top screen, with the player names, the round counter, the scoreboard and the idle animations
 // shown while nothing else is.
 
+#define CIRCLE_PUSH_NO_MON 12 // "no Pokemon" in the 0..11 mon indices
+
 // Front picture of one of the 12 Pokemon, uncompressed, for upload into a picture sprite.
 typedef struct PokeathlonCirclePushMonPic {
     void *charData;
@@ -48,14 +50,14 @@ enum PokeathlonCirclePushDisplayPhase {
 typedef struct PokeathlonCirclePushDisplayAnim {
     BOOL active;
     BOOL scoreboardShown;
-    u8 monShown[12]; // the picture of this Pokemon was shown
+    u8 monShown[POKEATHLON_MONS]; // the picture of this Pokemon was shown
     PokeathlonCirclePushDisplayCallback update;
     u16 idleCount; // picks the next idle animation
     u16 frame;
     u32 phase;                // enum PokeathlonCirclePushDisplayPhase
     u32 picImageLocations[2]; // VRAM of the two picture sprites
     u32 picPaletteLocations[2];
-    PokeathlonCirclePushMonPic monPics[12]; // participant * 3 + team member
+    PokeathlonCirclePushMonPic monPics[POKEATHLON_MONS]; // participant * 3 + team member
     PokeathlonCourseSpritePoolSprite *picSprites[2];
     NNSG2dScreenData *zoomBg3Screen;
     NNSG2dScreenData *matchupBg3Screen;
@@ -66,10 +68,10 @@ typedef struct PokeathlonCirclePushDisplayAnim {
     NNSG2dScreenData *digitsScreen; // the digits 0-9 in two rows of five
     PokeathlonCourseSpritePoolSprite *unkB4;
     PokeathlonCourseSpritePoolSprite *roundSprite;
-    void *scoreboardSprites[2];
+    PokeathlonCourseSpritePoolSprite *scoreboardSprites[2];
     PokeathlonCourseSpritePoolSprite *zoomSprite;
-    void *nameplateSprites[4];   // per name window, in the team color
-    void *playerEventSprites[4]; // per name window
+    PokeathlonCourseSpritePoolSprite *nameplateSprites[POKEATHLON_PARTICIPANTS];   // per name window, in the team color
+    PokeathlonCourseSpritePoolSprite *playerEventSprites[POKEATHLON_PARTICIPANTS]; // per name window
     u8 score;                    // points of the own team
     u8 shownScore;
     u8 scroll;            // sub BG 2 vertical offset while a picture is shown
@@ -85,7 +87,7 @@ struct PokeathlonCirclePushDisplay {
     MessageFormat *msgFormat;
     u32 round;
     PokeathlonCirclePushDisplayAnim anim;
-    u8 windowOfParticipant[4];
+    u8 windowOfParticipant[POKEATHLON_PARTICIPANTS];
 };
 
 void PokeathlonCirclePushDisplay_CreateSprites(PokeathlonCourseSpritePool *scene, PokeathlonCirclePushDisplay *display);

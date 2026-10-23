@@ -468,7 +468,7 @@ static BOOL PokeathlonMedals_HandleInput(PokeathlonMedals *work) {
     u32 next = GridInputHandler_GetNextInput(work->grid);
     int hit = TouchscreenHitbox_FindHitboxAtTouchNew(gPokeathlonMedalsHitboxes);
 
-    if (hit != -1) {
+    if (hit != TOUCH_MENU_NO_INPUT) {
         if (hit == 0) {
             PokeathlonMedals_ChangePage(work, FALSE, TRUE);
         } else if (hit == 1) {

@@ -23,7 +23,7 @@ struct PokeathlonBlockSmashMon {
     // 0: the active Pokemon, 1: its hit effect, 2: the mark above it, 3: the switch smoke, 4: the ball,
     // 5, 6: the waiting Pokemon, 7, 8: their marks
     ManagedSprite *sprites[9];
-    PokeathlonBlockSmashMember members[3];
+    PokeathlonBlockSmashMember members[POKEATHLON_TEAM_SIZE];
     u32 member : 2; // the active Pokemon
     u32 mode : 8;
     u32 frames : 11; // counts up every frame (stamina recovery)
@@ -39,7 +39,7 @@ struct PokeathlonBlockSmashMon {
 // One of the other teams' rows (the touch screen's upper part).
 typedef struct PokeathlonBlockSmashRival {
     PokeathlonCourseData *course;
-    PokeathlonCourseMonObject *monPics[3];
+    PokeathlonCourseMonObject *monPics[POKEATHLON_TEAM_SIZE];
     u32 maxStamina[3];
     ManagedSprite *sprites[6]; // 0: score drop, 1: falling block, 2: stamina mark, 3: gauge effect, 4, 5: switch effects
     SysTask *switchTask;
@@ -73,7 +73,7 @@ enum PokeathlonBlockSmashCpuMode {
 // A participant without a player (the host plays them; same rules as the own team).
 typedef struct PokeathlonBlockSmashCpuPlayer {
     PokeathlonCourseData *course;
-    PokeathlonBlockSmashMember members[3];
+    PokeathlonBlockSmashMember members[POKEATHLON_TEAM_SIZE];
     int blockHealth;
     u32 score : 8;
     u32 modeFrames : 8;

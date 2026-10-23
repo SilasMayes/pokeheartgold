@@ -151,7 +151,7 @@ static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu
     if (player->depositing || player->knockedDown == 1 || player->freezeTimer) {
         return;
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonPennantCapturePlayer *other;
         players[i] = cpu->players[i];
         other = players[i].player;
@@ -195,7 +195,7 @@ static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu
                 }
             }
         }
-        for (j = 0; j < 4; j++) {
+        for (j = 0; j < POKEATHLON_PARTICIPANTS; j++) {
             if (j != who && PokeathlonPennantCaptureCpu_IsNearCellTarget(cell, players[j].x, players[j].y)) {
                 cell->score -= 3;
             }

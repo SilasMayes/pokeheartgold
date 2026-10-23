@@ -124,7 +124,7 @@ static void PokeathlonDiscCatchCpuMon_Think(PokeathlonDiscCatchCpuMon *mon) {
     PokeathlonDiscCatch_CountTeamsAhead(mon->course, (u8)mon->participant);
     switch (mon->state) {
     case CPU_MON_STATE_IDLE:
-        GF_ASSERT(mon->chasing == FALSE);
+        GF_ASSERT(!mon->chasing);
         mon->targetX = mon->homeX;
         for (i = 0; i < DISC_CATCH_DISCS; i++) {
             if (PokeathlonDiscCatch_GetDisc(work, (u8)i)->active) {
@@ -163,7 +163,7 @@ static void PokeathlonDiscCatchCpuMon_Update(PokeathlonDiscCatchCpuMon *mon, u16
     PokeathlonDiscCatch *work = PokeathlonCourse_GetWork(mon->course);
     int roll;
     int chance;
-    if (PokeathlonDiscCatch_IsMonInPlay(work, (u8)mon->participant, (u8)mon->member) == FALSE) {
+    if (!PokeathlonDiscCatch_IsMonInPlay(work, (u8)mon->participant, (u8)mon->member)) {
         return;
     }
     mon->homeTimer--;
@@ -176,7 +176,7 @@ static void PokeathlonDiscCatchCpuMon_Update(PokeathlonDiscCatchCpuMon *mon, u16
         PokeathlonDiscCatchCpuMon_Think(mon);
         mon->thinkTimer = 20;
     }
-    if (mon->chasing == FALSE) {
+    if (!mon->chasing) {
         return;
     }
     if (!PokeathlonDiscCatchCpuMon_IsNearDisc(mon, mon->disc, 16)) {

@@ -34,7 +34,7 @@ void PokeathlonHurdleDashRunner_Init(PokeathlonCourseData *course, const Pokeath
     VecFx32 markerPosition;
     VecFx32 rankPosition;
     VecFx32 boostPosition;
-    void *monObject;
+    PokeathlonCourseMonObject *monObject;
     int x;
     int member;
     PokeathlonCourseMonGfx *gfx;

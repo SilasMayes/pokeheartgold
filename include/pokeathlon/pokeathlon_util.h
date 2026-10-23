@@ -17,6 +17,8 @@
 
 // Sprite and text helpers shared by the Pokeathlon course, event and record screens.
 
+#define POKEATHLON_NO_RECORD 0xFFFF // the score of an empty record
+
 typedef struct PokeathlonSpriteContext {
     enum HeapID heapId;
     SpriteSystem *spriteSystem;

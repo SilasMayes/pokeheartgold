@@ -653,7 +653,7 @@ static void PokeathlonCourseMonObjects_FinishLoad(SysTask *task, void *data) {
     PokeathlonCourseMonObjects *objects = data;
     int i;
     int drawPriority;
-    if (PokeathlonCourseMonGfx_IsLoaded(objects->gfxManager) == FALSE) {
+    if (!PokeathlonCourseMonGfx_IsLoaded(objects->gfxManager)) {
         return;
     }
     drawPriority = objects->baseDrawPriority;
@@ -707,7 +707,7 @@ void PokeathlonCourseMonObject_SetDrawFlag(PokeathlonCourseMonObject *object, u8
     Sprite *sprite = PokeathlonCourseMonGfx_GetSprite(object->gfx);
     Sprite_SetDrawFlag(sprite, draw);
     if (object->shadowSprite != NULL) {
-        if (object->shadowHidden != FALSE) {
+        if (object->shadowHidden) {
             Sprite_SetDrawFlag(object->shadowSprite, FALSE);
         } else {
             Sprite_SetDrawFlag(object->shadowSprite, draw);
@@ -721,7 +721,7 @@ void PokeathlonCourseMonObject_SetDrawFlag(PokeathlonCourseMonObject *object, u8
 void PokeathlonCourseMonObject_SetShadowDrawFlag(PokeathlonCourseMonObject *object, BOOL draw) {
     Sprite *sprite = object->shadowSprite;
     if (sprite != NULL) {
-        if (object->shadowHidden != FALSE) {
+        if (object->shadowHidden) {
             Sprite_SetDrawFlag(sprite, FALSE);
         } else {
             Sprite_SetDrawFlag(sprite, draw);

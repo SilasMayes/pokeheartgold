@@ -18,6 +18,7 @@
 #include "poke_overlay.h"
 #include "save_vars_flags.h"
 #include "screen_fade.h"
+#include "screen_fade_internal.h"
 #include "sound.h"
 #include "sound_gb.h"
 #include "sound_playback.h"
@@ -65,8 +66,6 @@ enum PokeathlonEventIntroFadeOutState {
 };
 
 FS_EXTERN_OVERLAY(OVY_98);
-
-void SetBothScreensBrightnessByColor(u16 color);
 
 typedef struct EventIntroBgTemplates {
     BgTemplate templates[7];
@@ -547,8 +546,8 @@ static void PokeathlonEventIntro_Create(PokeathlonCourseData *course) {
     Main_SetHBlankIntrCB(NULL, NULL);
     GfGfx_DisableEngineAPlanes();
     GfGfx_DisableEngineBPlanes();
-    reg_GX_DISPCNT &= 0xFFFFE0FF;
-    reg_GXS_DB_DISPCNT &= 0xFFFFE0FF;
+    reg_GX_DISPCNT &= ~REG_GX_DISPCNT_DISPLAY_MASK;
+    reg_GXS_DB_DISPCNT &= ~REG_GXS_DB_DISPCNT_DISPLAY_MASK;
     PokeathlonEventIntro_SetBanks();
     intro = PokeathlonCourse_AllocWork(course, sizeof(PokeathlonEventIntro));
     MI_CpuFill8(intro, 0, sizeof(PokeathlonEventIntro));
@@ -577,7 +576,7 @@ static void PokeathlonEventIntro_LoadDetailsBg(PokeathlonEventIntro *intro) {
     PokeathlonEventBanner_LoadGraphics(intro->banner);
     GfGfxLoader_GXLoadPalFromOpenNarc(intro->narc, 4, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_0_OFFSET, 0, intro->heapId);
     GfGfxLoader_LoadCharDataFromOpenNarc(intro->narc, 5, intro->bgConfig, GF_BG_LYR_SUB_0, 0, 0, TRUE, intro->heapId);
-    if (intro->showRecord != FALSE) {
+    if (intro->showRecord) {
         GfGfxLoader_LoadScrnDataFromOpenNarc(intro->narc, 10, intro->bgConfig, GF_BG_LYR_SUB_0, 0, 0, TRUE, intro->heapId);
     } else {
         GfGfxLoader_LoadScrnDataFromOpenNarc(intro->narc, 9, intro->bgConfig, GF_BG_LYR_SUB_0, 0, 0, TRUE, intro->heapId);
@@ -621,7 +620,7 @@ static void PokeathlonEventIntro_LoadGraphics(PokeathlonEventIntro *intro) {
     GfGfxLoader_GXLoadPalFromOpenNarc(intro->narc, 4, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_0_OFFSET, 0, intro->heapId);
     GfGfxLoader_LoadCharDataFromOpenNarc(intro->narc, 5, intro->bgConfig, GF_BG_LYR_MAIN_0, 0, 0, TRUE, intro->heapId);
     GfGfxLoader_LoadScrnDataFromOpenNarc(intro->narc, 6, intro->bgConfig, GF_BG_LYR_MAIN_0, 0, 0, TRUE, intro->heapId);
-    if (intro->linkMode == FALSE) {
+    if (!intro->linkMode) {
         GfGfxLoader_LoadCharDataFromOpenNarc(intro->narc, 5, intro->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, TRUE, intro->heapId);
         GfGfxLoader_LoadScrnDataFromOpenNarc(intro->narc, 8, intro->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, TRUE, intro->heapId);
     }
@@ -653,7 +652,7 @@ static void PokeathlonEventIntro_PrintDetails(PokeathlonEventIntro *intro) {
     PokeathlonEventBanner_PrintTexts(intro->banner);
     if (intro->showRecord) {
         int record = PokeathlonEventIntro_GetRecord(intro, intro->event);
-        if (record == 0xFFFF) {
+        if (record == POKEATHLON_NO_RECORD) {
             record = 0;
         }
         if (intro->event == 0) {
@@ -777,7 +776,7 @@ static void PokeathlonEventIntro_StartZoom(PokeathlonEventIntro *intro) {
     int offset = 0;
     MtxFx22 matrix;
 
-    if (intro->showRecord == FALSE) {
+    if (!intro->showRecord) {
         offset = 32;
     }
     matrix._00 = 0x125;
@@ -840,7 +839,7 @@ static void PokeathlonEventIntro_ShowDetails(PokeathlonEventIntro *intro) {
     ToggleBgLayer(GF_BG_LYR_MAIN_1, GF_PLANE_TOGGLE_ON);
     PokeathlonEventIntro_PrintDetails(intro);
     y = 0;
-    if (intro->showRecord == FALSE) {
+    if (!intro->showRecord) {
         y = -32;
     }
     matrix._00 = FX32_ONE;
@@ -934,18 +933,18 @@ BOOL PokeathlonEventIntro_Appear(PokeathlonCourseData *course, u8 *state) {
         }
         break;
     case EVENT_INTRO_APPEAR_ZOOM:
-        if (intro->zooming != FALSE) {
+        if (intro->zooming) {
             PokeathlonEventIntro_UpdateZoom(intro);
         } else if (PokeathlonEventIntro_IsBgmAt(0, 3)) {
             BeginNormalPaletteFade(FADE_MAIN_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0x7FFF, 12, 1, intro->heapId);
             ManagedSprite_SetAnimateFlag(intro->sprites[2], TRUE);
-            ManagedSprite_SetDrawFlag(intro->sprites[3], intro->linkMode == FALSE);
+            ManagedSprite_SetDrawFlag(intro->sprites[3], !intro->linkMode);
             (*step)++;
         }
         break;
     case EVENT_INTRO_APPEAR_WAIT_FADE:
         if (IsPaletteFadeFinished()) {
-            if (intro->linkMode != FALSE) {
+            if (intro->linkMode) {
                 intro->timer = 0;
                 (*step)++;
             } else {
@@ -973,7 +972,7 @@ BOOL PokeathlonEventIntro_DetailsPage(PokeathlonCourseData *course, u8 *state) {
     case EVENT_INTRO_DETAILS_INPUT:
         if (IsPaletteFadeFinished()) {
             int button = TouchscreenHitbox_FindRectAtTouchNew(sPokeathlonEventIntroDetailsHitboxes);
-            if (button != -1) {
+            if (button != TOUCH_MENU_NO_INPUT) {
                 switch (button) {
                 case 0:
                     PlaySE(SEQ_SE_DP_SELECT);

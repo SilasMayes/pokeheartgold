@@ -13,10 +13,9 @@
 #include "message_format.h"
 #include "msgdata.h"
 #include "sound_playback.h"
+#include "sound_playback_internal.h"
 #include "string_util.h"
 #include "text.h"
-
-BOOL PlaySEOnPlayer(u16 seqNo, int player);
 
 static void PokeathlonRingDropMon_StartDash(PokeathlonRingDropMon *mon, const s16 *target);
 static void PokeathlonRingDropMon_EndDash(PokeathlonRingDropMon *mon);
@@ -434,7 +433,7 @@ void PokeathlonRingDropMon_UpdateStatus(PokeathlonRingDropMon *mon, PokeathlonRi
     } else {
         newStatus = 3;
     }
-    if (onSwitchButton == FALSE) {
+    if (!onSwitchButton) {
         *status = newStatus;
         return;
     }

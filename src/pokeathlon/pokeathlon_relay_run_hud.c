@@ -353,7 +353,7 @@ void PokeathlonRelayRunHud_UpdateTeam(PokeathlonRelayRunHud *hud, u8 teamId, u8 
         shownMembers[teamId] = (u8)member;
         PokeathlonRelayRunHud_SetMonIcon(hud, teamId, member);
     }
-    if (swapping != FALSE) {
+    if (swapping) {
         PokeathlonCourseSpritePoolSprite_Show(hud->map.teams[teamId].icon, TRUE, FALSE);
         PokeathlonCourseSpritePoolSprite_Show(hud->map.teams[teamId].swapMark, TRUE, TRUE);
         PokeathlonCourseSpritePoolSprite_Show(hud->map.teams[teamId].conditionMark, TRUE, FALSE);

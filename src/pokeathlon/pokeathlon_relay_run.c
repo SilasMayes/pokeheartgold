@@ -28,6 +28,7 @@
 #include "pm_string.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
+#include "sound_playback_internal.h"
 #include "sprite.h"
 #include "string_util.h"
 #include "system.h"
@@ -63,9 +64,6 @@ typedef char PokeathlonRelayRunLayoutCheck[(offsetof(PokeathlonRelayRun, teams) 
 fx32 FX_Sqrt(fx32 x);
 
 f32 _fflt(int value);
-
-BOOL PlaySEOnPlayer(u16 seqNo, int playerNo);
-u32 GF_SndCountPlayingSeqOnPlayer(u32 playerNo);
 
 static void PokeathlonRelayRun_SetGfxBanks(void);
 static void PokeathlonRelayRun_InitBgs(BgConfig *bgConfig);
@@ -974,14 +972,14 @@ static void PokeathlonRelayRun_DrawPacket(PokeathlonCourseData *course) {
         PokeathlonCourseSpritePoolSprite_TryChangeAnim(relayRun->signSprite, 13);
         break;
     case 2:
-        if (relayRun->signSoundPlayed == FALSE) {
+        if (!relayRun->signSoundPlayed) {
             relayRun->signSoundPlayed = TRUE;
             PlaySE(SEQ_SE_GS_CHANGE1);
         }
         PokeathlonCourseSpritePoolSprite_TryChangeAnim(relayRun->signSprite, 12);
         break;
     case 4:
-        if (relayRun->signSoundPlayed == FALSE) {
+        if (!relayRun->signSoundPlayed) {
             relayRun->signSoundPlayed = TRUE;
             PlaySE(SEQ_SE_GS_CHANGE2);
         }
@@ -1125,7 +1123,7 @@ static void PokeathlonRelayRun_MoveTeams(PokeathlonCourseData *course) {
             break;
         }
         result = PokeathlonRelayRun_CollideRunners(course, relayRun->teams, &bump);
-        if (relayRun->bumped == FALSE && result) {
+        if (!relayRun->bumped && result) {
             relayRun->bumped = TRUE;
             relayRun->bumpX = bump.x / FX32_ONE;
             relayRun->bumpY = bump.y / FX32_ONE;
@@ -1344,7 +1342,7 @@ void PokeathlonRelayRun_DrawTeams(PokeathlonCourseData *course, int own, Pokeath
             PokeathlonRelayRunTeam_DrawSwap(relayRun->hud, team, &position, packet, i, (u8)member, touch, isHost, FALSE, isCpu);
         }
         PokeathlonRelayRunHud_UpdateTeam(relayRun->hud, i, (u8)member, swapping, condition);
-        if (team->runnerHidden == FALSE && screenX >= -32 && screenX <= 288) {
+        if (!team->runnerHidden && screenX >= -32 && screenX <= 288) {
             PokeathlonCourseMonObject_SetDrawFlag(monObject, TRUE);
         } else {
             PokeathlonCourseMonObject_SetDrawFlag(monObject, FALSE);
@@ -1368,7 +1366,7 @@ void PokeathlonRelayRun_DrawTeams(PokeathlonCourseData *course, int own, Pokeath
                 }
                 PokeathlonCourseMonObject_SetAnim(monObject, 8);
                 running = TRUE;
-                if (team->speedSoundGrade <= RELAY_RUN_SPEED_SLOW && team->speedSoundPlayed == FALSE) {
+                if (team->speedSoundGrade <= RELAY_RUN_SPEED_SLOW && !team->speedSoundPlayed) {
                     PokeathlonRelayRun_PlaySEIfOnScreen(screenX, SEQ_SE_GS_FW015_2, isOwn);
                     team->speedSoundGrade = RELAY_RUN_SPEED_FAST;
                     team->speedSoundPlayed = TRUE;
@@ -1381,7 +1379,7 @@ void PokeathlonRelayRun_DrawTeams(PokeathlonCourseData *course, int own, Pokeath
                 }
                 PokeathlonCourseMonObject_SetAnim(monObject, 8);
                 running = TRUE;
-                if (team->speedSoundGrade <= RELAY_RUN_SPEED_SLOW && team->speedSoundPlayed == FALSE) {
+                if (team->speedSoundGrade <= RELAY_RUN_SPEED_SLOW && !team->speedSoundPlayed) {
                     PokeathlonRelayRun_PlaySEIfOnScreen(screenX, SEQ_SE_GS_FW015_2, isOwn);
                     team->speedSoundGrade = RELAY_RUN_SPEED_TOP;
                     team->speedSoundPlayed = TRUE;
@@ -1446,7 +1444,7 @@ void PokeathlonRelayRun_ScrollObstacles(PokeathlonRelayRun *relayRun, int x) {
         int screenX;
         u8 y;
 
-        if (shifted->obstacles[0].active == FALSE) {
+        if (!shifted->obstacles[0].active) {
             break;
         }
         y = shifted->obstacles[0].y;
@@ -1501,12 +1499,12 @@ static void PokeathlonRelayRunTeam_AnimateLeave(PokeathlonRelayRunHud *hud, Poke
         }
         break;
     case 2:
-        if (isOwn != FALSE) {
+        if (isOwn) {
             if (PokeathlonRelayRunHud_RotateMonPics(hud, member)) {
                 touch->displayPhase = RELAY_RUN_SWAP_LEAVE;
                 team->swapStep++;
             }
-        } else if (isHostForCpu != FALSE) {
+        } else if (isHostForCpu) {
             if (PokeathlonRelayRunHud_RotateCpuMonPics(hud, teamId)) {
                 touch->displayPhase = RELAY_RUN_SWAP_LEAVE;
                 team->swapStep++;
@@ -1550,7 +1548,7 @@ static void PokeathlonRelayRunTeam_AnimateArrive(PokeathlonRelayRunTeam *team, V
         break;
     }
     case 2:
-        if (reportPhase != FALSE) {
+        if (reportPhase) {
             touch->displayPhase = RELAY_RUN_SWAP_ARRIVE;
         }
         PokeathlonCourseSpritePoolSprite_SetPosition(team->swapSprite, position);
@@ -1646,7 +1644,7 @@ static void PokeathlonRelayRun_FindNearbyObstacles(PokeathlonRelayRun *relayRun,
         u8 kind;
         int distance;
         int screenX;
-        if (relayRun->obstacles[i].active == FALSE) {
+        if (!relayRun->obstacles[i].active) {
             return;
         }
         kind = relayRun->layout[i];
@@ -1942,7 +1940,7 @@ static fx32 PokeathlonRelayRun_CalcCircleEntry(const VecFx32 *a, const VecFx32 *
 
 // The fastest a flick can make the member run: its speed on a slow patch, when tired, or its speed limit.
 f32 PokeathlonRelayRunTeam_GetMaxSpeed(PokeathlonRelayRunTeam *team, int member) {
-    if (team->onPatch != FALSE) {
+    if (team->onPatch) {
         return (f32)team->members[member].patchSpeed;
     }
     if (team->members[member].energy <= 40.0) {
@@ -1971,7 +1969,7 @@ BOOL PokeathlonRelayRun_CollideRunners(PokeathlonCourseData *course, PokeathlonR
     VecFx32 d;
     int radP, radQ;
     int px, py, qx, qy;
-    void *objectP, *objectQ;
+    PokeathlonCourseMonObject *objectP, *objectQ;
     BOOL result;
     u8 pushMember;
     int pX;
@@ -1985,7 +1983,7 @@ BOOL PokeathlonRelayRun_CollideRunners(PokeathlonCourseData *course, PokeathlonR
     posQ.z = 0;
     for (i = 0, p = teams; i < RELAY_RUN_TEAMS; i++, p++) {
         memberP = p->current;
-        if (p->swapping != FALSE || p->stunTimer != 0) {
+        if (p->swapping || p->stunTimer != 0) {
             continue;
         }
         objectP = p->monObjects[memberP];
@@ -1994,7 +1992,7 @@ BOOL PokeathlonRelayRun_CollideRunners(PokeathlonCourseData *course, PokeathlonR
             if (i == j) {
                 continue;
             }
-            if (q->swapping != FALSE) {
+            if (q->swapping) {
                 continue;
             }
             wrappedPx = px;
@@ -2129,7 +2127,7 @@ void PokeathlonRelayRunTeam_SetDrawPriority(PokeathlonRelayRunTeam *team, u8 y, 
         row = 0;
     }
     row = row / 8;
-    if (isOwn != FALSE) {
+    if (isOwn) {
         priority = 30 * row + 4;
     } else {
         priority = 30 * row + 7;
@@ -2242,7 +2240,7 @@ void PokeathlonRelayRun_UpdateSwapSign(PokeathlonRelayRun *relayRun, u8 teamId, 
     u8 *signs = relayRun->swapSigns;
     u8 sign = 0;
     u8 condition = relayRun->teams[teamId].members[relayRun->teams[teamId].current].condition;
-    if (relayRun->teams[teamId].swapping != FALSE) {
+    if (relayRun->teams[teamId].swapping) {
         sign = 3;
     } else if (relayRun->teams[teamId].stunTimer != 0) {
         sign = 3;
@@ -2251,11 +2249,11 @@ void PokeathlonRelayRun_UpdateSwapSign(PokeathlonRelayRun *relayRun, u8 teamId, 
     } else if (condition == RELAY_RUN_TIRED) {
         sign = 1;
     }
-    if (touchingSwapButton == FALSE) {
+    if (!touchingSwapButton) {
         signs[teamId] = sign;
         return;
     }
-    if (relayRun->presses[teamId].pressed != FALSE) {
+    if (relayRun->presses[teamId].pressed) {
         if (sign <= 1) {
             signs[teamId] = 2;
             return;
@@ -2267,7 +2265,7 @@ void PokeathlonRelayRun_UpdateSwapSign(PokeathlonRelayRun *relayRun, u8 teamId, 
         GF_ASSERT(FALSE);
         return;
     }
-    if (relayRun->presses[teamId].held == FALSE) {
+    if (!relayRun->presses[teamId].held) {
         signs[teamId] = sign;
     }
 }

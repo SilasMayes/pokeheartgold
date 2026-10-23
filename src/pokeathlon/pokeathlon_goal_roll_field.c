@@ -113,7 +113,7 @@ void PokeathlonGoalRoll_MoveMons(PokeathlonCourseData *course) {
     VecFx32 direction;
     VecFx32 position;
 
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < GOAL_ROLL_MONS; i++) {
         mon = &goalRoll->mons[i / 3][i % 3];
         mon->direction = zero;
         previous[i] = mon->position;
@@ -194,7 +194,7 @@ void PokeathlonGoalRoll_MoveMons(PokeathlonCourseData *course) {
     {
         PokeathlonGoalRollMon *moved;
         VecFx32 *from;
-        for (i = 0, from = previous; i < 12; i++, from++) {
+        for (i = 0, from = previous; i < GOAL_ROLL_MONS; i++, from++) {
             moved = &goalRoll->mons[i / 3][i % 3];
             if (moved->position.x != from->x || moved->position.y != from->y) {
                 VecFx32 out;
@@ -240,7 +240,7 @@ void PokeathlonGoalRoll_CollideBalls(PokeathlonCourseData *course) {
             radius = 12;
         }
         ballRadius = radius * FX32_ONE;
-        for (i = 0, ballPosition = &ball->position, teams = goalRoll->mons; i < 12; i++) {
+        for (i = 0, ballPosition = &ball->position, teams = goalRoll->mons; i < GOAL_ROLL_MONS; i++) {
             VecFx32 center = { 0, 0, 0 };
             VecFx32 normal;
             int monRadius;
@@ -630,7 +630,7 @@ void PokeathlonGoalRoll_UpdateTiredMons(PokeathlonCourseData *course) {
     u8 i;
     int tired = GOAL_ROLL_MODE_TIRED;
 
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < GOAL_ROLL_MONS; i++) {
         int participant = i / 3;
         int member = i % 3;
         PokeathlonGoalRollMon *mon = &goalRoll->mons[participant][member];
@@ -665,7 +665,7 @@ int PokeathlonGoalRoll_GetTouchedMon(PokeathlonGoalRoll *goalRoll, u8 participan
     reach = PokeathlonCourse_GetTouchRadius();
     count = 0;
     nearest = reach << FX32_SHIFT;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < GOAL_ROLL_TEAM_SIZE; i++) {
         PokeathlonGoalRollMon *mon = &goalRoll->mons[participant][i];
         if (PokeathlonCourse_IsInRange(mon->position.x / FX32_ONE, mon->position.y / FX32_ONE, touchX, touchY, reach, &distance)) {
             distances[i] = distance;
@@ -680,7 +680,7 @@ int PokeathlonGoalRoll_GetTouchedMon(PokeathlonGoalRoll *goalRoll, u8 participan
         return GOAL_ROLL_NO_MON;
     }
     best = 3;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < GOAL_ROLL_TEAM_SIZE; i++) {
         if (inReach[i] && distances[i] < nearest) {
             best = i;
             nearest = distances[i];
@@ -716,7 +716,7 @@ void PokeathlonGoalRoll_ResetBall(PokeathlonGoalRollBall *ball) {
     ball->wait = 0;
     ball->strength = 0;
     ball->kickLevel = 0;
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < GOAL_ROLL_MONS; i++) {
         ball->touching[i] = FALSE;
     }
 }
@@ -1247,7 +1247,7 @@ void PokeathlonGoalRoll_LoadStrings(PokeathlonCourseData *course) {
     goalRoll->plateStrings[0] = NewString_ReadMsgData(msgData, msg_0309_00307);
     goalRoll->plateStrings[1] = NewString_ReadMsgData(msgData, msg_0309_00308);
     goalRoll->plateStrings[2] = NewString_ReadMsgData(msgData, msg_0309_00309);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
         String *name = PlayerProfile_GetPlayerName_NewString(PokeathlonCourse_GetPlayerProfileFromData(course, i), goalRoll->heapId);
         BufferString(msgFormat, 0, name, 2, 1, 2);
         goalRoll->nameStrings[i] = ReadMsgData_ExpandPlaceholders(msgFormat, msgData, msg_0309_00306, goalRoll->heapId);
@@ -1263,7 +1263,7 @@ void PokeathlonGoalRoll_FreeStrings(PokeathlonCourseData *course) {
     String_Delete(goalRoll->plateStrings[0]);
     String_Delete(goalRoll->plateStrings[1]);
     String_Delete(goalRoll->plateStrings[2]);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
         String_Delete(goalRoll->nameStrings[i]);
     }
 }

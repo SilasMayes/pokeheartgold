@@ -133,7 +133,7 @@ static const ManagedSpriteTemplate sPokeathlonRingDropUiTimerSpriteTemplate = {
     .vramTransfer = 0,
 };
 
-PokeathlonRingDropUi *PokeathlonRingDropUi_New(SpriteSystem *spriteSystem, SpriteManager *spriteManager, void *resources, BgConfig *bgConfig, MsgData *msgData, MessageFormat *msgFormat, u8 participant, enum HeapID heapId, PokeathlonCourseData *course) {
+PokeathlonRingDropUi *PokeathlonRingDropUi_New(SpriteSystem *spriteSystem, SpriteManager *spriteManager, PokeathlonCourseSpriteResources *resources, BgConfig *bgConfig, MsgData *msgData, MessageFormat *msgFormat, u8 participant, enum HeapID heapId, PokeathlonCourseData *course) {
     PokeathlonRingDropUi *ui;
     u8 *member;
     int i;
@@ -232,7 +232,7 @@ void PokeathlonRingDropUi_SetTimer(PokeathlonRingDropUi *ui, s32 seconds) {
     int i;
     ui->ranksHidden = seconds < 10 || seconds > 55;
     for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
-        ManagedSprite_SetDrawFlag(ui->sprites[RING_DROP_UI_SPRITE_RANKS + i], ui->ranksHidden == FALSE);
+        ManagedSprite_SetDrawFlag(ui->sprites[RING_DROP_UI_SPRITE_RANKS + i], !ui->ranksHidden);
     }
     Sprite_SetAnimCtrlSeq(ui->timerDigits[0], tens + 1);
     Sprite_SetAnimCtrlSeq(ui->timerDigits[1], ones + 1);
@@ -337,7 +337,7 @@ void PokeathlonRingDropUi_SetSwitching(PokeathlonRingDropUi *ui, u8 participant,
     GF_ASSERT(ui != NULL);
     GF_ASSERT(participant < RING_DROP_PARTICIPANTS);
     GF_ASSERT(member < RING_DROP_TEAM_SIZE);
-    if (switching == FALSE) {
+    if (!switching) {
         PokeathlonRingDropUi_LoadMonIcon(ui, participant, member);
     }
     PokeathlonRingDropUi_ShowSwitching(ui, participant, switching);
@@ -466,7 +466,7 @@ static void PokeathlonRingDropUi_LoadMonIcon(PokeathlonRingDropUi *ui, u8 partic
 
 static void *PokeathlonRingDropUi_NewTimerSprite(SpriteSystem *spriteSystem, SpriteManager *spriteManager, u16 x, u16 y, u16 animation, u16 priority) {
     ManagedSpriteTemplate template = sPokeathlonRingDropUiTimerSpriteTemplate;
-    void *sprite;
+    ManagedSprite *sprite;
     GF_ASSERT(spriteSystem != NULL);
     GF_ASSERT(spriteManager != NULL);
     template.x = x;
@@ -520,6 +520,6 @@ static void PokeathlonRingDropUi_SetPicPosition(PokeathlonRingDropUi *ui, s32 sp
 }
 
 static void PokeathlonRingDropUi_ShowSwitching(PokeathlonRingDropUi *ui, s32 participant, BOOL switching) {
-    ManagedSprite_SetDrawFlag(RING_DROP_UI_SPRITE(ui, participant + RING_DROP_UI_SPRITE_ICONS), switching == FALSE);
+    ManagedSprite_SetDrawFlag(RING_DROP_UI_SPRITE(ui, participant + RING_DROP_UI_SPRITE_ICONS), !switching);
     ManagedSprite_SetDrawFlag(RING_DROP_UI_SPRITE(ui, participant + RING_DROP_UI_SPRITE_SWITCHING), switching);
 }

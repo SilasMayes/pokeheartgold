@@ -2,9 +2,8 @@
 
 #include "pokeathlon/pokeathlon_util.h"
 
+#include "MATH_pop.h"
 #include "screen_fade.h"
-
-u32 MATH_CountPopulation(u32 value);
 
 static void PokeathlonUtil_SetGfxBanks(void);
 
@@ -78,7 +77,7 @@ u16 PokeathlonUtil_GetEventThreshold(u32 row, u32 column) {
 
 BOOL PokeathlonUtil_BeatsEventThreshold(u32 direction, u32 column, u16 value) {
     u16 limit = PokeathlonUtil_GetEventThreshold(direction, column);
-    if (value == 0xFFFF) {
+    if (value == POKEATHLON_NO_RECORD) {
         return FALSE;
     }
     if (direction == 0) {
@@ -89,7 +88,7 @@ BOOL PokeathlonUtil_BeatsEventThreshold(u32 direction, u32 column, u16 value) {
 
 BOOL PokeathlonUtil_ReachesEventThreshold(u32 direction, u32 column, u16 value) {
     u16 limit = PokeathlonUtil_GetEventThreshold(direction, column);
-    if (value == 0xFFFF) {
+    if (value == POKEATHLON_NO_RECORD) {
         return FALSE;
     }
     if (direction == 0) {
@@ -133,8 +132,8 @@ void PokeathlonUtil_ResetDisplay(void) {
     HBlankInterruptDisable();
     GfGfx_DisableEngineAPlanes();
     GfGfx_DisableEngineBPlanes();
-    reg_GX_DISPCNT &= 0xFFFFE0FF;
-    reg_GXS_DB_DISPCNT &= 0xFFFFE0FF;
+    reg_GX_DISPCNT &= ~REG_GX_DISPCNT_DISPLAY_MASK;
+    reg_GXS_DB_DISPCNT &= ~REG_GXS_DB_DISPCNT_DISPLAY_MASK;
     reg_GX_POWCNT &= 0xFFFF7FFF;
     PokeathlonUtil_SetGfxBanks();
 }

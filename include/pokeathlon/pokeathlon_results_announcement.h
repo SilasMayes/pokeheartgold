@@ -89,7 +89,7 @@ typedef struct PokeathlonResultsAnnouncementRanking {
 // One team on the scoreboard: name plate, three digits and the name.
 typedef struct PokeathlonResultsAnnouncementScoreboardTeam {
     PokeathlonCourseSpritePoolSprite *plate;
-    void *digits[3];
+    PokeathlonCourseSpritePoolSprite *digits[3];
     PokeathlonResultsAnnouncementText name;
     u32 points;
     int y;

@@ -210,7 +210,7 @@ void PokeathlonBlockSmashMon_Update(PokeathlonBlockSmashMon *mon, BOOL stackDrop
         break;
     }
     gPokeathlonBlockSmashFramesSinceHit++;
-    if (stackDropping == FALSE) {
+    if (!stackDropping) {
         PokeathlonBlockSmashMon_UpdateGauge(mon);
     }
     PokeathlonBlockSmashMon_UpdateTired(mon);
@@ -218,7 +218,7 @@ void PokeathlonBlockSmashMon_Update(PokeathlonBlockSmashMon *mon, BOOL stackDrop
     mon->frames++;
     if (ManagedSprite_IsAnimated(mon->sprites[0])) {
         cellAnim = Sprite_GetCellAnim(mon->sprites[0]->sprite);
-        element = (PokeathlonBlockSmashAnimElement *)NNS_G2dGetAnimCtrlCurrentElement(&cellAnim->animCtrl);
+        element = NNS_G2dGetAnimCtrlCurrentElement(&cellAnim->animCtrl);
         GF_ASSERT(cellAnim->animCtrl.bActive);
         ManagedSprite_GetPositionXY(mon->sprites[0], &position.x, &position.y);
         position.x += element->x;
@@ -335,11 +335,11 @@ PokeathlonBlockSmashRivals *PokeathlonBlockSmashRivals_New(enum HeapID heapId, S
     rivals->monPics = monPics;
     PokeathlonBlockSmashRivals_InitMonPics(monPics, self);
     row = rivals->rows;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (i == self) {
             continue;
         }
-        for (k = 0, out = maxStamina; k < 3; k++, out++) {
+        for (k = 0, out = maxStamina; k < POKEATHLON_TEAM_SIZE; k++, out++) {
             *out = table.stamina[PokeathlonCourse_GetMonStats(course, i, k)[3]];
         }
         PokeathlonBlockSmashRival_Init(row, spriteSystem, spriteManager, rivals->monPics, (u8)i, course, maxStamina);
@@ -387,7 +387,7 @@ void PokeathlonBlockSmashRivals_Pause(PokeathlonBlockSmashRivals *rivals) {
 }
 
 static void PokeathlonBlockSmashMon_UpdateReady(PokeathlonBlockSmashMon *mon, BOOL stackDropping) {
-    if (stackDropping == FALSE && !ManagedSprite_IsAnimated(mon->sprites[0])) {
+    if (!stackDropping && !ManagedSprite_IsAnimated(mon->sprites[0])) {
         ManagedSprite_SetAnim(mon->sprites[0], 1);
     }
 }
@@ -545,7 +545,7 @@ static void PokeathlonBlockSmashMon_UpdateTired(PokeathlonBlockSmashMon *mon) {
     if (mon->mode == BLOCK_SMASH_MON_SWITCHING) {
         return;
     }
-    for (i = 0, member = mon->members; i < 3; i++, member++) {
+    for (i = 0, member = mon->members; i < POKEATHLON_TEAM_SIZE; i++, member++) {
         if (i == mon->member) {
             tiredAnim = 26;
             anim = 24;
@@ -594,7 +594,7 @@ static void PokeathlonBlockSmashRival_Init(PokeathlonBlockSmashRival *row, Sprit
     if (row->participant > PokeathlonCourse_GetNetId(course)) {
         row->column = row->column - 1;
     }
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         row->monPics[i] = PokeathlonCourseMonObjects_Get(monPics, (u8)(i + row->column * 3));
         row->maxStamina[i] = maxStamina[i];
     }
@@ -797,7 +797,7 @@ static void PokeathlonBlockSmashRival_Update(PokeathlonBlockSmashRival *row) {
         ManagedSprite_SetDrawFlag(row->sprites[3], FALSE);
     }
     PokeathlonBlockSmashRival_UpdateScore(row, &reports[participant]);
-    if (row->switching == FALSE && row->member != reports[participant].member) {
+    if (!row->switching && row->member != reports[participant].member) {
         GF_ASSERT(reports[participant].member < 3);
         row->newMember = reports[participant].member;
         PokeathlonBlockSmashRival_StartSwitch(row);
@@ -950,11 +950,11 @@ static void PokeathlonBlockSmashRivals_InitMonPics(PokeathlonCourseMonObjects *m
     s32 i;
     int x;
     s32 j;
-    for (j = 0, base = 0, x = 72; j < 4; j++) {
+    for (j = 0, base = 0, x = 72; j < POKEATHLON_PARTICIPANTS; j++) {
         if (j == self) {
             continue;
         }
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
             pic = PokeathlonCourseMonObjects_Get(monPics, (u8)(i + base));
             PokeathlonCourseMonObject_SetDrawPriority(pic, 32);
             PokeathlonCourseObject_SetGroundPosition(pic, x, 48);
@@ -1356,7 +1356,7 @@ static void PokeathlonBlockSmash_InitMembers(PokeathlonBlockSmashMember *members
     int i;
     u8 *ratings;
     ReadWholeNarcMemberByIdPair(table, NARC_a_1_7_0, 5);
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         ratings = PokeathlonCourse_GetMonStats(course, participant, i);
         GF_ASSERT(ratings[0] < 5);
         GF_ASSERT(ratings[3] < 5);
@@ -1373,7 +1373,7 @@ static void PokeathlonBlockSmash_InitMembers(PokeathlonBlockSmashMember *members
 static void PokeathlonBlockSmash_RecoverStamina(PokeathlonBlockSmashMember *members, u32 frames, u8 active) {
     int i = 0;
     u32 every60 = frames % 60, every30 = frames % 30;
-    for (; i < 3; i++, members++) {
+    for (; i < POKEATHLON_TEAM_SIZE; i++, members++) {
         u16 stamina = members->stamina, maxStamina = members->maxStamina;
         if (frames != 0 && stamina < maxStamina) {
             if (i == active) {

@@ -35,7 +35,7 @@ static const VecFx32 sHurdleDashNewHurdlePos = { 0, -FX32_CONST(8), 0 };
 static PokeathlonHurdle *PokeathlonHurdleDash_AllocHurdles(u32 count, enum HeapID heapId) {
     u32 size = count * sizeof(PokeathlonHurdle);
     PokeathlonHurdle *hurdles = Heap_Alloc(heapId, size);
-    MIi_CpuClearFast(0, (u32 *)hurdles, size);
+    MI_CpuClearFast(hurdles, size);
     return hurdles;
 }
 
@@ -47,7 +47,7 @@ PokeathlonHurdle *PokeathlonHurdleDash_GetHurdle(PokeathlonHurdle *hurdles, int 
     return &hurdles[index];
 }
 
-static void PokeathlonHurdle_SetSprites(PokeathlonHurdle *hurdle, void *standingSprite, void *knockedSprite) {
+static void PokeathlonHurdle_SetSprites(PokeathlonHurdle *hurdle, PokeathlonCourseSpritePoolSprite *standingSprite, PokeathlonCourseSpritePoolSprite *knockedSprite) {
     hurdle->standingSprite = standingSprite;
     hurdle->knockedSprite = knockedSprite;
 }
@@ -175,7 +175,8 @@ void PokeathlonHurdleDashTrack_Free(PokeathlonHurdleDashTrack *track) {
     Heap_Free(base);
 }
 
-void PokeathlonHurdleDashTrack_CreateHurdleSprites(PokeathlonHurdleDashLane *lane, PokeathlonCourseSpritePool *spritePool) {
+void PokeathlonHurdleDashTrack_CreateHurdleSprites(PokeathlonHurdleDashTrack *track, PokeathlonCourseSpritePool *spritePool) {
+    PokeathlonHurdleDashLane *lane = track->lanes;
     int i = 0;
     int j;
     do {
@@ -242,14 +243,14 @@ int PokeathlonHurdleDashTrack_GetHurdleAt(PokeathlonHurdleDashTrack *track, int 
 
 PokeathlonHurdleDashStandings *PokeathlonHurdleDashStandings_New(enum HeapID heapId) {
     PokeathlonHurdleDashStandings *standings = Heap_Alloc(heapId, sizeof(PokeathlonHurdleDashStandings));
-    MIi_CpuClearFast(0, (u32 *)standings, sizeof(PokeathlonHurdleDashStandings));
+    MI_CpuClearFast(standings, sizeof(PokeathlonHurdleDashStandings));
     standings->heapId = heapId;
     return standings;
 }
 
 void PokeathlonHurdleDashStandings_Free(PokeathlonHurdleDashStandings *standings) {
     int i;
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         Sprite_Delete(standings->mons[i].icon);
         Sprite_Delete(standings->mons[i].frame);
         Sprite_Delete(standings->mons[i].rank);
@@ -288,7 +289,7 @@ void PokeathlonHurdleDashStandings_SetRank(PokeathlonHurdleDashStandings *standi
 
 void PokeathlonHurdleDashStandings_SetDrawFlag(PokeathlonHurdleDashStandings *standings, BOOL draw) {
     int i;
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         Sprite_SetDrawFlag(standings->mons[i].icon, draw);
         Sprite_SetDrawFlag(standings->mons[i].frame, draw);
     }
@@ -346,7 +347,7 @@ static void PokeathlonHurdleDashStandings_CreateSprites(PokeathlonHurdleDashStan
     x = 16;
     flushSize = offset;
     loadSize = offset;
-    for (i = 0; i < 12; i++, x += 32) {
+    for (i = 0; i < POKEATHLON_MONS; i++, x += 32) {
         standings->mons[i].icon = Sprite_CreateAffine(&template);
         Sprite_SetAnimActiveFlag(standings->mons[i].icon, TRUE);
         Sprite_SetAnimCtrlSeq(standings->mons[i].icon, i);
@@ -427,7 +428,7 @@ void PokeathlonHurdleDashDust_Spawn(PokeathlonHurdleDashDustLane *lanes, u32 lan
     GF_ASSERT(lane < 3);
     selected = &lanes[lane];
     dust = &selected->dust[selected->next];
-    if (dust->active == FALSE) {
+    if (!dust->active) {
         PokeathlonCourseSpritePoolSprite_Show(dust->sprite, TRUE, TRUE);
         PokeathlonCourseSpritePoolSprite_SetAnim(dust->sprite, 1);
         PokeathlonCourseSpritePoolSprite_SetPosition(dust->sprite, position);
@@ -446,11 +447,11 @@ void PokeathlonHurdleDashDust_Scroll(PokeathlonHurdleDashDustLane *lanes, u32 la
     selected = &lanes[lane];
     for (i = 0; i < 5; i++) {
         PokeathlonHurdleDashDust *dust = &selected->dust[i];
-        if (dust->active != FALSE) {
+        if (dust->active) {
             position = *PokeathlonCourseSpritePoolSprite_GetPosition(dust->sprite);
             position.y += distance << FX32_SHIFT;
             PokeathlonCourseSpritePoolSprite_SetPosition(dust->sprite, &position);
-            if (PokeathlonCourseSpritePoolSprite_IsAnimated(dust->sprite) == FALSE) {
+            if (!PokeathlonCourseSpritePoolSprite_IsAnimated(dust->sprite)) {
                 PokeathlonHurdleDashDust_Remove(dust);
             }
         }

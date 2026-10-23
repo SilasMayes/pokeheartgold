@@ -496,9 +496,9 @@ BOOL PokeathlonBlockSmash_Init(PokeathlonCourseData *course) {
         PokeathlonCourseMonInfo mons[9];
         int n = 0;
         PokeathlonCourseMonGfxTemplate params = { 0 };
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
             if (i != PokeathlonCourse_GetNetId(course)) {
-                for (j = 0; j < 3; j++) {
+                for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
                     GF_ASSERT(n < 9);
                     PokeathlonCourse_GetMonInfo(course, i, j, &mons[n]);
                     params.sizeTypes[n] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, i, j));
@@ -575,7 +575,7 @@ BOOL PokeathlonBlockSmash_ShowResults(PokeathlonCourseData *course) {
     PokeathlonCourseScoreList *graphics = PokeathlonCourse_GetGraphicsSystem(course);
     int i;
     PokeathlonCourseScoreList_Init(graphics);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         u16 value = PokeathlonCourse_GetReceivedScore(course, (u8)i);
         PokeathlonCourse_AddScoreEntry(course, graphics, i, value, 0, 3, msg_0309_00294);
     }
@@ -845,7 +845,7 @@ static void PokeathlonBlockSmash_CreateTeamRows(PokeathlonCourseData *course) {
     GF_ASSERT(work->spriteSystem != NULL);
     GF_ASSERT(work->spriteManager != NULL);
     GF_ASSERT(work->rivals != NULL);
-    for (i = 0, row = work->icons.rows, x = 120, sprites = sPokeathlonBlockSmashRowSprites; i < 4; row++, x += 32, sprites++, i++) {
+    for (i = 0, row = work->icons.rows, x = 120, sprites = sPokeathlonBlockSmashRowSprites; i < POKEATHLON_PARTICIPANTS; row++, x += 32, sprites++, i++) {
         s16 iconX = x;
         row->icon = PokeathlonBlockSmash_NewSubSprite(work->spriteSystem, work->spriteManager, iconX, 152, i + 13, 3);
         PokeathlonBlockSmash_SetTeamRowIcon(course, (u8)i, 0);
@@ -866,7 +866,7 @@ static void PokeathlonBlockSmash_CreateTeamRows(PokeathlonCourseData *course) {
 static void PokeathlonBlockSmash_DeleteTeamRows(PokeathlonBlockSmash *work) {
     s32 i, j;
     PokeathlonBlockSmashTeamRow *row;
-    for (i = 0, row = work->icons.rows; i < 4; i++, row++) {
+    for (i = 0, row = work->icons.rows; i < POKEATHLON_PARTICIPANTS; i++, row++) {
         GF_ASSERT(row->icon != NULL);
         Sprite_DeleteAndFreeResources(row->icon);
         GF_ASSERT(row->switching != NULL);
@@ -987,7 +987,7 @@ static void PokeathlonBlockSmash_HandleSwipe(PokeathlonBlockSmash *work, BOOL an
         }
     }
     if (System_GetTouchNew() || System_GetTouchHeld() <= 0) {
-        if (TouchscreenHitbox_FindRectAtTouchNew(sPokeathlonBlockSmashSwipeHitboxes) != -1) {
+        if (TouchscreenHitbox_FindRectAtTouchNew(sPokeathlonBlockSmashSwipeHitboxes) != TOUCH_MENU_NO_INPUT) {
             if (PokeathlonBlockSmashMon_CanSwitch(work->mon)) {
                 anim = 20;
                 PlaySE(SEQ_SE_GS_CHANGE1);
@@ -1035,7 +1035,7 @@ static void PokeathlonBlockSmash_UpdateLinkData(PokeathlonCourseData *course) {
         out = (PokeathlonBlockSmashReport *)PokeathlonCourse_ToBytes(data + POKEATHLON_COURSE_DATA_FRAME_OUT);
         *(PokeathlonBlockSmashLinkBlock *)PokeathlonCourse_ToBytes(data + POKEATHLON_COURSE_DATA_INPUTS) = *(PokeathlonBlockSmashLinkBlock *)PokeathlonCourse_ToBytes(data);
         data += POKEATHLON_COURSE_DATA_INPUTS;
-        for (i = 0; i < 4; i++, data += POKEATHLON_COURSE_DATA_SLOT_SIZE, out++) {
+        for (i = 0; i < POKEATHLON_PARTICIPANTS; i++, data += POKEATHLON_COURSE_DATA_SLOT_SIZE, out++) {
             PokeathlonBlockSmashReport *report = (PokeathlonBlockSmashReport *)PokeathlonCourse_ToBytes(data);
             out->score = report->score;
             out->stamina = report->stamina;

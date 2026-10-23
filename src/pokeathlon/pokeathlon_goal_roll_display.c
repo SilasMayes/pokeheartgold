@@ -181,17 +181,17 @@ static u32 PokeathlonGoalRoll_GetQuadrant(s32 x, s32 y) {
 void PokeathlonGoalRoll_UpdateLeaders(PokeathlonGoalRoll *goalRoll) {
     u8 best = 0, i;
     if (goalRoll->timer <= 300) {
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
             goalRoll->leading[i] = FALSE;
         }
         return;
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
         if (best < goalRoll->shownScores[i]) {
             best = goalRoll->shownScores[i];
         }
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
         if (best != 0 && best == goalRoll->shownScores[i]) {
             goalRoll->leading[i] = TRUE;
         } else {
@@ -221,7 +221,7 @@ void PokeathlonGoalRoll_SortOwnTeamOrder(PokeathlonGoalRollMon *team, u8 *monY) 
     PokeathlonGoalRollDrawOrder *order[3];
     PokeathlonGoalRollDrawOrder *high, *low;
     u8 i;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < GOAL_ROLL_TEAM_SIZE; i++) {
         mons[i].y = monY + i;
         mons[i].mon = team + i;
     }
@@ -247,7 +247,7 @@ void PokeathlonGoalRoll_SortOwnTeamOrder(PokeathlonGoalRollMon *team, u8 *monY) 
         order[1] = high;
         order[2] = low;
     }
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < GOAL_ROLL_TEAM_SIZE; i++) {
         PokeathlonCourseMonObject_SetDrawPriority(order[i]->mon->object, i + 8);
     }
 }
@@ -280,7 +280,7 @@ void PokeathlonGoalRoll_SortOtherMonsOrder(PokeathlonGoalRoll *goalRoll, Pokeath
     PokeathlonGoalRollMonY mons[9];
     u8 i, count = 0;
     i = count;
-    for (; i < 12; i++) {
+    for (; i < GOAL_ROLL_MONS; i++) {
         if (i / 3 != own) {
             mons[count].index = i;
             mons[count].y = frame->monY[i];
@@ -342,12 +342,12 @@ void PokeathlonGoalRollDisplay_CreateSprites(PokeathlonCourseSpritePool *pool, P
     PokeathlonCourseSpritePoolSprite *sprite;
     u8 i;
 
-    sprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 0, 2, 102, 9);
+    sprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 0, NNS_G2D_VRAM_TYPE_2DSUB, 102, 9);
     PokeathlonCourseSpritePoolSprite_Show(sprite, TRUE, TRUE);
     PokeathlonCourseSpritePoolSprite_SetPosition(sprite, &numberPosition);
     PokeathlonCourseSpritePoolSprite_SetAnim(sprite, PokeathlonCourse_GetNetId(display->course) + 1);
 
-    sprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 0, 2, 102, 10);
+    sprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 0, NNS_G2D_VRAM_TYPE_2DSUB, 102, 10);
     PokeathlonCourseSpritePoolSprite_Show(sprite, TRUE, TRUE);
     PokeathlonCourseSpritePoolSprite_SetPosition(sprite, &labelPosition);
     PokeathlonCourseSpritePoolSprite_SetAnim(sprite, 5);

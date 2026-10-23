@@ -139,7 +139,7 @@ void PokeathlonCourseObjects_PauseAnims(PokeathlonCourseMonObjects *objects, BOO
     u8 i = 0;
     BOOL active;
     if (objects->count > 0) {
-        if (paused == FALSE) {
+        if (!paused) {
             active = TRUE;
         } else {
             active = FALSE;
@@ -154,13 +154,13 @@ void PokeathlonCourseObjects_PauseAnims(PokeathlonCourseMonObjects *objects, BOO
 PokeathlonCourseSpritePool *PokeathlonCourseSpritePool_New(enum HeapID heapId, PokeathlonCourseSpritePoolTemplate *template) {
     PokeathlonCourseSpritePool *pool = Heap_Alloc(heapId, sizeof(PokeathlonCourseSpritePool));
     int i;
-    MIi_CpuClearFast(0, (u32 *)pool, sizeof(PokeathlonCourseSpritePool));
+    MI_CpuClearFast(pool, sizeof(PokeathlonCourseSpritePool));
     pool->heapId = heapId;
     pool->template = *template;
     pool->resources = Heap_Alloc(heapId, pool->template.resourceCount * sizeof(PokeathlonCourseSpritePoolResources));
-    MIi_CpuClear32(0, (u32 *)pool->resources, pool->template.resourceCount * sizeof(PokeathlonCourseSpritePoolResources));
+    MI_CpuClear32(pool->resources, pool->template.resourceCount * sizeof(PokeathlonCourseSpritePoolResources));
     pool->sprites = Heap_Alloc(pool->heapId, pool->template.capacity * sizeof(PokeathlonCourseSpritePoolSprite));
-    MIi_CpuClear32(0, (u32 *)pool->sprites, pool->template.capacity * sizeof(PokeathlonCourseSpritePoolSprite));
+    MI_CpuClear32(pool->sprites, pool->template.capacity * sizeof(PokeathlonCourseSpritePoolSprite));
     pool->spriteList = G2dRenderer_Init(pool->template.capacity, &pool->renderer, pool->heapId);
     for (i = 0; i < 4; i++) {
         pool->resMans[i] = Create2DGfxResObjMan(pool->template.resCounts[i], (GfGfxResType)i, pool->heapId);

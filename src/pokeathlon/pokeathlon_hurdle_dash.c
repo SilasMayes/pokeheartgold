@@ -64,7 +64,7 @@ BOOL PokeathlonHurdleDash_Play(PokeathlonCourseData *course, u8 *state) {
         PokeathlonHurdleDash_UpdateCpuParticipants(course);
         if (finished) {
             total = 0;
-            for (i = 0; i < 3; i++) {
+            for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
                 total += hurdleDash->runners[i].time;
             }
             PokeathlonCourse_SetRecordScore(course, (u16)total);
@@ -126,20 +126,20 @@ BOOL PokeathlonHurdleDash_CalcScores(PokeathlonCourseData *course, u8 *state) {
     }
     self = PokeathlonCourse_GetNetId(course);
     total = 0;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         total += hurdleDash->runners[i].time;
     }
     PokeathlonCourse_SetEventScore(course, (u8)self, (u16)PokeathlonHurdleDash_RoundTime(total));
     if (self == 0) {
         // the host simulates the races of the participants without a player
         count = PokeathlonCourse_GetParticipantCount(course);
-        for (participant = count; participant < 4; participant++) {
+        for (participant = count; participant < POKEATHLON_PARTICIPANTS; participant++) {
             sum = 0;
-            for (member = 0; member < 3; member++) {
+            for (member = 0; member < POKEATHLON_TEAM_SIZE; member++) {
                 float speed;
                 int framesLeft;
                 int index = (participant - count) * 3 + member;
-                if (hurdleDash->cpuRunners[index].finished == FALSE) {
+                if (!hurdleDash->cpuRunners[index].finished) {
                     speed = hurdleDash->cpuRunners[index].speed;
                     if (speed < hurdleDash->cpuRunners[index].topSpeed) {
                         speed = hurdleDash->cpuRunners[index].topSpeed;
@@ -187,8 +187,8 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
     int i, j;
     switch (PokeathlonCourse_GetEventInitState(course)) {
     case HURDLE_DASH_INIT_CREATE: {
-        void *a, *b;
-        int c;
+        void *layoutToSend, *layout;
+        int layoutSize;
         Heap_Create(HEAP_ID_POKEATHLON, HEAP_ID_138, 0x48000);
         Main_SetVBlankIntrCB(NULL, NULL);
         Main_SetHBlankIntrCB(NULL, NULL);
@@ -202,10 +202,10 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
         hurdleDash->bgConfig = BgConfig_Alloc(HEAP_ID_138);
         hurdleDash->track = PokeathlonHurdleDashTrack_New(hurdleDash->heapId);
         hurdleDash->dust = PokeathlonHurdleDashDust_New(hurdleDash->heapId);
-        a = PokeathlonHurdleDashTrack_GetLayoutToSend(hurdleDash->track);
-        b = PokeathlonHurdleDashTrack_GetLayout(hurdleDash->track);
-        c = PokeathlonHurdleDashTrack_GetLayoutSize(hurdleDash->track);
-        PokeathlonCourse_SetEventDataTransfer(course, (u32)a, (u32)b, (u32)c);
+        layoutToSend = PokeathlonHurdleDashTrack_GetLayoutToSend(hurdleDash->track);
+        layout = PokeathlonHurdleDashTrack_GetLayout(hurdleDash->track);
+        layoutSize = PokeathlonHurdleDashTrack_GetLayoutSize(hurdleDash->track);
+        PokeathlonCourse_SetEventDataTransfer(course, (u32)layoutToSend, (u32)layout, (u32)layoutSize);
         PokeathlonCourse_SetHudPlanes(course, 8);
         charTransfer.maxTasks = 107;
         charTransfer.sizeMain = 0x40000;
@@ -263,7 +263,7 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
     case HURDLE_DASH_INIT_CREATE_SPRITES:
-        for (i = 0; i < 12; i++) {
+        for (i = 0; i < POKEATHLON_MONS; i++) {
             Sprite_SetDrawPriority(PokeathlonCourseSpritePool_CreateSprite(hurdleDash->scene, 1, NNS_G2D_VRAM_TYPE_2DBOTH, 101, 2), 27);
             Sprite_SetDrawPriority(PokeathlonCourseSpritePool_CreateSprite(hurdleDash->scene, 1, NNS_G2D_VRAM_TYPE_2DMAIN, 103, 6), 27);
         }
@@ -295,9 +295,9 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
             PokeathlonHurdleDashStandingsMonId *out;
             i = 0;
             out = mons;
-            for (; i < 4; i++) {
+            for (; i < POKEATHLON_PARTICIPANTS; i++) {
                 PokeathlonHurdleDashTeamMon *mon = (PokeathlonHurdleDashTeamMon *)PokeathlonCourse_GetParticipantMons(course, i);
-                for (j = 0; j < 3; j++) {
+                for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
                     out->species = mon->species;
                     out->form = mon->form;
                     mon++;
@@ -307,7 +307,7 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
         }
         PokeathlonHurdleDashStandings_Init(hurdleDash->standings, mons);
         PokeathlonHurdleDashStandings_SetDrawFlag(hurdleDash->standings, FALSE);
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
             PokeathlonCourse_GetMonInfo(course, PokeathlonCourse_GetNetId(course), i, &views[i]);
             template.sizeTypes[i] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, PokeathlonCourse_GetNetId(course), i));
         }
@@ -342,7 +342,7 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         PokeathlonCourse_SetEventDrawEnabled(course, 1);
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
             PokeathlonCourseMonObject_SetDrawFlag(PokeathlonCourseMonObjects_Get(hurdleDash->monSpriteManager, (u8)i), 1);
         }
         PokeathlonCourse_AdvanceEventInitState(course);
@@ -362,7 +362,7 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
         ReadWholeNarcMemberByIdPair(&table, NARC_a_1_7_0, 0);
         {
             int k;
-            for (k = 0; k < 3; k++) {
+            for (k = 0; k < POKEATHLON_TEAM_SIZE; k++) {
                 PokeathlonHurdleDashRunner_Init(course, &table, &params, hurdleDash->track, hurdleDash->scene, hurdleDash->monSpriteManager, (u8)k, &hurdleDash->runners[k]);
                 numberPos[k].x = numberX.x[k];
                 numberPos[k].y = 392;
@@ -419,7 +419,7 @@ BOOL PokeathlonHurdleDash_ShowResults(PokeathlonCourseData *course) {
     hurdleDash = PokeathlonCourse_GetWork(course);
     gfx = PokeathlonCourse_GetGraphicsSystem(course);
     PokeathlonCourseScoreList_Init(gfx);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         frames = PokeathlonCourse_GetReceivedScore(course, (u8)i);
         seconds = frames / 30;
         PokeathlonCourse_AddScoreEntry2(course, gfx, i, (u16)frames, seconds, (frames % 30) * 10 / 30, 0, 1, 3, 1, msg_0309_00291);

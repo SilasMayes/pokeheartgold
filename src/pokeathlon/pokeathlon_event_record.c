@@ -150,7 +150,7 @@ static BOOL PokeathlonEventRecord_SoloRecordReachesThreshold(PokeathlonEventReco
 }
 
 static BOOL PokeathlonEventRecord_IsRankEmpty(PokeathlonEventRecord *work, u8 rank) {
-    if (PokeathlonEventRecord_GetRecordScore(work->data, work->cursor, rank, work->linkMode) == 0xFFFF) {
+    if (PokeathlonEventRecord_GetRecordScore(work->data, work->cursor, rank, work->linkMode) == POKEATHLON_NO_RECORD) {
         return TRUE;
     }
     return FALSE;
@@ -222,7 +222,7 @@ static void PokeathlonEventRecord_ShowEvent(PokeathlonEventRecord *work) {
 
     if (work->linkMode) {
         altTiles = TRUE;
-    } else if (work->noRecord[work->cursor] == FALSE) {
+    } else if (!work->noRecord[work->cursor]) {
         altTiles = TRUE;
     } else {
         altTiles = FALSE;
@@ -281,7 +281,7 @@ static void PokeathlonEventRecord_PrintReturnButton(PokeathlonEventRecord *work)
 }
 
 static void PokeathlonEventRecord_PrintRecordValue(PokeathlonEventRecord *work, int value, int window, int unused, int highlight) {
-    GF_ASSERT(value != 0xFFFF);
+    GF_ASSERT(value != POKEATHLON_NO_RECORD);
     if (work->cursor == 0) {
         PokeathlonUtil_BufferNumber(work->textContext, (u8)(value / 30), 3, 0);
         PokeathlonUtil_BufferNumber(work->textContext, (u8)((value % 30) * 10 / 30), 1, 1);
@@ -311,7 +311,7 @@ static void PokeathlonEventRecord_PrintEventRecord(PokeathlonEventRecord *work) 
     BufferIntegerAsString(msgFormat, 0, PokeathlonEventRecord_GetTimesJoined(work->data, (u8)work->cursor, work->linkMode), 7, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     PokeathlonUtil_PrintMessageAtXY(work->textContext, 3, msg_0314_00054, 1, 0);
     for (i = 0; i < 5; i++) {
-        if (i == 0 && work->linkMode == FALSE) {
+        if (i == 0 && !work->linkMode) {
             highlight = TRUE;
         } else {
             highlight = FALSE;
@@ -374,7 +374,7 @@ static void PokeathlonEventRecord_ShowEventRecordMons(PokeathlonEventRecord *wor
 
     if (work->linkMode) {
         showMarker = FALSE;
-    } else if (work->noRecord[work->cursor] == FALSE) {
+    } else if (!work->noRecord[work->cursor]) {
         showMarker = TRUE;
     } else {
         showMarker = FALSE;
@@ -429,14 +429,14 @@ static void PokeathlonEventRecord_CreateEventSprites(PokeathlonEventRecord *work
             spriteTemplate.animation = 16;
             index = event + 12;
             work->sprites[index] = PokeathlonUtil_NewSprite(work->spriteContext, &spriteTemplate);
-            ManagedSprite_SetDrawFlag(work->sprites[index], work->noRecord[event] == FALSE);
+            ManagedSprite_SetDrawFlag(work->sprites[index], !work->noRecord[event]);
             spriteTemplate.drawPriority = 1;
             spriteTemplate.animation = 4;
             index = event + 2;
             work->sprites[index] = PokeathlonUtil_NewSprite(work->spriteContext, &spriteTemplate);
             ManagedSprite_SetDrawFlag(work->sprites[index], PokeathlonEventRecord_SoloRecordReachesThreshold(work, event, 1));
             ManagedSprite_SetAnimateFlag(work->sprites[index], TRUE);
-            PokeathlonEventRecord_DrawEventIcon(work, event, (u16)(col * 6 + 1), (u16)(row * 8 + 6), work->noRecord[event] == FALSE, FALSE);
+            PokeathlonEventRecord_DrawEventIcon(work, event, (u16)(col * 6 + 1), (u16)(row * 8 + 6), !work->noRecord[event], FALSE);
         }
     }
 }
@@ -477,7 +477,7 @@ static void PokeathlonEventRecord_ShowRecordMonIcons(PokeathlonEventRecord *work
     int base = 0;
 
     for (; rank < 5; rank++, base += 3) {
-        if (PokeathlonEventRecord_GetRecordScore(work->data, work->cursor, rank, work->linkMode) != 0xFFFF) {
+        if (PokeathlonEventRecord_GetRecordScore(work->data, work->cursor, rank, work->linkMode) != POKEATHLON_NO_RECORD) {
             for (slot = 0; slot < 3; slot++) {
                 PokeathlonRecordMon mon = { 0 };
                 int index = slot + base + 22;
@@ -536,7 +536,7 @@ static void PokeathlonEventRecord_UpdateEventGrid(PokeathlonEventRecord *work) {
             s32 index;
             if (work->linkMode) {
                 altTiles = TRUE;
-            } else if (work->noRecord[event] == FALSE) {
+            } else if (!work->noRecord[event]) {
                 altTiles = TRUE;
             } else {
                 altTiles = FALSE;
@@ -559,7 +559,7 @@ static BOOL PokeathlonEventRecord_HandleInput(PokeathlonEventRecord *work) {
 
     if (gSystem.touchNew) {
         int hit = TouchscreenHitbox_FindHitboxAtTouchNew(gPokeathlonEventRecordHitboxes);
-        if (hit != -1) {
+        if (hit != TOUCH_MENU_NO_INPUT) {
             work->cursor = hit - 1;
             ManagedSprite_SetAnim(work->sprites[0], 11);
             PlaySE(SEQ_SE_DP_SELECT);

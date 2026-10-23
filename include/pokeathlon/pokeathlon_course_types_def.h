@@ -5,6 +5,11 @@
 
 #include "sprite.h"
 
+// A course is played by four participants (players or NPC teams) with three Pokemon each.
+#define POKEATHLON_PARTICIPANTS 4
+#define POKEATHLON_TEAM_SIZE    3
+#define POKEATHLON_MONS         (POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE)
+
 typedef struct PokeathlonCourseSpritePoolTemplate PokeathlonCourseSpritePoolTemplate;
 typedef struct PokeathlonCourseSpritePoolSprite PokeathlonCourseSpritePoolSprite;
 typedef struct PokeathlonCourseSpritePool PokeathlonCourseSpritePool;
@@ -66,7 +71,7 @@ struct PokeathlonCourseMonObjects {
     SpriteList *spriteList;
     PokeathlonCourseMonGfxManager *gfxManager;
     PokeathlonCourseSpriteResources *resources;
-    PokeathlonCourseMonObject objects[12];
+    PokeathlonCourseMonObject objects[POKEATHLON_MONS];
 };
 
 // What PokeathlonCourseSpritePool_New sets up: sprite and resource capacities.

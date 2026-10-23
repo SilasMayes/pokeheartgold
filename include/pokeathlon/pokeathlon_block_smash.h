@@ -90,7 +90,7 @@ typedef struct PokeathlonBlockSmashTeamRow {
 // The top screen's rows and what their Pokemon icons are loaded from.
 typedef struct PokeathlonBlockSmashTeamIcons {
     NARC *narc; // the Pokemon icons
-    PokeathlonBlockSmashTeamRow rows[4];
+    PokeathlonBlockSmashTeamRow rows[POKEATHLON_PARTICIPANTS];
     u16 plttId;
 } PokeathlonBlockSmashTeamIcons;
 
@@ -111,7 +111,7 @@ typedef struct PokeathlonBlockSmash {
     SpriteManager *spriteManager;
     PokeathlonCourseMonObjects *monPics; // the other teams' Pokemon
     PokeathlonCourseSpriteResources *iconResources;
-    String *names[3]; // the own team's nicknames
+    String *names[POKEATHLON_TEAM_SIZE]; // the own team's nicknames
     ManagedSprite *timerFrame;
     ManagedSprite *switchButton;
     Sprite *scoreDigits[3];
@@ -147,7 +147,7 @@ typedef struct PokeathlonBlockSmashReport {
 
 // The host's block of the link data as every participant receives it.
 typedef struct PokeathlonBlockSmashFrame {
-    PokeathlonBlockSmashReport reports[4];
+    PokeathlonBlockSmashReport reports[POKEATHLON_PARTICIPANTS];
     u32 unk10 : 16;
     u32 finished : 1;                      // the host's timer ran out
     u32 unk10_17 : 15;

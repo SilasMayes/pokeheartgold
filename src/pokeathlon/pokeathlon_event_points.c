@@ -41,11 +41,11 @@ static float PokeathlonEvent_Saturate(u32 score, float rate) {
 }
 
 static u8 PokeathlonEvent_ClampPoints(float points) {
-    u32 n = (u32)points;
-    if ((double)n > 200.0) {
-        n = 200;
+    u32 clamped = (u32)points;
+    if ((double)clamped > 200.0) {
+        clamped = 200;
     }
-    return (u8)n;
+    return (u8)clamped;
 }
 
 // Event 0 (Hurdle Dash): the score is the time in frames.

@@ -20,6 +20,7 @@
 #include "pm_string.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
+#include "sound_system_internal.h"
 #include "sprite_resource_header.h"
 #include "sprite_system.h"
 #include "system.h"
@@ -35,8 +36,6 @@ typedef struct PokeathlonBlockSmashSpot {
     s16 x;
     s16 y;
 } PokeathlonBlockSmashSpot;
-
-void GF_SndSetTrackPitchBySeqNo(u16 seqNo, u32 trackMask, int pitch);
 
 static void PokeathlonBlockSmashBlocks_UpdateDrop(PokeathlonBlockSmashBlocks *blocks);
 static void PokeathlonBlockSmashBlocks_CheckEmpty(PokeathlonBlockSmashBlocks *blocks);
@@ -459,7 +458,7 @@ static BOOL PokeathlonBlockSmashBlock_IsSpotTouched(PokeathlonBlockSmashBlock *b
         } while (i < (s32)count);
     }
     hitboxes[count].rect.top = TOUCHSCREEN_RECTLIST_END;
-    if (TouchscreenHitbox_FindRectAtTouchNew(hitboxes) != -1) {
+    if (TouchscreenHitbox_FindRectAtTouchNew(hitboxes) != TOUCH_MENU_NO_INPUT) {
         return TRUE;
     }
     return FALSE;

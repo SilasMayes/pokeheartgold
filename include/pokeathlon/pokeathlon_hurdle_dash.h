@@ -30,7 +30,7 @@ enum PokeathlonHurdleDashJumpPhase {
 
 // A Pokemon on its lane.
 typedef struct PokeathlonHurdleDashMon {
-    void *monObject; // PokeathlonCourseMonObject
+    PokeathlonCourseMonObject *monObject;
     u32 state;       // 0 running, 1 jumping, 2 tripped, 3 back to the middle after the finish, 4 stopped
     u32 phase;       // of a jump: 1 up, 2 in the air, 3 down; 4 after tripping
     u8 timer;
@@ -72,7 +72,7 @@ typedef struct PokeathlonHurdleDashRunner {
     u8 unk1A;
     u8 finishLineY;
     s32 finishLineState;
-    void *hurdles; // PokeathlonHurdle[4] of the lane
+    struct PokeathlonHurdle *hurdles; // the four of the lane
     PokeathlonHurdleDashMon mon;
     f32 rankScale;
     s16 rank;
@@ -102,17 +102,17 @@ typedef struct PokeathlonHurdleDash {
     BgConfig *bgConfig;
     Window window;
     u8 unk018[0xC0];
-    void *track; // PokeathlonHurdleDashTrack
-    void *dust;  // PokeathlonHurdleDashDustLane[3]
-    PokeathlonHurdleDashRunner runners[3];
-    void *scene;
-    void *standings; // PokeathlonHurdleDashStandings
+    struct PokeathlonHurdleDashTrack *track;
+    struct PokeathlonHurdleDashDustLane *dust; // one per lane
+    PokeathlonHurdleDashRunner runners[POKEATHLON_TEAM_SIZE];
+    PokeathlonCourseSpritePool *scene;
+    struct PokeathlonHurdleDashStandings *standings;
     u32 raceTime;    // frames until the own Pokemon have finished
     u32 frame;
     u32 endTimer;
     PokeathlonHurdleDashCpuRunner cpuRunners[9]; // 3 per participant without a player
     PokeathlonCourseSpriteResources *spriteResources;
-    void *monSpriteManager;
+    PokeathlonCourseMonObjects *monSpriteManager;
     PokeathlonCourseSpritePoolSprite *timerLabel;
     Sprite *sprites[6];
     u16 rankTimer;

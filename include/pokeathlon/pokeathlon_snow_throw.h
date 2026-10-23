@@ -121,7 +121,7 @@ typedef struct PokeathlonSnowThrowDisplay {
     u32 picCharOffsets[SNOW_THROW_MEMBERS];
     u32 picPlttOffsets[SNOW_THROW_MEMBERS];
     PokeathlonCourseSpritePoolSprite *picSprites[SNOW_THROW_MEMBERS];
-    void *tiredSprites[SNOW_THROW_MEMBERS];
+    PokeathlonCourseSpritePoolSprite *tiredSprites[SNOW_THROW_MEMBERS];
     u8 unk6C[4];
     u8 shaking;
     u8 shakeTimer;
@@ -167,9 +167,9 @@ typedef struct PokeathlonSnowThrow {
     PokeathlonCourseSpritePoolSprite *frameSprite;
     Sprite *timerDigits[2];
     void *teamMarks[SNOW_THROW_TEAMS - 1];                  // the colour of each other team
-    void *hitMarks[SNOW_THROW_MEMBERS];                     // where the own snowballs hit
+    PokeathlonCourseSpritePoolSprite *hitMarks[SNOW_THROW_MEMBERS]; // where the own snowballs hit
     void *tiredMarks[SNOW_THROW_MONS - SNOW_THROW_MEMBERS]; // over the other teams' Pokemon
-    void *monObjects[SNOW_THROW_MONS - SNOW_THROW_MEMBERS]; // the other teams' Pokemon (the own are on the top screen)
+    PokeathlonCourseMonObject *monObjects[SNOW_THROW_MONS - SNOW_THROW_MEMBERS]; // the other teams' Pokemon (the own are on the top screen)
     PokeathlonSnowThrowBall balls[SNOW_THROW_MONS];
     PokeathlonSnowThrowMon mons[SNOW_THROW_MONS];
     void *sortBuffer; // MATH_QSort work area
@@ -178,7 +178,7 @@ typedef struct PokeathlonSnowThrow {
     u8 finished;
     u8 unk5D1[3];
     PokeathlonCourseSpriteResources *monResources;
-    void *monObjectList; // PokeathlonCourseMonObjects
+    PokeathlonCourseMonObjects *monObjectList;
     PokeathlonSnowThrowCpu *cpu;
     PokeathlonSnowThrowDisplay *display;
     u32 unk5E4;

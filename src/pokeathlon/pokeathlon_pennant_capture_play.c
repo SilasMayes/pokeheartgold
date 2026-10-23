@@ -98,7 +98,7 @@ void PokeathlonPennantCapture_CreateSprites(PokeathlonPennantCapture *work, Poke
         work->fieldItems[i].shadowSprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 18);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->fieldItems[i].shadowSprite, 5);
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         work->players[i].carrySprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 9);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->players[i].carrySprite, 2);
         for (j = 0; j < 2; j++) {
@@ -109,12 +109,12 @@ void PokeathlonPennantCapture_CreateSprites(PokeathlonPennantCapture *work, Poke
         work->players[i].pennantSprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 27);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->players[i].pennantSprite, 8);
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         work->pickupEffects[i] = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 14);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->pickupEffects[i], 7);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->pickupEffects[i], 4);
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         work->dropEffects[i] = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 25);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->dropEffects[i], 4);
     }
@@ -241,7 +241,7 @@ BOOL PokeathlonPennantCapture_State_End(PokeathlonCourseData *course, u8 *state)
     }
     link += 0x28;
     frame = (u32 *)PokeathlonCourse_ToBytes(link);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         u16 score = (frame[i] >> 18) & 0x3FF;
         u16 pennants = (((u16 *)frame)[i + 12] >> 11) & 31;
         u16 total = score + pennants;
@@ -298,12 +298,12 @@ static void PokeathlonPennantCapture_HostStep(PokeathlonCourseData *course) {
     }
     PokeathlonPennantCaptureCpu_Update(work->cpu);
     work->flicked = 0;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         input = (PokeathlonPennantCaptureInput *)PokeathlonCourse_ToBytes(&(link + 2)[i]);
         if (input->touching) {
             if (work->touches[i].pressed && work->touches[i].held) {
                 work->touches[i].pressed = FALSE;
-            } else if (work->touches[i].pressed == FALSE && work->touches[i].held == FALSE) {
+            } else if (!work->touches[i].pressed && !work->touches[i].held) {
                 work->touches[i].pressed = TRUE;
                 work->touches[i].held = TRUE;
             }
@@ -349,7 +349,7 @@ static void PokeathlonPennantCapture_HostStep(PokeathlonCourseData *course) {
                 } else {
                     work->heldTooLong = 1;
                 }
-                if (work->dragging[i] == FALSE) {
+                if (!work->dragging[i]) {
                     continue;
                 }
                 work->players[i].cpuTarget.x = input->x << FX32_SHIFT;
@@ -427,7 +427,7 @@ void PokeathlonPennantCapture_PackFrame(PokeathlonPennantCapture *work, Pokeathl
     player = work->players;
     word = (u8 *)frame;
     spot = (u16 *)frame;
-    for (i = 0, j = 0; i < 4; i++, j += 2, player++) {
+    for (i = 0, j = 0; i < POKEATHLON_PARTICIPANTS; i++, j += 2, player++) {
         *(u32 *)word = (player->position.x / FX32_ONE) | ((player->position.y / FX32_ONE) << 9) | (player->score << 18) | (player->pennants << 28);
         spot[12] |= player->member << 5;
         spot[12] |= (player->direction - 1) << 7;

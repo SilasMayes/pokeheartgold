@@ -28,7 +28,7 @@ typedef struct PokeathlonLampJumpMon {
     u8 stunned; // cannot be touched while set
     u8 stunTimer;
     u8 bounceReady;
-    u8 colliding[3]; // touching each of the other Pokemon
+    u8 colliding[POKEATHLON_TEAM_SIZE]; // touching each of the other Pokemon
     s32 bounce;      // scales the bounce off the trampoline, in twelfths
     s32 stunFrames;  // after a collision
     s32 flickScale;  // scales the sideways speed of a flick, in twelfths
@@ -48,9 +48,9 @@ typedef struct PokeathlonLampJumpJump {
 // The trampoline: a height per column (2 pixels wide); below 0 = pressed down.
 typedef struct PokeathlonLampJumpTrampoline {
     s32 surface[128];  // the lowest of the dents and lines below
-    s32 dents[3][128]; // the dent under each Pokemon
+    s32 dents[POKEATHLON_TEAM_SIZE][128]; // the dent under each Pokemon
     s32 lines[3][128]; // the cloth between two Pokemon: 0-1, 1-2, 2-0
-    s32 monColumns[3]; // the column of each Pokemon
+    s32 monColumns[POKEATHLON_TEAM_SIZE]; // the column of each Pokemon
 } PokeathlonLampJumpTrampoline;
 
 typedef struct PokeathlonLampJump {
@@ -61,19 +61,19 @@ typedef struct PokeathlonLampJump {
     NNSG2dScreenData *bg2Screen;
     PokeathlonCourseSpritePool *scene;
     PokeathlonCourseSpritePoolSprite *timerLabel;
-    PokeathlonCourseSpritePoolSprite *playerSprites[4];
+    PokeathlonCourseSpritePoolSprite *playerSprites[POKEATHLON_PARTICIPANTS];
     PokeathlonCourseSpritePoolSprite *effectSprites[3];
     Sprite *timerDigits[2];
     struct PokeathlonLampJumpLamps *lamps;
-    PokeathlonLampJumpMon mons[3];
+    PokeathlonLampJumpMon mons[POKEATHLON_TEAM_SIZE];
     struct PokeathlonLampJumpCpuPlayers *cpuPlayers;
     int timer;      // frames left
     u8 selectedMon; // 3 = none
     u8 holdFrames;
     u8 hitLamp;    // sent to the other players every frame
     u8 nextEffect; // next of effectPositions / effectPending
-    VecFx32 effectPositions[3];
-    u8 effectPending[3];
+    VecFx32 effectPositions[POKEATHLON_TEAM_SIZE];
+    u8 effectPending[POKEATHLON_TEAM_SIZE];
     VecFx32 touchStart;
     u8 unk178[0x10];
     PokeathlonCourseSpriteResources *spriteResources;
@@ -84,13 +84,13 @@ typedef struct PokeathlonLampJump {
     union {
         struct {
             s32 trampolineRows[7][128]; // the trampoline as rows
-            s32 monColumns[3];          // x / 2 of each Pokemon, in pixels
+            s32 monColumns[POKEATHLON_TEAM_SIZE]; // x / 2 of each Pokemon, in pixels
         };
 
         PokeathlonLampJumpTrampoline trampoline;
     };
 
-    PokeathlonLampJumpJump jumps[3];
+    PokeathlonLampJumpJump jumps[POKEATHLON_TEAM_SIZE];
     NNSG2dCellTransferState *cellTransferState;
 } PokeathlonLampJump;
 
@@ -140,9 +140,9 @@ typedef struct PokeathlonLampJumpLamps {
 typedef struct PokeathlonLampJumpCpuPlayers {
     BOOL active;
     u8 *dataCopy;       // PokeathlonCourse_GetDataCopyArea
-    u8 skill[4];        // per participant, the sum of the Skill of its Pokemon
-    u8 jump[4];         // per participant, the sum of the Jump of its Pokemon
-    u8 skillUpTo[4][3]; // per participant, the Skill sums up to each Pokemon (picks the one that hits)
+    u8 skill[POKEATHLON_PARTICIPANTS];                           // per participant, the sum of the Skill of its Pokemon
+    u8 jump[POKEATHLON_PARTICIPANTS];                            // per participant, the sum of the Jump of its Pokemon
+    u8 skillUpTo[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE]; // per participant, the Skill sums up to each Pokemon (picks the one that hits)
     u8 count;
     u8 current;
     u8 tick;

@@ -16,12 +16,10 @@
 #include "message_format.h"
 #include "msgdata.h"
 #include "pm_string.h"
+#include "sound_playback_internal.h"
 #include "text.h"
 
 fx32 FX_Sqrt(fx32 x);
-
-BOOL PlaySEOnPlayer(u16 seqNo, int playerNo);
-u32 GF_SndCountPlayingSeqOnPlayer(u32 playerNo);
 
 u8 *PokeathlonCourse_GetPerformance(PokeathlonCourseData *course, int participant, u16 member);
 u8 *PokeathlonCourse_GetMonStats(PokeathlonCourseData *course, int participant, u8 member);
@@ -86,7 +84,7 @@ void PokeathlonPennantCapture_UpdatePlayers(PokeathlonCourseData *course) {
     work->hitReported = 0;
     i = 0;
     flag = handled;
-    for (; i < 4; flag++, i++) {
+    for (; i < POKEATHLON_PARTICIPANTS; flag++, i++) {
         *flag = 0;
         if (work->players[i].freezeTimer) {
             PokeathlonPennantCapture_TickFreezeTimer(course, work, &work->players[i]);
@@ -94,7 +92,7 @@ void PokeathlonPennantCapture_UpdatePlayers(PokeathlonCourseData *course) {
         }
     }
     player = work->players;
-    for (i = 0; i < 4; i++, player++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++, player++) {
         if (handled[i]) {
             continue;
         }
@@ -336,7 +334,7 @@ void PokeathlonPennantCapture_ApplyFrame(PokeathlonCourseData *course, int viewe
 
     isHost = viewer == 0 ? TRUE : FALSE;
 
-    for (i = 0; i < 4; i++, players++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++, players++) {
         PokeathlonPennantCapturePlayer *player = players;
         VecFx32 position;
         curX = frame->words[i] & 0x1FF;
@@ -374,7 +372,7 @@ void PokeathlonPennantCapture_ApplyFrame(PokeathlonCourseData *course, int viewe
                 PokeathlonCourseMonObject_SetDrawFlag(object, FALSE);
             }
         }
-        for (j = 0; j < 3; j++) {
+        for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
             PokeathlonCourseObject_SetGroundPosition(player->monObjects[j], px, py);
         }
         {
@@ -468,7 +466,7 @@ void PokeathlonPennantCapture_UpdateObstacleSprites(PokeathlonPennantCapture *wo
         int dx;
         int dy;
         VecFx32 position;
-        if (work->obstacles[i].placed == FALSE) {
+        if (!work->obstacles[i].placed) {
             break;
         }
         dx = work->obstacles[i].x - x + 0x80;
@@ -492,7 +490,7 @@ void PokeathlonPennantCapture_UpdateFieldItemSprites(PokeathlonPennantCapture *w
         int dx;
         int dy;
         VecFx32 position;
-        if (work->fieldItems[i].placed == FALSE) {
+        if (!work->fieldItems[i].placed) {
             break;
         }
         dx = work->fieldItems[i].x - x + 0x80;
@@ -652,7 +650,7 @@ static void PokeathlonPennantCapture_GetObstaclesNear(PokeathlonPennantCapture *
     for (i = 0; i < 20; i++, position++) {
         int dx;
         int dy;
-        if (work->obstacles[i].placed == FALSE) {
+        if (!work->obstacles[i].placed) {
             break;
         }
         dx = work->obstacles[i].x - x + 0x80;
@@ -925,14 +923,14 @@ static int PokeathlonPennantCapture_CollidePlayers(PokeathlonCourseData *course,
     applied = 0;
     frame.pointA.z = 0;
     frame.pointB.z = 0;
-    for (i = 0, a = players; i < 4; i++, a++) {
+    for (i = 0, a = players; i < POKEATHLON_PARTICIPANTS; i++, a++) {
         int member = a->member;
         if (a->depositing) {
             continue;
         }
         objectA = a->monObjects[member];
         PokeathlonCourseObject_GroundToCenter(objectA, a->position.x / FX32_ONE, a->position.y / FX32_ONE, &frame.aX, &frame.aY);
-        for (j = 0, b = players; j < 4; j++, b++) {
+        for (j = 0, b = players; j < POKEATHLON_PARTICIPANTS; j++, b++) {
             if (i == j || b->depositing) {
                 continue;
             }
@@ -1010,7 +1008,7 @@ static void PokeathlonPennantCapture_SetPennantDrawPriority(PokeathlonPennantCap
 static void PokeathlonPennantCapture_SetDropEffectDrawPriority(PokeathlonPennantCapture *work) {
     int i;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         int priority = PokeathlonPennantCapture_GetDrawPriority(PokeathlonCourseSpritePoolSprite_GetPosition(work->dropEffects[i])->y / FX32_ONE);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->dropEffects[i], priority + 2);
     }
@@ -1021,7 +1019,7 @@ static void PokeathlonPennantCapture_SetPlayerDrawPriority(PokeathlonPennantCapt
     int priority = PokeathlonPennantCapture_GetDrawPriority(y);
 
     PokeathlonCourseSpritePoolSprite_SetDrawPriority(player->carrySprite, priority + 3);
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonCourseMonObject_SetDrawPriority(player->monObjects[i], priority + 4);
     }
 }

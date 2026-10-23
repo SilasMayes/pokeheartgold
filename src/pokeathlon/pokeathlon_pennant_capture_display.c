@@ -43,11 +43,11 @@ PokeathlonPennantCaptureDisplay *PokeathlonPennantCaptureDisplay_New(enum HeapID
     PokeathlonPennantCaptureDisplay_InitWindow(display);
     display->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0309_bin, heapId);
     display->msgFormat = MessageFormat_New(heapId);
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         display->names[i] = String_New(11, heapId);
     }
     mons = (PokeathlonCourseMon *)PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
-    for (int j = 0; j < 3; j++) {
+    for (int j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
         CopyU16ArrayToString(display->names[j], mons[j].nickname);
     }
     PokeathlonPennantCaptureDisplay_PrintName(display, 1);
@@ -57,7 +57,7 @@ PokeathlonPennantCaptureDisplay *PokeathlonPennantCaptureDisplay_New(enum HeapID
 void PokeathlonPennantCaptureDisplay_Delete(PokeathlonPennantCaptureDisplay *display) {
     int i;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         Heap_Free(display->monPics[i].character);
         Heap_Free(display->monPics[i].palette);
     }
@@ -69,7 +69,7 @@ void PokeathlonPennantCaptureDisplay_Delete(PokeathlonPennantCaptureDisplay *dis
         }
     }
     Heap_Free(display->scoreScreenFile);
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         String_Delete(display->names[i]);
     }
     MessageFormat_Delete(display->msgFormat);
@@ -122,7 +122,7 @@ void PokeathlonPennantCaptureDisplay_CreateSprites(PokeathlonPennantCaptureDispl
     row = display;
     status = display->statusSprites[0];
     point = display->pointSprites[0];
-    for (; participant < 4; participant++) {
+    for (; participant < POKEATHLON_PARTICIPANTS; participant++) {
         row->u.mons[0].icon = PokeathlonCourseSpritePool_CreateAndTake(pool, 3, NNS_G2D_VRAM_TYPE_2DSUB, 0x65, 2);
         row->u.mons[0].frame = PokeathlonCourseSpritePool_CreateAndTake(pool, 3, NNS_G2D_VRAM_TYPE_2DSUB, 0x65, 3);
         row->u.mons[0].carryMark = PokeathlonCourseSpritePool_CreateAndTake(pool, 3, NNS_G2D_VRAM_TYPE_2DSUB, 0x65, 10);
@@ -203,7 +203,7 @@ void PokeathlonPennantCaptureDisplay_LoadIcons(PokeathlonPennantCaptureDisplay *
     x = 0x70;
     pointRow = display;
     statusRow = display;
-    for (; i < 4; i++) {
+    for (; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonPennantCaptureDisplay_SetIcon(display, (u8)i, 0);
         PokeathlonCourseSpritePoolSprite_Show(monRow->u.mons[0].icon, 1, 1);
         PokeathlonCourseSpritePoolSprite_Show(monRow->u.mons[0].frame, 1, 1);
@@ -236,7 +236,7 @@ void PokeathlonPennantCaptureDisplay_LoadMonPics(PokeathlonPennantCaptureDisplay
     PokepicTemplate template;
     int i = 0;
 
-    for (; i < 3; i++) {
+    for (; i < POKEATHLON_TEAM_SIZE; i++) {
         GetMonSpriteCharAndPlttNarcIdsEx(&template, mons[i].species, mons[i].gender, 2, mons[i].shiny, (u8)mons[i].form, mons[i].personality);
         display->monPics[i].character = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)template.narcID, template.charDataID, display->heapId, mons[i].personality, FALSE, 2, mons[i].species);
         display->monPics[i].palette = AllocAndLoadPltt16FromNarc((NarcId)template.narcID, template.palDataID, display->heapId);
@@ -405,17 +405,17 @@ void PokeathlonPennantCaptureDisplay_BringToFront(PokeathlonPennantCaptureDispla
         Sprite_SetDrawPriority(PokeathlonCourseSpritePoolSprite_GetSprite(display->picSprites[i]), 2);
     }
     next = 1;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (i == chosen) {
             order[0] = i;
         }
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (order[0] != i) {
             order[next++] = i;
         }
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(display->u.mons[order[i]].carryMark, 3 + i * 2);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(display->u.mons[order[i]].icon, 4 + i * 2);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(display->u.mons[order[i]].frame, 11 + i);

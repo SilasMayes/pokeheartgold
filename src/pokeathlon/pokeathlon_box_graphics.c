@@ -471,7 +471,7 @@ static void PokeathlonBox_LoadMonPic(PokeathlonBox_SubGraphics *sub, PokeathlonB
     if (NNS_G2dGetUnpackedPaletteData(file, &plttData) != TRUE) {
         GF_ASSERT(FALSE);
     }
-    MIi_CpuCopy16(plttData->pRawData, (u16 *)sub->monPicPalette, 32);
+    MI_CpuCopy16(plttData->pRawData, sub->monPicPalette, 32);
     Heap_Free(file);
 }
 

@@ -328,7 +328,7 @@ BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
     int participant;
     int i;
     int k;
-    void *object;
+    PokeathlonCourseMonObject *object;
     u8 mon;
     int x;
     int team;
@@ -473,7 +473,7 @@ BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
                 }
             }
             if (PokeathlonCourse_GetNetId(course) == 0) {
-                PokeathlonSnowThrow_PackPacket(work, (PokeathlonSnowThrowPacket *)PokeathlonCourse_ToBytes((u8 *)PokeathlonCourse_GetDataCopyArea(course) + offsetof(PokeathlonSnowThrowLink, packetToSend)));
+                PokeathlonSnowThrow_PackPacket(work, (PokeathlonSnowThrowPacket *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + offsetof(PokeathlonSnowThrowLink, packetToSend)));
             }
             PokeathlonSnowThrowDisplay_SetMonShadows(work->display, work->spritePool, work->monResources);
             PokeathlonSnowThrow_LoadBgGraphics(work, PokeathlonCourse_GetNetId(course));
@@ -766,7 +766,7 @@ static void PokeathlonSnowThrow_UpdateHost(PokeathlonCourseData *course) {
         if (touch->held) {
             if (work->presses[i].pressed && work->presses[i].held) {
                 work->presses[i].pressed = FALSE;
-            } else if (work->presses[i].pressed == FALSE && work->presses[i].held == FALSE) {
+            } else if (!work->presses[i].pressed && !work->presses[i].held) {
                 work->presses[i].pressed = TRUE;
                 work->presses[i].held = TRUE;
             }
@@ -1010,7 +1010,7 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
     f32 factor;
 
     work = PokeathlonCourse_GetWork(course);
-    packet = (PokeathlonSnowThrowPacket *)PokeathlonCourse_ToBytes((u8 *)PokeathlonCourse_GetDataCopyArea(course) + offsetof(PokeathlonSnowThrowLink, packet));
+    packet = (PokeathlonSnowThrowPacket *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + offsetof(PokeathlonSnowThrowLink, packet));
     own = PokeathlonCourse_GetNetId(course);
     seconds = (packet->flags >> 25) & 0x7F;
     PokeathlonSnowThrow_SetTimerDigits(work, seconds == 0 ? 0 : (u8)(seconds - 1));
@@ -1507,7 +1507,7 @@ static void PokeathlonSnowThrow_ShowOwnScore(PokeathlonCourseData *course) {
     PokeathlonSnowThrow *work;
     u16 score;
 
-    teams = ((PokeathlonSnowThrowPacket *)PokeathlonCourse_ToBytes((u8 *)PokeathlonCourse_GetDataCopyArea(course) + offsetof(PokeathlonSnowThrowLink, packet)))->teams;
+    teams = ((PokeathlonSnowThrowPacket *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + offsetof(PokeathlonSnowThrowLink, packet)))->teams;
     work = PokeathlonCourse_GetWork(course);
     score = (u16)(teams[(u8)PokeathlonCourse_GetNetId(course)] & 0x3FF);
     if (score > 999) {

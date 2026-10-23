@@ -56,7 +56,7 @@ void PokeathlonGoalRollDisplay_UpdateTimer(PokeathlonGoalRollDisplay *display, s
         Sprite_SetDrawFlag(display->timerDigits[0], FALSE);
         Sprite_SetDrawFlag(display->timerDigits[1], FALSE);
         PokeathlonCourseSpritePoolSprite_Show(display->timerLabelSprite, TRUE, FALSE);
-        if (display->secondWindShown == FALSE) {
+        if (!display->secondWindShown) {
             PokeathlonGoalRollDisplay_PrintSecondWind(display);
             display->secondWindShown = TRUE;
         }
@@ -106,7 +106,7 @@ void PokeathlonGoalRollCpu_SetMon(PokeathlonGoalRollCpuTeam *teams, s32 index, P
 void PokeathlonGoalRollCpu_ChooseAllRoles(PokeathlonGoalRollCpuTeam *teams) {
     u8 i;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
         PokeathlonGoalRollCpu_ChooseRoles(&teams[i]);
     }
 }
@@ -117,16 +117,16 @@ static void PokeathlonGoalRollCpu_ChooseRoles(PokeathlonGoalRollCpuTeam *team) {
     u8 second[3];
     u8 selected;
     u8 i;
-    u8 a;
-    u8 b;
+    u8 next;
+    u8 last;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < GOAL_ROLL_TEAM_SIZE; i++) {
         first[i] = team->mons[i]->kickRow + team->mons[i]->maxPower;
         second[i] = team->mons[i]->kickRow + team->mons[i]->kickLevel;
     }
 
     selected = 0;
-    for (i = 1; i < 3; i++) {
+    for (i = 1; i < GOAL_ROLL_TEAM_SIZE; i++) {
         if (first[i - 1] < first[i]) {
             selected = i;
         }
@@ -134,33 +134,33 @@ static void PokeathlonGoalRollCpu_ChooseRoles(PokeathlonGoalRollCpuTeam *team) {
 
     if (selected == 0) {
         if (second[1] >= second[2]) {
-            a = 1;
-            b = 2;
+            next = 1;
+            last = 2;
         } else {
-            a = 2;
-            b = 1;
+            next = 2;
+            last = 1;
         }
     } else if (selected == 1) {
         if (second[0] >= second[2]) {
-            a = 0;
-            b = 2;
+            next = 0;
+            last = 2;
         } else {
-            a = 2;
-            b = 0;
+            next = 2;
+            last = 0;
         }
     } else {
         if (second[0] >= second[1]) {
-            a = 0;
-            b = 1;
+            next = 0;
+            last = 1;
         } else {
-            a = 1;
-            b = 0;
+            next = 1;
+            last = 0;
         }
     }
 
     team->order[0].mon = team->mons[selected];
-    team->order[1].mon = team->mons[a];
-    team->order[2].mon = team->mons[b];
+    team->order[1].mon = team->mons[next];
+    team->order[2].mon = team->mons[last];
 }
 
 void PokeathlonGoalRollCpu_SetBalls(PokeathlonGoalRollCpu *cpu, PokeathlonGoalRollBall *balls) {
@@ -183,7 +183,7 @@ void PokeathlonGoalRollCpu_Update(PokeathlonCourseData *course, PokeathlonGoalRo
         cpu->run = TRUE;
         cpu->timer = 0;
     }
-    if (cpu->run == FALSE) {
+    if (!cpu->run) {
         return;
     }
     slot = &cpu->teams[cpu->firstCpu + cpu->current].order[cpu->orderSlot];
@@ -536,8 +536,8 @@ static int PokeathlonGoalRollCpu_MoveToEmptierQuadrant(PokeathlonGoalRollMon *mo
     u8 i, j;
     int chosen, x, y;
 
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 3; j++) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
+        for (j = 0; j < GOAL_ROLL_TEAM_SIZE; j++) {
             PokeathlonGoalRollMon *other = teams[i].order[j].mon;
             int quadrant = PokeathlonGoalRollCpu_GetQuadrant(128, 96, other->position.x / FX32_ONE, other->position.y / FX32_ONE);
             if (quadrant != 4) {

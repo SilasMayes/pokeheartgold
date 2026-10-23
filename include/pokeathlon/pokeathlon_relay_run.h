@@ -222,8 +222,8 @@ typedef struct PokeathlonRelayRun {
     u8 heldTooLong; // someone held the stylus down for 255 frames: more friction
     u8 nextBumpMark;
     PokeathlonCourseSpriteResources *monResources;
-    void *monObjects; // PokeathlonCourseMonObjects
-    void *bumpMarks[4];
+    PokeathlonCourseMonObjects *monObjects;
+    PokeathlonCourseSpritePoolSprite *bumpMarks[4];
     struct PokeathlonRelayRunCpu *cpu;     // the teams without a player
     struct PokeathlonRelayRunHud *hud;     // the touch screen
     s32 layoutToSend[RELAY_RUN_OBSTACLES]; // host: kind | y << 8 | x << 16
@@ -280,8 +280,8 @@ typedef struct PokeathlonRelayRunHud {
     PokeathlonRelayRunHudPic pics[RELAY_RUN_MEMBERS]; // the player's own members
     u32 picCharLocations[2];                          // VRAM of the two picture slots
     u32 picPaletteLocations[2];
-    void *picFrames[2]; // the picture slots (PokeathlonCourseSpritePoolSprite)
-    void *tiredMarks[2];
+    PokeathlonCourseSpritePoolSprite *picFrames[2]; // the picture slots
+    PokeathlonCourseSpritePoolSprite *tiredMarks[2];
     u16 benchMembers[2]; // member in each picture slot
     u32 rotateState;     // PokeathlonRelayRunHud_RotateMonPics
     int rotateSlot;

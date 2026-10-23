@@ -65,7 +65,7 @@ typedef struct PokeathlonHurdleDashStandings {
     SpriteResource *resources[4];
     u8 unk158[8];
     SpriteResourcesHeader header;
-    PokeathlonHurdleDashStandingsMon mons[12];
+    PokeathlonHurdleDashStandingsMon mons[POKEATHLON_MONS];
 } PokeathlonHurdleDashStandings;
 
 // The Pokemon of the standings bar (species and form).
@@ -77,20 +77,20 @@ typedef struct PokeathlonHurdleDashStandingsMonId {
 // A participant's link packet (block 0 of the data copy area is the own one, blocks 2 to 5 those of the
 // four participants).
 typedef struct PokeathlonHurdleDashPacket {
-    u16 distances[3];
+    u16 distances[POKEATHLON_TEAM_SIZE];
     u8 unk06;
     u8 unk07;
     u8 unk08;
     u8 done; // the participant's race is over
-    u16 finishTimes[3];
-    u16 finished[3];
+    u16 finishTimes[POKEATHLON_TEAM_SIZE];
+    u16 finished[POKEATHLON_TEAM_SIZE];
     u8 unk16[0xE];
 } PokeathlonHurdleDashPacket;
 
 // The host's packet (block 1 sent, block 6 received).
 typedef struct PokeathlonHurdleDashStatus {
     u32 allDone;
-    u16 distances[4][3];
+    u16 distances[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE];
     u8 ranks[6]; // a nibble per Pokemon, the low one first
 } PokeathlonHurdleDashStatus;
 
@@ -140,7 +140,7 @@ void PokeathlonHurdleDash_CountFrame(PokeathlonHurdleDash *hurdleDash);
 s32 PokeathlonHurdleDash_RoundTime(s32 frames);
 PokeathlonHurdleDashTrack *PokeathlonHurdleDashTrack_New(enum HeapID heapId);
 void PokeathlonHurdleDashTrack_Free(PokeathlonHurdleDashTrack *track);
-void PokeathlonHurdleDashTrack_CreateHurdleSprites(PokeathlonHurdleDashLane *lane, PokeathlonCourseSpritePool *spritePool);
+void PokeathlonHurdleDashTrack_CreateHurdleSprites(PokeathlonHurdleDashTrack *track, PokeathlonCourseSpritePool *spritePool);
 PokeathlonHurdle *PokeathlonHurdleDashTrack_GetLaneHurdles(PokeathlonHurdleDashTrack *track, u32 lane);
 void *PokeathlonHurdleDashTrack_GetLayoutToSend(PokeathlonHurdleDashTrack *track);
 void *PokeathlonHurdleDashTrack_GetLayout(PokeathlonHurdleDashTrack *track);

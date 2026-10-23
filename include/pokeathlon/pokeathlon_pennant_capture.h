@@ -28,8 +28,8 @@ typedef struct PokeathlonPennantCaptureMoveParams {
 
 // One participant's team on the field (the Pokemon currently running is `member`).
 typedef struct PokeathlonPennantCapturePlayer {
-    PokeathlonCourseMonObject *monObjects[3]; // one course object per team member
-    PokeathlonPennantCaptureMoveParams moveParams[3];
+    PokeathlonCourseMonObject *monObjects[POKEATHLON_TEAM_SIZE]; // one course object per team member
+    PokeathlonPennantCaptureMoveParams moveParams[POKEATHLON_TEAM_SIZE];
     PokeathlonCourseSpritePoolSprite *carrySprite;     // shown above the Pokemon while active
     PokeathlonCourseSpritePoolSprite *pointSprites[2]; // "+points" effects, used alternately
     PokeathlonCourseSpritePoolSprite *pennantSprite;   // pennant count change effect
@@ -43,7 +43,7 @@ typedef struct PokeathlonPennantCapturePlayer {
     u16 holdTime;      // frames the touch was held (human players)
     VecFx32 cpuFrom;   // CPU: where the current path starts; human: where the touch drag started
     VecFx32 cpuTarget; // CPU: where it leads; human: where the touch drag is now
-    u8 contacts[4];    // touching the other participants' Pokemon
+    u8 contacts[POKEATHLON_PARTICIPANTS]; // touching the other participants' Pokemon
     u32 participant;
     u8 swapPending; // set once a deposit finished
     u8 swapPhase;
@@ -122,9 +122,9 @@ typedef struct PokeathlonPennantCapture {
     void *bgCharsFile;            // the file bgChars points into
     NNSG2dCharacterData *bgChars; // the animated BG0 tiles (6 frames)
     PokeathlonCourseSpritePool *spritePool;
-    PokeathlonPennantCapturePlayer players[4];
-    PokeathlonPennantCaptureTouch touches[4]; // host: the participants' touch state
-    BOOL dragging[4];                         // the touch started on the own Pokemon
+    PokeathlonPennantCapturePlayer players[POKEATHLON_PARTICIPANTS];
+    PokeathlonPennantCaptureTouch touches[POKEATHLON_PARTICIPANTS]; // host: the participants' touch state
+    BOOL dragging[POKEATHLON_PARTICIPANTS];                         // the touch started on the own Pokemon
     PokeathlonCourseSpriteResources *monResources;
     PokeathlonCourseMonObjects *monObjects;
     PokeathlonCourseSpritePoolSprite *pickupEffects[4]; // SEQ_SE_GS_THLON06, used in turn
@@ -158,7 +158,7 @@ typedef struct PokeathlonPennantCapture {
     PokeathlonPennantCapturePoint obstaclePositions[20];
     PokeathlonPennantCapturePoint fieldItemPositions[10];
     u8 unk694[0x28];
-    u8 pennantsFull[4]; // touched a pennant while carrying 9
+    u8 pennantsFull[POKEATHLON_PARTICIPANTS]; // touched a pennant while carrying 9
 } PokeathlonPennantCapture;
 
 // The frame state the host sends to all participants.
@@ -177,7 +177,7 @@ typedef struct PokeathlonPennantCaptureFrame {
 // Link data as seen by the frame update: own block, the other participants' blocks, the frame.
 typedef struct PokeathlonPennantCaptureLinkData {
     u8 own[0x50];
-    u8 others[4][0x28];
+    u8 others[POKEATHLON_PARTICIPANTS][0x28];
     u8 frame[0x28];
 } PokeathlonPennantCaptureLinkData;
 
@@ -214,17 +214,17 @@ typedef struct PokeathlonPennantCaptureDisplay {
     u8 unk02C[0xC];
 
     union {
-        PokeathlonPennantCaptureDisplayMon mons[4];
+        PokeathlonPennantCaptureDisplayMon mons[POKEATHLON_PARTICIPANTS];
 
         struct {
             u8 filler[0x64];
-            void *iconFiles[12];
+            void *iconFiles[POKEATHLON_MONS];
         } raw;
     } u;
 
-    NNSG2dCharacterData *iconChars[12];
-    u8 iconPalettes[12];
-    PokeathlonPennantCaptureMonPic monPics[3];
+    NNSG2dCharacterData *iconChars[POKEATHLON_MONS];
+    u8 iconPalettes[POKEATHLON_MONS];
+    PokeathlonPennantCaptureMonPic monPics[POKEATHLON_TEAM_SIZE];
     u32 picCharOffsets[2];
     u32 picPlttOffsets[2];
     PokeathlonCourseSpritePoolSprite *picSprites[2];
@@ -234,8 +234,8 @@ typedef struct PokeathlonPennantCaptureDisplay {
     int picState;
     u16 picSlot;
     u16 nextPointSprite;
-    u8 shownMember[4];
-    String *names[3];
+    u8 shownMember[POKEATHLON_PARTICIPANTS];
+    String *names[POKEATHLON_TEAM_SIZE];
     Sprite *timerDigits[2];
     PokeathlonPennantCaptureCounter counters[3];
 } PokeathlonPennantCaptureDisplay;
@@ -297,7 +297,7 @@ typedef struct PokeathlonPennantCaptureCpuCell {
 
 // The CPU of the participants without a player (one decision per CPU every `interval` frames).
 typedef struct PokeathlonPennantCaptureCpu {
-    PokeathlonPennantCaptureCpuPlayer players[4];
+    PokeathlonPennantCaptureCpuPlayer players[POKEATHLON_PARTICIPANTS];
     PokeathlonPennantCaptureCpuObject obstacles[20];
     PokeathlonPennantCaptureCpuObject fieldItems[10];
     PokeathlonPennantCapturePennant *pennants;

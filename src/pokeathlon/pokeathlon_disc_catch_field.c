@@ -233,12 +233,12 @@ static void PokeathlonDiscCatch_UpdateCollisions(PokeathlonCourseData *course) {
                 VEC_Subtract(&a->position, &b->position, &push);
                 VEC_Normalize(&push, &push);
                 power = b->stats->power;
-                if (a->large == FALSE) {
+                if (!a->large) {
                     power = power * 6 / 5;
                 }
                 VEC_MultAdd(power, &push, &a->direction, &a->velocity);
                 power = a->stats->power;
-                if (b->large == FALSE) {
+                if (!b->large) {
                     power = power * 6 / 5;
                 }
                 VEC_MultAdd(power, &push, &b->direction, &b->velocity);

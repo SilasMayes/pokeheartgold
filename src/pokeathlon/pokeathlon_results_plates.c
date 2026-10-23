@@ -1,5 +1,6 @@
 #include "global.h"
 
+#include "nnsys/g2d_internal.h"
 #include "pokeathlon/pokeathlon_course_internal.h"
 #include "pokeathlon/pokeathlon_course_objects.h"
 #include "pokeathlon/pokeathlon_course_types_def.h"
@@ -20,9 +21,6 @@
 #include "sprite_transfer.h"
 #include "system.h"
 #include "text.h"
-
-void NNS_G2dSetImageLocation(NNSG2dImageProxy *proxy, NNS_G2D_VRAM_TYPE type, u32 addr);
-void NNS_G2dSetImagePaletteLocation(NNSG2dImagePaletteProxy *proxy, NNS_G2D_VRAM_TYPE type, u32 addr);
 
 static void PokeathlonResults_LoadPlateResources(PokeathlonResultsAnnouncementPlates *plates);
 static void PokeathlonResults_InitPlateResourcesHeader(PokeathlonResultsAnnouncementPlates *plates);
@@ -149,7 +147,7 @@ PokeathlonResultsAnnouncementPlate *PokeathlonResults_ShowPlate(PokeathlonResult
 }
 
 void PokeathlonResults_HidePlate(PokeathlonResultsAnnouncementPlate *plate) {
-    GF_ASSERT(plate->active != FALSE);
+    GF_ASSERT(plate->active);
     plate->active = FALSE;
     PokeathlonResults_DestroyText(&plate->name);
     PokeathlonResults_DestroyText(&plate->text);
@@ -386,7 +384,7 @@ void PokeathlonResults_FreeScoreboard(PokeathlonResultsAnnouncementScoreboard *s
     PokeathlonResultsAnnouncementTextWindow *window;
     i = 0;
     name = &scoreboard->teams[0].name;
-    for (; i < 4; i++, name = (PokeathlonResultsAnnouncementText *)((u8 *)name + sizeof(PokeathlonResultsAnnouncementScoreboardTeam))) {
+    for (; i < POKEATHLON_PARTICIPANTS; i++, name = (PokeathlonResultsAnnouncementText *)((u8 *)name + sizeof(PokeathlonResultsAnnouncementScoreboardTeam))) {
         PokeathlonResults_DestroyScoreboardText(name);
     }
     window = &scoreboard->window;
@@ -411,7 +409,7 @@ void PokeathlonResults_InitScoreboard(PokeathlonResultsAnnouncementScoreboard *s
     VecFx32 pos;
     String *name;
     PokeathlonResultsAnnouncementScoreboardTeam *team;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         sprite = PokeathlonCourseSpritePool_CreateSprite(scoreboard->scene, 0, NNS_G2D_VRAM_TYPE_2DSUB, 104, 3);
         pos.z = 0;
         pos.x = (i * 64) << FX32_SHIFT;
@@ -432,7 +430,7 @@ void PokeathlonResults_InitScoreboard(PokeathlonResultsAnnouncementScoreboard *s
             Sprite_SetDrawPriority(sprite, 1);
         }
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         team = &scoreboard->teams[i];
         team->plate = PokeathlonCourseSpritePool_Take(scoreboard->scene, 104, 3);
         PokeathlonCourseSpritePoolSprite_Show(team->plate, 1, 1);

@@ -35,7 +35,7 @@ typedef struct PokeathlonCourseMon {
 // A course participant. PokeathlonCourseData stores four of them as PokeathlonParticipantData.
 typedef struct PokeathlonCourseParticipant {
     u32 npcTeam; // NARC a/2/5/8 entry + 1 of an NPC team, 0 for a player
-    PokeathlonCourseMon mons[3];
+    PokeathlonCourseMon mons[POKEATHLON_TEAM_SIZE];
 } PokeathlonCourseParticipant;
 
 // Score list (PokeathlonCourseData.graphicsSystem): the per-event result rows and the course point totals
@@ -59,10 +59,10 @@ struct PokeathlonCourseScoreList {
     s32 next;
     u32 sortOrder;
     BOOL totalsAdded;
-    u32 totals[4];
+    u32 totals[POKEATHLON_PARTICIPANTS];
     PokeathlonCourseScore entries[POKEATHLON_COURSE_SCORE_ENTRY_MAX];
     PokeathlonCourseScore *ranking[POKEATHLON_COURSE_SCORE_ENTRY_MAX];
-    u32 eventPoints[POKEATHLON_COURSE_EVENT_POINTS_MAX][4];
+    u32 eventPoints[POKEATHLON_COURSE_EVENT_POINTS_MAX][POKEATHLON_PARTICIPANTS];
 };
 
 // Doubly linked node of the insertion sort in PokeathlonCourseScoreList_Rank.
@@ -107,7 +107,7 @@ struct PokeathlonCourseMonGfxTemplate {
     BOOL vramTransfer;
     int vram; // 1 main, 2 sub, 3 both
     NNS_G2D_VRAM_TYPE whichScreen;
-    int sizeTypes[12]; // 1..3, selects the shadow / marker offsets of each Pokemon
+    int sizeTypes[POKEATHLON_MONS]; // 1..3, selects the shadow / marker offsets of each Pokemon
 };
 
 // The task that loads the requested Pokemon sprites, one per frame.
@@ -128,9 +128,9 @@ struct PokeathlonCourseSpriteResources {
     u32 flags; // which of the 12 sprite groups are loaded
     int charVram;
     GF_2DGfxResMan *resMans[4]; // char, palette, cell, animation
-    SpriteResource *chars[12];
-    SpriteResource *cells[12];
-    SpriteResource *anims[12];
+    SpriteResource *chars[POKEATHLON_MONS];
+    SpriteResource *cells[POKEATHLON_MONS];
+    SpriteResource *anims[POKEATHLON_MONS];
     SpriteResource *palette;
     SpriteResource *extraPalette;
 };
@@ -291,7 +291,7 @@ struct PokeathlonCoursePerformance {
 
 // The performance data of every participant's Pokemon.
 typedef struct PokeathlonCoursePerformanceTable {
-    PokeathlonCoursePerformance mons[4][3];
+    PokeathlonCoursePerformance mons[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE];
 } PokeathlonCoursePerformanceTable;
 
 // A marker sprite following a Pokemon.
@@ -351,11 +351,11 @@ typedef struct PokeathlonCourseEvent {
 
 // The course results (its first 4 PokeathlonFieldData are the counters).
 typedef struct PokeathlonCourseResults {
-    u32 counters[4][3][8]; // per participant and Pokemon, capped at 9999
+    u32 counters[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE][8]; // per participant and Pokemon, capped at 9999
     u32 bonuses;
     u32 instructions;
-    u16 eventPoints[4][4]; // [participant][round]
-    u16 eventScores[4][4]; // [participant][round]
+    u16 eventPoints[POKEATHLON_PARTICIPANTS][4]; // [participant][round]
+    u16 eventScores[POKEATHLON_PARTICIPANTS][4]; // [participant][round]
     u8 wonRound[4];
     u8 lastInRound[4];
     u16 wonCourse : 1;
@@ -395,9 +395,9 @@ typedef struct PokeathlonCourseLayout {
     u32 unk3D4;
     u32 roundEvents[4];
     u32 courseId;
-    PokeathlonCourseParticipant participants[4];
+    PokeathlonCourseParticipant participants[POKEATHLON_PARTICIPANTS];
     PlayerProfile *playerProfiles;
-    PokeathlonCourseEventResult eventResults[4]; // the player's own, then (host) everybody's
+    PokeathlonCourseEventResult eventResults[POKEATHLON_PARTICIPANTS]; // the player's own, then (host) everybody's
     u16 receivedResults[18];                     // the results the host sent
     PokeathlonCourseScoreList *scores;
     PokeathlonCoursePerformanceTable performance;
@@ -414,8 +414,8 @@ typedef struct PokeathlonCourseLayout {
     u8 rounds;
     u8 timeUpSeconds;
     PokeathlonCourseResults results;
-    PokeathlonStatistics records[4]; // every player's saved record
-    u32 localCounters[3][8];
+    PokeathlonStatistics records[POKEATHLON_PARTICIPANTS]; // every player's saved record
+    u32 localCounters[POKEATHLON_TEAM_SIZE][8];
     u8 monCounters[0x180];
     s32 frameCounter;
     u16 frameTimer;
@@ -444,13 +444,13 @@ typedef struct PokeathlonCourseSavedMon {
 typedef struct PokeathlonCourseBestRecord {
     u16 roundPoints[3];
     u16 totalPoints;
-    PokeathlonCourseSavedMon mons[3];
+    PokeathlonCourseSavedMon mons[POKEATHLON_TEAM_SIZE];
 } PokeathlonCourseBestRecord;
 
 // A result in an event ranking: score, the Pokemon (form << 10 | species) and, in link rankings, the trainer.
 typedef struct PokeathlonCourseRankEntry {
     u16 score;
-    u16 mons[3];
+    u16 mons[POKEATHLON_TEAM_SIZE];
     u32 trainerId;
     u16 name[8];
     u8 language;
@@ -459,7 +459,7 @@ typedef struct PokeathlonCourseRankEntry {
 
 typedef struct PokeathlonCourseEventRecordRow {
     u16 score;
-    u16 mons[3];
+    u16 mons[POKEATHLON_TEAM_SIZE];
 } PokeathlonCourseEventRecordRow;
 
 // Top 5 of a solo event (Pokeathlon_RecordsSolo).
@@ -484,7 +484,7 @@ typedef struct PokeathlonCourseLinkEventRecord {
 
 // An NPC team (NARC a/2/5/8).
 typedef struct PokeathlonCourseNpcTeam {
-    u16 species[3];
+    u16 species[POKEATHLON_TEAM_SIZE];
     u8 nameId; // msg 310
     u8 msgId;
 } PokeathlonCourseNpcTeam;
@@ -660,6 +660,7 @@ void PokeathlonCourseMonObjects_Free(PokeathlonCourseMonObjects *objects);
 void PokeathlonCourseMonObjects_Load(PokeathlonCourseMonObjects *objects, int count, PokeathlonCourseMonInfo *infos, PokeathlonCourseMonGfxTemplate *template, u32 priority, int baseIndex);
 BOOL PokeathlonCourseMonObjects_IsLoaded(PokeathlonCourseMonObjects *objects);
 PokeathlonCourseMonObject *PokeathlonCourseMonObjects_Get(PokeathlonCourseMonObjects *objects, u8 index);
+void PokeathlonCourseMonObjects_SetPalette(PokeathlonCourseMonObjects *objects, u8 index, int vram, void *palette);
 PokeathlonCourseMonGfx *PokeathlonCourseMonObject_GetGfx(PokeathlonCourseMonObject *object);
 void PokeathlonCourseMonObject_SetDrawFlag(PokeathlonCourseMonObject *object, u8 draw);
 void PokeathlonCourseMonObject_SetShadowDrawFlag(PokeathlonCourseMonObject *object, BOOL draw);

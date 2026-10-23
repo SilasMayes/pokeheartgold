@@ -464,7 +464,7 @@ BOOL PokeathlonResults_Run(PokeathlonCourseData *course, u8 *state) {
             if (!PokeathlonResults_UpdateRanking(&announcement->ranking, course)) {
                 break;
             }
-            for (i = 0; i < 4; i++) {
+            for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
                 ranked[i] = PokeathlonCourseScoreList_GetRanked(PokeathlonCourse_GetGraphicsSystem(course), i);
             }
             if (ranked[0]->rank == ranked[1]->rank) {
@@ -489,7 +489,7 @@ BOOL PokeathlonResults_Run(PokeathlonCourseData *course, u8 *state) {
             }
             break;
         case RESULTS_STATE_SHOW_POINTS:
-            for (i = 0; i < 4; i++) {
+            for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
                 u32 field3D8 = PokeathlonCourse_GetCurrentEvent(course);
                 int points = PokeathlonCourseScoreList_GetEventPoints(PokeathlonCourse_GetGraphicsSystem(course), field3D8, i);
                 if (points > 999) {
@@ -568,7 +568,7 @@ static void PokeathlonResults_MoveSlide(PokeathlonResultsAnnouncementSlide *slid
     if (slide->active) {
         if (slide->delay == 0) {
             PokeathlonResults_MovePlate(slide->plate, dx, dy);
-            if (slide->started == FALSE) {
+            if (!slide->started) {
                 PokeathlonResults_GetPlateRank(slide->plate);
                 PlaySE(SEQ_SE_GS_KEKKA);
                 slide->started = TRUE;
@@ -635,7 +635,7 @@ static BOOL PokeathlonResults_UpdateRanking(PokeathlonResultsAnnouncementRanking
             if (!PokeathlonResults_IsSlideDone(slide, SLIDE_IN)) {
                 break;
             }
-            if (ranking->fanfarePlayed == FALSE && PokeathlonResults_GetPlateRank(slide->plate) == 0) {
+            if (!ranking->fanfarePlayed && PokeathlonResults_GetPlateRank(slide->plate) == 0) {
                 PlayFanfare(SEQ_ME_PT_RESULTG);
                 ranking->fanfarePlayed = TRUE;
             }
@@ -824,7 +824,7 @@ static BOOL PokeathlonResults_WaitForPlayers(PokeathlonCourseData *course) {
                 if (player[0] < progress || player[1] == TRUE) {
                     behind = TRUE;
                 }
-                if (player[2] == FALSE) {
+                if (!player[2]) {
                     allFinished = FALSE;
                 }
                 block += 0x28;

@@ -66,7 +66,7 @@ void PokeathlonCourseScoreList_Rank(PokeathlonCourseScoreList *list, int mode) {
     int j;
     PokeathlonCourseScoreNode *node;
     PokeathlonCourseScoreNode *cur;
-    PokeathlonCourseScoreNode *p;
+    PokeathlonCourseScoreNode *ranked;
     int prevScore;
     int rank;
     int tie;
@@ -130,15 +130,15 @@ void PokeathlonCourseScoreList_Rank(PokeathlonCourseScoreList *list, int mode) {
             node->prev = cur;
         }
     }
-    p = &nodes[0];
+    ranked = &nodes[0];
     prevScore = -1;
     tie = 0;
     rank = -1;
     for (i = 0; i < list->count; i++) {
-        p = p->next;
-        list->ranking[i] = p->entry;
-        if (prevScore != p->entry->score) {
-            prevScore = p->entry->score;
+        ranked = ranked->next;
+        list->ranking[i] = ranked->entry;
+        if (prevScore != ranked->entry->score) {
+            prevScore = ranked->entry->score;
             if (tie) {
                 rank = i;
                 tie = 0;
@@ -174,8 +174,8 @@ u32 PokeathlonCourseScoreList_GetField04(PokeathlonCourseScoreList *list) {
 
 void PokeathlonCourseScoreList_AddPointsToTotals(PokeathlonCourseScoreList *list) {
     int i;
-    GF_ASSERT(list->totalsAdded == FALSE);
-    if (list->totalsAdded == FALSE) {
+    GF_ASSERT(!list->totalsAdded);
+    if (!list->totalsAdded) {
         for (i = 0; i < list->count; i++) {
             list->totals[list->ranking[i]->participant] += list->ranking[i]->points;
         }
@@ -190,7 +190,7 @@ void PokeathlonCourseScoreList_SaveEventPoints(PokeathlonCourseScoreList *list, 
     for (i = 0; i < list->count; i++) {
         points[list->ranking[i]->participant] += list->ranking[i]->points;
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         list->eventPoints[event][i] = points[i];
     }
 }
@@ -334,7 +334,7 @@ void PokeathlonCourseCmd_RecvMonCounters(int netId, int size, void *data, void *
     PokeathlonCourse_GetDataCopyArea(course);
     if (!PokeathlonCourse_GetNetId(course)) {
         dst = (u32 *)PokeathlonCourse_GetFieldData_AtIndex(course, (u8)netId);
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
             dst[i * 8 + 0] += src[i * 8 + 0];
             dst[i * 8 + 1] += src[i * 8 + 1];
             dst[i * 8 + 2] += src[i * 8 + 2];

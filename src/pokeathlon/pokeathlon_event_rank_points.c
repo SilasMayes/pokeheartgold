@@ -20,14 +20,14 @@ void PokeathlonEvent_CalcRankPoints(PokeathlonCourseScoreList *list) {
     last = gPokeathlonEventRankPoints[3];
     table[2] = gPokeathlonEventRankPoints[2];
     table[3] = last;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         ranks[i] = PokeathlonCourseScoreList_GetRanked(list, i)->rank;
         ties[i] = 0;
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         u8 rank = ranks[i];
         entry = PokeathlonCourseScoreList_GetRanked(list, i);
-        for (j = 0; j < 4; j++) {
+        for (j = 0; j < POKEATHLON_PARTICIPANTS; j++) {
             if (i != j && rank == ranks[j]) {
                 ties[i]++;
             }

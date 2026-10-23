@@ -442,7 +442,7 @@ void PokeathlonRingDrop_BuildFramePacket(u8 (*contacts)[RING_DROP_PARTICIPANTS],
     PokeathlonRingDropFrameMarks *marks;
 
     bumped = 0;
-    packets = (void *)PokeathlonCourse_ToBytes((u8 *)PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_OUT);
+    packets = (void *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_OUT);
     for (i = 0, mon = (PokeathlonRingDropMon *)((u8 *)contacts + RING_DROP_CONTACTS_TO(players[0].mon)), packet = packets; i < RING_DROP_PARTICIPANTS; i++, mon = (PokeathlonRingDropMon *)((u8 *)mon + sizeof(PokeathlonRingDropPlayer)), packet++) {
         s32 x = (mon->position.x << 4) >> 16;
         s32 y = (mon->position.y << 4) >> 16;

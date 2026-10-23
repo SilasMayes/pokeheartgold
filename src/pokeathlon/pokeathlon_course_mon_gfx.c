@@ -55,7 +55,7 @@ void PokeathlonCourseMonGfx_FreeManager(PokeathlonCourseMonGfxManager *manager) 
         Destroy2DGfxResObjMan(manager->resMans[i]);
     }
     Heap_Free(manager->mons);
-    if (manager->ownsSpriteList != FALSE) {
+    if (manager->ownsSpriteList) {
         SpriteList_Delete(manager->ownSpriteList);
     }
     Heap_Free(manager);
@@ -225,7 +225,7 @@ static void PokeathlonCourseMonGfx_Load(PokeathlonCourseMonGfxManager *manager, 
                 GXS_LoadOBJ(manager->buffer, location + offset, size);
             }
         }
-        MIi_CpuCopyFast((u32 *)manager->buffer, (u32 *)((u8 *)charData->pRawData + offset), size);
+        MI_CpuCopyFast(manager->buffer, (u8 *)charData->pRawData + offset, size);
         offset += size;
     }
     pltt = (u8 *)tex + tex->plttInfo.ofsPlttData;
@@ -296,11 +296,11 @@ static BOOL PokeathlonCourseMonGfx_LoadStep(PokeathlonCourseMonGfxLoad *load) {
         PokeathlonCourseMonGfx_Load(load->manager, &load->manager->mons[index], (PokeathlonCourseMonInfo *)((u32)load->infos + (u32)index * sizeof(PokeathlonCourseMonInfo)), load->template.vram, index, load->template.vramTransfer);
         load->manager->mons[index].info = load->infos[index];
         load->manager->mons[index].topRow = PokeathlonCourseMonGfx_FindTopRow(&load->manager->mons[index]);
-        load->manager->mons[index].shiftedUp = load->manager->shiftLargeUp != FALSE && load->infos[index].isLarge != 0;
+        load->manager->mons[index].shiftedUp = load->manager->shiftLargeUp && load->infos[index].isLarge != 0;
         if (load->manager->mons[index].shiftedUp) {
             load->manager->mons[index].topRow += 8;
         }
-        if (load->template.vramTransfer == FALSE) {
+        if (!load->template.vramTransfer) {
             mon = &load->manager->mons[index];
             GF2DGfxResObj_FreeData(mon->charRes);
             GF2DGfxResObj_FreeData(mon->plttRes);
@@ -420,7 +420,7 @@ void PokeathlonCourseMonGfx_SetScale(PokeathlonCourseMonGfx *mon, f32 x, f32 y) 
 // Large Pokemon of the following loads are drawn one tile row higher; only before loading.
 void PokeathlonCourseMonGfx_ShiftLargeUp(PokeathlonCourseMonGfxManager *manager) {
     GF_ASSERT(manager != NULL);
-    GF_ASSERT(manager->loaded == FALSE);
+    GF_ASSERT(!manager->loaded);
     manager->shiftLargeUp = TRUE;
 }
 

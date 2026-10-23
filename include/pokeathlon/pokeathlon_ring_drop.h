@@ -249,7 +249,7 @@ typedef struct PokeathlonRingDrop {
     MessageFormat *msgFormat;
     MsgData *msgData;
     PokeathlonCourseSpriteResources *resources;
-    void *monObjects;
+    PokeathlonCourseMonObjects *monObjects;
     Window window;
     PokeathlonRingDropMemberParams memberParams[RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE];
     PokeathlonRingDropUi *ui;
@@ -339,7 +339,7 @@ void PokeathlonRingDrop_AddScoreWindow(PokeathlonRingDrop *ringDrop);
 void PokeathlonRingDrop_PrintScore(PokeathlonCourseData *course, u32 score);
 void PokeathlonRingDropMon_UpdateStatus(PokeathlonRingDropMon *mon, PokeathlonRingDropTouch *touch, BOOL onSwitchButton);
 
-PokeathlonRingDropUi *PokeathlonRingDropUi_New(SpriteSystem *spriteSystem, SpriteManager *spriteManager, void *resources, BgConfig *bgConfig, MsgData *msgData, MessageFormat *msgFormat, u8 participant, enum HeapID heapId, PokeathlonCourseData *course);
+PokeathlonRingDropUi *PokeathlonRingDropUi_New(SpriteSystem *spriteSystem, SpriteManager *spriteManager, PokeathlonCourseSpriteResources *resources, BgConfig *bgConfig, MsgData *msgData, MessageFormat *msgFormat, u8 participant, enum HeapID heapId, PokeathlonCourseData *course);
 void PokeathlonRingDropUi_Init(PokeathlonRingDropUi *ui);
 void PokeathlonRingDropUi_Free(PokeathlonRingDropUi *ui);
 void PokeathlonRingDropUi_StopAnimations(PokeathlonRingDropUi *ui);

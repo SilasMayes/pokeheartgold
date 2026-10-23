@@ -418,9 +418,9 @@ void PokeathlonCirclePushAi_Free(PokeathlonCirclePushAi *ai) {
 }
 
 // Every interval frames one Pokemon of each CPU team (in turn) gets a new target. Returns it
-// (12: none).
+// (CIRCLE_PUSH_NO_MON: none).
 int PokeathlonCirclePushAi_Update(PokeathlonCirclePushAi *ai, u8 layout) {
-    int result = 12;
+    int result = CIRCLE_PUSH_NO_MON;
     int mon;
 
     if (ai->firstTeam2 == 4) {
@@ -435,7 +435,7 @@ int PokeathlonCirclePushAi_Update(PokeathlonCirclePushAi *ai, u8 layout) {
             ai->skipped[i] = 0;
         }
     }
-    if (ai->moving != FALSE) {
+    if (ai->moving) {
         u8 firstTeam = ai->firstTeam;
         mon = 2 - ai->member + (firstTeam + ai->team) * 3;
         GF_ASSERT(mon / 3 >= firstTeam);
@@ -490,7 +490,7 @@ static void PokeathlonCirclePushAi_ChooseTarget(PokeathlonCirclePushAi *ai, u8 i
         work->skipped[work->member]++;
         return;
     }
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         PokeathlonCirclePushAiMon *other = &work->mons[i];
 
         if (*other->state) {
@@ -590,7 +590,7 @@ static void PokeathlonCirclePushAi_ScoreCells(PokeathlonCirclePushAi *ai, u8 cou
         } else {
             BOOL inZone;
             cells[i]->score = PokeathlonCirclePushAi_ScoreCell(ai, zones, cells[i]->cellIndex, mon, cells[i]->pixelX, cells[i]->pixelY, &inZone);
-            if (inZone != FALSE) {
+            if (inZone) {
                 PokeathlonCirclePushAi_SnapToZone(ai, zones, (u8)cells[i]->cellIndex, &cells[i]->pixelX, &cells[i]->pixelY);
             }
         }
@@ -666,7 +666,7 @@ static int PokeathlonCirclePushAi_CountRivals(const PokeathlonCirclePushAiMon *m
     }
     slot = mon->slot;
     result = 0;
-    for (i = 0; i < 12; i++, mons++) {
+    for (i = 0; i < POKEATHLON_MONS; i++, mons++) {
         if (i != slot && cell == mons->cell) {
             if (mon->speed < mons->speed) {
                 if (slot / 3 == mons->slot / 3) {
@@ -804,7 +804,7 @@ PokeathlonCirclePushDisplay *PokeathlonCirclePushDisplay_New(enum HeapID heapId,
 
 void PokeathlonCirclePushDisplay_Free(PokeathlonCirclePushDisplay *display) {
     s32 i;
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         Heap_Free(display->anim.monPics[i].charData);
         Heap_Free(display->anim.monPics[i].paletteData);
     }

@@ -425,13 +425,13 @@ static void PokeathlonDiscCatch_ShowDisc(PokeathlonDiscCatchDiscSprites *sprites
     switch (mode) {
     case 0:
         ManagedSprite_SetDrawFlag(sprites->disc[0], draw);
-        hidden = draw == FALSE;
+        hidden = !draw;
         ManagedSprite_SetDrawFlag(sprites->disc[1], hidden);
         ManagedSprite_SetDrawFlag(sprites->shadow[0], draw);
         ManagedSprite_SetDrawFlag(sprites->shadow[1], hidden);
         break;
     case 1:
-        hidden = draw == FALSE;
+        hidden = !draw;
         ManagedSprite_SetDrawFlag(sprites->disc[0], hidden);
         ManagedSprite_SetDrawFlag(sprites->disc[1], draw);
         ManagedSprite_SetDrawFlag(sprites->shadow[0], hidden);
