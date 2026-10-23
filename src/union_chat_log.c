@@ -40,7 +40,6 @@ typedef struct UnionChatLogPeer {
     UnionChatLogPeerChat chat;
 } UnionChatLogPeer;
 
-extern UnionChatLogPeer *CommWireless_GetParentInfo(int index);
 
 static const int sUnionChatLogRowPressBgOffsets[] = { 0, 0, 0 };
 

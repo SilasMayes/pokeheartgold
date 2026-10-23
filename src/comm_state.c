@@ -1553,7 +1553,8 @@ void CommState_ShowRestartErrorAndHalt(void) {
     while (TRUE) {}
 }
 
-void CommState_FrameDummy(void) {
+void CommState_FrameDummy(enum HeapID heapID, BgConfig *bgConfig) {
+#pragma unused(heapID, bgConfig)
 }
 
 void CommState_CheckLinkError(int unused) {

@@ -164,7 +164,6 @@ static void CommWireless_Update(int count, CommWirelessWork *work);
 static BOOL CommWireless_IsAidConnected(u16 aid);
 static int CommWireless_CountConnected(void);
 static u32 CommWireless_GetBeaconPeriod(u32 kind);
-void *CommWireless_GetParentInfo(int slot);
 void *CommWireless_GetParentProfile(int slot);
 void *CommWireless_GetRuleset(void);
 

@@ -26,7 +26,6 @@ enum UnionRoomConnectRequest {
 // Communication core and Union Room message functions, declared with the types their call sites were matched
 // against.
 BOOL Comm_SendParentCommand(int command, void *data, int size);
-UnionRoomRecord *CommWireless_GetParentInfo(int netId);
 BOOL CommWireless_GetParentProfile(int netId);
 void *CommWireless_GetRuleset(void);
 void CommState_StartAlternateSearch(void);

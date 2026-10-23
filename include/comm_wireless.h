@@ -15,6 +15,7 @@ BOOL CommWireless_RequestStopAndFree(void);
 void CommWireless_SetManagerEnded(BOOL);
 int CommWireless_CountParents(void);
 int CommWireless_GetParentSlot(int ordinal);
+void *CommWireless_GetParentInfo(int slot);
 u8 CommWireless_IsParentListChanged(void);
 void CommWireless_ClearParentListChanged(void);
 BOOL CommWireless_GetParentMemberCount(int);

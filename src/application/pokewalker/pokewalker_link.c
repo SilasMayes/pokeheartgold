@@ -6,6 +6,7 @@
 #include "constants/sndseq.h"
 
 #include "application/pokewalker/pokewalker_app.h"
+#include "application/pokewalker/pokewalker_app_internal.h"
 #include "msgdata/msg/msg_0274.h"
 
 #include "math_util.h"
@@ -16,8 +17,6 @@
 #include "sys_task_api.h"
 #include "system.h"
 #include "text.h"
-
-typedef int (*PokewalkerAppStateFunc)(PokewalkerApp *app);
 
 #define LINK_MOTION(app) ((PokewalkerAppMotion *)(app)->unk_1F2C0)
 

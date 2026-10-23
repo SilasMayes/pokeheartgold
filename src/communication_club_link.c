@@ -11,7 +11,7 @@ static void CommClubLink_CheckPartnerState5E(void);
 
 void FillScreenWithColor(int screen, u16 color);
 int LinkSync_GetPlayerState(int index);
-void CommState_FrameDummy(int, void *);
+void CommState_FrameDummy(enum HeapID heapID, BgConfig *bgConfig);
 
 void CommClubLink_StartCardExchange(FieldSystem *fieldSystem);
 
@@ -288,7 +288,7 @@ static void CommClubLink_CheckPartnerState5E(void) {
             StartMapSceneScript(gCommClubLink->fieldSystem, 0x238e, 0);
         }
     }
-    CommState_FrameDummy(4, gCommClubLink->fieldSystem->bgConfig);
+    CommState_FrameDummy(HEAP_ID_FIELD1, gCommClubLink->fieldSystem->bgConfig);
 }
 
 void CommClubLink_WaitLeaveSpot(void) {

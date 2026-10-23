@@ -268,7 +268,7 @@ void CommState_SetErrorScreen(s8 errorScreen);
 u8 CommState_GetErrorScreen(void);
 void CommState_ShowErrorAndHalt(u32 errorCode);
 void CommState_ShowRestartErrorAndHalt(void);
-void CommState_FrameDummy(void);
+void CommState_FrameDummy(enum HeapID heapID, BgConfig *bgConfig);
 void CommState_CheckLinkError(int unused);
 BOOL CommState_IsLinkDown(void);
 BOOL CommState_SetError(int errorKind);
