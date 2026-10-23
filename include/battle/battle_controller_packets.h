@@ -6,6 +6,13 @@
 
 #include "battle/battle.h"
 
+// Kinds of queued battle controller data (BattleController_EmitPacket / BattleController_ProcessQueue)
+enum BattleControllerPacketKind {
+    BATTLE_PACKET_REPLY,            // a battler's input, to the battle context
+    BATTLE_PACKET_COMMAND,          // a command, to the battlers' controllers
+    BATTLE_PACKET_COMMAND_COMPLETE, // a controller finished a command
+};
+
 // Packets sent by the BattleController_Emit* functions. The first byte is the command that
 // OpponentData_RunCommand dispatches on.
 

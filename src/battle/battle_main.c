@@ -12,6 +12,7 @@
 
 #include "battle/battle.h"
 #include "battle/battle_controller_opponent.h"
+#include "battle/battle_controller_packets.h"
 #include "battle/battle_controller_player.h"
 #include "battle/battle_input.h"
 #include "battle/battle_recording_stop.h"
@@ -365,20 +366,20 @@ BOOL Battle_BattleMain(OverlayManager *man) {
     } else {
         if (battleSystem->isServer) {
             battleSystem->battleFinished = BattleContext_Main(battleSystem, battleSystem->ctx);
-            BattleController_ProcessQueue(battleSystem, 1);
+            BattleController_ProcessQueue(battleSystem, BATTLE_PACKET_COMMAND);
         }
         for (i = 0; i < battleSystem->maxBattlers; i++) {
             OpponentData_RunCommand(battleSystem, battleSystem->opponentData[i]);
-            BattleController_ProcessQueue(battleSystem, 0);
+            BattleController_ProcessQueue(battleSystem, BATTLE_PACKET_REPLY);
         }
         if (!battleSystem->battleFinished) {
             if (battleSystem->isServer) {
                 battleSystem->battleFinished = BattleContext_Main(battleSystem, battleSystem->ctx);
-                BattleController_ProcessQueue(battleSystem, 1);
+                BattleController_ProcessQueue(battleSystem, BATTLE_PACKET_COMMAND);
             }
             for (i = 0; i < battleSystem->maxBattlers; i++) {
                 OpponentData_RunCommand(battleSystem, battleSystem->opponentData[i]);
-                BattleController_ProcessQueue(battleSystem, 0);
+                BattleController_ProcessQueue(battleSystem, BATTLE_PACKET_REPLY);
             }
         }
     }

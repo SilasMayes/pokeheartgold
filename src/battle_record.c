@@ -80,7 +80,7 @@ void *BattleRecord_GetProfile2(void) {
     return gBattleRecord->profile;
 }
 
-BOOL BattleRecord_Load(SaveData *save, enum HeapID heapId, int *out, void *battle, int index) {
+BOOL BattleRecord_Load(SaveData *save, enum HeapID heapId, int *out, BattleSetup *setup, int index) {
     if (gBattleRecord != NULL) {
         Heap_Free(gBattleRecord);
         gBattleRecord = NULL;
@@ -101,8 +101,8 @@ BOOL BattleRecord_Load(SaveData *save, enum HeapID heapId, int *out, void *battl
         *out = LOAD_STATUS_SLOT_FAIL;
         return TRUE;
     }
-    if (battle != NULL) {
-        BattleRecord_RestoreSetup(battle, save);
+    if (setup != NULL) {
+        BattleRecord_RestoreSetup(setup, save);
     }
     *out = LOAD_STATUS_IS_GOOD;
     return TRUE;
@@ -492,15 +492,15 @@ BattleRecordHeader *BattleRecord_GetHeader(void) {
     return &gBattleRecord->header;
 }
 
-void BattleRecord_Import(void *profile, void *summary, void *data, void *battle, SaveData *save) {
+void BattleRecord_Import(void *profile, void *summary, void *data, BattleSetup *setup, SaveData *save) {
     GF_ASSERT(gBattleRecord != NULL);
     MI_CpuCopy8(summary, &gBattleRecord->header, sizeof(gBattleRecord->header));
     MI_CpuCopy8(data, &gBattleRecord->data, sizeof(gBattleRecord->data));
     MI_CpuCopy8(profile, gBattleRecord->profile, sizeof(gBattleRecord->profile));
     u32 crc = gBattleRecord->data.crc;
     BattleRecord_Decrypt(&gBattleRecord->data, offsetof(BattleRecordData, crc), crc + ((crc ^ 0xffff) << 16));
-    if (battle != NULL) {
-        BattleRecord_RestoreSetup(battle, save);
+    if (setup != NULL) {
+        BattleRecord_RestoreSetup(setup, save);
     }
 }
 

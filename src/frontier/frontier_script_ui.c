@@ -345,7 +345,7 @@ static void FrontierMenu_Task(SysTask *task, FrontierMenu *menu) {
     }
     if (IsPaletteFadeFinished()) {
         selection = Handle2dMenuInput(menu->menu);
-        if (selection == -1 && System_GetTouchNew() == TRUE) {
+        if (selection == LIST_NOTHING_CHOSEN && System_GetTouchNew() == TRUE) {
             selection = Get2dMenuSelection(menu->menu);
         }
         if ((gSystem.newAndRepeatedKeys & PAD_KEY_UP) || (gSystem.newAndRepeatedKeys & PAD_KEY_DOWN) || (gSystem.newAndRepeatedKeys & PAD_KEY_LEFT) || (gSystem.newAndRepeatedKeys & PAD_KEY_RIGHT)) {
@@ -356,13 +356,13 @@ static void FrontierMenu_Task(SysTask *task, FrontierMenu *menu) {
             return;
         }
         switch (selection) {
-        case -2:
+        case LIST_CANCEL:
             if (menu->canCancel == TRUE) {
                 *menu->result = FRONTIER_MENU_RESULT_CANCEL;
                 FrontierMenu_Close(menu);
             }
             break;
-        case -1:
+        case LIST_NOTHING_CHOSEN:
             break;
         default:
             *menu->result = selection;

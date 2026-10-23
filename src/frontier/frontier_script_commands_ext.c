@@ -1625,7 +1625,7 @@ static BOOL FrontierScriptNative_WaitLinkSyncOrAbort(FrontierScriptContext *ctx)
     if (!result) {
         lobby = Frontier_GetData(ctx->frontierSystem->frontierWork);
         if (lobby != NULL && lobby->receiveCount != 0) {
-            if (lobby->partnerValue74 == 1 || lobby->partnerValue74 == 0xFFFE) {
+            if (lobby->partnerValue74 == 1 || lobby->partnerValue74 == FRONTIER_MENU_RESULT_CANCEL) {
                 ctx->frontierSystem->syncAborted = TRUE;
                 result = TRUE;
             } else if (lobby->partnerValue74 == 0) {

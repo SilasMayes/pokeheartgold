@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "global.h"
 
 #include "frontier/battle_factory_app_internal.h"
@@ -213,18 +215,7 @@ void BattleFactory_SetPokepicHFlip(Pokepic *pokepic, int hFlip) {
 BattleFactorySprite *BattleFactorySprite_Create(BattleFactorySpriteGfx *gfx, int resourceId, int animSeq, int priority, int drawPriority, int x, int y) {
     BattleFactorySprite *sprite = Heap_Alloc(HEAP_ID_100, sizeof(BattleFactorySprite));
 
-    ((u8 *)sprite)[0] = 0;
-    ((u8 *)sprite)[1] = 0;
-    ((u8 *)sprite)[2] = 0;
-    ((u8 *)sprite)[3] = 0;
-    ((u8 *)sprite)[4] = 0;
-    ((u8 *)sprite)[5] = 0;
-    ((u8 *)sprite)[6] = 0;
-    ((u8 *)sprite)[7] = 0;
-    ((u8 *)sprite)[8] = 0;
-    ((u8 *)sprite)[9] = 0;
-    ((u8 *)sprite)[10] = 0;
-    ((u8 *)sprite)[11] = 0;
+    memset(sprite, 0, sizeof(BattleFactorySprite));
     sprite->x = x;
     sprite->y = y;
     sprite->sprite = BattleFactorySpriteGfx_CreateSprite(gfx, resourceId, animSeq, drawPriority, priority, 0);
@@ -235,18 +226,7 @@ BattleFactorySprite *BattleFactorySprite_Create(BattleFactorySpriteGfx *gfx, int
 BattleFactorySprite *BattleFactorySprite_CreateSub(BattleFactorySpriteGfx *gfx, int resourceId, int animSeq, int priority, int drawPriority, int x, int y) {
     BattleFactorySprite *sprite = Heap_Alloc(HEAP_ID_100, sizeof(BattleFactorySprite));
 
-    ((u8 *)sprite)[0] = 0;
-    ((u8 *)sprite)[1] = 0;
-    ((u8 *)sprite)[2] = 0;
-    ((u8 *)sprite)[3] = 0;
-    ((u8 *)sprite)[4] = 0;
-    ((u8 *)sprite)[5] = 0;
-    ((u8 *)sprite)[6] = 0;
-    ((u8 *)sprite)[7] = 0;
-    ((u8 *)sprite)[8] = 0;
-    ((u8 *)sprite)[9] = 0;
-    ((u8 *)sprite)[10] = 0;
-    ((u8 *)sprite)[11] = 0;
+    memset(sprite, 0, sizeof(BattleFactorySprite));
     sprite->x = x;
     sprite->y = y;
     sprite->sprite = BattleFactorySpriteGfx_CreateSprite(gfx, resourceId, animSeq, drawPriority, priority, 1);
