@@ -10,13 +10,6 @@ extern u8 WCM_Essid_Any[]; // SSID of 0xFF bytes (any)
 static void WifiSetupWcm_HandleEvent(WifiSetupWcmEvent *event);
 static int WifiSetupWcm_ReturnToIdle(void);
 
-s32 WifiSetup_NotifyStatus(s32 arg);
-int WifiSetupWcm_CopyApList(u8 *dst, int max);
-int WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int option);
-int WifiSetupWcm_StopSearch(void);
-int WifiSetupWcm_StartDisconnect(void);
-int WifiSetupWcm_StartCleanup(void);
-int WifiSetupWcm_StartConnect(void *ap, void *key, int option);
 BOOL WifiSetupWcm_Init(void (*callback)(int event, int arg), void *allocation, u32 size);
 
 void WifiSetup_Sleep(s32 ticks) {

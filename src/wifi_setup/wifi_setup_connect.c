@@ -1,7 +1,8 @@
 #include "wifi_setup/wifi_setup_wcm.h"
 
+#include "wifi_setup/wifi_setup.h"
+
 #include "WM.h"
-#include "to55_overlay13_r14_private.h"
 
 typedef struct ConnectKey {
     u8 data[0x14];
@@ -19,28 +20,16 @@ typedef struct ApInfo {
     u16 ssidLength;
 } ApInfo;
 
-typedef struct ConnectParam {
-    u32 ssidLength;
-    u8 ssid[0x20];
-    int mode;
-    u32 keyLength;
-    u8 key[0x20];
-} ConnectParam;
-
 extern ConnectSetting gWifiSetupConnectSetting;
 extern ApInfo gWifiSetupConnectApInfo;
 void MI_CpuFill8(void *dest, u8 value, u32 size);
 void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void WCM_ClearApList(void);
-void WifiSetup_CopyConnectSsid(ConnectParam *param, ApInfo *info);
-BOOL WifiSetupWcm_StartConnect(ApInfo *info, ConnectSetting *setting, u32 mode);
-void WifiSetup_StoreConnectResult(void *out, ApInfo *info, BOOL failed);
-int WifiSetup_ConnectAccessPoint(ConnectParam *param, void *out);
 #define APINFO2 ((ApInfo *)((u8 *)&gWifiSetupRuntime + 0x40))
 // @fn WifiSetup_ConnectAccessPoint
 #pragma optimization_level 2
 #pragma opt_propagation off
-int WifiSetup_ConnectAccessPoint(ConnectParam *param, void *out) {
+int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, int *out) {
     OSAlarm alarm;
     OSMessage message;
     BOOL running = TRUE;
@@ -70,7 +59,7 @@ int WifiSetup_ConnectAccessPoint(ConnectParam *param, void *out) {
     gWifiSetupConnectSetting.keyIndex = connected;
     MI_CpuCopy8(param->key, (u8 *)&gWifiSetupConnectSetting + (connected * sizeof(ConnectKey) + 2), param->keyLength);
     WCM_ClearApList();
-    if (WifiSetupWcm_StartSearch(0, (u32)param->ssid, param->ssidLength, 0x0030BFFE)) {
+    if (WifiSetupWcm_StartSearch(NULL, param->ssid, param->ssidLength, 0x0030BFFE)) {
         retries = 0;
         OS_CreateAlarm(&alarm);
         OS_SetAlarm(&alarm, 0x003FEC42, (OSAlarmHandler)WifiSetup_OnTimeoutAlarm, (void *)0x12);
@@ -90,7 +79,7 @@ int WifiSetup_ConnectAccessPoint(ConnectParam *param, void *out) {
             case WIFI_SETUP_WCM_EVENT_FOUND_AP:
                 if (!connected) {
                     OS_CancelAlarm(&alarm);
-                    if (WifiSetupWcm_CopyApList(&gWifiSetupConnectApInfo, 1) != 1) {
+                    if (WifiSetupWcm_CopyApList((u8 *)&gWifiSetupConnectApInfo, 1) != 1) {
                         running = FALSE;
                     } else {
                         WifiSetup_CopyConnectSsid(param, &gWifiSetupConnectApInfo);

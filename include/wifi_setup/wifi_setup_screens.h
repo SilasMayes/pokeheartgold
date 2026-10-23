@@ -87,6 +87,15 @@ typedef struct WifiSetupPaletteRow {
     u8 row;
 } WifiSetupPaletteRow;
 
+// Messages and store functions of the text entry screen, indexed by its screen arguments
+typedef struct WifiSetupTextEntryParams {
+    WifiSetupBytePair messages; // per field (SSID, WEP key)
+    u16 unk_02;
+    u32 unk_04;
+    u32 confirmMessages[2];          // per second screen argument
+    void (*storeFuncs[2])(u8 *text); // per field
+} WifiSetupTextEntryParams;
+
 extern WifiSetupClientStatus *gWifiSetupClientStatus;
 extern WifiSetupTopMenu gWifiSetupTopMenu;
 extern u8 gWifiSetupEraseConfirmed;
@@ -122,7 +131,7 @@ extern WifiSetupRect gWifiSetupListScreenTouchRects[];
 extern u16 gWifiSetupListScreenCursorLeft[];
 extern u16 gWifiSetupListScreenCursorTop[];
 extern u16 gWifiSetupListScreenCursorRight[];
-extern u32 gWifiSetupTextEntryParams[];
+extern const WifiSetupTextEntryParams gWifiSetupTextEntryParams;
 extern char *gWifiSetupMessageBankPaths[];
 
 // graphics and text bank paths

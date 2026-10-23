@@ -78,5 +78,8 @@ s32 WifiSetup_NotifyStatus(s32 arg);
 int WifiSetupWcm_StartCleanup(void);
 int WifiSetupWcm_StartDisconnect(void);
 int WifiSetupWcm_StopSearch(void);
+int WifiSetupWcm_CopyApList(u8 *dst, int max);
+int WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int option);
+int WifiSetupWcm_StartConnect(void *ap, void *key, int option);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_WCM_H

@@ -44,8 +44,6 @@ static BOOL WifiSetup_OnWcmNotify(void *message);
 static int WifiSetup_DisconnectAccessPoint(void);
 
 BOOL WifiSetupWcm_Init(BOOL (*callback)(void *), void *allocation, u32 size);
-BOOL WifiSetupWcm_StartSearch(u32, u32, u32, u32);
-int WifiSetupWcm_CopyApList(void *, u32);
 
 void *WifiSetup_SocketAlloc(s32 unused, s32 size) {
     void *(*alloc)(s32);
@@ -394,7 +392,7 @@ int WifiSetup_SearchAccessPoints(void **output) {
         return -1;
     }
     base = buffer;
-    if (WifiSetupWcm_StartSearch(0, 0, 0, 0x0030BFFE) != 0) {
+    if (WifiSetupWcm_StartSearch(NULL, NULL, 0, 0x0030BFFE) != 0) {
         goto started;
     }
     goto cleanup;

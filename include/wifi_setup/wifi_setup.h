@@ -234,6 +234,7 @@ BOOL WifiSetup_OnTimeoutAlarm(void *message);
 int WifiSetup_Startup(WifiSetupAllocFunc alloc, WifiSetupFreeFunc free);
 int WifiSetup_Cleanup(void);
 int WifiSetup_SearchAccessPoints(void **output);
+int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, int *out);
 int WifiSetup_CheckPrintable(const u8 *data, int length);
 int WifiSetup_FindAossAccessPoint(WifiSetupAossApList *list);
 int WifiSetup_InitAossConnectInfo(WifiSetupAossConnectInfo *info);

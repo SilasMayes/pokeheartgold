@@ -2480,9 +2480,9 @@ static void WifiSetupBanner_LoadScreenTask(WifiSetupTask *task, void *arg) {
 
 BOOL WifiSetupUsbScan_Start(void (*cb)(int)) {
     OSOwnerInfo info;
-    WifiSetupUsbScan *w = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupUsbScan), 0x20);
-    gWifiSetupUsbScan = w;
-    w->callback = cb;
+    WifiSetupUsbScan *scan = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupUsbScan), 0x20);
+    gWifiSetupUsbScan = scan;
+    scan->callback = cb;
     (*(WifiSetupUsbScan *volatile *)&gWifiSetupUsbScan)->startTick = OS_GetTick();
     if (WM_Initialize(gWifiSetupUsbScan, WifiSetupUsbScan_WmCallback, 3) == WM_ERRCODE_OPERATING) {
         do {
@@ -2571,31 +2571,31 @@ static void WifiSetupUsbScan_StoreResults(WMStartScanExCallback *arg) {
     WMBssDesc *bss;
     int i;
     int j;
-    WifiSetupUsbScan *w;
+    WifiSetupUsbScan *scan;
     for (i = 0; i < arg->bssDescCount; i++) {
         bss = arg->bssDesc[i];
         DC_InvalidateRange(bss, 0xC0);
         if (memcmp(bss->ssid, gWifiSetupUsbApSsid, 8) != 0) {
             continue;
         }
-        w = gWifiSetupUsbScan;
+        scan = gWifiSetupUsbScan;
         for (j = 0; j < 16; j++) {
-            if (memcmp(bss->bssid, w->entries[j].bssid, 6) == 0) {
-                if (w->entries[j].flag != 0) {
+            if (memcmp(bss->bssid, scan->entries[j].bssid, 6) == 0) {
+                if (scan->entries[j].flag != 0) {
                     goto next;
                 }
                 if (!(bss->ssid[9] & 1)) {
                     goto next;
                 }
-                if (w->callback != NULL) {
-                    w->callback(1);
+                if (scan->callback != NULL) {
+                    scan->callback(1);
                 }
                 return;
             }
         }
         for (j = 0; j < 16; j++) {
-            if (memcmp(w->entries[j].bssid, gWifiSetupUsbScanEmptyBssid, 6) == 0) {
-                MI_CpuCopy8(bss->bssid, w->entries[j].bssid, 6);
+            if (memcmp(scan->entries[j].bssid, gWifiSetupUsbScanEmptyBssid, 6) == 0) {
+                MI_CpuCopy8(bss->bssid, scan->entries[j].bssid, 6);
                 gWifiSetupUsbScan->entries[j].flag = (bss->ssid[9] & 1) ? 1 : 0;
                 break;
             }
@@ -2645,36 +2645,36 @@ static void WifiSetupUsbScan_CheckResults(WMStartScanExCallback *arg) {
 
 static void WifiSetupUsbScan_TimeoutTask(WifiSetupTask *task, void *arg) {
     int j;
-    BOOL a;
-    BOOL b;
-    WifiSetupUsbScan *w;
+    BOOL flagged;
+    BOOL unflagged;
+    WifiSetupUsbScan *scan;
     OSTick now = OS_GetTick();
-    w = gWifiSetupUsbScan;
-    b = FALSE;
-    if (now < w->startTick + 0x17F898) {
+    scan = gWifiSetupUsbScan;
+    unflagged = FALSE;
+    if (now < scan->startTick + 0x17F898) {
         return;
     }
-    a = FALSE;
+    flagged = FALSE;
     for (j = 0; j < 16; j++) {
-        if (memcmp(w->entries[j].bssid, gWifiSetupUsbScanEmptyBssid, 6) != 0) {
-            if (w->entries[j].flag) {
-                a = TRUE;
+        if (memcmp(scan->entries[j].bssid, gWifiSetupUsbScanEmptyBssid, 6) != 0) {
+            if (scan->entries[j].flag) {
+                flagged = TRUE;
             } else {
-                b = TRUE;
+                unflagged = TRUE;
             }
         }
     }
-    if (a && b) {
-        if (w->callback != NULL) {
-            w->callback(2);
+    if (flagged && unflagged) {
+        if (scan->callback != NULL) {
+            scan->callback(2);
         }
-    } else if (a) {
-        if (w->callback != NULL) {
-            w->callback(1);
+    } else if (flagged) {
+        if (scan->callback != NULL) {
+            scan->callback(1);
         }
-    } else if (!b) {
-        if (w->callback != NULL) {
-            w->callback(0);
+    } else if (!unflagged) {
+        if (scan->callback != NULL) {
+            scan->callback(0);
         }
     }
     gWifiSetupUsbScan->task = NULL;
@@ -2828,19 +2828,19 @@ static void WifiSetupDialog_SetY(int y) {
 }
 
 static void WifiSetupDialog_ClipBlock(WifiSetupOamBlock *obj, int y) {
-    int n = WifiSetupOamBlock_GetCount(obj);
+    int count = WifiSetupOamBlock_GetCount(obj);
     int i;
     int x;
     int yy;
-    int f;
-    for (i = 0; i < n; i++) {
+    int mode;
+    for (i = 0; i < count; i++) {
         WifiSetupOamBlock_GetPosition(obj, i, &x, &yy);
         if (yy >= y && yy < 0xC0) {
-            f = 0;
+            mode = 0;
         } else {
-            f = 0x200;
+            mode = 0x200;
         }
-        WifiSetupOamBlock_SetAffineMode(obj, i, f, 0);
+        WifiSetupOamBlock_SetAffineMode(obj, i, mode, 0);
     }
 }
 

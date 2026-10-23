@@ -453,7 +453,7 @@ u8 WifiSetupFade_IsActive(int screen) {
 }
 
 int WifiSetupFade_Start(int kind, int screen, int planes, int duration) {
-    WifiSetupBrightnessTable start = *(WifiSetupBrightnessTable *)(gWifiSetupFadeTables + 8);
+    WifiSetupBrightnessTable start = gWifiSetupFadeTables[2];
     WifiSetupFade *fade;
     if (screen == 1) {
         fade = &gWifiSetupFades[0];
@@ -478,8 +478,8 @@ int WifiSetupFade_Start(int kind, int screen, int planes, int duration) {
 
 static void WifiSetupFade_Task(WifiSetupTask *task, void *arg) {
     WifiSetupFade *fade = arg;
-    WifiSetupBrightnessTable flags = *(WifiSetupBrightnessTable *)(gWifiSetupFadeTables + 4);
-    WifiSetupBrightnessTable end = *(WifiSetupBrightnessTable *)(gWifiSetupFadeTables + 0);
+    WifiSetupBrightnessTable flags = gWifiSetupFadeTables[1];
+    WifiSetupBrightnessTable end = gWifiSetupFadeTables[0];
     int brightness;
     u8 kindFlags;
     fade->counter++;
@@ -492,17 +492,17 @@ static void WifiSetupFade_Task(WifiSetupTask *task, void *arg) {
         brightness = -brightness;
     }
     if (fade == gWifiSetupFades) {
-        G2x_ChangeBlendBrightness_((u16 *)0x04001050, brightness);
+        G2x_ChangeBlendBrightness_((u16 *)&reg_G2S_DB_BLDCNT, brightness);
     } else {
-        G2x_ChangeBlendBrightness_((u16 *)0x04000050, brightness);
+        G2x_ChangeBlendBrightness_((u16 *)&reg_G2_BLDCNT, brightness);
     }
     if (fade->counter < fade->duration) {
         return;
     }
     if (fade == gWifiSetupFades) {
-        G2x_ChangeBlendBrightness_((u16 *)0x04001050, end.values[fade->kind]);
+        G2x_ChangeBlendBrightness_((u16 *)&reg_G2S_DB_BLDCNT, end.values[fade->kind]);
     } else {
-        G2x_ChangeBlendBrightness_((u16 *)0x04000050, end.values[fade->kind]);
+        G2x_ChangeBlendBrightness_((u16 *)&reg_G2_BLDCNT, end.values[fade->kind]);
     }
     fade->active = 0;
     WifiSetupTask_DestroyLater(1, task);
@@ -1369,13 +1369,13 @@ void WifiSetup_RestoreVramBanks(void) {
 
 static void WifiSetup_ClearVram(void) {
     GX_SetBankForLCDC((GXVRamLCDC)0x1F3);
-    MIi_CpuClearFast(0, (void *)0x06800000, 0x40000);
-    MIi_CpuClearFast(0, (void *)0x06880000, 0x24000);
+    MIi_CpuClearFast(0, (void *)HW_LCDC_VRAM, 0x40000);
+    MIi_CpuClearFast(0, (void *)(HW_LCDC_VRAM + 0x80000), 0x24000);
     GX_DisableBankForLCDC();
-    MIi_CpuClearFast(0x200, (void *)0x07000000, 0x400);
-    MIi_CpuClearFast(0, (void *)0x05000000, 0x400);
-    MIi_CpuClearFast(0x200, (void *)0x07000400, 0x400);
-    MIi_CpuClearFast(0, (void *)0x05000400, 0x400);
+    MIi_CpuClearFast(0x200, (void *)HW_OAM, HW_OAM_SIZE);
+    MIi_CpuClearFast(0, (void *)HW_PLTT, HW_PLTT_SIZE);
+    MIi_CpuClearFast(0x200, (void *)HW_DB_OAM, HW_DB_OAM_SIZE);
+    MIi_CpuClearFast(0, (void *)HW_DB_PLTT, HW_DB_PLTT_SIZE);
 }
 
 void WifiSetupLed_SetWirelessPattern(void) {

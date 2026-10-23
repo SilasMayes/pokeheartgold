@@ -2905,20 +2905,20 @@ static void WifiSetupListScreen_WaitErrorDialogClosed(void) {
 }
 
 void WifiSetupTextEntry_Init(void) {
-    WifiSetupBytePair messages = *(const WifiSetupBytePair *)gWifiSetupTextEntryParams;
-    int a, b;
+    WifiSetupBytePair messages = gWifiSetupTextEntryParams.messages;
+    int field, b;
     gWifiSetupTextEntry = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupTextEntry), 4);
-    WifiSetupApp_GetScreenArgs(&a, &b);
-    if (a == 0) {
+    WifiSetupApp_GetScreenArgs(&field, &b);
+    if (field == 0) {
         WifiSetupConnections_GetSsid(gWifiSetupTextEntry->text);
         gWifiSetupTextEntry->length = WifiSetup_StrNLen(gWifiSetupTextEntry->text, 32);
     }
     WifiSetupTextEntry_LoadGraphics();
-    WifiSetupBackground_LoadHeader(a + 9);
+    WifiSetupBackground_LoadHeader(field + 9);
     if (b == 1) {
         WifiSetupMessage_Show(53, -1, 0);
     } else {
-        WifiSetupMessage_Show(messages.values[a], -1, 0);
+        WifiSetupMessage_Show(messages.values[field], -1, 0);
     }
     WifiSetupBanner_Show(2);
     gWifiSetupTextEntry->canvas = WifiSetupText_InitBgCanvas(0, 0);
@@ -3051,10 +3051,10 @@ static void WifiSetupTextEntry_CloseKeyboard(void) {
 }
 
 static void WifiSetupTextEntry_WaitKeyboardClosed(void) {
-    u32 opts[2];
+    u32 messages[2];
     int x;
-    opts[0] = gWifiSetupTextEntryParams[2];
-    opts[1] = gWifiSetupTextEntryParams[3];
+    messages[0] = gWifiSetupTextEntryParams.confirmMessages[0];
+    messages[1] = gWifiSetupTextEntryParams.confirmMessages[1];
     if (WifiSetupKeyboard_Exists()) {
         return;
     }
@@ -3068,22 +3068,22 @@ static void WifiSetupTextEntry_WaitKeyboardClosed(void) {
         return;
     }
     WifiSetupApp_GetScreenArgs(0, &x);
-    WifiSetupDialog_Open(opts[x], 2, 1, -1, 0);
+    WifiSetupDialog_Open(messages[x], 2, 1, -1, 0);
     WifiSetupApp_SetStateFunc(WifiSetupTextEntry_WaitConfirmDialog);
 }
 
 static void WifiSetupTextEntry_End(void) {
-    int a, b;
+    int field, b;
     WifiSetupMessage_Hide();
     WifiSetupOam_Release(gWifiSetupTextEntry->cursor);
     WifiSetupText_FreeBgCanvas(0);
     WifiSetup_LoadGraphics(gWifiSetupTextEntryYbObjMainNclPath, GX_LoadOBJPltt);
     WifiSetupDisplay_HidePlanes(1, GX_PLANEMASK_BG0);
     WifiSetupDisplay_HidePlanes(0, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
-    WifiSetupApp_GetScreenArgs(&a, &b);
+    WifiSetupApp_GetScreenArgs(&field, &b);
     if (b == 0) {
         WifiSetupApp_SetTransition(2, 1);
-        WifiSetupApp_SetScreenArgs(0, a);
+        WifiSetupApp_SetScreenArgs(0, field);
         WifiSetupApp_SetStateFunc(WifiSetupSettings_Init);
     } else if (gWifiSetupTextEntry->flag == 0) {
         WifiSetupApp_SetTransition(0, 1);
@@ -3154,10 +3154,10 @@ static void WifiSetupTextEntry_WaitConfirmDialog(void) {
 }
 
 static void WifiSetupTextEntry_WaitConfirmDialogClosed(void) {
-    void (*opts[2])(u8 *);
-    int x;
-    opts[0] = (void (*)(u8 *))gWifiSetupTextEntryParams[4];
-    opts[1] = (void (*)(u8 *))gWifiSetupTextEntryParams[5];
+    void (*storeFuncs[2])(u8 *);
+    int field;
+    storeFuncs[0] = gWifiSetupTextEntryParams.storeFuncs[0];
+    storeFuncs[1] = gWifiSetupTextEntryParams.storeFuncs[1];
     if (WifiSetupDialog_IsOpen()) {
         return;
     }
@@ -3166,19 +3166,19 @@ static void WifiSetupTextEntry_WaitConfirmDialogClosed(void) {
         WifiSetupApp_SetStateFunc(WifiSetupTextEntry_WaitFadeIn);
         return;
     }
-    WifiSetupApp_GetScreenArgs(&x, 0);
-    opts[x](gWifiSetupTextEntry->text);
+    WifiSetupApp_GetScreenArgs(&field, 0);
+    storeFuncs[field](gWifiSetupTextEntry->text);
     WifiSetupApp_SetStateFunc(WifiSetupTextEntry_End);
 }
 
 static int WifiSetupTextEntry_IsTextValid(void) {
-    int a, b, len;
-    WifiSetupApp_GetScreenArgs(&a, &b);
+    int field, b, len;
+    WifiSetupApp_GetScreenArgs(&field, &b);
     if (b == 1) {
         WifiSetupMessage_Show(0x35, -1, 0);
     }
-    WifiSetupApp_GetScreenArgs(&a, &b);
-    if (a == 0) {
+    WifiSetupApp_GetScreenArgs(&field, &b);
+    if (field == 0) {
         return gWifiSetupTextEntry->text[0] != 0;
     }
     if (b == 1 && gWifiSetupTextEntry->text[0] == 0) {

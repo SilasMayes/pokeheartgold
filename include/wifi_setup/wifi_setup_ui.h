@@ -286,7 +286,7 @@ extern WifiSetupOamBuffer *gWifiSetupOamBuffer;
 extern WifiSetupCharVramManager *gWifiSetupCharVram;
 extern WifiSetupVramBanks gWifiSetupSavedVramBanks;
 extern WifiSetupTaskQueue *gWifiSetupTaskQueues;
-extern u8 gWifiSetupFadeTables[];
+extern WifiSetupBrightnessTable gWifiSetupFadeTables[3]; // end, flags and start values per fade kind
 extern const u16 gWifiSetupTextScreenCharBases[];
 extern const u16 gWifiSetupTextScreenWidths[];
 extern const u16 gWifiSetupTextScreenHeights[];

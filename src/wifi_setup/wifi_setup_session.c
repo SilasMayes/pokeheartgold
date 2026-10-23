@@ -30,8 +30,6 @@ typedef struct AossSession {
     WifiSetupAossPacketParams params;
 } AossSession;
 
-int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *, int *);
-
 static const WifiSetupAossRetry sWifiSetupUnsetConnection = {
     .max = -1,
     .delay = -1,

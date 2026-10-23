@@ -100,10 +100,10 @@ static void WifiSetupApScanScreen_WaitDialogClosed(void);
 static void WifiSetupConnectionList_LoadGraphics(void);
 
 int WifiSetupSettings_GetItemRow(int item) {
-    int d = FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
+    int shownItem = FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
     int i;
-    for (i = 0; i < 4; i++, d++) {
-        if (d == item) {
+    for (i = 0; i < 4; i++, shownItem++) {
+        if (shownItem == item) {
             return i;
         }
     }
@@ -111,12 +111,12 @@ int WifiSetupSettings_GetItemRow(int item) {
 }
 
 int WifiSetupSettings_GetRowItem(int row) {
-    int d = FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
-    return d + row;
+    int firstItem = FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
+    return firstItem + row;
 }
 
 void WifiSetupSettings_ScrollUpTask(WifiSetupTask *task, void *arg) {
-    int m;
+    int offset;
     WifiSetupScrollBar_Disable();
     WifiSetupCursor_Hide();
     if (gWifiSetupSettings.scroll > 6) {
@@ -124,17 +124,17 @@ void WifiSetupSettings_ScrollUpTask(WifiSetupTask *task, void *arg) {
     } else {
         gWifiSetupSettings.scroll = 0;
     }
-    m = FX_ModS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
-    if (m == 0x17) {
+    offset = FX_ModS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
+    if (offset == 0x17) {
         WifiSetupSettings_DrawRows();
         return;
     }
-    if (m > 0x17) {
-        gWifiSetupSettings.scroll += WIFI_SETUP_SETTINGS_ROW_HEIGHT - m;
-        m = 0;
+    if (offset > 0x17) {
+        gWifiSetupSettings.scroll += WIFI_SETUP_SETTINGS_ROW_HEIGHT - offset;
+        offset = 0;
     }
     WifiSetupSettings_UpdateObjects();
-    if (m != 0) {
+    if (offset != 0) {
         return;
     }
     WifiSetupScrollBar_SetValue(gWifiSetupSettings.scroll * 0x37 / WIFI_SETUP_SETTINGS_MAX_SCROLL);
@@ -145,16 +145,16 @@ void WifiSetupSettings_ScrollUpTask(WifiSetupTask *task, void *arg) {
 }
 
 void WifiSetupSettings_ScrollDownTask(WifiSetupTask *task, void *arg) {
-    int m;
+    int offset;
     WifiSetupScrollBar_Disable();
     WifiSetupCursor_Hide();
     gWifiSetupSettings.scroll += 6;
-    m = FX_ModS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
-    if (m >= 6) {
+    offset = FX_ModS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
+    if (offset >= 6) {
         WifiSetupSettings_UpdateObjects();
         return;
     }
-    gWifiSetupSettings.scroll -= m;
+    gWifiSetupSettings.scroll -= offset;
     WifiSetupSettings_DrawRows();
     WifiSetupScrollBar_SetValue(gWifiSetupSettings.scroll * 0x37 / WIFI_SETUP_SETTINGS_MAX_SCROLL);
     WifiSetupScrollBar_Enable();
@@ -164,16 +164,16 @@ void WifiSetupSettings_ScrollDownTask(WifiSetupTask *task, void *arg) {
 }
 
 void WifiSetupSettings_ScrollTask(WifiSetupTask *task, void *arg) {
-    int d;
-    int m;
+    int firstItem;
+    int offset;
     if (gWifiSetupSettings.work->objectsDirty == 0) {
         return;
     }
-    d = FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
-    m = FX_ModS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT) - 0x33;
-    d = gWifiSetupSettingsScrollOffsets[d];
-    G2_SetBG0Offset(0, m);
-    G2_SetBG2Offset(0, m + d);
+    firstItem = FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
+    offset = FX_ModS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT) - 0x33;
+    firstItem = gWifiSetupSettingsScrollOffsets[firstItem];
+    G2_SetBG0Offset(0, offset);
+    G2_SetBG2Offset(0, offset + firstItem);
     gWifiSetupSettings.work->objectsDirty = 0;
 }
 
