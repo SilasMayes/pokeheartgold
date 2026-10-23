@@ -194,145 +194,10 @@ enum MimeJrTopStarsState {
     MIME_JR_TOP_STARS_WAIT_END,
 };
 
-typedef struct MimeJrTopModelFiles {
-    int files[16][2]; // model file, animation file
-} MimeJrTopModelFiles;
-
-typedef struct MimeJrTopTopModels {
-    int files[4];
-} MimeJrTopTopModels;
-
-typedef struct MimeJrTopGraphicsModes {
-    u32 values[4];
-} MimeJrTopGraphicsModes;
-
-typedef struct MimeJrTopBanks {
-    u32 values[10];
-} MimeJrTopBanks;
-
-typedef struct MimeJrTopBgTemplates {
-    BgTemplate bgs[4];
-} MimeJrTopBgTemplates;
-
-typedef struct MimeJrTopDemoPoint {
-    s16 x;
-    s16 y;
-} MimeJrTopDemoPoint;
-
-typedef struct MimeJrTopDemoPath {
-    MimeJrTopDemoPoint points[48];
-} MimeJrTopDemoPath;
-
-typedef struct MimeJrTopRivalAnims {
-    int anims[4][2]; // face, body
-} MimeJrTopRivalAnims;
-
-typedef struct MimeJrTopTierPoints {
-    u16 values[4];
-} MimeJrTopTierPoints;
-
-typedef struct MimeJrTopWobbleIntervals {
-    s16 values[4];
-} MimeJrTopWobbleIntervals;
-
-typedef struct MimeJrTopTouchData {
-    TouchscreenHitbox hitboxes[2];
-    u8 unk08[8];
-    MimeJrTopTierPoints tierScores; // points per frame
-    MimeJrTopTierPoints tierBonus;  // points for reaching a tier
-    MimeJrTopWobbleIntervals wobbleIntervals;
-} MimeJrTopTouchData;
-
-typedef struct MimeJrTopWobbleChoice {
-    int speed;
-    int weight;
-} MimeJrTopWobbleChoice;
-
-typedef struct MimeJrTopOffsets {
-    int values[6];
-} MimeJrTopOffsets;
-
-typedef struct MimeJrTopStarOrigins {
-    s16 values[10];
-} MimeJrTopStarOrigins;
-
-typedef struct MimeJrTopDoneFlags {
-    BOOL done[4];
-} MimeJrTopDoneFlags;
-
-typedef struct MimeJrTopRoutine {
-    int timer;
-    int count;
-    int speed;
-    int frontPalettes[3];
-    int backPalettes[3];
-    SysTaskFunc func;
-} MimeJrTopRoutine;
-
-typedef struct MimeJrTopRoutineValue {
-    int value;
-    u8 unk04[0x24];
-} MimeJrTopRoutineValue;
-
-typedef struct MimeJrTopRoutineTask {
-    SysTaskFunc func;
-    u8 unk04[0x24];
-} MimeJrTopRoutineTask;
-
-typedef struct MimeJrTopPlayerPalettes {
-    int values[5];
-} MimeJrTopPlayerPalettes;
-
 typedef void (*MimeJrTopSetPaletteOffsetFunc)(ManagedSprite *sprite, int offset);
 typedef void (*MimeJrTopInitTemplateFunc)(ManagedSpriteTemplate *template, u16 x, u16 y, u32 vram, int pal, int resId);
 typedef void (*MimeJrTopStartBurstFunc)(MimeJrTopGame *game, s16 x, s16 y);
 typedef void (*MimeJrTopRosterInitFunc)(PlazaGameRoster *roster, u32 fromLobby, SaveData *saveData, u32 voiceChat, PlazaGameArgs *args);
-
-extern const VecFx32 gMimeJrTopDemoTurnTiltAxis;
-extern const VecFx32 gMimeJrTopDemoSpinTiltAxis;
-extern const MimeJrTopGraphicsModes gMimeJrTopGraphicsModes;
-extern const MimeJrTopTopModels gMimeJrTopTopModels;
-extern const u16 gMimeJrTopEdgeColors[];
-extern const OamCharTransferParam gMimeJrTopOamCharTransferParam;
-extern const SpriteResourceCountsListUnion gMimeJrTopSpriteResourceCounts;
-extern const OamManagerParam gMimeJrTopOamManagerParam;
-extern const MimeJrTopBanks gMimeJrTopBanks;
-extern const MimeJrTopBgTemplates gMimeJrTopMainBgTemplates;
-extern const MimeJrTopBgTemplates gMimeJrTopSubBgTemplates;
-extern const MimeJrTopModelFiles gMimeJrTopAudienceModelFiles;
-extern const MimeJrTopDemoPath gMimeJrTopDemoPath;
-extern const u16 gMimeJrTopPopupPositions[4];
-extern const VecFx32 gMimeJrTopCameraPosition;
-extern const VecFx32 gMimeJrTopLightVector;
-extern const s16 gMimeJrTopRivalSpriteX[][3];
-extern const MimeJrTopRivalAnims gMimeJrTopRivalAnims;
-extern const MimeJrTopRivalAnims gMimeJrTopRivalSetAnims;
-extern const s16 gMimeJrTopRivalNamePositions[3][3][4];
-extern const MimeJrTopTouchData gMimeJrTopTouchData;
-extern const TouchscreenHitbox gMimeJrTopSelectionHitboxes[];
-extern const VecFx32 gMimeJrTopSpinTiltAxis;
-extern const VecFx32 gMimeJrTopTurnTiltAxis;
-extern const VecFx32 gMimeJrTopSettleTiltAxis;
-extern const VecFx32 gMimeJrTopSettleTouchTiltAxis;
-extern const VecFx32 gMimeJrTopWobbleTiltAxis;
-extern const int gMimeJrTopTierModels[][2];
-extern const int gMimeJrTopTierChangeModels[][2];
-extern const MimeJrTopWobbleChoice gMimeJrTopWobbleChoices[][4];
-extern const s32 gMimeJrTopWobbleWeights[][8];
-extern const u16 gMimeJrTopPopupLimits[];
-extern const MimeJrTopDoneFlags gMimeJrTopDance3DoneFlags;
-extern const MimeJrTopDoneFlags gMimeJrTopDance2DoneFlags;
-extern const MimeJrTopDoneFlags gMimeJrTopDance4DoneFlags;
-extern const MimeJrTopDoneFlags gMimeJrTopPopupDoneFlags;
-extern const MimeJrTopDoneFlags gMimeJrTopDance5DoneFlags;
-extern const MimeJrTopStarOrigins gMimeJrTopStarOrigins;
-extern const MimeJrTopOffsets gMimeJrTopBurstOffsetsX;
-extern const MimeJrTopOffsets gMimeJrTopBurstOffsetsY;
-extern const MimeJrTopRoutine gMimeJrTopRoutines[];
-extern const MimeJrTopRoutineValue gMimeJrTopRoutineCounts[];
-extern const MimeJrTopRoutineValue gMimeJrTopRoutineSpeeds[];
-extern const MimeJrTopRoutineTask gMimeJrTopRoutineTasks[];
-extern MimeJrTopPlayerPalettes gMimeJrTopPlayerPalettes[];
 
 static void MimeJrTop_ReceiveStart(int netId, int size, void *data, MimeJrTopApp *app);
 static void MimeJrTop_ReceiveFinish(int netId, int size, void *data, MimeJrTopApp *app);
@@ -3685,16 +3550,16 @@ void MimeJrTopDance_Routine1(SysTask *sysTask, MimeJrTopDance *dance) {
         dance->dancers[2].radiusX = 64;
         dance->dancers[2].radiusY = 24;
         ManagedSprite_SetDrawFlag(dance->dancers[2].sprite, TRUE);
-        ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[0].sprite, &x, &y, 1 << 20);
+        ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[0].sprite, &x, &y, FX32_CONST(256));
         ax = (dance->dancers[0].baseX << 12) + GF_SinDeg((u16)dance->dancers[0].angle) * dance->dancers[0].radiusX;
         ay = (dance->dancers[0].baseY << 12) + GF_CosDeg((u16)dance->dancers[0].angle) * dance->dancers[0].radiusY;
-        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[0].sprite, ax, ay, 1 << 20);
+        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[0].sprite, ax, ay, FX32_CONST(256));
         MimeJrTopTween_Init(&dance->dancers[0].tweenX, ax, ax + (45 << 14), MimeJrTop_GetDanceStepFrames(dance->frontSpeed));
         MimeJrTopTween_Init(&dance->dancers[0].tweenY, ay, ay - (6 << 14), MimeJrTop_GetDanceStepFrames(dance->frontSpeed));
-        ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[2].sprite, &x, &y, 1 << 20);
+        ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[2].sprite, &x, &y, FX32_CONST(256));
         bx = (dance->dancers[2].baseX << 12) + GF_SinDeg((u16)dance->dancers[2].angle) * dance->dancers[2].radiusX;
         by = (dance->dancers[2].baseY << 12) - GF_CosDeg((u16)dance->dancers[2].angle) * dance->dancers[2].radiusY;
-        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[2].sprite, bx, by, 1 << 20);
+        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[2].sprite, bx, by, FX32_CONST(256));
         MimeJrTopTween_Init(&dance->dancers[2].tweenX, bx, bx - (45 << 14), MimeJrTop_GetDanceStepFrames(dance->backSpeed));
         MimeJrTopTween_Init(&dance->dancers[2].tweenY, by, by + (6 << 14), MimeJrTop_GetDanceStepFrames(dance->backSpeed));
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -3751,7 +3616,7 @@ static BOOL MimeJrTopDancer_Slide(MimeJrTopDancer *dancer, int speed, s32 xdir, 
     BOOL done;
     switch (dancer->state) {
     case MIME_JR_TOP_DANCER_START:
-        ManagedSprite_GetPositionFxXYWithSubscreenOffset(dancer->sprite, &x, &y, 1 << 20);
+        ManagedSprite_GetPositionFxXYWithSubscreenOffset(dancer->sprite, &x, &y, FX32_CONST(256));
         if (xdir == 0) {
             MimeJrTopTween_Init(&dancer->tweenX, x, x - 0xb4000, MimeJrTop_GetDanceStepFrames(speed));
         } else {
@@ -3766,7 +3631,7 @@ static BOOL MimeJrTopDancer_Slide(MimeJrTopDancer *dancer, int speed, s32 xdir, 
     case MIME_JR_TOP_DANCER_MOVE:
         done = MimeJrTopTween_Update(&dancer->tweenX);
         MimeJrTopTween_Update(&dancer->tweenY);
-        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dancer->sprite, dancer->tweenX.value, dancer->tweenY.value, 1 << 20);
+        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dancer->sprite, dancer->tweenX.value, dancer->tweenY.value, FX32_CONST(256));
         if (done) {
             return TRUE;
         }
@@ -3795,7 +3660,7 @@ static BOOL MimeJrTopDancer_EnterLow(MimeJrTopDancer *dancer, int speed, s32 xdi
     case MIME_JR_TOP_DANCER_MOVE:
         done = MimeJrTopTween_Update(&dancer->tweenX);
         MimeJrTopTween_Update(&dancer->tweenY);
-        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dancer->sprite, dancer->tweenX.value, dancer->tweenY.value, 1 << 20);
+        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dancer->sprite, dancer->tweenX.value, dancer->tweenY.value, FX32_CONST(256));
         if (done) {
             return TRUE;
         }
@@ -3824,7 +3689,7 @@ static BOOL MimeJrTopDancer_EnterHigh(MimeJrTopDancer *dancer, int speed, s32 xd
     case MIME_JR_TOP_DANCER_MOVE:
         done = MimeJrTopTween_Update(&dancer->tweenX);
         MimeJrTopTween_Update(&dancer->tweenY);
-        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dancer->sprite, dancer->tweenX.value, dancer->tweenY.value, 1 << 20);
+        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dancer->sprite, dancer->tweenX.value, dancer->tweenY.value, FX32_CONST(256));
         if (done) {
             return TRUE;
         }
@@ -3848,7 +3713,7 @@ static BOOL MimeJrTopDancer_Circle(MimeJrTopDancer *dancer, int speed, s32 xdir,
         if (dancer->angle >= 360) {
             dancer->angle = 0;
         }
-        ManagedSprite_GetPositionFxXYWithSubscreenOffset(dancer->sprite, &oldX, &oldY, 1 << 20);
+        ManagedSprite_GetPositionFxXYWithSubscreenOffset(dancer->sprite, &oldX, &oldY, FX32_CONST(256));
         if (xdir == 0) {
             x = (dancer->baseX << 12) - GF_SinDeg(dancer->angle) * dancer->radiusX;
             y = (dancer->baseY << 12) - GF_CosDeg(dancer->angle) * dancer->radiusY;
@@ -3856,7 +3721,7 @@ static BOOL MimeJrTopDancer_Circle(MimeJrTopDancer *dancer, int speed, s32 xdir,
             x = (dancer->baseX << 12) + GF_SinDeg(dancer->angle) * dancer->radiusX;
             y = (dancer->baseY << 12) - GF_CosDeg(dancer->angle) * dancer->radiusY;
         }
-        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dancer->sprite, x, y, 1 << 20);
+        ManagedSprite_SetPositionFxXYWithSubscreenOffset(dancer->sprite, x, y, FX32_CONST(256));
         if (dancer->angle == 0) {
             dancer->cycles++;
             if (dancer->cycles >= cycles) {
@@ -3897,14 +3762,14 @@ void MimeJrTopDance_Routine2(SysTask *sysTask, MimeJrTopDance *dance) {
             dance->dancers[i + 2].radiusX = 0x40;
             dance->dancers[i + 2].radiusY = 0x18;
             ManagedSprite_SetDrawFlag(dance->dancers[i + 2].sprite, TRUE);
-            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, &x, &y, 1 << 20);
+            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, &x, &y, FX32_CONST(256));
             newX = (dance->dancers[i].baseX << 12) + GF_SinDeg(dance->dancers[i].angle) * dance->dancers[i].radiusX;
             newY = (dance->dancers[i].baseY << 12) + GF_CosDeg(dance->dancers[i].angle) * dance->dancers[i].radiusY;
-            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, newX, newY, 1 << 20);
-            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, &x, &y, 1 << 20);
+            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, newX, newY, FX32_CONST(256));
+            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, &x, &y, FX32_CONST(256));
             newX = (dance->dancers[i + 2].baseX << 12) + GF_SinDeg(dance->dancers[i + 2].angle) * dance->dancers[i + 2].radiusX;
             newY = (dance->dancers[i + 2].baseY << 12) - GF_CosDeg(dance->dancers[i + 2].angle) * dance->dancers[i + 2].radiusY;
-            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, newX, newY, 1 << 20);
+            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, newX, newY, FX32_CONST(256));
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
         MimeJrTopDancer_Reset(&dance->dancers[3]);
@@ -4003,14 +3868,14 @@ void MimeJrTopDance_Routine3(SysTask *sysTask, MimeJrTopDance *dance) {
             dance->dancers[i + 2].radiusX = 0x40;
             dance->dancers[i + 2].radiusY = 0x18;
             ManagedSprite_SetDrawFlag(dance->dancers[i + 2].sprite, TRUE);
-            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, &x, &y, 1 << 20);
+            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, &x, &y, FX32_CONST(256));
             newX = (dance->dancers[i].baseX << 12) + GF_SinDeg(dance->dancers[i].angle) * dance->dancers[i].radiusX;
             newY = (dance->dancers[i].baseY << 12) + GF_CosDeg(dance->dancers[i].angle) * dance->dancers[i].radiusY;
-            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, newX, newY, 1 << 20);
-            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, &x, &y, 1 << 20);
+            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, newX, newY, FX32_CONST(256));
+            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, &x, &y, FX32_CONST(256));
             newX = (dance->dancers[i + 2].baseX << 12) + GF_SinDeg(dance->dancers[i + 2].angle) * dance->dancers[i + 2].radiusX;
             newY = (dance->dancers[i + 2].baseY << 12) - GF_CosDeg(dance->dancers[i + 2].angle) * dance->dancers[i + 2].radiusY;
-            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, newX, newY, 1 << 20);
+            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, newX, newY, FX32_CONST(256));
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
         MimeJrTopDancer_Reset(&dance->dancers[3]);
@@ -4109,14 +3974,14 @@ void MimeJrTopDance_Routine4(SysTask *sysTask, MimeJrTopDance *dance) {
             dance->dancers[i + 2].radiusX = 0x40;
             dance->dancers[i + 2].radiusY = 0x18;
             ManagedSprite_SetDrawFlag(dance->dancers[i + 2].sprite, TRUE);
-            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, &x, &y, 1 << 20);
+            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, &x, &y, FX32_CONST(256));
             newX = (dance->dancers[i].baseX << 12) + GF_SinDeg(dance->dancers[i].angle) * dance->dancers[i].radiusX;
             newY = (dance->dancers[i].baseY << 12) + GF_CosDeg(dance->dancers[i].angle) * dance->dancers[i].radiusY;
-            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, newX, newY, 1 << 20);
-            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, &x, &y, 1 << 20);
+            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, newX, newY, FX32_CONST(256));
+            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, &x, &y, FX32_CONST(256));
             newX = (dance->dancers[i + 2].baseX << 12) + GF_SinDeg(dance->dancers[i + 2].angle) * dance->dancers[i + 2].radiusX;
             newY = (dance->dancers[i + 2].baseY << 12) - GF_CosDeg(dance->dancers[i + 2].angle) * dance->dancers[i + 2].radiusY;
-            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, newX, newY, 1 << 20);
+            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, newX, newY, FX32_CONST(256));
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
         MimeJrTopDancer_Reset(&dance->dancers[3]);
@@ -4229,14 +4094,14 @@ void MimeJrTopDance_Routine5(SysTask *sysTask, MimeJrTopDance *dance) {
             dance->dancers[i + 2].radiusX = 0x40;
             dance->dancers[i + 2].radiusY = 0x18;
             ManagedSprite_SetDrawFlag(dance->dancers[i + 2].sprite, TRUE);
-            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, &x, &y, 1 << 20);
+            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, &x, &y, FX32_CONST(256));
             newX = (dance->dancers[i].baseX << 12) + GF_SinDeg(dance->dancers[i].angle) * dance->dancers[i].radiusX;
             newY = (dance->dancers[i].baseY << 12) + GF_CosDeg(dance->dancers[i].angle) * dance->dancers[i].radiusY;
-            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, newX, newY, 1 << 20);
-            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, &x, &y, 1 << 20);
+            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i].sprite, newX, newY, FX32_CONST(256));
+            ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, &x, &y, FX32_CONST(256));
             newX = (dance->dancers[i + 2].baseX << 12) + GF_SinDeg(dance->dancers[i + 2].angle) * dance->dancers[i + 2].radiusX;
             newY = (dance->dancers[i + 2].baseY << 12) - GF_CosDeg(dance->dancers[i + 2].angle) * dance->dancers[i + 2].radiusY;
-            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, newX, newY, 1 << 20);
+            ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[i + 2].sprite, newX, newY, FX32_CONST(256));
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
         MimeJrTopDancer_Reset(&dance->dancers[3]);

@@ -1,9 +1,13 @@
 #ifndef POKEHEARTGOLD_EASY_CHAT_APP_PANELS_H
 #define POKEHEARTGOLD_EASY_CHAT_APP_PANELS_H
 
+#include "bg_window.h"
 #include "easy_chat_app_internal.h"
 #include "filesystem.h"
+#include "gf_gfx_planes.h"
+#include "obj_char_transfer.h"
 #include "sprite.h"
+#include "sys_task_api.h"
 #include "touchscreen.h"
 
 // The panels the easy chat screen (EasyChatAppView) is made of.
@@ -12,6 +16,46 @@ typedef struct EasyChatMenuView EasyChatMenuView;
 typedef struct EasyChatCategoryView EasyChatCategoryView;
 typedef struct EasyChatWordListView EasyChatWordListView;
 typedef struct EasyChatPageButtonsView EasyChatPageButtonsView;
+
+typedef struct EasyChatViewCommand {
+    EasyChatAppView *view;
+    EasyChatApp *app;
+    ECMenu *menu;
+    u32 command;
+    u32 slot;
+    u32 state;
+} EasyChatViewCommand;
+
+typedef void (*EasyChatViewCommandFunc)(SysTask *task, EasyChatViewCommand *command);
+
+extern const ObjCharTransferTemplate gEasyChatObjCharTransferTemplate;
+extern const GraphicsModes gEasyChatAppViewGraphicsModes;
+extern const BgTemplate gEasyChatBgTemplate_Main2;
+extern const BgTemplate gEasyChatBgTemplate_Main1;
+extern const BgTemplate gEasyChatBgTemplate_Sub1;
+extern const BgTemplate gEasyChatBgTemplate_Main3;
+extern const BgTemplate gEasyChatBgTemplate_Main0;
+extern const BgTemplate gEasyChatBgTemplate_Sub0;
+extern const GraphicsBanks gEasyChatAppViewGraphicsBanks;
+extern const EasyChatViewCommandFunc gEasyChatViewCommandFuncs[];
+
+// One cell of the initial letter grid.
+typedef struct EasyChatInitialGridCell {
+    u16 letter;
+    u8 x;
+    u8 y;
+    u8 up;
+    u8 down;
+    u8 left;
+    u8 right;
+    u8 belowButton;
+    u8 aboveButton;
+} EasyChatInitialGridCell;
+
+#define EC_INITIAL_GRID_CELLS 27
+
+extern const WindowTemplate gEasyChatMenuViewWindowTemplates[3];
+extern const EasyChatInitialGridCell gEasyChatInitialGridCells[EC_INITIAL_GRID_CELLS];
 
 EasyChatSentenceView *EasyChatSentenceView_Create(EasyChatAppView *view, EasyChatApp *app, ECMenu *menu);
 void EasyChatSentenceView_Delete(EasyChatSentenceView *sentence);

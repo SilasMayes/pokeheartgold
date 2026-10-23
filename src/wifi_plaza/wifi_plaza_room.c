@@ -550,7 +550,7 @@ void WiFiPlazaRoom_IgnorePlazaClosing(WiFiPlazaRoomWork *room) {
 }
 
 void WiFiPlazaRoom_SetPlayerBusy(WiFiPlazaRoomWork *room, u8 index, u8 value) {
-    GF_ASSERT(index < 20);
+    GF_ASSERT(index < WIFI_PLAZA_MAX_PLAYERS);
     room->playerBusy[index] = value;
 }
 
@@ -559,7 +559,7 @@ u8 WiFiPlazaRoom_IsPlayerBusy(WiFiPlazaRoomWork *room, u32 index) {
 }
 
 void WiFiPlazaRoom_SetCardBlocked(WiFiPlazaRoomWork *room, u8 index, u8 value) {
-    GF_ASSERT(index < 20);
+    GF_ASSERT(index < WIFI_PLAZA_MAX_PLAYERS);
     room->cardBlocked[index] = value;
 }
 
@@ -807,7 +807,7 @@ BOOL WiFiPlazaRoom_TakePanelButtonPress(WiFiPlazaRoomWork *room) {
 
 void WiFiPlazaRoom_StartInstrument(WiFiPlazaRoomWork *room, u32 playerIndex) {
     u32 instrument;
-    GF_ASSERT(playerIndex < 20);
+    GF_ASSERT(playerIndex < WIFI_PLAZA_MAX_PLAYERS);
     instrument = WiFiPlazaPlayer_GetTapToy(WiFiPlazaWork_GetPlayer(room->lobby, playerIndex));
     WiFiPlazaInstrument_Start(room->instruments, playerIndex, instrument);
     if (playerIndex == WiFiPlazaWork_GetOwnSlot(room->lobby)) {
@@ -816,7 +816,7 @@ void WiFiPlazaRoom_StartInstrument(WiFiPlazaRoomWork *room, u32 playerIndex) {
 }
 
 BOOL WiFiPlazaRoom_IsInstrumentFinished(WiFiPlazaRoomWork *room, u32 playerIndex) {
-    GF_ASSERT(playerIndex < 20);
+    GF_ASSERT(playerIndex < WIFI_PLAZA_MAX_PLAYERS);
     return WiFiPlazaInstrument_IsFinished(room->instruments, playerIndex);
 }
 

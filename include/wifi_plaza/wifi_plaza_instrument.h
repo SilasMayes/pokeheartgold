@@ -152,6 +152,46 @@ typedef struct WiFiPlazaInstrumentManager {
 typedef void (*WiFiPlazaInstrumentInitFunc)(WiFiPlazaInstrumentManager *manager, WiFiPlazaInstrumentEffect *effect);
 typedef BOOL (*WiFiPlazaInstrumentUpdateFunc)(WiFiPlazaInstrumentManager *manager, WiFiPlazaInstrumentEffect *effect);
 
+// Entry of the type 12-14 sequences (12 steps each): show `model` at animation frame `frame`, 0 = hidden
+typedef struct WiFiPlazaInstrumentStep {
+    u16 model;
+    u16 frame;
+} WiFiPlazaInstrumentStep;
+
+typedef void (*WiFiPlazaInstrumentBurstStartFunc)(WiFiPlazaInstrumentBurst *burst, WiFiPlazaObj *obj);
+typedef BOOL (*WiFiPlazaInstrumentBurstUpdateFunc)(WiFiPlazaInstrumentBurst *burst);
+
+extern const u8 gWiFiPlazaInstrumentBalloonHeights[];
+extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Bell01[];
+extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Cymbal02[];
+extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Drum01[];
+extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Bell02[];
+extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Cymbal03[];
+extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Cymbal01[];
+extern const WiFiPlazaInstrumentBurstUpdateFunc gWiFiPlazaInstrumentBurstUpdateFuncs[];
+extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Drum02[];
+extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Bell03[];
+extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Drum03[];
+extern const WiFiPlazaInstrumentBurstStartFunc gWiFiPlazaInstrumentBurstStartFuncs[];
+extern const VecFx32 gWiFiPlazaInstrumentSparkleStarts[];
+extern const VecFx32 gWiFiPlazaInstrumentSparkleFalls[];
+extern const WiFiPlazaInstrumentUpdateFunc gWiFiPlazaInstrumentUpdateFuncs[];
+extern const WiFiPlazaInstrumentInitFunc gWiFiPlazaInstrumentInitFuncs[];
+extern const u32 gWiFiPlazaInstrumentStartSEs[];
+extern const WiFiPlazaInstrumentStep gWiFiPlazaInstrumentSignalSteps[][12];
+extern const WiFiPlazaInstrumentStep gWiFiPlazaInstrumentSignalNextSteps[][12];
+extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentModelDescs[];
+extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentPopModel1[];
+extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentPopModel2[];
+extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentPopModel3[];
+extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentPopModel0[];
+extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentBalloonModel0[];
+extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentBalloonModel1[];
+extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentBalloonModel2[];
+extern const u8 gWiFiPlazaInstrumentBurstModels01[];
+extern const u8 gWiFiPlazaInstrumentBurstModels02[];
+extern const u8 gWiFiPlazaInstrumentBurstModels03[];
+
 WiFiPlazaInstrumentManager *WiFiPlazaInstrument_Create(struct WiFiPlazaWork *lobby, WiFiPlazaMap *map, WiFiPlazaCamera *camera, WiFiPlazaObjManager *objManager, enum HeapID heapID, enum HeapID gfxHeapID);
 void WiFiPlazaInstrument_Delete(WiFiPlazaInstrumentManager *manager);
 void WiFiPlazaInstrument_Update(WiFiPlazaInstrumentManager *manager);

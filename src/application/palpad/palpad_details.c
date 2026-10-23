@@ -30,21 +30,7 @@ enum PalPadDetailsInput {
     DETAILS_INPUT_NEXT_FRIEND,
 };
 
-typedef void (*PalPadDetailsPagePrinter)(PalPadDetailsSlot *slot, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
-
-extern const TouchscreenHitbox gPalPadDetailsHitboxes[];
-extern const TouchscreenHitbox gPalPadDetailsFrontierHitboxes[];
-extern const u32 gPalPadDetailsSlotBaseTiles[3];
-extern const PalPadPanelLayout gPalPadPanelLayouts[3];
-extern const PalPadWindowSpec *const gPalPadDetailsPageWindowSpecs[8];
-extern const u8 gPalPadDetailsPageWindowCounts[8];
-extern const WindowTemplate gPalPadDetailsProfileWindowTemplates[8];
-extern const u8 gPalPadDetailsTabX[2][8];
-extern const u8 gPalPadDetailsTabWidths[2][8];
-extern const u8 gPalPadDetailsTabSrcY[2];
 extern const u16 gPalPadTables[];
-extern const PalPadDetailsPagePrinter gPalPadDetailsPagePrinters[3];
-extern const PalPadDetailsPagePrinter gPalPadDetailsFrontierPagePrinters[8];
 
 static inline int Abs16(s16 value);
 static BOOL PalPadDetails_IsLastPage(PalPadDetails *details, int page);

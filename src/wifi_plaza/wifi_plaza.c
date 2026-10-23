@@ -164,7 +164,7 @@ static void (*const sWiFiPlazaLobbyMessageHandlers[])(WiFiPlazaWork *work, const
     WiFiPlaza_HandleMinigameResultNews,
 };
 
-static const s32 sWiFiPlazaGroupStartTimes[9] = { 0, 360, 720, 1200, 1560, 1920, 2400, 2760, 3120 };
+static const s32 sWiFiPlazaGroupStartTimes[WIFI_PLAZA_GROUP_COUNT] = { 0, 360, 720, 1200, 1560, 1920, 2400, 2760, 3120 };
 
 const WiFiPlazaAvatarEntry gWiFiPlazaAvatars[16] = {
     { 3,  0 },
@@ -552,7 +552,7 @@ BOOL WiFiPlazaWork_IsSlotOccupied(WiFiPlazaWork *work, int index) {
 WiFiPlazaPlayer *WiFiPlazaWork_GetPlayer(WiFiPlazaWork *work, u32 index) {
     WiFiPlazaPlayerList list;
     int id;
-    GF_ASSERT(index < 20);
+    GF_ASSERT(index < WIFI_PLAZA_MAX_PLAYERS);
     WiFiPlazaLobbyClient_GetPlayerList(&list);
     id = list.ids[index];
     if (id == -1) {
@@ -961,7 +961,7 @@ void WiFiPlaza_SendActivityNews(WiFiPlazaWork *work, int selector, int count, in
     WiFiPlazaLobbyClient_SendToLobby(4, &msg, 20);
 }
 
-void WiFiPlaza_SendMinigameResultNews(void *unused, int mode, u8 kind, u32 slot0, u32 slot1, u32 slot2, u32 slot3) {
+void WiFiPlaza_SendMinigameResultNews(WiFiPlazaWork *work, int game, int count, u32 slot0, u32 slot1, u32 slot2, u32 slot3) {
     WiFiPlazaLobbyMessage msg;
     u32 *dst = (u32 *)&msg;
     dst[0] = 0;
@@ -969,7 +969,7 @@ void WiFiPlaza_SendMinigameResultNews(void *unused, int mode, u8 kind, u32 slot0
     dst[2] = 0;
     dst[3] = 0;
     dst[4] = 0;
-    switch (mode) {
+    switch (game) {
     case 0:
     case 1:
     case 2:
@@ -978,8 +978,8 @@ void WiFiPlaza_SendMinigameResultNews(void *unused, int mode, u8 kind, u32 slot0
         msg.ids[1] = WiFiPlazaLobbyClient_SlotToId(slot1);
         msg.ids[2] = WiFiPlazaLobbyClient_SlotToId(slot2);
         msg.ids[3] = WiFiPlazaLobbyClient_SlotToId(slot3);
-        msg.count = kind;
-        msg.option = mode;
+        msg.count = count;
+        msg.option = game;
         msg.allPlayers = 0;
         WiFiPlazaLobbyClient_SendToLobby(4, &msg, sizeof(msg));
         break;
@@ -1007,7 +1007,7 @@ int WiFiPlazaWork_GetOpenDuration(WiFiPlazaWork *work) {
 }
 
 u8 WiFiPlazaWork_HasPlayedTapToy(WiFiPlazaWork *work, u32 index) {
-    GF_ASSERT(index < 20);
+    GF_ASSERT(index < WIFI_PLAZA_MAX_PLAYERS);
     return work->tapToyPlayed[index];
 }
 
@@ -1054,8 +1054,8 @@ void WiFiPlazaWork_ClearGroupActionRequest(WiFiPlazaWork *work, int place) {
 }
 
 void WiFiPlaza_SplitGroupPlace(u32 value, u32 *quotient, u32 *remainder) {
-    *quotient = value / 3;
-    *remainder = value % 3;
+    *quotient = value / WIFI_PLAZA_GROUP_SEATS;
+    *remainder = value % WIFI_PLAZA_GROUP_SEATS;
 }
 
 void WiFiPlazaWork_SetGroupMarkerPassed(WiFiPlazaWork *work, int place, int value) {
@@ -1174,7 +1174,7 @@ u16 WiFiPlazaWork_GetTalkPartnerMessage(WiFiPlazaWork *work) {
 }
 
 static BOOL WiFiPlazaWork_CanTalkWith(WiFiPlazaWork *work, u32 index) {
-    GF_ASSERT(index < 20);
+    GF_ASSERT(index < WIFI_PLAZA_MAX_PLAYERS);
     if (work->talk.talkCounts[index] >= 6) {
         return FALSE;
     }
@@ -1543,7 +1543,7 @@ static void WiFiPlaza_FillPlaces(WiFiPlazaProfile *profile, WiFiPlazaPlace *out)
     country = WiFiPlazaPlayer_GetCountry(player);
     region = WiFiPlazaPlayer_GetRegion(player);
     WiFiPlazaPlaces_Add(out, (u16)country, (u8)region, 0);
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < WIFI_PLAZA_MAX_PLAYERS; i++) {
         if (list.ids[i] != -1) {
             player = WiFiPlazaLobbyClient_GetPlayer(list.ids[i]);
             country = WiFiPlazaPlayer_GetCountry(player);
@@ -1551,7 +1551,7 @@ static void WiFiPlaza_FillPlaces(WiFiPlazaProfile *profile, WiFiPlazaPlace *out)
             WiFiPlazaPlaces_Add(out, (u16)country, (u8)region, 0);
         }
     }
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < WIFI_PLAZA_MAX_PLAYERS; i++) {
         u8 entryCountry = (u8)WiFiPlazaLobbyClient_GetLocationCountry((u8)i);
         WiFiPlazaPlaces_Add(out, entryCountry, WiFiPlazaLobbyClient_GetLocationRegion((u8)i), 1);
     }
@@ -1802,24 +1802,24 @@ static void WiFiPlazaTalkSession_Abort(WiFiPlazaTalkSession *session) {
 }
 
 static BOOL WiFiPlazaTalkSession_HasTalkedWith(WiFiPlazaTalkSession *session, u32 slot) {
-    GF_ASSERT(slot < 20);
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
     return (session->talkedWith & (1 << slot)) != 0;
 }
 
 static void WiFiPlazaTalkSession_SetTalkedWith(WiFiPlazaTalkSession *session, u32 slot) {
-    GF_ASSERT(slot < 20);
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
     session->talkedWith |= 1 << slot;
 }
 
 static void WiFiPlazaTalkSession_ClearTalkedWith(WiFiPlazaTalkSession *session, u32 slot) {
-    GF_ASSERT(slot < 20);
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
     session->talkedWith &= ~(1 << slot);
 }
 
 static void WiFiPlazaTalkSession_IncTalkCount(WiFiPlazaTalkSession *session, u32 slot) {
     int value;
 
-    GF_ASSERT(slot < 20);
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
     value = session->talkCounts[slot] + 1;
     if (value <= 6) {
         session->talkCounts[slot] = value;
@@ -1827,7 +1827,7 @@ static void WiFiPlazaTalkSession_IncTalkCount(WiFiPlazaTalkSession *session, u32
 }
 
 static void WiFiPlazaTalkSession_ResetTalkCount(WiFiPlazaTalkSession *session, u32 slot) {
-    GF_ASSERT(slot < 20);
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
     session->talkCounts[slot] = 0;
 }
 
@@ -2114,7 +2114,7 @@ static void WiFiPlazaGroups_Start(WiFiPlazaGroups *groups) {
 static void WiFiPlazaGroups_Update(WiFiPlazaGroups *groups) {
     int i;
     if (groups->active != 0) {
-        for (i = 0; i < 9; i++) {
+        for (i = 0; i < WIFI_PLAZA_GROUP_COUNT; i++) {
             if (groups->time == sWiFiPlazaGroupStartTimes[i]) {
                 groups->states[i] = 1;
             }
@@ -2133,7 +2133,7 @@ static void WiFiPlazaGroups_Update(WiFiPlazaGroups *groups) {
 }
 
 // Puts id into the first free place of a group that has not ended and whose markerCounts count allows value; returns the
-// place (group * 3 + seat) or -1.
+// place (group * WIFI_PLAZA_GROUP_SEATS + seat) or -1.
 static int WiFiPlazaGroups_Join(WiFiPlazaGroups *groups, u32 id, u32 value) {
     int seat;
     int base;
@@ -2141,9 +2141,9 @@ static int WiFiPlazaGroups_Join(WiFiPlazaGroups *groups, u32 id, u32 value) {
     if (WiFiPlazaGroups_FindPlace(groups, (s32)id) == -1) {
         base = 0;
         group = 0;
-        for (; group < 9; group++, base += 3) {
+        for (; group < WIFI_PLAZA_GROUP_COUNT; group++, base += WIFI_PLAZA_GROUP_SEATS) {
             if (WiFiPlazaGroups_GetState(groups, group) != 2) {
-                for (seat = 0; seat < 3; seat++) {
+                for (seat = 0; seat < WIFI_PLAZA_GROUP_SEATS; seat++) {
                     if (WiFiPlazaGroups_HasPassedMarker(groups, seat + base, value) == 0 && WiFiPlazaGroups_GetPlaceId(groups, seat + base) == -1) {
                         groups->ids[group][seat] = id;
                         return seat + base;
@@ -2158,7 +2158,7 @@ static int WiFiPlazaGroups_Join(WiFiPlazaGroups *groups, u32 id, u32 value) {
 static void WiFiPlazaGroups_Leave(WiFiPlazaGroups *groups, u32 id) {
     int place = WiFiPlazaGroups_FindPlace(groups, id);
     if (place != -1) {
-        u32 group = (u32)place / 3, seat = (u32)place % 3;
+        u32 group = (u32)place / WIFI_PLAZA_GROUP_SEATS, seat = (u32)place % WIFI_PLAZA_GROUP_SEATS;
         groups->ids[group][seat] = (u32)-1;
     }
 }
@@ -2167,27 +2167,27 @@ static int WiFiPlazaGroups_GetPlaceId(WiFiPlazaGroups *groups, u32 place) {
     u32 group;
     u32 seat;
     u32 *slot;
-    GF_ASSERT(place < 27);
-    group = place / 3;
-    seat = place % 3;
+    GF_ASSERT(place < WIFI_PLAZA_PLACE_COUNT);
+    group = place / WIFI_PLAZA_GROUP_SEATS;
+    seat = place % WIFI_PLAZA_GROUP_SEATS;
     slot = &groups->ids[group][seat];
     return *slot;
 }
 
 static int WiFiPlazaGroups_GetState(WiFiPlazaGroups *groups, u32 group) {
-    GF_ASSERT(group < 9);
+    GF_ASSERT(group < WIFI_PLAZA_GROUP_COUNT);
     return groups->states[group];
 }
 
 static int WiFiPlazaGroups_GetCounter(WiFiPlazaGroups *groups, u32 group) {
-    GF_ASSERT(group < 9);
+    GF_ASSERT(group < WIFI_PLAZA_GROUP_COUNT);
     return groups->counters[group];
 }
 
 static void WiFiPlazaGroups_RequestAction(WiFiPlazaGroups *groups, u32 id) {
     u32 place = WiFiPlazaGroups_FindPlace(groups, id);
     if (place != (u32)-1) {
-        groups->actionRequests[place / 3][place % 3] = 1;
+        groups->actionRequests[place / WIFI_PLAZA_GROUP_SEATS][place % WIFI_PLAZA_GROUP_SEATS] = 1;
     }
 }
 
@@ -2195,9 +2195,9 @@ static int WiFiPlazaGroups_GetActionRequest(WiFiPlazaGroups *groups, u32 place) 
     u32 group;
     u32 seat;
     u32 *slot;
-    GF_ASSERT(place < 27);
-    group = place / 3;
-    seat = place % 3;
+    GF_ASSERT(place < WIFI_PLAZA_PLACE_COUNT);
+    group = place / WIFI_PLAZA_GROUP_SEATS;
+    seat = place % WIFI_PLAZA_GROUP_SEATS;
     slot = &groups->actionRequests[group][seat];
     return *slot;
 }
@@ -2206,21 +2206,21 @@ static void WiFiPlazaGroups_ClearActionRequest(WiFiPlazaGroups *groups, u32 plac
     u32 group;
     u32 seat;
     u32 *slot;
-    GF_ASSERT(place < 27);
-    group = place / 3;
-    seat = place % 3;
+    GF_ASSERT(place < WIFI_PLAZA_PLACE_COUNT);
+    group = place / WIFI_PLAZA_GROUP_SEATS;
+    seat = place % WIFI_PLAZA_GROUP_SEATS;
     slot = &groups->actionRequests[group][seat];
     *slot = 0;
 }
 
-// The place (group * 3 + seat) of id, or -1.
+// The place (group * WIFI_PLAZA_GROUP_SEATS + seat) of id, or -1.
 static int WiFiPlazaGroups_FindPlace(WiFiPlazaGroups *groups, int id) {
     int i;
     int j;
-    for (i = 0; i < 9; i++) {
-        for (j = 0; j < 3; j++) {
+    for (i = 0; i < WIFI_PLAZA_GROUP_COUNT; i++) {
+        for (j = 0; j < WIFI_PLAZA_GROUP_SEATS; j++) {
             if (id == groups->ids[i][j]) {
-                return i * 3 + j;
+                return i * WIFI_PLAZA_GROUP_SEATS + j;
             }
         }
     }
@@ -2231,9 +2231,9 @@ static void WiFiPlazaGroups_SetMarkerPassed(WiFiPlazaGroups *groups, u32 place, 
     u32 group;
     u32 seat;
     u32 *slot;
-    GF_ASSERT(place < 27);
-    group = place / 3;
-    seat = place % 3;
+    GF_ASSERT(place < WIFI_PLAZA_PLACE_COUNT);
+    group = place / WIFI_PLAZA_GROUP_SEATS;
+    seat = place % WIFI_PLAZA_GROUP_SEATS;
     slot = &groups->markerCounts[group][seat];
     *slot = value + 1;
 }
@@ -2242,9 +2242,9 @@ static BOOL WiFiPlazaGroups_HasPassedMarker(WiFiPlazaGroups *groups, u32 place, 
     u32 group;
     u32 seat;
     u32 *slot;
-    GF_ASSERT(place < 27);
-    group = place / 3;
-    seat = place % 3;
+    GF_ASSERT(place < WIFI_PLAZA_PLACE_COUNT);
+    group = place / WIFI_PLAZA_GROUP_SEATS;
+    seat = place % WIFI_PLAZA_GROUP_SEATS;
     slot = &groups->markerCounts[group][seat];
     if (*slot <= value) {
         return FALSE;
@@ -2256,9 +2256,9 @@ static u32 WiFiPlazaGroups_GetMarkerCount(WiFiPlazaGroups *groups, u32 place) {
     u32 group;
     u32 seat;
     u32 *slot;
-    GF_ASSERT(place < 27);
-    group = place / 3;
-    seat = place % 3;
+    GF_ASSERT(place < WIFI_PLAZA_PLACE_COUNT);
+    group = place / WIFI_PLAZA_GROUP_SEATS;
+    seat = place % WIFI_PLAZA_GROUP_SEATS;
     slot = &groups->markerCounts[group][seat];
     return *slot;
 }
@@ -2389,17 +2389,17 @@ static void WiFiPlaza_RecvGroupAction(int id, const void *data, u32 size, void *
 static void WiFiPlazaGroupWeights_Init(WiFiPlazaGroupWeights *weights) {
     int i;
     memset(weights, 0, sizeof(WiFiPlazaGroupWeights));
-    for (i = 0; i < 9; i++) {
+    for (i = 0; i < WIFI_PLAZA_GROUP_COUNT; i++) {
         weights->weights[i] = 100;
     }
 }
 
 // The first time the player of a lobby slot reports a place, the weight of that place's group is halved.
 static void WiFiPlazaGroupWeights_ReportPlace(WiFiPlazaGroupWeights *weights, u32 place, u32 slot) {
-    GF_ASSERT(slot < 20);
-    GF_ASSERT(place < 27);
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
+    GF_ASSERT(place < WIFI_PLAZA_PLACE_COUNT);
     if (weights->seen[slot] == 0) {
-        weights->weights[place / 3] >>= 1;
+        weights->weights[place / WIFI_PLAZA_GROUP_SEATS] >>= 1;
         weights->seen[slot] = 1;
     }
 }
@@ -2410,16 +2410,16 @@ static u32 WiFiPlazaGroupWeights_PickGroup(WiFiPlazaGroupWeights *weights) {
     int i = 0;
     u32 target;
     u32 accum;
-    while (i < 9) {
+    while (i < WIFI_PLAZA_GROUP_COUNT) {
         sum += weights->weights[i];
         i++;
     }
     target = MTRandom() % (u32)sum;
     accum = 0;
     i = 0;
-    while (i < 9) {
+    while (i < WIFI_PLAZA_GROUP_COUNT) {
         if (accum <= target && accum + weights->weights[i] > target) {
-            return i * 3;
+            return i * WIFI_PLAZA_GROUP_SEATS;
         }
         accum += weights->weights[i];
         i++;
@@ -2429,15 +2429,15 @@ static u32 WiFiPlazaGroupWeights_PickGroup(WiFiPlazaGroupWeights *weights) {
 }
 
 static void WiFiPlaza_SetSlotFlag(u8 *flags, u32 slot, u8 value) {
-    GF_ASSERT(slot < 20);
-    if (slot < 20) {
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
+    if (slot < WIFI_PLAZA_MAX_PLAYERS) {
         flags[slot] = value;
     }
 }
 
 static u32 WiFiPlaza_GetSlotFlag(u8 *flags, u32 slot) {
-    GF_ASSERT(slot < 20);
-    if (slot < 20) {
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
+    if (slot < WIFI_PLAZA_MAX_PLAYERS) {
         return flags[slot];
     }
     return 0;
@@ -2454,8 +2454,8 @@ static void WiFiPlazaWordSet_Free(WiFiPlazaWordSet *wordSet) {
 
 // Sets the flag of a lobby slot; flag 1 also makes its four words from code.
 static void WiFiPlazaWordSet_Set(WiFiPlazaWordSet *wordSet, u32 slot, u8 flag, u32 code) {
-    GF_ASSERT(slot < 20);
-    if (slot < 20) {
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
+    if (slot < WIFI_PLAZA_MAX_PLAYERS) {
         wordSet->flags[slot] = flag;
         if (flag == 1) {
             WiFiPlaza_MakeWordsFromCode(wordSet->bank, code, wordSet->words[slot]);
@@ -2464,16 +2464,16 @@ static void WiFiPlazaWordSet_Set(WiFiPlazaWordSet *wordSet, u32 slot, u8 flag, u
 }
 
 static u32 WiFiPlazaWordSet_HasWords(WiFiPlazaWordSet *wordSet, u32 slot) {
-    GF_ASSERT(slot < 20);
-    if (slot < 20) {
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
+    if (slot < WIFI_PLAZA_MAX_PLAYERS) {
         return wordSet->flags[slot];
     }
     return 0;
 }
 
 static u16 *WiFiPlazaWordSet_GetWords(WiFiPlazaWordSet *wordSet, u32 slot) {
-    GF_ASSERT(slot < 20);
-    if (slot < 20 && wordSet->flags[slot]) {
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
+    if (slot < WIFI_PLAZA_MAX_PLAYERS && wordSet->flags[slot]) {
         return wordSet->words[slot];
     }
     return NULL;

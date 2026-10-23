@@ -3,6 +3,7 @@
 #include "global.h"
 
 #include "constants/sndseq.h"
+#include "constants/wifi_plaza.h"
 
 #include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0777.h"
@@ -1162,7 +1163,7 @@ static u64 WiFiPlazaSurvey_GetBarLength(WiFiPlazaSurveyTally *tally, int answer,
 static void WiFiPlazaSurvey_CountPlazaAnswers(WiFiPlazaSurveyTally *tally, struct WiFiPlazaWork *lobby) {
     int i;
     memset(tally, 0, sizeof(WiFiPlazaSurveyTally));
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < WIFI_PLAZA_MAX_PLAYERS; i++) {
         struct WiFiPlazaPlayer *player = WiFiPlazaWork_GetPlayer(lobby, i);
         if (player != NULL) {
             void *value = WiFiPlazaPlayer_GetRawLanguage(player);

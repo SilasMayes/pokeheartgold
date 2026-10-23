@@ -407,6 +407,42 @@ typedef struct SwalotPlopCommand {
     void *getBuffer;
 } SwalotPlopCommand;
 
+typedef struct SwalotPlopAnimRange {
+    u8 start;
+    u8 end;
+} SwalotPlopAnimRange;
+
+extern const u16 gSwalotPlopStageAnimFiles[];
+extern const u16 gSwalotPlopStageAnimModels[];
+extern const u16 gSwalotPlopSceneModelFiles[3];
+extern const u16 gSwalotPlopStageFiles[];
+extern const SwalotPlopAnimRange gSwalotPlopSpecialAnimRanges[];
+extern const u16 gSwalotPlopSceneAnimFiles[6];
+extern const VecFx32 gSwalotPlopBodyOffset;
+extern const u32 gSwalotPlopHitPoints[];
+extern const u32 gSwalotPlopPhaseFrames[];
+extern const VecFx32 gSwalotPlopBodyBaseNormal;
+extern int (*const gSwalotPlopTiltFuncs[])(SwalotPlopBody *body, u32 frame, u32 duration);
+extern const ObjCharTransferTemplate gSwalotPlopObjCharTransfer;
+extern const GraphicsModes gSwalotPlopGraphicsModes;
+extern const s16 gSwalotPlopDemoCursorYs[];
+extern const BgTemplate gSwalotPlopMain1BgTemplate;
+extern const BgTemplate gSwalotPlopMain2BgTemplate;
+extern const BgTemplate gSwalotPlopSub0BgTemplate;
+extern const BgTemplate gSwalotPlopSub1BgTemplate;
+extern const BgTemplate gSwalotPlopSub2BgTemplate;
+extern const BgTemplate gSwalotPlopSub3BgTemplate;
+extern const u16 gSwalotPlopSeatAngles[][4];
+extern const u16 gSwalotPlopCameraAngles[][4];
+extern const u16 gSwalotPlopStageRotations[][4];
+extern const GraphicsBanks gSwalotPlopBanks;
+extern const u32 gSwalotPlopIntroNamePositions[];
+extern const u8 gSwalotPlopPopupPosX[];
+extern const u8 gSwalotPlopPopupPosY[];
+extern const NNSG3dResName gSwalotPlopSceneNodeNames[6][15];
+extern const u8 gSwalotPlopSceneAnimModels[6];
+extern const SwalotPlopCommand gSwalotPlopCommands[8];
+
 BOOL SwalotPlop_Init(OverlayManager *man, int *state);
 BOOL SwalotPlop_Main(OverlayManager *man, int *state);
 BOOL SwalotPlop_Exit(OverlayManager *man, int *state);

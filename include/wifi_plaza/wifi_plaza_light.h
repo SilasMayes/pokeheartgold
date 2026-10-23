@@ -18,6 +18,9 @@ typedef struct WiFiPlazaLight {
     s32 materialTimers[4];
 } WiFiPlazaLight;
 
+extern const u16 gWiFiPlazaLightColorSets[][5];
+extern const u16 gWiFiPlazaLight1Colors[];
+
 WiFiPlazaLight *WiFiPlazaLight_Create(enum HeapID heapID, u32 colorSet, u32 light1Set, u32 thirdSet);
 void WiFiPlazaLight_UnpackColorSet(s8 *dest, const u16 *colors);
 void WiFiPlazaLight_UnpackLight1(WiFiPlazaLight *light, const u16 *color);

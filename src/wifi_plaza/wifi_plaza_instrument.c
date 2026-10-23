@@ -35,48 +35,6 @@ enum WiFiPlazaBalloonPhase {
     WIFI_PLAZA_BALLOON_PHASE_DOWN,
 };
 
-// Entry of the type 12-14 sequences (12 steps each): show `model` at animation frame `frame`, 0 = hidden
-typedef struct WiFiPlazaInstrumentStep {
-    u16 model;
-    u16 frame;
-} WiFiPlazaInstrumentStep;
-
-typedef void (*WiFiPlazaInstrumentBurstStartFunc)(WiFiPlazaInstrumentBurst *burst, WiFiPlazaObj *obj);
-typedef BOOL (*WiFiPlazaInstrumentBurstUpdateFunc)(WiFiPlazaInstrumentBurst *burst);
-
-extern const u8 gWiFiPlazaInstrumentBalloonHeights[];
-extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Bell01[];
-extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Cymbal02[];
-extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Drum01[];
-extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Bell02[];
-extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Cymbal03[];
-extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Cymbal01[];
-extern const WiFiPlazaInstrumentBurstUpdateFunc gWiFiPlazaInstrumentBurstUpdateFuncs[];
-extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Drum02[];
-extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Bell03[];
-extern const WiFiPlazaInstrumentBurstEvent gWiFiPlazaInstrumentBursts_Drum03[];
-extern const WiFiPlazaInstrumentBurstStartFunc gWiFiPlazaInstrumentBurstStartFuncs[];
-extern const VecFx32 gWiFiPlazaInstrumentSparkleStarts[];
-extern const VecFx32 gWiFiPlazaInstrumentSparkleFalls[];
-extern const WiFiPlazaInstrumentUpdateFunc gWiFiPlazaInstrumentUpdateFuncs[];
-extern const WiFiPlazaInstrumentInitFunc gWiFiPlazaInstrumentInitFuncs[];
-extern const u32 gWiFiPlazaInstrumentStartSEs[];
-extern const WiFiPlazaInstrumentStep gWiFiPlazaInstrumentSignalSteps[][12];
-extern const WiFiPlazaInstrumentStep gWiFiPlazaInstrumentSignalNextSteps[][12];
-extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentModelDescs[];
-extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentPopModel1[];
-extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentPopModel2[];
-extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentPopModel3[];
-extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentPopModel0[];
-extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentBalloonModel0[];
-extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentBalloonModel1[];
-extern const WiFiPlazaInstrumentModelDesc gWiFiPlazaInstrumentBalloonModel2[];
-extern const u8 gWiFiPlazaInstrumentBurstModels01[];
-extern const u8 gWiFiPlazaInstrumentBurstModels02[];
-extern const u8 gWiFiPlazaInstrumentBurstModels03[];
-extern const u16 gWiFiPlazaLightColorSets[][5];
-extern const u16 gWiFiPlazaLight1Colors[];
-
 static void WiFiPlazaInstrumentTween_Init(WiFiPlazaInstrumentTween *tween, fx32 x0, fx32 x1, fx32 y0, fx32 y1, fx32 z0, fx32 z1, s32 duration);
 static BOOL WiFiPlazaInstrumentTween_Update(WiFiPlazaInstrumentTween *tween, s32 frame);
 static void WiFiPlazaInstrumentTween_GetPosition(WiFiPlazaInstrumentTween *tween, fx32 *x, fx32 *y, fx32 *z);
@@ -947,7 +905,7 @@ BOOL WiFiPlazaInstrument_UpdatePop(WiFiPlazaInstrumentManager *manager, WiFiPlaz
                 if (WiFiPlazaInstrument_PlayAnimBy(manager, effect, i, 0, FX32_CONST(2.5)) == FALSE) {
                     done = FALSE;
                 } else {
-                    volatile WiFiPlazaInstrumentEffect *fadeView = (WiFiPlazaInstrumentEffect *)((u8 *)effect + (i - 1) * 4);
+                    WiFiPlazaInstrumentEffect *fadeView = (WiFiPlazaInstrumentEffect *)((u8 *)effect + (i - 1) * 4);
                     if (fadeView->work.fade.fade[0] == 0) {
                         ModelInstance_SetVisible(model, FALSE);
                         NNS_G3dMdlSetMdlAlphaAll(manager->models[descView->descs[0]->model].model, 31);
@@ -1567,7 +1525,7 @@ static BOOL WiFiPlazaInstrument_UpdateSparkleModel(WiFiPlazaInstrumentManager *m
     VecFx32 pos;
     BOOL done;
     int offset;
-    volatile s8 *timers = (volatile s8 *)effect->work.shower.timers;
+    s8 *timers = effect->work.shower.timers;
 
     timers[index]++;
     offset = index;

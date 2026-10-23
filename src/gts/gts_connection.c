@@ -74,15 +74,6 @@ typedef enum GtsConnectionState {
     GTS_CONNECTION_STATE_WAIT_CLOSE_ERROR,
 } GtsConnectionState;
 
-
-extern int (*const gGtsConnectionStates[])(GtsApp *app);
-extern const BgTemplate gGtsConnectionBg0Template;
-extern const BgTemplate gGtsConnectionBg1Template;
-extern const BgTemplate gGtsConnectionSubBg0Template;
-extern const BgTemplate gGtsConnectionSubBg1Template;
-// GTS, GTS TRADE POKEMON, GTS SUMMARY, GTS DEPOSIT POKEMON, GTS SEEK POKEMON.
-extern const u32 gGtsPanelCaptionMsgIds[];
-
 static void GtsConnection_InitBgs(BgConfig *bgConfig);
 static void GtsConnection_FreeBgs(BgConfig *bgConfig);
 static void GtsConnection_LoadGraphics(GtsApp *app);

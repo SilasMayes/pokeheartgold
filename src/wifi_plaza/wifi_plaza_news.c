@@ -112,7 +112,7 @@ BOOL WiFiPlazaNews_RemovePlayer(WiFiPlazaNews *news, int slot) {
 // Moves flag 2 to the given lobby slot.
 void WiFiPlazaNews_SetOldestPlayer(WiFiPlazaNews *news, int slot) {
     int i;
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < WIFI_PLAZA_MAX_PLAYERS; i++) {
         u32 flags = WiFiPlazaNewsSlots_GetFlags(&news->slots, i);
         if (flags & 2) {
             WiFiPlazaNewsSlots_SetFlags(&news->slots, i, flags & ~2);
@@ -320,13 +320,13 @@ int WiFiPlazaNews_GetEventSlot(WiFiPlazaNews *news, int unused, int index) {
 
 void WiFiPlazaNewsSlots_Init(WiFiPlazaNewsSlots *slots) {
     int i;
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < WIFI_PLAZA_MAX_PLAYERS; i++) {
         WiFiPlazaNewsSlots_Set(slots, i, 2, 0);
     }
 }
 
 static void WiFiPlazaNewsSlots_Set(WiFiPlazaNewsSlots *slots, int slot, int state, int flags) {
-    GF_ASSERT((u32)slot < 20);
+    GF_ASSERT((u32)slot < WIFI_PLAZA_MAX_PLAYERS);
     slots->slots[slot].state = state;
     slots->slots[slot].flags = flags;
 }
@@ -343,7 +343,7 @@ static void WiFiPlazaNewsSlots_RemovePlayer(WiFiPlazaNewsSlots *slots, int slot)
 }
 
 static void WiFiPlazaNewsSlots_SetFlags(WiFiPlazaNewsSlots *slots, int slot, int flags) {
-    GF_ASSERT((u32)slot < 20);
+    GF_ASSERT((u32)slot < WIFI_PLAZA_MAX_PLAYERS);
     slots->slots[slot].flags = flags;
 }
 
@@ -354,7 +354,7 @@ void WiFiPlazaNewsSlots_SetChange(WiFiPlazaNewsSlots *slots, int change) {
 }
 
 static void WiFiPlazaNewsSlots_SetLastJoined(WiFiPlazaNewsSlots *slots, int slot) {
-    GF_ASSERT((u32)slot < 20);
+    GF_ASSERT((u32)slot < WIFI_PLAZA_MAX_PLAYERS);
     slots->lastSlot = slot;
 }
 
@@ -363,22 +363,22 @@ static BOOL WiFiPlazaNewsSlots_IsOccupied(WiFiPlazaNewsSlots *slots, int slot) {
 }
 
 static int WiFiPlazaNewsSlots_GetGender(WiFiPlazaNewsSlots *slots, int slot) {
-    GF_ASSERT((u32)slot < 20);
+    GF_ASSERT((u32)slot < WIFI_PLAZA_MAX_PLAYERS);
     return slots->slots[slot].state;
 }
 
 static BOOL WiFiPlazaNewsSlots_IsOwn(WiFiPlazaNewsSlots *slots, int slot) {
-    GF_ASSERT((u32)slot < 20);
+    GF_ASSERT((u32)slot < WIFI_PLAZA_MAX_PLAYERS);
     return (slots->slots[slot].flags & 1) != 0;
 }
 
 static BOOL WiFiPlazaNewsSlots_IsOldest(WiFiPlazaNewsSlots *slots, int slot) {
-    GF_ASSERT((u32)slot < 20);
+    GF_ASSERT((u32)slot < WIFI_PLAZA_MAX_PLAYERS);
     return (slots->slots[slot].flags & 2) != 0;
 }
 
 static int WiFiPlazaNewsSlots_GetFlags(WiFiPlazaNewsSlots *slots, int slot) {
-    GF_ASSERT((u32)slot < 20);
+    GF_ASSERT((u32)slot < WIFI_PLAZA_MAX_PLAYERS);
     return slots->slots[slot].flags;
 }
 
@@ -390,7 +390,7 @@ static u16 WiFiPlazaNewsSlots_GetChange(WiFiPlazaNewsSlots *slots) {
 // event takes a free one or replaces one of at least its rank.
 
 static BOOL WiFiPlazaNewsSlots_IsLastJoined(WiFiPlazaNewsSlots *slots, u32 slot) {
-    GF_ASSERT(slot < 20);
+    GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
     return slots->lastSlot == slot;
 }
 

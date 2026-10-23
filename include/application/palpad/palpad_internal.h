@@ -275,6 +275,68 @@ typedef struct PalPadWork {
     s32 screenChangeDelay;
 } PalPadWork;
 
+extern const GraphicsModes gPalPadGraphicsModes;
+extern const ObjCharTransferTemplate gPalPadObjCharTransferTemplate;
+extern const GraphicsBanks gPalPadGraphicsBanks;
+extern const BgTemplate gPalPadBgTemplates[7];
+extern const u8 gPalPadScreenFileIds[2];
+extern SpriteTemplate gPalPadArrowSpriteTemplates[2];
+extern SpriteTemplate gPalPadCursorSpriteTemplate;
+extern u8 gPalPadArrowTemplateScale[];
+
+extern const TouchscreenHitbox gPalPadMenuHitboxes[];
+extern const u8 gPalPadMenuRegisterErrorMsgIds[];
+extern const u8 gPalPadMenuItemScreens[];
+
+extern const TouchscreenHitbox gPalPadFriendCodeHitboxes[];
+
+typedef void (*PalPadDetailsPagePrinter)(PalPadDetailsSlot *slot, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
+
+extern const TouchscreenHitbox gPalPadDetailsHitboxes[];
+extern const TouchscreenHitbox gPalPadDetailsFrontierHitboxes[];
+extern const u32 gPalPadDetailsSlotBaseTiles[3];
+extern const PalPadPanelLayout gPalPadPanelLayouts[3];
+extern const PalPadWindowSpec *const gPalPadDetailsPageWindowSpecs[8];
+extern const u8 gPalPadDetailsPageWindowCounts[8];
+extern const WindowTemplate gPalPadDetailsProfileWindowTemplates[8];
+extern const u8 gPalPadDetailsTabX[2][8];
+extern const u8 gPalPadDetailsTabWidths[2][8];
+extern const u8 gPalPadDetailsTabSrcY[2];
+extern const PalPadDetailsPagePrinter gPalPadDetailsPagePrinters[3];
+extern const PalPadDetailsPagePrinter gPalPadDetailsFrontierPagePrinters[8];
+
+typedef struct PalPadSlotRect {
+    s16 x;
+    s16 y;
+    u8 width;
+    u8 height;
+    u8 bgId;
+    u8 palette;
+    u8 selectedPalette;
+} PalPadSlotRect;
+
+typedef struct PalPadListMenuEntry {
+    int msgId;
+    int value;
+} PalPadListMenuEntry;
+
+typedef void (*PalPadRosterScrollCallback)(PalPadRoster *roster, PalPadGfx *gfx, s16 page, s16 prevPage);
+
+extern const u16 gPalPadRosterPageBaseTiles[3];
+extern const PalPadListMenuEntry gPalPadRosterFriendMenus[2][4];
+extern const SpriteTemplate gPalPadDeleteEffectSpriteTemplate;
+extern const TouchscreenHitbox gPalPadRosterHitboxes[];
+extern const PalPadSlotRect gPalPadRosterSlotRects[9];
+
+typedef struct PalPadSlotRectFromY {
+    s16 y;
+    u8 unk_02[8];
+} PalPadSlotRectFromY;
+
+extern const PalPadSlotRectFromY gPalPadRosterSlotY[9];
+extern const u32 gPalPadRosterNameColors[3];
+extern const PalPadRosterScrollCallback gPalPadRosterScrollCallbacks[4];
+
 int FriendRoster_IsFriendValid(FriendRoster *wifiList, int slot);
 void *FriendRoster_GetDwcFriendData(FriendRoster *wifiList, int slot);
 void FriendRoster_SetPlayerName(FriendRoster *wifiList, int slot, String *name);

@@ -2,7 +2,9 @@
 
 #include "global.h"
 
+#include "constants/items.h"
 #include "constants/save_arrays.h"
+#include "constants/species.h"
 
 #include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0778.h"
@@ -1228,55 +1230,55 @@ void WifiClub_DrawStatusIconToBg(BgConfig *bgConfig, WifiClubStatusIcons *status
 
     paletteOffset = 0;
     switch (status) {
-    case 1:
+    case WIFI_CLUB_STATUS_VOICE_CHAT:
         iconIndex = 3;
         break;
-    case 9:
-    case 10:
-    case 11:
-    case 12:
-    case 13:
-    case 14:
+    case WIFI_CLUB_STATUS_SEEK_LV50_SINGLE:
+    case WIFI_CLUB_STATUS_SEEK_LV100_SINGLE:
+    case WIFI_CLUB_STATUS_SEEK_FREE_SINGLE:
+    case WIFI_CLUB_STATUS_SEEK_LV50_DOUBLE:
+    case WIFI_CLUB_STATUS_SEEK_LV100_DOUBLE:
+    case WIFI_CLUB_STATUS_SEEK_FREE_DOUBLE:
         paletteOffset = 1;
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
+    case WIFI_CLUB_STATUS_IN_LV50_SINGLE:
+    case WIFI_CLUB_STATUS_IN_LV100_SINGLE:
+    case WIFI_CLUB_STATUS_IN_FREE_SINGLE:
+    case WIFI_CLUB_STATUS_IN_LV50_DOUBLE:
+    case WIFI_CLUB_STATUS_IN_LV100_DOUBLE:
+    case WIFI_CLUB_STATUS_IN_FREE_DOUBLE:
         iconIndex = 6;
         break;
-    case 15:
+    case WIFI_CLUB_STATUS_SEEK_TRADE:
         paletteOffset = 1;
-    case 8:
+    case WIFI_CLUB_STATUS_TRADING:
         iconIndex = 7;
         break;
-    case 23:
-    case 25:
-    case 27:
+    case WIFI_CLUB_STATUS_SEEK_GAME_1:
+    case WIFI_CLUB_STATUS_SEEK_GAME_2:
+    case WIFI_CLUB_STATUS_SEEK_GAME_3:
         paletteOffset = 1;
-    case 22:
-    case 24:
-    case 26:
+    case WIFI_CLUB_STATUS_PLAYING_GAME_1:
+    case WIFI_CLUB_STATUS_PLAYING_GAME_2:
+    case WIFI_CLUB_STATUS_PLAYING_GAME_3:
         iconIndex = 10;
         break;
-    case 18:
-    case 19:
+    case WIFI_CLUB_STATUS_COOKING:
+    case WIFI_CLUB_STATUS_SEEK_COOK:
         iconIndex = 5;
         break;
-    case 21:
+    case WIFI_CLUB_STATUS_SEEK_FRONTIER:
         paletteOffset = 1;
-    case 20:
+    case WIFI_CLUB_STATUS_IN_FRONTIER:
         iconIndex = 11;
         break;
-    case 16:
+    case WIFI_CLUB_STATUS_IN_ROOM:
         iconIndex = 4;
         break;
-    case 0:
+    case WIFI_CLUB_STATUS_NONE:
         iconIndex = 8;
         break;
-    case 28:
-    case 29:
+    case WIFI_CLUB_STATUS_NOT_IN_CLUB:
+    case WIFI_CLUB_STATUS_UNAVAILABLE:
         iconIndex = 5;
         break;
     default:
@@ -1296,55 +1298,55 @@ void WifiClub_DrawStatusIconToWindow(Window *window, WifiClubStatusIcons *status
     u8 iconIndex;
     u8 paletteOffset = 0;
     switch (status) {
-    case 1:
+    case WIFI_CLUB_STATUS_VOICE_CHAT:
         iconIndex = 3;
         break;
-    case 9:
-    case 10:
-    case 11:
-    case 12:
-    case 13:
-    case 14:
+    case WIFI_CLUB_STATUS_SEEK_LV50_SINGLE:
+    case WIFI_CLUB_STATUS_SEEK_LV100_SINGLE:
+    case WIFI_CLUB_STATUS_SEEK_FREE_SINGLE:
+    case WIFI_CLUB_STATUS_SEEK_LV50_DOUBLE:
+    case WIFI_CLUB_STATUS_SEEK_LV100_DOUBLE:
+    case WIFI_CLUB_STATUS_SEEK_FREE_DOUBLE:
         paletteOffset = 1;
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
+    case WIFI_CLUB_STATUS_IN_LV50_SINGLE:
+    case WIFI_CLUB_STATUS_IN_LV100_SINGLE:
+    case WIFI_CLUB_STATUS_IN_FREE_SINGLE:
+    case WIFI_CLUB_STATUS_IN_LV50_DOUBLE:
+    case WIFI_CLUB_STATUS_IN_LV100_DOUBLE:
+    case WIFI_CLUB_STATUS_IN_FREE_DOUBLE:
         iconIndex = 6;
         break;
-    case 15:
+    case WIFI_CLUB_STATUS_SEEK_TRADE:
         paletteOffset = 1;
-    case 8:
+    case WIFI_CLUB_STATUS_TRADING:
         iconIndex = 7;
         break;
-    case 23:
-    case 25:
-    case 27:
+    case WIFI_CLUB_STATUS_SEEK_GAME_1:
+    case WIFI_CLUB_STATUS_SEEK_GAME_2:
+    case WIFI_CLUB_STATUS_SEEK_GAME_3:
         paletteOffset = 1;
-    case 22:
-    case 24:
-    case 26:
+    case WIFI_CLUB_STATUS_PLAYING_GAME_1:
+    case WIFI_CLUB_STATUS_PLAYING_GAME_2:
+    case WIFI_CLUB_STATUS_PLAYING_GAME_3:
         iconIndex = 10;
         break;
-    case 18:
-    case 19:
+    case WIFI_CLUB_STATUS_COOKING:
+    case WIFI_CLUB_STATUS_SEEK_COOK:
         iconIndex = 5;
         break;
-    case 21:
+    case WIFI_CLUB_STATUS_SEEK_FRONTIER:
         paletteOffset = 1;
-    case 20:
+    case WIFI_CLUB_STATUS_IN_FRONTIER:
         iconIndex = 11;
         break;
-    case 16:
+    case WIFI_CLUB_STATUS_IN_ROOM:
         iconIndex = 4;
         break;
-    case 0:
+    case WIFI_CLUB_STATUS_NONE:
         iconIndex = 8;
         break;
-    case 28:
-    case 29:
+    case WIFI_CLUB_STATUS_NOT_IN_CLUB:
+    case WIFI_CLUB_STATUS_UNAVAILABLE:
         iconIndex = 5;
         break;
     default:
@@ -2067,10 +2069,10 @@ void WifiClub_PrintOwnStatus(WifiClubApp *app) {
         if (WifiConnection_GetTargetFriendIndex() == -1) {
             ReadMsgDataIntoString(app->msgData, statusMsgId, app->msgRaw);
         } else {
-            s32 temp_r0_3 = FriendRoster_GetEntryField(app->friendRoster, WifiConnection_GetTargetFriendIndex(), 8);
-            if (temp_r0_3 == 0) {
+            s32 gender = FriendRoster_GetEntryField(app->friendRoster, WifiConnection_GetTargetFriendIndex(), 8);
+            if (gender == 0) {
                 color = MAKE_TEXT_COLOR(5, 6, 0);
-            } else if (temp_r0_3 == 1) {
+            } else if (gender == 1) {
                 color = MAKE_TEXT_COLOR(3, 4, 0);
             }
             CopyU16ArrayToString(app->msgRaw, FriendRoster_GetPlayerName(app->friendRoster, WifiConnection_GetTargetFriendIndex()));
@@ -2574,7 +2576,7 @@ s32 WifiClub_State_MessageThenLeaveMatch(WifiClubApp *app, s32 mainState) {
         WifiClub_HandleWifiError(app);
         return mainState;
     }
-    if (WifiClub_GetPlayerStatus(app, &app->clubData->own) != 16) {
+    if (WifiClub_GetPlayerStatus(app, &app->clubData->own) != WIFI_CLUB_STATUS_IN_ROOM) {
         WifiClub_SetStatusAndSend(app, WIFI_CLUB_STATUS_IN_ROOM);
     }
     if (TextPrinterCheckActive(app->textPrinterId) != 0) {
@@ -3144,14 +3146,14 @@ s32 WifiClub_State_OpenApplyMenu(WifiClubApp *app, s32 mainState) {
 }
 
 s32 WifiClub_IsPartyValid(WifiClubPlayerStatus *playerStatus) {
-    for (s32 i = 0; i < 6; i++) {
-        if (playerStatus->species[i] == 495) {
+    for (s32 i = 0; i < PARTY_SIZE; i++) {
+        if (playerStatus->species[i] == SPECIES_BAD_EGG) {
             return 0;
         }
-        if (playerStatus->species[i] > 495) {
+        if (playerStatus->species[i] > SPECIES_BAD_EGG) {
             return 0;
         }
-        if (playerStatus->heldItems[i] > 536) {
+        if (playerStatus->heldItems[i] > ITEM_ENIGMA_STONE) {
             return 0;
         }
     }
@@ -3854,19 +3856,19 @@ s32 WifiClub_State_CreateVoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
 }
 
 s32 WifiClub_State_VoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
-    s32 temp_r0 = WifiClubRoom_GetTalkPartnerId(&app->room);
-    if (WifiClub_FindPlayerObject(app, temp_r0) == 0) {
+    s32 talkPartnerId = WifiClubRoom_GetTalkPartnerId(&app->room);
+    if (WifiClub_FindPlayerObject(app, talkPartnerId) == 0) {
         if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
             Clear2dMenuWindowAndDelete(app->yesNoMenu, HEAP_ID_53);
         } else {
             YesNoPrompt_Destroy(app->yesNoPrompt);
         }
-        WifiClub_BufferFriendName(app, temp_r0 - 1);
+        WifiClub_BufferFriendName(app, talkPartnerId - 1);
         WifiClub_PrintMessage(app, msg_0778_00016, 0);
         app->state = WIFI_CLUB_STATE_MESSAGE_THEN_RETURN_TO_ROOM;
         return mainState;
     }
-    WifiClubPlayerStatus *partnerStatusData = WifiClub_GetFriendStatusData(app, temp_r0 - 1);
+    WifiClubPlayerStatus *partnerStatusData = WifiClub_GetFriendStatusData(app, talkPartnerId - 1);
     u32 currentStatus = WifiClub_GetPlayerStatus(app, partnerStatusData);
     u8 voiceChat = partnerStatusData->voiceChat;
     if ((app->partnerStatus != currentStatus) || (app->partnerVoiceChat != voiceChat)) {
@@ -3875,7 +3877,7 @@ s32 WifiClub_State_VoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
         } else {
             YesNoPrompt_Destroy(app->yesNoPrompt);
         }
-        WifiClub_BufferFriendName(app, temp_r0 - 1);
+        WifiClub_BufferFriendName(app, talkPartnerId - 1);
         WifiClub_PrintMessage(app, msg_0778_00016, 0);
         app->state = WIFI_CLUB_STATE_MESSAGE_THEN_RETURN_TO_ROOM;
         return mainState;
@@ -3904,20 +3906,20 @@ s32 WifiClub_State_VoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
                 return mainState;
             }
             if (menuInputResult == 0) {
-                u32 temp_r0 = WifiClub_GetCounterpartStatus(app->partnerStatus);
-                if (temp_r0 != 29) {
+                u32 counterpart = WifiClub_GetCounterpartStatus(app->partnerStatus);
+                if (counterpart != WIFI_CLUB_STATUS_UNAVAILABLE) {
                     if (WifiClub_GetFriendOnlineState(app->partnerId - 1) == 6) {
                         WifiClub_ToggleVoiceChat(app);
-                        if (WifiClub_StartMatch(app, app->partnerId - 1, temp_r0) != 0) {
+                        if (WifiClub_StartMatch(app, app->partnerId - 1, counterpart) != 0) {
                             app->matchTimer = 1800;
-                            WifiClub_SetLinkModeForStatus(temp_r0);
+                            WifiClub_SetLinkModeForStatus(counterpart);
                             Comm_SetWifiContinuousSend(0);
-                            WifiClub_SetStatusAndSend(app, temp_r0);
+                            WifiClub_SetStatusAndSend(app, counterpart);
                             WifiClub_BufferFriendName(app, app->partnerId - 1);
                             WifiClub_PrintMessage(app, msg_0778_00017, 0);
                             GF_ASSERT(app->waitingIcon == NULL);
                             app->waitingIcon = WaitingIcon_New(&app->msgWindow, 482);
-                            if (temp_r0 != 1) {
+                            if (counterpart != WIFI_CLUB_STATUS_VOICE_CHAT) {
                                 app->state = WIFI_CLUB_STATE_WAIT_MATCH_ACCEPTED;
                                 return mainState;
                             }
@@ -3938,20 +3940,20 @@ s32 WifiClub_State_VoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
         YesNoResponse yesNoResponse = YesNoPrompt_HandleInput(app->yesNoPrompt);
         if (yesNoResponse == YESNORESPONSE_YES) {
             YesNoPrompt_Destroy(app->yesNoPrompt);
-            u32 temp_r0 = WifiClub_GetCounterpartStatus(app->partnerStatus);
-            if (temp_r0 != 29) {
+            u32 counterpart = WifiClub_GetCounterpartStatus(app->partnerStatus);
+            if (counterpart != WIFI_CLUB_STATUS_UNAVAILABLE) {
                 if (WifiClub_GetFriendOnlineState(app->partnerId - 1) == 6) {
                     WifiClub_ToggleVoiceChat(app);
-                    if (WifiClub_StartMatch(app, app->partnerId - 1, temp_r0) != 0) {
+                    if (WifiClub_StartMatch(app, app->partnerId - 1, counterpart) != 0) {
                         app->matchTimer = 1800;
-                        WifiClub_SetLinkModeForStatus(temp_r0);
+                        WifiClub_SetLinkModeForStatus(counterpart);
                         Comm_SetWifiContinuousSend(0);
-                        WifiClub_SetStatusAndSend(app, temp_r0);
+                        WifiClub_SetStatusAndSend(app, counterpart);
                         WifiClub_BufferFriendName(app, app->partnerId - 1);
                         WifiClub_PrintMessage(app, msg_0778_00017, 0);
                         GF_ASSERT(app->waitingIcon == NULL);
                         app->waitingIcon = WaitingIcon_New(&app->msgWindow, 482);
-                        if (temp_r0 != 1) {
+                        if (counterpart != WIFI_CLUB_STATUS_VOICE_CHAT) {
                             app->state = WIFI_CLUB_STATE_WAIT_MATCH_ACCEPTED;
                             return mainState;
                         }
@@ -4542,9 +4544,9 @@ void WifiClub_DrawProfileSummary(WifiClubApp *app, enum HeapID heapID) {
     // DATE LAST PLAYED
     ReadMsgDataIntoString(app->msgData, msg_0778_00051, app->tmpString);
     AddTextPrinterParameterizedWithColor(&app->roster.profileWindow, 0, app->tmpString, 8, 128, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
-    s32 temp_r0_2 = FriendRoster_GetEntryField(app->friendRoster, friendIndex, 6);
-    if (temp_r0_2 != 0) {
-        BufferIntegerAsString(app->roster.msgFormat, 2, temp_r0_2, 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
+    s32 day = FriendRoster_GetEntryField(app->friendRoster, friendIndex, 6);
+    if (day != 0) {
+        BufferIntegerAsString(app->roster.msgFormat, 2, day, 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
         BufferIntegerAsString(app->roster.msgFormat, 0, FriendRoster_GetEntryField(app->friendRoster, friendIndex, 4), 4, PRINTING_MODE_LEFT_ALIGN, TRUE);
         BufferMonthNameAbbr(app->roster.msgFormat, 1, FriendRoster_GetEntryField(app->friendRoster, friendIndex, 5));
         // {STRVAR_34 16, 1, 0} {STRVAR_1 51, 2, 0}, {STRVAR_1 53, 0, 0}
@@ -4754,67 +4756,67 @@ s32 WifiClub_GetStatusLabel(u32 status, u32 *color) {
     *color = MAKE_TEXT_COLOR(1, 2, 0);
     s32 ret = 0;
     switch (status) {
-    case 1:
+    case WIFI_CLUB_STATUS_VOICE_CHAT:
         ret = msg_0778_00036;
         *color = MAKE_TEXT_COLOR(2, 14, 0);
         break;
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
+    case WIFI_CLUB_STATUS_IN_LV50_SINGLE:
+    case WIFI_CLUB_STATUS_IN_LV100_SINGLE:
+    case WIFI_CLUB_STATUS_IN_FREE_SINGLE:
+    case WIFI_CLUB_STATUS_IN_LV50_DOUBLE:
+    case WIFI_CLUB_STATUS_IN_LV100_DOUBLE:
+    case WIFI_CLUB_STATUS_IN_FREE_DOUBLE:
         ret = msg_0778_00027;
         *color = MAKE_TEXT_COLOR(2, 14, 0);
         break;
-    case 9:
+    case WIFI_CLUB_STATUS_SEEK_LV50_SINGLE:
         ret = msg_0778_00096;
         break;
-    case 10:
+    case WIFI_CLUB_STATUS_SEEK_LV100_SINGLE:
         ret = msg_0778_00097;
         break;
-    case 11:
+    case WIFI_CLUB_STATUS_SEEK_FREE_SINGLE:
         ret = msg_0778_00095;
         break;
-    case 12:
+    case WIFI_CLUB_STATUS_SEEK_LV50_DOUBLE:
         ret = msg_0778_00099;
         break;
-    case 13:
+    case WIFI_CLUB_STATUS_SEEK_LV100_DOUBLE:
         ret = msg_0778_00100;
         break;
-    case 14:
+    case WIFI_CLUB_STATUS_SEEK_FREE_DOUBLE:
         ret = msg_0778_00098;
         break;
-    case 8:
+    case WIFI_CLUB_STATUS_TRADING:
         ret = msg_0778_00029;
         *color = MAKE_TEXT_COLOR(2, 14, 0);
         break;
-    case 15:
+    case WIFI_CLUB_STATUS_SEEK_TRADE:
         ret = msg_0778_00028;
         break;
-    case 18:
-    case 19:
+    case WIFI_CLUB_STATUS_COOKING:
+    case WIFI_CLUB_STATUS_SEEK_COOK:
         ret = msg_0778_00092;
         break;
-    case 20:
+    case WIFI_CLUB_STATUS_IN_FRONTIER:
         ret = msg_0778_00033;
         *color = MAKE_TEXT_COLOR(2, 14, 0);
         break;
-    case 21:
+    case WIFI_CLUB_STATUS_SEEK_FRONTIER:
         ret = msg_0778_00032;
         break;
-    case 22:
-    case 24:
-    case 26:
+    case WIFI_CLUB_STATUS_PLAYING_GAME_1:
+    case WIFI_CLUB_STATUS_PLAYING_GAME_2:
+    case WIFI_CLUB_STATUS_PLAYING_GAME_3:
         ret = msg_0778_00035;
         *color = MAKE_TEXT_COLOR(2, 14, 0);
         break;
-    case 23:
-    case 25:
-    case 27:
+    case WIFI_CLUB_STATUS_SEEK_GAME_1:
+    case WIFI_CLUB_STATUS_SEEK_GAME_2:
+    case WIFI_CLUB_STATUS_SEEK_GAME_3:
         ret = msg_0778_00034;
         break;
-    case 16:
+    case WIFI_CLUB_STATUS_IN_ROOM:
         ret = msg_0778_00079;
         break;
     default:

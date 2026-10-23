@@ -25,15 +25,7 @@
 
 FS_EXTERN_OVERLAY(OVY_42);
 
-extern const GraphicsModes gPalPadGraphicsModes;
-extern const ObjCharTransferTemplate gPalPadObjCharTransferTemplate;
-extern const GraphicsBanks gPalPadGraphicsBanks;
-extern const BgTemplate gPalPadBgTemplates[7];
-extern const u8 gPalPadScreenFileIds[2];
 extern NNSG2dViewRect gPalPadRenderSurfaceRect;
-extern SpriteTemplate gPalPadArrowSpriteTemplates[2];
-extern SpriteTemplate gPalPadCursorSpriteTemplate;
-extern u8 gPalPadArrowTemplateScale[];
 
 enum {
     PALPAD_STATE_RUN_SCREEN,

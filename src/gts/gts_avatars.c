@@ -27,18 +27,6 @@ typedef struct GtsPlayerAnim {
     GtsApp *app;
 } GtsPlayerAnim;
 
-// The OBJ char offset of each trainer avatar.
-extern const u16 gGtsAvatarCharOffsets[];
-
-typedef struct GtsAvatarPosition {
-    u16 x;
-    u16 y;
-} GtsAvatarPosition;
-
-extern const GtsAvatarPosition gGtsAvatarPositions[];
-extern const TouchscreenHitbox gGtsAvatarHitboxes[];
-extern const u8 gGtsViewMonSummaryPages[];
-
 static void Gts_SetPlayerAnim(GtsPlayerAnim *anim, int seq);
 static void Gts_PlayerEnterTask(SysTask *task, GtsPlayerAnim *anim);
 static void Gts_PlayerExitTask(SysTask *task, GtsPlayerAnim *anim);

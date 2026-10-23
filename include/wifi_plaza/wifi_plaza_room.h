@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+#include "constants/wifi_plaza.h"
+
 #include "bg_window.h"
 #include "filesystem.h"
 #include "gf_3d_vramman.h"
@@ -186,8 +188,8 @@ struct WiFiPlazaRoomWork {
     u8 plazaClosing;
     u8 ignorePlazaClosing;
     s32 closingTimer;
-    u8 playerBusy[20];
-    u8 cardBlocked[20];
+    u8 playerBusy[WIFI_PLAZA_MAX_PLAYERS];
+    u8 cardBlocked[WIFI_PLAZA_MAX_PLAYERS];
     WiFiPlazaWork *lobby;
     u16 *startParams; // WiFiPlazaRoomArgs.startParams
     WiFiPlazaRoomGraphics graphics;

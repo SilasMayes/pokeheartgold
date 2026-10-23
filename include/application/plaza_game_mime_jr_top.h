@@ -360,6 +360,141 @@ typedef struct MimeJrTopCommand {
     void *(*getBuffer)(int netId, void *context, int size);
 } MimeJrTopCommand;
 
+typedef struct MimeJrTopModelFiles {
+    int files[16][2]; // model file, animation file
+} MimeJrTopModelFiles;
+
+typedef struct MimeJrTopTopModels {
+    int files[4];
+} MimeJrTopTopModels;
+
+typedef struct MimeJrTopGraphicsModes {
+    u32 values[4];
+} MimeJrTopGraphicsModes;
+
+typedef struct MimeJrTopBanks {
+    u32 values[10];
+} MimeJrTopBanks;
+
+typedef struct MimeJrTopBgTemplates {
+    BgTemplate bgs[4];
+} MimeJrTopBgTemplates;
+
+typedef struct MimeJrTopDemoPoint {
+    s16 x;
+    s16 y;
+} MimeJrTopDemoPoint;
+
+typedef struct MimeJrTopDemoPath {
+    MimeJrTopDemoPoint points[48];
+} MimeJrTopDemoPath;
+
+typedef struct MimeJrTopRivalAnims {
+    int anims[4][2]; // face, body
+} MimeJrTopRivalAnims;
+
+typedef struct MimeJrTopTierPoints {
+    u16 values[4];
+} MimeJrTopTierPoints;
+
+typedef struct MimeJrTopWobbleIntervals {
+    s16 values[4];
+} MimeJrTopWobbleIntervals;
+
+typedef struct MimeJrTopTouchData {
+    TouchscreenHitbox hitboxes[2];
+    u8 unk08[8];
+    MimeJrTopTierPoints tierScores; // points per frame
+    MimeJrTopTierPoints tierBonus;  // points for reaching a tier
+    MimeJrTopWobbleIntervals wobbleIntervals;
+} MimeJrTopTouchData;
+
+typedef struct MimeJrTopWobbleChoice {
+    int speed;
+    int weight;
+} MimeJrTopWobbleChoice;
+
+typedef struct MimeJrTopOffsets {
+    int values[6];
+} MimeJrTopOffsets;
+
+typedef struct MimeJrTopStarOrigins {
+    s16 values[10];
+} MimeJrTopStarOrigins;
+
+typedef struct MimeJrTopDoneFlags {
+    BOOL done[4];
+} MimeJrTopDoneFlags;
+
+typedef struct MimeJrTopRoutine {
+    int timer;
+    int count;
+    int speed;
+    int frontPalettes[3];
+    int backPalettes[3];
+    SysTaskFunc func;
+} MimeJrTopRoutine;
+
+typedef struct MimeJrTopRoutineValue {
+    int value;
+    u8 unk04[0x24];
+} MimeJrTopRoutineValue;
+
+typedef struct MimeJrTopRoutineTask {
+    SysTaskFunc func;
+    u8 unk04[0x24];
+} MimeJrTopRoutineTask;
+
+typedef struct MimeJrTopPlayerPalettes {
+    int values[5];
+} MimeJrTopPlayerPalettes;
+
+extern const VecFx32 gMimeJrTopDemoTurnTiltAxis;
+extern const VecFx32 gMimeJrTopDemoSpinTiltAxis;
+extern const MimeJrTopGraphicsModes gMimeJrTopGraphicsModes;
+extern const MimeJrTopTopModels gMimeJrTopTopModels;
+extern const u16 gMimeJrTopEdgeColors[];
+extern const OamCharTransferParam gMimeJrTopOamCharTransferParam;
+extern const SpriteResourceCountsListUnion gMimeJrTopSpriteResourceCounts;
+extern const OamManagerParam gMimeJrTopOamManagerParam;
+extern const MimeJrTopBanks gMimeJrTopBanks;
+extern const MimeJrTopBgTemplates gMimeJrTopMainBgTemplates;
+extern const MimeJrTopBgTemplates gMimeJrTopSubBgTemplates;
+extern const MimeJrTopModelFiles gMimeJrTopAudienceModelFiles;
+extern const MimeJrTopDemoPath gMimeJrTopDemoPath;
+extern const u16 gMimeJrTopPopupPositions[4];
+extern const VecFx32 gMimeJrTopCameraPosition;
+extern const VecFx32 gMimeJrTopLightVector;
+extern const s16 gMimeJrTopRivalSpriteX[][3];
+extern const MimeJrTopRivalAnims gMimeJrTopRivalAnims;
+extern const MimeJrTopRivalAnims gMimeJrTopRivalSetAnims;
+extern const s16 gMimeJrTopRivalNamePositions[3][3][4];
+extern const MimeJrTopTouchData gMimeJrTopTouchData;
+extern const TouchscreenHitbox gMimeJrTopSelectionHitboxes[];
+extern const VecFx32 gMimeJrTopSpinTiltAxis;
+extern const VecFx32 gMimeJrTopTurnTiltAxis;
+extern const VecFx32 gMimeJrTopSettleTiltAxis;
+extern const VecFx32 gMimeJrTopSettleTouchTiltAxis;
+extern const VecFx32 gMimeJrTopWobbleTiltAxis;
+extern const int gMimeJrTopTierModels[][2];
+extern const int gMimeJrTopTierChangeModels[][2];
+extern const MimeJrTopWobbleChoice gMimeJrTopWobbleChoices[][4];
+extern const s32 gMimeJrTopWobbleWeights[][8];
+extern const u16 gMimeJrTopPopupLimits[];
+extern const MimeJrTopDoneFlags gMimeJrTopDance3DoneFlags;
+extern const MimeJrTopDoneFlags gMimeJrTopDance2DoneFlags;
+extern const MimeJrTopDoneFlags gMimeJrTopDance4DoneFlags;
+extern const MimeJrTopDoneFlags gMimeJrTopPopupDoneFlags;
+extern const MimeJrTopDoneFlags gMimeJrTopDance5DoneFlags;
+extern const MimeJrTopStarOrigins gMimeJrTopStarOrigins;
+extern const MimeJrTopOffsets gMimeJrTopBurstOffsetsX;
+extern const MimeJrTopOffsets gMimeJrTopBurstOffsetsY;
+extern const MimeJrTopRoutine gMimeJrTopRoutines[];
+extern const MimeJrTopRoutineValue gMimeJrTopRoutineCounts[];
+extern const MimeJrTopRoutineValue gMimeJrTopRoutineSpeeds[];
+extern const MimeJrTopRoutineTask gMimeJrTopRoutineTasks[];
+extern MimeJrTopPlayerPalettes gMimeJrTopPlayerPalettes[];
+
 BOOL MimeJrTop_Init(OverlayManager *man, int *state);
 BOOL MimeJrTop_Main(OverlayManager *man, int *state);
 BOOL MimeJrTop_Exit(OverlayManager *man, int *state);

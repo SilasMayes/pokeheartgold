@@ -1,6 +1,14 @@
 #ifndef POKEHEARTGOLD_CONSTANTS_WIFI_PLAZA_H
 #define POKEHEARTGOLD_CONSTANTS_WIFI_PLAZA_H
 
+// Players in one lobby (the lobby slots)
+#define WIFI_PLAZA_MAX_PLAYERS 20
+
+// WiFiPlazaGroups: nine groups of three places (place = group * WIFI_PLAZA_GROUP_SEATS + seat)
+#define WIFI_PLAZA_GROUP_COUNT 9
+#define WIFI_PLAZA_GROUP_SEATS 3
+#define WIFI_PLAZA_PLACE_COUNT (WIFI_PLAZA_GROUP_COUNT * WIFI_PLAZA_GROUP_SEATS)
+
 // WiFiPlazaTalkSession.state: how far a talk between two players has got, and whose turn it is
 enum WiFiPlazaTalkState {
     WIFI_PLAZA_TALK_STATE_NONE,

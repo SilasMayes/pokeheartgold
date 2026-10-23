@@ -360,6 +360,122 @@ struct GtsApp {
 };
 
 // Helpers shared by the GTS screens.
+extern int (*const gGtsConnectionStates[])(GtsApp *app);
+extern const BgTemplate gGtsConnectionBg0Template;
+extern const BgTemplate gGtsConnectionBg1Template;
+extern const BgTemplate gGtsConnectionSubBg0Template;
+extern const BgTemplate gGtsConnectionSubBg1Template;
+// GTS, GTS TRADE POKEMON, GTS SUMMARY, GTS DEPOSIT POKEMON, GTS SEEK POKEMON.
+extern const u32 gGtsPanelCaptionMsgIds[];
+
+typedef struct GtsSelectorWindowPosition {
+    u8 x;
+    u8 y;
+} GtsSelectorWindowPosition;
+
+typedef struct GtsSelectorCursorPos {
+    u8 x;
+    u8 y;
+} GtsSelectorCursorPos;
+
+typedef struct GtsSelectorCursorNext {
+    u8 up;
+    u8 down;
+    u8 left;
+    u8 right;
+} GtsSelectorCursorNext;
+
+typedef struct GtsSelectorWindowPosition3 {
+    u8 x;
+    u8 y;
+    u8 unused;
+} GtsSelectorWindowPosition3;
+
+extern int (*const gGtsSelectorStates[])(GtsSelector *selector);
+extern const GtsSelectorWindowPosition gGtsSelectorGenderWindowPositions[];
+extern const GtsSelectorWindowPosition gGtsSelectorLevelWindowPositions[];
+extern const GtsSelectorWindowPosition gGtsSelectorCountryWindowPositions[];
+extern const GtsSelectorWindowPosition3 gGtsSelectorSpeciesWindowPositions[];
+extern const GtsSelectorWindowPosition gGtsSelectorGridWindowPositions[];
+// The cursor positions are {x, y} pairs. The list cursors are in pixels, the grid cursors in tiles of the panel.
+extern const GtsSelectorCursorPos gGtsSelectorGenderCursorPositions[];
+extern const GtsSelectorCursorPos gGtsSelectorSpeciesCursorPositions[];
+extern const GtsSelectorCursorPos gGtsSelectorLevelCursorPositions[];
+extern const GtsSelectorCursorPos gGtsSelectorCountryCursorPositions[];
+extern const GtsSelectorCursorPos gGtsSelectorCountryGroupCursorPositions[];
+extern const GtsSelectorCursorPos gGtsSelectorGroupCursorPositions[];
+// The value of each row of the gender list: EITHER MON_GENDERLESS, then MON_MALE, MON_FEMALE, BACK -2.
+extern const int gGtsSelectorGenders[];
+// The cursor's next button for up, down, left, right on each button.
+extern const GtsSelectorCursorNext gGtsSelectorLetterNext[];
+extern const GtsSelectorCursorNext gGtsSelectorGroupNext[];
+extern const GtsSelectorCursorNext gGtsSelectorCountryGroupNext[];
+extern const TouchscreenHitbox gGtsSelectorGroupHitboxes[];
+extern const TouchscreenHitbox gGtsSelectorCountryGroupHitboxes[];
+extern const TouchscreenHitbox gGtsSelectorListHitboxes[];
+extern const TouchscreenHitbox gGtsSelectorGenderHitboxes[];
+extern const TouchscreenHitbox gGtsSelectorCountryListHitboxes[];
+extern const TouchscreenHitbox gGtsSelectorLetterHitboxes[];
+// The message of each letter, A .. Z.
+extern const int gGtsSelectorLetterMsgs[];
+
+// The OBJ char offset of each trainer avatar.
+extern const u16 gGtsAvatarCharOffsets[];
+
+typedef struct GtsAvatarPosition {
+    u16 x;
+    u16 y;
+} GtsAvatarPosition;
+
+extern const GtsAvatarPosition gGtsAvatarPositions[];
+extern const TouchscreenHitbox gGtsAvatarHitboxes[];
+extern const u8 gGtsViewMonSummaryPages[];
+
+extern int gGtsCountryCount[];
+
+extern const OverlayManagerTemplate gGtsTradeSequenceTemplate;
+
+extern int (*const gGtsTransactionStates[])(GtsApp *app);
+extern const GraphicsModes gGtsTransactionGraphicsModes;
+extern const BgTemplate gGtsTransactionBg0Template;
+extern const BgTemplate gGtsTransactionBg1Template;
+extern const BgTemplate gGtsTransactionBg2Template;
+extern const BgTemplate gGtsTransactionSubBg0Template;
+extern const BgTemplate gGtsTransactionSubBg1Template;
+
+typedef struct GtsWantedWindowPosition {
+    u16 x;
+    u16 y;
+} GtsWantedWindowPosition;
+
+// A choice of the level list: kind 0 the levels a deposit asks for (12), kind 1 the levels SEEK POKEMON searches (11).
+typedef struct GtsLevelRange {
+    u32 msgId;
+    s16 minLevel; // 0: none
+    s16 maxLevel; // 0: none
+} GtsLevelRange;
+
+// The countries in list order, in groups by initial letter: {first index in gGtsCountries, group}.
+typedef struct GtsCountryGroup {
+    u8 start;
+    u8 group;
+} GtsCountryGroup;
+
+extern int (*const gGtsWantedStates[])(GtsApp *app);
+extern const BgTemplate gGtsWantedBg0Template;
+extern const BgTemplate gGtsWantedBg1Template;
+extern const BgTemplate gGtsWantedBg2Template;
+extern const BgTemplate gGtsWantedBg3Template;
+extern const GtsWantedWindowPosition gGtsWantedWindowPositions[];
+// The text colors of the male and female symbols.
+extern u32 gGtsGenderColors[];
+extern const GtsLevelRange gGtsWantedLevelRanges[];
+extern const GtsLevelRange gGtsSearchLevelRanges[];
+// NARC_zukan_data_sort_order_letters_*.
+extern const int gGtsSpeciesLetterFiles[];
+extern const u16 gGtsCountries[];
+extern const GtsCountryGroup gGtsCountryGroups[];
+
 void Gts_InitSpriteTemplate(SpriteTemplate *template, GtsApp *app, const SpriteResourcesHeader *header, NNS_G2D_VRAM_TYPE screen);
 YesNoPrompt *Gts_CreateYesNoPrompt(BgConfig *bgConfig, u8 y, int tileStart, u32 palette, u8 dimScreen);
 YesNoPrompt *Gts_CreateYesNoPromptOnBg(BgConfig *bgConfig, u8 y, int tileStart, u32 palette, int bgId, u8 dimScreen);

@@ -764,10 +764,10 @@ static void PlazaNewsPeople_Draw(PlazaNewsPeople *people, PlazaNewsTileset *tile
 
 static void PlazaNewsPeople_DrawGrid(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, void *newsData, void *lobby, int mode) {
     struct {
-        volatile int altPage;
-        volatile int usePalette3;
-        volatile int altRow;
-        volatile int row;
+        int altPage;
+        int usePalette3;
+        int altRow;
+        int row;
         volatile int isLastJoined;
         int rowU8;
     } f;

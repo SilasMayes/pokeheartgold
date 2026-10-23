@@ -163,4 +163,51 @@ struct WirelessTradeSelectMon {
     TouchscreenListMenu *touchMenu;
 };
 
+typedef struct WirelessTradeSlotPos {
+    int x;
+    int y;
+} WirelessTradeSlotPos;
+
+typedef struct WirelessTradeDetailSpritePos {
+    int x;
+    int y;
+    int animSeq;
+} WirelessTradeDetailSpritePos;
+
+typedef struct WirelessTradeWindowPos {
+    u16 x;
+    u16 y;
+} WirelessTradeWindowPos;
+
+typedef struct WirelessTradeWindowTemplate {
+    u16 x;
+    u16 y;
+    u16 width;
+    u16 height;
+    u16 baseTile;
+} WirelessTradeWindowTemplate;
+
+// The cursor anim of each side: own slot, partner slot, quit.
+extern const u32 sWirelessTradeSelectMonCursorAnims[][3];
+extern const u32 sWirelessTradeSelectMonPartnerCursorAnims[][3];
+extern const u32 sWirelessTradeSelectMonQuitCursorAnims[][3];
+extern const BgTemplate sWirelessTradeSelectMonBgTemplate_Sub0;
+extern const BgTemplate sWirelessTradeSelectMonBgTemplate_Sub1;
+extern const BgTemplate sWirelessTradeSelectMonBgTemplate_Main1;
+extern const BgTemplate sWirelessTradeSelectMonBgTemplate_Sub2;
+extern const BgTemplate sWirelessTradeSelectMonBgTemplate_Main0;
+extern const BgTemplate sWirelessTradeSelectMonBgTemplate_Main2;
+extern const BgTemplate sWirelessTradeSelectMonBgTemplate_Main3;
+extern const GraphicsBanks sWirelessTradeSelectMonGraphicsBanks;
+extern const TouchscreenHitbox sWirelessTradeSelectMonSlotHitboxes[];
+extern const WirelessTradeDetailSpritePos sWirelessTradeSelectMonDetailSpritePos[];
+extern const WirelessTradeDetailSpritePos sWirelessTradeSelectMonDetailSpritePosY[];
+extern const u32 sWirelessTradeSelectMonBallPalettes[];
+extern const WirelessTradeSlotPos sWirelessTradeSelectMonSlotPos[];
+extern const WirelessTradeSlotPos sWirelessTradeSelectMonSlotPosY[];
+extern const u8 sWirelessTradeSelectMonCursorMoves[][4][6];
+extern const ListMenuTemplate sWirelessTradeSelectMonRosterListTemplate;
+extern const WirelessTradeWindowPos sWirelessTradeSelectMonNameWindowPos[];
+extern const WirelessTradeWindowTemplate sWirelessTradeSelectMonDetailWindows[];
+
 #endif // POKEHEARTGOLD_WIRELESS_TRADE_SELECT_MON_INTERNAL_H

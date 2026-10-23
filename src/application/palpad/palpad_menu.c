@@ -25,10 +25,6 @@ enum PalPadMenuItem {
     PALPAD_MENU_EXIT,
 };
 
-extern const TouchscreenHitbox gPalPadMenuHitboxes[];
-extern const u8 gPalPadMenuRegisterErrorMsgIds[];
-extern const u8 gPalPadMenuItemScreens[];
-
 static void PalPadMenu_Show(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx);
 static BOOL PalPadMenu_HandleKeys(u32 *selection, u32 *inputState, PalPadGfx *gfx);
 static BOOL PalPadMenu_HandleTouch(u32 *selection, u32 *inputState, PalPadGfx *gfx, BOOL *touched);

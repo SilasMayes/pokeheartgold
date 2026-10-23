@@ -178,30 +178,12 @@ struct EasyChatPageButtonsView {
     u32 unk2C;
 };
 
-// One cell of the initial letter grid.
-typedef struct EasyChatInitialGridCell {
-    u16 letter;
-    u8 x;
-    u8 y;
-    u8 up;
-    u8 down;
-    u8 left;
-    u8 right;
-    u8 belowButton;
-    u8 aboveButton;
-} EasyChatInitialGridCell;
-
-#define EC_INITIAL_GRID_CELLS 27
-
 #define EC_BLEND_PLANEMASK_ALL (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD)
 
 #define GetECWordIntoStringByIndexInt ((void (*)(int, String *))GetECWordIntoStringByIndex)
 #define ListMenuUpdateCursorObjInt    ((void (*)(struct ListMenuCursor *, Window *, int, int))ListMenuUpdateCursorObj)
 
 void DrawFrame2AroundWindow(Window *window, u32 baseTile, u32 paletteNum);
-
-extern const WindowTemplate gEasyChatMenuViewWindowTemplates[3];
-extern const EasyChatInitialGridCell gEasyChatInitialGridCells[EC_INITIAL_GRID_CELLS];
 
 static void EasyChatSentenceView_HBlankCallback(EasyChatSentenceView *sentence);
 static void EasyChatSentenceView_ToggleScrollWindows(EasyChatSentenceView *sentence, BOOL enable);

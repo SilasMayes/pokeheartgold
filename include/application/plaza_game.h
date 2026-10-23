@@ -2,8 +2,10 @@
 #define POKEHEARTGOLD_APPLICATION_PLAZA_GAME_H
 
 #include "bg_window.h"
+#include "gf_gfx_planes.h"
 #include "message_format.h"
 #include "msgdata.h"
+#include "obj_char_transfer.h"
 #include "player_data.h"
 #include "pm_string.h"
 #include "render_window.h"
@@ -257,6 +259,39 @@ typedef struct PlazaGameResults {
     u16 flashEnabled;
     u32 fanfareState;
 } PlazaGameResults;
+
+extern const u8 gPlazaGameMimeJrTopSelectionWeights[];
+extern const u8 gPlazaGameWobbuffetPopSelectionWeights[];
+extern const u8 gPlazaGameSwalotPlopSelectionWeights[];
+extern const u8 gPlazaGameResultsFlashSlots[];
+extern const s16 gPlazaGameResultsRankOffsets[];
+extern const fx32 gPlazaGameTitleSlideOutEndX[];
+extern const fx32 gPlazaGameTitleSlideOutVelocity[];
+extern const u32 gPlazaGameTitleColors[];
+extern const fx32 gPlazaGameTitleSlideInVelocity[];
+extern const fx32 gPlazaGameTitleRestX[];
+extern const fx32 gPlazaGameTitleBounceX[];
+extern const fx32 gPlazaGameTitleBounceOutVelocity[];
+extern const fx32 gPlazaGameTitleBounceBackVelocity[];
+extern const fx32 gPlazaGameTitleSlideInStartX[];
+extern const GraphicsModes gPlazaGameResultsGraphicsModes;
+extern const s16 gPlazaGamePlayerSpritePositions[];
+extern const s16 gPlazaGamePlayerSpriteY[];
+extern const u8 gPlazaGameSeatOrders[][4];
+extern const ObjCharTransferTemplate gPlazaGameObjCharTransfer;
+extern const GraphicsModes gPlazaGameEntryGraphicsModes;
+extern const VecFx32 gPlazaGameSignWindowSpritePositions[2];
+extern const GraphicsBanks gPlazaGameEntryBanks;
+extern const GraphicsBanks gPlazaGameResultsBanks;
+extern const u8 gPlazaGameSeatRowsByCount[][12];
+extern const u8 gPlazaGameScreenRowsByCount[][12];
+extern const u8 gPlazaGameSeatAnimsByCount[][12];
+extern const u8 gPlazaGameSeatRows[][12];
+extern const u8 gPlazaGameSeatAnims[][12];
+extern const u16 gPlazaGameAltMessages[20][2];
+extern const PlazaGameBgTemplate gPlazaGameEntryBgTemplates[];
+extern const PlazaGameBgTemplate gPlazaGameResultsBgTemplates[];
+extern const u8 gPlazaGameCommands[];
 
 void PlazaGameRoster_Init(PlazaGameRoster *roster, u32 fromLobby, SaveData *saveData, u8 voiceChat, PlazaGameArgs *args);
 int PlazaGameRoster_GetIndexOfNetId(const PlazaGameRoster *roster, u32 netId);

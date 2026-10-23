@@ -5,6 +5,8 @@
 
 #include "global.h"
 
+#include "constants/wifi_plaza.h"
+
 #include "billboard_internal.h"
 #include "billboard_lists.h"
 #include "easy_chat.h"
@@ -93,7 +95,7 @@ typedef struct WiFiPlazaTalkSession {
     u16 partnerMessage;
     u8 role; // 0 = none, 1 = asked the other player, 2 = asked by it
     u8 isFirstTalk;
-    u8 talkCounts[20]; // per lobby slot, counts up to 6
+    u8 talkCounts[WIFI_PLAZA_MAX_PLAYERS]; // per lobby slot, counts up to 6
     u16 sendMessage;
     u16 sendState;
     u16 timeoutActive;
@@ -176,15 +178,15 @@ typedef struct WiFiPlazaTimerPhase {
 
 // The chance of each group of WiFiPlazaWork.groups.
 typedef struct WiFiPlazaGroupWeights {
-    u8 weights[9];
+    u8 weights[WIFI_PLAZA_GROUP_COUNT];
     u8 padding_09[3];
-    u8 seen[20]; // per lobby slot
+    u8 seen[WIFI_PLAZA_MAX_PLAYERS]; // per lobby slot
 } WiFiPlazaGroupWeights;
 
 // Four words per lobby slot, made from a code.
 typedef struct WiFiPlazaWordSet {
-    u8 flags[20];
-    u16 words[20][4];
+    u8 flags[WIFI_PLAZA_MAX_PLAYERS];
+    u16 words[WIFI_PLAZA_MAX_PLAYERS][4];
     WallpaperPasswordBank *bank;
 } WiFiPlazaWordSet;
 
@@ -204,11 +206,11 @@ typedef struct WiFiPlazaOwnProfileData {
 typedef struct WiFiPlazaGroups {
     u32 active;
     s32 time;
-    s32 counters[9];
-    u32 states[9];
-    u32 ids[9][3]; // -1 = free
-    u32 markerCounts[9][3];
-    u32 actionRequests[9][3];
+    s32 counters[WIFI_PLAZA_GROUP_COUNT];
+    u32 states[WIFI_PLAZA_GROUP_COUNT];
+    u32 ids[WIFI_PLAZA_GROUP_COUNT][WIFI_PLAZA_GROUP_SEATS]; // -1 = free
+    u32 markerCounts[WIFI_PLAZA_GROUP_COUNT][WIFI_PLAZA_GROUP_SEATS];
+    u32 actionRequests[WIFI_PLAZA_GROUP_COUNT][WIFI_PLAZA_GROUP_SEATS];
 } WiFiPlazaGroups;
 
 // A time of day.
@@ -311,7 +313,7 @@ typedef struct WiFiPlazaNewsSlot {
 } WiFiPlazaNewsSlot;
 
 typedef struct WiFiPlazaNewsSlots {
-    WiFiPlazaNewsSlot slots[20];
+    WiFiPlazaNewsSlot slots[WIFI_PLAZA_MAX_PLAYERS];
     u16 change; // 1: a player came, 2: a player left
     u16 lastSlot;
 } WiFiPlazaNewsSlots;
@@ -355,12 +357,12 @@ typedef struct WiFiPlazaWork {
     u32 changeFlags[4]; // per lobby slot: entered, left, events, updated
     WiFiPlazaProfile profile;
     WiFiPlazaTalkSession talk;
-    u8 tapToyPlayed[0x14];
+    u8 tapToyPlayed[WIFI_PLAZA_MAX_PLAYERS];
     WiFiPlazaEventSchedule eventSchedule;
     WiFiPlazaGroups groups;
     WiFiPlazaSessionState sessionState;
     WiFiPlazaGroupWeights groupWeights;
-    u8 specialVisitors[0x14]; // per lobby slot
+    u8 specialVisitors[WIFI_PLAZA_MAX_PLAYERS]; // per lobby slot
     u8 gameMembers[4];
     WiFiPlazaWordSet wordSet;
     WiFiPlazaTimer timer;
@@ -564,7 +566,7 @@ typedef struct WiFiPlazaLobbyClient {
     void *callbackArg; // last argument of the callbacks
     u8 *playerData;    // playerDataSize bytes per lobby slot
     u32 playerDataSize;
-    WiFiPlazaLobbyPlayerRecord records[20];
+    WiFiPlazaLobbyPlayerRecord records[WIFI_PLAZA_MAX_PLAYERS];
     WiFiPlazaLobbyIdList idLists[2];
     u8 state;        // WIFI_PLAZA_LOBBY_STATE_*
     u8 channel;      // 4 = none
@@ -574,7 +576,7 @@ typedef struct WiFiPlazaLobbyClient {
     u8 excessFlood;
     u8 requestError;
     u8 ownRecordError;
-    WiFiPlazaLobbyLocation locations[20];
+    WiFiPlazaLobbyLocation locations[WIFI_PLAZA_MAX_PLAYERS];
     WiFiPlazaLobbyCommandTable commandTables[2]; // lobby, channel
     s64 time;                                    // lobby time, refreshed every frame
     u8 padding_1A4[0x10];
@@ -667,7 +669,7 @@ int WiFiPlaza_ChannelSlotToSlot(WiFiPlazaWork *work, int channelSlot);
 void WiFiPlaza_SendChatNews(WiFiPlazaWork *work, u32 slot0, u32 slot1);
 void WiFiPlaza_SendTapToyTradeNews(WiFiPlazaWork *work, u32 slot0, u32 slot1, u8 value);
 void WiFiPlaza_SendActivityNews(WiFiPlazaWork *work, int selector, int count, int slot0, int slot1, int slot2, int slot3, int flag);
-void WiFiPlaza_SendMinigameResultNews(void *unused, int mode, u8 kind, u32 slot0, u32 slot1, u32 slot2, u32 slot3);
+void WiFiPlaza_SendMinigameResultNews(WiFiPlazaWork *work, int game, int count, u32 slot0, u32 slot1, u32 slot2, u32 slot3);
 int WiFiPlazaWork_GetScheduleValue3(WiFiPlazaWork *work);
 int WiFiPlazaWork_GetScheduleValue2(WiFiPlazaWork *work);
 int WiFiPlazaWork_GetOpenDuration(WiFiPlazaWork *work);

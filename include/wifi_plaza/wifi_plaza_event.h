@@ -65,6 +65,26 @@ typedef struct WiFiPlazaEvent {
     WiFiPlazaEventEffect *effect;
 } WiFiPlazaEvent;
 
+extern void (*const gWiFiPlazaEventEffectPhaseUpdates[])(WiFiPlazaEventEffect *effect, int arg);
+extern void (*const gWiFiPlazaEventEffectPhaseStarts[])(WiFiPlazaEventEffect *effect, u32 arg);
+extern const u8 gWiFiPlazaEventPhase3PropIds[];
+extern const u32 gWiFiPlazaEventPhase3PropGroups[][2];
+extern const u8 gWiFiPlazaEventPhase4Steps[];
+extern const u8 gWiFiPlazaEventPhase4HideSteps[];
+extern const u32 gWiFiPlazaEventPhase5Thresholds[];
+extern const u32 gWiFiPlazaEventPhase5AnimSpeeds[];
+extern const u8 gWiFiPlazaEventModelIds3[];
+extern const u8 gWiFiPlazaEventModelIds4[];
+extern const u8 gWiFiPlazaEventModelIds2[];
+extern const u8 gWiFiPlazaEventModelIds5[];
+extern const u8 gWiFiPlazaEventModelIds1[];
+extern const u8 gWiFiPlazaEventModelIds6[];
+extern const u8 gWiFiPlazaEventModelIds0[];
+extern const u8 gWiFiPlazaMoverMarkerTags[];
+extern const u16 gWiFiPlazaMoverSounds[][6];
+extern BOOL (*const gWiFiPlazaEventWobbleSteps[])(WiFiPlazaEventWobble *wobble, WiFiPlazaModels *models, int index);
+extern BOOL (*const gWiFiPlazaEventWobbleInits[])(WiFiPlazaEventWobble *wobble, WiFiPlazaModels *models, int index);
+
 WiFiPlazaEvent *WiFiPlazaEvent_Create(enum HeapID heapID, WiFiPlazaRoomWork *room);
 void WiFiPlazaEvent_Delete(WiFiPlazaEvent *event);
 void WiFiPlazaEvent_Update(WiFiPlazaEvent *event);

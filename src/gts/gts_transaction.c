@@ -84,14 +84,6 @@ typedef enum GtsTransactionState {
     GTS_TRANSACTION_STATE_SERVER_ERROR,
 } GtsTransactionState;
 
-extern int (*const gGtsTransactionStates[])(GtsApp *app);
-extern const GraphicsModes gGtsTransactionGraphicsModes;
-extern const BgTemplate gGtsTransactionBg0Template;
-extern const BgTemplate gGtsTransactionBg1Template;
-extern const BgTemplate gGtsTransactionBg2Template;
-extern const BgTemplate gGtsTransactionSubBg0Template;
-extern const BgTemplate gGtsTransactionSubBg1Template;
-
 static void GtsTransaction_InitBgs(BgConfig *bgConfig);
 static void GtsTransaction_FreeBgs(BgConfig *bgConfig);
 static void GtsTransaction_LoadGraphics(GtsApp *app);

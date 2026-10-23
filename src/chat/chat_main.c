@@ -77,9 +77,9 @@ void ciHandleDisconnect(ChatConnection *chat, const char *reason) {
         return;
     }
     chat->connected = FALSE;
-    *(volatile BOOL *)&chat->connecting = FALSE;
+    chat->connecting = FALSE;
     chat->disconnected = TRUE;
-    if (*(volatile BOOL *)&chat->connecting) {
+    if (chat->connecting) {
         if (chat->connectedCallback) {
             ((ChatConnectedFunc)chat->connectedCallback)(chat, FALSE, 0, chat->connectParam);
         }

@@ -56,28 +56,6 @@ struct EasyChatAppView {
     EasyChatButtonText buttonTexts[2];
 };
 
-typedef struct EasyChatViewCommand {
-    EasyChatAppView *view;
-    EasyChatApp *app;
-    ECMenu *menu;
-    u32 command;
-    u32 slot;
-    u32 state;
-} EasyChatViewCommand;
-
-typedef void (*EasyChatViewCommandFunc)(SysTask *task, EasyChatViewCommand *command);
-
-extern const ObjCharTransferTemplate gEasyChatObjCharTransferTemplate;
-extern const GraphicsModes gEasyChatAppViewGraphicsModes;
-extern const BgTemplate gEasyChatBgTemplate_Main2;
-extern const BgTemplate gEasyChatBgTemplate_Main1;
-extern const BgTemplate gEasyChatBgTemplate_Sub1;
-extern const BgTemplate gEasyChatBgTemplate_Main3;
-extern const BgTemplate gEasyChatBgTemplate_Main0;
-extern const BgTemplate gEasyChatBgTemplate_Sub0;
-extern const GraphicsBanks gEasyChatAppViewGraphicsBanks;
-extern const EasyChatViewCommandFunc gEasyChatViewCommandFuncs[];
-
 static void EasyChatAppView_InitCharTransfer(EasyChatAppView *view);
 static void EasyChatAppView_FreeCharTransfer(EasyChatAppView *view);
 static void EasyChatAppView_CreateButtonTexts(EasyChatAppView *view);

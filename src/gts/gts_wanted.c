@@ -55,39 +55,6 @@ typedef enum GtsWantedState {
 // GtsWantedMon.gender: 1 male, 2 female, 3 either (or genderless).
 #define GTS_GENDER_ANY 3
 
-typedef struct GtsWantedWindowPosition {
-    u16 x;
-    u16 y;
-} GtsWantedWindowPosition;
-
-// A choice of the level list: kind 0 the levels a deposit asks for (12), kind 1 the levels SEEK POKEMON searches (11).
-typedef struct GtsLevelRange {
-    u32 msgId;
-    s16 minLevel; // 0: none
-    s16 maxLevel; // 0: none
-} GtsLevelRange;
-
-// The countries in list order, in groups by initial letter: {first index in gGtsCountries, group}.
-typedef struct GtsCountryGroup {
-    u8 start;
-    u8 group;
-} GtsCountryGroup;
-
-extern int (*const gGtsWantedStates[])(GtsApp *app);
-extern const BgTemplate gGtsWantedBg0Template;
-extern const BgTemplate gGtsWantedBg1Template;
-extern const BgTemplate gGtsWantedBg2Template;
-extern const BgTemplate gGtsWantedBg3Template;
-extern const GtsWantedWindowPosition gGtsWantedWindowPositions[];
-// The text colors of the male and female symbols.
-extern u32 gGtsGenderColors[];
-extern const GtsLevelRange gGtsWantedLevelRanges[];
-extern const GtsLevelRange gGtsSearchLevelRanges[];
-// NARC_zukan_data_sort_order_letters_*.
-extern const int gGtsSpeciesLetterFiles[];
-extern const u16 gGtsCountries[];
-extern const GtsCountryGroup gGtsCountryGroups[];
-
 static void GtsWanted_PrintMessage(GtsApp *app, int msgId, int textSpeed, int unused3, int unused4);
 static void GtsWanted_InitBgs(BgConfig *bgConfig);
 static void GtsWanted_FreeBgs(BgConfig *bgConfig);

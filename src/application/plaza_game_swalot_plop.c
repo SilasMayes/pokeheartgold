@@ -1,5 +1,7 @@
 #include "application/plaza_game_swalot_plop.h"
 
+#include <nnsys/g3d_internal.h>
+#include <nnsys/g3d_util_internal.h>
 #include <string.h>
 
 #include "global.h"
@@ -33,8 +35,10 @@
 #include "obj_pltt_transfer.h"
 #include "palette.h"
 #include "render_window.h"
+#include "screen_fade_internal.h"
 #include "screen_fade_legacy.h"
 #include "sound_playback.h"
+#include "sound_system_internal.h"
 #include "sprite.h"
 #include "sprite_transfer.h"
 #include "string_util.h"
@@ -48,14 +52,8 @@
 
 BOOL GF_TouchpadStartRecording(TPData *data, u32 capacity, u32 frequency);
 int GF_TouchpadUpdate(SwalotPlopTouch *out, int mode, u32 threshold);
-void SetBothScreensBrightnessByColor(u16 color);
-void GF_SndHandleSetTempoRatio(int handleNo, int ratio);
-void NNS_G3dMdlSetMdlAmbAll(NNSG3dResMdl *model, GXRgb color);
 int MTX_Inverse33(const MtxFx33 *src, MtxFx33 *dst);
 fx32 FX_Sqrt(fx32 x);
-void NNS_G3dAnmObjDisableID(NNSG3dAnmObj *anmObj, int id);
-void NNS_G3dAnmObjEnableID(NNSG3dAnmObj *anmObj, int id);
-int NNS_G3dGetResDictIdxByName(const NNSG3dResDict *dict, const NNSG3dResName *name);
 
 enum SwalotPlopState {
     SWALOT_PLOP_STATE_CREATE_ENTRY,
@@ -152,42 +150,6 @@ enum SwalotPlopCommandId {
     SWALOT_PLOP_CMD_SCORE_REPORT,
     SWALOT_PLOP_CMD_SYNC,
 };
-
-extern const u16 gSwalotPlopStageAnimFiles[];
-extern const u16 gSwalotPlopStageAnimModels[];
-extern const u16 gSwalotPlopSceneModelFiles[3];
-extern const u16 gSwalotPlopStageFiles[];
-typedef struct SwalotPlopAnimRange {
-    u8 start;
-    u8 end;
-} SwalotPlopAnimRange;
-
-extern const SwalotPlopAnimRange gSwalotPlopSpecialAnimRanges[];
-extern const u16 gSwalotPlopSceneAnimFiles[6];
-extern const VecFx32 gSwalotPlopBodyOffset;
-extern const u32 gSwalotPlopHitPoints[];
-extern const u32 gSwalotPlopPhaseFrames[];
-extern const VecFx32 gSwalotPlopBodyBaseNormal;
-extern int (*const gSwalotPlopTiltFuncs[])(SwalotPlopBody *body, u32 frame, u32 duration);
-extern const ObjCharTransferTemplate gSwalotPlopObjCharTransfer;
-extern const GraphicsModes gSwalotPlopGraphicsModes;
-extern const s16 gSwalotPlopDemoCursorYs[];
-extern const BgTemplate gSwalotPlopMain1BgTemplate;
-extern const BgTemplate gSwalotPlopMain2BgTemplate;
-extern const BgTemplate gSwalotPlopSub0BgTemplate;
-extern const BgTemplate gSwalotPlopSub1BgTemplate;
-extern const BgTemplate gSwalotPlopSub2BgTemplate;
-extern const BgTemplate gSwalotPlopSub3BgTemplate;
-extern const u16 gSwalotPlopSeatAngles[][4];
-extern const u16 gSwalotPlopCameraAngles[][4];
-extern const u16 gSwalotPlopStageRotations[][4];
-extern const GraphicsBanks gSwalotPlopBanks;
-extern const u32 gSwalotPlopIntroNamePositions[];
-extern const u8 gSwalotPlopPopupPosX[];
-extern const u8 gSwalotPlopPopupPosY[];
-extern const NNSG3dResName gSwalotPlopSceneNodeNames[6][15];
-extern const u8 gSwalotPlopSceneAnimModels[6];
-extern const SwalotPlopCommand gSwalotPlopCommands[8];
 
 static void SwalotPlop_ReceiveStart(SwalotPlopApp *app);
 static void SwalotPlop_ReceiveFinish(SwalotPlopApp *app);

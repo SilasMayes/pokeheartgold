@@ -19,8 +19,6 @@
 // Screen 2 runs the naming screen (friend name) and the number entry (friend code) as nested
 // applications; screen 3 shows the player's own friend code.
 
-extern const OverlayManagerTemplate gOverlayTemplate_CodeEntry;
-
 // palettes of the return button: normal, pressed
 typedef struct PalPadButtonPalettes {
     u8 palettes[2];
@@ -30,8 +28,6 @@ extern const struct {
     u8 unk0;
     PalPadButtonPalettes returnButton;
 } gPalPadTables;
-
-extern const TouchscreenHitbox gPalPadFriendCodeHitboxes[];
 
 static NamingScreenArgs *PalPadNaming_CreateNamingArgs(PalPadNaming *naming, PalPadShared *shared, enum HeapID heapId);
 static BOOL PalPadFriendCode_HandleInput(PalPadFriendCode *friendCode, PalPadShared *shared);

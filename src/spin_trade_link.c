@@ -13,25 +13,6 @@
 #include "union_room_talk.h"
 #include "wireless_manager.h"
 
-typedef struct SpinTradeLinkPacket {
-    u32 command;
-    u8 data[20];
-} SpinTradeLinkPacket;
-
-struct SpinTradeLink {
-    SpinTradeArgs *parent;
-    SpinTradeLinkPacket packet;
-    u32 blocked, count, state, leaderJoinPending, participantCount, leavingMask, unk34;
-    u16 assignedCount;
-    u8 pad3a[6];
-    u16 receivedStatus, memberMask, flags44;
-    s16 partyReceivedMask;
-    u16 cancelMask, confirmMask;
-    u8 *partyRecvBuffer; // the link layer receives each member's party here
-    u8 *parties;         // then SpinTradeLink_ReceiveParty copies it here
-    u32 unk54;
-};
-
 typedef struct SpinTradeJoinRequest {
     u8 sender, count, command, accepted;
 } SpinTradeJoinRequest;
@@ -47,12 +28,7 @@ void SpinTrade_ReceiveSpinData(struct SpinTradeApp *app, const u16 *data);
 void SpinTrade_ReceiveTradeSlot(struct SpinTradeApp *app, int sender, u32 data);
 void SpinTrade_ReceiveResult(struct SpinTradeApp *app, const u16 *data);
 typedef void (*SpinTradeLinkPacketHandler)(int, int, void *, SpinTradeLink *);
-void *SpinTradeLink_New(SpinTradeArgs *parent, enum HeapID heap);
-
-void SpinTradeLink_RegisterCommands(SpinTradeLink *link);
-
 static BOOL SpinTradeLink_SendPacket(SpinTradeLink *link, u32 command, void *data, u32 size);
-BOOL SpinTradeLink_SendCommand(SpinTradeLink *link, u32 command, void *data, u32 size);
 static void SpinTradeLink_ReceivePacket(int sender, int size, void *data, void *context);
 static void SpinTradeLink_ReceiveParty(int sender, int size, void *data, void *context);
 static void SpinTradeLink_HandleLeaderMenuState(int sender, int unused, void *data, SpinTradeLink *link);
@@ -77,7 +53,6 @@ static u32 SpinTradeLink_GetPacketSize(void);
 static u32 SpinTradeLink_GetPartySize(void);
 static void *SpinTradeLink_GetPartyRecvBuffer(int sender, void *context, int size);
 static int SpinTradeLink_CountMemberProfiles(void);
-void *SpinTradeLink_GetReceivedParty(SpinTradeLink *link, int sender);
 
 static const SpinTradeLinkPacketHandler sSpinTradeLinkPacketHandlers[] = {
     SpinTradeLink_HandleMemberJoined,
@@ -238,7 +213,7 @@ static const CommCommand sSpinTradeLinkCommands[] = {
     { NULL,                        NULL,                        NULL                             },
 };
 
-void *SpinTradeLink_New(SpinTradeArgs *parent, enum HeapID heap) {
+SpinTradeLink *SpinTradeLink_New(SpinTradeArgs *parent, enum HeapID heap) {
     SpinTradeLink *link = Heap_Alloc(heap, sizeof(SpinTradeLink));
     GF_ASSERT(link);
     memset(link, 0, sizeof(SpinTradeLink));
@@ -345,7 +320,7 @@ static void SpinTradeLink_HandleJoinRequest(int sender, int unused, void *data, 
         case 1:
             break;
         }
-        SpinTradeLink_SendCommand(link, 2, &packet, 4);
+        SpinTradeLink_SendCommand(link, SPIN_TRADE_CMD_JOIN_REQUEST, &packet, 4);
         return;
     }
     switch (src->command) {
@@ -384,7 +359,7 @@ static void SpinTradeLink_HandleCloseYesNo(int sender, int unused, void *data, S
 static void SpinTradeLink_HandleJoinNotice(int sender, int unused, void *data, SpinTradeLink *link) {
     if (Comm_GetLocalNetId() == 0) {
         u8 id = sender;
-        SpinTradeLink_SendCommand(link, 0, &id, 1);
+        SpinTradeLink_SendCommand(link, SPIN_TRADE_CMD_MEMBER_JOINED, &id, 1);
     }
 }
 

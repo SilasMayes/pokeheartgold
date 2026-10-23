@@ -7,6 +7,7 @@
 
 #include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0236.h"
+#include "wifi_plaza/wifi_plaza_internal.h"
 
 #include "assert.h"
 #include "comm_state.h"
@@ -28,6 +29,7 @@
 #include "options.h"
 #include "overlay_00_thumb.h"
 #include "render_text.h"
+#include "scanline_effect.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
 #include "sound_system.h"
@@ -37,48 +39,8 @@
 #include "vram_transfer_manager.h"
 #include "wireless_status_icon.h"
 
-struct DoubleBuffer *DoubleBuffer_New(enum HeapID heapId, void *first, void *second);
-void DoubleBuffer_Delete(struct DoubleBuffer *buffer);
-u16 *DoubleBuffer_GetCurrent(struct DoubleBuffer *buffer);
-s16 *DoubleBuffer_GetOther(struct DoubleBuffer *buffer);
-void DoubleBuffer_SetEnabled(struct DoubleBuffer *buffer, u8 enabled);
-void DoubleBuffer_Swap(struct DoubleBuffer *buffer);
 void CommState_EndPlazaMatch(void);
 int Comm_FindFriendSlot(SaveData *saveData, void *friendData, u32 *index);
-void WiFiPlaza_SendMinigameResultNews(void *lobby, u8 game, int count, u32 id0, u32 id1, u32 id2, u32 id3);
-
-extern const u8 gPlazaGameMimeJrTopSelectionWeights[];
-extern const u8 gPlazaGameWobbuffetPopSelectionWeights[];
-extern const u8 gPlazaGameSwalotPlopSelectionWeights[];
-extern const u8 gPlazaGameResultsFlashSlots[];
-extern const s16 gPlazaGameResultsRankOffsets[];
-extern const fx32 gPlazaGameTitleSlideOutEndX[];
-extern const fx32 gPlazaGameTitleSlideOutVelocity[];
-extern const u32 gPlazaGameTitleColors[];
-extern const fx32 gPlazaGameTitleSlideInVelocity[];
-extern const fx32 gPlazaGameTitleRestX[];
-extern const fx32 gPlazaGameTitleBounceX[];
-extern const fx32 gPlazaGameTitleBounceOutVelocity[];
-extern const fx32 gPlazaGameTitleBounceBackVelocity[];
-extern const fx32 gPlazaGameTitleSlideInStartX[];
-extern const GraphicsModes gPlazaGameResultsGraphicsModes;
-extern const s16 gPlazaGamePlayerSpritePositions[];
-extern const s16 gPlazaGamePlayerSpriteY[];
-extern const u8 gPlazaGameSeatOrders[][4];
-extern const ObjCharTransferTemplate gPlazaGameObjCharTransfer;
-extern const GraphicsModes gPlazaGameEntryGraphicsModes;
-extern const VecFx32 gPlazaGameSignWindowSpritePositions[2];
-extern const GraphicsBanks gPlazaGameEntryBanks;
-extern const GraphicsBanks gPlazaGameResultsBanks;
-extern const u8 gPlazaGameSeatRowsByCount[][12];
-extern const u8 gPlazaGameScreenRowsByCount[][12];
-extern const u8 gPlazaGameSeatAnimsByCount[][12];
-extern const u8 gPlazaGameSeatRows[][12];
-extern const u8 gPlazaGameSeatAnims[][12];
-extern const u16 gPlazaGameAltMessages[20][2];
-extern const PlazaGameBgTemplate gPlazaGameEntryBgTemplates[];
-extern const PlazaGameBgTemplate gPlazaGameResultsBgTemplates[];
-extern const u8 gPlazaGameCommands[];
 
 enum PlazaGameKind {
     PLAZA_GAME_SWALOT_PLOP,
@@ -1415,7 +1377,7 @@ static void PlazaGameLineScroll_SetPlayer(PlazaGameLineScroll *lineScroll, Plaza
 }
 
 static void PlazaGameLineScroll_Swap(PlazaGameLineScroll *lineScroll) {
-    struct DoubleBuffer *buffer = lineScroll->buffer;
+    DoubleBuffer *buffer = lineScroll->buffer;
     if (buffer != NULL) {
         DoubleBuffer_Swap(buffer);
         DoubleBuffer_SetEnabled(lineScroll->buffer, 0);

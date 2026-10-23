@@ -50,8 +50,6 @@ typedef struct GtsSearchCursorPosition {
     u16 anim;
 } GtsSearchCursorPosition;
 
-extern int gGtsCountryCount[];
-
 static void GtsSearch_InitBgs(BgConfig *bgConfig);
 static void GtsSearch_FreeBgs(BgConfig *bgConfig);
 static void GtsSearch_LoadGraphics(GtsApp *app);

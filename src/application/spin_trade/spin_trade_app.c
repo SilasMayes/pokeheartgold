@@ -103,34 +103,10 @@
 #define SPIN_TRADE_STATE_WAIT_FADE_OUT       52
 #define SPIN_TRADE_STATE_EXIT                53
 
-// Link commands sent through SpinTradeLink_SendCommand
-#define SPIN_TRADE_CMD_STATUS     8
-#define SPIN_TRADE_CMD_JOIN       9
-#define SPIN_TRADE_CMD_JUMP       10
-#define SPIN_TRADE_CMD_SPIN       11
-#define SPIN_TRADE_CMD_SLOT       12
-#define SPIN_TRADE_CMD_COUNT      13
-#define SPIN_TRADE_CMD_TRADE_SLOT 14
-#define SPIN_TRADE_CMD_RESULT     15
-#define SPIN_TRADE_CMD_CANCEL     16
-#define SPIN_TRADE_CMD_CONFIRM    17
-
 #define SPIN_TRADE_LINK_SYNC_NO 0xCA
 
 #define SPIN_TRADE_MAX_PLAYERS 5
 #define SPIN_TRADE_ANGLE_FULL  FX32_CONST(360)
-
-// The link menu (SpinTradeArgs.menu)
-typedef struct SpinTradeLinkMenu {
-    u8 unk_00[0x3C];
-    u32 unk_3C;
-    u16 receivedStatus; // SPIN_TRADE_CMD_STATUS bits received from the host
-    u16 memberMask;     // netIds of the joined members
-    u16 unk_44;
-    s16 partyReceivedMask;
-    u16 cancelled;
-    u16 confirmMask;
-} SpinTradeLinkMenu;
 
 // Egg sitting on the turntable
 typedef struct SpinTradeEgg {
@@ -325,7 +301,7 @@ typedef struct SpinTradeApp {
     String *names[SPIN_TRADE_MAX_PLAYERS];
     u8 scratch[0x20];
     SpinTradeArgs *args;
-    SpinTradeLinkMenu *menu;
+    SpinTradeLink *menu;
     SpinTradeMachine machine;
     SpinTradeObjects objects;
     SpinTradeBounce bounces[5];
@@ -426,8 +402,6 @@ void CommState_SetMaxEntries(int count);
 void Comm_InitSyncedSave(s32 *state);
 BOOL Comm_SyncedSave(SaveData *saveData, int unused, s32 *state);
 int GF_TouchpadUpdate(SpinTradeTouchSamples *out, int mode, u32 threshold);
-BOOL SpinTradeLink_SendCommand(SpinTradeLinkMenu *menu, int command, void *data, int size);
-Party *SpinTradeLink_GetReceivedParty(SpinTradeLinkMenu *menu, int netId);
 
 BOOL SpinTradeApp_Init(OverlayManager *man, int *state);
 BOOL SpinTradeApp_Exit(OverlayManager *man, int *state);
@@ -1377,7 +1351,7 @@ BOOL SpinTrade_State_WaitExitSync(SpinTradeApp *app) {
         app->timer++;
         if (app->timer >= 120) {
             app->timer = 0;
-            if (app->menu->unk_3C == 0) {
+            if (app->menu->unk3C == 0) {
                 CommState_SetErrorWatch(0, 0);
                 CommState_SetMaxEntries(1);
                 CommState_ResumeAlternateSearch();
@@ -1965,7 +1939,7 @@ static void SpinTrade_FreeObjects(SpinTradeApp *app) {
 }
 
 static void SpinTrade_LoadObjectModels(SpinTradeApp *app) {
-    volatile int i;
+    int i;
     const int *modelIds;
     const int *animIds;
     RenderModelStorage *model;
@@ -2863,7 +2837,7 @@ static void *SpinTrade_GetScratch(SpinTradeApp *app) {
 }
 
 static BOOL SpinTrade_HasReceivedStatus(SpinTradeApp *app, u32 status) {
-    SpinTradeLinkMenu *menu = app->menu;
+    SpinTradeLink *menu = app->menu;
     if ((menu->receivedStatus & status) != 0) {
         return TRUE;
     }
@@ -2871,7 +2845,7 @@ static BOOL SpinTrade_HasReceivedStatus(SpinTradeApp *app, u32 status) {
 }
 
 static BOOL SpinTrade_HaveAllMembersJoined(SpinTradeApp *app) {
-    SpinTradeLinkMenu *menu = app->menu;
+    SpinTradeLink *menu = app->menu;
     SpinTradeArgs *args = app->args;
     u32 count = 0;
     s32 needed = args->playerCount - 1;
@@ -2888,7 +2862,7 @@ static BOOL SpinTrade_HaveAllMembersJoined(SpinTradeApp *app) {
 }
 
 static int SpinTrade_CountMembers(SpinTradeApp *app) {
-    SpinTradeLinkMenu *menu = app->menu;
+    SpinTradeLink *menu = app->menu;
     u32 count = 0;
     u32 mask = menu->memberMask;
 
@@ -2935,7 +2909,7 @@ static void SpinTrade_ReceiveTradedMon(SpinTradeApp *app, int netId) {
 }
 
 static int SpinTrade_CountReceivedParties(SpinTradeApp *app) {
-    SpinTradeLinkMenu *menu = app->menu;
+    SpinTradeLink *menu = app->menu;
     u32 count = 0;
     u32 mask = menu->partyReceivedMask;
 
@@ -3026,7 +3000,7 @@ static BOOL SpinTrade_AnyPartyHasBadEgg(SpinTradeApp *app) {
 }
 
 static int SpinTrade_CountConfirmed(SpinTradeApp *app) {
-    SpinTradeLinkMenu *menu = app->menu;
+    SpinTradeLink *menu = app->menu;
     u32 count = 0;
     u32 mask = menu->confirmMask;
 
@@ -3038,8 +3012,8 @@ static int SpinTrade_CountConfirmed(SpinTradeApp *app) {
 }
 
 static BOOL SpinTrade_IsCancelled(SpinTradeApp *app) {
-    SpinTradeLinkMenu *menu = app->menu;
-    if (menu->cancelled != 0) {
+    SpinTradeLink *menu = app->menu;
+    if (menu->cancelMask != 0) {
         return TRUE;
     }
     return FALSE;

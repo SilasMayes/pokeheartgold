@@ -111,57 +111,6 @@ struct GtsSelector {
     u8 savedCursor;     // the grid cursor while on a button below the grid
 };
 
-typedef struct GtsSelectorWindowPosition {
-    u8 x;
-    u8 y;
-} GtsSelectorWindowPosition;
-
-typedef struct GtsSelectorCursorPos {
-    u8 x;
-    u8 y;
-} GtsSelectorCursorPos;
-
-typedef struct GtsSelectorCursorNext {
-    u8 up;
-    u8 down;
-    u8 left;
-    u8 right;
-} GtsSelectorCursorNext;
-
-typedef struct GtsSelectorWindowPosition3 {
-    u8 x;
-    u8 y;
-    u8 unused;
-} GtsSelectorWindowPosition3;
-
-extern int (*const gGtsSelectorStates[])(GtsSelector *selector);
-extern const GtsSelectorWindowPosition gGtsSelectorGenderWindowPositions[];
-extern const GtsSelectorWindowPosition gGtsSelectorLevelWindowPositions[];
-extern const GtsSelectorWindowPosition gGtsSelectorCountryWindowPositions[];
-extern const GtsSelectorWindowPosition3 gGtsSelectorSpeciesWindowPositions[];
-extern const GtsSelectorWindowPosition gGtsSelectorGridWindowPositions[];
-// The cursor positions are {x, y} pairs. The list cursors are in pixels, the grid cursors in tiles of the panel.
-extern const GtsSelectorCursorPos gGtsSelectorGenderCursorPositions[];
-extern const GtsSelectorCursorPos gGtsSelectorSpeciesCursorPositions[];
-extern const GtsSelectorCursorPos gGtsSelectorLevelCursorPositions[];
-extern const GtsSelectorCursorPos gGtsSelectorCountryCursorPositions[];
-extern const GtsSelectorCursorPos gGtsSelectorCountryGroupCursorPositions[];
-extern const GtsSelectorCursorPos gGtsSelectorGroupCursorPositions[];
-// The value of each row of the gender list: EITHER MON_GENDERLESS, then MON_MALE, MON_FEMALE, BACK -2.
-extern const int gGtsSelectorGenders[];
-// The cursor's next button for up, down, left, right on each button.
-extern const GtsSelectorCursorNext gGtsSelectorLetterNext[];
-extern const GtsSelectorCursorNext gGtsSelectorGroupNext[];
-extern const GtsSelectorCursorNext gGtsSelectorCountryGroupNext[];
-extern const TouchscreenHitbox gGtsSelectorGroupHitboxes[];
-extern const TouchscreenHitbox gGtsSelectorCountryGroupHitboxes[];
-extern const TouchscreenHitbox gGtsSelectorListHitboxes[];
-extern const TouchscreenHitbox gGtsSelectorGenderHitboxes[];
-extern const TouchscreenHitbox gGtsSelectorCountryListHitboxes[];
-extern const TouchscreenHitbox gGtsSelectorLetterHitboxes[];
-// The message of each letter, A .. Z.
-extern const int gGtsSelectorLetterMsgs[];
-
 static void GtsSelector_AddWindows(GtsSelector *selector, int page);
 static void GtsSelector_RemoveWindows(GtsSelector *selector, int page);
 static int GtsSelector_GetTouchedButton(GtsSelector *selector, u32 page);

@@ -406,7 +406,8 @@ static void WiFiPlazaApps_StartMain(WiFiPlazaApps *apps, void **args) {
 
 // The plaza tells which app comes next.
 static BOOL WiFiPlazaApps_EndMain(WiFiPlazaApps *apps, void **args) {
-    switch (((WiFiPlazaMainArgs *)*args)->result) {
+    WiFiPlazaMainArgs *mainArgs = *args;
+    switch (mainArgs->result) {
     case 0:
         WiFiPlazaApps_Start(apps, WIFI_PLAZA_APP_DISCONNECT);
         break;
@@ -449,6 +450,7 @@ static BOOL WiFiPlazaApps_EndMain(WiFiPlazaApps *apps, void **args) {
 // App 1, the visitor profiles.
 static void WiFiPlazaApps_NewVisitorProfilesArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
     u8 *p;
+    VisitorProfilesArgs *profilesArgs;
     u32 count;
     p = Heap_Alloc(heapID, sizeof(VisitorProfilesArgs));
     *out = p;
@@ -458,9 +460,9 @@ static void WiFiPlazaApps_NewVisitorProfilesArgs(WiFiPlazaApps *apps, void **out
         p++;
         count--;
     } while (count);
-    p = *out;
-    ((VisitorProfilesArgs *)p)->saveData = apps->save;
-    ((VisitorProfilesArgs *)p)->lobby = apps->work;
+    profilesArgs = *out;
+    profilesArgs->saveData = apps->save;
+    profilesArgs->lobby = apps->work;
 }
 
 static void WiFiPlazaApps_FreeVisitorProfilesArgs(void **args) {
@@ -485,6 +487,7 @@ static BOOL WiFiPlazaApps_EndVisitorProfiles(WiFiPlazaApps *apps) {
 
 // App 2, the plaza news.
 static void WiFiPlazaApps_NewPlazaNewsArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
+    WiFiPlazaNewsArgs *newsArgs;
     u8 *p = Heap_Alloc(heapID, 12);
     *out = p;
     p[0] = 0;
@@ -499,10 +502,10 @@ static void WiFiPlazaApps_NewPlazaNewsArgs(WiFiPlazaApps *apps, void **out, enum
     p[9] = 0;
     p[10] = 0;
     p[11] = 0;
-    p = *out;
-    ((WiFiPlazaNewsArgs *)p)->news = WiFiPlazaWork_GetNews(apps->work);
-    ((WiFiPlazaNewsArgs *)p)->time = WiFiPlazaWork_GetCurrentTimePtr(apps->work);
-    ((WiFiPlazaNewsArgs *)p)->work = apps->work;
+    newsArgs = *out;
+    newsArgs->news = WiFiPlazaWork_GetNews(apps->work);
+    newsArgs->time = WiFiPlazaWork_GetCurrentTimePtr(apps->work);
+    newsArgs->work = apps->work;
 }
 
 static void WiFiPlazaApps_FreePlazaNewsArgs(void **args) {
@@ -525,6 +528,7 @@ static BOOL WiFiPlazaApps_EndPlazaNews(WiFiPlazaApps *apps) {
 // App 5, connect.
 static void WiFiPlazaApps_NewConnectArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
     u8 *p;
+    WiFiPlazaConnectArgs *connectArgs;
     u32 count;
     p = Heap_Alloc(heapID, sizeof(WiFiPlazaConnectArgs));
     *out = p;
@@ -534,11 +538,11 @@ static void WiFiPlazaApps_NewConnectArgs(WiFiPlazaApps *apps, void **out, enum H
         p++;
         count--;
     } while (count);
-    p = *out;
-    ((WiFiPlazaConnectArgs *)p)->saveData = apps->save;
-    ((WiFiPlazaConnectArgs *)p)->work = apps->work;
-    ((WiFiPlazaConnectArgs *)p)->skipPrompt = apps->skipPrompt;
-    ((WiFiPlazaConnectArgs *)p)->loginTime = apps->loginTime;
+    connectArgs = *out;
+    connectArgs->saveData = apps->save;
+    connectArgs->work = apps->work;
+    connectArgs->skipPrompt = apps->skipPrompt;
+    connectArgs->loginTime = apps->loginTime;
 }
 
 static void WiFiPlazaApps_FreeConnectArgs(void **args) {
@@ -551,7 +555,8 @@ static void WiFiPlazaApps_StartConnect(WiFiPlazaApps *apps, void **args) {
 
 // TRUE (the plaza ends) unless the connection was made.
 static BOOL WiFiPlazaApps_EndConnect(WiFiPlazaApps *apps, void **args) {
-    if (((WiFiPlazaConnectArgs *)*args)->connected == 0) {
+    WiFiPlazaConnectArgs *connectArgs = *args;
+    if (connectArgs->connected == 0) {
         return TRUE;
     }
     WiFiPlazaApps_Start(apps, WIFI_PLAZA_APP_MAIN);
@@ -560,14 +565,14 @@ static BOOL WiFiPlazaApps_EndConnect(WiFiPlazaApps *apps, void **args) {
 
 // Apps 6, 7, 8, the games.
 static void WiFiPlazaApps_NewSwalotPlopArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
-    u8 *p;
+    PlazaGameArgs *gameArgs;
     *out = Heap_Alloc(heapID, sizeof(PlazaGameArgs) - 4); // without mimeJrTopVoiceChat
     memset(*out, 0, sizeof(PlazaGameArgs) - 4);
-    p = *out;
-    ((PlazaGameArgs *)p)->voiceChat = 0;
-    ((PlazaGameArgs *)p)->fromLobby = 1;
-    ((PlazaGameArgs *)p)->saveData = apps->save;
-    WiFiPlazaGameArgs_NewProfiles((PlazaGameArgs *)p, heapID);
+    gameArgs = *out;
+    gameArgs->voiceChat = 0;
+    gameArgs->fromLobby = 1;
+    gameArgs->saveData = apps->save;
+    WiFiPlazaGameArgs_NewProfiles(gameArgs, heapID);
 }
 
 static void WiFiPlazaApps_FreeSwalotPlopArgs(void **args) {
@@ -592,14 +597,14 @@ static BOOL WiFiPlazaApps_EndSwalotPlop(WiFiPlazaApps *apps, void **args) {
 }
 
 static void WiFiPlazaApps_NewMimeJrTopArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
-    u8 *p;
+    PlazaGameArgs *gameArgs;
     *out = Heap_Alloc(heapID, sizeof(PlazaGameArgs));
     memset(*out, 0, sizeof(PlazaGameArgs));
-    p = *out;
-    ((PlazaGameArgs *)p)->mimeJrTopVoiceChat = 0;
-    *(u32 *)&((PlazaGameArgs *)p)->voiceChat = 1;
-    ((PlazaGameArgs *)p)->saveData = apps->save;
-    WiFiPlazaGameArgs_NewProfiles((PlazaGameArgs *)p, heapID);
+    gameArgs = *out;
+    gameArgs->mimeJrTopVoiceChat = 0;
+    *(u32 *)&gameArgs->voiceChat = 1;
+    gameArgs->saveData = apps->save;
+    WiFiPlazaGameArgs_NewProfiles(gameArgs, heapID);
 }
 
 static void WiFiPlazaApps_FreeMimeJrTopArgs(void **args) {
@@ -624,14 +629,14 @@ static BOOL WiFiPlazaApps_EndMimeJrTop(WiFiPlazaApps *apps, void **args) {
 }
 
 static void WiFiPlazaApps_NewWobbuffetPopArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
-    u8 *p;
+    PlazaGameArgs *gameArgs;
     *out = Heap_Alloc(heapID, sizeof(PlazaGameArgs) - 4); // without mimeJrTopVoiceChat
     memset(*out, 0, sizeof(PlazaGameArgs) - 4);
-    p = *out;
-    ((PlazaGameArgs *)p)->voiceChat = 0;
-    ((PlazaGameArgs *)p)->fromLobby = 1;
-    ((PlazaGameArgs *)p)->saveData = apps->save;
-    WiFiPlazaGameArgs_NewProfiles((PlazaGameArgs *)p, heapID);
+    gameArgs = *out;
+    gameArgs->voiceChat = 0;
+    gameArgs->fromLobby = 1;
+    gameArgs->saveData = apps->save;
+    WiFiPlazaGameArgs_NewProfiles(gameArgs, heapID);
 }
 
 static void WiFiPlazaApps_FreeWobbuffetPopArgs(void **args) {
@@ -657,6 +662,7 @@ static BOOL WiFiPlazaApps_EndWobbuffetPop(WiFiPlazaApps *apps, void **args) {
 
 // Apps 3 and 4, the footprint stamp.
 static void WiFiPlazaApps_NewFootprintStampArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
+    FootprintStampArgs *stampArgs;
     u8 *p = Heap_Alloc(heapID, 8);
     *out = p;
     p[0] = 0;
@@ -667,7 +673,8 @@ static void WiFiPlazaApps_NewFootprintStampArgs(WiFiPlazaApps *apps, void **out,
     p[5] = 0;
     p[6] = 0;
     p[7] = 0;
-    ((FootprintStampArgs *)*out)->lobby = apps->work;
+    stampArgs = *out;
+    stampArgs->lobby = apps->work;
 }
 
 static void WiFiPlazaApps_FreeFootprintStampArgs(void **args) {
@@ -684,17 +691,20 @@ static BOOL WiFiPlazaApps_EndFootprintStamp(WiFiPlazaApps *apps) {
 }
 
 static void WiFiPlazaApps_StartFootprintStampBoard0(WiFiPlazaApps *apps, void **args) {
-    ((FootprintStampArgs *)*args)->boardType = 0;
+    FootprintStampArgs *stampArgs = *args;
+    stampArgs->boardType = 0;
     WiFiPlazaApps_StartOverlay(apps, args, &sWiFiPlazaFootprintStampBoard0OverlayTemplate);
 }
 
 static void WiFiPlazaApps_StartFootprintStampBoard1(WiFiPlazaApps *apps, void **args) {
-    ((FootprintStampArgs *)*args)->boardType = 1;
+    FootprintStampArgs *stampArgs = *args;
+    stampArgs->boardType = 1;
     WiFiPlazaApps_StartOverlay(apps, args, &sWiFiPlazaFootprintStampBoard1OverlayTemplate);
 }
 
 // Apps 9 and 10, disconnect.
 static void WiFiPlazaApps_NewDisconnectArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
+    WiFiPlazaDisconnectArgs *disconnectArgs;
     u8 *p = Heap_Alloc(heapID, 12);
     *out = p;
     p[0] = 0;
@@ -709,9 +719,9 @@ static void WiFiPlazaApps_NewDisconnectArgs(WiFiPlazaApps *apps, void **out, enu
     p[9] = 0;
     p[10] = 0;
     p[11] = 0;
-    p = *out;
-    ((WiFiPlazaDisconnectArgs *)p)->saveData = apps->save;
-    ((WiFiPlazaDisconnectArgs *)p)->work = apps->work;
+    disconnectArgs = *out;
+    disconnectArgs->saveData = apps->save;
+    disconnectArgs->work = apps->work;
 }
 
 static void WiFiPlazaApps_FreeDisconnectArgs(void **args) {
@@ -727,7 +737,8 @@ static void WiFiPlazaApps_StartClosedDisconnect(WiFiPlazaApps *apps, void **args
 }
 
 static void WiFiPlazaApps_StartDisconnectOverlay(WiFiPlazaApps *apps, void **args, u32 mode) {
-    ((WiFiPlazaDisconnectArgs *)*args)->mode = mode;
+    WiFiPlazaDisconnectArgs *disconnectArgs = *args;
+    disconnectArgs->mode = mode;
     WiFiPlazaApps_StartOverlay(apps, args, &sWiFiPlazaDisconnectOverlayTemplate);
 }
 
@@ -737,6 +748,7 @@ static BOOL WiFiPlazaApps_EndDisconnect(void) {
 
 // Apps 11 and 12.
 static void WiFiPlazaApps_NewSurveyAnswerArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
+    WiFiPlazaDisconnectArgs *surveyArgs;
     u8 *p = Heap_Alloc(heapID, 12);
     *out = p;
     p[0] = 0;
@@ -751,13 +763,14 @@ static void WiFiPlazaApps_NewSurveyAnswerArgs(WiFiPlazaApps *apps, void **out, e
     p[9] = 0;
     p[10] = 0;
     p[11] = 0;
-    p = *out;
-    ((WiFiPlazaDisconnectArgs *)p)->saveData = apps->save;
-    ((WiFiPlazaDisconnectArgs *)p)->work = apps->work;
-    ((WiFiPlazaDisconnectArgs *)p)->mode = 0;
+    surveyArgs = *out;
+    surveyArgs->saveData = apps->save;
+    surveyArgs->work = apps->work;
+    surveyArgs->mode = 0;
 }
 
 static void WiFiPlazaApps_NewSurveyResultsArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
+    WiFiPlazaDisconnectArgs *surveyArgs;
     u8 *p = Heap_Alloc(heapID, 12);
     *out = p;
     p[0] = 0;
@@ -772,10 +785,10 @@ static void WiFiPlazaApps_NewSurveyResultsArgs(WiFiPlazaApps *apps, void **out, 
     p[9] = 0;
     p[10] = 0;
     p[11] = 0;
-    p = *out;
-    ((WiFiPlazaDisconnectArgs *)p)->saveData = apps->save;
-    ((WiFiPlazaDisconnectArgs *)p)->work = apps->work;
-    ((WiFiPlazaDisconnectArgs *)p)->mode = 1;
+    surveyArgs = *out;
+    surveyArgs->saveData = apps->save;
+    surveyArgs->work = apps->work;
+    surveyArgs->mode = 1;
 }
 
 static void WiFiPlazaApps_FreeSurveyArgs(void **args) {

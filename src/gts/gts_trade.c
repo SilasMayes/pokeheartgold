@@ -13,8 +13,6 @@
 #include "pokemon_storage_system.h"
 #include "save_gts.h"
 
-extern const OverlayManagerTemplate gGtsTradeSequenceTemplate;
-
 static PlayerProfile *GtsTrade_CreatePartnerProfile(GtsRecord *record);
 static Pokemon *GtsTrade_GetReceivedMon(GtsApp *app, int kind);
 static void GtsTrade_StoreReceivedMon(GtsApp *app);

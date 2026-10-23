@@ -272,7 +272,7 @@ static void WirelessStatusIcon_WriteOam(WirelessStatusIcon *p) {
     s32 mode;
     u32 pal;
     u8 prio;
-    volatile WirelessStatusIconOam *old;
+    WirelessStatusIconOam *old;
     switch (p->screenMode) {
     case 1:
         if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == 1) {

@@ -311,7 +311,7 @@ BOOL ciParseUser(char *prefix, ChatMessage *message) {
     }
     p = prefix;
     while (*p) {
-        if (*(volatile char *)p != '!') {
+        if (*p != '!') {
             p++;
             nickLength++;
         } else {

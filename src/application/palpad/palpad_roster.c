@@ -39,45 +39,12 @@ enum PalPadRosterAction {
 #define ROSTER_CURSOR_RETURN 8
 #define ROSTER_CURSOR_HIDDEN 10
 
-typedef struct PalPadSlotRect {
-    s16 x;
-    s16 y;
-    u8 width;
-    u8 height;
-    u8 bgId;
-    u8 palette;
-    u8 selectedPalette;
-} PalPadSlotRect;
-
-typedef struct PalPadListMenuEntry {
-    int msgId;
-    int value;
-} PalPadListMenuEntry;
-
-typedef void (*PalPadRosterScrollCallback)(PalPadRoster *roster, PalPadGfx *gfx, s16 page, s16 prevPage);
-
-extern const u16 gPalPadRosterPageBaseTiles[3];
-extern const PalPadPanelLayout gPalPadPanelLayouts[3];
-extern const PalPadListMenuEntry gPalPadRosterFriendMenus[2][4];
-extern const SpriteTemplate gPalPadDeleteEffectSpriteTemplate;
-extern const TouchscreenHitbox gPalPadRosterHitboxes[];
-extern const PalPadSlotRect gPalPadRosterSlotRects[9];
-
-typedef struct PalPadSlotRectFromY {
-    s16 y;
-    u8 unk_02[8];
-} PalPadSlotRectFromY;
-
-extern const PalPadSlotRectFromY gPalPadRosterSlotY[9];
-extern const u32 gPalPadRosterNameColors[3];
-
 extern const struct {
     u32 nameColor;
     TouchscreenListMenuTemplate template;
 } sPalPadRosterFriendMenuTemplate;
 
 extern const NNSG2dViewRect gPalPadRenderSurfaceRect;
-extern const PalPadRosterScrollCallback gPalPadRosterScrollCallbacks[4];
 
 static inline int Abs16(s16 value);
 static inline int AddTiles(int a, int b);
