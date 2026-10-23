@@ -7,6 +7,7 @@
 
 #include "bg_cell_manager.h" // 0x0201956C
 #include "bg_window.h"
+#include "char_tiles.h"
 #include "grid_input_handler.h" // 0x02019BA4
 #include "msgdata.h"
 #include "overlay_18.h"
@@ -777,5 +778,48 @@ void PokedexApp_BuildListEntries(PokedexAppData *pokedexApp, int mode);
 u32 PokedexApp_GetListLength(PokedexAppData *pokedexApp, int mode);
 u32 PokedexApp_GetLastListPage(PokedexAppData *pokedexApp, int mode);
 u32 PokedexApp_IdentityU32(u32 value);
+
+typedef struct PokedexWeightRange {
+    u16 min;
+    u16 max;
+} PokedexWeightRange;
+
+extern const OamManagerParam gPokedexOamManagerParam;
+extern const OamCharTransferParam gPokedexOamCharTransferParam;
+extern const SpriteResourceCountsListUnion gSpriteResourceCapacities;
+extern const ManagedSpriteTemplate gMonIconSpriteTemplate;
+extern const ManagedSpriteTemplate gPokedexMonPicSpriteTemplate0; // Pokemon picture, first of the pair
+extern const ManagedSpriteTemplate gPokedexMonPicSpriteTemplate1; // Pokemon picture, second of the pair
+extern const TileRect gPokedexMonPicSpriteRect;
+extern const ManagedSpriteTemplate gFootprintSpriteTemplate;
+extern const ManagedSpriteTemplate gTypeIconSpriteTemplate;
+extern const ManagedSpriteTemplate gLanguageIconSpriteTemplate;
+extern const ManagedSpriteTemplate gPokedexLanguageIconSpriteTemplate;
+extern const ManagedSpriteTemplate gPokedexListSpriteTemplates[]; // the list screen's 8 main-screen sprites
+extern const ManagedSpriteTemplate gPokedexListSprite9Template;
+extern const ManagedSpriteTemplate gPokedexListSprite10Template;
+extern const u16 gListScrollbarSizeThresholds[];
+extern const u8 gPokedexScrollbarLengths[];                         // scrollbar length per size animation
+extern const ManagedSpriteTemplate gPokedexSearchSpriteTemplates[]; // search menu sprites 0-25
+extern const ManagedSpriteTemplate gPokedexSearchSprite43Template;
+extern const ManagedSpriteTemplate gPokedexSearchSprite26Template;
+extern const ManagedSpriteTemplate gPokedexSearchSprite27Template;
+extern const ManagedSpriteTemplate gPokedexBodyTypeIconSpriteTemplate; // body type icons
+extern const ManagedSpriteTemplate gPokedexEntryTabCursorSpriteTemplate;
+extern const ManagedSpriteTemplate gPokedexAreaSpriteTemplates[]; // area screen sprites 1-8
+
+extern const ManagedSpriteTemplate gPokedexFormsSpriteTemplates[];
+extern const u16 gPokedexFormScrollbarSizeSteps[];
+extern const u8 gPokedexAreaScrollbarLengths[]; // area list scrollbar length per size animation
+extern const TileRect gPokedexMonPicBgRect;
+extern const u16 gPokedexMonPicBgTilemap[];
+
+extern const u16 gPokedexAreaScrollbarSizeSteps[];
+extern u8 gPokedexAreaMarkerSizes[][2]; // width and height of each area marker shape
+extern const ManagedSpriteTemplate gAreaMarkerSpriteTemplate;
+
+extern const ManagedSpriteTemplate gPokedexSizeCheckSpriteTemplates[];
+extern PokedexWeightRange gWeightCheckDiffRanges[];
+extern BOOL (*const gWeightCheckAnimFuncs[])(PokedexWeightCheckAnim *anim);
 
 #endif // GUARD_POKEHEARTGOLD_APPLICATION_POKEDEX_POKEDEX_INTERNAL_H

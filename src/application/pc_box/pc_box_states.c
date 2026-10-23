@@ -32,23 +32,6 @@
 #include "touchscreen.h"
 #include "yes_no_prompt.h"
 
-typedef u32 (*PCBoxStateFunc)(PCBoxWork *work);
-
-// Sub-apps run from the box (summary, bag, naming screen): start, end, state to return to.
-typedef struct PCBoxSubApp {
-    u32 (*start)(PCBoxWork *work);
-    u32 (*end)(PCBoxWork *work);
-    u32 nextState;
-} PCBoxSubApp;
-
-extern const PCBoxStateFunc gPCBoxStateTable[];
-// {yes, no} handler pairs of the yes/no prompts
-extern const PCBoxStateFunc gPCBoxYesNoHandlers[][2];
-extern const PCBoxSubApp gPCBoxSubApps[];
-extern const PCBoxMenuEntry gPCBoxDepositMenu[];
-extern const PCBoxMenuEntry gPCBoxWithdrawMenu[];
-extern const PCBoxMenuEntry gPCBoxMoveMenu[];
-
 static inline u32 plus30(u32 n);
 static u32 PCBox_StartFadeIn(PCBoxWork *work, u32 v);
 static u32 PCBox_StartFadeOut(PCBoxWork *work, u32 v);

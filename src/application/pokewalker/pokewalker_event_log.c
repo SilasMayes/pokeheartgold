@@ -38,28 +38,6 @@ typedef struct FollowMonModelParam {
     u8 unk_03;
 } FollowMonModelParam;
 
-typedef struct EventLogBgTemplates {
-    BgTemplate templates[5];
-} EventLogBgTemplates;
-
-extern const u8 *const gPokewalkerUploadBlocks[16];
-extern const u8 gPokewalkerUploadBlockSizes[16];
-extern const u8 gEventLogTouchBoxes[]; // previous page, next page, quit
-extern const u16 gEventLogInvalidName[];
-extern const GraphicsModes gEventLogGraphicsModes;
-extern const OamCharTransferParam gEventLogOamTransferParam;
-extern const SpriteResourceCountsListUnion gEventLogSpriteResourceCounts;
-extern const OamManagerParam gEventLogOamManagerParam;
-extern const WindowTemplate gEventLogWindowTemplates[4];
-extern const GraphicsBanks gEventLogGraphicsBanks;
-extern const ManagedSpriteTemplate gEventLogSpriteTemplate;
-extern const ManagedSpriteTemplate gEventLogEffectSpriteTemplate;
-extern const ManagedSpriteTemplate gEventLogMonSpriteTemplate;
-extern const EventLogBgTemplates gEventLogBgTemplates;
-extern const u8 gEventLogBgLayers[5];
-extern const s8 gEventLogFleeHopHeights[]; // ends with 111
-extern const u32 gEventLogCourseBgm[8];
-
 void MATH_QSort(void *base, u32 count, u32 width, int (*compare)(const void *, const void *, void *), void *context);
 
 static void PokewalkerEventLog_CreateMonSprite(PokewalkerEventLogMonSprite *monSprite, SpriteSystem *spriteSystem, SpriteManager *spriteManager, s16 x, s16 y, u8 animation, int side);

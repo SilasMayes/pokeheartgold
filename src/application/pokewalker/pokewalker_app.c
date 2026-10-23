@@ -4,6 +4,7 @@
 
 #include "global.h"
 
+#include "application/pokewalker/pokewalker_app_internal.h"
 #include "msgdata/msg.naix"
 
 #include "font.h"
@@ -20,25 +21,6 @@
 #include "touchpad.h"
 #include "vram_transfer_manager.h"
 
-typedef int (*PokewalkerAppModeFunc)(PokewalkerApp *app);
-
-// Mode table: {enter, update, exit} for each mode.
-typedef struct PokewalkerAppModeEntry {
-    PokewalkerAppModeFunc func;
-    PokewalkerAppModeFunc other[2];
-} PokewalkerAppModeEntry;
-
-extern const PokewalkerAppModeEntry gPokewalkerAppModeEnter[];  // enter
-extern const PokewalkerAppModeEntry gPokewalkerAppModeUpdate[]; // update
-extern const PokewalkerAppModeEntry gPokewalkerAppModeExit[];   // exit
-extern const GraphicsModes gPokewalkerAppGraphicsModes;
-extern const GraphicsBanks gPokewalkerAppGraphicsBanks;
-extern const BgTemplate gPokewalkerAppBgTemplate_Main1;
-extern const BgTemplate gPokewalkerAppBgTemplate_Main2;
-extern const BgTemplate gPokewalkerAppBgTemplate_Main3;
-extern const BgTemplate gPokewalkerAppBgTemplate_Sub0;
-extern const BgTemplate gPokewalkerAppBgTemplate_Sub1;
-extern const BgTemplate gPokewalkerAppBgTemplate_Sub2;
 static void PokewalkerApp_BuildOwnRecord(PokewalkerApp *app);
 static void PokewalkerApp_FreeBgs(BgConfig *bgConfig);
 static void PokewalkerApp_FreeMessages(PokewalkerApp *app);

@@ -37,20 +37,6 @@
 #include "touchscreen.h"
 #include "yes_no_prompt.h"
 
-// Callbacks and layouts of the grid inputs (PCBox_CreateGridInput).
-typedef struct PCBoxGridLayout {
-    const TouchscreenHitbox *hitboxes;
-    const DpadMenuBox *dpadBoxes;
-    const GridCallbacks *callbacks;
-} PCBoxGridLayout;
-
-extern const u8 gPCBoxThumbnailTiles[];
-extern const WindowTemplate gPCBoxWindowTemplates[];
-extern const TouchscreenHitbox gPCBoxSlotHitboxes[];
-extern const TouchscreenHitbox gPCBoxPartyHitboxes[];
-extern const TouchscreenHitbox gPCBoxTrayPartyHitboxes[];
-extern const PCBoxGridLayout gPCBoxGridLayouts[];
-
 static void PCBox_PlaceSpriteOnTop(PCBoxView *view, u32 i, s16 x, s16 y, u32 v);
 static void PCBox_CopyWindowToTextObj(PCBoxView *view, Window *window, u32 index);
 static void PCBox_PrintAligned(Window *window, String *str, s32 x, s32 y, u32 font, u32 color, u32 align);

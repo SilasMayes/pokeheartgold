@@ -18,8 +18,6 @@
 #include "save_vars_flags.h"
 #include "string_util.h"
 
-extern const u16 gTrainerHouseDailyFlags[MAX_NUM_TRAINER_HOUSE_SETS];
-
 static int PokewalkerApp_CountTrainerHouseSets(TrainerHouse *trainerHouse);
 static void PokewalkerApp_FillTrainerHouseParty(TrainerHouseMon *mons, Party *party);
 static void PokewalkerApp_FillTrainerHouseTrainer(TrainerHouseTrainer *trainer, SaveData *saveData);

@@ -32,28 +32,6 @@
 // Bag application: item list, message boxes, quantity and money windows, sprites (cursor, item icons,
 // pocket tabs, buttons).
 
-// Cursor sprite position, animation and palette of each button, move-item slot and quantity button.
-typedef struct BagAppCursorPos {
-    u8 x;
-    u8 y;
-    u8 anim;
-    u8 palette;
-} BagAppCursorPos;
-
-extern const u8 gListPocketCapacities[];
-extern const BagAppCursorPos gBagAppCursorPositions[];
-extern const BagAppCursorPos gBagAppMoveCursorPositions[];
-extern const BagAppCursorPos gBagAppQuantityCursorPositions[];
-extern const SpriteResourceCountsListUnion gBagSpriteResourceCounts;
-extern const OamManagerParam gBagOamManagerParam;
-extern const OamCharTransferParam gBagOamCharTransferParam;
-extern const ManagedSpriteTemplate gBagSpriteTemplates[];
-extern const int gQuantityButtonCounts[];
-extern const int gHiddenQuantityButtonCounts[];
-extern const int gHiddenQuantityButtons[][4];
-extern const int gQuantityButtonSprites[][6];
-extern const int gQuantityButtonAnims[][6];
-
 static void BagApp_DrawRegisteredItemIcon(BagApp *app, Window *window, int y, BOOL secondSlot);
 static BOOL BagApp_TextPrinterCallback(TextPrinterTemplate *printer, u16 event);
 static int BagApp_GetNthItemSlotIndex(BagViewPocket *pocket, int pocketId, int n);
@@ -66,8 +44,6 @@ static void BagApp_LoadSpriteResources(BagApp *app);
 static void BagApp_CreateSprites(BagApp *app);
 static void BagApp_ClearField648(BagApp *app);
 static void BagApp_UpdatePageArrows(BagApp *app);
-
-NarcId MoveCategoryIcon_GetNarc(void);
 
 static void BagApp_DrawRegisteredItemIcon(BagApp *app, Window *window, int y, BOOL secondSlot) {
     NNSG2dCharacterData *charData;

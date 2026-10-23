@@ -4,6 +4,7 @@
 #include "bag_types_def.h"
 #include "bg_cell_manager.h"
 #include "bg_window.h"
+#include "char_tiles.h"
 #include "filesystem.h"
 #include "font_sprite.h"
 #include "grid_input_handler.h"
@@ -971,5 +972,89 @@ void PCBox_WallpaperGridOnTouch(PCBoxWork *work, u32 newTarget);
 u32 PCBox_GetItemTrayHoldingInput(PCBoxWork *work);
 void PCBox_StartCursorSlide(PCBoxView *view, u32 newTarget, u32 prevTarget);
 u32 PCBox_IsSummaryShortcutPressed(PCBoxWork *work);
+
+typedef u32 (*PCBoxStateFunc)(PCBoxWork *work);
+
+// Sub-apps run from the box (summary, bag, naming screen): start, end, state to return to.
+typedef struct PCBoxSubApp {
+    u32 (*start)(PCBoxWork *work);
+    u32 (*end)(PCBoxWork *work);
+    u32 nextState;
+} PCBoxSubApp;
+
+typedef struct PCBoxScreenPos {
+    s16 x;
+    s16 y;
+} PCBoxScreenPos;
+
+// Callbacks and layouts of the grid inputs (PCBox_CreateGridInput).
+typedef struct PCBoxGridLayout {
+    const TouchscreenHitbox *hitboxes;
+    const DpadMenuBox *dpadBoxes;
+    const GridCallbacks *callbacks;
+} PCBoxGridLayout;
+
+extern const GraphicsBanks gPCBoxGfxBanks;
+extern const GraphicsModes gPCBoxGraphicsModes;
+extern const BgTemplate gPCBoxBgTemplate0;
+extern const BgTemplate gPCBoxBgTemplate1;
+extern const BgTemplate gPCBoxBgTemplate4;
+extern const BgTemplate gPCBoxBgTemplate2;
+extern const BgTemplate gPCBoxBgTemplate3;
+extern const BgTemplate gPCBoxBgTemplate5;
+extern const BgTemplate gPCBoxBgTemplate6;
+extern const u16 gPCBoxReleaseCheckMoves[];
+extern const u8 gPCBoxSlotGridRect[];
+extern const u8 gPCBoxTrayRects[];
+
+extern const OamCharTransferParam gPCBoxOamCharTransferParam;
+extern const SpriteResourceCountsListUnion gPCBoxSpriteResourceCounts;
+extern const OamManagerParam gPCBoxOamManagerParam;
+extern const PCBoxScreenPos gPCBoxPartySlotPositions[6];
+extern const u8 gPCBoxPartyIconOffsets[6][2];
+extern const TileRect gPCBoxMonPicRect;
+extern const u8 gPCBoxTrayCursorX[];
+extern const s8 gPCBoxOutlineOffsetsX[];
+extern const s8 gPCBoxOutlineOffsetsY[];
+extern const ManagedSpriteTemplate gPCBoxMonIconSpriteTemplate;
+extern const ManagedSpriteTemplate gPCBoxTrayBoxSpriteTemplate;
+extern const ManagedSpriteTemplate gPCBoxWallpaperListSpriteTemplate;
+extern const ManagedSpriteTemplate gPCBoxUiSprite0Template;
+extern const ManagedSpriteTemplate gPCBoxUiSprite1Template;
+extern const ManagedSpriteTemplate gPCBoxMonPicSprite2Template;
+extern const ManagedSpriteTemplate gPCBoxMonPicSprite3Template;
+extern const ManagedSpriteTemplate gPCBoxUiSprite4Template;
+extern const ManagedSpriteTemplate gPCBoxUiSprite5Template;
+extern const ManagedSpriteTemplate gPCBoxUiSprite6Template;
+extern const ManagedSpriteTemplate gPCBoxUiSprite7Template;
+extern const ManagedSpriteTemplate gPCBoxUiSprite8Template;
+extern const ManagedSpriteTemplate gPCBoxUiSprite9Template;
+extern const ManagedSpriteTemplate gPCBoxUiSprite10Template;
+extern const ManagedSpriteTemplate gPCBoxItemIconSpriteTemplate;
+extern const ManagedSpriteTemplate gPCBoxItemIconSprite12Template;
+extern const ManagedSpriteTemplate gPCBoxTypeIconSprite13Template;
+extern const ManagedSpriteTemplate gPCBoxTypeIconSprite14Template;
+
+extern const PCBoxStateFunc gPCBoxStateTable[];
+// {yes, no} handler pairs of the yes/no prompts
+extern const PCBoxStateFunc gPCBoxYesNoHandlers[][2];
+extern const PCBoxSubApp gPCBoxSubApps[];
+extern const PCBoxMenuEntry gPCBoxDepositMenu[];
+extern const PCBoxMenuEntry gPCBoxWithdrawMenu[];
+extern const PCBoxMenuEntry gPCBoxMoveMenu[];
+
+extern const u8 gPCBoxThumbnailTiles[];
+extern const WindowTemplate gPCBoxWindowTemplates[];
+extern const TouchscreenHitbox gPCBoxSlotHitboxes[];
+extern const TouchscreenHitbox gPCBoxPartyHitboxes[];
+extern const TouchscreenHitbox gPCBoxTrayPartyHitboxes[];
+extern const PCBoxGridLayout gPCBoxGridLayouts[];
+
+extern const u8 gPCBoxPartyDropRects[];
+extern const u8 gPCBoxTrayPartyDropRects[];
+extern const u8 gPCBoxSummaryPages[];
+extern const u8 gPCBoxBagPockets[];
+
+extern const TouchscreenHitbox gPCBoxSummaryShortcutHitbox[];
 
 #endif // POKEHEARTGOLD_APPLICATION_PC_BOX_PC_BOX_INTERNAL_H

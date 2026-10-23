@@ -12,6 +12,8 @@ typedef struct PokewalkerTrainerHouseData {
     u16 crc; // GF_CalcCRC16 of everything before it
 } PokewalkerTrainerHouseData;
 
+extern const u16 gTrainerHouseDailyFlags[MAX_NUM_TRAINER_HOUSE_SETS];
+
 // dst: PokewalkerTrainerHouseData
 void PokewalkerApp_BuildTrainerHouseData(SaveData *saveData, void *dst);
 void PokewalkerApp_SaveTrainerHouseData(SaveData *saveData, PokewalkerTrainerHouseData *data);

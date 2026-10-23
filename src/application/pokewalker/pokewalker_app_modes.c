@@ -10,6 +10,7 @@
 
 #include "application/choose_starter/choose_starter_sub_res.naix"
 #include "application/pokewalker/pokewalker_app.h"
+#include "application/pokewalker/pokewalker_app_internal.h"
 #include "application/pokewalker/pokewalker_modes2.h"
 #include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0274.h"
@@ -28,21 +29,11 @@
 #include "screen_fade.h"
 #include "sound.h"
 #include "sound_playback.h"
+#include "sound_playback_internal.h"
 #include "sprite_transfer.h"
 #include "string_util.h"
 #include "system.h"
 #include "text.h"
-
-extern int (*const gLinkSaveStates[])(PokewalkerApp *app);
-extern int (*const gStrollReportStates[])(PokewalkerApp *app);
-extern const GraphicsBanks gSelectMonGraphicsBanks;
-extern const GraphicsModes gSelectMonGraphicsModes;
-extern const ObjCharTransferTemplate gSelectMonObjCharTransferTemplate;
-extern const OverlayManagerTemplate gEventLogAppTemplate;
-extern const BgTemplate gBoxDisplayBgTemplateSub1;
-extern const BgTemplate gBoxDisplayBgTemplateSub3;
-
-BOOL IsFanfarePlayingOrWaiting(void);
 
 enum StrollReportState {
     STROLL_REPORT_START,

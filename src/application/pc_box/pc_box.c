@@ -34,22 +34,6 @@
 #include "touchscreen.h"
 #include "yes_no_prompt.h"
 
-extern const GraphicsBanks gPCBoxGfxBanks;
-extern const u8 gPCBoxSlotHitboxes[];
-extern const u8 gPCBoxPartyHitboxes[];
-extern const u8 gPCBoxTrayPartyHitboxes[];
-extern const GraphicsModes gPCBoxGraphicsModes;
-extern const BgTemplate gPCBoxBgTemplate0;
-extern const BgTemplate gPCBoxBgTemplate1;
-extern const BgTemplate gPCBoxBgTemplate4;
-extern const BgTemplate gPCBoxBgTemplate2;
-extern const BgTemplate gPCBoxBgTemplate3;
-extern const BgTemplate gPCBoxBgTemplate5;
-extern const BgTemplate gPCBoxBgTemplate6;
-extern const u16 gPCBoxReleaseCheckMoves[];
-extern const u8 gPCBoxSlotGridRect[];
-extern const u8 gPCBoxTrayRects[];
-
 static void PCBox_UpdateDetailPanel(PCBoxWork *work);
 static void PCBox_SwapBoxAndPartyMon(PCBoxWork *work, PCBoxMoveEntry *a, PCBoxMoveEntry *b);
 static void PCBox_MoveBoxMonToParty(PCBoxWork *work, PCBoxMoveEntry *e);

@@ -11,6 +11,7 @@
 #include "message_printer.h"
 #include "msgdata.h"
 #include "options.h"
+#include "overlay_manager.h"
 #include "player_data.h"
 #include "pm_string.h"
 #include "sprite_system.h"
@@ -206,5 +207,106 @@ void BagApp_ShowQuantityButtons(BagApp *app, int numDigits, int max);
 void BagApp_HideQuantityButtons(BagApp *app);
 void BagApp_ShowPocketTabSprites(BagApp *app, BOOL show);
 void BagApp_SetCancelSpriteVisible(BagApp *app, BOOL show);
+
+// Sub-screen tilemap edit: 1 copies a rect of the loaded tilemap, 2 clears one
+typedef struct BagAppTilemapCommand {
+    u8 type;
+    u8 srcX;
+    u8 srcY;
+    u8 destX;
+    u8 destY;
+    u8 width;
+    u8 height;
+    u8 padding;
+} BagAppTilemapCommand;
+
+typedef struct BagAppTileRect {
+    u8 x;
+    u8 y;
+    u8 width;
+    u8 height;
+} BagAppTileRect;
+
+// Camera key per pocket (0: closed bag, 1-8: pockets), one set per trainer gender
+typedef struct BagAppCameraKey {
+    u16 angleX;
+    u16 angleY;
+    u8 unk_4[4];
+    fx32 distance;
+    fx32 modelY;
+} BagAppCameraKey;
+
+typedef struct BagAppWindowTemplate {
+    u32 x;
+    u32 y;
+    u32 baseTile;
+} BagAppWindowTemplate;
+
+typedef struct BagAppWindowPos {
+    u32 x;
+    u32 y;
+} BagAppWindowPos;
+
+typedef struct BagAppItemMenuChoices {
+    u8 actions[5]; // index into gItemActionFuncs, 0xFF for none
+} BagAppItemMenuChoices;
+
+// Cursor sprite position, animation and palette of each button, move-item slot and quantity button.
+typedef struct BagAppCursorPos {
+    u8 x;
+    u8 y;
+    u8 anim;
+    u8 palette;
+} BagAppCursorPos;
+
+extern const OverlayManagerTemplate gOverlayTemplate_Bag;
+
+extern const BagAppItemMenuChoices gDefaultItemMenuChoices;
+extern const GraphicsModes gBagGraphicsModes;
+extern const GraphicsBanks gBagGraphicsBanks;
+extern const BgTemplate gBgTemplate_Main1;
+extern const BgTemplate gBgTemplate_Main2;
+extern const BgTemplate gBgTemplate_Main3;
+extern const BgTemplate gBgTemplate_Sub0;
+extern const BgTemplate gBgTemplate_Sub1;
+extern const BgTemplate gBgTemplate_Sub2;
+extern const BgTemplate gBgTemplate_Sub3;
+extern const u8 gPocketCapacities[];
+// The navigation tables are {up, down, left, right} per button.
+extern const u8 gBagAppButtonNavTable[][4];
+extern const u8 gBagAppMoveNavTable[][4];
+extern const u8 gBagAppItemMenuNavTable[][4];
+extern u8 gItemMenuCursorButtons[]; // not const: BagApp_HandleItemMenuInput stores the cursor before reading it
+extern const TouchscreenHitbox *const gTouchHitboxTables[];
+extern int (*const gItemActionFuncs[])(BagApp *app);
+extern const BagAppTilemapCommand gSubScreenTilemapCommands[][4];
+extern const BagAppTileRect gUnusedSlotRects[][2];
+extern const BagAppTileRect gItemSlotRects[];
+extern const VecFx32 gCameraTarget;
+extern const CameraParam gCameraSetup;
+extern const VecFx32 gBagModelPosition;
+extern const VecFx32 gBagModelScale;
+extern const MtxFx33 gBagModelRotation;
+extern const GXRgb gBagEdgeColorTable[8];
+extern const BagAppCameraKey gCameraTweenKeys[2][9];
+extern const BagAppWindowTemplate gItemListWindowTemplates[];
+extern const BagAppWindowPos gItemMenuWindowPositions[];
+extern const BagAppWindowPos gQuantityDigitWindowPositions[];
+extern s32 gDebugSubScreenLayoutCount;
+extern s32 gDebugSubScreenLayout;
+
+extern const u8 gListPocketCapacities[];
+extern const BagAppCursorPos gBagAppCursorPositions[];
+extern const BagAppCursorPos gBagAppMoveCursorPositions[];
+extern const BagAppCursorPos gBagAppQuantityCursorPositions[];
+extern const SpriteResourceCountsListUnion gBagSpriteResourceCounts;
+extern const OamManagerParam gBagOamManagerParam;
+extern const OamCharTransferParam gBagOamCharTransferParam;
+extern const ManagedSpriteTemplate gBagSpriteTemplates[];
+extern const int gQuantityButtonCounts[];
+extern const int gHiddenQuantityButtonCounts[];
+extern const int gHiddenQuantityButtons[][4];
+extern const int gQuantityButtonSprites[][6];
+extern const int gQuantityButtonAnims[][6];
 
 #endif // POKEHEARTGOLD_APPLICATION_BAG_BAG_APP_H

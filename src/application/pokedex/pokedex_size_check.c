@@ -23,15 +23,6 @@ typedef struct PokedexSpritePos {
     s16 x;
 } PokedexSpritePos;
 
-typedef struct PokedexWeightRange {
-    u16 min;
-    u16 max;
-} PokedexWeightRange;
-
-extern const ManagedSpriteTemplate gPokedexSizeCheckSpriteTemplates[];
-extern PokedexWeightRange gWeightCheckDiffRanges[];
-extern BOOL (*const gWeightCheckAnimFuncs[])(PokedexWeightCheckAnim *anim);
-
 void PokedexApp_SetupSizeCheckSprites(PokedexAppData *pokedexApp) {
     u32 i;
 

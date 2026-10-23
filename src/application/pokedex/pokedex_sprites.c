@@ -22,30 +22,6 @@
 #include "sprite_resource_header.h"
 #include "sprite_system.h"
 
-extern const OamManagerParam gPokedexOamManagerParam;
-extern const OamCharTransferParam gPokedexOamCharTransferParam;
-extern const SpriteResourceCountsListUnion gSpriteResourceCapacities;
-extern const ManagedSpriteTemplate gMonIconSpriteTemplate;
-extern const ManagedSpriteTemplate gPokedexMonPicSpriteTemplate0; // Pokemon picture, first of the pair
-extern const ManagedSpriteTemplate gPokedexMonPicSpriteTemplate1; // Pokemon picture, second of the pair
-extern const TileRect gPokedexMonPicSpriteRect;
-extern const ManagedSpriteTemplate gFootprintSpriteTemplate;
-extern const ManagedSpriteTemplate gTypeIconSpriteTemplate;
-extern const ManagedSpriteTemplate gLanguageIconSpriteTemplate;
-extern const ManagedSpriteTemplate gPokedexLanguageIconSpriteTemplate;
-extern const ManagedSpriteTemplate gPokedexListSpriteTemplates[]; // the list screen's 8 main-screen sprites
-extern const ManagedSpriteTemplate gPokedexListSprite9Template;
-extern const ManagedSpriteTemplate gPokedexListSprite10Template;
-extern const u16 gListScrollbarSizeThresholds[];
-extern const u8 gPokedexScrollbarLengths[];                         // scrollbar length per size animation
-extern const ManagedSpriteTemplate gPokedexSearchSpriteTemplates[]; // search menu sprites 0-25
-extern const ManagedSpriteTemplate gPokedexSearchSprite43Template;
-extern const ManagedSpriteTemplate gPokedexSearchSprite26Template;
-extern const ManagedSpriteTemplate gPokedexSearchSprite27Template;
-extern const ManagedSpriteTemplate gPokedexBodyTypeIconSpriteTemplate; // body type icons
-extern const ManagedSpriteTemplate gPokedexEntryTabCursorSpriteTemplate;
-extern const ManagedSpriteTemplate gPokedexAreaSpriteTemplates[]; // area screen sprites 1-8
-
 // Sprite slots: pokedexApp->sprites[120]. Character / palette / cell / animation resource ids start at 0xC550.
 // The list screen lays its icon grid out as two sets of 30 sprites (iconPage selects the one shown).
 

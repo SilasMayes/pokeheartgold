@@ -8,10 +8,6 @@
 #include "pokemon_icon_idx.h"
 #include "sprite_system.h"
 
-extern const u16 gPokedexAreaScrollbarSizeSteps[];
-extern u8 gPokedexAreaMarkerSizes[][2]; // width and height of each area marker shape
-extern const ManagedSpriteTemplate gAreaMarkerSpriteTemplate;
-
 void PokedexApp_LoadAreaSpriteResources(PokedexAppData *pokedexApp) {
     SpriteSystem_LoadCharResObjFromOpenNarc(pokedexApp->spriteSystem, pokedexApp->spriteManager, pokedexApp->gfxNarc, NARC_zukan_gra_zukan_gra_00000076_NCGR_lz, TRUE, NNS_G2D_VRAM_TYPE_2DSUB, 0xC550);
     SpriteSystem_LoadPaletteBufferFromOpenNarc(pokedexApp->paletteData, PLTTBUF_SUB_OBJ, pokedexApp->spriteSystem, pokedexApp->spriteManager, pokedexApp->iconNarc, GetMonIconPlttNaix(), FALSE, 3, NNS_G2D_VRAM_TYPE_2DSUB, 0xC551);

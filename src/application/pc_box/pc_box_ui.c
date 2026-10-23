@@ -4,6 +4,7 @@
 #include "constants/pokemon.h"
 #include "constants/sndseq.h"
 
+#include "application/bag/bag_app.h"
 #include "application/pc_box/pc_box_internal.h"
 
 #include "bag.h"
@@ -34,17 +35,7 @@
 #include "touchscreen.h"
 #include "yes_no_prompt.h"
 
-typedef u32 (*PCBoxStateFunc)(PCBoxWork *work);
-
 FS_EXTERN_OVERLAY(OVY_15);
-
-extern const OverlayManagerTemplate gOverlayTemplate_Bag;
-
-extern const u8 gPCBoxPartyDropRects[];
-extern const u8 gPCBoxTrayPartyDropRects[];
-extern const u8 gPCBoxSummaryPages[];
-extern const u8 gPCBoxBagPockets[];
-extern const PCBoxStateFunc gPCBoxStateTable[];
 
 static void PCBox_StartHeldItemMoveWithIcon(PCBoxWork *work, u32 fromSlot, u32 toSlot, u32 partyLayout);
 static void PCBox_StartHeldItemMoveFromDropTarget(PCBoxWork *work, int toSlot, int partyLayout);

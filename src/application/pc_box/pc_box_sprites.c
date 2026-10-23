@@ -28,39 +28,6 @@
 // frame and cursors, 9 cursor, 10 unused, 11 held item, 12 info item, 13-14 type icons, 15-20 tray boxes,
 // 21-24 wallpaper list, 25-60 mon icons (slotIcons maps a slot to its icon), 61-68 icon outline pieces.
 
-typedef struct PCBoxScreenPos {
-    s16 x;
-    s16 y;
-} PCBoxScreenPos;
-
-extern const OamCharTransferParam gPCBoxOamCharTransferParam;
-extern const SpriteResourceCountsListUnion gPCBoxSpriteResourceCounts;
-extern const OamManagerParam gPCBoxOamManagerParam;
-extern const PCBoxScreenPos gPCBoxPartySlotPositions[6];
-extern const u8 gPCBoxPartyIconOffsets[6][2];
-extern const TileRect gPCBoxMonPicRect;
-extern const u8 gPCBoxTrayCursorX[];
-extern const s8 gPCBoxOutlineOffsetsX[];
-extern const s8 gPCBoxOutlineOffsetsY[];
-extern const ManagedSpriteTemplate gPCBoxMonIconSpriteTemplate;
-extern const ManagedSpriteTemplate gPCBoxTrayBoxSpriteTemplate;
-extern const ManagedSpriteTemplate gPCBoxWallpaperListSpriteTemplate;
-extern const ManagedSpriteTemplate gPCBoxUiSprite0Template;
-extern const ManagedSpriteTemplate gPCBoxUiSprite1Template;
-extern const ManagedSpriteTemplate gPCBoxMonPicSprite2Template;
-extern const ManagedSpriteTemplate gPCBoxMonPicSprite3Template;
-extern const ManagedSpriteTemplate gPCBoxUiSprite4Template;
-extern const ManagedSpriteTemplate gPCBoxUiSprite5Template;
-extern const ManagedSpriteTemplate gPCBoxUiSprite6Template;
-extern const ManagedSpriteTemplate gPCBoxUiSprite7Template;
-extern const ManagedSpriteTemplate gPCBoxUiSprite8Template;
-extern const ManagedSpriteTemplate gPCBoxUiSprite9Template;
-extern const ManagedSpriteTemplate gPCBoxUiSprite10Template;
-extern const ManagedSpriteTemplate gPCBoxItemIconSpriteTemplate;
-extern const ManagedSpriteTemplate gPCBoxItemIconSprite12Template;
-extern const ManagedSpriteTemplate gPCBoxTypeIconSprite13Template;
-extern const ManagedSpriteTemplate gPCBoxTypeIconSprite14Template;
-
 static void PCBox_SetSpriteDrawPriority(PCBoxView *view, u32 index, u32 priority);
 static void PCBox_SetSpriteTranslucent(PCBoxView *view, u32 index, u32 enabled);
 static void PCBox_FreeSpriteSystem(PCBoxView *view);

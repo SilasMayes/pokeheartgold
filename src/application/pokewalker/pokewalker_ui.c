@@ -3,6 +3,7 @@
 #include "global.h"
 
 #include "application/pokewalker/pokewalker_app.h"
+#include "application/pokewalker/pokewalker_app_internal.h"
 #include "msgdata/msg/msg_0274.h"
 
 #include "filesystem.h"
@@ -19,37 +20,6 @@
 #include "text.h"
 #include "touchscreen.h"
 #include "vram_transfer_manager.h"
-
-// Pixel positions of one of Spinda's four spots, terminated by x = 0xFF.
-typedef struct PokewalkerSpotPixel {
-    u8 x;
-    u8 y;
-} PokewalkerSpotPixel;
-
-extern const u16 gPokewalkerPictureFiles[][2];  // Pokewalker picture file per species: {male, female}
-extern const u8 gWindowBankScreens[];           // window bank -> 0 main screen, 1 sub screen
-extern const u8 gPokewalkerAppSpritePalettes[]; // palettes of the first 17 sprites
-extern const OamCharTransferParam gPokewalkerAppOamCharTransferParam;
-extern const SpriteResourceCountsListUnion gPokewalkerAppSpriteResourceCounts;
-extern const OamManagerParam gPokewalkerAppOamManagerParam;
-// Cursor positions {x, y, anim, palette}
-extern const u8 gPokewalkerAppCursorX[];
-extern const u8 gPokewalkerAppCursorY[];
-extern const u8 gPokewalkerAppCursorAnims[];
-extern const u8 gPokewalkerAppCursorPalettes[];
-extern const ManagedSpriteTemplate gPokewalkerAppSpriteTemplates[];
-extern const ManagedSpriteTemplate gPokewalkerAppMainSpriteTemplate;
-extern const ManagedSpriteTemplate gPokewalkerAppSubSpriteTemplate;
-extern const PokewalkerSpotPixel *gSpindaSpotPixels[];
-extern const TouchscreenHitbox *gTouchButtons[];
-extern const WindowTemplate *gWindowBank2Templates[];
-extern const WindowTemplate *gWindowBank1Templates[];
-extern const WindowTemplate *gWindowBank7Templates[];
-extern const WindowTemplate *gWindowBank0Templates[];
-extern const WindowTemplate *gWindowBank5Templates[];
-extern const WindowTemplate *gWindowBank3Templates[];
-extern const WindowTemplate *gWindowBank4Templates[];
-extern const WindowTemplate *gWindowBank6Templates[];
 
 static void PokewalkerApp_ClearParticles(PokewalkerApp *app);
 static void PokewalkerApp_CreateSprites(PokewalkerApp *app);

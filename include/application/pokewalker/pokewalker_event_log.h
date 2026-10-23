@@ -127,6 +127,29 @@ typedef struct PokewalkerUploadBlock {
     u8 checksum;
 } PokewalkerUploadBlock;
 
+extern const u8 *const gPokewalkerUploadBlocks[16];
+extern const u8 gPokewalkerUploadBlockSizes[16];
+
+typedef struct EventLogBgTemplates {
+    BgTemplate templates[5];
+} EventLogBgTemplates;
+
+extern const u8 gEventLogTouchBoxes[]; // previous page, next page, quit
+extern const u16 gEventLogInvalidName[];
+extern const GraphicsModes gEventLogGraphicsModes;
+extern const OamCharTransferParam gEventLogOamTransferParam;
+extern const SpriteResourceCountsListUnion gEventLogSpriteResourceCounts;
+extern const OamManagerParam gEventLogOamManagerParam;
+extern const WindowTemplate gEventLogWindowTemplates[4];
+extern const GraphicsBanks gEventLogGraphicsBanks;
+extern const ManagedSpriteTemplate gEventLogSpriteTemplate;
+extern const ManagedSpriteTemplate gEventLogEffectSpriteTemplate;
+extern const ManagedSpriteTemplate gEventLogMonSpriteTemplate;
+extern const EventLogBgTemplates gEventLogBgTemplates;
+extern const u8 gEventLogBgLayers[5];
+extern const s8 gEventLogFleeHopHeights[]; // ends with 111
+extern const u32 gEventLogCourseBgm[8];
+
 void PokewalkerApp_WriteUploadBlocks(PokewalkerUploadBlock *blocks);
 BOOL PokewalkerEventLog_Init(OverlayManager *manager, int *state);
 BOOL PokewalkerEventLog_Exit(OverlayManager *manager, int *state);

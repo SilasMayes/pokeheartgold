@@ -11,8 +11,6 @@
 #include "system.h"
 #include "touchscreen.h"
 
-extern const TouchscreenHitbox gPCBoxSummaryShortcutHitbox[];
-
 void PCBox_GridOnKeyMove(PCBoxWork *work, u32 newTarget, u32 prevTarget) {
     PCBox_StartCursorSlide(work->view, newTarget, prevTarget);
     PCBox_SetPendingUpdateFunc(work->view, PCBox_UpdateCursorSlide);

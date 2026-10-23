@@ -3,6 +3,7 @@
 #include "global.h"
 
 #include "application/pokewalker/pokewalker_app.h"
+#include "application/pokewalker/pokewalker_app_internal.h"
 #include "msgdata/msg/msg_0274.h"
 
 #include "message_format.h"
@@ -16,14 +17,6 @@
 #include "system.h"
 #include "text.h"
 #include "touchscreen.h"
-
-typedef int (*PokewalkerAppStateFunc)(PokewalkerApp *app);
-
-extern const PokewalkerAppStateFunc gMainMenuStates[];
-// Cursor positions of the menus' items.
-extern const int gReceiveMenuCursorPositions[];
-extern const int gFullMenuCursorPositions[];
-extern const int gTopMenuCursorPositions[];
 
 static BOOL PokewalkerApp_IsDownXLHeld(void);
 static BOOL PokewalkerApp_IsUpSelectRHeld(void);

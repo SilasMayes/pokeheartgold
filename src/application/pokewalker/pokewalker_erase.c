@@ -3,6 +3,7 @@
 #include "global.h"
 
 #include "application/pokewalker/pokewalker_app.h"
+#include "application/pokewalker/pokewalker_app_internal.h"
 #include "msgdata/msg/msg_0274.h"
 
 #include "math_util.h"
@@ -15,11 +16,6 @@
 #include "system.h"
 #include "text.h"
 #include "touchscreen.h"
-
-typedef int (*PokewalkerAppStateFunc)(PokewalkerApp *app);
-
-extern const PokewalkerAppStateFunc gQuitMessageStates[];
-extern const PokewalkerAppStateFunc gEraseRecordsStates[];
 
 static void PokewalkerApp_ReturnWalkerMonToBox(PokewalkerApp *app);
 

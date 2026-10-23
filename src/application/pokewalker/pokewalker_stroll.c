@@ -5,6 +5,7 @@
 #include "constants/items.h"
 
 #include "application/pokewalker/pokewalker_app.h"
+#include "application/pokewalker/pokewalker_app_internal.h"
 #include "msgdata/msg/msg_0274.h"
 
 #include "bag.h"
@@ -19,10 +20,6 @@
 #include "system.h"
 #include "text.h"
 #include "trainer_memo.h"
-
-typedef int (*PokewalkerAppStateFunc)(PokewalkerApp *app);
-
-extern const PokewalkerAppStateFunc gStartStrollStates[];
 
 static BOOL PokewalkerApp_AddStrollExp(BoxPokemon *boxMon, Pokemon *mon, int exp);
 static void PokewalkerApp_AddStrollFriendship(BoxPokemon *boxMon, int steps);

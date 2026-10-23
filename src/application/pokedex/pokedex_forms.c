@@ -12,13 +12,6 @@
 #include "pokemon.h"
 #include "sprite_system.h"
 
-extern const ManagedSpriteTemplate gPokedexFormsSpriteTemplates[];
-extern const u16 gPokedexFormScrollbarSizeSteps[];
-extern const u8 gPokedexAreaScrollbarLengths[]; // area list scrollbar length per size animation
-extern const u8 gPokedexScrollbarLengths[];     // form list scrollbar length per size animation
-extern const TileRect gPokedexMonPicBgRect;
-extern const u16 gPokedexMonPicBgTilemap[];
-
 void PokedexApp_SetupFormsSprites(PokedexAppData *pokedexApp) {
     PokedexApp_LoadMonIconResources(pokedexApp, 6);
     PokedexApp_LoadMonPicResources(pokedexApp);
