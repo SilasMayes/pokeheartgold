@@ -10,6 +10,7 @@ typedef struct Point2D {
 } Point2D;
 
 // NitroSDK fixed-point routines the SDK headers in lib/include do not declare yet.
+fx32 FX_Sqrt(fx32 x);
 u16 FX_Atan2Idx(fx32 y, fx32 x);
 fx32 FX_Modf(fx32 value, fx32 *integerPart);
 

@@ -27,7 +27,7 @@ struct SaveFashionMon {
     u8 x;
     u8 y;
     u8 form;
-    u8 unk_34;
+    u8 secondTextGender; // gender of the trainer named by secondText
 };
 
 // One dressed-up Pokemon entry.
@@ -59,7 +59,7 @@ static BOOL IsValidFashionMagic(u32 value);
 static void GetFashionObjectPlacement(DressUpMonPic *monPic, u8 *outX, u8 *outY, u8 *outZ);
 static void FashionMon_Init(SaveFashionMon *dst, Pokemon *mon, u8 x, u8 y, s8 z);
 static void FashionMon_InitAtObject(SaveFashionMon *dst, Pokemon *mon, DressUpMonPic *monPic);
-static void FashionMon_SetSecondText(SaveFashionMon *dst, String *str, u8 a2);
+static void FashionMon_SetSecondText(SaveFashionMon *dst, String *str, u32 gender);
 static void FashionMon_CreatePokemon(SaveFashionMon *src, Pokemon *mon);
 static void SetFashionItemPlacement(u8 *dst, u8 accessoryId, u8 x, u8 y, u8 z);
 static void SetStackableAccessoryCount(u32 *data, int value, u8 index);
@@ -117,9 +117,9 @@ static void FashionMon_InitAtObject(SaveFashionMon *dst, Pokemon *mon, DressUpMo
     FashionMon_Init(dst, mon, x, y, (s8)z);
 }
 
-static void FashionMon_SetSecondText(SaveFashionMon *dst, String *str, u8 a2) {
+static void FashionMon_SetSecondText(SaveFashionMon *dst, String *str, u32 gender) {
     CopyStringToU16Array(str, dst->secondText, 8);
-    dst->unk_34 = a2;
+    dst->secondTextGender = gender;
 }
 
 static void FashionMon_CreatePokemon(SaveFashionMon *src, Pokemon *mon) {
@@ -307,7 +307,7 @@ u32 FashionCase_GetAccessoryCount(FashionCase *fashionCase, int id) {
     return GetUniqueAccessoryFlag(&fashionCase->accessories[8], (u8)id);
 }
 
-u8 FashionCase_GetWallpaperOrder(FashionCase *fashionCase, int index) {
+int FashionCase_GetWallpaperOrder(FashionCase *fashionCase, int index) {
     GF_ASSERT((u32)index < 18);
     return GetWallpaperOrder(&fashionCase->wallpaperOrder[0], (u8)index);
 }
@@ -450,10 +450,10 @@ static void FashionEntry_Copy(SaveFashionDataSub *dst_, SaveFashionDataSub *src_
     memcpy(dst, src_, sizeof(FashionEntry));
 }
 
-void FashionEntry_SetMonSecondText(SaveFashionDataSub *entry_, String *string, u8 value) {
+void FashionEntry_SetMonSecondText(SaveFashionDataSub *entry_, String *string, u32 gender) {
     FashionEntry *entry = (FashionEntry *)entry_;
     GF_ASSERT(IsValidFashionMagic(entry->magic));
-    FashionMon_SetSecondText(&entry->mon, string, value);
+    FashionMon_SetSecondText(&entry->mon, string, gender);
 }
 
 BOOL FashionEntry_IsItemPlaced(SaveFashionDataSub *entry_, int index) {

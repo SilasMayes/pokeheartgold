@@ -14,7 +14,6 @@ typedef struct Vec2f {
 
 static BOOL OrbitCursor_StepToward(s16 x, s16 y, float fx, float fy, float *outX, float *outY, float speed, s16 minDist);
 
-fx32 FX_Sqrt(fx32 x);
 
 OrbitCursor *OrbitCursor_New(OrbitCursorArgs args, SpriteSystem *spriteSys, SpriteManager *spriteMan, PaletteData *plttData) {
     OrbitCursor *motion = Heap_Alloc(args.heapId, sizeof(OrbitCursor));
