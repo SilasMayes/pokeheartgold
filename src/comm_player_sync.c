@@ -713,7 +713,7 @@ BOOL CommPlayerManager_AssignBattleSlots(void) {
     int mapping[4];
     int count;
     int result;
-    int n;
+    int maxPlayers;
     int i;
     int j;
     const u16 *coords;
@@ -737,12 +737,12 @@ BOOL CommPlayerManager_AssignBattleSlots(void) {
             dst++;
         } while (--copyCount != 0);
     }
-    n = Comm_GetMaxPlayers(CommState_GetLinkMode());
+    maxPlayers = Comm_GetMaxPlayers(CommState_GetLinkMode());
     count = 0;
     result = FALSE;
-    coords = n == 2 ? coords2 : coords4;
-    for (i = 0; i < n; i++, coords += 2) {
-        for (j = 0; j < n; j++) {
+    coords = maxPlayers == 2 ? coords2 : coords4;
+    for (i = 0; i < maxPlayers; i++, coords += 2) {
+        for (j = 0; j < maxPlayers; j++) {
             if (coords[0] == CommPlayerManager_GetPlayerX(j) && coords[1] == CommPlayerManager_GetPlayerZ(j)) {
                 count++;
                 mapping[j] = i;
@@ -753,8 +753,8 @@ BOOL CommPlayerManager_AssignBattleSlots(void) {
             }
         }
     }
-    if (count == n) {
-        for (i = 0; i < n; i++) {
+    if (count == maxPlayers) {
+        for (i = 0; i < maxPlayers; i++) {
             Comm_SetBattleSlot(mapping[i], i);
         }
     }

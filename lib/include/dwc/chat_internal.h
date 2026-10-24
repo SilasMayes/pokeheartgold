@@ -15,25 +15,16 @@
 // Chat client of the OVY_45 network library: the connection object, the queue of pending user callbacks
 // and the table of joined channels with their users.
 
-// A user callback waiting to be called: its kind, the function, a heap copy of its arguments (an array
-// of words; string arguments are duplicated) and the user data passed back to it.
+// A user callback waiting to be called: its kind, the function, a heap copy of its arguments (string
+// arguments are duplicated) and the user data passed back to it.
 typedef struct ChatCallback {
-    int type; // 0 .. 31, selects the argument layout
+    int type; // ChatCallbackType, selects the arguments
     void *callback;
-    void *param; // u32 array of the arguments
+    void *param; // the Chat*Args of the type
     void *user;
     int id;        // 0 = not tied to a request
     char *channel; // NULL = not tied to a channel
 } ChatCallback;
-
-// The callback signatures by number of word arguments (connection first, user data last).
-typedef void (*ChatCallbackFunc1)(void *, u32, void *);
-typedef void (*ChatCallbackFunc2)(void *, u32, u32, void *);
-typedef void (*ChatCallbackFunc3)(void *, u32, u32, u32, void *);
-typedef void (*ChatCallbackFunc4)(void *, u32, u32, u32, u32, void *);
-typedef void (*ChatCallbackFunc5)(void *, u32, u32, u32, u32, u32, void *);
-typedef void (*ChatCallbackFunc6)(void *, u32, u32, u32, u32, u32, u32, void *);
-typedef void (*ChatCallbackFunc7)(void *, u32, u32, u32, u32, u32, u32, u32, void *);
 
 // Success flag of some chat functions (an enum, not BOOL: the conditional selects are emitted in a
 // different order for an int result).
@@ -176,7 +167,7 @@ typedef struct ChatUserInfo {
 void ciFreeCallbackData(ChatCallback *callback);
 ChatResult ciInitCallbacks(ChatConnection *chat);
 void ciCleanupCallbacks(ChatConnection *chat);
-BOOL ciAddCallback_(ChatConnection *chat, int type, void *func, u32 *src, void *user, int id, char *channel, int size);
+BOOL ciAddCallback_(ChatConnection *chat, int type, void *func, const void *params, void *user, int id, const char *channel, int size);
 void ciCallCallback(ChatConnection *chat, ChatCallback *callback);
 void ciCallCallbacks(ChatConnection *chat, int id);
 int ciGetCallbackIndexByID(ChatConnection *chat, int id);
@@ -368,7 +359,7 @@ ChatRequest *ciFindFilter(ChatConnection *chat, int count, const ChatRequestKey 
 ChatRequest *ciFindGetKeyFilter(ChatConnection *chat, const char *channel);
 void ciDestroyFilter(ChatRequest *request);
 void ciRemoveFilter(ChatConnection *chat, ChatRequest *target);
-void ciFinishFilter(ChatConnection *chat, ChatRequest *request, u32 *results);
+void ciFinishFilter(ChatConnection *chat, ChatRequest *request, const void *results);
 void ciFilterTimedout(ChatConnection *chat, ChatRequest *request);
 int ciAddFilter(ChatConnection *chat, int type, const char *name, const char *name2, void *callback, void *callback2, void *param, void *data);
 ChatModeChange *ciParseMode(const char *modes, const char **args, int argCount);
@@ -456,6 +447,179 @@ typedef struct ChatChannelListEntryArgs {
     int numUsers;
     int unk_14;
 } ChatChannelListEntryArgs;
+
+// Arguments of the raw callback (ChatGlobalCallbacks.raw).
+typedef struct ChatRawArgs {
+    const char *raw;
+} ChatRawArgs;
+
+// Arguments of the disconnected callback (ChatGlobalCallbacks.disconnected).
+typedef struct ChatDisconnectedArgs {
+    const char *reason;
+} ChatDisconnectedArgs;
+
+// Arguments of the user list updated callback (ChatChannelCallbacks.usersChanged).
+typedef struct ChatUsersChangedArgs {
+    const char *channel;
+} ChatUsersChangedArgs;
+
+// Results of a channel list request (ChatRequest.callback2).
+typedef struct ChatChannelListArgs {
+    BOOL success;
+    int numChannels;
+    char **channels;
+    char **topics;
+    int *numUsers;
+} ChatChannelListArgs;
+
+// Results of an enter request.
+typedef struct ChatEnterChannelArgs {
+    BOOL success;
+    int result; // ChatEnterResult
+    const char *channel;
+} ChatEnterChannelArgs;
+
+// Results of a channel topic request.
+typedef struct ChatGetTopicArgs {
+    BOOL success;
+    const char *channel;
+    const char *topic;
+} ChatGetTopicArgs;
+
+// Results of a channel password request.
+typedef struct ChatGetPasswordArgs {
+    BOOL success;
+    const char *channel;
+    BOOL enabled;
+    const char *password;
+} ChatGetPasswordArgs;
+
+// Results of a channel user list request.
+typedef struct ChatEnumUsersArgs {
+    BOOL success;
+    const char *channel;
+    int numUsers;
+    char **users;
+    int *modes;
+} ChatEnumUsersArgs;
+
+// Results of a WHOIS request.
+typedef struct ChatGetUserInfoArgs {
+    BOOL success;
+    const char *nick;
+    const char *user;
+    const char *name;
+    const char *address;
+    int numChannels;
+    char **channels;
+} ChatGetUserInfoArgs;
+
+// Results of a user address request.
+typedef struct ChatGetBasicUserInfoArgs {
+    BOOL success;
+    const char *nick;
+    const char *user;
+    const char *address;
+} ChatGetBasicUserInfoArgs;
+
+// Results of a user address request for all users of a channel.
+typedef struct ChatGetChannelBasicUserInfoArgs {
+    BOOL success;
+    const char *channel;
+    const char *nick;
+    const char *user;
+    const char *address;
+} ChatGetChannelBasicUserInfoArgs;
+
+// Results of a user mode request.
+typedef struct ChatGetUserModeArgs {
+    BOOL success;
+    const char *channel;
+    const char *user;
+    int mode;
+} ChatGetUserModeArgs;
+
+// Results of a ban list request.
+typedef struct ChatEnumBansArgs {
+    BOOL success;
+    const char *channel;
+    int numBans;
+    char **bans;
+} ChatEnumBansArgs;
+
+// Results of a nick change request.
+typedef struct ChatChangeNickArgs {
+    BOOL success;
+    const char *oldNick;
+    const char *newNick;
+} ChatChangeNickArgs;
+
+// Results of an unquiet request: the users of the channel.
+typedef struct ChatNewUserListArgs {
+    const char *channel;
+    int numUsers;
+    char **users;
+    int *modes;
+} ChatNewUserListArgs;
+
+// Results of a user key request.
+typedef struct ChatGetGlobalKeysArgs {
+    BOOL success;
+    const char *user;
+    int num;
+    char **keys;
+    char **values; // NULL when only the keys were asked for
+} ChatGetGlobalKeysArgs;
+
+// Results of a channel key request.
+typedef struct ChatGetChannelKeysArgs {
+    BOOL success;
+    const char *channel;
+    const char *user;
+    int num;
+    char **keys;
+    char **values; // NULL when only the keys were asked for
+} ChatGetChannelKeysArgs;
+
+// Results of a CD key check.
+typedef struct ChatAuthenticateCDKeyArgs {
+    int result;
+    const char *message;
+} ChatAuthenticateCDKeyArgs;
+
+// The user callbacks, one per ChatCallbackType (connection first, user data last).
+typedef void (*ChatRawCallback)(ChatConnection *chat, const char *raw, void *param);
+typedef void (*ChatDisconnectedCallback)(ChatConnection *chat, const char *reason, void *param);
+typedef void (*ChatPrivateMessageCallback)(ChatConnection *chat, const char *nick, const char *message, int type, void *param);
+typedef void (*ChatInvitedCallback)(ChatConnection *chat, const char *channel, const char *nick, void *param);
+typedef void (*ChatChannelMessageCallback)(ChatConnection *chat, const char *channel, const char *nick, const char *message, int type, void *param);
+typedef void (*ChatKickedCallback)(ChatConnection *chat, const char *channel, const char *kicker, const char *reason, void *param);
+typedef void (*ChatUserJoinedCallback)(ChatConnection *chat, const char *channel, const char *nick, int mode, void *param);
+typedef void (*ChatUserPartedCallback)(ChatConnection *chat, const char *channel, const char *nick, int reason, const char *message, const char *kicker, void *param);
+typedef void (*ChatUserChangedNickCallback)(ChatConnection *chat, const char *channel, const char *oldNick, const char *newNick, void *param);
+typedef void (*ChatTopicChangedCallback)(ChatConnection *chat, const char *channel, const char *topic, void *param);
+typedef void (*ChatChannelModeChangedCallback)(ChatConnection *chat, const char *channel, ChatChannelMode *mode, void *param);
+typedef void (*ChatUserModeChangedCallback)(ChatConnection *chat, const char *channel, const char *nick, int mode, void *param);
+typedef void (*ChatUserListUpdatedCallback)(ChatConnection *chat, const char *channel, void *param);
+typedef void (*ChatEnumChannelsEachCallback)(ChatConnection *chat, BOOL success, int index, const char *channel, const char *topic, int numUsers, void *param);
+typedef void (*ChatEnumChannelsAllCallback)(ChatConnection *chat, BOOL success, int numChannels, char **channels, char **topics, int *numUsers, void *param);
+typedef void (*ChatEnterChannelCallback)(ChatConnection *chat, BOOL success, int result, const char *channel, void *param);
+typedef void (*ChatGetChannelTopicCallback)(ChatConnection *chat, BOOL success, const char *channel, const char *topic, void *param);
+typedef void (*ChatGetChannelModeCallback)(ChatConnection *chat, BOOL success, const char *channel, ChatChannelMode *mode, void *param);
+typedef void (*ChatGetChannelPasswordCallback)(ChatConnection *chat, BOOL success, const char *channel, BOOL enabled, const char *password, void *param);
+typedef void (*ChatEnumUsersCallback)(ChatConnection *chat, BOOL success, const char *channel, int numUsers, char **users, int *modes, void *param);
+typedef void (*ChatGetUserInfoCallback)(ChatConnection *chat, BOOL success, const char *nick, const char *user, const char *name, const char *address, int numChannels, char **channels, void *param);
+typedef void (*ChatGetBasicUserInfoCallback)(ChatConnection *chat, BOOL success, const char *nick, const char *user, const char *address, void *param);
+typedef void (*ChatGetChannelBasicUserInfoCallback)(ChatConnection *chat, BOOL success, const char *channel, const char *nick, const char *user, const char *address, void *param);
+typedef void (*ChatGetUserModeCallback)(ChatConnection *chat, BOOL success, const char *channel, const char *user, int mode, void *param);
+typedef void (*ChatEnumChannelBansCallback)(ChatConnection *chat, BOOL success, const char *channel, int numBans, char **bans, void *param);
+typedef void (*ChatNickErrorCallback)(ChatConnection *chat, int type, const char *nick, int numSuggestedNicks, char **suggestedNicks, void *param);
+typedef void (*ChatChangeNickCallback)(ChatConnection *chat, BOOL success, const char *oldNick, const char *newNick, void *param);
+typedef void (*ChatNewUserListCallback)(ChatConnection *chat, const char *channel, int numUsers, char **users, int *modes, void *param);
+typedef void (*ChatBroadcastKeyChangedCallback)(ChatConnection *chat, const char *channel, const char *nick, const char *key, const char *value, void *param);
+typedef void (*ChatGetGlobalKeysCallback)(ChatConnection *chat, BOOL success, const char *user, int num, char **keys, char **values, void *param);
+typedef void (*ChatGetChannelKeysCallback)(ChatConnection *chat, BOOL success, const char *channel, const char *user, int num, char **keys, char **values, void *param);
+typedef void (*ChatAuthenticateCDKeyCallback)(ChatConnection *chat, int result, const char *message, void *param);
 
 // ChatConnection.fillInUserCallback: gets the own address (from the 302 reply) and may write a user name.
 typedef void (*ChatFillInUserFunc)(ChatConnection *chat, int address, char *user, void *param);

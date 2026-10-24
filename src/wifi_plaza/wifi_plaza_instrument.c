@@ -508,105 +508,105 @@ void WiFiPlazaInstrument_InitSignal(WiFiPlazaInstrumentManager *manager, WiFiPla
 }
 
 void WiFiPlazaInstrument_InitPop01(WiFiPlazaInstrumentManager *manager, WiFiPlazaInstrumentEffect *effect) {
-    VecFx32 a;
-    VecFx32 b;
+    VecFx32 model1Pos;
+    VecFx32 model0Pos;
 
     WiFiPlazaInstrument_SetModel(manager, effect, 1, gWiFiPlazaInstrumentPopModel1);
     WiFiPlazaInstrument_SetModel(manager, effect, 0, gWiFiPlazaInstrumentPopModel0);
     ModelInstance_SetVisible(&effect->models[1], FALSE);
-    WiFiPlazaObj_GetPosition(effect->obj, &a);
-    a.y += FX32_CONST(16);
-    a.x += FX32_CONST(8);
-    b = a;
-    b.y += FX32_CONST(16);
+    WiFiPlazaObj_GetPosition(effect->obj, &model1Pos);
+    model1Pos.y += FX32_CONST(16);
+    model1Pos.x += FX32_CONST(8);
+    model0Pos = model1Pos;
+    model0Pos.y += FX32_CONST(16);
     effect->work.fade.fade[0] = 8;
 
     switch (WiFiPlazaObj_GetParam(effect->obj, 6)) {
     case DIR_NORTH:
-        a.z -= 0x1C000;
-        b.z -= 0xE000;
+        model1Pos.z -= 0x1C000;
+        model0Pos.z -= 0xE000;
         ModelInstance_SetRotation(&effect->models[1], 0xBFFF, 1);
         break;
     case DIR_SOUTH:
-        a.z += 0x18000;
-        b.z += 0xB000;
+        model1Pos.z += 0x18000;
+        model0Pos.z += 0xB000;
         ModelInstance_SetRotation(&effect->models[1], 0x3FFF, 1);
         break;
     case DIR_WEST:
-        a.x -= 0x17000;
-        b.x -= 0x7000;
-        b.z += 0x8000;
+        model1Pos.x -= 0x17000;
+        model0Pos.x -= 0x7000;
+        model0Pos.z += 0x8000;
         ModelInstance_SetRotation(&effect->models[1], 0, 1);
         break;
     case DIR_EAST:
-        a.x += 0x17000;
-        b.x += 0x7000;
-        b.z += 0x8000;
+        model1Pos.x += 0x17000;
+        model0Pos.x += 0x7000;
+        model0Pos.z += 0x8000;
         ModelInstance_SetRotation(&effect->models[1], 0x7FFF, 1);
         break;
     }
-    ModelInstance_SetPosition(&effect->models[1], a.x, a.y, a.z);
-    ModelInstance_SetPosition(&effect->models[0], b.x, b.y, b.z);
+    ModelInstance_SetPosition(&effect->models[1], model1Pos.x, model1Pos.y, model1Pos.z);
+    ModelInstance_SetPosition(&effect->models[0], model0Pos.x, model0Pos.y, model0Pos.z);
 }
 
 void WiFiPlazaInstrument_InitPop02(WiFiPlazaInstrumentManager *manager, WiFiPlazaInstrumentEffect *effect) {
-    VecFx32 a;
-    VecFx32 b;
+    VecFx32 model1Pos;
+    VecFx32 model0Pos;
 
     WiFiPlazaInstrument_SetModel(manager, effect, 1, gWiFiPlazaInstrumentPopModel1);
     WiFiPlazaInstrument_SetModel(manager, effect, 0, gWiFiPlazaInstrumentPopModel0);
     WiFiPlazaInstrument_SetModel(manager, effect, 2, gWiFiPlazaInstrumentPopModel2);
     ModelInstance_SetVisible(&effect->models[1], FALSE);
-    WiFiPlazaObj_GetPosition(effect->obj, &a);
-    a.y += FX32_CONST(16);
-    a.x += FX32_CONST(8);
-    b = a;
-    b.y += FX32_CONST(16);
+    WiFiPlazaObj_GetPosition(effect->obj, &model1Pos);
+    model1Pos.y += FX32_CONST(16);
+    model1Pos.x += FX32_CONST(8);
+    model0Pos = model1Pos;
+    model0Pos.y += FX32_CONST(16);
     effect->work.fade.fade[0] = 8;
     effect->work.fade.fade[1] = 8;
 
     switch (WiFiPlazaObj_GetParam(effect->obj, 6)) {
     case DIR_NORTH:
-        a.z -= 0x1C000;
-        b.z -= 0xE000;
+        model1Pos.z -= 0x1C000;
+        model0Pos.z -= 0xE000;
         ModelInstance_SetRotation(&effect->models[1], 0xA38D, 1);
         ModelInstance_SetRotation(&effect->models[2], 0xDC70, 1);
-        ModelInstance_SetPosition(&effect->models[1], a.x + 0x8000, a.y, a.z);
-        ModelInstance_SetPosition(&effect->models[2], a.x - 0x8000, a.y, a.z);
+        ModelInstance_SetPosition(&effect->models[1], model1Pos.x + 0x8000, model1Pos.y, model1Pos.z);
+        ModelInstance_SetPosition(&effect->models[2], model1Pos.x - 0x8000, model1Pos.y, model1Pos.z);
         break;
     case DIR_SOUTH:
-        a.z += 0x18000;
-        b.z += 0xB000;
+        model1Pos.z += 0x18000;
+        model0Pos.z += 0xB000;
         ModelInstance_SetRotation(&effect->models[1], 0x238E, 1);
         ModelInstance_SetRotation(&effect->models[2], 0x5C71, 1);
-        ModelInstance_SetPosition(&effect->models[1], a.x - 0x8000, a.y, a.z);
-        ModelInstance_SetPosition(&effect->models[2], a.x + 0x8000, a.y, a.z);
+        ModelInstance_SetPosition(&effect->models[1], model1Pos.x - 0x8000, model1Pos.y, model1Pos.z);
+        ModelInstance_SetPosition(&effect->models[2], model1Pos.x + 0x8000, model1Pos.y, model1Pos.z);
         break;
     case DIR_WEST:
-        a.x -= 0x17000;
-        b.x -= 0x7000;
-        b.z += 0x8000;
+        model1Pos.x -= 0x17000;
+        model0Pos.x -= 0x7000;
+        model0Pos.z += 0x8000;
         ModelInstance_SetRotation(&effect->models[1], 0xE38F, 1);
         ModelInstance_SetRotation(&effect->models[2], 0x1C71, 1);
-        ModelInstance_SetPosition(&effect->models[1], a.x, a.y, a.z - 0x8000);
-        ModelInstance_SetPosition(&effect->models[2], a.x, a.y, a.z + 0x8000);
+        ModelInstance_SetPosition(&effect->models[1], model1Pos.x, model1Pos.y, model1Pos.z - 0x8000);
+        ModelInstance_SetPosition(&effect->models[2], model1Pos.x, model1Pos.y, model1Pos.z + 0x8000);
         break;
     case DIR_EAST:
-        a.x += 0x17000;
-        b.x += 0x7000;
-        b.z += 0x8000;
+        model1Pos.x += 0x17000;
+        model0Pos.x += 0x7000;
+        model0Pos.z += 0x8000;
         ModelInstance_SetRotation(&effect->models[1], 0x638D, 1);
         ModelInstance_SetRotation(&effect->models[2], 0x9C71, 1);
-        ModelInstance_SetPosition(&effect->models[1], a.x, a.y, a.z + 0x8000);
-        ModelInstance_SetPosition(&effect->models[2], a.x, a.y, a.z - 0x8000);
+        ModelInstance_SetPosition(&effect->models[1], model1Pos.x, model1Pos.y, model1Pos.z + 0x8000);
+        ModelInstance_SetPosition(&effect->models[2], model1Pos.x, model1Pos.y, model1Pos.z - 0x8000);
         break;
     }
-    ModelInstance_SetPosition(&effect->models[0], b.x, b.y, b.z);
+    ModelInstance_SetPosition(&effect->models[0], model0Pos.x, model0Pos.y, model0Pos.z);
 }
 
 void WiFiPlazaInstrument_InitPop03(WiFiPlazaInstrumentManager *manager, WiFiPlazaInstrumentEffect *effect) {
-    VecFx32 a;
-    VecFx32 b;
+    VecFx32 model1Pos;
+    VecFx32 model0Pos;
 
     WiFiPlazaInstrument_SetModel(manager, effect, 1, gWiFiPlazaInstrumentPopModel1);
     WiFiPlazaInstrument_SetModel(manager, effect, 0, gWiFiPlazaInstrumentPopModel0);
@@ -616,57 +616,57 @@ void WiFiPlazaInstrument_InitPop03(WiFiPlazaInstrumentManager *manager, WiFiPlaz
     effect->work.fade.fade[0] = 8;
     effect->work.fade.fade[1] = 8;
     effect->work.fade.fade[2] = 8;
-    WiFiPlazaObj_GetPosition(effect->obj, &a);
-    a.y += FX32_CONST(16);
-    a.x += FX32_CONST(8);
-    b = a;
-    b.y += FX32_CONST(16);
+    WiFiPlazaObj_GetPosition(effect->obj, &model1Pos);
+    model1Pos.y += FX32_CONST(16);
+    model1Pos.x += FX32_CONST(8);
+    model0Pos = model1Pos;
+    model0Pos.y += FX32_CONST(16);
 
     switch (WiFiPlazaObj_GetParam(effect->obj, 6)) {
     case DIR_NORTH:
-        a.z -= 0x1C000;
-        b.z -= 0xE000;
+        model1Pos.z -= 0x1C000;
+        model0Pos.z -= 0xE000;
         ModelInstance_SetRotation(&effect->models[1], 0xA38D, 1);
         ModelInstance_SetRotation(&effect->models[2], 0xDC70, 1);
         ModelInstance_SetRotation(&effect->models[3], 0xBFFF, 1);
-        ModelInstance_SetPosition(&effect->models[1], a.x + 0x8000, a.y, a.z);
-        ModelInstance_SetPosition(&effect->models[2], a.x - 0x8000, a.y, a.z);
-        ModelInstance_SetPosition(&effect->models[3], a.x, a.y, a.z);
+        ModelInstance_SetPosition(&effect->models[1], model1Pos.x + 0x8000, model1Pos.y, model1Pos.z);
+        ModelInstance_SetPosition(&effect->models[2], model1Pos.x - 0x8000, model1Pos.y, model1Pos.z);
+        ModelInstance_SetPosition(&effect->models[3], model1Pos.x, model1Pos.y, model1Pos.z);
         break;
     case DIR_SOUTH:
-        a.z += 0x18000;
-        b.z += 0xB000;
+        model1Pos.z += 0x18000;
+        model0Pos.z += 0xB000;
         ModelInstance_SetRotation(&effect->models[1], 0x238E, 1);
         ModelInstance_SetRotation(&effect->models[2], 0x5C71, 1);
         ModelInstance_SetRotation(&effect->models[3], 0x3FFF, 1);
-        ModelInstance_SetPosition(&effect->models[1], a.x - 0x8000, a.y, a.z);
-        ModelInstance_SetPosition(&effect->models[2], a.x + 0x8000, a.y, a.z);
-        ModelInstance_SetPosition(&effect->models[3], a.x, a.y, a.z);
+        ModelInstance_SetPosition(&effect->models[1], model1Pos.x - 0x8000, model1Pos.y, model1Pos.z);
+        ModelInstance_SetPosition(&effect->models[2], model1Pos.x + 0x8000, model1Pos.y, model1Pos.z);
+        ModelInstance_SetPosition(&effect->models[3], model1Pos.x, model1Pos.y, model1Pos.z);
         break;
     case DIR_WEST:
-        a.x -= 0x17000;
-        b.x -= 0x7000;
-        b.z += 0x8000;
+        model1Pos.x -= 0x17000;
+        model0Pos.x -= 0x7000;
+        model0Pos.z += 0x8000;
         ModelInstance_SetRotation(&effect->models[1], 0xE38F, 1);
         ModelInstance_SetRotation(&effect->models[2], 0x1C71, 1);
         ModelInstance_SetRotation(&effect->models[3], 0, 1);
-        ModelInstance_SetPosition(&effect->models[1], a.x, a.y, a.z - 0x8000);
-        ModelInstance_SetPosition(&effect->models[2], a.x, a.y, a.z + 0x8000);
-        ModelInstance_SetPosition(&effect->models[3], a.x, a.y, a.z);
+        ModelInstance_SetPosition(&effect->models[1], model1Pos.x, model1Pos.y, model1Pos.z - 0x8000);
+        ModelInstance_SetPosition(&effect->models[2], model1Pos.x, model1Pos.y, model1Pos.z + 0x8000);
+        ModelInstance_SetPosition(&effect->models[3], model1Pos.x, model1Pos.y, model1Pos.z);
         break;
     case DIR_EAST:
-        a.x += 0x17000;
-        b.x += 0x7000;
-        b.z += 0x8000;
+        model1Pos.x += 0x17000;
+        model0Pos.x += 0x7000;
+        model0Pos.z += 0x8000;
         ModelInstance_SetRotation(&effect->models[1], 0x638D, 1);
         ModelInstance_SetRotation(&effect->models[2], 0x9C71, 1);
         ModelInstance_SetRotation(&effect->models[3], 0x7FFF, 1);
-        ModelInstance_SetPosition(&effect->models[1], a.x, a.y, a.z + 0x8000);
-        ModelInstance_SetPosition(&effect->models[2], a.x, a.y, a.z - 0x8000);
-        ModelInstance_SetPosition(&effect->models[3], a.x, a.y, a.z);
+        ModelInstance_SetPosition(&effect->models[1], model1Pos.x, model1Pos.y, model1Pos.z + 0x8000);
+        ModelInstance_SetPosition(&effect->models[2], model1Pos.x, model1Pos.y, model1Pos.z - 0x8000);
+        ModelInstance_SetPosition(&effect->models[3], model1Pos.x, model1Pos.y, model1Pos.z);
         break;
     }
-    ModelInstance_SetPosition(&effect->models[0], b.x, b.y, b.z);
+    ModelInstance_SetPosition(&effect->models[0], model0Pos.x, model0Pos.y, model0Pos.z);
 }
 
 void WiFiPlazaInstrument_InitBalloon01(WiFiPlazaInstrumentManager *manager, WiFiPlazaInstrumentEffect *effect) {
@@ -949,7 +949,7 @@ BOOL WiFiPlazaInstrument_UpdateSparkle(WiFiPlazaInstrumentManager *manager, WiFi
 
     if (effect->work.shower.rows < effect->work.shower.totalRows) {
         int target;
-        u32 n;
+        u32 index;
         ModelInstance *model;
 
         effect->work.shower.tick++;
@@ -958,13 +958,13 @@ BOOL WiFiPlazaInstrument_UpdateSparkle(WiFiPlazaInstrumentManager *manager, WiFi
             effect->work.shower.rows++;
         }
         target = (effect->work.shower.tick * 4) / 8 + effect->work.shower.rows * 4;
-        n = effect->work.shower.shown;
-        if (n < (u32)target) {
-            model = &effect->models[n];
+        index = effect->work.shower.shown;
+        if (index < (u32)target) {
+            model = &effect->models[index];
             do {
                 ModelInstance_SetVisible(model, TRUE);
                 model++;
-            } while (++n < (u32)target);
+            } while (++index < (u32)target);
         }
         effect->work.shower.shown = target;
     }

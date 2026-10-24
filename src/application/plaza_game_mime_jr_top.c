@@ -402,7 +402,8 @@ static void MimeJrTop_InitGame(MimeJrTopApp *app) {
     MimeJrTopModelFiles audienceFiles;
     int i;
     void *raw;
-    int n;
+    int playerCount;
+    int topFile;
     MimeJrTopModel *model;
     int offset;
     int shift;
@@ -422,13 +423,13 @@ static void MimeJrTop_InitGame(MimeJrTopApp *app) {
     NNS_G2dGetUnpackedPaletteData(raw, &pal);
     PaletteData_LoadPalette(app->resources.palette, pal->pRawData, PLTTBUF_MAIN_OBJ, 0xE0, 32);
     Heap_Free(raw);
-    n = CommPlayerInfo_CountAccepted();
+    playerCount = CommPlayerInfo_CountAccepted();
     app->netId = Comm_GetLocalNetId();
     MimeJrTop_RegisterCommands(app);
     if (MimeJrTop_IsParent(app) == TRUE) {
-        app->clock = MimeJrTopClock_New(n, &app->resources);
+        app->clock = MimeJrTopClock_New(playerCount, &app->resources);
     }
-    app->game = MimeJrTopGame_New(n, app->netId, &app->resources);
+    app->game = MimeJrTopGame_New(playerCount, app->netId, &app->resources);
     app->game->selection = app->start.selection;
     app->game->seed = app->savedSeed;
     GF_TouchpadResetSampling();
@@ -477,8 +478,8 @@ static void MimeJrTop_InitGame(MimeJrTopApp *app) {
     MimeJrTopModel_Init(&app->game->stage, app->start.selection);
     ModelInstance_SetVisible(&app->game->stage.instance, FALSE);
     topModels = gMimeJrTopTopModels;
-    n = topModels.files[MimeJrTop_GetPlayerIndex(app, app->netId)];
-    MimeJrTopModel_Load(&app->game->top, app->resources.narc, n);
+    topFile = topModels.files[MimeJrTop_GetPlayerIndex(app, app->netId)];
+    MimeJrTopModel_Load(&app->game->top, app->resources.narc, topFile);
     MimeJrTopModel_Init(&app->game->top, app->start.selection);
     MimeJrTopModel_Load(&app->game->mimeJr[0], app->resources.narc, 0x33);
     MimeJrTopModel_Load(&app->game->mimeJr[1], app->resources.narc, 0x39);
@@ -549,8 +550,8 @@ BOOL MimeJrTop_Init(OverlayManager *man, int *state) {
 static void MimeJrTopGame_RubDemo(MimeJrTopGame *game, int x, int y) {
     VecFx32 spinAxis;
     VecFx32 turnAxis;
-    f32 a;
-    int v;
+    f32 lean;
+    int tiltY;
     if (x == 0 && y == 0) {
         game->lastTouchX = 0;
         game->lastTouchY = 0;
@@ -566,10 +567,10 @@ static void MimeJrTopGame_RubDemo(MimeJrTopGame *game, int x, int y) {
         MimeJrTopModel_Turn(&game->mimeJr[0], game->lastTouchX, game->lastTouchY, game->lastTouchX, game->lastTouchY, 0.22f, FALSE);
         return;
     }
-    v = game->tilt.y >> 12;
-    a = (100 - v) / 40;
-    if (v >= 95) {
-        a = 0.1f;
+    tiltY = game->tilt.y >> 12;
+    lean = (100 - tiltY) / 40;
+    if (tiltY >= 95) {
+        lean = 0.1f;
     }
     if (game->lastTouchX == 0) {
         game->lastTouchX = x;
@@ -1439,13 +1440,13 @@ static void MimeJrTopGame_ShowRivalNames(MimeJrTopApp *app, MimeJrTopGame *game)
     i = 0;
     if (game->playerCount > 0) {
         Window *window = game->nameWindows;
-        int n = 0;
+        int rival = 0;
         do {
             if (i != game->localIndex) {
                 int flag = PlazaGameRoster_IsSpecialVisitor(&app->roster, i);
                 PlayerProfile *profile = PlazaGameRoster_GetProfile(&app->roster, i);
                 InitWindow(window);
-                s16 *coords = (s16 *)((u8 *)table + game->playerCount * 24 + n * 8);
+                s16 *coords = (s16 *)((u8 *)table + game->playerCount * 24 + rival * 8);
                 int width = coords[-22], height = coords[-21];
                 AddWindowParameterized(game->resources->bgConfig, window, GF_BG_LYR_SUB_3, (u8)coords[-24], (u8)coords[-23], (u8)width, (u8)height, 14, (u16)tile);
                 tile += width * height;
@@ -1460,7 +1461,7 @@ static void MimeJrTopGame_ShowRivalNames(MimeJrTopApp *app, MimeJrTopGame *game)
                 String_Delete(name);
                 CopyWindowToVram(window);
                 window++;
-                n++;
+                rival++;
             }
             i++;
         } while (i < game->playerCount);
@@ -1521,31 +1522,31 @@ static void MimeJrTopGame_CreateRivalSprites(MimeJrTopApp *app, MimeJrTopGame *g
     ManagedSpriteTemplate template;
     SpriteSystem *spriteSystem = game->resources->spriteSystem;
     SpriteManager *spriteManager = game->resources->spriteManager;
-    int n = 0;
+    int rival = 0;
     int i;
     for (i = 0; i < game->playerCount; i++) {
         game->rivalSlots[i] = 0xFF;
         if (i == game->localIndex) {
             continue;
         }
-        game->rivalSlots[i] = n;
-        MimeJrTop_InitSpriteTemplate(&template, gMimeJrTopRivalSpriteX[game->playerCount - 1][n], 0xF0, NNS_G2D_VRAM_TYPE_2DSUB, 0, 9000);
+        game->rivalSlots[i] = rival;
+        MimeJrTop_InitSpriteTemplate(&template, gMimeJrTopRivalSpriteX[game->playerCount - 1][rival], 0xF0, NNS_G2D_VRAM_TYPE_2DSUB, 0, 9000);
         template.drawPriority = 1;
-        game->rivalFaces[n] = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
-        MimeJrTop_InitSpriteTemplate(&template, gMimeJrTopRivalSpriteX[game->playerCount - 1][n], 0xF0, NNS_G2D_VRAM_TYPE_2DSUB, 0, 9000);
+        game->rivalFaces[rival] = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
+        MimeJrTop_InitSpriteTemplate(&template, gMimeJrTopRivalSpriteX[game->playerCount - 1][rival], 0xF0, NNS_G2D_VRAM_TYPE_2DSUB, 0, 9000);
         template.drawPriority = 2;
-        game->rivalBodies[n] = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
-        ((MimeJrTopSetPaletteOffsetFunc)ManagedSprite_SetPaletteOverrideOffset)(game->rivalBodies[n], MimeJrTop_GetPlayerIndex(app, i));
-        MimeJrTop_InitSpriteTemplate(&template, gMimeJrTopRivalSpriteX[game->playerCount - 1][n], 0xF0, NNS_G2D_VRAM_TYPE_2DSUB, 0, 9000);
+        game->rivalBodies[rival] = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
+        ((MimeJrTopSetPaletteOffsetFunc)ManagedSprite_SetPaletteOverrideOffset)(game->rivalBodies[rival], MimeJrTop_GetPlayerIndex(app, i));
+        MimeJrTop_InitSpriteTemplate(&template, gMimeJrTopRivalSpriteX[game->playerCount - 1][rival], 0xF0, NNS_G2D_VRAM_TYPE_2DSUB, 0, 9000);
         template.drawPriority = 3;
-        game->rivalBadges[n] = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
-        ((MimeJrTopSetPaletteOffsetFunc)ManagedSprite_SetPaletteOverrideOffset)(game->rivalBadges[n], MimeJrTop_GetPlayerIndex(app, i));
-        ManagedSprite_SetAnim(game->rivalBadges[n], 5);
-        ManagedSprite_TickTwoFrames(game->rivalFaces[n]);
-        ManagedSprite_TickTwoFrames(game->rivalBodies[n]);
-        ManagedSprite_TickTwoFrames(game->rivalBadges[n]);
+        game->rivalBadges[rival] = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
+        ((MimeJrTopSetPaletteOffsetFunc)ManagedSprite_SetPaletteOverrideOffset)(game->rivalBadges[rival], MimeJrTop_GetPlayerIndex(app, i));
+        ManagedSprite_SetAnim(game->rivalBadges[rival], 5);
+        ManagedSprite_TickTwoFrames(game->rivalFaces[rival]);
+        ManagedSprite_TickTwoFrames(game->rivalBodies[rival]);
+        ManagedSprite_TickTwoFrames(game->rivalBadges[rival]);
         MimeJrTopGame_SetRivalAnim(game, i, 0);
-        n++;
+        rival++;
     }
 }
 
@@ -1683,8 +1684,6 @@ static MimeJrTopGame *MimeJrTopGame_New(u32 playerCount, u32 localIndex, MimeJrT
 // Puts the top upright and the models back to their start rotation.
 static void MimeJrTopGame_ResetBalance(MimeJrTopGame *game) {
     int i;
-    MimeJrTopQuat *rotation, *lastTurn;
-    MimeJrTopModel *model;
     game->tilt.x = 0;
     game->tilt.y = 0x64000;
     game->tilt.z = 0;
@@ -1700,19 +1699,12 @@ static void MimeJrTopGame_ResetBalance(MimeJrTopGame *game) {
     MimeJrTop_QuatIdentity(&game->mimeJr[0].lastTurn);
     MimeJrTop_QuatIdentity(&game->stage.rotation);
     MimeJrTop_QuatIdentity(&game->stage.lastTurn);
-    i = 0;
-    rotation = &game->audience[0].rotation;
-    lastTurn = &game->audience[0].lastTurn;
-    model = game->audience;
-    do {
-        MimeJrTop_QuatIdentity(rotation);
-        MimeJrTop_QuatIdentity(lastTurn);
-        MimeJrTopModel_Turn(model, 0, 0, 5, 5, 0.8f, FALSE);
-        MimeJrTopModel_Turn(model, 0, 0, -5, -5, 0.8f, FALSE);
-        rotation = (MimeJrTopQuat *)((u8 *)rotation + sizeof(MimeJrTopModel));
-        lastTurn = (MimeJrTopQuat *)((u8 *)lastTurn + sizeof(MimeJrTopModel));
-        model++;
-    } while (++i < 8);
+    for (i = 0; i < 8; i++) {
+        MimeJrTop_QuatIdentity(&game->audience[i].rotation);
+        MimeJrTop_QuatIdentity(&game->audience[i].lastTurn);
+        MimeJrTopModel_Turn(&game->audience[i], 0, 0, 5, 5, 0.8f, FALSE);
+        MimeJrTopModel_Turn(&game->audience[i], 0, 0, -5, -5, 0.8f, FALSE);
+    }
     MimeJrTopModel_Turn(&game->top, 0, 0, 5, 5, 1.88f, FALSE);
     MimeJrTopModel_Turn(&game->top, 0, 0, -5, -5, 1.88f, FALSE);
     MimeJrTopModel_Turn(&game->mimeJr[0], 0, 0, 5, 5, 0.8f, FALSE);
@@ -2053,17 +2045,17 @@ static void MimeJrTopRivalTier_Task(SysTask *sysTask, void *data) {
     }
 }
 
-#define FREE_TIER_MODELS()                                               \
-    MimeJrTopModel_Free(a);                                              \
-    MimeJrTopModel_Free(b);                                              \
-    ModelAnimation_Free(&a->animations[0], &task->resources->allocator); \
-    ModelAnimation_Free(&a->animations[1], &task->resources->allocator); \
-    ModelAnimation_Free(&b->animations[0], &task->resources->allocator); \
-    ModelAnimation_Free(&b->animations[1], &task->resources->allocator)
+#define FREE_TIER_MODELS()                                                    \
+    MimeJrTopModel_Free(modelA);                                              \
+    MimeJrTopModel_Free(modelB);                                              \
+    ModelAnimation_Free(&modelA->animations[0], &task->resources->allocator); \
+    ModelAnimation_Free(&modelA->animations[1], &task->resources->allocator); \
+    ModelAnimation_Free(&modelB->animations[0], &task->resources->allocator); \
+    ModelAnimation_Free(&modelB->animations[1], &task->resources->allocator)
 
 // Loads the two models of the current tier (one step per frame) and swaps them in.
 static void MimeJrTopTierModels_Task(SysTask *sysTask, MimeJrTopTierModelsTask *task) {
-    MimeJrTopModel *a = task->modelA, *b = task->modelB;
+    MimeJrTopModel *modelA = task->modelA, *modelB = task->modelB;
     int tier, index;
     if (!IsPaletteFadeFinished() || task->resources->connectionLost == TRUE) {
         FREE_TIER_MODELS();
@@ -2078,56 +2070,56 @@ static void MimeJrTopTierModels_Task(SysTask *sysTask, MimeJrTopTierModelsTask *
     }
     switch (task->state) {
     case MIME_JR_TOP_TIER_MODELS_LOAD_TOP:
-        MimeJrTopModel_Load(a, task->resources->narc, gMimeJrTopTierModels[index][0]);
-        MimeJrTopModel_Init(a, task->selection);
+        MimeJrTopModel_Load(modelA, task->resources->narc, gMimeJrTopTierModels[index][0]);
+        MimeJrTopModel_Init(modelA, task->selection);
         task->state++;
         return;
     case MIME_JR_TOP_TIER_MODELS_LOAD_TOP_ANIMS:
-        ModelAnimation_LoadFromNarc(&a->animations[0], &a->resource, task->resources->narc, 39, HEAP_ID_113, &task->resources->allocator);
-        ModelAnimation_LoadFromNarc(&a->animations[1], &a->resource, task->resources->narc, 40, HEAP_ID_113, &task->resources->allocator);
-        ModelInstance_AddAnimation(&a->instance, &a->animations[0]);
-        ModelInstance_AddAnimation(&a->instance, &a->animations[1]);
-        ModelAnimation_SetFrame(&a->animations[0], 0);
-        ModelAnimation_SetFrame(&a->animations[1], 0);
-        ModelInstance_SetVisible(&a->instance, FALSE);
-        a->animate = FALSE;
-        MimeJrTop_QuatIdentity(&a->rotation);
-        MimeJrTop_QuatIdentity(&a->lastTurn);
-        MimeJrTopModel_Turn(a, 0, 0, 5, 5, 0.8f, FALSE);
-        MimeJrTopModel_Turn(a, 0, 0, -5, -5, 0.8f, FALSE);
+        ModelAnimation_LoadFromNarc(&modelA->animations[0], &modelA->resource, task->resources->narc, 39, HEAP_ID_113, &task->resources->allocator);
+        ModelAnimation_LoadFromNarc(&modelA->animations[1], &modelA->resource, task->resources->narc, 40, HEAP_ID_113, &task->resources->allocator);
+        ModelInstance_AddAnimation(&modelA->instance, &modelA->animations[0]);
+        ModelInstance_AddAnimation(&modelA->instance, &modelA->animations[1]);
+        ModelAnimation_SetFrame(&modelA->animations[0], 0);
+        ModelAnimation_SetFrame(&modelA->animations[1], 0);
+        ModelInstance_SetVisible(&modelA->instance, FALSE);
+        modelA->animate = FALSE;
+        MimeJrTop_QuatIdentity(&modelA->rotation);
+        MimeJrTop_QuatIdentity(&modelA->lastTurn);
+        MimeJrTopModel_Turn(modelA, 0, 0, 5, 5, 0.8f, FALSE);
+        MimeJrTopModel_Turn(modelA, 0, 0, -5, -5, 0.8f, FALSE);
         task->state++;
         return;
     case MIME_JR_TOP_TIER_MODELS_LOAD_CHANGE:
-        MimeJrTopModel_Load(b, task->resources->narc, gMimeJrTopTierChangeModels[index][0]);
-        MimeJrTopModel_Init(b, task->selection);
+        MimeJrTopModel_Load(modelB, task->resources->narc, gMimeJrTopTierChangeModels[index][0]);
+        MimeJrTopModel_Init(modelB, task->selection);
         task->state++;
         return;
     case MIME_JR_TOP_TIER_MODELS_LOAD_CHANGE_ANIMS:
-        ModelAnimation_LoadFromNarc(&b->animations[0], &b->resource, task->resources->narc, 41, HEAP_ID_113, &task->resources->allocator);
-        ModelAnimation_LoadFromNarc(&b->animations[1], &b->resource, task->resources->narc, 42, HEAP_ID_113, &task->resources->allocator);
-        ModelInstance_AddAnimation(&b->instance, &b->animations[0]);
-        ModelInstance_AddAnimation(&b->instance, &b->animations[1]);
-        ModelAnimation_SetFrame(&b->animations[0], 0);
-        ModelAnimation_SetFrame(&b->animations[1], 0);
-        ModelInstance_SetVisible(&b->instance, TRUE);
-        b->animate = TRUE;
-        MimeJrTop_QuatIdentity(&b->rotation);
-        MimeJrTop_QuatIdentity(&b->lastTurn);
-        MimeJrTopModel_Turn(b, 0, 0, 5, 5, 0.8f, FALSE);
-        MimeJrTopModel_Turn(b, 0, 0, -5, -5, 0.8f, FALSE);
+        ModelAnimation_LoadFromNarc(&modelB->animations[0], &modelB->resource, task->resources->narc, 41, HEAP_ID_113, &task->resources->allocator);
+        ModelAnimation_LoadFromNarc(&modelB->animations[1], &modelB->resource, task->resources->narc, 42, HEAP_ID_113, &task->resources->allocator);
+        ModelInstance_AddAnimation(&modelB->instance, &modelB->animations[0]);
+        ModelInstance_AddAnimation(&modelB->instance, &modelB->animations[1]);
+        ModelAnimation_SetFrame(&modelB->animations[0], 0);
+        ModelAnimation_SetFrame(&modelB->animations[1], 0);
+        ModelInstance_SetVisible(&modelB->instance, TRUE);
+        modelB->animate = TRUE;
+        MimeJrTop_QuatIdentity(&modelB->rotation);
+        MimeJrTop_QuatIdentity(&modelB->lastTurn);
+        MimeJrTopModel_Turn(modelB, 0, 0, 5, 5, 0.8f, FALSE);
+        MimeJrTopModel_Turn(modelB, 0, 0, -5, -5, 0.8f, FALSE);
         if (task->selection) {
-            ModelInstance_SetPosition(&a->instance, 0, -0x8000, 0);
-            ModelInstance_SetPosition(&b->instance, 0, -0x8000, 0);
-            a->position.y = -0x8000;
-            b->position.y = -0x8000;
+            ModelInstance_SetPosition(&modelA->instance, 0, -0x8000, 0);
+            ModelInstance_SetPosition(&modelB->instance, 0, -0x8000, 0);
+            modelA->position.y = -0x8000;
+            modelB->position.y = -0x8000;
         }
         task->state++;
         return;
     case MIME_JR_TOP_TIER_MODELS_WAIT_CHANGE:
-        if (!b->animate) {
-            ModelInstance_SetVisible(&a->instance, TRUE);
-            ModelInstance_SetVisible(&b->instance, FALSE);
-            a->animate = TRUE;
+        if (!modelB->animate) {
+            ModelInstance_SetVisible(&modelA->instance, TRUE);
+            ModelInstance_SetVisible(&modelB->instance, FALSE);
+            modelA->animate = TRUE;
             task->state++;
         }
         return;
@@ -2211,8 +2203,8 @@ static BOOL MimeJrTop_GetTier(MimeJrTopGame *game, int spinFrames, u32 *tier) {
 
 // Follows the other players' states (sent with command 24).
 static void MimeJrTopGame_UpdateRivals(MimeJrTopGame *game) {
-    int n = game->playerCount, i;
-    for (i = 0; i < n; i++) {
+    int count = game->playerCount, i;
+    for (i = 0; i < count; i++) {
         if (i == game->localIndex) {
             continue;
         }
@@ -2327,9 +2319,9 @@ static void MimeJrTopGame_HandleTouch(MimeJrTopGame *game) {
     VecFx32 turnAxis;
     u32 x, y;
     int hit;
-    f32 a;
-    int v;
-    f32 b;
+    f32 lean;
+    int tiltY;
+    f32 mimeJrSpeed;
     System_GetTouchHeldCoords(&x, &y);
     game->touched = FALSE;
     if (game->selection) {
@@ -2354,22 +2346,22 @@ static void MimeJrTopGame_HandleTouch(MimeJrTopGame *game) {
         MimeJrTopModel_Turn(&game->mimeJr[0], game->lastTouchX, game->lastTouchY, game->lastTouchX, game->lastTouchY, 0.22f, FALSE);
         return;
     }
-    v = game->tilt.y >> 12;
-    a = (100 - v) / 40;
-    if (v >= 95) {
-        a = 0.1f;
+    tiltY = game->tilt.y >> 12;
+    lean = (100 - tiltY) / 40;
+    if (tiltY >= 95) {
+        lean = 0.1f;
     }
-    if (a >= 0.22) {
-        b = 0.22f;
+    if (lean >= 0.22) {
+        mimeJrSpeed = 0.22f;
     } else {
-        b = 0.22 - a;
+        mimeJrSpeed = 0.22 - lean;
     }
     if (game->lastTouchX == 0) {
         game->lastTouchX = x;
         game->lastTouchY = y;
     }
     MimeJrTopModel_Turn(&game->top, x, y, game->lastTouchX, game->lastTouchY, 2.0f, TRUE);
-    MimeJrTopModel_Turn(&game->mimeJr[0], x, y, game->lastTouchX, game->lastTouchY, b, TRUE);
+    MimeJrTopModel_Turn(&game->mimeJr[0], x, y, game->lastTouchX, game->lastTouchY, mimeJrSpeed, TRUE);
     turnAxis = gMimeJrTopTurnTiltAxis;
     MTX_MultVec43(&turnAxis, &game->mimeJr[0].rotationFx, &game->tilt);
     game->touched = TRUE;
@@ -2826,11 +2818,9 @@ static void MimeJrTopStars_Task(SysTask *sysTask, MimeJrTopStarsTask *task) {
     s32 startX;
     s32 startY;
     s32 j;
-    s32 spriteOffset;
     s32 x;
     s32 y;
     int i;
-    MimeJrTopStarsTask *star;
     MimeJrTopResources *resources = task->game->resources;
 
     if (!IsPaletteFadeFinished() || resources->connectionLost == TRUE) {
@@ -2850,91 +2840,89 @@ static void MimeJrTopStars_Task(SysTask *sysTask, MimeJrTopStarsTask *task) {
         startX = origins.values[task->group * 2];
         startY = origins.values[task->group * 2 + 1];
         task->timer = i;
-        star = task;
         x = startX << 12;
         y = startY << 12;
-        spriteOffset = i;
-        for (; i < 36; i++, star = (MimeJrTopStarsTask *)((u8 *)star + sizeof(MimeJrTopStar)), spriteOffset += 4) {
+        for (; i < 36; i++) {
             int rem;
-            star->stars[0].delay = i % 2;
+            task->stars[i].delay = i % 2;
             rem = i % 3;
-            star->stars[0].radiusX = 6 - rem;
-            star->stars[0].radiusY = 6 - rem;
-            star->stars[0].sprite = *(ManagedSprite **)((u8 *)task->game->stars + spriteOffset);
-            star->stars[0].angle = (i / 3) * 30;
-            star->stars[0].angle %= 360;
-            star->stars[0].fallSpeed = 0;
-            star->stars[0].timer = -(rem * 2);
+            task->stars[i].radiusX = 6 - rem;
+            task->stars[i].radiusY = 6 - rem;
+            task->stars[i].sprite = task->game->stars[i];
+            task->stars[i].angle = (i / 3) * 30;
+            task->stars[i].angle %= 360;
+            task->stars[i].fallSpeed = 0;
+            task->stars[i].timer = -(rem * 2);
             {
-                f32 f;
+                f32 rounded;
                 if (startX) {
-                    f = (f32)(u32)x + 0.5f;
+                    rounded = (f32)(u32)x + 0.5f;
                 } else {
-                    f = (f32)(u32)x - 0.5f;
+                    rounded = (f32)(u32)x - 0.5f;
                 }
-                star->stars[0].originX = (s32)f;
+                task->stars[i].originX = (s32)rounded;
             }
             {
-                f32 f;
+                f32 rounded;
                 if (startY) {
-                    f = (f32)(u32)y + 0.5f;
+                    rounded = (f32)(u32)y + 0.5f;
                 } else {
-                    f = (f32)(u32)y - 0.5f;
+                    rounded = (f32)(u32)y - 0.5f;
                 }
-                star->stars[0].originY = (s32)f;
+                task->stars[i].originY = (s32)rounded;
             }
-            star->stars[0].circleX = 0;
-            star->stars[0].circleY = 0;
-            star->stars[0].driftX = 0;
-            star->stars[0].driftY = 0;
-            star->stars[0].jitterX = 0;
-            star->stars[0].jitterY = 0;
-            star->stars[0].type = 0;
-            star->stars[0].visible = TRUE;
-            star->stars[0].jitterPhase = 0;
-            if (star->stars[0].angle == 180) {
-                star->stars[0].type = 2;
+            task->stars[i].circleX = 0;
+            task->stars[i].circleY = 0;
+            task->stars[i].driftX = 0;
+            task->stars[i].driftY = 0;
+            task->stars[i].jitterX = 0;
+            task->stars[i].jitterY = 0;
+            task->stars[i].type = 0;
+            task->stars[i].visible = TRUE;
+            task->stars[i].jitterPhase = 0;
+            if (task->stars[i].angle == 180) {
+                task->stars[i].type = 2;
             }
-            if (star->stars[0].angle >= 270 && star->stars[0].angle <= 90) {
-                star->stars[0].type = 1;
+            if (task->stars[i].angle >= 270 && task->stars[i].angle <= 90) {
+                task->stars[i].type = 1;
             }
             {
-                s32 radius = star->stars[0].radiusX;
-                f32 f;
+                s32 radius = task->stars[i].radiusX;
+                f32 rounded;
                 s32 amp;
                 if (radius > 0) {
-                    f = (f32)(radius << 12) + 0.5f;
+                    rounded = (f32)(radius << 12) + 0.5f;
                 } else {
-                    f = (f32)(radius << 12) - 0.5f;
+                    rounded = (f32)(radius << 12) - 0.5f;
                 }
-                amp = (s32)f;
-                star->stars[0].circleX = FX_Mul(GF_SinDeg((u16)star->stars[0].angle), amp);
+                amp = (s32)rounded;
+                task->stars[i].circleX = FX_Mul(GF_SinDeg((u16)task->stars[i].angle), amp);
             }
             {
-                s32 radius = star->stars[0].radiusY;
-                f32 f;
+                s32 radius = task->stars[i].radiusY;
+                f32 rounded;
                 s32 amp;
                 if (radius > 0) {
-                    f = (f32)(radius << 12) + 0.5f;
+                    rounded = (f32)(radius << 12) + 0.5f;
                 } else {
-                    f = (f32)(radius << 12) - 0.5f;
+                    rounded = (f32)(radius << 12) - 0.5f;
                 }
-                amp = (s32)f;
-                star->stars[0].circleY = FX_Mul(GF_CosDeg((u16)star->stars[0].angle), amp);
+                amp = (s32)rounded;
+                task->stars[i].circleY = FX_Mul(GF_CosDeg((u16)task->stars[i].angle), amp);
             }
             {
-                s32 fallSpeed = star->stars[0].fallSpeed;
-                f32 f;
+                s32 fallSpeed = task->stars[i].fallSpeed;
+                f32 rounded;
                 if (fallSpeed > 0) {
-                    f = (f32)(fallSpeed << 12) + 0.5f;
+                    rounded = (f32)(fallSpeed << 12) + 0.5f;
                 } else {
-                    f = (f32)(fallSpeed << 12) - 0.5f;
+                    rounded = (f32)(fallSpeed << 12) - 0.5f;
                 }
-                star->stars[0].driftY += (s32)f;
+                task->stars[i].driftY += (s32)rounded;
             }
-            ManagedSprite_SetPositionFxXYWithSubscreenOffset(star->stars[0].sprite,
-                star->stars[0].jitterX + star->stars[0].originX + star->stars[0].circleX + star->stars[0].driftX,
-                star->stars[0].jitterY + star->stars[0].originY + star->stars[0].circleY + star->stars[0].driftY,
+            ManagedSprite_SetPositionFxXYWithSubscreenOffset(task->stars[i].sprite,
+                task->stars[i].jitterX + task->stars[i].originX + task->stars[i].circleX + task->stars[i].driftX,
+                task->stars[i].jitterY + task->stars[i].originY + task->stars[i].circleY + task->stars[i].driftY,
                 14 << 16);
         }
         task->state++;
@@ -2953,113 +2941,112 @@ static void MimeJrTopStars_Task(SysTask *sysTask, MimeJrTopStarsTask *task) {
         } else {
             task->timer++;
             j = 0;
-            star = task;
-            for (; j < 36; j++, star = (MimeJrTopStarsTask *)((u8 *)star + sizeof(MimeJrTopStar))) {
-                star->stars[0].timer++;
-                if (star->stars[0].timer < 0) {
+            for (; j < 36; j++) {
+                task->stars[j].timer++;
+                if (task->stars[j].timer < 0) {
                     continue;
                 }
-                if (star->stars[0].timer >= star->stars[0].delay + 10) {
-                    if (star->stars[0].timer == star->stars[0].delay + 10) {
-                        ManagedSprite_SetAnim(star->stars[0].sprite, 0);
+                if (task->stars[j].timer >= task->stars[j].delay + 10) {
+                    if (task->stars[j].timer == task->stars[j].delay + 10) {
+                        ManagedSprite_SetAnim(task->stars[j].sprite, 0);
                     }
-                    if (star->stars[0].timer == star->stars[0].delay + 18) {
-                        star->stars[0].visible = FALSE;
-                    } else if ((star->stars[0].timer % 2) != 0) {
-                        star->stars[0].visible ^= 1;
+                    if (task->stars[j].timer == task->stars[j].delay + 18) {
+                        task->stars[j].visible = FALSE;
+                    } else if ((task->stars[j].timer % 2) != 0) {
+                        task->stars[j].visible ^= 1;
                     }
-                    ManagedSprite_SetDrawFlag(star->stars[0].sprite, star->stars[0].visible);
-                    switch (star->stars[0].jitterPhase) {
+                    ManagedSprite_SetDrawFlag(task->stars[j].sprite, task->stars[j].visible);
+                    switch (task->stars[j].jitterPhase) {
                     case 0:
-                        star->stars[0].jitterX = -FX32_ONE;
+                        task->stars[j].jitterX = -FX32_ONE;
                         break;
                     case 1:
-                        star->stars[0].jitterX = 0;
+                        task->stars[j].jitterX = 0;
                         break;
                     case 2:
-                        star->stars[0].jitterX = FX32_ONE;
+                        task->stars[j].jitterX = FX32_ONE;
                         break;
                     }
-                    star->stars[0].jitterPhase++;
-                    star->stars[0].jitterPhase %= 3;
+                    task->stars[j].jitterPhase++;
+                    task->stars[j].jitterPhase %= 3;
                 }
                 s16 radialX;
                 s16 radialY;
-                if (star->stars[0].timer > 5) {
-                    switch (star->stars[0].type) {
+                if (task->stars[j].timer > 5) {
+                    switch (task->stars[j].type) {
                     case 2:
-                        star->stars[0].fallSpeed = (star->stars[0].timer + 5) / 6;
+                        task->stars[j].fallSpeed = (task->stars[j].timer + 5) / 6;
                         break;
                     case 1:
-                        star->stars[0].fallSpeed = (star->stars[0].timer + 5) / 6;
+                        task->stars[j].fallSpeed = (task->stars[j].timer + 5) / 6;
                         break;
                     case 0:
-                        star->stars[0].fallSpeed = (star->stars[0].timer + 5) / 7;
+                        task->stars[j].fallSpeed = (task->stars[j].timer + 5) / 7;
                         break;
                     }
                 }
-                switch (star->stars[0].type) {
+                switch (task->stars[j].type) {
                 case 2:
-                    radialX = ((30 - (star->stars[0].timer + 5)) / 8);
-                    radialY = ((30 - (star->stars[0].timer + 7)) / 8);
+                    radialX = ((30 - (task->stars[j].timer + 5)) / 8);
+                    radialY = ((30 - (task->stars[j].timer + 7)) / 8);
                     break;
                 case 1:
                 default:
-                    radialX = ((30 - (star->stars[0].timer + 5)) / 8);
-                    radialY = ((30 - (star->stars[0].timer + 6)) / 8);
+                    radialX = ((30 - (task->stars[j].timer + 5)) / 8);
+                    radialY = ((30 - (task->stars[j].timer + 6)) / 8);
                     break;
                 case 0:
-                    radialX = ((30 - (star->stars[0].timer + 5)) / 8);
-                    radialY = ((30 - (star->stars[0].timer + 4)) / 8);
+                    radialX = ((30 - (task->stars[j].timer + 5)) / 8);
+                    radialY = ((30 - (task->stars[j].timer + 4)) / 8);
                     break;
                 }
                 if (radialX > 0) {
-                    star->stars[0].radiusX += radialX;
+                    task->stars[j].radiusX += radialX;
                 } else {
-                    star->stars[0].radiusX++;
+                    task->stars[j].radiusX++;
                 }
                 if (radialY > 0) {
-                    star->stars[0].radiusY += radialY;
+                    task->stars[j].radiusY += radialY;
                 } else {
-                    star->stars[0].radiusY++;
+                    task->stars[j].radiusY++;
                 }
                 {
-                    s32 radius = star->stars[0].radiusX;
-                    f32 f;
+                    s32 radius = task->stars[j].radiusX;
+                    f32 rounded;
                     s32 amp;
                     if (radius > 0) {
-                        f = (f32)(radius << 12) + 0.5f;
+                        rounded = (f32)(radius << 12) + 0.5f;
                     } else {
-                        f = (f32)(radius << 12) - 0.5f;
+                        rounded = (f32)(radius << 12) - 0.5f;
                     }
-                    amp = (s32)f;
-                    star->stars[0].circleX = FX_Mul(GF_SinDeg((u16)star->stars[0].angle), amp);
+                    amp = (s32)rounded;
+                    task->stars[j].circleX = FX_Mul(GF_SinDeg((u16)task->stars[j].angle), amp);
                 }
                 {
-                    s32 radius = star->stars[0].radiusY;
-                    f32 f;
+                    s32 radius = task->stars[j].radiusY;
+                    f32 rounded;
                     s32 amp;
                     if (radius > 0) {
-                        f = (f32)(radius << 12) + 0.5f;
+                        rounded = (f32)(radius << 12) + 0.5f;
                     } else {
-                        f = (f32)(radius << 12) - 0.5f;
+                        rounded = (f32)(radius << 12) - 0.5f;
                     }
-                    amp = (s32)f;
-                    star->stars[0].circleY = FX_Mul(GF_CosDeg((u16)star->stars[0].angle), amp);
+                    amp = (s32)rounded;
+                    task->stars[j].circleY = FX_Mul(GF_CosDeg((u16)task->stars[j].angle), amp);
                 }
                 {
-                    s32 fallSpeed = star->stars[0].fallSpeed;
-                    f32 f;
+                    s32 fallSpeed = task->stars[j].fallSpeed;
+                    f32 rounded;
                     if (fallSpeed > 0) {
-                        f = (f32)(fallSpeed << 12) + 0.5f;
+                        rounded = (f32)(fallSpeed << 12) + 0.5f;
                     } else {
-                        f = (f32)(fallSpeed << 12) - 0.5f;
+                        rounded = (f32)(fallSpeed << 12) - 0.5f;
                     }
-                    star->stars[0].driftY += (s32)f;
+                    task->stars[j].driftY += (s32)rounded;
                 }
-                ManagedSprite_SetPositionFxXYWithSubscreenOffset(star->stars[0].sprite,
-                    star->stars[0].jitterX + star->stars[0].originX + star->stars[0].circleX + star->stars[0].driftX,
-                    star->stars[0].jitterY + star->stars[0].originY + star->stars[0].circleY + star->stars[0].driftY,
+                ManagedSprite_SetPositionFxXYWithSubscreenOffset(task->stars[j].sprite,
+                    task->stars[j].jitterX + task->stars[j].originX + task->stars[j].circleX + task->stars[j].driftX,
+                    task->stars[j].jitterY + task->stars[j].originY + task->stars[j].circleY + task->stars[j].driftY,
                     14 << 16);
             }
         }
@@ -3738,7 +3725,7 @@ static BOOL MimeJrTopDancer_Circle(MimeJrTopDancer *dancer, int speed, s32 xdir,
 }
 
 void MimeJrTopDance_Routine2(SysTask *sysTask, MimeJrTopDance *dance) {
-    MimeJrTopDoneFlags f = gMimeJrTopDance2DoneFlags;
+    MimeJrTopDoneFlags flags = gMimeJrTopDance2DoneFlags;
     fx32 x, y;
     fx32 newX, newY;
     s32 i;
@@ -3778,11 +3765,11 @@ void MimeJrTopDance_Routine2(SysTask *sysTask, MimeJrTopDance *dance) {
         ManagedSprite_SetDrawFlag(dance->dancers[1].sprite, FALSE);
         dance->routineState++;
     case 1:
-        f.done[0] = MimeJrTopDancer_Slide(&dance->dancers[2], dance->backSpeed, 0, 3);
-        f.done[1] = MimeJrTopDancer_EnterLow(&dance->dancers[3], dance->backSpeed, 0, 2);
-        f.done[2] = MimeJrTopDancer_EnterHigh(&dance->dancers[0], dance->frontSpeed, 1, 3);
-        f.done[3] = TRUE;
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_Slide(&dance->dancers[2], dance->backSpeed, 0, 3);
+        flags.done[1] = MimeJrTopDancer_EnterLow(&dance->dancers[3], dance->backSpeed, 0, 2);
+        flags.done[2] = MimeJrTopDancer_EnterHigh(&dance->dancers[0], dance->frontSpeed, 1, 3);
+        flags.done[3] = TRUE;
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -3792,11 +3779,11 @@ void MimeJrTopDance_Routine2(SysTask *sysTask, MimeJrTopDance *dance) {
         ManagedSprite_SetDrawFlag(dance->dancers[1].sprite, TRUE);
         dance->routineState++;
     case 2:
-        f.done[0] = TRUE;
-        f.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 0, 1);
-        f.done[2] = MimeJrTopDancer_Slide(&dance->dancers[0], dance->frontSpeed, 1, 2);
-        f.done[3] = MimeJrTopDancer_EnterHigh(&dance->dancers[1], dance->frontSpeed, 1, 3);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = TRUE;
+        flags.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 0, 1);
+        flags.done[2] = MimeJrTopDancer_Slide(&dance->dancers[0], dance->frontSpeed, 1, 2);
+        flags.done[3] = MimeJrTopDancer_EnterHigh(&dance->dancers[1], dance->frontSpeed, 1, 3);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -3805,11 +3792,11 @@ void MimeJrTopDance_Routine2(SysTask *sysTask, MimeJrTopDance *dance) {
         MimeJrTopDancer_Reset(&dance->dancers[1]);
         dance->routineState++;
     case 3:
-        f.done[0] = MimeJrTopDancer_EnterLow(&dance->dancers[2], dance->backSpeed, 0, 2);
-        f.done[1] = MimeJrTopDancer_Slide(&dance->dancers[3], dance->backSpeed, 0, 3);
-        f.done[2] = TRUE;
-        f.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_EnterLow(&dance->dancers[2], dance->backSpeed, 0, 2);
+        flags.done[1] = MimeJrTopDancer_Slide(&dance->dancers[3], dance->backSpeed, 0, 3);
+        flags.done[2] = TRUE;
+        flags.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -3818,11 +3805,11 @@ void MimeJrTopDance_Routine2(SysTask *sysTask, MimeJrTopDance *dance) {
         MimeJrTopDancer_Reset(&dance->dancers[1]);
         dance->routineState++;
     case 4:
-        f.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 0, 1);
-        f.done[1] = TRUE;
-        f.done[2] = TRUE;
-        f.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 0, 1);
+        flags.done[1] = TRUE;
+        flags.done[2] = TRUE;
+        flags.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -3844,7 +3831,7 @@ void MimeJrTopDance_Routine2(SysTask *sysTask, MimeJrTopDance *dance) {
 }
 
 void MimeJrTopDance_Routine3(SysTask *sysTask, MimeJrTopDance *dance) {
-    MimeJrTopDoneFlags f = gMimeJrTopDance3DoneFlags;
+    MimeJrTopDoneFlags flags = gMimeJrTopDance3DoneFlags;
     fx32 x, y;
     fx32 newX, newY;
     s32 i;
@@ -3884,11 +3871,11 @@ void MimeJrTopDance_Routine3(SysTask *sysTask, MimeJrTopDance *dance) {
         ManagedSprite_SetDrawFlag(dance->dancers[1].sprite, FALSE);
         dance->routineState++;
     case 1:
-        f.done[0] = MimeJrTopDancer_Slide(&dance->dancers[2], dance->backSpeed, 0, 3);
-        f.done[1] = MimeJrTopDancer_EnterLow(&dance->dancers[3], dance->backSpeed, 0, 2);
-        f.done[2] = MimeJrTopDancer_EnterHigh(&dance->dancers[0], dance->frontSpeed, 1, 3);
-        f.done[3] = TRUE;
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_Slide(&dance->dancers[2], dance->backSpeed, 0, 3);
+        flags.done[1] = MimeJrTopDancer_EnterLow(&dance->dancers[3], dance->backSpeed, 0, 2);
+        flags.done[2] = MimeJrTopDancer_EnterHigh(&dance->dancers[0], dance->frontSpeed, 1, 3);
+        flags.done[3] = TRUE;
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -3898,11 +3885,11 @@ void MimeJrTopDance_Routine3(SysTask *sysTask, MimeJrTopDance *dance) {
         ManagedSprite_SetDrawFlag(dance->dancers[1].sprite, TRUE);
         dance->routineState++;
     case 2:
-        f.done[0] = TRUE;
-        f.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 0, 2);
-        f.done[2] = MimeJrTopDancer_Slide(&dance->dancers[0], dance->frontSpeed, 1, 2);
-        f.done[3] = MimeJrTopDancer_EnterHigh(&dance->dancers[1], dance->frontSpeed, 1, 3);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = TRUE;
+        flags.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 0, 2);
+        flags.done[2] = MimeJrTopDancer_Slide(&dance->dancers[0], dance->frontSpeed, 1, 2);
+        flags.done[3] = MimeJrTopDancer_EnterHigh(&dance->dancers[1], dance->frontSpeed, 1, 3);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -3911,11 +3898,11 @@ void MimeJrTopDance_Routine3(SysTask *sysTask, MimeJrTopDance *dance) {
         MimeJrTopDancer_Reset(&dance->dancers[1]);
         dance->routineState++;
     case 3:
-        f.done[0] = MimeJrTopDancer_EnterLow(&dance->dancers[2], dance->backSpeed, 0, 2);
-        f.done[1] = MimeJrTopDancer_Slide(&dance->dancers[3], dance->backSpeed, 0, 3);
-        f.done[2] = TRUE;
-        f.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_EnterLow(&dance->dancers[2], dance->backSpeed, 0, 2);
+        flags.done[1] = MimeJrTopDancer_Slide(&dance->dancers[3], dance->backSpeed, 0, 3);
+        flags.done[2] = TRUE;
+        flags.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -3924,11 +3911,11 @@ void MimeJrTopDance_Routine3(SysTask *sysTask, MimeJrTopDance *dance) {
         MimeJrTopDancer_Reset(&dance->dancers[1]);
         dance->routineState++;
     case 4:
-        f.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 0, 2);
-        f.done[1] = TRUE;
-        f.done[2] = TRUE;
-        f.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 0, 2);
+        flags.done[1] = TRUE;
+        flags.done[2] = TRUE;
+        flags.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -3950,7 +3937,7 @@ void MimeJrTopDance_Routine3(SysTask *sysTask, MimeJrTopDance *dance) {
 }
 
 void MimeJrTopDance_Routine4(SysTask *sysTask, MimeJrTopDance *dance) {
-    MimeJrTopDoneFlags f = gMimeJrTopDance4DoneFlags;
+    MimeJrTopDoneFlags flags = gMimeJrTopDance4DoneFlags;
     fx32 x, y;
     fx32 newX, newY;
     s32 i;
@@ -3990,11 +3977,11 @@ void MimeJrTopDance_Routine4(SysTask *sysTask, MimeJrTopDance *dance) {
         ManagedSprite_SetDrawFlag(dance->dancers[1].sprite, FALSE);
         dance->routineState++;
     case 1:
-        f.done[0] = MimeJrTopDancer_Slide(&dance->dancers[2], dance->backSpeed, 0, 3);
-        f.done[1] = MimeJrTopDancer_EnterLow(&dance->dancers[3], dance->backSpeed, 0, 2);
-        f.done[2] = MimeJrTopDancer_EnterHigh(&dance->dancers[0], dance->frontSpeed, 1, 3);
-        f.done[3] = TRUE;
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_Slide(&dance->dancers[2], dance->backSpeed, 0, 3);
+        flags.done[1] = MimeJrTopDancer_EnterLow(&dance->dancers[3], dance->backSpeed, 0, 2);
+        flags.done[2] = MimeJrTopDancer_EnterHigh(&dance->dancers[0], dance->frontSpeed, 1, 3);
+        flags.done[3] = TRUE;
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -4004,11 +3991,11 @@ void MimeJrTopDance_Routine4(SysTask *sysTask, MimeJrTopDance *dance) {
         ManagedSprite_SetDrawFlag(dance->dancers[1].sprite, TRUE);
         dance->routineState++;
     case 2:
-        f.done[0] = TRUE;
-        f.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 0, 1);
-        f.done[2] = MimeJrTopDancer_Slide(&dance->dancers[0], dance->frontSpeed, 1, 2);
-        f.done[3] = MimeJrTopDancer_EnterHigh(&dance->dancers[1], dance->frontSpeed, 1, 3);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = TRUE;
+        flags.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 0, 1);
+        flags.done[2] = MimeJrTopDancer_Slide(&dance->dancers[0], dance->frontSpeed, 1, 2);
+        flags.done[3] = MimeJrTopDancer_EnterHigh(&dance->dancers[1], dance->frontSpeed, 1, 3);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -4017,18 +4004,18 @@ void MimeJrTopDance_Routine4(SysTask *sysTask, MimeJrTopDance *dance) {
         MimeJrTopDancer_Reset(&dance->dancers[1]);
         dance->routineState++;
     case 3:
-        f.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 1, 1);
-        if (!f.done[1]) {
+        flags.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 1, 1);
+        if (!flags.done[1]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[3]);
         dance->routineState++;
     case 4:
-        f.done[0] = MimeJrTopDancer_EnterLow(&dance->dancers[2], dance->backSpeed, 0, 2);
-        f.done[1] = MimeJrTopDancer_Slide(&dance->dancers[3], dance->backSpeed, 0, 3);
-        f.done[2] = TRUE;
-        f.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_EnterLow(&dance->dancers[2], dance->backSpeed, 0, 2);
+        flags.done[1] = MimeJrTopDancer_Slide(&dance->dancers[3], dance->backSpeed, 0, 3);
+        flags.done[2] = TRUE;
+        flags.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -4037,11 +4024,11 @@ void MimeJrTopDance_Routine4(SysTask *sysTask, MimeJrTopDance *dance) {
         MimeJrTopDancer_Reset(&dance->dancers[1]);
         dance->routineState++;
     case 5:
-        f.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 0, 1);
-        f.done[1] = TRUE;
-        f.done[2] = TRUE;
-        f.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 0, 1);
+        flags.done[1] = TRUE;
+        flags.done[2] = TRUE;
+        flags.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -4050,8 +4037,8 @@ void MimeJrTopDance_Routine4(SysTask *sysTask, MimeJrTopDance *dance) {
         MimeJrTopDancer_Reset(&dance->dancers[1]);
         dance->routineState++;
     case 6:
-        f.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 1, 1);
-        if (!f.done[0]) {
+        flags.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 1, 1);
+        if (!flags.done[0]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -4070,7 +4057,7 @@ void MimeJrTopDance_Routine4(SysTask *sysTask, MimeJrTopDance *dance) {
 }
 
 void MimeJrTopDance_Routine5(SysTask *sysTask, MimeJrTopDance *dance) {
-    MimeJrTopDoneFlags f = gMimeJrTopDance5DoneFlags;
+    MimeJrTopDoneFlags flags = gMimeJrTopDance5DoneFlags;
     fx32 x, y;
     fx32 newX, newY;
     s32 i;
@@ -4110,11 +4097,11 @@ void MimeJrTopDance_Routine5(SysTask *sysTask, MimeJrTopDance *dance) {
         ManagedSprite_SetDrawFlag(dance->dancers[1].sprite, FALSE);
         dance->routineState++;
     case 1:
-        f.done[0] = MimeJrTopDancer_Slide(&dance->dancers[2], dance->backSpeed, 0, 3);
-        f.done[1] = MimeJrTopDancer_EnterLow(&dance->dancers[3], dance->backSpeed, 0, 2);
-        f.done[2] = MimeJrTopDancer_EnterHigh(&dance->dancers[0], dance->frontSpeed, 1, 3);
-        f.done[3] = TRUE;
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_Slide(&dance->dancers[2], dance->backSpeed, 0, 3);
+        flags.done[1] = MimeJrTopDancer_EnterLow(&dance->dancers[3], dance->backSpeed, 0, 2);
+        flags.done[2] = MimeJrTopDancer_EnterHigh(&dance->dancers[0], dance->frontSpeed, 1, 3);
+        flags.done[3] = TRUE;
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -4124,11 +4111,11 @@ void MimeJrTopDance_Routine5(SysTask *sysTask, MimeJrTopDance *dance) {
         ManagedSprite_SetDrawFlag(dance->dancers[1].sprite, TRUE);
         dance->routineState++;
     case 2:
-        f.done[0] = TRUE;
-        f.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 0, 1);
-        f.done[2] = MimeJrTopDancer_Slide(&dance->dancers[0], dance->frontSpeed, 1, 2);
-        f.done[3] = MimeJrTopDancer_EnterHigh(&dance->dancers[1], dance->frontSpeed, 1, 3);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = TRUE;
+        flags.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 0, 1);
+        flags.done[2] = MimeJrTopDancer_Slide(&dance->dancers[0], dance->frontSpeed, 1, 2);
+        flags.done[3] = MimeJrTopDancer_EnterHigh(&dance->dancers[1], dance->frontSpeed, 1, 3);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -4137,18 +4124,18 @@ void MimeJrTopDance_Routine5(SysTask *sysTask, MimeJrTopDance *dance) {
         MimeJrTopDancer_Reset(&dance->dancers[1]);
         dance->routineState++;
     case 3:
-        f.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 1, 1);
-        if (!f.done[1]) {
+        flags.done[1] = MimeJrTopDancer_Circle(&dance->dancers[3], dance->backSpeed, 1, 1);
+        if (!flags.done[1]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[3]);
         dance->routineState++;
     case 4:
-        f.done[0] = MimeJrTopDancer_EnterLow(&dance->dancers[2], dance->backSpeed, 0, 2);
-        f.done[1] = MimeJrTopDancer_Slide(&dance->dancers[3], dance->backSpeed, 0, 3);
-        f.done[2] = TRUE;
-        f.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_EnterLow(&dance->dancers[2], dance->backSpeed, 0, 2);
+        flags.done[1] = MimeJrTopDancer_Slide(&dance->dancers[3], dance->backSpeed, 0, 3);
+        flags.done[2] = TRUE;
+        flags.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -4157,11 +4144,11 @@ void MimeJrTopDance_Routine5(SysTask *sysTask, MimeJrTopDance *dance) {
         MimeJrTopDancer_Reset(&dance->dancers[1]);
         dance->routineState++;
     case 5:
-        f.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 0, 1);
-        f.done[1] = TRUE;
-        f.done[2] = TRUE;
-        f.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
-        if (!f.done[0] || !f.done[1] || !f.done[2] || !f.done[3]) {
+        flags.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 0, 1);
+        flags.done[1] = TRUE;
+        flags.done[2] = TRUE;
+        flags.done[3] = MimeJrTopDancer_Slide(&dance->dancers[1], dance->frontSpeed, 1, 2);
+        if (!flags.done[0] || !flags.done[1] || !flags.done[2] || !flags.done[3]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);
@@ -4170,8 +4157,8 @@ void MimeJrTopDance_Routine5(SysTask *sysTask, MimeJrTopDance *dance) {
         MimeJrTopDancer_Reset(&dance->dancers[1]);
         dance->routineState++;
     case 6:
-        f.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 1, 1);
-        if (!f.done[0]) {
+        flags.done[0] = MimeJrTopDancer_Circle(&dance->dancers[2], dance->backSpeed, 1, 1);
+        if (!flags.done[0]) {
             break;
         }
         MimeJrTopDancer_Reset(&dance->dancers[2]);

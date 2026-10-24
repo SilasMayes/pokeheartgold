@@ -88,26 +88,26 @@ static const WirelessStatusIconAnimFrame *sWirelessStatusIconAnims[] = {
 static WirelessStatusIcon *sWirelessStatusIcon;
 
 static WirelessStatusIcon *WirelessStatusIcon_New(int a0, enum HeapID heapId, int x, int y, int isWifi, const WirelessStatusIconAnimFrame **anims, int screen, int plttBase) {
-    WirelessStatusIcon *p;
+    WirelessStatusIcon *icon;
 
     WirelessStatusIcon_LoadPalette(screen, isWifi, plttBase, heapId);
     WirelessStatusIcon_LoadChar(screen, isWifi, heapId);
-    p = Heap_AllocAtEnd(heapId, sizeof(WirelessStatusIcon));
-    p->task = SysTask_CreateOnVWaitQueue(WirelessStatusIcon_Task, p, 5);
-    p->x = x;
-    p->y = y;
-    p->unused = 0;
-    p->palette = plttBase / 32;
-    p->screen = screen;
-    p->priority = 0;
-    p->level = 3;
-    p->anims = anims;
-    p->animTimer = 0;
-    p->isWifi = isWifi;
-    p->onBothScreens = 0;
-    p->screenMode = 0;
-    p->oam = (WirelessStatusIconOam *)0x07000000;
-    return p;
+    icon = Heap_AllocAtEnd(heapId, sizeof(WirelessStatusIcon));
+    icon->task = SysTask_CreateOnVWaitQueue(WirelessStatusIcon_Task, icon, 5);
+    icon->x = x;
+    icon->y = y;
+    icon->unused = 0;
+    icon->palette = plttBase / 32;
+    icon->screen = screen;
+    icon->priority = 0;
+    icon->level = 3;
+    icon->anims = anims;
+    icon->animTimer = 0;
+    icon->isWifi = isWifi;
+    icon->onBothScreens = 0;
+    icon->screenMode = 0;
+    icon->oam = (WirelessStatusIconOam *)HW_OAM;
+    return icon;
 }
 
 static void WirelessStatusIcon_Task(SysTask *task, void *data) {
@@ -123,11 +123,11 @@ static void WirelessStatusIcon_SetLevelOf(WirelessStatusIcon *p, int level) {
 
 static void WirelessStatusIcon_Delete(WirelessStatusIcon *p) {
     SysTask_Destroy(p->task);
-    ((WirelessStatusIconOam *)0x07000000)->attr01 = 0x40000200;
-    ((WirelessStatusIconOam *)0x07000000)->attr2 = 0;
+    ((WirelessStatusIconOam *)HW_OAM)->attr01 = 0x40000200;
+    ((WirelessStatusIconOam *)HW_OAM)->attr2 = 0;
     if (p->onBothScreens != 0) {
-        ((WirelessStatusIconOam *)0x07000400)->attr01 = 0x40000200;
-        ((WirelessStatusIconOam *)0x07000400)->attr2 = 0;
+        ((WirelessStatusIconOam *)HW_DB_OAM)->attr01 = 0x40000200;
+        ((WirelessStatusIconOam *)HW_DB_OAM)->attr2 = 0;
     }
     Heap_Free(p);
 }

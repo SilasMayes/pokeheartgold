@@ -10,18 +10,6 @@
 // Local wireless manager: drives the WM library for the communication layer. Every request is asynchronous: the
 // state is WIRELESS_STATE_BUSY until its callback arrives.
 
-#define WIRELESS_STATE_STOPPED  0
-#define WIRELESS_STATE_IDLE     1
-#define WIRELESS_STATE_SCANNING 2
-#define WIRELESS_STATE_BUSY     3
-#define WIRELESS_STATE_PARENT   4 // MP communication running
-#define WIRELESS_STATE_5        5
-#define WIRELESS_STATE_CHILD    6
-#define WIRELESS_STATE_MEASURED 7 // all channels measured, Wireless_SelectChannel picks one
-#define WIRELESS_STATE_8        8
-#define WIRELESS_STATE_ERROR    9
-#define WIRELESS_STATE_FATAL    10
-
 #define WM_OK 2 // asynchronous request accepted
 
 typedef void (*WMCallback)(void *arg);
@@ -260,7 +248,7 @@ static void Wireless_OnParentParameterSet(void *arg) {
 static BOOL Wireless_StartParentRun(void) {
     u8 *status;
     int result;
-    if ((u32)(sWirelessManager.work->state - WIRELESS_STATE_PARENT) <= 2) {
+    if ((u32)(sWirelessManager.work->state - WIRELESS_STATE_MP) <= 2) {
         return TRUE;
     }
     status = WMi_GetStatusAddress();
@@ -325,10 +313,10 @@ static BOOL Wireless_StartParentMP(void) {
     WirelessWork *work;
     int result;
 
-    if ((u32)(sWirelessManager.work->state - WIRELESS_STATE_PARENT) <= 2) {
+    if ((u32)(sWirelessManager.work->state - WIRELESS_STATE_MP) <= 2) {
         return TRUE;
     }
-    Wireless_SetState(WIRELESS_STATE_PARENT);
+    Wireless_SetState(WIRELESS_STATE_MP);
     work = sWirelessManager.work;
     result = WM_StartMP(Wireless_OnParentMPEvent,
         work->receiveBuffer,
@@ -357,13 +345,13 @@ static void Wireless_OnParentMPEvent(void *arg) {
     switch (state) {
     case 10:
         if (sWirelessManager.work->mode == 2) {
-            if (sWirelessManager.work->state != WIRELESS_STATE_PARENT) {
+            if (sWirelessManager.work->state != WIRELESS_STATE_MP) {
                 if (sWirelessManager.work->state == WIRELESS_STATE_CHILD) {
                     break;
                 }
             }
         }
-        Wireless_SetState(WIRELESS_STATE_PARENT);
+        Wireless_SetState(WIRELESS_STATE_MP);
         break;
     case 11:
     case 12:
@@ -599,7 +587,7 @@ static void Wireless_OnScanEnded(void *arg) {
 static BOOL Wireless_StartConnect(void) {
     u8 data[0x20];
     int result;
-    if ((u32)(sWirelessManager.work->state - WIRELESS_STATE_PARENT) <= 2) {
+    if ((u32)(sWirelessManager.work->state - WIRELESS_STATE_MP) <= 2) {
         return TRUE;
     }
     Wireless_SetState(WIRELESS_STATE_BUSY);
@@ -648,7 +636,7 @@ static void Wireless_OnConnectEvent(void *arg) {
             Wireless_SetState(WIRELESS_STATE_ERROR);
             return;
         }
-        Wireless_SetState(WIRELESS_STATE_PARENT);
+        Wireless_SetState(WIRELESS_STATE_MP);
         if (!Wireless_StartChildMP()) {
             Wireless_SetState(WIRELESS_STATE_BUSY);
             return;
@@ -696,7 +684,7 @@ static void Wireless_OnChildMPEvent(void *arg) {
     switch (state) {
     case 10:
         if (sWirelessManager.work->mode != 3 || sWirelessManager.work->state != WIRELESS_STATE_CHILD) {
-            Wireless_SetState(WIRELESS_STATE_PARENT);
+            Wireless_SetState(WIRELESS_STATE_MP);
         }
         break;
     case 11:
@@ -1172,7 +1160,7 @@ void Wireless_Stop(void) {
     if (state == WIRELESS_STATE_IDLE) {
         return;
     }
-    if (state != WIRELESS_STATE_CHILD && state != WIRELESS_STATE_5 && state != WIRELESS_STATE_PARENT) {
+    if (state != WIRELESS_STATE_CHILD && state != WIRELESS_STATE_5 && state != WIRELESS_STATE_MP) {
         Wireless_SetState(WIRELESS_STATE_BUSY);
         Wireless_ForceReset();
         return;
@@ -1244,7 +1232,7 @@ BOOL Wireless_IsScanning(void) {
 }
 
 void Wireless_UpdateGameInfo(const void *gameInfo, int length, u32 ggid, int tgid) {
-    if (sWirelessManager.work->state == WIRELESS_STATE_PARENT) {
+    if (sWirelessManager.work->state == WIRELESS_STATE_MP) {
         WM_SetGameInfo(NULL, gameInfo, (u16)length, ggid, (u16)tgid, 1);
     }
 }
@@ -1258,7 +1246,7 @@ static void Wireless_OnEntrySet(void *arg) {
 
 BOOL Wireless_SetEntry(BOOL enabled) {
     sWirelessManager.work->entrySet = 0;
-    if (sWirelessManager.work->state == WIRELESS_STATE_PARENT && WM_SetEntry(Wireless_OnEntrySet, enabled) == WM_OK) {
+    if (sWirelessManager.work->state == WIRELESS_STATE_MP && WM_SetEntry(Wireless_OnEntrySet, enabled) == WM_OK) {
         return TRUE;
     }
     return FALSE;

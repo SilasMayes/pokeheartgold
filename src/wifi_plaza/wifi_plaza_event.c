@@ -334,11 +334,11 @@ static WiFiPlazaEventEffect *WiFiPlazaEventEffect_Create(WiFiPlazaWork *lobby, W
     WiFiPlazaEventEffect *effect = Heap_Alloc(heapID, sizeof(WiFiPlazaEventEffect));
     u32 effectId;
     u8 *cursor = (u8 *)effect;
-    u32 n = sizeof(WiFiPlazaEventEffect);
+    u32 size = sizeof(WiFiPlazaEventEffect);
 
     do {
         *cursor++ = 0;
-    } while (--n);
+    } while (--size);
     effect->lobby = lobby;
     effect->models = models;
     effectId = WiFiPlazaWork_GetFireworksPhase(lobby);

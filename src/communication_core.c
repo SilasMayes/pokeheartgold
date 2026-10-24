@@ -491,7 +491,7 @@ static void Comm_UpdateChildSend(void) {
         }
         sCommSendStages.stage[1] = 4;
         sCommCore.work->sentFrames++;
-    } else if (Wireless_GetState() == 4) {
+    } else if (Wireless_GetState() == WIRELESS_STATE_MP) {
         if (!Comm_IsNetIdConnected(Comm_GetLocalNetId())) {
             return;
         }
@@ -552,7 +552,7 @@ static void Comm_SendParentFrame(void) {
             sCommCore.initialized = 1;
         }
     }
-    if (Wireless_GetState() == 4) {
+    if (Wireless_GetState() == WIRELESS_STATE_MP) {
         if (!Wireless_SendData(sCommCore.work->parentFrames[sCommCore.work->parentFrameIndex], 0xC0, 14, Comm_OnParentFrameSent)) {
             sCommSendStages.stage[0]--;
         }
@@ -567,7 +567,7 @@ static void Comm_SendParentFrame(void) {
         Comm_OnParentFrameReceived(0, sCommCore.work->parentFrames[sCommCore.work->parentFrameIndex], 0xC0);
         sCommCore.work->parentFrameIndex = 1 - sCommCore.work->parentFrameIndex;
     }
-    if (Wireless_GetState() != 4) {
+    if (Wireless_GetState() != WIRELESS_STATE_MP) {
         sCommSendStages.stage[0]++;
     }
 }
@@ -621,7 +621,7 @@ static void Comm_UpdateParentSend(void) {
             }
         }
     } else {
-        if (Wireless_GetState() != 4 || sCommSendStages.stage[0] != 4 || !Comm_HasNoChildBacklog()) {
+        if (Wireless_GetState() != WIRELESS_STATE_MP || sCommSendStages.stage[0] != 4 || !Comm_HasNoChildBacklog()) {
             return;
         }
         if (Comm_GetTransferMode() == 0) {
@@ -780,7 +780,7 @@ static void Comm_SendChildFrame(void) {
     }
     frameSize = Comm_GetChildFrameSize((u16)CommState_GetLinkMode());
     Comm_GetMaxChildren((u16)CommState_GetLinkMode());
-    if (Wireless_GetState() != 4) {
+    if (Wireless_GetState() != WIRELESS_STATE_MP) {
         return;
     }
     if (!Comm_IsNetIdConnected(Comm_GetLocalNetId())) {
@@ -1166,7 +1166,7 @@ int Comm_IsNetIdConnected(int slot) {
     if (!Comm_IsActive()) {
         return 0;
     }
-    if (Wireless_GetState() != 4) {
+    if (Wireless_GetState() != WIRELESS_STATE_MP) {
         return 0;
     }
     if (slot == Comm_GetLocalNetId()) {

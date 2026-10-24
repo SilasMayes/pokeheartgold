@@ -36,248 +36,248 @@ void ciFreeCallbackData(ChatCallback *callback) {
     ASSERT_CALLBACK(callback, gChatStr_ciFreeCallbackData, 171);
     switch (callback->type) {
     case CALLBACK_RAW: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
+        ChatRawArgs *args = callback->param;
+        DWCi_GsFree(args->raw);
         break;
     }
     case CALLBACK_DISCONNECTED: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
+        ChatDisconnectedArgs *args = callback->param;
+        DWCi_GsFree(args->reason);
         break;
     }
     case CALLBACK_PRIVATE_MESSAGE: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
+        ChatPrivateMessageArgs *args = callback->param;
+        DWCi_GsFree(args->nick);
+        DWCi_GsFree(args->message);
         break;
     }
     case CALLBACK_INVITED: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
+        ChatInviteArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->nick);
         break;
     }
     case CALLBACK_CHANNEL_MESSAGE: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
+        ChatChannelMessageArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->sender);
+        DWCi_GsFree(args->message);
         break;
     }
     case CALLBACK_KICKED: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
+        ChatKickedArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->kicker);
+        DWCi_GsFree(args->reason);
         break;
     }
     case CALLBACK_USER_JOINED: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
+        ChatUserJoinedArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->nick);
         break;
     }
     case CALLBACK_USER_PARTED: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[3]);
-        DWCi_GsFree((void *)p[4]);
+        ChatUserLeftArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->nick);
+        DWCi_GsFree(args->message);
+        DWCi_GsFree(args->kicker);
         break;
     }
     case CALLBACK_USER_CHANGED_NICK: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
+        ChatNickChangeArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->oldNick);
+        DWCi_GsFree(args->newNick);
         break;
     }
     case CALLBACK_TOPIC_CHANGED: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
+        ChatTopicArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->topic);
         break;
     }
     case CALLBACK_CHANNEL_MODE_CHANGED: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
+        ChatChannelModeChangedArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->mode);
         break;
     }
     case CALLBACK_USER_MODE_CHANGED: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
+        ChatUserModeArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->nick);
         break;
     }
     case CALLBACK_USER_LIST_UPDATED: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
+        ChatUsersChangedArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
         break;
     }
     case CALLBACK_ENUM_CHANNELS_EACH: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[2]);
-        DWCi_GsFree((void *)p[3]);
+        ChatChannelListEntryArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->topic);
         break;
     }
     case CALLBACK_ENUM_CHANNELS_ALL: {
         int i;
-        u32 *p = callback->param;
-        for (i = 0; i < (int)p[1]; i++) {
-            DWCi_GsFree(((void **)p[2])[i]);
-            DWCi_GsFree(((void **)p[3])[i]);
+        ChatChannelListArgs *args = callback->param;
+        for (i = 0; i < args->numChannels; i++) {
+            DWCi_GsFree(args->channels[i]);
+            DWCi_GsFree(args->topics[i]);
         }
-        DWCi_GsFree((void *)p[2]);
-        DWCi_GsFree((void *)p[3]);
-        DWCi_GsFree((void *)p[4]);
+        DWCi_GsFree(args->channels);
+        DWCi_GsFree(args->topics);
+        DWCi_GsFree(args->numUsers);
         break;
     }
     case CALLBACK_ENTER_CHANNEL: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[2]);
+        ChatEnterChannelArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
         break;
     }
     case CALLBACK_GET_CHANNEL_TOPIC: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
+        ChatGetTopicArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->topic);
         break;
     }
     case CALLBACK_GET_CHANNEL_MODE: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
+        ChatChannelModeArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->mode);
         break;
     }
     case CALLBACK_GET_CHANNEL_PASSWORD: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[3]);
+        ChatGetPasswordArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->password);
         break;
     }
     case CALLBACK_ENUM_USERS: {
         int i;
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        for (i = 0; i < (int)p[2]; i++) {
-            DWCi_GsFree(((void **)p[3])[i]);
+        ChatEnumUsersArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        for (i = 0; i < args->numUsers; i++) {
+            DWCi_GsFree(args->users[i]);
         }
-        DWCi_GsFree((void *)p[3]);
-        DWCi_GsFree((void *)p[4]);
+        DWCi_GsFree(args->users);
+        DWCi_GsFree(args->modes);
         break;
     }
     case CALLBACK_GET_USER_INFO: {
         int i;
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
-        DWCi_GsFree((void *)p[3]);
-        DWCi_GsFree((void *)p[4]);
-        for (i = 0; i < (int)p[5]; i++) {
-            DWCi_GsFree(((void **)p[6])[i]);
+        ChatGetUserInfoArgs *args = callback->param;
+        DWCi_GsFree(args->nick);
+        DWCi_GsFree(args->user);
+        DWCi_GsFree(args->name);
+        DWCi_GsFree(args->address);
+        for (i = 0; i < args->numChannels; i++) {
+            DWCi_GsFree(args->channels[i]);
         }
-        DWCi_GsFree((void *)p[6]);
+        DWCi_GsFree(args->channels);
         break;
     }
     case CALLBACK_GET_BASIC_USER_INFO: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
-        DWCi_GsFree((void *)p[3]);
+        ChatGetBasicUserInfoArgs *args = callback->param;
+        DWCi_GsFree(args->nick);
+        DWCi_GsFree(args->user);
+        DWCi_GsFree(args->address);
         break;
     }
     case CALLBACK_GET_CHANNEL_BASIC_USER_INFO: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
-        DWCi_GsFree((void *)p[3]);
-        DWCi_GsFree((void *)p[4]);
+        ChatGetChannelBasicUserInfoArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->nick);
+        DWCi_GsFree(args->user);
+        DWCi_GsFree(args->address);
         break;
     }
     case CALLBACK_GET_USER_MODE: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
+        ChatGetUserModeArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->user);
         break;
     }
     case CALLBACK_ENUM_CHANNEL_BANS: {
         int i;
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        for (i = 0; i < (int)p[2]; i++) {
-            DWCi_GsFree(((void **)p[3])[i]);
+        ChatEnumBansArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        for (i = 0; i < args->numBans; i++) {
+            DWCi_GsFree(args->bans[i]);
         }
-        DWCi_GsFree((void *)p[3]);
+        DWCi_GsFree(args->bans);
         break;
     }
     case CALLBACK_NICK_ERROR: {
         int i;
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        for (i = 0; i < (int)p[2]; i++) {
-            DWCi_GsFree(((void **)p[3])[i]);
+        ChatNickErrorArgs *args = callback->param;
+        DWCi_GsFree(args->nick);
+        for (i = 0; i < args->numSuggestedNicks; i++) {
+            DWCi_GsFree(args->suggestedNicks[i]);
         }
-        DWCi_GsFree((void *)p[3]);
+        DWCi_GsFree(args->suggestedNicks);
         break;
     }
     case CALLBACK_CHANGE_NICK: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
+        ChatChangeNickArgs *args = callback->param;
+        DWCi_GsFree(args->oldNick);
+        DWCi_GsFree(args->newNick);
         break;
     }
     case CALLBACK_NEW_USER_LIST: {
         int i;
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        for (i = 0; i < (int)p[1]; i++) {
-            DWCi_GsFree(((void **)p[2])[i]);
+        ChatNewUserListArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        for (i = 0; i < args->numUsers; i++) {
+            DWCi_GsFree(args->users[i]);
         }
-        DWCi_GsFree((void *)p[2]);
-        DWCi_GsFree((void *)p[3]);
+        DWCi_GsFree(args->users);
+        DWCi_GsFree(args->modes);
         break;
     }
     case CALLBACK_BROADCAST_KEY_CHANGED: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[0]);
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
-        DWCi_GsFree((void *)p[3]);
+        ChatBroadcastKeyArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->nick);
+        DWCi_GsFree(args->key);
+        DWCi_GsFree(args->value);
         break;
     }
     case CALLBACK_GET_GLOBAL_KEYS: {
         int i;
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        for (i = 0; i < (int)p[2]; i++) {
-            DWCi_GsFree(((void **)p[3])[i]);
-            if (p[4]) {
-                DWCi_GsFree(((void **)p[4])[i]);
+        ChatGetGlobalKeysArgs *args = callback->param;
+        DWCi_GsFree(args->user);
+        for (i = 0; i < args->num; i++) {
+            DWCi_GsFree(args->keys[i]);
+            if (args->values) {
+                DWCi_GsFree(args->values[i]);
             }
         }
-        DWCi_GsFree((void *)p[3]);
-        DWCi_GsFree((void *)p[4]);
+        DWCi_GsFree(args->keys);
+        DWCi_GsFree(args->values);
         break;
     }
     case CALLBACK_GET_CHANNEL_KEYS: {
         int i;
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
-        DWCi_GsFree((void *)p[2]);
-        for (i = 0; i < (int)p[3]; i++) {
-            DWCi_GsFree(((void **)p[4])[i]);
-            if (p[5]) {
-                DWCi_GsFree(((void **)p[5])[i]);
+        ChatGetChannelKeysArgs *args = callback->param;
+        DWCi_GsFree(args->channel);
+        DWCi_GsFree(args->user);
+        for (i = 0; i < args->num; i++) {
+            DWCi_GsFree(args->keys[i]);
+            if (args->values) {
+                DWCi_GsFree(args->values[i]);
             }
         }
-        DWCi_GsFree((void *)p[4]);
-        DWCi_GsFree((void *)p[5]);
+        DWCi_GsFree(args->keys);
+        DWCi_GsFree(args->values);
         break;
     }
     case CALLBACK_AUTHENTICATE_CDKEY: {
-        u32 *p = callback->param;
-        DWCi_GsFree((void *)p[1]);
+        ChatAuthenticateCDKeyArgs *args = callback->param;
+        DWCi_GsFree(args->message);
         break;
     }
     default:
@@ -320,43 +320,61 @@ void ciCleanupCallbacks(ChatConnection *chat) {
         DWCi_GsFree(item.channel); \
         return FALSE;              \
     } while (0)
-// Copies the string argument i into the stored parameters.
-#define COPY_STRING(i)                               \
-    do {                                             \
-        if (src[i]) {                                \
-            dst[i] = (u32)goastrdup((char *)src[i]); \
-            if (!dst[i]) {                           \
-                FAIL();                              \
-            }                                        \
-        }                                            \
+// Copies a string argument into the stored arguments.
+#define COPY_STRING(field)                      \
+    do {                                        \
+        if (src->field) {                       \
+            dst->field = goastrdup(src->field); \
+            if (!dst->field) {                  \
+                FAIL();                         \
+            }                                   \
+        }                                       \
+    } while (0)
+// Copies an array of count strings into the stored arguments.
+#define COPY_STRING_ARRAY(count, array)                                \
+    do {                                                               \
+        if (!src->array) {                                             \
+            dst->array = NULL;                                         \
+        } else {                                                       \
+            dst->array = DWCi_GsMalloc(src->count * sizeof(char *));   \
+            if (!dst->array) {                                         \
+                FAIL();                                                \
+            }                                                          \
+            for (i = 0; i < src->count; i++) {                         \
+                if (!src->array[i]) {                                  \
+                    dst->array[i] = NULL;                              \
+                } else {                                               \
+                    dst->array[i] = goastrdup(src->array[i]);          \
+                    if (!dst->array[i]) {                              \
+                        for (i--; i >= 0; i--) {                       \
+                            DWCi_GsFree(dst->array[i]);                \
+                        }                                              \
+                        DWCi_GsFree(dst->array);                       \
+                        FAIL();                                        \
+                    }                                                  \
+                }                                                      \
+            }                                                          \
+        }                                                              \
     } while (0)
 
-BOOL ciAddCallback_(ChatConnection *chat, int type, void *func, u32 *src, void *user, int id, char *channel, int size) {
+BOOL ciAddCallback_(ChatConnection *chat, int type, void *func, const void *params, void *user, int id, const char *channel, int size) {
     ChatCallback item;
     ASSERT(chat, gChatStr_ChatNeNULL, 0x21f);
     ASSERT(type >= 0, gChatStr_TypeGe0, 0x221);
     ASSERT(type < CALLBACK_NUM, gChatStr_TypeLtCALLBACK_NUM, 0x222);
     ASSERT(chat->callbacks, gChatStr_ConnectionCallbackListNeNULL, 0x223);
     ASSERT(func, gChatStr_CallbackNeNULL_2, 0x224);
-    ASSERT(src, gChatStr_CallbackParamsNeNULL, 0x225);
+    ASSERT(params, gChatStr_CallbackParamsNeNULL, 0x225);
     ASSERT(size, gChatStr_CallbackParamsSizeGt0, 0x226);
     ASSERT(id >= 0, gChatStr_ID_Ge0, 0x227);
-    {
-        u32 *zero = (u32 *)&item;
-        zero[0] = 0;
-        zero[1] = 0;
-        zero[2] = 0;
-        zero[3] = 0;
-        zero[4] = 0;
-        zero[5] = 0;
-    }
+    memset(&item, 0, sizeof(item));
     item.type = type;
     item.callback = func;
     item.param = DWCi_GsMalloc(size);
     if (!item.param) {
         return FALSE;
     }
-    memcpy(item.param, src, size);
+    memcpy(item.param, params, size);
     item.user = user;
     item.id = id;
     if (!channel) {
@@ -372,505 +390,302 @@ BOOL ciAddCallback_(ChatConnection *chat, int type, void *func, u32 *src, void *
     }
     switch (item.type) {
     case CALLBACK_RAW: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
+        const ChatRawArgs *src = params;
+        ChatRawArgs *dst = item.param;
+        COPY_STRING(raw);
         break;
     }
     case CALLBACK_DISCONNECTED: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
+        const ChatDisconnectedArgs *src = params;
+        ChatDisconnectedArgs *dst = item.param;
+        COPY_STRING(reason);
         break;
     }
     case CALLBACK_PRIVATE_MESSAGE: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        COPY_STRING(1);
+        const ChatPrivateMessageArgs *src = params;
+        ChatPrivateMessageArgs *dst = item.param;
+        COPY_STRING(nick);
+        COPY_STRING(message);
         break;
     }
     case CALLBACK_INVITED: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        COPY_STRING(1);
+        const ChatInviteArgs *src = params;
+        ChatInviteArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(nick);
         break;
     }
     case CALLBACK_CHANNEL_MESSAGE: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        COPY_STRING(1);
-        COPY_STRING(2);
+        const ChatChannelMessageArgs *src = params;
+        ChatChannelMessageArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(sender);
+        COPY_STRING(message);
         break;
     }
     case CALLBACK_KICKED: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        COPY_STRING(1);
-        COPY_STRING(2);
+        const ChatKickedArgs *src = params;
+        ChatKickedArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(kicker);
+        COPY_STRING(reason);
         break;
     }
     case CALLBACK_USER_JOINED: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        COPY_STRING(1);
+        const ChatUserJoinedArgs *src = params;
+        ChatUserJoinedArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(nick);
         break;
     }
     case CALLBACK_USER_PARTED: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        COPY_STRING(1);
-        COPY_STRING(3);
-        COPY_STRING(4);
+        const ChatUserLeftArgs *src = params;
+        ChatUserLeftArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(nick);
+        COPY_STRING(message);
+        COPY_STRING(kicker);
         break;
     }
     case CALLBACK_USER_CHANGED_NICK: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        COPY_STRING(1);
-        COPY_STRING(2);
+        const ChatNickChangeArgs *src = params;
+        ChatNickChangeArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(oldNick);
+        COPY_STRING(newNick);
         break;
     }
     case CALLBACK_TOPIC_CHANGED: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        COPY_STRING(1);
+        const ChatTopicArgs *src = params;
+        ChatTopicArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(topic);
         break;
     }
     case CALLBACK_CHANNEL_MODE_CHANGED: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        if (src[1]) {
-            dst[1] = (u32)DWCi_GsMalloc(32);
-            if (!dst[1]) {
+        const ChatChannelModeChangedArgs *src = params;
+        ChatChannelModeChangedArgs *dst = item.param;
+        COPY_STRING(channel);
+        if (src->mode) {
+            dst->mode = DWCi_GsMalloc(sizeof(ChatChannelMode));
+            if (!dst->mode) {
                 FAIL();
             }
-            memcpy((void *)dst[1], (void *)src[1], 32);
+            memcpy(dst->mode, src->mode, sizeof(ChatChannelMode));
         }
         break;
     }
     case CALLBACK_USER_MODE_CHANGED: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        COPY_STRING(1);
+        const ChatUserModeArgs *src = params;
+        ChatUserModeArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(nick);
         break;
     }
     case CALLBACK_USER_LIST_UPDATED: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
+        const ChatUsersChangedArgs *src = params;
+        ChatUsersChangedArgs *dst = item.param;
+        COPY_STRING(channel);
         break;
     }
     case CALLBACK_ENUM_CHANNELS_EACH: {
-        u32 *dst = item.param;
-        COPY_STRING(2);
-        COPY_STRING(3);
+        const ChatChannelListEntryArgs *src = params;
+        ChatChannelListEntryArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(topic);
         break;
     }
     case CALLBACK_ENUM_CHANNELS_ALL: {
         int i;
-        u32 *dst = item.param;
-        ASSERT((int)src[1] >= 0, gChatStr_SrcParamsNumChannelsGe0, 0x2d3);
-        if (!src[2]) {
-            dst[2] = 0;
-        } else {
-            dst[2] = (u32)DWCi_GsMalloc(src[1] * 4);
-            if (!dst[2]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[1]; i++) {
-                if (!((u32 *)src[2])[i]) {
-                    ((u32 *)dst[2])[i] = 0;
-                } else {
-                    ((u32 *)dst[2])[i] = (u32)goastrdup((char *)((u32 *)src[2])[i]);
-                    if (!((u32 *)dst[2])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[2])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[2]);
-                        FAIL();
-                    }
-                }
-            }
-        }
-        ASSERT((int)src[1] >= 0, gChatStr_SrcParamsNumChannelsGe0, 0x2d4);
-        if (!src[3]) {
-            dst[3] = 0;
-        } else {
-            dst[3] = (u32)DWCi_GsMalloc(src[1] * 4);
-            if (!dst[3]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[1]; i++) {
-                if (!((u32 *)src[3])[i]) {
-                    ((u32 *)dst[3])[i] = 0;
-                } else {
-                    ((u32 *)dst[3])[i] = (u32)goastrdup((char *)((u32 *)src[3])[i]);
-                    if (!((u32 *)dst[3])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[3])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[3]);
-                        FAIL();
-                    }
-                }
-            }
-        }
-        ASSERT((int)src[1] >= 0, gChatStr_SrcParamsNumChannelsGe0, 0x2d5);
-        if ((int)src[1] > 0) {
+        const ChatChannelListArgs *src = params;
+        ChatChannelListArgs *dst = item.param;
+        ASSERT(src->numChannels >= 0, gChatStr_SrcParamsNumChannelsGe0, 0x2d3);
+        COPY_STRING_ARRAY(numChannels, channels);
+        ASSERT(src->numChannels >= 0, gChatStr_SrcParamsNumChannelsGe0, 0x2d4);
+        COPY_STRING_ARRAY(numChannels, topics);
+        ASSERT(src->numChannels >= 0, gChatStr_SrcParamsNumChannelsGe0, 0x2d5);
+        if (src->numChannels > 0) {
             int bytes;
-            ASSERT(src[4], gChatStr_SrcParamsNumUsersNeNULL, 0x2d5);
-            bytes = src[1] * 4;
-            dst[4] = (u32)DWCi_GsMalloc(bytes);
-            if (!dst[4]) {
-                DWCi_GsFree(dst);
-                DWCi_GsFree(item.channel);
-                return FALSE;
+            ASSERT(src->numUsers, gChatStr_SrcParamsNumUsersNeNULL, 0x2d5);
+            bytes = src->numChannels * sizeof(int);
+            dst->numUsers = DWCi_GsMalloc(bytes);
+            if (!dst->numUsers) {
+                FAIL();
             }
-            memcpy((void *)dst[4], (void *)src[4], bytes);
+            memcpy(dst->numUsers, src->numUsers, bytes);
         }
         break;
     }
     case CALLBACK_ENTER_CHANNEL: {
-        u32 *dst = item.param;
-        COPY_STRING(2);
+        const ChatEnterChannelArgs *src = params;
+        ChatEnterChannelArgs *dst = item.param;
+        COPY_STRING(channel);
         break;
     }
     case CALLBACK_GET_CHANNEL_TOPIC: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        COPY_STRING(2);
+        const ChatGetTopicArgs *src = params;
+        ChatGetTopicArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(topic);
         break;
     }
     case CALLBACK_GET_CHANNEL_MODE: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        if (src[2]) {
-            dst[2] = (u32)DWCi_GsMalloc(32);
-            if (!dst[2]) {
+        const ChatChannelModeArgs *src = params;
+        ChatChannelModeArgs *dst = item.param;
+        COPY_STRING(channel);
+        if (src->mode) {
+            dst->mode = DWCi_GsMalloc(sizeof(ChatChannelMode));
+            if (!dst->mode) {
                 FAIL();
             }
-            memcpy((void *)dst[2], (void *)src[2], 32);
+            memcpy(dst->mode, src->mode, sizeof(ChatChannelMode));
         }
         break;
     }
     case CALLBACK_GET_CHANNEL_PASSWORD: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        COPY_STRING(3);
+        const ChatGetPasswordArgs *src = params;
+        ChatGetPasswordArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(password);
         break;
     }
     case CALLBACK_ENUM_USERS: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        ASSERT((int)src[2] >= 0, gChatStr_SrcParamsNumUsersGe0, 0x301);
-        if (!src[3]) {
-            dst[3] = 0;
-        } else {
-            int i;
-            dst[3] = (u32)DWCi_GsMalloc(src[2] * 4);
-            if (!dst[3]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[2]; i++) {
-                if (!((u32 *)src[3])[i]) {
-                    ((u32 *)dst[3])[i] = 0;
-                } else {
-                    ((u32 *)dst[3])[i] = (u32)goastrdup((char *)((u32 *)src[3])[i]);
-                    if (!((u32 *)dst[3])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[3])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[3]);
-                        FAIL();
-                    }
-                }
-            }
-        }
-        ASSERT((int)src[2] >= 0, gChatStr_SrcParamsNumUsersGe0, 0x302);
-        if ((int)src[2] > 0) {
+        const ChatEnumUsersArgs *src = params;
+        ChatEnumUsersArgs *dst = item.param;
+        int i;
+        COPY_STRING(channel);
+        ASSERT(src->numUsers >= 0, gChatStr_SrcParamsNumUsersGe0, 0x301);
+        COPY_STRING_ARRAY(numUsers, users);
+        ASSERT(src->numUsers >= 0, gChatStr_SrcParamsNumUsersGe0, 0x302);
+        if (src->numUsers > 0) {
             int bytes;
-            ASSERT(src[4], gChatStr_SrcParamsModesNeNULL, 0x302);
-            bytes = src[2] * 4;
-            dst[4] = (u32)DWCi_GsMalloc(bytes);
-            if (!dst[4]) {
+            ASSERT(src->modes, gChatStr_SrcParamsModesNeNULL, 0x302);
+            bytes = src->numUsers * sizeof(int);
+            dst->modes = DWCi_GsMalloc(bytes);
+            if (!dst->modes) {
                 FAIL();
             }
-            memcpy((void *)dst[4], (void *)src[4], bytes);
+            memcpy(dst->modes, src->modes, bytes);
         }
         break;
     }
     case CALLBACK_GET_USER_INFO: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        COPY_STRING(2);
-        COPY_STRING(3);
-        COPY_STRING(4);
-        ASSERT((int)src[5] >= 0, gChatStr_SrcParamsNumChannelsGe0, 0x30e);
-        if (!src[6]) {
-            dst[6] = 0;
-        } else {
-            int i;
-            dst[6] = (u32)DWCi_GsMalloc(src[5] * 4);
-            if (!dst[6]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[5]; i++) {
-                if (!((u32 *)src[6])[i]) {
-                    ((u32 *)dst[6])[i] = 0;
-                } else {
-                    ((u32 *)dst[6])[i] = (u32)goastrdup((char *)((u32 *)src[6])[i]);
-                    if (!((u32 *)dst[6])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[6])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[6]);
-                        FAIL();
-                    }
-                }
-            }
-        }
+        const ChatGetUserInfoArgs *src = params;
+        ChatGetUserInfoArgs *dst = item.param;
+        int i;
+        COPY_STRING(nick);
+        COPY_STRING(user);
+        COPY_STRING(name);
+        COPY_STRING(address);
+        ASSERT(src->numChannels >= 0, gChatStr_SrcParamsNumChannelsGe0, 0x30e);
+        COPY_STRING_ARRAY(numChannels, channels);
         break;
     }
     case CALLBACK_GET_BASIC_USER_INFO: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        COPY_STRING(2);
-        COPY_STRING(3);
+        const ChatGetBasicUserInfoArgs *src = params;
+        ChatGetBasicUserInfoArgs *dst = item.param;
+        COPY_STRING(nick);
+        COPY_STRING(user);
+        COPY_STRING(address);
         break;
     }
     case CALLBACK_GET_CHANNEL_BASIC_USER_INFO: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        COPY_STRING(2);
-        COPY_STRING(3);
-        COPY_STRING(4);
+        const ChatGetChannelBasicUserInfoArgs *src = params;
+        ChatGetChannelBasicUserInfoArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(nick);
+        COPY_STRING(user);
+        COPY_STRING(address);
         break;
     }
     case CALLBACK_GET_USER_MODE: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        COPY_STRING(2);
+        const ChatGetUserModeArgs *src = params;
+        ChatGetUserModeArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(user);
         break;
     }
     case CALLBACK_ENUM_CHANNEL_BANS: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        ASSERT((int)src[2] >= 0, gChatStr_SrcParamsNumBansGe0, 0x335);
-        if (!src[3]) {
-            dst[3] = 0;
-        } else {
-            int i;
-            dst[3] = (u32)DWCi_GsMalloc(src[2] * 4);
-            if (!dst[3]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[2]; i++) {
-                if (!((u32 *)src[3])[i]) {
-                    ((u32 *)dst[3])[i] = 0;
-                } else {
-                    ((u32 *)dst[3])[i] = (u32)goastrdup((char *)((u32 *)src[3])[i]);
-                    if (!((u32 *)dst[3])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[3])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[3]);
-                        FAIL();
-                    }
-                }
-            }
-        }
+        const ChatEnumBansArgs *src = params;
+        ChatEnumBansArgs *dst = item.param;
+        int i;
+        COPY_STRING(channel);
+        ASSERT(src->numBans >= 0, gChatStr_SrcParamsNumBansGe0, 0x335);
+        COPY_STRING_ARRAY(numBans, bans);
         break;
     }
     case CALLBACK_NICK_ERROR: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        ASSERT((int)src[2] >= 0, gChatStr_SrcParamsNumSuggestedNicksGe0, 0x33e);
-        if (!src[3]) {
-            dst[3] = 0;
-        } else {
-            int i;
-            dst[3] = (u32)DWCi_GsMalloc(src[2] * 4);
-            if (!dst[3]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[2]; i++) {
-                if (!((u32 *)src[3])[i]) {
-                    ((u32 *)dst[3])[i] = 0;
-                } else {
-                    ((u32 *)dst[3])[i] = (u32)goastrdup((char *)((u32 *)src[3])[i]);
-                    if (!((u32 *)dst[3])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[3])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[3]);
-                        FAIL();
-                    }
-                }
-            }
-        }
+        const ChatNickErrorArgs *src = params;
+        ChatNickErrorArgs *dst = item.param;
+        int i;
+        COPY_STRING(nick);
+        ASSERT(src->numSuggestedNicks >= 0, gChatStr_SrcParamsNumSuggestedNicksGe0, 0x33e);
+        COPY_STRING_ARRAY(numSuggestedNicks, suggestedNicks);
         break;
     }
     case CALLBACK_CHANGE_NICK: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        COPY_STRING(2);
+        const ChatChangeNickArgs *src = params;
+        ChatChangeNickArgs *dst = item.param;
+        COPY_STRING(oldNick);
+        COPY_STRING(newNick);
         break;
     }
     case CALLBACK_NEW_USER_LIST: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        ASSERT((int)src[1] >= 0, gChatStr_SrcParamsNumUsersGe0, 0x350);
-        if (!src[2]) {
-            dst[2] = 0;
-        } else {
-            int i;
-            dst[2] = (u32)DWCi_GsMalloc(src[1] * 4);
-            if (!dst[2]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[1]; i++) {
-                if (!((u32 *)src[2])[i]) {
-                    ((u32 *)dst[2])[i] = 0;
-                } else {
-                    ((u32 *)dst[2])[i] = (u32)goastrdup((char *)((u32 *)src[2])[i]);
-                    if (!((u32 *)dst[2])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[2])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[2]);
-                        FAIL();
-                    }
-                }
-            }
-        }
-        ASSERT((int)src[1] >= 0, gChatStr_SrcParamsNumUsersGe0, 0x351);
-        if ((int)src[1] > 0) {
+        const ChatNewUserListArgs *src = params;
+        ChatNewUserListArgs *dst = item.param;
+        int i;
+        COPY_STRING(channel);
+        ASSERT(src->numUsers >= 0, gChatStr_SrcParamsNumUsersGe0, 0x350);
+        COPY_STRING_ARRAY(numUsers, users);
+        ASSERT(src->numUsers >= 0, gChatStr_SrcParamsNumUsersGe0, 0x351);
+        if (src->numUsers > 0) {
             int bytes;
-            ASSERT(src[3], gChatStr_SrcParamsModesNeNULL, 0x351);
-            bytes = src[1] * 4;
-            dst[3] = (u32)DWCi_GsMalloc(bytes);
-            if (!dst[3]) {
+            ASSERT(src->modes, gChatStr_SrcParamsModesNeNULL, 0x351);
+            bytes = src->numUsers * sizeof(int);
+            dst->modes = DWCi_GsMalloc(bytes);
+            if (!dst->modes) {
                 FAIL();
             }
-            memcpy((void *)dst[3], (void *)src[3], bytes);
+            memcpy(dst->modes, src->modes, bytes);
         }
         break;
     }
     case CALLBACK_BROADCAST_KEY_CHANGED: {
-        u32 *dst = item.param;
-        COPY_STRING(0);
-        COPY_STRING(1);
-        COPY_STRING(2);
-        COPY_STRING(3);
+        const ChatBroadcastKeyArgs *src = params;
+        ChatBroadcastKeyArgs *dst = item.param;
+        COPY_STRING(channel);
+        COPY_STRING(nick);
+        COPY_STRING(key);
+        COPY_STRING(value);
         break;
     }
     case CALLBACK_GET_GLOBAL_KEYS: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        ASSERT((int)src[2] >= 0, gChatStr_SrcParamsNumGe0, 0x365);
-        if (!src[3]) {
-            dst[3] = 0;
-        } else {
-            int i;
-            dst[3] = (u32)DWCi_GsMalloc(src[2] * 4);
-            if (!dst[3]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[2]; i++) {
-                if (!((u32 *)src[3])[i]) {
-                    ((u32 *)dst[3])[i] = 0;
-                } else {
-                    ((u32 *)dst[3])[i] = (u32)goastrdup((char *)((u32 *)src[3])[i]);
-                    if (!((u32 *)dst[3])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[3])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[3]);
-                        FAIL();
-                    }
-                }
-            }
-        }
-        ASSERT((int)src[2] >= 0, gChatStr_SrcParamsNumGe0, 0x366);
-        if (!src[4]) {
-            dst[4] = 0;
-        } else {
-            int i;
-            dst[4] = (u32)DWCi_GsMalloc(src[2] * 4);
-            if (!dst[4]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[2]; i++) {
-                if (!((u32 *)src[4])[i]) {
-                    ((u32 *)dst[4])[i] = 0;
-                } else {
-                    ((u32 *)dst[4])[i] = (u32)goastrdup((char *)((u32 *)src[4])[i]);
-                    if (!((u32 *)dst[4])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[4])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[4]);
-                        FAIL();
-                    }
-                }
-            }
-        }
+        const ChatGetGlobalKeysArgs *src = params;
+        ChatGetGlobalKeysArgs *dst = item.param;
+        int i;
+        COPY_STRING(user);
+        ASSERT(src->num >= 0, gChatStr_SrcParamsNumGe0, 0x365);
+        COPY_STRING_ARRAY(num, keys);
+        ASSERT(src->num >= 0, gChatStr_SrcParamsNumGe0, 0x366);
+        COPY_STRING_ARRAY(num, values);
         break;
     }
     case CALLBACK_GET_CHANNEL_KEYS: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
-        COPY_STRING(2);
-        ASSERT((int)src[3] >= 0, gChatStr_SrcParamsNumGe0, 0x370);
-        if (!src[4]) {
-            dst[4] = 0;
-        } else {
-            int i;
-            dst[4] = (u32)DWCi_GsMalloc(src[3] * 4);
-            if (!dst[4]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[3]; i++) {
-                if (!((u32 *)src[4])[i]) {
-                    ((u32 *)dst[4])[i] = 0;
-                } else {
-                    ((u32 *)dst[4])[i] = (u32)goastrdup((char *)((u32 *)src[4])[i]);
-                    if (!((u32 *)dst[4])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[4])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[4]);
-                        FAIL();
-                    }
-                }
-            }
-        }
-        ASSERT((int)src[3] >= 0, gChatStr_SrcParamsNumGe0, 0x371);
-        if (!src[5]) {
-            dst[5] = 0;
-        } else {
-            int i;
-            dst[5] = (u32)DWCi_GsMalloc(src[3] * 4);
-            if (!dst[5]) {
-                FAIL();
-            }
-            for (i = 0; i < (int)src[3]; i++) {
-                if (!((u32 *)src[5])[i]) {
-                    ((u32 *)dst[5])[i] = 0;
-                } else {
-                    ((u32 *)dst[5])[i] = (u32)goastrdup((char *)((u32 *)src[5])[i]);
-                    if (!((u32 *)dst[5])[i]) {
-                        for (i--; i >= 0; i--) {
-                            DWCi_GsFree((void *)((u32 *)dst[5])[i]);
-                        }
-                        DWCi_GsFree((void *)dst[5]);
-                        FAIL();
-                    }
-                }
-            }
-        }
+        const ChatGetChannelKeysArgs *src = params;
+        ChatGetChannelKeysArgs *dst = item.param;
+        int i;
+        COPY_STRING(channel);
+        COPY_STRING(user);
+        ASSERT(src->num >= 0, gChatStr_SrcParamsNumGe0, 0x370);
+        COPY_STRING_ARRAY(num, keys);
+        ASSERT(src->num >= 0, gChatStr_SrcParamsNumGe0, 0x371);
+        COPY_STRING_ARRAY(num, values);
         break;
     }
     case CALLBACK_AUTHENTICATE_CDKEY: {
-        u32 *dst = item.param;
-        COPY_STRING(1);
+        const ChatAuthenticateCDKeyArgs *src = params;
+        ChatAuthenticateCDKeyArgs *dst = item.param;
+        COPY_STRING(message);
         break;
     }
     default:
@@ -881,6 +696,7 @@ BOOL ciAddCallback_(ChatConnection *chat, int type, void *func, u32 *src, void *
     return TRUE;
 }
 
+#undef COPY_STRING_ARRAY
 #undef COPY_STRING
 #undef FAIL
 #undef ASSERT
@@ -892,196 +708,196 @@ void ciCallCallback(ChatConnection *chat, ChatCallback *callback) {
     user = callback->user;
     switch (callback->type) {
     case CALLBACK_RAW: {
-        u32 *args = callback->param;
-        ChatCallbackFunc1 func = (ChatCallbackFunc1)callback->callback;
-        func(chat, args[0], user);
+        ChatRawArgs *args = callback->param;
+        ChatRawCallback func = (ChatRawCallback)callback->callback;
+        func(chat, args->raw, user);
         break;
     }
     case CALLBACK_DISCONNECTED: {
-        u32 *args = callback->param;
-        ChatCallbackFunc1 func = (ChatCallbackFunc1)callback->callback;
-        func(chat, args[0], user);
+        ChatDisconnectedArgs *args = callback->param;
+        ChatDisconnectedCallback func = (ChatDisconnectedCallback)callback->callback;
+        func(chat, args->reason, user);
         break;
     }
     case CALLBACK_PRIVATE_MESSAGE: {
-        u32 *args = callback->param;
-        ChatCallbackFunc3 func = (ChatCallbackFunc3)callback->callback;
-        func(chat, args[0], args[1], args[2], user);
+        ChatPrivateMessageArgs *args = callback->param;
+        ChatPrivateMessageCallback func = (ChatPrivateMessageCallback)callback->callback;
+        func(chat, args->nick, args->message, args->type, user);
         break;
     }
     case CALLBACK_INVITED: {
-        u32 *args = callback->param;
-        ChatCallbackFunc2 func = (ChatCallbackFunc2)callback->callback;
-        func(chat, args[0], args[1], user);
+        ChatInviteArgs *args = callback->param;
+        ChatInvitedCallback func = (ChatInvitedCallback)callback->callback;
+        func(chat, args->channel, args->nick, user);
         break;
     }
     case CALLBACK_CHANNEL_MESSAGE: {
-        u32 *args = callback->param;
-        ChatCallbackFunc4 func = (ChatCallbackFunc4)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], user);
+        ChatChannelMessageArgs *args = callback->param;
+        ChatChannelMessageCallback func = (ChatChannelMessageCallback)callback->callback;
+        func(chat, args->channel, args->sender, args->message, args->type, user);
         break;
     }
     case CALLBACK_KICKED: {
-        u32 *args = callback->param;
-        ChatCallbackFunc3 func = (ChatCallbackFunc3)callback->callback;
-        func(chat, args[0], args[1], args[2], user);
+        ChatKickedArgs *args = callback->param;
+        ChatKickedCallback func = (ChatKickedCallback)callback->callback;
+        func(chat, args->channel, args->kicker, args->reason, user);
         break;
     }
     case CALLBACK_USER_JOINED: {
-        u32 *args = callback->param;
-        ChatCallbackFunc3 func = (ChatCallbackFunc3)callback->callback;
-        func(chat, args[0], args[1], args[2], user);
+        ChatUserJoinedArgs *args = callback->param;
+        ChatUserJoinedCallback func = (ChatUserJoinedCallback)callback->callback;
+        func(chat, args->channel, args->nick, args->mode, user);
         break;
     }
     case CALLBACK_USER_PARTED: {
-        u32 *args = callback->param;
-        ChatCallbackFunc5 func = (ChatCallbackFunc5)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], args[4], user);
+        ChatUserLeftArgs *args = callback->param;
+        ChatUserPartedCallback func = (ChatUserPartedCallback)callback->callback;
+        func(chat, args->channel, args->nick, args->reason, args->message, args->kicker, user);
         break;
     }
     case CALLBACK_USER_CHANGED_NICK: {
-        u32 *args = callback->param;
-        ChatCallbackFunc3 func = (ChatCallbackFunc3)callback->callback;
-        func(chat, args[0], args[1], args[2], user);
+        ChatNickChangeArgs *args = callback->param;
+        ChatUserChangedNickCallback func = (ChatUserChangedNickCallback)callback->callback;
+        func(chat, args->channel, args->oldNick, args->newNick, user);
         break;
     }
     case CALLBACK_TOPIC_CHANGED: {
-        u32 *args = callback->param;
-        ChatCallbackFunc2 func = (ChatCallbackFunc2)callback->callback;
-        func(chat, args[0], args[1], user);
+        ChatTopicArgs *args = callback->param;
+        ChatTopicChangedCallback func = (ChatTopicChangedCallback)callback->callback;
+        func(chat, args->channel, args->topic, user);
         break;
     }
     case CALLBACK_CHANNEL_MODE_CHANGED: {
-        u32 *args = callback->param;
-        ChatCallbackFunc2 func = (ChatCallbackFunc2)callback->callback;
-        func(chat, args[0], args[1], user);
+        ChatChannelModeChangedArgs *args = callback->param;
+        ChatChannelModeChangedCallback func = (ChatChannelModeChangedCallback)callback->callback;
+        func(chat, args->channel, args->mode, user);
         break;
     }
     case CALLBACK_USER_MODE_CHANGED: {
-        u32 *args = callback->param;
-        ChatCallbackFunc3 func = (ChatCallbackFunc3)callback->callback;
-        func(chat, args[0], args[1], args[2], user);
+        ChatUserModeArgs *args = callback->param;
+        ChatUserModeChangedCallback func = (ChatUserModeChangedCallback)callback->callback;
+        func(chat, args->channel, args->nick, args->mode, user);
         break;
     }
     case CALLBACK_USER_LIST_UPDATED: {
-        u32 *args = callback->param;
-        ChatCallbackFunc1 func = (ChatCallbackFunc1)callback->callback;
-        func(chat, args[0], user);
+        ChatUsersChangedArgs *args = callback->param;
+        ChatUserListUpdatedCallback func = (ChatUserListUpdatedCallback)callback->callback;
+        func(chat, args->channel, user);
         break;
     }
     case CALLBACK_ENUM_CHANNELS_EACH: {
-        u32 *args = callback->param;
-        ChatCallbackFunc5 func = (ChatCallbackFunc5)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], args[4], user);
+        ChatChannelListEntryArgs *args = callback->param;
+        ChatEnumChannelsEachCallback func = (ChatEnumChannelsEachCallback)callback->callback;
+        func(chat, args->success, args->index, args->channel, args->topic, args->numUsers, user);
         break;
     }
     case CALLBACK_ENUM_CHANNELS_ALL: {
-        u32 *args = callback->param;
-        ChatCallbackFunc5 func = (ChatCallbackFunc5)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], args[4], user);
+        ChatChannelListArgs *args = callback->param;
+        ChatEnumChannelsAllCallback func = (ChatEnumChannelsAllCallback)callback->callback;
+        func(chat, args->success, args->numChannels, args->channels, args->topics, args->numUsers, user);
         break;
     }
     case CALLBACK_ENTER_CHANNEL: {
-        u32 *args = callback->param;
-        ChatCallbackFunc3 func = (ChatCallbackFunc3)callback->callback;
-        ciJoinCallbackCalled(chat, (const char *)args[2]);
-        func(chat, args[0], args[1], args[2], user);
+        ChatEnterChannelArgs *args = callback->param;
+        ChatEnterChannelCallback func = (ChatEnterChannelCallback)callback->callback;
+        ciJoinCallbackCalled(chat, args->channel);
+        func(chat, args->success, args->result, args->channel, user);
         break;
     }
     case CALLBACK_GET_CHANNEL_TOPIC: {
-        u32 *args = callback->param;
-        ChatCallbackFunc3 func = (ChatCallbackFunc3)callback->callback;
-        func(chat, args[0], args[1], args[2], user);
+        ChatGetTopicArgs *args = callback->param;
+        ChatGetChannelTopicCallback func = (ChatGetChannelTopicCallback)callback->callback;
+        func(chat, args->success, args->channel, args->topic, user);
         break;
     }
     case CALLBACK_GET_CHANNEL_MODE: {
-        u32 *args = callback->param;
-        ChatCallbackFunc3 func = (ChatCallbackFunc3)callback->callback;
-        func(chat, args[0], args[1], args[2], user);
+        ChatChannelModeArgs *args = callback->param;
+        ChatGetChannelModeCallback func = (ChatGetChannelModeCallback)callback->callback;
+        func(chat, args->success, args->channel, args->mode, user);
         break;
     }
     case CALLBACK_GET_CHANNEL_PASSWORD: {
-        u32 *args = callback->param;
-        ChatCallbackFunc4 func = (ChatCallbackFunc4)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], user);
+        ChatGetPasswordArgs *args = callback->param;
+        ChatGetChannelPasswordCallback func = (ChatGetChannelPasswordCallback)callback->callback;
+        func(chat, args->success, args->channel, args->enabled, args->password, user);
         break;
     }
     case CALLBACK_ENUM_USERS: {
-        u32 *args = callback->param;
-        ChatCallbackFunc5 func = (ChatCallbackFunc5)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], args[4], user);
+        ChatEnumUsersArgs *args = callback->param;
+        ChatEnumUsersCallback func = (ChatEnumUsersCallback)callback->callback;
+        func(chat, args->success, args->channel, args->numUsers, args->users, args->modes, user);
         break;
     }
     case CALLBACK_GET_USER_INFO: {
-        u32 *args = callback->param;
-        ChatCallbackFunc7 func = (ChatCallbackFunc7)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], args[4], args[5], args[6], user);
+        ChatGetUserInfoArgs *args = callback->param;
+        ChatGetUserInfoCallback func = (ChatGetUserInfoCallback)callback->callback;
+        func(chat, args->success, args->nick, args->user, args->name, args->address, args->numChannels, args->channels, user);
         break;
     }
     case CALLBACK_GET_BASIC_USER_INFO: {
-        u32 *args = callback->param;
-        ChatCallbackFunc4 func = (ChatCallbackFunc4)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], user);
+        ChatGetBasicUserInfoArgs *args = callback->param;
+        ChatGetBasicUserInfoCallback func = (ChatGetBasicUserInfoCallback)callback->callback;
+        func(chat, args->success, args->nick, args->user, args->address, user);
         break;
     }
     case CALLBACK_GET_CHANNEL_BASIC_USER_INFO: {
-        u32 *args = callback->param;
-        ChatCallbackFunc5 func = (ChatCallbackFunc5)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], args[4], user);
+        ChatGetChannelBasicUserInfoArgs *args = callback->param;
+        ChatGetChannelBasicUserInfoCallback func = (ChatGetChannelBasicUserInfoCallback)callback->callback;
+        func(chat, args->success, args->channel, args->nick, args->user, args->address, user);
         break;
     }
     case CALLBACK_GET_USER_MODE: {
-        u32 *args = callback->param;
-        ChatCallbackFunc4 func = (ChatCallbackFunc4)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], user);
+        ChatGetUserModeArgs *args = callback->param;
+        ChatGetUserModeCallback func = (ChatGetUserModeCallback)callback->callback;
+        func(chat, args->success, args->channel, args->user, args->mode, user);
         break;
     }
     case CALLBACK_ENUM_CHANNEL_BANS: {
-        u32 *args = callback->param;
-        ChatCallbackFunc4 func = (ChatCallbackFunc4)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], user);
+        ChatEnumBansArgs *args = callback->param;
+        ChatEnumChannelBansCallback func = (ChatEnumChannelBansCallback)callback->callback;
+        func(chat, args->success, args->channel, args->numBans, args->bans, user);
         break;
     }
     case CALLBACK_NICK_ERROR: {
-        u32 *args = callback->param;
-        ChatCallbackFunc4 func = (ChatCallbackFunc4)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], user);
+        ChatNickErrorArgs *args = callback->param;
+        ChatNickErrorCallback func = (ChatNickErrorCallback)callback->callback;
+        func(chat, args->type, args->nick, args->numSuggestedNicks, args->suggestedNicks, user);
         break;
     }
     case CALLBACK_CHANGE_NICK: {
-        u32 *args = callback->param;
-        ChatCallbackFunc3 func = (ChatCallbackFunc3)callback->callback;
-        func(chat, args[0], args[1], args[2], user);
+        ChatChangeNickArgs *args = callback->param;
+        ChatChangeNickCallback func = (ChatChangeNickCallback)callback->callback;
+        func(chat, args->success, args->oldNick, args->newNick, user);
         break;
     }
     case CALLBACK_NEW_USER_LIST: {
-        u32 *args = callback->param;
-        ChatCallbackFunc4 func = (ChatCallbackFunc4)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], user);
+        ChatNewUserListArgs *args = callback->param;
+        ChatNewUserListCallback func = (ChatNewUserListCallback)callback->callback;
+        func(chat, args->channel, args->numUsers, args->users, args->modes, user);
         break;
     }
     case CALLBACK_BROADCAST_KEY_CHANGED: {
-        u32 *args = callback->param;
-        ChatCallbackFunc4 func = (ChatCallbackFunc4)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], user);
+        ChatBroadcastKeyArgs *args = callback->param;
+        ChatBroadcastKeyChangedCallback func = (ChatBroadcastKeyChangedCallback)callback->callback;
+        func(chat, args->channel, args->nick, args->key, args->value, user);
         break;
     }
     case CALLBACK_GET_GLOBAL_KEYS: {
-        u32 *args = callback->param;
-        ChatCallbackFunc5 func = (ChatCallbackFunc5)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], args[4], user);
+        ChatGetGlobalKeysArgs *args = callback->param;
+        ChatGetGlobalKeysCallback func = (ChatGetGlobalKeysCallback)callback->callback;
+        func(chat, args->success, args->user, args->num, args->keys, args->values, user);
         break;
     }
     case CALLBACK_GET_CHANNEL_KEYS: {
-        u32 *args = callback->param;
-        ChatCallbackFunc6 func = (ChatCallbackFunc6)callback->callback;
-        func(chat, args[0], args[1], args[2], args[3], args[4], args[5], user);
+        ChatGetChannelKeysArgs *args = callback->param;
+        ChatGetChannelKeysCallback func = (ChatGetChannelKeysCallback)callback->callback;
+        func(chat, args->success, args->channel, args->user, args->num, args->keys, args->values, user);
         break;
     }
     case CALLBACK_AUTHENTICATE_CDKEY: {
-        u32 *args = callback->param;
-        ChatCallbackFunc2 func = (ChatCallbackFunc2)callback->callback;
-        func(chat, args[0], args[1], user);
+        ChatAuthenticateCDKeyArgs *args = callback->param;
+        ChatAuthenticateCDKeyCallback func = (ChatAuthenticateCDKeyCallback)callback->callback;
+        func(chat, args->result, args->message, user);
         break;
     }
     default:

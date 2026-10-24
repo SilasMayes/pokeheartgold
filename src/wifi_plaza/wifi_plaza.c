@@ -315,7 +315,7 @@ static void WiFiPlazaWork_Update(WiFiPlazaWork *work) {
     WiFiPlazaNews_Update(work->news);
     WiFiPlazaLobbyClient_GetTime(&time);
     work->lobbyTime = time;
-    WiFiPlaza_SecondsToTime(&work->currentTime, &time);
+    WiFiPlaza_SecondsToTime(&work->currentTime.word, &time);
     WiFiPlazaWork_CheckClosingTime(work);
     WiFiPlazaTalkSession_UpdateTimeout(&work->talk);
     WiFiPlaza_ClearTapToyPlayedFlags(work->tapToyPlayed);
@@ -340,7 +340,7 @@ BOOL WiFiPlazaWork_TakeExcessFlood(WiFiPlazaWork *work) {
     return WiFiPlazaLobbyClient_TakeExcessFlood();
 }
 
-void *WiFiPlazaWork_GetNews(WiFiPlazaWork *work) {
+WiFiPlazaNews *WiFiPlazaWork_GetNews(WiFiPlazaWork *work) {
     return work->news;
 }
 
@@ -349,7 +349,7 @@ void *WiFiPlazaWork_GetPlaces(WiFiPlazaWork *work) {
     return work->places;
 }
 
-u32 *WiFiPlazaWork_GetCurrentTimePtr(WiFiPlazaWork *work) {
+WiFiPlazaTime *WiFiPlazaWork_GetCurrentTimePtr(WiFiPlazaWork *work) {
     return &work->currentTime;
 }
 
@@ -671,19 +671,19 @@ void WiFiPlazaWork_SetSurveyAnswer(WiFiPlazaWork *work, u32 a, u32 b) {
 void WiFiPlazaPlayer_CopyToProfile(WiFiPlazaPlayer *player, PlayerProfile *profile, enum HeapID heapID) {
     BOOL invalid;
     int ok = WiFiPlaza_IsNameTerminated(player->name, 8, heapID);
-    String *b;
-    String *a;
+    String *name;
+    String *invalidChars;
     invalid = FALSE;
     if (ok == 1) {
         Save_Profile_PlayerName_Set(profile, player->name);
-        a = String_New(0x20, heapID);
-        b = String_New(0x20, heapID);
-        PlayerName_FlatToString(profile, b);
-        if (!FontID_String_AllCharsValid((FontID)0, b, a)) {
+        invalidChars = String_New(0x20, heapID);
+        name = String_New(0x20, heapID);
+        PlayerName_FlatToString(profile, name);
+        if (!FontID_String_AllCharsValid((FontID)0, name, invalidChars)) {
             invalid = TRUE;
         }
-        String_Delete(a);
-        String_Delete(b);
+        String_Delete(invalidChars);
+        String_Delete(name);
     } else {
         invalid = TRUE;
     }
@@ -702,8 +702,8 @@ void WiFiPlazaPlayer_CopyToProfile(WiFiPlazaPlayer *player, PlayerProfile *profi
 }
 
 int WiFiPlazaPlayer_GetActivity(WiFiPlazaPlayer *player) {
-    u8 v = player->activity;
-    return v < 14 ? v : 14;
+    u8 activity = player->activity;
+    return activity < 14 ? activity : 14;
 }
 
 #pragma opt_common_subs off
@@ -732,8 +732,8 @@ void *WiFiPlazaPlayer_GetHistoryValue(WiFiPlazaPlayer *player, u32 index) {
     GF_ASSERT(index < 12);
     seen = 0;
     for (i = 0; i < 12; i++) {
-        u8 v = player->slots[i];
-        if (v < 24) {
+        u8 slot = player->slots[i];
+        if (slot < 24) {
             seen++;
         }
         if (seen - 1 == index) {
@@ -752,10 +752,10 @@ static u32 WiFiPlazaPlayer_GetTrainerID(WiFiPlazaPlayer *player) {
 }
 
 int WiFiPlazaPlayer_GetAvatarIndex(WiFiPlazaPlayer *player) {
-    u16 v = WiFiPlazaPlayer_GetAvatar(player);
+    u16 avatar = WiFiPlazaPlayer_GetAvatar(player);
     int i;
     for (i = 0; i < 16; i++) {
-        if (v == gWiFiPlazaAvatars[i].avatar) {
+        if (avatar == gWiFiPlazaAvatars[i].avatar) {
             return i;
         }
     }
@@ -840,14 +840,14 @@ u8 WiFiPlazaPlayer_GetRegion(WiFiPlazaPlayer *player) {
 }
 
 u8 WiFiPlazaPlayer_GetTapToy(WiFiPlazaPlayer *player) {
-    u8 v = player->tapToy;
-    if (v == 0xFF) {
+    u8 tapToy = player->tapToy;
+    if (tapToy == 0xFF) {
         return 0;
     }
-    if (v >= 27) {
+    if (tapToy >= 27) {
         return 0;
     }
-    return v;
+    return tapToy;
 }
 
 BOOL WiFiPlazaPlayer_HasTapToy(WiFiPlazaPlayer *player) {
@@ -876,7 +876,7 @@ int WiFiPlazaWork_IsSpecialVisitor(WiFiPlazaWork *work, int slot) {
     return WiFiPlaza_GetSlotFlag(work->specialVisitors, slot);
 }
 
-void WiFiPlazaWork_GetSpecialVisitors(WiFiPlazaWork *work, void *dest) {
+void WiFiPlazaWork_GetSpecialVisitors(WiFiPlazaWork *work, u8 *dest) {
     MI_CpuCopy8(work->specialVisitors, dest, sizeof(work->specialVisitors));
 }
 
@@ -1434,11 +1434,11 @@ static void WiFiPlaza_OnLobbyEvent(u32 event, WiFiPlazaWork *work) {
     int notify = 0;
     int which;
     PPW_LobbyGetTimeInfo(&now);
-    WiFiPlaza_SecondsToTime(&work->currentTime, &now.time);
+    WiFiPlaza_SecondsToTime(&work->currentTime.word, &now.time);
     work->lobbyTime = now.time;
     switch (event) {
     case 0:
-        WiFiPlazaNews_SetOpenTime(work->news, &work->currentTime);
+        WiFiPlazaNews_SetOpenTime(work->news, &work->currentTime.word);
         work->lobbyOpenTime = work->lobbyTime;
         work->eventSchedule.flag0 = 1;
         work->changeFlags[2] |= 1;
@@ -1485,13 +1485,13 @@ static void WiFiPlaza_OnLobbyEvent(u32 event, WiFiPlazaWork *work) {
         work->changeFlags[2] |= 8;
         break;
     case 16: {
-        int a;
-        int b;
+        int start;
+        int end;
         notify = 1;
         which = 1;
-        a = WiFiPlazaLobbyClient_GetScheduleValue(6);
-        b = WiFiPlazaLobbyClient_GetScheduleValue(7);
-        WiFiPlazaTimer_Init(&work->timer, a, b);
+        start = WiFiPlazaLobbyClient_GetScheduleValue(6);
+        end = WiFiPlazaLobbyClient_GetScheduleValue(7);
+        WiFiPlazaTimer_Init(&work->timer, start, end);
         work->eventSchedule.fireworksDelay = 300;
     } break;
     case 17:
@@ -2095,7 +2095,7 @@ static void WiFiPlaza_HandleUnusedNews(WiFiPlazaWork *work, const WiFiPlazaLobby
 
 static void WiFiPlazaWork_AddLobbyEventNotice(WiFiPlazaWork *work, int which) {
     WiFiPlazaLobbyNotice notice;
-    notice.time = &work->currentTime;
+    notice.time = &work->currentTime.word;
     notice.which = which;
     WiFiPlazaNews_AddLobbyEventNotice(work->news, &notice);
 }

@@ -2939,24 +2939,24 @@ void SpinTrade_ReceiveResult(SpinTradeApp *app, const u16 *src) {
 
 static BOOL SpinTrade_IsInBonusArea(SpinTradeApp *app, fx32 angle, int playerCount) {
     s32 position;
-    u32 a, count;
-    s32 b;
+    u32 startDegree, count;
+    s32 endDegree;
     const SpinTradeAngleRange *range;
 
     SpinTrade_AddAngle(&angle, -app->machine.angle);
     position = angle;
     SpinTrade_AddAngle(&position, FX32_CONST(-4));
-    a = position / FX32_ONE;
+    startDegree = position / FX32_ONE;
     position = angle;
     SpinTrade_AddAngle(&position, FX32_CONST(5));
-    b = position / FX32_ONE;
+    endDegree = position / FX32_ONE;
     {
         const SpinTradeBonusAreas *areas = &gSpinTradeBonusAreas[playerCount];
         count = areas->count;
         range = areas->ranges;
     }
     while (count) {
-        if ((a >= range->low && a <= range->high) || ((u32)b >= range->low && (u32)b <= range->high)) {
+        if ((startDegree >= range->low && startDegree <= range->high) || ((u32)endDegree >= range->low && (u32)endDegree <= range->high)) {
             return TRUE;
         }
         range++;

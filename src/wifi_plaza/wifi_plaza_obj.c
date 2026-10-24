@@ -493,7 +493,7 @@ u32 WiFiPlazaObj_IsVisible(WiFiPlazaObj *obj) {
 static void WiFiPlazaObj_SpawnMapObjects(WiFiPlazaObjManager *manager) {
     const WiFiPlazaObjSpawn *spawn = sWiFiPlazaObjMapSpawns;
     u32 i;
-    u16 n;
+    u16 tileIndex;
 
     struct {
         struct {
@@ -509,8 +509,8 @@ static void WiFiPlazaObj_SpawnMapObjects(WiFiPlazaObjManager *manager) {
     void *avatar;
 
     for (i = 0; i < 4; i++, spawn++) {
-        n = 0;
-        while (WiFiPlazaMap_FindTileTag(manager->map, spawn->tag, &frame.cell.x, &frame.cell.y, n) == TRUE) {
+        tileIndex = 0;
+        while (WiFiPlazaMap_FindTileTag(manager->map, spawn->tag, &frame.cell.x, &frame.cell.y, tileIndex) == TRUE) {
             obj = WiFiPlazaObj_AllocObj(manager);
             frame.template.x = frame.cell.x << 4;
             frame.template.y = frame.cell.y << 4;
@@ -526,7 +526,7 @@ static void WiFiPlazaObj_SpawnMapObjects(WiFiPlazaObjManager *manager) {
             if (spawn->tag == 97) {
                 manager->special = obj;
             }
-            n++;
+            tileIndex++;
         }
     }
 }

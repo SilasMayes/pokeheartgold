@@ -123,7 +123,7 @@ typedef struct ChatNickErrorArgs {
     int type;
     const char *nick;
     int numSuggestedNicks;
-    int suggestedNicks;
+    char **suggestedNicks;
 } ChatNickErrorArgs;
 
 // Arguments of the channel message callback.
@@ -133,13 +133,6 @@ typedef struct ChatChannelMessageArgs {
     const char *message;
     int type; // 0 .. 4, see chatSendChannelMessageA
 } ChatChannelMessageArgs;
-
-// Arguments of the channel mode callback.
-typedef struct ChatChannelModeArgs {
-    BOOL success;
-    const char *channel;
-    void *mode;
-} ChatChannelModeArgs;
 
 typedef void (*ChatEnumUsersFunc)(ChatConnection *chat, BOOL success, const char *channel, int count, ChatChannelUser **users, int *modes, void *param);
 
@@ -159,6 +152,13 @@ typedef struct ChatChannelMode {
     BOOL opsObeyChannelLimit; // mode letter e
     int limit;   // 0 = none
 } ChatChannelMode;
+
+// Arguments of the channel mode callback.
+typedef struct ChatChannelModeArgs {
+    BOOL success;
+    const char *channel;
+    ChatChannelMode *mode;
+} ChatChannelModeArgs;
 
 typedef struct ChatBytes2 {
     char bytes[2];
@@ -198,7 +198,7 @@ void chatSetChannelKeysA(ChatConnection *chat, const char *channel, const char *
 BOOL ciSendGetChannelKey(ChatConnection *chat, const char *channel, const char *nick, const char *cookie, int count, const char **keys);
 void chatGetChannelKeysA(ChatConnection *chat, const char *channel, const char *nick, int count, const char **keys, void *callback, void *param, BOOL blocking);
 int ciNickIsValid(const char *nick);
-void ciNickError(ChatConnection *chat, int type, const char *nick, int unk_0C, int unk_10);
+void ciNickError(ChatConnection *chat, int type, const char *nick, int numSuggestedNicks, char **suggestedNicks);
 
 // Line buffers
 BOOL ciBufferInit(ChatBuffer *buffer);

@@ -213,7 +213,7 @@ void WiFiPlazaNews_AddLobbyEventNotice(WiFiPlazaNews *news, WiFiPlazaLobbyNotice
 
 void WiFiPlazaNews_AddSpecialVisitorEvent(WiFiPlazaNews *news, int *slot, const u8 *flags) {
     WiFiPlazaNewsEvent *event;
-    if ((u32)*slot >= 20 || flags[*slot] == 0) {
+    if ((u32)*slot >= WIFI_PLAZA_MAX_PLAYERS || flags[*slot] == 0) {
         return;
     }
     event = WiFiPlazaNewsEventList_GetFreeEvent(&news->events, 1);
@@ -304,7 +304,7 @@ BOOL WiFiPlazaNews_FormatEvent(WiFiPlazaNews *news, const u8 *flags, int unused,
     return result;
 }
 
-// The lobby slot of the index-th name of the current event (20: none), by gWiFiPlazaNewsEventSlotGetters[type].
+// The lobby slot of the index-th name of the current event (WIFI_PLAZA_NEWS_NO_SLOT: none), by gWiFiPlazaNewsEventSlotGetters[type].
 int WiFiPlazaNews_GetEventSlot(WiFiPlazaNews *news, int unused, int index) {
     WiFiPlazaNewsEvent *event;
     int type;
@@ -315,7 +315,7 @@ int WiFiPlazaNews_GetEventSlot(WiFiPlazaNews *news, int unused, int index) {
         return gWiFiPlazaNewsEventSlotGetters[type](event, index);
     }
     GF_ASSERT(FALSE);
-    return 20;
+    return WIFI_PLAZA_NEWS_NO_SLOT;
 }
 
 void WiFiPlazaNewsSlots_Init(WiFiPlazaNewsSlots *slots) {
@@ -641,7 +641,7 @@ static BOOL WiFiPlazaNewsEvent_FormatLobbyEventNotice(WiFiPlazaNewsEvent *event,
 // Type 7: the lobby slot a, if flags[a] is set.
 static BOOL WiFiPlazaNewsEvent_FormatSpecialVisitor(WiFiPlazaNewsEvent *event, const u8 *flags, MessageFormat *format, MsgData *msgData, String *out, enum HeapID heapID) {
     u32 slot = event->a;
-    if (slot >= 20) {
+    if (slot >= WIFI_PLAZA_MAX_PLAYERS) {
         return FALSE;
     }
     if (flags[slot] == 0) {
@@ -674,43 +674,43 @@ static BOOL WiFiPlazaNewsEvent_FormatMinigameResult(WiFiPlazaNewsEvent *event, c
 
 static u16 WiFiPlazaNewsEvent_GetChatSlot(WiFiPlazaNewsEvent *event, u32 index) {
     if (index >= 2) {
-        return 20;
+        return WIFI_PLAZA_NEWS_NO_SLOT;
     }
     return event->slots[index];
 }
 
 static u16 WiFiPlazaNewsEvent_GetTapToyTradeSlot(WiFiPlazaNewsEvent *event, u32 index) {
     if (index >= 2) {
-        return 20;
+        return WIFI_PLAZA_NEWS_NO_SLOT;
     }
     return event->slots[index];
 }
 
 static u16 WiFiPlazaNewsEvent_GetMinigameEntrySlot(WiFiPlazaNewsEvent *event, u32 index) {
     if (event->b <= index) {
-        return 20;
+        return WIFI_PLAZA_NEWS_NO_SLOT;
     }
     return event->slots[index];
 }
 
 static u16 WiFiPlazaNewsEvent_GetFootprintStampSlot(WiFiPlazaNewsEvent *event, u32 index) {
     if (index >= 1) {
-        return 20;
+        return WIFI_PLAZA_NEWS_NO_SLOT;
     }
     return event->slots[index];
 }
 
 static u16 WiFiPlazaNewsEvent_GetCheckingSlot(WiFiPlazaNewsEvent *event, u32 index) {
     if (event->a <= index) {
-        return 20;
+        return WIFI_PLAZA_NEWS_NO_SLOT;
     }
     return event->slots[index];
 }
 
 static u16 WiFiPlazaNewsEvent_GetLobbyEventNoticeSlot(WiFiPlazaNewsEvent *event, u32 index) {
-    return 20;
+    return WIFI_PLAZA_NEWS_NO_SLOT;
 }
 
 static u16 WiFiPlazaNewsEvent_GetSpecialVisitorSlot(WiFiPlazaNewsEvent *event, u32 index) {
-    return 20;
+    return WIFI_PLAZA_NEWS_NO_SLOT;
 }

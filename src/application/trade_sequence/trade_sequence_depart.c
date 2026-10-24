@@ -511,7 +511,6 @@ static void TradeSequenceDepart_CreateStreaks(TradeSequenceDepart *depart) {
     NNSG2dImageProxy image;
     SpriteResourcesHeader header;
     int i, x, y;
-    TradeSequenceDepart *p;
 
     TradeSequence_LoadCellAnim(&depart->cellAnim, NARC_a_0_8_9, 11, 12);
     NNS_G2dInitImagePaletteProxy(&palette);
@@ -522,38 +521,30 @@ static void TradeSequenceDepart_CreateStreaks(TradeSequenceDepart *depart) {
     GfGfxLoader_PartiallyLoadPalette(NARC_a_0_8_9, 14, NNS_G2D_VRAM_TYPE_2DSUB, 0, HEAP_ID_57, &palette);
     TradeSequence_InitSpriteHeader(&header, &depart->cellAnim, &image, &palette, 1);
     SetMTRNGSeed(0x35947D1);
-    i = 0;
-    p = depart;
-    do {
+    for (i = 0; i < TRADE_SEQUENCE_DEPART_NUM_STREAKS; i++) {
         x = MTRandom() % 232 + 12;
         y = (int)(MTRandom() % 452) - 28;
-        p->streaks[0].head = TradeSequence_CreateSprite(depart->ts, &header, x, y, 0, NNS_G2D_VRAM_TYPE_2DMAIN);
+        depart->streaks[i].head = TradeSequence_CreateSprite(depart->ts, &header, x, y, 0, NNS_G2D_VRAM_TYPE_2DMAIN);
         y += 56;
-        p->streaks[0].tail = TradeSequence_CreateSprite(depart->ts, &header, x, y, 0, NNS_G2D_VRAM_TYPE_2DMAIN);
-        Sprite_SetAnimCtrlSeq(p->streaks[0].head, 0);
-        Sprite_SetAnimCtrlSeq(p->streaks[0].tail, 1);
-        Sprite_SetDrawFlag(p->streaks[0].head, FALSE);
-        Sprite_SetDrawFlag(p->streaks[0].tail, FALSE);
-        p = (TradeSequenceDepart *)((u8 *)p + sizeof(TradeSequenceDepartStreak));
-    } while (++i < TRADE_SEQUENCE_DEPART_NUM_STREAKS);
+        depart->streaks[i].tail = TradeSequence_CreateSprite(depart->ts, &header, x, y, 0, NNS_G2D_VRAM_TYPE_2DMAIN);
+        Sprite_SetAnimCtrlSeq(depart->streaks[i].head, 0);
+        Sprite_SetAnimCtrlSeq(depart->streaks[i].tail, 1);
+        Sprite_SetDrawFlag(depart->streaks[i].head, FALSE);
+        Sprite_SetDrawFlag(depart->streaks[i].tail, FALSE);
+    }
 }
 
 static void TradeSequenceDepart_DeleteStreaks(TradeSequenceDepart *depart) {
     s32 i;
-    TradeSequenceDepart *p;
 
-    i = 0;
-    p = depart;
-    do {
-        if (p->streaks[0].head != NULL) {
-            Sprite_Delete(p->streaks[0].head);
+    for (i = 0; i < TRADE_SEQUENCE_DEPART_NUM_STREAKS; i++) {
+        if (depart->streaks[i].head != NULL) {
+            Sprite_Delete(depart->streaks[i].head);
         }
-        if (p->streaks[0].tail != NULL) {
-            Sprite_Delete(p->streaks[0].tail);
+        if (depart->streaks[i].tail != NULL) {
+            Sprite_Delete(depart->streaks[i].tail);
         }
-        i++;
-        p = (TradeSequenceDepart *)((u8 *)p + sizeof(TradeSequenceDepartStreak));
-    } while (i < TRADE_SEQUENCE_DEPART_NUM_STREAKS);
+    }
     TradeSequence_FreeCellAnim(&depart->cellAnim);
 }
 

@@ -1000,9 +1000,9 @@ void WifiConnection_SetFriendStatusBuffer(u8 *data, int stride) {
 static void WifiConnection_UpdateFriendStatus(void) {
     int result;
     if (sWifiConnection->friendStatusData) {
-        int n = sWifiConnection->friendStatusIndex & 31;
-        if (DWC_IsBuddyFriendData(&sWifiConnection->friendList[n])) {
-            sWifiConnection->friendStatus[n] = DWC_GetFriendStatusData(&sWifiConnection->friendList[n], sWifiConnection->friendStatusData + sWifiConnection->friendStatusStride * n, &result);
+        int friendIndex = sWifiConnection->friendStatusIndex & 31;
+        if (DWC_IsBuddyFriendData(&sWifiConnection->friendList[friendIndex])) {
+            sWifiConnection->friendStatus[friendIndex] = DWC_GetFriendStatusData(&sWifiConnection->friendList[friendIndex], sWifiConnection->friendStatusData + sWifiConnection->friendStatusStride * friendIndex, &result);
         }
         sWifiConnection->friendStatusIndex = (sWifiConnection->friendStatusIndex + 1) & 31;
     }

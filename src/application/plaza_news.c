@@ -27,17 +27,7 @@
 #include "text.h"
 #include "vram_transfer_manager.h"
 #include "wireless_status_icon.h"
-
-// Hours, minutes and seconds as kept by the lobby, copied as one word.
-typedef union PlazaNewsTime {
-    u32 word;
-    struct {
-        u8 hour;
-        u8 minute;
-        u8 second;
-        u8 unk_03;
-    } hms;
-} PlazaNewsTime;
+#include "wifi_plaza/wifi_plaza_internal.h"
 
 enum PlazaNewsState {
     PLAZA_NEWS_STATE_FADE_IN,
@@ -46,12 +36,6 @@ enum PlazaNewsState {
     PLAZA_NEWS_STATE_FADE_OUT,
     PLAZA_NEWS_STATE_WAIT_FADE_OUT,
 };
-
-typedef struct PlazaNewsArgs {
-    void *newsData;
-    const PlazaNewsTime *time;
-    void *lobby;
-} PlazaNewsArgs;
 
 typedef struct PlazaNewsGraphics {
     BgConfig *bgConfig;
@@ -69,7 +53,7 @@ typedef struct PlazaNewsTileset {
 
 // TIME panel: a gauge of 40 cells (10 columns, 4 rows) counting down the plaza time.
 typedef struct PlazaNewsClock {
-    PlazaNewsTime time;
+    WiFiPlazaTime time;
     u8 isWaiting;
     u8 needsRedraw;
     u16 blinkTimer;
@@ -131,8 +115,8 @@ typedef struct PlazaNewsTitleTemplate {
 } PlazaNewsTitleTemplate;
 
 typedef struct PlazaNewsWork {
-    void *newsData;
-    const PlazaNewsTime *time;
+    WiFiPlazaNews *news;
+    const WiFiPlazaTime *time;
     PlazaNewsGraphics graphics;
     PlazaNewsTileset tileset;
     PlazaNewsClock clock;
@@ -141,29 +125,8 @@ typedef struct PlazaNewsWork {
     PlazaNewsTitles titles;
 } PlazaNewsWork;
 
-int WiFiPlazaWork_IsClosing(void *lobby);
-void WiFiPlazaWork_SetAppQuitForClosing(void *lobby);
-void WiFiPlazaWork_SetLowVolume(void *lobby, int value);
-int WiFiPlazaWork_IsSpecialVisitor(void *lobby, int index);
-void WiFiPlazaWork_GetSpecialVisitors(void *lobby, void *out);
-u32 WiFiPlazaWork_GetOpenDuration(void *lobby);
-void WiFiPlazaTime_Subtract(const PlazaNewsTime *first, const PlazaNewsTime *second, PlazaNewsTime *out);
-int WiFiPlaza_HasConnectionFailed(void);
-void WiFiPlazaNews_RemoveCurrentEvent(void *newsData);
-int WiFiPlazaNews_GetOpenTime(void *newsData, PlazaNewsTime *out);
-int WiFiPlazaNews_IsSlotOccupied(void *newsData, int index);
-int WiFiPlazaNews_GetSlotGender(void *newsData, int index);
-int WiFiPlazaNews_IsOwnSlot(void *newsData, int index);
-int WiFiPlazaNews_IsOldestSlot(void *newsData, int index);
-int WiFiPlazaNews_IsLastJoinedSlot(void *newsData, int index);
-int WiFiPlazaNews_GetSlotChange(void *newsData);
-BOOL WiFiPlazaNews_HasEvent(void *newsData);
-void *WiFiPlazaNews_GetEventType(void *newsData);
-int WiFiPlazaNews_FormatEvent(void *newsData, void *info, void *item, String *dest, enum HeapID heapID);
-int WiFiPlazaNews_GetEventSlot(void *newsData, void *item, int index);
-
 static void PlazaNews_VBlankCallback(void *data);
-static void PlazaNews_Update(PlazaNewsWork *work, void *lobby);
+static void PlazaNews_Update(PlazaNewsWork *work, WiFiPlazaWork *lobby);
 static void PlazaNewsGraphics_Init(PlazaNewsGraphics *graphics, enum HeapID heapID);
 static void PlazaNewsGraphics_Exit(PlazaNewsGraphics *graphics);
 static void PlazaNewsGraphics_DrawSprites(PlazaNewsGraphics *graphics);
@@ -176,24 +139,24 @@ static void PlazaNewsTileset_Load(PlazaNewsTileset *tileset, PlazaNewsGraphics *
 static void PlazaNewsTileset_Free(PlazaNewsTileset *tileset);
 static void PlazaNewsClock_DrawCell(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, u32 tile, u8 col, u8 row);
 static void PlazaNewsPeople_DrawIcon(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, u32 col, u32 row, u32 tile, u32 altRow, u32 usePalette3, u32 altPage, u32 usePalette4);
-static void PlazaNewsClock_Init(PlazaNewsClock *clock, PlazaNewsGraphics *graphics, PlazaNewsTileset *tileset, void *newsData, const PlazaNewsTime *endTime, void *lobby, enum HeapID heapID);
+static void PlazaNewsClock_Init(PlazaNewsClock *clock, PlazaNewsGraphics *graphics, PlazaNewsTileset *tileset, WiFiPlazaNews *news, const WiFiPlazaTime *endTime, WiFiPlazaWork *lobby, enum HeapID heapID);
 static void PlazaNewsClock_Free(PlazaNewsClock *clock);
-static BOOL PlazaNewsClock_UpdateTime(PlazaNewsClock *clock, void *newsData, const PlazaNewsTime *endTime);
+static BOOL PlazaNewsClock_UpdateTime(PlazaNewsClock *clock, WiFiPlazaNews *news, const WiFiPlazaTime *endTime);
 static void PlazaNewsClock_Draw(PlazaNewsClock *clock, PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics);
 static void PlazaNewsClock_DrawWaiting(PlazaNewsClock *clock, PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics);
 static void PlazaNewsClock_DrawGauge(PlazaNewsClock *clock, PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics);
-static void PlazaNewsPeople_Init(PlazaNewsPeople *people, PlazaNewsGraphics *graphics, PlazaNewsTileset *tileset, void *newsData, void *lobby, enum HeapID heapID);
+static void PlazaNewsPeople_Init(PlazaNewsPeople *people, PlazaNewsGraphics *graphics, PlazaNewsTileset *tileset, WiFiPlazaNews *news, WiFiPlazaWork *lobby, enum HeapID heapID);
 static void PlazaNewsPeople_Free(PlazaNewsPeople *people);
-static BOOL PlazaNewsPeople_UpdateState(PlazaNewsPeople *people, void *newsData);
-static void PlazaNewsPeople_Draw(PlazaNewsPeople *people, PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, void *newsData, void *lobby);
-static void PlazaNewsPeople_DrawGrid(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, void *newsData, void *lobby, int mode);
-static void PlazaNewsPeople_BlinkMode2(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, void *newsData, void *lobby, u32 frame);
-static void PlazaNewsPeople_BlinkMode1(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, void *newsData, void *lobby, u32 frame);
-static void PlazaNewsHeadlines_GetNameColors(u8 *colors, void *newsData, void *item, void *lobby);
+static BOOL PlazaNewsPeople_UpdateState(PlazaNewsPeople *people, WiFiPlazaNews *news);
+static void PlazaNewsPeople_Draw(PlazaNewsPeople *people, PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, WiFiPlazaNews *news, WiFiPlazaWork *lobby);
+static void PlazaNewsPeople_DrawGrid(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, WiFiPlazaNews *news, WiFiPlazaWork *lobby, int mode);
+static void PlazaNewsPeople_BlinkMode2(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, WiFiPlazaNews *news, WiFiPlazaWork *lobby, u32 frame);
+static void PlazaNewsPeople_BlinkMode1(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, WiFiPlazaNews *news, WiFiPlazaWork *lobby, u32 frame);
+static void PlazaNewsHeadlines_GetNameColors(u8 *colors, WiFiPlazaNews *news, int type, WiFiPlazaWork *lobby);
 static void PlazaNewsHeadlines_LoadNameColors(const u8 *colors, NNSG2dPaletteData *palette, int paletteNum);
 static void PlazaNewsHeadlines_Init(PlazaNewsHeadlines *headlines, PlazaNewsGraphics *graphics, enum HeapID heapID);
 static void PlazaNewsHeadlines_Free(PlazaNewsHeadlines *headlines);
-static BOOL PlazaNewsHeadlines_Update(PlazaNewsHeadlines *headlines, void *newsData, void *lobby, enum HeapID heapID);
+static BOOL PlazaNewsHeadlines_Update(PlazaNewsHeadlines *headlines, WiFiPlazaNews *news, WiFiPlazaWork *lobby, enum HeapID heapID);
 static void PlazaNewsHeadlines_Draw(PlazaNewsHeadlines *headlines);
 static void PlazaNewsTicker_Init(PlazaNewsTicker *ticker, PlazaNewsGraphics *graphics, int row, enum HeapID heapID);
 static void PlazaNewsTicker_Free(PlazaNewsTicker *ticker);
@@ -381,12 +344,12 @@ BOOL PlazaNews_Init(OverlayManager *man, int *state) {
     Heap_Create(HEAP_ID_3, HEAP_ID_114, 5 << 16);
     work = OverlayManager_CreateAndGetData(man, sizeof(PlazaNewsWork), HEAP_ID_114);
     memset(work, 0, sizeof(PlazaNewsWork));
-    work->newsData = args->newsData;
+    work->news = args->news;
     work->time = args->time;
     PlazaNewsGraphics_Init(&work->graphics, HEAP_ID_114);
     PlazaNewsTileset_Load(&work->tileset, &work->graphics, HEAP_ID_114);
-    PlazaNewsClock_Init(&work->clock, &work->graphics, &work->tileset, work->newsData, work->time, args->lobby, HEAP_ID_114);
-    PlazaNewsPeople_Init(&work->people, &work->graphics, &work->tileset, work->newsData, args->lobby, HEAP_ID_114);
+    PlazaNewsClock_Init(&work->clock, &work->graphics, &work->tileset, work->news, work->time, args->lobby, HEAP_ID_114);
+    PlazaNewsPeople_Init(&work->people, &work->graphics, &work->tileset, work->news, args->lobby, HEAP_ID_114);
     PlazaNewsHeadlines_Init(&work->headlines, &work->graphics, HEAP_ID_114);
     PlazaNewsTitles_Init(&work->titles, &work->graphics, HEAP_ID_114);
     Main_SetVBlankIntrCB(PlazaNews_VBlankCallback, work);
@@ -415,13 +378,13 @@ BOOL PlazaNews_Main(OverlayManager *man, int *state) {
             }
             *state = PLAZA_NEWS_STATE_FADE_OUT;
         } else {
-            if (PlazaNewsClock_UpdateTime(&work->clock, work->newsData, work->time) == TRUE) {
+            if (PlazaNewsClock_UpdateTime(&work->clock, work->news, work->time) == TRUE) {
                 PlazaNewsTitles_StartFlash(&work->titles, 1);
             }
-            if (PlazaNewsPeople_UpdateState(&work->people, work->newsData) == TRUE) {
+            if (PlazaNewsPeople_UpdateState(&work->people, work->news) == TRUE) {
                 PlazaNewsTitles_StartFlash(&work->titles, 2);
             }
-            if (PlazaNewsHeadlines_Update(&work->headlines, work->newsData, args->lobby, HEAP_ID_114) == TRUE) {
+            if (PlazaNewsHeadlines_Update(&work->headlines, work->news, args->lobby, HEAP_ID_114) == TRUE) {
                 PlazaNewsTitles_StartFlash(&work->titles, 3);
             }
         }
@@ -463,9 +426,9 @@ static void PlazaNews_VBlankCallback(void *data) {
     PlazaNewsGraphics_VBlank(&work->graphics);
 }
 
-static void PlazaNews_Update(PlazaNewsWork *work, void *lobby) {
+static void PlazaNews_Update(PlazaNewsWork *work, WiFiPlazaWork *lobby) {
     PlazaNewsClock_Draw(&work->clock, &work->tileset, &work->graphics);
-    PlazaNewsPeople_Draw(&work->people, &work->tileset, &work->graphics, work->newsData, lobby);
+    PlazaNewsPeople_Draw(&work->people, &work->tileset, &work->graphics, work->news, lobby);
     PlazaNewsHeadlines_Draw(&work->headlines);
     PlazaNewsTitles_Update(&work->titles);
     PlazaNewsGraphics_DrawSprites(&work->graphics);
@@ -601,28 +564,28 @@ static void PlazaNewsPeople_DrawIcon(PlazaNewsTileset *tileset, PlazaNewsGraphic
     ScheduleBgTilemapBufferTransfer(graphics->bgConfig, GF_BG_LYR_MAIN_3);
 }
 
-static void PlazaNewsClock_Init(PlazaNewsClock *clock, PlazaNewsGraphics *graphics, PlazaNewsTileset *tileset, void *newsData, const PlazaNewsTime *endTime, void *lobby, enum HeapID heapID) {
+static void PlazaNewsClock_Init(PlazaNewsClock *clock, PlazaNewsGraphics *graphics, PlazaNewsTileset *tileset, WiFiPlazaNews *news, const WiFiPlazaTime *endTime, WiFiPlazaWork *lobby, enum HeapID heapID) {
     u32 seconds = WiFiPlazaWork_GetOpenDuration(lobby);
-    clock->time.hms.hour = 0;
-    clock->time.hms.minute = seconds / 60 + 1;
-    clock->time.hms.second = 0;
+    clock->time.field.hour = 0;
+    clock->time.field.minute = seconds / 60 + 1;
+    clock->time.field.second = 0;
     clock->secondsPerCell = seconds / 40;
     clock->isWaiting = TRUE;
     clock->blinkTimer = 0;
     clock->needsRedraw = FALSE;
-    PlazaNewsClock_UpdateTime(clock, newsData, endTime);
+    PlazaNewsClock_UpdateTime(clock, news, endTime);
     PlazaNewsClock_Draw(clock, tileset, graphics);
 }
 
 static void PlazaNewsClock_Free(PlazaNewsClock *clock) {
 }
 
-static BOOL PlazaNewsClock_UpdateTime(PlazaNewsClock *clock, void *newsData, const PlazaNewsTime *endTime) {
-    PlazaNewsTime now;
-    PlazaNewsTime remaining;
-    PlazaNewsTime diff;
+static BOOL PlazaNewsClock_UpdateTime(PlazaNewsClock *clock, WiFiPlazaNews *news, const WiFiPlazaTime *endTime) {
+    WiFiPlazaTime now;
+    WiFiPlazaTime remaining;
+    WiFiPlazaTime diff;
     int changed = FALSE;
-    if (WiFiPlazaNews_GetOpenTime(newsData, &now) == 0) {
+    if (WiFiPlazaNews_GetOpenTime(news, &now.word) == 0) {
         return changed;
     }
     if (clock->isWaiting == TRUE) {
@@ -632,7 +595,7 @@ static BOOL PlazaNewsClock_UpdateTime(PlazaNewsClock *clock, void *newsData, con
     }
     WiFiPlazaTime_Subtract(endTime, &now, &remaining);
     WiFiPlazaTime_Subtract(&remaining, &clock->time, &diff);
-    if (diff.hms.second >= clock->secondsPerCell || diff.hms.minute != 0 || diff.hms.hour != 0) {
+    if (diff.field.second >= clock->secondsPerCell || diff.field.minute != 0 || diff.field.hour != 0) {
         changed = TRUE;
         clock->needsRedraw = changed;
         clock->time = remaining;
@@ -657,7 +620,7 @@ static void PlazaNewsClock_DrawWaiting(PlazaNewsClock *clock, PlazaNewsTileset *
 
 static void PlazaNewsClock_DrawGauge(PlazaNewsClock *clock, PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics) {
     int i;
-    int cell = (clock->time.hms.minute * 60 + clock->time.hms.second + clock->time.hms.hour * 3600) / clock->secondsPerCell;
+    int cell = (clock->time.field.minute * 60 + clock->time.field.second + clock->time.field.hour * 3600) / clock->secondsPerCell;
     if (clock->needsRedraw) {
         int j;
         clock->blinkTimer = 0;
@@ -708,16 +671,16 @@ static void PlazaNewsClock_DrawGauge(PlazaNewsClock *clock, PlazaNewsTileset *ti
     }
 }
 
-static void PlazaNewsPeople_Init(PlazaNewsPeople *people, PlazaNewsGraphics *graphics, PlazaNewsTileset *tileset, void *newsData, void *lobby, enum HeapID heapID) {
-    PlazaNewsPeople_DrawGrid(tileset, graphics, newsData, lobby, 0);
+static void PlazaNewsPeople_Init(PlazaNewsPeople *people, PlazaNewsGraphics *graphics, PlazaNewsTileset *tileset, WiFiPlazaNews *news, WiFiPlazaWork *lobby, enum HeapID heapID) {
+    PlazaNewsPeople_DrawGrid(tileset, graphics, news, lobby, 0);
 }
 
 static void PlazaNewsPeople_Free(PlazaNewsPeople *people) {
 }
 
-static BOOL PlazaNewsPeople_UpdateState(PlazaNewsPeople *people, void *newsData) {
+static BOOL PlazaNewsPeople_UpdateState(PlazaNewsPeople *people, WiFiPlazaNews *news) {
     int ret = FALSE;
-    switch (WiFiPlazaNews_GetSlotChange(newsData)) {
+    switch (WiFiPlazaNews_GetSlotChange(news)) {
     case 0:
         break;
     case 1:
@@ -734,14 +697,14 @@ static BOOL PlazaNewsPeople_UpdateState(PlazaNewsPeople *people, void *newsData)
     return ret;
 }
 
-static void PlazaNewsPeople_Draw(PlazaNewsPeople *people, PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, void *newsData, void *lobby) {
+static void PlazaNewsPeople_Draw(PlazaNewsPeople *people, PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, WiFiPlazaNews *news, WiFiPlazaWork *lobby) {
     switch (people->state) {
     case 1:
         people->state = 2;
         people->frame = 0;
         return;
     case 2:
-        PlazaNewsPeople_BlinkMode2(tileset, graphics, newsData, lobby, people->frame);
+        PlazaNewsPeople_BlinkMode2(tileset, graphics, news, lobby, people->frame);
         people->frame++;
         if (people->frame >= 32) {
             people->state = 0;
@@ -753,7 +716,7 @@ static void PlazaNewsPeople_Draw(PlazaNewsPeople *people, PlazaNewsTileset *tile
         people->frame = 0;
         return;
     case 4:
-        PlazaNewsPeople_BlinkMode1(tileset, graphics, newsData, lobby, people->frame);
+        PlazaNewsPeople_BlinkMode1(tileset, graphics, news, lobby, people->frame);
         people->frame++;
         if (people->frame >= 32) {
             people->state = 0;
@@ -762,7 +725,7 @@ static void PlazaNewsPeople_Draw(PlazaNewsPeople *people, PlazaNewsTileset *tile
     }
 }
 
-static void PlazaNewsPeople_DrawGrid(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, void *newsData, void *lobby, int mode) {
+static void PlazaNewsPeople_DrawGrid(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, WiFiPlazaNews *news, WiFiPlazaWork *lobby, int mode) {
     struct {
         int altPage;
         int usePalette3;
@@ -781,13 +744,13 @@ static void PlazaNewsPeople_DrawGrid(PlazaNewsTileset *tileset, PlazaNewsGraphic
         f.rowU8 = (u8)f.row;
         col = 0;
         do {
-            if (WiFiPlazaNews_IsSlotOccupied(newsData, col + base)) {
+            if (WiFiPlazaNews_IsSlotOccupied(news, col + base)) {
                 int highlight;
                 int tile;
-                f.altRow = WiFiPlazaNews_GetSlotGender(newsData, col + base);
-                f.usePalette3 = WiFiPlazaNews_IsOwnSlot(newsData, col + base);
-                f.altPage = WiFiPlazaNews_IsOldestSlot(newsData, col + base);
-                f.isLastJoined = WiFiPlazaNews_IsLastJoinedSlot(newsData, col + base);
+                f.altRow = WiFiPlazaNews_GetSlotGender(news, col + base);
+                f.usePalette3 = WiFiPlazaNews_IsOwnSlot(news, col + base);
+                f.altPage = WiFiPlazaNews_IsOldestSlot(news, col + base);
+                f.isLastJoined = WiFiPlazaNews_IsLastJoinedSlot(news, col + base);
                 highlight = WiFiPlazaWork_IsSpecialVisitor(lobby, col + base);
                 if (mode == 2 && f.isLastJoined == 1) {
                     tile = 0;
@@ -804,7 +767,7 @@ static void PlazaNewsPeople_DrawGrid(PlazaNewsTileset *tileset, PlazaNewsGraphic
     } while (nextRow < 4);
 }
 
-static void PlazaNewsPeople_BlinkMode2(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, void *newsData, void *lobby, u32 frame) {
+static void PlazaNewsPeople_BlinkMode2(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, WiFiPlazaNews *news, WiFiPlazaWork *lobby, u32 frame) {
     int mode;
     if ((frame & 7) != 0) {
         return;
@@ -815,10 +778,10 @@ static void PlazaNewsPeople_BlinkMode2(PlazaNewsTileset *tileset, PlazaNewsGraph
     } else {
         mode = 0;
     }
-    PlazaNewsPeople_DrawGrid(tileset, graphics, newsData, lobby, mode);
+    PlazaNewsPeople_DrawGrid(tileset, graphics, news, lobby, mode);
 }
 
-static void PlazaNewsPeople_BlinkMode1(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, void *newsData, void *lobby, u32 frame) {
+static void PlazaNewsPeople_BlinkMode1(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, WiFiPlazaNews *news, WiFiPlazaWork *lobby, u32 frame) {
     int mode;
     if ((frame & 7) != 0) {
         return;
@@ -829,14 +792,14 @@ static void PlazaNewsPeople_BlinkMode1(PlazaNewsTileset *tileset, PlazaNewsGraph
     } else {
         mode = 0;
     }
-    PlazaNewsPeople_DrawGrid(tileset, graphics, newsData, lobby, mode);
+    PlazaNewsPeople_DrawGrid(tileset, graphics, news, lobby, mode);
 }
 
-static void PlazaNewsHeadlines_GetNameColors(u8 *colors, void *newsData, void *item, void *lobby) {
+static void PlazaNewsHeadlines_GetNameColors(u8 *colors, WiFiPlazaNews *news, int type, WiFiPlazaWork *lobby) {
     int i;
     for (i = 0; i < 4; i++) {
-        int person = WiFiPlazaNews_GetEventSlot(newsData, item, i);
-        if (person != 20) {
+        int person = WiFiPlazaNews_GetEventSlot(news, type, i);
+        if (person != WIFI_PLAZA_NEWS_NO_SLOT) {
             if (WiFiPlazaWork_IsSpecialVisitor(lobby, person) == 1) {
                 colors[i] = 9;
             } else {
@@ -901,14 +864,14 @@ static void PlazaNewsHeadlines_Free(PlazaNewsHeadlines *headlines) {
     }
 }
 
-static BOOL PlazaNewsHeadlines_Update(PlazaNewsHeadlines *headlines, void *newsData, void *lobby, enum HeapID heapID) {
-    u32 info[5];
-    u32 nameColors;
+static BOOL PlazaNewsHeadlines_Update(PlazaNewsHeadlines *headlines, WiFiPlazaNews *news, WiFiPlazaWork *lobby, enum HeapID heapID) {
+    u8 specialVisitors[WIFI_PLAZA_MAX_PLAYERS];
+    u8 nameColors[4];
     int i;
     PlazaNewsTicker *ticker;
     const u32 *duration;
-    void *item;
-    WiFiPlazaWork_GetSpecialVisitors(lobby, info);
+    int type;
+    WiFiPlazaWork_GetSpecialVisitors(lobby, specialVisitors);
     i = 2;
     ticker = &headlines->tickers[2];
     duration = &sPlazaNewsHeadlineRowDurations[2];
@@ -925,17 +888,17 @@ static BOOL PlazaNewsHeadlines_Update(PlazaNewsHeadlines *headlines, void *newsD
         duration--;
     }
     if (headlines->tickers[0].active == FALSE) {
-        if (WiFiPlazaNews_HasEvent(newsData) == TRUE) {
+        if (WiFiPlazaNews_HasEvent(news) == TRUE) {
             do {
-                item = WiFiPlazaNews_GetEventType(newsData);
-                if (WiFiPlazaNews_FormatEvent(newsData, info, item, headlines->string, heapID) == 1) {
-                    PlazaNewsHeadlines_GetNameColors((u8 *)&nameColors, newsData, item, lobby);
-                    PlazaNewsTicker_SetText(&headlines->tickers[0], headlines->string, 336, (u8 *)&nameColors, headlines->palette);
-                    WiFiPlazaNews_RemoveCurrentEvent(newsData);
+                type = WiFiPlazaNews_GetEventType(news);
+                if (WiFiPlazaNews_FormatEvent(news, specialVisitors, type, headlines->string, heapID) == 1) {
+                    PlazaNewsHeadlines_GetNameColors(nameColors, news, type, lobby);
+                    PlazaNewsTicker_SetText(&headlines->tickers[0], headlines->string, 336, nameColors, headlines->palette);
+                    WiFiPlazaNews_RemoveCurrentEvent(news);
                     return TRUE;
                 }
-                WiFiPlazaNews_RemoveCurrentEvent(newsData);
-            } while (WiFiPlazaNews_HasEvent(newsData) == TRUE);
+                WiFiPlazaNews_RemoveCurrentEvent(news);
+            } while (WiFiPlazaNews_HasEvent(news) == TRUE);
         }
     }
     return FALSE;

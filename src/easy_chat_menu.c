@@ -3232,20 +3232,20 @@ void ECMenu_Delete(ECMenu *menu) {
 static void ECMenu_BuildCategoryLists(ECMenu *menu) {
     int i;
     u32 total;
-    u32 n;
+    u32 count;
 
     i = 0;
     total = 0;
     for (; i < 12; i++) {
         menu->categoryOffsets[i] = total;
-        n = sECMenuSpecs[i].func(menu, sECMenuSpecs[i].words, sECMenuSpecs[i].count, &menu->categoryWords[total]);
-        menu->categoryCounts[i] = n;
-        total += n;
+        count = sECMenuSpecs[i].func(menu, sECMenuSpecs[i].words, sECMenuSpecs[i].count, &menu->categoryWords[total]);
+        menu->categoryCounts[i] = count;
+        total += count;
     }
 }
 
 static u32 ECMenuBuild_Pokemon(ECMenu *menu, const u16 *words, u32 count, u16 *dest) {
-    u32 n = 0;
+    u32 written = 0;
     u32 i;
     Pokedex *pokedex = EasyChatArgs_GetPokedex(menu->args);
 
@@ -3253,12 +3253,12 @@ static u32 ECMenuBuild_Pokemon(ECMenu *menu, const u16 *words, u32 count, u16 *d
         if (Pokedex_CheckMonSeenFlag(pokedex, words[i])) {
             u32 word = words[i];
             menu->knownWords[word >> 3] |= 1 << (word & 7);
-            n++;
+            written++;
             *dest = words[i];
             dest++;
         }
     }
-    return n;
+    return written;
 }
 
 static u32 ECMenuBuild_Move(ECMenu *menu, const u16 *words, u32 count, u16 *dest) {
@@ -3278,26 +3278,26 @@ static u32 ECMenuBuild_Move(ECMenu *menu, const u16 *words, u32 count, u16 *dest
 
 static u32 ECMenuBuild_TrendySayings(ECMenu *menu, const u16 *words, u32 count, u16 *dest) {
     u32 i;
-    u32 n;
+    u32 written;
     SaveEasyChat *saveEasyChat = EasyChatArgs_GetEasyChat(menu->args);
     u32 base = GetECWordIndexByPair(0x122, 0); // NARC_msg_msg_0290_bin
 
     i = 0;
-    n = i;
+    written = i;
     for (; i < count; i++) {
         if (Save_EasyChat_GetTrendySayingFlag(saveEasyChat, words[i] - base)) {
             u32 word = words[i];
             menu->knownWords[word >> 3] |= 1 << (word & 7);
-            n++;
+            written++;
             *dest = words[i];
             dest++;
         }
     }
-    return n;
+    return written;
 }
 
 static u32 ECMenuBuild_Greetings(ECMenu *menu, const u16 *words, u32 count, u16 *dest) {
-    u32 n;
+    u32 written;
 
     struct {
         u32 i;
@@ -3309,17 +3309,17 @@ static u32 ECMenuBuild_Greetings(ECMenu *menu, const u16 *words, u32 count, u16 
     u16 base = GetECWordIndexByPair(0x11F, 0); // NARC_msg_msg_0289_bin
     locals.last = (u16)(base + 5);
 
-    n = 0;
+    written = 0;
     for (locals.i = 0; locals.i < count; locals.i++) {
         if (words[locals.i] < base || words[locals.i] > locals.last || Save_EasyChat_GetGreetingsFlag(locals.saveEasyChat, words[locals.i] - base)) {
             u32 word = words[locals.i];
             menu->knownWords[word >> 3] |= 1 << (word & 7);
-            n++;
+            written++;
             *dest = words[locals.i];
             dest++;
         }
     }
-    return n;
+    return written;
 }
 
 static u32 ECMenuBuild_Generic(ECMenu *menu, const u16 *words, u32 count, u16 *dest) {
@@ -3361,7 +3361,7 @@ static void ECMenu_BuildInitialLists(ECMenu *menu) {
 }
 
 static u32 ECMenu_CollectKnownWords(ECMenu *menu, const u16 *words, u16 *dest, u32 destIndex) {
-    u32 n = 0;
+    u32 count = 0;
 
     while (*words != 0xFFFF) {
         if (*words == 0xFFFE) {
@@ -3374,7 +3374,7 @@ static u32 ECMenu_CollectKnownWords(ECMenu *menu, const u16 *words, u16 *dest, u
                 u32 word = words[j];
                 if (menu->knownWords[word >> 3] & (1 << (word & 7))) {
                     dest[destIndex++] = words[j];
-                    n++;
+                    count++;
                     break;
                 }
             }
@@ -3382,12 +3382,12 @@ static u32 ECMenu_CollectKnownWords(ECMenu *menu, const u16 *words, u16 *dest, u
         } else {
             if (menu->knownWords[(u32)*words >> 3] & (1 << (*words & 7))) {
                 dest[destIndex++] = *words;
-                n++;
+                count++;
             }
             words++;
         }
     }
-    return n;
+    return count;
 }
 
 u32 ECMenu_GetCategoryCount(ECMenu *menu, u32 category) {

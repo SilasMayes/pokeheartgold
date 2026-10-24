@@ -46,23 +46,23 @@ static ChatChannel *ciGetChannel(ChatConnection *chat, const char *channel) {
 }
 
 int ciChannelTableHashFn(const void *element, int numBuckets) {
-    char *name = (char *)element;
+    const char *name = element;
     ASSERT(name, gChatStr_ElemNeNULL, gChatStr_ciChannelTableHashFn, 0xb4);
     ASSERT(numBuckets > 0, gChatStr_NumBucketsGt0, gChatStr_ciChannelTableHashFn, 0xb5);
     return ciHashString((const signed char *)name, numBuckets);
 }
 
 int ciChannelTableCompareFn(const void *first, const void *second) {
-    char *a = (char *)first, *b = (char *)second;
-    ASSERT(a, gChatStr_Elem1_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc1);
-    ASSERT(b, gChatStr_Elem2_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc2);
-    ASSERT(a, gChatStr_Str1_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc6);
-    ASSERT(b, gChatStr_Str2_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc7);
-    ASSERT(a, gChatStr_Str1_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc8);
-    ASSERT(*a, gChatStr_Str1_0_Ne0, gChatStr_ciChannelTableCompareFn, 0xc8);
-    ASSERT(b, gChatStr_Str2_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc9);
-    ASSERT(*b, gChatStr_Str2_0_Ne0, gChatStr_ciChannelTableCompareFn, 0xc9);
-    return strnicmp(a, b);
+    const char *name1 = first, *name2 = second;
+    ASSERT(name1, gChatStr_Elem1_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc1);
+    ASSERT(name2, gChatStr_Elem2_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc2);
+    ASSERT(name1, gChatStr_Str1_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc6);
+    ASSERT(name2, gChatStr_Str2_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc7);
+    ASSERT(name1, gChatStr_Str1_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc8);
+    ASSERT(*name1, gChatStr_Str1_0_Ne0, gChatStr_ciChannelTableCompareFn, 0xc8);
+    ASSERT(name2, gChatStr_Str2_NeNULL, gChatStr_ciChannelTableCompareFn, 0xc9);
+    ASSERT(*name2, gChatStr_Str2_0_Ne0, gChatStr_ciChannelTableCompareFn, 0xc9);
+    return strnicmp(name1, name2);
 }
 
 void ciChannelTableElementFreeFn(void *element) {
@@ -75,27 +75,27 @@ void ciChannelTableElementFreeFn(void *element) {
 }
 
 int ciUserTableHashFn(const void *element, int numBuckets) {
-    char *nick = (char *)element;
+    const char *nick = element;
     ASSERT(nick, gChatStr_ElemNeNULL, gChatStr_ciUserTableHashFn, 0xe1);
     ASSERT(numBuckets > 0, gChatStr_NumBucketsGt0, gChatStr_ciUserTableHashFn, 0xe2);
     return ciHashString((const signed char *)nick, numBuckets);
 }
 
 int ciUserTableCompareFn(const void *first, const void *second) {
-    char *a = (char *)first, *b = (char *)second;
-    ASSERT(a, gChatStr_Elem1_NeNULL, gChatStr_ciUserTableCompareFn, 0xee);
-    ASSERT(b, gChatStr_Elem2_NeNULL, gChatStr_ciUserTableCompareFn, 0xef);
-    if (!a || !b) {
-        if (!a && !b) {
+    const char *nick1 = first, *nick2 = second;
+    ASSERT(nick1, gChatStr_Elem1_NeNULL, gChatStr_ciUserTableCompareFn, 0xee);
+    ASSERT(nick2, gChatStr_Elem2_NeNULL, gChatStr_ciUserTableCompareFn, 0xef);
+    if (!nick1 || !nick2) {
+        if (!nick1 && !nick2) {
             return 0;
         }
-        return !a ? -1 : 1;
+        return !nick1 ? -1 : 1;
     }
-    ASSERT(a, gChatStr_Str1_NeNULL, gChatStr_ciUserTableCompareFn, 0x102);
-    ASSERT(*a, gChatStr_Str1_0_Ne0, gChatStr_ciUserTableCompareFn, 0x102);
-    ASSERT(b, gChatStr_Str2_NeNULL, gChatStr_ciUserTableCompareFn, 0x103);
-    ASSERT(*b, gChatStr_Str2_0_Ne0, gChatStr_ciUserTableCompareFn, 0x103);
-    return strnicmp(a, b);
+    ASSERT(nick1, gChatStr_Str1_NeNULL, gChatStr_ciUserTableCompareFn, 0x102);
+    ASSERT(*nick1, gChatStr_Str1_0_Ne0, gChatStr_ciUserTableCompareFn, 0x102);
+    ASSERT(nick2, gChatStr_Str2_NeNULL, gChatStr_ciUserTableCompareFn, 0x103);
+    ASSERT(*nick2, gChatStr_Str2_0_Ne0, gChatStr_ciUserTableCompareFn, 0x103);
+    return strnicmp(nick1, nick2);
 }
 
 void ciUserTableElementFreeFn(void *element) {
@@ -464,7 +464,7 @@ void ciUserChangeNickMap(void *element, void *arg) {
         args.channel = channel->name;
         args.oldNick = change->oldNick;
         args.newNick = change->newNick;
-        ciAddCallback_(change->chat, CALLBACK_USER_CHANGED_NICK, channel->callbacks.nickChanged, (u32 *)&args, channel->callbacks.param, 0, channel->name, sizeof(args));
+        ciAddCallback_(change->chat, CALLBACK_USER_CHANGED_NICK, channel->callbacks.nickChanged, &args, channel->callbacks.param, 0, channel->name, sizeof(args));
     }
 }
 
@@ -522,7 +522,7 @@ void ciUserChangedMode(ChatConnection *chat, const char *nick, const char *name,
     frame.args.channel = name;
     frame.args.nick = nick;
     frame.args.mode = user->mode;
-    ciAddCallback_(chat, CALLBACK_USER_MODE_CHANGED, channel->callbacks.userModeChanged, (u32 *)&frame.args, channel->callbacks.param, 0, (char *)name, sizeof(frame.args));
+    ciAddCallback_(chat, CALLBACK_USER_MODE_CHANGED, channel->callbacks.userModeChanged, &frame.args, channel->callbacks.param, 0, name, sizeof(frame.args));
 }
 
 void ciSetUserBasicInfoMap(void *element, void *arg) {

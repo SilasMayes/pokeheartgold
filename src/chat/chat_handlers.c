@@ -107,7 +107,7 @@ void ciRemoveFilter(ChatConnection *chat, ChatRequest *target) {
 
 // Completes the request: queues its callback with the results (callback types 14 .. 31, by request type), frees
 // the collected data and the request.
-void ciFinishFilter(ChatConnection *chat, ChatRequest *request, u32 *results) {
+void ciFinishFilter(ChatConnection *chat, ChatRequest *request, const void *results) {
     int i, valid;
     ChatRequestData *data;
     ASSERT(request, gChatStr_filter, gChatStr_ciFinishFilter, 0x1C1);
@@ -119,7 +119,7 @@ void ciFinishFilter(ChatConnection *chat, ChatRequest *request, u32 *results) {
     if (request->type == TYPE_LIST) {
         data = request->data;
         if (request->callback2) {
-            ciAddCallback_(chat, CALLBACK_ENUM_CHANNELS_ALL, request->callback2, results, request->param, request->id, NULL, 20);
+            ciAddCallback_(chat, CALLBACK_ENUM_CHANNELS_ALL, request->callback2, results, request->param, request->id, NULL, sizeof(ChatChannelListArgs));
         }
         for (i = 0; i < data->channels.count; i++) {
             DWCi_GsFree(data->channels.names[i]);
@@ -130,17 +130,18 @@ void ciFinishFilter(ChatConnection *chat, ChatRequest *request, u32 *results) {
         DWCi_GsFree(data->channels.numUsers);
     } else if (request->type == TYPE_JOIN) {
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_ENTER_CHANNEL, request->callback, results, request->param, request->id, NULL, 12);
+            ciAddCallback_(chat, CALLBACK_ENTER_CHANNEL, request->callback, results, request->param, request->id, NULL, sizeof(ChatEnterChannelArgs));
         }
     } else if (request->type == TYPE_TOPIC) {
-        i = results[1];
+        const ChatGetTopicArgs *topic = results;
+        const char *channel = topic->channel;
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_TOPIC, request->callback, results, request->param, request->id, (char *)i, 12);
+            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_TOPIC, request->callback, results, request->param, request->id, channel, sizeof(ChatGetTopicArgs));
         }
     } else if (request->type == TYPE_NAMES) {
         data = request->data;
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_ENUM_USERS, request->callback, results, request->param, request->id, NULL, 20);
+            ciAddCallback_(chat, CALLBACK_ENUM_USERS, request->callback, results, request->param, request->id, NULL, sizeof(ChatEnumUsersArgs));
         }
         for (i = 0; i < data->nicks.count; i++) {
             DWCi_GsFree(data->nicks.nicks[i]);
@@ -150,7 +151,7 @@ void ciFinishFilter(ChatConnection *chat, ChatRequest *request, u32 *results) {
     } else if (request->type == TYPE_WHOIS) {
         data = request->data;
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_GET_USER_INFO, request->callback, results, request->param, request->id, NULL, 28);
+            ciAddCallback_(chat, CALLBACK_GET_USER_INFO, request->callback, results, request->param, request->id, NULL, sizeof(ChatGetUserInfoArgs));
         }
         for (i = 0; i < data->whois.channelCount; i++) {
             DWCi_GsFree(data->whois.channels[i]);
@@ -161,38 +162,40 @@ void ciFinishFilter(ChatConnection *chat, ChatRequest *request, u32 *results) {
         DWCi_GsFree(data->whois.user);
     } else if (request->type == TYPE_WHO) {
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_GET_BASIC_USER_INFO, request->callback, results, request->param, request->id, NULL, 16);
+            ciAddCallback_(chat, CALLBACK_GET_BASIC_USER_INFO, request->callback, results, request->param, request->id, NULL, sizeof(ChatGetBasicUserInfoArgs));
         }
     } else if (request->type == TYPE_CWHO) {
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_BASIC_USER_INFO, request->callback, results, request->param, request->id, NULL, 16);
+            // BUG: the copy is sized for a user address request, one word short of these arguments
+            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_BASIC_USER_INFO, request->callback, results, request->param, request->id, NULL, sizeof(ChatGetBasicUserInfoArgs));
         }
     } else if (request->type == TYPE_CMODE) {
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_MODE, request->callback, results, request->param, request->id, NULL, 12);
+            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_MODE, request->callback, results, request->param, request->id, NULL, sizeof(ChatChannelModeArgs));
         }
     } else if (request->type == TYPE_UMODE) {
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_GET_USER_MODE, request->callback, results, request->param, request->id, NULL, 16);
+            ciAddCallback_(chat, CALLBACK_GET_USER_MODE, request->callback, results, request->param, request->id, NULL, sizeof(ChatGetUserModeArgs));
         }
     } else if (request->type == TYPE_BAN) {
-        DWCi_GsFree(*(void **)request->data);
+        data = request->data;
+        DWCi_GsFree(data->ban.channel);
     } else if (request->type == TYPE_GETBAN) {
         data = request->data;
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_ENUM_CHANNEL_BANS, request->callback, results, request->param, request->id, NULL, 16);
+            ciAddCallback_(chat, CALLBACK_ENUM_CHANNEL_BANS, request->callback, results, request->param, request->id, NULL, sizeof(ChatEnumBansArgs));
         }
         for (i = 0; i < data->banList.count; i++) {
             DWCi_GsFree(data->banList.bans[i]);
         }
     } else if (request->type == TYPE_NICK) {
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_CHANGE_NICK, request->callback, results, request->param, request->id, NULL, 12);
+            ciAddCallback_(chat, CALLBACK_CHANGE_NICK, request->callback, results, request->param, request->id, NULL, sizeof(ChatChangeNickArgs));
         }
     } else if (request->type == TYPE_GETKEY) {
         data = request->data;
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_GET_GLOBAL_KEYS, request->callback, results, request->param, request->id, NULL, 20);
+            ciAddCallback_(chat, CALLBACK_GET_GLOBAL_KEYS, request->callback, results, request->param, request->id, NULL, sizeof(ChatGetGlobalKeysArgs));
         }
         DWCi_GsFree(data->keys.arg.channel);
         for (i = 0; i < data->keys.count; i++) {
@@ -202,7 +205,7 @@ void ciFinishFilter(ChatConnection *chat, ChatRequest *request, u32 *results) {
     } else if (request->type == TYPE_GETCKEY) {
         data = request->data;
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_KEYS, request->callback, results, request->param, request->id, NULL, 24);
+            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_KEYS, request->callback, results, request->param, request->id, NULL, sizeof(ChatGetChannelKeysArgs));
         }
         for (i = 0; i < data->keys.count; i++) {
             DWCi_GsFree(data->keys.keys[i]);
@@ -211,7 +214,7 @@ void ciFinishFilter(ChatConnection *chat, ChatRequest *request, u32 *results) {
     } else if (request->type == TYPE_GETCHANKEY) {
         data = request->data;
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_KEYS, request->callback, results, request->param, request->id, NULL, 24);
+            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_KEYS, request->callback, results, request->param, request->id, NULL, sizeof(ChatGetChannelKeysArgs));
         }
         for (i = 0; i < data->keys.count; i++) {
             DWCi_GsFree(data->keys.keys[i]);
@@ -220,7 +223,7 @@ void ciFinishFilter(ChatConnection *chat, ChatRequest *request, u32 *results) {
     } else if (request->type == TYPE_UNQUIET) {
         data = request->data;
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_NEW_USER_LIST, request->callback, results, request->param, request->id, NULL, 16);
+            ciAddCallback_(chat, CALLBACK_NEW_USER_LIST, request->callback, results, request->param, request->id, NULL, sizeof(ChatNewUserListArgs));
         }
         for (i = 0; i < data->nicks.count; i++) {
             DWCi_GsFree(data->nicks.nicks[i]);
@@ -229,7 +232,7 @@ void ciFinishFilter(ChatConnection *chat, ChatRequest *request, u32 *results) {
         DWCi_GsFree(data->nicks.modes);
     } else if (request->type == TYPE_CDKEY) {
         if (request->callback) {
-            ciAddCallback_(chat, CALLBACK_AUTHENTICATE_CDKEY, request->callback, results, request->param, request->id, NULL, 8);
+            ciAddCallback_(chat, CALLBACK_AUTHENTICATE_CDKEY, request->callback, results, request->param, request->id, NULL, sizeof(ChatAuthenticateCDKeyArgs));
         }
     } else {
         __msl_assertion_failed(gChatStr_0_10, gChatStr_ChatHandlersC, gChatStr_ciFinishFilter, 0x25C);
@@ -247,87 +250,87 @@ void ciFilterTimedout(ChatConnection *chat, ChatRequest *request) {
     }
     ASSERT(valid, gChatStr_FilterTypeGe0_AndFilterTypeLtNUM_TYPES, gChatStr_ciFilterTimedout, 0x269);
     if (request->type == TYPE_LIST) {
-        u32 results[5];
-        results[0] = 0;
-        results[1] = 0;
-        results[2] = 0;
-        results[3] = 0;
-        results[4] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatChannelListArgs results;
+        results.success = FALSE;
+        results.numChannels = 0;
+        results.channels = NULL;
+        results.topics = NULL;
+        results.numUsers = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_JOIN) {
-        u32 results[3];
-        results[0] = 0;
-        results[1] = (u32)CHAT_ENTER_TIMED_OUT;
-        results[2] = (u32)request->name;
-        ciFinishFilter(chat, request, results);
+        ChatEnterChannelArgs results;
+        results.success = FALSE;
+        results.result = CHAT_ENTER_TIMED_OUT;
+        results.channel = request->name;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_TOPIC) {
-        u32 results[3];
-        results[0] = 0;
-        results[1] = (u32)request->name;
-        results[2] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatGetTopicArgs results;
+        results.success = FALSE;
+        results.channel = request->name;
+        results.topic = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_NAMES) {
-        u32 results[5];
-        results[0] = 0;
-        results[1] = (u32)request->name;
-        results[2] = 0;
-        results[3] = 0;
-        results[4] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatEnumUsersArgs results;
+        results.success = FALSE;
+        results.channel = request->name;
+        results.numUsers = 0;
+        results.users = NULL;
+        results.modes = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_WHOIS) {
-        u32 results[7];
-        results[0] = 0;
-        results[1] = (u32)request->name;
-        results[2] = 0;
-        results[3] = 0;
-        results[4] = 0;
-        results[5] = 0;
-        results[6] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatGetUserInfoArgs results;
+        results.success = FALSE;
+        results.nick = request->name;
+        results.user = NULL;
+        results.name = NULL;
+        results.address = NULL;
+        results.numChannels = 0;
+        results.channels = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_WHO) {
-        u32 results[4];
-        results[0] = 0;
-        results[1] = (u32)request->name;
-        results[2] = 0;
-        results[3] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatGetBasicUserInfoArgs results;
+        results.success = FALSE;
+        results.nick = request->name;
+        results.user = NULL;
+        results.address = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_CWHO) {
-        u32 results[5];
-        results[0] = 0;
-        results[1] = (u32)request->name;
-        results[2] = 0;
-        results[3] = 0;
-        results[4] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatGetChannelBasicUserInfoArgs results;
+        results.success = FALSE;
+        results.channel = request->name;
+        results.nick = NULL;
+        results.user = NULL;
+        results.address = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_CMODE) {
-        u32 results[3];
-        results[0] = 0;
-        results[1] = (u32)request->name;
-        results[2] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatChannelModeArgs results;
+        results.success = FALSE;
+        results.channel = request->name;
+        results.mode = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_UMODE) {
-        u32 results[4];
-        results[0] = 0;
-        results[1] = (u32)request->name2;
-        results[2] = (u32)request->name;
-        results[3] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatGetUserModeArgs results;
+        results.success = FALSE;
+        results.channel = request->name2;
+        results.user = request->name;
+        results.mode = 0;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_BAN) {
@@ -335,51 +338,51 @@ void ciFilterTimedout(ChatConnection *chat, ChatRequest *request) {
         return;
     }
     if (request->type == TYPE_GETBAN) {
-        u32 results[4];
-        results[1] = (u32)request->name;
-        results[2] = 0;
-        results[3] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatEnumBansArgs results;
+        results.channel = request->name;
+        results.numBans = 0;
+        results.bans = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_NICK) {
-        u32 results[3];
-        results[0] = 0;
-        results[1] = (u32)request->name;
-        results[2] = (u32)request->name2;
-        ciFinishFilter(chat, request, results);
+        ChatChangeNickArgs results;
+        results.success = FALSE;
+        results.oldNick = request->name;
+        results.newNick = request->name2;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_GETKEY) {
-        u32 results[5];
-        results[0] = 0;
-        results[1] = 0;
-        results[2] = 0;
-        results[3] = 0;
-        results[4] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatGetGlobalKeysArgs results;
+        results.success = FALSE;
+        results.user = NULL;
+        results.num = 0;
+        results.keys = NULL;
+        results.values = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_GETCKEY) {
-        u32 results[6];
-        results[0] = 0;
-        results[1] = 0;
-        results[2] = 0;
-        results[3] = 0;
-        results[4] = 0;
-        results[5] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatGetChannelKeysArgs results;
+        results.success = FALSE;
+        results.channel = NULL;
+        results.user = NULL;
+        results.num = 0;
+        results.keys = NULL;
+        results.values = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_GETCHANKEY) {
-        u32 results[6];
-        results[0] = 0;
-        results[1] = 0;
-        results[2] = 0;
-        results[3] = 0;
-        results[4] = 0;
-        results[5] = 0;
-        ciFinishFilter(chat, request, results);
+        ChatGetChannelKeysArgs results;
+        results.success = FALSE;
+        results.channel = NULL;
+        results.user = NULL;
+        results.num = 0;
+        results.keys = NULL;
+        results.values = NULL;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     if (request->type == TYPE_UNQUIET) {
@@ -387,10 +390,10 @@ void ciFilterTimedout(ChatConnection *chat, ChatRequest *request) {
         return;
     }
     if (request->type == TYPE_CDKEY) {
-        u32 results[2];
-        results[0] = 0;
-        results[1] = (u32)gChatStr_TimedOut;
-        ciFinishFilter(chat, request, results);
+        ChatAuthenticateCDKeyArgs results;
+        results.result = 0;
+        results.message = gChatStr_TimedOut;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     __msl_assertion_failed(gChatStr_0_10, gChatStr_ChatHandlersC, gChatStr_ciFilterTimedout, 0x311);
@@ -828,7 +831,7 @@ void ciPrivmsgHandler(ChatConnection *chat, ChatMessage *message) {
         }
         privateArgs.nick = nick;
         privateArgs.message = text;
-        ciAddCallback_(chat, CALLBACK_PRIVATE_MESSAGE, chat->globalCallbacks.privateMessage, (u32 *)&privateArgs, chat->globalCallbacks.param, 0, NULL, sizeof(privateArgs));
+        ciAddCallback_(chat, CALLBACK_PRIVATE_MESSAGE, chat->globalCallbacks.privateMessage, &privateArgs, chat->globalCallbacks.param, 0, NULL, sizeof(privateArgs));
         return;
     }
     {
@@ -844,7 +847,7 @@ void ciPrivmsgHandler(ChatConnection *chat, ChatMessage *message) {
         channelArgs.channel = target;
         channelArgs.sender = nick;
         channelArgs.message = text;
-        ciAddCallback_(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->message, (u32 *)&channelArgs, callbacks->param, 0, target, sizeof(channelArgs));
+        ciAddCallback_(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->message, &channelArgs, callbacks->param, 0, target, sizeof(channelArgs));
     }
 }
 
@@ -871,7 +874,7 @@ void ciNoticeHandler(ChatConnection *chat, ChatMessage *message) {
         }
         privateArgs.message = text;
         privateArgs.type = CHAT_MESSAGE_NOTICE;
-        ciAddCallback_(chat, CALLBACK_PRIVATE_MESSAGE, chat->globalCallbacks.privateMessage, (u32 *)&privateArgs, chat->globalCallbacks.param, 0, NULL, sizeof(privateArgs));
+        ciAddCallback_(chat, CALLBACK_PRIVATE_MESSAGE, chat->globalCallbacks.privateMessage, &privateArgs, chat->globalCallbacks.param, 0, NULL, sizeof(privateArgs));
     } else {
         callbacks = ciGetChannelCallbacks(chat, target);
         if (!callbacks || !callbacks->message) {
@@ -885,7 +888,7 @@ void ciNoticeHandler(ChatConnection *chat, ChatMessage *message) {
         }
         channelArgs.message = text;
         channelArgs.type = CHAT_MESSAGE_NOTICE;
-        ciAddCallback_(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->message, (u32 *)&channelArgs, callbacks->param, 0, target, sizeof(channelArgs));
+        ciAddCallback_(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->message, &channelArgs, callbacks->param, 0, target, sizeof(channelArgs));
     }
 }
 
@@ -912,7 +915,7 @@ void ciUTMHandler(ChatConnection *chat, ChatMessage *message) {
         }
         privateArgs.type = CHAT_MESSAGE_UTM;
         privateArgs.message = text;
-        ciAddCallback_(chat, CALLBACK_PRIVATE_MESSAGE, chat->globalCallbacks.privateMessage, (u32 *)&privateArgs, chat->globalCallbacks.param, 0, NULL, sizeof(privateArgs));
+        ciAddCallback_(chat, CALLBACK_PRIVATE_MESSAGE, chat->globalCallbacks.privateMessage, &privateArgs, chat->globalCallbacks.param, 0, NULL, sizeof(privateArgs));
         return;
     }
     callbacks = ciGetChannelCallbacks(chat, target);
@@ -927,7 +930,7 @@ void ciUTMHandler(ChatConnection *chat, ChatMessage *message) {
     }
     channelArgs.type = CHAT_MESSAGE_UTM;
     channelArgs.message = text;
-    ciAddCallback_(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->message, (u32 *)&channelArgs, callbacks->param, 0, target, sizeof(channelArgs));
+    ciAddCallback_(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->message, &channelArgs, callbacks->param, 0, target, sizeof(channelArgs));
 }
 
 void ciATMHandler(ChatConnection *chat, ChatMessage *message) {
@@ -954,7 +957,7 @@ void ciATMHandler(ChatConnection *chat, ChatMessage *message) {
         }
         privateArgs.type = CHAT_MESSAGE_ATM;
         privateArgs.message = text;
-        ciAddCallback_(chat, CALLBACK_PRIVATE_MESSAGE, chat->globalCallbacks.privateMessage, (u32 *)&privateArgs, chat->globalCallbacks.param, 0, NULL, sizeof(privateArgs));
+        ciAddCallback_(chat, CALLBACK_PRIVATE_MESSAGE, chat->globalCallbacks.privateMessage, &privateArgs, chat->globalCallbacks.param, 0, NULL, sizeof(privateArgs));
     } else {
         callbacks = ciGetChannelCallbacks(chat, target);
         if (!callbacks || !callbacks->message) {
@@ -968,7 +971,7 @@ void ciATMHandler(ChatConnection *chat, ChatMessage *message) {
         }
         channelArgs.message = text;
         channelArgs.type = CHAT_MESSAGE_ATM;
-        ciAddCallback_(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->message, (u32 *)&channelArgs, callbacks->param, 0, target, sizeof(channelArgs));
+        ciAddCallback_(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->message, &channelArgs, callbacks->param, 0, target, sizeof(channelArgs));
     }
 }
 
@@ -994,16 +997,16 @@ void ciNickHandler(ChatConnection *chat, ChatMessage *message) {
         strncpy(chat->nick, newNick, sizeof(chat->nick));
         chat->nick[sizeof(chat->nick) - 1] = 0;
         ChatRequestKey key = { 0 };
-        u32 results[3];
+        ChatChangeNickArgs results;
         key.type = TYPE_NICK;
         key.name = oldNick;
         key.name2 = newNick;
         request = ciFindFilter(chat, 1, &key);
         if (request) {
-            results[0] = TRUE;
-            results[1] = (u32)oldNick;
-            results[2] = (u32)newNick;
-            ciFinishFilter(chat, request, results);
+            results.success = TRUE;
+            results.oldNick = oldNick;
+            results.newNick = newNick;
+            ciFinishFilter(chat, request, &results);
         }
     }
     ciUserChangedNick(chat, oldNick, newNick);
@@ -1018,7 +1021,7 @@ void ciJoinHandler(ChatConnection *chat, ChatMessage *message) {
     int mode;
     ChatRequestKey key;
     ChatUserJoinedArgs args;
-    char *usersChangedArg;
+    ChatUsersChangedArgs usersChanged;
     ChatRequest *request;
     ASSERT_CHAT(chat, gChatStr_ciJoinHandler, 1750);
     ASSERT(message->paramCount == 1, gChatStr_MessageNumParamsEq1, gChatStr_ciJoinHandler, 1756);
@@ -1072,13 +1075,13 @@ void ciJoinHandler(ChatConnection *chat, ChatMessage *message) {
         args.channel = channel;
         args.nick = nick;
         args.mode = mode;
-        ciAddCallback_(chat, CALLBACK_USER_JOINED, callbacks->userJoined, (u32 *)&args, callbacks->param, 0, channel, sizeof(args));
+        ciAddCallback_(chat, CALLBACK_USER_JOINED, callbacks->userJoined, &args, callbacks->param, 0, channel, sizeof(args));
     }
     if (!callbacks->usersChanged) {
         return;
     }
-    usersChangedArg = channel;
-    ciAddCallback_(chat, CALLBACK_USER_LIST_UPDATED, callbacks->usersChanged, (u32 *)&usersChangedArg, callbacks->param, 0, channel, sizeof(usersChangedArg));
+    usersChanged.channel = channel;
+    ciAddCallback_(chat, CALLBACK_USER_LIST_UPDATED, callbacks->usersChanged, &usersChanged, callbacks->param, 0, channel, sizeof(usersChanged));
 }
 
 static inline BOOL IsKickParamCount(int count) {
@@ -1093,7 +1096,7 @@ static inline BOOL IsKickParamCount(int count) {
 void ciPartHandler(ChatConnection *chat, ChatMessage *message) {
     ChatMessage *msg = message;
     ChatUserLeftArgs args;
-    char *usersChangedArg;
+    ChatUsersChangedArgs usersChanged;
     char *nick, *channel;
     ChatChannelCallbacks *callbacks;
     ChatConnection *c = chat;
@@ -1119,11 +1122,11 @@ void ciPartHandler(ChatConnection *chat, ChatMessage *message) {
         args.reason = CHAT_LEFT_PART;
         args.message = reason;
         args.kicker = NULL;
-        ciAddCallback_(c, CALLBACK_USER_PARTED, callbacks->userLeft, (u32 *)&args, callbacks->param, 0, channel, sizeof(args));
+        ciAddCallback_(c, CALLBACK_USER_PARTED, callbacks->userLeft, &args, callbacks->param, 0, channel, sizeof(args));
     }
     if (callbacks->usersChanged) {
-        usersChangedArg = channel;
-        ciAddCallback_(c, CALLBACK_USER_LIST_UPDATED, callbacks->usersChanged, (u32 *)&usersChangedArg, callbacks->param, 0, channel, sizeof(usersChangedArg));
+        usersChanged.channel = channel;
+        ciAddCallback_(c, CALLBACK_USER_LIST_UPDATED, callbacks->usersChanged, &usersChanged, callbacks->param, 0, channel, sizeof(usersChanged));
     }
 }
 
@@ -1131,7 +1134,7 @@ void ciPartHandler(ChatConnection *chat, ChatMessage *message) {
 void ciKickHandler(ChatConnection *chat, ChatMessage *message) {
     ChatKickedArgs kickedArgs;
     ChatUserLeftArgs args;
-    char *usersChangedArg;
+    ChatUsersChangedArgs usersChanged;
     char *channel, *kicker, *nick;
     const char *reason;
     char **params;
@@ -1158,7 +1161,7 @@ void ciKickHandler(ChatConnection *chat, ChatMessage *message) {
             kickedArgs.channel = channel;
             kickedArgs.kicker = kicker;
             kickedArgs.reason = reason;
-            ciAddCallback_(chat, CALLBACK_KICKED, callbacks->kicked, (u32 *)&kickedArgs, callbacks->param, 0, NULL, sizeof(kickedArgs));
+            ciAddCallback_(chat, CALLBACK_KICKED, callbacks->kicked, &kickedArgs, callbacks->param, 0, NULL, sizeof(kickedArgs));
         }
         ciChannelLeft(chat, channel);
         return;
@@ -1172,18 +1175,19 @@ void ciKickHandler(ChatConnection *chat, ChatMessage *message) {
         args.reason = CHAT_LEFT_KICK;
         args.message = reason;
         args.kicker = kicker;
-        ciAddCallback_(chat, CALLBACK_USER_PARTED, callbacks->userLeft, (u32 *)&args, callbacks->param, 0, channel, sizeof(args));
+        ciAddCallback_(chat, CALLBACK_USER_PARTED, callbacks->userLeft, &args, callbacks->param, 0, channel, sizeof(args));
     }
     if (callbacks->usersChanged) {
-        usersChangedArg = channel;
-        ciAddCallback_(chat, CALLBACK_USER_LIST_UPDATED, callbacks->usersChanged, (u32 *)&usersChangedArg, callbacks->param, 0, channel, sizeof(usersChangedArg));
+        usersChanged.channel = channel;
+        ciAddCallback_(chat, CALLBACK_USER_LIST_UPDATED, callbacks->usersChanged, &usersChanged, callbacks->param, 0, channel, sizeof(usersChanged));
     }
 }
 
 // Per channel of a user who quit (ciUserEnumChannels callback, param = the quit message).
 void ciQuitEnumChannelsCallback(ChatConnection *chat, const char *nick, ChatChannel *channel, void *param) {
     ChatChannelCallbacks *callbacks;
-    u32 args[5], usersChangedArg;
+    ChatUserLeftArgs args;
+    ChatUsersChangedArgs usersChanged;
     ASSERT(nick, gChatStr_UserNeNULL_2, gChatStr_ciQuitEnumChannelsCallback, 2022);
     ASSERT(*nick, gChatStr_User0_Ne0_2, gChatStr_ciQuitEnumChannelsCallback, 2022);
     ASSERT(channel, gChatStr_ChannelNeNULL_2, gChatStr_ciQuitEnumChannelsCallback, 2023);
@@ -1198,18 +1202,18 @@ void ciQuitEnumChannelsCallback(ChatConnection *chat, const char *nick, ChatChan
         return;
     }
     if (callbacks->userLeft) {
-        args[2] = CHAT_LEFT_QUIT;
-        args[0] = (u32)channel;
-        args[1] = (u32)nick;
-        args[3] = (u32)param;
-        args[4] = 0;
-        ciAddCallback_(chat, CALLBACK_USER_PARTED, callbacks->userLeft, args, callbacks->param, 0, channel->name, sizeof(args));
+        args.reason = CHAT_LEFT_QUIT;
+        args.channel = channel->name;
+        args.nick = nick;
+        args.message = param;
+        args.kicker = NULL;
+        ciAddCallback_(chat, CALLBACK_USER_PARTED, callbacks->userLeft, &args, callbacks->param, 0, channel->name, sizeof(args));
     }
     if (!callbacks->usersChanged) {
         return;
     }
-    usersChangedArg = (u32)channel;
-    ciAddCallback_(chat, CALLBACK_USER_LIST_UPDATED, callbacks->usersChanged, &usersChangedArg, callbacks->param, 0, channel->name, sizeof(usersChangedArg));
+    usersChanged.channel = channel->name;
+    ciAddCallback_(chat, CALLBACK_USER_LIST_UPDATED, callbacks->usersChanged, &usersChanged, callbacks->param, 0, channel->name, sizeof(usersChanged));
 }
 
 // QUIT: a user left the server.
@@ -1225,7 +1229,8 @@ void ciQuitHandler(ChatConnection *chat, ChatMessage *message) {
 // Per channel of a user who was killed (ciUserEnumChannels callback, param = the reason).
 void ciKillEnumChannelsCallback(ChatConnection *chat, const char *nick, ChatChannel *channel, void *param) {
     ChatChannelCallbacks *callbacks;
-    u32 args[5], usersChangedArg;
+    ChatUserLeftArgs args;
+    ChatUsersChangedArgs usersChanged;
     ASSERT(nick, gChatStr_UserNeNULL_2, gChatStr_ciKillEnumChannelsCallback, 2088);
     ASSERT(*nick, gChatStr_User0_Ne0_2, gChatStr_ciKillEnumChannelsCallback, 2088);
     ASSERT(channel, gChatStr_ChannelNeNULL_2, gChatStr_ciKillEnumChannelsCallback, 2089);
@@ -1240,18 +1245,18 @@ void ciKillEnumChannelsCallback(ChatConnection *chat, const char *nick, ChatChan
         return;
     }
     if (callbacks->userLeft) {
-        args[2] = CHAT_LEFT_KILL;
-        args[0] = (u32)channel;
-        args[1] = (u32)nick;
-        args[3] = (u32)param;
-        args[4] = 0;
-        ciAddCallback_(chat, CALLBACK_USER_PARTED, callbacks->userLeft, args, callbacks->param, 0, channel->name, sizeof(args));
+        args.reason = CHAT_LEFT_KILL;
+        args.channel = channel->name;
+        args.nick = nick;
+        args.message = param;
+        args.kicker = NULL;
+        ciAddCallback_(chat, CALLBACK_USER_PARTED, callbacks->userLeft, &args, callbacks->param, 0, channel->name, sizeof(args));
     }
     if (!callbacks->usersChanged) {
         return;
     }
-    usersChangedArg = (u32)channel;
-    ciAddCallback_(chat, CALLBACK_USER_LIST_UPDATED, callbacks->usersChanged, &usersChangedArg, callbacks->param, 0, channel->name, sizeof(usersChangedArg));
+    usersChanged.channel = channel->name;
+    ciAddCallback_(chat, CALLBACK_USER_LIST_UPDATED, callbacks->usersChanged, &usersChanged, callbacks->param, 0, channel->name, sizeof(usersChanged));
 }
 
 void ciKillHandler(ChatConnection *chat, ChatMessage *message) {
@@ -1281,7 +1286,7 @@ void ciTopicHandler(ChatConnection *chat, ChatMessage *message) {
     }
     args.channel = channel;
     args.topic = topic;
-    ciAddCallback_(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, (u32 *)&args, callbacks->param, 0, channel, sizeof(args));
+    ciAddCallback_(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, &args, callbacks->param, 0, channel, sizeof(args));
 }
 
 // MODE: the mode of a channel or of its users changed.
@@ -1375,7 +1380,7 @@ void ciInviteHandler(ChatConnection *chat, ChatMessage *message) {
     }
     args.channel = channel;
     args.nick = nick;
-    ciAddCallback_(chat, CALLBACK_INVITED, chat->globalCallbacks.invited, (u32 *)&args, chat->globalCallbacks.param, 0, NULL, sizeof(args));
+    ciAddCallback_(chat, CALLBACK_INVITED, chat->globalCallbacks.invited, &args, chat->globalCallbacks.param, 0, NULL, sizeof(args));
 }
 
 // 353: a part of the user list of a channel (nicks with "@" for operators and "+" for voiced users).
@@ -1459,28 +1464,9 @@ void ciNameReplyHandler(ChatConnection *chat, ChatMessage *message) {
 // 366: end of the user list of a channel ("*" = all channels).
 void ciEndOfNamesHandler(ChatConnection *chat, ChatMessage *message) {
     ChatRequestKey keys[4];
-
-    struct {
-        BOOL success;
-        int result; // ChatEnterResult
-        char *channel;
-    } enterResult;
-
-    struct {
-        char *channel;
-        int count;
-        char **nicks;
-        int *modes;
-    } nickListResult;
-
-    struct {
-        BOOL success;
-        char *channel;
-        int count;
-        char **nicks;
-        int *modes;
-    } usersResult;
-
+    ChatEnterChannelArgs enterResult;
+    ChatNewUserListArgs nickListResult;
+    ChatEnumUsersArgs usersResult;
     ChatRequest *request;
     char *channel;
     ASSERT_CHAT(chat, gChatStr_ciEndOfNamesHandler, 0x99F);
@@ -1511,22 +1497,22 @@ void ciEndOfNamesHandler(ChatConnection *chat, ChatMessage *message) {
         if (request->callback == NULL) {
             ciJoinCallbackCalled(chat, channel);
         }
-        ciFinishFilter(chat, request, (u32 *)&enterResult);
+        ciFinishFilter(chat, request, &enterResult);
     } else if (request->type == TYPE_UNQUIET) {
         ChatNickListData *list = request->data;
         nickListResult.channel = channel;
-        nickListResult.count = list->count;
-        nickListResult.nicks = list->nicks;
+        nickListResult.numUsers = list->count;
+        nickListResult.users = list->nicks;
         nickListResult.modes = list->modes;
-        ciFinishFilter(chat, request, (u32 *)&nickListResult);
+        ciFinishFilter(chat, request, &nickListResult);
     } else if (request->type == TYPE_NAMES) {
         ChatNickListData *list = request->data;
         usersResult.success = TRUE;
         usersResult.channel = channel;
-        usersResult.count = list->count;
-        usersResult.nicks = list->nicks;
+        usersResult.numUsers = list->count;
+        usersResult.users = list->nicks;
         usersResult.modes = list->modes;
-        ciFinishFilter(chat, request, (u32 *)&usersResult);
+        ciFinishFilter(chat, request, &usersResult);
     }
 }
 
@@ -1542,16 +1528,16 @@ void ciRplTopicHandler(ChatConnection *chat, ChatMessage *message) {
     topic = message->params[2];
     ciSetChannelTopic(chat, channel, topic);
     ChatRequestKey key = { 0 };
-    u32 results[3];
+    ChatGetTopicArgs results;
     ChatTopicArgs args;
     key.type = TYPE_TOPIC;
     key.name = channel;
     request = ciFindFilter(chat, 1, &key);
     if (request) {
-        results[0] = TRUE;
-        results[1] = (u32)channel;
-        results[2] = (u32)topic;
-        ciFinishFilter(chat, request, results);
+        results.success = TRUE;
+        results.channel = channel;
+        results.topic = topic;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     ChatChannelCallbacks *callbacks = ciGetChannelCallbacks(chat, channel);
@@ -1560,7 +1546,7 @@ void ciRplTopicHandler(ChatConnection *chat, ChatMessage *message) {
     }
     args.channel = channel;
     args.topic = topic;
-    ciAddCallback_(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, (u32 *)&args, callbacks->param, 0, channel, sizeof(args));
+    ciAddCallback_(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, &args, callbacks->param, 0, channel, sizeof(args));
 }
 
 // 331: a channel has no topic.
@@ -1573,16 +1559,16 @@ void ciRplNoTopicHandler(ChatConnection *chat, ChatMessage *message) {
     }
     channel = message->params[1];
     ChatRequestKey key = { 0 };
-    u32 results[3];
+    ChatGetTopicArgs results;
     ChatTopicArgs args;
     key.type = TYPE_TOPIC;
     key.name = channel;
     request = ciFindFilter(chat, 1, &key);
     if (request) {
-        results[0] = TRUE;
-        results[1] = (u32)channel;
-        results[2] = (u32)gChatStr_Empty_20;
-        ciFinishFilter(chat, request, results);
+        results.success = TRUE;
+        results.channel = channel;
+        results.topic = gChatStr_Empty_20;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     ChatChannelCallbacks *callbacks = ciGetChannelCallbacks(chat, channel);
@@ -1591,7 +1577,7 @@ void ciRplNoTopicHandler(ChatConnection *chat, ChatMessage *message) {
     }
     args.channel = channel;
     args.topic = gChatStr_Empty_20;
-    ciAddCallback_(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, (u32 *)&args, callbacks->param, 0, channel, sizeof(args));
+    ciAddCallback_(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, &args, callbacks->param, 0, channel, sizeof(args));
 }
 
 // 433: the nick is already in use (fails a nick change, or reported while connecting).
@@ -1606,16 +1592,16 @@ void ciErrNickInUseHandler(ChatConnection *chat, ChatMessage *message) {
     oldNick = message->params[0];
     newNick = message->params[1];
     ChatRequestKey key = { 0 };
-    u32 results[3];
+    ChatChangeNickArgs results;
     key.type = TYPE_NICK;
     key.name = oldNick;
     key.name2 = newNick;
     request = ciFindFilter(chat, 1, &key);
     if (request) {
-        results[0] = FALSE;
-        results[1] = (u32)oldNick;
-        results[2] = (u32)newNick;
-        ciFinishFilter(chat, request, results);
+        results.success = FALSE;
+        results.oldNick = oldNick;
+        results.newNick = newNick;
+        ciFinishFilter(chat, request, &results);
         return;
     }
     ASSERT(chat->connecting, gChatStr_ConnectionConnecting, gChatStr_ciErrNickInUseHandler, 2707);
@@ -1628,9 +1614,9 @@ void ciErrNickInUseHandler(ChatConnection *chat, ChatMessage *message) {
 // 352: one user of a WHO reply (channel, user, host, server, nick, flags "H@+", ...).
 void ciRplWhoReplyHandler(ChatConnection *chat, ChatMessage *message) {
     ChatRequestKey keys[3];
-    u32 modeResult[4];
-    u32 addressResult[4];
-    u32 channelResult[5];
+    ChatGetUserModeArgs modeResult;
+    ChatGetBasicUserInfoArgs addressResult;
+    ChatGetChannelBasicUserInfoArgs channelResult;
     char *channel, *nick, *user, *host;
     ChatRequest *request;
     ASSERT(message->paramCount == 8, gChatStr_MessageNumParamsEq8, gChatStr_ciRplWhoReplyHandler, 2726);
@@ -1666,25 +1652,25 @@ void ciRplWhoReplyHandler(ChatConnection *chat, ChatMessage *message) {
             if (strchr(flags, '+') != NULL) {
                 mode |= CHAT_USER_MODE_VOICE;
             }
-            modeResult[0] = TRUE;
-            modeResult[1] = (u32)channel;
-            modeResult[2] = (u32)nick;
-            modeResult[3] = mode;
-            ciFinishFilter(chat, request, modeResult);
+            modeResult.success = TRUE;
+            modeResult.channel = channel;
+            modeResult.user = nick;
+            modeResult.mode = mode;
+            ciFinishFilter(chat, request, &modeResult);
         } else if (request->type == TYPE_WHO) {
-            addressResult[0] = TRUE;
-            addressResult[1] = (u32)nick;
-            addressResult[2] = (u32)user;
-            addressResult[3] = (u32)host;
-            ciAddCallback_(chat, CALLBACK_GET_BASIC_USER_INFO, request->callback, addressResult, request->param, request->id, NULL, sizeof(addressResult));
+            addressResult.success = TRUE;
+            addressResult.nick = nick;
+            addressResult.user = user;
+            addressResult.address = host;
+            ciAddCallback_(chat, CALLBACK_GET_BASIC_USER_INFO, request->callback, &addressResult, request->param, request->id, NULL, sizeof(addressResult));
             request->callback = NULL;
         } else if (request->type == TYPE_CWHO && request->callback != NULL) {
-            channelResult[0] = TRUE;
-            channelResult[1] = (u32)request->name;
-            channelResult[2] = (u32)nick;
-            channelResult[3] = (u32)user;
-            channelResult[4] = (u32)host;
-            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_BASIC_USER_INFO, request->callback, channelResult, request->param, request->id, NULL, sizeof(channelResult));
+            channelResult.success = TRUE;
+            channelResult.channel = request->name;
+            channelResult.nick = nick;
+            channelResult.user = user;
+            channelResult.address = host;
+            ciAddCallback_(chat, CALLBACK_GET_CHANNEL_BASIC_USER_INFO, request->callback, &channelResult, request->param, request->id, NULL, sizeof(channelResult));
         }
     }
 }
@@ -1699,8 +1685,8 @@ void ciRplEndOfWhoHandler(ChatConnection *chat, ChatMessage *message) {
     }
     name = message->params[1];
     ChatRequestKey keys[2] = { 0 };
-    u32 addressResult[4];
-    u32 channelResult[5];
+    ChatGetBasicUserInfoArgs addressResult;
+    ChatGetChannelBasicUserInfoArgs channelResult;
     keys[0].type = TYPE_WHO;
     keys[0].name = name;
     keys[1].type = TYPE_CWHO;
@@ -1710,20 +1696,20 @@ void ciRplEndOfWhoHandler(ChatConnection *chat, ChatMessage *message) {
         return;
     }
     if (request->type == TYPE_WHO) {
-        addressResult[0] = FALSE;
-        addressResult[1] = (u32)name;
-        addressResult[2] = 0;
-        addressResult[3] = 0;
-        ciFinishFilter(chat, request, addressResult);
+        addressResult.success = FALSE;
+        addressResult.nick = name;
+        addressResult.user = NULL;
+        addressResult.address = NULL;
+        ciFinishFilter(chat, request, &addressResult);
         return;
     }
     if (request->type == TYPE_CWHO) {
-        channelResult[0] = TRUE;
-        channelResult[1] = (u32)name;
-        channelResult[2] = 0;
-        channelResult[3] = 0;
-        channelResult[4] = 0;
-        ciFinishFilter(chat, request, channelResult);
+        channelResult.success = TRUE;
+        channelResult.channel = name;
+        channelResult.nick = NULL;
+        channelResult.user = NULL;
+        channelResult.address = NULL;
+        ciFinishFilter(chat, request, &channelResult);
     }
 }
 
@@ -1770,7 +1756,7 @@ void ciRplGetKeyHandler(ChatConnection *chat, ChatMessage *message) {
     cursor = message->params[3];
     {
         ChatRequestKey key = { 0, 0, 0 };
-        u32 results[5]; // success, nick, count, keys, values
+        ChatGetGlobalKeysArgs results;
         int length;
         key.type = TYPE_GETKEY;
         key.name = cookie;
@@ -1793,15 +1779,15 @@ void ciRplGetKeyHandler(ChatConnection *chat, ChatMessage *message) {
                 values[i] = goastrdup(gChatStr_Empty_20);
             }
         }
-        results[0] = TRUE;
-        results[1] = (u32)nick;
-        results[2] = count;
-        results[3] = (u32)data->keys;
-        results[4] = (u32)values;
+        results.success = TRUE;
+        results.user = nick;
+        results.num = count;
+        results.keys = data->keys;
+        results.values = values;
         if (!data->arg.channel) {
-            ciFinishFilter(chat, request, results);
+            ciFinishFilter(chat, request, &results);
         } else {
-            ciAddCallback_(chat, CALLBACK_GET_GLOBAL_KEYS, request->callback, results, request->param, request->id, NULL, sizeof(results));
+            ciAddCallback_(chat, CALLBACK_GET_GLOBAL_KEYS, request->callback, &results, request->param, request->id, NULL, sizeof(results));
         }
         for (i = 0; i < count; i++) {
             DWCi_GsFree(values[i]);
@@ -1821,7 +1807,7 @@ void ciRplEndGetKeyHandler(ChatConnection *chat, ChatMessage *message) {
     }
     cookie = message->params[2];
     ChatRequestKey key = { 0 };
-    u32 results[5]; // success, nick, count, keys, values
+    ChatGetGlobalKeysArgs results;
     key.type = TYPE_GETKEY;
     key.name = cookie;
     request = ciFindFilter(chat, 1, &key);
@@ -1829,12 +1815,12 @@ void ciRplEndGetKeyHandler(ChatConnection *chat, ChatMessage *message) {
         return;
     }
     data = request->data;
-    results[1] = 0;
-    results[0] = TRUE;
-    results[2] = data->count;
-    results[3] = (u32)data->keys;
-    results[4] = 0;
-    ciFinishFilter(chat, request, results);
+    results.user = NULL;
+    results.success = TRUE;
+    results.num = data->count;
+    results.keys = data->keys;
+    results.values = NULL;
+    ciFinishFilter(chat, request, &results);
 }
 
 // 702: the keys of a user in a channel (request type 13). The cookie "BCAST" instead reports changed broadcast
@@ -1843,7 +1829,7 @@ void ciRplGetCKeyHandler(ChatConnection *chat, ChatMessage *message) {
     ChatRequestKey key;
     ChatRequest *request;
     ChatBroadcastKeyArgs change;
-    u32 results[6]; // success, channel, nick, count, keys, values
+    ChatGetChannelKeysArgs results;
     char **params;
     char *cookie;
     char *nick;
@@ -1900,7 +1886,7 @@ void ciRplGetCKeyHandler(ChatConnection *chat, ChatMessage *message) {
             *cursor = 0;
             change.key = name;
             change.value = value;
-            ciAddCallback_(chat, CALLBACK_BROADCAST_KEY_CHANGED, callbacks->broadcastKeyChanged, (u32 *)&change, callbacks->param, 0, channel, sizeof(change));
+            ciAddCallback_(chat, CALLBACK_BROADCAST_KEY_CHANGED, callbacks->broadcastKeyChanged, &change, callbacks->param, 0, channel, sizeof(change));
             *cursor = saved;
         } while (*cursor != 0);
         return;
@@ -1956,16 +1942,16 @@ void ciRplGetCKeyHandler(ChatConnection *chat, ChatMessage *message) {
         }
         data->count = count;
     }
-    results[0] = TRUE;
-    results[1] = (u32)channel;
-    results[2] = (u32)nick;
-    results[3] = count;
-    results[4] = (u32)data->keys;
-    results[5] = (u32)values;
+    results.success = TRUE;
+    results.channel = channel;
+    results.user = nick;
+    results.num = count;
+    results.keys = data->keys;
+    results.values = values;
     if (!data->arg.allUsers) {
-        ciFinishFilter(chat, request, results);
+        ciFinishFilter(chat, request, &results);
     } else {
-        ciAddCallback_(chat, CALLBACK_GET_CHANNEL_KEYS, request->callback, results, request->param, request->id, NULL, sizeof(results));
+        ciAddCallback_(chat, CALLBACK_GET_CHANNEL_KEYS, request->callback, &results, request->param, request->id, NULL, sizeof(results));
     }
     for (i = 0; i < count; i++) {
         DWCi_GsFree(values[i]);
@@ -1985,7 +1971,7 @@ void ciRplEndGetCKeyHandler(ChatConnection *chat, ChatMessage *message) {
     channel = message->params[1];
     cookie = message->params[2];
     ChatRequestKey key = { 0 };
-    u32 results[6]; // success, channel, nick, count, keys, values
+    ChatGetChannelKeysArgs results;
     key.type = TYPE_GETCKEY;
     key.name = cookie;
     request = ciFindFilter(chat, 1, &key);
@@ -1993,13 +1979,13 @@ void ciRplEndGetCKeyHandler(ChatConnection *chat, ChatMessage *message) {
         return;
     }
     data = request->data;
-    results[1] = (u32)channel;
-    results[2] = 0;
-    results[0] = TRUE;
-    results[3] = data->count;
-    results[4] = (u32)data->keys;
-    results[5] = 0;
-    ciFinishFilter(chat, request, results);
+    results.channel = channel;
+    results.user = NULL;
+    results.success = TRUE;
+    results.num = data->count;
+    results.keys = data->keys;
+    results.values = NULL;
+    ciFinishFilter(chat, request, &results);
 }
 
 // 704: the keys of a channel (request type 14; without requested keys, all name / value pairs of the reply are
@@ -2013,7 +1999,7 @@ void ciRplGetChanKeyHandler(ChatConnection *chat, ChatMessage *message) {
     ChatChannelCallbacks *callbacks;
     ChatRequestKey key;
     ChatBroadcastKeyArgs change;
-    u32 results[6]; // success, channel, nick, count, keys, values
+    ChatGetChannelKeysArgs results;
     ASSERT(message->paramCount == 4, gChatStr_MessageNumParamsEq4, gChatStr_ciRplGetChanKeyHandler, 3297);
     if (message->paramCount != 4) {
         return;
@@ -2053,7 +2039,7 @@ void ciRplGetChanKeyHandler(ChatConnection *chat, ChatMessage *message) {
             *cursor = 0;
             change.key = name;
             change.value = value;
-            ciAddCallback_(chat, CALLBACK_BROADCAST_KEY_CHANGED, callbacks->broadcastKeyChanged, (u32 *)&change, callbacks->param, 0, channel, sizeof(change));
+            ciAddCallback_(chat, CALLBACK_BROADCAST_KEY_CHANGED, callbacks->broadcastKeyChanged, &change, callbacks->param, 0, channel, sizeof(change));
             *cursor = saved;
         } while (*cursor);
         return;
@@ -2164,13 +2150,13 @@ void ciRplGetChanKeyHandler(ChatConnection *chat, ChatMessage *message) {
             data->count = count;
             data->keys = keys;
         }
-        results[0] = TRUE;
-        results[1] = (u32)channel;
-        results[2] = 0;
-        results[3] = count;
-        results[4] = (u32)data->keys;
-        results[5] = (u32)values;
-        ciFinishFilter(chat, request, results);
+        results.success = TRUE;
+        results.channel = channel;
+        results.user = NULL;
+        results.num = count;
+        results.keys = data->keys;
+        results.values = values;
+        ciFinishFilter(chat, request, &results);
         for (i = 0; i < count; i++) {
             DWCi_GsFree(values[i]);
         }
@@ -2256,7 +2242,7 @@ void ciRplListHandler(ChatConnection *chat, ChatMessage *message) {
         args.topic = topic;
         args.numUsers = numUsers;
         args.success = TRUE;
-        ciAddCallback_(chat, CALLBACK_ENUM_CHANNELS_EACH, request->callback, (u32 *)&args, request->param, request->id, NULL, sizeof(args));
+        ciAddCallback_(chat, CALLBACK_ENUM_CHANNELS_EACH, request->callback, &args, request->param, request->id, NULL, sizeof(args));
         array = DWCi_GsRealloc(data->names, (data->count + 1) * 4);
         if (array == NULL) {
             DWCi_GsFree(name);
@@ -2288,7 +2274,7 @@ void ciRplListHandler(ChatConnection *chat, ChatMessage *message) {
 // 323: end of the channel list (request type 0).
 void ciRplListEndHandler(ChatConnection *chat, ChatMessage *message) {
     ChatRequestKey key = { 0 };
-    u32 results[5]; // success, count, names, topics, numUsers
+    ChatChannelListArgs results;
     ChatRequest *request;
     ChatChannelListData *data;
     key.type = TYPE_LIST;
@@ -2297,12 +2283,12 @@ void ciRplListEndHandler(ChatConnection *chat, ChatMessage *message) {
         return;
     }
     data = request->data;
-    results[0] = TRUE;
-    results[1] = data->count;
-    results[2] = (u32)data->names;
-    results[4] = (u32)data->numUsers;
-    results[3] = (u32)data->topics;
-    ciFinishFilter(chat, request, results);
+    results.success = TRUE;
+    results.numChannels = data->count;
+    results.channels = data->names;
+    results.numUsers = data->numUsers;
+    results.topics = data->topics;
+    ciFinishFilter(chat, request, &results);
 }
 
 // 324: the mode of a channel (answer to a mode request, request type 5, or sent when the channel is entered).
@@ -2328,10 +2314,7 @@ void ciRplChannelModeIsHandler(ChatConnection *chat, ChatMessage *message) {
 
     ChatChannelModeArgs result;
 
-    union {
-        ChatChannelModeChangedArgs args;
-        u32 words[2];
-    } changed;
+    ChatChannelModeChangedArgs changed;
 
     memset(&mode, 0, sizeof(mode));
     ciApplyChangesToMode(&mode, changes);
@@ -2340,9 +2323,9 @@ void ciRplChannelModeIsHandler(ChatConnection *chat, ChatMessage *message) {
         ciSetChannelMode(chat, channel, &mode);
         callbacks = ciGetChannelCallbacks(chat, channel);
         if (callbacks && callbacks->modeChanged) {
-            changed.args.channel = channel;
-            changed.args.mode = &mode;
-            ciAddCallback_(chat, CALLBACK_CHANNEL_MODE_CHANGED, callbacks->modeChanged, changed.words, callbacks->param, 0, channel, sizeof(changed));
+            changed.channel = channel;
+            changed.mode = &mode;
+            ciAddCallback_(chat, CALLBACK_CHANNEL_MODE_CHANGED, callbacks->modeChanged, &changed, callbacks->param, 0, channel, sizeof(changed));
         }
     }
     memset(&key, 0, sizeof(key));
@@ -2353,7 +2336,7 @@ void ciRplChannelModeIsHandler(ChatConnection *chat, ChatMessage *message) {
         result.success = TRUE;
         result.channel = channel;
         result.mode = &mode;
-        ciFinishFilter(chat, request, (u32 *)&result);
+        ciFinishFilter(chat, request, &result);
     }
     DWCi_GsFree(changes);
 }
@@ -2466,7 +2449,7 @@ void ciRplEndOfWhoisHandler(ChatConnection *chat, ChatMessage *message) {
     }
     nick = message->params[1];
     ChatRequestKey key = { 0 };
-    u32 results[7]; // success, nick, user, realName, address, channelCount, channels
+    ChatGetUserInfoArgs results;
     key.type = TYPE_WHOIS;
     key.name = nick;
     request = ciFindFilter(chat, 1, &key);
@@ -2474,14 +2457,14 @@ void ciRplEndOfWhoisHandler(ChatConnection *chat, ChatMessage *message) {
         return;
     }
     data = request->data;
-    results[0] = data->user != NULL;
-    results[1] = (u32)nick;
-    results[2] = (u32)data->user;
-    results[3] = (u32)data->realName;
-    results[4] = (u32)data->address;
-    results[5] = data->channelCount;
-    results[6] = (u32)data->channels;
-    ciFinishFilter(chat, request, results);
+    results.success = data->user != NULL;
+    results.nick = nick;
+    results.user = data->user;
+    results.name = data->realName;
+    results.address = data->address;
+    results.numChannels = data->channelCount;
+    results.channels = data->channels;
+    ciFinishFilter(chat, request, &results);
 }
 
 // 367: one ban mask of a channel's ban list (request type 8).
@@ -2534,7 +2517,7 @@ void ciRplEndOfBanListHandler(ChatConnection *chat, ChatMessage *message) {
     }
     channel = message->params[1];
     ChatRequestKey key = { 0 };
-    u32 results[4]; // success, channel, count, bans
+    ChatEnumBansArgs results;
     key.type = TYPE_GETBAN;
     key.name = channel;
     request = ciFindFilter(chat, 1, &key);
@@ -2542,11 +2525,11 @@ void ciRplEndOfBanListHandler(ChatConnection *chat, ChatMessage *message) {
         return;
     }
     data = request->data;
-    results[1] = (u32)channel;
-    results[0] = TRUE;
-    results[2] = data->count;
-    results[3] = (u32)data->bans;
-    ciFinishFilter(chat, request, results);
+    results.channel = channel;
+    results.success = TRUE;
+    results.numBans = data->count;
+    results.bans = data->bans;
+    ciFinishFilter(chat, request, &results);
 }
 
 // 001: the registration is done (the server may have changed the nick); calls the connected callback.
@@ -2609,15 +2592,15 @@ void ciRplCDKeyHandler(ChatConnection *chat, ChatMessage *message) {
     result = atol(message->params[1]);
     text = message->params[2];
     ChatRequestKey key = { 0 };
-    u32 results[2]; // result, text
+    ChatAuthenticateCDKeyArgs results;
     key.type = TYPE_CDKEY;
     request = ciFindFilter(chat, 1, &key);
     if (!request) {
         return;
     }
-    results[0] = result;
-    results[1] = (u32)text;
-    ciFinishFilter(chat, request, results);
+    results.result = result;
+    results.message = text;
+    ciFinishFilter(chat, request, &results);
 }
 
 // 707: the login was accepted (two numbers); then the address query or the registration is sent.
@@ -2639,9 +2622,9 @@ void ciRplLoginHandler(ChatConnection *chat, ChatMessage *message) {
 // 403: no such channel: fails an enter (type 1), mode (type 5) or channel keys (type 12) request.
 void ciErrNoSuchChannelHandler(ChatConnection *chat, ChatMessage *message) {
     ChatRequestKey keys[2];
-    u32 enterResult[3];
-    u32 modeResult[3];
-    u32 keysResult[5];
+    ChatEnterChannelArgs enterResult;
+    ChatChannelModeArgs modeResult;
+    ChatGetGlobalKeysArgs keysResult;
     ChatRequest *request;
     char *channel;
     ASSERT(message->paramCount == 3, gChatStr_MessageNumParamsEq3, gChatStr_ciErrNoSuchChannelHandler, 4240);
@@ -2657,17 +2640,17 @@ void ciErrNoSuchChannelHandler(ChatConnection *chat, ChatMessage *message) {
     request = ciFindFilter(chat, 2, keys);
     if (request != NULL) {
         if (request->type == TYPE_JOIN) {
-            enterResult[0] = FALSE;
-            enterResult[1] = CHAT_ENTER_NO_SUCH_CHANNEL;
-            enterResult[2] = (u32)channel;
-            ciFinishFilter(chat, request, enterResult);
+            enterResult.success = FALSE;
+            enterResult.result = CHAT_ENTER_NO_SUCH_CHANNEL;
+            enterResult.channel = channel;
+            ciFinishFilter(chat, request, &enterResult);
             return;
         }
         if (request->type == TYPE_CMODE) {
-            modeResult[0] = FALSE;
-            modeResult[1] = (u32)channel;
-            modeResult[2] = 0;
-            ciFinishFilter(chat, request, modeResult);
+            modeResult.success = FALSE;
+            modeResult.channel = channel;
+            modeResult.mode = NULL;
+            ciFinishFilter(chat, request, &modeResult);
             return;
         }
     }
@@ -2675,12 +2658,12 @@ void ciErrNoSuchChannelHandler(ChatConnection *chat, ChatMessage *message) {
     if (request == NULL) {
         return;
     }
-    keysResult[0] = FALSE;
-    keysResult[1] = 0;
-    keysResult[2] = 0;
-    keysResult[3] = 0;
-    keysResult[4] = 0;
-    ciFinishFilter(chat, request, keysResult);
+    keysResult.success = FALSE;
+    keysResult.user = NULL;
+    keysResult.num = 0;
+    keysResult.keys = NULL;
+    keysResult.values = NULL;
+    ciFinishFilter(chat, request, &keysResult);
 }
 
 // Fails the enter request (request type 1) of the channel in the second parameter.
@@ -2694,17 +2677,17 @@ void ciErrNoSuchChannelHandler(ChatConnection *chat, ChatMessage *message) {
         }                                                                       \
         channel = message->params[1];                                           \
         ChatRequestKey key = { 0 };                                             \
-        u32 results[3]; /* success, reason, channel */                          \
+        ChatEnterChannelArgs results;                                           \
         key.type = 1;                                                           \
         key.name = channel;                                                     \
         request = ciFindFilter(chat, 1, &key);                                  \
         if (!request) {                                                         \
             return;                                                             \
         }                                                                       \
-        results[0] = FALSE;                                                     \
-        results[1] = reason;                                                    \
-        results[2] = (u32)channel;                                              \
-        ciFinishFilter(chat, request, results);                                 \
+        results.success = FALSE;                                                \
+        results.result = reason;                                                \
+        results.channel = channel;                                              \
+        ciFinishFilter(chat, request, &results);                                \
     } while (0)
 
 // 405: too many channels.
@@ -2810,7 +2793,7 @@ void ciErrRegisterNickFailedHandler(ChatConnection *chat, ChatMessage *message) 
         token = strtok(NULL, gChatStr_Backslash_2);
         i++;
     }
-    ciNickError(chat, 5, chat->registeredNick, i, (int)suggestions);
+    ciNickError(chat, 5, chat->registeredNick, i, suggestions);
     for (j = 0; j < i; j++) {
         DWCi_GsFree(suggestions[j]);
     }

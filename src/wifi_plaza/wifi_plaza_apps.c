@@ -57,13 +57,6 @@ typedef struct WiFiPlazaMainArgs {
     WiFiPlazaWork *work;
 } WiFiPlazaMainArgs;
 
-// Arguments of app 2, the plaza news.
-typedef struct WiFiPlazaNewsArgs {
-    void *news; // WiFiPlazaWork.news
-    u32 *time;  // WiFiPlazaWork.currentTime
-    WiFiPlazaWork *work;
-} WiFiPlazaNewsArgs;
-
 static void WiFiPlazaApps_StartOverlay(WiFiPlazaApps *apps, void **args, const OverlayManagerTemplate *template);
 static void WiFiPlazaApps_InitArgs(WiFiPlazaApps *apps, u32 app, enum HeapID heapID);
 static void WiFiPlazaApps_FreeArgs(WiFiPlazaApps *apps, u32 app);
@@ -472,7 +465,7 @@ static void WiFiPlazaApps_FreeVisitorProfilesArgs(void **args) {
 static void WiFiPlazaApps_StartVisitorProfiles(WiFiPlazaApps *apps, void **args) {
     VisitorProfilesArgs *visitor = *args;
     visitor->visitors = WiFiPlazaWork_GetPlaces(apps->work);
-    visitor->clock.raw = *WiFiPlazaWork_GetCurrentTimePtr(apps->work);
+    visitor->clock.raw = WiFiPlazaWork_GetCurrentTimePtr(apps->work)->word;
     WiFiPlazaApps_StartOverlay(apps, args, &sWiFiPlazaVisitorProfilesOverlayTemplate);
 }
 
@@ -487,7 +480,7 @@ static BOOL WiFiPlazaApps_EndVisitorProfiles(WiFiPlazaApps *apps) {
 
 // App 2, the plaza news.
 static void WiFiPlazaApps_NewPlazaNewsArgs(WiFiPlazaApps *apps, void **out, enum HeapID heapID) {
-    WiFiPlazaNewsArgs *newsArgs;
+    PlazaNewsArgs *newsArgs;
     u8 *p = Heap_Alloc(heapID, 12);
     *out = p;
     p[0] = 0;
@@ -505,7 +498,7 @@ static void WiFiPlazaApps_NewPlazaNewsArgs(WiFiPlazaApps *apps, void **out, enum
     newsArgs = *out;
     newsArgs->news = WiFiPlazaWork_GetNews(apps->work);
     newsArgs->time = WiFiPlazaWork_GetCurrentTimePtr(apps->work);
-    newsArgs->work = apps->work;
+    newsArgs->lobby = apps->work;
 }
 
 static void WiFiPlazaApps_FreePlazaNewsArgs(void **args) {

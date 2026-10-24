@@ -1163,7 +1163,7 @@ void WifiClub_InitBgs(BgConfig *bgConfig) {
 }
 
 void WifiClub_AddPlayerObject(WifiClubApp *app, WifiClubRoomPerson *person) {
-    for (int i = 0; i < 33; i++) {
+    for (int i = 0; i < FRIEND_ROSTER_MAX + 1; i++) {
         if (app->playerObjects[i] == NULL) {
             app->playerObjects[i] = person;
             return;
@@ -1174,7 +1174,7 @@ void WifiClub_AddPlayerObject(WifiClubApp *app, WifiClubRoomPerson *person) {
 }
 
 void WifiClub_RemovePlayerObject(WifiClubApp *app, WifiClubRoomPerson *person) {
-    for (int i = 0; i < 33; i++) {
+    for (int i = 0; i < FRIEND_ROSTER_MAX + 1; i++) {
         if (app->playerObjects[i] == person) {
             app->playerObjects[i] = NULL;
             return;
@@ -1185,7 +1185,7 @@ void WifiClub_RemovePlayerObject(WifiClubApp *app, WifiClubRoomPerson *person) {
 }
 
 WifiClubRoomPerson *WifiClub_FindPlayerObject(WifiClubApp *app, u32 personId) {
-    for (s32 i = 0; i < 33; i++) {
+    for (s32 i = 0; i < FRIEND_ROSTER_MAX + 1; i++) {
         if ((app->playerObjects[i] != NULL) && (personId == WifiClubRoomPerson_GetId(app->playerObjects[i]))) {
             return app->playerObjects[i];
         }
@@ -1696,7 +1696,7 @@ void WifiClub_InitOwnStatus(WifiClubApp *app, u32 status) {
 
 s32 WifiClub_CollectOnlineFriends(WifiClubApp *app) {
     s32 counter = 0;
-    for (s32 i = 0; i < 32; i++) {
+    for (s32 i = 0; i < FRIEND_ROSTER_MAX; i++) {
         app->onlineFriends[i] = 0;
         if ((app->friendCount > i) && (WifiClub_GetFriendOnlineState(i) != 0)) {
             WifiClubPlayerStatus *friendStatusData = WifiClub_GetFriendStatusData(app, i);
@@ -1825,7 +1825,7 @@ s32 WifiClub_State_ErrorThenAskReconnect(WifiClubApp *app, s32 mainState) {
 
 s32 WifiClub_State_CreateReconnectPrompt(WifiClubApp *app, s32 mainState) {
     if (TextPrinterCheckActive(app->textPrinterId) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             app->yesNoMenu = Std_CreateYesNoMenu(app->bgConfig, &sYesNoMenuWindowTemplate, 473, 11, HEAP_ID_53);
         } else {
             app->yesNoPrompt = WifiClub_CreateYesNoPrompt(app->bgConfig, &sYesNoPromptWindowTemplate, 0);
@@ -1836,7 +1836,7 @@ s32 WifiClub_State_CreateReconnectPrompt(WifiClubApp *app, s32 mainState) {
 }
 
 s32 WifiClub_State_ReconnectPrompt(WifiClubApp *app, s32 mainState) {
-    if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+    if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
         s32 menuResult = Handle2dMenuInput_DeleteOnFinish(app->yesNoMenu, HEAP_ID_53);
         if (menuResult == -1) {
             return mainState;
@@ -1882,7 +1882,7 @@ s32 WifiClub_State_Reconnect(WifiClubApp *app, s32 mainState) {
             SetMasterBrightnessByColor(PM_LCD_TOP, RGB_BLACK);
             SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_BLACK);
             WifiClubRoom_Free(&app->room);
-            for (s32 i = 0; i < 33; i++) {
+            for (s32 i = 0; i < FRIEND_ROSTER_MAX + 1; i++) {
                 app->playerObjects[i] = 0;
             }
             thunk_ClearMainOAM(HEAP_ID_53);
@@ -1915,8 +1915,8 @@ s32 WifiClub_State_Reconnect(WifiClubApp *app, s32 mainState) {
             ListMenuItems_Delete(app->unusedMenuItems);
             app->unusedMenuItems = NULL;
         }
-        MI_CpuFill8(app->onlineFriends, 0, 32);
-        MI_CpuFill8(app->prevOnlineFriends, 0, 32);
+        MI_CpuFill8(app->onlineFriends, 0, sizeof(app->onlineFriends));
+        MI_CpuFill8(app->prevOnlineFriends, 0, sizeof(app->prevOnlineFriends));
         MI_CpuFill8(app->friendStatuses, 0, 128);
         MI_CpuFill8(app->friendVoiceChat, 0, 128);
         WifiClub_PrintTitleBar(app);
@@ -2183,11 +2183,11 @@ s32 WifiClub_SyncRoomPlayers(WifiClubApp *app) {
     int onlineCount = WifiClub_CollectOnlineFriends(app);
     int friendAdded = 0;
     int friendLeft = 0;
-    if (memcmp(app->onlineFriends, app->prevOnlineFriends, 32) != 0) {
-        for (int i = 0; i < 32; i++) {
+    if (memcmp(app->onlineFriends, app->prevOnlineFriends, sizeof(app->onlineFriends)) != 0) {
+        for (int i = 0; i < FRIEND_ROSTER_MAX; i++) {
             int j;
             int found = 0;
-            for (j = 0; j < 32; j++) {
+            for (j = 0; j < FRIEND_ROSTER_MAX; j++) {
                 if (app->onlineFriends[j] == app->prevOnlineFriends[i]) {
                     found = 1;
                     break;
@@ -2204,7 +2204,7 @@ s32 WifiClub_SyncRoomPlayers(WifiClubApp *app) {
                 }
             }
             found = 0;
-            for (j = 0; j < 32; j++) {
+            for (j = 0; j < FRIEND_ROSTER_MAX; j++) {
                 if (app->onlineFriends[i] == app->prevOnlineFriends[j]) {
                     found = 1;
                     break;
@@ -2223,7 +2223,7 @@ s32 WifiClub_SyncRoomPlayers(WifiClubApp *app) {
                 }
             }
         }
-        memcpy(app->prevOnlineFriends, app->onlineFriends, 32);
+        memcpy(app->prevOnlineFriends, app->onlineFriends, sizeof(app->prevOnlineFriends));
         WifiClub_RequestRosterRedraw(app);
         if (friendAdded == 1) {
             PlaySE(SEQ_SE_DP_TELE2);
@@ -2498,7 +2498,7 @@ s32 WifiClub_State_CreateEndVoiceChatPrompt(WifiClubApp *app, s32 mainState) {
         if (WifiConnection_GetTargetFriendIndex() != -1) {
             FriendRoster_UpdateDate(app->friendRoster, WifiConnection_GetTargetFriendIndex());
         }
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             app->yesNoMenu = Std_CreateYesNoMenu(app->bgConfig, &sYesNoMenuWindowTemplate, 473, 11, HEAP_ID_53);
         } else {
             app->yesNoPrompt = WifiClub_CreateYesNoPromptIgnoreTouch(app->bgConfig, &sYesNoPromptWindowTemplate, 0);
@@ -2509,7 +2509,7 @@ s32 WifiClub_State_CreateEndVoiceChatPrompt(WifiClubApp *app, s32 mainState) {
 }
 
 s32 WifiClub_State_EndVoiceChatPrompt(WifiClubApp *app, s32 mainState) {
-    if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+    if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
         s32 menuResult = Handle2dMenuInput_DeleteOnFinish(app->yesNoMenu, HEAP_ID_53);
         if (menuResult == -1) {
             if ((CommState_GetWifiMatchStatus() >= 4) || (CommState_WasWifiDisconnected() != 0) || (Comm_IsNetIdConnected(0) == 0)) {
@@ -2682,7 +2682,7 @@ s32 WifiClub_State_AskCancelSeeking(WifiClubApp *app, s32 mainState) {
 s32 WifiClub_State_CreateCancelSeekingPrompt(WifiClubApp *app, s32 mainState) {
     WifiClubRoom_UpdateLights(&app->room);
     if (TextPrinterCheckActive(app->textPrinterId) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             app->yesNoMenu = Std_CreateYesNoMenu(app->bgConfig, &sYesNoMenuWindowTemplate, 473, 11, HEAP_ID_53);
         } else {
             app->yesNoPrompt = WifiClub_CreateYesNoPromptIgnoreTouch(app->bgConfig, &sYesNoPromptWindowTemplate, 0);
@@ -2693,7 +2693,7 @@ s32 WifiClub_State_CreateCancelSeekingPrompt(WifiClubApp *app, s32 mainState) {
 }
 
 s32 WifiClub_State_CancelSeekingPrompt(WifiClubApp *app, s32 mainState) {
-    if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+    if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
         s32 response = Handle2dMenuInput_DeleteOnFinish(app->yesNoMenu, HEAP_ID_53);
         WifiClubRoom_UpdateLights(&app->room);
         if ((app->contactFriend == -1) && (WifiConnection_GetNewClientIndex() != -1)) {
@@ -3653,7 +3653,7 @@ s32 WifiClub_State_CloseMessage(WifiClubApp *app, s32 mainState) {
 
 s32 WifiClub_State_CreateDisconnectPrompt(WifiClubApp *app, s32 mainState) {
     if (TextPrinterCheckActive(app->textPrinterId) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             app->yesNoMenu = Std_CreateYesNoMenu(app->bgConfig, &sYesNoMenuWindowTemplate, 473, 11, HEAP_ID_53);
         } else {
             app->yesNoPrompt = WifiClub_CreateYesNoPromptIgnoreTouch(app->bgConfig, &sYesNoPromptWindowTemplate, 0);
@@ -3664,7 +3664,7 @@ s32 WifiClub_State_CreateDisconnectPrompt(WifiClubApp *app, s32 mainState) {
 }
 
 s32 WifiClub_State_DisconnectPrompt(WifiClubApp *app, s32 mainState) {
-    if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+    if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
         s32 response = Handle2dMenuInput_DeleteOnFinish(app->yesNoMenu, HEAP_ID_53);
         if (TextPrinterCheckActive(app->textPrinterId) != 0) {
             return mainState;
@@ -3748,7 +3748,7 @@ s32 WifiClub_State_CreateRematchPrompt(WifiClubApp *app, s32 mainState) {
     }
     CommState_SetErrorWatch(0, 1);
     if (TextPrinterCheckActive(app->textPrinterId) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             app->yesNoMenu = Std_CreateYesNoMenu(app->bgConfig, &sYesNoMenuWindowTemplate, 473, 11, HEAP_ID_53);
         } else {
             app->yesNoPrompt = WifiClub_CreateYesNoPrompt(app->bgConfig, &sYesNoPromptWindowTemplate, 0);
@@ -3763,7 +3763,7 @@ s32 WifiClub_State_RematchPrompt(WifiClubApp *app, s32 mainState) {
         return mainState;
     }
     if ((CommState_IsWifiJoiningLobby() != 0) || (CommState_WasWifiDisconnected() != 0) || (CommState_GetWifiMatchStatus() >= 3)) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             Clear2dMenuWindowAndDelete(app->yesNoMenu, HEAP_ID_53);
         } else {
             YesNoPrompt_Destroy(app->yesNoPrompt);
@@ -3772,14 +3772,14 @@ s32 WifiClub_State_RematchPrompt(WifiClubApp *app, s32 mainState) {
         app->state = WIFI_CLUB_STATE_MESSAGE_THEN_REENTER_ROOM;
     } else {
         if (CommState_HasWifiFailed() != 0) {
-            if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+            if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
                 Clear2dMenuWindowAndDelete(app->yesNoMenu, HEAP_ID_53);
             } else {
                 YesNoPrompt_Destroy(app->yesNoPrompt);
             }
             WifiClub_HandleWifiError(app);
         } else {
-            if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+            if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
                 s32 menuResult = Handle2dMenuInput_DeleteOnFinish(app->yesNoMenu, HEAP_ID_53);
                 if (menuResult == -1) {
                     return mainState;
@@ -3845,7 +3845,7 @@ s32 WifiClub_State_CreateVoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
         return mainState;
     }
     if (TextPrinterCheckActive(app->textPrinterId) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             app->yesNoMenu = Std_CreateYesNoMenu(app->bgConfig, &sYesNoMenuWindowTemplate, 473, 11, HEAP_ID_53);
         } else {
             app->yesNoPrompt = WifiClub_CreateYesNoPromptIgnoreTouch(app->bgConfig, &sYesNoPromptWindowTemplate, 0);
@@ -3858,7 +3858,7 @@ s32 WifiClub_State_CreateVoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
 s32 WifiClub_State_VoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
     s32 talkPartnerId = WifiClubRoom_GetTalkPartnerId(&app->room);
     if (WifiClub_FindPlayerObject(app, talkPartnerId) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             Clear2dMenuWindowAndDelete(app->yesNoMenu, HEAP_ID_53);
         } else {
             YesNoPrompt_Destroy(app->yesNoPrompt);
@@ -3872,7 +3872,7 @@ s32 WifiClub_State_VoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
     u32 currentStatus = WifiClub_GetPlayerStatus(app, partnerStatusData);
     u8 voiceChat = partnerStatusData->voiceChat;
     if ((app->partnerStatus != currentStatus) || (app->partnerVoiceChat != voiceChat)) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             Clear2dMenuWindowAndDelete(app->yesNoMenu, HEAP_ID_53);
         } else {
             YesNoPrompt_Destroy(app->yesNoPrompt);
@@ -3883,7 +3883,7 @@ s32 WifiClub_State_VoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
         return mainState;
     }
     if (CommState_HasWifiFailed() != 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             Clear2dMenuWindowAndDelete(app->yesNoMenu, HEAP_ID_53);
         } else {
             YesNoPrompt_Destroy(app->yesNoPrompt);
@@ -3891,7 +3891,7 @@ s32 WifiClub_State_VoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
         WifiClub_HandleWifiError(app);
     } else {
         if (CommState_GetWifiMatchStatus() >= 3) {
-            if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+            if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
                 Clear2dMenuWindowAndDelete(app->yesNoMenu, HEAP_ID_53);
             } else {
                 YesNoPrompt_Destroy(app->yesNoPrompt);
@@ -3900,7 +3900,7 @@ s32 WifiClub_State_VoiceChatModePrompt(WifiClubApp *app, s32 mainState) {
             CommState_LeaveWifiMatch();
             app->state = WIFI_CLUB_STATE_MESSAGE_THEN_RETURN_TO_ROOM;
             return mainState;
-        } else if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        } else if (((reg_GX_POWCNT & REG_GX_POWCNT_DSEL_MASK) >> REG_GX_POWCNT_DSEL_SHIFT) == GX_DISP_SELECT_MAIN_SUB) {
             s32 menuInputResult = Handle2dMenuInput_DeleteOnFinish(app->yesNoMenu, HEAP_ID_53);
             if (menuInputResult == -1) {
                 return mainState;

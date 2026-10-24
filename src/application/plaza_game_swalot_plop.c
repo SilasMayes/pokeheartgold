@@ -1531,7 +1531,7 @@ static void SwalotPlopBody_SetTilt(SwalotPlopBody *body, int tilt) {
 }
 
 static void SwalotPlopBody_SetSpin(SwalotPlopBody *body, u16 spin) {
-    VecFx32 v;
+    VecFx32 mouthOffset;
     fx32 dot;
     body->spin = spin;
     MTX_Identity33_(&body->rotation);
@@ -1539,15 +1539,15 @@ static void SwalotPlopBody_SetSpin(SwalotPlopBody *body, u16 spin) {
     MTX_RotY33_(&body->spinMtx, FX_SinIdx(spin), FX_CosIdx(spin));
     MTX_Concat33(&body->tiltMtx, &body->spinMtx, &body->rotation);
     MTX_MultVec33(&gSwalotPlopBodyBaseNormal, &body->rotation, &body->normal);
-    v.x = 0;
-    v.y = 0;
-    v.z = -body->mouthDepth;
-    MTX_MultVec33(&v, &body->rotation, &body->mouthPos);
-    v.x = body->mouthOffsetX + body->offset.x;
-    v.y = body->mouthOffsetY;
-    v.z = body->offset.z + 0x50000;
-    MTX_MultVec33(&v, &body->spinMtx, &v);
-    VEC_Add(&v, &body->mouthPos, &body->mouthPos);
+    mouthOffset.x = 0;
+    mouthOffset.y = 0;
+    mouthOffset.z = -body->mouthDepth;
+    MTX_MultVec33(&mouthOffset, &body->rotation, &body->mouthPos);
+    mouthOffset.x = body->mouthOffsetX + body->offset.x;
+    mouthOffset.y = body->mouthOffsetY;
+    mouthOffset.z = body->offset.z + 0x50000;
+    MTX_MultVec33(&mouthOffset, &body->spinMtx, &mouthOffset);
+    VEC_Add(&mouthOffset, &body->mouthPos, &body->mouthPos);
     dot = FX_Mul(body->normal.x, body->mouthPos.x) + FX_Mul(body->normal.y, body->mouthPos.y) + FX_Mul(body->normal.z, body->mouthPos.z);
     body->mouthPlane = dot;
     MTX_MultVec33(&body->offset, &body->spinMtx, &body->position);
@@ -1557,17 +1557,17 @@ static int SwalotPlopBody_CheckMouth(SwalotPlopBody *body, const VecFx32 *positi
     VecFx32 hit;
     VecFx32 delta;
     VecFx32 normalized;
-    fx32 t;
+    fx32 hitFraction;
     fx32 distance;
     fx32 strength;
     int result = 0;
     if (body->active == FALSE) {
         return result;
     }
-    SwalotPlop_IntersectPlane(position, move, &body->normal, body->mouthPlane, &hit, &t);
+    SwalotPlop_IntersectPlane(position, move, &body->normal, body->mouthPlane, &hit, &hitFraction);
     VEC_Subtract(&body->mouthPos, position, &delta);
     distance = VEC_Mag(&delta);
-    if (t >= 0 && t <= FX32_ONE) {
+    if (hitFraction >= 0 && hitFraction <= FX32_ONE) {
         if (distance <= body->mouthDepth) {
             if (body->mouthOpen == TRUE) {
                 result = 1;
@@ -1578,7 +1578,7 @@ static int SwalotPlopBody_CheckMouth(SwalotPlopBody *body, const VecFx32 *positi
             return 2;
         }
     }
-    if (t > 0 && distance < body->pushRadius) {
+    if (hitFraction > 0 && distance < body->pushRadius) {
         strength = FX_Mul(body->pushRadius - distance, body->pushStrength);
         VEC_Normalize(&delta, &normalized);
         push->x = FX_Mul(normalized.x, strength);
@@ -1627,22 +1627,22 @@ static BOOL SwalotPlopBody_IsInside(SwalotPlopBody *body, const VecFx32 *pos) {
 
 static fx32 SwalotPlopBody_CalcMouthDepth(SwalotPlopBody *body, s32 tilt) {
     s32 degrees = 90;
-    s32 t;
+    s32 depth;
     degrees <<= 2;
-    t = (degrees * tilt) / 0xFFFF;
-    t = ((90 - t) * body->mouthDepthRange) / 90;
-    t += body->mouthDepthMin;
-    return t;
+    depth = (degrees * tilt) / 0xFFFF;
+    depth = ((90 - depth) * body->mouthDepthRange) / 90;
+    depth += body->mouthDepthMin;
+    return depth;
 }
 
 static fx32 SwalotPlopBody_CalcHeight(SwalotPlopBody *body, s32 tilt) {
     s32 degrees = 90;
-    s32 t;
+    s32 height;
     degrees <<= 2;
-    t = (degrees * tilt) / 0xFFFF;
-    t = (t * body->heightRange) / 90;
-    t += body->heightMin;
-    return t;
+    height = (degrees * tilt) / 0xFFFF;
+    height = (height * body->heightRange) / 90;
+    height += body->heightMin;
+    return height;
 }
 
 static void SwalotPlopBody_SetScale(SwalotPlopBody *body, fx32 scale) {
@@ -3380,9 +3380,9 @@ static inline int FxMul(int a, int b) {
 static void SwalotPlop_CalcArcStep(int step, int steps, int radius, int startAngle, int endAngle, int *x, int *y) {
     u16 angle = (s16)(startAngle + ((endAngle - startAngle) * step) / steps);
     int cosine = GF_CosDegNoWrap(angle);
-    int r = radius << 12;
-    *x = FxMul(cosine, r) >> 12;
-    *y = FxMul(GF_SinDegNoWrap(angle), r) >> 12;
+    int radiusFx = radius << 12;
+    *x = FxMul(cosine, radiusFx) >> 12;
+    *y = FxMul(GF_SinDegNoWrap(angle), radiusFx) >> 12;
 }
 
 static void SwalotPlopStage_Init(SwalotPlopStage *stage, SwalotPlopGfx *gfx, NARC *narc, int playerCount, int localIndex, enum HeapID heapId, NNSFndAllocator *allocator) {

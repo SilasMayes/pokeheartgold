@@ -71,7 +71,7 @@ static BOOL ciCheckForID(ChatConnection *chat, int id) {
 
 // The connection was lost: queue the disconnected callback once.
 void ciHandleDisconnect(ChatConnection *chat, const char *reason) {
-    const char *args;
+    ChatDisconnectedArgs args;
     ASSERT_CHAT(chat, gChatStr_ciHandleDisconnect, 115);
     if (chat->disconnected) {
         return;
@@ -88,23 +88,23 @@ void ciHandleDisconnect(ChatConnection *chat, const char *reason) {
     if (!chat->globalCallbacks.disconnected) {
         return;
     }
-    args = reason;
-    ciAddCallback_(chat, 1, chat->globalCallbacks.disconnected, (u32 *)&args, chat->globalCallbacks.param, 0, NULL, 4);
+    args.reason = reason;
+    ciAddCallback_(chat, CALLBACK_DISCONNECTED, chat->globalCallbacks.disconnected, &args, chat->globalCallbacks.param, 0, NULL, sizeof(args));
 }
 
 // Per-frame work: receive and handle the server lines, then call the queued callbacks of the request id
 // (0 = all).
 void ciThink(ChatConnection *chat, int id) {
     ChatMessage *message;
-    u32 text;
+    ChatRawArgs args;
     ASSERT_CHAT(chat, gChatStr_ciThink, 154);
     if (chat->socket.state == 1) {
         ciSocketThink(&chat->socket);
         message = ciSocketRecv(&chat->socket);
         while (message) {
             if (chat->globalCallbacks.raw) {
-                text = (u32)message->text;
-                ciAddCallback_(chat, 0, chat->globalCallbacks.raw, &text, chat->globalCallbacks.param, 0, NULL, 4);
+                args.raw = message->text;
+                ciAddCallback_(chat, CALLBACK_RAW, chat->globalCallbacks.raw, &args, chat->globalCallbacks.param, 0, NULL, sizeof(args));
             }
             ciProcessServerMessage(chat, message);
             message = ciSocketRecv(&chat->socket);
@@ -471,7 +471,7 @@ void chatSendChannelMessageA(ChatConnection *chat, const char *channel, const ch
     args.channel = channel;
     args.message = message;
     args.type = type;
-    ciAddCallback_(chat, 4, callbacks->message, (u32 *)&args, callbacks->param, 0, (char *)channel, sizeof(args));
+    ciAddCallback_(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->message, &args, callbacks->param, 0, channel, sizeof(args));
 }
 
 // Sets the mode of a channel ("+i-p..." from the eight mode fields, then the limit).
@@ -548,7 +548,7 @@ void chatGetChannelModeA(ChatConnection *chat, const char *channel, void *callba
         args.success = TRUE;
         args.mode = &mode;
         args.channel = channel;
-        ciAddCallback_(chat, 17, callback, (u32 *)&args, param, id, NULL, sizeof(args));
+        ciAddCallback_(chat, CALLBACK_GET_CHANNEL_MODE, callback, &args, param, id, NULL, sizeof(args));
         if (!blocking) {
             return;
         }
@@ -819,15 +819,15 @@ int ciNickIsValid(const char *nick) {
 }
 
 // The nick was refused: queue the nick error callback, or end the connect attempt without one.
-void ciNickError(ChatConnection *chat, int type, const char *nick, int unk_0C, int unk_10) {
+void ciNickError(ChatConnection *chat, int type, const char *nick, int numSuggestedNicks, char **suggestedNicks) {
     ASSERT_CHAT(chat, gChatStr_ciNickError, 3017);
     if (chat->nickErrorCallback) {
         ChatNickErrorArgs args = { 0 };
-        args.suggestedNicks = unk_10;
+        args.suggestedNicks = suggestedNicks;
         args.type = type;
         args.nick = nick;
-        args.numSuggestedNicks = unk_0C;
-        ciAddCallback_(chat, CALLBACK_NICK_ERROR, chat->nickErrorCallback, (u32 *)&args, chat->connectParam, 0, NULL, sizeof(args));
+        args.numSuggestedNicks = numSuggestedNicks;
+        ciAddCallback_(chat, CALLBACK_NICK_ERROR, chat->nickErrorCallback, &args, chat->connectParam, 0, NULL, sizeof(args));
         return;
     }
     chat->connecting = FALSE;

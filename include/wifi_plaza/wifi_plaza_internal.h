@@ -350,7 +350,7 @@ typedef struct WiFiPlazaWork {
     WiFiPlazaNews *news;
     u32 lightingStarted;
     WiFiPlazaPlace places[50]; // filled from the profile
-    u32 currentTime;
+    WiFiPlazaTime currentTime;
     s64 lobbyTime;     // refreshed every frame
     s64 lobbyOpenTime; // PPW_LobbyGetTimeInfo when the lobby opened
     PlayerProfile *profiles[4];
@@ -602,9 +602,9 @@ typedef struct WiFiPlazaLobbyClient {
 
 u32 WiFiPlazaWork_HasError(WiFiPlazaWork *work);
 BOOL WiFiPlazaWork_TakeExcessFlood(WiFiPlazaWork *work);
-void *WiFiPlazaWork_GetNews(WiFiPlazaWork *work);
+WiFiPlazaNews *WiFiPlazaWork_GetNews(WiFiPlazaWork *work);
 void *WiFiPlazaWork_GetPlaces(WiFiPlazaWork *work);
-u32 *WiFiPlazaWork_GetCurrentTimePtr(WiFiPlazaWork *work);
+WiFiPlazaTime *WiFiPlazaWork_GetCurrentTimePtr(WiFiPlazaWork *work);
 BOOL WiFiPlazaWork_TakePlayerEntered(WiFiPlazaWork *work, int bit);
 BOOL WiFiPlazaWork_TakePlayerLeft(WiFiPlazaWork *work, int bit);
 BOOL WiFiPlazaWork_IsEventFlagSet(WiFiPlazaWork *work, int bit);
@@ -669,7 +669,7 @@ void WiFiPlazaPlayer_GetSurvey(WiFiPlazaPlayer *player, WiFiPlazaPlayerSurvey *o
 
 void *WiFiPlazaWork_GetOwnPlayerProfile(WiFiPlazaWork *work);
 int WiFiPlazaWork_IsSpecialVisitor(WiFiPlazaWork *work, int slot);
-void WiFiPlazaWork_GetSpecialVisitors(WiFiPlazaWork *work, void *dest);
+void WiFiPlazaWork_GetSpecialVisitors(WiFiPlazaWork *work, u8 *dest);
 int WiFiPlazaWork_HasWordSet(WiFiPlazaWork *work, int slot);
 u16 *WiFiPlazaWork_GetWordSet(WiFiPlazaWork *work, int slot);
 u32 WiFiPlaza_GetChannelPlayerCount(WiFiPlazaWork *work);
@@ -764,6 +764,9 @@ u32 WiFiPlaza_GetTypeByChoice(u32 index);
 int WiFiPlaza_GetErrorMessageClass(u32 errorCode, u32 context);
 BOOL WiFiPlaza_IsErrorRecoverable(u32 errorCode, u32 context);
 BOOL WiFiPlaza_HasConnectionFailed(void);
+// WiFiPlazaNews_GetEventSlot: the event names no further lobby slot.
+#define WIFI_PLAZA_NEWS_NO_SLOT WIFI_PLAZA_MAX_PLAYERS
+
 WiFiPlazaNews *WiFiPlazaNews_New(enum HeapID heapID);
 void WiFiPlazaNews_Delete(WiFiPlazaNews *news);
 void WiFiPlazaNews_Update(WiFiPlazaNews *news);

@@ -3,6 +3,19 @@
 
 #include "global.h"
 
+// Wireless_GetState
+#define WIRELESS_STATE_STOPPED  0
+#define WIRELESS_STATE_IDLE     1
+#define WIRELESS_STATE_SCANNING 2
+#define WIRELESS_STATE_BUSY     3
+#define WIRELESS_STATE_MP       4 // MP communication running (parent, or child connected)
+#define WIRELESS_STATE_5        5
+#define WIRELESS_STATE_CHILD    6
+#define WIRELESS_STATE_MEASURED 7 // all channels measured, Wireless_SelectChannel picks one
+#define WIRELESS_STATE_8        8
+#define WIRELESS_STATE_ERROR    9
+#define WIRELESS_STATE_FATAL    10
+
 typedef void (*WirelessSentFunc)(BOOL success);
 
 u16 Wireless_GetConnectedBitmap(void);
