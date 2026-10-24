@@ -368,13 +368,11 @@ void MailboxApp_CreateMailMenuItems(MailboxApp *app) {
     app->data->listMenuSpawner = TouchscreenListMenuSpawner_Create(HEAP_ID_157, NULL);
     numItems = MailboxApp_GetMailMenuItemCount(app);
     app->data->listMenuItems = ListMenuItems_New(numItems, HEAP_ID_157);
-    i = 0;
-    do {
+    for (i = 0; i < 4; i++) {
         if (numItems != 2 || (i != 2 && i != 1)) {
             ListMenuItems_AppendFromMsgData(app->data->listMenuItems, app->data->msgData, msg_0232_00005 + i, i);
         }
-        i++;
-    } while (i < 4);
+    }
 }
 
 void MailboxApp_DeleteMailMenuItems(MailboxApp *app) {

@@ -309,7 +309,7 @@ static void VsRecorder_ScrollSearchResultIcons(VsRecorderWork *work) {
     }
     for (j = 0; j < 6; j++) {
         if (search->icons[row][j].sprite != NULL) {
-            VsRecorder_DeleteSprite(work, (void *)search->icons[row][j].resId, search->icons[row][j].sprite);
+            VsRecorder_DeleteSprite(work, search->icons[row][j].resId, search->icons[row][j].sprite);
             freed[j] = search->icons[row][j].resId;
             search->icons[row][j].sprite = NULL;
         }
@@ -778,9 +778,9 @@ BOOL VsRecorder_VideoSearchSelectFacility(VsRecorderWork *work) {
             VsRecorder_CreateTouchScrollSprites(&work->touchScroll, work);
             VsRecorder_ClearListWindow(&work->listWindow);
             if (VsRecorderApp_HasVisitedBattleFrontier(work) == TRUE) {
-                VsRecorder_InitMessageList(&work->listWindow, work, (VsRecorderListConfig *)&gVsRecorderSearchFacilityListConfigLong);
+                VsRecorder_InitMessageList(&work->listWindow, work, &gVsRecorderSearchFacilityListConfigLong);
             } else {
-                VsRecorder_InitMessageList(&work->listWindow, work, (VsRecorderListConfig *)&gVsRecorderSearchFacilityListConfig);
+                VsRecorder_InitMessageList(&work->listWindow, work, &gVsRecorderSearchFacilityListConfig);
             }
             VsRecorder_TouchScrollSetEnabled(&work->touchScroll, &work->listWindow);
             VsRecorder_CreateListArrows(&work->listWindow, work, NNS_G2D_VRAM_TYPE_2DSUB);
@@ -1131,7 +1131,7 @@ BOOL VsRecorder_VideoSearchSelectLocation(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&search->eva, &search->evb, FALSE, 2)) {
             VsRecorder_SetVBlankPaused(work, TRUE);
             VsRecorder_CreateTouchScrollSprites(&work->touchScroll, work);
-            VsRecorder_InitMessageList(&work->listWindow, work, (VsRecorderListConfig *)&gVsRecorderSearchLocationListConfig);
+            VsRecorder_InitMessageList(&work->listWindow, work, &gVsRecorderSearchLocationListConfig);
             VsRecorder_TouchScrollSetEnabled(&work->touchScroll, &work->listWindow);
             VsRecorder_CreateListArrows(&work->listWindow, work, NNS_G2D_VRAM_TYPE_2DSUB);
             VsRecorder_SetVBlankPaused(work, FALSE);

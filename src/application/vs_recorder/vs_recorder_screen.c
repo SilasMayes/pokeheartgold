@@ -59,10 +59,6 @@ typedef struct VsRecorderMsgIdTable {
     u32 ids[12];
 } VsRecorderMsgIdTable;
 
-typedef struct VsRecorderMailBuf {
-    u32 v[2];
-} VsRecorderMailBuf;
-
 static void VsRecorder_PrintProfile(VsRecorderProfile *profile, VsRecorderWork *work);
 static void VsRecorder_RemoveProfileWindows(VsRecorderProfile *profile);
 static void VsRecorder_SetProfileMonIconDrawFlag(VsRecorderProfile *profile, BOOL draw);
@@ -80,7 +76,7 @@ typedef struct VsRecorderRankLimits {
 
 static void VsRecorder_PrintListLocation(VsRecorderListWindow *list, VsRecorderWork *work);
 
-static ManagedSprite *VsRecorder_NewScrollSprite(void *unused, VsRecorderWork *work, NNS_G2D_VRAM_TYPE vram, int anim);
+static ManagedSprite *VsRecorder_NewScrollSprite(VsRecorderTouchScroll *scroll, VsRecorderWork *work, NNS_G2D_VRAM_TYPE vram, int anim);
 static void VsRecorder_DeleteTouchScrollSprites(VsRecorderTouchScroll *scroll);
 static void VsRecorder_TouchScrollTrack(VsRecorderTouchScroll *scroll, int y);
 static void VsRecorder_FlipScreensTask(SysTask *task, void *data);
@@ -230,8 +226,8 @@ void VsRecorder_SetMenuRowText(VsRecorderWork *work, VsRecorderMenuRow *row, int
     String *str;
     MsgData *msgData = work->msgData;
 
-    if (msgId == 8) {
-        void *owner = work->videoOwners[entry->selection];
+    if (msgId == msg_0013_00008) {
+        FrontierCard *owner = work->videoOwners[entry->selection];
         if (owner == NULL) {
             str = NewString_ReadMsgData(msgData, msgId);
         } else {
@@ -246,8 +242,8 @@ void VsRecorder_SetMenuRowText(VsRecorderWork *work, VsRecorderMenuRow *row, int
             String_Delete(name);
             MessageFormat_Delete(format);
         }
-    } else if (msgId == 0x29) {
-        void *owner = work->videoOwners[entry->selection];
+    } else if (msgId == msg_0013_00041) {
+        FrontierCard *owner = work->videoOwners[entry->selection];
         if (owner == NULL) {
             str = NewString_ReadMsgData(msgData, msgId);
         } else {
@@ -720,7 +716,7 @@ void VsRecorder_ShowMenuNotice(VsRecorderWork *work, int msgId) {
 static void VsRecorder_PrintProfile(VsRecorderProfile *profile, VsRecorderWork *work) {
     VsRecorderWindowCoordsTable coords = sVsRecorderProfileLabelWindows;
     VsRecorderMsgIdTable msgIds = sVsRecorderProfileLabelMsgIds;
-    VsRecorderMailBuf mail;
+    MailMessage mail;
     String *cityTemplate;
     String *countryTemplate;
     String *countryStr;
@@ -841,9 +837,9 @@ static void VsRecorder_PrintProfile(VsRecorderProfile *profile, VsRecorderWork *
     String_Delete(str);
 
     window = &profile->windows[7];
-    str = FrontierCard_GetGreeting(card, (MailMessage *)&mail, HEAP_ID_109);
+    str = FrontierCard_GetGreeting(card, &mail, HEAP_ID_109);
     if (str == NULL) {
-        str = MailMsg_GetExpandedString((MailMessage *)&mail, HEAP_ID_109);
+        str = MailMsg_GetExpandedString(&mail, HEAP_ID_109);
     }
     FillWindowPixelBuffer(window, 0);
     AddTextPrinterParameterizedWithColor(window, 0, str, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 13, 0), NULL);
@@ -958,7 +954,7 @@ static void VsRecorder_CreateProfileAvatar(VsRecorderProfile *profile, VsRecorde
     SpriteManager *spriteManager = work->spriteManager;
     plttData = work->plttData;
     if (work->selection == 0) {
-        if (gender == 1) {
+        if (gender == PLAYER_GENDER_FEMALE) {
             palFile = 15;
             charFile = 16;
         }
@@ -1046,7 +1042,7 @@ static void VsRecorder_PrintListLocation(VsRecorderListWindow *list, VsRecorderW
 }
 
 // one message per entry; entry msg 0x10 is followed by the trainer's location
-void VsRecorder_InitMessageList(VsRecorderListWindow *list, VsRecorderWork *work, VsRecorderListConfig *config) {
+void VsRecorder_InitMessageList(VsRecorderListWindow *list, VsRecorderWork *work, const VsRecorderListConfig *config) {
     Window *window = &list->window;
     int i;
     int count;
@@ -1070,7 +1066,7 @@ void VsRecorder_InitMessageList(VsRecorderListWindow *list, VsRecorderWork *work
         String *str = NewString_ReadMsgData(list->msgData, config->entries[i].msgId);
         AddTextPrinterParameterizedWithColor(window, 0, str, 0, config->lineHeight * 16 * i, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 13, 0), NULL);
         String_Delete(str);
-        if (config->entries[i].msgId == 0x10) {
+        if (config->entries[i].msgId == msg_0013_00016) {
             VsRecorder_PrintListLocation(list, work);
         }
     }
@@ -1078,7 +1074,7 @@ void VsRecorder_InitMessageList(VsRecorderListWindow *list, VsRecorderWork *work
 }
 
 // message list (msgData, or the app's msg_0013 if NULL); without entries: numbered names of work->net.videoList.headers
-void VsRecorder_InitList(VsRecorderListWindow *list, VsRecorderWork *work, MsgData *msgData, VsRecorderListConfig *config) {
+void VsRecorder_InitList(VsRecorderListWindow *list, VsRecorderWork *work, MsgData *msgData, const VsRecorderListConfig *config) {
     Window *window = &list->window;
     int i;
     int count;
@@ -1142,7 +1138,7 @@ void VsRecorder_InitList(VsRecorderListWindow *list, VsRecorderWork *work, MsgDa
 }
 
 // ranking list (type 0 message value, 1 month, 2 species); equal times share a rank
-void VsRecorder_InitRankingList(VsRecorderListWindow *list, VsRecorderWork *work, MsgData *msgData, VsRecorderListConfig *config, int unused, int type, String *valueTemplate) {
+void VsRecorder_InitRankingList(VsRecorderListWindow *list, VsRecorderWork *work, MsgData *msgData, const VsRecorderListConfig *config, int ranking, int type, String *valueTemplate) {
     Window *win;
     String *label;
     String *number;
@@ -1255,7 +1251,7 @@ void VsRecorder_InitRankingList(VsRecorderListWindow *list, VsRecorderWork *work
 }
 
 // two columns of prepared strings (items[2 * row], items[2 * row + 1])
-void VsRecorder_InitPairList(VsRecorderListWindow *list, VsRecorderWork *work, VsRecorderListConfig *config, String **items) {
+void VsRecorder_InitPairList(VsRecorderListWindow *list, VsRecorderWork *work, const VsRecorderListConfig *config, String **items) {
     Window *window = &list->window;
     int i;
     int count;
@@ -1332,7 +1328,7 @@ int VsRecorder_RedrawPairList(VsRecorderListWindow *list, VsRecorderWork *work, 
     return 0;
 }
 
-int VsRecorder_RedrawRankingList(VsRecorderListWindow *list, VsRecorderWork *work, void *unused, u32 type, String *valueTemplate) {
+int VsRecorder_RedrawRankingList(VsRecorderListWindow *list, VsRecorderWork *work, int ranking, u32 type, String *valueTemplate) {
     Window *win;
     String *label;
     String *number;
@@ -1717,7 +1713,7 @@ void VsRecorder_FreeListArrows(VsRecorderListWindow *list, VsRecorderWork *work)
     Sprite_DeleteAndFreeResources(list->arrows[1]);
 }
 
-static ManagedSprite *VsRecorder_NewScrollSprite(void *unused, VsRecorderWork *work, NNS_G2D_VRAM_TYPE vram, int anim) {
+static ManagedSprite *VsRecorder_NewScrollSprite(VsRecorderTouchScroll *scroll, VsRecorderWork *work, NNS_G2D_VRAM_TYPE vram, int anim) {
     ManagedSpriteTemplate template;
     ManagedSprite *sprite;
 
@@ -2058,7 +2054,7 @@ void VsRecorder_DeleteMonIcon(VsRecorderWork *work, u32 index, ManagedSprite *sp
     }
 }
 
-void VsRecorder_DeleteSprite(void *unused0, void *unused1, ManagedSprite *sprite) {
+void VsRecorder_DeleteSprite(VsRecorderWork *work, int resId, ManagedSprite *sprite) {
     if (sprite != NULL) {
         Sprite_DeleteAndFreeResources(sprite);
     }
@@ -2191,7 +2187,7 @@ static void VsRecorder_PrintVideoInfo(VsRecorderVideoInfo *info, VsRecorderWork 
 
 static void VsRecorder_RemoveVideoInfoWindows(VsRecorderVideoInfo *info, VsRecorderWork *work) {
     int i;
-    Window *window = (Window *)info;
+    Window *window;
     i = 0;
     window = info->windows;
     do {
@@ -2241,7 +2237,7 @@ static void VsRecorder_CreateVideoPartyIcons(VsRecorderVideoInfo *info, VsRecord
     int end;
     int fm;
     int sp;
-    int n;
+    int slot;
     int i;
     int form;
     SpriteSystem_LoadPaletteBuffer(plttData, PLTTBUF_MAIN_OBJ, spriteSystem, spriteManager, NARC_poketool_icongra_poke_icon, GetMonIconPlttNaix(), FALSE, 3, NNS_G2D_VRAM_TYPE_2DMAIN, 100000);
@@ -2249,7 +2245,7 @@ static void VsRecorder_CreateVideoPartyIcons(VsRecorderVideoInfo *info, VsRecord
     SpriteSystem_LoadAnimResObj(spriteSystem, spriteManager, NARC_poketool_icongra_poke_icon, GetMonIconAnim64KNaix(), FALSE, 100000);
     step = 6;
     end = 6;
-    n = 0;
+    slot = 0;
     start = 0;
     sel = 0;
     if (VsRecorderVideoInfo_UsesThreeMonLayout(info) == TRUE) {
@@ -2259,19 +2255,19 @@ static void VsRecorder_CreateVideoPartyIcons(VsRecorderVideoInfo *info, VsRecord
     }
     do {
         for (i = start; i < end; i++) {
-            species[n] = 0xFF;
+            species[slot] = 0xFF;
             mon = BattleRecordHeader_GetField(info->header, BATTLE_RECORD_HEADER_SPECIES, i);
             form = BattleRecordHeader_GetField(info->header, BATTLE_RECORD_HEADER_FORM, i);
             if (mon != 0) {
-                species[n] = mon;
-                forms[n] = form;
-                n++;
+                species[slot] = mon;
+                forms[slot] = form;
+                slot++;
             }
         }
-        for (i = n; i < end; i++) {
-            species[n] = 0;
-            forms[n] = 0;
-            n++;
+        for (i = slot; i < end; i++) {
+            species[slot] = 0;
+            forms[slot] = 0;
+            slot++;
         }
         start += step;
         end += step;
@@ -2317,15 +2313,13 @@ void VsRecorder_FreeVideoInfo(VsRecorderVideoInfo *info, VsRecorderWork *work) {
     SpriteManager_UnloadPlttObjById(work->spriteManager, 100000);
     SpriteManager_UnloadCellObjById(work->spriteManager, 100000);
     SpriteManager_UnloadAnimObjById(work->spriteManager, 100000);
-    i = 0;
-    do {
+    for (i = 0; i < 12; i++) {
         if (info->monIcons[i]) {
             SpriteManager_UnloadCharObjById(work->spriteManager, i + 100000);
             Sprite_DeleteAndFreeResources(info->monIcons[i]);
             info->monIcons[i] = NULL;
         }
-        i++;
-    } while (i < 12);
+    }
     VsRecorder_RemoveVideoInfoWindows(info, work);
 }
 
@@ -2350,12 +2344,12 @@ void VsRecorder_ResetRecordSave(VsRecorderWork *work) {
 }
 
 BOOL VsRecorder_ClearSavedVideoKeys(VsRecorderWork *work) {
-    u32 a;
-    u32 b;
-    u8 c;
+    u32 curKey;
+    u32 prevKey;
+    u8 lastSlot;
     SAVE_MISC_DATA *misc = Save_Misc_Get(work->saveData);
-    SaveMisc_GetExtraChunkKeys(misc, work->selection + 2, &a, &b, &c);
-    SaveMisc_SetExtraChunkKeys(misc, work->selection + 2, -1, -1, c);
+    SaveMisc_GetExtraChunkKeys(misc, work->selection + 2, &curKey, &prevKey, &lastSlot);
+    SaveMisc_SetExtraChunkKeys(misc, work->selection + 2, -1, -1, lastSlot);
     return TRUE;
 }
 

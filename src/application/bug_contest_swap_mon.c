@@ -79,7 +79,7 @@ typedef struct SwapMonPanel {
     Pokemon *mon;
     ManagedSprite *sprites[2]; // frame, icon
     Window windows[SWAP_MON_PANEL_WINDOWS];
-    void *scrolling; // non-NULL while the panel slides to targetY
+    BOOL scrolling; // while the panel slides to targetY
     s16 targetY;
     s16 x;
     s16 y;
@@ -169,14 +169,14 @@ static ManagedSprite *BugContestSwapMon_NewSprite(SpriteSystem *spriteSystem, Sp
 static ManagedSprite *BugContestSwapMon_NewMonIconSprite(SpriteSystem *spriteSystem, SpriteManager *spriteManager, s16 x, s16 y, u8 slot);
 static SwapMonPanel *SwapMonPanel_New(SwapMonPanels *panels, u16 x, u16 y, int slot, Pokemon *mon);
 static void SwapMonPanel_Draw(SwapMonPanel *panel, SwapMonText *text);
-static void SwapMonPanel_StartScroll(SwapMonPanel *panel, void *scrolling, s16 targetY);
+static void SwapMonPanel_StartScroll(SwapMonPanel *panel, BOOL scrolling, s16 targetY);
 static void SwapMonPanel_Scroll(SwapMonPanel *panel);
 static BOOL SwapMonPanel_IsScrollDone(SwapMonPanel *panel);
 static void SwapMonPanel_Delete(SwapMonPanel *panel);
 static SwapMonPanels *SwapMonPanels_New(enum HeapID heapID, BgConfig *bgConfig, SwapMonText *text, SpriteSystem *spriteSystem, SpriteManager *spriteManager, s8 iconPalette);
 static void SwapMonPanels_Delete(SwapMonPanels *panels);
 static void SwapMonPanels_Add(SwapMonPanels *panels, int slot, u16 x, u16 y, Pokemon *mon);
-static void SwapMonPanels_StartScroll(SwapMonPanels *panels, int slot, void *scrolling, s16 targetY);
+static void SwapMonPanels_StartScroll(SwapMonPanels *panels, int slot, BOOL scrolling, s16 targetY);
 static void SwapMonPanels_Scroll(SwapMonPanels *panels);
 static BOOL SwapMonPanels_IsScrollDone(SwapMonPanels *panels);
 static SwapMonText *SwapMonText_New(enum HeapID heapID);
@@ -469,16 +469,16 @@ static BOOL BugContestSwapMon_ChooseMon(BugContestSwapMon *swapMon) {
         case YESNORESPONSE_YES:
             YesNoPrompt_Reset(swapMon->yesNoPrompt);
             ManagedSprite_SetDrawFlag(swapMon->cursorSprite, FALSE);
-            SwapMonPanels_StartScroll(swapMon->panels, 0, (void *)TRUE, 72);
-            SwapMonPanels_StartScroll(swapMon->panels, 1, (void *)TRUE, 242);
+            SwapMonPanels_StartScroll(swapMon->panels, 0, TRUE, 72);
+            SwapMonPanels_StartScroll(swapMon->panels, 1, TRUE, 242);
             BugContestSwapMon_SetResult(swapMon, SWAP_MON_CHOICE_KEEP_NEW);
             swapMon->substate = SWAP_MON_CHOOSE_SCROLL_KEEP_NEW;
             break;
         case YESNORESPONSE_NO:
             YesNoPrompt_Reset(swapMon->yesNoPrompt);
             ManagedSprite_SetDrawFlag(swapMon->cursorSprite, FALSE);
-            SwapMonPanels_StartScroll(swapMon->panels, 0, (void *)TRUE, -50);
-            SwapMonPanels_StartScroll(swapMon->panels, 1, (void *)TRUE, 72);
+            SwapMonPanels_StartScroll(swapMon->panels, 0, TRUE, -50);
+            SwapMonPanels_StartScroll(swapMon->panels, 1, TRUE, 72);
             BugContestSwapMon_SetResult(swapMon, SWAP_MON_CHOICE_KEEP_CURRENT);
             swapMon->substate = SWAP_MON_CHOOSE_SCROLL_KEEP_CURRENT;
             break;
@@ -882,7 +882,7 @@ static void SwapMonPanel_Draw(SwapMonPanel *panel, SwapMonText *text) {
     BugContestSwapMon_DrawHpBar(&panel->windows[SWAP_MON_PANEL_WIN_HP_BAR], (u16)hp, (u16)maxHp);
 }
 
-static void SwapMonPanel_StartScroll(SwapMonPanel *panel, void *scrolling, s16 targetY) {
+static void SwapMonPanel_StartScroll(SwapMonPanel *panel, BOOL scrolling, s16 targetY) {
     panel->scrolling = scrolling;
     panel->targetY = targetY;
 }
@@ -912,7 +912,7 @@ static void SwapMonPanel_Scroll(SwapMonPanel *panel) {
         distance = (s16)distance;
         step = distance >> 2;
         if (distance <= 1 || step == 0) {
-            panel->scrolling = NULL;
+            panel->scrolling = FALSE;
         } else {
             if (current > target) {
                 step = (s16)(~0u * (u32)step); // -step
@@ -932,7 +932,7 @@ static void SwapMonPanel_Scroll(SwapMonPanel *panel) {
 }
 
 static BOOL SwapMonPanel_IsScrollDone(SwapMonPanel *panel) {
-    return panel->scrolling == NULL;
+    return !panel->scrolling;
 }
 
 static void SwapMonPanel_Delete(SwapMonPanel *panel) {
@@ -985,25 +985,23 @@ static void SwapMonPanels_Add(SwapMonPanels *panels, int slot, u16 x, u16 y, Pok
     panels->panels[slot] = panel;
 }
 
-static void SwapMonPanels_StartScroll(SwapMonPanels *panels, int slot, void *scrolling, s16 targetY) {
+static void SwapMonPanels_StartScroll(SwapMonPanels *panels, int slot, BOOL scrolling, s16 targetY) {
     SwapMonPanel_StartScroll(panels->panels[slot], scrolling, targetY);
 }
 
 static void SwapMonPanels_Scroll(SwapMonPanels *panels) {
     int i;
-    u8 *slot = (u8 *)panels;
-    for (i = 0; i < 2; i++, slot += sizeof(SwapMonPanel *)) {
-        if (!SwapMonPanel_IsScrollDone(((SwapMonPanels *)slot)->panels[0])) {
-            SwapMonPanel_Scroll(((SwapMonPanels *)slot)->panels[0]);
+    for (i = 0; i < 2; i++) {
+        if (!SwapMonPanel_IsScrollDone(panels->panels[i])) {
+            SwapMonPanel_Scroll(panels->panels[i]);
         }
     }
 }
 
 static BOOL SwapMonPanels_IsScrollDone(SwapMonPanels *panels) {
     int i;
-    u8 *slot = (u8 *)panels;
-    for (i = 0; i < 2; i++, slot += sizeof(SwapMonPanel *)) {
-        if (!SwapMonPanel_IsScrollDone(((SwapMonPanels *)slot)->panels[0])) {
+    for (i = 0; i < 2; i++) {
+        if (!SwapMonPanel_IsScrollDone(panels->panels[i])) {
             return FALSE;
         }
     }

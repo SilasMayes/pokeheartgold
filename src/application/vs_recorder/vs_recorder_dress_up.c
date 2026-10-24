@@ -1240,7 +1240,8 @@ static void VsRecorder_RemoveDressUpToggleWindow(VsRecorderWork *work) {
 }
 
 static void VsRecorder_PrintDressUpToggleLabel(VsRecorderWork *work, u32 msgId) {
-    Window *window = &((VsRecorderDressUp *)work->screenWork)->windows[0];
+    VsRecorderDressUp *dressUp = work->screenWork;
+    Window *window = &dressUp->windows[0];
     String *str;
     FillWindowPixelBuffer(window, 0);
     str = NewString_ReadMsgData(work->msgData, msgId);
@@ -1250,7 +1251,8 @@ static void VsRecorder_PrintDressUpToggleLabel(VsRecorderWork *work, u32 msgId) 
 }
 
 static void VsRecorder_CreateDressUpToggleWindow(VsRecorderWork *work) {
-    Window *window = &((VsRecorderDressUp *)work->screenWork)->windows[0];
+    VsRecorderDressUp *dressUp = work->screenWork;
+    Window *window = &dressUp->windows[0];
     InitWindow(window);
     AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_SUB_2, 8, 3, 16, 2, 14, 1);
     VsRecorder_PrintDressUpToggleLabel(work, msg_0013_00121); // the photo is shown
@@ -1258,8 +1260,9 @@ static void VsRecorder_CreateDressUpToggleWindow(VsRecorderWork *work) {
 
 static void VsRecorder_DressUpVBlankCB(void *data) {
     VsRecorderWork *work = data;
-    if (((VsRecorderDressUp *)work->screenWork)->portrait != NULL) {
-        AccessoryPortrait_VBlank(((VsRecorderDressUp *)work->screenWork)->portrait);
+    VsRecorderDressUp *dressUp = work->screenWork;
+    if (dressUp->portrait != NULL) {
+        AccessoryPortrait_VBlank(dressUp->portrait);
     }
     GF_RunVramTransferTasks();
     PaletteData_PushTransparentBuffers(work->plttData);
@@ -1502,6 +1505,7 @@ static void VsRecorder_OnDressUpCategoryTouch(u32 index, u32 event, void *arg) {
 
 // one window per species group, grayed out if no species of it was seen
 static void VsRecorder_CreateDressUpCategoryWindows(VsRecorderWork *work) {
+    VsRecorderDressUp *dressUp = work->screenWork;
     u32 textX;
     String *string;
     int baseTile;
@@ -1514,7 +1518,7 @@ static void VsRecorder_CreateDressUpCategoryWindows(VsRecorderWork *work) {
 
     baseTile = 1;
     hitbox = gVsRecorderSpeciesGroupHitboxes;
-    for (i = 0, window = ((VsRecorderDressUp *)work->screenWork)->windows; i < 9; i++) {
+    for (i = 0, window = dressUp->windows; i < 9; i++) {
         x = hitbox->rect.left >> 3;
         y = hitbox->rect.top >> 3;
         width = ((u32)hitbox->rect.right >> 3) - x;
@@ -1539,8 +1543,9 @@ static void VsRecorder_CreateDressUpCategoryWindows(VsRecorderWork *work) {
 }
 
 static void VsRecorder_RemoveDressUpCategoryWindows(VsRecorderWork *work) {
+    VsRecorderDressUp *dressUp = work->screenWork;
     u32 i;
-    Window *window = ((VsRecorderDressUp *)work->screenWork)->windows;
+    Window *window = dressUp->windows;
     for (i = 0; i < 9; i++) {
         ClearWindowTilemapAndCopyToVram(window);
         RemoveWindow(window);

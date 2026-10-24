@@ -908,7 +908,8 @@ static void WonderCardAlbum_LoadCardBg(WonderCardAlbum *album, int page) {
 }
 
 static void WonderCardAlbum_HandleListMenuInput(OverlayManager *manager, int *state, MysteryGiftMenuFunc cancelFunc) {
-    u32 input = ListMenu_ProcessInput(((WonderCardAlbum *)OverlayManager_GetData(manager))->listMenu);
+    WonderCardAlbum *album = OverlayManager_GetData(manager);
+    u32 input = ListMenu_ProcessInput(album->listMenu);
     int nextState;
 
     switch (input) {
@@ -1430,7 +1431,7 @@ static int WonderCardAlbum_UpdateReceiverList(WonderCardAlbum *album, Window *wi
     int count = 0;
     int changes = 0;
     int i;
-    u32 order[4];
+    s32 order[4];
     int netIds[4];
     MessageFormat *msgFormat;
     String *string;
@@ -1464,10 +1465,10 @@ static int WonderCardAlbum_UpdateReceiverList(WonderCardAlbum *album, Window *wi
     order[1] = album->receiverOrder[2];
     order[2] = album->receiverOrder[3];
     order[3] = album->receiverOrder[4];
-    netIds[0] = WonderCardAlbum_TakeEarliest((s32 *)order);
-    netIds[1] = WonderCardAlbum_TakeEarliest((s32 *)order);
-    netIds[2] = WonderCardAlbum_TakeEarliest((s32 *)order);
-    netIds[3] = WonderCardAlbum_TakeEarliest((s32 *)order);
+    netIds[0] = WonderCardAlbum_TakeEarliest(order);
+    netIds[1] = WonderCardAlbum_TakeEarliest(order);
+    netIds[2] = WonderCardAlbum_TakeEarliest(order);
+    netIds[3] = WonderCardAlbum_TakeEarliest(order);
     msgFormat = MessageFormat_New(HEAP_ID_85);
     msgData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0247_bin, HEAP_ID_85);
     y = 0;

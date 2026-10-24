@@ -250,7 +250,7 @@ typedef struct VsRecorderListWindow {
     int rows;     // visible rows
     int pages;
     Window window;
-    VsRecorderListConfig *config;
+    const VsRecorderListConfig *config;
     ManagedSprite *arrows[2]; // up, down
     MsgData *msgData;
     int cursor;    // selected entry (cursor lists)
@@ -282,7 +282,7 @@ typedef struct VsRecorderFlipArgs {
 typedef struct VsRecorderVideoList {
     GlobalTerminalNetVideoHeader *headers[30];
     GlobalTerminalNetVideoHeader videos[30]; // copies of the headers
-    volatile s32 count;
+    s32 count;
     u8 flags[30]; // flag byte of each video
     u8 unk_1B52[2];
 } VsRecorderVideoList;
@@ -297,7 +297,7 @@ typedef struct VsRecorderNetData {
 // battle video info panel on the top screen: owner, battle mode, video number, party icons
 typedef struct VsRecorderVideoInfo {
     const u16 *ownerName;
-    void *header; // battle record header
+    BattleRecordHeader *header;
     u8 unk_08[4];
     ManagedSprite *monIcons[12];
     Window windows[5];
@@ -555,8 +555,8 @@ struct VsRecorderWork {
     u32 selection;
     u32 boxUploaded; // a box was sent (only one per visit)
     u32 battleResult;
-    u32 videoFlagPtr;
-    void *savedVideos[4];
+    u8 *videoFlag;
+    BattleRecordHeader *savedVideos[4];
     FrontierCard *videoOwners[4];
     u32 menuNoticeShown; // notice raised by the menu touch
     u32 messageShown;
@@ -648,12 +648,12 @@ void VsRecorder_CreateProfile(VsRecorderProfile *profile, VsRecorderWork *work);
 void VsRecorder_FreeProfile(VsRecorderProfile *profile, VsRecorderWork *work);
 void VsRecorder_SetProfileDrawFlag(VsRecorderProfile *profile, BOOL draw);
 
-void VsRecorder_InitMessageList(VsRecorderListWindow *list, VsRecorderWork *work, VsRecorderListConfig *config);
-void VsRecorder_InitList(VsRecorderListWindow *list, VsRecorderWork *work, MsgData *msgData, VsRecorderListConfig *config);
-void VsRecorder_InitRankingList(VsRecorderListWindow *list, VsRecorderWork *work, MsgData *msgData, VsRecorderListConfig *config, int unused, int type, String *valueTemplate);
-void VsRecorder_InitPairList(VsRecorderListWindow *list, VsRecorderWork *work, VsRecorderListConfig *config, String **items);
+void VsRecorder_InitMessageList(VsRecorderListWindow *list, VsRecorderWork *work, const VsRecorderListConfig *config);
+void VsRecorder_InitList(VsRecorderListWindow *list, VsRecorderWork *work, MsgData *msgData, const VsRecorderListConfig *config);
+void VsRecorder_InitRankingList(VsRecorderListWindow *list, VsRecorderWork *work, MsgData *msgData, const VsRecorderListConfig *config, int ranking, int type, String *valueTemplate);
+void VsRecorder_InitPairList(VsRecorderListWindow *list, VsRecorderWork *work, const VsRecorderListConfig *config, String **items);
 int VsRecorder_RedrawPairList(VsRecorderListWindow *list, VsRecorderWork *work, String **items);
-int VsRecorder_RedrawRankingList(VsRecorderListWindow *list, VsRecorderWork *work, void *unused, u32 type, String *valueTemplate);
+int VsRecorder_RedrawRankingList(VsRecorderListWindow *list, VsRecorderWork *work, int ranking, u32 type, String *valueTemplate);
 u32 VsRecorder_UpdateMessageList(VsRecorderListWindow *list, VsRecorderWork *work);
 int VsRecorder_RedrawNameList(VsRecorderListWindow *list, VsRecorderWork *work);
 void VsRecorder_ListMoveCursor(VsRecorderListWindow *list, s16 delta);
@@ -686,7 +686,7 @@ NARC *VsRecorder_OpenMonIconNarc(enum HeapID heapID);
 void VsRecorder_CloseMonIconNarc(NARC *narc);
 ManagedSprite *VsRecorder_NewMonIcon(VsRecorderWork *work, NARC *narc, int index, int species, int form, int isEgg);
 void VsRecorder_DeleteMonIcon(VsRecorderWork *work, u32 index, ManagedSprite *sprite);
-void VsRecorder_DeleteSprite(void *unused0, void *unused1, ManagedSprite *sprite);
+void VsRecorder_DeleteSprite(VsRecorderWork *work, int resId, ManagedSprite *sprite);
 
 BOOL VsRecorder_HeaderUsesThreeMonLayout(void *header);
 int VsRecorderVideoInfo_GetScreenId(VsRecorderVideoInfo *info);
@@ -790,7 +790,7 @@ BOOL VsRecorder_RankingsSwitch(VsRecorderWork *work);
 
 BOOL VsRecorder_IsNetIdle(VsRecorderWork *work);
 GlobalTerminalNet *VsRecorder_GetNet(VsRecorderWork *work);
-u32 VsRecorder_WriteRecordAsync(SaveData *save, u32 index, u32 sealed, u16 *state, void *writeState);
+u32 VsRecorder_WriteRecordAsync(SaveData *save, u32 index, u32 sealed, u16 *state, u16 *writeState);
 int VsRecorder_WriteRecord(SaveData *save, int index);
 void VsRecorder_InitNet(VsRecorderWork *work);
 void VsRecorder_UpdateNet(VsRecorderWork *work);

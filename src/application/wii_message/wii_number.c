@@ -66,20 +66,20 @@ void WiiNumber_ToWiiAddress(String *wiiNumber, char *address, enum HeapID heapID
 // TRUE if the string is empty or only "0"s.
 BOOL WiiNumber_IsZero(String *wiiNumber, enum HeapID heapID) {
     u16 *chars;
-    u16 *c;
+    u16 *ch;
     BOOL zero = TRUE;
 
     chars = Heap_Alloc(heapID, 200);
     CopyStringToU16Array(wiiNumber, chars, 100);
     if (*chars != EOS) {
-        c = chars;
+        ch = chars;
         do {
-            if (*c != CHAR_0) {
+            if (*ch != CHAR_0) {
                 zero = FALSE;
                 break;
             }
-            c++;
-        } while (*c != EOS);
+            ch++;
+        } while (*ch != EOS);
     }
     Heap_Free(chars);
     return zero;
@@ -90,20 +90,20 @@ void WiiNumber_ParseDigitGroups(char *address, u32 *groups, enum HeapID unused) 
     int i;
     int j;
     int pos = 0;
-    char *c;
+    char *ch;
 
     for (i = 0; i < 4; i++) {
         *groups = 0;
         for (j = 0; j < 4; j++) {
-            while ((c = address + pos, *c < '0') || *c > '9') {
-                if (*c == 0) {
-                    GF_ASSERT(*c != 0);
+            while ((ch = address + pos, *ch < '0') || *ch > '9') {
+                if (*ch == 0) {
+                    GF_ASSERT(*ch != 0);
                     break;
                 }
                 pos++;
             }
             *groups *= 10;
-            *groups += *c - '0';
+            *groups += *ch - '0';
             pos++;
         }
         groups++;

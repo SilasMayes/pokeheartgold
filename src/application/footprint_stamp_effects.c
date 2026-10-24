@@ -725,12 +725,9 @@ void FootprintStamp_DrawSpreadX(FootprintStampBoard *board, FootprintStampObj *s
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x3F << 24);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x1F << 16);
     }
-    i = 0;
-    do {
-        ModelInstance_Draw(&spread->copies[0]);
-        i++;
-        spread = (FootprintStampSpread *)((u8 *)spread + sizeof(ModelInstance));
-    } while (i < 2);
+    for (i = 0; i < 2; i++) {
+        ModelInstance_Draw(&spread->copies[i]);
+    }
     ModelInstance_Draw(&stamp->instance);
 }
 
@@ -815,12 +812,9 @@ void FootprintStamp_DrawSpreadY(FootprintStampBoard *board, FootprintStampObj *s
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x3F << 24);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x1F << 16);
     }
-    i = 0;
-    do {
-        ModelInstance_Draw(&spread->copies[0]);
-        i++;
-        spread = (FootprintStampSpread *)((u8 *)spread + sizeof(ModelInstance));
-    } while (i < 2);
+    for (i = 0; i < 2; i++) {
+        ModelInstance_Draw(&spread->copies[i]);
+    }
     ModelInstance_Draw(&stamp->instance);
 }
 
@@ -1285,7 +1279,7 @@ BOOL FootprintStampCamera_PitchDown(FootprintStampBoard *unused, FootprintStampB
     return FALSE;
 }
 
-void FootprintStamp_PrintPlayerName(MsgData *msgData, MessageFormat *msgFormat, Window *windows, void *lobby, int playerId) {
+void FootprintStamp_PrintPlayerName(MsgData *msgData, MessageFormat *msgFormat, Window *windows, struct WiFiPlazaWork *lobby, int playerId) {
     u32 index = WiFiPlazaLobbyClient_IdToChannelSlot(playerId);
     int slot;
     WiFiPlazaPlayer *record;

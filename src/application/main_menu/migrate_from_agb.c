@@ -1175,9 +1175,8 @@ static void MigrateFromAgb_RemoveWindow(Window *window) {
 // Back from the confirmation screen to the boxes
 static void MigrateFromAgb_CloseConfirmScreen(MigrateFromAgbApp *app) {
     int i = 0;
-    MigrateFromAgbApp *cursor = app;
-    for (; i < MIGRATE_FROM_AGB_MON_COUNT; i++, cursor = (MigrateFromAgbApp *)((u8 *)cursor + sizeof(Sprite *))) {
-        Sprite_Delete(cursor->pickIcons[0]);
+    for (; i < MIGRATE_FROM_AGB_MON_COUNT; i++) {
+        Sprite_Delete(app->pickIcons[i]);
     }
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
     MigrateFromAgb_RemoveWindow(&app->msgWindow);
@@ -1373,7 +1372,7 @@ static BOOL MigrateFromAgb_Init(OverlayManager *man, int *state) {
     app->yesNoPrompt = YesNoPrompt_Create(HEAP_ID_76);
     SetMasterBrightnessByColor(PM_LCD_TOP, RGB_BLACK);
     SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_BLACK);
-    app->saveData = ((SaveData **)OverlayManager_GetArgs(man))[2];
+    app->saveData = ((MainOverlayArgs *)OverlayManager_GetArgs(man))->saveData;
     app->profile = Save_PlayerData_GetProfile(app->saveData);
     app->options = Save_PlayerData_GetOptionsAddr(app->saveData);
     app->frame = Options_GetFrame(app->options);

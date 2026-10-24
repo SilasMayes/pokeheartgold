@@ -58,7 +58,7 @@ enum FootprintStampEffect {
 };
 
 typedef struct FootprintStampArgs {
-    void *lobby;  // Wi-Fi Plaza lobby state
+    struct WiFiPlazaWork *lobby;
     u8 boardType; // selects the board model, palettes and ink color column
 } FootprintStampArgs;
 
@@ -398,7 +398,7 @@ BOOL FootprintStampCamera_ZoomOut(FootprintStampBoard *unused, FootprintStampBoa
 BOOL FootprintStampCamera_ShakeX(FootprintStampBoard *unused, FootprintStampBoard *board, Camera *camera);
 BOOL FootprintStampCamera_ShakeY(FootprintStampBoard *unused, FootprintStampBoard *board, Camera *camera);
 BOOL FootprintStampCamera_PitchDown(FootprintStampBoard *unused, FootprintStampBoard *board, Camera *camera);
-void FootprintStamp_PrintPlayerName(MsgData *msgData, MessageFormat *msgFormat, Window *windows, void *lobby, int playerId);
+void FootprintStamp_PrintPlayerName(MsgData *msgData, MessageFormat *msgFormat, Window *windows, struct WiFiPlazaWork *lobby, int playerId);
 void FootprintStamp_ClearPlayerNameWindow(Window *windows, u32 index);
 u16 FootprintStamp_GetInkColor(u32 column, u32 otId);
 u32 FootprintStamp_GetTouchedPartySlot(const FootprintStampMon *party, int current);

@@ -688,15 +688,13 @@ void BagApp_ShowMoveSlotSprites(BagApp *app, int count, int movingSlot, BOOL hid
         ManagedSprite_SetDrawFlag(app->sprites[27], FALSE);
         return;
     }
-    i = 0;
-    do {
+    for (i = 0; i < 6; i++) {
         if (i < count) {
             ManagedSprite_SetDrawFlag(app->sprites[21 + i], TRUE);
         } else {
             ManagedSprite_SetDrawFlag(app->sprites[21 + i], FALSE);
         }
-        i++;
-    } while (i < 6);
+    }
     if (movingSlot >= 0) {
         movingSlot += 21;
         ManagedSprite_SetDrawFlag(app->sprites[movingSlot], FALSE);

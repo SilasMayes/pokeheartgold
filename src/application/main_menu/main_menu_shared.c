@@ -82,7 +82,7 @@ void MainMenuUtil_EncryptWonderCard(WonderCardInfo *header, void *dest, enum Hea
     u16 key[4];
     u16 prev;
     int i;
-    u16 *p;
+    u16 *word;
     CRYPTORC4Context *rc4;
 
     MATHi_CRC16InitTableRev(table, 0xA001);
@@ -92,9 +92,9 @@ void MainMenuUtil_EncryptWonderCard(WonderCardInfo *header, void *dest, enum Hea
     key[3] = key[1];
     key[1] = crc;
     prev = 0xD679;
-    for (i = 0, p = key; i < 4; i++, p++) {
-        *p ^= prev;
-        prev = *p;
+    for (i = 0, word = key; i < 4; i++, word++) {
+        *word ^= prev;
+        prev = *word;
     }
     rc4 = Heap_Alloc(heapID, sizeof(CRYPTORC4Context));
     CRYPTO_RC4Init(rc4, key, 8);

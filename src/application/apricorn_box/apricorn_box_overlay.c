@@ -152,13 +152,13 @@ void ApricornBox_FeedAprijuice(ApricornJuice *record, Party *party, int slot) {
     }
     newMods[juice.order[APRICORN_JUICE_FLAVOR_COUNT - 1]] -= penalty;
     for (i = 0; i < 5; i++) {
-        int v = newMods[i];
-        if (v < -127) {
-            v = -127;
-        } else if (v > 127) {
-            v = 127;
+        int mod = newMods[i];
+        if (mod < -127) {
+            mod = -127;
+        } else if (mod > 127) {
+            mod = 127;
         }
-        modifiers.stats[i] = v;
+        modifiers.stats[i] = mod;
     }
     Party_SetMonAprijuiceModifiers(party, &modifiers, slot);
     ApplyMonMoodModifier(Party_GetMonByIndex(party, slot), 7);

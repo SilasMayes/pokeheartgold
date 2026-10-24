@@ -293,7 +293,7 @@ BOOL VsRecorder_VideoSearchDownloadVideo(VsRecorderWork *work) {
             StopSE(SEQ_SE_PL_BREC80, 0);
             work->step = VS_RECORDER_STEP_FINISH;
             search->downloaded = TRUE;
-            work->videoFlagPtr = (u32)&work->net.videoList.flags[work->listWindow.cursor];
+            work->videoFlag = &work->net.videoList.flags[work->listWindow.cursor];
             search->foundVideo = work->net.downloadedVideo;
             MI_CpuCopy8(search->foundVideo, work->net.videoBuffer, 0x1D4C);
         }
@@ -632,7 +632,7 @@ BOOL VsRecorder_NumberSearchDownloadVideo(VsRecorderWork *work) {
             work->step = VS_RECORDER_STEP_FINISH;
             search->downloaded = TRUE;
             PlaySE(SEQ_SE_PL_BREC12);
-            work->videoFlagPtr = (u32)&NUMBER_SEARCH_VIDEO_FLAG(work);
+            work->videoFlag = &NUMBER_SEARCH_VIDEO_FLAG(work);
             search->foundVideo = work->net.downloadedVideo;
             MI_CpuCopy8(search->foundVideo, work->net.videoBuffer, 0x1D4C);
         }
@@ -749,7 +749,8 @@ BOOL VsRecorder_NumberSearchShowDetails(VsRecorderWork *work) {
 }
 
 BOOL VsRecorder_NumberSearchDetailsMain(VsRecorderWork *work) {
-    TouchHitboxController_IsTriggered(((VsRecorderVideoSearch *)work->screenWork)->hitboxes);
+    VsRecorderVideoSearch *search = work->screenWork;
+    TouchHitboxController_IsTriggered(search->hitboxes);
     return FALSE;
 }
 
@@ -1089,7 +1090,8 @@ BOOL VsRecorder_NumberSearchShowSlots(VsRecorderWork *work) {
 }
 
 BOOL VsRecorder_NumberSearchSlotsMain(VsRecorderWork *work) {
-    TouchHitboxController_IsTriggered(((VsRecorderVideoSearch *)work->screenWork)->slotHitboxes);
+    VsRecorderVideoSearch *search = work->screenWork;
+    TouchHitboxController_IsTriggered(search->slotHitboxes);
     return FALSE;
 }
 
@@ -1115,7 +1117,8 @@ BOOL VsRecorder_NumberSearchConfirmOverwrite(VsRecorderWork *work) {
 }
 
 BOOL VsRecorder_NumberSearchOverwriteMain(VsRecorderWork *work) {
-    TouchHitboxController_IsTriggered(((VsRecorderVideoSearch *)work->screenWork)->overwriteHitboxes);
+    VsRecorderVideoSearch *search = work->screenWork;
+    TouchHitboxController_IsTriggered(search->overwriteHitboxes);
     return FALSE;
 }
 

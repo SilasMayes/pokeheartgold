@@ -72,7 +72,7 @@ typedef struct PokewalkerIrTransfer {
     u16 chunk;
     u16 totalChunks;
     u16 totalChunk;
-    volatile u16 totalSize;
+    u16 totalSize;
 } PokewalkerIrTransfer;
 
 extern u8 gPokewalkerIrLinkArgs[];

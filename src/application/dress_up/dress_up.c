@@ -3028,10 +3028,10 @@ static int DressUp_DivFloorPlusOne(int value, int divisor) {
 
 static void DressUpTouch_Reset(DressUpTouch *touch) {
     u8 *bytes = (u8 *)touch;
-    u32 n = sizeof(DressUpTouch);
-    while (n != 0) {
+    u32 size = sizeof(DressUpTouch);
+    while (size != 0) {
         *bytes++ = 0;
-        n--;
+        size--;
     }
     touch->onTouch = DressUpTouch_DefaultHandler;
     touch->onRelease = DressUpTouch_DefaultHandler;
@@ -3199,13 +3199,13 @@ static void DressUpDrag_OnReleaseAccessory(DressUpTouch *touch) {
     int height;
     int x;
     int y;
-    int n;
+    int cornersInside;
     if (drag->selected != NULL) {
         DressUpDrag_GetSelectedVisibleRect(touch, &top, &bottom, &left, &right);
-        n = DressUpCanvas_IsPointIn(drag->canvas, left, top);
-        n += DressUpCanvas_IsPointIn(drag->canvas, right, top);
-        n += DressUpCanvas_IsPointIn(drag->canvas, left, bottom);
-        if (n + DressUpCanvas_IsPointIn(drag->canvas, right, bottom) >= 4) {
+        cornersInside = DressUpCanvas_IsPointIn(drag->canvas, left, top);
+        cornersInside += DressUpCanvas_IsPointIn(drag->canvas, right, top);
+        cornersInside += DressUpCanvas_IsPointIn(drag->canvas, left, bottom);
+        if (cornersInside + DressUpCanvas_IsPointIn(drag->canvas, right, bottom) >= 4) {
             if (!DressUpCanvas_TryAddAccessory(drag->canvas, drag->selected, drag->gfx->hitMaps)) {
                 x = drag->originX;
                 y = drag->originY;
@@ -3221,8 +3221,8 @@ static void DressUpDrag_OnReleaseAccessory(DressUpTouch *touch) {
         } else {
             DressUpSlot *slot = drag->selected->object;
             DressUpDrag_GetSelectedRect(touch, &top, &bottom, &left, &right);
-            n = DressUpTray_IsPointIn(drag->tray, left, top);
-            if (n + DressUpTray_IsPointIn(drag->tray, right, bottom) < 2) {
+            cornersInside = DressUpTray_IsPointIn(drag->tray, left, top);
+            if (cornersInside + DressUpTray_IsPointIn(drag->tray, right, bottom) < 2) {
                 // dropped outside the tray: a random spot for items from the canvas, else where it came from
                 if (drag->fromCanvas == TRUE) {
                     DressUpObj_GetSize(drag->selected, &width, &height);

@@ -26,7 +26,7 @@ void VsRecorder_LoadPlaceholderTrainerName(String *str, enum HeapID heapID) {
 }
 
 // writes the current recording into a save slot over several frames; sealed: the header gets the magic and its CRC
-u32 VsRecorder_WriteRecordAsync(SaveData *saveData, u32 index, u32 sealed, u16 *state, void *writeState) {
+u32 VsRecorder_WriteRecordAsync(SaveData *saveData, u32 index, u32 sealed, u16 *state, u16 *writeState) {
     u16 crc;
     switch (*state) {
     case VS_RECORDER_RECORD_WRITE_PREPARE:

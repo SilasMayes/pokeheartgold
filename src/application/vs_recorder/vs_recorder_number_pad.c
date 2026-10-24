@@ -95,22 +95,14 @@ void VsRecorder_PrintVideoNumber(VsRecorderVideoSearch *search, VsRecorderWork *
 VsRecorderNumberPadConfig *VsRecorder_NewNumberPadConfig(enum HeapID heapID, u32 length, const int *groupLengths, Options *options) {
     VsRecorderNumberPadConfig *config;
     int i;
-    const int *src;
-    int *dst;
 
     config = Heap_Alloc(heapID, sizeof(VsRecorderNumberPadConfig));
     MI_CpuFill8(config, 0, sizeof(VsRecorderNumberPadConfig));
     config->length = length;
     config->text = String_New(length + 1, heapID);
     config->options = options;
-    i = 0;
-    src = groupLengths;
-    dst = (int *)config;
-    while (i < 3) {
-        dst[1] = *src;
-        i++;
-        src++;
-        dst++;
+    for (i = 0; i < 3; i++) {
+        config->groupLengths[i] = groupLengths[i];
     }
     config->groupLengths[i] = groupLengths[i - 1];
     return config;
@@ -513,9 +505,9 @@ static void VsRecorder_NumberPadClearAction(VsRecorderNumberPad *pad) {
 
 static int VsRecorder_NumberPadFindGroupFirst(VsRecorderNumberPad *pad, int group) {
     int i;
-    int n = pad->count;
+    int count = pad->count;
     VsRecorderNumberPadDigit *digit = pad->digits;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < count; i++) {
         if (group == digit->group) {
             return i;
         }
@@ -527,10 +519,10 @@ static int VsRecorder_NumberPadFindGroupFirst(VsRecorderNumberPad *pad, int grou
 static int VsRecorder_NumberPadFindGroupLast(VsRecorderNumberPad *pad, int group) {
     int i;
     int found;
-    int n = pad->count;
+    int count = pad->count;
     VsRecorderNumberPadDigit *digit = pad->digits;
     found = 0;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < count; i++) {
         if (group == digit->group) {
             found = 1;
         } else if (found == 1) {
@@ -538,7 +530,7 @@ static int VsRecorder_NumberPadFindGroupLast(VsRecorderNumberPad *pad, int group
         }
         digit++;
     }
-    return n - 1;
+    return count - 1;
 }
 
 static void VsRecorder_NumberPadLoadGfx(VsRecorderNumberPad *pad) {

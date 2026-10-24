@@ -31,11 +31,11 @@ static void PokewalkerIr_RequestChunk(void);
 static u16 PokewalkerIr_Checksum(u8 *bytes, u32 len) {
     u32 sum = 2, index;
     for (index = 0; index < len; index++) {
-        u8 b = *bytes++;
+        u8 byte = *bytes++;
         if (index & 1) {
-            sum += b;
+            sum += byte;
         } else {
-            sum += b << 8;
+            sum += byte << 8;
         }
     }
     sum = (sum >> 16) + (u16)sum;
@@ -93,10 +93,10 @@ static void PokewalkerIr_SendPacket(const u8 *src, int len, u8 command, u8 arg, 
     packet->checksumHi = 0;
     dst = gPokewalkerIrPayload;
     for (i = 0; i < len;) {
-        u8 b = *src;
+        u8 byte = *src;
         src++;
         i++;
-        *dst = b;
+        *dst = byte;
         dst++;
     }
     len = (u8)(len + 8);
@@ -178,9 +178,9 @@ static BOOL PokewalkerIr_CheckTimeout(void) {
 #pragma opt_rotateloops off
 
 static BOOL PokewalkerIr_VerifyPacket(u32 size) {
-    u8 *p = (u8 *)&gPokewalkerIrPacket;
+    u8 *bytes = (u8 *)&gPokewalkerIrPacket;
     if (size == 1) {
-        if (p[0] == 0xFC) {
+        if (bytes[0] == 0xFC) {
             return TRUE;
         }
         return FALSE;
@@ -188,12 +188,12 @@ static BOOL PokewalkerIr_VerifyPacket(u32 size) {
     if (size < 4) {
         return FALSE;
     }
-    u16 checksum = p[2] + (p[3] << 8);
-    p[2] = 0;
-    p[3] = 0;
-    u32 actual = PokewalkerIr_Checksum(p, size);
-    p[2] = checksum;
-    p[3] = checksum >> 8;
+    u16 checksum = bytes[2] + (bytes[3] << 8);
+    bytes[2] = 0;
+    bytes[3] = 0;
+    u32 actual = PokewalkerIr_Checksum(bytes, size);
+    bytes[2] = checksum;
+    bytes[3] = checksum >> 8;
     if (checksum == actual) {
         gPokewalkerIrLink.unk_00 = 0;
         return TRUE;
@@ -339,23 +339,23 @@ void PokewalkerIr_SetCompressBuffer(void *buffer) {
 void PokewalkerIr_CompressBlocks(u8 *src, u8 *dst, u16 size, u8 *sizes) {
     int i = 0, blocks = (u16)((size + 127) / 128);
     for (; i < blocks; i++) {
-        u32 n = size;
-        if (n > 128) {
-            n = 128;
+        u32 blockSize = size;
+        if (blockSize > 128) {
+            blockSize = 128;
         }
-        if (n != 128) {
-            MI_CpuCopy8(src, dst, n);
+        if (blockSize != 128) {
+            MI_CpuCopy8(src, dst, blockSize);
             *sizes++ = 128;
         } else {
-            u8 result = MI_CompressLZImpl(src, n, dst, 0);
+            u8 result = MI_CompressLZImpl(src, blockSize, dst, 0);
             if (result == 0) {
-                MI_CpuCopy8(src, dst, n);
+                MI_CpuCopy8(src, dst, blockSize);
                 *sizes++ = 128;
             } else {
                 *sizes++ = result;
             }
         }
-        size -= n;
+        size -= blockSize;
         src += 128;
         dst += 128;
     }
@@ -382,15 +382,15 @@ static void PokewalkerIr_StoreCurrentTime(void) {
     if (RTC_GetTime(&time) == 0) {
         if (RTC_GetDate(&date) == 0) {
             s64 seconds = RTC_ConvertDateTimeToSecond(&date, &time);
-            u32 s;
+            u32 clamped;
             if (seconds > 0xFFFFFFFFLL) {
                 seconds = 0xFFFFFFFFLL;
             }
             if (seconds < 0) {
                 seconds = 0;
             }
-            s = (u32)seconds;
-            gPokewalkerIrWork.identity->currentTime = SWAP32(s);
+            clamped = (u32)seconds;
+            gPokewalkerIrWork.identity->currentTime = SWAP32(clamped);
         }
     }
 }
@@ -510,14 +510,14 @@ static void PokewalkerIr_OnSendComplete(void) {
 static void PokewalkerIr_RequestChunk(void) {
     u8 data[4];
     u16 addr;
-    u16 n = gPokewalkerIrTransfer.remaining;
-    if (n > 0x80) {
-        n = 0x80;
+    u16 count = gPokewalkerIrTransfer.remaining;
+    if (count > 0x80) {
+        count = 0x80;
     }
     addr = (u16)(u32)gPokewalkerIrTransfer.data;
     data[0] = addr >> 8;
     data[1] = addr;
-    data[2] = n;
+    data[2] = count;
     PokewalkerIr_Send(data, 3, 0xC, 2);
 }
 
@@ -890,10 +890,10 @@ static void PokewalkerIr_ValidatePeer(void) {
 static void PokewalkerIr_OnReceive(void *data, u32 size, int command) {
     switch (command) {
     case 34: {
-        u32 v;
+        u32 steps;
         MI_CpuCopy8(data, gPokewalkerIrWork.peerIdentity, 104);
-        v = gPokewalkerIrWork.peerIdentity->steps;
-        gPokewalkerIrWork.peerIdentity->steps = (u8)(v >> 24) | ((v >> 8) & 0xFF00) | ((v << 8) & 0xFF0000) | ((v << 24) & 0xFF000000);
+        steps = gPokewalkerIrWork.peerIdentity->steps;
+        gPokewalkerIrWork.peerIdentity->steps = (u8)(steps >> 24) | ((steps >> 8) & 0xFF00) | ((steps << 8) & 0xFF0000) | ((steps << 24) & 0xFF000000);
         PokewalkerIr_ValidatePeer();
     } break;
     case 38:

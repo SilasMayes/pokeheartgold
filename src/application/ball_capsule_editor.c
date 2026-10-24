@@ -938,10 +938,10 @@ static void BallCapsuleEditor_SortSeals(BallCapsuleEditor *editor) {
     {
         s32 *sorted;
         BallCapsuleEditor *dst = editor;
-        s32 n = 0;
+        s32 slot = 0;
         sorted = order;
         u8 *src = copy.bytes;
-        for (; n < MAX_SEALS_ON_CAPSULE; n++, sorted++, dst = (BallCapsuleEditor *)((u8 *)dst + sizeof(BallCapsuleEditorSeal))) {
+        for (; slot < MAX_SEALS_ON_CAPSULE; slot++, sorted++, dst = (BallCapsuleEditor *)((u8 *)dst + sizeof(BallCapsuleEditorSeal))) {
             if (*sorted == 0xFF) {
                 dst->seals[0].seal.kind = SEAL_NONE;
                 dst->seals[0].seal.x = 0;
@@ -951,7 +951,7 @@ static void BallCapsuleEditor_SortSeals(BallCapsuleEditor *editor) {
                 dst->seals[0].seal.x = src[*sorted * 3 + 1];
                 dst->seals[0].seal.y = src[*sorted * 3 + 2];
                 if (editor->seals[*sorted].sprite != NULL) {
-                    ((BallCapsuleEditorSetDrawPriorityFunc)ManagedSprite_SetDrawPriority)(editor->seals[*sorted].sprite, n);
+                    ((BallCapsuleEditorSetDrawPriorityFunc)ManagedSprite_SetDrawPriority)(editor->seals[*sorted].sprite, slot);
                 }
             }
         }

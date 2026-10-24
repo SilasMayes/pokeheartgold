@@ -196,10 +196,8 @@ void LegendaryCinematic_DrawModels(LegendaryCinematic *cinematic) {
     for (i = 0; i < cinematic->numModels; i++) {
         LegendaryCinematicModel *model = &cinematic->models[i];
         u32 j = 0;
-        u8 *slot = (u8 *)model;
-        // walks the animation slots with a byte pointer
         while (j < LEGENDARY_CINEMATIC_MODEL_ANIMS) {
-            NNSG3dAnmObj *anmObj = ((LegendaryCinematicModel *)slot)->anmObj[0];
+            NNSG3dAnmObj *anmObj = model->anmObj[j];
             if (anmObj != NULL) {
                 fx32 frame = anmObj->frame;
                 fx32 end = NNS_G3dAnmObjGetNumFrame(anmObj);
@@ -208,7 +206,6 @@ void LegendaryCinematic_DrawModels(LegendaryCinematic *cinematic) {
                 }
             }
             j++;
-            slot += sizeof(NNSG3dAnmObj *);
         }
         GF3dRender_DrawModel(&model->renderObj, &translation, &rotation, &scale);
     }
@@ -216,16 +213,13 @@ void LegendaryCinematic_DrawModels(LegendaryCinematic *cinematic) {
 }
 
 static BOOL LegendaryCinematic_IsModelAnimating(LegendaryCinematic *cinematic, u32 index) {
-    u32 offset = sizeof(LegendaryCinematicModel) * index;
-    u8 *model = (u8 *)cinematic->models;
+    LegendaryCinematicModel *model = &cinematic->models[index];
     fx32 step;
     u32 i;
     step = FX32_ONE;
     i = 0;
-    model += offset;
-    // walks the animation slots of models[index] with a byte pointer
     while (i < LEGENDARY_CINEMATIC_MODEL_ANIMS) {
-        NNSG3dAnmObj *anmObj = ((LegendaryCinematicModel *)model)->anmObj[0];
+        NNSG3dAnmObj *anmObj = model->anmObj[i];
         if (anmObj != NULL) {
             fx32 frame = anmObj->frame + step;
             fx32 end = NNS_G3dAnmObjGetNumFrame(anmObj);
@@ -234,7 +228,6 @@ static BOOL LegendaryCinematic_IsModelAnimating(LegendaryCinematic *cinematic, u
             }
         }
         i++;
-        model += sizeof(NNSG3dAnmObj *);
     }
     return FALSE;
 }

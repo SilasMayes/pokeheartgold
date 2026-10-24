@@ -1161,11 +1161,11 @@ static int PhotoAlbumApp_FlipToNextPage(PhotoAlbumApp *app) {
 }
 
 static int PhotoAlbumApp_RunContextMenu(PhotoAlbumApp *app) {
-    int r = PhotoAlbumApp_HandleContextMenu(app);
-    if (r < 0) {
-        r = PHOTO_ALBUM_STATE_CONTEXT_MENU;
+    int state = PhotoAlbumApp_HandleContextMenu(app);
+    if (state < 0) {
+        state = PHOTO_ALBUM_STATE_CONTEXT_MENU;
     }
-    return r;
+    return state;
 }
 
 static int PhotoAlbumApp_RunDeletePrompt(PhotoAlbumApp *app) {
@@ -1444,12 +1444,12 @@ static void PhotoAlbumApp_DrawPageArrowBg(PhotoAlbumApp *app, int bgId, int mode
 static void PhotoAlbumApp_DrawGridColumns(PhotoAlbumApp *app, int bgId, int page, u8 start) {
     int row;
     int x;
-    u8 n;
+    u8 index;
     for (row = 0; row < 3; row++) {
         for (x = start; x < start + 2; x++) {
-            n = sPhotoAlbumGridSlots[row * 4 + x] + page * PHOTOS_PER_PAGE;
-            if (n < app->numPhotos) {
-                PhotoAlbumApp_DrawGridIcon(app, app->entries[n].photo, bgId, x, row);
+            index = sPhotoAlbumGridSlots[row * 4 + x] + page * PHOTOS_PER_PAGE;
+            if (index < app->numPhotos) {
+                PhotoAlbumApp_DrawGridIcon(app, app->entries[index].photo, bgId, x, row);
             } else {
                 PhotoAlbumApp_DrawGridIcon(app, NULL, bgId, x, row);
             }

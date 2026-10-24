@@ -953,8 +953,8 @@ static BOOL FootprintStamp_LoadFootprintIcon(int species, int form, ManagedSprit
     }
     {
         NNSG2dImageProxy *proxy = Sprite_GetImageProxy(sprite->sprite);
-        MIi_CpuCopy16((u16 *)bottom, (u16 *)(vram + proxy->vramLocation.baseAddrOfVram[screen]), 0x40);
-        MIi_CpuCopy16((u16 *)top, (u16 *)(vram + 0x40 + proxy->vramLocation.baseAddrOfVram[screen]), 0x40);
+        MI_CpuCopy16(bottom, (void *)(vram + proxy->vramLocation.baseAddrOfVram[screen]), 0x40);
+        MI_CpuCopy16(top, (void *)(vram + 0x40 + proxy->vramLocation.baseAddrOfVram[screen]), 0x40);
     }
     Heap_Free(file);
     return TRUE;
@@ -1455,7 +1455,7 @@ static void FootprintStampBoard_ResolveChains(FootprintStampBoard *board) {
     int i;
     int numActive;
     int numIdle;
-    int m;
+    int k;
     int j;
     FootprintStampObj *stamp;
     FootprintStampObj *other;
@@ -1476,8 +1476,8 @@ static void FootprintStampBoard_ResolveChains(FootprintStampBoard *board) {
     }
     for (j = 0; j < numIdle; j++) {
         other = board->sorted[FOOTPRINT_STAMP_STAMPS_MAX - 1 - j];
-        for (m = 0; m < numActive; m++) {
-            stamp = board->sorted[m];
+        for (k = 0; k < numActive; k++) {
+            stamp = board->sorted[k];
             if (gFootprintStampEffectFuncs[stamp->effectId].hit(board, stamp, other) == TRUE && FootprintStamp_SetEffect(other, stamp->effectId) == TRUE && other->chain == 0xFF) {
                 other->chain = stamp->chain;
                 FootprintStampBoard_AddToChain(board, stamp->chain, stamp->effectId);

@@ -1572,51 +1572,51 @@ static void ScratchOffCards_AnimateMatch(ScratchOffCardsWork *work) {
 
 static int ScratchOffCards_CheckMatch(ScratchOffCardsWork *work) {
     int match = FALSE;
-    u8 a, b;
+    u8 secondCell, firstCell;
     if (work->revealedCount <= 1) {
         return FALSE;
     }
-    a = work->cells[work->revealed[1]];
-    b = work->cells[work->revealed[0]];
-    if (b == a) {
+    secondCell = work->cells[work->revealed[1]];
+    firstCell = work->cells[work->revealed[0]];
+    if (firstCell == secondCell) {
         work->flags.hasPair = TRUE;
-    } else if (b == SCRATCH_CELL_WILDCARD) {
+    } else if (firstCell == SCRATCH_CELL_WILDCARD) {
         work->flags.hasPair = TRUE;
-    } else if (a == SCRATCH_CELL_WILDCARD) {
+    } else if (secondCell == SCRATCH_CELL_WILDCARD) {
         work->flags.hasPair = TRUE;
     }
     if (work->revealedCount <= 2) {
         return FALSE;
     }
-    b = work->cells[work->revealed[1]];
-    a = work->cells[work->revealed[0]];
-    if (a == b && a == work->cells[work->revealed[2]]) {
+    firstCell = work->cells[work->revealed[1]];
+    secondCell = work->cells[work->revealed[0]];
+    if (secondCell == firstCell && secondCell == work->cells[work->revealed[2]]) {
         match = TRUE;
     }
-    if (a == SCRATCH_CELL_WILDCARD && b == SCRATCH_CELL_WILDCARD) {
+    if (secondCell == SCRATCH_CELL_WILDCARD && firstCell == SCRATCH_CELL_WILDCARD) {
         match = TRUE;
     }
-    if (a == SCRATCH_CELL_WILDCARD && work->cells[work->revealed[2]] == SCRATCH_CELL_WILDCARD) {
+    if (secondCell == SCRATCH_CELL_WILDCARD && work->cells[work->revealed[2]] == SCRATCH_CELL_WILDCARD) {
         match = TRUE;
     }
-    if (b == SCRATCH_CELL_WILDCARD && work->cells[work->revealed[2]] == SCRATCH_CELL_WILDCARD) {
+    if (firstCell == SCRATCH_CELL_WILDCARD && work->cells[work->revealed[2]] == SCRATCH_CELL_WILDCARD) {
         match = TRUE;
     }
-    if (a == SCRATCH_CELL_WILDCARD && b == work->cells[work->revealed[2]]) {
+    if (secondCell == SCRATCH_CELL_WILDCARD && firstCell == work->cells[work->revealed[2]]) {
         match = TRUE;
     }
-    if (b == SCRATCH_CELL_WILDCARD && a == work->cells[work->revealed[2]]) {
+    if (firstCell == SCRATCH_CELL_WILDCARD && secondCell == work->cells[work->revealed[2]]) {
         match = TRUE;
     }
-    if (work->cells[work->revealed[2]] == SCRATCH_CELL_WILDCARD && a == b) {
+    if (work->cells[work->revealed[2]] == SCRATCH_CELL_WILDCARD && secondCell == firstCell) {
         match = TRUE;
     }
     if (match == TRUE) {
         int i;
         for (i = 0; i < 3; i++) {
-            b = work->cells[work->revealed[i]];
-            if (b != SCRATCH_CELL_WILDCARD) {
-                work->matchedSymbol = b;
+            firstCell = work->cells[work->revealed[i]];
+            if (firstCell != SCRATCH_CELL_WILDCARD) {
+                work->matchedSymbol = firstCell;
                 break;
             }
         }
@@ -1632,14 +1632,12 @@ static u32 ScratchOffCards_StartWildcardMosaic(ScratchOffCardsWork *work) {
     u32 ret;
     int i;
     ret = FALSE;
-    i = 0;
-    do {
+    for (i = 0; i < 3; i++) {
         if (work->cells[work->revealed[i]] == SCRATCH_CELL_WILDCARD) {
             ScratchOffCardsSprite_SetMosaic(work->resultSprites[i], TRUE);
             ret = TRUE;
         }
-        i++;
-    } while (i < 3);
+    }
     work->mosaic = 0;
     REG_OBJ_MOSAIC = work->mosaic | (work->mosaic << 4);
     return ret;
@@ -1662,13 +1660,11 @@ static int ScratchOffCards_UpdateWildcardMosaic(ScratchOffCardsWork *work, int f
         if (work->mosaic < 4) {
             work->mosaic++;
         } else {
-            i = 0;
-            do {
+            for (i = 0; i < 3; i++) {
                 if (work->cells[work->revealed[i]] == SCRATCH_CELL_WILDCARD) {
                     ScratchOffCardsSprite_SetAnim(work->resultSprites[i], work->matchedSymbol);
                 }
-                i++;
-            } while (i < 3);
+            }
             return FALSE;
         }
     } else {

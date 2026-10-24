@@ -211,81 +211,81 @@ extern const ResdatIdList gSafariAreaCustomizerResdatIds;
 extern const OamCharTransferParam gSafariAreaCustomizerOamCharTransferParam;
 extern const OamManagerParam gSafariAreaCustomizerOamManagerParam;
 
-static void SafariAreaCustomizer_InitFromArgs(SafariAreaCustomizer *s, SafariAreaCustomizerArgs *args);
-static void SafariAreaCustomizer_SaveResults(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_State_Setup(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_State_Teardown(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_State_SelectSlot(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_State_SelectArea(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_State_MoveArea(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_State_FadeIn(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_State_FadeOut(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_Setup(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_Teardown(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleSlotInput(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleSlotMenu(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_ScrollPages(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleAreaInput(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleConfirmArea(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_ChangePage(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleMoveInput(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_SwapAreas(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *s);
-static void thunk_SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_ChooseArea(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleAreaTouch(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_StartMove(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_EndMove(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *s);
-static int SafariAreaCustomizer_HandleMoveTouch(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_OpenSlotMenu(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_AskConfirmArea(SafariAreaCustomizer *s);
+static void SafariAreaCustomizer_InitFromArgs(SafariAreaCustomizer *customizer, SafariAreaCustomizerArgs *args);
+static void SafariAreaCustomizer_SaveResults(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_State_Setup(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_State_Teardown(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_State_SelectSlot(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_State_SelectArea(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_State_MoveArea(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_State_FadeIn(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_State_FadeOut(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_Setup(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_Teardown(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleSlotInput(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleSlotMenu(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_ScrollPages(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleAreaInput(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleConfirmArea(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_ChangePage(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleMoveInput(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_SwapAreas(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *customizer);
+static void thunk_SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_ChooseArea(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleAreaTouch(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_StartMove(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_EndMove(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *customizer);
+static int SafariAreaCustomizer_HandleMoveTouch(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_OpenSlotMenu(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_AskConfirmArea(SafariAreaCustomizer *customizer);
 static void SafariAreaCustomizer_VBlankCB(void *cbArg);
 static void SafariAreaCustomizer_SetGfxBanks(void);
-static void SafariAreaCustomizer_InitBgLayers(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_FreeBgLayers(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_LoadBgGraphics(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_FreeScreenData(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_CreateStrings(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_DeleteStrings(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_AddWindows(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_RemoveWindows(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_CreateMenuItems(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_DeleteMenuItems(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_InitSprites(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_FreeSprites(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_CreateSprites(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_DeleteSprites(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_CreateCancelTextObj(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_DeleteCancelTextObj(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_DrawPageScreenPart(SafariAreaCustomizer *s, int value);
-static void SafariAreaCustomizer_PrintWindowText(SafariAreaCustomizer *s, u8 windowId, u8 msg, BOOL unused);
-static void SafariAreaCustomizer_PrintPageNumber(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_SetCursorAnim(SafariAreaCustomizer *s, u32 index, u32 anim, BOOL draw);
-static void SafariAreaCustomizer_MoveCursor(SafariAreaCustomizer *s, u32 index, u32 pos);
-static void SafariAreaCustomizer_DrawSelectFrame(SafariAreaCustomizer *s, u8 layer, int pos, BOOL show);
-static void SafariAreaCustomizer_InitSlotTilemaps(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_LoadAreaPictureFromNarc(SafariAreaCustomizer *s, NARC *narc, u32 slot, int area);
-static void SafariAreaCustomizer_LoadAreaPicture(SafariAreaCustomizer *s, u32 slot, int area);
-static void SafariAreaCustomizer_InitScreen(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_PrintObjectTypeLabels(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_PrintSlotInfo(SafariAreaCustomizer *s, u32 slot);
-static void SafariAreaCustomizer_PrintAreaNames(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_StartPageScroll(SafariAreaCustomizer *s);
-static BOOL SafariAreaCustomizer_RunPageScroll(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_StartPageChange(SafariAreaCustomizer *s);
-static BOOL SafariAreaCustomizer_RunPageChange(SafariAreaCustomizer *s);
-static BOOL SafariAreaCustomizer_RunSwapAnim(SafariAreaCustomizer *s, int dir);
-static void SafariAreaCustomizer_InitSpriteSystem(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_FreeSpriteSystem(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_CreateSpriteManager(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_DestroySpriteManager(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_DrawSprites(SafariAreaCustomizer *s);
-static void SafariAreaCustomizer_TransferOam(SafariAreaCustomizer *s);
+static void SafariAreaCustomizer_InitBgLayers(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_FreeBgLayers(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_LoadBgGraphics(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_FreeScreenData(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_CreateStrings(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_DeleteStrings(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_AddWindows(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_RemoveWindows(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_CreateMenuItems(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_DeleteMenuItems(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_InitSprites(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_FreeSprites(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_CreateSprites(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_DeleteSprites(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_CreateCancelTextObj(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_DeleteCancelTextObj(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_DrawPageScreenPart(SafariAreaCustomizer *customizer, int value);
+static void SafariAreaCustomizer_PrintWindowText(SafariAreaCustomizer *customizer, u8 windowId, u8 msg, BOOL unused);
+static void SafariAreaCustomizer_PrintPageNumber(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_SetCursorAnim(SafariAreaCustomizer *customizer, u32 index, u32 anim, BOOL draw);
+static void SafariAreaCustomizer_MoveCursor(SafariAreaCustomizer *customizer, u32 index, u32 pos);
+static void SafariAreaCustomizer_DrawSelectFrame(SafariAreaCustomizer *customizer, u8 layer, int pos, BOOL show);
+static void SafariAreaCustomizer_InitSlotTilemaps(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_LoadAreaPictureFromNarc(SafariAreaCustomizer *customizer, NARC *narc, u32 slot, int area);
+static void SafariAreaCustomizer_LoadAreaPicture(SafariAreaCustomizer *customizer, u32 slot, int area);
+static void SafariAreaCustomizer_InitScreen(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_PrintObjectTypeLabels(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_PrintSlotInfo(SafariAreaCustomizer *customizer, u32 slot);
+static void SafariAreaCustomizer_PrintAreaNames(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_StartPageScroll(SafariAreaCustomizer *customizer);
+static BOOL SafariAreaCustomizer_RunPageScroll(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_StartPageChange(SafariAreaCustomizer *customizer);
+static BOOL SafariAreaCustomizer_RunPageChange(SafariAreaCustomizer *customizer);
+static BOOL SafariAreaCustomizer_RunSwapAnim(SafariAreaCustomizer *customizer, int dir);
+static void SafariAreaCustomizer_InitSpriteSystem(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_FreeSpriteSystem(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_CreateSpriteManager(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_DestroySpriteManager(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_DrawSprites(SafariAreaCustomizer *customizer);
+static void SafariAreaCustomizer_TransferOam(SafariAreaCustomizer *customizer);
 static SafariAreaCustomizerSpriteRes *SafariAreaCustomizerSpriteRes_New(enum HeapID heapId, u16 maxSprites, u16 vram, int transferMode);
 static void SafariAreaCustomizerSpriteRes_Delete(SafariAreaCustomizerSpriteRes *res);
 static void SafariAreaCustomizerSpriteRes_SetAreaPicture(SafariAreaCustomizerSpriteRes *res, u8 index, u8 area);
@@ -299,55 +299,55 @@ static void SafariAreaCustomizerSpriteRes_LoadResources(SafariAreaCustomizerSpri
 
 BOOL SafariAreaCustomizer_Init(OverlayManager *man, int *state) {
     SafariAreaCustomizerArgs *args = OverlayManager_GetArgs(man);
-    SafariAreaCustomizer *s;
+    SafariAreaCustomizer *customizer;
 
 #pragma unused(state)
     Heap_Create(HEAP_ID_3, HEAP_ID_95, 0x50000);
-    s = OverlayManager_CreateAndGetData(man, sizeof(SafariAreaCustomizer), HEAP_ID_95);
-    MI_CpuFill8(s, 0, sizeof(SafariAreaCustomizer));
-    s->heapId = HEAP_ID_95;
-    SafariAreaCustomizer_InitFromArgs(s, args);
+    customizer = OverlayManager_CreateAndGetData(man, sizeof(SafariAreaCustomizer), HEAP_ID_95);
+    MI_CpuFill8(customizer, 0, sizeof(SafariAreaCustomizer));
+    customizer->heapId = HEAP_ID_95;
+    SafariAreaCustomizer_InitFromArgs(customizer, args);
     Sound_SetSceneAndPlayBGM(0x43, 0, 0);
     return TRUE;
 }
 
 BOOL SafariAreaCustomizer_Exit(OverlayManager *man, int *state) {
-    SafariAreaCustomizer *s = OverlayManager_GetData(man);
+    SafariAreaCustomizer *customizer = OverlayManager_GetData(man);
     enum HeapID heapId;
 
 #pragma unused(state)
-    SafariAreaCustomizer_SaveResults(s);
-    heapId = s->heapId;
-    MI_CpuFill8(s, 0, sizeof(SafariAreaCustomizer));
+    SafariAreaCustomizer_SaveResults(customizer);
+    heapId = customizer->heapId;
+    MI_CpuFill8(customizer, 0, sizeof(SafariAreaCustomizer));
     OverlayManager_FreeData(man);
     Heap_Destroy(heapId);
     return TRUE;
 }
 
 BOOL SafariAreaCustomizer_Main(OverlayManager *man, int *state) {
-    SafariAreaCustomizer *s = OverlayManager_GetData(man);
+    SafariAreaCustomizer *customizer = OverlayManager_GetData(man);
 
     switch (*state) {
     case SAC_STATE_SETUP:
-        *state = SafariAreaCustomizer_State_Setup(s);
+        *state = SafariAreaCustomizer_State_Setup(customizer);
         break;
     case SAC_STATE_TEARDOWN:
-        *state = SafariAreaCustomizer_State_Teardown(s);
+        *state = SafariAreaCustomizer_State_Teardown(customizer);
         break;
     case SAC_STATE_SELECT_SLOT:
-        *state = SafariAreaCustomizer_State_SelectSlot(s);
+        *state = SafariAreaCustomizer_State_SelectSlot(customizer);
         break;
     case SAC_STATE_SELECT_AREA:
-        *state = SafariAreaCustomizer_State_SelectArea(s);
+        *state = SafariAreaCustomizer_State_SelectArea(customizer);
         break;
     case SAC_STATE_MOVE_AREA:
-        *state = SafariAreaCustomizer_State_MoveArea(s);
+        *state = SafariAreaCustomizer_State_MoveArea(customizer);
         break;
     case SAC_STATE_FADE_IN:
-        *state = SafariAreaCustomizer_State_FadeIn(s);
+        *state = SafariAreaCustomizer_State_FadeIn(customizer);
         break;
     case SAC_STATE_FADE_OUT:
-        *state = SafariAreaCustomizer_State_FadeOut(s);
+        *state = SafariAreaCustomizer_State_FadeOut(customizer);
         break;
     case SAC_STATE_EXIT:
         return TRUE;
@@ -355,149 +355,149 @@ BOOL SafariAreaCustomizer_Main(OverlayManager *man, int *state) {
     return FALSE;
 }
 
-static void SafariAreaCustomizer_InitFromArgs(SafariAreaCustomizer *s, SafariAreaCustomizerArgs *args) {
+static void SafariAreaCustomizer_InitFromArgs(SafariAreaCustomizer *customizer, SafariAreaCustomizerArgs *args) {
     Options *options;
 
-    s->safariZone = Save_SafariZone_Get(args->saveData);
-    SafariZone_CopyAreaSet(s->safariZone, 0, &s->areaSet);
+    customizer->safariZone = Save_SafariZone_Get(args->saveData);
+    SafariZone_CopyAreaSet(customizer->safariZone, 0, &customizer->areaSet);
     options = Save_PlayerData_GetOptionsAddr(args->saveData);
-    s->textSpeed = Options_GetTextSpeed(options);
-    s->frame = Options_GetFrame(options);
-    s->touchMode = MenuInputStateMgr_GetState(args->menuInputStatePtr);
-    s->modified = FALSE;
-    s->args = args;
-    if (SafariZone_GetObjectUnlockLevel(s->safariZone)) {
-        s->objectsUnlocked = TRUE;
+    customizer->textSpeed = Options_GetTextSpeed(options);
+    customizer->frame = Options_GetFrame(options);
+    customizer->touchMode = MenuInputStateMgr_GetState(args->menuInputStatePtr);
+    customizer->modified = FALSE;
+    customizer->args = args;
+    if (SafariZone_GetObjectUnlockLevel(customizer->safariZone)) {
+        customizer->objectsUnlocked = TRUE;
     }
 }
 
-static void SafariAreaCustomizer_SaveResults(SafariAreaCustomizer *s) {
-    SafariZone_SetAreaSet(s->safariZone, 0, &s->areaSet);
-    ChangeFlag99D(Save_VarsFlags_Get(s->args->saveData), s->modified);
-    MenuInputStateMgr_SetState(s->args->menuInputStatePtr, (MenuInputState)s->touchMode);
+static void SafariAreaCustomizer_SaveResults(SafariAreaCustomizer *customizer) {
+    SafariZone_SetAreaSet(customizer->safariZone, 0, &customizer->areaSet);
+    ChangeFlag99D(Save_VarsFlags_Get(customizer->args->saveData), customizer->modified);
+    MenuInputStateMgr_SetState(customizer->args->menuInputStatePtr, (MenuInputState)customizer->touchMode);
 }
 
-static int SafariAreaCustomizer_State_Setup(SafariAreaCustomizer *s) {
-    if (SafariAreaCustomizer_Setup(s)) {
+static int SafariAreaCustomizer_State_Setup(SafariAreaCustomizer *customizer) {
+    if (SafariAreaCustomizer_Setup(customizer)) {
         return SAC_STATE_FADE_IN;
     }
     return SAC_STATE_SETUP;
 }
 
-static int SafariAreaCustomizer_State_Teardown(SafariAreaCustomizer *s) {
-    if (SafariAreaCustomizer_Teardown(s)) {
+static int SafariAreaCustomizer_State_Teardown(SafariAreaCustomizer *customizer) {
+    if (SafariAreaCustomizer_Teardown(customizer)) {
         return SAC_STATE_EXIT;
     }
     return SAC_STATE_TEARDOWN;
 }
 
-static int SafariAreaCustomizer_State_SelectSlot(SafariAreaCustomizer *s) {
-    switch (s->state) {
+static int SafariAreaCustomizer_State_SelectSlot(SafariAreaCustomizer *customizer) {
+    switch (customizer->state) {
     case SAC_INPUT_STATE_WAIT:
-        s->state = SafariAreaCustomizer_HandleSlotInput(s);
+        customizer->state = SafariAreaCustomizer_HandleSlotInput(customizer);
         break;
     case SAC_INPUT_STATE_MENU:
-        s->state = SafariAreaCustomizer_HandleSlotMenu(s);
+        customizer->state = SafariAreaCustomizer_HandleSlotMenu(customizer);
         break;
     case SAC_INPUT_STATE_SCROLL:
-        s->state = SafariAreaCustomizer_ScrollPages(s);
+        customizer->state = SafariAreaCustomizer_ScrollPages(customizer);
         break;
     case SAC_INPUT_STATE_CHANGE_PAGE:
         break;
     case SAC_INPUT_STATE_EXIT:
-        s->state = SAC_INPUT_STATE_WAIT;
-        SafariAreaCustomizer_DrawSprites(s);
-        return s->nextState;
+        customizer->state = SAC_INPUT_STATE_WAIT;
+        SafariAreaCustomizer_DrawSprites(customizer);
+        return customizer->nextState;
     }
-    SafariAreaCustomizer_DrawSprites(s);
+    SafariAreaCustomizer_DrawSprites(customizer);
     return SAC_STATE_SELECT_SLOT;
 }
 
-static int SafariAreaCustomizer_State_SelectArea(SafariAreaCustomizer *s) {
-    switch (s->state) {
+static int SafariAreaCustomizer_State_SelectArea(SafariAreaCustomizer *customizer) {
+    switch (customizer->state) {
     case SAC_INPUT_STATE_WAIT:
-        s->state = SafariAreaCustomizer_HandleAreaInput(s);
+        customizer->state = SafariAreaCustomizer_HandleAreaInput(customizer);
         break;
     case SAC_INPUT_STATE_MENU:
-        s->state = SafariAreaCustomizer_HandleConfirmArea(s);
+        customizer->state = SafariAreaCustomizer_HandleConfirmArea(customizer);
         break;
     case SAC_INPUT_STATE_SCROLL:
-        s->state = SafariAreaCustomizer_ScrollPages(s);
+        customizer->state = SafariAreaCustomizer_ScrollPages(customizer);
         break;
     case SAC_INPUT_STATE_CHANGE_PAGE:
-        s->state = SafariAreaCustomizer_ChangePage(s);
+        customizer->state = SafariAreaCustomizer_ChangePage(customizer);
         break;
     case SAC_INPUT_STATE_EXIT:
-        s->state = SAC_INPUT_STATE_WAIT;
-        SafariAreaCustomizer_DrawSprites(s);
-        return s->nextState;
+        customizer->state = SAC_INPUT_STATE_WAIT;
+        SafariAreaCustomizer_DrawSprites(customizer);
+        return customizer->nextState;
     }
-    SafariAreaCustomizer_DrawSprites(s);
+    SafariAreaCustomizer_DrawSprites(customizer);
     return SAC_STATE_SELECT_AREA;
 }
 
-static int SafariAreaCustomizer_State_MoveArea(SafariAreaCustomizer *s) {
-    switch (s->state) {
+static int SafariAreaCustomizer_State_MoveArea(SafariAreaCustomizer *customizer) {
+    switch (customizer->state) {
     case SAC_INPUT_STATE_WAIT:
-        s->state = SafariAreaCustomizer_HandleMoveInput(s);
+        customizer->state = SafariAreaCustomizer_HandleMoveInput(customizer);
         break;
     case SAC_INPUT_STATE_MENU:
         break;
     case SAC_INPUT_STATE_SCROLL:
-        s->state = SafariAreaCustomizer_ScrollPages(s);
+        customizer->state = SafariAreaCustomizer_ScrollPages(customizer);
         break;
     case SAC_INPUT_STATE_SWAP_AREAS:
-        s->state = SafariAreaCustomizer_SwapAreas(s);
+        customizer->state = SafariAreaCustomizer_SwapAreas(customizer);
         break;
     case SAC_INPUT_STATE_EXIT:
-        s->state = SAC_INPUT_STATE_WAIT;
-        SafariAreaCustomizer_DrawSprites(s);
-        return s->nextState;
+        customizer->state = SAC_INPUT_STATE_WAIT;
+        SafariAreaCustomizer_DrawSprites(customizer);
+        return customizer->nextState;
     }
-    SafariAreaCustomizer_DrawSprites(s);
+    SafariAreaCustomizer_DrawSprites(customizer);
     return SAC_STATE_MOVE_AREA;
 }
 
-static int SafariAreaCustomizer_State_FadeIn(SafariAreaCustomizer *s) {
-    switch (s->state) {
+static int SafariAreaCustomizer_State_FadeIn(SafariAreaCustomizer *customizer) {
+    switch (customizer->state) {
     case SAC_FADE_START:
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, s->heapId);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, customizer->heapId);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
-        s->state++;
+        customizer->state++;
         break;
     case SAC_FADE_WAIT:
         if (IsPaletteFadeFinished()) {
-            s->state = SAC_FADE_START;
-            SafariAreaCustomizer_DrawSprites(s);
+            customizer->state = SAC_FADE_START;
+            SafariAreaCustomizer_DrawSprites(customizer);
             return SAC_STATE_SELECT_SLOT;
         }
         break;
     }
-    SafariAreaCustomizer_DrawSprites(s);
+    SafariAreaCustomizer_DrawSprites(customizer);
     return SAC_STATE_FADE_IN;
 }
 
-static int SafariAreaCustomizer_State_FadeOut(SafariAreaCustomizer *s) {
-    switch (s->state) {
+static int SafariAreaCustomizer_State_FadeOut(SafariAreaCustomizer *customizer) {
+    switch (customizer->state) {
     case SAC_FADE_START:
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, s->heapId);
-        s->state++;
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, customizer->heapId);
+        customizer->state++;
         break;
     case SAC_FADE_WAIT:
         if (IsPaletteFadeFinished()) {
-            s->state = SAC_FADE_START;
-            SafariAreaCustomizer_DrawSprites(s);
+            customizer->state = SAC_FADE_START;
+            SafariAreaCustomizer_DrawSprites(customizer);
             return SAC_STATE_TEARDOWN;
         }
         break;
     }
-    SafariAreaCustomizer_DrawSprites(s);
+    SafariAreaCustomizer_DrawSprites(customizer);
     return SAC_STATE_FADE_OUT;
 }
 
-static int SafariAreaCustomizer_Setup(SafariAreaCustomizer *s) {
-    switch (s->subState) {
+static int SafariAreaCustomizer_Setup(SafariAreaCustomizer *customizer) {
+    switch (customizer->subState) {
     case SAC_SETUP_RESET_DISPLAY:
         Main_SetVBlankIntrCB(NULL, NULL);
         HBlankInterruptDisable();
@@ -513,36 +513,36 @@ static int SafariAreaCustomizer_Setup(SafariAreaCustomizer *s) {
         GF_TouchpadStartSampling(4);
         break;
     case SAC_SETUP_LOAD:
-        SafariAreaCustomizer_InitBgLayers(s);
-        SafariAreaCustomizer_LoadBgGraphics(s);
-        SafariAreaCustomizer_CreateStrings(s);
-        SafariAreaCustomizer_AddWindows(s);
-        SafariAreaCustomizer_CreateMenuItems(s);
-        SafariAreaCustomizer_InitSprites(s);
-        SafariAreaCustomizer_CreateSprites(s);
+        SafariAreaCustomizer_InitBgLayers(customizer);
+        SafariAreaCustomizer_LoadBgGraphics(customizer);
+        SafariAreaCustomizer_CreateStrings(customizer);
+        SafariAreaCustomizer_AddWindows(customizer);
+        SafariAreaCustomizer_CreateMenuItems(customizer);
+        SafariAreaCustomizer_InitSprites(customizer);
+        SafariAreaCustomizer_CreateSprites(customizer);
         break;
     case SAC_SETUP_INIT_SCREEN:
-        SafariAreaCustomizer_InitScreen(s);
-        Main_SetVBlankIntrCB(SafariAreaCustomizer_VBlankCB, s);
-        s->subState = SAC_SETUP_RESET_DISPLAY;
+        SafariAreaCustomizer_InitScreen(customizer);
+        Main_SetVBlankIntrCB(SafariAreaCustomizer_VBlankCB, customizer);
+        customizer->subState = SAC_SETUP_RESET_DISPLAY;
         return TRUE;
     }
-    s->subState++;
+    customizer->subState++;
     return FALSE;
 }
 
-static int SafariAreaCustomizer_Teardown(SafariAreaCustomizer *s) {
-    switch (s->subState) {
+static int SafariAreaCustomizer_Teardown(SafariAreaCustomizer *customizer) {
+    switch (customizer->subState) {
     case SAC_TEARDOWN_FREE:
         Main_SetVBlankIntrCB(NULL, NULL);
         HBlankInterruptDisable();
-        SafariAreaCustomizer_DeleteSprites(s);
-        SafariAreaCustomizer_FreeSprites(s);
-        SafariAreaCustomizer_DeleteMenuItems(s);
-        SafariAreaCustomizer_RemoveWindows(s);
-        SafariAreaCustomizer_DeleteStrings(s);
-        SafariAreaCustomizer_FreeScreenData(s);
-        SafariAreaCustomizer_FreeBgLayers(s);
+        SafariAreaCustomizer_DeleteSprites(customizer);
+        SafariAreaCustomizer_FreeSprites(customizer);
+        SafariAreaCustomizer_DeleteMenuItems(customizer);
+        SafariAreaCustomizer_RemoveWindows(customizer);
+        SafariAreaCustomizer_DeleteStrings(customizer);
+        SafariAreaCustomizer_FreeScreenData(customizer);
+        SafariAreaCustomizer_FreeBgLayers(customizer);
         break;
     case SAC_TEARDOWN_RESET_DISPLAY:
         GF_TouchpadStopSampling();
@@ -550,243 +550,243 @@ static int SafariAreaCustomizer_Teardown(SafariAreaCustomizer *s) {
         GXS_SetVisiblePlane(0);
         GfGfx_DisableEngineAPlanes();
         GfGfx_DisableEngineBPlanes();
-        s->subState = SAC_TEARDOWN_FREE;
+        customizer->subState = SAC_TEARDOWN_FREE;
         return TRUE;
     }
-    s->subState++;
+    customizer->subState++;
     return FALSE;
 }
 
-static int SafariAreaCustomizer_HandleSlotInput(SafariAreaCustomizer *s) {
-    if (SafariAreaCustomizer_CheckInputModeSwitch(s)) {
+static int SafariAreaCustomizer_HandleSlotInput(SafariAreaCustomizer *customizer) {
+    if (SafariAreaCustomizer_CheckInputModeSwitch(customizer)) {
         return SAC_INPUT_STATE_WAIT;
     }
-    if (s->touchMode == MENU_INPUT_STATE_BUTTONS) {
-        return SafariAreaCustomizer_HandleSlotButtons(s);
+    if (customizer->touchMode == MENU_INPUT_STATE_BUTTONS) {
+        return SafariAreaCustomizer_HandleSlotButtons(customizer);
     }
-    return SafariAreaCustomizer_HandleSlotTouch(s);
+    return SafariAreaCustomizer_HandleSlotTouch(customizer);
 }
 
-static int SafariAreaCustomizer_HandleSlotMenu(SafariAreaCustomizer *s) {
-    s32 input = TouchscreenListMenu_HandleInput(s->listMenu);
+static int SafariAreaCustomizer_HandleSlotMenu(SafariAreaCustomizer *customizer) {
+    s32 input = TouchscreenListMenu_HandleInput(customizer->listMenu);
     u32 touchMode;
 
     if (input == -1) {
         return SAC_INPUT_STATE_MENU;
     }
-    touchMode = s->listMenu->isTouch;
-    TouchscreenListMenu_Destroy(s->listMenu);
-    if (touchMode != s->touchMode) {
+    touchMode = customizer->listMenu->isTouch;
+    TouchscreenListMenu_Destroy(customizer->listMenu);
+    if (touchMode != customizer->touchMode) {
         if (touchMode == MENU_INPUT_STATE_BUTTONS) {
-            SafariAreaCustomizer_ShowCursors(s);
+            SafariAreaCustomizer_ShowCursors(customizer);
         } else {
-            thunk_SafariAreaCustomizer_ShowCursors(s);
+            thunk_SafariAreaCustomizer_ShowCursors(customizer);
         }
     }
-    s->touchMode = touchMode;
+    customizer->touchMode = touchMode;
     switch (input) {
     case 0:
-        s->cursorPos = 0;
+        customizer->cursorPos = 0;
         return SAC_INPUT_STATE_SCROLL;
     case 1:
-        SafariAreaCustomizer_DrawSelectFrame(s, GF_BG_LYR_MAIN_1, 0, FALSE);
-        SafariAreaCustomizer_DrawSelectFrame(s, GF_BG_LYR_SUB_0, 0, FALSE);
-        s->cursorPos = s->selectedSlot;
-        SafariAreaCustomizer_StartMove(s);
-        s->nextState = SAC_STATE_MOVE_AREA;
+        SafariAreaCustomizer_DrawSelectFrame(customizer, GF_BG_LYR_MAIN_1, 0, FALSE);
+        SafariAreaCustomizer_DrawSelectFrame(customizer, GF_BG_LYR_SUB_0, 0, FALSE);
+        customizer->cursorPos = customizer->selectedSlot;
+        SafariAreaCustomizer_StartMove(customizer);
+        customizer->nextState = SAC_STATE_MOVE_AREA;
         return SAC_INPUT_STATE_EXIT;
     case 2:
     default:
-        SafariAreaCustomizer_DrawSelectFrame(s, GF_BG_LYR_MAIN_1, 0, FALSE);
-        SafariAreaCustomizer_DrawSelectFrame(s, GF_BG_LYR_SUB_0, 0, FALSE);
+        SafariAreaCustomizer_DrawSelectFrame(customizer, GF_BG_LYR_MAIN_1, 0, FALSE);
+        SafariAreaCustomizer_DrawSelectFrame(customizer, GF_BG_LYR_SUB_0, 0, FALSE);
         return SAC_INPUT_STATE_WAIT;
     }
 }
 
-static int SafariAreaCustomizer_ScrollPages(SafariAreaCustomizer *s) {
-    switch (s->subState) {
+static int SafariAreaCustomizer_ScrollPages(SafariAreaCustomizer *customizer) {
+    switch (customizer->subState) {
     case SAC_ANIM_START:
-        SafariAreaCustomizer_StartPageScroll(s);
-        s->subState++;
+        SafariAreaCustomizer_StartPageScroll(customizer);
+        customizer->subState++;
         break;
     case SAC_ANIM_RUN:
-        if (SafariAreaCustomizer_RunPageScroll(s)) {
-            s->subState++;
+        if (SafariAreaCustomizer_RunPageScroll(customizer)) {
+            customizer->subState++;
         }
         break;
     default:
         GXS_SetVisibleWnd(GX_WNDMASK_NONE);
-        s->animFrame = 0;
-        s->subState = SAC_ANIM_START;
-        if (s->mode == SAC_MODE_SLOTS) {
-            s->nextState = SAC_STATE_SELECT_AREA;
-            SafariAreaCustomizer_PrintWindowText(s, 0, 1, TRUE);
-            SafariAreaCustomizer_PrintAreaNames(s);
-            s->mode = SAC_MODE_AREAS;
+        customizer->animFrame = 0;
+        customizer->subState = SAC_ANIM_START;
+        if (customizer->mode == SAC_MODE_SLOTS) {
+            customizer->nextState = SAC_STATE_SELECT_AREA;
+            SafariAreaCustomizer_PrintWindowText(customizer, 0, 1, TRUE);
+            SafariAreaCustomizer_PrintAreaNames(customizer);
+            customizer->mode = SAC_MODE_AREAS;
         } else {
-            s->nextState = SAC_STATE_SELECT_SLOT;
-            SafariAreaCustomizer_PrintWindowText(s, 0, 0, TRUE);
-            SafariAreaCustomizer_PrintSlotInfo(s, s->selectedSlot);
-            s->mode = SAC_MODE_SLOTS;
+            customizer->nextState = SAC_STATE_SELECT_SLOT;
+            SafariAreaCustomizer_PrintWindowText(customizer, 0, 0, TRUE);
+            SafariAreaCustomizer_PrintSlotInfo(customizer, customizer->selectedSlot);
+            customizer->mode = SAC_MODE_SLOTS;
         }
         return SAC_INPUT_STATE_EXIT;
     }
     return SAC_INPUT_STATE_SCROLL;
 }
 
-static int SafariAreaCustomizer_HandleAreaInput(SafariAreaCustomizer *s) {
-    if (SafariAreaCustomizer_CheckInputModeSwitch(s)) {
+static int SafariAreaCustomizer_HandleAreaInput(SafariAreaCustomizer *customizer) {
+    if (SafariAreaCustomizer_CheckInputModeSwitch(customizer)) {
         return SAC_INPUT_STATE_WAIT;
     }
-    if (s->touchMode == MENU_INPUT_STATE_BUTTONS) {
-        return SafariAreaCustomizer_HandleAreaButtons(s);
+    if (customizer->touchMode == MENU_INPUT_STATE_BUTTONS) {
+        return SafariAreaCustomizer_HandleAreaButtons(customizer);
     }
-    return SafariAreaCustomizer_HandleAreaTouch(s);
+    return SafariAreaCustomizer_HandleAreaTouch(customizer);
 }
 
-static int SafariAreaCustomizer_HandleConfirmArea(SafariAreaCustomizer *s) {
+static int SafariAreaCustomizer_HandleConfirmArea(SafariAreaCustomizer *customizer) {
     int yes;
     int touchMode;
 
-    switch (YesNoPrompt_HandleInput(s->yesNoPrompt)) {
+    switch (YesNoPrompt_HandleInput(customizer->yesNoPrompt)) {
     case YESNORESPONSE_YES: {
         u8 chosen;
         u8 current;
 
         yes = TRUE;
-        chosen = (u8)(s->page * NUM_AREA_SLOTS + s->cursorPos);
-        current = s->areaSet.areas[s->selectedSlot].area_no;
+        chosen = (u8)(customizer->page * NUM_AREA_SLOTS + customizer->cursorPos);
+        current = customizer->areaSet.areas[customizer->selectedSlot].area_no;
         if (chosen != current) {
-            s->modified = TRUE;
-            SafariZone_InitAreaInSet(&s->areaSet, s->selectedSlot, chosen);
+            customizer->modified = TRUE;
+            SafariZone_InitAreaInSet(&customizer->areaSet, customizer->selectedSlot, chosen);
         }
         break;
     }
     case YESNORESPONSE_NO:
-        SafariAreaCustomizer_LoadAreaPicture(s, s->selectedSlot, s->areaSet.areas[s->selectedSlot].area_no);
+        SafariAreaCustomizer_LoadAreaPicture(customizer, customizer->selectedSlot, customizer->areaSet.areas[customizer->selectedSlot].area_no);
         yes = FALSE;
         break;
     default:
         return SAC_INPUT_STATE_MENU;
     }
-    touchMode = YesNoPrompt_IsInTouchMode(s->yesNoPrompt);
-    if (touchMode != s->touchMode) {
+    touchMode = YesNoPrompt_IsInTouchMode(customizer->yesNoPrompt);
+    if (touchMode != customizer->touchMode) {
         if (!touchMode) {
-            SafariAreaCustomizer_ShowCursors(s);
+            SafariAreaCustomizer_ShowCursors(customizer);
         } else {
-            thunk_SafariAreaCustomizer_ShowCursors(s);
+            thunk_SafariAreaCustomizer_ShowCursors(customizer);
         }
     }
-    s->touchMode = touchMode;
-    YesNoPrompt_Reset(s->yesNoPrompt);
-    ClearWindowTilemapAndCopyToVram(&s->windows[1]);
-    SafariAreaCustomizer_DrawPageScreenPart(s, 0);
-    SafariAreaCustomizer_PrintWindowText(s, 0, 1, TRUE);
-    SafariAreaCustomizer_DrawSelectFrame(s, GF_BG_LYR_MAIN_1, 0, FALSE);
+    customizer->touchMode = touchMode;
+    YesNoPrompt_Reset(customizer->yesNoPrompt);
+    ClearWindowTilemapAndCopyToVram(&customizer->windows[1]);
+    SafariAreaCustomizer_DrawPageScreenPart(customizer, 0);
+    SafariAreaCustomizer_PrintWindowText(customizer, 0, 1, TRUE);
+    SafariAreaCustomizer_DrawSelectFrame(customizer, GF_BG_LYR_MAIN_1, 0, FALSE);
     if (yes) {
         return SAC_INPUT_STATE_SCROLL;
     }
     return SAC_INPUT_STATE_WAIT;
 }
 
-static int SafariAreaCustomizer_ChangePage(SafariAreaCustomizer *s) {
-    switch (s->subState) {
+static int SafariAreaCustomizer_ChangePage(SafariAreaCustomizer *customizer) {
+    switch (customizer->subState) {
     case SAC_ANIM_START:
-        SafariAreaCustomizer_StartPageChange(s);
-        s->subState++;
+        SafariAreaCustomizer_StartPageChange(customizer);
+        customizer->subState++;
         break;
     case SAC_ANIM_RUN:
-        if (SafariAreaCustomizer_RunPageChange(s)) {
-            s->subState++;
+        if (SafariAreaCustomizer_RunPageChange(customizer)) {
+            customizer->subState++;
         }
         break;
     default:
-        s->spriteBank ^= 1;
-        s->subState = SAC_ANIM_START;
+        customizer->spriteBank ^= 1;
+        customizer->subState = SAC_ANIM_START;
         return SAC_INPUT_STATE_WAIT;
     }
     return SAC_INPUT_STATE_CHANGE_PAGE;
 }
 
-static int SafariAreaCustomizer_HandleMoveInput(SafariAreaCustomizer *s) {
-    if (SafariAreaCustomizer_CheckInputModeSwitch(s)) {
+static int SafariAreaCustomizer_HandleMoveInput(SafariAreaCustomizer *customizer) {
+    if (SafariAreaCustomizer_CheckInputModeSwitch(customizer)) {
         return SAC_INPUT_STATE_WAIT;
     }
-    if (s->touchMode == MENU_INPUT_STATE_BUTTONS) {
-        return SafariAreaCustomizer_HandleMoveButtons(s);
+    if (customizer->touchMode == MENU_INPUT_STATE_BUTTONS) {
+        return SafariAreaCustomizer_HandleMoveButtons(customizer);
     }
-    return SafariAreaCustomizer_HandleMoveTouch(s);
+    return SafariAreaCustomizer_HandleMoveTouch(customizer);
 }
 
-static int SafariAreaCustomizer_SwapAreas(SafariAreaCustomizer *s) {
-    u32 bank = s->spriteBank * NUM_AREA_SLOTS;
+static int SafariAreaCustomizer_SwapAreas(SafariAreaCustomizer *customizer) {
+    u32 bank = customizer->spriteBank * NUM_AREA_SLOTS;
 
-    switch (s->subState) {
+    switch (customizer->subState) {
     case SAC_SWAP_START:
-        ManagedSprite_SetPriority(s->areaSprites[s->selectedSlot + bank], 0);
-        ManagedSprite_SetPriority(s->areaSprites[s->cursorPos + bank], 0);
+        ManagedSprite_SetPriority(customizer->areaSprites[customizer->selectedSlot + bank], 0);
+        ManagedSprite_SetPriority(customizer->areaSprites[customizer->cursorPos + bank], 0);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_OFF);
-        s->subState++;
+        customizer->subState++;
         break;
     case SAC_SWAP_MOVE_OUT:
-        if (SafariAreaCustomizer_RunSwapAnim(s, 0)) {
-            s->modified = TRUE;
-            SafariZone_SwapAreasInSet(&s->areaSet, s->selectedSlot, s->cursorPos);
-            SafariAreaCustomizerSpriteRes_SetAreaPicture(s->spriteRes, s->selectedSlot + bank, s->areaSet.areas[s->selectedSlot].area_no);
-            SafariAreaCustomizer_LoadAreaPicture(s, s->selectedSlot, s->areaSet.areas[s->selectedSlot].area_no);
-            SafariAreaCustomizerSpriteRes_SetAreaPicture(s->spriteRes, s->cursorPos + bank, s->areaSet.areas[s->cursorPos].area_no);
-            SafariAreaCustomizer_LoadAreaPicture(s, s->cursorPos, s->areaSet.areas[s->cursorPos].area_no);
-            s->subState++;
+        if (SafariAreaCustomizer_RunSwapAnim(customizer, 0)) {
+            customizer->modified = TRUE;
+            SafariZone_SwapAreasInSet(&customizer->areaSet, customizer->selectedSlot, customizer->cursorPos);
+            SafariAreaCustomizerSpriteRes_SetAreaPicture(customizer->spriteRes, customizer->selectedSlot + bank, customizer->areaSet.areas[customizer->selectedSlot].area_no);
+            SafariAreaCustomizer_LoadAreaPicture(customizer, customizer->selectedSlot, customizer->areaSet.areas[customizer->selectedSlot].area_no);
+            SafariAreaCustomizerSpriteRes_SetAreaPicture(customizer->spriteRes, customizer->cursorPos + bank, customizer->areaSet.areas[customizer->cursorPos].area_no);
+            SafariAreaCustomizer_LoadAreaPicture(customizer, customizer->cursorPos, customizer->areaSet.areas[customizer->cursorPos].area_no);
+            customizer->subState++;
         }
         break;
     case SAC_SWAP_MOVE_BACK:
-        if (SafariAreaCustomizer_RunSwapAnim(s, 1)) {
-            ManagedSprite_SetPriority(s->areaSprites[s->selectedSlot + bank], 2);
-            ManagedSprite_SetPriority(s->areaSprites[s->cursorPos + bank], 2);
+        if (SafariAreaCustomizer_RunSwapAnim(customizer, 1)) {
+            ManagedSprite_SetPriority(customizer->areaSprites[customizer->selectedSlot + bank], 2);
+            ManagedSprite_SetPriority(customizer->areaSprites[customizer->cursorPos + bank], 2);
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
-            s->subState++;
+            customizer->subState++;
         }
         break;
     default:
-        s->selectedSlot = s->cursorPos;
-        SafariAreaCustomizer_EndMove(s);
-        s->subState = SAC_SWAP_START;
-        s->nextState = SAC_STATE_SELECT_SLOT;
+        customizer->selectedSlot = customizer->cursorPos;
+        SafariAreaCustomizer_EndMove(customizer);
+        customizer->subState = SAC_SWAP_START;
+        customizer->nextState = SAC_STATE_SELECT_SLOT;
         return SAC_INPUT_STATE_EXIT;
     }
     return SAC_INPUT_STATE_SWAP_AREAS;
 }
 
-static void SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *s) {
-    switch (s->mode) {
+static void SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *customizer) {
+    switch (customizer->mode) {
     case SAC_MODE_SLOTS:
-        SafariAreaCustomizer_MoveCursor(s, 0, s->selectedSlot);
+        SafariAreaCustomizer_MoveCursor(customizer, 0, customizer->selectedSlot);
         break;
     case SAC_MODE_AREAS:
-        SafariAreaCustomizer_MoveCursor(s, 1, s->cursorPos);
-        SafariAreaCustomizer_MoveCursor(s, 2, s->selectedSlot);
+        SafariAreaCustomizer_MoveCursor(customizer, 1, customizer->cursorPos);
+        SafariAreaCustomizer_MoveCursor(customizer, 2, customizer->selectedSlot);
         break;
     case SAC_MODE_MOVE:
-        SafariAreaCustomizer_MoveCursor(s, 0, s->cursorPos);
+        SafariAreaCustomizer_MoveCursor(customizer, 0, customizer->cursorPos);
         break;
     }
 }
 
-static void thunk_SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *s) {
-    SafariAreaCustomizer_ShowCursors(s);
+static void thunk_SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *customizer) {
+    SafariAreaCustomizer_ShowCursors(customizer);
 }
 
-static int SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *s) {
-    if (s->touchMode == MENU_INPUT_STATE_TOUCH) {
+static int SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *customizer) {
+    if (customizer->touchMode == MENU_INPUT_STATE_TOUCH) {
         if (System_GetTouchHeld()) {
             return FALSE;
         }
         if (gSystem.heldKeys) {
-            if (s->onSwitchToButtons != NULL) {
-                s->onSwitchToButtons(s);
+            if (customizer->onSwitchToButtons != NULL) {
+                customizer->onSwitchToButtons(customizer);
             }
-            SafariAreaCustomizer_ShowCursors(s);
-            s->touchMode = MENU_INPUT_STATE_BUTTONS;
+            SafariAreaCustomizer_ShowCursors(customizer);
+            customizer->touchMode = MENU_INPUT_STATE_BUTTONS;
             return FALSE;
         }
     } else {
@@ -794,18 +794,18 @@ static int SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *s) {
             return FALSE;
         }
         if (System_GetTouchHeld()) {
-            if (s->onSwitchToTouch != NULL) {
-                s->onSwitchToTouch(s);
+            if (customizer->onSwitchToTouch != NULL) {
+                customizer->onSwitchToTouch(customizer);
             }
-            thunk_SafariAreaCustomizer_ShowCursors(s);
-            s->touchMode = MENU_INPUT_STATE_TOUCH;
+            thunk_SafariAreaCustomizer_ShowCursors(customizer);
+            customizer->touchMode = MENU_INPUT_STATE_TOUCH;
             return FALSE;
         }
     }
     return FALSE;
 }
 
-static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *s) {
+static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *customizer) {
     u32 keys = gSystem.newKeys;
     u8 old;
     u8 column;
@@ -813,23 +813,23 @@ static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *s) {
 
     if (keys & PAD_BUTTON_B) {
         PlaySE(SEQ_SE_DP_SELECT);
-        s->nextState = SAC_STATE_FADE_OUT;
+        customizer->nextState = SAC_STATE_FADE_OUT;
         return SAC_INPUT_STATE_EXIT;
     }
     if (keys & PAD_BUTTON_A) {
-        if (s->selectedSlot >= NUM_AREA_SLOTS) {
+        if (customizer->selectedSlot >= NUM_AREA_SLOTS) {
             PlaySE(SEQ_SE_DP_SELECT);
-            s->nextState = SAC_STATE_FADE_OUT;
+            customizer->nextState = SAC_STATE_FADE_OUT;
             return SAC_INPUT_STATE_EXIT;
         }
         PlaySE(SEQ_SE_DP_SELECT);
-        SafariAreaCustomizer_OpenSlotMenu(s);
+        SafariAreaCustomizer_OpenSlotMenu(customizer);
         return SAC_INPUT_STATE_MENU;
     }
     if (!(keys & PAD_PLUS_KEY_MASK)) {
         return SAC_INPUT_STATE_WAIT;
     }
-    old = s->selectedSlot;
+    old = customizer->selectedSlot;
     column = old % 3;
     row = old / 3;
     if (row < 2) {
@@ -844,16 +844,16 @@ static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *s) {
     } else if (keys & PAD_KEY_DOWN) {
         row = (row + 1) % 3;
     }
-    s->selectedSlot = column + row * 3;
+    customizer->selectedSlot = column + row * 3;
     if (row < 2 || (gSystem.newKeys & (PAD_KEY_UP | PAD_KEY_DOWN))) {
         PlaySE(SEQ_SE_DP_BUTTON3);
     }
-    SafariAreaCustomizer_MoveCursor(s, 0, s->selectedSlot);
-    SafariAreaCustomizer_PrintSlotInfo(s, s->selectedSlot);
+    SafariAreaCustomizer_MoveCursor(customizer, 0, customizer->selectedSlot);
+    SafariAreaCustomizer_PrintSlotInfo(customizer, customizer->selectedSlot);
     return SAC_INPUT_STATE_WAIT;
 }
 
-static int SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *s) {
+static int SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *customizer) {
     s32 hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariAreaCustomizerSlotHitboxes);
 
     if (hit == -1) {
@@ -861,40 +861,40 @@ static int SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *s) {
     }
     if (hit == 6) {
         u16 transparent = 0xFFFE;
-        if (!DoesPixelAtScreenXYMatchPtrVal(s->bgConfig, GF_BG_LYR_MAIN_3, gSystem.touchX, gSystem.touchY, &transparent)) {
+        if (!DoesPixelAtScreenXYMatchPtrVal(customizer->bgConfig, GF_BG_LYR_MAIN_3, gSystem.touchX, gSystem.touchY, &transparent)) {
             return SAC_INPUT_STATE_WAIT;
         }
         PlaySE(SEQ_SE_DP_SELECT);
-        s->nextState = SAC_STATE_FADE_OUT;
+        customizer->nextState = SAC_STATE_FADE_OUT;
         return SAC_INPUT_STATE_EXIT;
     }
-    s->selectedSlot = hit;
-    s->cursorPos = 0;
-    SafariAreaCustomizer_MoveCursor(s, 0, s->selectedSlot);
-    SafariAreaCustomizer_PrintSlotInfo(s, s->selectedSlot);
+    customizer->selectedSlot = hit;
+    customizer->cursorPos = 0;
+    SafariAreaCustomizer_MoveCursor(customizer, 0, customizer->selectedSlot);
+    SafariAreaCustomizer_PrintSlotInfo(customizer, customizer->selectedSlot);
     PlaySE(SEQ_SE_DP_SELECT);
-    SafariAreaCustomizer_OpenSlotMenu(s);
+    SafariAreaCustomizer_OpenSlotMenu(customizer);
     return SAC_INPUT_STATE_MENU;
 }
 
-static int SafariAreaCustomizer_ChooseArea(SafariAreaCustomizer *s) {
+static int SafariAreaCustomizer_ChooseArea(SafariAreaCustomizer *customizer) {
     u8 area;
 
     PlaySE(SEQ_SE_DP_SELECT);
-    if (s->objectsUnlocked) {
-        SafariAreaCustomizer_AskConfirmArea(s);
+    if (customizer->objectsUnlocked) {
+        SafariAreaCustomizer_AskConfirmArea(customizer);
         return SAC_INPUT_STATE_MENU;
     }
-    area = s->cursorPos + s->page * NUM_AREA_SLOTS;
-    s->modified = TRUE;
-    SafariZone_InitAreaInSet(&s->areaSet, s->selectedSlot, area);
-    SafariAreaCustomizer_LoadAreaPicture(s, s->selectedSlot, s->areaSet.areas[s->selectedSlot].area_no);
-    SafariAreaCustomizer_DrawSelectFrame(s, GF_BG_LYR_MAIN_1, 0, FALSE);
+    area = customizer->cursorPos + customizer->page * NUM_AREA_SLOTS;
+    customizer->modified = TRUE;
+    SafariZone_InitAreaInSet(&customizer->areaSet, customizer->selectedSlot, area);
+    SafariAreaCustomizer_LoadAreaPicture(customizer, customizer->selectedSlot, customizer->areaSet.areas[customizer->selectedSlot].area_no);
+    SafariAreaCustomizer_DrawSelectFrame(customizer, GF_BG_LYR_MAIN_1, 0, FALSE);
     return SAC_INPUT_STATE_SCROLL;
 }
 
-static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *s) {
-    u8 old = s->cursorPos;
+static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *customizer) {
+    u8 old = customizer->cursorPos;
     u32 keys = gSystem.newKeys;
     u8 column;
     u8 row;
@@ -909,10 +909,10 @@ static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *s) {
             PlaySE(SEQ_SE_DP_SELECT);
             return SAC_INPUT_STATE_SCROLL;
         }
-        if (old + s->page * NUM_AREA_SLOTS == s->areaSet.areas[s->selectedSlot].area_no) {
+        if (old + customizer->page * NUM_AREA_SLOTS == customizer->areaSet.areas[customizer->selectedSlot].area_no) {
             return SAC_INPUT_STATE_WAIT;
         }
-        return SafariAreaCustomizer_ChooseArea(s);
+        return SafariAreaCustomizer_ChooseArea(customizer);
     }
     if (!(keys & PAD_PLUS_KEY_MASK)) {
         return SAC_INPUT_STATE_WAIT;
@@ -925,9 +925,9 @@ static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *s) {
             if (row == 0) {
                 row ^= 1;
                 column = (column + 1) % 3;
-            } else if (row < 2 && s->page < 1) {
+            } else if (row < 2 && customizer->page < 1) {
                 changePage = TRUE;
-                s->pageDir = 0;
+                customizer->pageDir = 0;
                 row ^= changePage;
                 column = (column + 1) % 3;
             }
@@ -939,9 +939,9 @@ static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *s) {
             if (row == 1) {
                 row ^= 1;
                 column = (column + 2) % 3;
-            } else if (row < 2 && s->page != 0) {
+            } else if (row < 2 && customizer->page != 0) {
                 changePage = TRUE;
-                s->pageDir = 1;
+                customizer->pageDir = 1;
                 row ^= changePage;
                 column = (column + 2) % 3;
             }
@@ -953,21 +953,21 @@ static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *s) {
     } else if (keys & PAD_KEY_DOWN) {
         row = (row + 1) % 3;
     }
-    s->cursorPos = column + row * 3;
-    SafariAreaCustomizer_MoveCursor(s, 1, s->cursorPos);
+    customizer->cursorPos = column + row * 3;
+    SafariAreaCustomizer_MoveCursor(customizer, 1, customizer->cursorPos);
     if (changePage) {
         PlaySE(SEQ_SE_DP_SELECT5);
-        SafariAreaCustomizer_SetCursorAnim(s, 1, 0, FALSE);
+        SafariAreaCustomizer_SetCursorAnim(customizer, 1, 0, FALSE);
         return SAC_INPUT_STATE_CHANGE_PAGE;
     }
-    if (old != s->cursorPos) {
+    if (old != customizer->cursorPos) {
         PlaySE(SEQ_SE_DP_BUTTON3);
     }
-    SafariAreaCustomizer_PrintAreaNames(s);
+    SafariAreaCustomizer_PrintAreaNames(customizer);
     return SAC_INPUT_STATE_WAIT;
 }
 
-static int SafariAreaCustomizer_HandleAreaTouch(SafariAreaCustomizer *s) {
+static int SafariAreaCustomizer_HandleAreaTouch(SafariAreaCustomizer *customizer) {
     s32 hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariAreaCustomizerAreaHitboxes);
 
     if (hit == -1) {
@@ -976,77 +976,77 @@ static int SafariAreaCustomizer_HandleAreaTouch(SafariAreaCustomizer *s) {
     switch (hit) {
     case 6: {
         u16 transparent = 0xFFFE;
-        if (!DoesPixelAtScreenXYMatchPtrVal(s->bgConfig, GF_BG_LYR_MAIN_3, gSystem.touchX, gSystem.touchY, &transparent)) {
+        if (!DoesPixelAtScreenXYMatchPtrVal(customizer->bgConfig, GF_BG_LYR_MAIN_3, gSystem.touchX, gSystem.touchY, &transparent)) {
             return SAC_INPUT_STATE_WAIT;
         }
-        s->cursorPos = 6;
+        customizer->cursorPos = 6;
         PlaySE(SEQ_SE_DP_SELECT);
         return SAC_INPUT_STATE_SCROLL;
     }
     case 7:
-        if (s->page == 0) {
+        if (customizer->page == 0) {
             return SAC_INPUT_STATE_WAIT;
         }
-        s->pageDir = 1;
-        s->cursorPos = 5;
-        SafariAreaCustomizer_SetCursorAnim(s, 1, 0, FALSE);
-        Sprite_SetAnimActiveFlag(s->sprites[4], TRUE);
-        Sprite_ResetAnimCtrlState(s->sprites[4]);
+        customizer->pageDir = 1;
+        customizer->cursorPos = 5;
+        SafariAreaCustomizer_SetCursorAnim(customizer, 1, 0, FALSE);
+        Sprite_SetAnimActiveFlag(customizer->sprites[4], TRUE);
+        Sprite_ResetAnimCtrlState(customizer->sprites[4]);
         PlaySE(SEQ_SE_DP_SELECT5);
         return SAC_INPUT_STATE_CHANGE_PAGE;
     case 8:
-        if (s->page == 1) {
+        if (customizer->page == 1) {
             return SAC_INPUT_STATE_WAIT;
         }
-        s->pageDir = 0;
-        s->cursorPos = 0;
-        SafariAreaCustomizer_SetCursorAnim(s, 1, 0, FALSE);
-        Sprite_SetAnimActiveFlag(s->sprites[5], TRUE);
-        Sprite_ResetAnimCtrlState(s->sprites[5]);
+        customizer->pageDir = 0;
+        customizer->cursorPos = 0;
+        SafariAreaCustomizer_SetCursorAnim(customizer, 1, 0, FALSE);
+        Sprite_SetAnimActiveFlag(customizer->sprites[5], TRUE);
+        Sprite_ResetAnimCtrlState(customizer->sprites[5]);
         PlaySE(SEQ_SE_DP_SELECT5);
         return SAC_INPUT_STATE_CHANGE_PAGE;
     default:
-        s->cursorPos = hit;
-        SafariAreaCustomizer_MoveCursor(s, 1, s->cursorPos);
-        SafariAreaCustomizer_PrintAreaNames(s);
-        if (s->cursorPos + s->page * NUM_AREA_SLOTS == s->areaSet.areas[s->selectedSlot].area_no) {
+        customizer->cursorPos = hit;
+        SafariAreaCustomizer_MoveCursor(customizer, 1, customizer->cursorPos);
+        SafariAreaCustomizer_PrintAreaNames(customizer);
+        if (customizer->cursorPos + customizer->page * NUM_AREA_SLOTS == customizer->areaSet.areas[customizer->selectedSlot].area_no) {
             return SAC_INPUT_STATE_WAIT;
         }
-        return SafariAreaCustomizer_ChooseArea(s);
+        return SafariAreaCustomizer_ChooseArea(customizer);
     }
 }
 
-static void SafariAreaCustomizer_StartMove(SafariAreaCustomizer *s) {
-    s->mode = SAC_MODE_MOVE;
-    SafariAreaCustomizer_MoveCursor(s, 0, s->cursorPos);
-    thunk_Sprite_SetPriority(s->sprites[0], 0);
-    SafariAreaCustomizer_MoveCursor(s, 3, s->selectedSlot);
-    SafariAreaCustomizer_PrintWindowText(s, 0, 2, TRUE);
+static void SafariAreaCustomizer_StartMove(SafariAreaCustomizer *customizer) {
+    customizer->mode = SAC_MODE_MOVE;
+    SafariAreaCustomizer_MoveCursor(customizer, 0, customizer->cursorPos);
+    thunk_Sprite_SetPriority(customizer->sprites[0], 0);
+    SafariAreaCustomizer_MoveCursor(customizer, 3, customizer->selectedSlot);
+    SafariAreaCustomizer_PrintWindowText(customizer, 0, 2, TRUE);
 }
 
-static void SafariAreaCustomizer_EndMove(SafariAreaCustomizer *s) {
-    s->mode = SAC_MODE_SLOTS;
-    SafariAreaCustomizer_MoveCursor(s, 0, s->selectedSlot);
-    thunk_Sprite_SetPriority(s->sprites[0], 2);
-    SafariAreaCustomizer_SetCursorAnim(s, 3, 0, FALSE);
-    SafariAreaCustomizer_PrintWindowText(s, 0, 0, TRUE);
+static void SafariAreaCustomizer_EndMove(SafariAreaCustomizer *customizer) {
+    customizer->mode = SAC_MODE_SLOTS;
+    SafariAreaCustomizer_MoveCursor(customizer, 0, customizer->selectedSlot);
+    thunk_Sprite_SetPriority(customizer->sprites[0], 2);
+    SafariAreaCustomizer_SetCursorAnim(customizer, 3, 0, FALSE);
+    SafariAreaCustomizer_PrintWindowText(customizer, 0, 0, TRUE);
 }
 
-static int SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *s) {
+static int SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *customizer) {
     u32 keys = gSystem.newKeys;
     u8 column;
     u8 row;
 
     if (keys & PAD_BUTTON_B) {
-        SafariAreaCustomizer_EndMove(s);
-        s->nextState = SAC_STATE_SELECT_SLOT;
+        SafariAreaCustomizer_EndMove(customizer);
+        customizer->nextState = SAC_STATE_SELECT_SLOT;
         PlaySE(SEQ_SE_DP_SELECT);
         return SAC_INPUT_STATE_EXIT;
     }
     if (keys & PAD_BUTTON_A) {
-        if (s->cursorPos >= NUM_AREA_SLOTS || s->selectedSlot == s->cursorPos) {
-            SafariAreaCustomizer_EndMove(s);
-            s->nextState = SAC_STATE_SELECT_SLOT;
+        if (customizer->cursorPos >= NUM_AREA_SLOTS || customizer->selectedSlot == customizer->cursorPos) {
+            SafariAreaCustomizer_EndMove(customizer);
+            customizer->nextState = SAC_STATE_SELECT_SLOT;
             PlaySE(SEQ_SE_DP_SELECT);
             return SAC_INPUT_STATE_EXIT;
         }
@@ -1056,8 +1056,8 @@ static int SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *s) {
     if (!(keys & PAD_PLUS_KEY_MASK)) {
         return SAC_INPUT_STATE_WAIT;
     }
-    column = (s32)s->cursorPos % 3;
-    row = (s32)s->cursorPos / 3;
+    column = (s32)customizer->cursorPos % 3;
+    row = (s32)customizer->cursorPos / 3;
     if (row < 2) {
         if (keys & PAD_KEY_RIGHT) {
             column = (column + 1) % 3;
@@ -1070,15 +1070,15 @@ static int SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *s) {
     } else if (keys & PAD_KEY_DOWN) {
         row = (row + 1) % 3;
     }
-    s->cursorPos = row * 3 + column;
+    customizer->cursorPos = row * 3 + column;
     if (row < 2 || (gSystem.newKeys & (PAD_KEY_UP | PAD_KEY_DOWN))) {
         PlaySE(SEQ_SE_DP_BUTTON3);
     }
-    SafariAreaCustomizer_MoveCursor(s, 0, s->cursorPos);
+    SafariAreaCustomizer_MoveCursor(customizer, 0, customizer->cursorPos);
     return SAC_INPUT_STATE_WAIT;
 }
 
-static int SafariAreaCustomizer_HandleMoveTouch(SafariAreaCustomizer *s) {
+static int SafariAreaCustomizer_HandleMoveTouch(SafariAreaCustomizer *customizer) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariAreaCustomizerSlotHitboxes);
 
     if (hit == -1) {
@@ -1086,77 +1086,77 @@ static int SafariAreaCustomizer_HandleMoveTouch(SafariAreaCustomizer *s) {
     }
     if (hit == 6) {
         u16 transparent = 0xFFFE;
-        if (!DoesPixelAtScreenXYMatchPtrVal(s->bgConfig, GF_BG_LYR_MAIN_3, gSystem.touchX, gSystem.touchY, &transparent)) {
+        if (!DoesPixelAtScreenXYMatchPtrVal(customizer->bgConfig, GF_BG_LYR_MAIN_3, gSystem.touchX, gSystem.touchY, &transparent)) {
             return SAC_INPUT_STATE_WAIT;
         }
-        s->cursorPos = 6;
-        SafariAreaCustomizer_EndMove(s);
-        s->nextState = SAC_STATE_SELECT_SLOT;
+        customizer->cursorPos = 6;
+        SafariAreaCustomizer_EndMove(customizer);
+        customizer->nextState = SAC_STATE_SELECT_SLOT;
         PlaySE(SEQ_SE_DP_SELECT);
         return SAC_INPUT_STATE_EXIT;
     }
-    if (s->selectedSlot == hit) {
-        SafariAreaCustomizer_EndMove(s);
-        s->nextState = SAC_STATE_SELECT_SLOT;
+    if (customizer->selectedSlot == hit) {
+        SafariAreaCustomizer_EndMove(customizer);
+        customizer->nextState = SAC_STATE_SELECT_SLOT;
         PlaySE(SEQ_SE_DP_SELECT);
         return SAC_INPUT_STATE_EXIT;
     }
-    s->cursorPos = hit;
-    SafariAreaCustomizer_MoveCursor(s, 0, s->cursorPos);
+    customizer->cursorPos = hit;
+    SafariAreaCustomizer_MoveCursor(customizer, 0, customizer->cursorPos);
     PlaySE(SEQ_SE_DP_SYU02);
     return SAC_INPUT_STATE_SWAP_AREAS;
 }
 
-static void SafariAreaCustomizer_OpenSlotMenu(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_OpenSlotMenu(SafariAreaCustomizer *customizer) {
     TouchscreenListMenuHeader header;
     u16 x;
     u16 y;
 
     MI_CpuFill8(&header, 0, sizeof(header));
     header.template = gSafariAreaCustomizerConsts.menuTemplate;
-    header.listMenuItems = s->areaMenuItems;
-    header.bgConfig = s->bgConfig;
+    header.listMenuItems = customizer->areaMenuItems;
+    header.bgConfig = customizer->bgConfig;
     header.numWindows = 3;
-    y = gSafariAreaCustomizerSlotMenuPositions[s->selectedSlot].y;
-    x = gSafariAreaCustomizerSlotMenuPositions[s->selectedSlot].x;
-    s->listMenu = TouchscreenListMenu_Create(s->listMenuSpawner, &header, s->touchMode, x, y, 0, 0);
-    SafariAreaCustomizer_DrawSelectFrame(s, GF_BG_LYR_MAIN_1, s->selectedSlot, TRUE);
-    SafariAreaCustomizer_DrawSelectFrame(s, GF_BG_LYR_SUB_0, s->selectedSlot, TRUE);
+    y = gSafariAreaCustomizerSlotMenuPositions[customizer->selectedSlot].y;
+    x = gSafariAreaCustomizerSlotMenuPositions[customizer->selectedSlot].x;
+    customizer->listMenu = TouchscreenListMenu_Create(customizer->listMenuSpawner, &header, customizer->touchMode, x, y, 0, 0);
+    SafariAreaCustomizer_DrawSelectFrame(customizer, GF_BG_LYR_MAIN_1, customizer->selectedSlot, TRUE);
+    SafariAreaCustomizer_DrawSelectFrame(customizer, GF_BG_LYR_SUB_0, customizer->selectedSlot, TRUE);
 }
 
-static void SafariAreaCustomizer_AskConfirmArea(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_AskConfirmArea(SafariAreaCustomizer *customizer) {
     YesNoPromptTemplate template;
 
     MI_CpuFill8(&template, 0, sizeof(template));
-    template.bgConfig = s->bgConfig;
+    template.bgConfig = customizer->bgConfig;
     template.bgId = GF_BG_LYR_MAIN_0;
     template.tileStart = 0x379;
     template.plttSlot = 13;
     template.x = 26;
     template.y = 16;
-    template.ignoreTouchFlag = (u8)s->touchMode;
+    template.ignoreTouchFlag = (u8)customizer->touchMode;
     template.initialCursorPos = 0;
-    YesNoPrompt_InitFromTemplate(s->yesNoPrompt, &template);
-    SafariAreaCustomizer_DrawSelectFrame(s, GF_BG_LYR_MAIN_1, s->cursorPos, TRUE);
-    SafariAreaCustomizer_LoadAreaPicture(s, s->selectedSlot, (u8)(s->cursorPos + NUM_AREA_SLOTS * s->page));
-    SafariAreaCustomizer_DrawPageScreenPart(s, 1);
-    SafariAreaCustomizer_PrintWindowText(s, 1, 3, TRUE);
+    YesNoPrompt_InitFromTemplate(customizer->yesNoPrompt, &template);
+    SafariAreaCustomizer_DrawSelectFrame(customizer, GF_BG_LYR_MAIN_1, customizer->cursorPos, TRUE);
+    SafariAreaCustomizer_LoadAreaPicture(customizer, customizer->selectedSlot, (u8)(customizer->cursorPos + NUM_AREA_SLOTS * customizer->page));
+    SafariAreaCustomizer_DrawPageScreenPart(customizer, 1);
+    SafariAreaCustomizer_PrintWindowText(customizer, 1, 3, TRUE);
 }
 
 static void SafariAreaCustomizer_VBlankCB(void *cbArg) {
-    SafariAreaCustomizer *s = cbArg;
+    SafariAreaCustomizer *customizer = cbArg;
 
-    SafariAreaCustomizer_TransferOam(s);
-    if (s->scrollPending) {
-        BgSetPosTextAndCommit(s->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_Y, s->mainBgY);
-        BgSetPosTextAndCommit(s->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_Y, s->mainBgY);
-        BgSetPosTextAndCommit(s->bgConfig, GF_BG_LYR_SUB_0, BG_POS_OP_SET_Y, s->subBgY);
-        BgSetPosTextAndCommit(s->bgConfig, GF_BG_LYR_SUB_2, BG_POS_OP_SET_Y, s->subBgY);
-        BgSetPosTextAndCommit(s->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_Y, s->subBgY);
-        s->scrollPending = FALSE;
+    SafariAreaCustomizer_TransferOam(customizer);
+    if (customizer->scrollPending) {
+        BgSetPosTextAndCommit(customizer->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_Y, customizer->mainBgY);
+        BgSetPosTextAndCommit(customizer->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_Y, customizer->mainBgY);
+        BgSetPosTextAndCommit(customizer->bgConfig, GF_BG_LYR_SUB_0, BG_POS_OP_SET_Y, customizer->subBgY);
+        BgSetPosTextAndCommit(customizer->bgConfig, GF_BG_LYR_SUB_2, BG_POS_OP_SET_Y, customizer->subBgY);
+        BgSetPosTextAndCommit(customizer->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_Y, customizer->subBgY);
+        customizer->scrollPending = FALSE;
     }
     GF_RunVramTransferTasks();
-    DoScheduledBgGpuUpdates(s->bgConfig);
+    DoScheduledBgGpuUpdates(customizer->bgConfig);
     OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
 
@@ -1165,7 +1165,7 @@ static void SafariAreaCustomizer_SetGfxBanks(void) {
     GfGfx_SetBanks(&banks);
 }
 
-static void SafariAreaCustomizer_InitBgLayers(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_InitBgLayers(SafariAreaCustomizer *customizer) {
     GraphicsModes modes;
     SafariAreaCustomizerBgTemplates templates;
     int i;
@@ -1174,7 +1174,7 @@ static void SafariAreaCustomizer_InitBgLayers(SafariAreaCustomizer *s) {
 
     SafariAreaCustomizer_SetGfxBanks();
     GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
-    s->bgConfig = BgConfig_Alloc(s->heapId);
+    customizer->bgConfig = BgConfig_Alloc(customizer->heapId);
     modes = gSafariAreaCustomizerGraphicsModes;
     SetBothScreensModesAndDisable(&modes);
     templates = gSafariAreaCustomizerBgTemplates;
@@ -1182,9 +1182,9 @@ static void SafariAreaCustomizer_InitBgLayers(SafariAreaCustomizer *s) {
     count = 0;
     template = templates.templates;
     while (count < 8) {
-        InitBgFromTemplate(s->bgConfig, (u8)i, template, GF_BG_TYPE_TEXT);
-        BgClearTilemapBufferAndCommit(s->bgConfig, (u8)i);
-        BG_ClearCharDataRange((u8)i, 0x40, 0, s->heapId);
+        InitBgFromTemplate(customizer->bgConfig, (u8)i, template, GF_BG_TYPE_TEXT);
+        BgClearTilemapBufferAndCommit(customizer->bgConfig, (u8)i);
+        BG_ClearCharDataRange((u8)i, 0x40, 0, customizer->heapId);
         count++;
         i++;
         template ++;
@@ -1193,82 +1193,82 @@ static void SafariAreaCustomizer_InitBgLayers(SafariAreaCustomizer *s) {
     G2S_SetBlendAlpha(GX_BLEND_PLANEMASK_BG0, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ, 28, 4);
 }
 
-static void SafariAreaCustomizer_FreeBgLayers(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_FreeBgLayers(SafariAreaCustomizer *customizer) {
     int i;
 
     G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_NONE, 31, 0);
     G2S_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_NONE, 31, 0);
     for (i = 0; i < 8; i++) {
-        FreeBgTilemapBuffer(s->bgConfig, (u8)i);
+        FreeBgTilemapBuffer(customizer->bgConfig, (u8)i);
     }
-    Heap_Free(s->bgConfig);
+    Heap_Free(customizer->bgConfig);
     GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
 }
 
-static void SafariAreaCustomizer_LoadBgGraphics(SafariAreaCustomizer *s) {
-    NARC *narc = NARC_New(NARC_a_1_6_6, s->heapId);
+static void SafariAreaCustomizer_LoadBgGraphics(SafariAreaCustomizer *customizer) {
+    NARC *narc = NARC_New(NARC_a_1_6_6, customizer->heapId);
 
-    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 6, GF_BG_LYR_MAIN_3, GF_BG_GFX_TYPE_CHAR, 0, 0);
-    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 6, GF_BG_LYR_SUB_0, GF_BG_GFX_TYPE_CHAR, 0, 0);
-    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 1, GF_BG_LYR_SUB_3, GF_BG_GFX_TYPE_CHAR, 0, 0);
-    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 5, GF_BG_LYR_MAIN_3, GF_BG_GFX_TYPE_PLTT, 0, 0);
-    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 0, GF_BG_LYR_SUB_3, GF_BG_GFX_TYPE_PLTT, 0, 0);
-    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 10, GF_BG_LYR_MAIN_2, GF_BG_GFX_TYPE_SCRN, 0, 0);
-    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 7, GF_BG_LYR_MAIN_3, GF_BG_GFX_TYPE_SCRN, 0, 0);
-    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, 4, GF_BG_LYR_SUB_2, GF_BG_GFX_TYPE_SCRN, 0, 0);
-    BgConfig_LoadAssetFromOpenNarc(s->bgConfig, s->heapId, narc, NARC_a_1_6_6, (!s->objectsUnlocked) + 2, GF_BG_LYR_SUB_3, GF_BG_GFX_TYPE_SCRN, 0, 0);
-    s->pageScreenFile = GfGfxLoader_GetScrnDataFromOpenNarc(narc, 8, FALSE, &s->pageScreen, s->heapId);
-    s->selectFrameScreenFile = GfGfxLoader_GetScrnDataFromOpenNarc(narc, 9, FALSE, &s->selectFrameScreen, s->heapId);
+    BgConfig_LoadAssetFromOpenNarc(customizer->bgConfig, customizer->heapId, narc, NARC_a_1_6_6, 6, GF_BG_LYR_MAIN_3, GF_BG_GFX_TYPE_CHAR, 0, 0);
+    BgConfig_LoadAssetFromOpenNarc(customizer->bgConfig, customizer->heapId, narc, NARC_a_1_6_6, 6, GF_BG_LYR_SUB_0, GF_BG_GFX_TYPE_CHAR, 0, 0);
+    BgConfig_LoadAssetFromOpenNarc(customizer->bgConfig, customizer->heapId, narc, NARC_a_1_6_6, 1, GF_BG_LYR_SUB_3, GF_BG_GFX_TYPE_CHAR, 0, 0);
+    BgConfig_LoadAssetFromOpenNarc(customizer->bgConfig, customizer->heapId, narc, NARC_a_1_6_6, 5, GF_BG_LYR_MAIN_3, GF_BG_GFX_TYPE_PLTT, 0, 0);
+    BgConfig_LoadAssetFromOpenNarc(customizer->bgConfig, customizer->heapId, narc, NARC_a_1_6_6, 0, GF_BG_LYR_SUB_3, GF_BG_GFX_TYPE_PLTT, 0, 0);
+    BgConfig_LoadAssetFromOpenNarc(customizer->bgConfig, customizer->heapId, narc, NARC_a_1_6_6, 10, GF_BG_LYR_MAIN_2, GF_BG_GFX_TYPE_SCRN, 0, 0);
+    BgConfig_LoadAssetFromOpenNarc(customizer->bgConfig, customizer->heapId, narc, NARC_a_1_6_6, 7, GF_BG_LYR_MAIN_3, GF_BG_GFX_TYPE_SCRN, 0, 0);
+    BgConfig_LoadAssetFromOpenNarc(customizer->bgConfig, customizer->heapId, narc, NARC_a_1_6_6, 4, GF_BG_LYR_SUB_2, GF_BG_GFX_TYPE_SCRN, 0, 0);
+    BgConfig_LoadAssetFromOpenNarc(customizer->bgConfig, customizer->heapId, narc, NARC_a_1_6_6, (!customizer->objectsUnlocked) + 2, GF_BG_LYR_SUB_3, GF_BG_GFX_TYPE_SCRN, 0, 0);
+    customizer->pageScreenFile = GfGfxLoader_GetScrnDataFromOpenNarc(narc, 8, FALSE, &customizer->pageScreen, customizer->heapId);
+    customizer->selectFrameScreenFile = GfGfxLoader_GetScrnDataFromOpenNarc(narc, 9, FALSE, &customizer->selectFrameScreen, customizer->heapId);
     NARC_Delete(narc);
-    SafariAreaCustomizer_InitSlotTilemaps(s);
-    SafariAreaCustomizer_LoadAreaPicture(s, 0xFF, 0);
-    ScheduleBgTilemapBufferTransfer(s->bgConfig, GF_BG_LYR_MAIN_0);
-    ScheduleBgTilemapBufferTransfer(s->bgConfig, GF_BG_LYR_MAIN_2);
-    ScheduleBgTilemapBufferTransfer(s->bgConfig, GF_BG_LYR_MAIN_3);
-    ScheduleBgTilemapBufferTransfer(s->bgConfig, GF_BG_LYR_SUB_2);
-    ScheduleBgTilemapBufferTransfer(s->bgConfig, GF_BG_LYR_SUB_3);
+    SafariAreaCustomizer_InitSlotTilemaps(customizer);
+    SafariAreaCustomizer_LoadAreaPicture(customizer, 0xFF, 0);
+    ScheduleBgTilemapBufferTransfer(customizer->bgConfig, GF_BG_LYR_MAIN_0);
+    ScheduleBgTilemapBufferTransfer(customizer->bgConfig, GF_BG_LYR_MAIN_2);
+    ScheduleBgTilemapBufferTransfer(customizer->bgConfig, GF_BG_LYR_MAIN_3);
+    ScheduleBgTilemapBufferTransfer(customizer->bgConfig, GF_BG_LYR_SUB_2);
+    ScheduleBgTilemapBufferTransfer(customizer->bgConfig, GF_BG_LYR_SUB_3);
 }
 
-static void SafariAreaCustomizer_FreeScreenData(SafariAreaCustomizer *s) {
-    Heap_Free(s->pageScreenFile);
-    Heap_Free(s->selectFrameScreenFile);
+static void SafariAreaCustomizer_FreeScreenData(SafariAreaCustomizer *customizer) {
+    Heap_Free(customizer->pageScreenFile);
+    Heap_Free(customizer->selectFrameScreenFile);
 }
 
-static void SafariAreaCustomizer_CreateStrings(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_CreateStrings(SafariAreaCustomizer *customizer) {
     int i;
 
-    FontID_Alloc(4, s->heapId);
-    s->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0429_bin, s->heapId);
-    s->msgFormat = MessageFormat_New_Custom(1, 17, s->heapId);
-    s->string = String_New(81, s->heapId);
-    s->pageTemplate = NewString_ReadMsgData(s->msgData, msg_0429_00009);
-    s->countTemplate = NewString_ReadMsgData(s->msgData, msg_0429_00015);
+    FontID_Alloc(4, customizer->heapId);
+    customizer->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0429_bin, customizer->heapId);
+    customizer->msgFormat = MessageFormat_New_Custom(1, 17, customizer->heapId);
+    customizer->string = String_New(81, customizer->heapId);
+    customizer->pageTemplate = NewString_ReadMsgData(customizer->msgData, msg_0429_00009);
+    customizer->countTemplate = NewString_ReadMsgData(customizer->msgData, msg_0429_00015);
     for (i = 0; i < 5; i++) {
-        s->labelStrings[i] = NewString_ReadMsgData(s->msgData, i + 4);
+        customizer->labelStrings[i] = NewString_ReadMsgData(customizer->msgData, i + 4);
     }
     for (i = 0; i < 4; i++) {
-        s->menuStrings[i] = NewString_ReadMsgData(s->msgData, i);
+        customizer->menuStrings[i] = NewString_ReadMsgData(customizer->msgData, i);
     }
 }
 
-static void SafariAreaCustomizer_DeleteStrings(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_DeleteStrings(SafariAreaCustomizer *customizer) {
     int i;
 
     for (i = 0; i < 4; i++) {
-        String_Delete(s->menuStrings[i]);
+        String_Delete(customizer->menuStrings[i]);
     }
     for (i = 0; i < 5; i++) {
-        String_Delete(s->labelStrings[i]);
+        String_Delete(customizer->labelStrings[i]);
     }
-    String_Delete(s->countTemplate);
-    String_Delete(s->pageTemplate);
-    String_Delete(s->string);
-    MessageFormat_Delete(s->msgFormat);
-    DestroyMsgData(s->msgData);
+    String_Delete(customizer->countTemplate);
+    String_Delete(customizer->pageTemplate);
+    String_Delete(customizer->string);
+    MessageFormat_Delete(customizer->msgFormat);
+    DestroyMsgData(customizer->msgData);
     FontID_Release(4);
 }
 
-static void SafariAreaCustomizer_AddWindows(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_AddWindows(SafariAreaCustomizer *customizer) {
     int i;
     u8 y;
     int windowId;
@@ -1276,8 +1276,8 @@ static void SafariAreaCustomizer_AddWindows(SafariAreaCustomizer *s) {
     int baseTile;
 
     for (i = 0; i <= 4; i++) {
-        AddWindow(s->bgConfig, &s->windows[i], &gSafariAreaCustomizerWindowTemplates[i]);
-        FillWindowPixelBuffer(&s->windows[i], 0);
+        AddWindow(customizer->bgConfig, &customizer->windows[i], &gSafariAreaCustomizerWindowTemplates[i]);
+        FillWindowPixelBuffer(&customizer->windows[i], 0);
     }
     baseTile = 0x3A6;
     for (i = 0; i < 5; i++) {
@@ -1285,152 +1285,152 @@ static void SafariAreaCustomizer_AddWindows(SafariAreaCustomizer *s) {
         y = i * 4 + 1;
         height = (u8)(1 ^ (i / 4)) * 2 + 2;
         baseTile -= 22 * height;
-        AddWindowParameterized(s->bgConfig, &s->windows[windowId], GF_BG_LYR_SUB_3, 1, y, 22, height, 5, baseTile);
-        FillWindowPixelBuffer(&s->windows[windowId], (gSafariAreaCustomizerLabelColors[i % 2] & 0xFF));
+        AddWindowParameterized(customizer->bgConfig, &customizer->windows[windowId], GF_BG_LYR_SUB_3, 1, y, 22, height, 5, baseTile);
+        FillWindowPixelBuffer(&customizer->windows[windowId], (gSafariAreaCustomizerLabelColors[i % 2] & 0xFF));
         baseTile -= 22 * height;
-        AddWindowParameterized(s->bgConfig, &s->windows[windowId + 1], GF_BG_LYR_SUB_3, 26, y + (u8)(1 ^ (i / 4)), 5, 2, 5, baseTile);
-        FillWindowPixelBuffer(&s->windows[windowId + 1], (gSafariAreaCustomizerLabelColors[i % 2] & 0xFF));
+        AddWindowParameterized(customizer->bgConfig, &customizer->windows[windowId + 1], GF_BG_LYR_SUB_3, 26, y + (u8)(1 ^ (i / 4)), 5, 2, 5, baseTile);
+        FillWindowPixelBuffer(&customizer->windows[windowId + 1], (gSafariAreaCustomizerLabelColors[i % 2] & 0xFF));
         baseTile -= 10;
     }
-    InitWindow(&s->textObjWindow);
-    AddTextWindowTopLeftCorner(s->bgConfig, &s->textObjWindow, 6, 2, 0x2E1, 0);
-    FillWindowPixelBufferText_AssumeTileSize32(&s->textObjWindow, 0);
-    s->yesNoPrompt = YesNoPrompt_Create(s->heapId);
+    InitWindow(&customizer->textObjWindow);
+    AddTextWindowTopLeftCorner(customizer->bgConfig, &customizer->textObjWindow, 6, 2, 0x2E1, 0);
+    FillWindowPixelBufferText_AssumeTileSize32(&customizer->textObjWindow, 0);
+    customizer->yesNoPrompt = YesNoPrompt_Create(customizer->heapId);
 }
 
-static void SafariAreaCustomizer_RemoveWindows(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_RemoveWindows(SafariAreaCustomizer *customizer) {
     int i;
 
-    YesNoPrompt_Destroy(s->yesNoPrompt);
-    RemoveWindow(&s->textObjWindow);
+    YesNoPrompt_Destroy(customizer->yesNoPrompt);
+    RemoveWindow(&customizer->textObjWindow);
     for (i = 0; i < 15; i++) {
-        ClearWindowTilemapAndCopyToVram(&s->windows[i]);
-        RemoveWindow(&s->windows[i]);
+        ClearWindowTilemapAndCopyToVram(&customizer->windows[i]);
+        RemoveWindow(&customizer->windows[i]);
     }
 }
 
-static void SafariAreaCustomizer_CreateMenuItems(SafariAreaCustomizer *s) {
-    s->areaMenuItems = ListMenuItems_New(3, s->heapId);
-    s->confirmMenuItems = ListMenuItems_New(2, s->heapId);
-    ListMenuItems_AppendFromMsgData(s->areaMenuItems, s->msgData, msg_0429_00007, 0);
-    ListMenuItems_AppendFromMsgData(s->areaMenuItems, s->msgData, msg_0429_00008, 1);
-    ListMenuItems_AppendFromMsgData(s->areaMenuItems, s->msgData, msg_0429_00006, 2);
-    ListMenuItems_AppendFromMsgData(s->confirmMenuItems, s->msgData, msg_0429_00005, 0);
-    ListMenuItems_AppendFromMsgData(s->confirmMenuItems, s->msgData, msg_0429_00006, 1);
+static void SafariAreaCustomizer_CreateMenuItems(SafariAreaCustomizer *customizer) {
+    customizer->areaMenuItems = ListMenuItems_New(3, customizer->heapId);
+    customizer->confirmMenuItems = ListMenuItems_New(2, customizer->heapId);
+    ListMenuItems_AppendFromMsgData(customizer->areaMenuItems, customizer->msgData, msg_0429_00007, 0);
+    ListMenuItems_AppendFromMsgData(customizer->areaMenuItems, customizer->msgData, msg_0429_00008, 1);
+    ListMenuItems_AppendFromMsgData(customizer->areaMenuItems, customizer->msgData, msg_0429_00006, 2);
+    ListMenuItems_AppendFromMsgData(customizer->confirmMenuItems, customizer->msgData, msg_0429_00005, 0);
+    ListMenuItems_AppendFromMsgData(customizer->confirmMenuItems, customizer->msgData, msg_0429_00006, 1);
 }
 
-static void SafariAreaCustomizer_DeleteMenuItems(SafariAreaCustomizer *s) {
-    ListMenuItems_Delete(s->confirmMenuItems);
-    ListMenuItems_Delete(s->areaMenuItems);
-    s->areaMenuItems = NULL;
-    s->confirmMenuItems = NULL;
+static void SafariAreaCustomizer_DeleteMenuItems(SafariAreaCustomizer *customizer) {
+    ListMenuItems_Delete(customizer->confirmMenuItems);
+    ListMenuItems_Delete(customizer->areaMenuItems);
+    customizer->areaMenuItems = NULL;
+    customizer->confirmMenuItems = NULL;
 }
 
-static void SafariAreaCustomizer_InitSprites(SafariAreaCustomizer *s) {
-    SafariAreaCustomizer_InitSpriteSystem(s);
-    s->spriteRes = SafariAreaCustomizerSpriteRes_New(s->heapId, 12, NNS_G2D_VRAM_TYPE_2DMAIN, 2);
-    SafariAreaCustomizer_CreateSpriteManager(s);
-    s->listMenuSpawner = TouchscreenListMenuSpawner_Create(s->heapId, NULL);
-    s->fontSystem = FontSystem_NewInit(1, s->heapId);
+static void SafariAreaCustomizer_InitSprites(SafariAreaCustomizer *customizer) {
+    SafariAreaCustomizer_InitSpriteSystem(customizer);
+    customizer->spriteRes = SafariAreaCustomizerSpriteRes_New(customizer->heapId, 12, NNS_G2D_VRAM_TYPE_2DMAIN, 2);
+    SafariAreaCustomizer_CreateSpriteManager(customizer);
+    customizer->listMenuSpawner = TouchscreenListMenuSpawner_Create(customizer->heapId, NULL);
+    customizer->fontSystem = FontSystem_NewInit(1, customizer->heapId);
 }
 
-static void SafariAreaCustomizer_FreeSprites(SafariAreaCustomizer *s) {
-    FontSystem_Delete(s->fontSystem);
-    TouchscreenListMenuSpawner_Destroy(s->listMenuSpawner);
-    SafariAreaCustomizer_DestroySpriteManager(s);
-    SafariAreaCustomizerSpriteRes_Delete(s->spriteRes);
-    SafariAreaCustomizer_FreeSpriteSystem(s);
+static void SafariAreaCustomizer_FreeSprites(SafariAreaCustomizer *customizer) {
+    FontSystem_Delete(customizer->fontSystem);
+    TouchscreenListMenuSpawner_Destroy(customizer->listMenuSpawner);
+    SafariAreaCustomizer_DestroySpriteManager(customizer);
+    SafariAreaCustomizerSpriteRes_Delete(customizer->spriteRes);
+    SafariAreaCustomizer_FreeSpriteSystem(customizer);
 }
 
-static void SafariAreaCustomizer_CreateSprites(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_CreateSprites(SafariAreaCustomizer *customizer) {
     int i = 0;
 
     for (; i < NUM_AREA_SLOTS; i++) {
-        s->areaSprites[i] = SafariAreaCustomizerSpriteRes_CreateAreaSprite(s->spriteRes, (i % 3) * 72 + 56, (i / 3) * 72 + 56, 2, 128, i, s->areaSet.areas[i].area_no, NNS_G2D_VRAM_TYPE_2DMAIN);
+        customizer->areaSprites[i] = SafariAreaCustomizerSpriteRes_CreateAreaSprite(customizer->spriteRes, (i % 3) * 72 + 56, (i / 3) * 72 + 56, 2, 128, i, customizer->areaSet.areas[i].area_no, NNS_G2D_VRAM_TYPE_2DMAIN);
     }
     for (i = 0; i < NUM_AREA_SLOTS; i++) {
-        s->areaSprites[i + 6] = SafariAreaCustomizerSpriteRes_CreateAreaSprite(s->spriteRes, (i % 3) * 80 + 48, (i / 3) * 72 + 56, 3, 128, i + 6, i + 6 * s->page, NNS_G2D_VRAM_TYPE_2DMAIN);
+        customizer->areaSprites[i + 6] = SafariAreaCustomizerSpriteRes_CreateAreaSprite(customizer->spriteRes, (i % 3) * 80 + 48, (i / 3) * 72 + 56, 3, 128, i + 6, i + 6 * customizer->page, NNS_G2D_VRAM_TYPE_2DMAIN);
     }
-    s->sprites[0] = SpriteSystem_CreateSpriteFromResourceHeader(s->spriteSystem, s->spriteManager, &gSafariAreaCustomizerSprite0Template);
-    s->sprites[1] = SpriteSystem_CreateSpriteFromResourceHeader(s->spriteSystem, s->spriteManager, &gSafariAreaCustomizerSprite0Template);
-    s->sprites[3] = SpriteSystem_CreateSpriteFromResourceHeader(s->spriteSystem, s->spriteManager, &gSafariAreaCustomizerSprite0Template);
-    s->sprites[2] = SpriteSystem_CreateSpriteFromResourceHeader(s->spriteSystem, s->spriteManager, &gSafariAreaCustomizerSprite2Template);
-    s->sprites[4] = SpriteSystem_CreateSpriteFromResourceHeader(s->spriteSystem, s->spriteManager, &gSafariAreaCustomizerSprite4Template);
-    s->sprites[5] = SpriteSystem_CreateSpriteFromResourceHeader(s->spriteSystem, s->spriteManager, &gSafariAreaCustomizerSprite5Template);
-    thunk_Sprite_SetPriority(s->sprites[1], 3);
-    thunk_Sprite_SetPriority(s->sprites[4], 3);
-    thunk_Sprite_SetPriority(s->sprites[5], 3);
-    thunk_Sprite_SetPriority(s->sprites[3], 0);
-    thunk_Sprite_SetDrawPriority(s->sprites[3], 5);
-    thunk_Sprite_SetDrawFlag(s->sprites[0], FALSE);
-    thunk_Sprite_SetDrawFlag(s->sprites[1], FALSE);
-    thunk_Sprite_SetDrawFlag(s->sprites[3], FALSE);
-    thunk_Sprite_SetDrawFlag(s->sprites[2], FALSE);
-    SafariAreaCustomizer_CreateCancelTextObj(s);
+    customizer->sprites[0] = SpriteSystem_CreateSpriteFromResourceHeader(customizer->spriteSystem, customizer->spriteManager, &gSafariAreaCustomizerSprite0Template);
+    customizer->sprites[1] = SpriteSystem_CreateSpriteFromResourceHeader(customizer->spriteSystem, customizer->spriteManager, &gSafariAreaCustomizerSprite0Template);
+    customizer->sprites[3] = SpriteSystem_CreateSpriteFromResourceHeader(customizer->spriteSystem, customizer->spriteManager, &gSafariAreaCustomizerSprite0Template);
+    customizer->sprites[2] = SpriteSystem_CreateSpriteFromResourceHeader(customizer->spriteSystem, customizer->spriteManager, &gSafariAreaCustomizerSprite2Template);
+    customizer->sprites[4] = SpriteSystem_CreateSpriteFromResourceHeader(customizer->spriteSystem, customizer->spriteManager, &gSafariAreaCustomizerSprite4Template);
+    customizer->sprites[5] = SpriteSystem_CreateSpriteFromResourceHeader(customizer->spriteSystem, customizer->spriteManager, &gSafariAreaCustomizerSprite5Template);
+    thunk_Sprite_SetPriority(customizer->sprites[1], 3);
+    thunk_Sprite_SetPriority(customizer->sprites[4], 3);
+    thunk_Sprite_SetPriority(customizer->sprites[5], 3);
+    thunk_Sprite_SetPriority(customizer->sprites[3], 0);
+    thunk_Sprite_SetDrawPriority(customizer->sprites[3], 5);
+    thunk_Sprite_SetDrawFlag(customizer->sprites[0], FALSE);
+    thunk_Sprite_SetDrawFlag(customizer->sprites[1], FALSE);
+    thunk_Sprite_SetDrawFlag(customizer->sprites[3], FALSE);
+    thunk_Sprite_SetDrawFlag(customizer->sprites[2], FALSE);
+    SafariAreaCustomizer_CreateCancelTextObj(customizer);
 }
 
-static void SafariAreaCustomizer_DeleteSprites(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_DeleteSprites(SafariAreaCustomizer *customizer) {
     int i;
 
-    SafariAreaCustomizer_DeleteCancelTextObj(s);
-    thunk_Sprite_Delete(s->sprites[0]);
-    thunk_Sprite_Delete(s->sprites[1]);
-    thunk_Sprite_Delete(s->sprites[2]);
-    thunk_Sprite_Delete(s->sprites[3]);
-    thunk_Sprite_Delete(s->sprites[4]);
-    thunk_Sprite_Delete(s->sprites[5]);
+    SafariAreaCustomizer_DeleteCancelTextObj(customizer);
+    thunk_Sprite_Delete(customizer->sprites[0]);
+    thunk_Sprite_Delete(customizer->sprites[1]);
+    thunk_Sprite_Delete(customizer->sprites[2]);
+    thunk_Sprite_Delete(customizer->sprites[3]);
+    thunk_Sprite_Delete(customizer->sprites[4]);
+    thunk_Sprite_Delete(customizer->sprites[5]);
     for (i = 0; i < 12; i++) {
-        SafariAreaCustomizer_DeleteAreaSprite(s->areaSprites[i]);
+        SafariAreaCustomizer_DeleteAreaSprite(customizer->areaSprites[i]);
     }
 }
 
 // The "CANCEL" text object of the main screen.
-static void SafariAreaCustomizer_CreateCancelTextObj(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_CreateCancelTextObj(SafariAreaCustomizer *customizer) {
     TextOBJTemplate template;
     u32 size;
     u32 width;
     u32 x;
 
-    s->fontLayout = TextOBJLayout_New(&s->textObjWindow, s->heapId);
-    size = TextOBJLayout_GetCharSize(s->fontLayout, NNS_G2D_VRAM_TYPE_2DMAIN);
-    width = GetWindowWidth(&s->textObjWindow);
-    x = (width * 8 - FontID_String_GetWidth(0, s->labelStrings[0], 0)) / 2;
-    AddTextPrinterParameterizedWithColor(&s->textObjWindow, 0, s->labelStrings[0], x, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(11, 6, 0), NULL);
-    template.fontSystem = s->fontSystem;
-    template.window = &s->textObjWindow;
-    template.spriteList = SpriteManager_GetSpriteList(s->spriteManager);
-    template.plttResourceProxy = SpriteManager_FindPlttResourceProxy(s->spriteManager, 0);
+    customizer->fontLayout = TextOBJLayout_New(&customizer->textObjWindow, customizer->heapId);
+    size = TextOBJLayout_GetCharSize(customizer->fontLayout, NNS_G2D_VRAM_TYPE_2DMAIN);
+    width = GetWindowWidth(&customizer->textObjWindow);
+    x = (width * 8 - FontID_String_GetWidth(0, customizer->labelStrings[0], 0)) / 2;
+    AddTextPrinterParameterizedWithColor(&customizer->textObjWindow, 0, customizer->labelStrings[0], x, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(11, 6, 0), NULL);
+    template.fontSystem = customizer->fontSystem;
+    template.window = &customizer->textObjWindow;
+    template.spriteList = SpriteManager_GetSpriteList(customizer->spriteManager);
+    template.plttResourceProxy = SpriteManager_FindPlttResourceProxy(customizer->spriteManager, 0);
     template.bgPriority = 3;
     template.drawPriority = 128;
     template.x = 200;
     template.y = 172;
     template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
-    template.heapID = s->heapId;
-    ObjCharTransfer_ReserveCharSpace(size, FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, &s->charTransfer);
-    template.offset = s->charTransfer.offset;
+    template.heapID = customizer->heapId;
+    ObjCharTransfer_ReserveCharSpace(size, FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, &customizer->charTransfer);
+    template.offset = customizer->charTransfer.offset;
     template.sprite = NULL;
-    s->textObj = TextOBJ_Create(&template, s->fontLayout);
-    TextOBJ_SetSpritesDrawFlag(s->textObj, TRUE);
-    TextOBJ_SetPaletteNum(s->textObj, 4);
+    customizer->textObj = TextOBJ_Create(&template, customizer->fontLayout);
+    TextOBJ_SetSpritesDrawFlag(customizer->textObj, TRUE);
+    TextOBJ_SetPaletteNum(customizer->textObj, 4);
 }
 
-static void SafariAreaCustomizer_DeleteCancelTextObj(SafariAreaCustomizer *s) {
-    TextOBJ_Destroy(s->textObj);
-    ObjCharTransfer_FreeCharSpace(&s->charTransfer);
-    s->textObj = NULL;
-    TextOBJLayout_Delete(s->fontLayout);
+static void SafariAreaCustomizer_DeleteCancelTextObj(SafariAreaCustomizer *customizer) {
+    TextOBJ_Destroy(customizer->textObj);
+    ObjCharTransfer_FreeCharSpace(&customizer->charTransfer);
+    customizer->textObj = NULL;
+    TextOBJLayout_Delete(customizer->fontLayout);
 }
 
-static void SafariAreaCustomizer_DrawPageScreenPart(SafariAreaCustomizer *s, int value) {
+static void SafariAreaCustomizer_DrawPageScreenPart(SafariAreaCustomizer *customizer, int value) {
     NNSG2dScreenData *screen;
 
-    FillBgTilemapRect(s->bgConfig, GF_BG_LYR_MAIN_0, 0, 0, 19, 24, 5, TILEMAP_FILL_OVWT_PAL);
-    screen = s->pageScreen;
-    CopyToBgTilemapRect(s->bgConfig, GF_BG_LYR_MAIN_0, 0, (u8)(21u - (u32)value * 2), 24, (u8)((u32)value * 2 + 3), screen->rawData, 0, (u8)((u32)value * 3), (u8)(screen->screenWidth >> 3), (u8)(screen->screenHeight >> 3));
-    ScheduleBgTilemapBufferTransfer(s->bgConfig, GF_BG_LYR_MAIN_0);
+    FillBgTilemapRect(customizer->bgConfig, GF_BG_LYR_MAIN_0, 0, 0, 19, 24, 5, TILEMAP_FILL_OVWT_PAL);
+    screen = customizer->pageScreen;
+    CopyToBgTilemapRect(customizer->bgConfig, GF_BG_LYR_MAIN_0, 0, (u8)(21u - (u32)value * 2), 24, (u8)((u32)value * 2 + 3), screen->rawData, 0, (u8)((u32)value * 3), (u8)(screen->screenWidth >> 3), (u8)(screen->screenHeight >> 3));
+    ScheduleBgTilemapBufferTransfer(customizer->bgConfig, GF_BG_LYR_MAIN_0);
 }
 
-static void SafariAreaCustomizer_PrintWindowText(SafariAreaCustomizer *s, u8 windowId, u8 msg, BOOL unused) {
+static void SafariAreaCustomizer_PrintWindowText(SafariAreaCustomizer *customizer, u8 windowId, u8 msg, BOOL unused) {
     String **strings;
     u32 x;
     u8 width;
@@ -1438,63 +1438,63 @@ static void SafariAreaCustomizer_PrintWindowText(SafariAreaCustomizer *s, u8 win
     u32 color;
     int y;
 
-    width = GetWindowWidth(&s->windows[windowId]) * 8;
-    height = GetWindowHeight(&s->windows[windowId]) * 8;
+    width = GetWindowWidth(&customizer->windows[windowId]) * 8;
+    height = GetWindowHeight(&customizer->windows[windowId]) * 8;
     color = MAKE_TEXT_COLOR(3, 1, 2);
     if (windowId != 2) {
-        strings = s->menuStrings;
+        strings = customizer->menuStrings;
         x = 0;
         y = 4;
         if (windowId <= 1) {
             color = MAKE_TEXT_COLOR(13, 12, 14);
-            FillWindowPixelBuffer(&s->windows[windowId], 14);
-            FillWindowPixelRect(&s->windows[windowId], 6, 0, 0, width, 2);
-            FillWindowPixelRect(&s->windows[windowId], 6, 0, height - 2, width, 2);
+            FillWindowPixelBuffer(&customizer->windows[windowId], 14);
+            FillWindowPixelRect(&customizer->windows[windowId], 6, 0, 0, width, 2);
+            FillWindowPixelRect(&customizer->windows[windowId], 6, 0, height - 2, width, 2);
         } else {
-            FillWindowPixelBuffer(&s->windows[windowId], 2);
+            FillWindowPixelBuffer(&customizer->windows[windowId], 2);
         }
     } else {
-        strings = s->labelStrings;
+        strings = customizer->labelStrings;
         x = (u8)((width - FontID_String_GetWidth(0, strings[msg], 0)) / 2);
         y = 4;
     }
-    AddTextPrinterParameterizedWithColor(&s->windows[windowId], 0, strings[msg], x, y, TEXT_SPEED_INSTANT, color, NULL);
+    AddTextPrinterParameterizedWithColor(&customizer->windows[windowId], 0, strings[msg], x, y, TEXT_SPEED_INSTANT, color, NULL);
 }
 
-static void SafariAreaCustomizer_PrintPageNumber(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_PrintPageNumber(SafariAreaCustomizer *customizer) {
     u32 x;
 
-    FillWindowPixelBuffer(&s->windows[3], 2);
-    BufferIntegerAsString(s->msgFormat, 0, s->page + 1, 1, PRINTING_MODE_RIGHT_ALIGN, TRUE);
-    StringExpandPlaceholders(s->msgFormat, s->string, s->pageTemplate);
-    x = (GetWindowWidth(&s->windows[3]) * 8 - FontID_String_GetWidth(0, s->string, 0)) / 2;
-    AddTextPrinterParameterizedWithColor(&s->windows[3], 0, s->string, x, 0, TEXT_SPEED_INSTANT, MAKE_TEXT_COLOR(3, 1, 2), NULL);
-    ScheduleBgTilemapBufferTransfer(s->bgConfig, GF_BG_LYR_MAIN_3);
-    Sprite_SetAnimActiveFlag(s->sprites[4], FALSE);
-    if (s->page == 0) {
-        Sprite_SetAnimCtrlSeq(s->sprites[4], 6);
+    FillWindowPixelBuffer(&customizer->windows[3], 2);
+    BufferIntegerAsString(customizer->msgFormat, 0, customizer->page + 1, 1, PRINTING_MODE_RIGHT_ALIGN, TRUE);
+    StringExpandPlaceholders(customizer->msgFormat, customizer->string, customizer->pageTemplate);
+    x = (GetWindowWidth(&customizer->windows[3]) * 8 - FontID_String_GetWidth(0, customizer->string, 0)) / 2;
+    AddTextPrinterParameterizedWithColor(&customizer->windows[3], 0, customizer->string, x, 0, TEXT_SPEED_INSTANT, MAKE_TEXT_COLOR(3, 1, 2), NULL);
+    ScheduleBgTilemapBufferTransfer(customizer->bgConfig, GF_BG_LYR_MAIN_3);
+    Sprite_SetAnimActiveFlag(customizer->sprites[4], FALSE);
+    if (customizer->page == 0) {
+        Sprite_SetAnimCtrlSeq(customizer->sprites[4], 6);
     } else {
-        Sprite_SetAnimCtrlSeq(s->sprites[4], 4);
+        Sprite_SetAnimCtrlSeq(customizer->sprites[4], 4);
     }
-    Sprite_SetAnimActiveFlag(s->sprites[5], FALSE);
-    if (s->page == 1) {
-        Sprite_SetAnimCtrlSeq(s->sprites[5], 7);
+    Sprite_SetAnimActiveFlag(customizer->sprites[5], FALSE);
+    if (customizer->page == 1) {
+        Sprite_SetAnimCtrlSeq(customizer->sprites[5], 7);
     } else {
-        Sprite_SetAnimCtrlSeq(s->sprites[5], 5);
+        Sprite_SetAnimCtrlSeq(customizer->sprites[5], 5);
     }
 }
 
-static void SafariAreaCustomizer_SetCursorAnim(SafariAreaCustomizer *s, u32 index, u32 anim, BOOL draw) {
+static void SafariAreaCustomizer_SetCursorAnim(SafariAreaCustomizer *customizer, u32 index, u32 anim, BOOL draw) {
     if (!draw) {
-        Sprite_SetDrawFlag(s->sprites[index], FALSE);
+        Sprite_SetDrawFlag(customizer->sprites[index], FALSE);
     } else {
-        Sprite_SetDrawFlag(s->sprites[index], TRUE);
-        Sprite_SetAnimCtrlSeq(s->sprites[index], anim);
+        Sprite_SetDrawFlag(customizer->sprites[index], TRUE);
+        Sprite_SetAnimCtrlSeq(customizer->sprites[index], anim);
     }
 }
 
 // Moves cursor sprite `index` to grid position `pos` (6 = the CANCEL button).
-static void SafariAreaCustomizer_MoveCursor(SafariAreaCustomizer *s, u32 index, u32 pos) {
+static void SafariAreaCustomizer_MoveCursor(SafariAreaCustomizer *customizer, u32 index, u32 pos) {
     s16 x;
     s16 y;
     int anim = 0;
@@ -1510,48 +1510,48 @@ static void SafariAreaCustomizer_MoveCursor(SafariAreaCustomizer *s, u32 index, 
             y += 192;
         } else if (index == 3) {
             anim = 2;
-        } else if (index == 0 && s->mode == SAC_MODE_MOVE) {
+        } else if (index == 0 && customizer->mode == SAC_MODE_MOVE) {
             anim = 3;
         }
     } else {
         x = ((s32)pos % 3) * 80 + 48;
         y = ((s32)pos / 3) * 72 + 56;
     }
-    Sprite_SetPositionXY(s->sprites[index], x, y);
-    SafariAreaCustomizer_SetCursorAnim(s, index, anim, TRUE);
+    Sprite_SetPositionXY(customizer->sprites[index], x, y);
+    SafariAreaCustomizer_SetCursorAnim(customizer, index, anim, TRUE);
 }
 
-static void SafariAreaCustomizer_DrawSelectFrame(SafariAreaCustomizer *s, u8 layer, int pos, BOOL show) {
+static void SafariAreaCustomizer_DrawSelectFrame(SafariAreaCustomizer *customizer, u8 layer, int pos, BOOL show) {
     struct {
         u8 x;
         u8 y;
     } frame;
 
     if (!show) {
-        BgClearTilemapBufferAndCommit(s->bgConfig, layer);
-        ScheduleBgTilemapBufferTransfer(s->bgConfig, layer);
+        BgClearTilemapBufferAndCommit(customizer->bgConfig, layer);
+        ScheduleBgTilemapBufferTransfer(customizer->bgConfig, layer);
         return;
     }
     {
-        NNSG2dScreenData *screen = s->selectFrameScreen;
-        CopyToBgTilemapRect(s->bgConfig, layer, 0, (u8)(24 * s->mode), 32, 24, screen->rawData, 0, 0, screen->screenWidth >> 3, screen->screenHeight >> 3);
+        NNSG2dScreenData *screen = customizer->selectFrameScreen;
+        CopyToBgTilemapRect(customizer->bgConfig, layer, 0, (u8)(24 * customizer->mode), 32, 24, screen->rawData, 0, 0, screen->screenWidth >> 3, screen->screenHeight >> 3);
     }
-    if (s->mode == SAC_MODE_SLOTS) {
+    if (customizer->mode == SAC_MODE_SLOTS) {
         frame.x = (u8)((u32)(pos % 3) * 9 + 3);
         frame.y = (u8)((u32)(pos / 3) * 9 + 3);
         if (layer == GF_BG_LYR_SUB_0) {
-            NNSG2dScreenData *screen = s->selectFrameScreen;
-            CopyToBgTilemapRect(s->bgConfig, layer, 0, 21, 32, 3, screen->rawData, 0, 24, screen->screenWidth >> 3, screen->screenHeight >> 3);
+            NNSG2dScreenData *screen = customizer->selectFrameScreen;
+            CopyToBgTilemapRect(customizer->bgConfig, layer, 0, 21, 32, 3, screen->rawData, 0, 24, screen->screenWidth >> 3, screen->screenHeight >> 3);
         }
     } else {
         frame.x = (u8)((u32)(pos % 3) * 10 + 2);
         frame.y = (u8)((u32)(pos / 3) * 9 + 27);
     }
-    FillBgTilemapRect(s->bgConfig, layer, 0, frame.x, frame.y, 8, 8, TILEMAP_FILL_OVWT_PAL);
-    ScheduleBgTilemapBufferTransfer(s->bgConfig, layer);
+    FillBgTilemapRect(customizer->bgConfig, layer, 0, frame.x, frame.y, 8, 8, TILEMAP_FILL_OVWT_PAL);
+    ScheduleBgTilemapBufferTransfer(customizer->bgConfig, layer);
 }
 
-static void SafariAreaCustomizer_InitSlotTilemaps(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_InitSlotTilemaps(SafariAreaCustomizer *customizer) {
     int slot;
     int row;
     int column;
@@ -1568,7 +1568,7 @@ static void SafariAreaCustomizer_InitSlotTilemaps(SafariAreaCustomizer *s) {
             u8 xPos = x;
             column = 0;
             while (column < 8) {
-                FillBgTilemapRect(s->bgConfig, GF_BG_LYR_SUB_1, tile++, (u8)(y + column), xPos, 1, 1, TILEMAP_FILL_OVWT_PAL);
+                FillBgTilemapRect(customizer->bgConfig, GF_BG_LYR_SUB_1, tile++, (u8)(y + column), xPos, 1, 1, TILEMAP_FILL_OVWT_PAL);
                 column++;
             }
             x++;
@@ -1576,62 +1576,62 @@ static void SafariAreaCustomizer_InitSlotTilemaps(SafariAreaCustomizer *s) {
         }
         slot++;
     }
-    ScheduleBgTilemapBufferTransfer(s->bgConfig, GF_BG_LYR_SUB_1);
+    ScheduleBgTilemapBufferTransfer(customizer->bgConfig, GF_BG_LYR_SUB_1);
 }
 
-static void SafariAreaCustomizer_LoadAreaPictureFromNarc(SafariAreaCustomizer *s, NARC *narc, u32 slot, int area) {
+static void SafariAreaCustomizer_LoadAreaPictureFromNarc(SafariAreaCustomizer *customizer, NARC *narc, u32 slot, int area) {
     NNSG2dCharacterData *charData;
-    void *charFile = GfGfxLoader_GetCharDataFromOpenNarc(narc, area + 18, FALSE, &charData, s->heapId);
+    void *charFile = GfGfxLoader_GetCharDataFromOpenNarc(narc, area + 18, FALSE, &charData, customizer->heapId);
 
-    BG_LoadCharTilesData(s->bgConfig, GF_BG_LYR_SUB_1, charData->pRawData, 0x1000, slot * 0x40 + 1);
+    BG_LoadCharTilesData(customizer->bgConfig, GF_BG_LYR_SUB_1, charData->pRawData, 0x1000, slot * 0x40 + 1);
     Heap_Free(charFile);
 }
 
 // Loads the picture of `area` into slot `slot`, or of every slot when `slot` >= 6.
-static void SafariAreaCustomizer_LoadAreaPicture(SafariAreaCustomizer *s, u32 slot, int area) {
-    NARC *narc = NARC_New(NARC_a_1_6_6, s->heapId);
+static void SafariAreaCustomizer_LoadAreaPicture(SafariAreaCustomizer *customizer, u32 slot, int area) {
+    NARC *narc = NARC_New(NARC_a_1_6_6, customizer->heapId);
 
     if (slot >= NUM_AREA_SLOTS) {
         int i;
         for (i = 0; i < NUM_AREA_SLOTS; i++) {
-            SafariAreaCustomizer_LoadAreaPictureFromNarc(s, narc, (u8)i, s->areaSet.areas[i].area_no);
+            SafariAreaCustomizer_LoadAreaPictureFromNarc(customizer, narc, (u8)i, customizer->areaSet.areas[i].area_no);
         }
     } else {
-        SafariAreaCustomizer_LoadAreaPictureFromNarc(s, narc, slot, area);
+        SafariAreaCustomizer_LoadAreaPictureFromNarc(customizer, narc, slot, area);
     }
     NARC_Delete(narc);
 }
 
-static void SafariAreaCustomizer_InitScreen(SafariAreaCustomizer *s) {
-    SafariAreaCustomizer_PrintObjectTypeLabels(s);
-    SafariAreaCustomizer_PrintSlotInfo(s, s->selectedSlot);
-    SafariAreaCustomizer_DrawPageScreenPart(s, 0);
-    SafariAreaCustomizer_PrintWindowText(s, 0, 0, TRUE);
-    if (s->touchMode == MENU_INPUT_STATE_BUTTONS) {
-        SafariAreaCustomizer_ShowCursors(s);
+static void SafariAreaCustomizer_InitScreen(SafariAreaCustomizer *customizer) {
+    SafariAreaCustomizer_PrintObjectTypeLabels(customizer);
+    SafariAreaCustomizer_PrintSlotInfo(customizer, customizer->selectedSlot);
+    SafariAreaCustomizer_DrawPageScreenPart(customizer, 0);
+    SafariAreaCustomizer_PrintWindowText(customizer, 0, 0, TRUE);
+    if (customizer->touchMode == MENU_INPUT_STATE_BUTTONS) {
+        SafariAreaCustomizer_ShowCursors(customizer);
     } else {
-        thunk_SafariAreaCustomizer_ShowCursors(s);
+        thunk_SafariAreaCustomizer_ShowCursors(customizer);
     }
-    s->mainBgY = 0;
-    s->subBgY = -192;
-    s->scrollPending = TRUE;
+    customizer->mainBgY = 0;
+    customizer->subBgY = -192;
+    customizer->scrollPending = TRUE;
 }
 
-static void SafariAreaCustomizer_PrintObjectTypeLabels(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_PrintObjectTypeLabels(SafariAreaCustomizer *customizer) {
     int i;
 
-    if (s->objectsUnlocked) {
+    if (customizer->objectsUnlocked) {
         for (i = 0; i < 5; i++) {
-            Window *window = &s->windows[5 + i * 2];
-            ReadMsgDataIntoString(s->msgData, i + 10, s->string);
-            AddTextPrinterParameterizedWithColor(window, 0, s->string, 0, 0, TEXT_SPEED_INSTANT, gSafariAreaCustomizerLabelColors[i % 2], NULL);
+            Window *window = &customizer->windows[5 + i * 2];
+            ReadMsgDataIntoString(customizer->msgData, i + 10, customizer->string);
+            AddTextPrinterParameterizedWithColor(window, 0, customizer->string, 0, 0, TEXT_SPEED_INSTANT, gSafariAreaCustomizerLabelColors[i % 2], NULL);
             CopyWindowToVram(window);
         }
     }
 }
 
 // Prints the name of the area in `slot` and, once objects are unlocked, its object counts per type.
-static void SafariAreaCustomizer_PrintSlotInfo(SafariAreaCustomizer *s, u32 slot) {
+static void SafariAreaCustomizer_PrintSlotInfo(SafariAreaCustomizer *customizer, u32 slot) {
     int i;
     SAFARIZONE_AREA *area;
     u8 x;
@@ -1639,26 +1639,26 @@ static void SafariAreaCustomizer_PrintSlotInfo(SafariAreaCustomizer *s, u32 slot
     SafariObjectConfig config;
 
     if (slot >= NUM_AREA_SLOTS) {
-        if (s->objectsUnlocked) {
+        if (customizer->objectsUnlocked) {
             for (i = 0; i < 5; i++) {
-                FillWindowPixelBuffer(&s->windows[i * 2 + 6], gSafariAreaCustomizerLabelColors[i % 2]);
-                ScheduleWindowCopyToVram(&s->windows[i * 2 + 6]);
+                FillWindowPixelBuffer(&customizer->windows[i * 2 + 6], gSafariAreaCustomizerLabelColors[i % 2]);
+                ScheduleWindowCopyToVram(&customizer->windows[i * 2 + 6]);
             }
         }
-        FillWindowPixelBuffer(&s->windows[4], 12);
-        ScheduleWindowCopyToVram(&s->windows[4]);
+        FillWindowPixelBuffer(&customizer->windows[4], 12);
+        ScheduleWindowCopyToVram(&customizer->windows[4]);
         return;
     }
-    area = &s->areaSet.areas[slot];
+    area = &customizer->areaSet.areas[slot];
     {
-        Window *window = &s->windows[4];
-        ReadMsgDataIntoString(s->msgData, area->area_no + 16, s->string);
-        x = (GetWindowWidth(window) * 8 - FontID_String_GetWidth(0, s->string, 0)) / 2;
+        Window *window = &customizer->windows[4];
+        ReadMsgDataIntoString(customizer->msgData, area->area_no + 16, customizer->string);
+        x = (GetWindowWidth(window) * 8 - FontID_String_GetWidth(0, customizer->string, 0)) / 2;
         FillWindowPixelBuffer(window, 12);
-        AddTextPrinterParameterizedWithColor(window, 0, s->string, x, 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(8, 11, 12), NULL);
+        AddTextPrinterParameterizedWithColor(window, 0, customizer->string, x, 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(8, 11, 12), NULL);
         ScheduleWindowCopyToVram(window);
     }
-    if (s->objectsUnlocked) {
+    if (customizer->objectsUnlocked) {
         MI_CpuFill8(counts, 0, 5);
         for (i = 0; i < area->active_object_count; i++) {
             GetSafariObjectConfig(&config, area->objects[i].id, 2);
@@ -1669,63 +1669,63 @@ static void SafariAreaCustomizer_PrintSlotInfo(SafariAreaCustomizer *s, u32 slot
             }
         }
         for (i = 0; i < 5; i++) {
-            Window *window = &s->windows[i * 2 + 6];
-            BufferIntegerAsString(s->msgFormat, 0, counts[i], 2, PRINTING_MODE_RIGHT_ALIGN, TRUE);
-            StringExpandPlaceholders(s->msgFormat, s->string, s->countTemplate);
+            Window *window = &customizer->windows[i * 2 + 6];
+            BufferIntegerAsString(customizer->msgFormat, 0, counts[i], 2, PRINTING_MODE_RIGHT_ALIGN, TRUE);
+            StringExpandPlaceholders(customizer->msgFormat, customizer->string, customizer->countTemplate);
             FillWindowPixelBuffer(window, gSafariAreaCustomizerLabelColors[i % 2]);
-            AddTextPrinterParameterizedWithColor(window, 0, s->string, 0, 0, TEXT_SPEED_NOTRANSFER, gSafariAreaCustomizerLabelColors[i % 2], NULL);
+            AddTextPrinterParameterizedWithColor(window, 0, customizer->string, 0, 0, TEXT_SPEED_NOTRANSFER, gSafariAreaCustomizerLabelColors[i % 2], NULL);
             ScheduleWindowCopyToVram(window);
         }
     }
 }
 
-static void SafariAreaCustomizer_PrintAreaNames(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_PrintAreaNames(SafariAreaCustomizer *customizer) {
     u8 x;
     SAFARIZONE_AREA *area;
-    Window *window = &s->windows[4];
+    Window *window = &customizer->windows[4];
 
     FillWindowPixelBuffer(window, 12);
-    area = &s->areaSet.areas[s->selectedSlot];
-    ReadMsgDataIntoString(s->msgData, area->area_no + 16, s->string);
-    x = (96 - FontID_String_GetWidth(0, s->string, 0)) / 2;
-    AddTextPrinterParameterizedWithColor(window, 0, s->string, x, 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(8, 11, 12), NULL);
-    if (s->cursorPos < NUM_AREA_SLOTS) {
-        ReadMsgDataIntoString(s->msgData, s->cursorPos + 16 + s->page * NUM_AREA_SLOTS, s->string);
-        x = (96 - FontID_String_GetWidth(0, s->string, 0)) / 2;
-        AddTextPrinterParameterizedWithColor(window, 0, s->string, x + 144, 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(8, 11, 12), NULL);
+    area = &customizer->areaSet.areas[customizer->selectedSlot];
+    ReadMsgDataIntoString(customizer->msgData, area->area_no + 16, customizer->string);
+    x = (96 - FontID_String_GetWidth(0, customizer->string, 0)) / 2;
+    AddTextPrinterParameterizedWithColor(window, 0, customizer->string, x, 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(8, 11, 12), NULL);
+    if (customizer->cursorPos < NUM_AREA_SLOTS) {
+        ReadMsgDataIntoString(customizer->msgData, customizer->cursorPos + 16 + customizer->page * NUM_AREA_SLOTS, customizer->string);
+        x = (96 - FontID_String_GetWidth(0, customizer->string, 0)) / 2;
+        AddTextPrinterParameterizedWithColor(window, 0, customizer->string, x + 144, 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(8, 11, 12), NULL);
     }
     ScheduleWindowCopyToVram(window);
 }
 
-static void SafariAreaCustomizer_StartPageScroll(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_StartPageScroll(SafariAreaCustomizer *customizer) {
     int i;
     int bank;
     u32 ctrl;
 
-    if (s->mode == SAC_MODE_SLOTS) {
-        FillBgTilemapRect(s->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 21, 32, 3, TILEMAP_FILL_OVWT_PAL);
-        ScheduleBgTilemapBufferTransfer(s->bgConfig, GF_BG_LYR_MAIN_1);
-        s->subBgY = -192;
-        s->scrollPending = TRUE;
-        s->cursorPos = 0;
-        SafariAreaCustomizer_MoveCursor(s, 1, s->cursorPos);
-        SafariAreaCustomizer_MoveCursor(s, 2, s->selectedSlot);
-        SafariAreaCustomizer_PrintPageNumber(s);
+    if (customizer->mode == SAC_MODE_SLOTS) {
+        FillBgTilemapRect(customizer->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 21, 32, 3, TILEMAP_FILL_OVWT_PAL);
+        ScheduleBgTilemapBufferTransfer(customizer->bgConfig, GF_BG_LYR_MAIN_1);
+        customizer->subBgY = -192;
+        customizer->scrollPending = TRUE;
+        customizer->cursorPos = 0;
+        SafariAreaCustomizer_MoveCursor(customizer, 1, customizer->cursorPos);
+        SafariAreaCustomizer_MoveCursor(customizer, 2, customizer->selectedSlot);
+        SafariAreaCustomizer_PrintPageNumber(customizer);
     } else {
-        SafariAreaCustomizer_DrawSelectFrame(s, GF_BG_LYR_MAIN_1, 0xFF, FALSE);
-        SafariAreaCustomizer_SetCursorAnim(s, 1, 0, FALSE);
+        SafariAreaCustomizer_DrawSelectFrame(customizer, GF_BG_LYR_MAIN_1, 0xFF, FALSE);
+        SafariAreaCustomizer_SetCursorAnim(customizer, 1, 0, FALSE);
         i = 0;
-        bank = s->spriteBank * NUM_AREA_SLOTS;
+        bank = customizer->spriteBank * NUM_AREA_SLOTS;
         do {
-            ManagedSprite_SetPositionXY(s->areaSprites[bank + i], 56 + 72 * (i % 3), -136 + 72 * (i / 3));
-            ManagedSprite_SetPriority(s->areaSprites[bank + i], 2);
-            SafariAreaCustomizerSpriteRes_SetAreaPicture(s->spriteRes, i + bank, s->areaSet.areas[i].area_no);
+            ManagedSprite_SetPositionXY(customizer->areaSprites[bank + i], 56 + 72 * (i % 3), -136 + 72 * (i / 3));
+            ManagedSprite_SetPriority(customizer->areaSprites[bank + i], 2);
+            SafariAreaCustomizerSpriteRes_SetAreaPicture(customizer->spriteRes, i + bank, customizer->areaSet.areas[i].area_no);
             i++;
         } while (i < NUM_AREA_SLOTS);
     }
-    s->animFrame = 0;
-    FillWindowPixelBuffer(&s->windows[4], 12);
-    ScheduleWindowCopyToVram(&s->windows[4]);
+    customizer->animFrame = 0;
+    FillWindowPixelBuffer(&customizer->windows[4], 12);
+    ScheduleWindowCopyToVram(&customizer->windows[4]);
     reg_G2S_DB_WIN0H = 0xF0;
     reg_G2S_DB_WIN0V = 0x10;
     ctrl = (reg_G2S_DB_WININ & ~0x3F) | 0xF;
@@ -1738,136 +1738,136 @@ static void SafariAreaCustomizer_StartPageScroll(SafariAreaCustomizer *s) {
 }
 
 // Scrolls the area pages between the set view and the page view, 8 frames.
-static BOOL SafariAreaCustomizer_RunPageScroll(SafariAreaCustomizer *s) {
+static BOOL SafariAreaCustomizer_RunPageScroll(SafariAreaCustomizer *customizer) {
     int i;
     int delta;
 
-    if (s->mode == SAC_MODE_SLOTS) {
-        s->mainBgY += 24;
-        s->subBgY += 24;
+    if (customizer->mode == SAC_MODE_SLOTS) {
+        customizer->mainBgY += 24;
+        customizer->subBgY += 24;
         delta = -24;
     } else {
-        s->mainBgY -= 24;
-        s->subBgY -= 24;
+        customizer->mainBgY -= 24;
+        customizer->subBgY -= 24;
         delta = 24;
     }
-    s->scrollPending = TRUE;
+    customizer->scrollPending = TRUE;
     for (i = 0; i < NUM_AREA_SLOTS; i++) {
-        ManagedSprite_OffsetPositionXY(s->areaSprites[s->spriteBank * NUM_AREA_SLOTS + i], 0, delta);
+        ManagedSprite_OffsetPositionXY(customizer->areaSprites[customizer->spriteBank * NUM_AREA_SLOTS + i], 0, delta);
     }
-    Sprite_OffsetPositionXY(s->sprites[0], 0, delta);
-    Sprite_OffsetPositionXY(s->sprites[2], 0, delta);
-    s->animFrame++;
-    return s->animFrame >= 8;
+    Sprite_OffsetPositionXY(customizer->sprites[0], 0, delta);
+    Sprite_OffsetPositionXY(customizer->sprites[2], 0, delta);
+    customizer->animFrame++;
+    return customizer->animFrame >= 8;
 }
 
-static void SafariAreaCustomizer_StartPageChange(SafariAreaCustomizer *s) {
+static void SafariAreaCustomizer_StartPageChange(SafariAreaCustomizer *customizer) {
     int bank;
     int dx;
     int i;
 
-    if (s->pageDir == 0) {
-        s->page++;
+    if (customizer->pageDir == 0) {
+        customizer->page++;
         dx = 256;
     } else {
-        s->page--;
+        customizer->page--;
         dx = -256;
     }
-    bank = s->spriteBank * NUM_AREA_SLOTS;
+    bank = customizer->spriteBank * NUM_AREA_SLOTS;
     for (i = 0; i < NUM_AREA_SLOTS; i++) {
-        ManagedSprite_SetPositionXY(s->areaSprites[bank + i], 48 + 80 * (i % 3) + dx, 56 + 72 * (i / 3));
-        SafariAreaCustomizerSpriteRes_SetAreaPicture(s->spriteRes, (u8)(i + bank), (u8)(s->page * NUM_AREA_SLOTS + i));
-        ManagedSprite_SetPriority(s->areaSprites[bank + i], 3);
+        ManagedSprite_SetPositionXY(customizer->areaSprites[bank + i], 48 + 80 * (i % 3) + dx, 56 + 72 * (i / 3));
+        SafariAreaCustomizerSpriteRes_SetAreaPicture(customizer->spriteRes, (u8)(i + bank), (u8)(customizer->page * NUM_AREA_SLOTS + i));
+        ManagedSprite_SetPriority(customizer->areaSprites[bank + i], 3);
     }
-    s->animFrame = 0;
+    customizer->animFrame = 0;
 }
 
 // Slides the area page by 32 pixels per frame, 8 frames.
-static BOOL SafariAreaCustomizer_RunPageChange(SafariAreaCustomizer *s) {
+static BOOL SafariAreaCustomizer_RunPageChange(SafariAreaCustomizer *customizer) {
     int i;
-    int dx = s->pageDir == 0 ? -32 : 32;
+    int dx = customizer->pageDir == 0 ? -32 : 32;
 
     i = 0;
     do {
-        ManagedSprite_OffsetPositionXY(s->areaSprites[i], (s16)dx, 0);
+        ManagedSprite_OffsetPositionXY(customizer->areaSprites[i], (s16)dx, 0);
         i++;
     } while (i < 12);
-    s->animFrame++;
-    if (s->animFrame >= 8) {
-        s->animFrame = 0;
-        SafariAreaCustomizer_MoveCursor(s, 1, s->cursorPos);
-        SafariAreaCustomizer_PrintAreaNames(s);
-        SafariAreaCustomizer_PrintPageNumber(s);
+    customizer->animFrame++;
+    if (customizer->animFrame >= 8) {
+        customizer->animFrame = 0;
+        SafariAreaCustomizer_MoveCursor(customizer, 1, customizer->cursorPos);
+        SafariAreaCustomizer_PrintAreaNames(customizer);
+        SafariAreaCustomizer_PrintPageNumber(customizer);
         return TRUE;
     }
     return FALSE;
 }
 
 // Moves the two areas being swapped out of (dir 0) or back into (dir 1) their slots, 8 frames.
-static BOOL SafariAreaCustomizer_RunSwapAnim(SafariAreaCustomizer *s, int dir) {
+static BOOL SafariAreaCustomizer_RunSwapAnim(SafariAreaCustomizer *customizer, int dir) {
     u8 sprites[2];
     u8 rows[2];
-    int bank = NUM_AREA_SLOTS * s->spriteBank;
+    int bank = NUM_AREA_SLOTS * customizer->spriteBank;
     int i;
 
-    sprites[0] = s->selectedSlot + bank;
-    sprites[1] = s->cursorPos + bank;
-    rows[0] = s->selectedSlot / 3;
-    rows[1] = s->cursorPos / 3;
+    sprites[0] = customizer->selectedSlot + bank;
+    sprites[1] = customizer->cursorPos + bank;
+    rows[0] = customizer->selectedSlot / 3;
+    rows[1] = customizer->cursorPos / 3;
     for (i = 0; i < 2; i++) {
-        ManagedSprite_OffsetPositionXY(s->areaSprites[sprites[i]], 0, 12 * gSafariAreaCustomizerConsts.swapDir[dir][rows[i]]);
+        ManagedSprite_OffsetPositionXY(customizer->areaSprites[sprites[i]], 0, 12 * gSafariAreaCustomizerConsts.swapDir[dir][rows[i]]);
     }
-    s->animFrame++;
-    if (s->animFrame >= 8) {
-        s->animFrame = 0;
+    customizer->animFrame++;
+    if (customizer->animFrame >= 8) {
+        customizer->animFrame = 0;
         return TRUE;
     }
     return FALSE;
 }
 
-static void SafariAreaCustomizer_InitSpriteSystem(SafariAreaCustomizer *s) {
-    GF_CreateVramTransferManager(32, s->heapId);
-    s->spriteSystem = SpriteSystem_Alloc(s->heapId);
-    SpriteSystem_Init(s->spriteSystem, &gSafariAreaCustomizerOamManagerParam, &gSafariAreaCustomizerOamCharTransferParam, 4);
-    thunk_ClearMainOAM(s->heapId);
-    thunk_ClearSubOAM(s->heapId);
+static void SafariAreaCustomizer_InitSpriteSystem(SafariAreaCustomizer *customizer) {
+    GF_CreateVramTransferManager(32, customizer->heapId);
+    customizer->spriteSystem = SpriteSystem_Alloc(customizer->heapId);
+    SpriteSystem_Init(customizer->spriteSystem, &gSafariAreaCustomizerOamManagerParam, &gSafariAreaCustomizerOamCharTransferParam, 4);
+    thunk_ClearMainOAM(customizer->heapId);
+    thunk_ClearSubOAM(customizer->heapId);
 }
 
-static void SafariAreaCustomizer_FreeSpriteSystem(SafariAreaCustomizer *s) {
-    SpriteSystem_Free(s->spriteSystem);
-    s->spriteSystem = NULL;
+static void SafariAreaCustomizer_FreeSpriteSystem(SafariAreaCustomizer *customizer) {
+    SpriteSystem_Free(customizer->spriteSystem);
+    customizer->spriteSystem = NULL;
     GF_DestroyVramTransferManager();
-    thunk_ClearMainOAM(s->heapId);
-    thunk_ClearSubOAM(s->heapId);
+    thunk_ClearMainOAM(customizer->heapId);
+    thunk_ClearSubOAM(customizer->heapId);
 }
 
-static void SafariAreaCustomizer_CreateSpriteManager(SafariAreaCustomizer *s) {
-    if (s->spriteSystem != NULL) {
-        s->spriteManager = SpriteManager_New(s->spriteSystem);
-        SpriteSystem_InitSprites(s->spriteSystem, s->spriteManager, 140);
-        SpriteSystem_LoadResourceDataFromFileIdListEx(s->spriteSystem, s->spriteManager, &gSafariAreaCustomizerResdatIds, 2, 0);
-        SafariAreaCustomizerSpriteRes_SetSpriteList(s->spriteRes, SpriteManager_GetSpriteList(s->spriteManager));
+static void SafariAreaCustomizer_CreateSpriteManager(SafariAreaCustomizer *customizer) {
+    if (customizer->spriteSystem != NULL) {
+        customizer->spriteManager = SpriteManager_New(customizer->spriteSystem);
+        SpriteSystem_InitSprites(customizer->spriteSystem, customizer->spriteManager, 140);
+        SpriteSystem_LoadResourceDataFromFileIdListEx(customizer->spriteSystem, customizer->spriteManager, &gSafariAreaCustomizerResdatIds, 2, 0);
+        SafariAreaCustomizerSpriteRes_SetSpriteList(customizer->spriteRes, SpriteManager_GetSpriteList(customizer->spriteManager));
     }
 }
 
-static void SafariAreaCustomizer_DestroySpriteManager(SafariAreaCustomizer *s) {
-    if (s->spriteManager != NULL) {
-        SpriteSystem_DestroySpriteManager(s->spriteSystem, s->spriteManager);
-        s->spriteManager = NULL;
+static void SafariAreaCustomizer_DestroySpriteManager(SafariAreaCustomizer *customizer) {
+    if (customizer->spriteManager != NULL) {
+        SpriteSystem_DestroySpriteManager(customizer->spriteSystem, customizer->spriteManager);
+        customizer->spriteManager = NULL;
     }
 }
 
-static void SafariAreaCustomizer_DrawSprites(SafariAreaCustomizer *s) {
-    if (s->spriteRes != NULL) {
-        SafariAreaCustomizerSpriteRes_DrawSprites(s->spriteRes);
+static void SafariAreaCustomizer_DrawSprites(SafariAreaCustomizer *customizer) {
+    if (customizer->spriteRes != NULL) {
+        SafariAreaCustomizerSpriteRes_DrawSprites(customizer->spriteRes);
     }
-    if (s->spriteManager != NULL) {
-        SpriteSystem_DrawSprites(s->spriteManager);
+    if (customizer->spriteManager != NULL) {
+        SpriteSystem_DrawSprites(customizer->spriteManager);
     }
 }
 
-static void SafariAreaCustomizer_TransferOam(SafariAreaCustomizer *s) {
-    if (s->spriteSystem != NULL) {
+static void SafariAreaCustomizer_TransferOam(SafariAreaCustomizer *customizer) {
+    if (customizer->spriteSystem != NULL) {
         SpriteSystem_TransferOam();
     }
 }

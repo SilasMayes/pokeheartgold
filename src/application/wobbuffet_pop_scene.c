@@ -440,13 +440,13 @@ static void WobbuffetPopInflation_UpdateBg(BgConfig *bgConfig, WobbuffetPopInfla
 }
 
 static void WobbuffetPopInflation_CalcScale(int playerCount, int size, int air, int *scaleX, int *scaleY) {
-    int q = sWobbuffetPopInflationGfx[size].scale * air / sWobbuffetPopInflationCapacities[playerCount][size];
-    int scale = q + 768;
+    int growth = sWobbuffetPopInflationGfx[size].scale * air / sWobbuffetPopInflationCapacities[playerCount][size];
+    int scale = growth + 768;
 
     *scaleX = scale;
     *scaleY = scale;
     if (scale > FX32_ONE) {
-        *scaleX += (int)(((s64)(q - 3328) * 4506 + 2048) >> 12);
+        *scaleX += (int)(((s64)(growth - 3328) * 4506 + 2048) >> 12);
     }
 }
 
@@ -712,10 +712,10 @@ static void WobbuffetPopConfetti_Create(WobbuffetPop *game, WobbuffetPopConfetti
     int j;
     int count;
     int seat;
-    WobbuffetPopConfettiPiece *p;
-    ManagedSprite *s;
-    WobbuffetPopConfettiPiece *q;
-    ManagedSprite *t;
+    WobbuffetPopConfettiPiece *playerPiece;
+    ManagedSprite *playerSprite;
+    WobbuffetPopConfettiPiece *piece;
+    ManagedSprite *sprite;
 
     count = 0;
     tmpl = sWobbuffetPopConfettiSpriteTemplate;
@@ -726,58 +726,58 @@ static void WobbuffetPopConfetti_Create(WobbuffetPop *game, WobbuffetPopConfetti
         counts[i] = 36 * inflation->playerAir[seat] / (air + pendingAir);
         anim = sWobbuffetPopConfettiAnims[game->app->playerCount][seat];
         for (j = 0; j < counts[i]; j++) {
-            p = &confetti->playerPieces[count];
-            s = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &tmpl);
-            if (s == NULL) {
+            playerPiece = &confetti->playerPieces[count];
+            playerSprite = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &tmpl);
+            if (playerSprite == NULL) {
                 break;
             }
-            ManagedSprite_SetPositionXYWithSubscreenOffset(s, 128, 96, 22 << 16);
-            ManagedSprite_SetAnim(s, anim);
-            Sprite_TickFrame(s->sprite);
-            p->radius = LCRandom() % 0x2000 + 0x2000;
-            p->radiusSpeed = LCRandom() % 0x4000 + 0x2000;
-            p->angle = (LCRandom() % 360) << 12;
-            p->angleSpeed = LCRandom() % (5 << 14) + (10 << 12);
-            p->life = LCRandom() % 15 + 20;
-            confetti->playerPieces[count].sprite = s;
+            ManagedSprite_SetPositionXYWithSubscreenOffset(playerSprite, 128, 96, 22 << 16);
+            ManagedSprite_SetAnim(playerSprite, anim);
+            Sprite_TickFrame(playerSprite->sprite);
+            playerPiece->radius = LCRandom() % 0x2000 + 0x2000;
+            playerPiece->radiusSpeed = LCRandom() % 0x4000 + 0x2000;
+            playerPiece->angle = (LCRandom() % 360) << 12;
+            playerPiece->angleSpeed = LCRandom() % (5 << 14) + (10 << 12);
+            playerPiece->life = LCRandom() % 15 + 20;
+            confetti->playerPieces[count].sprite = playerSprite;
             count++;
         }
     }
     tmpl.drawPriority = 14;
     tmpl.pal = 0;
     for (i = 0; i < 8; i++) {
-        q = &confetti->pieces[i];
-        t = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &tmpl);
-        if (t == NULL) {
+        piece = &confetti->pieces[i];
+        sprite = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &tmpl);
+        if (sprite == NULL) {
             break;
         }
-        ManagedSprite_SetPositionXYWithSubscreenOffset(t, 128, 96, 22 << 16);
-        ManagedSprite_SetAnim(t, LCRandom() % 3 + 28);
-        Sprite_TickFrame(t->sprite);
-        q->radius = LCRandom() % 0x2000 + 0x2000;
-        q->radiusSpeed = LCRandom() % 0x4000 + 0x2000;
-        q->angle = (LCRandom() % 360) << 12;
-        q->angleSpeed = LCRandom() % (5 << 14) + (1 << 16);
-        q->life = LCRandom() % 15 + 20;
-        confetti->pieces[i].sprite = t;
+        ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, 128, 96, 22 << 16);
+        ManagedSprite_SetAnim(sprite, LCRandom() % 3 + 28);
+        Sprite_TickFrame(sprite->sprite);
+        piece->radius = LCRandom() % 0x2000 + 0x2000;
+        piece->radiusSpeed = LCRandom() % 0x4000 + 0x2000;
+        piece->angle = (LCRandom() % 360) << 12;
+        piece->angleSpeed = LCRandom() % (5 << 14) + (1 << 16);
+        piece->life = LCRandom() % 15 + 20;
+        confetti->pieces[i].sprite = sprite;
     }
     tmpl.drawPriority = 13;
     tmpl.pal = sWobbuffetPopConfettiPalettes[inflation->size];
     for (i = 0; i < 3; i++) {
-        q = &confetti->balloonPieces[i];
-        t = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &tmpl);
-        if (t == NULL) {
+        piece = &confetti->balloonPieces[i];
+        sprite = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &tmpl);
+        if (sprite == NULL) {
             break;
         }
-        ManagedSprite_SetPositionXYWithSubscreenOffset(t, 128, 96, 22 << 16);
-        ManagedSprite_SetAnim(t, 11);
-        Sprite_TickFrame(t->sprite);
-        q->radius = LCRandom() % 0x2000 + 0x2000;
-        q->radiusSpeed = LCRandom() % 0x4000 + 0x2000;
-        q->angle = (LCRandom() % 360) << 12;
-        q->angleSpeed = LCRandom() % (5 << 14) + (1 << 16);
-        q->life = LCRandom() % 15 + 20;
-        confetti->balloonPieces[i].sprite = t;
+        ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, 128, 96, 22 << 16);
+        ManagedSprite_SetAnim(sprite, 11);
+        Sprite_TickFrame(sprite->sprite);
+        piece->radius = LCRandom() % 0x2000 + 0x2000;
+        piece->radiusSpeed = LCRandom() % 0x4000 + 0x2000;
+        piece->angle = (LCRandom() % 360) << 12;
+        piece->angleSpeed = LCRandom() % (5 << 14) + (1 << 16);
+        piece->life = LCRandom() % 15 + 20;
+        confetti->balloonPieces[i].sprite = sprite;
     }
 }
 #pragma opt_common_subs reset
@@ -1158,13 +1158,13 @@ BOOL WobbuffetPop_QueuePump(WobbuffetPop *game, const WobbuffetPopPump *pump) {
 }
 
 static WobbuffetPopPump *WobbuffetPop_DequeuePump(WobbuffetPop *game) {
-    s32 n = game->pumpQueueRead;
+    s32 read = game->pumpQueueRead;
 
-    if (n >= game->pumpQueueWrite) {
+    if (read >= game->pumpQueueWrite) {
         return NULL;
     }
-    game->pumpQueueRead = n + 1;
-    return &game->pumpQueue[n % 8];
+    game->pumpQueueRead = read + 1;
+    return &game->pumpQueue[read % 8];
 }
 
 static BOOL WobbuffetPop_SetPumpBonus(WobbuffetPop *game, int bonus) {
@@ -1347,9 +1347,9 @@ void WobbuffetPopBonusRing_Update(WobbuffetPop *game, WobbuffetPopBonusRing *rin
     }
     if (ring->speed == 1) {
         {
-            const WobbuffetPopRingSpeed *p = sWobbuffetPopRingSpeeds;
-            for (i = 0; i < 2; i++, p++) {
-                sum += (p->steps + p->delay) * 12;
+            const WobbuffetPopRingSpeed *speed = sWobbuffetPopRingSpeeds;
+            for (i = 0; i < 2; i++, speed++) {
+                sum += (speed->steps + speed->delay) * 12;
             }
         }
         if (sum - 15 == ring->ticks) {
@@ -1357,9 +1357,9 @@ void WobbuffetPopBonusRing_Update(WobbuffetPop *game, WobbuffetPopBonusRing *rin
         }
     } else if (ring->speed == 2) {
         {
-            const WobbuffetPopRingSpeed *p = sWobbuffetPopRingSpeeds;
-            for (i = 0; i < 3; i++, p++) {
-                sum += (p->steps + p->delay) * 12;
+            const WobbuffetPopRingSpeed *speed = sWobbuffetPopRingSpeeds;
+            for (i = 0; i < 3; i++, speed++) {
+                sum += (speed->steps + speed->delay) * 12;
             }
         }
         if (sum - 15 == ring->ticks) {

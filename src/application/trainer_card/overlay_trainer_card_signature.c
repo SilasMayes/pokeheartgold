@@ -473,11 +473,9 @@ static void TrainerCardSignature_InitSpriteResources(TrainerCardSignature *signa
     OamManager_Create(0, 126, 0, 32, 0, 126, 0, 32, HEAP_ID_39);
     signature->spriteList = G2dRenderer_Init(50, &signature->renderer, HEAP_ID_39);
     G2dRenderer_SetSubSurfaceCoords(&signature->renderer, 0, FX32_CONST(256));
-    i = 0;
-    do {
+    for (i = 0; i < 4; i++) {
         signature->resourceManagers[i] = Create2DGfxResObjMan(2, (GfGfxResType)i, HEAP_ID_39);
-        i++;
-    } while (i < 4);
+    }
     signature->resourceObjects[0][0] = AddCharResObjFromOpenNarc(signature->resourceManagers[0], narc, 7, TRUE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, HEAP_ID_39);
     signature->resourceObjects[0][1] = AddPlttResObjFromOpenNarc(signature->resourceManagers[1], narc, 1, FALSE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, 3, HEAP_ID_39);
     signature->resourceObjects[0][2] = AddCellOrAnimResObjFromOpenNarc(signature->resourceManagers[2], narc, 8, TRUE, 0, GF_GFX_RES_TYPE_CELL, HEAP_ID_39);
@@ -927,7 +925,7 @@ static BOOL TrainerCardSignature_IsPrinterDone(u32 textPrinterId) {
 // Packs the 4bpp canvas (colour 1 = ink) into the save's 1bpp signature.
 
 static void TrainerCardSignature_PackCanvas(u8 *signature, const u8 *pixels) {
-    int n = 0;
+    int byteCount = 0;
     int bit = 0;
     int i = 0;
 
@@ -942,11 +940,11 @@ static void TrainerCardSignature_PackCanvas(u8 *signature, const u8 *pixels) {
         bit += 2;
         if (bit == 8) {
             signature++;
-            n++;
+            byteCount++;
             *signature = 0;
             bit = 0;
         }
-        GF_ASSERT(n < 6144);
+        GF_ASSERT(byteCount < 6144);
     }
 }
 

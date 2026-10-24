@@ -12,8 +12,9 @@
 #define MYSTERY_GIFT_BEACON_GGID 0x400318
 
 // WM results (only the ones this module tests)
-#define WM_ERRCODE_SUCCESS   0
-#define WM_ERRCODE_OPERATING 2
+#define WM_ERRCODE_SUCCESS    0
+#define WM_ERRCODE_OPERATING  2
+#define WM_ERRCODE_FIFO_ERROR 8
 
 #define MYSTERY_GIFT_BEACON_ASSERT(cond) (void)((cond) || (OS_Terminate(), 0))
 
@@ -35,10 +36,6 @@ typedef struct MysteryGiftBeaconScanResult {
 } MysteryGiftBeaconScanResult;
 
 // argument of the other WM callbacks (common head)
-typedef struct MysteryGiftBeaconWmResult {
-    u16 apiId;
-    u16 errCode;
-} MysteryGiftBeaconWmResult;
 
 typedef struct MysteryGiftBeaconWork {
     u8 wmBuffer[0xF00]; // WM_Initialize
@@ -260,7 +257,8 @@ static BOOL MysteryGiftBeacon_EndScan(void) {
 }
 
 static void MysteryGiftBeacon_EndScanCallback(void *arg) {
-    int result = ((MysteryGiftBeaconWmResult *)arg)->errCode;
+    WMCallback *cb = arg;
+    int result = cb->errcode;
     if (result != WM_ERRCODE_SUCCESS) {
         MysteryGiftBeacon_SetError(result);
     } else {
@@ -269,7 +267,8 @@ static void MysteryGiftBeacon_EndScanCallback(void *arg) {
 }
 
 static void MysteryGiftBeacon_EndCallback(void *arg) {
-    if (((MysteryGiftBeaconWmResult *)arg)->errCode != WM_ERRCODE_SUCCESS) {
+    WMCallback *cb = arg;
+    if (cb->errcode != WM_ERRCODE_SUCCESS) {
         MysteryGiftBeacon_SetState(MYSTERY_GIFT_BEACON_STATE_FATAL);
     } else {
         MysteryGiftBeacon_SetState(MYSTERY_GIFT_BEACON_STATE_STOP);
@@ -290,7 +289,8 @@ static BOOL MysteryGiftBeacon_Start(void) {
 
 // WM indication: the wireless hardware was shut down
 static void MysteryGiftBeacon_IndicationCallback(void *arg) {
-    if (((MysteryGiftBeaconWmResult *)arg)->errCode == 8) {
+    WMCallback *cb = arg;
+    if (cb->errcode == WM_ERRCODE_FIFO_ERROR) {
         MysteryGiftBeacon_SetState(MYSTERY_GIFT_BEACON_STATE_ERROR);
         void (*callback)(int) = gMysteryGiftBeacon.work->callback;
         if (callback != NULL) {
@@ -311,7 +311,8 @@ static BOOL MysteryGiftBeacon_Initialize(void) {
 }
 
 static void MysteryGiftBeacon_InitializeCallback(void *arg) {
-    int result = ((MysteryGiftBeaconWmResult *)arg)->errCode;
+    WMCallback *cb = arg;
+    int result = cb->errcode;
     if (result != WM_ERRCODE_SUCCESS) {
         MysteryGiftBeacon_SetError(result);
         MysteryGiftBeacon_SetState(MYSTERY_GIFT_BEACON_STATE_FATAL);
@@ -364,9 +365,10 @@ static BOOL MysteryGiftBeacon_Reset(void) {
 }
 
 static void MysteryGiftBeacon_ResetCallback(void *arg) {
-    if (((MysteryGiftBeaconWmResult *)arg)->errCode != WM_ERRCODE_SUCCESS) {
+    WMCallback *cb = arg;
+    if (cb->errcode != WM_ERRCODE_SUCCESS) {
         MysteryGiftBeacon_SetState(MYSTERY_GIFT_BEACON_STATE_ERROR);
-        MysteryGiftBeacon_SetError(((MysteryGiftBeaconWmResult *)arg)->errCode);
+        MysteryGiftBeacon_SetError(cb->errcode);
         void (*callback)(int) = gMysteryGiftBeacon.work->callback;
         if (callback != NULL) {
             callback(MYSTERY_GIFT_BEACON_EVENT_ERROR);
@@ -423,7 +425,7 @@ static BOOL MysteryGiftBeacon_ReceivePacket(MysteryGiftBeaconPacket *packet) {
         }
     }
     if (packet->index == 0xFFFF) {
-        MIi_CpuCopy32((const u32 *)packet->data, (u32 *)gMysteryGiftBeacon.work->title, MYSTERY_GIFT_BEACON_PACKET_DATA_SIZE);
+        MI_CpuCopy32(packet->data, gMysteryGiftBeacon.work->title, MYSTERY_GIFT_BEACON_PACKET_DATA_SIZE);
         gMysteryGiftBeacon.work->titleReceived = TRUE;
     } else {
         gMysteryGiftBeacon.work->lastPacket = packet->index;
@@ -442,9 +444,9 @@ static BOOL MysteryGiftBeacon_ReceivePacket(MysteryGiftBeaconPacket *packet) {
                 received[packet->index] = TRUE;
                 work = gMysteryGiftBeacon.work;
                 if (packet->index == work->packetCount - 1) {
-                    MIi_CpuCopy32((const u32 *)packet->data, (u32 *)((u8 *)work->dest + packet->index * MYSTERY_GIFT_BEACON_PACKET_DATA_SIZE), work->dataSize - packet->index * MYSTERY_GIFT_BEACON_PACKET_DATA_SIZE);
+                    MI_CpuCopy32(packet->data, (u8 *)work->dest + packet->index * MYSTERY_GIFT_BEACON_PACKET_DATA_SIZE, work->dataSize - packet->index * MYSTERY_GIFT_BEACON_PACKET_DATA_SIZE);
                 } else {
-                    MIi_CpuCopy32((const u32 *)packet->data, (u32 *)((u8 *)work->dest + packet->index * MYSTERY_GIFT_BEACON_PACKET_DATA_SIZE), MYSTERY_GIFT_BEACON_PACKET_DATA_SIZE);
+                    MI_CpuCopy32(packet->data, (u8 *)work->dest + packet->index * MYSTERY_GIFT_BEACON_PACKET_DATA_SIZE, MYSTERY_GIFT_BEACON_PACKET_DATA_SIZE);
                 }
                 gMysteryGiftBeacon.work->packetsReceived++;
                 work = gMysteryGiftBeacon.work;
@@ -490,7 +492,7 @@ BOOL MysteryGiftBeacon_DecryptGift(void) {
     CRYPTO_RC4Init(&gMysteryGiftBeacon.work->rc4, key, 8);
     work = gMysteryGiftBeacon.work;
     CRYPTO_RC4Encrypt(&work->rc4, work->dest, work->dataSize, work->dest);
-    MIi_CpuClear32(0, (u32 *)&gMysteryGiftBeacon.work->rc4, sizeof(CRYPTORC4Context));
+    MI_CpuClear32(&gMysteryGiftBeacon.work->rc4, sizeof(CRYPTORC4Context));
     u16 sum = MysteryGiftBeacon_Checksum(gMysteryGiftBeacon.work->dest, gMysteryGiftBeacon.work->dataSize);
     if (gMysteryGiftBeacon.work->dataId == sum) {
         return TRUE;

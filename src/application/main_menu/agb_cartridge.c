@@ -378,7 +378,7 @@ int PmAgbCartridge_LoadSave(void) {
                 save->counter = sector->counter;
                 validSectors |= 1 << sector->id;
                 size = PmAgbCartridge_GetSectorDataSize(sector->id);
-                MIi_CpuCopy32((const u32 *)sector, (u32 *)PmAgbCartridge_GetSectorData(sector->id), size);
+                MI_CpuCopy32(sector, PmAgbCartridge_GetSectorData(sector->id), size);
                 if (sector->id == 0) {
                     save->firstSector = i;
                 }
@@ -398,9 +398,9 @@ static void PmAgbCartridge_WriteSectorAsync(int id) {
     int size;
     int flashSector;
     gPmAgbSave.writeStatus = 1;
-    MIi_CpuClear32(0, (u32 *)sector, AGB_SAVE_SECTOR_SIZE);
+    MI_CpuClear32(sector, AGB_SAVE_SECTOR_SIZE);
     size = PmAgbCartridge_GetSectorDataSize(id);
-    MIi_CpuCopy32((u32 *)PmAgbCartridge_GetSectorData(id), (u32 *)sector, size);
+    MI_CpuCopy32(PmAgbCartridge_GetSectorData(id), sector, size);
     sector->counter = gPmAgbSave.counter;
     sector->id = id;
     sector->signature = AGB_SAVE_SECTOR_SIGNATURE;
@@ -1446,11 +1446,11 @@ void MigrateBoxMon(AgbBoxMon *agbMon, BoxPokemon *boxMon) {
         u32 personality = AGB_GetBoxMonData(agbMon, AGB_MON_DATA_PERSONALITY, NULL);
         data = personality;
         u32 mask = 3;
-        u32 a = ((mask << 8) & personality) >> 6;
-        u32 b = ((mask << 24) & personality) >> 18;
-        u32 c = ((mask << 16) & personality) >> 12;
-        u32 d = personality & mask;
-        data = (b | c | a | d) % 28;
+        u32 byte1Bits = ((mask << 8) & personality) >> 6;
+        u32 byte3Bits = ((mask << 24) & personality) >> 18;
+        u32 byte2Bits = ((mask << 16) & personality) >> 12;
+        u32 byte0Bits = personality & mask;
+        data = (byte3Bits | byte2Bits | byte1Bits | byte0Bits) % 28;
         SetBoxMonData(boxMon, MON_DATA_FORM, &data);
     }
     if (GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL) == SPECIES_DEOXYS) {

@@ -56,14 +56,6 @@ typedef struct MainMenuUtilGiftPalettes {
     u8 data[34]; // gift type, palette; ...
 } MainMenuUtilGiftPalettes;
 
-// A gift as shown by the card screens (only the Pokemon is read here)
-typedef struct MainMenuUtilGift {
-    u16 type;
-    u8 unk_02[2];
-    u32 itemId;
-    u8 mon[1];
-} MainMenuUtilGift;
-
 extern MainMenuUtilWork gMainMenuUtilWork;
 extern MainMenuUtilSprites gMainMenuUtilSprites;
 extern G2dRenderer gMainMenuUtilRenderer;
@@ -353,7 +345,7 @@ void MainMenuUtil_InitSprites(void) {
     OamManager_Create(0, 126, 0, 32, 0, 126, 0, 32, gMainMenuUtilWork.heapId);
     gMainMenuUtilWork.sprites.spriteList = G2dRenderer_Init(128, &gMainMenuUtilRenderer, gMainMenuUtilWork.heapId);
     G2dRenderer_SetSubSurfaceCoords(&gMainMenuUtilRenderer, 0, FX32_CONST(256));
-    *(fx32 *)((u8 *)gMainMenuUtilGiftSpriteWork + 0x10) = FX32_CONST(192);
+    gMainMenuUtilGiftSpriteWork[4] = FX32_CONST(192);
     for (i = 0; i < 6; i++) {
         work->sprites.resMan[i] = Create2DGfxResObjMan(32, (GfGfxResType)i, work->heapId);
     }
@@ -398,7 +390,7 @@ void MainMenuUtil_LoadSpriteResources(NarcId narcId, u32 charFileId, u32 plttFil
 
 static void MainMenuUtil_SetSubScreenOffset(fx32 x, fx32 y) {
     G2dRenderer_SetSubSurfaceCoords(&gMainMenuUtilRenderer, x, y);
-    *(fx32 *)((u8 *)gMainMenuUtilGiftSpriteWork + 0x10) = y;
+    gMainMenuUtilGiftSpriteWork[4] = y;
 }
 
 void MainMenuUtil_UpdateSprites(void) {
@@ -542,19 +534,19 @@ static void MainMenuUtil_LoadGiftMonSprite(Sprite *sprite, Pokemon *mon, int spe
 }
 
 // Gift graphics of the card screens: the gift box
-void MainMenuUtil_ShowGiftBox(MainMenuUtilWork *work, int giftType, void *gift) {
+void MainMenuUtil_ShowGiftBox(MainMenuUtilWork *work, int giftType, WonderCard *card) {
     MainMenuUtil_LoadSpriteResources(NARC_a_1_1_3, 39, 36, 38, 37, 1);
     MainMenuUtil_SetSubScreenOffset(0, FX32_CONST(256));
     work->giftSprite = MainMenuUtil_CreateSprite(1, work->giftSprite, 128, 0, 0);
 }
 
 // The gift Pokemon (types 1, 13), Egg (2) or Manaphy Egg (7)
-void MainMenuUtil_ShowGiftPokemon(MainMenuUtilWork *work, int giftType, void *gift) {
-    void *mon;
+void MainMenuUtil_ShowGiftPokemon(MainMenuUtilWork *work, int giftType, WonderCard *card) {
+    Pokemon *mon;
     MainMenuUtil_LoadSpriteResources(NARC_a_0_5_2, 10, 0, 11, 12, 1);
     MainMenuUtil_SetSubScreenOffset(0, FX32_CONST(256));
     work->giftSprite = MainMenuUtil_CreateSprite(1, work->giftSprite, 128, 0, 1);
-    mon = ((MainMenuUtilGift *)gift)->mon;
+    mon = &card->data.pokemon.mon;
     switch (giftType) {
     case MG_TAG_POKEMON:
     case MG_TAG_POKEMON_MOVIE: {
@@ -573,7 +565,7 @@ void MainMenuUtil_ShowGiftPokemon(MainMenuUtilWork *work, int giftType, void *gi
 }
 
 // The gift item (type 3) or the item of a special gift
-void MainMenuUtil_ShowGiftItem(MainMenuUtilWork *work, int giftType, void *gift) {
+void MainMenuUtil_ShowGiftItem(MainMenuUtilWork *work, int giftType, WonderCard *card) {
     u32 item;
     u32 charId;
     u32 plttId;
@@ -581,7 +573,7 @@ void MainMenuUtil_ShowGiftItem(MainMenuUtilWork *work, int giftType, void *gift)
     u32 anim;
     switch (giftType) {
     case MG_TAG_ITEM:
-        item = ((MainMenuUtilGift *)gift)->itemId;
+        item = card->data.item;
         break;
     case MG_TAG_MEMBER_CARD:
         item = ITEM_MEMBER_CARD;

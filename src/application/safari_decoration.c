@@ -291,26 +291,26 @@ static SafariDecorationObject *SafariDecoration_CreateObjectList(u32 trainerId, 
 u8 SafariDecoration_GetSizeClass(u8 width, u8 height);
 
 // FX32 conversion of the camera table entries, rounded to nearest.
-static inline fx32 SafariDecoration_RoundS16ToFx32(s16 n) {
-    float f;
+static inline fx32 SafariDecoration_RoundS16ToFx32(s16 value) {
+    float rounded;
 
-    if (n > 0) {
-        f = 0.5f + (float)(n * FX32_ONE);
+    if (value > 0) {
+        rounded = 0.5f + (float)(value * FX32_ONE);
     } else {
-        f = (float)(n * FX32_ONE) - 0.5f;
+        rounded = (float)(value * FX32_ONE) - 0.5f;
     }
-    return (fx32)f;
+    return (fx32)rounded;
 }
 
-static inline fx32 SafariDecoration_RoundU16ToFx32(u16 n) {
-    float f;
+static inline fx32 SafariDecoration_RoundU16ToFx32(u16 value) {
+    float rounded;
 
-    if (n) {
-        f = 0.5f + (float)(n * FX32_ONE);
+    if (value) {
+        rounded = 0.5f + (float)(value * FX32_ONE);
     } else {
-        f = (float)(n * FX32_ONE) - 0.5f;
+        rounded = (float)(value * FX32_ONE) - 0.5f;
     }
-    return (fx32)f;
+    return (fx32)rounded;
 }
 
 BOOL SafariDecoration_Init(OverlayManager *man, int *state) {

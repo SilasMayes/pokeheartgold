@@ -207,12 +207,13 @@ static void VsRecorder_FillRankingEntries(VsRecorderWork *work) {
 
 // SWITCH RANKINGS / SWITCH TEAMS
 static void VsRecorder_CreateRankingsButtonLabels(VsRecorderWork *work) {
+    VsRecorderRankings *rankings = work->screenWork;
     Window *window;
     const VsRecorderRankingsWindowRect *rect = gVsRecorderRankingsButtonLabelWindows;
     int baseTile = 1;
     int i;
 
-    for (i = 0, window = ((VsRecorderRankings *)work->screenWork)->buttonLabels; i < 2; i++) {
+    for (i = 0, window = rankings->buttonLabels; i < 2; i++) {
         String *str;
         AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_SUB_2, rect->x, rect->y, rect->width, rect->height, 14, baseTile);
         baseTile += rect->width * rect->height;
@@ -227,8 +228,9 @@ static void VsRecorder_CreateRankingsButtonLabels(VsRecorderWork *work) {
 }
 
 static void VsRecorder_RemoveRankingsButtonLabels(VsRecorderWork *work) {
+    VsRecorderRankings *rankings = work->screenWork;
     int i;
-    Window *window = ((VsRecorderRankings *)work->screenWork)->buttonLabels;
+    Window *window = rankings->buttonLabels;
 
     for (i = 0; i < 2; i++) {
         ClearWindowTilemapAndCopyToVram(window);
@@ -267,8 +269,9 @@ static void VsRecorder_CreateRankingsWindows(VsRecorderWork *work) {
 }
 
 static void VsRecorder_RemoveRankingsWindows(VsRecorderWork *work) {
+    VsRecorderRankings *rankings = work->screenWork;
     int i;
-    Window *window = ((VsRecorderRankings *)work->screenWork)->windows;
+    Window *window = rankings->windows;
 
     for (i = 0; i < 2; i++) {
         ClearWindowTilemapAndCopyToVram(window);
@@ -674,7 +677,7 @@ BOOL VsRecorder_RankingsMain(VsRecorderWork *work) {
 
     VsRecorder_UpdateTouchScroll(&work->touchScroll);
     VsRecorder_ListScroll(&work->listWindow, work->touchScroll.direction);
-    VsRecorder_RedrawRankingList(&work->listWindow, work, (void *)rankings->ranking, rankings->team, rankings->valueTemplate);
+    VsRecorder_RedrawRankingList(&work->listWindow, work, rankings->ranking, rankings->team, rankings->valueTemplate);
     TouchHitboxController_IsTriggered(rankings->hitboxController);
     return FALSE;
 }

@@ -776,26 +776,24 @@ static void ApricornBoxScreen_SetCursorAnimActive(ApricornBoxScreen *screen, int
 
 static void ApricornBoxScreen_DrawApricornCount(ApricornBoxScreen *screen, u8 index) {
     u8 *counts;
-    int windowOffset;
-    u8 *windowBase;
+    Window *window;
     Sprite **spriteSlot;
     u8 width;
-    windowBase = (u8 *)screen->windows;
-    windowOffset = (index + 11) * sizeof(Window);
+    window = &screen->windows[index + 11];
     counts = screen->apricornCounts;
     if (counts[index] == 0) {
         spriteSlot = &screen->sprites[index + 2];
         Sprite_SetDrawFlag(*spriteSlot, FALSE);
-        ClearWindowTilemapAndScheduleTransfer((Window *)(windowBase + windowOffset));
+        ClearWindowTilemapAndScheduleTransfer(window);
     } else {
         spriteSlot = &screen->sprites[index + 2];
         Sprite_SetDrawFlag(*spriteSlot, TRUE);
-        FillWindowPixelBuffer((Window *)(windowBase + windowOffset), 0);
+        FillWindowPixelBuffer(window, 0);
         BufferIntegerAsString(screen->msgFormat, 0, counts[index], 2, PRINTING_MODE_RIGHT_ALIGN, TRUE);
         StringExpandPlaceholders(screen->msgFormat, screen->string, screen->numberTemplate);
         width = FontID_String_GetWidth(0, screen->string, 0);
-        AddTextPrinterParameterizedWithColor((Window *)(windowBase + windowOffset), 0, screen->string, (16 - width) / 2, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
-        ScheduleWindowCopyToVram((Window *)(windowBase + windowOffset));
+        AddTextPrinterParameterizedWithColor(window, 0, screen->string, (16 - width) / 2, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
+        ScheduleWindowCopyToVram(window);
     }
     Sprite_SetPositionXY(*spriteSlot, gApricornBoxApricornPositions[index][0], gApricornBoxApricornPositions[index][1]);
 }

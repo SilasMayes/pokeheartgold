@@ -32,7 +32,8 @@ FS_EXTERN_OVERLAY(OVY_39);
 FS_EXTERN_OVERLAY(OVY_40);
 
 VsRecorderWork *VsRecorderApp_GetRecorderWork(OverlayManager *manager) {
-    return ((VsRecorderApp *)OverlayManager_GetArgs(manager))->recorder;
+    VsRecorderApp *app = OverlayManager_GetArgs(manager);
+    return app->recorder;
 }
 
 void VsRecorderApp_SetResult(void *result, u32 first, u32 second) {
@@ -204,7 +205,7 @@ static BOOL VsRecorderApp_RunPlayback(VsRecorderApp *work, enum HeapID heapId) {
         if (OverlayManager_Run(work->manager)) {
             work->recorder->battleResult = work->setup->isRecordingPaused;
             if (work->recorder->mode != 0 && work->recorder->battleResult == 0) {
-                *(u8 *)work->recorder->videoFlagPtr = 1;
+                *work->recorder->videoFlag = 1;
             }
             Heap_Free(work->setup->bagCursor);
             BattleSetup_Delete(work->setup);

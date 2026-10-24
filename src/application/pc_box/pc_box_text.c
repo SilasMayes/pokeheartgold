@@ -37,7 +37,7 @@
 #include "touchscreen.h"
 #include "yes_no_prompt.h"
 
-static void PCBox_PlaceSpriteOnTop(PCBoxView *view, u32 i, s16 x, s16 y, u32 v);
+static void PCBox_PlaceSpriteOnTop(PCBoxView *view, u32 i, s16 x, s16 y, u32 visible);
 static void PCBox_CopyWindowToTextObj(PCBoxView *view, Window *window, u32 index);
 static void PCBox_PrintAligned(Window *window, String *str, s32 x, s32 y, u32 font, u32 color, u32 align);
 static void PCBox_PrintMsg(PCBoxView *view, MsgData *msgData, u32 win, u32 msgId, s32 x, s32 y, u32 font, u32 color, u32 align);
@@ -135,9 +135,9 @@ void PCBox_DrawBoxThumbnailMons(PCBoxWork *work, u32 box, void *dst) {
     }
 }
 
-static void PCBox_PlaceSpriteOnTop(PCBoxView *view, u32 i, s16 x, s16 y, u32 v) {
+static void PCBox_PlaceSpriteOnTop(PCBoxView *view, u32 i, s16 x, s16 y, u32 visible) {
     ManagedSprite_SetPositionXY(view->sprites[i], x, y);
-    PCBox_SetSpriteVisible(view, i, v);
+    PCBox_SetSpriteVisible(view, i, visible);
     PCBox_SetSpritePriority(view, i, 0);
 }
 
@@ -692,18 +692,18 @@ static void PCBox_DrawMenuExitButton(PCBoxWork *work, u32 style) {
 }
 
 void PCBox_DrawActionMenu(PCBoxWork *work, const PCBoxMenuEntry *list, u32 count) {
-    u16 v[2];
+    u16 size[2];
     u32 i;
 
-    BgCellManager_GetCellSize(work->view->panels, PC_BOX_PANEL_MENU_ROW_0, &v[1], &v[0]);
+    BgCellManager_GetCellSize(work->view->panels, PC_BOX_PANEL_MENU_ROW_0, &size[1], &size[0]);
     for (i = 0; i < count; i++) {
         const PCBoxMenuEntry *entry = &list[count - 1 - i];
         if (entry->kind == 0) {
             PCBox_DrawButtonWindow(work, 0x21 - i, entry->msgId, 0);
-            BgCellManager_SetCellPalette(work->view->panels, PC_BOX_PANEL_MENU_ROW_4 - i, 0, 0, (u8)v[1], (u8)v[0], 0xc);
+            BgCellManager_SetCellPalette(work->view->panels, PC_BOX_PANEL_MENU_ROW_4 - i, 0, 0, (u8)size[1], (u8)size[0], 0xc);
         } else {
             PCBox_DrawTabWindow(work, 0x21 - i, entry->msgId);
-            BgCellManager_SetCellPalette(work->view->panels, PC_BOX_PANEL_MENU_ROW_4 - i, 0, 0, (u8)v[1], (u8)v[0], 2);
+            BgCellManager_SetCellPalette(work->view->panels, PC_BOX_PANEL_MENU_ROW_4 - i, 0, 0, (u8)size[1], (u8)size[0], 2);
         }
     }
     for (; count < 5; count++) {
@@ -927,50 +927,50 @@ static void PCBox_PrintMessage(PCBoxWork *work, int msgNo, int windowId) {
     DestroyMsgData(msgData);
 }
 
-void PCBox_PrintExitPrompt(PCBoxWork *work, int x, int kind) {
+void PCBox_PrintExitPrompt(PCBoxWork *work, int windowId, int kind) {
     if (kind == 1) {
-        PCBox_PrintMessage(work, msg_0025_00011, x);
+        PCBox_PrintMessage(work, msg_0025_00011, windowId);
     } else {
-        PCBox_PrintMessage(work, msg_0025_00012, x);
+        PCBox_PrintMessage(work, msg_0025_00012, windowId);
     }
 }
 
-void PCBox_PrintTakeItemPrompt(PCBoxWork *work, int item, int x) {
+void PCBox_PrintTakeItemPrompt(PCBoxWork *work, int item, int windowId) {
     PCBoxView *view = work->view;
     BufferItemName(view->msgFormat, 0, item);
-    PCBox_PrintMessage(work, msg_0025_00023, x);
+    PCBox_PrintMessage(work, msg_0025_00023, windowId);
 }
 
-void PCBox_PrintMailCantBeTaken(PCBoxWork *work, int x) {
-    PCBox_PrintMessage(work, msg_0025_00024, x);
+void PCBox_PrintMailCantBeTaken(PCBoxWork *work, int windowId) {
+    PCBox_PrintMessage(work, msg_0025_00024, windowId);
 }
 
-void PCBox_PrintMailCantBeMoved(PCBoxWork *work, int x) {
-    PCBox_PrintMessage(work, msg_0025_00054, x);
+void PCBox_PrintMailCantBeMoved(PCBoxWork *work, int windowId) {
+    PCBox_PrintMessage(work, msg_0025_00054, windowId);
 }
 
-void PCBox_PrintTookItem(PCBoxWork *work, int item, int x) {
+void PCBox_PrintTookItem(PCBoxWork *work, int item, int windowId) {
     PCBoxView *view = work->view;
     BufferItemName(view->msgFormat, 0, item);
-    PCBox_PrintMessage(work, msg_0025_00015, x);
+    PCBox_PrintMessage(work, msg_0025_00015, windowId);
 }
 
-void PCBox_PrintBagFull(PCBoxWork *work, int x) {
-    PCBox_PrintMessage(work, msg_0025_00014, x);
+void PCBox_PrintBagFull(PCBoxWork *work, int windowId) {
+    PCBox_PrintMessage(work, msg_0025_00014, windowId);
 }
 
-void PCBox_PrintItemHeld(PCBoxWork *work, int item, int x) {
+void PCBox_PrintItemHeld(PCBoxWork *work, int item, int windowId) {
     if (item == 0) {
         BufferItemName(work->view->msgFormat, 0, ITEM_GRISEOUS_ORB);
-        PCBox_PrintMessage(work, msg_0025_00055, x);
+        PCBox_PrintMessage(work, msg_0025_00055, windowId);
     } else {
         BufferItemName(work->view->msgFormat, 0, item);
-        PCBox_PrintMessage(work, msg_0025_00016, x);
+        PCBox_PrintMessage(work, msg_0025_00016, windowId);
     }
 }
 
-void PCBox_PrintTouchTheMark(PCBoxWork *work, int x) {
-    PCBox_PrintMessage(work, msg_0025_00035, x);
+void PCBox_PrintTouchTheMark(PCBoxWork *work, int windowId) {
+    PCBox_PrintMessage(work, msg_0025_00035, windowId);
 }
 
 void PCBox_PrintReleaseMessage(PCBoxWork *work, int mode, int windowId) {
@@ -1007,7 +1007,7 @@ void PCBox_PrintReleaseMessage(PCBoxWork *work, int mode, int windowId) {
     PCBox_PrintMessage(work, msgNo, windowId);
 }
 
-void PCBox_PrintMenuPrompt(PCBoxWork *work, u32 which, u32 v) {
+void PCBox_PrintMenuPrompt(PCBoxWork *work, u32 which, u32 windowId) {
     switch (which) {
     case 0:
         which = msg_0025_00007;
@@ -1016,10 +1016,10 @@ void PCBox_PrintMenuPrompt(PCBoxWork *work, u32 which, u32 v) {
         which = msg_0025_00010;
         break;
     }
-    PCBox_PrintMessage(work, which, v);
+    PCBox_PrintMessage(work, which, windowId);
 }
 
-void PCBox_PrintMonActionMessage(PCBoxWork *work, u32 a, u32 kind, u32 v) {
+void PCBox_PrintMonActionMessage(PCBoxWork *work, u32 unused, u32 kind, u32 windowId) {
     u32 id;
 
     switch (kind) {
@@ -1047,10 +1047,10 @@ void PCBox_PrintMonActionMessage(PCBoxWork *work, u32 a, u32 kind, u32 v) {
         break;
     }
 
-    PCBox_PrintMessage(work, id, v);
+    PCBox_PrintMessage(work, id, windowId);
 }
 
-void PCBox_PrintItemActionMessage(PCBoxWork *work, u32 kind, u32 v) {
+void PCBox_PrintItemActionMessage(PCBoxWork *work, u32 kind, u32 windowId) {
     u32 id;
 
     switch (kind) {
@@ -1080,7 +1080,7 @@ void PCBox_PrintItemActionMessage(PCBoxWork *work, u32 kind, u32 v) {
         break;
     }
 
-    PCBox_PrintMessage(work, id, v);
+    PCBox_PrintMessage(work, id, windowId);
 }
 
 void PCBox_PrintPanelHint(PCBoxWork *work, u32 idx, u32 kind) {

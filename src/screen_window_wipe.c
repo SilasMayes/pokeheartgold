@@ -298,27 +298,27 @@ s8 ScreenWindow_GetOutside(int screen) {
 void ScreenWindow_SetRect(int left, int top, int right, int bottom, int window, int screen) {
     if (window == 0) {
         if (screen == 0) {
-            u32 h = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
-            u32 v = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);
-            reg_G2_WIN0H = h;
-            reg_G2_WIN0V = v;
+            u32 horizontal = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
+            u32 vertical = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);
+            reg_G2_WIN0H = horizontal;
+            reg_G2_WIN0V = vertical;
         } else {
-            u32 h = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
-            u32 v = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);
-            reg_G2S_DB_WIN0H = h;
-            reg_G2S_DB_WIN0V = v;
+            u32 horizontal = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
+            u32 vertical = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);
+            reg_G2S_DB_WIN0H = horizontal;
+            reg_G2S_DB_WIN0V = vertical;
         }
     } else {
         if (screen == 0) {
-            u32 h = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
-            u32 v = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);
-            reg_G2_WIN1H = h;
-            reg_G2_WIN1V = v;
+            u32 horizontal = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
+            u32 vertical = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);
+            reg_G2_WIN1H = horizontal;
+            reg_G2_WIN1V = vertical;
         } else {
-            u32 h = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
-            u32 v = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);
-            reg_G2S_DB_WIN1H = h;
-            reg_G2S_DB_WIN1V = v;
+            u32 horizontal = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
+            u32 vertical = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);
+            reg_G2S_DB_WIN1H = horizontal;
+            reg_G2S_DB_WIN1V = vertical;
         }
     }
 }

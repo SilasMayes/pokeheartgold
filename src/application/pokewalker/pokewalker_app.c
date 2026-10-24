@@ -256,10 +256,10 @@ void PokewalkerApp_BuildSendStrollData(PokewalkerApp *app) {
 }
 
 static void PokewalkerApp_BuildOwnRecord(PokewalkerApp *app) {
-    void *p;
+    void *clock;
     PokewalkerApp_BuildTrainerHouseData(app->saveData, &app->ownTrainerHouseData);
     app->unk_F1D0 = 1;
     app->ownRecordVersion = GAME_VERSION;
-    p = Pokewalker_GetIrClock(app->pokewalker);
-    MIi_CpuCopyFast(p, (u32 *)&app->ownRecordClock, sizeof(PokewalkerIrClock));
+    clock = Pokewalker_GetIrClock(app->pokewalker);
+    MI_CpuCopyFast(clock, &app->ownRecordClock, sizeof(PokewalkerIrClock));
 }

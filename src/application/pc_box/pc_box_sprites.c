@@ -238,7 +238,7 @@ void PCBox_LoadBoxIconImages(PCBoxWork *work, int box) {
         } else {
             boxMon = PCBox_GetSlotBoxMon(work, box, i);
             allocation = PCBox_LoadMonIconChars(work->view, boxMon, &charData);
-            MIi_CpuCopy32(charData->pRawData, (u32 *)work->view->iconChars[i], 0x200);
+            MI_CpuCopy32(charData->pRawData, work->view->iconChars[i], 0x200);
             Heap_Free(allocation);
             work->view->iconPalettes[i] = Boxmon_GetIconPalette(boxMon);
             work->view->iconDraw[i] = 1;

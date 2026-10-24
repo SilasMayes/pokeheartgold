@@ -1042,14 +1042,12 @@ static void MailView_DeleteMonIcons(MailView *mailView) {
     if (mailView->screen != MAIL_VIEW_SCREEN_READ) {
         return;
     }
-    i = 0;
-    do {
+    for (i = 0; i < 3; i++) {
         ManagedSprite *icon = mailView->icons[i];
         if (icon != NULL) {
             Sprite_DeleteAndFreeResources(icon);
         }
-        i++;
-    } while (i < 3);
+    }
     SpriteSystem_FreeResourcesAndManager(mailView->spriteSystem, mailView->spriteManager);
     SpriteSystem_Free(mailView->spriteSystem);
     GF_DestroyVramTransferManager();

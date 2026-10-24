@@ -261,7 +261,7 @@ typedef struct PokewalkerApp {
     u8 unk_1F2C0[2];
     u8 unk_1F2C2; // mode 6: cleared before the fanfare
     u8 unk_1F2C3[0xD];
-    volatile int timer;
+    int timer;
     u16 motionStarted;        // the motion object was started (transfer progress > 200)
     u16 monPicAlpha;          // alpha of the Pokemon picture fading in, 31 = done
     SysTask *monFadeTask;

@@ -805,10 +805,9 @@ static void UnownReport_DrawFormSpread(UnownReportApp *app, u8 spread) {
     first = UNOWN_ICONS_PER_SPREAD * spread;
     rightWindow = &app->windows[UNOWN_REPORT_WIN_RIGHT_PAGE];
     i = 0;
-    leftWindow = (Window *)app;
     slot = app;
     y = 0;
-    leftWindow = (Window *)((u8 *)leftWindow + offsetof(UnownReportApp, windows[UNOWN_REPORT_WIN_LEFT_PAGE]));
+    leftWindow = &app->windows[UNOWN_REPORT_WIN_LEFT_PAGE];
     for (; i < UNOWN_ICONS_PER_SPREAD; i++, slot = (UnownReportApp *)((u8 *)slot + sizeof(ManagedSprite *)), y += 24) {
         int index = first + i;
 

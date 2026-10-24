@@ -371,7 +371,7 @@ BOOL VsRecorder_VideoListDownloadVideo(VsRecorderWork *work) {
             StopSE(SEQ_SE_PL_BREC80, 0);
             work->step = VS_RECORDER_STEP_FINISH;
             listWork->downloaded = TRUE;
-            work->videoFlagPtr = (u32)&work->net.videoList.flags[work->listWindow.cursor];
+            work->videoFlag = &work->net.videoList.flags[work->listWindow.cursor];
             listWork->downloadedVideo = work->net.downloadedVideo;
             MI_CpuCopy8(listWork->downloadedVideo, work->net.videoBuffer, 0x1D4C);
         }
@@ -1724,7 +1724,8 @@ static void VsRecorder_RemoveDetailsButtonWindow(VsRecorderWork *work) {
 }
 
 static void VsRecorder_PrintDetailsButtonLabel(VsRecorderWork *work, int msgId) {
-    Window *window = &((VsRecorderVideoListScreen *)work->screenWork)->buttonWindows[0];
+    VsRecorderVideoListScreen *listWork = work->screenWork;
+    Window *window = &listWork->buttonWindows[0];
     String *str;
     int x;
 
@@ -1981,7 +1982,7 @@ static void VsRecorder_ScrollVideoListIcons(VsRecorderWork *work) {
     }
     for (j = 0; j < 6; j++) {
         if (listWork->icons[row][j].sprite != NULL) {
-            VsRecorder_DeleteSprite(work, (void *)listWork->icons[row][j].resId, listWork->icons[row][j].sprite);
+            VsRecorder_DeleteSprite(work, listWork->icons[row][j].resId, listWork->icons[row][j].sprite);
             freed[j] = listWork->icons[row][j].resId;
             listWork->icons[row][j].sprite = NULL;
         }

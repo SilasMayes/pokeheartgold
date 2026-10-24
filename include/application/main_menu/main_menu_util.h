@@ -6,6 +6,7 @@
 #include "application/main_menu/main_menu_internal.h"
 
 #include "bg_window.h"
+#include "mystery_gift.h"
 #include "pokemon_types_def.h"
 #include "save.h"
 #include "sprite.h"
@@ -63,9 +64,9 @@ u32 MainMenuUtil_SpritesActive(void);
 MainMenuUtilSprites *MainMenuUtil_GetSpriteList(void);
 void MainMenuUtil_UpdateGiftSprite(int hideGiftSprite);
 int MainMenuUtil_GetGiftPalette(int giftType);
-void MainMenuUtil_ShowGiftBox(MainMenuUtilWork *work, int giftType, void *gift);
-void MainMenuUtil_ShowGiftPokemon(MainMenuUtilWork *work, int giftType, void *gift);
-void MainMenuUtil_ShowGiftItem(MainMenuUtilWork *work, int giftType, void *gift);
+void MainMenuUtil_ShowGiftBox(MainMenuUtilWork *work, int giftType, WonderCard *card);
+void MainMenuUtil_ShowGiftPokemon(MainMenuUtilWork *work, int giftType, WonderCard *card);
+void MainMenuUtil_ShowGiftItem(MainMenuUtilWork *work, int giftType, WonderCard *card);
 void MainMenuUtil_LoadCardSubScreenPalette(MainMenuUtilWork *work);
 
 #endif // POKEHEARTGOLD_APPLICATION_MAIN_MENU_MAIN_MENU_UTIL_H

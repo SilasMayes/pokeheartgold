@@ -163,7 +163,8 @@ void VsRecorder_LoadBoxDataOwner(VsRecorderWork *work, int index) {
 }
 
 void VsRecorder_FreeBoxDataOwner(VsRecorderWork *work) {
-    FrontierCard_Delete(((VsRecorderBoxData *)work->screenWork)->profile.card);
+    VsRecorderBoxData *boxData = work->screenWork;
+    FrontierCard_Delete(boxData->profile.card);
 }
 
 static BOOL VsRecorder_BoxFormHasMon(GlobalTerminalNetBoxForm *form) {
@@ -536,7 +537,8 @@ BOOL VsRecorder_BoxDataSendShowCategories(VsRecorderWork *work) {
 
 // send screen, substate 6
 BOOL VsRecorder_BoxDataSendSelectCategory(VsRecorderWork *work) {
-    TouchHitboxController_IsTriggered(((VsRecorderBoxData *)work->screenWork)->hitboxes[1]);
+    VsRecorderBoxData *boxData = work->screenWork;
+    TouchHitboxController_IsTriggered(boxData->hitboxes[1]);
     return FALSE;
 }
 
@@ -698,13 +700,14 @@ BOOL VsRecorder_BoxDataViewQuit(VsRecorderWork *work) {
 }
 
 void VsRecorder_CreateBoxDataWindows(VsRecorderWork *work) {
+    VsRecorderBoxData *boxData = work->screenWork;
     Window *window;
     const VsRecorderBoxWindowRect *rect = gVsRecorderBoxDataWindows;
     const u32 *fill = gVsRecorderBoxDataWindowFillColors;
     int baseTile = 0x101;
     int i;
 
-    for (i = 0, window = ((VsRecorderBoxData *)work->screenWork)->windows; i < 3; i++) {
+    for (i = 0, window = boxData->windows; i < 3; i++) {
         InitWindow(window);
         AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_MAIN_2, rect->x, rect->y, rect->width, rect->height, 14, baseTile);
         FillWindowPixelBuffer(window, (u8)*fill);
@@ -717,12 +720,13 @@ void VsRecorder_CreateBoxDataWindows(VsRecorderWork *work) {
 }
 
 void VsRecorder_CreateBoxDataCategoryButtons(VsRecorderWork *work) {
+    VsRecorderBoxData *boxData = work->screenWork;
     Window *window;
     const VsRecorderBoxWindowRect *rect = sVsRecorderBoxDataCategoryButtonWindows;
     int baseTile = 1;
     u32 i;
 
-    for (i = 0, window = ((VsRecorderBoxData *)work->screenWork)->buttons; i < 6; i++) {
+    for (i = 0, window = boxData->buttons; i < 6; i++) {
         String *str;
         int x;
         InitWindow(window);
@@ -740,10 +744,11 @@ void VsRecorder_CreateBoxDataCategoryButtons(VsRecorderWork *work) {
 }
 
 void VsRecorder_RemoveBoxDataCategoryButtons(VsRecorderWork *work) {
+    VsRecorderBoxData *boxData = work->screenWork;
     u32 i;
     Window *window;
 
-    for (i = 0, window = ((VsRecorderBoxData *)work->screenWork)->buttons; i < 6; i++) {
+    for (i = 0, window = boxData->buttons; i < 6; i++) {
         ClearWindowTilemapAndCopyToVram(window);
         RemoveWindow(window);
         window++;
@@ -751,10 +756,11 @@ void VsRecorder_RemoveBoxDataCategoryButtons(VsRecorderWork *work) {
 }
 
 void VsRecorder_RemoveBoxDataWindows(VsRecorderWork *work) {
+    VsRecorderBoxData *boxData = work->screenWork;
     int i;
     Window *window;
 
-    for (i = 0, window = ((VsRecorderBoxData *)work->screenWork)->windows; i < 3; i++) {
+    for (i = 0, window = boxData->windows; i < 3; i++) {
         ClearWindowTilemapAndCopyToVram(window);
         RemoveWindow(window);
         window++;
@@ -806,11 +812,12 @@ static void VsRecorder_PrintBoxName(VsRecorderWork *work) {
 
 // Pokemon name and box name
 void VsRecorder_ClearBoxDataInfoWindows(VsRecorderWork *work) {
+    VsRecorderBoxData *boxData = work->screenWork;
     Window *window;
     const u32 *fill = gVsRecorderBoxDataWindowFillColors;
     int i;
 
-    for (i = 0, window = ((VsRecorderBoxData *)work->screenWork)->windows; i < 2; i++) {
+    for (i = 0, window = boxData->windows; i < 2; i++) {
         FillWindowPixelBuffer(window, (u8)*fill);
         ScheduleWindowCopyToVram(window);
         window++;
@@ -962,7 +969,8 @@ void VsRecorder_SetBoxMonPicVanished(VsRecorderWork *work, BOOL vanished) {
 }
 
 void VsRecorder_FreeBoxMonPic(VsRecorderWork *work) {
-    Pokepic *pokepic = ((VsRecorderBoxData *)work->screenWork)->pokepic;
+    VsRecorderBoxData *boxData = work->screenWork;
+    Pokepic *pokepic = boxData->pokepic;
     if (pokepic != NULL) {
         Pokepic_Delete(pokepic);
     }
@@ -1144,7 +1152,8 @@ BOOL VsRecorder_BoxDataViewShow(VsRecorderWork *work) {
 
 // view screen, substate 3
 BOOL VsRecorder_BoxDataViewSelectCategory(VsRecorderWork *work) {
-    TouchHitboxController_IsTriggered(((VsRecorderBoxData *)work->screenWork)->hitboxes[2]);
+    VsRecorderBoxData *boxData = work->screenWork;
+    TouchHitboxController_IsTriggered(boxData->hitboxes[2]);
     return FALSE;
 }
 

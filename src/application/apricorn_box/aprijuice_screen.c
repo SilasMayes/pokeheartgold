@@ -950,11 +950,9 @@ static void AprijuiceScreen_InitStrings(AprijuiceScreen *screen) {
     screen->string = String_New(256, screen->heapId);
     screen->string2 = String_New(256, screen->heapId);
     screen->levelTemplate = NewString_ReadMsgData(screen->msgData, msg_0022_00004);
-    i = 0;
-    do {
+    for (i = 0; i < 2; i++) {
         screen->genderSymbols[i] = NewString_ReadMsgData(screen->msgData, i + msg_0022_00010);
-        i++;
-    } while (i < 2);
+    }
 }
 
 static void AprijuiceScreen_FreeStrings(AprijuiceScreen *screen) {

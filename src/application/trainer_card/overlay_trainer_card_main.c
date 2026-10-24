@@ -923,7 +923,7 @@ static void TrainerCardMain_ResetBgAffine(void) {
 
 static void TrainerCardMain_DrawFrontPicture(TrainerCardMain *cardMain) {
     NNSG2dScreenData *screen;
-    BG_LoadCharTilesData(cardMain->bgConfig, 7, cardMain->frontCharData->pRawData, cardMain->frontCharData->szByte, 0);
+    BG_LoadCharTilesData(cardMain->bgConfig, GF_BG_LYR_SUB_3, cardMain->frontCharData->pRawData, cardMain->frontCharData->szByte, 0);
     screen = cardMain->frontScreen;
     CopyToBgTilemapRect(cardMain->bgConfig, GF_BG_LYR_SUB_3, 21, 5, 10, 11, screen->rawData, 21, 5, (u8)(screen->screenWidth >> 3), (u8)(screen->screenHeight >> 3));
     BgCommitTilemapBufferToVram(cardMain->bgConfig, GF_BG_LYR_SUB_3);
@@ -953,16 +953,14 @@ static void TrainerCardMain_DrawSignature(BgConfig *bgConfig, int bgId, u8 *pixe
     BG_LoadCharTilesData(bgConfig, (u8)bgId, pixels, 12288, 1);
     tilemap = GetBgTilemapBuffer(bgConfig, (u8)bgId);
     tile = 0;
-    y = 0;
-    do {
+    for (y = 0; y < 8; y++) {
         x = 0;
         do {
             tile++;
             tilemap[(y + 12) * 32 + x + 4] = tile;
             x++;
         } while (x < 24);
-        y++;
-    } while (y < 8);
+    }
     ScheduleBgTilemapBufferTransfer(bgConfig, (u8)bgId);
 }
 

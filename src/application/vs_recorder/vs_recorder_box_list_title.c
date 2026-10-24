@@ -7,8 +7,9 @@
 // VS Recorder box data view: removes the box list title. Its own translation unit: built at -O2 (Makefile override).
 
 void VsRecorder_RemoveBoxListTitle(VsRecorderWork *work) {
+    VsRecorderBoxData *boxData = work->screenWork;
     u32 i = 0;
-    Window *window = ((VsRecorderBoxData *)work->screenWork)->windows;
+    Window *window = boxData->windows;
 
     do {
         ClearWindowTilemapAndCopyToVram(window);

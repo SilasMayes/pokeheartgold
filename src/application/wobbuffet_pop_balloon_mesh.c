@@ -23,15 +23,15 @@ static s32 WobbuffetPopBalloon_CalcMeshArea(WobbuffetPopBalloon *balloon);
 
 void WobbuffetPopBalloon_LoadShininessTable(void) {
     u8 buf[0x80];
-    u8 *p = buf;
+    u8 *table = buf;
     u8 i;
-    s32 n;
+    s32 odd;
 
     for (i = 0; i < 0x7f; i++) {
-        n = i * 2 + 1;
-        p[i] = (u8)(((s64)n * n * n * n) >> 24);
+        odd = i * 2 + 1;
+        table[i] = (u8)(((s64)odd * odd * odd * odd) >> 24);
     }
-    p[0x7f] = 0xff;
+    table[0x7f] = 0xff;
     NNS_G3dGeBufferOP_N(G3OP_SHININESS, (u32 *)buf, G3OP_SHININESS_NPARAMS);
 }
 
@@ -53,17 +53,17 @@ void WobbuffetPopBalloon_InitMeshVertices(WobbuffetPopBalloon *balloon) {
 
 void WobbuffetPopBalloon_InitMeshTexCoords(WobbuffetPopBalloon *balloon) {
     s32 i;
-    s32 t;
+    s32 texV;
 
-    for (i = 0, t = 0; i < WOBBUFFET_POP_MESH_ROWS; i++, t += 0x10000) {
+    for (i = 0, texV = 0; i < WOBBUFFET_POP_MESH_ROWS; i++, texV += 0x10000) {
         balloon->texCoords[i].topLeftX = 0;
-        balloon->texCoords[i].topLeftY = t;
+        balloon->texCoords[i].topLeftY = texV;
         balloon->texCoords[i].bottomLeftX = 0;
-        balloon->texCoords[i].bottomLeftY = t + 0x10000;
+        balloon->texCoords[i].bottomLeftY = texV + 0x10000;
         balloon->texCoords[i].topRightX = 0x80000;
-        balloon->texCoords[i].topRightY = t;
+        balloon->texCoords[i].topRightY = texV;
         balloon->texCoords[i].bottomRightX = 0x80000;
-        balloon->texCoords[i].bottomRightY = t + 0x10000;
+        balloon->texCoords[i].bottomRightY = texV + 0x10000;
     }
 }
 
@@ -219,8 +219,8 @@ static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode
     s32 hi;
     s32 lo;
     BOOL flag;
-    s32 a;
-    s32 b;
+    s32 leftY;
+    s32 rightY;
     s32 mid;
     s32 newMid;
     s32 i;
@@ -228,26 +228,26 @@ static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode
     s32 angleA;
     s32 angleB;
 
-    a = -balloon->vertices[0].topLeftY;
-    b = -balloon->vertices[0].topRightY;
-    mid = b + (a - b) / 2;
+    leftY = -balloon->vertices[0].topLeftY;
+    rightY = -balloon->vertices[0].topRightY;
+    mid = rightY + (leftY - rightY) / 2;
     flag = FALSE;
 
     switch (WobbuffetPopBalloon_GetPushSide(balloon, mode)) {
     case 0:
-        hi = a + amount;
-        lo = b + amount;
+        hi = leftY + amount;
+        lo = rightY + amount;
         break;
     case 1:
-        flag = WobbuffetPopBalloon_CalcSidePush(balloon, amount, a, b, &hi, &lo);
+        flag = WobbuffetPopBalloon_CalcSidePush(balloon, amount, leftY, rightY, &hi, &lo);
         break;
     case 2:
-        flag = WobbuffetPopBalloon_CalcSidePush(balloon, amount, b, a, &lo, &hi);
+        flag = WobbuffetPopBalloon_CalcSidePush(balloon, amount, rightY, leftY, &lo, &hi);
         break;
     }
 
     newMid = lo + (hi - lo) / 2;
-    if (mid == newMid && a == hi && b == lo) {
+    if (mid == newMid && leftY == hi && rightY == lo) {
         return 0;
     }
     if (newMid < 0) {
@@ -294,22 +294,22 @@ static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode
     balloon->vertices[0].topRightY = -(newMid + (FX_SinIdx(angleB) << 6));
     deltaMid = (FX32_CONST(112) - newMid) / 7;
     if ((u32)angleB > 0x8000) {
-        a = -(0x10000 - angleB) / 7;
+        leftY = -(0x10000 - angleB) / 7;
     } else {
-        a = angleB / 7;
+        leftY = angleB / 7;
     }
-    b = a;
+    rightY = leftY;
     mid = deltaMid;
     for (i = 1; i < 7; i++) {
-        balloon->vertices[i].topLeftX = (FX_CosIdx(angleA - b) << 6) + FX32_CONST(64);
-        balloon->vertices[i].topLeftY = -(newMid + (FX_SinIdx(angleA - b) << 6) + mid);
-        balloon->vertices[i].topRightX = (FX_CosIdx(angleB - b) << 6) + FX32_CONST(64);
-        balloon->vertices[i].topRightY = -(newMid + (FX_SinIdx(angleB - b) << 6) + mid);
+        balloon->vertices[i].topLeftX = (FX_CosIdx(angleA - rightY) << 6) + FX32_CONST(64);
+        balloon->vertices[i].topLeftY = -(newMid + (FX_SinIdx(angleA - rightY) << 6) + mid);
+        balloon->vertices[i].topRightX = (FX_CosIdx(angleB - rightY) << 6) + FX32_CONST(64);
+        balloon->vertices[i].topRightY = -(newMid + (FX_SinIdx(angleB - rightY) << 6) + mid);
         balloon->vertices[i - 1].bottomLeftX = balloon->vertices[i].topLeftX;
         balloon->vertices[i - 1].bottomLeftY = balloon->vertices[i].topLeftY;
         balloon->vertices[i - 1].bottomRightX = balloon->vertices[i].topRightX;
         balloon->vertices[i - 1].bottomRightY = balloon->vertices[i].topRightY;
-        b += a;
+        rightY += leftY;
         mid += deltaMid;
     }
     return flag == TRUE ? 2 : 0;
