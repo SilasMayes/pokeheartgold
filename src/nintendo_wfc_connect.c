@@ -1150,7 +1150,6 @@ static void NintendoWfc_LoadBgGraphics(NintendoWfcConnect *wfc) {
     MIi_CpuCopy16(plttData->pRawData, wfc->paletteCycle.basePltt, 0x80);
     MIi_CpuCopy16(plttData->pRawData, wfc->paletteCycle.cyclePltt, 0x80);
     Heap_Free(raw);
-    // 21 palettes: three blends of 7 steps each between consecutive base palettes
     count = 0;
     outer = 0;
     dest = wfc->paletteCycle.cyclePltt;
@@ -1159,7 +1158,7 @@ static void NintendoWfc_LoadBgGraphics(NintendoWfcConnect *wfc) {
         blend = 0;
         last = 0;
         while (TRUE) {
-            GF_ASSERT(count < 21);
+            GF_ASSERT(count < NINTENDO_WFC_PALETTE_CYCLE_STEPS);
             for (i = 1; i < 16; i++) {
                 BlendPalette(&src[i], &dest[i], 1, blend >> 8, wfc->paletteCycle.basePltt[(outer + 1) * 16 + i]);
             }
@@ -1199,8 +1198,8 @@ static void NintendoWfc_PaletteCycleTask(SysTask *task, void *data) {
         }
         if (cycle->direction == 0) {
             cycle->index++;
-            if (cycle->index >= 21) {
-                cycle->index = 19;
+            if (cycle->index >= NINTENDO_WFC_PALETTE_CYCLE_STEPS) {
+                cycle->index = NINTENDO_WFC_PALETTE_CYCLE_STEPS - 2;
                 cycle->direction ^= 1;
             }
         } else {

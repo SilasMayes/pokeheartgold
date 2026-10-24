@@ -56,9 +56,9 @@ BOOL GF3d_BoundsBoxTest(const VecFx32 *translation, const BoxTestBounds *bounds)
     NNS_G3dGlbFlushP();
     NNS_G3dGeBufferOP_N(G3OP_MTX_PUSH, NULL, 0);
     {
-        fx32 scaleZ = bounds->scaleZ << 12;
-        fx32 scaleY = bounds->scaleY << 12;
-        fx32 scaleX = bounds->scaleX << 12;
+        fx32 scaleZ = bounds->scaleZ << FX32_SHIFT;
+        fx32 scaleY = bounds->scaleY << FX32_SHIFT;
+        fx32 scaleX = bounds->scaleX << FX32_SHIFT;
         VecFx32 scale = { scaleX, scaleY, scaleZ };
         NNS_G3dGeBufferOP_N(G3OP_MTX_SCALE, (const u32 *)&scale, 3);
     }

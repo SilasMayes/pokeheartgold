@@ -19,12 +19,15 @@ enum NintendoWfcPaletteScreens {
     NINTENDO_WFC_PALETTE_SUB_SCREEN,
 };
 
-// Background palette cycling (VBlank task).
+// Background palette cycling (VBlank task): three blends of 7 steps each between consecutive base palettes,
+// played forwards and backwards.
+#define NINTENDO_WFC_PALETTE_CYCLE_STEPS 21
+
 typedef struct NintendoWfcPaletteCycle {
     SysTask *task;
     int active;
     u16 basePltt[64];
-    u16 cyclePltt[21 * 16];
+    u16 cyclePltt[NINTENDO_WFC_PALETTE_CYCLE_STEPS * 16];
     s16 index;
     s8 direction;
     u8 tick;

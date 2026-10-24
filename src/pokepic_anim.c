@@ -728,7 +728,7 @@ static void PokepicScriptAnimCmd_Sin(PokepicScriptAnim *anim) {
     s32 angle;
     s32 amplitude;
     PokepicScriptAnim_ReadDestAngleAndAmplitude(anim, &dest, &angle, &amplitude);
-    anim->vars[dest] = (FX_SinIdx(angle) * amplitude) >> 12;
+    anim->vars[dest] = (FX_SinIdx(angle) * amplitude) >> FX32_SHIFT;
 }
 
 static void PokepicScriptAnimCmd_Cos(PokepicScriptAnim *anim) {
@@ -736,7 +736,7 @@ static void PokepicScriptAnimCmd_Cos(PokepicScriptAnim *anim) {
     s32 angle;
     s32 amplitude;
     PokepicScriptAnim_ReadDestAngleAndAmplitude(anim, &dest, &angle, &amplitude);
-    anim->vars[dest] = (FX_CosIdx(angle) * amplitude) >> 12;
+    anim->vars[dest] = (FX_CosIdx(angle) * amplitude) >> FX32_SHIFT;
 }
 
 static void PokepicScriptAnimCmd_SetPosFromVar(PokepicScriptAnim *anim) {
@@ -980,16 +980,16 @@ static void PokepicMotion_UpdateWave(PokepicMotion *motion, PokepicScriptAnim *a
     u16 angle = motion->wave.startAngle + motion->wave.angleStep * (motion->wave.frame + 1);
     switch (motion->wave.waveform) {
     case POKEPIC_WAVE_SIN:
-        *motion->value = (FX_SinIdx(angle) * motion->wave.amplitude) >> 12;
+        *motion->value = (FX_SinIdx(angle) * motion->wave.amplitude) >> FX32_SHIFT;
         break;
     case POKEPIC_WAVE_COS:
-        *motion->value = (FX_CosIdx(angle) * motion->wave.amplitude) >> 12;
+        *motion->value = (FX_CosIdx(angle) * motion->wave.amplitude) >> FX32_SHIFT;
         break;
     case POKEPIC_WAVE_NEG_SIN:
-        *motion->value = -((FX_SinIdx(angle) * motion->wave.amplitude) >> 12);
+        *motion->value = -((FX_SinIdx(angle) * motion->wave.amplitude) >> FX32_SHIFT);
         break;
     case POKEPIC_WAVE_NEG_COS:
-        *motion->value = -((FX_CosIdx(angle) * motion->wave.amplitude) >> 12);
+        *motion->value = -((FX_CosIdx(angle) * motion->wave.amplitude) >> FX32_SHIFT);
         break;
     default:
         GF_ASSERT(FALSE);
@@ -1006,16 +1006,16 @@ static void PokepicMotion_UpdateWaveOverDuration(PokepicMotion *motion, PokepicS
     u16 angle = motion->wave.startAngle + motion->wave.angleStep * (motion->wave.frame + 1) / motion->wave.duration;
     switch (motion->wave.waveform) {
     case POKEPIC_WAVE_SIN:
-        *motion->value = (FX_SinIdx(angle) * motion->wave.amplitude) >> 12;
+        *motion->value = (FX_SinIdx(angle) * motion->wave.amplitude) >> FX32_SHIFT;
         break;
     case POKEPIC_WAVE_COS:
-        *motion->value = (FX_CosIdx(angle) * motion->wave.amplitude) >> 12;
+        *motion->value = (FX_CosIdx(angle) * motion->wave.amplitude) >> FX32_SHIFT;
         break;
     case POKEPIC_WAVE_NEG_SIN:
-        *motion->value = -((FX_SinIdx(angle) * motion->wave.amplitude) >> 12);
+        *motion->value = -((FX_SinIdx(angle) * motion->wave.amplitude) >> FX32_SHIFT);
         break;
     case POKEPIC_WAVE_NEG_COS:
-        *motion->value = -((FX_CosIdx(angle) * motion->wave.amplitude) >> 12);
+        *motion->value = -((FX_CosIdx(angle) * motion->wave.amplitude) >> FX32_SHIFT);
         break;
     default:
         GF_ASSERT(FALSE);
