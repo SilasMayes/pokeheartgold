@@ -423,7 +423,7 @@ BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
         template.loadAtOnce = FALSE;
         template.priority = 3;
         template.vramTransfer = FALSE;
-        template.vram = 1;
+        template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
         PokeathlonCourseMonObjects_Load(work->monObjectList, 9, infos, &template, 0, 0);
         PokeathlonCourse_AdvanceEventInitState(course);

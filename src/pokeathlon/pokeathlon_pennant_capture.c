@@ -66,7 +66,7 @@ static inline void PokeathlonPennantCapture_PlaceAtStart(PokeathlonPennantCaptur
 // Set-up, a step per frame (PokeathlonCourse_GetEventInitState): heaps and screens, the top screen and the CPU,
 // sprites, the Pokemon graphics, then the field once they are loaded. The host also picks the field layout.
 BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
-    PokeathlonCourseMonInfo infos[12];
+    PokeathlonCourseMonInfo infos[POKEATHLON_MONS];
     PokeathlonCourseMonGfxTemplate template;
     PokeathlonPennantCaptureMoveTables moveTables;
     ObjCharTransferTemplate charTransfer;
@@ -159,9 +159,9 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
         template.loadAtOnce = FALSE;
         template.priority = 2;
         template.vramTransfer = FALSE;
-        template.vram = 1;
+        template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
-        PokeathlonCourseMonObjects_Load(work->monObjects, 12, infos, &template, 0, 0);
+        PokeathlonCourseMonObjects_Load(work->monObjects, POKEATHLON_MONS, infos, &template, 0, 0);
         PokeathlonPennantCaptureDisplay_BringToFront(work->display, PokeathlonCourse_GetNetId(course));
         PokeathlonCourse_AdvanceEventInitState(course);
         break;

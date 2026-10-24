@@ -323,7 +323,7 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
         template.loadAtOnce = FALSE;
         template.priority = 2;
         template.vramTransfer = FALSE;
-        template.vram = 1;
+        template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
         PokeathlonCourseMonObjects_Load(relayRun->monObjects, RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS, infos, &template, 0, 0);
         PokeathlonRelayRunHud_SetDrawPriorities(relayRun->hud, PokeathlonCourse_GetNetId(course));

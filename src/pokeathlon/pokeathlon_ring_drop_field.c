@@ -108,19 +108,19 @@ void PokeathlonRingDrop_CreateMonObjects(PokeathlonRingDrop *ringDrop, Pokeathlo
     spriteList = SpriteManager_GetSpriteList(ringDrop->spriteManager);
     ringDrop->monObjects = PokeathlonCourseMonObjects_Create(ringDrop->heapId, 12, 7, ringDrop->resources, spriteList);
     {
-        PokeathlonCourseMonInfo infos[12];
+        PokeathlonCourseMonInfo infos[RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE];
         PokeathlonCourseMonGfxTemplate template = { 0 };
         int i;
-        for (i = 0; i < 12; i++) {
+        for (i = 0; i < RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE; i++) {
             int member = i % RING_DROP_TEAM_SIZE;
             int participant = i / RING_DROP_TEAM_SIZE;
             PokeathlonCourse_GetMonInfo(course, participant, member, &infos[i]);
             template.sizeTypes[i] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, participant, member));
         }
         template.priority = 3;
-        template.vram = 1;
+        template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
-        PokeathlonCourseMonObjects_Load(ringDrop->monObjects, 12, infos, &template, 0, 0);
+        PokeathlonCourseMonObjects_Load(ringDrop->monObjects, RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE, infos, &template, 0, 0);
     }
 }
 
@@ -145,7 +145,7 @@ void PokeathlonRingDrop_InitMons(PokeathlonRingDrop *ringDrop, PokeathlonCourseD
     ReadWholeNarcMemberByIdPair(collisions, (NarcId)170, 19);
     GF_ASSERT(ringDrop != NULL);
     PokeathlonRingDrop_InitMemberParams(course);
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE; i++) {
         int size;
         participant = i / RING_DROP_TEAM_SIZE;
         member = i % RING_DROP_TEAM_SIZE;
@@ -481,7 +481,7 @@ void PokeathlonRingDrop_BuildFramePacket(u8 (*contacts)[RING_DROP_PARTICIPANTS],
     marks = &((PokeathlonRingDropFramePacket *)packets)->marks;
     marks->raw = (marks->raw & ~0x80) | (((u32)bumped << 31) >> 24);
     marks->raw = (u8)marks->raw;
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE; i++) {
         int participant = i / RING_DROP_TEAM_SIZE;
         int member = i % RING_DROP_TEAM_SIZE;
         s32 stamina = *(fx32 *)((u8 *)contacts + participant * sizeof(PokeathlonRingDropPlayer) + member * sizeof(PokeathlonRingDropMember) + RING_DROP_CONTACTS_TO(players[0].mon.members[0].stamina)) >> FX32_SHIFT;

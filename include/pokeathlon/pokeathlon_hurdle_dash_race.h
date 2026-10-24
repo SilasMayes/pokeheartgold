@@ -14,6 +14,9 @@
 // The race of Hurdle Dash: running, jumping and tripping over the hurdles, the Pokemon of the participants without
 // a player, the ranking and the standings on the touch screen.
 
+#define HURDLE_DASH_LANE_HURDLES 4
+#define HURDLE_DASH_LAYOUT_FLAGS 512 // one per 8 pixels of a lane
+
 // A hurdle on a lane: a standing sprite and a knocked-over one.
 typedef struct PokeathlonHurdle {
     BOOL visible;
@@ -31,10 +34,10 @@ typedef struct PokeathlonHurdleDashLane {
 // The track: where the hurdles are, one flag per 8 pixels of each lane. The host loads one of
 // three layouts (NARC a/2/2/6) into layoutToSend, the course link copies it into layout for everyone.
 typedef struct PokeathlonHurdleDashTrack {
-    PokeathlonHurdleDashLane lanes[3];
-    u8 layoutToSend[3][512];
-    u8 layout[3][512];
-    int lastHurdle[3]; // last flag of each lane a hurdle was placed for
+    PokeathlonHurdleDashLane lanes[POKEATHLON_TEAM_SIZE];
+    u8 layoutToSend[POKEATHLON_TEAM_SIZE][HURDLE_DASH_LAYOUT_FLAGS];
+    u8 layout[POKEATHLON_TEAM_SIZE][HURDLE_DASH_LAYOUT_FLAGS];
+    int lastHurdle[POKEATHLON_TEAM_SIZE]; // last flag of each lane a hurdle was placed for
 } PokeathlonHurdleDashTrack;
 
 // The dust a running Pokemon kicks up: five sprites per lane.

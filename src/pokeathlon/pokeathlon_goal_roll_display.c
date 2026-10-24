@@ -73,7 +73,8 @@ void PokeathlonGoalRoll_StartPlateFlash(PokeathlonGoalRoll *goalRoll, int partic
 }
 
 // Shows "+1", "+2" or "-1" on a participant's plate and flashes it for 30 frames.
-void PokeathlonGoalRoll_PlateTask(SysTask *task, PokeathlonGoalRollPlate *plate) {
+void PokeathlonGoalRoll_PlateTask(SysTask *task, void *data) {
+    PokeathlonGoalRollPlate *plate = data;
     switch (plate->state) {
     case PLATE_STATE_IDLE:
         break;
@@ -152,7 +153,7 @@ u32 PokeathlonGoalRoll_GetGoalCode(u32 goal, u8 team) {
         GF_ASSERT(FALSE);
         return 0;
     }
-    if (team >= 4) {
+    if (team >= GOAL_ROLL_PARTICIPANTS) {
         GF_ASSERT(FALSE);
         return 0;
     }
@@ -202,7 +203,7 @@ void PokeathlonGoalRoll_UpdateLeaders(PokeathlonGoalRoll *goalRoll) {
 
 void PokeathlonGoalRoll_RefreshPlates(PokeathlonGoalRoll *goalRoll) {
     u8 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
         if (goalRoll->plates[i].state == PLATE_STATE_IDLE) {
             PokeathlonGoalRoll_PrintPlate(goalRoll, i, 0);
         }

@@ -70,7 +70,8 @@ static void PokeathlonDiscCatch_LoadBgGraphics(PokeathlonDiscCatch *work);
 static void PokeathlonDiscCatch_AnimateBg(u8 *timer, BgConfig *bgConfig, enum HeapID heapId);
 static void PokeathlonDiscCatch_UpdateHost(PokeathlonCourseData *course);
 
-static void PokeathlonDiscCatch_ShakeTask(SysTask *task, PokeathlonDiscCatchShake *shake) {
+static void PokeathlonDiscCatch_ShakeTask(SysTask *task, void *data) {
+    PokeathlonDiscCatchShake *shake = data;
     int sign, offset;
     if (shake->flip == 0) {
         sign = 1;
@@ -114,7 +115,7 @@ static void PokeathlonDiscCatchShake_Start(PokeathlonDiscCatchShake *shake, u8 d
     shake->flip = 0;
     shake->distance = distance;
     shake->frames = frames;
-    shake->task = SysTask_CreateOnMainQueue((SysTaskFunc)PokeathlonDiscCatch_ShakeTask, shake, 2);
+    shake->task = SysTask_CreateOnMainQueue(PokeathlonDiscCatch_ShakeTask, shake, 2);
 }
 
 // Squashes the Pokemon for two frames and stretches it back.

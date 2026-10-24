@@ -71,7 +71,7 @@ void PokeathlonScreenShake_Start(PokeathlonScreenShake *shake, int magnitude, in
     shake->offset = magnitude << FX32_SHIFT;
     shake->magnitude = magnitude;
     shake->step = FX_Div(magnitude << FX32_SHIFT, duration << FX32_SHIFT);
-    shake->task = SysTask_CreateOnMainQueue((SysTaskFunc)PokeathlonScreenShake_Task, shake, 2);
+    shake->task = SysTask_CreateOnMainQueue(PokeathlonScreenShake_Task, shake, 2);
 }
 
 BOOL PokeathlonRingDrop_IsOnSwitchButton(int x, int y) {

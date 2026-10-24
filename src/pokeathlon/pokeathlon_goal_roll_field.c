@@ -1270,20 +1270,20 @@ void PokeathlonGoalRoll_FreeStrings(PokeathlonCourseData *course) {
 
 void PokeathlonGoalRoll_CreatePlateTasks(PokeathlonGoalRoll *goalRoll) {
     u8 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
         PokeathlonGoalRollPlate *plate = &goalRoll->plates[i];
         plate->state = 0;
         plate->id = i;
         plate->timer = 0;
         plate->unk03 = -1;
         plate->owner = goalRoll;
-        plate->task = SysTask_CreateOnMainQueue((SysTaskFunc)PokeathlonGoalRoll_PlateTask, plate, 1);
+        plate->task = SysTask_CreateOnMainQueue(PokeathlonGoalRoll_PlateTask, plate, 1);
     }
 }
 
 void PokeathlonGoalRoll_DestroyPlateTasks(PokeathlonGoalRoll *goalRoll) {
     u8 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
         SysTask_Destroy(goalRoll->plates[i].task);
     }
 }

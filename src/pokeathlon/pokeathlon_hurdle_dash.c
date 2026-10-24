@@ -144,7 +144,7 @@ BOOL PokeathlonHurdleDash_CalcScores(PokeathlonCourseData *course, u8 *state) {
                     if (speed < hurdleDash->cpuRunners[index].topSpeed) {
                         speed = hurdleDash->cpuRunners[index].topSpeed;
                     }
-                    frames = (float)(0x1000 - hurdleDash->cpuRunners[index].distance) / speed;
+                    frames = (float)(HURDLE_DASH_FINISH - hurdleDash->cpuRunners[index].distance) / speed;
                     framesLeft = (int)frames;
                     if (frames - (float)framesLeft > 0.0f) {
                         framesLeft++;
@@ -314,7 +314,7 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
         template.loadAtOnce = FALSE;
         template.priority = 1;
         template.vramTransfer = FALSE;
-        template.vram = 1;
+        template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
         PokeathlonCourseMonObjects_Load(hurdleDash->monSpriteManager, 3, views, &template, 0, 0);
         PokeathlonCourse_AdvanceEventInitState(course);

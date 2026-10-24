@@ -87,7 +87,7 @@ static void PokeathlonHurdleDash_UpdateRunner(PokeathlonCourseData *course, Poke
         PokeathlonHurdleDashMon_StartJump(course, touch->unk4, runner->lane, &runner->mon);
         timed = FALSE;
         if (runner->mon.jumpStat != 0) {
-            for (i = 0; i < 4; i++) {
+            for (i = 0; i < HURDLE_DASH_LANE_HURDLES; i++) {
                 hurdle = PokeathlonHurdleDashRunner_GetHurdle(runner, i);
                 if (PokeathlonHurdle_IsStanding(hurdle)) {
                     PokeathlonHurdle_GetRect(hurdle, &rect);
@@ -124,7 +124,7 @@ static void PokeathlonHurdleDash_UpdateRunner(PokeathlonCourseData *course, Poke
     if ((s32)(runner->mainScrollY + 0x200) <= 0) {
         runner->mainScrollY = runner->mainScrollY + 0x200;
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < HURDLE_DASH_LANE_HURDLES; i++) {
         PokeathlonHurdle_Scroll(PokeathlonHurdleDashRunner_GetHurdle(runner, i), distance);
     }
     PokeathlonHurdleDashDust_Scroll(hurdleDash->dust, runner->lane, distance);
@@ -140,7 +140,7 @@ static void PokeathlonHurdleDash_UpdateRunner(PokeathlonCourseData *course, Poke
                     runner->speed = 0.0f;
                     runner->speedFraction = 0.0f;
                 }
-            } else if (runner->distance >= 0x1000) {
+            } else if (runner->distance >= HURDLE_DASH_FINISH) {
                 runner->speed = 1.0f;
                 runner->speedFraction = 0.0f;
                 PokeathlonCourseMonObject_SetAnimState(runner->mon.monObject, 1);
@@ -158,7 +158,7 @@ static void PokeathlonHurdleDash_UpdateRunner(PokeathlonCourseData *course, Poke
             checkHurdles = TRUE;
         }
         if (checkHurdles) {
-            for (i = 0; i < 4; i++) {
+            for (i = 0; i < HURDLE_DASH_LANE_HURDLES; i++) {
                 hurdle = PokeathlonHurdleDashRunner_GetHurdle(runner, i);
                 if (PokeathlonHurdle_IsStanding(hurdle)) {
                     PokeathlonCourseMonObject *monObject = runner->mon.monObject;
@@ -188,7 +188,7 @@ static void PokeathlonHurdleDash_UpdateRunner(PokeathlonCourseData *course, Poke
                 }
             }
         }
-        if (runner->finished != TRUE && runner->distance >= 0x1000) {
+        if (runner->finished != TRUE && runner->distance >= HURDLE_DASH_FINISH) {
             runner->finished = TRUE;
             runner->time = hurdleDash->frame;
             PlaySEOnPlayer(SEQ_SE_GS_MYGOAL, gPokeathlonHurdleDashLaneSoundPlayers[runner->lane]);
@@ -211,7 +211,7 @@ BOOL PokeathlonHurdleDash_UpdateRunners(PokeathlonCourseData *course, Pokeathlon
     if (System_GetTouchNew()) {
         PokeathlonCourse_AddMonCounter(course, PokeathlonCourse_GetNetId(course), 3, POKEATHLON_COUNTER_INSTRUCTIONS, 1);
         touchedLane = PokeathlonHurdleDash_GetTouchedLane(hurdleDash, gSystem.touchX, gSystem.touchY);
-        if (touchedLane < 3) {
+        if (touchedLane < POKEATHLON_TEAM_SIZE) {
             touch.lane = touchedLane;
         }
     }
@@ -236,7 +236,7 @@ BOOL PokeathlonHurdleDash_UpdateRunners(PokeathlonCourseData *course, Pokeathlon
     G2S_SetBG0Offset(0, hurdleDash->runners[0].subScrollY);
     G2S_SetBG1Offset(0, hurdleDash->runners[1].subScrollY);
     G2S_SetBG2Offset(0, hurdleDash->runners[2].subScrollY);
-    if (finished >= 3) {
+    if (finished >= POKEATHLON_TEAM_SIZE) {
         allFinished = TRUE;
     }
     return allFinished;
@@ -617,10 +617,10 @@ static void PokeathlonHurdleDash_UpdateRanks(PokeathlonCourseData *course) {
                 u8 rank;
                 VecFx32 scale;
                 PokeathlonCourseSpritePoolSprite_Show(hurdleDash->runners[i].mon.rankSprite, TRUE, TRUE);
-                byte = (PokeathlonCourse_GetNetId(course) * 3 + i) / 2;
-                rank = (PokeathlonCourse_GetNetId(course) * 3 + i) % 2;
+                byte = (PokeathlonCourse_GetNetId(course) * POKEATHLON_TEAM_SIZE + i) / 2;
+                rank = (PokeathlonCourse_GetNetId(course) * POKEATHLON_TEAM_SIZE + i) % 2;
                 rank = (u8)((status->ranks[byte] >> (rank * 4)) & 0xF);
-                GF_ASSERT(rank > 0 && rank <= 12);
+                GF_ASSERT(rank > 0 && rank <= POKEATHLON_MONS);
                 hurdleDash->runners[i].rankScale = 1.5f;
                 scale.x = (int)(4096.0f * hurdleDash->runners[i].rankScale);
                 scale.y = (int)(4096.0f * hurdleDash->runners[i].rankScale);
@@ -638,10 +638,10 @@ static void PokeathlonHurdleDash_UpdateRanks(PokeathlonCourseData *course) {
             Sprite *sprite = PokeathlonCourseSpritePoolSprite_GetSprite(hurdleDash->runners[i].mon.rankSprite);
             u8 byte;
             u8 rank;
-            byte = (PokeathlonCourse_GetNetId(course) * 3 + i) / 2;
-            rank = (PokeathlonCourse_GetNetId(course) * 3 + i) % 2;
+            byte = (PokeathlonCourse_GetNetId(course) * POKEATHLON_TEAM_SIZE + i) / 2;
+            rank = (PokeathlonCourse_GetNetId(course) * POKEATHLON_TEAM_SIZE + i) % 2;
             rank = (u8)((status->ranks[byte] >> (rank * 4)) & 0xF);
-            GF_ASSERT(rank > 0 && rank <= 12);
+            GF_ASSERT(rank > 0 && rank <= POKEATHLON_MONS);
             if (hurdleDash->runners[i].finished) {
                 VecFx32 position = *Sprite_GetMatrixPtr(sprite);
                 position.y = FX32_CONST(312);
@@ -818,8 +818,8 @@ static void PokeathlonHurdleDash_SetRank(PokeathlonHurdleDashStatus *status, int
     u8 byte;
     u8 bits;
     u8 *ranks;
-    GF_ASSERT((u32)index < 12);
-    GF_ASSERT(rank != 0 && rank <= 12);
+    GF_ASSERT((u32)index < POKEATHLON_MONS);
+    GF_ASSERT(rank != 0 && rank <= POKEATHLON_MONS);
     shift = (u8)(index % 2);
     byte = (u8)(index >> 1);
     bits = (u8)(rank << (shift * 4));
@@ -835,7 +835,7 @@ BOOL PokeathlonHurdleDash_HaveAllStopped(PokeathlonHurdleDash *hurdleDash) {
             break;
         }
     }
-    if (i == 3) {
+    if (i == POKEATHLON_TEAM_SIZE) {
         stopped = TRUE;
     }
     return stopped;
@@ -858,21 +858,21 @@ void PokeathlonHurdleDash_UpdateCpuParticipants(PokeathlonCourseData *course) {
         hurdleDash = PokeathlonCourse_GetWork(course);
         count = PokeathlonCourse_GetParticipantCount(course);
         participant = count;
-        if (participant < 4) {
+        if (participant < POKEATHLON_PARTICIPANTS) {
             packetBlock = block + 2 * sizeof(PokeathlonCoursePacket) + participant * sizeof(PokeathlonCoursePacket);
             do {
                 packet = (PokeathlonHurdleDashPacket *)PokeathlonCourse_ToBytes(packetBlock);
                 member = 0;
-                cpuIndex = (participant - count) * 3;
+                cpuIndex = (participant - count) * POKEATHLON_TEAM_SIZE;
                 participantId = (u8)participant;
                 do {
                     PokeathlonHurdleDash_UpdateCpuRunner(course, hurdleDash, packet, participantId, (u8)member, (u8)cpuIndex);
                     member++;
                     cpuIndex++;
-                } while (member < 3);
+                } while (member < POKEATHLON_TEAM_SIZE);
                 packetBlock += sizeof(PokeathlonCoursePacket);
                 participant++;
-            } while (participant < 4);
+            } while (participant < POKEATHLON_PARTICIPANTS);
         }
     }
 }
@@ -926,7 +926,7 @@ static void PokeathlonHurdleDashRunner_UpdateDust(PokeathlonHurdleDash *hurdleDa
 static u8 PokeathlonHurdleDash_GetTouchedLane(PokeathlonHurdleDash *hurdleDash, s32 x, s32 y) {
     PokeathlonHurdleDashLaneX laneX = gHurdleDashTouchLaneX;
     u8 i;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         s32 left = laneX.x[i] - 24;
         if (left < x && x < left + 48 && y > 88 && y < 168) {
             return i;
@@ -1050,7 +1050,7 @@ static void PokeathlonHurdleDash_UpdateCpuRunner(PokeathlonCourseData *course, P
     runner->speedFraction = distance - pixels;
     runner->distance += pixels;
     packet->distances[member] = runner->distance;
-    if (!runner->finished && runner->distance >= 0x1000) {
+    if (!runner->finished && runner->distance >= HURDLE_DASH_FINISH) {
         packet->finished[member] = 1;
         packet->finishTimes[member] = hurdleDash->frame;
         runner->time = hurdleDash->frame;

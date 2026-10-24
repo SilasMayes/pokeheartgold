@@ -268,9 +268,9 @@ BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
         work.objectsInfo.loadAtOnce = FALSE;
         work.objectsInfo.priority = 1;
         work.objectsInfo.vramTransfer = FALSE;
-        work.objectsInfo.vram = 1;
+        work.objectsInfo.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         work.objectsInfo.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
-        PokeathlonCourseMonObjects_Load(goalRoll->monObjects, 12, work.views, &work.objectsInfo, 0, 0);
+        PokeathlonCourseMonObjects_Load(goalRoll->monObjects, GOAL_ROLL_MONS, work.views, &work.objectsInfo, 0, 0);
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
     }
@@ -419,7 +419,7 @@ BOOL PokeathlonGoalRoll_Exit(PokeathlonCourseData *course) {
     window = (Window *)goalRoll;
     i = 0;
     window = (Window *)((u8 *)window + offsetof(PokeathlonGoalRoll, nameWindows));
-    while (i < 4) {
+    while (i < GOAL_ROLL_PARTICIPANTS) {
         RemoveWindow(window);
         i++;
         window++;
@@ -889,7 +889,7 @@ static void PokeathlonGoalRoll_ApplyFrame(PokeathlonCourseData *course) {
         }
     }
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
         if (!PokeathlonCourseSpritePoolSprite_IsAnimated(goalRoll->goalFlashSprites[i])) {
             PokeathlonCourseSpritePoolSprite_Show(goalRoll->goalLabelSprites[i], TRUE, FALSE);
         }

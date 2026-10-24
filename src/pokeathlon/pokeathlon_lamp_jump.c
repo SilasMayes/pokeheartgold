@@ -381,7 +381,7 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
         info.loadAtOnce = FALSE;
         info.priority = 1;
         info.vramTransfer = TRUE;
-        info.vram = 3;
+        info.vram = NNS_G2D_VRAM_TYPE_2DBOTH;
         info.whichScreen = NNS_G2D_VRAM_TYPE_2DBOTH;
         PokeathlonCourseMonObjects_Load(lampJump->monSpriteManager, 3, views, &info, 0, 0);
         PokeathlonCourse_AdvanceEventInitState(course);

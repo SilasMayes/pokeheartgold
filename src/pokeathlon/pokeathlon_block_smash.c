@@ -507,7 +507,7 @@ BOOL PokeathlonBlockSmash_Init(PokeathlonCourseData *course) {
             }
         }
         params.priority = 1;
-        params.vram = 1;
+        params.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         params.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
         PokeathlonCourseMonObjects_Load(work->monPics, 9, mons, &params, 0, 0);
         PokeathlonCourse_AdvanceEventInitState(course);

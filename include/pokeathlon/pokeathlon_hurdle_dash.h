@@ -12,6 +12,8 @@
 // Hurdle Dash: the three Pokemon of each team race over a track of hurdles; the team's result is the sum of its
 // Pokemon's times.
 
+#define HURDLE_DASH_FINISH 0x1000 // the distance of the finish line
+
 enum PokeathlonHurdleDashMonState {
     HURDLE_DASH_MON_RUNNING,
     HURDLE_DASH_MON_JUMPING,

@@ -434,9 +434,9 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
         mon->attacker = packet->attacker;
         PokeathlonCourseMonObject_SetAnimState(monObject, packet->direction + 1);
         if (packet->state == RING_DROP_MON_RETURN && mon->state != RING_DROP_MON_RETURN) {
-            PokeathlonCourseMonObjects_SetPalette(ringDrop->monObjects, objectIndex, 1, mon->palettes[team][1]);
+            PokeathlonCourseMonObjects_SetPalette(ringDrop->monObjects, objectIndex, NNS_G2D_VRAM_TYPE_2DMAIN, mon->palettes[team][1]);
         } else if (mon->state == RING_DROP_MON_RETURN && packet->state != RING_DROP_MON_RETURN) {
-            PokeathlonCourseMonObjects_SetPalette(ringDrop->monObjects, objectIndex, 1, mon->palettes[team][0]);
+            PokeathlonCourseMonObjects_SetPalette(ringDrop->monObjects, objectIndex, NNS_G2D_VRAM_TYPE_2DMAIN, mon->palettes[team][0]);
         }
         if (packet->state == RING_DROP_MON_DASH_START && mon->state != RING_DROP_MON_DASH_START) {
             if (participant == PokeathlonCourse_GetNetId(course)) {

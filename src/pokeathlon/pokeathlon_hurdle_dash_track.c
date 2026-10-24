@@ -153,10 +153,10 @@ PokeathlonHurdleDashTrack *PokeathlonHurdleDashTrack_New(enum HeapID heapId) {
     lane = track->lanes;
     i = 0;
     do {
-        lane->hurdles = PokeathlonHurdleDash_AllocHurdles(4, heapId);
+        lane->hurdles = PokeathlonHurdleDash_AllocHurdles(HURDLE_DASH_LANE_HURDLES, heapId);
         i++;
         lane++;
-    } while (i < 3);
+    } while (i < POKEATHLON_TEAM_SIZE);
     return track;
 }
 
@@ -171,7 +171,7 @@ void PokeathlonHurdleDashTrack_Free(PokeathlonHurdleDashTrack *track) {
         PokeathlonHurdleDash_FreeHurdles(lane->hurdles);
         i++;
         lane++;
-    } while (i < 3);
+    } while (i < POKEATHLON_TEAM_SIZE);
     Heap_Free(base);
 }
 
@@ -180,7 +180,7 @@ void PokeathlonHurdleDashTrack_CreateHurdleSprites(PokeathlonHurdleDashTrack *tr
     int i = 0;
     int j;
     do {
-        for (j = 0; j < 4; j++) {
+        for (j = 0; j < HURDLE_DASH_LANE_HURDLES; j++) {
             PokeathlonHurdle *hurdle = PokeathlonHurdleDash_GetHurdle(lane->hurdles, j);
             PokeathlonCourseSpritePoolSprite *standing = PokeathlonCourseSpritePool_Take(spritePool, 101, 2);
             PokeathlonCourseSpritePoolSprite *knocked = PokeathlonCourseSpritePool_Take(spritePool, 103, 6);
@@ -188,11 +188,11 @@ void PokeathlonHurdleDashTrack_CreateHurdleSprites(PokeathlonHurdleDashTrack *tr
         }
         lane++;
         i++;
-    } while (i < 3);
+    } while (i < POKEATHLON_TEAM_SIZE);
 }
 
 PokeathlonHurdle *PokeathlonHurdleDashTrack_GetLaneHurdles(PokeathlonHurdleDashTrack *track, u32 lane) {
-    GF_ASSERT(lane < 3);
+    GF_ASSERT(lane < POKEATHLON_TEAM_SIZE);
     return track->lanes[lane].hurdles;
 }
 
@@ -216,7 +216,7 @@ void PokeathlonHurdleDashTrack_RevealHurdles(PokeathlonHurdleDashTrack *track, i
     if (flag != 0) {
         y = position - flag * 8;
         flag--;
-        if (flag < 512 && track->layout[lane][flag] != 0 && track->lastHurdle[lane] < flag) {
+        if (flag < HURDLE_DASH_LAYOUT_FLAGS && track->layout[lane][flag] != 0 && track->lastHurdle[lane] < flag) {
             track->lastHurdle[lane] = flag;
             PokeathlonHurdleDashTrack_PlaceHurdle(track, lane, y);
         }

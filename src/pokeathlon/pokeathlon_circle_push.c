@@ -155,9 +155,9 @@ static BOOL PokeathlonCirclePush_IsTeamOut(PokeathlonCirclePush *circlePush, int
 static void PokeathlonCirclePush_RecoverStamina(PokeathlonCirclePushMon *mon);
 static void PokeathlonCirclePush_SetMonStats(PokeathlonCourseData *course, PokeathlonCirclePushRingData *ringData, u8 team, u8 member, PokeathlonCirclePushMon *mon);
 static void PokeathlonCirclePush_StartLayoutChange(PokeathlonCirclePushEffects *effects, u8 oldLayout, u8 newLayout, PokeathlonCourseData *course);
-static void PokeathlonCirclePush_LayoutChangeTask(SysTask *task, PokeathlonCirclePushEffects *effects);
-static void PokeathlonCirclePush_LayoutFadeTask(SysTask *task, PokeathlonCirclePushEffects *effects);
-static void PokeathlonCirclePush_RingSlideTask(SysTask *task, PokeathlonCirclePushEffects *effects);
+static void PokeathlonCirclePush_LayoutChangeTask(SysTask *task, void *data);
+static void PokeathlonCirclePush_LayoutFadeTask(SysTask *task, void *data);
+static void PokeathlonCirclePush_RingSlideTask(SysTask *task, void *data);
 static void PokeathlonCirclePush_ShakeTask(SysTask *task, void *data);
 static void PokeathlonCirclePush_StopEffects(PokeathlonCirclePushEffects *effects);
 static void PokeathlonCirclePush_StartBounce(PokeathlonCirclePushEffects *effects, u8 mon);
@@ -492,7 +492,7 @@ BOOL PokeathlonCirclePush_Init(PokeathlonCourseData *course) {
         template.loadAtOnce = FALSE;
         template.priority = 1;
         template.vramTransfer = FALSE;
-        template.vram = 1;
+        template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
         PokeathlonCourseMonObjects_Load(circlePush->objects, POKEATHLON_MONS, infos, &template, FALSE, FALSE);
         PokeathlonCourse_AdvanceEventInitState(course);
@@ -1284,10 +1284,10 @@ static void PokeathlonCirclePush_UpdateScreen(PokeathlonCourseData *course) {
             PokeathlonCourseMonObject_SetDrawFlag(mon->object, 1);
             if (state == CIRCLE_PUSH_MON_AT_START && circlePush->grayed[i] == 0) {
                 circlePush->grayed[i] = 1;
-                PokeathlonCourseMonObjects_SetPalette(circlePush->objects, i, 1, mon->grayPalette);
+                PokeathlonCourseMonObjects_SetPalette(circlePush->objects, i, NNS_G2D_VRAM_TYPE_2DMAIN, mon->grayPalette);
             } else if (state == CIRCLE_PUSH_MON_IN_RING && circlePush->grayed[i] == 1) {
                 circlePush->grayed[i] = 0;
-                PokeathlonCourseMonObjects_SetPalette(circlePush->objects, i, 1, mon->palette);
+                PokeathlonCourseMonObjects_SetPalette(circlePush->objects, i, NNS_G2D_VRAM_TYPE_2DMAIN, mon->palette);
             }
             outOfRing[i] = 0;
             x = packet->x[i];
@@ -1919,14 +1919,15 @@ static void PokeathlonCirclePush_StartLayoutChange(PokeathlonCirclePushEffects *
     effects->oldLayout = oldLayout;
     effects->newLayout = newLayout;
     effects->state = LAYOUT_CHANGE_WAIT_SLIDE;
-    effects->changeTask = SysTask_CreateOnMainQueue((SysTaskFunc)PokeathlonCirclePush_LayoutChangeTask, effects, 0);
-    effects->fadeTask = SysTask_CreateOnMainQueue((SysTaskFunc)PokeathlonCirclePush_LayoutFadeTask, effects, 1);
+    effects->changeTask = SysTask_CreateOnMainQueue(PokeathlonCirclePush_LayoutChangeTask, effects, 0);
+    effects->fadeTask = SysTask_CreateOnMainQueue(PokeathlonCirclePush_LayoutFadeTask, effects, 1);
     effects->course = course;
     reg_G2_BG2OFS = 2 << 22;
-    effects->slideTask = SysTask_CreateOnMainQueue((SysTaskFunc)PokeathlonCirclePush_RingSlideTask, effects, 2);
+    effects->slideTask = SysTask_CreateOnMainQueue(PokeathlonCirclePush_RingSlideTask, effects, 2);
 }
 
-static void PokeathlonCirclePush_LayoutChangeTask(SysTask *task, PokeathlonCirclePushEffects *effects) {
+static void PokeathlonCirclePush_LayoutChangeTask(SysTask *task, void *data) {
+    PokeathlonCirclePushEffects *effects = data;
     switch (effects->state) {
     case LAYOUT_CHANGE_WAIT_SLIDE:
         if (effects->slideTask == NULL) {
@@ -1948,7 +1949,8 @@ static void PokeathlonCirclePush_LayoutChangeTask(SysTask *task, PokeathlonCircl
 }
 
 // The zone markers of the old layout fade out, those of the new one in.
-static void PokeathlonCirclePush_LayoutFadeTask(SysTask *task, PokeathlonCirclePushEffects *effects) {
+static void PokeathlonCirclePush_LayoutFadeTask(SysTask *task, void *data) {
+    PokeathlonCirclePushEffects *effects = data;
     u16 value;
 
     switch (effects->fadeState) {
@@ -1984,7 +1986,8 @@ static void PokeathlonCirclePush_LayoutFadeTask(SysTask *task, PokeathlonCircleP
 }
 
 // The ring's floor (main BG 2) slides out to the left and back in.
-static void PokeathlonCirclePush_RingSlideTask(SysTask *task, PokeathlonCirclePushEffects *effects) {
+static void PokeathlonCirclePush_RingSlideTask(SysTask *task, void *data) {
+    PokeathlonCirclePushEffects *effects = data;
     s32 value;
 
     switch (effects->slideState) {

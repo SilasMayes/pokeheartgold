@@ -105,7 +105,7 @@ struct PokeathlonCourseMonGfxTemplate {
     BOOL loadAtOnce; // load all Pokemon in one frame
     int priority;
     BOOL vramTransfer;
-    int vram; // 1 main, 2 sub, 3 both
+    int vram; // NNS_G2D_VRAM_TYPE_2DMAIN, _2DSUB or _2DBOTH
     NNS_G2D_VRAM_TYPE whichScreen;
     int sizeTypes[POKEATHLON_MONS]; // 1..3, selects the shadow / marker offsets of each Pokemon
 };

@@ -1063,7 +1063,7 @@ static void PokeathlonCourseCeremony_LoadWinnerMonPics(PokeathlonCourseData *cou
         PokeathlonCourse_LoadMonPicWithPalette(ceremony->monPicSprites[i], &info, TRUE, FALSE, ceremony->heapId, FALSE);
         GetMonSpriteCharAndPlttNarcIdsEx(&template, info.species, info.gender, 2, info.isShiny, info.form, info.personality);
         file = GfGfxLoader_GetPlttData((NarcId) template.narcID, template.palDataID, &palette, ceremony->heapId);
-        PokeathlonCourseMonObjects_SetPalette(ceremony->objects, i * POKEATHLON_TEAM_SIZE + 1, 1, palette->pRawData);
+        PokeathlonCourseMonObjects_SetPalette(ceremony->objects, i * POKEATHLON_TEAM_SIZE + 1, NNS_G2D_VRAM_TYPE_2DMAIN, palette->pRawData);
         Heap_Free(file);
     }
 }
@@ -1486,7 +1486,7 @@ static void PokeathlonCourseConfetti_SpawnPieces(PokeathlonCourseConfetti *confe
 
 static BOOL PokeathlonCourseCeremony_Init(PokeathlonCourseData *course) {
     PokeathlonCourseCeremony *ceremony = PokeathlonCourse_GetWork(course);
-    PokeathlonCourseMonInfo infos[12];
+    PokeathlonCourseMonInfo infos[POKEATHLON_MONS];
     int i;
     PokeathlonCourseMonObject *object;
     int mode;
@@ -1526,9 +1526,9 @@ static BOOL PokeathlonCourseCeremony_Init(PokeathlonCourseData *course) {
         template.loadAtOnce = FALSE;
         template.priority = 3;
         template.vramTransfer = FALSE;
-        template.vram = 1;
+        template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
-        PokeathlonCourseMonObjects_Load(ceremony->objects, 12, infos, &template, 1, 0);
+        PokeathlonCourseMonObjects_Load(ceremony->objects, POKEATHLON_MONS, infos, &template, 1, 0);
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
     }

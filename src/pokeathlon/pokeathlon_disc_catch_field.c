@@ -130,7 +130,7 @@ void PokeathlonDiscCatch_CreateMonPics(PokeathlonDiscCatch *work) {
             template.sizeTypes[i] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, participant, member));
         }
         template.priority = 1;
-        template.vram = 1;
+        template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
         PokeathlonCourseMonObjects_Load(work->monPics, DISC_CATCH_MONS, infos, &template, 0, 0);
     }

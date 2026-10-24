@@ -663,7 +663,8 @@ static BOOL PokeathlonGoalRollCpu_CirclesTouch(const VecFx32 *a, fx32 radiusA, c
 }
 
 // Screen shake task (started by PokeathlonScreenShake_Start).
-void PokeathlonScreenShake_Task(SysTask *task, PokeathlonScreenShake *shake) {
+void PokeathlonScreenShake_Task(SysTask *task, void *data) {
+    PokeathlonScreenShake *shake = data;
     int sign;
     int x;
     int y;

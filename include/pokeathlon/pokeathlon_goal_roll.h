@@ -295,7 +295,7 @@ void PokeathlonGoalRoll_CreatePlateTasks(PokeathlonGoalRoll *goalRoll);
 void PokeathlonGoalRoll_DestroyPlateTasks(PokeathlonGoalRoll *goalRoll);
 
 void PokeathlonGoalRoll_StartPlateFlash(PokeathlonGoalRoll *goalRoll, int participant, int gained, int bigBall);
-void PokeathlonGoalRoll_PlateTask(SysTask *task, PokeathlonGoalRollPlate *plate);
+void PokeathlonGoalRoll_PlateTask(SysTask *task, void *data);
 u32 PokeathlonGoalRoll_GetGoalCode(u32 goal, u8 team);
 u32 PokeathlonGoalRoll_GetBallQuadrant(PokeathlonGoalRollBall *ball);
 void PokeathlonGoalRoll_UpdateLeaders(PokeathlonGoalRoll *goalRoll);
@@ -321,7 +321,7 @@ void PokeathlonGoalRollCpu_SetBalls(PokeathlonGoalRollCpu *cpu, PokeathlonGoalRo
 void PokeathlonGoalRollCpu_Free(PokeathlonGoalRollCpu *cpu);
 void PokeathlonGoalRollCpu_Update(PokeathlonCourseData *course, PokeathlonGoalRollCpu *cpu);
 BOOL PokeathlonGoalRollCpu_IsNearPoint(int x, int y, const u16 (*points)[2]);
-void PokeathlonScreenShake_Task(SysTask *task, PokeathlonScreenShake *shake);
+void PokeathlonScreenShake_Task(SysTask *task, void *data);
 
 extern const VecFx32 gPokeathlonGoalRollWallPost;
 extern const VecFx32 gPokeathlonGoalRollWallNormal;
