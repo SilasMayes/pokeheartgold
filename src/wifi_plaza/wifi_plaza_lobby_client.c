@@ -59,7 +59,7 @@ void WiFiPlazaLobbyClient_Init(enum HeapID heapID, SaveData *save, u32 count, Wi
     gWiFiPlazaLobbyClient->callbacks = *callbacks;
     gWiFiPlazaLobbyClient->callbackArg = callbackArg;
     WiFiPlazaLobbyClient_AllocPlayerData(gWiFiPlazaLobbyClient, count, heapID);
-    WiFiPlazaLobbyClient_AllocIdLists(gWiFiPlazaLobbyClient, 20, 8, heapID);
+    WiFiPlazaLobbyClient_AllocIdLists(gWiFiPlazaLobbyClient, WIFI_PLAZA_MAX_PLAYERS, 8, heapID);
     WiFiPlazaLobbyClient_InitMatches(gWiFiPlazaLobbyClient);
     WiFiPlazaLobbyIdValueList_Init(&gWiFiPlazaLobbyClient->specialVisitors, 128, heapID);
     gWiFiPlazaLobbyClient->initResult = 0;
@@ -109,7 +109,7 @@ int WiFiPlazaLobbyClient_Update(void) {
         switch (PPW_LobbyGetSubChannelState()) {
         case PPW_LOBBY_CHANNEL_STATE_NONE:
             gWiFiPlazaLobbyClient->channelState = WIFI_PLAZA_CHANNEL_STATE_NONE;
-            gWiFiPlazaLobbyClient->channel = 4;
+            gWiFiPlazaLobbyClient->channel = WIFI_PLAZA_LOBBY_CHANNEL_NONE;
             break;
         case PPW_LOBBY_CHANNEL_STATE_JOINING:
             gWiFiPlazaLobbyClient->channelState = WIFI_PLAZA_CHANNEL_STATE_JOINING;
@@ -191,7 +191,7 @@ int WiFiPlazaLobbyClient_GetState(void) {
     WiFiPlazaLobbyClient *client;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     client = gWiFiPlazaLobbyClient;
-    if (client->channel != 4 && client->channelState == WIFI_PLAZA_CHANNEL_STATE_ERROR) {
+    if (client->channel != WIFI_PLAZA_LOBBY_CHANNEL_NONE && client->channelState == WIFI_PLAZA_CHANNEL_STATE_ERROR) {
         return WIFI_PLAZA_LOBBY_STATE_ERROR;
     }
     if (client->ownRecordError) {
@@ -247,7 +247,7 @@ int WiFiPlazaLobbyClient_GetOldestPlayer(void) {
     result = -1;
     oldest = 0x0FFFFFFFFFFFFFFFLL;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    for (slot = 0; slot < 20; slot++) {
+    for (slot = 0; slot < WIFI_PLAZA_MAX_PLAYERS; slot++) {
         int id = WiFiPlazaLobbyClient_GetIdListEntry(gWiFiPlazaLobbyClient, slot, 0);
         if (id != -1) {
             WiFiPlazaLobbyClient_GetEntryTime(id, &time);
@@ -270,7 +270,7 @@ int WiFiPlazaLobbyClient_GetOldestOtherPlayer(int excluded) {
     result = -1;
     oldest = 0x0FFFFFFFFFFFFFFFLL;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    for (slot = 0; slot < 20; slot++) {
+    for (slot = 0; slot < WIFI_PLAZA_MAX_PLAYERS; slot++) {
         int id = WiFiPlazaLobbyClient_GetIdListEntry(gWiFiPlazaLobbyClient, slot, 0);
         if (id != -1 && id != excluded) {
             WiFiPlazaLobbyClient_GetEntryTime(id, &time);
@@ -501,7 +501,7 @@ void WiFiPlazaLobbyClient_SendToChannel(int type, const void *data, int size) {
     GF_ASSERT(gWiFiPlazaLobbyClient->commandTables[1].count > (u32)type);
     command = &gWiFiPlazaLobbyClient->commandTables[1].commands[type];
     GF_ASSERT(size == command->size);
-    GF_ASSERT(gWiFiPlazaLobbyClient->channel != 4);
+    GF_ASSERT(gWiFiPlazaLobbyClient->channel != WIFI_PLAZA_LOBBY_CHANNEL_NONE);
     GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbySendChannelBinaryMessage(WiFiPlazaLobbyClient_ChannelToLib(gWiFiPlazaLobbyClient->channel), type, data, size)) == TRUE);
 }
 
@@ -513,7 +513,7 @@ BOOL WiFiPlazaLobbyClient_HostMatch(int index, int maxPlayers) {
     if (WiFiPlazaLobbyMatches_IsActive(gWiFiPlazaLobbyClient, index) == TRUE) {
         return FALSE;
     }
-    if (gWiFiPlazaLobbyClient->currentMatch != 3) {
+    if (gWiFiPlazaLobbyClient->currentMatch != WIFI_PLAZA_LOBBY_MATCH_NONE) {
         return FALSE;
     }
     gWiFiPlazaLobbyClient->matches[index].info.index = index;
@@ -540,7 +540,7 @@ void WiFiPlazaLobbyClient_StopMatch(void) {
     WiFiPlazaLobbyClient *client;
     int ownId;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    if (gWiFiPlazaLobbyClient->currentMatch != 3 && gWiFiPlazaLobbyClient->isMatchHost) {
+    if (gWiFiPlazaLobbyClient->currentMatch != WIFI_PLAZA_LOBBY_MATCH_NONE && gWiFiPlazaLobbyClient->isMatchHost) {
         GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbyStopRecruit()));
         client = gWiFiPlazaLobbyClient;
         ownId = PPW_LobbyGetMyUserId();
@@ -561,7 +561,7 @@ BOOL WiFiPlazaLobbyClient_IsCurrentMatchClosed(void) {
     u16 index;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     index = gWiFiPlazaLobbyClient->currentMatch;
-    if (index == 3) {
+    if (index == WIFI_PLAZA_LOBBY_MATCH_NONE) {
         return FALSE;
     }
     return gWiFiPlazaLobbyClient->matches[index].info.state == WIFI_PLAZA_MATCH_CLOSED;
@@ -589,7 +589,7 @@ BOOL WiFiPlazaLobbyClient_IsMatchOpen(int index) {
 int WiFiPlazaLobbyClient_GetMatchFreePlaces(int index) {
     WiFiPlazaLobbyMatch *match;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    GF_ASSERT(index < 3);
+    GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
     if (!WiFiPlazaLobbyMatches_IsActive(gWiFiPlazaLobbyClient, index)) {
         return 0;
     }
@@ -600,7 +600,7 @@ int WiFiPlazaLobbyClient_GetMatchFreePlaces(int index) {
 u32 WiFiPlazaLobbyClient_GetMatchPlayerCount(int index) {
     WiFiPlazaLobbyMatch *match;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    GF_ASSERT(index < 3);
+    GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
     if (!WiFiPlazaLobbyMatches_IsActive(gWiFiPlazaLobbyClient, index)) {
         return 0;
     }
@@ -616,7 +616,7 @@ BOOL WiFiPlazaLobbyClient_JoinMatch(int index) {
     if (!WiFiPlazaLobbyMatches_IsActive(gWiFiPlazaLobbyClient, index)) {
         return FALSE;
     }
-    if (gWiFiPlazaLobbyClient->currentMatch != 3) {
+    if (gWiFiPlazaLobbyClient->currentMatch != WIFI_PLAZA_LOBBY_MATCH_NONE) {
         return FALSE;
     }
     match = &gWiFiPlazaLobbyClient->matches[index];
@@ -633,7 +633,7 @@ BOOL WiFiPlazaLobbyClient_JoinMatch(int index) {
 
 u32 WiFiPlazaLobbyClient_GetMatchTimer(int index) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    GF_ASSERT(index < 3);
+    GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
     if (!WiFiPlazaLobbyMatches_IsActive(gWiFiPlazaLobbyClient, index)) {
         return 1800;
     }
@@ -644,7 +644,7 @@ int WiFiPlazaLobbyClient_GetMatchHostId(void) {
     u16 index;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     index = gWiFiPlazaLobbyClient->currentMatch;
-    if (index == 3) {
+    if (index == WIFI_PLAZA_LOBBY_MATCH_NONE) {
         return -1;
     }
     return gWiFiPlazaLobbyClient->matches[index].hostId;
@@ -667,7 +667,7 @@ int WiFiPlazaLobbyClient_GetSpecialVisitorCode(int id) {
 
 void WiFiPlazaLobbyClient_SubmitSurveyAnswer(int index) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    GF_ASSERT(index < 3);
+    GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
     GF_ASSERT(gWiFiPlazaLobbyClient->surveySubmitState != 1);
     GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbySubmitQuestionnaire(index)) == TRUE);
     gWiFiPlazaLobbyClient->surveySubmitState = 1;
@@ -751,7 +751,7 @@ void WiFiPlazaLobbyClient_EndMatch(void) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     WifiConnection_SetClientCallback(NULL, NULL);
     WifiConnection_SetDisconnectCallback(NULL, NULL);
-    gWiFiPlazaLobbyClient->currentMatch = 3;
+    gWiFiPlazaLobbyClient->currentMatch = WIFI_PLAZA_LOBBY_MATCH_NONE;
     gWiFiPlazaLobbyClient->isMatchHost = 0;
     gWiFiPlazaLobbyClient->matchCancelled = 0;
 }
@@ -810,7 +810,7 @@ static BOOL WiFiPlazaLobbyClient_AddOwnLocation(WiFiPlazaLobbyClient *client) {
     if (!country) {
         return FALSE;
     }
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < WIFI_PLAZA_MAX_PLAYERS; i++) {
         if (!client->locations[i].active) {
             break;
         }
@@ -818,7 +818,7 @@ static BOOL WiFiPlazaLobbyClient_AddOwnLocation(WiFiPlazaLobbyClient *client) {
             return FALSE;
         }
     }
-    if (i >= 20) {
+    if (i >= WIFI_PLAZA_MAX_PLAYERS) {
         GF_ASSERT(FALSE);
         return FALSE;
     }
@@ -829,7 +829,7 @@ static BOOL WiFiPlazaLobbyClient_AddOwnLocation(WiFiPlazaLobbyClient *client) {
 }
 
 static void WiFiPlazaLobbyClient_AllocPlayerData(WiFiPlazaLobbyClient *client, u32 size, enum HeapID heapID) {
-    u32 bytes = size * 20;
+    u32 bytes = size * WIFI_PLAZA_MAX_PLAYERS;
     gWiFiPlazaLobbyClient->playerData = Heap_Alloc(heapID, bytes);
     memset(gWiFiPlazaLobbyClient->playerData, 0, bytes);
     gWiFiPlazaLobbyClient->playerDataSize = size;

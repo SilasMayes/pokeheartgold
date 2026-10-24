@@ -50,20 +50,20 @@ void FrontierLinkLobby_Free(FrontierLinkLobby *lobby) {
     }
 }
 
-BOOL FrontierLinkLobby_Send(FrontierLinkLobby *lobby, int kind, u16 a, u16 b) {
+BOOL FrontierLinkLobby_Send(FrontierLinkLobby *lobby, int kind, u16 value, u16 secondValue) {
     switch (kind) {
     case LINK_LOBBY_SEND_FACILITY:
         return FrontierLinkLobby_SendFacility(lobby);
     case LINK_LOBBY_SEND_CHOICE:
-        return FrontierLinkLobby_SendChoice(lobby, a);
+        return FrontierLinkLobby_SendChoice(lobby, value);
     case LINK_LOBBY_SEND_PARTY:
-        return FrontierLinkLobby_SendParty(lobby, a, b);
+        return FrontierLinkLobby_SendParty(lobby, value, secondValue);
     case 3:
         break;
     case LINK_LOBBY_SEND_VALUE74:
-        return FrontierLinkLobby_SendValue74(lobby, a);
+        return FrontierLinkLobby_SendValue74(lobby, value);
     case LINK_LOBBY_SEND_VALUE71:
-        return FrontierLinkLobby_SendValue71(lobby, a);
+        return FrontierLinkLobby_SendValue71(lobby, value);
     }
 }
 
@@ -97,35 +97,35 @@ static void FrontierLinkLobby_LaunchPartyMenu(void *frontierWork, FrontierLinkLo
     lobby->partyMenuArgs->mailbox = Save_Mailbox_Get(lobby->saveData);
     lobby->partyMenuArgs->options = Save_PlayerData_GetOptionsAddr(lobby->saveData);
     lobby->partyMenuArgs->panelLayout = 0;
-    if (lobby->facility == 1) {
+    if (lobby->facility == LINK_LOBBY_FACILITY_TOWER) {
         lobby->partyMenuArgs->context = PARTY_MENU_CONTEXT_17;
-    } else if (lobby->facility == 5) {
+    } else if (lobby->facility == LINK_LOBBY_FACILITY_HALL) {
         lobby->partyMenuArgs->context = PARTY_MENU_CONTEXT_BATTLE_HALL;
-    } else if (lobby->facility == 4) {
+    } else if (lobby->facility == LINK_LOBBY_FACILITY_CASTLE) {
         lobby->partyMenuArgs->context = PARTY_MENU_CONTEXT_23;
-    } else if (lobby->facility == 6) {
+    } else if (lobby->facility == LINK_LOBBY_FACILITY_ARCADE) {
         lobby->partyMenuArgs->context = PARTY_MENU_CONTEXT_23;
     } else {
         GF_ASSERT(FALSE);
     }
     lobby->partyMenuArgs->fieldSystem = fieldSystem;
     lobby->partyMenuArgs->partySlot = lobby->partySlot;
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < NELEMS(lobby->selectedOrder); i++) {
         lobby->partyMenuArgs->selectedOrder[i] = lobby->selectedOrder[i];
     }
-    if (lobby->facility == 1) {
+    if (lobby->facility == LINK_LOBBY_FACILITY_TOWER) {
         lobby->partyMenuArgs->minMonsToSelect = 2;
         lobby->partyMenuArgs->maxMonsToSelect = 2;
         lobby->partyMenuArgs->maxLevel = 100;
-    } else if (lobby->facility == 5) {
+    } else if (lobby->facility == LINK_LOBBY_FACILITY_HALL) {
         lobby->partyMenuArgs->minMonsToSelect = 1;
         lobby->partyMenuArgs->maxMonsToSelect = 1;
         lobby->partyMenuArgs->maxLevel = 30;
-    } else if (lobby->facility == 4) {
+    } else if (lobby->facility == LINK_LOBBY_FACILITY_CASTLE) {
         lobby->partyMenuArgs->minMonsToSelect = 2;
         lobby->partyMenuArgs->maxMonsToSelect = 2;
         lobby->partyMenuArgs->maxLevel = 100;
-    } else if (lobby->facility == 6) {
+    } else if (lobby->facility == LINK_LOBBY_FACILITY_ARCADE) {
         lobby->partyMenuArgs->minMonsToSelect = 2;
         lobby->partyMenuArgs->maxMonsToSelect = 2;
         lobby->partyMenuArgs->maxLevel = 100;
@@ -147,7 +147,7 @@ static void FrontierLinkLobby_ReadPartyMenuResult(void *frontierWork, FrontierLi
         lobby->appResult = 4;
         break;
     default:
-        MI_CpuCopy8(lobby->partyMenuArgs->selectedOrder, lobby->selectedOrder, 2);
+        MI_CpuCopy8(lobby->partyMenuArgs->selectedOrder, lobby->selectedOrder, sizeof(lobby->selectedOrder));
         lobby->partySlot = lobby->partyMenuArgs->partySlot;
         Heap_Free(lobby->partyMenuArgs);
         lobby->partyMenuArgs = NULL;

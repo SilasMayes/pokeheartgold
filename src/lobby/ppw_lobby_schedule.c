@@ -3,6 +3,7 @@
 #include <nitro/code32.h>
 #include <stdarg.h>
 
+#include "ppw_lobby_state.h"
 #include "ppw_lobby_work.h"
 
 void LobbyCharVector_Grow(LobbyCharVector *vector, u32 size);
@@ -21,7 +22,7 @@ void LobbyStringVectorBuffer_EraseAtEnd(LobbyStringVectorBuffer *buffer, u32 cou
 }
 
 PPWLobbySchedule *PPWLobbySchedule_Init(PPWLobbySchedule *schedule) {
-    schedule->state = 0;
+    schedule->state = PPW_LOBBY_SCHEDULE_STATE_NONE;
     schedule->hasTime = 0;
     schedule->time.seconds = 0;
     schedule->startTime = 0;

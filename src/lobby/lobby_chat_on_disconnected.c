@@ -18,7 +18,7 @@ void LobbyChat_OnDisconnected(void) {
         return;
     }
     // stop the connect timeout
-    timerId = 0;
+    timerId = PPW_LOBBY_TIMER_CONNECT_TIMEOUT;
     LobbyTimerMap_EraseKey(&gLobbyChatManager->timerMap, &timerId);
     manager = gLobbyChatManager;
     if (manager->state == LOBBY_CHAT_STATE_DISCONNECTING) {

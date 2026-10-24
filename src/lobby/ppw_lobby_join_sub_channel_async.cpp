@@ -108,7 +108,7 @@ extern "C" int PPW_LobbyJoinSubChannelAsync(int mode) {
     if (w != 0 && gPPWLobbyWork->state != PPW_LOBBY_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (w != 0 && (w->mode != 5 ? 1 : 0) != 0) {
+    if (w != 0 && (w->mode != PPW_LOBBY_CHANNEL_KIND_INVALID ? 1 : 0) != 0) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     Callbacks cb;
@@ -121,14 +121,14 @@ extern "C" int PPW_LobbyJoinSubChannelAsync(int mode) {
     Str name = Build(mode, PPWLobby_GetChannelBaseName(w));
     Table *t;
     switch (mode) {
-    case 1:
-    case 2:
+    case PPW_LOBBY_CHANNEL_KIND_FOOT1:
+    case PPW_LOBBY_CHANNEL_KIND_FOOT2:
         t = &gPPWLobbyFootChannelMode;
         break;
-    case 3:
+    case PPW_LOBBY_CHANNEL_KIND_CLOCK:
         t = &gPPWLobbyClockChannelMode;
         break;
-    case 4:
+    case PPW_LOBBY_CHANNEL_KIND_NEWS:
         t = &gPPWLobbyNewsChannelMode;
         break;
     default:

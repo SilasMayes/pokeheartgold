@@ -52,24 +52,27 @@ static inline const char *StrData(Str *s) {
 extern "C" {
 #endif
 
-Str *LobbyString_InitCopy(Str *, const Str *);
-Str *LobbyString_InitFromCStr(Str *, const char *);
+Str *LobbyString_InitCopy(Str *output, const Str *input);
+Str *LobbyString_InitFromCStr(Str *output, const char *text);
 Str *LobbyString_InitSubstring(Str *, Str *, u32, u32);
-Str *LobbyString_Destroy(Str *);
-Str *LobbyString_Assign(Str *, const Str *);
+Str *LobbyString_Destroy(Str *output);
+Str *LobbyString_Assign(Str *dst, const Str *src);
 void LobbyString_AssignCStr(Str *, const char *);
 void LobbyString_Append(Str *, void *);
 void LobbyString_AppendCStr(Str *, const char *);
-Str *LobbyString_Replace(Str *, u32, u32, const Str *);
+Str *LobbyString_Replace(Str *out, u32 pos, u32 remove, const Str *input);
 void LobbyString_ReplaceCStr(Str *, u32, u32, const char *);
 Str *LobbyString_ReplaceSubstring(Str *, u32, u32, Str *, u32, u32);
 void LobbyString_Reserve(Str *, u32);
 int LobbyString_Compare(const Str *, const Str *);
 int LobbyString_CompareCStr(const Str *, const char *);
+int LobbyString_CompareChars(const Str *s, u32 pos, u32 length, const void *other, u32 otherLength);
+int LobbyString_CompareSubstring(const Str *s, u32 pos, u32 length, const Str *other);
+int LobbyString_CompareNoCase(Str *a, Str *b, u32 length);
 int LobbyString_FindFirstOfChars(Str *, const char *, u32, u32);
 void LobbyString_Substr(Str *, Str *, u32, u32);
-Str *LobbyString_Concat(Str *, Str *, Str *);
-Str *LobbyString_ConcatCStr(Str *, Str *, char *);
+Str *LobbyString_Concat(Str *out, Str *left, Str *right);
+Str *LobbyString_ConcatCStr(Str *out, Str *left, char *right);
 void LobbyString_Format(Str *, const char *, ...);
 void LobbyString_FormatN(Str *, u32, const char *, ...);
 #ifdef __cplusplus

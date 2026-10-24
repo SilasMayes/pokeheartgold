@@ -7,6 +7,7 @@ extern "C" {
 #include <nitro/code32.h>
 
 #include "lobby_cpp_types.h"
+#include "ppw_lobby_state.h"
 
 extern "C" int memcmp(const void *, const void *, u32);
 
@@ -237,7 +238,7 @@ struct Sub {
         : vtbl(gPPWLobbyPlayerVtable) {
         Entry *const pe = &entry;
         Sub *const t = this;
-        pe->Init(5);
+        pe->Init(PPW_LOBBY_CHANNEL_KIND_INVALID);
         t->field.Init();
         t->a28 = 0;
         t->id = i;
@@ -293,7 +294,7 @@ extern "C" void PPWLobbyPlayers_SetSelf(Obj *obj, int id, const u8 *data, u32 le
     Sub *ps = &s;
     obj->sub = *ps;
     s.Destroy();
-    obj->sub.SetInfo(Info(5));
+    obj->sub.SetInfo(Info(PPW_LOBBY_CHANNEL_KIND_INVALID));
     obj->sub.a30 = 1;
     obj->sub.SetData(data, len);
     obj->sub.a38 = 1;

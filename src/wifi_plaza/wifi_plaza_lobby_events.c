@@ -155,7 +155,7 @@ void WiFiPlazaLobbyClient_OnPlayerLeave(int id) {
     if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0) == -1) {
         return;
     }
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < WIFI_PLAZA_LOBBY_MATCH_COUNT; i++) {
         if (id == gWiFiPlazaLobbyClient->matches[i].hostId) {
             WiFiPlazaLobbyClient_OnMatchClosed(id, &gWiFiPlazaLobbyClient->matches[i].info);
         }
@@ -205,7 +205,7 @@ void WiFiPlazaLobbyClient_OnMessage(int id, u32 libChannel, u32 type, const void
 }
 
 // The lobby's location list (key gWiFiPlazaLocationListKey) changed.
-void WiFiPlazaLobbyClient_OnLocationsChanged(int a0, int a1, int a2, int a3, const char *key, const void *data) {
+void WiFiPlazaLobbyClient_OnLocationsChanged(BOOL success, BOOL broadcast, int channelKind, int userId, const char *key, const void *data) {
     if (strcmp(key, gWiFiPlazaLocationListKey) == 0) {
         memcpy(gWiFiPlazaLobbyClient->locations, data, sizeof(gWiFiPlazaLobbyClient->locations));
         if (gWiFiPlazaLobbyClient->addingLocation) {
@@ -217,12 +217,12 @@ void WiFiPlazaLobbyClient_OnLocationsChanged(int a0, int a1, int a2, int a3, con
 // A player's record changed: follows the player into or out of the own channel.
 void WiFiPlazaLobbyClient_OnPlayerRecordChanged(int id, const WiFiPlazaLobbyPlayerRecord *record) {
     if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0) != -1) {
-        if (gWiFiPlazaLobbyClient->channel != 4) {
+        if (gWiFiPlazaLobbyClient->channel != WIFI_PLAZA_LOBBY_CHANNEL_NONE) {
             int current, old = WiFiPlazaLobbyClient_GetPlayerRecord(gWiFiPlazaLobbyClient, id)->channel;
             current = record->channel;
             {
                 int own = WiFiPlazaLobbyClient_ChannelToLib(gWiFiPlazaLobbyClient->channel);
-                if (old == 5 && current == own) {
+                if (old == WIFI_PLAZA_LOBBY_LIB_CHANNEL_NONE && current == own) {
                     WiFiPlazaLobbyClient_AddToIdList(gWiFiPlazaLobbyClient, id, 1);
                 } else if (old == own && current != own) {
                     WiFiPlazaLobbyClient_RemoveFromIdList(gWiFiPlazaLobbyClient, id, 1);
@@ -322,13 +322,13 @@ void WiFiPlazaLobbyClient_OnExcessFlood(void) {
 
 void WiFiPlazaLobbyClient_InitMatches(WiFiPlazaLobbyClient *client) {
     memset(client->matches, 0, sizeof(client->matches));
-    client->currentMatch = 3;
+    client->currentMatch = WIFI_PLAZA_LOBBY_MATCH_NONE;
 }
 
 // The three matchmaking sessions of the lobby client: the info their hosts send, the start time, the countdown.
 
 static void WiFiPlazaLobbyMatches_Set(WiFiPlazaLobbyClient *client, int index, int hostId, const WiFiPlazaLobbyMatchInfo *info) {
-    GF_ASSERT(index < 3);
+    GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
     if (WiFiPlazaLobbyMatches_IsActive(client, index) == TRUE && hostId != client->matches[index].hostId) {
         return;
     }
@@ -342,7 +342,7 @@ static void WiFiPlazaLobbyMatches_Set(WiFiPlazaLobbyClient *client, int index, i
 
 // The host closed the session.
 BOOL WiFiPlazaLobbyMatches_Remove(WiFiPlazaLobbyClient *client, int index, int hostId) {
-    GF_ASSERT(index < 3);
+    GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
     if (WiFiPlazaLobbyMatches_IsActive(client, index) == TRUE) {
         if (hostId == client->matches[index].hostId) {
             client->matches[index].active = 0;
@@ -353,7 +353,7 @@ BOOL WiFiPlazaLobbyMatches_Remove(WiFiPlazaLobbyClient *client, int index, int h
 }
 
 BOOL WiFiPlazaLobbyMatches_IsActive(WiFiPlazaLobbyClient *client, int index) {
-    GF_ASSERT(index < 3);
+    GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
     return client->matches[index].active;
 }
 
@@ -375,7 +375,7 @@ static u16 WiFiPlazaLobbyMatches_CalcTimer(WiFiPlazaLobbyClient *client, int ind
 }
 
 WiFiPlazaLobbyMatch *WiFiPlazaLobbyMatches_Get(WiFiPlazaLobbyClient *client, int index) {
-    GF_ASSERT(index < 3);
+    GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
     GF_ASSERT(client->matches[index].active == 1);
     return &client->matches[index];
 }
@@ -393,7 +393,7 @@ void WiFiPlazaLobbyMatches_Update(WiFiPlazaLobbyClient *client) {
             PPW_LobbyUpdateRecruitInfo(match);
         }
     }
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < WIFI_PLAZA_LOBBY_MATCH_COUNT; i++) {
         if (gWiFiPlazaLobbyClient->matches[i].active == 1) {
             u32 frames;
             if (gWiFiPlazaLobbyClient->matches[i].timer) {

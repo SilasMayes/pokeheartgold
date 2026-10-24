@@ -58,23 +58,23 @@ typedef struct LobbyUserMapInsertResult {
 extern "C" {
 #endif
 
-void LobbyUserIdSet_Assign(LobbyUserIdSet *, LobbyUserIdSet *);
-void LobbyUserIdSet_CopyNodes(LobbyUserIdSet *, LobbyUserIdSetNode *, LobbyUserIdSetNode *, BOOL);
-void *LobbyUserIdSet_Destroy(LobbyUserIdSet *);
-void *LobbyUserIdSet_Destroy2(LobbyUserIdSet *);
-void LobbyUserIdSet_DestroyNodes(LobbyUserIdSet *, LobbyUserIdSetNode *);
-void LobbyUserIdSet_Erase(Iterator *, LobbyUserIdSet *, Iterator);
-int LobbyUserIdSet_EraseKey(LobbyUserIdSet *, void *);
-LobbyUserIdSetNode *LobbyUserIdSet_FindInsertPos(LobbyUserIdSet *, int *, LobbyUserIdSetNode **, u8 *, u8 *);
-void LobbyUserIdSet_Insert(LobbyUserIdSetInsertResult *, LobbyUserIdSet *, int *);
-LobbyUserIdSetNode *LobbyUserIdSet_InsertNode(LobbyUserIdSet *, LobbyUserIdSetNode *, int, int, const int *);
+void LobbyUserIdSet_Assign(LobbyUserIdSet *set, LobbyUserIdSet *other);
+void LobbyUserIdSet_CopyNodes(LobbyUserIdSet *set, LobbyUserIdSetNode *parent, LobbyUserIdSetNode *src, BOOL left);
+void *LobbyUserIdSet_Destroy(LobbyUserIdSet *set);
+void *LobbyUserIdSet_Destroy2(LobbyUserIdSet *set);
+void LobbyUserIdSet_DestroyNodes(LobbyUserIdSet *set, LobbyUserIdSetNode *node);
+void LobbyUserIdSet_Erase(Iterator *out, LobbyUserIdSet *set, Iterator node);
+int LobbyUserIdSet_EraseKey(LobbyUserIdSet *set, void *key);
+LobbyUserIdSetNode *LobbyUserIdSet_FindInsertPos(LobbyUserIdSet *set, int *key, LobbyUserIdSetNode **prev, u8 *left, u8 *first);
+void LobbyUserIdSet_Insert(LobbyUserIdSetInsertResult *out, LobbyUserIdSet *set, int *key);
+LobbyUserIdSetNode *LobbyUserIdSet_InsertNode(LobbyUserIdSet *set, LobbyUserIdSetNode *parent, int left, int last, const int *key);
 void LobbyUserIdSet_Swap(LobbyUserIdSet *, LobbyUserIdSet *);
-void *LobbyUserMap_Destroy(LobbyUserMap *);
-void LobbyUserMap_DestroyNodes(LobbyUserMap *, LobbyUserMapNode *);
-void LobbyUserMap_Erase(Iterator *, LobbyUserMap *, Iterator);
-LobbyUserMapNode *LobbyUserMap_FindInsertPos(LobbyUserMap *, int *, LobbyUserMapNode **, u8 *, u8 *);
-void LobbyUserMap_Insert(LobbyUserMapInsertResult *, LobbyUserMap *, LobbyUserMapEntry *);
-LobbyUserMapNode *LobbyUserMap_InsertNode(LobbyUserMap *, LobbyUserMapNode *, int, int, LobbyUserMapEntry *);
+void *LobbyUserMap_Destroy(LobbyUserMap *map);
+void LobbyUserMap_DestroyNodes(LobbyUserMap *map, LobbyUserMapNode *node);
+void LobbyUserMap_Erase(Iterator *out, LobbyUserMap *map, Iterator node);
+LobbyUserMapNode *LobbyUserMap_FindInsertPos(LobbyUserMap *map, int *key, LobbyUserMapNode **prev, u8 *left, u8 *first);
+void LobbyUserMap_Insert(LobbyUserMapInsertResult *out, LobbyUserMap *map, LobbyUserMapEntry *entry);
+LobbyUserMapNode *LobbyUserMap_InsertNode(LobbyUserMap *map, LobbyUserMapNode *parent, int left, int first, LobbyUserMapEntry *entry);
 
 #ifdef __cplusplus
 }

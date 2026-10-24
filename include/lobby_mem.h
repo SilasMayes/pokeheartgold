@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-void *LobbyMem_Alloc(u32);
+void *LobbyMem_Alloc(u32 size);
 void LobbyMem_ReleaseReserve(void);
 
 #ifdef __cplusplus

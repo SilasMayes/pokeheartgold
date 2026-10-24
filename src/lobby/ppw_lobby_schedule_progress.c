@@ -39,7 +39,7 @@ void PPWLobbySchedule_Process(PPWLobbySchedule *schedule) {
     case 2:
     case 3:
         break;
-    case 4:
+    case PPW_LOBBY_SCHEDULE_STATE_LOADED:
         if (!PPWLobbySchedule_CanStart(schedule)) {
             return;
         }
@@ -47,10 +47,10 @@ void PPWLobbySchedule_Process(PPWLobbySchedule *schedule) {
         LobbyChat_SetChannelMode(name.l.isLong == 0 ? name.s.buf : name.l.ptr, gPPWLobbyMainChannelSecretMode);
         LobbyString_Destroy(&name);
         zero = 0;
-        PPWLobby_SendMessage(-1, 0, 1, 0, 0, &zero, 4);
+        PPWLobby_SendMessage(-1, PPW_LOBBY_CHANNEL_KIND_MAIN, 1, 0, 0, &zero, 4);
         PPWLobbySchedule_Start(schedule);
         return;
-    case 5:
+    case PPW_LOBBY_SCHEDULE_STATE_STARTED:
         if (!schedule->pendingEvents.size) {
             return;
         }
@@ -82,7 +82,7 @@ BOOL PPWLobbySchedule_CanStart(PPWLobbySchedule *schedule) {
     RTCTime time;
     RTCDate date;
     s64 now;
-    if (schedule->state == 5 || PPWLobby_GetWork()->state != PPW_LOBBY_STATE_READY) {
+    if (schedule->state == PPW_LOBBY_SCHEDULE_STATE_STARTED || PPWLobby_GetWork()->state != PPW_LOBBY_STATE_READY) {
         return FALSE;
     }
     if (schedule->startTime != 0) {
@@ -102,10 +102,10 @@ BOOL PPWLobbySchedule_CanStart(PPWLobbySchedule *schedule) {
 BOOL PPWLobbySchedule_Start(PPWLobbySchedule *schedule) {
     RTCTime time;
     RTCDate date;
-    if (schedule->state != 5 && PPWLobby_GetWork()->state == PPW_LOBBY_STATE_READY) {
+    if (schedule->state != PPW_LOBBY_SCHEDULE_STATE_STARTED && PPWLobby_GetWork()->state == PPW_LOBBY_STATE_READY) {
         DWC_GetDateTime(&date, &time);
         schedule->startTime = RTC_ConvertDateTimeToSecond(&date, &time);
-        schedule->state = 5;
+        schedule->state = PPW_LOBBY_SCHEDULE_STATE_STARTED;
         schedule->startRequested = FALSE;
         PPWLobby_GetWork()->callbacks.onLobbyEvent(0);
         return TRUE;

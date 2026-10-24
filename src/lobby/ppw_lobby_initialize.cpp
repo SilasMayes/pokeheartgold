@@ -74,7 +74,7 @@ struct Peer {
     u32 a, b;
 
     Peer()
-        : kind(5) {
+        : kind(PPW_LOBBY_CHANNEL_KIND_INVALID) {
     }
 };
 
@@ -96,7 +96,7 @@ struct Info {
     int z;
 
     Info()
-        : id(5)
+        : id(PPW_LOBBY_CHANNEL_KIND_INVALID)
         , mid(0)
         , z(0) {
         RTCTime time;

@@ -87,7 +87,7 @@ struct Peer {
     int b;
 
     BOOL IsValid() const {
-        if (kind == 5) {
+        if (kind == PPW_LOBBY_CHANNEL_KIND_INVALID) {
             return FALSE;
         }
         return TRUE;
@@ -95,7 +95,7 @@ struct Peer {
 
     void Reset() {
         Str empty;
-        kind = 5;
+        kind = PPW_LOBBY_CHANNEL_KIND_INVALID;
         name = empty;
         a = 0;
         b = 0;
@@ -131,7 +131,7 @@ inline void Refresh(Work *w, Info &info) {
     Work *ww = w;
     ww->entry.valid = 0;
     info = ww->entry.info;
-    info.id = 5;
+    info.id = PPW_LOBBY_CHANNEL_KIND_INVALID;
     Entry e(info);
     const Info &ni = e.info;
     if (!(ww->entry.info == ni)) {

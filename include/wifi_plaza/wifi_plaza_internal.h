@@ -921,7 +921,7 @@ void WiFiPlazaLobbyClient_OnPlayerEnter(int id, const WiFiPlazaLobbyPlayerRecord
 void WiFiPlazaLobbyClient_OnPlayerLeave(int id);
 void WiFiPlazaLobbyClient_OnEvent3Dummy(void);
 void WiFiPlazaLobbyClient_OnMessage(int id, u32 libChannel, u32 type, const void *data, u32 size);
-void WiFiPlazaLobbyClient_OnLocationsChanged(int a0, int a1, int a2, int a3, const char *key, const void *data);
+void WiFiPlazaLobbyClient_OnLocationsChanged(BOOL success, BOOL broadcast, int channelKind, int userId, const char *key, const void *data);
 void WiFiPlazaLobbyClient_OnPlayerRecordChanged(int id, const WiFiPlazaLobbyPlayerRecord *record);
 void WiFiPlazaLobbyClient_OnPlayerUpdate(int id, const void *data);
 void WiFiPlazaLobbyClient_OnMatchInfo(int id, WiFiPlazaLobbyMatchInfo *info);

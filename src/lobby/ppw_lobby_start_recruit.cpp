@@ -174,7 +174,7 @@ extern "C" int PPW_LobbyStartRecruit(User *u) {
     RTCDate date;
     RTCTime time;
     DWC_GetDateTime(&date, &time);
-    InsertEntry(&h->entries, ConvertEntry(Tag(), LobbyTimerMap_MakeEntry(3, Info(RTC_ConvertDateTimeToSecond(&date, &time), 21, PPWLobby_TimerSendRecruitInfo))));
+    InsertEntry(&h->entries, ConvertEntry(Tag(), LobbyTimerMap_MakeEntry(PPW_LOBBY_TIMER_SEND_RECRUIT_INFO, Info(RTC_ConvertDateTimeToSecond(&date, &time), 21, PPWLobby_TimerSendRecruitInfo))));
     LobbyString_Destroy(&value);
     return PPW_LOBBY_RESULT_SUCCESS;
 }

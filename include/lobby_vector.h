@@ -68,7 +68,7 @@ typedef struct LobbyStringVectorBuffer {
 extern "C" {
 #endif
 
-LobbyCharVector *LobbyCharVector_Destroy(LobbyCharVector *);
+LobbyCharVector *LobbyCharVector_Destroy(LobbyCharVector *vector);
 char *LobbyCharVector_Data(LobbyCharVector *);
 char *LobbyByteVector_Data(LobbyCharVector *);
 void LobbyCharVector_Grow(LobbyCharVector *, u32);
@@ -84,7 +84,7 @@ void LobbyU32Vector_AppendFillSlow(LobbyU32Vector *vector, u32 count, u32 *value
 u32 *LobbyU32Vector_Data2(LobbyU32Vector *vector);
 void LobbyU32VectorBuffer_Allocate(LobbyU32VectorBuffer *buffer, u32 capacity, LobbyTag tag);
 LobbyU32VectorBuffer *LobbyU32VectorBuffer_Destroy(LobbyU32VectorBuffer *buffer);
-LobbyStringVector *LobbyStringVector_Destroy(LobbyStringVector *);
+LobbyStringVector *LobbyStringVector_Destroy(LobbyStringVector *vector);
 LobbyCharVectorBuffer *LobbyCharVectorBuffer_Destroy(LobbyCharVectorBuffer *);
 void LobbyCharVectorBuffer_Allocate(LobbyCharVectorBuffer *, u32, LobbyTag);
 void LobbyStringVector_EraseAtEnd(LobbyStringVector *, u32, LobbyTag);

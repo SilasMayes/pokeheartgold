@@ -98,21 +98,20 @@ void LobbyString_AssignCStr(Str *s, const char *arg) {
 }
 
 #pragma warn_uninitializedvar off
-void LobbyString_ReplaceCStr(Str *s, u32 a, u32 b, const char *str) {
-    LobbyTag x;
-    LobbyString_ReplaceRange(s, a, b, str, str + strlen(str), x);
+void LobbyString_ReplaceCStr(Str *s, u32 pos, u32 length, const char *str) {
+    LobbyTag tag;
+    LobbyString_ReplaceRange(s, pos, length, str, str + strlen(str), tag);
 }
 
-int LobbyString_CompareSubstring(const u8 *s, u32 a, u32 b, const u8 *input) {
-    const Str *o = (const Str *)input;
-    u32 n;
-    const char *p;
-    if (StrIsShort(o)) {
-        p = o->s.buf;
-        n = o->s.len;
+int LobbyString_CompareSubstring(const Str *s, u32 pos, u32 length, const Str *other) {
+    u32 otherLength;
+    const char *otherChars;
+    if (StrIsShort(other)) {
+        otherChars = other->s.buf;
+        otherLength = other->s.len;
     } else {
-        p = o->l.ptr;
-        n = o->l.size;
+        otherChars = other->l.ptr;
+        otherLength = other->l.size;
     }
-    return LobbyString_CompareChars(s, a, b, p, n);
+    return LobbyString_CompareChars(s, pos, length, otherChars, otherLength);
 }

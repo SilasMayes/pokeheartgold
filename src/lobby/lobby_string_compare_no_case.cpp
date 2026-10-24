@@ -43,7 +43,6 @@ inline It End(Str *s) {
 }
 
 extern "C" int LobbyString_ToLowerChar(int c);
-extern "C" void LobbyString_CompareSubstring(Str *a, int, void *c, Str *b);
 
 inline It Transform(It first, It last, It out, int (*f)(int)) {
     for (; first != last; ++first, ++out) {
@@ -52,10 +51,8 @@ inline It Transform(It first, It last, It out, int (*f)(int)) {
     return out;
 }
 
-extern "C" void LobbyString_CompareNoCase(Str *a, Str *b, void *c);
-
-extern "C" void LobbyString_CompareNoCase(Str *a, Str *b, void *c) {
+extern "C" int LobbyString_CompareNoCase(Str *a, Str *b, u32 length) {
     Transform(Begin(a), End(a), Begin(a), LobbyString_ToLowerChar);
     Transform(Begin(b), End(b), Begin(b), LobbyString_ToLowerChar);
-    LobbyString_CompareSubstring(a, 0, c, b);
+    return LobbyString_CompareSubstring(a, 0, length, b);
 }

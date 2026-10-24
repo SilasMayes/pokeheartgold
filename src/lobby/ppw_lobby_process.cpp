@@ -264,7 +264,7 @@ static inline void Lobby_UpdateTimers(void) {
 }
 
 static inline int Lobby_IsReady(PPWLobbyWork *w) {
-    if (w->schedule.state >= 2) {
+    if (w->schedule.state >= PPW_LOBBY_SCHEDULE_STATE_QUESTIONNAIRE) {
         return 1;
     }
     return 0;

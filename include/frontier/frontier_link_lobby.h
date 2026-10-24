@@ -42,6 +42,14 @@ typedef struct FrontierLinkLobby {
     u16 *resultVar; // script variable that receives the app result
 } FrontierLinkLobby;
 
+// FrontierLinkLobby.facility: the facility of the link challenge
+#define LINK_LOBBY_FACILITY_TOWER        1
+#define LINK_LOBBY_FACILITY_FACTORY_LV50 2
+#define LINK_LOBBY_FACILITY_FACTORY_OPEN 3
+#define LINK_LOBBY_FACILITY_CASTLE       4
+#define LINK_LOBBY_FACILITY_HALL         5
+#define LINK_LOBBY_FACILITY_ARCADE       6
+
 // FrontierLinkLobby_Send
 #define LINK_LOBBY_SEND_FACILITY 0
 #define LINK_LOBBY_SEND_CHOICE   1
@@ -56,7 +64,7 @@ typedef struct FrontierLinkLobby {
 #define LINK_LOBBY_APP_READ_SUMMARY        3
 
 void FrontierLinkLobby_Free(FrontierLinkLobby *lobby);
-BOOL FrontierLinkLobby_Send(FrontierLinkLobby *lobby, int kind, u16 a, u16 b);
+BOOL FrontierLinkLobby_Send(FrontierLinkLobby *lobby, int kind, u16 value, u16 secondValue);
 void FrontierLinkLobby_RunPartyApp(void *frontierWork, FrontierLinkLobby *lobby, u32 kind);
 
 extern const u8 gBattleHallCellTypes[20];

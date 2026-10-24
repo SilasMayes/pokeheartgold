@@ -7,17 +7,17 @@
 
 extern "C" void LobbyChat_OnChannelModeChanged(void *chat, const char *name, u32 mode, u32 id);
 
-inline void KeyInit(LobbyRequest *k, u32 id) {
-    k->vtable = &gLobbyRequestVtable;
-    k->id = id;
-    k->param = 0;
+inline void KeyInit(LobbyRequest *key, u32 id) {
+    key->vtable = &gLobbyRequestVtable;
+    key->id = id;
+    key->param = 0;
 }
 
-inline LobbyRequestMapIterator FindIt(LobbyChatManager *m, u32 id) {
+inline LobbyRequestMapIterator FindIt(LobbyChatManager *manager, u32 id) {
     LobbyRequest key;
     KeyInit(&key, id);
     LobbyRequest *kp = &key;
-    return LobbyRequestMap_Find(&m->requestMap, kp);
+    return LobbyRequestMap_Find(&manager->requestMap, kp);
 }
 
 struct Tag {};
@@ -72,48 +72,48 @@ extern "C" void LobbyChat_OnEnterChannelEnumUsers(void *chat, int result, const 
         return;
     }
     if (result == 1) {
-        Str s;
-        LobbyString_InitFromCStr(&s, name);
-        Vec tmp = LobbyChat_AddChannelUsers(gLobbyChatManager, count, nicks, s);
+        Str usersChannelName;
+        LobbyString_InitFromCStr(&usersChannelName, name);
+        Vec tmp = LobbyChat_AddChannelUsers(gLobbyChatManager, count, nicks, usersChannelName);
         tmp.destroy();
-        LobbyString_Destroy(&s);
+        LobbyString_Destroy(&usersChannelName);
     }
     {
-        Str u;
-        LobbyString_InitFromCStr(&u, name);
-        LobbyChat_SetChannelUsersEnumerated(gLobbyChatManager, &u);
-        LobbyString_Destroy(&u);
+        Str enumeratedName;
+        LobbyString_InitFromCStr(&enumeratedName, name);
+        LobbyChat_SetChannelUsersEnumerated(gLobbyChatManager, &enumeratedName);
+        LobbyString_Destroy(&enumeratedName);
     }
     int sid = id;
-    LobbyChatManager *m = gLobbyChatManager;
-    LobbyRequestMapIterator it = FindIt(m, sid);
-    LobbyEnterChannelRequest *h;
-    if (it.node == (LobbyRequestMapNode *)&m->requestMap.root) {
-        h = 0;
+    LobbyChatManager *manager = gLobbyChatManager;
+    LobbyRequestMapIterator it = FindIt(manager, sid);
+    LobbyEnterChannelRequest *request;
+    if (it.node == (LobbyRequestMapNode *)&manager->requestMap.root) {
+        request = 0;
     } else {
         LobbyRequestMapNode *nd = it.node;
-        h = (LobbyEnterChannelRequest *)nd->request;
+        request = (LobbyEnterChannelRequest *)nd->request;
     }
-    Str t;
-    LobbyString_InitFromCStr(&t, name);
-    Str k;
-    LobbyChat_StripChannelPrefix(&k, gLobbyChatManager, &t);
-    LobbyEnterChannelCallback cb = h->callback;
-    const char *str = k.c_str();
-    cb(result == 1, 0, str, h->getParam());
-    LobbyString_Destroy(&k);
-    LobbyString_Destroy(&t);
+    Str fullName;
+    LobbyString_InitFromCStr(&fullName, name);
+    Str strippedName;
+    LobbyChat_StripChannelPrefix(&strippedName, gLobbyChatManager, &fullName);
+    LobbyEnterChannelCallback cb = request->callback;
+    const char *str = strippedName.c_str();
+    cb(result == 1, 0, str, request->getParam());
+    LobbyString_Destroy(&strippedName);
+    LobbyString_Destroy(&fullName);
     LobbyRequestMap_DeleteKey(&gLobbyChatManager->requestMap, sid);
     if (result != 0) {
         return;
     }
-    Str a;
-    LobbyString_InitFromCStr(&a, name);
-    Str b;
-    LobbyChat_StripChannelPrefix(&b, gLobbyChatManager, &a);
-    LobbyChat_LeaveChannel(b.c_str());
-    LobbyString_Destroy(&b);
-    LobbyString_Destroy(&a);
+    Str fullNameToLeave;
+    LobbyString_InitFromCStr(&fullNameToLeave, name);
+    Str nameToLeave;
+    LobbyChat_StripChannelPrefix(&nameToLeave, gLobbyChatManager, &fullNameToLeave);
+    LobbyChat_LeaveChannel(nameToLeave.c_str());
+    LobbyString_Destroy(&nameToLeave);
+    LobbyString_Destroy(&fullNameToLeave);
 }
 
 #pragma pop
@@ -126,10 +126,10 @@ extern "C" void LobbyChat_OnEnterChannel(void *chat, int ok, int error, const ch
         return;
     }
     if (ok == 1) {
-        Str s;
-        LobbyString_InitFromCStr(&s, name);
-        int userLimit = LobbyChat_GetChannelUserLimit(gLobbyChatManager, &s);
-        LobbyString_Destroy(&s);
+        Str fullName;
+        LobbyString_InitFromCStr(&fullName, name);
+        int userLimit = LobbyChat_GetChannelUserLimit(gLobbyChatManager, &fullName);
+        LobbyString_Destroy(&fullName);
         if (userLimit != 0) {
             int numUsers = chatGetChannelNumUsersA(gLobbyChatManager->connection, name);
             if (userLimit == -1) {
@@ -155,27 +155,27 @@ extern "C" void LobbyChat_OnEnterChannel(void *chat, int ok, int error, const ch
         return;
     }
     {
-        Str s;
-        LobbyString_InitFromCStr(&s, name);
-        Str t;
-        LobbyChat_StripChannelPrefix(&t, gLobbyChatManager, &s);
-        LobbyChat_LeaveChannel(t.c_str());
-        LobbyString_Destroy(&t);
-        LobbyString_Destroy(&s);
+        Str fullName;
+        LobbyString_InitFromCStr(&fullName, name);
+        Str strippedName;
+        LobbyChat_StripChannelPrefix(&strippedName, gLobbyChatManager, &fullName);
+        LobbyChat_LeaveChannel(strippedName.c_str());
+        LobbyString_Destroy(&strippedName);
+        LobbyString_Destroy(&fullName);
     }
     int sid = id;
-    LobbyChatManager *m = gLobbyChatManager;
-    LobbyRequestMapIterator it = FindIt(m, sid);
-    LobbyEnterChannelRequest *h = it.node == (LobbyRequestMapNode *)&m->requestMap.root ? 0 : (LobbyEnterChannelRequest *)it.node->request;
-    Str s;
-    LobbyString_InitFromCStr(&s, name);
-    Str t;
-    LobbyChat_StripChannelPrefix(&t, gLobbyChatManager, &s);
-    const char *str = t.c_str();
-    LobbyEnterChannelCallback cb = h->callback;
-    cb(0, error, str, h->getParam());
-    LobbyString_Destroy(&t);
-    LobbyString_Destroy(&s);
+    LobbyChatManager *manager = gLobbyChatManager;
+    LobbyRequestMapIterator it = FindIt(manager, sid);
+    LobbyEnterChannelRequest *request = it.node == (LobbyRequestMapNode *)&manager->requestMap.root ? 0 : (LobbyEnterChannelRequest *)it.node->request;
+    Str fullName;
+    LobbyString_InitFromCStr(&fullName, name);
+    Str strippedName;
+    LobbyChat_StripChannelPrefix(&strippedName, gLobbyChatManager, &fullName);
+    const char *str = strippedName.c_str();
+    LobbyEnterChannelCallback cb = request->callback;
+    cb(0, error, str, request->getParam());
+    LobbyString_Destroy(&strippedName);
+    LobbyString_Destroy(&fullName);
     LobbyRequestMap_DeleteKey(&gLobbyChatManager->requestMap, sid);
 }
 
@@ -195,21 +195,21 @@ extern "C" void LobbyChat_OnGetChannelKeys(void *chat, int result, const char *n
     if (user == NULL) {
         userId = -1;
     } else {
-        Str s;
-        LobbyString_InitFromCStr(&s, user);
-        userId = LobbyChat_FindUserIdByNick(gLobbyChatManager, &s);
-        LobbyString_Destroy(&s);
+        Str nick;
+        LobbyString_InitFromCStr(&nick, user);
+        userId = LobbyChat_FindUserIdByNick(gLobbyChatManager, &nick);
+        LobbyString_Destroy(&nick);
     }
     int sid = id;
     const char *key, *value;
-    LobbyGetChannelKeysRequest *h;
-    LobbyChatManager *m = gLobbyChatManager;
-    LobbyRequestMapIterator it = FindIt(m, sid);
-    if (it.node == (LobbyRequestMapNode *)&m->requestMap.root) {
-        h = 0;
+    LobbyGetChannelKeysRequest *request;
+    LobbyChatManager *manager = gLobbyChatManager;
+    LobbyRequestMapIterator it = FindIt(manager, sid);
+    if (it.node == (LobbyRequestMapNode *)&manager->requestMap.root) {
+        request = 0;
     } else {
         LobbyRequestMapNode *nd = it.node;
-        h = (LobbyGetChannelKeysRequest *)nd->request;
+        request = (LobbyGetChannelKeysRequest *)nd->request;
     }
     key = 0;
     value = key;
@@ -217,15 +217,15 @@ extern "C" void LobbyChat_OnGetChannelKeys(void *chat, int result, const char *n
         key = *keys;
         value = *values;
     }
-    Str t;
-    LobbyString_InitFromCStr(&t, name);
-    Str k;
-    LobbyChat_StripChannelPrefix(&k, gLobbyChatManager, &t);
-    const char *str = k.c_str();
-    LobbyGetChannelKeysCallback cb = h->callback;
-    cb(result == 1, str, userId, key, value, h->getParam());
-    LobbyString_Destroy(&k);
-    LobbyString_Destroy(&t);
+    Str fullName;
+    LobbyString_InitFromCStr(&fullName, name);
+    Str strippedName;
+    LobbyChat_StripChannelPrefix(&strippedName, gLobbyChatManager, &fullName);
+    const char *str = strippedName.c_str();
+    LobbyGetChannelKeysCallback cb = request->callback;
+    cb(result == 1, str, userId, key, value, request->getParam());
+    LobbyString_Destroy(&strippedName);
+    LobbyString_Destroy(&fullName);
     LobbyRequestMap_DeleteKey(&gLobbyChatManager->requestMap, sid);
 }
 
@@ -271,18 +271,18 @@ extern "C" void LobbyChat_OnGetChannelMode(void *chat, int result, const char *n
     }
     LobbyChat_OnChannelModeChanged(chat, name, mode, id);
     int sid = id;
-    LobbyChatManager *m = gLobbyChatManager;
-    LobbyRequestMapIterator it = FindIt(m, sid);
-    LobbyGetChannelModeRequest *h = it.node == (LobbyRequestMapNode *)&m->requestMap.root ? 0 : (LobbyGetChannelModeRequest *)it.node->request;
-    Str s;
-    LobbyString_InitFromCStr(&s, name);
-    Str t;
-    LobbyChat_StripChannelPrefix(&t, gLobbyChatManager, &s);
-    const char *str = t.c_str();
-    LobbyGetChannelModeCallback cb = h->callback;
-    cb(result == 1, str, mode, h->getParam());
-    LobbyString_Destroy(&t);
-    LobbyString_Destroy(&s);
+    LobbyChatManager *manager = gLobbyChatManager;
+    LobbyRequestMapIterator it = FindIt(manager, sid);
+    LobbyGetChannelModeRequest *request = it.node == (LobbyRequestMapNode *)&manager->requestMap.root ? 0 : (LobbyGetChannelModeRequest *)it.node->request;
+    Str fullName;
+    LobbyString_InitFromCStr(&fullName, name);
+    Str strippedName;
+    LobbyChat_StripChannelPrefix(&strippedName, gLobbyChatManager, &fullName);
+    const char *str = strippedName.c_str();
+    LobbyGetChannelModeCallback cb = request->callback;
+    cb(result == 1, str, mode, request->getParam());
+    LobbyString_Destroy(&strippedName);
+    LobbyString_Destroy(&fullName);
     LobbyRequestMap_DeleteKey(&gLobbyChatManager->requestMap, sid);
 }
 

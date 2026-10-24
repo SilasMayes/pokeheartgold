@@ -8,7 +8,7 @@
 
 
 static inline BOOL active(PPWLobbyWork *w) {
-    return w->subChannel.kind == 5 ? FALSE : TRUE;
+    return w->subChannel.kind == PPW_LOBBY_CHANNEL_KIND_INVALID ? FALSE : TRUE;
 }
 
 #pragma opt_propagation off

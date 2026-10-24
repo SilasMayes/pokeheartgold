@@ -229,7 +229,7 @@ extern "C" int LobbyChat_Initialize(const char *gameName, const char *gameKey, i
     {
         root = gLobbyChatManager;
         DWC_GetDateTime(&date, &time);
-        root->queue.insert(LobbyTimerMap_MakeEntry(0, Task(RTC_ConvertDateTimeToSecond(&date, &time), root, LobbyChat_TimerConnectTimeout)));
+        root->queue.insert(LobbyTimerMap_MakeEntry(PPW_LOBBY_TIMER_CONNECT_TIMEOUT, Task(RTC_ConvertDateTimeToSecond(&date, &time), root, LobbyChat_TimerConnectTimeout)));
     }
     realName.destroy();
     userName.destroy();

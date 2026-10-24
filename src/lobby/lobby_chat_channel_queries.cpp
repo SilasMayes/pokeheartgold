@@ -30,28 +30,28 @@ inline LobbyChatManager *GetMgr() {
     return gLobbyChatManager;
 }
 
-inline void BaseInit(LobbyRequest *h, u32 param) {
-    h->vtable = &gLobbyRequestVtable;
-    h->id = 0;
-    h->param = param;
+inline void BaseInit(LobbyRequest *request, u32 param) {
+    request->vtable = &gLobbyRequestVtable;
+    request->id = 0;
+    request->param = param;
 }
 
 // The id counter is only changed here; it is declared const so that stores through the new handler cannot alias it.
 inline u32 NextHandlerId() {
-    u32 n = gLobbyChatNextRequestId;
-    *(u32 *)&gLobbyChatNextRequestId = n + 1;
-    return n;
+    u32 id = gLobbyChatNextRequestId;
+    *(u32 *)&gLobbyChatNextRequestId = id + 1;
+    return id;
 }
 
 inline LobbyCallbackRequest *NewHandler(LobbyRequestVtable *vtable, u32 callback, u32 param) {
-    LobbyCallbackRequest *p = (LobbyCallbackRequest *)LobbyMem_Alloc(sizeof(LobbyCallbackRequest));
-    if (p) {
-        BaseInit(p, param);
-        p->id = NextHandlerId();
-        p->vtable = vtable;
-        p->callback = callback;
+    LobbyCallbackRequest *request = (LobbyCallbackRequest *)LobbyMem_Alloc(sizeof(LobbyCallbackRequest));
+    if (request) {
+        BaseInit(request, param);
+        request->id = NextHandlerId();
+        request->vtable = vtable;
+        request->callback = callback;
     }
-    return p;
+    return request;
 }
 
 extern "C" int LobbyChat_EnumChannelsAsync(const char *name, u32 callback, u32 param);
@@ -59,21 +59,21 @@ extern "C" int LobbyChat_EnumUsersAsync(const char *name, u32 callback, u32 para
 
 struct IdTag {};
 
-inline u32 GetId(LobbyCallbackRequest *h, IdTag, IdTag) {
-    return h->vtable->getId(h);
+inline u32 GetId(LobbyCallbackRequest *request, IdTag, IdTag) {
+    return request->vtable->getId(request);
 }
 
 #pragma opt_common_subs off
 
 int LobbyChat_GetChannelKeysAsync(const char *name, int userId, const char *key, LobbyGetChannelKeysCallback callback, u32 param) {
-    LobbyChatManager *m = gLobbyChatManager;
-    if (m == NULL) {
+    LobbyChatManager *manager = gLobbyChatManager;
+    if (manager == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (m != NULL && m->state == LOBBY_CHAT_STATE_ERROR) {
+    if (manager != NULL && manager->state == LOBBY_CHAT_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (m != NULL && GetMgr()->state != LOBBY_CHAT_STATE_READY) {
+    if (manager != NULL && GetMgr()->state != LOBBY_CHAT_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     if (strlen(key) + 1 > LOBBY_CHAT_KEY_SIZE) {
@@ -84,86 +84,86 @@ int LobbyChat_GetChannelKeysAsync(const char *name, int userId, const char *key,
     if (userId == -1) {
         LobbyString_AssignCStr(&nick, gLobbyStr_Empty_17);
     } else {
-        Str tmp = LobbyChat_GetUserNick(GetMgr(), userId);
-        LobbyString_Assign(&nick, &tmp);
-        LobbyString_Destroy(&tmp);
+        Str userNick = LobbyChat_GetUserNick(GetMgr(), userId);
+        LobbyString_Assign(&nick, &userNick);
+        LobbyString_Destroy(&userNick);
         if (StrEquals(&nick, gLobbyStr_Empty_17)) {
             LobbyString_Destroy(&nick);
             return PPW_LOBBY_RESULT_ERROR_PARAM;
         }
     }
-    m = GetMgr();
+    manager = GetMgr();
     LobbyRequestMapInsertResult res;
-    LobbyCallbackRequest *h = NewHandler(&gLobbyGetChannelKeysRequestVtable, (u32)callback, param);
-    LobbyRequestMap_Insert(&res, &m->requestMap, &h);
-    u32 id = GetId(h, IdTag(), IdTag());
-    Str s;
-    LobbyString_InitFromCStr(&s, name);
-    Str t = LobbyChat_GetFullChannelName(GetMgr(), s);
-    chatGetChannelKeysA(GetMgr()->connection, t.c_str(), nick.c_str(), 1, &key, LobbyChat_OnGetChannelKeys, id, 0);
-    LobbyString_Destroy(&t);
-    LobbyString_Destroy(&s);
+    LobbyCallbackRequest *request = NewHandler(&gLobbyGetChannelKeysRequestVtable, (u32)callback, param);
+    LobbyRequestMap_Insert(&res, &manager->requestMap, &request);
+    u32 id = GetId(request, IdTag(), IdTag());
+    Str channelName;
+    LobbyString_InitFromCStr(&channelName, name);
+    Str fullName = LobbyChat_GetFullChannelName(GetMgr(), channelName);
+    chatGetChannelKeysA(GetMgr()->connection, fullName.c_str(), nick.c_str(), 1, &key, LobbyChat_OnGetChannelKeys, id, 0);
+    LobbyString_Destroy(&fullName);
+    LobbyString_Destroy(&channelName);
     LobbyString_Destroy(&nick);
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 
 extern "C" int LobbyChat_EnumChannelsAsync(const char *name, u32 callback, u32 param) {
-    LobbyChatManager *m = gLobbyChatManager;
-    if (m == NULL) {
+    LobbyChatManager *manager = gLobbyChatManager;
+    if (manager == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (m != NULL && m->state == LOBBY_CHAT_STATE_ERROR) {
+    if (manager != NULL && manager->state == LOBBY_CHAT_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (m != NULL && GetMgr()->state != LOBBY_CHAT_STATE_READY) {
+    if (manager != NULL && GetMgr()->state != LOBBY_CHAT_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     LobbyRequestMapInsertResult res;
-    LobbyCallbackRequest *h = NewHandler(&gLobbyEnumChannelsRequestVtable, callback, param);
-    LobbyRequestMap_Insert(&res, &m->requestMap, &h);
-    u32 id = GetId(h, IdTag(), IdTag());
-    Str s;
-    LobbyString_InitFromCStr(&s, name);
-    Str t = LobbyChat_GetFullChannelName(GetMgr(), s);
-    chatEnumChannelsA(GetMgr()->connection, t.c_str(), LobbyChat_OnEnumChannelsEach, LobbyChat_OnEnumChannels, id, 0);
-    LobbyString_Destroy(&t);
-    LobbyString_Destroy(&s);
+    LobbyCallbackRequest *request = NewHandler(&gLobbyEnumChannelsRequestVtable, callback, param);
+    LobbyRequestMap_Insert(&res, &manager->requestMap, &request);
+    u32 id = GetId(request, IdTag(), IdTag());
+    Str channelName;
+    LobbyString_InitFromCStr(&channelName, name);
+    Str fullName = LobbyChat_GetFullChannelName(GetMgr(), channelName);
+    chatEnumChannelsA(GetMgr()->connection, fullName.c_str(), LobbyChat_OnEnumChannelsEach, LobbyChat_OnEnumChannels, id, 0);
+    LobbyString_Destroy(&fullName);
+    LobbyString_Destroy(&channelName);
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 
 extern "C" int LobbyChat_EnumUsersAsync(const char *name, u32 callback, u32 param) {
-    LobbyChatManager *m = gLobbyChatManager;
-    if (m == NULL) {
+    LobbyChatManager *manager = gLobbyChatManager;
+    if (manager == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (m != NULL && m->state == LOBBY_CHAT_STATE_ERROR) {
+    if (manager != NULL && manager->state == LOBBY_CHAT_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (m != NULL && GetMgr()->state != LOBBY_CHAT_STATE_READY) {
+    if (manager != NULL && GetMgr()->state != LOBBY_CHAT_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     {
-        Str s;
-        LobbyString_InitFromCStr(&s, name);
-        Str t = LobbyChat_GetFullChannelName(GetMgr(), s);
-        BOOL exists = chatInChannelA(GetMgr()->connection, t.c_str()) == 0;
-        LobbyString_Destroy(&t);
-        LobbyString_Destroy(&s);
+        Str channelName;
+        LobbyString_InitFromCStr(&channelName, name);
+        Str fullName = LobbyChat_GetFullChannelName(GetMgr(), channelName);
+        BOOL exists = chatInChannelA(GetMgr()->connection, fullName.c_str()) == 0;
+        LobbyString_Destroy(&fullName);
+        LobbyString_Destroy(&channelName);
         if (exists) {
             return PPW_LOBBY_RESULT_ERROR_CHANNEL;
         }
     }
-    m = GetMgr();
+    manager = GetMgr();
     LobbyRequestMapInsertResult res;
-    LobbyCallbackRequest *h = NewHandler(&gLobbyEnumUsersRequestVtable, callback, param);
-    LobbyRequestMap_Insert(&res, &m->requestMap, &h);
-    u32 id = GetId(h, IdTag(), IdTag());
-    Str s;
-    LobbyString_InitFromCStr(&s, name);
-    Str t = LobbyChat_GetFullChannelName(GetMgr(), s);
-    chatEnumUsersA(GetMgr()->connection, t.c_str(), LobbyChat_OnEnumUsers, id, 0);
-    LobbyString_Destroy(&t);
-    LobbyString_Destroy(&s);
+    LobbyCallbackRequest *request = NewHandler(&gLobbyEnumUsersRequestVtable, callback, param);
+    LobbyRequestMap_Insert(&res, &manager->requestMap, &request);
+    u32 id = GetId(request, IdTag(), IdTag());
+    Str channelName;
+    LobbyString_InitFromCStr(&channelName, name);
+    Str fullName = LobbyChat_GetFullChannelName(GetMgr(), channelName);
+    chatEnumUsersA(GetMgr()->connection, fullName.c_str(), LobbyChat_OnEnumUsers, id, 0);
+    LobbyString_Destroy(&fullName);
+    LobbyString_Destroy(&channelName);
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 

@@ -24,6 +24,35 @@ enum PPWLobbyChannelState {
     PPW_LOBBY_CHANNEL_STATE_ERROR,
 };
 
+// The lobby channels (PPWLobbyChannel.kind, the channel in a player's system profile)
+enum PPWLobbyChannelKind {
+    PPW_LOBBY_CHANNEL_KIND_MAIN,
+    PPW_LOBBY_CHANNEL_KIND_FOOT1, // the footprint channels
+    PPW_LOBBY_CHANNEL_KIND_FOOT2,
+    PPW_LOBBY_CHANNEL_KIND_CLOCK,
+    PPW_LOBBY_CHANNEL_KIND_NEWS,
+    PPW_LOBBY_CHANNEL_KIND_INVALID, // no channel; as a message target, one player
+};
+
+// PPWLobbySchedule.state: how far the questionnaire, the schedule and the lobby events have come
+enum PPWLobbyScheduleState {
+    PPW_LOBBY_SCHEDULE_STATE_NONE = 0,
+    PPW_LOBBY_SCHEDULE_STATE_QUESTIONNAIRE = 2, // the questionnaire has arrived
+    PPW_LOBBY_SCHEDULE_STATE_LOADED = 4,        // the schedule of the lobby is loaded
+    PPW_LOBBY_SCHEDULE_STATE_STARTED = 5,       // the lobby events run
+};
+
+// The keys of the lobby timers (the chat's timer map and gPPWLobbyWork->timers), named after what they run
+enum PPWLobbyTimer {
+    PPW_LOBBY_TIMER_CONNECT_TIMEOUT,
+    PPW_LOBBY_TIMER_UPLOAD_SYSTEM_PROFILE,
+    PPW_LOBBY_TIMER_UPLOAD_USER_PROFILE,
+    PPW_LOBBY_TIMER_SEND_RECRUIT_INFO,
+    PPW_LOBBY_TIMER_POLL_CHANNEL_MODE,
+    PPW_LOBBY_TIMER_REQUEST_CHANNEL_TIME,
+    PPW_LOBBY_TIMER_REQUEST_LOBBY_DATA,
+};
+
 // Results of the PPW_Lobby* calls and of the lobby chat commands they pass through
 enum PPWLobbyResult {
     PPW_LOBBY_RESULT_SUCCESS,

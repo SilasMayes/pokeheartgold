@@ -30,7 +30,6 @@ extern unsigned char __lower_mapC[];
 void _ZNSt15__vector_commonILb1EE18throw_length_errorEv(void);
 
 void LobbyString_ReplaceRange(Str *, u32, u32, const char *, const char *, LobbyTag);
-int LobbyString_CompareChars(const u8 *, u32, u32, const void *, u32);
 
 typedef struct Session {
     VTable *vt;
@@ -139,7 +138,6 @@ BOOL PPWLobbyPlayers_Remove(SessionMgr *m, int id);
 Session *PPWLobbyPlayers_Find(SessionMgr *m, int id);
 
 void LobbyCharVector_PushBackSlow(LobbyCharVector *s, const char *c);
-int LobbyString_CompareSubstring(const u8 *s, u32 a, u32 b, const u8 *o);
 int LobbyString_ToLowerChar(int c);
 BOOL PPWLobbyPlayer_HasProfiles(Session *s);
 BOOL PPWLobbyPlayers_IsFull(SessionMgr *m);

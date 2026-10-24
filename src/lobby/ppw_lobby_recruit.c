@@ -107,7 +107,7 @@ int PPW_LobbyStopRecruit(void) {
     }
     w = gPPWLobbyWork;
     PPWLobby_SendMessage(w->userId, 0, 1, 0, 2, &w->recruitInfo, sizeof(Packet));
-    timerId = 3;
+    timerId = PPW_LOBBY_TIMER_SEND_RECRUIT_INFO;
     LobbyTimerMap_EraseKey(&gPPWLobbyWork->timers, &timerId);
     return PPW_LOBBY_RESULT_SUCCESS;
 }

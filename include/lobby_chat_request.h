@@ -59,9 +59,9 @@ extern LobbyRequestVtable gLobbyEnterChannelRequestVtable;
 extern LobbyRequestVtable gLobbyEnumUsersRequestVtable;
 extern LobbyRequestVtable gLobbyEnumChannelsRequestVtable;
 
-void *LobbyRequestMap_Destroy(LobbyRequestMap *);
-void LobbyRequestMap_DestroyNodes(LobbyRequestMap *, LobbyRequestMapNode *);
-LobbyRequestMapNode *LobbyRequestMap_InsertNode(LobbyRequestMap *, LobbyRequestMapNode *, int, int, LobbyRequest *const *);
+void *LobbyRequestMap_Destroy(LobbyRequestMap *map);
+void LobbyRequestMap_DestroyNodes(LobbyRequestMap *map, LobbyRequestMapNode *node);
+LobbyRequestMapNode *LobbyRequestMap_InsertNode(LobbyRequestMap *map, LobbyRequestMapNode *parent, int left, int leftmost, LobbyRequest *const *request);
 
 #ifdef __cplusplus
 }
@@ -117,9 +117,9 @@ struct LobbyRequestMapIterator {
 
 extern "C" {
 
-void LobbyRequestMap_Insert(LobbyRequestMapInsertResult *, LobbyRequestMap *, LobbyCallbackRequest **);
+void LobbyRequestMap_Insert(LobbyRequestMapInsertResult *out, LobbyRequestMap *map, LobbyCallbackRequest **val);
 LobbyRequestMapIterator LobbyRequestMap_Find(LobbyRequestMap *, LobbyRequest *const &);
-void LobbyRequestMap_DeleteKey(LobbyRequestMap *, u32);
+void LobbyRequestMap_DeleteKey(LobbyRequestMap *map, u32 id);
 }
 
 #endif // __cplusplus

@@ -101,13 +101,13 @@ extern "C" {
 
 extern LobbyChatManager *gLobbyChatManager;
 
-void *LobbyChannelMap_Destroy(LobbyChannelMap *);
-void LobbyChannelMap_DestroyNodes(LobbyChannelMap *, LobbyChannelMapNode *);
-void LobbyChannelMap_Erase(Iterator *, LobbyChannelMap *, Iterator);
-int LobbyChannelMap_EraseKey(LobbyChannelMap *, Str *);
-void LobbyChannelMap_Find(Iterator *, LobbyChannelMap *, Str *);
-LobbyChannelMapNode *LobbyChannelMap_FindInsertPos(LobbyChannelMap *, Str *, LobbyChannelMapNode **, u8 *, u8 *);
-void LobbyChannelMap_Insert(LobbyChannelMapInsertResult *, LobbyChannelMap *, LobbyChannelMapEntry *);
+void *LobbyChannelMap_Destroy(LobbyChannelMap *map);
+void LobbyChannelMap_DestroyNodes(LobbyChannelMap *map, LobbyChannelMapNode *node);
+void LobbyChannelMap_Erase(Iterator *out, LobbyChannelMap *map, Iterator node);
+int LobbyChannelMap_EraseKey(LobbyChannelMap *map, Str *key);
+void LobbyChannelMap_Find(Iterator *out, LobbyChannelMap *map, Str *key);
+LobbyChannelMapNode *LobbyChannelMap_FindInsertPos(LobbyChannelMap *map, Str *key, LobbyChannelMapNode **found, u8 *left, u8 *empty);
+void LobbyChannelMap_Insert(LobbyChannelMapInsertResult *out, LobbyChannelMap *map, LobbyChannelMapEntry *entry);
 LobbyChannelMapNode *LobbyChannelMap_InsertNode(LobbyChannelMap *, LobbyChannelMapNode *, u8, u8, LobbyChannelMapEntry *);
 
 void LobbyChatManager_GetNick(Str *out, LobbyChatManager *manager);

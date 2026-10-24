@@ -42,13 +42,13 @@ typedef struct LobbyTimerMap {
 extern "C" {
 #endif
 
-void LobbyTimerMap_MakeEntry(LobbyTimerMapEntry *, int, LobbyTimer *);
-void LobbyTimerMap_Find(LobbyTimerMapNode **, LobbyTimerMap *, u32 *);
-BOOL LobbyTimerMap_EraseKey(LobbyTimerMap *, u32 *);
+void LobbyTimerMap_MakeEntry(LobbyTimerMapEntry *entry, int id, LobbyTimer *timer);
+void LobbyTimerMap_Find(LobbyTimerMapNode **out, LobbyTimerMap *map, u32 *key);
+BOOL LobbyTimerMap_EraseKey(LobbyTimerMap *map, u32 *id);
 LobbyTimerMapNode *LobbyTimerMap_LowerBound(LobbyTimerMap *, u32 *, LobbyTimerMapNode *, LobbyTimerMapNode *);
-LobbyTimerMapNode *LobbyTimerMap_FindInsertPos(LobbyTimerMap *, const u32 *, LobbyTimerMapNode **, u8 *, u8 *);
-void LobbyTimerMap_Clear(LobbyTimerMap *);
-void *LobbyTimerMap_Destroy(LobbyTimerMap *);
+LobbyTimerMapNode *LobbyTimerMap_FindInsertPos(LobbyTimerMap *map, const u32 *key, LobbyTimerMapNode **last, u8 *left, u8 *first);
+void LobbyTimerMap_Clear(LobbyTimerMap *map);
+void *LobbyTimerMap_Destroy(LobbyTimerMap *map);
 
 #ifdef __cplusplus
 }

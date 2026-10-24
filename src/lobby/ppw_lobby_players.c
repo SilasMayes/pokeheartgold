@@ -3,6 +3,7 @@
 #include <nitro/code32.h>
 
 #include "ppw_lobby_internal.h"
+#include "ppw_lobby_state.h"
 
 void PPWLobbyPlayer_UpdateState(Session *s) {
     switch (s->state) {
@@ -37,7 +38,7 @@ BOOL PPWLobbyPlayers_Add(SessionMgr *m, int id) {
     Session *n = LobbyMem_Alloc(sizeof(Session));
     if (n != NULL) {
         n->vt = &gPPWLobbyPlayerVtable;
-        n->channel = 5;
+        n->channel = PPW_LOBBY_CHANNEL_KIND_INVALID;
         n->time = 0;
         n->unk10 = 0;
         DWC_GetDateTime(&date, &time);
