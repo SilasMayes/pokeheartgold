@@ -28,7 +28,7 @@ typedef struct {
 static void BattleRecord_Decrypt(void *data, u32 size, u32 seed);
 static BOOL BattleRecord_IsEmpty(SaveData *save, BattleRecord *record);
 static BOOL BattleRecord_IsValid(SaveData *save, BattleRecord *record);
-static void BattleRecord_FillHeader(SaveData *save, BattleRecordHeader *header, void *data, int type, int arg);
+static void BattleRecord_FillHeader(SaveData *save, BattleRecordHeader *header, BattleRecordData *data, int type, int arg);
 static void BattleRecordParty_FromParty(Party *party, BattleRecordParty *record);
 static void BattleRecordParty_ToParty(BattleRecordParty *record, Party *party);
 
@@ -204,8 +204,7 @@ void BattleRecord_GetBattlerAndPartyCount(int type, int *count, int *last) {
     }
 }
 
-static void BattleRecord_FillHeader(SaveData *save, BattleRecordHeader *header, void *recordData, int type, int arg) {
-    BattleRecordData *data = recordData;
+static void BattleRecord_FillHeader(SaveData *save, BattleRecordHeader *header, BattleRecordData *data, int type, int arg) {
     int count, partySize;
     BattlerOrder order = sBattleRecordBattlerOrder;
     MultiOrder multi = sBattleRecordMultiOrder;

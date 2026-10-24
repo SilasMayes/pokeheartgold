@@ -504,7 +504,7 @@ int BattleCastleData_CalcPointsEarned(BattleCastleData *data) {
     }
     ppTotal = 0;
     for (j = 0; j < numMons; j++) {
-        for (k = 0; k < 4; k++) {
+        for (k = 0; k < MAX_MON_MOVES; k++) {
             ppTotal += data->startPP[j][k];
         }
     }

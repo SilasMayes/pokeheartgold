@@ -312,20 +312,13 @@ BattleSetup *BattleTower_NewBattleSetup(FrontierFieldSystem *tower, FrontierLaun
 
 static void BattleTower_AddTrainerToBattle(BattleSetup *setup, FrontierTrainer *trainer, int count, int battler, enum HeapID heapID) {
     Pokemon *mon;
-    FrontierMon *frontierMon;
     int i;
 
     FrontierTrainer_SetBattleTrainer(setup, (FrontierTrainerRecord *)trainer, count, battler, heapID);
     mon = AllocMonZeroed(heapID);
-    i = 0;
-    if (count > 0) {
-        frontierMon = trainer->frontierMons;
-        do {
-            FrontierMon_ToPokemon(frontierMon, mon, 120);
-            Party_AddMon(setup->party[battler], mon);
-            i++;
-            frontierMon++;
-        } while (i < count);
+    for (i = 0; i < count; i++) {
+        FrontierMon_ToPokemon(&trainer->frontierMons[i], mon, 120);
+        Party_AddMon(setup->party[battler], mon);
     }
     Heap_Free(mon);
 }
@@ -350,7 +343,7 @@ static u32 BattleTower_GetBattleType(u32 towerMode) {
     return battleType;
 }
 
-void BattleTowerSetup_SetLinkFlag(FrontierFieldSystem *tower, u16 value) {
+void BattleTowerSetup_SetLinkFlag(FrontierFieldSystem *tower, u32 value) {
     tower->linkFlag = value;
     tower->linkSendBuffer[0] = value;
 }

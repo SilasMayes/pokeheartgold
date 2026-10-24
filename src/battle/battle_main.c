@@ -9,6 +9,7 @@
 #include "constants/game_stats.h"
 #include "constants/pokemon.h"
 #include "constants/sndseq.h"
+#include "constants/trainer_class.h"
 
 #include "battle/battle.h"
 #include "battle/battle_controller_opponent.h"
@@ -346,7 +347,7 @@ void Battle_BattleInit(OverlayManager *manager) {
     battleSystem->pokepicAnimManager = PokepicAnimManager_New(HEAP_ID_BATTLE, 4, 0);
     battleSystem->cellTransferState = (void *)CreateCellTransferStateManager(4, HEAP_ID_BATTLE);
     if (battleSystem->battleSpecial & BATTLE_SPECIAL_RECORDING) {
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < BATTLER_MAX; i++) {
             battleSystem->chatotVoiceParam[i] = setup->chatotVoiceParam[i];
         }
     }
@@ -411,7 +412,7 @@ void Battle_BattleExit(OverlayManager *man) {
     SetMasterBrightnessByColor(PM_LCD_TOP, color);
     SetMasterBrightnessByColor(PM_LCD_BOTTOM, color);
     BattleSystem_TryChangeForm(battleSystem);
-    if (battleSystem->battleOutcomeFlag != 4) {
+    if (battleSystem->battleOutcomeFlag != BATTLE_OUTCOME_MON_CAUGHT) {
         BattleSystem_EmptyMonFunc(battleSystem, Party_GetMonByIndex(battleSystem->trainerParty[1], 0));
     }
     for (i = 0; i < BATTLER_MAX; i++) {
@@ -777,7 +778,7 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
         for (i = 0; i < battleSystem->maxBattlers; i++) {
             for (slot = 0; slot < BattleSystem_GetPartySize(battleSystem, i); slot++) {
                 mon = BattleSystem_GetPartyMon(battleSystem, i, slot);
-                if (i == 2) {
+                if (i == BATTLER_PLAYER2) {
                     if (GetMonData(mon, MON_DATA_SPECIES, NULL)
                         && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
                         && GetMonData(mon, MON_DATA_HP, NULL)
@@ -791,7 +792,7 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
                 }
             }
             BattleContext_Set(battleSystem, battleSystem->ctx, 2, i, slot);
-            if (i == 0) {
+            if (i == BATTLER_PLAYER) {
                 playerSlot = slot;
             }
         }
@@ -918,27 +919,27 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
 
 static BOOL Battle_IsLeagueTrainerClass(int trainerClass) {
     switch (trainerClass) {
-    case 0x42:
-    case 0x43:
-    case 0x46:
-    case 0x48:
-    case 0x49:
-    case 0x4A:
-    case 0x4B:
-    case 0x4C:
-    case 0x56:
-    case 0x57:
-    case 0x58:
-    case 0x59:
-    case 0x62:
-    case 0x67:
-    case 0x68:
-    case 0x69:
-    case 0x6A:
-    case 0x6B:
-    case 0x6C:
-    case 0x6E:
-    case 0x70:
+    case TRAINERCLASS_LEADER_FALKNER:
+    case TRAINERCLASS_LEADER_BUGSY:
+    case TRAINERCLASS_LEADER_WHITNEY:
+    case TRAINERCLASS_LEADER_MORTY:
+    case TRAINERCLASS_LEADER_PRYCE:
+    case TRAINERCLASS_LEADER_JASMINE:
+    case TRAINERCLASS_LEADER_CHUCK:
+    case TRAINERCLASS_LEADER_CLAIR:
+    case TRAINERCLASS_CHAMPION:
+    case TRAINERCLASS_ELITE_FOUR_WILL:
+    case TRAINERCLASS_ELITE_FOUR_KAREN:
+    case TRAINERCLASS_ELITE_FOUR_KOGA:
+    case TRAINERCLASS_LEADER_BROCK:
+    case TRAINERCLASS_LEADER_MISTY:
+    case TRAINERCLASS_LEADER_LT_SURGE:
+    case TRAINERCLASS_LEADER_ERIKA:
+    case TRAINERCLASS_LEADER_JANINE:
+    case TRAINERCLASS_LEADER_SABRINA:
+    case TRAINERCLASS_LEADER_BLAINE:
+    case TRAINERCLASS_LEADER_BLUE:
+    case TRAINERCLASS_ELITE_FOUR_BRUNO:
         return TRUE;
     default:
         return FALSE;
@@ -1664,7 +1665,7 @@ static void BattleSystem_ChooseLinkServer(BattleSystem *battleSystem, BattleSetu
         battleSystem->isServer = 1;
         return;
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < BATTLER_MAX; i++) {
         ids[i] = i;
         values[i] = setup->aiFlags[i];
     }

@@ -794,24 +794,16 @@ void FrontierMap_AddObjectGfx(FrontierMap *map, const FrontierMapObjectGfx *gfx)
     int slot;
     u16 id = gfx->id;
 
-    i = 0;
-    entry = table;
-    do {
+    for (i = 0, entry = table; i < FRONTIER_MAP_OBJECT_GFX_MAX; i++, entry++) {
         if (id == entry->id) {
             return;
         }
-        entry++;
-        i++;
-    } while (i < FRONTIER_MAP_OBJECT_GFX_MAX);
-    slot = 0;
-    entry = table;
-    do {
-        if (entry->id == FRONTIER_MAP_NO_ID) {
+    }
+    for (slot = 0; slot < FRONTIER_MAP_OBJECT_GFX_MAX; slot++) {
+        if (table[slot].id == FRONTIER_MAP_NO_ID) {
             break;
         }
-        slot++;
-        entry++;
-    } while (slot < FRONTIER_MAP_OBJECT_GFX_MAX);
+    }
     GF_ASSERT(slot != FRONTIER_MAP_OBJECT_GFX_MAX);
     table[slot] = *gfx;
     Field2DObjectSpriteManager_LoadChar(map->objectGfx, gfx->id, gfx->animSet, HEAP_ID_101);

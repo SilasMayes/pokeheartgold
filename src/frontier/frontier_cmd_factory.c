@@ -49,7 +49,7 @@ BOOL FrtCmd_FactoryAlloc(FrontierScriptContext *ctx) {
     u32 type = FrontierScript_ReadVar(ctx);
     u32 levelMode = FrontierScript_ReadVar(ctx);
     BattleFactoryData *data = BattleFactoryData_Alloc(Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork)->saveData, resume, (u8)type, (u8)levelMode);
-    Frontier_SetData(ctx->frontierSystem->frontierWork, (u32)data);
+    Frontier_SetData(ctx->frontierSystem->frontierWork, data);
     return FALSE;
 }
 
@@ -101,15 +101,10 @@ BOOL FrtCmd_FactoryLaunchTradeApp(FrontierScriptContext *ctx) {
     FrontierLaunchArgs *launchArgs = Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork);
     BattleFactoryData *data = Frontier_GetData(ctx->frontierSystem->frontierWork);
     BattleFactoryAppLaunchArgs *args;
-    int i = 0;
-    u8 *p = (u8 *)data;
-    u16 zero = i;
-    // Clear the six selections before the trade
-    do {
-        i++;
-        ((BattleFactoryData *)p)->selection[0] = zero;
-        p += 2;
-    } while (i < 6);
+    int i;
+    for (i = 0; i < 6; i++) {
+        data->selection[i] = 0;
+    }
     args = Heap_Alloc(HEAP_ID_FIELD2, sizeof(BattleFactoryAppLaunchArgs));
     MI_CpuFill8(args, 0, sizeof(BattleFactoryAppLaunchArgs));
     args->saveData = launchArgs->saveData;
@@ -251,24 +246,17 @@ BOOL FrtCmd_FactoryAction(FrontierScriptContext *ctx) {
     case FACTORY_ACTION_GET_OPPONENT_MAIN_TYPE: {
         int count;
         int i;
-        int types[18];
+        int types[NUMBER_OF_MON_TYPES];
         int j;
-        int zero;
-        int *p;
         Pokemon *mon;
         int type1;
         int type2;
         int best;
 
         count = BattleFactory_GetOpponentMonCount(data->type, 1);
-        j = 0;
-        zero = j;
-        p = types;
-        do {
-            j++;
-            *p = zero;
-            p++;
-        } while (j < 18);
+        for (j = 0; j < NUMBER_OF_MON_TYPES; j++) {
+            types[j] = 0;
+        }
         mon = AllocMonZeroed(HEAP_ID_FIELD2);
         for (i = 0; i < count; i++) {
             FrontierMon_ToPokemon(&data->opponentMons[i], mon, BattleFactory_GetMonLevel(data));
@@ -284,7 +272,7 @@ BOOL FrtCmd_FactoryAction(FrontierScriptContext *ctx) {
         }
         Heap_Free(mon);
         best = 0;
-        for (j = 0; j < 18; j++) {
+        for (j = 0; j < NUMBER_OF_MON_TYPES; j++) {
             if (types[best] < types[j]) {
                 best = j;
             }
@@ -397,7 +385,8 @@ static void BattleFactory_BgScrollTask(SysTask *task, void *data) {
 
 BOOL FrtCmd_FactoryGetBattleResult(FrontierScriptContext *ctx) {
     u16 *var = FrontierScript_ReadVarPtr(ctx);
-    *var = ((BattleFactoryData *)Frontier_GetData(ctx->frontierSystem->frontierWork))->battleWon;
+    BattleFactoryData *data = Frontier_GetData(ctx->frontierSystem->frontierWork);
+    *var = data->battleWon;
     return FALSE;
 }
 

@@ -333,26 +333,26 @@ void ArcadeFlags_Init(u8 *flags) {
     MI_CpuFill8(flags, 0, 4);
 }
 
-void *Save_Frontier_GetArcadeFlags(SaveData *save) {
+u8 *Save_Frontier_GetArcadeFlags(SaveData *save) {
     return (u8 *)Save_Frontier_GetStatic(save) + 0x1624;
 }
 
-void ArcadeFlags_SetField(void *flags, u32 field, u32 index, u32 unused, void *input) {
+void ArcadeFlags_SetField(u8 *flags, u32 field, u32 index, u32 unused, void *input) {
     u8 *value = input;
     if (field == ARCADE_FLAGS_HAS_STREAK) {
         if (*value >= 1) {
-            *(u8 *)flags |= 1 << index;
+            *flags |= 1 << index;
         } else {
-            *(u8 *)flags &= (1 << index) ^ 0xff;
+            *flags &= (1 << index) ^ 0xff;
         }
     } else {
         GF_ASSERT(FALSE);
     }
 }
 
-u32 ArcadeFlags_GetField(void *flags, u32 field, u8 index, u32 unused, u32 unused2) {
+u32 ArcadeFlags_GetField(u8 *flags, u32 field, u8 index, u32 unused, u32 unused2) {
     if (field == ARCADE_FLAGS_HAS_STREAK) {
-        return (*(u8 *)flags >> index) & 1;
+        return (*flags >> index) & 1;
     }
     GF_ASSERT(FALSE);
     return 0;

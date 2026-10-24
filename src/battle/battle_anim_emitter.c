@@ -251,7 +251,7 @@ static void BattleAnimEmitter_SetConvergenceTarget(BattleAnimSystem *system, SPL
         break;
     case BATTLE_ANIM_EMITTER_TARGET_FROM_SCRIPT: {
         BattleAnimEmitterTargetArgs args = { 0 };
-        BattleAnimSystem_ReadScriptArgs(system, (u32 *)&args, 4);
+        BattleAnimSystem_ReadScriptArgs(system, &args, 4);
         pos.x = args.pos.x;
         pos.y = args.pos.y;
         pos.z = args.pos.z;
@@ -289,7 +289,7 @@ static void BattleAnimEmitter_SetMagnetTarget(BattleAnimSystem *system, SPLEmitt
         break;
     case BATTLE_ANIM_EMITTER_TARGET_FROM_SCRIPT: {
         s32 args[4] = { 0, 0, 0, 0 }; // BattleAnimEmitterTargetArgs
-        BattleAnimSystem_ReadScriptArgs(system, (u32 *)args, 4);
+        BattleAnimSystem_ReadScriptArgs(system, args, 4);
         pos.x = args[0];
         pos.y = args[1];
         pos.z = args[2];
@@ -327,13 +327,13 @@ static void BattleAnimEmitter_SetTransformFromScript(BattleAnimSystem *system, S
     BattleAnimSystem_GetCurrentParticleSystem(system);
     typeA = BattleAnimUtil_GetBattlerType(system, battlerA);
     typeB = BattleAnimUtil_GetBattlerType(system, battlerB);
-    BattleAnimSystem_ReadScriptArgs(system, (u32 *)&axis0, 3);
-    BattleAnimSystem_ReadScriptArgs(system, (u32 *)&axis1, 3);
-    BattleAnimSystem_ReadScriptArgs(system, (u32 *)&axis2, 3);
-    BattleAnimSystem_ReadScriptArgs(system, (u32 *)&axis3, 3);
-    BattleAnimSystem_ReadScriptArgs(system, (u32 *)&axis4, 3);
-    BattleAnimSystem_ReadScriptArgs(system, (u32 *)&axis5, 3);
-    BattleAnimSystem_ReadScriptArgs(system, (u32 *)&axis6, 3);
+    BattleAnimSystem_ReadScriptArgs(system, &axis0, 3);
+    BattleAnimSystem_ReadScriptArgs(system, &axis1, 3);
+    BattleAnimSystem_ReadScriptArgs(system, &axis2, 3);
+    BattleAnimSystem_ReadScriptArgs(system, &axis3, 3);
+    BattleAnimSystem_ReadScriptArgs(system, &axis4, 3);
+    BattleAnimSystem_ReadScriptArgs(system, &axis5, 3);
+    BattleAnimSystem_ReadScriptArgs(system, &axis6, 3);
     switch (typeA) {
     default:
     case BATTLER_TYPE_SOLO_PLAYER:
@@ -580,7 +580,7 @@ static void BattleAnimEmitter_ApplyConfiguredPosition(SPLEmitter *emitter, Battl
         BattleAnimUtil_GetBattlerEmitterPositionKind11(config->system, config->battlerB, &pos);
         break;
     case 3:
-        BattleAnimSystem_ReadScriptArgs(config->system, (u32 *)&args, 4);
+        BattleAnimSystem_ReadScriptArgs(config->system, &args, 4);
         config->sideSign = BattleAnimEmitter_GetConfiguredSideSign(config);
         pos.x = args.offset.x;
         pos.y = args.offset.y;
@@ -1026,9 +1026,9 @@ static void BattleAnimEmitter_AddOffsetForBattlerType(BattleAnimEmitterConfig *c
 
     for (i = 0; i < 6; i++) {
         if (i == BattleAnimUtil_GetBattlerType(config->system, battler)) {
-            BattleAnimSystem_ReadScriptArgs(config->system, (u32 *)&args, 4);
+            BattleAnimSystem_ReadScriptArgs(config->system, &args, 4);
         } else {
-            BattleAnimSystem_ReadScriptArgs(config->system, (u32 *)&skipped, 4);
+            BattleAnimSystem_ReadScriptArgs(config->system, &skipped, 4);
         }
     }
     config->sideSign = BattleAnimEmitter_GetConfiguredSideSign(config);
@@ -1050,7 +1050,7 @@ static void BattleAnimEmitter_AddOffsetFromScript(BattleAnimEmitterConfig *confi
     BattleAnimEmitterOffsetArgs args;
     VecFx32 offset = { 0 };
 
-    BattleAnimSystem_ReadScriptArgs(config->system, (u32 *)&args, 4);
+    BattleAnimSystem_ReadScriptArgs(config->system, &args, 4);
     config->sideSign = BattleAnimEmitter_GetConfiguredSideSign(config);
     offset.x = args.offset.x;
     offset.y = args.offset.y;
@@ -1067,7 +1067,7 @@ static void BattleAnimEmitter_AddOffsetFromScript(BattleAnimEmitterConfig *confi
 }
 
 void BattleAnimEmitter_ReadFlagCbParams(BattleAnimEmitterConfig *config, BattleAnimEmitterFlagParams *params) {
-    BattleAnimSystem_ReadScriptArgs(config->system, (u32 *)params, 5);
+    BattleAnimSystem_ReadScriptArgs(config->system, params, 5);
 }
 
 BOOL BattleAnimEmitterFlagCb_Nop0(SPLEmitter *emitter, BattleAnimEmitterConfig *config) {

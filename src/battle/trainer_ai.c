@@ -2111,7 +2111,7 @@ void AICmd_SumPositiveStatStages(BattleSystem *battleSystem, BattleContext *ctx)
     ctx->trainerAIData.calcTemp = 0;
 
     for (int stat = STAT_HP; stat < NUM_BATTLE_STATS; stat++) {
-        if (ctx->battleMons[battler].statChanges[stat] > 6) {
+        if (ctx->battleMons[battler].statChanges[stat] > STAT_NEUTRAL) {
             ctx->trainerAIData.calcTemp += ctx->battleMons[battler].statChanges[stat] - 6;
         }
     }
@@ -3102,7 +3102,7 @@ static int TrainerAI_MoveType(BattleSystem *battleSystem, BattleContext *ctx, in
 static BOOL AI_PerishSongKO(BattleContext *ctx, int battler) {
     if ((ctx->battleMons[battler].moveEffectFlags & MOVE_EFFECT_FLAG_PERISH_SONG)
         && ctx->battleMons[battler].moveEffectData.perishSongTurns == 0) {
-        ctx->aiSwitchedPartySlot[battler] = 6;
+        ctx->aiSwitchedPartySlot[battler] = PARTY_SIZE;
         return TRUE;
     }
 
@@ -3659,14 +3659,14 @@ static BOOL AI_IsAsleepWithNaturalCure(BattleSystem *battleSystem, BattleContext
     // Check for the move that last hit you; i.e., don't switch on your first turn.
     // Switch 50% of the time, and use post-KO switch logic.
     if (ctx->moveNoHit[battler] == MOVE_NONE && (BattleSystem_Random(battleSystem) & 1)) {
-        ctx->aiSwitchedPartySlot[battler] = 6;
+        ctx->aiSwitchedPartySlot[battler] = PARTY_SIZE;
         return TRUE;
     }
 
     // If the last move that hit you is a status move, switch 50% of the time, following
     // post-KO switch logic.
     if (ctx->trainerAIData.moveData[ctx->moveNoHit[battler]].power == 0 && (BattleSystem_Random(battleSystem) & 1)) {
-        ctx->aiSwitchedPartySlot[battler] = 6;
+        ctx->aiSwitchedPartySlot[battler] = PARTY_SIZE;
         return TRUE;
     }
 
@@ -3684,7 +3684,7 @@ static BOOL AI_IsAsleepWithNaturalCure(BattleSystem *battleSystem, BattleContext
 
     // Randomly switch 50% of the time, following post-KO switch logic.
     if (BattleSystem_Random(battleSystem) & 1) {
-        ctx->aiSwitchedPartySlot[battler] = 6;
+        ctx->aiSwitchedPartySlot[battler] = PARTY_SIZE;
         return TRUE;
     }
 
@@ -3707,7 +3707,7 @@ static BOOL AI_IsHeavilyStatBoosted(BattleSystem *battleSystem, BattleContext *c
     u8 numBoosts = 0;
 
     for (stat = STAT_HP; stat < NUM_BATTLE_STATS; stat++) {
-        if (ctx->battleMons[battler].statChanges[stat] > 6) {
+        if (ctx->battleMons[battler].statChanges[stat] > STAT_NEUTRAL) {
             numBoosts += ctx->battleMons[battler].statChanges[stat] - 6;
         }
     }
@@ -3830,8 +3830,8 @@ int TrainerAI_SelectCommand(BattleSystem *battleSystem, int battler) {
         if (TrainerAI_ShouldSwitch(battleSystem, ctx, battler)) {
             // If this is a switch which should use the post-KO switch logic, then do so.
             // If there is no valid battler, pick the first one in party order.
-            if (ctx->aiSwitchedPartySlot[battler] == 6) {
-                if ((i = TrainerAI_PostKOSwitchIn(battleSystem, battler)) == 6) {
+            if (ctx->aiSwitchedPartySlot[battler] == PARTY_SIZE) {
+                if ((i = TrainerAI_PostKOSwitchIn(battleSystem, battler)) == PARTY_SIZE) {
                     battler1 = battler;
                     if ((battleType & BATTLE_TYPE_TAG) || (battleType & BATTLE_TYPE_MULTI)) {
                         battler2 = battler1;

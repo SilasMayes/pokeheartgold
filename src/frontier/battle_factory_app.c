@@ -2979,12 +2979,10 @@ static void BattleFactoryApp_CreateOrderSprites(BattleFactoryApp *app) {
         step = 112;
     }
     animSeq = 0;
-    i = 0;
-    do {
+    for (i = 0; i < 3; i++) {
         app->orderSprites[i] = BattleFactorySprite_Create(&app->spriteGfx, 2, animSeq, 0, 0, x + step * i, 176);
         animSeq++;
-        i++;
-    } while (i < 3);
+    }
     if (app->numPokepics == 2) {
         BattleFactorySprite_SetVisible(app->orderSprites[2], FALSE);
     }

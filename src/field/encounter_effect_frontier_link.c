@@ -35,10 +35,10 @@ enum FrontierSingleEffectState {
 };
 
 void EncounterEffect_FrontierOrLinkSingle(SysTask *task, EncounterEffectTask *ctx) {
-    VecFx32 scale5;
-    VecFx32 scale6;
-    VecFx32 tmp5;
-    VecFx32 tmp6;
+    VecFx32 startScale;
+    VecFx32 zoomScale;
+    VecFx32 startValue;
+    VecFx32 zoomValue;
     BOOL done;
     FrontierOrLinkSingleEffectWork *work = ctx->work;
 
@@ -49,7 +49,7 @@ void EncounterEffect_FrontierOrLinkSingle(SysTask *task, EncounterEffectTask *ct
         work = ctx->work;
         EncounterEffect_InitSprites(&work->spriteManager, 1, 1);
         EncounterEffect_LoadSpriteResources(ctx->narc, &work->spriteManager, &work->spriteResources, 0, 1, 7, 9, 8, 0x927c0);
-        work->sprite = EncounterEffect_CreateSprite(&work->spriteManager, &work->spriteResources, 2 << 18, 6 << 16, 0, 0);
+        work->sprite = EncounterEffect_CreateSprite(&work->spriteManager, &work->spriteResources, FX32_CONST(128), FX32_CONST(96), 0, 0);
         Sprite_SetDrawFlag(work->sprite, FALSE);
         Sprite_SetOamMode(work->sprite, GX_OAM_MODE_XLU);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, TRUE);
@@ -66,34 +66,34 @@ void EncounterEffect_FrontierOrLinkSingle(SysTask *task, EncounterEffectTask *ct
         break;
     case FRONTIER_SINGLE_STATE_START_FADE_IN:
         EncounterEffectInterp_Init(&work->fade, 0, 16, 12);
-        G2x_SetBlendAlpha_(0x04000050, 0, 15, work->fade.value, 16 - work->fade.value);
+        G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, work->fade.value, 16 - work->fade.value);
         Sprite_SetDrawFlag(work->sprite, TRUE);
         ctx->state++;
         break;
     case FRONTIER_SINGLE_STATE_FADE_IN:
         done = EncounterEffectInterp_Update(&work->fade);
-        *(vu16 *)0x04000052 = (u16)(((16 - work->fade.value) << 8) | work->fade.value);
+        reg_G2_BLDALPHA = (u16)(((16 - work->fade.value) << 8) | work->fade.value);
         if (done == TRUE) {
-            *(vu16 *)0x04000050 = 0;
+            reg_G2_BLDCNT = 0;
             Sprite_SetOamMode(work->sprite, GX_OAM_MODE_NORMAL);
             ctx->state++;
         }
         break;
     case FRONTIER_SINGLE_STATE_START_ZOOM:
-        EncounterEffectQuadInterp_Init(&work->scale, 1 << 12, 0x19a, 1, 6);
+        EncounterEffectQuadInterp_Init(&work->scale, FX32_ONE, 0x19a, 1, 6);
         Sprite_SetAffineOverwriteMode(work->sprite, 2);
-        EncounterEffect_SetVecFx32(&tmp5, work->scale.value, work->scale.value, work->scale.value);
-        scale5 = tmp5;
-        Sprite_SetAffineScale(work->sprite, &scale5);
+        EncounterEffect_SetVecFx32(&startValue, work->scale.value, work->scale.value, work->scale.value);
+        startScale = startValue;
+        Sprite_SetAffineScale(work->sprite, &startScale);
         HBlankSystem_Stop(ctx->fieldSystem->mapSystems->hBlankSystem);
         BeginNormalPaletteFade(3, 0x10, 0, 0, 6, 1, HEAP_ID_FIELD1);
         ctx->state++;
         break;
     case FRONTIER_SINGLE_STATE_ZOOM:
         done = EncounterEffectQuadInterp_Update(&work->scale);
-        EncounterEffect_SetVecFx32(&tmp6, work->scale.value, work->scale.value, work->scale.value);
-        scale6 = tmp6;
-        Sprite_SetAffineScale(work->sprite, &scale6);
+        EncounterEffect_SetVecFx32(&zoomValue, work->scale.value, work->scale.value, work->scale.value);
+        zoomScale = zoomValue;
+        Sprite_SetAffineScale(work->sprite, &zoomScale);
         if (done == TRUE && IsPaletteFadeFinished() == TRUE) {
             ctx->state++;
         }
@@ -142,7 +142,7 @@ void EncounterEffect_Double(SysTask *task, EncounterEffectTask *ctx) {
         EncounterEffect_InitSprites(&work->spriteManager, 4, 1);
         EncounterEffect_LoadSpriteResources(ctx->narc, &work->spriteManager, &work->spriteResources, 0, 1, 4, 6, 5, 0x927c0);
         for (i = 0; i < 4; i++) {
-            work->sprites[i] = EncounterEffect_CreateSprite(&work->spriteManager, &work->spriteResources, 2 << 18, 6 << 16, 0, 0);
+            work->sprites[i] = EncounterEffect_CreateSprite(&work->spriteManager, &work->spriteResources, FX32_CONST(128), FX32_CONST(96), 0, 0);
             Sprite_SetDrawFlag(work->sprites[i], FALSE);
         }
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, TRUE);
@@ -158,28 +158,24 @@ void EncounterEffect_Double(SysTask *task, EncounterEffectTask *ctx) {
         }
         break;
     case DOUBLE_EFFECT_STATE_START_SLIDE:
-        EncounterEffectQuadInterp_Init(&work->horiz, 0, 2 << 18, 0x19a, 4);
-        EncounterEffectQuadInterp_Init(&work->vert, 0, 10 << 16, 0x19a, 4);
+        EncounterEffectQuadInterp_Init(&work->horiz, 0, FX32_CONST(128), 0x19a, 4);
+        EncounterEffectQuadInterp_Init(&work->vert, 0, FX32_CONST(160), 0x19a, 4);
         for (i = 0; i < 4; i++) {
             Sprite_SetDrawFlag(work->sprites[i], TRUE);
         }
         ctx->state++;
         break;
     case DOUBLE_EFFECT_STATE_SLIDE:
-        i = 0;
-        interp = &work->horiz;
-        while (i < 2) {
+        for (i = 0, interp = &work->horiz; i < 2; i++, interp++) {
             done = EncounterEffectQuadInterp_Update(interp);
-            i++;
-            interp++;
         }
-        EncounterEffect_SetVecFx32(&matrix, 2 << 18, (6 << 16) - work->horiz.value, 0);
+        EncounterEffect_SetVecFx32(&matrix, FX32_CONST(128), FX32_CONST(96) - work->horiz.value, 0);
         Sprite_SetMatrix(work->sprites[0], &matrix);
-        EncounterEffect_SetVecFx32(&matrix, 2 << 18, work->horiz.value + (6 << 16), 0);
+        EncounterEffect_SetVecFx32(&matrix, FX32_CONST(128), work->horiz.value + FX32_CONST(96), 0);
         Sprite_SetMatrix(work->sprites[1], &matrix);
-        EncounterEffect_SetVecFx32(&matrix, (2 << 18) - work->vert.value, 6 << 16, 0);
+        EncounterEffect_SetVecFx32(&matrix, FX32_CONST(128) - work->vert.value, FX32_CONST(96), 0);
         Sprite_SetMatrix(work->sprites[2], &matrix);
-        EncounterEffect_SetVecFx32(&matrix, work->vert.value + (2 << 18), 6 << 16, 0);
+        EncounterEffect_SetVecFx32(&matrix, work->vert.value + FX32_CONST(128), FX32_CONST(96), 0);
         Sprite_SetMatrix(work->sprites[3], &matrix);
         if (done == TRUE) {
             ctx->state++;

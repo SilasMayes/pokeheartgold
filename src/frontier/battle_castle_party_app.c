@@ -2810,7 +2810,6 @@ static void BattleCastlePartyApp_PrintMonSummary(BattleCastlePartyApp *app, int 
     u32 move;
     u16 halfSlashWidth;
     u16 center;
-    u8 *cursor;
     String *slash;
     String *format;
 
@@ -2869,10 +2868,10 @@ static void BattleCastlePartyApp_PrintMonSummary(BattleCastlePartyApp *app, int 
     BattleCastlePartyApp_PrintExpandedMessage(app, &app->windows[CASTLE_PARTY_WIN_SPEED], app->msgData, msg_0031_00085, GetWindowWidth(&app->windows[CASTLE_PARTY_WIN_SPEED]) * 8, 0, 0, CASTLE_PARTY_TEXT_COLOR, CASTLE_ALIGN_RIGHT);
 
     // moves: name, then "pp / maxPp" centered on the slash ("--" for an empty slot)
-    for (move = 0, cursor = (u8 *)app; move < 4; move++, cursor += sizeof(u16)) {
-        BufferMoveName(app->msgFormat, move, *(u16 *)(cursor + offsetof(BattleCastlePartyApp, summary.moves)));
+    for (move = 0; move < MAX_MON_MOVES; move++) {
+        BufferMoveName(app->msgFormat, move, app->summary.moves[move]);
         BattleCastlePartyApp_PrintExpandedMessage(app, &app->windows[CASTLE_PARTY_WIN_MOVE_NAMES + move], app->msgData, msg_0031_00096 + move, 0, 0, 0, CASTLE_PARTY_TEXT_COLOR, CASTLE_ALIGN_LEFT);
-        if (*(u16 *)(cursor + offsetof(BattleCastlePartyApp, summary.moves)) == MOVE_NONE) {
+        if (app->summary.moves[move] == MOVE_NONE) {
             Window *window = &app->windows[CASTLE_PARTY_WIN_MOVE_PP + move];
             int width = GetWindowWidth(window);
 

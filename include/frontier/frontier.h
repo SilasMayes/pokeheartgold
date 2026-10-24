@@ -23,7 +23,7 @@ extern const OverlayManagerTemplate gOverlayTemplate_Frontier;
 typedef void(FrontierAppExitFunc)(void *);
 
 FrontierLaunchArgs *Frontier_GetLaunchArgs(void *work);
-void Frontier_SetData(void *work, u32 data);
+void Frontier_SetData(void *work, void *data);
 void *Frontier_GetData(void *work);
 void Frontier_LaunchApplication(void *work, const OverlayManagerTemplate *ovyTemp, void *args, u32 freeArgs, FrontierAppExitFunc func);
 

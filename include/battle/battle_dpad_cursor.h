@@ -16,6 +16,12 @@ typedef struct BattleDpadCursor {
     u32 enabledMask; // one bit per selectable box
 } BattleDpadCursor;
 
+// BattleDpadCursor_HandleInput results other than a selected box
+enum BattleDpadInput {
+    BATTLE_DPAD_INPUT_CANCEL = -2,
+    BATTLE_DPAD_INPUT_NONE = -1,
+};
+
 enum BattleDpadDirection {
     BATTLE_DPAD_DIR_UP,
     BATTLE_DPAD_DIR_DOWN,

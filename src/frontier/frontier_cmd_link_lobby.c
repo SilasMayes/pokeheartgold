@@ -32,7 +32,7 @@ static BOOL FrontierScriptNative_WaitTowerLinkReceive(FrontierScriptContext *ctx
 
 BOOL FrtCmd_LinkLobbyAlloc(FrontierScriptContext *ctx) {
     FrontierLinkLobby *lobby = FrontierLinkLobby_New(Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork)->saveData);
-    Frontier_SetData(ctx->frontierSystem->frontierWork, (u32)lobby);
+    Frontier_SetData(ctx->frontierSystem->frontierWork, lobby);
     return FALSE;
 }
 
@@ -262,7 +262,7 @@ BOOL FrtCmd_LinkLobbyStartTower(FrontierScriptContext *ctx) {
 
     FrontierLinkLobby_Free(lobby);
     frontierFsys = FrontierFieldSystem_New(args->saveData, FALSE, TOWER_MODE_6);
-    Frontier_SetData(ctx->frontierSystem->frontierWork, (u32)frontierFsys);
+    Frontier_SetData(ctx->frontierSystem->frontierWork, frontierFsys);
     if (frontierFsys->towerMode == TOWER_MODE_6) {
         Frontier_RecordLinkPlayerLocations(args->saveData);
     }

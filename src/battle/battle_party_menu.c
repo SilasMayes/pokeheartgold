@@ -690,7 +690,7 @@ static int BattlePartyMenu_HandlePartyListInput(BattlePartyMenu *menu) {
         return BATTLE_PARTY_STATE_PARTY_LIST;
     }
     if (BattlePartyMenu_HandlePartyListSelection(menu) == 1) {
-        if (menu->context->selectedMon == 6) {
+        if (menu->context->selectedMon == PARTY_SIZE) {
             if (menu->context->mode != BATTLE_PARTY_MODE_SWITCH_NO_CANCEL) {
                 PlaySE(SEQ_SE_DP_DECIDE);
                 BattlePartyMenu_StartButtonAnim(menu, 6);
@@ -899,9 +899,9 @@ static int BattlePartyMenu_HandleMoveDetailInput(BattlePartyMenu *menu) {
 static int BattlePartyMenu_HandleLearnMoveInput(BattlePartyMenu *menu) {
     int input = BattlePartyMenu_CheckTouchHitbox(menu, sBattlePartyLearnMoveHitboxes);
 
-    if (input == -1) {
+    if (input == TOUCH_MENU_NO_INPUT) {
         input = BattleDpadCursor_HandleInput(menu->cursor);
-        if (input == -2) {
+        if (input == BATTLE_DPAD_INPUT_CANCEL) {
             input = 6;
         }
     } else {
@@ -942,9 +942,9 @@ static int BattlePartyMenu_HandleLearnMoveInput(BattlePartyMenu *menu) {
 static int BattlePartyMenu_HandleForgetMoveInput(BattlePartyMenu *menu) {
     int input = BattlePartyMenu_CheckTouchHitbox(menu, sBattlePartyForgetMoveHitboxes);
 
-    if (input == -1) {
+    if (input == TOUCH_MENU_NO_INPUT) {
         input = BattleDpadCursor_HandleInput(menu->cursor);
-        if (input == -2) {
+        if (input == BATTLE_DPAD_INPUT_CANCEL) {
             input = 2;
         }
     } else {
@@ -994,9 +994,9 @@ static int BattlePartyMenu_HandleRestorePPInput(BattlePartyMenu *menu) {
     BattlePartyContext *context = menu->context;
     int input = BattlePartyMenu_CheckTouchHitbox(menu, sBattlePartyRestorePPHitboxes);
 
-    if (input == -1) {
+    if (input == TOUCH_MENU_NO_INPUT) {
         input = BattleDpadCursor_HandleInput(menu->cursor);
-        if (input == -2) {
+        if (input == BATTLE_DPAD_INPUT_CANCEL) {
             input = 4;
         }
     } else {
@@ -1225,7 +1225,7 @@ static int BattlePartyMenu_AnimateRestoreAllPP(BattlePartyMenu *menu) {
                 count++;
             }
         }
-        if (count == 4) {
+        if (count == MAX_MON_MOVES) {
             menu->effectState = RESTORE_ALL_PP_STATE_FINISH;
         }
         break;
@@ -1374,7 +1374,7 @@ static void BattlePartyMenu_LoadMonData(BattlePartyMenu *menu) {
         menu->mons[i].heldItem = GetMonData(menu->mons[i].mon, MON_DATA_HELD_ITEM, NULL);
         menu->mons[i].exp = GetMonData(menu->mons[i].mon, MON_DATA_EXPERIENCE, NULL);
         menu->mons[i].levelExp = GetMonExpBySpeciesAndLevel(menu->mons[i].species, menu->mons[i].level);
-        if (menu->mons[i].level == 100) {
+        if (menu->mons[i].level == MAX_LEVEL) {
             menu->mons[i].nextLevelExp = menu->mons[i].levelExp;
         } else {
             menu->mons[i].nextLevelExp = GetMonExpBySpeciesAndLevel(menu->mons[i].species, menu->mons[i].level + 1);
@@ -1406,18 +1406,18 @@ static void BattlePartyMenu_LoadMonData(BattlePartyMenu *menu) {
 static BOOL BattlePartyMenu_HandlePartyListSelection(BattlePartyMenu *menu) {
     int input = BattlePartyMenu_CheckTouchHitbox(menu, sBattlePartyPartyListHitboxes);
 
-    if (input == -1) {
+    if (input == TOUCH_MENU_NO_INPUT) {
         input = BattleDpadCursor_HandleInput(menu->cursor);
-        if (input == -2) {
-            input = 6;
-        } else if (input == -1) {
+        if (input == BATTLE_DPAD_INPUT_CANCEL) {
+            input = PARTY_SIZE;
+        } else if (input == BATTLE_DPAD_INPUT_NONE) {
             return FALSE;
         }
-        if (input == 6 || BattlePartyMenu_GetSlotType(menu, input)) {
+        if (input == PARTY_SIZE || BattlePartyMenu_GetSlotType(menu, input)) {
             menu->context->selectedMon = input;
             return TRUE;
         }
-    } else if (input == 6 || BattlePartyMenu_GetSlotType(menu, input)) {
+    } else if (input == PARTY_SIZE || BattlePartyMenu_GetSlotType(menu, input)) {
         menu->context->selectedMon = input;
         BattlePartyMenu_DeactivateCursor(menu);
         return TRUE;
@@ -1429,11 +1429,11 @@ static BOOL BattlePartyMenu_HandlePartyListSelection(BattlePartyMenu *menu) {
 #define DEFINE_GET_PAGE_INPUT(name, hitboxes, cancelButton)           \
     static u8 name(BattlePartyMenu *menu) {                           \
         int input = BattlePartyMenu_CheckTouchHitbox(menu, hitboxes); \
-        if (input == -1) {                                            \
+        if (input == TOUCH_MENU_NO_INPUT) {                                            \
             input = BattleDpadCursor_HandleInput(menu->cursor);       \
-            if (input == -2) {                                        \
+            if (input == BATTLE_DPAD_INPUT_CANCEL) {                                        \
                 input = cancelButton;                                 \
-            } else if (input == -1) {                                 \
+            } else if (input == BATTLE_DPAD_INPUT_NONE) {                                 \
                 return 0xFF;                                          \
             }                                                         \
         } else {                                                      \
@@ -1474,8 +1474,8 @@ static u8 BattlePartyMenu_FindNextMon(BattlePartyMenu *menu, int slot, int direc
         while (TRUE) {
             slot += direction;
             if (slot < 0) {
-                slot = 5;
-            } else if (slot >= 6) {
+                slot = PARTY_SIZE - 1;
+            } else if (slot >= PARTY_SIZE) {
                 slot = 0;
             }
             if (start == order.slots[slot]) {
@@ -1489,8 +1489,8 @@ static u8 BattlePartyMenu_FindNextMon(BattlePartyMenu *menu, int slot, int direc
         while (TRUE) {
             slot += direction;
             if (slot < 0) {
-                slot = 5;
-            } else if (slot >= 6) {
+                slot = PARTY_SIZE - 1;
+            } else if (slot >= PARTY_SIZE) {
                 slot = 0;
             }
             if (start == slot) {
@@ -1517,7 +1517,7 @@ static void BattlePartyMenu_DrawExpBar(BattlePartyMenu *menu, int page) {
     }
     slot = menu->context->selectedMon;
     mon = &menu->mons[slot];
-    if (mon->level < 100) {
+    if (mon->level < MAX_LEVEL) {
         u32 levelExp = mon->levelExp;
         expToNextLevel = mon->nextLevelExp - levelExp;
         exp = mon->exp - levelExp;
@@ -1640,7 +1640,7 @@ static int BattlePartyMenu_CanSwitchToSelectedMon(BattlePartyMenu *menu) {
         return 0;
     }
     context = menu->context;
-    if (context->reservedMon != 6) {
+    if (context->reservedMon != PARTY_SIZE) {
         u8 slot = context->selectedMon;
         if (context->reservedMon == context->partyOrder[slot]) {
             String *template = NewString_ReadMsgData(menu->msgData, msg_0006_00093);
@@ -1711,7 +1711,7 @@ static int BattlePartyMenu_IsPartnerMon(BattlePartyMenu *menu, u32 slot) {
 static BOOL BattlePartyMenu_IsSelectedMoveHM(BattlePartyMenu *menu) {
     u16 move;
 
-    if (menu->context->selectedMove == 4) {
+    if (menu->context->selectedMove == MAX_MON_MOVES) {
         move = menu->context->move;
     } else {
         move = menu->mons[menu->context->selectedMon].moves[menu->context->selectedMove].move;
@@ -2038,7 +2038,7 @@ static void BattlePartyMenu_PrintLevelAndNextExp(BattlePartyMenu *menu, int slot
 
     string = NewString_ReadMsgData(menu->msgData, msg_0006_00026);
     expanded = String_New(14, menu->context->heapID);
-    if (mon->level < 100) {
+    if (mon->level < MAX_LEVEL) {
         BufferIntegerAsString(menu->msgFormat, 0, mon->nextLevelExp - mon->exp, 6, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     } else {
         BufferIntegerAsString(menu->msgFormat, 0, 0, 6, PRINTING_MODE_RIGHT_ALIGN, TRUE);
@@ -2274,7 +2274,7 @@ static void BattlePartyMenu_PrintForgetButtonLabel(BattlePartyMenu *menu, int wi
     String *string;
     u32 width;
 
-    if (menu->context->selectedMove == 4) {
+    if (menu->context->selectedMove == MAX_MON_MOVES) {
         string = NewString_ReadMsgData(menu->msgData, msg_0006_00059);
     } else {
         string = NewString_ReadMsgData(menu->msgData, msg_0006_00058);
@@ -2612,7 +2612,7 @@ static void BattlePartyMenu_PrintForgetMovePage(BattlePartyMenu *menu) {
     BattlePartyMenu_PrintPowerLabel(menu, 5);
     BattlePartyMenu_PrintCategoryLabel(menu, 9);
     moveSlot = menu->context->selectedMove;
-    if (moveSlot < 4) {
+    if (moveSlot < MAX_MON_MOVES) {
         moves = menu->mons[menu->context->selectedMon].moves;
         move = &moves[moveSlot];
         BattlePartyMenu_PrintMoveName(menu, move->move, 1, gBattlePartyMoveNameMsgIds[moveSlot], 0, 0, MAKE_TEXT_COLOR(15, 14, 0));
@@ -2683,7 +2683,7 @@ static void BattlePartyMenu_PrintContestForgetMovePage(BattlePartyMenu *menu) {
     AddTextPrinterParameterizedWithColor(&menu->pageWindows[4], 0, string, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
     String_Delete(string);
     ScheduleWindowCopyToVram(&menu->pageWindows[4]);
-    if (menu->context->selectedMove < 4) {
+    if (menu->context->selectedMove < MAX_MON_MOVES) {
         u32 moveSlot = menu->context->selectedMove;
         moves = menu->mons[menu->context->selectedMon].moves;
         move = &moves[moveSlot];
@@ -3104,7 +3104,7 @@ static void BattlePartyMenu_ShowForgetMoveSprites(BattlePartyMenu *menu) {
     BattlePartyMenu_ShowSpriteAt(menu->sprites[21 + menu->context->selectedMove], 136, 48);
     BattlePartyMenu_ShowHeldItemIcon(mon->heldItem, menu->sprites[menu->context->selectedMon], 32, 20);
     BattlePartyMenu_ShowCapsuleIcon(mon->ballCapsule, menu->sprites[32 + menu->context->selectedMon], 40, 20);
-    if (menu->context->selectedMove < 4) {
+    if (menu->context->selectedMove < MAX_MON_MOVES) {
         BattlePartyMenu_SetMoveCategoryIcon(menu, menu->sprites[26], mon->moves[menu->context->selectedMove].moveClass);
     } else {
         BattlePartyMenu_SetMoveCategoryIcon(menu, menu->sprites[26], GetMoveAttr(menu->context->move, MOVEATTR_CLASS));

@@ -8,7 +8,7 @@
 #include "frontier/battle_arcade_game_board.h"
 
 // Defined with u8 slot0, u16 slot1 and u16 slot2; this caller passes full words.
-u32 BattleArcadeData_Alloc(SaveData *saveData, u32 resume, u8 type, u32 slot0, u32 slot1, u32 slot2, u16 *resultVar);
+ArcadeContext *BattleArcadeData_Alloc(SaveData *saveData, u32 resume, u8 type, u32 slot0, u32 slot1, u32 slot2, u16 *resultVar);
 
 BOOL FrtCmd_ArcadeAlloc(FrontierScriptContext *ctx);
 BOOL FrtCmd_ArcadeInit(FrontierScriptContext *ctx);

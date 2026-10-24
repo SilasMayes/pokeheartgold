@@ -165,9 +165,9 @@ void ArcadeChallenge_SetSaved(ArcadeChallenge *challenge, int saved);
 void ArcadeChallenge_SetField(ArcadeChallenge *challenge, int field, u8 index, int unused, void *value);
 u32 ArcadeChallenge_GetField(ArcadeChallenge *challenge, int field, u8 index, int unused, int unused2);
 void ArcadeFlags_Init(u8 *flags);
-void *Save_Frontier_GetArcadeFlags(SaveData *save);
-void ArcadeFlags_SetField(void *flags, u32 field, u32 index, u32 unused, void *input);
-u32 ArcadeFlags_GetField(void *flags, u32 field, u8 index, u32 unused, u32 unused2);
+u8 *Save_Frontier_GetArcadeFlags(SaveData *save);
+void ArcadeFlags_SetField(u8 *flags, u32 field, u32 index, u32 unused, void *input);
+u32 ArcadeFlags_GetField(u8 *flags, u32 field, u8 index, u32 unused, u32 unused2);
 
 void FactoryChallenge_Clear(FactoryChallenge *challenge);
 FactoryChallenge *Save_Frontier_GetFactoryChallenge(SaveData *save);

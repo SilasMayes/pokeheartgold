@@ -3226,7 +3226,8 @@ static s8 BattleAnimSystem_GetPanStep(int start, int end, int step) {
     return 0;
 }
 
-BOOL BattleAnimSystem_ReadScriptArgs(BattleAnimSystem *system, u32 *out, int count) {
+BOOL BattleAnimSystem_ReadScriptArgs(BattleAnimSystem *system, void *out, int count) {
+    u32 *words = out;
     u32 expected;
     int i;
     system->scriptPtr++;
@@ -3237,9 +3238,9 @@ BOOL BattleAnimSystem_ReadScriptArgs(BattleAnimSystem *system, u32 *out, int cou
         return FALSE;
     }
     for (i = 0; i < count; i++) {
-        *out = *system->scriptPtr;
+        *words = *system->scriptPtr;
         system->scriptPtr++;
-        out++;
+        words++;
     }
     return TRUE;
 }

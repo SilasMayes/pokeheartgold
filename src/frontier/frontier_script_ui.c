@@ -44,13 +44,13 @@ static void FrontierSystem_ShowMessageWindow(FrontierSystem *system);
 static void FrontierSystem_FormatMessage(FrontierSystem *system, MsgData *msgData, u16 msgId);
 static void FrontierSystem_StartTextPrinter(FrontierSystem *system, u8 font, u32 speed, BOOL canABSpeedUp, BOOL autoScroll);
 static void FrontierScript_GetMailMessageString(String *dest, u16 bank, u16 number, u16 field0, u16 field1);
-static void FrontierMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 description, void *value);
+static void FrontierMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 description, u32 value);
 static u32 FrontierMenu_GetWidth(FrontierMenu *menu);
 static void FrontierMenu_InitTemplate(FrontierMenu *menu);
 static void FrontierMenu_Task(SysTask *task, FrontierMenu *menu);
 static void FrontierMenu_Close(FrontierMenu *menu);
 static void FrontierMenu_PrintDescription(FrontierMenu *menu);
-static void FrontierListMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 description, void *value);
+static void FrontierListMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 description, u32 value);
 static u32 FrontierListMenu_GetWidth(FrontierMenu *menu);
 static void FrontierListMenu_InitTemplate(FrontierMenu *menu);
 static void FrontierListMenu_PrintItem(ListMenu *list, s32 value, u8 onInit);
@@ -255,7 +255,7 @@ FrontierMenu *FrontierMenu_New(FrontierSystem *system, u8 x, u8 y, u8 initialSel
 }
 
 void FrontierMenu_AddItem(FrontierMenu *menu, u16 msgId, u16 description, u16 value) {
-    FrontierMenu_AddItemInternal(menu, msgId, description, (void *)value);
+    FrontierMenu_AddItemInternal(menu, msgId, description, value);
 }
 
 void FrontierMenu_Show(FrontierMenu *menu) {
@@ -283,7 +283,7 @@ void FrontierMenu_Show(FrontierMenu *menu) {
     menu->task = SysTask_CreateOnMainQueue((SysTaskFunc)FrontierMenu_Task, menu, 0);
 }
 
-static void FrontierMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 description, void *value) {
+static void FrontierMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 description, u32 value) {
     String *string;
 
     string = String_New(80, menu->system->heapId);
@@ -292,31 +292,24 @@ static void FrontierMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 desc
     menu->menuItems[menu->count].text = menu->strings[menu->count];
     String_Delete(string);
     menu->descriptions[menu->count] = description;
-    menu->menuItems[menu->count].value = (s32)value;
+    menu->menuItems[menu->count].value = value;
     menu->count++;
 }
 
 static u32 FrontierMenu_GetWidth(FrontierMenu *menu) {
     u32 width = 0;
-    s32 i = 0;
-    s32 count = menu->count;
-    const u8 *cursor;
+    s32 i;
 
-    if (count > 0) {
-        cursor = (const u8 *)menu;
-        do {
-            String *string = ((const FrontierMenu *)cursor)->menuItems[0].text;
-            u32 itemWidth;
-            if (string == NULL) {
-                break;
-            }
-            itemWidth = FontID_String_GetWidth(0, string, 0);
-            if (width < itemWidth) {
-                width = itemWidth;
-            }
-            i++;
-            cursor += sizeof(ListMenuItem);
-        } while (i < menu->count);
+    for (i = 0; i < menu->count; i++) {
+        String *string = menu->menuItems[i].text;
+        u32 itemWidth;
+        if (string == NULL) {
+            break;
+        }
+        itemWidth = FontID_String_GetWidth(0, string, 0);
+        if (width < itemWidth) {
+            width = itemWidth;
+        }
     }
     return width + 12;
 }
@@ -375,19 +368,14 @@ static void FrontierMenu_Task(SysTask *task, FrontierMenu *menu) {
 static void FrontierMenu_Close(FrontierMenu *menu) {
     FrontierSystem *system = menu->system;
     s32 i;
-    u8 *cursor;
 
     PlaySE(SEQ_SE_DP_SELECT);
     Delete2dMenu(menu->menu, NULL);
     EraseFrameAndWindow1(menu->menuTemplate.window, FALSE);
     RemoveWindow(menu->menuTemplate.window);
-    i = 0;
-    cursor = (u8 *)menu;
-    do {
-        String_Delete(((FrontierMenu *)cursor)->strings[0]);
-        i++;
-        cursor += sizeof(String *);
-    } while (i < FRONTIER_MENU_ITEMS_MAX);
+    for (i = 0; i < FRONTIER_MENU_ITEMS_MAX; i++) {
+        String_Delete(menu->strings[i]);
+    }
     if (menu->ownsMsgData == TRUE) {
         DestroyMsgData(menu->msgData);
     }
@@ -409,7 +397,7 @@ FrontierMenu *FrontierListMenu_New(FrontierSystem *system, u8 x, u8 y, u8 initia
 }
 
 void FrontierListMenu_AddItem(FrontierMenu *menu, u16 msgId, u16 description, u16 value) {
-    FrontierListMenu_AddItemInternal(menu, msgId, description, (void *)value);
+    FrontierListMenu_AddItemInternal(menu, msgId, description, value);
 }
 
 void FrontierListMenu_Show(FrontierMenu *menu) {
@@ -445,7 +433,7 @@ void FrontierListMenu_Show(FrontierMenu *menu) {
 }
 
 // value 0xFA adds a header line (value -3, printed in other colors).
-static void FrontierListMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 description, void *value) {
+static void FrontierListMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 description, u32 value) {
     String *string;
     u8 count;
 
@@ -455,10 +443,10 @@ static void FrontierListMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 
     count = menu->count;
     menu->listItems[count].text = menu->strings[count];
     String_Delete(string);
-    if (value == (void *)0xFA) {
+    if (value == 0xFA) {
         menu->listItems[menu->count].value = LIST_HEADER;
     } else {
-        menu->listItems[menu->count].value = (s32)value;
+        menu->listItems[menu->count].value = value;
     }
     menu->descriptions[menu->count] = description;
     menu->count++;
@@ -466,24 +454,18 @@ static void FrontierListMenu_AddItemInternal(FrontierMenu *menu, u32 msgId, u16 
 
 static u32 FrontierListMenu_GetWidth(FrontierMenu *menu) {
     u32 width = 0;
-    s32 i = 0;
-    s32 count = menu->count;
+    s32 i;
 
-    if (count > 0) {
-        const u8 *cursor = (const u8 *)menu;
-        do {
-            String *string = ((const FrontierMenu *)cursor)->listItems[0].text;
-            u32 itemWidth;
-            if (string == NULL) {
-                break;
-            }
-            itemWidth = FontID_String_GetWidth(0, string, 0);
-            if (width < itemWidth) {
-                width = itemWidth;
-            }
-            i++;
-            cursor += sizeof(ListMenuItem);
-        } while (i < menu->count);
+    for (i = 0; i < menu->count; i++) {
+        String *string = menu->listItems[i].text;
+        u32 itemWidth;
+        if (string == NULL) {
+            break;
+        }
+        itemWidth = FontID_String_GetWidth(0, string, 0);
+        if (width < itemWidth) {
+            width = itemWidth;
+        }
     }
     return width + 12;
 }
@@ -569,7 +551,6 @@ static void FrontierListMenu_Task(SysTask *task, FrontierMenu *menu) {
 
 static void FrontierListMenu_Close(FrontierMenu *menu, int playSound) {
     int i;
-    u8 *cursor;
     FrontierSystem *system = menu->system;
 
     if (playSound == TRUE) {
@@ -578,12 +559,8 @@ static void FrontierListMenu_Close(FrontierMenu *menu, int playSound) {
     DestroyListMenu(menu->listMenu, NULL, NULL);
     EraseFrameAndWindow1(menu->listTemplate.window, FALSE);
     RemoveWindow(&menu->window);
-    i = 0;
-    cursor = (u8 *)menu;
-    while (i < FRONTIER_MENU_ITEMS_MAX) {
-        String_Delete(((FrontierMenu *)cursor)->strings[0]);
-        i++;
-        cursor += sizeof(String *);
+    for (i = 0; i < FRONTIER_MENU_ITEMS_MAX; i++) {
+        String_Delete(menu->strings[i]);
     }
     if (menu->ownsMsgData == TRUE) {
         DestroyMsgData(menu->msgData);

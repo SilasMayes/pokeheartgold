@@ -43,7 +43,7 @@ BOOL FrtCmd_HallAlloc(FrontierScriptContext *ctx) {
     u16 slot0 = FrontierScript_ReadVar(ctx);
     u16 slot1 = FrontierScript_ReadVar(ctx);
     BattleHallData *data = BattleHallData_Alloc(Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork)->saveData, resume, (u8)type, (u8)slot0, (u8)slot1);
-    Frontier_SetData(ctx->frontierSystem->frontierWork, (u32)data);
+    Frontier_SetData(ctx->frontierSystem->frontierWork, data);
     return FALSE;
 }
 
@@ -287,7 +287,8 @@ BOOL FrtCmd_HallAction(FrontierScriptContext *ctx) {
 
 BOOL FrtCmd_HallGetBattleResult(FrontierScriptContext *ctx) {
     u16 *result = FrontierScript_ReadVarPtr(ctx);
-    *result = ((BattleHallData *)Frontier_GetData(ctx->frontierSystem->frontierWork))->battleWon;
+    BattleHallData *data = Frontier_GetData(ctx->frontierSystem->frontierWork);
+    *result = data->battleWon;
     return FALSE;
 }
 

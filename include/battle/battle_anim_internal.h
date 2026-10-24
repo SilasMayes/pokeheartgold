@@ -174,7 +174,7 @@ void BattleAnimSystem_BuildBattlerPicParams(BattleAnimSystem *system, BattleAnim
 u32 BattleAnimSystem_GetBattleBgPaletteMask(BattleAnimSystem *system);
 void BattleAnimBackground_LoadBattleBgToLayerDefault(BattleAnimSystem *system, GFBgLayer layer);
 void BattleAnimBackground_ResetLayer(BattleAnimSystem *system, GFBgLayer layer);
-BOOL BattleAnimSystem_ReadScriptArgs(BattleAnimSystem *system, u32 *out, int count);
+BOOL BattleAnimSystem_ReadScriptArgs(BattleAnimSystem *system, void *out, int count);
 void BattleAnimSystem_GetSpriteTemplate(ManagedSpriteTemplate *template, BattleAnimSystem *system);
 u8 BattleAnimSystem_GetBattlerType(BattleAnimSystem *system, int battler);
 u8 BattleAnimSystem_GetBattlerGender(BattleAnimSystem *system, int battler);

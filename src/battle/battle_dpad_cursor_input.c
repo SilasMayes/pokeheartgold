@@ -8,7 +8,7 @@
 #include "sound_playback.h"
 #include "system.h"
 
-// Returns the selected box on A, -2 on B and -1 otherwise. The d-pad moves to the neighbour in that direction,
+// Returns the selected box on A, BATTLE_DPAD_INPUT_CANCEL on B and BATTLE_DPAD_INPUT_NONE otherwise. The d-pad moves to the neighbour in that direction,
 // skipping boxes that are not enabled; a neighbour flagged as a return link (bit 7) leads back to the previous box.
 int BattleDpadCursor_HandleInput(BattleDpadCursor *cursor) {
     u8 input;
@@ -18,7 +18,7 @@ int BattleDpadCursor_HandleInput(BattleDpadCursor *cursor) {
     u8 x, y, w, h;
 
     if (BattleDpadCursor_TryActivate(cursor) == FALSE) {
-        return -1;
+        return BATTLE_DPAD_INPUT_NONE;
     }
     if (gSystem.newKeys & PAD_KEY_UP) {
         input = DpadMenuBox_GetNeighborInDirection(cursor->boxes, NULL, NULL, NULL, NULL, cursor->position, BATTLE_DPAD_DIR_UP);
@@ -68,13 +68,13 @@ int BattleDpadCursor_HandleInput(BattleDpadCursor *cursor) {
             BattleCursor_SetRect(cursor->battleCursor, x, w, y, h);
             PlaySE(SEQ_SE_DP_SELECT);
         }
-        return -1;
+        return BATTLE_DPAD_INPUT_NONE;
     }
     if (gSystem.newKeys & PAD_BUTTON_A) {
         return cursor->position;
     } else if (gSystem.newKeys & PAD_BUTTON_B) {
         PlaySE(SEQ_SE_DP_DECIDE);
-        return -2;
+        return BATTLE_DPAD_INPUT_CANCEL;
     }
-    return -1;
+    return BATTLE_DPAD_INPUT_NONE;
 }

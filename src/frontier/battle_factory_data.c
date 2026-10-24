@@ -138,46 +138,21 @@ static void BattleFactoryData_InitNew(BattleFactoryData *data) {
     BattleFactory_SwapRentalWithRandom(data, 4, 0);
     BattleFactory_SwapRentalWithRandom(data, 5, 0);
     count = FACTORY_RENTAL_COUNT;
-    {
-        u8 *p;
-        i = 0;
-        p = (u8 *)data;
-        for (; i < FACTORY_RENTAL_COUNT; i++) {
-            candidates[i] = ((BattleFactoryData *)p)->rentals.mons[0];
-            p += sizeof(FrontierMon);
-        }
+    for (i = 0; i < FACTORY_RENTAL_COUNT; i++) {
+        candidates[i] = data->rentals.mons[i];
     }
     // Link multi battles: the partner's rentals are generated here too, without the player's species and items.
     if (BattleFactory_IsMultiType(data->type) == TRUE) {
-        struct {
-            FrontierMon *mon;
-            u16 *setId;
-            BattleFactoryData *item;
-            u16 *excludedItem;
-        } v;
-        i = 0;
-        v.mon = data->rentals.mons;
-        v.setId = setIds;
-        v.item = data;
-        v.excludedItem = items;
-        for (; i < FACTORY_RENTAL_COUNT; i++) {
-            *v.setId++ = v.mon->species;
-            *v.excludedItem++ = v.item->rentals.mons[0].item;
-            v.mon++;
-            v.item = (BattleFactoryData *)((u8 *)v.item + sizeof(FrontierMon));
+        for (i = 0; i < FACTORY_RENTAL_COUNT; i++) {
+            setIds[i] = data->rentals.mons[i].species;
+            items[i] = data->rentals.mons[i].item;
         }
         BattleFactory_GenerateRentalSets(BattleFactory_GetRound(data), data->levelMode, data->partnerRentals.setIds, data->partnerRentals.mons, data->partnerRentals.ivs, data->partnerRentals.personalities, data->partnerTradeCount, setIds, items);
         BattleFactory_SwapRentalWithRandom(data, 4, 1);
         BattleFactory_SwapRentalWithRandom(data, 5, 1);
         count = 12;
-        {
-            u8 *p;
-            i = 0;
-            p = (u8 *)data;
-            for (; i < FACTORY_RENTAL_COUNT; i++) {
-                candidates[i + FACTORY_RENTAL_COUNT] = ((BattleFactoryData *)p)->partnerRentals.mons[0];
-                p += sizeof(FrontierMon);
-            }
+        for (i = 0; i < FACTORY_RENTAL_COUNT; i++) {
+            candidates[i + FACTORY_RENTAL_COUNT] = data->partnerRentals.mons[i];
         }
     }
     BattleFactory_GenerateTrainerSets(BattleFactory_GetOpponentMonCount(data->type, 1), data->trainerIds[data->battleNo], data->levelMode, candidates, data->opponentSetIds, data->opponentMons, data->opponentIVs, data->opponentPersonalities, count);
@@ -286,11 +261,9 @@ void BattleFactoryData_Free(BattleFactoryData *data) {
 }
 
 void BattleFactory_StoreAppResult(BattleFactoryData *data, BattleFactoryAppLaunchArgs *args) {
-    u8 *p = (u8 *)data;
     int i;
     for (i = 0; i < 6; i++) {
-        ((BattleFactoryData *)p)->selection[0] = BattleFactory_GetAppResult(args, (u8)i);
-        p += 2;
+        data->selection[i] = BattleFactory_GetAppResult(args, (u8)i);
     }
 }
 
@@ -409,36 +382,21 @@ void BattleFactory_CompleteRound(BattleFactoryData *data) {
 }
 
 void BattleFactory_SetRentalParty(BattleFactoryData *data) {
-    FrontierMon *rentals;
     int count = BattleFactory_GetPartySize(data->type);
     int opponentCount = BattleFactory_GetOpponentMonCount(data->type, 1);
     Pokemon *mon;
     int i;
-    u8 *p;
 
     SaveArray_Party_Init(data->playerParty);
     mon = AllocMonZeroed(HEAP_ID_FIELD2);
-    i = 0;
-    if (count > 0) {
-        p = (u8 *)data;
-        rentals = data->rentals.mons;
-        do {
-            FrontierMon_ToPokemon(&rentals[((BattleFactoryData *)p)->selection[0]], mon, BattleFactory_GetMonLevel(data));
-            Frontier_AddRentalMonToParty(data->saveData, data->playerParty, mon);
-            ((BattleFactoryData *)p)->partySetIds[0] = data->rentals.setIds[((BattleFactoryData *)p)->selection[0]];
-            i++;
-            p += 2;
-        } while (i < count);
+    for (i = 0; i < count; i++) {
+        FrontierMon_ToPokemon(&data->rentals.mons[data->selection[i]], mon, BattleFactory_GetMonLevel(data));
+        Frontier_AddRentalMonToParty(data->saveData, data->playerParty, mon);
+        data->partySetIds[i] = data->rentals.setIds[data->selection[i]];
     }
-    i = 0;
-    if (opponentCount > 0) {
-        FrontierMon *opponent = data->opponentMons;
-        do {
-            FrontierMon_ToPokemon(opponent, mon, BattleFactory_GetMonLevel(data));
-            Frontier_AddRentalMonToParty(data->saveData, data->opponentParty, mon);
-            i++;
-            opponent++;
-        } while (i < opponentCount);
+    for (i = 0; i < opponentCount; i++) {
+        FrontierMon_ToPokemon(&data->opponentMons[i], mon, BattleFactory_GetMonLevel(data));
+        Frontier_AddRentalMonToParty(data->saveData, data->opponentParty, mon);
     }
     Heap_Free(mon);
 }
@@ -486,7 +444,6 @@ void BattleFactory_TradeMon(BattleFactoryData *data) {
 }
 
 void BattleFactory_SetOpponentParty(BattleFactoryData *data) {
-    FrontierMon *opponent;
     int count;
     int i;
     Pokemon *mon;
@@ -495,15 +452,9 @@ void BattleFactory_SetOpponentParty(BattleFactoryData *data) {
     count = BattleFactory_GetOpponentMonCount(data->type, 1);
     SaveArray_Party_Init(data->opponentParty);
     mon = AllocMonZeroed(HEAP_ID_FIELD2);
-    i = 0;
-    if (count > 0) {
-        opponent = data->opponentMons;
-        do {
-            FrontierMon_ToPokemon(opponent, mon, BattleFactory_GetMonLevel(data));
-            Frontier_AddRentalMonToParty(data->saveData, data->opponentParty, mon);
-            opponent++;
-            i++;
-        } while (i < count);
+    for (i = 0; i < count; i++) {
+        FrontierMon_ToPokemon(&data->opponentMons[i], mon, BattleFactory_GetMonLevel(data));
+        Frontier_AddRentalMonToParty(data->saveData, data->opponentParty, mon);
     }
     Heap_Free(mon);
     for (i = 0; i < count; i++) {

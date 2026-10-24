@@ -97,7 +97,9 @@ typedef struct FrontierFieldSystem {
     u8 filler83d;
     u16 linkSendBuffer[0x23]; // Related to linkFlag somehow. Also player gender? Also species??? these seem to be some sort of struct?
     u16 unk884[0x23]; // Seemingly never set. Probably relates to tag partner somehow.
-    u8 filler8CA[0xa];
+    u8 filler8CA[2];
+    u32 battleWon;
+    struct BattleSetup *battleSetup;
     u8 linkReceiveCount;
     u8 partnerCheckKind;
     u8 filler8D6[2];

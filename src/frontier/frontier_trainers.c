@@ -306,16 +306,13 @@ static const u16 sFrontierTrainerClassSprites[][2] = {
 };
 
 u16 FrontierTrainer_GetClassSprite(u8 value) {
-    u32 i = 0;
-    const u16 *key = sFrontierTrainerClassSprites[0];
+    u32 i;
 
-    do {
-        if (value == *key) {
+    for (i = 0; i < NELEMS(sFrontierTrainerClassSprites); i++) {
+        if (value == sFrontierTrainerClassSprites[i][0]) {
             return sFrontierTrainerClassSprites[i][1];
         }
-        i++;
-        key += 2;
-    } while (i < 63);
+    }
 
     return 3;
 }
@@ -407,33 +404,21 @@ u32 FrontierMon_GenerateWithRandomOtId(FrontierMon *mon, u16 setId, int itemInde
 
 void FrontierMon_GenerateList(FrontierMon *mons, u16 *setIds, u8 *ivs, u32 *pids, u32 *outPids, int count, enum HeapID heapID, NarcId narcId) {
     int i;
-    u32 pidIter;
-    u32 outPidIter;
     u32 generatedPid;
     u8 iv;
     u32 pid;
 
-    i = 0;
-    if (count > 0) {
-        outPidIter = (u32)outPids;
-        pidIter = (u32)pids;
-        do {
-            iv = (u8)(ivs == NULL ? 0 : ivs[i]);
-            if (pids == NULL) {
-                pid = 0;
-            } else {
-                pid = *(u32 *)pidIter;
-            }
-            generatedPid = FrontierMon_GenerateWithRandomOtId(mons, *setIds, i, iv, pid, heapID, narcId);
-            if (outPids) {
-                *(u32 *)outPidIter = generatedPid;
-            }
-            i++;
-            mons++;
-            pidIter += 4;
-            setIds++;
-            outPidIter += 4;
-        } while (i < count);
+    for (i = 0; i < count; i++) {
+        iv = (u8)(ivs == NULL ? 0 : ivs[i]);
+        if (pids == NULL) {
+            pid = 0;
+        } else {
+            pid = pids[i];
+        }
+        generatedPid = FrontierMon_GenerateWithRandomOtId(&mons[i], setIds[i], i, iv, pid, heapID, narcId);
+        if (outPids) {
+            outPids[i] = generatedPid;
+        }
     }
 }
 

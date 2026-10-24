@@ -554,8 +554,8 @@ static BOOL FrontierBrainIntroLerp_Step(FrontierBrainIntroLerp *lerp) {
 }
 
 static void FrontierBrainIntro_SetVec(VecFx32 *vec, fx32 x, fx32 y, fx32 z) {
-    VecFx32 v = { x, y, z };
-    *vec = v;
+    VecFx32 newVec = { x, y, z };
+    *vec = newVec;
 }
 
 static void FrontierBrainIntro_LoadBackground(FrontierBrainIntro *intro, const FrontierBrainIntroArgs *args) {

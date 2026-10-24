@@ -1391,7 +1391,7 @@ static BOOL FrtCmd_BattleTransition(FrontierScriptContext *ctx) {
     work->state = 0;
     work->transition = ctx->data[0];
     work->map = FrontierSystem_GetFrontierMap(ctx->frontierSystem);
-    Frontier_SetData(ctx->frontierSystem->frontierWork, (u32)work);
+    Frontier_SetData(ctx->frontierSystem->frontierWork, work);
     FrontierScriptContext_Pause(ctx, FrontierScriptNative_WaitTransition);
     PaletteData_FillPaletteInBuffer(work->map->paletteData, PLTTBUF_MAIN_BG, PLTTSEL_BOTH, 0, 0, 1);
     return TRUE;
@@ -1405,7 +1405,7 @@ static BOOL FrontierScriptNative_WaitTransition(FrontierScriptContext *ctx) {
     if (running == FALSE) {
         SetMasterBrightnessByColor(PM_LCD_TOP, RGB_BLACK);
         SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_BLACK);
-        Frontier_SetData(ctx->frontierSystem->frontierWork, (u32)work->prevData);
+        Frontier_SetData(ctx->frontierSystem->frontierWork, work->prevData);
         Heap_Free(work);
     }
     return running == FALSE;

@@ -160,53 +160,33 @@ void BattleFactoryLink_ReceiveTrainerIds(int netId, int size, const u16 *data, B
 
 // The message carries {setIds[6], ivs[6], personalities low halves[6], high halves[6]}.
 BOOL BattleFactoryLink_SendRentalMons(BattleFactoryData *work) {
-    u8 *buffer = (u8 *)work->linkBuffer;
-    {
-        int i = 0;
-        u8 *src = (u8 *)work;
-        u8 *dst = buffer;
-        for (; i < 6; i++) {
-            *(u16 *)dst = ((BattleFactoryData *)src)->partnerRentals.setIds[0];
-            src += 2;
-            dst += 2;
-        }
+    u16 *buffer = work->linkBuffer;
+    u16 *personality;
+    int i;
+    for (i = 0; i < FACTORY_RENTAL_COUNT; i++) {
+        buffer[i] = work->partnerRentals.setIds[i];
     }
-    {
-        u8 *dst;
-        int i = 0;
-        dst = buffer;
-        for (; i < 6; i++) {
-            *(u16 *)(dst + 12) = work->partnerRentals.ivs[i];
-            dst += 2;
-        }
+    for (i = 0; i < FACTORY_RENTAL_COUNT; i++) {
+        buffer[FACTORY_RENTAL_COUNT + i] = work->partnerRentals.ivs[i];
     }
-    {
-        u8 *dst;
-        int i;
-        u8 *src = (u8 *)work;
-        dst = buffer;
-        i = 0;
-        dst += 24;
-        for (; i < 6; i++) {
-            *(u16 *)dst = ((BattleFactoryData *)src)->partnerRentals.personalities[0];
-            *(u16 *)(dst + 12) = ((BattleFactoryData *)src)->partnerRentals.personalities[0] >> 16;
-            src += 4;
-            dst += 2;
-        }
+    personality = buffer + FACTORY_RENTAL_COUNT * 2;
+    for (i = 0; i < FACTORY_RENTAL_COUNT; i++) {
+        personality[i] = work->partnerRentals.personalities[i];
+        personality[FACTORY_RENTAL_COUNT + i] = work->partnerRentals.personalities[i] >> 16;
     }
     return Comm_SendCommand(FRONTIER_LINK_CMD_FACTORY_RENTAL_MONS, buffer, 0x3C) == TRUE;
 }
 
-typedef struct FactoryMonsMessage6 {
+struct FactoryMonsMessage6 {
     u16 setIds[6];
     u16 ivs[6];
     u16 personalityLow[6];
     u16 personalityHigh[6];
-} FactoryMonsMessage6;
+};
 
-void BattleFactoryLink_ReceiveRentalMons(int netId, int size, const u16 *data, BattleFactoryData *work) {
-    const FactoryMonsMessage6 *msg = (const FactoryMonsMessage6 *)data;
+void BattleFactoryLink_ReceiveRentalMons(int netId, int size, const FactoryMonsMessage6 *msg, BattleFactoryData *work) {
     int i;
+    const u16 *personality;
     work->linkMessageCount++;
     if (netId == Comm_GetLocalNetId() || Comm_GetLocalNetId() == 0) {
         return;
@@ -217,64 +197,42 @@ void BattleFactoryLink_ReceiveRentalMons(int netId, int size, const u16 *data, B
     for (i = 0; i < 6; i++) {
         work->rentals.ivs[i] = msg->ivs[i];
     }
-    i = 0;
-    data += 12;
-    for (; i < 6; i++) {
-        work->rentals.personalities[i] = data[0];
-        work->rentals.personalities[i] |= data[6] << 16;
-        data++;
+    personality = msg->personalityLow;
+    for (i = 0; i < FACTORY_RENTAL_COUNT; i++) {
+        work->rentals.personalities[i] = personality[i];
+        work->rentals.personalities[i] |= personality[FACTORY_RENTAL_COUNT + i] << 16;
     }
 }
 
 // The message carries {setIds[4], ivs[4], personalities low halves[4], high halves[4]}.
 BOOL BattleFactoryLink_SendOpponentMons(BattleFactoryData *work) {
-    u8 *buffer = (u8 *)work->linkBuffer;
-    {
-        int i = 0;
-        u8 *src = (u8 *)work;
-        u8 *dst = buffer;
-        for (; i < 4; i++) {
-            *(u16 *)dst = ((BattleFactoryData *)src)->opponentSetIds[0];
-            src += 2;
-            dst += 2;
-        }
+    u16 *buffer = work->linkBuffer;
+    u16 *personality;
+    int i;
+    for (i = 0; i < FACTORY_OPPONENT_COUNT; i++) {
+        buffer[i] = work->opponentSetIds[i];
     }
-    {
-        u8 *dst;
-        int i = 0;
-        dst = buffer;
-        for (; i < 4; i++) {
-            *(u16 *)(dst + 8) = work->opponentIVs[i];
-            dst += 2;
-        }
+    for (i = 0; i < FACTORY_OPPONENT_COUNT; i++) {
+        buffer[FACTORY_OPPONENT_COUNT + i] = work->opponentIVs[i];
     }
-    {
-        u8 *dst;
-        int i;
-        u8 *src = (u8 *)work;
-        dst = buffer;
-        i = 0;
-        dst += 16;
-        for (; i < 4; i++) {
-            *(u16 *)dst = ((BattleFactoryData *)src)->opponentPersonalities[0];
-            *(u16 *)(dst + 8) = ((BattleFactoryData *)src)->opponentPersonalities[0] >> 16;
-            src += 4;
-            dst += 2;
-        }
+    personality = buffer + FACTORY_OPPONENT_COUNT * 2;
+    for (i = 0; i < FACTORY_OPPONENT_COUNT; i++) {
+        personality[i] = work->opponentPersonalities[i];
+        personality[FACTORY_OPPONENT_COUNT + i] = work->opponentPersonalities[i] >> 16;
     }
     return Comm_SendCommand(FRONTIER_LINK_CMD_FACTORY_OPPONENT_MONS, buffer, 0x3C) == TRUE;
 }
 
-typedef struct FactoryMonsMessage4 {
+struct FactoryMonsMessage4 {
     u16 setIds[4];
     u16 ivs[4];
     u16 personalityLow[4];
     u16 personalityHigh[4];
-} FactoryMonsMessage4;
+};
 
-void BattleFactoryLink_ReceiveOpponentMons(int netId, int size, const u16 *data, BattleFactoryData *work) {
-    const FactoryMonsMessage4 *msg = (const FactoryMonsMessage4 *)data;
+void BattleFactoryLink_ReceiveOpponentMons(int netId, int size, const FactoryMonsMessage4 *msg, BattleFactoryData *work) {
     int i;
+    const u16 *personality;
     work->linkMessageCount++;
     if (netId == Comm_GetLocalNetId() || Comm_GetLocalNetId() == 0) {
         return;
@@ -285,12 +243,10 @@ void BattleFactoryLink_ReceiveOpponentMons(int netId, int size, const u16 *data,
     for (i = 0; i < 4; i++) {
         work->opponentIVs[i] = msg->ivs[i];
     }
-    i = 0;
-    data += 8;
-    for (; i < 4; i++) {
-        work->opponentPersonalities[i] = data[0];
-        work->opponentPersonalities[i] |= data[4] << 16;
-        data++;
+    personality = msg->personalityLow;
+    for (i = 0; i < FACTORY_OPPONENT_COUNT; i++) {
+        work->opponentPersonalities[i] = personality[i];
+        work->opponentPersonalities[i] |= personality[FACTORY_OPPONENT_COUNT + i] << 16;
     }
 }
 
@@ -439,9 +395,7 @@ BOOL BattleCastleLink_SendChoice(BattleCastleData *work) {
     return Comm_SendCommand(FRONTIER_LINK_CMD_CASTLE_CHOICE, work->linkBuffer, 0x28) == TRUE;
 }
 
-void BattleCastleLink_ReceiveChoice(int netId, int size, void *data, BattleCastleData *work) {
-    const u16 *msg = data;
-
+void BattleCastleLink_ReceiveChoice(int netId, int size, const u16 *msg, BattleCastleData *work) {
     work->linkMessageCount++;
 
     if (Comm_GetLocalNetId() == netId) {
@@ -517,9 +471,8 @@ BOOL BattleCastleLink_SendOpponentMons(BattleCastleData *work) {
     return result;
 }
 
-void BattleCastleLink_ReceiveOpponentMons(int netId, int size, void *data, BattleCastleData *work) {
+void BattleCastleLink_ReceiveOpponentMons(int netId, int size, const u16 *msg, BattleCastleData *work) {
     int i, offset;
-    const u16 *msg = data;
 
     offset = 0;
     work->linkMessageCount++;
@@ -590,7 +543,7 @@ BOOL BattleCastleLink_SendPartyMons(BattleCastleData *work) {
 }
 
 // Adds the partner's Pokemon to the party; the child then swaps them in front of its own.
-void BattleCastleLink_ReceivePartyMons(int netId, int size, void *data, BattleCastleData *work) {
+void BattleCastleLink_ReceivePartyMons(int netId, int size, const u8 *data, BattleCastleData *work) {
     int i;
     int count;
     int monSize;
@@ -604,7 +557,7 @@ void BattleCastleLink_ReceivePartyMons(int netId, int size, void *data, BattleCa
     monSize = SizeOfStructPokemon();
     mon = AllocMonZeroed(HEAP_ID_FIELD2);
     for (i = 0; i < count; i++) {
-        MI_CpuCopy8((u8 *)data + i * monSize, mon, monSize);
+        MI_CpuCopy8(data + i * monSize, mon, monSize);
         Party_AddMon(work->playerParty, mon);
     }
     Heap_Free(mon);
@@ -700,6 +653,7 @@ struct ArcadeMonsMessage {
 
 void BattleArcadeLink_ReceiveOpponentMons(int netId, int size, ArcadeMonsMessage *msg, ArcadeContext *ctx) {
     int i;
+    const u16 *personality;
     ctx->linkMessageCount++;
     if (netId == Comm_GetLocalNetId()) {
         return;
@@ -713,14 +667,10 @@ void BattleArcadeLink_ReceiveOpponentMons(int netId, int size, ArcadeMonsMessage
     for (i = 0; i < 4; i++) {
         ctx->ivs[i] = msg->ivs[i];
     }
-    {
-        u8 *cursor;
-        i = 0;
-        cursor = (u8 *)msg + 16;
-        for (; i < 4; i++, cursor += 2) {
-            ctx->personalities[i] = *(u16 *)cursor;
-            ctx->personalities[i] |= (u32) * (u16 *)(cursor + 8) << 16;
-        }
+    personality = msg->personalityLow;
+    for (i = 0; i < 4; i++) {
+        ctx->personalities[i] = personality[i];
+        ctx->personalities[i] |= (u32)personality[4 + i] << 16;
     }
 }
 
@@ -766,7 +716,7 @@ BOOL BattleArcadeLink_SendPartyMons(ArcadeContext *ctx) {
 }
 
 // Adds the partner's Pokemon to the party; the child then swaps them in front of its own.
-void BattleArcadeLink_ReceivePartyMons(int netId, int size, void *data, ArcadeContext *ctx) {
+void BattleArcadeLink_ReceivePartyMons(int netId, int size, const u8 *data, ArcadeContext *ctx) {
     int i;
     int count;
     int monSize;
@@ -780,7 +730,7 @@ void BattleArcadeLink_ReceivePartyMons(int netId, int size, void *data, ArcadeCo
     monSize = SizeOfStructPokemon();
     mon = AllocMonZeroed(HEAP_ID_FIELD2);
     for (i = 0; i < count; i++) {
-        MI_CpuCopy8((u8 *)data + i * monSize, mon, monSize);
+        MI_CpuCopy8(data + i * monSize, mon, monSize);
         Party_AddMon(ctx->playerParty, mon);
     }
     Heap_Free(mon);

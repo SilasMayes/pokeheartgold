@@ -138,7 +138,7 @@ void BattleController_EmitPacket(BattleSystem *battleSystem, int direction, int 
 void BattleController_EmitPlayEncounterAnimation(BattleSystem *battleSystem, BOOL battlerId) {
     BattleControllerPacketEncounterAnimation packet;
 
-    packet.command = 1;
+    packet.command = OPPONENT_COMMAND_PLAY_ENCOUNTER_ANIMATION;
     packet.randTemp = BattleSystem_GetRandTemp(battleSystem);
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
 }
@@ -147,7 +147,7 @@ void BattleController_EmitPokemonEncounter(BattleSystem *battleSystem, int battl
     BattleControllerPacketPokemonEncounter packet;
     int i;
 
-    packet.command = 2;
+    packet.command = OPPONENT_COMMAND_POKEMON_ENCOUNTER;
     packet.gender = battleSystem->ctx->battleMons[battlerId].gender;
     packet.shiny = battleSystem->ctx->battleMons[battlerId].shiny;
     packet.species = battleSystem->ctx->battleMons[battlerId].species;
@@ -167,7 +167,7 @@ void BattleController_EmitPokemonSlideIn(BattleSystem *battleSystem, int battler
     BattleControllerPacketPokemonSendOut packet;
     int i;
 
-    packet.command = 3;
+    packet.command = OPPONENT_COMMAND_POKEMON_SLIDE_IN;
     packet.gender = battleSystem->ctx->battleMons[battlerId].gender;
     packet.shiny = battleSystem->ctx->battleMons[battlerId].shiny;
     packet.species = battleSystem->ctx->battleMons[battlerId].species;
@@ -190,7 +190,7 @@ void BattleController_EmitPokemonSlideIn(BattleSystem *battleSystem, int battler
 void BattleController_EmitPokemonSendOut(BattleSystem *battleSystem, int battlerId, int ball, int breakOut) {
     BattleControllerPacketPokemonSendOut packet;
 
-    packet.command = 4;
+    packet.command = OPPONENT_COMMAND_POKEMON_SEND_OUT;
     if (battleSystem->ctx->battleMons[battlerId].status2 & STATUS2_TRANSFORM) {
         packet.gender = (u8)battleSystem->ctx->battleMons[battlerId].moveEffectData.transformGender;
         packet.personality = battleSystem->ctx->battleMons[battlerId].moveEffectData.transformPersonality;
@@ -242,7 +242,7 @@ void BattleController_EmitRecallPokemon(BattleSystem *battleSystem, BattleContex
         facing = MON_PIC_FACING_BACK;
     }
     int form = battleSystem->ctx->battleMons[battlerId].form;
-    packet.command = 5;
+    packet.command = OPPONENT_COMMAND_RECALL_POKEMON;
     if (battleSystem->ctx->battleMons[battlerId].status2 & STATUS2_TRANSFORM) {
         packet.height = GetMonPicHeightBySpeciesGenderForm(battleSystem->ctx->battleMons[battlerId].species, battleSystem->ctx->battleMons[battlerId].moveEffectData.transformGender, facing, form, battleSystem->ctx->battleMons[battlerId].moveEffectData.transformPersonality);
     } else {
@@ -273,7 +273,7 @@ void BattleController_EmitPokemonEnterBall(BattleSystem *battleSystem, s32 battl
 
     facing = battleSystem->opponentData[battlerId]->battlerType & 1 ? MON_PIC_FACING_FRONT : MON_PIC_FACING_BACK;
     form = battleSystem->ctx->battleMons[battlerId].form;
-    packet.command = 6;
+    packet.command = OPPONENT_COMMAND_POKEMON_ENTER_BALL;
     if (battleSystem->ctx->battleMons[battlerId].status2 & STATUS2_TRANSFORM) {
         packet.height = GetMonPicHeightBySpeciesGenderForm(battleSystem->ctx->battleMons[battlerId].species, battleSystem->ctx->battleMons[battlerId].moveEffectData.transformGender, facing, form, battleSystem->ctx->battleMons[battlerId].moveEffectData.transformPersonality);
     } else {
@@ -284,14 +284,14 @@ void BattleController_EmitPokemonEnterBall(BattleSystem *battleSystem, s32 battl
 }
 
 void BattleController_EmitDeletePokemon(BattleSystem *battleSystem, int battlerId) {
-    u32 command = 7;
+    u32 command = OPPONENT_COMMAND_DELETE_POKEMON;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
 void BattleController_EmitTrainerEncounter(BattleSystem *battleSystem, int battlerId) {
     BattleControllerPacketTrainerEncounter packet;
 
-    packet.command = 8;
+    packet.command = OPPONENT_COMMAND_TRAINER_ENCOUNTER;
     packet.trainerClass = battleSystem->trainers[battlerId].data.trainerClass;
     packet.trainerGender = battleSystem->trainerGender[battlerId];
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
@@ -300,21 +300,21 @@ void BattleController_EmitTrainerEncounter(BattleSystem *battleSystem, int battl
 void BattleController_EmitThrowPokeball(BattleSystem *battleSystem, int battlerId, u32 throwType) {
     BattleControllerPacketThrowPokeball packet;
 
-    packet.command = 9;
+    packet.command = OPPONENT_COMMAND_THROW_POKEBALL;
     packet.throwType = throwType;
     packet.partnerSelectedMonIndex = battleSystem->ctx->selectedMonIndex[BattleSystem_GetBattlerIdPartner(battleSystem, battlerId)];
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
 }
 
 void BattleController_EmitTrainerSlideOut(BattleSystem *battleSystem, int battlerId) {
-    u32 command = 10;
+    u32 command = OPPONENT_COMMAND_TRAINER_SLIDE_OUT;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
 void BattleController_EmitTrainerSlideIn(BattleSystem *battleSystem, int battlerId, u32 index) {
     BattleControllerPacketTrainerSlideIn packet;
 
-    packet.command = 11;
+    packet.command = OPPONENT_COMMAND_TRAINER_SLIDE_IN;
     packet.trainerClass = battleSystem->trainers[battlerId].data.trainerClass;
     packet.trainerGender = battleSystem->trainerGender[battlerId];
     packet.index = index;
@@ -327,7 +327,7 @@ void BattleController_EmitHealthbarSlideIn(BattleSystem *battleSystem, BattleCon
     int species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     int level = GetMonData(mon, MON_DATA_LEVEL, NULL);
 
-    packet.command = 12;
+    packet.command = OPPONENT_COMMAND_HEALTHBAR_SLIDE_IN;
     packet.level = ctx->battleMons[battlerId].level;
     packet.hp = ctx->battleMons[battlerId].hp;
     packet.maxHp = ctx->battleMons[battlerId].maxHp;
@@ -348,7 +348,7 @@ void BattleController_EmitHealthbarSlideIn(BattleSystem *battleSystem, BattleCon
 }
 
 void BattleController_EmitHealthbarSlideOut(BattleSystem *battleSystem, int battlerId) {
-    u32 command = 13;
+    u32 command = OPPONENT_COMMAND_HEALTHBAR_SLIDE_OUT;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
@@ -373,7 +373,7 @@ void BattleController_EmitSelectCommand(BattleSystem *battleSystem, BattleContex
         }
     }
 
-    packet.command = 14;
+    packet.command = OPPONENT_COMMAND_SELECT_COMMAND;
     packet.partySlot = partySlot;
     packet.switchingOrCanPickCommandMask = ctx->switchInFlag | unavailableMask;
     battleType = BattleSystem_GetBattleType(battleSystem);
@@ -509,7 +509,7 @@ void BattleController_EmitSelectMove(BattleSystem *battleSystem, BattleContext *
     int i;
 
     BattleBuffer_Clear(BattleSystem_GetBattleContext(battleSystem), battlerId);
-    packet.command = 15;
+    packet.command = OPPONENT_COMMAND_SELECT_MOVE;
     packet.selectedMonIndex = ctx->selectedMonIndex[battlerId];
     for (i = 0; i < MAX_MON_MOVES; i++) {
         packet.moves[i] = ctx->battleMons[battlerId].moves[i];
@@ -531,7 +531,7 @@ void BattleController_EmitSelectTarget(BattleSystem *battleSystem, BattleContext
 
     BattleBuffer_Clear(ctx, battlerId);
     battleType = BattleSystem_GetBattleType(battleSystem);
-    packet.command = 16;
+    packet.command = OPPONENT_COMMAND_SELECT_TARGET;
     packet.moveRange = moveRange;
     if (!(battleType & BATTLE_TYPE_DOUBLES) || (battleType & BATTLE_TYPE_MULTI) || ((battleType & BATTLE_TYPE_DOUBLES) && battlerId >= BATTLER_PLAYER2)) {
         packet.isLastSelection = 1;
@@ -586,7 +586,7 @@ void BattleController_EmitSelectItem(BattleSystem *battleSystem, BattleContext *
     int j;
 
     BattleBuffer_Clear(ctx, battlerId);
-    packet.command = 17;
+    packet.command = OPPONENT_COMMAND_SELECT_ITEM;
     for (i = 0; i < BATTLER_MAX; i++) {
         packet.selectedMonIndex[i] = ctx->selectedMonIndex[i];
         for (j = 0; j < PARTY_SIZE; j++) {
@@ -624,7 +624,7 @@ void BattleController_EmitShowMonList(BattleSystem *battleSystem, BattleContext 
     int j;
 
     BattleBuffer_Clear(ctx, battlerId);
-    packet.command = 18;
+    packet.command = OPPONENT_COMMAND_SHOW_MON_LIST;
     packet.battlerId = battlerId;
     packet.mode = mode;
     packet.trapped = canSwitch;
@@ -647,7 +647,7 @@ void BattleController_EmitDrawYesNoBox(BattleSystem *battleSystem, BattleContext
     BattleControllerPacketYesNoBox packet;
 
     BattleBuffer_Clear(ctx, battlerId);
-    packet.command = 19;
+    packet.command = OPPONENT_COMMAND_DRAW_YES_NO_BOX;
     packet.msgId = msgId;
     packet.mode = mode;
     packet.value = value;
@@ -658,14 +658,14 @@ void BattleController_EmitDrawYesNoBox(BattleSystem *battleSystem, BattleContext
 void BattleController_EmitPrintAttackMessage(BattleSystem *battleSystem, BattleContext *ctx) {
     BattleControllerPacketAttackMessage packet;
 
-    packet.command = 20;
+    packet.command = OPPONENT_COMMAND_PRINT_ATTACK_MESSAGE;
     packet.selectedMonIndex = ctx->selectedMonIndex[ctx->battlerIdAttacker];
     packet.move = ctx->moveNoCur;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, ctx->battlerIdAttacker, &packet, sizeof(packet));
 }
 
 void BattleController_EmitPrintMessage(BattleSystem *battleSystem, BattleContext *ctx, BattleMessage *msg) {
-    msg->command = 21;
+    msg->command = OPPONENT_COMMAND_PRINT_MESSAGE;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, ctx->battlerIdAttacker, msg, sizeof(BattleMessage));
 }
 
@@ -682,7 +682,7 @@ void BattleController_SetMoveAnimationForBattlers(BattleSystem *battleSystem, Ba
 }
 
 void BattleController_EmitMonFlicker(BattleSystem *battleSystem, int battlerId, int moveStatusFlag) {
-    u32 command = 23;
+    u32 command = OPPONENT_COMMAND_MON_FLICKER;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
@@ -692,7 +692,7 @@ void BattleController_EmitHealthbarUpdate(BattleSystem *battleSystem, BattleCont
     u32 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u32 level = GetMonData(mon, MON_DATA_LEVEL, NULL);
 
-    packet.command = 24;
+    packet.command = OPPONENT_COMMAND_HEALTHBAR_UPDATE;
     packet.level = ctx->battleMons[battlerId].level;
     packet.hp = ctx->battleMons[battlerId].hp;
     packet.maxHp = ctx->battleMons[battlerId].maxHp;
@@ -713,7 +713,7 @@ void BattleController_EmitExpBarUpdate(BattleSystem *battleSystem, BattleContext
     u32 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u32 level = GetMonData(mon, MON_DATA_LEVEL, NULL);
 
-    packet.command = 25;
+    packet.command = OPPONENT_COMMAND_EXP_BAR_UPDATE;
     packet.prevExp = prevExp;
     packet.exp = ctx->battleMons[battlerId].exp - GetMonExpBySpeciesAndLevel(species, level);
     packet.maxExp = GetMonExpBySpeciesAndLevel(species, level + 1) - GetMonExpBySpeciesAndLevel(species, level);
@@ -723,7 +723,7 @@ void BattleController_EmitExpBarUpdate(BattleSystem *battleSystem, BattleContext
 void BattleController_EmitPlayFaintAnimation(BattleSystem *battleSystem, BattleContext *ctx, int battlerId) {
     BattleControllerPacketFaintAnimation packet;
 
-    packet.command = 26;
+    packet.command = OPPONENT_COMMAND_PLAY_FAINT_ANIMATION;
     packet.species = ctx->battleMons[battlerId].species;
     packet.form = ctx->battleMons[battlerId].form;
     packet.isSubstitute = (ctx->battleMons[battlerId].status2 & STATUS2_SUBSTITUTE) != 0;
@@ -752,13 +752,13 @@ void BattleController_EmitPlayFaintAnimation(BattleSystem *battleSystem, BattleC
 
 void BattleController_EmitPlaySE(BattleSystem *battleSystem, BattleContext *ctx, u32 sndSeqNo, int battlerId) {
     BattleControllerPacketPlaySE packet;
-    packet.command = 27;
+    packet.command = OPPONENT_COMMAND_PLAY_SE;
     packet.sndSeqNo = sndSeqNo;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
 }
 
 void BattleController_EmitFadeOutBattle(BattleSystem *battleSystem, BattleContext *ctx) {
-    u32 command = 28;
+    u32 command = OPPONENT_COMMAND_FADE_OUT_BATTLE;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, 0, &command, sizeof(command));
 }
 
@@ -766,7 +766,7 @@ void BattleController_EmitToggleVanish(BattleSystem *battleSystem, int battlerId
     BattleControllerPacketToggleVanish packet;
     int i;
 
-    packet.command = 29;
+    packet.command = OPPONENT_COMMAND_TOGGLE_VANISH;
     packet.vanish = vanish;
     packet.isSubstitute = (battleSystem->ctx->battleMons[battlerId].status2 & STATUS2_SUBSTITUTE) ? 1 : 0;
     for (i = 0; i < BATTLER_MAX; i++) {
@@ -786,14 +786,14 @@ void BattleController_EmitToggleVanish(BattleSystem *battleSystem, int battlerId
 
 void BattleController_EmitHealthbarStatus(BattleSystem *battleSystem, int battlerId, int status) {
     BattleControllerPacketHealthbarStatus packet;
-    packet.command = 30;
+    packet.command = OPPONENT_COMMAND_HEALTHBAR_STATUS;
     packet.status = status;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
 }
 
 void BattleController_EmitPrintTrainerMessage(BattleSystem *battleSystem, int battlerId, int msg) {
     BattleControllerPacketTrainerMessage packet;
-    packet.command = 31;
+    packet.command = OPPONENT_COMMAND_PRINT_TRAINER_MESSAGE;
     packet.msg = msg;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
 }
@@ -813,7 +813,7 @@ void BattleController_EmitCopyStatus2Effect(BattleSystem *battleSystem, BattleCo
 void BattleController_EmitPrintReturnMessage(BattleSystem *battleSystem, BattleContext *ctx, int battlerId, int selectedMonIndex) {
     BattleControllerPacketSwitchMessage packet;
 
-    packet.command = 32;
+    packet.command = OPPONENT_COMMAND_PRINT_RETURN_MESSAGE;
     packet.selectedMonIndex = selectedMonIndex;
     packet.value = (100 * (ctx->hpTemp - ctx->battleMons[BATTLER_ENEMY].hp)) / ctx->hpTemp;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
@@ -822,7 +822,7 @@ void BattleController_EmitPrintReturnMessage(BattleSystem *battleSystem, BattleC
 void BattleController_EmitPrintSendOutMessage(BattleSystem *battleSystem, BattleContext *ctx, int battlerId, int selectedMonIndex) {
     BattleControllerPacketSwitchMessage packet;
 
-    packet.command = 33;
+    packet.command = OPPONENT_COMMAND_PRINT_SEND_OUT_MESSAGE;
     packet.selectedMonIndex = selectedMonIndex;
     if (ctx->battleMons[BATTLER_ENEMY].hp == 0) {
         packet.value = 1000;
@@ -833,7 +833,7 @@ void BattleController_EmitPrintSendOutMessage(BattleSystem *battleSystem, Battle
 }
 
 void BattleController_EmitPrintEncounterMessage(BattleSystem *battleSystem, BattleContext *ctx, int battlerId) {
-    u32 command = 34;
+    u32 command = OPPONENT_COMMAND_PRINT_ENCOUNTER_MESSAGE;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
@@ -841,7 +841,7 @@ void BattleController_EmitPrintFirstSendOutMessage(BattleSystem *battleSystem, B
     BattleControllerPacketFirstSendOutMessage packet;
     int i;
 
-    packet.command = 35;
+    packet.command = OPPONENT_COMMAND_PRINT_FIRST_SEND_OUT_MESSAGE;
     for (i = 0; i < BattleSystem_GetMaxBattlers(battleSystem); i++) {
         packet.selectedMonIndex[i] = ctx->selectedMonIndex[i];
     }
@@ -849,7 +849,7 @@ void BattleController_EmitPrintFirstSendOutMessage(BattleSystem *battleSystem, B
 }
 
 void BattleController_EmitExpBarFullFlash(BattleSystem *battleSystem, int battlerId) {
-    u32 command = 36;
+    u32 command = OPPONENT_COMMAND_EXP_BAR_FULL_FLASH;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
@@ -857,7 +857,7 @@ void BattleController_EmitPrintSelectionMessage(BattleSystem *battleSystem, int 
     BattleControllerPacketSelectionMessage packet;
 
     BattleBuffer_Clear(BattleSystem_GetBattleContext(battleSystem), battlerId);
-    packet.command = 37;
+    packet.command = OPPONENT_COMMAND_PRINT_SELECTION_MESSAGE;
     packet.msg = msg;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
 }
@@ -873,7 +873,7 @@ void BattleController_EmitRefreshHealthbar(BattleSystem *battleSystem, BattleCon
     int level = GetMonData(mon, MON_DATA_LEVEL, NULL);
     BattleControllerPacketRefreshHealthbar packet;
 
-    packet.command = 38;
+    packet.command = OPPONENT_COMMAND_REFRESH_HEALTHBAR;
     packet.level = ctx->battleMons[battlerId].level;
     packet.hp = ctx->battleMons[battlerId].hp;
     packet.maxHp = ctx->battleMons[battlerId].maxHp;
@@ -894,7 +894,7 @@ void BattleController_EmitRefreshHealthbar(BattleSystem *battleSystem, BattleCon
 void BattleController_EmitBattleMonToPartyMonCopy(BattleSystem *battleSystem, BattleContext *ctx, int battlerId) {
     BattleControllerPacketBattleMonToPartyMonCopy packet;
 
-    packet.command = 39;
+    packet.command = OPPONENT_COMMAND_BATTLE_MON_TO_PARTY_MON_COPY;
     packet.selectedMonIndex = ctx->selectedMonIndex[battlerId];
     packet.mimicedMoveIndex = (u8)ctx->battleMons[battlerId].moveEffectData.mimicedMoveIndex;
     packet.hp = ctx->battleMons[battlerId].hp;
@@ -930,19 +930,19 @@ void BattleController_EmitBattleMonToPartyMonCopy(BattleSystem *battleSystem, Ba
 }
 
 void BattleController_EmitBackgroundSlideIn(BattleSystem *battleSystem, int battlerId) {
-    u32 command = 40;
+    u32 command = OPPONENT_COMMAND_BACKGROUND_SLIDE_IN;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
 void BattleController_EmitCancelSelection(BattleSystem *battleSystem, int battlerId) {
-    u32 command = 41;
+    u32 command = OPPONENT_COMMAND_CANCEL_SELECTION;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
 void BattleControl_EmitPartyStatusHeal(BattleSystem *battleSystem, BattleContext *ctx, int battlerId, int moveNo) {
     BattleControllerPacketPartyStatusHeal packet;
 
-    packet.command = 42;
+    packet.command = OPPONENT_COMMAND_PARTY_STATUS_HEAL;
     packet.moveNo = moveNo;
     packet.ability = ctx->battleMons[battlerId].ability;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
@@ -951,7 +951,7 @@ void BattleControl_EmitPartyStatusHeal(BattleSystem *battleSystem, BattleContext
 void BattleController_EmitSelectMoveToForget(BattleSystem *battleSystem, int battlerId, u32 move, int slot) {
     BattleControllerPacketSelectMoveToForget packet;
     BattleBuffer_Clear(BattleSystem_GetBattleContext(battleSystem), battlerId);
-    packet.command = 43;
+    packet.command = OPPONENT_COMMAND_SELECT_MOVE_TO_FORGET;
     packet.move = move;
     packet.slot = slot;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
@@ -959,7 +959,7 @@ void BattleController_EmitSelectMoveToForget(BattleSystem *battleSystem, int bat
 
 void BattleController_EmitPlayMosaicAnimation(BattleSystem *battleSystem, int battlerId, int mosaic, int delay) {
     BattleControllerPacketMosaicAnimation packet;
-    packet.command = 44;
+    packet.command = OPPONENT_COMMAND_PLAY_MOSAIC_ANIMATION;
     packet.mosaic = mosaic;
     packet.delay = delay;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
@@ -968,7 +968,7 @@ void BattleController_EmitPlayMosaicAnimation(BattleSystem *battleSystem, int ba
 void BattleController_EmitChangeForm(BattleSystem *battleSystem, int battlerId) {
     BattleControllerPacketChangeForm packet;
 
-    packet.command = 45;
+    packet.command = OPPONENT_COMMAND_CHANGE_FORM;
     packet.species = battleSystem->ctx->battleMons[battlerId].species;
     packet.shiny = battleSystem->ctx->battleMons[battlerId].shiny;
     if (battleSystem->ctx->battleMons[battlerId].status2 & STATUS2_TRANSFORM) {
@@ -983,12 +983,12 @@ void BattleController_EmitChangeForm(BattleSystem *battleSystem, int battlerId) 
 }
 
 void BattleController_EmitSetBattleBackground(BattleSystem *battleSystem, int battlerId) {
-    u32 command = 46;
+    u32 command = OPPONENT_COMMAND_SET_BATTLE_BACKGROUND;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
 void BattleController_EmitEndSelection(BattleSystem *battleSystem, int battlerId) {
-    u32 command = 47;
+    u32 command = OPPONENT_COMMAND_END_SELECTION;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
@@ -1017,18 +1017,18 @@ void BattleController_EmitDeleteBallGauge(BattleSystem *battleSystem, int battle
 }
 
 void BattleController_EmitLoadBallGfx(BattleSystem *battleSystem) {
-    u32 command = 52;
+    u32 command = OPPONENT_COMMAND_LOAD_BALL_GFX;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, 0, &command, sizeof(command));
 }
 
 void BattleController_EmitDeleteBallGfx(BattleSystem *battleSystem) {
-    u32 command = 53;
+    u32 command = OPPONENT_COMMAND_DELETE_BALL_GFX;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, 0, &command, sizeof(command));
 }
 
 void BattleController_EmitIncrementGameStat(BattleSystem *battleSystem, int battlerId, int flag, int id) {
     BattleControllerPacketIncrementGameStat packet;
-    packet.command = 54;
+    packet.command = OPPONENT_COMMAND_INCREMENT_GAME_STAT;
     packet.flag = flag;
     packet.id = id;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
@@ -1038,7 +1038,7 @@ void BattleController_EmitShowWaitMessage(BattleSystem *battleSystem, int battle
     BattleControllerPacketRecordData packet;
     u32 battleType = BattleSystem_GetBattleType(battleSystem);
 
-    packet.command = 55;
+    packet.command = OPPONENT_COMMAND_SHOW_WAIT_MESSAGE;
     packet.recordSize = 0;
     if ((battleType & BATTLE_TYPE_LINK) && BattleRecord_Exists() == TRUE && !(battleSystem->battleSpecial & BATTLE_SPECIAL_RECORDING)) {
         packet.recordSize = BattleSystem_PackRecordUpdate(battleSystem, packet.record);
@@ -1051,7 +1051,7 @@ void BattleController_EmitRestoreSprite(BattleSystem *battleSystem, BattleContex
     MoveAnimData packet;
     int i;
 
-    packet.command = 56;
+    packet.command = OPPONENT_COMMAND_RESTORE_SPRITE;
     for (i = 0; i < BATTLER_MAX; i++) {
         packet.species[i] = ctx->battleMons[i].species;
         packet.shiny[i] = ctx->battleMons[i].shiny;
@@ -1068,17 +1068,17 @@ void BattleController_EmitRestoreSprite(BattleSystem *battleSystem, BattleContex
 }
 
 void BattleController_EmitSpriteToOAM(BattleSystem *battleSystem, int battlerId) {
-    u32 command = 57;
+    u32 command = OPPONENT_COMMAND_SPRITE_TO_OAM;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
 void BattleController_EmitOAMToSprite(BattleSystem *battleSystem, int battlerId) {
-    u32 command = 58;
+    u32 command = OPPONENT_COMMAND_OAM_TO_SPRITE;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &command, sizeof(command));
 }
 
 void BattleController_EmitPrintResultMessage(BattleSystem *battleSystem) {
-    u32 command = 59;
+    u32 command = OPPONENT_COMMAND_PRINT_RESULT_MESSAGE;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, 0, &command, sizeof(command));
 }
 
@@ -1087,7 +1087,7 @@ void BattleController_EmitRunAwayMessage(BattleSystem *battleSystem, BattleConte
     int i;
     u32 battleType = BattleSystem_GetBattleType(battleSystem);
 
-    packet.command = 60;
+    packet.command = OPPONENT_COMMAND_RUN_AWAY_MESSAGE;
     packet.escapedMask = 0;
     packet.recordSize = 0;
     for (i = 0; i < BattleSystem_GetMaxBattlers(battleSystem); i++) {
@@ -1106,7 +1106,7 @@ void BattleController_EmitForefitMessage(BattleSystem *battleSystem) {
     BattleControllerPacketRecordData packet;
     u32 battleType = BattleSystem_GetBattleType(battleSystem);
 
-    packet.command = 61;
+    packet.command = OPPONENT_COMMAND_FORFEIT_MESSAGE;
     packet.recordSize = 0;
     if ((battleType & BATTLE_TYPE_LINK) && BattleRecord_Exists() == TRUE && !(battleSystem->battleSpecial & BATTLE_SPECIAL_RECORDING)) {
         packet.recordSize = BattleSystem_PackRecordUpdate(battleSystem, packet.record);
@@ -1119,7 +1119,7 @@ void BattleController_EmitSwapToSubstituteSprite(BattleSystem *battleSystem, Bat
     MoveAnimData packet;
     int i;
 
-    packet.command = 62;
+    packet.command = OPPONENT_COMMAND_SWAP_TO_SUBSTITUTE_SPRITE;
     for (i = 0; i < BATTLER_MAX; i++) {
         packet.species[i] = ctx->battleMons[i].species;
         packet.shiny[i] = ctx->battleMons[i].shiny;
@@ -1138,7 +1138,7 @@ void BattleController_EmitSwapToSubstituteSprite(BattleSystem *battleSystem, Bat
 void BattleController_EmitPlayMoveSE(BattleSystem *battleSystem, BattleContext *ctx, int battlerId) {
     BattleControllerPacketMoveSE packet;
 
-    packet.command = 63;
+    packet.command = OPPONENT_COMMAND_PLAY_MOVE_SE;
     if (ctx->moveStatusFlag & MOVE_STATUS_SUPER_EFFECTIVE) {
         packet.effectiveness = 2;
     } else if (ctx->moveStatusFlag & MOVE_STATUS_NOT_VERY_EFFECTIVE) {
@@ -1151,7 +1151,7 @@ void BattleController_EmitPlayMoveSE(BattleSystem *battleSystem, BattleContext *
 
 void BattleController_EmitPlaySong(BattleSystem *battleSystem, int battlerId, int song) {
     BattleControllerPacketPlaySong packet;
-    packet.command = 64;
+    packet.command = OPPONENT_COMMAND_PLAY_SONG;
     packet.song = song;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
 }
@@ -1160,7 +1160,7 @@ void BattleController_EmitSetBattleResults(BattleSystem *battleSystem) {
     u32 battleType = BattleSystem_GetBattleType(battleSystem);
     BattleControllerPacketBattleResults packet;
 
-    packet.command = 65;
+    packet.command = OPPONENT_COMMAND_SET_BATTLE_RESULTS;
     packet.outcomeFlags = BattleSystem_GetBattleOutcomeFlags(battleSystem);
     packet.recordSize = 0;
     if ((battleType & BATTLE_TYPE_LINK) && BattleRecord_Exists() == TRUE && !(battleSystem->battleSpecial & BATTLE_SPECIAL_RECORDING)) {
@@ -1171,7 +1171,7 @@ void BattleController_EmitSetBattleResults(BattleSystem *battleSystem) {
 }
 
 void BattleController_EmitBlankMessage(BattleSystem *battleSystem) {
-    u32 command = 66;
+    u32 command = OPPONENT_COMMAND_BLANK_MESSAGE;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, 0, &command, sizeof(command));
 }
 
@@ -1216,7 +1216,7 @@ void BattleController_InitMoveAnimData(BattleSystem *battleSystem, BattleContext
     int i;
     u8 slot;
 
-    animData->command = 22;
+    animData->command = OPPONENT_COMMAND_PLAY_MOVE_ANIMATION;
     animData->move = move;
     animData->attacker = attacker;
     animData->defender = defender;
@@ -1273,7 +1273,7 @@ void BattleController_InitMoveAnimData(BattleSystem *battleSystem, BattleContext
 void BattleController_EmitScreenFade(BattleSystem *battleSystem, BattleContext *ctx, u8 mode) {
     BattleControllerPacketScreenFade packet;
     MI_CpuFill8(&packet, 0, sizeof(packet));
-    packet.command = 67;
+    packet.command = OPPONENT_COMMAND_SCREEN_FADE;
     packet.mode = mode;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, 0, &packet, sizeof(packet));
 }

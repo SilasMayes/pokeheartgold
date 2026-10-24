@@ -707,7 +707,7 @@ static void LinkBattleScreen_UpdateBattleVideoPrompt(LinkBattleScreen *screen) {
             screen->videoPromptState = VIDEO_PROMPT_STATE_START_SAVE;
             screen->yesNoMenu = NULL;
             break;
-        case -2:
+        case LIST_CANCEL:
             screen->videoPromptState = VIDEO_PROMPT_STATE_SHOW_PROMPT;
             screen->yesNoMenu = NULL;
             break;

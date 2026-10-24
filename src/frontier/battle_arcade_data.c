@@ -62,7 +62,7 @@ extern const u16 gBattleArcadeItems_Rank0[];
 extern const u16 gBattleArcadeItems_Rank3[];
 extern const u16 gBattleArcadeItems_Rank6[];
 
-u32 BattleArcadeData_Alloc(SaveData *saveData, u32 resume, u8 type, u8 slot0, u16 slot1, u16 slot2, u16 *resultVar);
+ArcadeContext *BattleArcadeData_Alloc(SaveData *saveData, u32 resume, u8 type, u8 slot0, u16 slot1, u16 slot2, u16 *resultVar);
 
 void FrontierTrainer_GenerateMons(u32 count, u16 trainerId, u16 partnerTrainerId, u16 *monIds, FrontierMon *mons, u8 *ivs, u32 *outPids, u8 multiplayer);
 
@@ -166,14 +166,14 @@ static inline void BattleArcadeData_AddPartyMon(Party *party, u16 slot) {
     }
 }
 
-u32 BattleArcadeData_Alloc(SaveData *saveData, u32 resume, u8 type, u8 slot0, u16 slot1, u16 slot2, u16 *resultVar) {
+ArcadeContext *BattleArcadeData_Alloc(SaveData *saveData, u32 resume, u8 type, u8 slot0, u16 slot1, u16 slot2, u16 *resultVar) {
     u16 i;
     ArcadeContext *ctx[1];
     ArcadeContext *saved;
     u32 index;
     int count;
     ArcadeChallenge *record;
-    void *typeRecord;
+    u8 *typeRecord;
     FrontierSave *frontier;
     Party *party;
     Pokemon *mon;
@@ -253,7 +253,7 @@ u32 BattleArcadeData_Alloc(SaveData *saveData, u32 resume, u8 type, u8 slot0, u1
     if (BattleArcade_MultiplayerCheck(sBattleArcadeData->type) == TRUE) {
         Frontier_RecordLinkPlayerLocations(sBattleArcadeData->saveData);
     }
-    return (u32)sBattleArcadeData;
+    return sBattleArcadeData;
 }
 
 void BattleArcadeData_Init(ArcadeContext *ctx, u32 resume) {
@@ -361,7 +361,7 @@ void BattleArcadeData_SaveRecord(ArcadeContext *ctx, u32 mode) {
         } buffer;
         u8 byte;
     } value;
-    void *typeRecord;
+    u8 *typeRecord;
     FrontierSave *frontier;
     int index;
     int key;
@@ -953,9 +953,9 @@ static void BattleArcade_Event_LevelUp(ArcadeContext *ctx, Party *party, int cou
         Pokemon *mon = Party_GetMonByIndex(party, i);
         u32 level = GetMonData(mon, MON_DATA_LEVEL, NULL) + 3;
         u32 exp;
-        if (level > 100) {
+        if (level > MAX_LEVEL) {
             GF_ASSERT(FALSE);
-            level = 100;
+            level = MAX_LEVEL;
         }
         exp = GetMonExpBySpeciesAndLevel(GetMonData(mon, MON_DATA_SPECIES, NULL), level);
         SetMonData(mon, MON_DATA_EXPERIENCE, &exp);

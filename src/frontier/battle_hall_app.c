@@ -857,11 +857,9 @@ static void BattleHallApp_FreeGraphics(BattleHallApp *app) {
     String_Delete(app->expandedString);
     String_Delete(app->rawString);
     MessagePrinter_Delete(app->messagePrinter);
-    i = 0;
-    do {
+    for (i = 0; i < 2; i++) {
         String_Delete(app->strings[i]);
-        i++;
-    } while (i < 2);
+    }
     BattleHallApp_RemoveWindows(app->windows);
     BattleHallApp_FreeBgLayers(app->bgConfig);
     NARC_Delete(app->narc);

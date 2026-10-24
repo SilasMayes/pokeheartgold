@@ -7,6 +7,8 @@
 #include "frontier/battle_arcade_data.h"
 
 // Link messages of the facilities' script side.
+typedef struct FactoryMonsMessage6 FactoryMonsMessage6;
+typedef struct FactoryMonsMessage4 FactoryMonsMessage4;
 typedef struct ArcadeMonsMessage ArcadeMonsMessage;
 
 void BattleHallLink_ReceiveUnused(int netId, int size, void *data, BattleHallData *work);
@@ -26,9 +28,9 @@ void BattleFactoryLink_ReceiveRecord(int netId, int size, const u16 *data, Battl
 BOOL BattleFactoryLink_SendTrainerIds(BattleFactoryData *work);
 void BattleFactoryLink_ReceiveTrainerIds(int netId, int size, const u16 *data, BattleFactoryData *work);
 BOOL BattleFactoryLink_SendRentalMons(BattleFactoryData *work);
-void BattleFactoryLink_ReceiveRentalMons(int netId, int size, const u16 *data, BattleFactoryData *work);
+void BattleFactoryLink_ReceiveRentalMons(int netId, int size, const FactoryMonsMessage6 *msg, BattleFactoryData *work);
 BOOL BattleFactoryLink_SendOpponentMons(BattleFactoryData *work);
-void BattleFactoryLink_ReceiveOpponentMons(int netId, int size, const u16 *data, BattleFactoryData *work);
+void BattleFactoryLink_ReceiveOpponentMons(int netId, int size, const FactoryMonsMessage4 *msg, BattleFactoryData *work);
 BOOL BattleFactoryLink_SendValueA(BattleFactoryData *work, u16 value);
 void BattleFactoryLink_ReceiveValueA(int netId, int size, const u16 *data, BattleFactoryData *work);
 BOOL BattleFactoryLink_SendValueB(BattleFactoryData *work, u16 value);
@@ -40,15 +42,15 @@ void BattleCastleLink_ReceiveRecord(int netId, int size, const u16 *data, Battle
 BOOL BattleCastleLink_SendTrainerIds(BattleCastleData *work);
 void BattleCastleLink_ReceiveTrainerIds(int netId, int size, const u16 *data, BattleCastleData *work);
 BOOL BattleCastleLink_SendChoice(BattleCastleData *work);
-void BattleCastleLink_ReceiveChoice(int netId, int size, void *data, BattleCastleData *work);
+void BattleCastleLink_ReceiveChoice(int netId, int size, const u16 *msg, BattleCastleData *work);
 BOOL BattleCastleLink_SendOpponentMons(BattleCastleData *work);
-void BattleCastleLink_ReceiveOpponentMons(int netId, int size, void *data, BattleCastleData *work);
+void BattleCastleLink_ReceiveOpponentMons(int netId, int size, const u16 *msg, BattleCastleData *work);
 BOOL BattleCastleLink_SendValueA(BattleCastleData *work, u16 value);
 void BattleCastleLink_ReceiveValueA(int netId, int size, const u16 *data, BattleCastleData *work);
 BOOL BattleCastleLink_SendValueB(BattleCastleData *work, u16 value);
 void BattleCastleLink_ReceiveValueB(int netId, int size, const u16 *data, BattleCastleData *work);
 BOOL BattleCastleLink_SendPartyMons(BattleCastleData *work);
-void BattleCastleLink_ReceivePartyMons(int netId, int size, void *data, BattleCastleData *work);
+void BattleCastleLink_ReceivePartyMons(int netId, int size, const u8 *data, BattleCastleData *work);
 void *BattleCastleLink_GetRecvMonBuffer(int netId, BattleCastleData *work, int size);
 BOOL BattleArcadeLink_SendWinStreak(ArcadeContext *ctx);
 void BattleArcadeLink_ReceiveWinStreak(int netId, int size, const u16 *data, ArcadeContext *ctx);
@@ -61,7 +63,7 @@ void BattleArcadeLink_ReceiveValueA(int netId, int size, const u16 *data, Arcade
 BOOL BattleArcadeLink_SendValueB(ArcadeContext *ctx, u32 value);
 void BattleArcadeLink_ReceiveValueB(int netId, int size, const u16 *data, ArcadeContext *ctx);
 BOOL BattleArcadeLink_SendPartyMons(ArcadeContext *ctx);
-void BattleArcadeLink_ReceivePartyMons(int netId, int size, void *data, ArcadeContext *ctx);
+void BattleArcadeLink_ReceivePartyMons(int netId, int size, const u8 *data, ArcadeContext *ctx);
 void *BattleArcadeLink_GetRecvMonBuffer(int netId, ArcadeContext *ctx, int size);
 
 #endif // POKEHEARTGOLD_FRONTIER_FRONTIER_LINK_MESSAGES_H

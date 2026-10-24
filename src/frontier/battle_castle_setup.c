@@ -256,20 +256,13 @@ void BattleCastle_SetOpponentParty(BattleCastleData *data) {
     int count;
     Pokemon *mon;
     int i;
-    FrontierMon *frontierMon;
 
     SaveArray_Party_Init(data->opponentParty);
     count = BattleCastle_GetOpponentMonCount(data->type, TRUE);
     mon = AllocMonZeroed(HEAP_ID_FIELD2);
-    i = 0;
-    if (count > 0) {
-        frontierMon = data->opponentMons;
-        do {
-            FrontierMon_ToPokemon(frontierMon, mon, BattleCastle_GetMonLevel(data));
-            BattleCastle_AddMonToParty(data, data->opponentParty, mon);
-            i++;
-            frontierMon++;
-        } while (i < count);
+    for (i = 0; i < count; i++) {
+        FrontierMon_ToPokemon(&data->opponentMons[i], mon, BattleCastle_GetMonLevel(data));
+        BattleCastle_AddMonToParty(data, data->opponentParty, mon);
     }
     Heap_Free(mon);
 }

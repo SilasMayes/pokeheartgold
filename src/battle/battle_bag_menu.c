@@ -52,6 +52,19 @@ enum BattleBagPage {
     BATTLE_BAG_PAGE_USE_ITEM,
 };
 
+// Touch screen buttons; the four pocket buttons come first, in BTLPOCKETLIST_* order.
+enum BattleBagButton {
+    BATTLE_BAG_BUTTON_LAST_USED = 4,
+    BATTLE_BAG_BUTTON_CANCEL,
+    BATTLE_BAG_BUTTON_ITEM_0,
+    BATTLE_BAG_BUTTON_ITEM_5 = BATTLE_BAG_BUTTON_ITEM_0 + 5,
+    BATTLE_BAG_BUTTON_PREV_PAGE,
+    BATTLE_BAG_BUTTON_NEXT_PAGE,
+    BATTLE_BAG_BUTTON_BACK,
+    BATTLE_BAG_BUTTON_USE,
+    BATTLE_BAG_BUTTON_USE_BACK,
+};
+
 typedef struct BattleBagMenu {
     BattleBagContext *context;
     BgConfig *bgConfig;
@@ -311,26 +324,26 @@ static int BattleBagMenu_HandlePocketMenuInput(BattleBagMenu *menu) {
         return BATTLE_BAG_STATE_POCKET_MENU;
     }
     input = BattleBagMenu_CheckTouchHitbox(menu, gBattleBagPocketMenuHitboxes);
-    if (input == -1) {
+    if (input == TOUCH_MENU_NO_INPUT) {
         input = BattleDpadCursor_HandleInput(menu->cursor);
-        if (input == -2) {
-            input = 5;
+        if (input == BATTLE_DPAD_INPUT_CANCEL) {
+            input = BATTLE_BAG_BUTTON_CANCEL;
         }
     } else {
         BattleBagMenu_DeactivateCursor(menu);
     }
     switch (input) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
+    case BTLPOCKETLIST_HP_PP_RESTORE:
+    case BTLPOCKETLIST_STATUS_RESTORE:
+    case BTLPOCKETLIST_BALLS:
+    case BTLPOCKETLIST_BATTLE_ITEMS:
         PlaySE(SEQ_SE_DP_DECIDE);
         pocket = input;
         menu->pocket = pocket;
         menu->nextState = BATTLE_BAG_STATE_SHOW_ITEM_LIST;
         BattleBagMenu_StartButtonAnim(menu, pocket, 0);
         return BATTLE_BAG_STATE_WAIT_BUTTON_ANIM;
-    case 4:
+    case BATTLE_BAG_BUTTON_LAST_USED:
         if (!menu->context->lastUsedItem) {
             break;
         }
@@ -338,13 +351,13 @@ static int BattleBagMenu_HandlePocketMenuInput(BattleBagMenu *menu) {
         menu->pocket = menu->context->lastUsedPocket;
         menu->nextState = BATTLE_BAG_STATE_SHOW_USE_ITEM;
         BattleBagMenu_SelectLastUsedItem(menu);
-        BattleBagMenu_StartButtonAnim(menu, 4, 0);
+        BattleBagMenu_StartButtonAnim(menu, BATTLE_BAG_BUTTON_LAST_USED, 0);
         return BATTLE_BAG_STATE_WAIT_BUTTON_ANIM;
-    case 5:
+    case BATTLE_BAG_BUTTON_CANCEL:
         PlaySE(SEQ_SE_DP_DECIDE);
         menu->context->selectedItem = ITEM_NONE;
         menu->context->selectedPocket = 4;
-        BattleBagMenu_StartButtonAnim(menu, 5, 0);
+        BattleBagMenu_StartButtonAnim(menu, BATTLE_BAG_BUTTON_CANCEL, 0);
         return BATTLE_BAG_STATE_FADE_OUT;
     }
     return BATTLE_BAG_STATE_POCKET_MENU;
@@ -353,12 +366,12 @@ static int BattleBagMenu_HandlePocketMenuInput(BattleBagMenu *menu) {
 static int BattleBagMenu_HandleItemListInput(BattleBagMenu *menu) {
     u32 input = BattleBagMenu_CheckTouchHitbox(menu, gBattleBagItemListHitboxes);
 
-    if (input == -1u) {
+    if (input == TOUCH_MENU_NO_INPUT) {
         int wasActive = BattleDpadCursor_IsActive(menu->cursor);
         int prevPosition = BattleDpadCursor_GetPosition(menu->cursor);
         input = BattleDpadCursor_HandleInput(menu->cursor);
         int position = BattleDpadCursor_GetPosition(menu->cursor);
-        if (input == -2u) {
+        if (input == BATTLE_DPAD_INPUT_CANCEL) {
             input = 6;
         } else if (wasActive == 1 && prevPosition == position) {
             // left/right against the edge of the item grid turns the page
@@ -384,21 +397,21 @@ static int BattleBagMenu_HandleItemListInput(BattleBagMenu *menu) {
             PlaySE(SEQ_SE_DP_DECIDE);
             menu->context->pocketPositions[menu->pocket] = input;
             menu->nextState = BATTLE_BAG_STATE_SHOW_USE_ITEM;
-            BattleBagMenu_StartButtonAnim(menu, input + 6, 0);
+            BattleBagMenu_StartButtonAnim(menu, input + BATTLE_BAG_BUTTON_ITEM_0, 0);
             return BATTLE_BAG_STATE_WAIT_BUTTON_ANIM;
         }
         break;
     case 6:
         PlaySE(SEQ_SE_DP_DECIDE);
         menu->nextState = BATTLE_BAG_STATE_SHOW_POCKET_MENU;
-        BattleBagMenu_StartButtonAnim(menu, 14, 0);
+        BattleBagMenu_StartButtonAnim(menu, BATTLE_BAG_BUTTON_BACK, 0);
         return BATTLE_BAG_STATE_WAIT_BUTTON_ANIM;
     case 7:
         if (menu->lastPages[menu->pocket]) {
             PlaySE(SEQ_SE_DP_DECIDE);
             menu->nextState = BATTLE_BAG_STATE_CHANGE_ITEM_PAGE;
             menu->pageDelta = -1;
-            BattleBagMenu_StartButtonAnim(menu, 12, 0);
+            BattleBagMenu_StartButtonAnim(menu, BATTLE_BAG_BUTTON_PREV_PAGE, 0);
             return BATTLE_BAG_STATE_WAIT_BUTTON_ANIM;
         }
         break;
@@ -407,7 +420,7 @@ static int BattleBagMenu_HandleItemListInput(BattleBagMenu *menu) {
             PlaySE(SEQ_SE_DP_DECIDE);
             menu->nextState = BATTLE_BAG_STATE_CHANGE_ITEM_PAGE;
             menu->pageDelta = 1;
-            BattleBagMenu_StartButtonAnim(menu, 13, 0);
+            BattleBagMenu_StartButtonAnim(menu, BATTLE_BAG_BUTTON_NEXT_PAGE, 0);
             return BATTLE_BAG_STATE_WAIT_BUTTON_ANIM;
         }
         break;
@@ -437,9 +450,9 @@ static int BattleBagMenu_ChangeItemPage(BattleBagMenu *menu) {
 static int BattleBagMenu_HandleUseItemInput(BattleBagMenu *menu) {
     int input = BattleBagMenu_CheckTouchHitbox(menu, gBattleBagUseItemHitboxes);
 
-    if (input == -1) {
+    if (input == TOUCH_MENU_NO_INPUT) {
         input = BattleDpadCursor_HandleInput(menu->cursor);
-        if (input == -2) {
+        if (input == BATTLE_DPAD_INPUT_CANCEL) {
             input = 1;
         }
     } else {
@@ -450,13 +463,13 @@ static int BattleBagMenu_HandleUseItemInput(BattleBagMenu *menu) {
         PlaySE(SEQ_SE_DP_DECIDE);
         menu->context->selectedItem = BattleBagMenu_GetItemOnPage(menu, menu->context->pocketPositions[menu->pocket]);
         menu->context->selectedPocket = menu->pocket;
-        BattleBagMenu_StartButtonAnim(menu, 15, 0);
+        BattleBagMenu_StartButtonAnim(menu, BATTLE_BAG_BUTTON_USE, 0);
         return BattleBagMenu_TryUseItem(menu);
     }
     case 1: {
         PlaySE(SEQ_SE_DP_DECIDE);
         menu->nextState = BATTLE_BAG_STATE_SHOW_ITEM_LIST;
-        BattleBagMenu_StartButtonAnim(menu, 16, 0);
+        BattleBagMenu_StartButtonAnim(menu, BATTLE_BAG_BUTTON_USE_BACK, 0);
         return BATTLE_BAG_STATE_WAIT_BUTTON_ANIM;
     }
     default:
@@ -638,7 +651,7 @@ static int BattleBagMenu_RunTutorial(BattleBagMenu *menu) {
             PlaySE(SEQ_SE_DP_DECIDE);
             menu->pocket = BTLPOCKETLIST_BALLS;
             menu->nextState = BATTLE_BAG_STATE_TUTORIAL;
-            BattleBagMenu_StartButtonAnim(menu, 2, 0);
+            BattleBagMenu_StartButtonAnim(menu, BTLPOCKETLIST_BALLS, 0);
             menu->tutorialTimer = 0;
             menu->tutorialState++;
             return BATTLE_BAG_STATE_WAIT_BUTTON_ANIM;
@@ -654,7 +667,7 @@ static int BattleBagMenu_RunTutorial(BattleBagMenu *menu) {
             PlaySE(SEQ_SE_DP_DECIDE);
             menu->context->pocketPositions[menu->pocket] = 0;
             menu->nextState = BATTLE_BAG_STATE_TUTORIAL;
-            BattleBagMenu_StartButtonAnim(menu, 6, 0);
+            BattleBagMenu_StartButtonAnim(menu, BATTLE_BAG_BUTTON_ITEM_0, 0);
             menu->tutorialTimer = 0;
             menu->tutorialState++;
             return BATTLE_BAG_STATE_WAIT_BUTTON_ANIM;
@@ -670,7 +683,7 @@ static int BattleBagMenu_RunTutorial(BattleBagMenu *menu) {
             PlaySE(SEQ_SE_DP_DECIDE);
             menu->context->selectedItem = BattleBagMenu_GetItemOnPage(menu, menu->context->pocketPositions[menu->pocket]);
             menu->context->selectedPocket = menu->pocket;
-            BattleBagMenu_StartButtonAnim(menu, 15, 0);
+            BattleBagMenu_StartButtonAnim(menu, BATTLE_BAG_BUTTON_USE, 0);
             return BattleBagMenu_TryUseItem(menu);
         }
         menu->tutorialTimer++;
@@ -1475,7 +1488,7 @@ static void BattleBagMenu_ScrollButtonWindows(BattleBagMenu *menu, u8 button, in
     u8 direction, pixels;
     u16 i;
 
-    if (button >= 6 && button <= 11 && menu->itemListWindowBank == 0) {
+    if (button >= BATTLE_BAG_BUTTON_ITEM_0 && button <= BATTLE_BAG_BUTTON_ITEM_5 && menu->itemListWindowBank == 0) {
         windowList = gBattleBagButtonWindowLists[button + 11];
     } else {
         windowList = gBattleBagButtonWindowLists[button];
@@ -1507,9 +1520,9 @@ static void BattleBagMenu_OffsetButtonSprite(BattleBagMenu *menu, u32 button, u3
     ManagedSprite *sprite;
     u8 i;
 
-    if (button >= 6 && button <= 11) {
-        sprite = menu->itemIcons[(int)(button - 6)];
-    } else if (button == 4) {
+    if (button >= BATTLE_BAG_BUTTON_ITEM_0 && button <= BATTLE_BAG_BUTTON_ITEM_5) {
+        sprite = menu->itemIcons[(int)(button - BATTLE_BAG_BUTTON_ITEM_0)];
+    } else if (button == BATTLE_BAG_BUTTON_LAST_USED) {
         for (i = 0; i < 6; i++) {
             sprite = menu->itemIcons[i];
             if (ManagedSprite_GetDrawFlag(sprite)) {
@@ -1572,37 +1585,37 @@ static void BattleBagMenu_DrawPageButtons(BattleBagMenu *menu, u8 page) {
 
     switch (page) {
     case BATTLE_BAG_PAGE_POCKET_MENU:
-        BattleBagMenu_DrawButton(menu, 0, 0, page);
-        BattleBagMenu_DrawButton(menu, 1, 0, page);
-        BattleBagMenu_DrawButton(menu, 2, 0, page);
-        BattleBagMenu_DrawButton(menu, 3, 0, page);
+        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_HP_PP_RESTORE, 0, page);
+        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_STATUS_RESTORE, 0, page);
+        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_BALLS, 0, page);
+        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_BATTLE_ITEMS, 0, page);
         if (menu->context->lastUsedItem == ITEM_NONE) {
-            BattleBagMenu_DrawButton(menu, 4, 3, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_LAST_USED, 3, page);
         } else {
-            BattleBagMenu_DrawButton(menu, 4, 0, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_LAST_USED, 0, page);
         }
-        BattleBagMenu_DrawButton(menu, 5, 0, page);
+        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_CANCEL, 0, page);
         break;
     case BATTLE_BAG_PAGE_ITEM_LIST:
         for (i = 0; i < 6; i++) {
             if (BattleBagMenu_GetItemOnPage(menu, i) == ITEM_NONE) {
-                BattleBagMenu_DrawButton(menu, i + 6, 3, page);
+                BattleBagMenu_DrawButton(menu, i + BATTLE_BAG_BUTTON_ITEM_0, 3, page);
             } else {
-                BattleBagMenu_DrawButton(menu, i + 6, 0, page);
+                BattleBagMenu_DrawButton(menu, i + BATTLE_BAG_BUTTON_ITEM_0, 0, page);
             }
         }
         if (menu->lastPages[menu->pocket] == 0) {
-            BattleBagMenu_DrawButton(menu, 12, 3, page);
-            BattleBagMenu_DrawButton(menu, 13, 3, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_PREV_PAGE, 3, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_NEXT_PAGE, 3, page);
         } else {
-            BattleBagMenu_DrawButton(menu, 12, 0, page);
-            BattleBagMenu_DrawButton(menu, 13, 0, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_PREV_PAGE, 0, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_NEXT_PAGE, 0, page);
         }
-        BattleBagMenu_DrawButton(menu, 14, 0, page);
+        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_BACK, 0, page);
         break;
     case BATTLE_BAG_PAGE_USE_ITEM:
-        BattleBagMenu_DrawButton(menu, 15, 0, page);
-        BattleBagMenu_DrawButton(menu, 16, 0, page);
+        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_USE, 0, page);
+        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_USE_BACK, 0, page);
         break;
     }
 }

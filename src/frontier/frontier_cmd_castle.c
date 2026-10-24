@@ -15,6 +15,7 @@
 #include "frontier/frontier_trainers.h"
 
 #include "battle_frontier_communication.h"
+#include "communication_core.h"
 #include "filesystem_files_def.h"
 #include "frontier_save_access.h"
 #include "frontier_script_commands_misc_internal.h"
@@ -72,7 +73,7 @@ BOOL FrtCmd_CastleAlloc(FrontierScriptContext *ctx) {
     u16 *resultVar = FrontierScript_ReadVarPtr(ctx);
     FrontierLaunchArgs *args = Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork);
     BattleCastleData *data = BattleCastleData_Alloc(args->saveData, resume, (u8)type, slot0, slot1, slot2, resultVar);
-    Frontier_SetData(ctx->frontierSystem->frontierWork, (u32)data);
+    Frontier_SetData(ctx->frontierSystem->frontierWork, data);
     return FALSE;
 }
 

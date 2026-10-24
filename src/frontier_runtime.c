@@ -198,9 +198,9 @@ void *Frontier_GetData(void *frontierWork) {
     return work->launchArgs->frontierFsys;
 }
 
-void Frontier_SetData(void *frontierWork, u32 data) {
+void Frontier_SetData(void *frontierWork, void *data) {
     FrontierWork *work = frontierWork;
-    work->launchArgs->frontierFsys = (void *)data;
+    work->launchArgs->frontierFsys = data;
 }
 
 void Frontier_LaunchApplication(void *frontierWork, const OverlayManagerTemplate *template, void *args, u32 freeArgs, FrontierAppExitFunc exit) {

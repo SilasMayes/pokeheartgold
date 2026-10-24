@@ -6,6 +6,7 @@
 #include "constants/battle.h"
 #include "constants/battle/trainer_ai.h"
 #include "constants/battle_menu.h"
+#include "constants/battle_subscript.h"
 #include "constants/items.h"
 #include "constants/message_tags.h"
 #include "constants/moves.h"
@@ -1058,7 +1059,7 @@ int TrainerAI_PostKOSwitchIn(BattleSystem *battleSystem, int battler) {
     int moveType;
     u8 battlersDisregarded;
     u8 score, maxScore; // BUG: Post-KO Switch-In AI Scoring Overflow (see docs/bugs_and_glitches.md)
-    u8 picked = 6;
+    u8 picked = PARTY_SIZE;
     u32 moveStatusFlags;
     Pokemon *mon;
     BattleContext *ctx = BattleSystem_GetBattleContext(battleSystem);
@@ -1084,7 +1085,7 @@ int TrainerAI_PostKOSwitchIn(BattleSystem *battleSystem, int battler) {
     // Mono-type Pokemon are regarded as being dual-type of the same type.
     while (battlersDisregarded != 0x3F) {
         maxScore = 0;
-        picked = 6;
+        picked = PARTY_SIZE;
 
         for (i = 0; i < partySize; i++) {
             mon = BattleSystem_GetPartyMon(battleSystem, battler, i);
@@ -1115,7 +1116,7 @@ int TrainerAI_PostKOSwitchIn(BattleSystem *battleSystem, int battler) {
             }
         }
 
-        if (picked != 6) {
+        if (picked != PARTY_SIZE) {
             // Determine if this mon has any super-effective moves against the opponent
             mon = BattleSystem_GetPartyMon(battleSystem, battler, picked);
 
@@ -1155,7 +1156,7 @@ int TrainerAI_PostKOSwitchIn(BattleSystem *battleSystem, int battler) {
     }
 
     maxScore = 0;
-    picked = 6;
+    picked = PARTY_SIZE;
 
     // Stage 2: Loop through all the party slots and score them by how much damage would be done
     // by the maximum non-critical roll of each of their moves if it were used by the battler
@@ -2465,10 +2466,10 @@ static void OpponentData_PlayMoveAnimation(BattleSystem *battleSystem, OpponentD
     work->animSystem = (BattleAnimSystem *)BattleSystem_GetBattleAnimSystem(battleSystem);
     work->animData = *animData;
     work->pokepic = opponentData->pokepic;
-    if (animData->isEffectAnim == 1 && animData->effectAnimId == 25) {
+    if (animData->isEffectAnim == 1 && animData->effectAnimId == BATTLE_ANIMATION_SUBSTITUTE_IN) {
         opponentData->substituteShown = 1;
     }
-    if (animData->isEffectAnim == 1 && animData->effectAnimId == 26) {
+    if (animData->isEffectAnim == 1 && animData->effectAnimId == BATTLE_ANIMATION_SUBSTITUTE_OUT) {
         opponentData->substituteShown = 0;
     }
     MoveAnim_GetDisplayFlags(&work->disableHpBar, &work->updateG3, animData->isEffectAnim, animData->effectAnimId, animData->move);
@@ -2651,7 +2652,7 @@ static void OpponentData_PrintEncounterMessage(BattleSystem *battleSystem, Oppon
     msgData = BattleSystem_GetMessageLoader(battleSystem);
     work = Heap_Alloc(HEAP_ID_BATTLE, sizeof(OpponentMessageWork));
     work->battleSystem = battleSystem;
-    work->command = 34;
+    work->command = OPPONENT_COMMAND_PRINT_ENCOUNTER_MESSAGE;
     work->battlerId = opponentData->battlerId;
     work->printerId = BattleSystem_PrintBattleMessage(battleSystem, msgData, &msg, BattleSystem_GetTextFrameDelay(battleSystem));
     SysTask_CreateOnMainQueue(Task_WaitBattleMessage, work, 0);
@@ -2856,7 +2857,7 @@ static void OpponentData_PrintResultMessage(BattleSystem *battleSystem, Opponent
     msgData = BattleSystem_GetMessageLoader(battleSystem);
     work = Heap_Alloc(HEAP_ID_BATTLE, sizeof(OpponentMessageWork));
     work->battleSystem = battleSystem;
-    work->command = 59;
+    work->command = OPPONENT_COMMAND_PRINT_RESULT_MESSAGE;
     work->battlerId = opponentData->battlerId;
     work->printerId = BattleSystem_PrintBattleMessage(battleSystem, msgData, &msg, BattleSystem_GetTextFrameDelay(battleSystem));
     SysTask_CreateOnMainQueue(Task_WaitBattleMessage, work, 0);
@@ -2871,7 +2872,7 @@ static void OpponentData_RunAwayMessage(BattleSystem *battleSystem, OpponentData
     msgData = BattleSystem_GetMessageLoader(battleSystem);
     work = Heap_Alloc(HEAP_ID_BATTLE, sizeof(OpponentMessageWork));
     work->battleSystem = battleSystem;
-    work->command = 60;
+    work->command = OPPONENT_COMMAND_RUN_AWAY_MESSAGE;
     work->battlerId = opponentData->battlerId;
     work->printerId = BattleSystem_PrintBattleMessage(battleSystem, msgData, &msg, BattleSystem_GetTextFrameDelay(battleSystem));
     SysTask_CreateOnMainQueue(Task_WaitBattleMessage, work, 0);
@@ -2886,7 +2887,7 @@ static void OpponentData_ForfeitMessage(BattleSystem *battleSystem, OpponentData
     msgData = BattleSystem_GetMessageLoader(battleSystem);
     work = Heap_Alloc(HEAP_ID_BATTLE, sizeof(OpponentMessageWork));
     work->battleSystem = battleSystem;
-    work->command = 61;
+    work->command = OPPONENT_COMMAND_FORFEIT_MESSAGE;
     work->battlerId = opponentData->battlerId;
     work->printerId = BattleSystem_PrintBattleMessage(battleSystem, msgData, &msg, BattleSystem_GetTextFrameDelay(battleSystem));
     SysTask_CreateOnMainQueue(Task_WaitBattleMessage, work, 0);
@@ -6968,22 +6969,22 @@ static void MoveAnim_GetDisplayFlags(u8 *disableHpBar, u8 *updateG3, BOOL isEffe
     }
 
     switch (effect) {
-    case 18:
-    case 19:
-    case 20:
-    case 21:
-    case 22:
-    case 31:
-    case 32:
-    case 34:
-    case 35:
-    case 37:
-    case 39:
+    case BATTLE_ANIMATION_WEATHER_FOG:
+    case BATTLE_ANIMATION_WEATHER_RAIN:
+    case BATTLE_ANIMATION_WEATHER_HAIL:
+    case BATTLE_ANIMATION_WEATHER_SAND:
+    case BATTLE_ANIMATION_WEATHER_SUN:
+    case BATTLE_ANIMATION_DAMAGE_NIGHTMARE:
+    case BATTLE_ANIMATION_DAMAGE_LEECH_SEED:
+    case BATTLE_ANIMATION_DAMAGE_WRAP:
+    case BATTLE_ANIMATION_DAMAGE_FIRE_SPIN:
+    case BATTLE_ANIMATION_DAMAGE_CLAMP:
+    case BATTLE_ANIMATION_DAMAGE_SAND_TOMB:
         *disableHpBar = TRUE;
         *updateG3 = FALSE;
         break;
-    case 36:
-    case 38:
+    case BATTLE_ANIMATION_DAMAGE_MAGMA_STORM:
+    case BATTLE_ANIMATION_DAMAGE_WHIRLPOOL:
         *disableHpBar = TRUE;
         *updateG3 = TRUE;
         break;
