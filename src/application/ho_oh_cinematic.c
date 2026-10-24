@@ -75,8 +75,7 @@ static const LegendaryCinematicCamera sHoOhCinematicSecondSceneCamera = {
     .farClip = FX32_CONST(1700),
 };
 
-int ScriptCinematic_HoOh(void *data) {
-    LegendaryCinematic *cinematic = data;
+int ScriptCinematic_HoOh(LegendaryCinematic *cinematic) {
     cinematic->state = sScriptCinematicSubs_HoOh[cinematic->state](cinematic);
     if (cinematic->state == 6) {
         return FALSE;

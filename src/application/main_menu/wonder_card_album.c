@@ -164,7 +164,7 @@ static void WonderCardAlbum_LoadScreenData(WonderCardAlbum *album, int fileId, i
 static void WonderCardAlbum_LoadCardBg(WonderCardAlbum *album, int page);
 static void WonderCardAlbum_HandleListMenuInput(OverlayManager *manager, int *state, MysteryGiftMenuFunc cancelFunc);
 static void WonderCardAlbum_CreateMonIconSprites(WonderCardAlbum *album);
-static void WonderCardAlbum_FlipEffectTask(SysTask *task, WonderCardFlipEffect *effect);
+static void WonderCardAlbum_FlipEffectTask(SysTask *task, void *data);
 static void WonderCardAlbum_StartFlipEffect(WonderCardAlbum *album, int mode, fx32 speed, fx32 accel);
 static void WonderCardAlbum_StopFlipEffect(WonderCardAlbum *album);
 static BOOL WonderCardAlbum_UpdateFlipEffect(WonderCardAlbum *album);
@@ -177,20 +177,20 @@ static int WonderCardAlbum_CountReceivers(void);
 static int WonderCardAlbum_UpdateReceiverList(WonderCardAlbum *album, Window *window);
 static void WonderCardAlbum_PrintReceiverCount(WonderCardAlbum *album, Window *window, int count);
 static void WonderCardAlbum_StopSharing(WonderCardAlbum *album, int *state, int nextState);
-static BOOL WonderCardAlbum_BufferReceiveDate(WonderCardAlbum *album);
-static BOOL WonderCardAlbum_BufferZero(WonderCardAlbum *album);
+static BOOL WonderCardAlbum_BufferReceiveDate(void *data, Window *window, u32 color);
+static BOOL WonderCardAlbum_BufferZero(void *data, Window *window, u32 color);
 static int WonderCardAlbum_ConfirmTrash(OverlayManager *manager);
-static BOOL WonderCardAlbum_PrintCardText(WonderCardAlbum *album, Window *window, u32 color);
-static BOOL WonderCardAlbum_PrintCardTitle(WonderCardAlbum *album, Window *window, u32 color);
-static BOOL WonderCardAlbum_PrintGiftStatus(WonderCardAlbum *album, Window *window, u32 color);
-static BOOL WonderCardAlbum_PrintMessageOnly(void);
-static BOOL WonderCardAlbum_PrintSharesLeft(WonderCardAlbum *album, Window *window, u32 color);
+static BOOL WonderCardAlbum_PrintCardText(void *data, Window *window, u32 color);
+static BOOL WonderCardAlbum_PrintCardTitle(void *data, Window *window, u32 color);
+static BOOL WonderCardAlbum_PrintGiftStatus(void *data, Window *window, u32 color);
+static BOOL WonderCardAlbum_PrintMessageOnly(void *data, Window *window, u32 color);
+static BOOL WonderCardAlbum_PrintSharesLeft(void *data, Window *window, u32 color);
 static int WonderCardAlbum_ReturnToCardMenu(OverlayManager *manager);
 static int WonderCardAlbum_SelectShare(OverlayManager *manager);
 static int WonderCardAlbum_SelectTrash(OverlayManager *manager);
-static BOOL WonderCardAlbum_ShowCardMenu(WonderCardAlbum *album, Window *window, u32 color);
-static BOOL WonderCardAlbum_ShowShareYesNo(WonderCardAlbum *album, Window *window, u32 color);
-static BOOL WonderCardAlbum_ShowTrashYesNo(WonderCardAlbum *album, Window *window, u32 color);
+static BOOL WonderCardAlbum_ShowCardMenu(void *data, Window *window, u32 color);
+static BOOL WonderCardAlbum_ShowShareYesNo(void *data, Window *window, u32 color);
+static BOOL WonderCardAlbum_ShowTrashYesNo(void *data, Window *window, u32 color);
 
 static MysteryGiftMenuItem sWonderCardAlbumWirelessYesNoItems[2] = {
     { msg_0247_00065, (MysteryGiftMenuFunc)ALBUM_STATE_SHARE_FADE_OUT },
@@ -247,7 +247,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 0xFFFFFFFF,
      .msgId = 37,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintMessageOnly,
+     .func = WonderCardAlbum_PrintMessageOnly,
      .textX = 0,
      .textY = 0,
      },
@@ -261,7 +261,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0xF0200,
      .fillColor = 0xFFFFFFFF,
      .msgId = 41,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintMessageOnly,
+     .func = WonderCardAlbum_PrintMessageOnly,
      .textX = 0,
      .textY = 0,
      },
@@ -275,7 +275,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 0xFFFFFFFF,
      .msgId = 0,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintGiftStatus,
+     .func = WonderCardAlbum_PrintGiftStatus,
      .textX = 0,
      .textY = 0,
      },
@@ -289,7 +289,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0xF0200,
      .fillColor = 0xFFFFFFFF,
      .msgId = 0,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintCardTitle,
+     .func = WonderCardAlbum_PrintCardTitle,
      .textX = 0,
      .textY = 0,
      },
@@ -303,7 +303,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 0xFFFFFFFF,
      .msgId = 50,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_BufferReceiveDate,
+     .func = WonderCardAlbum_BufferReceiveDate,
      .textX = 0,
      .textY = 0,
      },
@@ -317,7 +317,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 0xFFFFFFFF,
      .msgId = 0,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintCardText,
+     .func = WonderCardAlbum_PrintCardText,
      .textX = 0,
      .textY = 0,
      },
@@ -331,7 +331,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 0xFFFFFFFF,
      .msgId = 42,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintSharesLeft,
+     .func = WonderCardAlbum_PrintSharesLeft,
      .textX = 0,
      .textY = 0,
      },
@@ -345,7 +345,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 15,
      .msgId = 37,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintMessageOnly,
+     .func = WonderCardAlbum_PrintMessageOnly,
      .textX = 0,
      .textY = 0,
      },
@@ -359,7 +359,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 5,
      .msgId = 0,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_ShowCardMenu,
+     .func = WonderCardAlbum_ShowCardMenu,
      .textX = 0,
      .textY = 0,
      },
@@ -373,7 +373,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 5,
      .msgId = 0,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_ShowTrashYesNo,
+     .func = WonderCardAlbum_ShowTrashYesNo,
      .textX = 0,
      .textY = 0,
      },
@@ -387,7 +387,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 5,
      .msgId = 0,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_ShowShareYesNo,
+     .func = WonderCardAlbum_ShowShareYesNo,
      .textX = 0,
      .textY = 0,
      },
@@ -401,7 +401,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0xE0F00,
      .fillColor = 0xFFFFFFFF,
      .msgId = 53,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintMessageOnly,
+     .func = WonderCardAlbum_PrintMessageOnly,
      .textX = 7,
      .textY = 0,
      },
@@ -415,7 +415,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0xE0F00,
      .fillColor = 0xFFFFFFFF,
      .msgId = 56,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintMessageOnly,
+     .func = WonderCardAlbum_PrintMessageOnly,
      .textX = 2,
      .textY = 0,
      },
@@ -429,7 +429,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0xE0F00,
      .fillColor = 0xFFFFFFFF,
      .msgId = 58,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintMessageOnly,
+     .func = WonderCardAlbum_PrintMessageOnly,
      .textX = 0xFFFFFFFF,
      .textY = 1,
      },
@@ -443,7 +443,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0xE0F00,
      .fillColor = 0xFFFFFFFF,
      .msgId = 59,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintMessageOnly,
+     .func = WonderCardAlbum_PrintMessageOnly,
      .textX = 0xFFFFFFFF,
      .textY = 1,
      },
@@ -457,7 +457,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 0xFFFFFFFF,
      .msgId = 57,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_BufferZero,
+     .func = WonderCardAlbum_BufferZero,
      .textX = 0,
      .textY = 0,
      },
@@ -471,7 +471,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 0xFFFFFFFF,
      .msgId = 0,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintMessageOnly,
+     .func = WonderCardAlbum_PrintMessageOnly,
      .textX = 0,
      .textY = 0,
      },
@@ -485,7 +485,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 14,
      .msgId = 60,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintMessageOnly,
+     .func = WonderCardAlbum_PrintMessageOnly,
      .textX = 0,
      .textY = 0,
      },
@@ -499,7 +499,7 @@ static WonderCardTextBox sWonderCardAlbumTextBoxes[19] = {
      .color = 0x10200,
      .fillColor = 14,
      .msgId = 61,
-     .func = (WonderCardTextBoxFunc)WonderCardAlbum_PrintMessageOnly,
+     .func = WonderCardAlbum_PrintMessageOnly,
      .textX = 0,
      .textY = 0,
      },
@@ -668,11 +668,12 @@ static void WonderCardAlbum_DestroyListMenu(WonderCardAlbum *album) {
     RemoveWindow(&album->menuWindow);
 }
 
-static BOOL WonderCardAlbum_PrintMessageOnly(void) {
+static BOOL WonderCardAlbum_PrintMessageOnly(void *data, Window *window, u32 color) {
     return TRUE;
 }
 
-static BOOL WonderCardAlbum_PrintCardTitle(WonderCardAlbum *album, Window *window, u32 color) {
+static BOOL WonderCardAlbum_PrintCardTitle(void *data, Window *window, u32 color) {
+    WonderCardAlbum *album = data;
     String *string = String_New(37, album->heapId);
 
     CopyU16ArrayToStringN(string, album->cards[album->cardIndex]->info.name, 36);
@@ -681,7 +682,8 @@ static BOOL WonderCardAlbum_PrintCardTitle(WonderCardAlbum *album, Window *windo
     return TRUE;
 }
 
-static BOOL WonderCardAlbum_PrintGiftStatus(WonderCardAlbum *album, Window *window, u32 color) {
+static BOOL WonderCardAlbum_PrintGiftStatus(void *data, Window *window, u32 color) {
+    WonderCardAlbum *album = data;
     int msgId;
     int index = album->cardIndex;
     String *string;
@@ -699,7 +701,8 @@ static BOOL WonderCardAlbum_PrintGiftStatus(WonderCardAlbum *album, Window *wind
     return TRUE;
 }
 
-static BOOL WonderCardAlbum_BufferReceiveDate(WonderCardAlbum *album) {
+static BOOL WonderCardAlbum_BufferReceiveDate(void *data, Window *window, u32 color) {
+    WonderCardAlbum *album = data;
     RTCDate date;
 
     RTC_ConvertDayToDate(&date, album->cards[album->cardIndex]->receiveDate);
@@ -709,7 +712,8 @@ static BOOL WonderCardAlbum_BufferReceiveDate(WonderCardAlbum *album) {
     return TRUE;
 }
 
-static BOOL WonderCardAlbum_PrintCardText(WonderCardAlbum *album, Window *window, u32 color) {
+static BOOL WonderCardAlbum_PrintCardText(void *data, Window *window, u32 color) {
+    WonderCardAlbum *album = data;
     String *string = String_New(251, HEAP_ID_85);
 
     CopyU16ArrayToStringN(string, album->cards[album->cardIndex]->text, 250);
@@ -718,7 +722,8 @@ static BOOL WonderCardAlbum_PrintCardText(WonderCardAlbum *album, Window *window
     return FALSE;
 }
 
-static BOOL WonderCardAlbum_PrintSharesLeft(WonderCardAlbum *album, Window *window, u32 color) {
+static BOOL WonderCardAlbum_PrintSharesLeft(void *data, Window *window, u32 color) {
+    WonderCardAlbum *album = data;
     u8 shareMax = album->cards[album->cardIndex]->shareMax;
 
     if (shareMax == 0xFF) {
@@ -734,7 +739,8 @@ static BOOL WonderCardAlbum_PrintSharesLeft(WonderCardAlbum *album, Window *wind
     return FALSE;
 }
 
-static BOOL WonderCardAlbum_ShowCardMenu(WonderCardAlbum *album, Window *window, u32 color) {
+static BOOL WonderCardAlbum_ShowCardMenu(void *data, Window *window, u32 color) {
+    WonderCardAlbum *album = data;
     MysteryGiftMenuItem items[4];
     const WonderCardTextBox *box;
     int count;
@@ -756,12 +762,14 @@ static BOOL WonderCardAlbum_ShowCardMenu(WonderCardAlbum *album, Window *window,
     return TRUE;
 }
 
-static BOOL WonderCardAlbum_ShowTrashYesNo(WonderCardAlbum *album, Window *window, u32 color) {
+static BOOL WonderCardAlbum_ShowTrashYesNo(void *data, Window *window, u32 color) {
+    WonderCardAlbum *album = data;
     WonderCardAlbum_CreateListMenu(album, sWonderCardAlbumTrashYesNoItems, 2, window, 1);
     return TRUE;
 }
 
-static BOOL WonderCardAlbum_ShowShareYesNo(WonderCardAlbum *album, Window *window, u32 color) {
+static BOOL WonderCardAlbum_ShowShareYesNo(void *data, Window *window, u32 color) {
+    WonderCardAlbum *album = data;
     WonderCardAlbum_CreateListMenu(album, sWonderCardAlbumShareYesNoItems, 2, window, 0);
     return TRUE;
 }
@@ -772,7 +780,8 @@ static BOOL WonderCardAlbum_ShowWirelessYesNo(WonderCardAlbum *album, Window *wi
     return TRUE;
 }
 
-static BOOL WonderCardAlbum_BufferZero(WonderCardAlbum *album) {
+static BOOL WonderCardAlbum_BufferZero(void *data, Window *window, u32 color) {
+    WonderCardAlbum *album = data;
     BufferIntegerAsString(album->msgFormat, 0, 0, 1, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     return TRUE;
 }
@@ -994,7 +1003,8 @@ BOOL WonderCardAlbum_Init(OverlayManager *manager, int *state) {
     return TRUE;
 }
 
-static void WonderCardAlbum_FlipEffectTask(SysTask *task, WonderCardFlipEffect *effect) {
+static void WonderCardAlbum_FlipEffectTask(SysTask *task, void *data) {
+    WonderCardFlipEffect *effect = data;
     void *buffer;
 
     HBlankDma_Stop();
@@ -1012,7 +1022,7 @@ static void WonderCardAlbum_StartFlipEffect(WonderCardAlbum *album, int mode, fx
         effect->doubleBuffer = DoubleBuffer_New(HEAP_ID_85, effect->buffers[0], effect->buffers[1]);
     }
     if (effect->task == NULL) {
-        effect->task = SysTask_CreateOnVBlankQueue((SysTaskFunc)WonderCardAlbum_FlipEffectTask, effect, 1024);
+        effect->task = SysTask_CreateOnVBlankQueue(WonderCardAlbum_FlipEffectTask, effect, 1024);
     }
     effect->active = TRUE;
 }

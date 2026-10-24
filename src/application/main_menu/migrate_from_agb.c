@@ -165,7 +165,7 @@ static void MigrateFromAgb_CloseConfirmScreen(MigrateFromAgbApp *app);
 static void MigrateFromAgb_FreeGraphics(MigrateFromAgbApp *app);
 static void MigrateFromAgb_ShowYesNo(MigrateFromAgbApp *app);
 static void MigrateFromAgb_PrintIntro(MigrateFromAgbApp *app);
-static void MigrateFromAgb_VBlankCB(MigrateFromAgbApp *app);
+static void MigrateFromAgb_VBlankCB(void *data);
 static int MigrateFromAgb_CheckCanMigrate(MigrateFromAgbApp *app);
 
 static int MigrateFromAgb_RunTransfer(MigrateFromAgbApp *app);
@@ -1273,7 +1273,8 @@ static void MigrateFromAgb_PrintIntro(MigrateFromAgbApp *app) {
     MigrateFromAgb_ShowYesNo(app);
 }
 
-static void MigrateFromAgb_VBlankCB(MigrateFromAgbApp *app) {
+static void MigrateFromAgb_VBlankCB(void *data) {
+    MigrateFromAgbApp *app = data;
     if (app->vblankCallback) {
         app->vblankCallback();
         app->vblankCallback = NULL;
@@ -1419,7 +1420,7 @@ static BOOL MigrateFromAgb_Main(OverlayManager *man, int *state) {
         MigrateFromAgb_InitSpriteResources(app);
         MigrateFromAgb_InitSpriteHeader(app);
         MigrateFromAgb_CreateButtons(app);
-        Main_SetVBlankIntrCB((GFIntrCB)MigrateFromAgb_VBlankCB, app);
+        Main_SetVBlankIntrCB(MigrateFromAgb_VBlankCB, app);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_OFF);
         if (app->pendingMsg == 1) {
             MigrateFromAgb_StartFadeBlack(app, FADE_TYPE_BRIGHTNESS_IN, MIGRATE_STATE_PRINT_RESULT, state);
@@ -1523,7 +1524,7 @@ static BOOL MigrateFromAgb_Main(OverlayManager *man, int *state) {
         MigrateFromAgb_LoadBoxBg(app);
         MigrateFromAgb_CreateBoxSprites(app);
         MigrateFromAgb_ShowBox(app);
-        Main_SetVBlankIntrCB((GFIntrCB)MigrateFromAgb_VBlankCB, app);
+        Main_SetVBlankIntrCB(MigrateFromAgb_VBlankCB, app);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         MigrateFromAgb_PrintMonInfo(app, NULL);
         MigrateFromAgb_StartFadeBlack(app, FADE_TYPE_BRIGHTNESS_IN, MIGRATE_STATE_PICK_MONS, state);

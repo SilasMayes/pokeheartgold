@@ -38,20 +38,37 @@ typedef struct WobbuffetPopApp {
     u8 unk_3F;
 } WobbuffetPopApp;
 
+// Air sent by one player, in the local queue until a bonus target decides its bonus.
+typedef struct WobbuffetPopPump {
+    u8 netId;
+    u8 bonus; // 0 none, 1 x2, 2 x1/2, 3 x3
+    u16 balloonIndex;
+    s32 amount;
+    s32 bonusAmount;
+    u8 bonusSet;
+    u8 unk_D[3];
+} WobbuffetPopPump;
+
 // One queued game event (local and per-player queues, see WobbuffetPop).
 typedef struct WobbuffetPopEvent {
     u32 kind;
     union {
+        WobbuffetPopPump pump;
         struct {
-            u32 a, b, c, d;
-        } words;
+            u8 kind;
+            u8 id;
+        } sync; // countdown, finish, sync and demo events
         struct {
-            u8 b4, b5, b6, b7;
-        } bytes;
+            u16 balloonIndex;
+            u8 syncKind;
+            u8 syncId;
+        } pop;
         struct {
-            u16 h4;
-            u8 b6, b7, b8;
-        } halves;
+            u16 balloonIndex;
+            u8 size;
+            u8 syncKind;
+            u8 syncId;
+        } newBalloon;
     } data;
 } WobbuffetPopEvent;
 
@@ -305,17 +322,6 @@ typedef struct WobbuffetPopDemo {
     u32 unk_08;
     s32 touch[4]; // x, y, held, new
 } WobbuffetPopDemo;
-
-// Air sent by one player, in the local queue until a bonus target decides its bonus.
-typedef struct WobbuffetPopPump {
-    u8 netId;
-    u8 bonus; // 0 none, 1 x2, 2 x1/2, 3 x3
-    u16 balloonIndex;
-    s32 amount;
-    s32 bonusAmount;
-    u8 bonusSet;
-    u8 unk_D[3];
-} WobbuffetPopPump;
 
 // A puff of air flying from a player's side of the lower screen to the ring.
 typedef struct WobbuffetPopPuff {

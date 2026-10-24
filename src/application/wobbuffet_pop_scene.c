@@ -105,7 +105,7 @@ static ManagedSprite *WobbuffetPop_CreateBalloonIconSprite(WobbuffetPop *game, u
 static BOOL WobbuffetPopBalloonIcon_Init(WobbuffetPop *game, WobbuffetPopBalloonIcon *icon, u32 position, u32 number);
 static void WobbuffetPopBalloonIcon_Slide(WobbuffetPopBalloonIcon *icon);
 static void WobbuffetPopBalloonIcon_Update(WobbuffetPop *game, WobbuffetPopBalloonIcon *icon);
-static u32 WobbuffetPopBalloonIcon_GetSize(s32 n);
+static u32 WobbuffetPopBalloonIcon_GetSize(s32 number);
 static void WobbuffetPop_PopBalloonIcon(WobbuffetPop *game);
 static inline int WobbuffetPop_FindPlayer(WobbuffetPop *game, int netId);
 static inline int WobbuffetPop_GetSubBgPaletteIndex(WobbuffetPop *game, int i);
@@ -450,11 +450,11 @@ static void WobbuffetPopInflation_CalcScale(int playerCount, int size, int air, 
     }
 }
 
-int WobbuffetPop_GetBalloonSize(int n) {
-    if (n >= 10) {
+int WobbuffetPop_GetBalloonSize(int balloonIndex) {
+    if (balloonIndex >= 10) {
         return 2;
     }
-    if (n >= 5) {
+    if (balloonIndex >= 5) {
         return 1;
     }
     return 0;
@@ -1003,11 +1003,11 @@ static void WobbuffetPopBalloonIcon_Update(WobbuffetPop *game, WobbuffetPopBallo
     }
 }
 
-static u32 WobbuffetPopBalloonIcon_GetSize(s32 n) {
-    if (n >= 10) {
+static u32 WobbuffetPopBalloonIcon_GetSize(s32 number) {
+    if (number >= 10) {
         return 2;
     }
-    if (n >= 5) {
+    if (number >= 5) {
         return 1;
     }
     return 0;
@@ -2248,13 +2248,13 @@ static void WobbuffetPop_QueuePumpEvent(WobbuffetPop *game, const WobbuffetPopPu
 
     MI_CpuFill8(&event, 0, sizeof(event));
     event.kind = WOBBUFFET_POP_EVENT_PUMP;
-    *(WobbuffetPopPump *)&event.data = *pump;
+    event.data.pump = *pump;
     WobbuffetPop_QueueEvent(game, &event);
 }
 
 void WobbuffetPop_HandlePumpEvent(WobbuffetPop *game, WobbuffetPopEvent *event) {
-    if (event->data.bytes.b4 != Comm_GetLocalNetId()) {
-        WobbuffetPop_LaunchPuff(game, (WobbuffetPopPump *)&event->data);
+    if (event->data.pump.netId != Comm_GetLocalNetId()) {
+        WobbuffetPop_LaunchPuff(game, &event->data.pump);
     }
 }
 
@@ -2263,16 +2263,16 @@ void WobbuffetPop_QueuePopEvent(WobbuffetPop *game, u32 balloonIndex, u8 syncId)
 
     MI_CpuFill8(&event, 0, sizeof(event));
     event.kind = WOBBUFFET_POP_EVENT_POP;
-    event.data.halves.h4 = balloonIndex;
-    event.data.halves.b6 = WOBBUFFET_POP_SYNC_POP;
-    event.data.halves.b7 = syncId;
+    event.data.pop.balloonIndex = balloonIndex;
+    event.data.pop.syncKind = WOBBUFFET_POP_SYNC_POP;
+    event.data.pop.syncId = syncId;
     WobbuffetPop_QueueEvent(game, &event);
 }
 
 void WobbuffetPop_HandlePopEvent(WobbuffetPop *game, WobbuffetPopEvent *event) {
     game->total++;
     WobbuffetPop_PopBalloon(game);
-    WobbuffetPop_RequestSync(game, event->data.halves.b6, event->data.halves.b7);
+    WobbuffetPop_RequestSync(game, event->data.pop.syncKind, event->data.pop.syncId);
 }
 
 void WobbuffetPop_QueueNewBalloonEvent(WobbuffetPop *game, int balloonIndex, int size, u8 syncId) {
@@ -2280,18 +2280,18 @@ void WobbuffetPop_QueueNewBalloonEvent(WobbuffetPop *game, int balloonIndex, int
 
     MI_CpuFill8(&event, 0, sizeof(event));
     event.kind = WOBBUFFET_POP_EVENT_NEW_BALLOON;
-    event.data.halves.h4 = balloonIndex;
-    event.data.halves.b6 = size;
-    event.data.halves.b7 = WOBBUFFET_POP_SYNC_NEW_BALLOON;
-    event.data.halves.b8 = syncId;
+    event.data.newBalloon.balloonIndex = balloonIndex;
+    event.data.newBalloon.size = size;
+    event.data.newBalloon.syncKind = WOBBUFFET_POP_SYNC_NEW_BALLOON;
+    event.data.newBalloon.syncId = syncId;
     WobbuffetPop_QueueEvent(game, &event);
 }
 
 void WobbuffetPop_HandleNewBalloonEvent(WobbuffetPop *game, WobbuffetPopEvent *event) {
-    game->balloonIndex = event->data.halves.h4;
-    WobbuffetPopInflation_Start(game->bgConfig, game->app->playerCount, event->data.halves.b6, &game->inflation);
+    game->balloonIndex = event->data.newBalloon.balloonIndex;
+    WobbuffetPopInflation_Start(game->bgConfig, game->app->playerCount, event->data.newBalloon.size, &game->inflation);
     game->balloonInPlay = TRUE;
-    WobbuffetPop_RequestSync(game, event->data.halves.b7, event->data.halves.b8);
+    WobbuffetPop_RequestSync(game, event->data.newBalloon.syncKind, event->data.newBalloon.syncId);
 }
 
 void WobbuffetPop_QueueCountdownEvent(WobbuffetPop *game, u8 syncId) {
@@ -2299,14 +2299,14 @@ void WobbuffetPop_QueueCountdownEvent(WobbuffetPop *game, u8 syncId) {
 
     MI_CpuFill8(&event, 0, sizeof(event));
     event.kind = WOBBUFFET_POP_EVENT_COUNTDOWN;
-    event.data.bytes.b4 = WOBBUFFET_POP_SYNC_COUNTDOWN;
-    event.data.bytes.b5 = syncId;
+    event.data.sync.kind = WOBBUFFET_POP_SYNC_COUNTDOWN;
+    event.data.sync.id = syncId;
     WobbuffetPop_QueueEvent(game, &event);
 }
 
 void WobbuffetPop_HandleCountdownEvent(WobbuffetPop *game, WobbuffetPopEvent *event) {
     game->gameState = WOBBUFFET_POP_GAME_START_COUNTDOWN;
-    WobbuffetPop_RequestSync(game, event->data.bytes.b4, event->data.bytes.b5);
+    WobbuffetPop_RequestSync(game, event->data.sync.kind, event->data.sync.id);
 }
 
 void WobbuffetPop_QueueFinishEvent(WobbuffetPop *game, u8 syncId) {
@@ -2314,15 +2314,15 @@ void WobbuffetPop_QueueFinishEvent(WobbuffetPop *game, u8 syncId) {
 
     MI_CpuFill8(&event, 0, sizeof(event));
     event.kind = WOBBUFFET_POP_EVENT_FINISH;
-    event.data.bytes.b4 = WOBBUFFET_POP_SYNC_FINISH;
-    event.data.bytes.b5 = syncId;
+    event.data.sync.kind = WOBBUFFET_POP_SYNC_FINISH;
+    event.data.sync.id = syncId;
     WobbuffetPop_QueueEvent(game, &event);
 }
 
 void WobbuffetPop_HandleFinishEvent(WobbuffetPop *game, WobbuffetPopEvent *event) {
     game->gameOver = TRUE;
     game->gameState = WOBBUFFET_POP_GAME_START_FINISH;
-    WobbuffetPop_RequestSync(game, event->data.bytes.b4, event->data.bytes.b5);
+    WobbuffetPop_RequestSync(game, event->data.sync.kind, event->data.sync.id);
 }
 
 void WobbuffetPop_QueueSyncEvent(WobbuffetPop *game, int syncKind, u8 syncId) {
@@ -2330,13 +2330,13 @@ void WobbuffetPop_QueueSyncEvent(WobbuffetPop *game, int syncKind, u8 syncId) {
 
     MI_CpuFill8(&event, 0, sizeof(event));
     event.kind = WOBBUFFET_POP_EVENT_SYNC;
-    event.data.bytes.b4 = syncKind;
-    event.data.bytes.b5 = syncId;
+    event.data.sync.kind = syncKind;
+    event.data.sync.id = syncId;
     WobbuffetPop_QueueEvent(game, &event);
 }
 
 void WobbuffetPop_HandleSyncEvent(WobbuffetPop *game, WobbuffetPopEvent *event) {
-    WobbuffetPop_RequestSync(game, event->data.bytes.b4, event->data.bytes.b5);
+    WobbuffetPop_RequestSync(game, event->data.sync.kind, event->data.sync.id);
 }
 
 void WobbuffetPop_QueueDemoEvent(WobbuffetPop *game, u8 syncId) {
@@ -2344,12 +2344,12 @@ void WobbuffetPop_QueueDemoEvent(WobbuffetPop *game, u8 syncId) {
 
     MI_CpuFill8(&event, 0, sizeof(event));
     event.kind = WOBBUFFET_POP_EVENT_DEMO;
-    event.data.bytes.b4 = WOBBUFFET_POP_SYNC_DEMO;
-    event.data.bytes.b5 = syncId;
+    event.data.sync.kind = WOBBUFFET_POP_SYNC_DEMO;
+    event.data.sync.id = syncId;
     WobbuffetPop_QueueEvent(game, &event);
 }
 
 void WobbuffetPop_HandleDemoEvent(WobbuffetPop *game, WobbuffetPopEvent *event) {
     game->gameState = WOBBUFFET_POP_GAME_START_DEMO;
-    WobbuffetPop_RequestSync(game, event->data.bytes.b4, event->data.bytes.b5);
+    WobbuffetPop_RequestSync(game, event->data.sync.kind, event->data.sync.id);
 }

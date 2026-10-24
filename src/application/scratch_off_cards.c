@@ -266,7 +266,7 @@ static void ScratchOffCards_DestroyYesNoPrompt(ScratchOffCardsWork *work);
 static void ScratchOffCards_InitBgGraphics(ScratchOffCardsWork *work);
 static void ScratchOffCards_InitSpriteGraphics(ScratchOffCardsWork *work);
 static void ScratchOffCards_FreeBgConfig(BgConfig *bgConfig);
-static void ScratchOffCards_VBlank(ScratchOffCardsWork *work);
+static void ScratchOffCards_VBlank(void *data);
 static void ScratchOffCards_SetVramBanks(void);
 static void ScratchOffCards_InitBgs(BgConfig *bgConfig);
 static void ScratchOffCards_LoadSubBg3Gfx(ScratchOffCardsWork *work, GFBgLayer bgId);
@@ -1100,7 +1100,7 @@ static void ScratchOffCards_InitResources(ScratchOffCardsWork *work) {
     GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
     GF_TouchpadResetSampling();
     GF_TouchpadStartSampling(1);
-    Main_SetVBlankIntrCB((GFIntrCB)ScratchOffCards_VBlank, work);
+    Main_SetVBlankIntrCB(ScratchOffCards_VBlank, work);
 }
 
 static void ScratchOffCards_CreateYesNoPrompt(ScratchOffCardsWork *work) {
@@ -1155,7 +1155,8 @@ static void ScratchOffCards_FreeBgConfig(BgConfig *bgConfig) {
     Heap_Free(bgConfig);
 }
 
-static void ScratchOffCards_VBlank(ScratchOffCardsWork *work) {
+static void ScratchOffCards_VBlank(void *data) {
+    ScratchOffCardsWork *work = data;
     if (work->unk_004 == 0) {
         PaletteData *paletteData = work->paletteData;
         if (paletteData != NULL) {

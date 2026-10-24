@@ -443,27 +443,27 @@ void VsRecorder_InitBlend(int *eva, int *evb, int mainPlane1, int mainPlane2, in
     *eva = 0;
     *evb = 31;
     if (mode == 0) {
-        G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, mainPlane1, mainPlane2, *eva, *evb);
-        G2x_SetBlendAlpha_((u32)&reg_G2S_DB_BLDCNT, subPlane1, subPlane2, *eva, *evb);
+        G2_SetBlendAlpha(mainPlane1, mainPlane2, *eva, *evb);
+        G2S_SetBlendAlpha(subPlane1, subPlane2, *eva, *evb);
     }
     if (mode == 1) {
-        G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, mainPlane1, mainPlane2, *eva, *evb);
+        G2_SetBlendAlpha(mainPlane1, mainPlane2, *eva, *evb);
     }
     if (mode == 2) {
-        G2x_SetBlendAlpha_((u32)&reg_G2S_DB_BLDCNT, subPlane1, subPlane2, *eva, *evb);
+        G2S_SetBlendAlpha(subPlane1, subPlane2, *eva, *evb);
     }
 }
 
 void VsRecorder_ApplyBlend(int *eva, int *evb, int mainPlane1, int mainPlane2, int subPlane1, int subPlane2, int mode) {
     if (mode == 0) {
-        G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, mainPlane1, mainPlane2, *eva, *evb);
-        G2x_SetBlendAlpha_((u32)&reg_G2S_DB_BLDCNT, subPlane1, subPlane2, *eva, *evb);
+        G2_SetBlendAlpha(mainPlane1, mainPlane2, *eva, *evb);
+        G2S_SetBlendAlpha(subPlane1, subPlane2, *eva, *evb);
     }
     if (mode == 1) {
-        G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, mainPlane1, mainPlane2, *eva, *evb);
+        G2_SetBlendAlpha(mainPlane1, mainPlane2, *eva, *evb);
     }
     if (mode == 2) {
-        G2x_SetBlendAlpha_((u32)&reg_G2S_DB_BLDCNT, subPlane1, subPlane2, *eva, *evb);
+        G2S_SetBlendAlpha(subPlane1, subPlane2, *eva, *evb);
     }
 }
 
@@ -638,8 +638,8 @@ void VsRecorder_HideNotice(VsRecorderWork *work) {
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
         SetBgPriority(GF_BG_LYR_SUB_2, 2);
-        G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_BG2, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, 7, 8);
-        G2x_SetBlendAlpha_((u32)&reg_G2S_DB_BLDCNT, GX_BLEND_PLANEMASK_BG2, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, 7, 8);
+        G2_SetBlendAlpha(GX_BLEND_PLANEMASK_BG2, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, 7, 8);
+        G2S_SetBlendAlpha(GX_BLEND_PLANEMASK_BG2, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, 7, 8);
     }
 }
 
@@ -2007,7 +2007,7 @@ void VsRecorder_CloseMonIconNarc(NARC *narc) {
 #pragma opt_common_subs off
 
 ManagedSprite *VsRecorder_NewMonIcon(VsRecorderWork *work, NARC *narc, int index, int species, int form, int isEgg) {
-    int e, f;
+    int egg, iconForm;
     SpriteSystem *spriteSystem;
     SpriteManager *spriteManager;
     spriteSystem = work->spriteSystem;
@@ -2017,9 +2017,9 @@ ManagedSprite *VsRecorder_NewMonIcon(VsRecorderWork *work, NARC *narc, int index
     if (species == SPECIES_NONE) {
         return NULL;
     }
-    f = form;
-    e = isEgg;
-    SpriteSystem_LoadCharResObjFromOpenNarcWithHardwareMappingType(spriteSystem, spriteManager, narc, GetMonIconNaixEx(species, e, f), FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, index + 100000);
+    iconForm = form;
+    egg = isEgg;
+    SpriteSystem_LoadCharResObjFromOpenNarcWithHardwareMappingType(spriteSystem, spriteManager, narc, GetMonIconNaixEx(species, egg, iconForm), FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, index + 100000);
     template.x = 0;
     template.y = -48;
     template.z = 0;
@@ -2036,7 +2036,7 @@ ManagedSprite *VsRecorder_NewMonIcon(VsRecorderWork *work, NARC *narc, int index
     template.resIdList[4] = -1;
     template.resIdList[5] = -1;
     sprite = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
-    ((void (*)(ManagedSprite *, int))ManagedSprite_SetPaletteOverrideOffset)(sprite, GetMonIconPaletteEx(species, f, e) + 4);
+    ((void (*)(ManagedSprite *, int))ManagedSprite_SetPaletteOverrideOffset)(sprite, GetMonIconPaletteEx(species, iconForm, egg) + 4);
     ManagedSprite_SetAnim(sprite, 1);
     ManagedSprite_TickFrame(sprite);
     return sprite;

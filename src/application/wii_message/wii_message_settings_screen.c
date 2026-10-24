@@ -186,7 +186,7 @@ static void WiiMessageSettingsScreen_VBlankCB(void *data);
 static void WiiMessageSettingsScreen_InitBgs(BgConfig *bgConfig);
 static void WiiMessageSettingsScreen_FreeBgs(BgConfig *bgConfig);
 static void WiiMessageSettingsScreen_LoadGraphics(WiiMessageSettingsScreen *screen);
-static void WiiMessageSettingsScreen_AnimatePaletteTask(SysTask *task, WiiMessageSettingsPaletteAnim *anim);
+static void WiiMessageSettingsScreen_AnimatePaletteTask(SysTask *task, void *data);
 static void WiiMessageSettingsScreen_AddWindows(WiiMessageSettingsScreen *screen);
 static void WiiMessageSettingsScreen_RemoveWindows(WiiMessageSettingsScreen *screen);
 static void WiiMessageSettingsScreen_SetState(WiiMessageSettingsScreen *screen, int state, int nextState);
@@ -739,7 +739,7 @@ static void WiiMessageSettingsScreen_LoadGraphics(WiiMessageSettingsScreen *scre
     DC_FlushRange(screen->paletteAnim.fadePltt, 21 * 32);
     screen->paletteAnim.active = TRUE;
     screen->paletteAnim.screens = 0;
-    screen->paletteAnim.task = SysTask_CreateOnVBlankQueue((SysTaskFunc)WiiMessageSettingsScreen_AnimatePaletteTask, &screen->paletteAnim, 20);
+    screen->paletteAnim.task = SysTask_CreateOnVBlankQueue(WiiMessageSettingsScreen_AnimatePaletteTask, &screen->paletteAnim, 20);
     NARC_Delete(narc);
 
     narc = NARC_New(NARC_a_1_9_7, HEAP_ID_116);
@@ -750,7 +750,8 @@ static void WiiMessageSettingsScreen_LoadGraphics(WiiMessageSettingsScreen *scre
     NARC_Delete(narc);
 }
 
-static void WiiMessageSettingsScreen_AnimatePaletteTask(SysTask *task, WiiMessageSettingsPaletteAnim *anim) {
+static void WiiMessageSettingsScreen_AnimatePaletteTask(SysTask *task, void *data) {
+    WiiMessageSettingsPaletteAnim *anim = data;
     if (anim->active) {
         anim->skipFrame ^= 1;
         if ((anim->skipFrame & 1) == 0) {

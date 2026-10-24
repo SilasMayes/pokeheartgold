@@ -209,8 +209,8 @@ typedef struct MysteryGiftVec2 {
     float y;
 } MysteryGiftVec2;
 
-static void MysteryGiftAnim_Task(SysTask *task, MysteryGiftAnimData *anim);
-static void MysteryGiftAnim_UpdateParticle(SysTask *task, MysteryGiftParticle *particle);
+static void MysteryGiftAnim_Task(SysTask *task, void *data);
+static void MysteryGiftAnim_UpdateParticle(SysTask *task, void *data);
 static int MysteryGiftApp_AcceptGift(OverlayManager *manager);
 static int MysteryGiftApp_CancelReceiveMenu(OverlayManager *manager);
 static int MysteryGiftApp_ConfirmReceiveGift(OverlayManager *manager);
@@ -1262,7 +1262,7 @@ static void MysteryGiftAnim_InitSparkles(MysteryGiftAnimData *anim) {
         pos.y = 0;
         Sprite_SetMatrix(cursor->sparkles[0].sprite, &pos);
         Sprite_SetDrawFlag(cursor->sparkles[0].sprite, FALSE);
-        cursor->sparkles[0].task = SysTask_CreateOnMainQueue((SysTaskFunc)MysteryGiftAnim_UpdateParticle, taskData, 6);
+        cursor->sparkles[0].task = SysTask_CreateOnMainQueue(MysteryGiftAnim_UpdateParticle, taskData, 6);
         cursor = NEXT_PARTICLE(cursor);
         taskData++;
         delayPtr += sizeof(int);
@@ -1313,7 +1313,7 @@ static void MysteryGiftAnim_StartSparkleTasks(MysteryGiftAnimData *anim) {
         Sprite_SetMatrix(cursor->sparkles[0].sprite, &position);
         Sprite_TryChangeAnimSeq(cursor->sparkles[0].sprite, 1);
         Sprite_SetDrawFlag(cursor->sparkles[0].sprite, FALSE);
-        cursor->sparkles[0].task = SysTask_CreateOnMainQueue((SysTaskFunc)MysteryGiftAnim_UpdateParticle, taskData, 6);
+        cursor->sparkles[0].task = SysTask_CreateOnMainQueue(MysteryGiftAnim_UpdateParticle, taskData, 6);
     }
 }
 
@@ -1371,7 +1371,7 @@ static void MysteryGiftAnim_StartRibbonTasks(MysteryGiftAnimData *anim) {
         position.y = FX32_CONST(384);
         Sprite_SetMatrix(cursor->ribbons[0].sprite, &position);
         Sprite_SetDrawFlag(cursor->ribbons[0].sprite, TRUE);
-        cursor->ribbons[0].task = SysTask_CreateOnMainQueue((SysTaskFunc)MysteryGiftAnim_UpdateParticle, taskData, 6);
+        cursor->ribbons[0].task = SysTask_CreateOnMainQueue(MysteryGiftAnim_UpdateParticle, taskData, 6);
     }
 }
 
@@ -1401,7 +1401,8 @@ static BOOL MysteryGiftAnim_StepTowards(s32 x, s32 y, float fromX, float fromY, 
     return TRUE;
 }
 
-static void MysteryGiftAnim_UpdateParticle(SysTask *task, MysteryGiftParticle *particle) {
+static void MysteryGiftAnim_UpdateParticle(SysTask *task, void *data) {
+    MysteryGiftParticle *particle = data;
     VecFx32 pos;
     float dx;
     float dy;
@@ -1660,7 +1661,8 @@ static void MysteryGiftAnim_Init(MysteryGiftAnimData *anim) {
 }
 
 // Task playing the gift animation while the gift is received.
-static void MysteryGiftAnim_Task(SysTask *task, MysteryGiftAnimData *anim) {
+static void MysteryGiftAnim_Task(SysTask *task, void *data) {
+    MysteryGiftAnimData *anim = data;
     int count;
     int allDone;
     int i;
@@ -1893,7 +1895,7 @@ static BOOL MysteryGiftApp_Main(OverlayManager *manager, int *state) {
             memset(anim, 0, sizeof(MysteryGiftAnimData));
             anim->status = &data->animStatus;
             anim->spriteSystem = MainMenuUtil_GetSpriteList();
-            SysTask_CreateOnMainQueue((SysTaskFunc)MysteryGiftAnim_Task, anim, 5);
+            SysTask_CreateOnMainQueue(MysteryGiftAnim_Task, anim, 5);
         } else {
             MainMenuUtil_ShowCardSubScreen(data->bgConfig, card);
             MysteryGiftApp_SaveReceivedGift(manager);

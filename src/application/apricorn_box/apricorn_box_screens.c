@@ -1211,12 +1211,12 @@ static void ApricornBoxScreen_LoadBgGraphics(ApricornBoxScreen *screen) {
     LoadUserFrameGfx2(screen->bgConfig, GF_BG_LYR_MAIN_0, 1, 13, screen->frame, screen->heapId);
     LoadFontPal1(GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_12_OFFSET, screen->heapId);
     LoadFontPal1(GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_12_OFFSET, screen->heapId);
-    G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG3, 6, 26);
+    G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG3, 6, 26);
 }
 
 static void ApricornBoxScreen_FreeBgGraphics(ApricornBoxScreen *screen) {
     NARC_Delete(screen->narc);
-    G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_NONE, 31, 0);
+    G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_NONE, 31, 0);
 }
 
 static void ApricornBoxScreen_InitStrings(ApricornBoxScreen *screen) {

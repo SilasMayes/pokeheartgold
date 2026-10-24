@@ -49,7 +49,7 @@ static void PokewalkerEventLog_SetMonSpriteVisible(PokewalkerEventLogMonSprite *
 static void PokewalkerEventLog_SetSceneVisible(PokewalkerEventLog *eventLog, BOOL visible);
 static void PokewalkerEventLog_UpdateCatchAnim(PokewalkerEventLog *eventLog);
 static void PokewalkerEventLog_UpdateFleeAnim(PokewalkerEventLog *eventLog);
-static void PokewalkerEventLog_VBlankCB(PokewalkerEventLog *eventLog);
+static void PokewalkerEventLog_VBlankCB(void *data);
 
 void PokewalkerBoxDisplay_GetMonPictureLocation(PokewalkerBoxDisplaySprites *sprites) {
     SpriteResource *plttResource = sprites->resObjs[1][GF_GFX_RES_TYPE_PLTT];
@@ -1390,7 +1390,7 @@ static void PokewalkerEventLog_Setup(OverlayManager *manager) {
     PokewalkerEventLog_InitSpriteSystem(eventLog);
     ResetVisibleHardwareWindows(PM_LCD_TOP);
     ResetVisibleHardwareWindows(PM_LCD_BOTTOM);
-    Main_SetVBlankIntrCB((GFIntrCB)PokewalkerEventLog_VBlankCB, eventLog);
+    Main_SetVBlankIntrCB(PokewalkerEventLog_VBlankCB, eventLog);
 }
 
 static void PokewalkerEventLog_Teardown(OverlayManager *manager) {
@@ -1407,7 +1407,8 @@ static void PokewalkerEventLog_Teardown(OverlayManager *manager) {
     Heap_Destroy(HEAP_ID_155);
 }
 
-static void PokewalkerEventLog_VBlankCB(PokewalkerEventLog *eventLog) {
+static void PokewalkerEventLog_VBlankCB(void *data) {
+    PokewalkerEventLog *eventLog = data;
     GF_ASSERT(eventLog != NULL);
     GF_ASSERT(eventLog->spriteManager != NULL);
     GF_ASSERT(eventLog->bgConfig != NULL);

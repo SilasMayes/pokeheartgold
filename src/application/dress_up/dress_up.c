@@ -377,9 +377,9 @@ static void DressUp_OnAccessoryTabButton(void *button, void *arg);
 static void DressUp_OnBackdropTabButton(void *button, void *arg);
 static void DressUp_FreeHud(DressUpWork *work);
 static void DressUp_StartFinishTransition(DressUpWork *work, u32 *done);
-static void DressUp_FinishTransitionTask(SysTask *task, DressUpTransition *env);
+static void DressUp_FinishTransitionTask(SysTask *task, void *data);
 static void DressUp_StartReturnTransition(DressUpWork *work, u32 *done);
-static void DressUp_ReturnTransitionTask(SysTask *task, DressUpTransition *env);
+static void DressUp_ReturnTransitionTask(SysTask *task, void *data);
 static void DressUp_SaveDesign(SaveFashionDataSub *entry, DressUpCanvas *canvas, PlayerProfile *profile);
 static BOOL DressUp_SlideCanvasStep(DressUpTransition *env, int dx, int dy, int frames);
 static void DressUp_ShowDressedUpPrompt(DressUpWork *work);
@@ -448,7 +448,7 @@ static DressUpNode *DressUpTray_GetPageObject(DressUpTray *tray, int group, int 
 static void DressUpTray_SyncObjectVisible(DressUpTray *tray, DressUpSlot *slot, int group, int page);
 static void DressUpTray_GetGridPos(int index, int *x, int *y);
 static void DressUpTray_StartPageSwapTask(DressUpTray *tray, int fromGroup, int fromPage, int toGroup, int toPage);
-static void DressUpTray_PageSwapTask(SysTask *task, DressUpPageSwap *swap);
+static void DressUpTray_PageSwapTask(SysTask *task, void *data);
 static void DressUp_StartSlideAnim(DressUpNode *node, DressUpSlideAnim *anims, int count);
 static DressUpSlideAnim *DressUp_FindFreeSlideAnim(DressUpSlideAnim *anims, int count);
 static void DressUp_TickSlideAnims(DressUpSlideAnim *anims, int count);
@@ -476,7 +476,7 @@ static void DressUpDrag_ClearSelection(DressUpDrag *drag);
 static void DressUpDrag_GetSelectedRect(DressUpTouch *touch, int *top, int *bottom, int *left, int *right);
 static void DressUpDrag_GetSelectedVisibleRect(DressUpTouch *touch, int *top, int *bottom, int *left, int *right);
 static void DressUp_StartTweenToTray(DressUpDrag *drag, int frames, int destX, int destY, int mode, int page);
-static void DressUp_TweenToTrayTask(SysTask *task, DressUpTrayTween *tween);
+static void DressUp_TweenToTrayTask(SysTask *task, void *data);
 static void DressUp_PrintSelectedItemName(DressUpDrag *drag);
 static void DressUp_MoveMonWithAccessories(DressUpTouch *touch, int x, int y);
 static void DressUp_LoadMonHitMap(DressUpGfx *gfx, const PokepicTemplate *template);
@@ -515,12 +515,12 @@ static void DressUpBgScreen_StopAltAnim(DressUpBgScreenAnim *anim);
 static void DressUp_StartBgSlide(DressUpBgScreen *screen, DressUpBgScreenTemplate *template, int dx, int dy, int frames, BOOL *done);
 static void DressUpBgScreen_AddCharOffset(NNSG2dScreenData *screenData, int charOffset);
 static void DressUpBgScreen_Load(const DressUpBgScreenTemplate *template, int *outWidth, int *outHeight);
-static void DressUp_BgSlideTask(SysTask *task, DressUpBgSlide *slide);
+static void DressUp_BgSlideTask(SysTask *task, void *data);
 static void DressUpBgScreen_CopyToTilemap(BgConfig *bgConfig, int layer, NNSG2dScreenData *screenData, int width, int height, int x, int y, int charOffset, int palette);
 static SysTask *DressUpBgScreen_QueueLoadChars(NarcId narcId, int fileId, BgConfig *bgConfig, u32 layer, u32 tileStart, enum HeapID heapID);
 static void DressUpBgScreen_QueueLoadPltt(NarcId narcId, int fileId, u32 location, u32 offset, u32 size, enum HeapID heapID);
-static void DressUpBgScreen_LoadCharsTask(SysTask *task, DressUpCharUpload *upload);
-static void DressUpBgScreen_LoadPlttTask(SysTask *task, DressUpPlttUpload *upload);
+static void DressUpBgScreen_LoadCharsTask(SysTask *task, void *data);
+static void DressUpBgScreen_LoadPlttTask(SysTask *task, void *data);
 static void DressUpButton_Init(DressUpButton *button, const DressUpButtonTemplate *template);
 static void DressUpButton_InitWithText(DressUpTextButton *button, const DressUpTextButtonTemplate *template);
 static void DressUpButton_Delete(DressUpButton *button);
@@ -1709,7 +1709,7 @@ static void DressUp_FreeHud(DressUpWork *work) {
 }
 
 static void DressUp_StartFinishTransition(DressUpWork *work, u32 *done) {
-    DressUpTransition *env = SysTask_GetData(CreateSysTaskAndEnvironment((SysTaskFunc)DressUp_FinishTransitionTask, sizeof(DressUpTransition), 10, HEAP_ID_13));
+    DressUpTransition *env = SysTask_GetData(CreateSysTaskAndEnvironment(DressUp_FinishTransitionTask, sizeof(DressUpTransition), 10, HEAP_ID_13));
     env->work = work;
     env->done = done;
     env->counter = 0;
@@ -1717,7 +1717,8 @@ static void DressUp_StartFinishTransition(DressUpWork *work, u32 *done) {
 }
 
 // DONE: tray away, fade, slide the canvas into the middle, "Is your Pokemon all dressed up?"
-static void DressUp_FinishTransitionTask(SysTask *task, DressUpTransition *env) {
+static void DressUp_FinishTransitionTask(SysTask *task, void *data) {
+    DressUpTransition *env = data;
     switch (env->state) {
     case DRESS_UP_FINISH_HIDE_TRAY:
         if (!DressUpTray_AnimateToPage(&env->work->tray, 3, 0)) {
@@ -1776,7 +1777,7 @@ static void DressUp_FinishTransitionTask(SysTask *task, DressUpTransition *env) 
 }
 
 static void DressUp_StartReturnTransition(DressUpWork *work, u32 *done) {
-    DressUpTransition *env = SysTask_GetData(CreateSysTaskAndEnvironment((SysTaskFunc)DressUp_ReturnTransitionTask, sizeof(DressUpTransition), 10, HEAP_ID_13));
+    DressUpTransition *env = SysTask_GetData(CreateSysTaskAndEnvironment(DressUp_ReturnTransitionTask, sizeof(DressUpTransition), 10, HEAP_ID_13));
     env->work = work;
     env->done = done;
     env->counter = 0;
@@ -1784,7 +1785,8 @@ static void DressUp_StartReturnTransition(DressUpWork *work, u32 *done) {
 }
 
 // "no" to "all dressed up?": back to editing (reverse of the finish transition)
-static void DressUp_ReturnTransitionTask(SysTask *task, DressUpTransition *env) {
+static void DressUp_ReturnTransitionTask(SysTask *task, void *data) {
+    DressUpTransition *env = data;
     switch (env->state) {
     case DRESS_UP_RETURN_FADE_OUT:
         StartBrightnessTransition(8, -16, 0, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG3), SCREEN_MASK_MAIN);
@@ -2890,7 +2892,7 @@ static void DressUpTray_GetGridPos(int index, int *x, int *y) {
 }
 
 static void DressUpTray_StartPageSwapTask(DressUpTray *tray, int fromGroup, int fromPage, int toGroup, int toPage) {
-    DressUpPageSwap *swap = SysTask_GetData(CreateSysTaskAndEnvironment((SysTaskFunc)DressUpTray_PageSwapTask, sizeof(DressUpPageSwap), 0, HEAP_ID_13));
+    DressUpPageSwap *swap = SysTask_GetData(CreateSysTaskAndEnvironment(DressUpTray_PageSwapTask, sizeof(DressUpPageSwap), 0, HEAP_ID_13));
     swap->tray = tray;
     swap->fromGroup = fromGroup;
     swap->fromPage = fromPage;
@@ -2908,7 +2910,8 @@ static void DressUpTray_StartPageSwapTask(DressUpTray *tray, int fromGroup, int 
 
 // the new page waits 132 pixels up; the old page drops out one object per frame, then the new page drops in
 // (two per frame) while the tab BG slides to the other tab
-static void DressUpTray_PageSwapTask(SysTask *task, DressUpPageSwap *swap) {
+static void DressUpTray_PageSwapTask(SysTask *task, void *data) {
+    DressUpPageSwap *swap = data;
     int i;
     switch (swap->state) {
     case DRESS_UP_PAGE_SWAP_START:
@@ -3020,10 +3023,10 @@ static void DressUp_TickSlideAnim(DressUpSlideAnim *anim) {
 
 // ceil(value / divisor) for positive values that are not multiples, value / divisor + 1 otherwise
 static int DressUp_DivFloorPlusOne(int value, int divisor) {
-    int d = divisor;
-    int v = value;
-    int rem = v % d;
-    return (d - rem + v) / d;
+    int div = divisor;
+    int val = value;
+    int rem = val % div;
+    return (div - rem + val) / div;
 }
 
 static void DressUpTouch_Reset(DressUpTouch *touch) {
@@ -3360,7 +3363,7 @@ static void DressUpDrag_GetSelectedVisibleRect(DressUpTouch *touch, int *top, in
 static void DressUp_StartTweenToTray(DressUpDrag *drag, int frames, int destX, int destY, int mode, int page) {
     int x;
     int y;
-    DressUpTrayTween *tween = SysTask_GetData(CreateSysTaskAndEnvironment((SysTaskFunc)DressUp_TweenToTrayTask, sizeof(DressUpTrayTween), 0, HEAP_ID_13));
+    DressUpTrayTween *tween = SysTask_GetData(CreateSysTaskAndEnvironment(DressUp_TweenToTrayTask, sizeof(DressUpTrayTween), 0, HEAP_ID_13));
     tween->tray = drag->tray;
     tween->node = drag->selected;
     tween->frames = frames;
@@ -3376,7 +3379,8 @@ static void DressUp_StartTweenToTray(DressUpDrag *drag, int frames, int destX, i
     drag->dragging = FALSE;
 }
 
-static void DressUp_TweenToTrayTask(SysTask *task, DressUpTrayTween *tween) {
+static void DressUp_TweenToTrayTask(SysTask *task, void *data) {
+    DressUpTrayTween *tween = data;
     int x;
     int y;
     if (*tween->paused != TRUE) {
@@ -3859,7 +3863,7 @@ static void DressUpBgScreen_StopAltAnim(DressUpBgScreenAnim *anim) {
 // scrolls the screen by (dx, dy) over `frames` frames, then loads the template there (the new screen is first
 // drawn at the offset position with chars at 128 and palette 5)
 static void DressUp_StartBgSlide(DressUpBgScreen *screen, DressUpBgScreenTemplate *template, int dx, int dy, int frames, BOOL *done) {
-    DressUpBgSlide *slide = SysTask_GetData(CreateSysTaskAndEnvironment((SysTaskFunc)DressUp_BgSlideTask, sizeof(DressUpBgSlide), 0, HEAP_ID_13));
+    DressUpBgSlide *slide = SysTask_GetData(CreateSysTaskAndEnvironment(DressUp_BgSlideTask, sizeof(DressUpBgSlide), 0, HEAP_ID_13));
     slide->screen = screen;
     slide->template = *template;
     slide->done = done;
@@ -3912,7 +3916,8 @@ static void DressUpBgScreen_Load(const DressUpBgScreenTemplate *template, int *o
     }
 }
 
-static void DressUp_BgSlideTask(SysTask *task, DressUpBgSlide *slide) {
+static void DressUp_BgSlideTask(SysTask *task, void *data) {
+    DressUpBgSlide *slide = data;
     slide->frames--;
     if (slide->frames >= 0) {
         ScheduleSetBgPosText(slide->screen->bgConfig, slide->screen->layer, BG_POS_OP_SUB_X, slide->stepX);
@@ -3942,7 +3947,7 @@ static SysTask *DressUpBgScreen_QueueLoadChars(NarcId narcId, int fileId, BgConf
     upload->bgConfig = bgConfig;
     upload->layer = layer;
     upload->tileStart = tileStart;
-    return SysTask_CreateOnVWaitQueue((SysTaskFunc)DressUpBgScreen_LoadCharsTask, upload, 128);
+    return SysTask_CreateOnVWaitQueue(DressUpBgScreen_LoadCharsTask, upload, 128);
 }
 
 static void DressUpBgScreen_QueueLoadPltt(NarcId narcId, int fileId, u32 location, u32 offset, u32 size, enum HeapID heapID) {
@@ -3952,10 +3957,11 @@ static void DressUpBgScreen_QueueLoadPltt(NarcId narcId, int fileId, u32 locatio
     upload->location = location;
     upload->offset = offset;
     upload->size = size;
-    SysTask_CreateOnVWaitQueue((SysTaskFunc)DressUpBgScreen_LoadPlttTask, upload, 128);
+    SysTask_CreateOnVWaitQueue(DressUpBgScreen_LoadPlttTask, upload, 128);
 }
 
-static void DressUpBgScreen_LoadCharsTask(SysTask *task, DressUpCharUpload *upload) {
+static void DressUpBgScreen_LoadCharsTask(SysTask *task, void *data) {
+    DressUpCharUpload *upload = data;
     DC_FlushRange(upload->charData->pRawData, upload->charData->szByte);
     BG_LoadCharTilesData(upload->bgConfig, upload->layer, upload->charData->pRawData, upload->charData->szByte, upload->tileStart);
     SysTask_Destroy(task);
@@ -3963,7 +3969,8 @@ static void DressUpBgScreen_LoadCharsTask(SysTask *task, DressUpCharUpload *uplo
     Heap_Free(upload);
 }
 
-static void DressUpBgScreen_LoadPlttTask(SysTask *task, DressUpPlttUpload *upload) {
+static void DressUpBgScreen_LoadPlttTask(SysTask *task, void *data) {
+    DressUpPlttUpload *upload = data;
     DC_FlushRange(upload->plttData->pRawData, upload->size);
     if (upload->location == 0) {
         GX_LoadBGPltt(upload->plttData->pRawData, upload->offset, upload->size);

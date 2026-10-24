@@ -461,10 +461,10 @@ static u16 sRangerCharTable[291][2] = {
 
 static u8 sConnectToRangerLinkCommand[42] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-static u16 ConnectToRanger_ConvertCharToRanger(u16 c) {
+static u16 ConnectToRanger_ConvertCharToRanger(u16 ch) {
     u32 i;
     for (i = 0; i < NELEMS(sRangerCharTable); i++) {
-        if (sRangerCharTable[i][1] == c) {
+        if (sRangerCharTable[i][1] == ch) {
             return sRangerCharTable[i][0];
         }
     }

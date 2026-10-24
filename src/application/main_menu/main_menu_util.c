@@ -71,7 +71,7 @@ static int MainMenuUtil_CheckGiftCartridgeSignature(void);
 static BOOL MainMenuUtil_IsGiftCartridgeInserted(void);
 static int MainMenuTextPrinter_Print(MainMenuTextPrinter *printer, int msgId);
 static void MainMenuUtil_SetSubScreenOffset(fx32 x, fx32 y);
-static void MainMenuUtil_VBlankCB(void);
+static void MainMenuUtil_VBlankCB(void *data);
 static void MainMenuUtil_LoadGiftMonSprite(Sprite *sprite, Pokemon *mon, int species, int form, void *charData, PokepicTemplate *template);
 
 void MainMenuUtil_SetCryptoHeap(enum HeapID heapID) {
@@ -385,7 +385,7 @@ void MainMenuUtil_LoadSpriteResources(NarcId narcId, u32 charFileId, u32 plttFil
     } else {
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
     }
-    Main_SetVBlankIntrCB((GFIntrCB)MainMenuUtil_VBlankCB, NULL);
+    Main_SetVBlankIntrCB(MainMenuUtil_VBlankCB, NULL);
 }
 
 static void MainMenuUtil_SetSubScreenOffset(fx32 x, fx32 y) {
@@ -485,7 +485,7 @@ u32 MainMenuUtil_GetVersionMaskBit(int spriteId) {
     return 1 << (spriteId - 10);
 }
 
-static void MainMenuUtil_VBlankCB(void) {
+static void MainMenuUtil_VBlankCB(void *data) {
     MainMenuUtilWork *work = &gMainMenuUtilWork;
     if (gMainMenuUtilVBlankWork[9]) {
         work->vblankCallback(work);

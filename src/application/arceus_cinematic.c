@@ -776,8 +776,7 @@ static const int sArceusCinematicScript[] = {
     ARCEUS_END(),
 };
 
-int ScriptCinematic_Arceus(void *data) {
-    LegendaryCinematic *cinematic = data;
+int ScriptCinematic_Arceus(LegendaryCinematic *cinematic) {
     ArceusCinematic *arceus;
     cinematic->state = sScriptCinematicSubs_Arceus[cinematic->state](cinematic);
     if (cinematic->state == 5) {

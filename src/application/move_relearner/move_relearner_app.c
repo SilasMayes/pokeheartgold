@@ -138,7 +138,7 @@ typedef struct MoveRelearnerYesNoAction {
 
 static void MoveRelearner_Setup(MoveRelearner *relearner);
 static void MoveRelearner_Teardown(MoveRelearner *relearner);
-static void MoveRelearner_VBlankCB(MoveRelearner *relearner);
+static void MoveRelearner_VBlankCB(void *data);
 static void MoveRelearner_SetGfxBanks(void);
 static void MoveRelearner_InitBgs(BgConfig *bgConfig);
 static void MoveRelearner_FreeBgs(BgConfig *bgConfig);
@@ -592,7 +592,7 @@ BOOL MoveRelearner_Init(OverlayManager *man, int *state) {
     MoveRelearner_SetCursorPos(relearner, (u8)relearner->args->cursorPos, 3);
     relearner->nextState = MOVE_RELEARNER_STATE_INPUT;
     MoveRelearner_UpdateScrollArrows(relearner, 0, FALSE);
-    Main_SetVBlankIntrCB((GFIntrCB)MoveRelearner_VBlankCB, relearner);
+    Main_SetVBlankIntrCB(MoveRelearner_VBlankCB, relearner);
     return TRUE;
 }
 
@@ -688,7 +688,7 @@ static void MoveRelearner_Setup(MoveRelearner *relearner) {
     MoveRelearner_PrintStaticTexts(relearner);
     MoveRelearner_CreateGridInput(relearner);
     BeginAppScreenFade(0, HEAP_ID_66);
-    Main_SetVBlankIntrCB((GFIntrCB)MoveRelearner_VBlankCB, relearner);
+    Main_SetVBlankIntrCB(MoveRelearner_VBlankCB, relearner);
     NARC_Delete(narc);
 }
 
@@ -707,7 +707,8 @@ static void MoveRelearner_Teardown(MoveRelearner *relearner) {
     Main_SetVBlankIntrCB(NULL, NULL);
 }
 
-static void MoveRelearner_VBlankCB(MoveRelearner *relearner) {
+static void MoveRelearner_VBlankCB(void *data) {
+    MoveRelearner *relearner = data;
     DoScheduledBgGpuUpdates(relearner->bgConfig);
     PokepicManager_HandleLoadImgAndOrPltt(relearner->monPic.pokepicManager);
     GF_RunVramTransferTasks();

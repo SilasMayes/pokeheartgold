@@ -189,12 +189,12 @@ static void PhotoAlbumApp_RemoveEntry(PhotoAlbumApp *app, u8 selected);
 static void PhotoAlbumApp_DrawInitialScreen(PhotoAlbumApp *app);
 static int PhotoAlbumApp_HandleGridInput(PhotoAlbumApp *app);
 static int PhotoAlbumApp_HandleGridSelection(PhotoAlbumApp *app, int input);
-static int PhotoAlbumApp_HandleGridTouch(PhotoAlbumApp *app, int *a);
+static int PhotoAlbumApp_HandleGridTouch(PhotoAlbumApp *app, int *done);
 static int PhotoAlbumApp_HandleGridKeys(PhotoAlbumApp *app);
 static int PhotoAlbumApp_HandleMoveInput(PhotoAlbumApp *app);
 static int PhotoAlbumApp_RunMoveDone(PhotoAlbumApp *app);
 static int PhotoAlbumApp_HandleMoveSelection(PhotoAlbumApp *app, u32 input);
-static int PhotoAlbumApp_HandleMoveTouch(PhotoAlbumApp *app, int *a);
+static int PhotoAlbumApp_HandleMoveTouch(PhotoAlbumApp *app, int *done);
 static int PhotoAlbumApp_HandleMoveKeys(PhotoAlbumApp *app);
 static int PhotoAlbumApp_FlipToPrevPage(PhotoAlbumApp *app);
 static int PhotoAlbumApp_FlipToNextPage(PhotoAlbumApp *app);
@@ -204,7 +204,7 @@ static void PhotoAlbumApp_VBlankCB(void *data);
 static void PhotoAlbumApp_ApplyBgToggle(PhotoAlbumApp *app);
 static void PhotoAlbumApp_RequestBgToggle(PhotoAlbumApp *app, int on);
 static void PhotoAlbumApp_ApplyZoom(PhotoAlbumApp *app);
-static void PhotoAlbumApp_SetZoom(PhotoAlbumApp *app, fx32 v);
+static void PhotoAlbumApp_SetZoom(PhotoAlbumApp *app, fx32 zoom);
 static void PhotoAlbumApp_SetBanks(void);
 static void PhotoAlbumApp_InitBgs(PhotoAlbumApp *app);
 static void PhotoAlbumApp_FreeBgs(PhotoAlbumApp *app);
@@ -228,7 +228,7 @@ static void PhotoAlbumApp_DrawPhotoIcon(PhotoAlbumApp *app, int index, u8 bgId, 
 static void PhotoAlbumApp_DrawGridIcon(PhotoAlbumApp *app, Photo *photo, int bgId, u8 x, u8 y);
 static void PhotoAlbumApp_RedrawSwappedIcons(PhotoAlbumApp *app, int oldIndex, int newIndex);
 static void PhotoAlbumApp_PrintPhotoDetails(PhotoAlbumApp *app, Photo *photo);
-static void PhotoAlbumApp_PrintCloseButton(PhotoAlbumApp *app, int a);
+static void PhotoAlbumApp_PrintCloseButton(PhotoAlbumApp *app, int animate);
 static void PhotoAlbumApp_PrintMessage(PhotoAlbumApp *app, int msgIdx, BOOL drawFrame, u8 textDelay);
 static void PhotoAlbumApp_SetCursorPos(PhotoAlbumApp *app, u8 x, u8 y, int draw);
 static void PhotoAlbumApp_UpdateSelectionSprite(PhotoAlbumApp *app, int draw);
@@ -812,7 +812,7 @@ static int PhotoAlbumApp_HandleGridSelection(PhotoAlbumApp *app, int input) {
     return PHOTO_ALBUM_STATE_CONTEXT_MENU;
 }
 
-static int PhotoAlbumApp_HandleGridTouch(PhotoAlbumApp *app, int *a) {
+static int PhotoAlbumApp_HandleGridTouch(PhotoAlbumApp *app, int *done) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(sPhotoAlbumGridHitboxes);
     if (hit == -1) {
         return PHOTO_ALBUM_STATE_GRID;
@@ -820,7 +820,7 @@ static int PhotoAlbumApp_HandleGridTouch(PhotoAlbumApp *app, int *a) {
     if (app->nextMenuState == 0) {
         PhotoAlbumApp_ToggleMenuInputState(app);
     }
-    *a = 1;
+    *done = 1;
     if ((u32)hit < PHOTOS_PER_PAGE) {
         app->cursorX = hit & 3;
         app->cursorY = (u32)hit >> 2;
@@ -986,7 +986,7 @@ static int PhotoAlbumApp_HandleMoveSelection(PhotoAlbumApp *app, u32 input) {
     }
 }
 
-static int PhotoAlbumApp_HandleMoveTouch(PhotoAlbumApp *app, int *a) {
+static int PhotoAlbumApp_HandleMoveTouch(PhotoAlbumApp *app, int *done) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(sPhotoAlbumGridHitboxes);
     if (hit == -1) {
         return PHOTO_ALBUM_STATE_MOVE_PHOTO;
@@ -994,7 +994,7 @@ static int PhotoAlbumApp_HandleMoveTouch(PhotoAlbumApp *app, int *a) {
     if (app->nextMenuState == 0) {
         PhotoAlbumApp_ToggleMenuInputState(app);
     }
-    *a = 1;
+    *done = 1;
     if ((u32)hit < PHOTOS_PER_PAGE) {
         app->cursorX = hit & 3;
         app->cursorY = (u32)hit >> 2;
@@ -1221,8 +1221,8 @@ static void PhotoAlbumApp_ApplyZoom(PhotoAlbumApp *app) {
     }
 }
 
-static void PhotoAlbumApp_SetZoom(PhotoAlbumApp *app, fx32 v) {
-    app->zoom = v;
+static void PhotoAlbumApp_SetZoom(PhotoAlbumApp *app, fx32 zoom) {
+    app->zoom = zoom;
     app->zoomChanged = TRUE;
 }
 
@@ -1534,9 +1534,9 @@ static void PhotoAlbumApp_PrintPhotoDetails(PhotoAlbumApp *app, Photo *photo) {
     PhotoAlbumApp_DrawPhotoIcon(app, (u8)(photo->iconId + 1), GF_BG_LYR_SUB_3, 13, 8);
 }
 
-static void PhotoAlbumApp_PrintCloseButton(PhotoAlbumApp *app, int a) {
+static void PhotoAlbumApp_PrintCloseButton(PhotoAlbumApp *app, int animate) {
     FillWindowPixelBuffer(&app->windows[0], 0);
-    if (a) {
+    if (animate) {
         Sprite_SetAnimCtrlSeq(app->sprites[4], 9);
         Sprite_ResetAnimCtrlState(app->sprites[4]);
     }

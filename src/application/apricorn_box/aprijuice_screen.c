@@ -159,7 +159,7 @@ static BOOL AprijuiceScreen_ShowStatChange(AprijuiceScreen *screen);
 static int AprijuiceScreen_Select(AprijuiceScreen *screen, int input);
 static int AprijuiceScreen_HandleKeys(AprijuiceScreen *screen);
 static int AprijuiceScreen_HandleTouch(AprijuiceScreen *screen, int *hit);
-static void AprijuiceScreen_VBlankCB(AprijuiceScreen *screen);
+static void AprijuiceScreen_VBlankCB(void *data);
 static void AprijuiceScreen_SetGfxBanks(void);
 static void AprijuiceScreen_InitBgs(AprijuiceScreen *screen);
 static void AprijuiceScreen_FreeBgs(AprijuiceScreen *screen);
@@ -185,11 +185,11 @@ static void AprijuiceScreen_DrawStatStars(AprijuiceScreen *screen, AprijuiceMon 
 static void AprijuiceScreen_DrawAllStars(AprijuiceScreen *screen, AprijuiceMon *entry);
 static void AprijuiceScreen_SetStarSprite(AprijuiceScreen *screen, int index, u8 sequence, int draw);
 static void AprijuiceScreen_StartStarTask(AprijuiceScreen *screen, int stat, int shrink);
-static void AprijuiceScreen_StarTask(SysTask *task, AprijuiceStarTask *star);
+static void AprijuiceScreen_StarTask(SysTask *task, void *data);
 static void AprijuiceScreen_StartShakeTask(AprijuiceScreen *screen);
-static void AprijuiceScreen_ShakeTask(SysTask *task, AprijuiceShakeTask *shake);
+static void AprijuiceScreen_ShakeTask(SysTask *task, void *data);
 static void AprijuiceScreen_StartFadeTask(AprijuiceScreen *screen);
-static void AprijuiceScreen_FadeTask(SysTask *task, AprijuiceFadeTask *fade);
+static void AprijuiceScreen_FadeTask(SysTask *task, void *data);
 static AprijuiceScene *AprijuiceScene_New(enum HeapID heapId);
 static void AprijuiceScene_Draw(AprijuiceScene *scene);
 static void AprijuiceScene_Delete(AprijuiceScene *scene);
@@ -579,7 +579,7 @@ static void AprijuiceScreen_InitGraphics(AprijuiceScreen *screen) {
     AprijuiceScreen_AddWindows(screen);
     AprijuiceScreen_InitSprites(screen);
     screen->scene = AprijuiceScene_New(screen->heapId);
-    Main_SetVBlankIntrCB((GFIntrCB)AprijuiceScreen_VBlankCB, screen);
+    Main_SetVBlankIntrCB(AprijuiceScreen_VBlankCB, screen);
 }
 
 static void AprijuiceScreen_FreeGraphics(AprijuiceScreen *screen) {
@@ -868,7 +868,8 @@ static int AprijuiceScreen_HandleTouch(AprijuiceScreen *screen, int *hit) {
     return AprijuiceScreen_Select(screen, input);
 }
 
-static void AprijuiceScreen_VBlankCB(AprijuiceScreen *screen) {
+static void AprijuiceScreen_VBlankCB(void *data) {
+    AprijuiceScreen *screen = data;
     if (screen->spriteSystem != NULL) {
         SpriteSystem_TransferOam();
     }
@@ -932,12 +933,12 @@ static void AprijuiceScreen_LoadBgGraphics(AprijuiceScreen *screen) {
     screen->narc = narc;
     LoadUserFrameGfx2(screen->bgConfig, GF_BG_LYR_MAIN_1, 1, 13, screen->frame, screen->heapId);
     LoadFontPal1(GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_12_OFFSET, screen->heapId);
-    G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_BG0, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, 6, 26);
+    G2_SetBlendAlpha(GX_BLEND_PLANEMASK_BG0, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, 6, 26);
 }
 
 static void AprijuiceScreen_FreeBgGraphics(AprijuiceScreen *screen) {
     NARC_Delete(screen->narc);
-    G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_NONE, 31, 0);
+    G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_NONE, 31, 0);
 }
 
 static void AprijuiceScreen_InitStrings(AprijuiceScreen *screen) {
@@ -1286,12 +1287,13 @@ static void AprijuiceScreen_StartStarTask(AprijuiceScreen *screen, int stat, int
     star->sprite = screen->sprites[index + 8];
     Sprite_SetAffineScale(star->sprite, &star->scale);
     AprijuiceScreen_SetStarSprite(screen, index, screen->oldStars.color[stat] + 4, 1);
-    SysTask_CreateOnMainQueue((SysTaskFunc)AprijuiceScreen_StarTask, star, 0);
+    SysTask_CreateOnMainQueue(AprijuiceScreen_StarTask, star, 0);
     screen->activeTasks++;
     screen->starsShown++;
 }
 
-static void AprijuiceScreen_StarTask(SysTask *task, AprijuiceStarTask *star) {
+static void AprijuiceScreen_StarTask(SysTask *task, void *data) {
+    AprijuiceStarTask *star = data;
     AprijuiceScreen *owner = star->owner;
     star->angle += star->angleStep;
     star->scale.x += star->scaleStep;
@@ -1322,11 +1324,12 @@ static void AprijuiceScreen_StartShakeTask(AprijuiceScreen *screen) {
     shake->counter = 30;
     shake->delta = 12;
     PlaySE(SEQ_SE_GS_JUICE_SIYOU);
-    SysTask_CreateOnMainQueue((SysTaskFunc)AprijuiceScreen_ShakeTask, shake, 0);
+    SysTask_CreateOnMainQueue(AprijuiceScreen_ShakeTask, shake, 0);
     screen->activeTasks++;
 }
 
-static void AprijuiceScreen_ShakeTask(SysTask *task, AprijuiceShakeTask *shake) {
+static void AprijuiceScreen_ShakeTask(SysTask *task, void *data) {
+    AprijuiceShakeTask *shake = data;
     SysTask *savedTask = task;
     AprijuiceScreen *owner = shake->owner;
     if ((shake->phase % 2) == 0) {
@@ -1352,11 +1355,12 @@ static void AprijuiceScreen_StartFadeTask(AprijuiceScreen *screen) {
     AprijuiceFadeTask *fade = Heap_Alloc(screen->heapId, sizeof(AprijuiceFadeTask));
     MI_CpuFill8(fade, 0, sizeof(AprijuiceFadeTask));
     fade->owner = screen;
-    SysTask_CreateOnMainQueue((SysTaskFunc)AprijuiceScreen_FadeTask, fade, 0);
+    SysTask_CreateOnMainQueue(AprijuiceScreen_FadeTask, fade, 0);
     screen->activeTasks++;
 }
 
-static void AprijuiceScreen_FadeTask(SysTask *task, AprijuiceFadeTask *fade) {
+static void AprijuiceScreen_FadeTask(SysTask *task, void *data) {
+    AprijuiceFadeTask *fade = data;
     AprijuiceScreen *owner = fade->owner;
     switch (fade->state) {
     case 0:
