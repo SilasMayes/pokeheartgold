@@ -878,7 +878,7 @@ static int NintendoWfcUnused_PrintReceivingTrainers(NintendoWfcUnused *wfc) {
     BufferIntegerAsString(wfc->msgFormat, 1, wfc->rank, 2, PRINTING_MODE_LEADING_ZEROS, TRUE);
     NintendoWfcUnused_PrintFormattedMessage(wfc, wfc->msgDataTower, msg_0799_00001, 1, 0xF0F);
     NintendoWfcUnused_SetState(wfc, NINTENDO_WFC_UNUSED_STATE_WAIT_MESSAGE, NINTENDO_WFC_UNUSED_STATE_REQUEST_TRAINERS_DOWNLOAD);
-    MIi_CpuClearFast(0, (u32 *)wfc->downloadBuffer, sizeof(wfc->downloadBuffer));
+    MIi_CpuClearFast(0, (u32 *)&wfc->downloadBuffer, sizeof(wfc->downloadBuffer));
     return NINTENDO_WFC_UNUSED_MAIN_SESSION_MAIN;
 }
 
@@ -889,7 +889,7 @@ static int NintendoWfcUnused_PrintRoomUnavailable(NintendoWfcUnused *wfc) {
 }
 
 static int NintendoWfcUnused_RequestTrainersDownload(NintendoWfcUnused *wfc) {
-    NintendoWfcHttp_RequestDownload(wfc->ownRank, wfc->room, wfc->downloadBuffer);
+    NintendoWfcHttp_RequestDownload(wfc->ownRank, wfc->room, &wfc->downloadBuffer);
     NintendoWfcUnused_ShowWaitingIcon(wfc);
     wfc->state = NINTENDO_WFC_UNUSED_STATE_WAIT_TRAINERS_DOWNLOAD;
     wfc->timeoutCounter = 0;
@@ -906,7 +906,7 @@ static int NintendoWfcUnused_WaitTrainersDownload(NintendoWfcUnused *wfc) {
         wfc->timeoutCounter = 0;
         switch (result) {
         case NINTENDO_WFC_HTTP_RESULT_OK:
-            BattleRoomDownload_SetTrainers((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer, (u8)wfc->ownRank, (u8)wfc->room);
+            BattleRoomDownload_SetTrainers((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer.trainers, (u8)wfc->ownRank, (u8)wfc->room);
             NintendoWfcUnused_SetState(wfc, NINTENDO_WFC_UNUSED_STATE_START_SAVE, NINTENDO_WFC_UNUSED_STATE_PRINT_TRAINERS_RECEIVED);
             DWC_GetDateTime(&date, &time);
             BattleRoomDownload_MarkRoom((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, &date);
@@ -1136,7 +1136,7 @@ static int NintendoWfcUnused_PrintReceivingLeaders(NintendoWfcUnused *wfc) {
 }
 
 static int NintendoWfcUnused_RequestLeadersDownload(NintendoWfcUnused *wfc) {
-    NintendoWfcHttp_RequestDownload(wfc->rank, wfc->room, wfc->downloadBuffer);
+    NintendoWfcHttp_RequestDownload(wfc->rank, wfc->room, &wfc->downloadBuffer);
     wfc->state = NINTENDO_WFC_UNUSED_STATE_WAIT_LEADERS_DOWNLOAD;
     wfc->timeoutCounter = 0;
     NintendoWfcUnused_ShowWaitingIcon(wfc);
@@ -1149,7 +1149,7 @@ static int NintendoWfcUnused_WaitLeadersDownload(NintendoWfcUnused *wfc) {
         wfc->timeoutCounter = 0;
         switch (result) {
         case NINTENDO_WFC_HTTP_RESULT_OK:
-            BattleRoomDownload_SetLeaders((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer + 0x63C, (u8)wfc->rank, (u8)wfc->room);
+            BattleRoomDownload_SetLeaders((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer.leaders, (u8)wfc->rank, (u8)wfc->room);
             NintendoWfcUnused_SetState(wfc, NINTENDO_WFC_UNUSED_STATE_START_SAVE, NINTENDO_WFC_UNUSED_STATE_PRINT_LEADERS_RECEIVED);
             break;
         case NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED:

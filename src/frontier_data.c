@@ -47,22 +47,6 @@ struct FrontierData {
     u8 wifiTeams[2][0xA8];
 };
 
-// One trainer of a downloaded Wi-Fi Battle Room.
-typedef struct BattleRoomTrainer {
-    u8 team[0xA8];
-    u16 name[16];
-    u8 useDefaultName : 1, gender : 1, pad : 6;
-    u8 trainerClass;
-    u8 messages[24];
-    u16 score;
-} BattleRoomTrainer;
-
-// One leader of a downloaded Wi-Fi Battle Room (the list is only stored and copied out).
-typedef struct BattleRoomLeader {
-    u16 name[9];
-    u8 unk_12[16];
-} BattleRoomLeader;
-
 typedef struct BattleRoomDownload {
     u32 markDate;      // year, month, day, hour of the last mark, one byte each
     u8 roomMarks[250]; // one bit per (rank 1..10, room 1..200)
@@ -489,7 +473,7 @@ u32 BattleRoomDownload_HasLeaders(u32 download) {
     return ((BattleRoomDownload *)download)->hasLeaders;
 }
 
-void BattleRoomDownload_SetTrainers(BattleRoomDownload *download, void *trainers, u32 rank, u32 room) {
+void BattleRoomDownload_SetTrainers(BattleRoomDownload *download, const BattleRoomTrainer *trainers, u32 rank, u32 room) {
     MI_CpuCopy8(trainers, download->trainers, sizeof(download->trainers));
     download->trainersRank = rank;
     download->trainersRoom = room;
@@ -521,7 +505,7 @@ void BattleRoomDownload_GetTrainer(u32 addr, FrontierTrainer *trainer, int index
     MI_CpuCopy8(roomTrainer->team, team, 0xA8);
 }
 
-void BattleRoomDownload_SetLeaders(BattleRoomDownload *download, void *leaders, u32 rank, u32 room) {
+void BattleRoomDownload_SetLeaders(BattleRoomDownload *download, const BattleRoomLeader *leaders, u32 rank, u32 room) {
     MI_CpuCopy8(leaders, download->leaders, sizeof(download->leaders));
     download->leadersRank = rank;
     download->leadersRoom = room;
@@ -534,9 +518,9 @@ void BattleRoomDownload_GetLeadersRoom(u32 addr, u8 *out) {
     out[1] = download->leadersRoom;
 }
 
-void *BattleRoomDownload_CopyLeaders(u32 addr, enum HeapID heapID) {
+BattleRoomLeader *BattleRoomDownload_CopyLeaders(u32 addr, enum HeapID heapID) {
     BattleRoomDownload *download = (BattleRoomDownload *)addr;
-    void *out = Heap_Alloc(heapID, sizeof(download->leaders));
+    BattleRoomLeader *out = Heap_Alloc(heapID, sizeof(download->leaders));
     MI_CpuCopy8(download->leaders, out, sizeof(download->leaders));
     return out;
 }

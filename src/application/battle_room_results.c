@@ -54,15 +54,15 @@ enum BattleRoomResultsFlashState {
     BATTLE_ROOM_RESULTS_FLASH_WAIT,
 };
 
-// One downloaded Battle Room leader.
-typedef struct BattleRoomLeader {
+// One downloaded Battle Room leader, as shown.
+typedef struct BattleRoomResultsLeader {
     String *name;
     u8 gender;
     u8 country;
     u8 region;
     u8 useDefaultName;
     MailMessage greeting;
-} BattleRoomLeader;
+} BattleRoomResultsLeader;
 
 // Brief palette flash of a pressed button: a sprite, or a rectangle of a bg layer.
 typedef struct BattleRoomResultsFlash {
@@ -96,7 +96,7 @@ typedef struct BattleRoomResults {
     u8 padding_34[0x30];
     String *defaultNames[2];
     Window windows[BATTLE_ROOM_RESULTS_NUM_LEADER_WINDOWS];
-    BattleRoomLeader leaders[BATTLE_ROOM_RESULTS_NUM_LEADERS];
+    BattleRoomResultsLeader leaders[BATTLE_ROOM_RESULTS_NUM_LEADERS];
     SpriteSystem *spriteSystem;
     SpriteManager *spriteManager;
     ManagedSprite *sprites[4];
@@ -108,20 +108,6 @@ typedef struct BattleRoomResults {
     GridInputHandler *gridInput;
     int pageChange;
 } BattleRoomResults;
-
-// The leader records as downloaded.
-typedef struct BattleRoomLeaderRecord {
-    u16 name[PLAYER_NAME_LENGTH + 1];
-    u8 padding_10[2];
-    u8 country;
-    u8 region;
-    u8 padding_14[4];
-    u8 greeting[8];
-    u8 useDefaultName : 1;
-    u8 gender : 1;
-    u8 unk_20_2 : 6;
-    u8 unk_21;
-} BattleRoomLeaderRecord;
 
 static BOOL BattleRoomResults_SetupScreens(BattleRoomResults *results);
 static BOOL BattleRoomResults_TeardownScreens(BattleRoomResults *results);
@@ -814,11 +800,11 @@ static void BattleRoomResults_PrintResults(BattleRoomResults *results) {
 static void BattleRoomResults_LoadLeaders(BattleRoomResults *results) {
     struct {
         int index;
-        BattleRoomLeaderRecord *records;
+        BattleRoomLeader *records;
     } query;
 
-    BattleRoomLeader *leader;
-    BattleRoomLeaderRecord *record;
+    BattleRoomResultsLeader *leader;
+    BattleRoomLeader *record;
     u8 *nameRecord;
 
     query.records = BattleRoomDownload_CopyLeaders(results->downloadData, results->heapID);
@@ -826,7 +812,7 @@ static void BattleRoomResults_LoadLeaders(BattleRoomResults *results) {
     leader = results->leaders;
     record = query.records;
     nameRecord = (u8 *)query.records;
-    for (; query.index < BATTLE_ROOM_RESULTS_NUM_LEADERS; leader++, record++, nameRecord += sizeof(BattleRoomLeaderRecord), query.index++) {
+    for (; query.index < BATTLE_ROOM_RESULTS_NUM_LEADERS; leader++, record++, nameRecord += sizeof(BattleRoomLeader), query.index++) {
         leader->gender = record->gender;
         leader->country = record->country;
         leader->region = record->region;

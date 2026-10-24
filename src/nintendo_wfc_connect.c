@@ -215,7 +215,7 @@ struct NintendoWfcConnect {
     u32 rank;
     int roomCount;
     u32 room;
-    u8 downloadBuffer[NINTENDO_WFC_DOWNLOAD_SIZE];
+    BattleRoomDownloadData downloadBuffer;
     FrontierWifiUploadRecord uploadRecord;
     u8 padding_0BBC[0x14];
     MessageFormat *msgFormat;
@@ -534,12 +534,12 @@ void NintendoWfcHttp_RequestRoomCount(int rank) {
     }
 }
 
-void NintendoWfcHttp_RequestDownload(int rank, int room, u8 *buffer) {
-    gNintendoWfcHttpResponse.buffer = buffer;
+void NintendoWfcHttp_RequestDownload(int rank, int room, BattleRoomDownloadData *download) {
+    gNintendoWfcHttpResponse.buffer = (u8 *)download;
     GameStats_Start();
     gNintendoWfcHttp.rank = rank - 1;
     gNintendoWfcHttp.room = room - 1;
-    if (NintendoWfcHttp_StartRequest(gNintendoWfcDownloadUrl, gNintendoWfcHttpRequestBuffer, 2, buffer, NINTENDO_WFC_DOWNLOAD_SIZE)) {
+    if (NintendoWfcHttp_StartRequest(gNintendoWfcDownloadUrl, gNintendoWfcHttpRequestBuffer, 2, download, NINTENDO_WFC_DOWNLOAD_SIZE)) {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DOWNLOAD;
     } else {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
@@ -1673,7 +1673,7 @@ int NintendoWfc_PrintReceivingTrainers(NintendoWfcConnect *wfc) {
     BufferIntegerAsString(wfc->msgFormat, 1, wfc->rank, 2, PRINTING_MODE_LEADING_ZEROS, TRUE);
     NintendoWfc_PrintFormattedMessage(wfc, wfc->msgDataTower, msg_0774_00001, 1, 0xF0F);
     NintendoWfc_SetState(wfc, NINTENDO_WFC_STATE_WAIT_MESSAGE, NINTENDO_WFC_STATE_REQUEST_TRAINERS_DOWNLOAD);
-    MIi_CpuClearFast(0, (u32 *)wfc->downloadBuffer, sizeof(wfc->downloadBuffer));
+    MIi_CpuClearFast(0, (u32 *)&wfc->downloadBuffer, sizeof(wfc->downloadBuffer));
     return NINTENDO_WFC_MAIN_SESSION_MAIN;
 }
 
@@ -1684,7 +1684,7 @@ int NintendoWfc_PrintRoomUnavailable(NintendoWfcConnect *wfc) {
 }
 
 int NintendoWfc_RequestTrainersDownload(NintendoWfcConnect *wfc) {
-    NintendoWfcHttp_RequestDownload(wfc->ownRank, wfc->room, wfc->downloadBuffer);
+    NintendoWfcHttp_RequestDownload(wfc->ownRank, wfc->room, &wfc->downloadBuffer);
     NintendoWfc_ShowWaitingIcon(wfc);
     wfc->state = NINTENDO_WFC_STATE_WAIT_TRAINERS_DOWNLOAD;
     wfc->timeoutCounter = 0;
@@ -1699,7 +1699,7 @@ int NintendoWfc_WaitTrainersDownload(NintendoWfcConnect *wfc) {
         case NINTENDO_WFC_HTTP_RESULT_OK: {
             RTCTime time;
             RTCDate date;
-            BattleRoomDownload_SetTrainers((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer, (u8)wfc->ownRank, (u8)wfc->room);
+            BattleRoomDownload_SetTrainers((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer.trainers, (u8)wfc->ownRank, (u8)wfc->room);
             NintendoWfc_SetState(wfc, NINTENDO_WFC_STATE_START_SAVE, NINTENDO_WFC_STATE_PRINT_TRAINERS_RECEIVED);
             DWC_GetDateTime(&date, &time);
             BattleRoomDownload_MarkRoom((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, &date);
@@ -1901,7 +1901,7 @@ int NintendoWfc_PrintReceivingLeaders(NintendoWfcConnect *wfc) {
 }
 
 int NintendoWfc_RequestLeadersDownload(NintendoWfcConnect *wfc) {
-    NintendoWfcHttp_RequestDownload(wfc->rank, wfc->room, wfc->downloadBuffer);
+    NintendoWfcHttp_RequestDownload(wfc->rank, wfc->room, &wfc->downloadBuffer);
     wfc->state = NINTENDO_WFC_STATE_WAIT_LEADERS_DOWNLOAD;
     wfc->timeoutCounter = 0;
     NintendoWfc_ShowWaitingIcon(wfc);
@@ -1914,7 +1914,7 @@ int NintendoWfc_WaitLeadersDownload(NintendoWfcConnect *wfc) {
         wfc->timeoutCounter = 0;
         switch (result) {
         case NINTENDO_WFC_HTTP_RESULT_OK:
-            BattleRoomDownload_SetLeaders((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer + 0x63C, (u8)wfc->rank, (u8)wfc->room);
+            BattleRoomDownload_SetLeaders((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer.leaders, (u8)wfc->rank, (u8)wfc->room);
             NintendoWfc_SetState(wfc, NINTENDO_WFC_STATE_START_SAVE, NINTENDO_WFC_STATE_PRINT_LEADERS_RECEIVED);
             break;
         case NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED:

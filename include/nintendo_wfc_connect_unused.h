@@ -7,6 +7,7 @@
 
 #include "global.h"
 
+#include "frontier_data_access.h"
 #include "frontier_wifi_upload_record.h"
 #include "msgdata.h"
 #include "nintendo_wfc_connect.h"
@@ -103,7 +104,7 @@ typedef struct NintendoWfcUnused {
     int rank;
     int roomCount;
     int room;
-    u8 downloadBuffer[NINTENDO_WFC_DOWNLOAD_SIZE];
+    BattleRoomDownloadData downloadBuffer;
     FrontierWifiUploadRecord uploadRecord;
     u8 padding_0BBC[0x14];
     MessageFormat *msgFormat;

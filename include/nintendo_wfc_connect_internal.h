@@ -4,6 +4,7 @@
 #include "global.h"
 
 #include "bg_window.h"
+#include "frontier_data_access.h"
 #include "frontier_wifi_upload_record.h"
 #include "gf_gfx_planes.h"
 #include "heap.h"
@@ -179,7 +180,7 @@ s32 NintendoWfcHttp_GetResult(void);
 void NintendoWfcHttp_Init(u32 profileId, u64 friendKey);
 BOOL NintendoWfcHttp_IsDone(void);
 void NintendoWfcHttp_RequestRoomCount(int rank);
-void NintendoWfcHttp_RequestDownload(int rank, int room, u8 *buffer);
+void NintendoWfcHttp_RequestDownload(int rank, int room, BattleRoomDownloadData *download);
 void NintendoWfcHttp_RequestUpload(int rank, int room, int winCount, FrontierWifiUploadRecord *record);
 void NintendoWfcHttp_RequestInfo(void);
 void NintendoWfcHttp_RequestSetProfile(WifiServerProfile *profile, u32 *response);
