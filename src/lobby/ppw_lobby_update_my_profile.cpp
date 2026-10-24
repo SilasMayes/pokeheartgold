@@ -122,9 +122,10 @@ struct Work {
 };
 
 extern "C" Work *gPPWLobbyWork;
-extern "C" int PPW_LobbyUpdateMyProfile(const u8 *data, u32 len, int flag);
+extern "C" int PPW_LobbyUpdateMyProfile(const void *profile, u32 len, int flag);
 
-extern "C" int PPW_LobbyUpdateMyProfile(const u8 *data, u32 len, int flag) {
+extern "C" int PPW_LobbyUpdateMyProfile(const void *profile, u32 len, int flag) {
+    const u8 *data = (const u8 *)profile;
     Work *w = gPPWLobbyWork;
     if (w == 0) {
         return PPW_LOBBY_RESULT_ERROR_STATE;

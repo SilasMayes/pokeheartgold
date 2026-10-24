@@ -23,6 +23,7 @@
 #include "overlay_42.h"
 #include "overlay_manager.h"
 #include "player_data.h"
+#include "ppw_lobby_work.h"
 #include "pm_string.h"
 #include "save.h"
 #include "save_wifi_history.h"
@@ -448,11 +449,6 @@ typedef struct WiFiPlazaLobbyMatch {
     int hostId; // own id when hosting
 } WiFiPlazaLobbyMatch;
 
-typedef struct WiFiPlazaLobbyKeyValue {
-    u32 value;
-    u32 key;
-} WiFiPlazaLobbyKeyValue;
-
 typedef struct WiFiPlazaLobbyIdValue {
     u32 id;
     u32 value;
@@ -465,14 +461,11 @@ typedef struct WiFiPlazaLobbyIdValueList {
     volatile u16 count;
 } WiFiPlazaLobbyIdValueList;
 
+// The lobby schedule as PPW_LobbyGetSchedule copies it: the record (roomFlag bit 0: the Arceus footprint is shown)
+// and room for the rest of its events.
 typedef struct WiFiPlazaLobbySchedule {
-    u32 unk_00;
-    u32 unk_04;
-    u32 roomFlag; // bit 0: the Arceus footprint is shown
-    u8 roomType;
-    u8 season;
-    volatile u16 count;
-    WiFiPlazaLobbyKeyValue values[126];
+    PPWLobbyScheduleRecord record;
+    LobbyEvent moreEvents[125];
 } WiFiPlazaLobbySchedule;
 
 typedef struct WiFiPlazaLobbySurvey {
@@ -586,8 +579,7 @@ typedef struct WiFiPlazaLobbyClient {
     u8 ownRecordError;
     WiFiPlazaLobbyLocation locations[WIFI_PLAZA_MAX_PLAYERS];
     WiFiPlazaLobbyCommandTable commandTables[2]; // lobby, channel
-    s64 time;                                    // lobby time, refreshed every frame
-    u8 padding_1A4[0x10];
+    PPWLobbyTimeInfo time;                       // refreshed every frame
     WiFiPlazaLobbySchedule schedule; // received with PPW_LobbyGetSchedule
     u32 scheduleSize;
     WiFiPlazaLobbyMatch matches[WIFI_PLAZA_LOBBY_MATCH_COUNT];
@@ -920,22 +912,22 @@ void WiFiPlazaLobbyClient_RebuildChannelList(WiFiPlazaLobbyClient *client, u32 c
 
 BOOL WiFiPlazaLobbyClient_HasChannelRoom(WiFiPlazaLobbyClient *client, int channel);
 void WiFiPlazaLobbyClient_OnEnterChannel(int result, u32 libChannel);
-void WiFiPlazaLobbyClient_OnPlayerEnter(int id, const WiFiPlazaLobbyPlayerRecord *record, const void *data, u32 size);
+void WiFiPlazaLobbyClient_OnPlayerEnter(int id, const void *record, const void *data, u32 size);
 void WiFiPlazaLobbyClient_OnPlayerLeave(int id);
-void WiFiPlazaLobbyClient_OnEvent3Dummy(void);
+void WiFiPlazaLobbyClient_OnEvent3Dummy(int id, int libChannel, int type, const void *data);
 void WiFiPlazaLobbyClient_OnMessage(int id, u32 libChannel, u32 type, const void *data, u32 size);
-void WiFiPlazaLobbyClient_OnLocationsChanged(BOOL success, BOOL broadcast, int channelKind, int userId, const char *key, const void *data);
-void WiFiPlazaLobbyClient_OnPlayerRecordChanged(int id, const WiFiPlazaLobbyPlayerRecord *record);
-void WiFiPlazaLobbyClient_OnPlayerUpdate(int id, const void *data);
-void WiFiPlazaLobbyClient_OnMatchInfo(int id, WiFiPlazaLobbyMatchInfo *info);
-void WiFiPlazaLobbyClient_OnMatchClosed(int id, const WiFiPlazaLobbyMatchInfo *info);
+void WiFiPlazaLobbyClient_OnLocationsChanged(BOOL success, BOOL broadcast, int channelKind, int userId, const char *key, const void *data, u32 size, u32 param);
+void WiFiPlazaLobbyClient_OnPlayerRecordChanged(int id, const void *data);
+void WiFiPlazaLobbyClient_OnPlayerUpdate(int id, const void *data, u32 size);
+void WiFiPlazaLobbyClient_OnMatchInfo(int id, void *data);
+void WiFiPlazaLobbyClient_OnMatchClosed(int id, const void *data);
 void WiFiPlazaLobbyClient_OnLobbyEvent(u32 event);
-void WiFiPlazaLobbyClient_OnOwnRecord(int result, const WiFiPlazaPlayer *data, u32 size);
-BOOL WiFiPlazaLobbyClient_OnScheduleReceived(int result);
+void WiFiPlazaLobbyClient_OnOwnRecord(int result, const void *data, u32 size);
+BOOL WiFiPlazaLobbyClient_OnScheduleReceived(int result, const void *schedule);
 void WiFiPlazaLobbyClient_OnSpecialVisitorsReceived(int result, const void *data, u32 size);
 void WiFiPlazaLobbyClient_OnSurveyReceived(int result, const void *data);
-void WiFiPlazaLobbyClient_OnSurveySubmitted(void);
-void WiFiPlazaLobbyClient_OnExcessFlood(void);
+void WiFiPlazaLobbyClient_OnSurveySubmitted(s32 result);
+void WiFiPlazaLobbyClient_OnExcessFlood(int id);
 void WiFiPlazaLobbyClient_InitMatches(WiFiPlazaLobbyClient *client);
 
 BOOL WiFiPlazaLobbyMatches_Remove(WiFiPlazaLobbyClient *client, int index, int hostId);
@@ -946,7 +938,7 @@ void WiFiPlazaLobbyMatchInfo_SetStartTime(WiFiPlazaLobbyMatchInfo *info, const s
 void WiFiPlazaLobbyClient_OnMatchClientDummy(int result, void *arg);
 
 void WiFiPlazaLobbyClient_OnMatchDisconnect(int result, void *arg);
-u32 WiFiPlazaLobbySchedule_FindValue(WiFiPlazaLobbySchedule *schedule, int key);
+u32 WiFiPlazaLobbySchedule_FindValue(const volatile WiFiPlazaLobbySchedule *schedule, int key);
 void WiFiPlazaLobbyIdValueList_Init(WiFiPlazaLobbyIdValueList *list, int count, enum HeapID heapID);
 void WiFiPlazaLobbyIdValueList_Free(WiFiPlazaLobbyIdValueList *list);
 BOOL WiFiPlazaLobbyIdValueList_Contains(WiFiPlazaLobbyIdValueList *list, int id);
@@ -986,28 +978,10 @@ extern u16 (*const gWiFiPlazaNewsEventSlotGetters[9])(WiFiPlazaNewsEvent *event,
 extern const char *gWiFiPlazaLocationListKey;                                                 // lobby data key of the location list
 extern void (*const gWiFiPlazaPlayerObjectActions[])(WiFiPlazaPlayerObject *object);       // per player action
 
-// lobby library
-int PPW_LobbyGetSchedule(WiFiPlazaLobbySchedule *data, u32 *size);
-int PPW_LobbySetChannelData(int a0, int a1, const char *key, const void *data, u32 size);
-void PPW_LobbyGetChannelDataAsync(int a0, int a1, const char *key, int a3);
-int PPW_LobbyInitializeAsync(const void *a0, const void *a1, int mode, void (**callbacks)(void), void *userData, int value, u32 playerDataSize);
-int PPW_LobbyShutdownAsync(void);
-int PPW_LobbyProcess(void);
-int PPW_LobbyJoinSubChannelAsync(int channel);
-int PPW_LobbyLeaveSubChannel(void);
-int PPW_LobbyGetSubChannelState(void);
-int PPW_LobbySendChannelBinaryMessage(int channel, int type, const void *data, int size);
-int PPW_LobbySendPlayerBinaryMessage(int id, int type, const void *data, int size);
-int PPW_LobbyGetMyUserId(void);
-void PPW_LobbyUpdateMyProfile(WiFiPlazaPlayer *player, u32 size, int a2);
+// lobby library (the rest of its interface is in ppw_lobby_work.h)
 int PPW_LobbyStartRecruit(WiFiPlazaLobbyMatch *match);
 int PPW_LobbyUpdateRecruitInfo(WiFiPlazaLobbyMatch *match);
 int PPW_LobbyStopRecruit(void);
-int PPW_LobbySubmitQuestionnaire(int index);
-int PPW_LobbyGetLastError(void);
-int PPW_LobbyToErrorCode(int error);
-int PPW_LobbyInitResultToLastError(int result);
-void PPW_LobbyGetTimeInfo(void *a0);
 
 BOOL WiFiPlazaRoom_Init(OverlayManager *manager, int *state);
 BOOL WiFiPlazaRoom_Main(OverlayManager *manager, int *state);

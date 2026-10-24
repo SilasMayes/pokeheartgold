@@ -145,28 +145,28 @@ void WiFiPlazaLobbyClient_Initialize(int value) {
 }
 
 static void WiFiPlazaLobbyClient_InitializeEx(int value, int mode) {
-    void (*callbacks[17])(void);
+    PPWLobbyCallbacks callbacks;
     void *userData;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    callbacks[0] = (void (*)(void))WiFiPlazaLobbyClient_OnEnterChannel;
-    callbacks[1] = (void (*)(void))WiFiPlazaLobbyClient_OnPlayerEnter;
-    callbacks[2] = (void (*)(void))WiFiPlazaLobbyClient_OnPlayerLeave;
-    callbacks[3] = (void (*)(void))WiFiPlazaLobbyClient_OnEvent3Dummy;
-    callbacks[4] = (void (*)(void))WiFiPlazaLobbyClient_OnMessage;
-    callbacks[5] = (void (*)(void))WiFiPlazaLobbyClient_OnLocationsChanged;
-    callbacks[6] = (void (*)(void))WiFiPlazaLobbyClient_OnPlayerRecordChanged;
-    callbacks[7] = (void (*)(void))WiFiPlazaLobbyClient_OnPlayerUpdate;
-    callbacks[8] = (void (*)(void))WiFiPlazaLobbyClient_OnMatchInfo;
-    callbacks[9] = (void (*)(void))WiFiPlazaLobbyClient_OnMatchClosed;
-    callbacks[10] = (void (*)(void))WiFiPlazaLobbyClient_OnLobbyEvent;
-    callbacks[11] = (void (*)(void))WiFiPlazaLobbyClient_OnOwnRecord;
-    callbacks[12] = (void (*)(void))WiFiPlazaLobbyClient_OnScheduleReceived;
-    callbacks[13] = (void (*)(void))WiFiPlazaLobbyClient_OnSpecialVisitorsReceived;
-    callbacks[14] = (void (*)(void))WiFiPlazaLobbyClient_OnSurveyReceived;
-    callbacks[15] = (void (*)(void))WiFiPlazaLobbyClient_OnSurveySubmitted;
-    callbacks[16] = (void (*)(void))WiFiPlazaLobbyClient_OnExcessFlood;
+    callbacks.onEnterChannel = WiFiPlazaLobbyClient_OnEnterChannel;
+    callbacks.onPlayerEnter = WiFiPlazaLobbyClient_OnPlayerEnter;
+    callbacks.onPlayerLeave = WiFiPlazaLobbyClient_OnPlayerLeave;
+    callbacks.onEvent3 = WiFiPlazaLobbyClient_OnEvent3Dummy;
+    callbacks.onMessage = WiFiPlazaLobbyClient_OnMessage;
+    callbacks.onLocationsChanged = WiFiPlazaLobbyClient_OnLocationsChanged;
+    callbacks.onPlayerRecordChanged = WiFiPlazaLobbyClient_OnPlayerRecordChanged;
+    callbacks.onPlayerUpdate = WiFiPlazaLobbyClient_OnPlayerUpdate;
+    callbacks.onMatchInfo = WiFiPlazaLobbyClient_OnMatchInfo;
+    callbacks.onMatchClosed = WiFiPlazaLobbyClient_OnMatchClosed;
+    callbacks.onLobbyEvent = WiFiPlazaLobbyClient_OnLobbyEvent;
+    callbacks.onOwnRecord = WiFiPlazaLobbyClient_OnOwnRecord;
+    callbacks.onScheduleReceived = WiFiPlazaLobbyClient_OnScheduleReceived;
+    callbacks.onSpecialVisitorsReceived = WiFiPlazaLobbyClient_OnSpecialVisitorsReceived;
+    callbacks.onSurveyReceived = WiFiPlazaLobbyClient_OnSurveyReceived;
+    callbacks.onSurveySubmitted = WiFiPlazaLobbyClient_OnSurveySubmitted;
+    callbacks.onExcessFlood = WiFiPlazaLobbyClient_OnExcessFlood;
     userData = FriendRoster_GetUserData(gWiFiPlazaLobbyClient->friendRoster);
-    gWiFiPlazaLobbyClient->initResult = PPW_LobbyInitializeAsync("pokemonplatds", "IIup73", mode, callbacks, userData, value, gWiFiPlazaLobbyClient->playerDataSize);
+    gWiFiPlazaLobbyClient->initResult = PPW_LobbyInitializeAsync("pokemonplatds", "IIup73", mode, &callbacks, userData, (const void *)value, gWiFiPlazaLobbyClient->playerDataSize);
     WiFiPlazaLobbyClient_CheckResult(gWiFiPlazaLobbyClient->initResult);
 }
 
@@ -351,7 +351,7 @@ int WiFiPlazaLobbyClient_ChannelSlotToId(int slot) {
 
 void WiFiPlazaLobbyClient_GetTime(s64 *time) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    *time = gWiFiPlazaLobbyClient->time;
+    *time = gWiFiPlazaLobbyClient->time.currentTime;
 }
 
 u32 WiFiPlazaLobbyClient_GetScheduleValue(int field) {
@@ -369,19 +369,19 @@ u32 WiFiPlazaLobbyClient_GetScheduleValue(int field) {
     schedule = &gWiFiPlazaLobbyClient->schedule;
     switch (field) {
     case 0:
-        result = schedule->unk_00;
+        result = schedule->record.lockTime;
         break;
     case 1:
-        result = schedule->unk_04;
+        result = schedule->record.unk_04;
         break;
     case 2:
-        result = schedule->roomType;
+        result = schedule->record.roomType;
         break;
     case 3:
-        result = schedule->season;
+        result = schedule->record.season;
         break;
     case 4:
-        result = (schedule->roomFlag & 1) != 0;
+        result = (schedule->record.roomFlag & 1) != 0;
         break;
     case 5:
         result = WiFiPlazaLobbySchedule_FindValue(schedule, 0x13);
@@ -520,7 +520,7 @@ BOOL WiFiPlazaLobbyClient_HostMatch(int index, int maxPlayers) {
     gWiFiPlazaLobbyClient->matches[index].info.maxPlayers = maxPlayers;
     gWiFiPlazaLobbyClient->matches[index].info.playerCount = 1;
     gWiFiPlazaLobbyClient->matches[index].info.state = WIFI_PLAZA_MATCH_OPEN;
-    WiFiPlazaLobbyMatchInfo_SetStartTime(&gWiFiPlazaLobbyClient->matches[index].info, &gWiFiPlazaLobbyClient->time);
+    WiFiPlazaLobbyMatchInfo_SetStartTime(&gWiFiPlazaLobbyClient->matches[index].info, &gWiFiPlazaLobbyClient->time.currentTime);
     GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbyStartRecruit(&gWiFiPlazaLobbyClient->matches[index])));
     gWiFiPlazaLobbyClient->matches[index].active = 1;
     gWiFiPlazaLobbyClient->matches[index].hostId = PPW_LobbyGetMyUserId();

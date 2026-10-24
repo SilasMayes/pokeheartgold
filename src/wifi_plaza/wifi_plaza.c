@@ -40,12 +40,6 @@ typedef struct WiFiPlaza {
 
 FS_EXTERN_OVERLAY(OVY_42);
 
-// What PPW_LobbyGetTimeInfo reports: the lobby time first.
-typedef struct WiFiPlazaLobbyTime {
-    s64 time;
-    u8 unk_08[16];
-} WiFiPlazaLobbyTime;
-
 static void WiFiPlaza_VBlankTask(SysTask *task, void *data);
 static WiFiPlazaWork *WiFiPlazaWork_New(SaveData *save, enum HeapID heapID);
 static void WiFiPlazaWork_Delete(WiFiPlazaWork *work);
@@ -1430,12 +1424,12 @@ static void WiFiPlaza_OnPlayerUpdate(int id, WiFiPlazaPlayer *player, WiFiPlazaW
 
 // Lobby callback: a lobby event (0: the lobby opened); most of them start a timer in WiFiPlazaWork.eventSchedule.
 static void WiFiPlaza_OnLobbyEvent(u32 event, WiFiPlazaWork *work) {
-    WiFiPlazaLobbyTime now;
+    PPWLobbyTimeInfo now;
     int notify = 0;
     int which;
     PPW_LobbyGetTimeInfo(&now);
-    WiFiPlaza_SecondsToTime(&work->currentTime.word, &now.time);
-    work->lobbyTime = now.time;
+    WiFiPlaza_SecondsToTime(&work->currentTime.word, &now.currentTime);
+    work->lobbyTime = now.currentTime;
     switch (event) {
     case 0:
         WiFiPlazaNews_SetOpenTime(work->news, &work->currentTime.word);

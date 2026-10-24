@@ -111,7 +111,7 @@ void WiFiPlazaLobbyClient_OnEnterChannel(int result, u32 libChannel) {
 
     if (libChannel == 0) {
         gWiFiPlazaLobbyClient->scheduleSize = sizeof(gWiFiPlazaLobbyClient->schedule);
-        GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbyGetSchedule(&gWiFiPlazaLobbyClient->schedule, &gWiFiPlazaLobbyClient->scheduleSize)));
+        GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbyGetSchedule(&gWiFiPlazaLobbyClient->schedule.record, &gWiFiPlazaLobbyClient->scheduleSize)));
         PPW_LobbyGetChannelDataAsync(-1, 0, gWiFiPlazaLocationListKey, 0);
         return;
     }
@@ -130,7 +130,7 @@ void WiFiPlazaLobbyClient_OnEnterChannel(int result, u32 libChannel) {
     }
 }
 
-void WiFiPlazaLobbyClient_OnPlayerEnter(int id, const WiFiPlazaLobbyPlayerRecord *record, const void *data, u32 size) {
+void WiFiPlazaLobbyClient_OnPlayerEnter(int id, const void *record, const void *data, u32 size) {
     BOOL isOwn;
     WiFiPlazaLobbyClient *client;
     WiFiPlazaPlayer *player;
@@ -167,7 +167,7 @@ void WiFiPlazaLobbyClient_OnPlayerLeave(int id) {
     WiFiPlazaLobbyClient_RemoveFromIdList(gWiFiPlazaLobbyClient, id, 1);
 }
 
-void WiFiPlazaLobbyClient_OnEvent3Dummy(void) {
+void WiFiPlazaLobbyClient_OnEvent3Dummy(int id, int libChannel, int type, const void *data) {
 }
 
 // A message of the given type from a player: calls the receive callback of the lobby (libChannel 0 / 5) or channel
@@ -205,7 +205,7 @@ void WiFiPlazaLobbyClient_OnMessage(int id, u32 libChannel, u32 type, const void
 }
 
 // The lobby's location list (key gWiFiPlazaLocationListKey) changed.
-void WiFiPlazaLobbyClient_OnLocationsChanged(BOOL success, BOOL broadcast, int channelKind, int userId, const char *key, const void *data) {
+void WiFiPlazaLobbyClient_OnLocationsChanged(BOOL success, BOOL broadcast, int channelKind, int userId, const char *key, const void *data, u32 size, u32 param) {
     if (strcmp(key, gWiFiPlazaLocationListKey) == 0) {
         memcpy(gWiFiPlazaLobbyClient->locations, data, sizeof(gWiFiPlazaLobbyClient->locations));
         if (gWiFiPlazaLobbyClient->addingLocation) {
@@ -215,7 +215,8 @@ void WiFiPlazaLobbyClient_OnLocationsChanged(BOOL success, BOOL broadcast, int c
 }
 
 // A player's record changed: follows the player into or out of the own channel.
-void WiFiPlazaLobbyClient_OnPlayerRecordChanged(int id, const WiFiPlazaLobbyPlayerRecord *record) {
+void WiFiPlazaLobbyClient_OnPlayerRecordChanged(int id, const void *data) {
+    const WiFiPlazaLobbyPlayerRecord *record = data;
     if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0) != -1) {
         if (gWiFiPlazaLobbyClient->channel != WIFI_PLAZA_LOBBY_CHANNEL_NONE) {
             int current, old = WiFiPlazaLobbyClient_GetPlayerRecord(gWiFiPlazaLobbyClient, id)->channel;
@@ -233,7 +234,7 @@ void WiFiPlazaLobbyClient_OnPlayerRecordChanged(int id, const WiFiPlazaLobbyPlay
     }
 }
 
-void WiFiPlazaLobbyClient_OnPlayerUpdate(int id, const void *data) {
+void WiFiPlazaLobbyClient_OnPlayerUpdate(int id, const void *data, u32 size) {
     if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0) != -1) {
         WiFiPlazaLobbyClient_SetPlayerData(gWiFiPlazaLobbyClient, id, data);
         gWiFiPlazaLobbyClient->callbacks.onPlayerUpdate(id, (WiFiPlazaPlayer *)data, gWiFiPlazaLobbyClient->callbackArg);
@@ -245,7 +246,8 @@ static inline BOOL IsSameId(int id, int other) {
 }
 
 // Match info from a player.
-void WiFiPlazaLobbyClient_OnMatchInfo(int id, WiFiPlazaLobbyMatchInfo *info) {
+void WiFiPlazaLobbyClient_OnMatchInfo(int id, void *data) {
+    WiFiPlazaLobbyMatchInfo *info = data;
     s64 current;
     s64 received;
     int slot = WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0);
@@ -264,7 +266,8 @@ void WiFiPlazaLobbyClient_OnMatchInfo(int id, WiFiPlazaLobbyMatchInfo *info) {
     }
 }
 
-void WiFiPlazaLobbyClient_OnMatchClosed(int id, const WiFiPlazaLobbyMatchInfo *info) {
+void WiFiPlazaLobbyClient_OnMatchClosed(int id, const void *data) {
+    const WiFiPlazaLobbyMatchInfo *info = data;
     int result;
     if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0) == -1) {
         return;
@@ -279,7 +282,7 @@ void WiFiPlazaLobbyClient_OnLobbyEvent(u32 event) {
     gWiFiPlazaLobbyClient->callbacks.onLobbyEvent(event, gWiFiPlazaLobbyClient->callbackArg);
 }
 
-void WiFiPlazaLobbyClient_OnOwnRecord(int result, const WiFiPlazaPlayer *data, u32 size) {
+void WiFiPlazaLobbyClient_OnOwnRecord(int result, const void *data, u32 size) {
     if (result != 0) {
         gWiFiPlazaLobbyClient->ownRecordError = 1;
     } else {
@@ -287,7 +290,7 @@ void WiFiPlazaLobbyClient_OnOwnRecord(int result, const WiFiPlazaPlayer *data, u
     }
 }
 
-BOOL WiFiPlazaLobbyClient_OnScheduleReceived(int result) {
+BOOL WiFiPlazaLobbyClient_OnScheduleReceived(int result, const void *schedule) {
     if (result == 0) {
         return TRUE;
     }
@@ -311,12 +314,12 @@ void WiFiPlazaLobbyClient_OnSurveyReceived(int result, const void *data) {
     }
 }
 
-void WiFiPlazaLobbyClient_OnSurveySubmitted(void) {
+void WiFiPlazaLobbyClient_OnSurveySubmitted(s32 result) {
     GF_ASSERT(gWiFiPlazaLobbyClient->surveySubmitState == 1);
     gWiFiPlazaLobbyClient->surveySubmitState = 2;
 }
 
-void WiFiPlazaLobbyClient_OnExcessFlood(void) {
+void WiFiPlazaLobbyClient_OnExcessFlood(int id) {
     gWiFiPlazaLobbyClient->excessFlood = 1;
 }
 
@@ -365,7 +368,7 @@ static u16 WiFiPlazaLobbyMatches_CalcTimer(WiFiPlazaLobbyClient *client, int ind
         return 0;
     }
     WiFiPlazaLobbyMatchInfo_GetStartTime(&WiFiPlazaLobbyMatches_Get(client, index)->info, &start);
-    elapsed = client->time - start;
+    elapsed = client->time.currentTime - start;
     if (elapsed > 30) {
         elapsed = 30;
     } else if (elapsed < 0) {
@@ -430,12 +433,12 @@ void WiFiPlazaLobbyClient_OnMatchDisconnect(int result, void *arg) {
     }
 }
 
-u32 WiFiPlazaLobbySchedule_FindValue(WiFiPlazaLobbySchedule *schedule, int key) {
+u32 WiFiPlazaLobbySchedule_FindValue(const volatile WiFiPlazaLobbySchedule *schedule, int key) {
     u32 result = 0;
     int i;
-    for (i = 0; i < schedule->count; i++) {
-        if (key == schedule->values[i].key) {
-            result = schedule->values[i].value;
+    for (i = 0; i < schedule->record.eventCount; i++) {
+        if (key == schedule->record.events[i].payload) {
+            result = schedule->record.events[i].key;
         }
     }
     return result;

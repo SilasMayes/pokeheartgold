@@ -7,23 +7,23 @@
 
 // The callbacks the game passes to PPW_LobbyInitializeAsync, in table order.
 typedef struct PPWLobbyCallbacks {
-    void (*onEnterChannel)(int success, int channel);
-    void (*onPlayerEnter)(u32 userId, void *systemProfile, void *userProfile, u32 userProfileSize);
+    void (*onEnterChannel)(int result, u32 channel);
+    void (*onPlayerEnter)(int userId, const void *systemProfile, const void *userProfile, u32 userProfileSize);
     void (*onPlayerLeave)(int userId);
-    void (*onEvent3)(int, int, int, void *);
-    void (*onMessage)(int userId, int channel, int type, void *data, u32 size);
-    void (*onLocationsChanged)(int success, int broadcast, int channel, int userId, const char *key, const void *data, u32 size, u32 param);
+    void (*onEvent3)(int userId, int channel, int type, const void *data);
+    void (*onMessage)(int userId, u32 channel, u32 type, const void *data, u32 size);
+    void (*onLocationsChanged)(BOOL success, BOOL broadcast, int channel, int userId, const char *key, const void *data, u32 size, u32 param);
     void (*onPlayerRecordChanged)(int userId, const void *systemProfile);
-    void (*onPlayerUpdate)(int userId, const u8 *userProfile, u32 size);
+    void (*onPlayerUpdate)(int userId, const void *userProfile, u32 size);
     void (*onMatchInfo)(int userId, void *info);
-    void (*onMatchClosed)(int userId, void *info);
+    void (*onMatchClosed)(int userId, const void *info);
     void (*onLobbyEvent)(u32 event);
-    void (*onOwnRecord)(int result, void *record, u32 size);
-    int (*onScheduleReceived)(int result, void *schedule);
-    void (*onSpecialVisitorsReceived)(int result, void *records, u32 count);
-    void (*onSurveyReceived)(int result, void *questionnaire);
+    void (*onOwnRecord)(int result, const void *record, u32 size);
+    BOOL (*onScheduleReceived)(int result, const void *schedule);
+    void (*onSpecialVisitorsReceived)(int result, const void *records, u32 count);
+    void (*onSurveyReceived)(int result, const void *questionnaire);
     void (*onSurveySubmitted)(s32 result);
-    void (*onExcessFlood)(int);
+    void (*onExcessFlood)(int userId);
 } PPWLobbyCallbacks;
 
 typedef struct PPWLobbyChannel {
@@ -227,7 +227,7 @@ int PPW_LobbySendChannelBinaryMessage(int channel, int type, const void *data, i
 int PPW_LobbySendPlayerBinaryMessage(int userId, int type, const void *data, int size);
 int PPW_LobbySetChannelData(int userId, int channel, const char *key, const void *data, u32 size);
 int PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 param);
-int PPW_LobbyUpdateMyProfile(const u8 *data, u32 size, int force);
+int PPW_LobbyUpdateMyProfile(const void *data, u32 size, int force);
 int PPW_LobbyGetTimeInfo(PPWLobbyTimeInfo *timeInfo);
 int PPW_LobbyGetSchedule(PPWLobbyScheduleRecord *records, u32 *size);
 int PPW_LobbySubmitQuestionnaire(int mode);
