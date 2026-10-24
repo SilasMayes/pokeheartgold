@@ -1028,11 +1028,11 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
 }
 
 static BOOL PokeathlonGoalRoll_SegmentsIntersect(Point2D *a, Point2D *b, Point2D *c, const VecFx32 *point) {
-    Point2D d;
+    Point2D end;
     Point2D out;
-    d.x = point->x / FX32_ONE;
-    d.y = point->y / FX32_ONE;
-    return Point2D_CalcSegmentIntersection(a, b, c, &d, &out);
+    end.x = point->x / FX32_ONE;
+    end.y = point->y / FX32_ONE;
+    return Point2D_CalcSegmentIntersection(a, b, c, &end, &out);
 }
 
 // Where the segment c-d crosses the axis-aligned wall a-b (into `out`); FALSE if it doesn't.

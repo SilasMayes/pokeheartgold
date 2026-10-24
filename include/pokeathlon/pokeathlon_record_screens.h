@@ -5,6 +5,7 @@
 
 #include "constants/species.h"
 
+#include "pokeathlon/pokeathlon_course_types_def.h"
 #include "pokeathlon/pokeathlon_util.h"
 
 #include "MATH_pop.h"
@@ -37,7 +38,7 @@ typedef struct PokeathlonRecordMon {
 typedef struct PokeathlonCourseRecordEntry {
     u16 eventScores[3];
     u16 totalScore; // event scores plus bonus points
-    PokeathlonRecordMon mons[3];
+    PokeathlonRecordMon mons[POKEATHLON_TEAM_SIZE];
 } PokeathlonCourseRecordEntry;
 
 typedef struct PokeathlonCourseRecordBgTemplates {
@@ -77,7 +78,7 @@ typedef struct PokeathlonTrophiesSummary {
     u16 eventRecordTotal;
     u16 totalPoints;
     u16 medalTotal;
-    u16 courseScores[5];
+    u16 courseScores[POKEATHLON_SOLO_COURSES];
     u8 medalistCount; // species that won all five medals
     u8 potentialTrophies;
     u8 gender;
@@ -139,7 +140,7 @@ void PokeathlonMedals_OnTouch(PokeathlonMedals *work, int newTarget, int prevTar
 // Event record app
 
 typedef struct PokeathlonEventRecordTeam {
-    u16 mons[3]; // bits 0-9: species, bits 10-14: form
+    u16 mons[POKEATHLON_TEAM_SIZE]; // bits 0-9: species, bits 10-14: form
 } PokeathlonEventRecordTeam;
 
 typedef struct PokeathlonEventRecordEntry {
@@ -161,7 +162,7 @@ typedef struct PokeathlonEventRecordDefaultEntry {
 
 typedef struct PokeathlonEventRecordData {
     PokeathlonEventRecordArgs *args;
-    PokeathlonEventRecords records[10]; // solo records with the trophy target inserted at its rank
+    PokeathlonEventRecords records[POKEATHLON_EVENT_COUNT]; // solo records with the trophy target inserted at its rank
     String *string;
 } PokeathlonEventRecordData;
 
@@ -182,7 +183,7 @@ typedef struct PokeathlonEventRecord {
     BOOL linkMode;
     BOOL modeSwitchRequested;
     BOOL eventChanged;
-    BOOL noRecord[10];
+    BOOL noRecord[POKEATHLON_EVENT_COUNT];
 } PokeathlonEventRecord;
 
 extern const WindowTemplate gPokeathlonEventRecordWindowTemplates[19];

@@ -182,7 +182,7 @@ static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, Pokeathlon
         teams[i].x = centerX / FX32_ONE;
         teams[i].y = centerY / FX32_ONE;
         cpu->lanes[i] = (teams[i].y - 32) / RELAY_RUN_CPU_CELL_SIZE;
-        GF_ASSERT(cpu->lanes[i] <= 4);
+        GF_ASSERT(cpu->lanes[i] <= RELAY_RUN_CPU_LANES);
     }
     self = &teams[index];
     for (i = 0; i < RELAY_RUN_OBSTACLES; i++) {
@@ -199,9 +199,9 @@ static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, Pokeathlon
     }
     for (i = 0; i < RELAY_RUN_CPU_CELLS; i++) {
         cpu->cells[i].index = i;
-        cellX = (i % 4) * RELAY_RUN_CPU_CELL_SIZE;
+        cellX = (i % RELAY_RUN_CPU_COLUMNS) * RELAY_RUN_CPU_CELL_SIZE;
         cpu->cells[i].x = self->x + RELAY_RUN_CPU_CELL_SIZE / 2 + cellX;
-        cellY = (i / 4) * RELAY_RUN_CPU_CELL_SIZE;
+        cellY = (i / RELAY_RUN_CPU_COLUMNS) * RELAY_RUN_CPU_CELL_SIZE;
         cpu->cells[i].y = cellY + 32 + RELAY_RUN_CPU_CELL_SIZE / 2;
         cpu->cells[i].targetX = self->x + cellX + LCRandom() % RELAY_RUN_CPU_CELL_SIZE;
         cpu->cells[i].targetY = cellY + 32 + LCRandom() % RELAY_RUN_CPU_CELL_SIZE;
@@ -209,7 +209,7 @@ static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, Pokeathlon
     for (i = 0; i < RELAY_RUN_CPU_CELLS; i++) {
         cpu->cells[i].score = sRelayRunCpuCellScores[i];
     }
-    for (lane = 0, laneScore = laneScores, firstCell = 0, laneTop = 32; lane < 4; lane++, laneScore++, firstCell += 4, laneTop += RELAY_RUN_CPU_CELL_SIZE) {
+    for (lane = 0, laneScore = laneScores, firstCell = 0, laneTop = 32; lane < RELAY_RUN_CPU_LANES; lane++, laneScore++, firstCell += RELAY_RUN_CPU_COLUMNS, laneTop += RELAY_RUN_CPU_CELL_SIZE) {
         // other runners: in the own lane ahead -4, in another lane ahead -2, the cell they are in -3;
         // close behind in the own lane +2
         for (j = 0; j < RELAY_RUN_TEAMS; j++) {
@@ -229,7 +229,7 @@ static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, Pokeathlon
                     }
                 }
                 column = distance / RELAY_RUN_CPU_CELL_SIZE;
-                if (column >= 4) {
+                if (column >= RELAY_RUN_CPU_COLUMNS) {
                     GF_ASSERT(FALSE);
                 } else {
                     cpu->cells[firstCell + column].score -= 3;
@@ -256,18 +256,18 @@ static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, Pokeathlon
         }
     }
     for (i = 0; i < RELAY_RUN_CPU_CELLS; i++) {
-        cpu->cells[i].score += laneScores[i / 4];
+        cpu->cells[i].score += laneScores[i / RELAY_RUN_CPU_COLUMNS];
     }
     if (timer < RELAY_RUN_DURATION) {
-        for (i = 0; i < 4; i++) {
-            cpu->cells[i * 4 + 2].score += 3;
-            cpu->cells[i * 4 + 3].score += 3;
+        for (i = 0; i < RELAY_RUN_CPU_LANES; i++) {
+            cpu->cells[i * RELAY_RUN_CPU_COLUMNS + 2].score += 3;
+            cpu->cells[i * RELAY_RUN_CPU_COLUMNS + 3].score += 3;
         }
     }
     if (self->team->members[self->team->current].energy <= 20.0f) {
-        for (i = 0; i < 4; i++) {
-            cpu->cells[i * 4 + 2].score -= 2;
-            cpu->cells[i * 4 + 3].score -= 2;
+        for (i = 0; i < RELAY_RUN_CPU_LANES; i++) {
+            cpu->cells[i * RELAY_RUN_CPU_COLUMNS + 2].score -= 2;
+            cpu->cells[i * RELAY_RUN_CPU_COLUMNS + 3].score -= 2;
         }
         threshold += 8;
     }

@@ -299,9 +299,9 @@ static void PokeathlonSnowThrowDisplay_PrintName(PokeathlonSnowThrowDisplay *dis
 
 void PokeathlonSnowThrow_ScreenToField(int screenX, int screenY, float *fieldX, float *fieldZ) {
     float x = (float)screenX, y = (float)screenY;
-    float z = (float)(22.53846153846154 + y * 5.0 / 52.0);
+    float zOut = (float)(22.53846153846154 + y * 5.0 / 52.0);
     float xOut = (float)((x * 0.19375 + y / 8.0 - 15.5 - 10.0) / (0.39402173913043476 + y / 512.0));
-    *fieldZ = z;
+    *fieldZ = zOut;
     *fieldX = xOut;
 }
 

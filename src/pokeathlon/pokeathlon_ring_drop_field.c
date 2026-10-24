@@ -276,34 +276,34 @@ static void PokeathlonRingDrop_UpdateCollisions(PokeathlonCourseData *course) {
     ringDrop = PokeathlonCourse_GetWork(course);
     contacts = ringDrop->contacts;
     for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
-        PokeathlonRingDropMon *a = &ringDrop->players[i].mon;
-        if (!PokeathlonRingDropMon_CanCollide(a) || a->hitFrames > 0) {
+        PokeathlonRingDropMon *mon = &ringDrop->players[i].mon;
+        if (!PokeathlonRingDropMon_CanCollide(mon) || mon->hitFrames > 0) {
             continue;
         }
         for (j = i + 1; j < RING_DROP_PARTICIPANTS; j++) {
-            PokeathlonRingDropMon *b = &ringDrop->players[j].mon;
-            if (PokeathlonRingDropMon_CanCollide(b) && PokeathlonRingDropMon_Collide(a, b)) {
+            PokeathlonRingDropMon *other = &ringDrop->players[j].mon;
+            if (PokeathlonRingDropMon_CanCollide(other) && PokeathlonRingDropMon_Collide(mon, other)) {
                 VecFx32 direction = { 0, 0, 0 };
                 BOOL pushedA, pushedB;
                 int reactionA, reactionB;
-                if (contacts[i][j] && !a->flags.bits.pushed) {
+                if (contacts[i][j] && !mon->flags.bits.pushed) {
                     contacts[i][j] = contacts[j][i] = 0;
                 }
                 if (contacts[i][j] == 0) {
-                    VEC_Subtract(&a->position, &b->position, &direction);
+                    VEC_Subtract(&mon->position, &other->position, &direction);
                     if (direction.x == 0 && direction.y == 0) {
                         direction.x = (MTRandom() & 0x3F) - 32;
                         direction.y = (MTRandom() & 0x3F) - 32;
                     }
                     VEC_Normalize(&direction, &direction);
-                    pushedA = PokeathlonRingDropMon_Push(a, b, &direction);
+                    pushedA = PokeathlonRingDropMon_Push(mon, other, &direction);
                     direction.x *= -1;
                     direction.y *= -1;
-                    pushedB = PokeathlonRingDropMon_Push(b, a, &direction);
-                    reactionA = PokeathlonRingDropMon_GetPushReaction(a);
-                    reactionB = PokeathlonRingDropMon_GetPushReaction(b);
-                    PokeathlonRingDropMon_ApplyPushReaction(a, reactionA);
-                    PokeathlonRingDropMon_ApplyPushReaction(b, reactionB);
+                    pushedB = PokeathlonRingDropMon_Push(other, mon, &direction);
+                    reactionA = PokeathlonRingDropMon_GetPushReaction(mon);
+                    reactionB = PokeathlonRingDropMon_GetPushReaction(other);
+                    PokeathlonRingDropMon_ApplyPushReaction(mon, reactionA);
+                    PokeathlonRingDropMon_ApplyPushReaction(other, reactionB);
                     if (pushedA || pushedB) {
                         contacts[i][j] = contacts[j][i] = 1;
                     }
@@ -586,12 +586,12 @@ void PokeathlonRingDropMon_SetDestination(PokeathlonRingDropMon *mon, const s16 
 
 int PokeathlonRingDrop_VecToDirection(const VecFx32 *vec) {
     VecFx32 reference = gPokeathlonRingDropDirectionReference;
-    VecFx32 v = { 0, 0, 0 };
+    VecFx32 flat = { 0, 0, 0 };
     u16 angle;
-    v.x = vec->y;
-    v.z = vec->x;
-    v.y = 0;
-    angle = CalcAngleBetweenVecs(&reference, &v);
+    flat.x = vec->y;
+    flat.z = vec->x;
+    flat.y = 0;
+    angle = CalcAngleBetweenVecs(&reference, &flat);
     if (angle <= 0x2000 || angle >= 0xE000) {
         return 4;
     }

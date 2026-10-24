@@ -722,9 +722,9 @@ static void PokeathlonCirclePushDisplayAnim_MovePicVertically(u8 frame, const Po
     } else if (frame > 15 && frame <= 60) {
         y = keys->hold;
     } else {
-        u8 t = frame - 60;
+        u8 fadeFrame = frame - 60;
         s32 delta = keys->end - keys->hold;
-        y = keys->hold + delta * t / 10;
+        y = keys->hold + delta * fadeFrame / 10;
     }
     sprite = PokeathlonCourseSpritePoolSprite_GetSprite(picSprite);
     pos.x = FX32_CONST(128);

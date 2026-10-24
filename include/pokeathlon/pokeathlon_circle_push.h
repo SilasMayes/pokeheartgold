@@ -61,7 +61,12 @@ typedef struct PokeathlonCirclePushTouch {
     u8 unk8[4];
 } PokeathlonCirclePushTouch;
 
-// A bonus zone of a layout (sPokeathlonCirclePushLayoutZones[layout], up to 4).
+#define CIRCLE_PUSH_LAYOUTS      15
+#define CIRCLE_PUSH_LAYOUT_NONE  CIRCLE_PUSH_LAYOUTS // the ring without bonus zones
+#define CIRCLE_PUSH_LAYOUT_ZONES 4
+#define CIRCLE_PUSH_ZONE_MARKERS 8
+
+// A bonus zone of a layout (sPokeathlonCirclePushLayoutZones[layout], up to CIRCLE_PUSH_LAYOUT_ZONES).
 typedef struct PokeathlonCirclePushZone {
     u32 kind; // 0: none; sPokeathlonCirclePushZoneKinds[kind - 1] = radius, points
     u16 x;
@@ -76,7 +81,7 @@ typedef struct PokeathlonCirclePushZoneMarker {
 } PokeathlonCirclePushZoneMarker;
 
 typedef struct PokeathlonCirclePushZoneMarkers {
-    PokeathlonCirclePushZoneMarker markers[8];
+    PokeathlonCirclePushZoneMarker markers[CIRCLE_PUSH_ZONE_MARKERS];
     u32 next;
 } PokeathlonCirclePushZoneMarkers;
 
@@ -137,6 +142,15 @@ typedef struct PokeathlonCirclePushAiMon {
     PokeathlonCourseMonObject *object;
 } PokeathlonCirclePushAiMon;
 
+// The CPU players see the ring as a grid of 32x32 cells and pick a target among the cells around their
+// Pokemon: the 3x3 near ones first, then the whole 5x5 area.
+#define CIRCLE_PUSH_AI_COLUMNS    7
+#define CIRCLE_PUSH_AI_ROWS       5
+#define CIRCLE_PUSH_AI_AREA       5
+#define CIRCLE_PUSH_AI_AREA_CELLS (CIRCLE_PUSH_AI_AREA * CIRCLE_PUSH_AI_AREA)
+#define CIRCLE_PUSH_AI_NEAR_CELLS 9
+#define CIRCLE_PUSH_AI_FAR_CELLS  (CIRCLE_PUSH_AI_AREA_CELLS - CIRCLE_PUSH_AI_NEAR_CELLS)
+
 typedef struct PokeathlonCirclePushAiCell {
     int x; // column, then pixel
     int y;
@@ -156,8 +170,8 @@ typedef struct PokeathlonCirclePushAiZone {
 
 typedef struct PokeathlonCirclePushAi {
     PokeathlonCirclePushAiMon mons[POKEATHLON_MONS];
-    PokeathlonCirclePushAiCell cells[25];
-    int zoneCells[4];
+    PokeathlonCirclePushAiCell cells[CIRCLE_PUSH_AI_AREA_CELLS];
+    int zoneCells[CIRCLE_PUSH_LAYOUT_ZONES];
     BOOL moving;
     int skipped[POKEATHLON_MONS];
     u8 teamCount;

@@ -89,7 +89,7 @@ void PokeathlonPennantCaptureCpu_SetPennants(PokeathlonPennantCaptureCpu *cpu, P
 // The obstacle spots: 20 (x, y) pairs in units of 8 (0, 0 = none).
 void PokeathlonPennantCaptureCpu_SetObstacles(PokeathlonPennantCaptureCpu *cpu, const u8 *spots) {
     int i;
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_OBSTACLES; i++) {
         u16 x = spots[0] << 3, y = spots[1] << 3;
         if (x && y) {
             cpu->obstacles[i].active = 1;
@@ -139,7 +139,7 @@ int PokeathlonPennantCaptureCpu_Update(PokeathlonPennantCaptureCpu *cpu) {
 // Rates the cells around the Pokemon (pennants +7, field items +2, other Pokemon -3, obstacles -2,
 // off the field -100; towards the goal rows when carrying pennants) and heads for one of the best.
 static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu *cpu, u8 who) {
-    PokeathlonPennantCaptureCpuObject obstacles[20], fieldItems[10];
+    PokeathlonPennantCaptureCpuObject obstacles[PENNANT_CAPTURE_OBSTACLES], fieldItems[PENNANT_CAPTURE_FIELD_ITEMS];
     PokeathlonPennantCaptureCpuPlayer players[4];
     PokeathlonPennantCaptureCpuPlayer *self;
     PokeathlonPennantCapturePennant *pennants;
@@ -161,21 +161,21 @@ static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu
         players[i].y = screen.y / FX32_ONE;
     }
     self = &players[who];
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_OBSTACLES; i++) {
         obstacles[i] = cpu->obstacles[i];
     }
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_FIELD_ITEMS; i++) {
         fieldItems[i] = cpu->fieldItems[i];
     }
     pennants = cpu->pennants;
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_CPU_CELLS; i++) {
         cpu->cells[i].index = i;
         cpu->cells[i].x = self->x - 80 + (i % 6) * 32;
         cpu->cells[i].y = self->y - 48 + (i / 6) * 32;
         cpu->cells[i].targetX = self->x - 96 + (i % 6) * 32 + (int)LCRandom() % 32;
         cpu->cells[i].targetY = self->y - 128 + (i / 6) * 32 + (int)LCRandom() % 32;
     }
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_CPU_CELLS; i++) {
         cpu->cells[i].score = 0;
     }
     // BUG: k is not used, so the four cells in front of the player (19..22) simply get the bonus twice.
@@ -185,11 +185,11 @@ static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu
             cpu->cells[id].score += 2;
         }
     }
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_CPU_CELLS; i++) {
         PokeathlonPennantCaptureCpuCell *cell = &cpu->cells[i];
         {
             PokeathlonPennantCapturePennant *pennant = pennants;
-            for (j = 0; j < 5; j++, pennant++) {
+            for (j = 0; j < PENNANT_CAPTURE_PENNANTS; j++, pennant++) {
                 if (pennant->active && PokeathlonPennantCaptureCpu_IsNearCellTarget(cell, pennant->x, pennant->y)) {
                     cell->score += 7;
                 }
@@ -200,7 +200,7 @@ static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu
                 cell->score -= 3;
             }
         }
-        for (j = 0; j < 20; j++) {
+        for (j = 0; j < PENNANT_CAPTURE_OBSTACLES; j++) {
             if (!obstacles[j].active) {
                 break;
             }
@@ -208,7 +208,7 @@ static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu
                 cell->score -= 2;
             }
         }
-        for (j = 0; j < 10; j++) {
+        for (j = 0; j < PENNANT_CAPTURE_FIELD_ITEMS; j++) {
             if (!fieldItems[j].active) {
                 break;
             }
@@ -265,12 +265,12 @@ static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu
 
 static PokeathlonPennantCaptureCpuCell *PokeathlonPennantCaptureCpu_PickBestCell(PokeathlonPennantCaptureCpu *cpu) {
     PokeathlonPennantCaptureCpuCell *sorted[48];
-    PokeathlonPennantCaptureCpuCell *list[48];
+    PokeathlonPennantCaptureCpuCell *list[PENNANT_CAPTURE_CPU_CELLS];
     s32 i;
     s32 count;
     u8 index;
 
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_CPU_CELLS; i++) {
         list[i] = &cpu->cells[i];
     }
     count = PokeathlonPennantCaptureCpu_SortCells(list, sorted);
@@ -280,7 +280,7 @@ static PokeathlonPennantCaptureCpuCell *PokeathlonPennantCaptureCpu_PickBestCell
 
 // Sorts the cells by score (insertion into a linked list, best first); returns how many share the best score.
 static u8 PokeathlonPennantCaptureCpu_SortCells(PokeathlonPennantCaptureCpuCell **cells, PokeathlonPennantCaptureCpuCell **out) {
-    PokeathlonPennantCaptureCellNode nodes[49];
+    PokeathlonPennantCaptureCellNode nodes[PENNANT_CAPTURE_CPU_CELLS + 1];
     u8 count;
     u8 i, j;
     PokeathlonPennantCaptureCellNode *node;
@@ -290,7 +290,7 @@ static u8 PokeathlonPennantCaptureCpu_SortCells(PokeathlonPennantCaptureCpuCell 
     nodes[0].next = &nodes[1];
     nodes[0].cell = NULL;
     count = 0;
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_CPU_CELLS; i++) {
         node = &nodes[i + 1];
         node->cell = cells[i];
         node->next = NULL;
@@ -315,7 +315,7 @@ static u8 PokeathlonPennantCaptureCpu_SortCells(PokeathlonPennantCaptureCpuCell 
         PokeathlonPennantCaptureCellNode *it;
         s16 first;
         first = nodes[0].next->cell->score;
-        for (j = 0, it = &nodes[0]; j < 48; j++) {
+        for (j = 0, it = &nodes[0]; j < PENNANT_CAPTURE_CPU_CELLS; j++) {
             it = it->next;
             out[j] = it->cell;
             if (first == out[j]->score) {

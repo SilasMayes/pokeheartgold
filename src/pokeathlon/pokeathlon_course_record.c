@@ -696,7 +696,7 @@ static PokeathlonRecordMon *PokeathlonCourseRecord_GetMon(PokeathlonCourseRecord
 
 static u16 PokeathlonCourseRecord_GetTotalScore(PokeathlonCourseRecordArgs *args, int course) {
     GF_ASSERT(args != NULL);
-    GF_ASSERT(course < 5);
+    GF_ASSERT(course < POKEATHLON_SOLO_COURSES);
     return PokeathlonCourseRecord_GetRecords(args)[course].totalScore;
 }
 
@@ -728,8 +728,8 @@ static int PokeathlonCourseRecord_GetEventId(PokeathlonCourseRecordArgs *args, s
 
 static u16 PokeathlonCourseRecord_GetMonSpecies(PokeathlonCourseRecordArgs *args, u32 course, u32 slot) {
     GF_ASSERT(args != NULL);
-    GF_ASSERT(slot < 3);
-    GF_ASSERT(course < 5);
+    GF_ASSERT(slot < POKEATHLON_TEAM_SIZE);
+    GF_ASSERT(course < POKEATHLON_SOLO_COURSES);
     return PokeathlonCourseRecord_GetRecords(args)[course].mons[slot].info.species;
 }
 
@@ -968,7 +968,7 @@ static void PokeathlonCourseRecord_CreateSprites(PokeathlonCourseRecord *work) {
         ManagedSprite_SetAnimateFlag(work->sprites[i], TRUE);
         spriteTemplate++;
     }
-    for (course = 0; course < 5; course++) {
+    for (course = 0; course < POKEATHLON_SOLO_COURSES; course++) {
         int medal;
         if (!PokeathlonCourseRecord_HasRecord(work->args, course)) {
             ManagedSprite_SetDrawFlag(work->sprites[1 + course], FALSE);

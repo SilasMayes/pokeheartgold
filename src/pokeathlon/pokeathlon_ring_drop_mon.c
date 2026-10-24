@@ -332,13 +332,13 @@ void PokeathlonRingDropMon_DrainStamina(PokeathlonRingDropMon *mon, int amount) 
 
 // value as fx32, rounded away from zero
 static inline float PokeathlonRingDrop_ToFx32(int value, float half) {
-    float f;
+    float result;
     if (value > 0) {
-        f = half + (float)(value << FX32_SHIFT);
+        result = half + (float)(value << FX32_SHIFT);
     } else {
-        f = (float)(value << FX32_SHIFT) - half;
+        result = (float)(value << FX32_SHIFT) - half;
     }
-    return f;
+    return result;
 }
 
 // Every team member's numbers from its performance stats 0-3 (levels 0-4) and the table NARC 170 #9.

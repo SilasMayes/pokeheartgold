@@ -79,7 +79,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
     int member;
     PokeathlonPennantCapture *work;
     int own;
-    s32 n;
+    s32 team;
     int memberOnField;
     int teamId;
 
@@ -196,16 +196,16 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
         work->timeLeft = 1800;
         PokeathlonPennantCaptureDisplay_SetTimer(work->display, work->timeLeft);
         PokeathlonPennantCapture_ResetPennantSpots(work);
-        for (n = 0; n < POKEATHLON_PARTICIPANTS; n++) {
-            work->dragging[n] = FALSE;
-            PokeathlonPennantCapturePlayer *player = &work->players[n];
+        for (team = 0; team < POKEATHLON_PARTICIPANTS; team++) {
+            work->dragging[team] = FALSE;
+            PokeathlonPennantCapturePlayer *player = &work->players[team];
             for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
-                PokeathlonPennantCapture_SetMoveParams(course, &moveTables, (u8)n, (u8)j, player);
+                PokeathlonPennantCapture_SetMoveParams(course, &moveTables, (u8)team, (u8)j, player);
             }
             if (PokeathlonCourse_GetNetId(course) == 0) {
-                PokeathlonPennantCaptureCpu_SetPlayer(work->cpu, n, player);
+                PokeathlonPennantCaptureCpu_SetPlayer(work->cpu, team, player);
             }
-            work->players[n].participant = n;
+            work->players[team].participant = team;
         }
         if (PokeathlonCourse_GetNetId(course) == 0) {
             PokeathlonPennantCapture_PackFrame(work, (PokeathlonPennantCaptureFrame *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + 40));

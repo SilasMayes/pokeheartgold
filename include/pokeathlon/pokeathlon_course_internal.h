@@ -202,20 +202,6 @@ enum PokeathlonCourseSync {
     POKEATHLON_COURSE_SYNC_CIRCLE_PUSH,
 };
 
-// What PokeathlonCourse_AddMonCounter counts for a Pokemon; at the end of the course the counts are added to the
-// saved statistics (PokeathlonStatistics.monInstructions..monSelfImpedes).
-enum PokeathlonMonCounter {
-    POKEATHLON_COUNTER_INSTRUCTIONS,
-    POKEATHLON_COUNTER_FAILURES,
-    POKEATHLON_COUNTER_JUMPS,
-    POKEATHLON_COUNTER_POINTS,
-    POKEATHLON_COUNTER_TACKLES,
-    POKEATHLON_COUNTER_FALLS,
-    POKEATHLON_COUNTER_DASHES,
-    POKEATHLON_COUNTER_SWITCHES,
-    POKEATHLON_COUNTER_SELF_IMPEDES,
-};
-
 // Medals of a Pokemon (PokeathlonSave_AddMonMedals): one per solo course (args course 0..4, in this order).
 #define POKEATHLON_MEDAL_SPEED   (1 << 0)
 #define POKEATHLON_MEDAL_POWER   (1 << 1)

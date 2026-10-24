@@ -492,8 +492,8 @@ BOOL PokeathlonResults_Run(PokeathlonCourseData *course, u8 *state) {
             for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
                 u32 field3D8 = PokeathlonCourse_GetCurrentEvent(course);
                 int points = PokeathlonCourseScoreList_GetEventPoints(PokeathlonCourse_GetGraphicsSystem(course), field3D8, i);
-                if (points > 999) {
-                    points = 999;
+                if (points > POKEATHLON_POINTS_MAX) {
+                    points = POKEATHLON_POINTS_MAX;
                 }
                 PokeathlonResults_SetScore(announcement->scoreboard, points, (u8)i);
             }
@@ -804,16 +804,16 @@ static BOOL PokeathlonResults_WaitForPlayers(PokeathlonCourseData *course) {
         BOOL allFinished = TRUE;
         u8 *dst;
         u8 *src;
-        u32 n;
+        u32 size;
         int i;
         int count;
         out[1] = progress;
         dst = PokeathlonCourse_ToBytes(data + POKEATHLON_COURSE_DATA_INPUTS);
         src = PokeathlonCourse_ToBytes(data);
-        n = 0x24;
-        while (n != 0) {
+        size = 0x24;
+        while (size != 0) {
             *dst++ = *src++;
-            n--;
+            size--;
         }
         i = 0;
         count = PokeathlonCourse_GetParticipantCount(course);

@@ -278,7 +278,7 @@ static const GraphicsBanks sLampJumpGraphicsBanks = {
     .texpltt = GX_VRAM_TEXPLTT_NONE,
 };
 
-static const u16 sLampJumpLampPositions[29][2] = {
+static const u16 sLampJumpLampPositions[LAMP_JUMP_LAMPS][2] = {
     { 16, 8  },
     { 4,  11 },
     { 12, 11 },
@@ -398,7 +398,7 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)lampJump->bgConfig);
         PokeathlonCourse_SetEventDrawEnabled(course, 1);
         ReadWholeNarcMemberByIdPair(offsets, NARC_a_1_7_0, 16);
-        for (monIndex = 0; monIndex < 3; monIndex++) {
+        for (monIndex = 0; monIndex < POKEATHLON_TEAM_SIZE; monIndex++) {
             PokeathlonLampJumpMon *mon = &lampJump->mons[monIndex];
 
             x = 64 + monIndex * 64;
@@ -437,7 +437,7 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
         lampJump->timer = 1800;
         PokeathlonLampJump_UpdateTimerDisplay(lampJump, lampJump->timer);
         PokeathlonLampJump_PrintPlayerNames(course, lampJump);
-        for (column = 0; column < 128; column++) {
+        for (column = 0; column < LAMP_JUMP_COLUMNS; column++) {
             lampJump->trampolineRows[0][column] = 0;
             lampJump->trampolineRows[1][column] = 0;
             lampJump->trampolineRows[2][column] = 0;
@@ -446,7 +446,7 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
             lampJump->trampolineRows[5][column] = 0;
             lampJump->trampolineRows[6][column] = 0;
         }
-        for (jumpIndex = 0; jumpIndex < 3; jumpIndex++) {
+        for (jumpIndex = 0; jumpIndex < POKEATHLON_TEAM_SIZE; jumpIndex++) {
             lampJump->jumps[jumpIndex].height = 0;
             jumpX = jumpIndex * 64 + 64;
             lampJump->monColumns[jumpIndex] = jumpX / 2;
@@ -592,8 +592,8 @@ BOOL PokeathlonLampJump_CalcScores(PokeathlonCourseData *course, u8 *state) {
     for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         score += lampJump->mons[i].score;
     }
-    if (score > 999) {
-        score = 999;
+    if (score > POKEATHLON_SCORE_MAX) {
+        score = POKEATHLON_SCORE_MAX;
     }
     PokeathlonCourse_SetEventScore(course, (u8)self, (u16)score);
     if (self == 0) {
@@ -683,8 +683,8 @@ static BOOL PokeathlonLampJump_Update(PokeathlonCourseData *course) {
         for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
             score += lampJump->mons[i].score;
         }
-        if (score > 999) {
-            score = 999;
+        if (score > POKEATHLON_SCORE_MAX) {
+            score = POKEATHLON_SCORE_MAX;
         }
         PokeathlonCourse_SetRecordScore(course, (u16)score);
         PokeathlonLampJump_PrintTotal(lampJump, (u16)score);
@@ -720,14 +720,14 @@ static void PokeathlonLampJump_HandleTouch(PokeathlonCourseData *course) {
     if (System_GetTouchNew()) {
         PokeathlonCourse_AddMonCounter(course, PokeathlonCourse_GetNetId(course), 3, POKEATHLON_COUNTER_INSTRUCTIONS, 1);
         selected = PokeathlonLampJump_FindTouchedMon(lampJump, gSystem.touchX, gSystem.touchY);
-        if (selected < 3) {
+        if (selected < POKEATHLON_TEAM_SIZE) {
             lampJump->selectedMon = selected;
             lampJump->touchStart.x = gSystem.touchX << FX32_SHIFT;
             lampJump->touchStart.y = (gSystem.touchY << FX32_SHIFT) + FX32_CONST(192);
             lampJump->touchStart.z = 0;
         }
     } else if (System_GetTouchHeld()) {
-        if (lampJump->selectedMon < 3) {
+        if (lampJump->selectedMon < POKEATHLON_TEAM_SIZE) {
             if (lampJump->holdFrames < 7) {
                 lampJump->holdFrames++;
             } else {
@@ -739,7 +739,7 @@ static void PokeathlonLampJump_HandleTouch(PokeathlonCourseData *course) {
             }
         }
     } else {
-        if (lampJump->selectedMon < 3 && lampJump->holdFrames < 7) {
+        if (lampJump->selectedMon < POKEATHLON_TEAM_SIZE && lampJump->holdFrames < 7) {
             VecFx32 flick = { 0, 0, 0 };
             PokeathlonLampJump_GetFlick((u8)gSystem.touchX, (u8)gSystem.touchY, &lampJump->touchStart, &flick);
             PokeathlonLampJump_LaunchMon(lampJump, lampJump->selectedMon, &flick);
@@ -893,7 +893,7 @@ static u8 PokeathlonLampJump_FindTouchedMon(PokeathlonLampJump *lampJump, u16 to
             minDistance = distances[i];
         }
     }
-    if (nearest == 3) {
+    if (nearest == POKEATHLON_TEAM_SIZE) {
         GF_ASSERT(FALSE);
         return 3;
     }
@@ -988,7 +988,7 @@ static void PokeathlonLampJump_DrawTrampoline(PokeathlonLampJump *lampJump) {
     sTrampolineBlue = 20;
     PokeathlonLampJump_GeVtx16(0xE000, 0);
     PokeathlonLampJump_GeVtx16(0xE800E000, 0);
-    for (i = 1; i <= 128; i++) {
+    for (i = 1; i <= LAMP_JUMP_COLUMNS; i++) {
         float x = ((float)i - 64.0) * 4.0 / 128.0;
 
         PokeathlonLampJump_GeVtx16((u16)(int)(x * 4096.0f) | ((u32)(u16)(s16)lampJump->trampoline.surface[i - 1] << 16), 0);
@@ -1038,7 +1038,7 @@ void PokeathlonLampJump_CalcTrampolineSurface(PokeathlonLampJumpTrampoline *tram
     PokeathlonLampJump_CalcLine(trampoline, 0, 0, 1);
     PokeathlonLampJump_CalcLine(trampoline, 1, 1, 2);
     PokeathlonLampJump_CalcLine(trampoline, 2, 2, 0);
-    for (i = 0; i < 128; i++) {
+    for (i = 0; i < LAMP_JUMP_COLUMNS; i++) {
         trampoline->surface[i] = trampoline->dents[0][i];
         if (trampoline->surface[i] > trampoline->dents[1][i]) {
             trampoline->surface[i] = trampoline->dents[1][i];
@@ -1066,7 +1066,7 @@ static void PokeathlonLampJump_CalcPartialSurface(PokeathlonLampJumpTrampoline *
     part0 &= parts;
     part1 &= parts;
     part2 &= parts;
-    for (; i < 128; i++) {
+    for (; i < LAMP_JUMP_COLUMNS; i++) {
         heights[i] = 0;
         if (part0) {
             if (heights[i] > trampoline->dents[0][i]) {
@@ -1117,7 +1117,7 @@ static void PokeathlonLampJump_CalcLine(PokeathlonLampJumpTrampoline *trampoline
         leftMon = &monB;
         rightMon = &monA;
     }
-    for (i = 0; i < 128; i++) {
+    for (i = 0; i < LAMP_JUMP_COLUMNS; i++) {
         trampoline->lines[line][i] = 0;
     }
     start = trampoline->dents[*leftMon][*left];
@@ -1134,8 +1134,8 @@ static u8 PokeathlonLampJump_ScoreLamp(PokeathlonLampJumpMon *mon) {
         mon->combo++;
     }
     mon->score = mon->score + mon->combo;
-    if (mon->score > 999) {
-        mon->score = 999;
+    if (mon->score > POKEATHLON_SCORE_MAX) {
+        mon->score = POKEATHLON_SCORE_MAX;
     }
     return (u8)mon->combo;
 }
@@ -1165,12 +1165,12 @@ void PokeathlonLampJump_UpdateJumps(PokeathlonCourseData *course, PokeathlonLamp
     jumpRow = lampJump;
     mon = lampJump->mons;
     soundPlayer = gPokeathlonLampJumpSoundPlayers;
-    while (i < 3) {
+    while (i < POKEATHLON_TEAM_SIZE) {
         PokeathlonCourseMonObject *sprite = monRow->mons[0].sprite;
         PokeathlonCourseObject_GroundToCenter(sprite, monRow->mons[0].x / FX32_ONE, (FX32_CONST(288) - (jumpRow->jumps[0].height << 6)) / FX32_ONE, &hit.screenX, &hit.screenY);
         PokeathlonCourseObject_GetCollisionCircle(sprite, hit.screenX << FX32_SHIFT, hit.screenY << FX32_SHIFT, &hit.pos.x, &hit.pos.y, &hit.radius);
         hit.pos.z = 0;
-        for (lamp = 0; lamp < 29; lamp++) {
+        for (lamp = 0; lamp < LAMP_JUMP_LAMPS; lamp++) {
             if (PokeathlonLampJump_IsLampLit(lampJump->lamps, lamp)) {
                 VecFx32 *lampPos = PokeathlonLampJump_GetLampPos(lampJump->lamps, lamp);
                 if (PokeathlonLampJump_CheckCollision(&hit.pos, hit.radius << FX32_SHIFT, lampPos, FX32_CONST(8))) {
@@ -1399,7 +1399,7 @@ void PokeathlonLampJump_SetRestingHeights(PokeathlonLampJump *lampJump) {
 
 static void PokeathlonLampJump_SetDent(PokeathlonLampJump *lampJump, int mon, u8 column, fx32 depth) {
     int i;
-    for (i = 0; i < 128; i++) {
+    for (i = 0; i < LAMP_JUMP_COLUMNS; i++) {
         lampJump->trampoline.dents[mon][i] = 0;
     }
     lampJump->trampoline.dents[mon][column] = depth;
@@ -1481,8 +1481,8 @@ void PokeathlonLampJump_UpdateScoreDisplay(PokeathlonLampJump *lampJump) {
     for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         total = total + lampJump->mons[i].score;
     }
-    if (total > 999) {
-        total = 999;
+    if (total > POKEATHLON_SCORE_MAX) {
+        total = POKEATHLON_SCORE_MAX;
     }
     PokeathlonLampJump_PrintScore(lampJump, total);
 }
@@ -1716,7 +1716,7 @@ void PokeathlonLampJump_FreeLamps(PokeathlonLampJumpLamps *lamps) {
 static void PokeathlonLampJump_CreateLampSprites(PokeathlonLampJumpLamps *lamps, PokeathlonCourseSpritePool *scene, int priority) {
     int i;
     PokeathlonLampJumpLamp *lamp = lamps->lamps;
-    for (i = 0; i < 29; i++, lamp++) {
+    for (i = 0; i < LAMP_JUMP_LAMPS; i++, lamp++) {
         lamp->sprite = PokeathlonCourseSpritePool_CreateAndTake(scene, priority, NNS_G2D_VRAM_TYPE_2DBOTH, 101, 2);
         PokeathlonCourseSpritePoolSprite_Show(lamp->sprite, 1, 1);
         PokeathlonCourseSpritePoolSprite_SetAnim(lamp->sprite, 8);
@@ -1733,7 +1733,7 @@ static void PokeathlonLampJump_PlaceLamps(PokeathlonLampJumpLamps *lamps) {
     VecFx32 pos;
     const u16 *xy = sLampJumpLampPositions[0];
     PokeathlonLampJumpLamp *lamp = lamps->lamps;
-    for (i = 0; i < 29; i++, xy += 2, lamp++) {
+    for (i = 0; i < LAMP_JUMP_LAMPS; i++, xy += 2, lamp++) {
         pos.x = xy[0] << 15;
         pos.y = xy[1] << 15;
         pos.z = 0;
@@ -1778,7 +1778,7 @@ static void PokeathlonLampJump_ShowLampPoints(PokeathlonLampJumpLamps *lamps, u8
 // Lights up to 25 of the lamps that are out, picked at random.
 static void PokeathlonLampJump_LightLamps(PokeathlonLampJumpLamps *lamps) {
     struct {
-        PokeathlonLampJumpLamp *lamps[29];
+        PokeathlonLampJumpLamp *lamps[LAMP_JUMP_LAMPS];
     } unlit;
 
     struct {
@@ -1790,7 +1790,7 @@ static void PokeathlonLampJump_LightLamps(PokeathlonLampJumpLamps *lamps) {
     PokeathlonLampJumpLamp *lamp = lamps->lamps;
 
     list.count = 0;
-    for (i = 0; i < 29; i++, lamp++) {
+    for (i = 0; i < LAMP_JUMP_LAMPS; i++, lamp++) {
         if (!lamp->lit) {
             unlit.lamps[list.count++] = lamp;
         }
@@ -1885,12 +1885,12 @@ static void PokeathlonLampJump_UpdateCpuPlayer(PokeathlonCourseData *course, Pok
     if (value >= 100) {
         *lampHit = TRUE;
         roll = LCRandom() % cpu->skill[participant];
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
             if (roll < cpu->skillUpTo[participant][i]) {
                 PokeathlonCourse_AddMonCounter(course, participant, i, POKEATHLON_COUNTER_POINTS, 1);
                 break;
             }
         }
-        GF_ASSERT(i < 3);
+        GF_ASSERT(i < POKEATHLON_TEAM_SIZE);
     }
 }

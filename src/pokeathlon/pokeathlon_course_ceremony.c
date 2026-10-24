@@ -89,12 +89,25 @@ enum PokeathlonCeremonyCryState {
     CRY_STATE_WAIT_CRY,
 };
 
+// The statistics the prize for effort can go for.
+enum {
+    EFFORT_PRIZE_JUMPED,
+    EFFORT_PRIZE_HIT,
+    EFFORT_PRIZE_FAILED,
+    EFFORT_PRIZE_DASHED,
+    EFFORT_PRIZE_KIND_COUNT,
+    EFFORT_PRIZE_NONE = EFFORT_PRIZE_KIND_COUNT, // no Pokemon has any of them
+};
+
 enum PokeathlonCeremonyInitState {
     CEREMONY_INIT_CREATE,
     CEREMONY_INIT_LOAD_MONS,
     CEREMONY_INIT_CREATE_SPRITES,
     CEREMONY_INIT_START,
 };
+
+#define INTRO_STATISTICS 29 // the u32 fields of PokeathlonStatistics an introduction can be about
+#define CHEER_LEVEL_MAX  12
 
 FS_EXTERN_OVERLAY(OVY_98);
 
@@ -257,7 +270,7 @@ static const GraphicsBanks sPokeathlonCourseCeremonyGraphicsBanks = {
     .texpltt = GX_VRAM_TEXPLTT_NONE,
 };
 
-static const s32 sPokeathlonCourseCeremonyCheerThresholds[12] = { 11, 26, 51, 101, 201, 0x1F5, 0x3E9, 0x7D1, 0x1389, 0x2711, 0x4E21, 0xC351 };
+static const s32 sPokeathlonCourseCeremonyCheerThresholds[CHEER_LEVEL_MAX] = { 11, 26, 51, 101, 201, 0x1F5, 0x3E9, 0x7D1, 0x1389, 0x2711, 0x4E21, 0xC351 };
 
 static const s32 sPokeathlonCourseCeremonyCheerPitches[13] = { -64, -32, 0, 32, 64, 96, -32, -16, 0, 16, 32, 48, 64 };
 
@@ -287,7 +300,7 @@ static const ManagedSpriteTemplate sPokeathlonCourseConfettiTopSpriteTemplate = 
     .vramTransfer = 0,
 };
 
-static const u32 sPokeathlonCourseCeremonyIntroStatWeights[29] = {
+static const u32 sPokeathlonCourseCeremonyIntroStatWeights[INTRO_STATISTICS] = {
     8, 6, 3, 15, 6, 18, 0xBB8, 240, 0x168, 0x3C0, 0x1E0, 12, 0x384, 36, 6, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 120
 };
 
@@ -429,7 +442,7 @@ BOOL PokeathlonCourseOpening_Introduce(PokeathlonCourseData *course, u8 *state) 
         }
         case OPENING_STATE_WAIT_CHEER:
             if (!ceremony->cheering) {
-                if (ceremony->team >= 4) {
+                if (ceremony->team >= POKEATHLON_PARTICIPANTS) {
                     ceremony->finished = TRUE;
                     msgId = msg_0309_00002;
                     ceremony->state = OPENING_STATE_END;
@@ -563,7 +576,7 @@ BOOL PokeathlonCourseClosing_Awards(PokeathlonCourseData *course, u8 *state) {
             ceremony->state = CLOSING_STATE_TEAM_BONUSES;
             // fallthrough
         case CLOSING_STATE_TEAM_BONUSES:
-            if (ceremony->team >= 4) {
+            if (ceremony->team >= POKEATHLON_PARTICIPANTS) {
                 ceremony->team = 0;
                 msgId = msg_0309_00006;
                 ceremony->state = CLOSING_STATE_NO_MISS_BONUS;
@@ -615,7 +628,7 @@ BOOL PokeathlonCourseClosing_Awards(PokeathlonCourseData *course, u8 *state) {
             }
             break;
         case CLOSING_STATE_EFFORT_PRIZE:
-            if (PokeathlonCourseCeremony_GetEffortPrizeKind(course) != 4) {
+            if (PokeathlonCourseCeremony_GetEffortPrizeKind(course) != EFFORT_PRIZE_NONE) {
                 msgId = msg_0309_00014;
                 ceremony->state = CLOSING_STATE_EFFORT_PRIZE_KIND;
             } else {
@@ -706,7 +719,7 @@ BOOL PokeathlonCourseClosing_Awards(PokeathlonCourseData *course, u8 *state) {
             PlaySE(SEQ_SE_GS_VOICE10);
             PlaySE(SEQ_SE_GS_VOICE07);
             PlayBGM(SEQ_GS_PT_VICTORY);
-            if (ceremony->course == 10) {
+            if (ceremony->course == POKEATHLON_COURSE_LINK_RANDOM) {
                 ceremony->state = CLOSING_STATE_WELL_DONE;
             } else {
                 ceremony->state = CLOSING_STATE_MEDALS;
@@ -723,7 +736,7 @@ BOOL PokeathlonCourseClosing_Awards(PokeathlonCourseData *course, u8 *state) {
             BufferPlayersName(msgFormat, 0, PokeathlonCourse_GetPlayerProfileFromData(course, ceremony->ranks[0].team));
             ManagedSprite_SetDrawFlag(ceremony->medalSprites[0], TRUE);
             BufferPokeathlonMedalName(msgFormat, 1, PokeathlonCourseCeremony_GetCourseMedal(ceremony->course, 0));
-            if (ceremony->course >= 5) {
+            if (ceremony->course >= POKEATHLON_SOLO_COURSES) {
                 msgId = msg_0309_00028;
                 ManagedSprite_SetDrawFlag(ceremony->medalSprites[1], TRUE);
                 BufferPokeathlonMedalName(msgFormat, 2, PokeathlonCourseCeremony_GetCourseMedal(ceremony->course, 1));
@@ -748,7 +761,7 @@ BOOL PokeathlonCourseClosing_Awards(PokeathlonCourseData *course, u8 *state) {
             pokeathlonSave = PokeathlonSave_dummy2(Save_Pokeathlon_Get(PokeathlonCourse_GetSaveData(course)));
             points = (s32)PokeathlonCourseCeremony_GetPoints(ceremony->scores, (u8)ceremony->ranks[0].team);
             // The best total of the course.
-            if (pokeathlonSave->prefix.nativeHalfwords[courseId * 22 + 3] < (u32)points) {
+            if (((PokeathlonCourseBestRecord *)pokeathlonSave)[courseId].totalPoints < (u32)points) {
                 msgId = msg_0309_00029;
                 BufferPlayersName(msgFormat, 0, PokeathlonCourse_GetPlayerProfileFromData(course, ceremony->ranks[0].team));
                 BufferPokeathlonCourseName(msgFormat, 1, courseId);
@@ -912,7 +925,7 @@ static void PokeathlonCourseCeremony_InitSpriteSystem(PokeathlonCourseCeremony *
 static void PokeathlonCourseCeremony_FreeSprites(PokeathlonCourseCeremony *ceremony) {
     u8 i;
 
-    for (i = 0; i < 26; i++) {
+    for (i = 0; i < NELEMS(ceremony->sprites); i++) {
         if (ceremony->sprites[i] != NULL) {
             Sprite_DeleteAndFreeResources(ceremony->sprites[i]);
             ceremony->sprites[i] = NULL;
@@ -1026,7 +1039,7 @@ static void PokeathlonCourseCeremony_CreateMedalSprites(PokeathlonCourseCeremony
         template.drawPriority = 2;
         template.x = i * 64 + 96;
         template.y = 56;
-        if (ceremony->course < 5) {
+        if (ceremony->course < POKEATHLON_SOLO_COURSES) {
             template.x = 128;
         }
         ceremony->sprites[index] = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, 0x20C000);
@@ -1103,12 +1116,12 @@ static void PokeathlonCourseCeremony_LoadMonPicResources(PokeathlonCourseCeremon
 static void PokeathlonCourseCeremony_ShowWinnerTeam(PokeathlonCourseData *course, int team) {
     PokeathlonCourseCeremony *ceremony = PokeathlonCourse_GetWork(course);
     u32 i;
-    void *member1;
-    void *member2;
+    PokeathlonCourseMonObject *member1;
+    PokeathlonCourseMonObject *member2;
     i = 0;
-    for (; (s32)i < 4; i++) {
-        member1 = PokeathlonCourseMonObjects_Get(ceremony->objects, (3 * i + 1));
-        member2 = PokeathlonCourseMonObjects_Get(ceremony->objects, (3 * i + 2));
+    for (; (s32)i < POKEATHLON_PARTICIPANTS; i++) {
+        member1 = PokeathlonCourseMonObjects_Get(ceremony->objects, POKEATHLON_TEAM_SIZE * i + 1);
+        member2 = PokeathlonCourseMonObjects_Get(ceremony->objects, POKEATHLON_TEAM_SIZE * i + 2);
         PokeathlonCourseMonObject_SetDrawFlag(member1, FALSE);
         PokeathlonCourseMonObject_SetDrawFlag(member2, FALSE);
     }
@@ -1246,7 +1259,7 @@ static void PokeathlonCourseCeremony_RankTeams(PokeathlonCourseCeremonyScore *sc
 
     for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         ranks[i].place = place;
-        if (i != 3 && ranks[i].points != ranks[i + 1].points) {
+        if (i != POKEATHLON_PARTICIPANTS - 1 && ranks[i].points != ranks[i + 1].points) {
             place = i + 1;
         }
     }
@@ -1261,8 +1274,8 @@ static void PokeathlonCourseCeremonyScore_Update(PokeathlonCourseCeremonyScore *
 
     if (score->counting) {
         shownPoints = score->shownPoints + 1;
-        if (shownPoints > 999) {
-            shownPoints = 999;
+        if (shownPoints > POKEATHLON_POINTS_MAX) {
+            shownPoints = POKEATHLON_POINTS_MAX;
         }
         score->shownPoints = shownPoints;
         if (!IsSEPlaying(SEQ_SE_GS_THLON02)) {
@@ -1294,8 +1307,8 @@ static BOOL PokeathlonCourseCeremonyScore_IsCounted(PokeathlonCourseCeremonyScor
 
 static void PokeathlonCourseCeremonyScore_Add(PokeathlonCourseCeremonyScore *score, u32 points) {
     u32 total = score->points + points;
-    if (total > 999) {
-        total = 999;
+    if (total > POKEATHLON_POINTS_MAX) {
+        total = POKEATHLON_POINTS_MAX;
     }
     score->points = total;
     score->counting = TRUE;
@@ -1410,7 +1423,7 @@ static void PokeathlonCourseConfetti_Free(PokeathlonCourseConfetti *confetti) {
     int i;
 
     GF_ASSERT(confetti != NULL);
-    for (i = 0; i < 15; i++) {
+    for (i = 0; i < POKEATHLON_CONFETTI_PIECES; i++) {
         if (confetti->pieces[i].sprite != NULL) {
             Sprite_DeleteAndFreeResources(confetti->pieces[i].sprite);
             confetti->pieces[i].sprite = NULL;
@@ -1435,7 +1448,7 @@ static void PokeathlonCourseConfetti_Update(PokeathlonCourseConfetti *confetti) 
     i = 0;
     flags = &confetti->pieces[0].state;
     piece = confetti->pieces;
-    for (; i < 15; i++, flags = (PokeathlonCourseConfettiFlags *)((u8 *)flags + sizeof(PokeathlonCourseConfettiPiece)), piece++) {
+    for (; i < POKEATHLON_CONFETTI_PIECES; i++, flags = (PokeathlonCourseConfettiFlags *)((u8 *)flags + sizeof(PokeathlonCourseConfettiPiece)), piece++) {
         if (flags->active == TRUE && PokeathlonCourseConfetti_Fall(piece)) {
             PokeathlonCourseConfetti_MoveToTopScreen(piece, confetti->spriteSystem, confetti->spriteManager);
         }
@@ -1468,7 +1481,7 @@ static void PokeathlonCourseConfetti_SpawnPieces(PokeathlonCourseConfetti *confe
         flags += sizeof(PokeathlonCourseConfettiPiece) / sizeof(u32);
         piece++;
         i = next;
-    } while (next < 15);
+    } while (next < POKEATHLON_CONFETTI_PIECES);
 }
 
 static BOOL PokeathlonCourseCeremony_Init(PokeathlonCourseData *course) {
@@ -1632,7 +1645,7 @@ static u32 PokeathlonCourseCeremony_IsNoMissMon(PokeathlonCourseData *course, in
     GF_ASSERT(course);
     GF_ASSERT(copyArea);
     GF_ASSERT(data);
-    GF_ASSERT(index < 12);
+    GF_ASSERT(index < POKEATHLON_MONS);
     return data->noMissMons & (1 << index);
 }
 
@@ -1643,7 +1656,7 @@ static u32 PokeathlonCourseCeremony_IsPointsLeader(PokeathlonCourseData *course,
     GF_ASSERT(course);
     GF_ASSERT(copyArea);
     GF_ASSERT(data);
-    GF_ASSERT(index < 12);
+    GF_ASSERT(index < POKEATHLON_MONS);
     return data->pointsLeaderMons & (1 << index);
 }
 
@@ -1804,7 +1817,7 @@ static u32 PokeathlonCourseCeremony_CalcChallengeBonus(PokeathlonCourseData *cou
 }
 
 // The statistic of the prize for effort: the first, from a random one on, that some Pokemon has
-// (4: none).
+// (EFFORT_PRIZE_NONE if none).
 static u32 PokeathlonCourseCeremony_ChooseEffortPrizeKind(PokeathlonCourseData *course) {
     s32 tries;
     s32 team;
@@ -1814,7 +1827,7 @@ static u32 PokeathlonCourseCeremony_ChooseEffortPrizeKind(PokeathlonCourseData *
 
         found = 0;
         kind = MTRandom() & 3;
-        for (tries = 0; tries < 4; tries++) {
+        for (tries = 0; tries < EFFORT_PRIZE_KIND_COUNT; tries++) {
             for (team = 0; team < POKEATHLON_PARTICIPANTS; team++) {
                 s32 member;
 
@@ -1831,10 +1844,10 @@ static u32 PokeathlonCourseCeremony_ChooseEffortPrizeKind(PokeathlonCourseData *
             if (found) {
                 break;
             }
-            kind = (kind + 1) % 4;
+            kind = (kind + 1) % EFFORT_PRIZE_KIND_COUNT;
         }
         if (!found) {
-            kind = 4;
+            kind = EFFORT_PRIZE_NONE;
         }
         return kind;
     }
@@ -1870,7 +1883,7 @@ static void PokeathlonCourseCeremony_ChooseAwards(PokeathlonCourseData *course) 
     kind = data->effortPrizeKind;
     for (team = 0, teamStats = stats; team < POKEATHLON_PARTICIPANTS; team++) {
         for (member = 0; member < POKEATHLON_TEAM_SIZE; member++) {
-            if (kind != 4) {
+            if (kind != EFFORT_PRIZE_NONE) {
                 effort = PokeathlonCourseCeremony_GetMonStat(course, kind, team, member);
                 if (maxEffort < effort) {
                     maxEffort = effort;
@@ -1880,7 +1893,7 @@ static void PokeathlonCourseCeremony_ChooseAwards(PokeathlonCourseData *course) 
                 maxPoints = teamStats[member].points;
             }
         }
-        teamStats += 3;
+        teamStats += POKEATHLON_TEAM_SIZE;
     }
     for (i = 0, bit = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         for (member = 0; member < POKEATHLON_TEAM_SIZE; member++) {
@@ -1891,7 +1904,7 @@ static void PokeathlonCourseCeremony_ChooseAwards(PokeathlonCourseData *course) 
             if (maxPoints == stats[member].points) {
                 data->pointsLeaderMons += 1 << mon;
             }
-            if (kind != 4) {
+            if (kind != EFFORT_PRIZE_NONE) {
                 value = PokeathlonCourseCeremony_GetMonStat(course, kind, i, member);
                 GF_ASSERT(value <= maxEffort);
                 if (maxEffort == value) {
@@ -1899,31 +1912,31 @@ static void PokeathlonCourseCeremony_ChooseAwards(PokeathlonCourseData *course) 
                 }
             }
         }
-        bit += 3;
-        stats += 3;
+        bit += POKEATHLON_TEAM_SIZE;
+        stats += POKEATHLON_TEAM_SIZE;
     }
     data->maxEffort = maxEffort;
     index = MTRandom() & 3;
     for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         data->drawingLots[index] = i;
-        index = (index + 1) % 4;
+        index = (index + 1) % POKEATHLON_PARTICIPANTS;
     }
 }
 
 // The which-th (0, 1) medal for winning course; course 10 has the first course's medal only.
 static u32 PokeathlonCourseCeremony_GetCourseMedal(u32 course, u32 which) {
     switch (course) {
-    case 10:
+    case POKEATHLON_COURSE_LINK_RANDOM:
         return 0;
-    case 5:
+    case POKEATHLON_COURSE_LINK_SPEED_JUMP:
         return (u8)(which ? 4 : 0);
-    case 6:
+    case POKEATHLON_COURSE_LINK_SKILL_JUMP:
         return (u8)(which ? 2 : 4);
-    case 7:
+    case POKEATHLON_COURSE_LINK_POWER_SKILL:
         return (u8)(which ? 1 : 2);
-    case 8:
+    case POKEATHLON_COURSE_LINK_POWER_STAMINA:
         return (u8)(which ? 3 : 1);
-    case 9:
+    case POKEATHLON_COURSE_LINK_SPEED_STAMINA:
         return (u8)(which ? 0 : 3);
     default:
         return course;
@@ -1939,19 +1952,19 @@ static u8 PokeathlonCourseCeremony_GetEffortPrizeKind(PokeathlonCourseData *cour
     return data->effortPrizeKind;
 }
 
-// Statistic kind (0 jumped, 1 hit, 2 failed, 3 dashed) of a Pokemon.
+// Statistic of a Pokemon by effort prize kind.
 static u32 PokeathlonCourseCeremony_GetMonStat(PokeathlonCourseData *course, u8 kind, u8 team, u8 member) {
-    PokeathlonCourseMonEventStats(*stats)[3] = (PokeathlonCourseMonEventStats(*)[3])PokeathlonCourse_GetFieldData(course);
-    GF_ASSERT(team < 4);
-    GF_ASSERT(member < 3);
+    PokeathlonCourseMonEventStats(*stats)[POKEATHLON_TEAM_SIZE] = (PokeathlonCourseMonEventStats(*)[POKEATHLON_TEAM_SIZE])PokeathlonCourse_GetFieldData(course);
+    GF_ASSERT(team < POKEATHLON_PARTICIPANTS);
+    GF_ASSERT(member < POKEATHLON_TEAM_SIZE);
     switch (kind) {
-    case 0:
+    case EFFORT_PRIZE_JUMPED:
         return stats[team][member].jumped;
-    case 1:
+    case EFFORT_PRIZE_HIT:
         return stats[team][member].hit;
-    case 2:
+    case EFFORT_PRIZE_FAILED:
         return stats[team][member].failed;
-    case 3:
+    case EFFORT_PRIZE_DASHED:
         return stats[team][member].dashed;
     default:
         GF_ASSERT(FALSE);
@@ -1963,11 +1976,11 @@ static u32 PokeathlonCourseCeremony_GetMonStat(PokeathlonCourseData *course, u8 
 // Next Pokemon; TRUE after the last one.
 static BOOL PokeathlonCourseCeremony_NextMon(PokeathlonCourseCeremony *ceremony) {
     ceremony->member++;
-    if (ceremony->member >= 3) {
+    if (ceremony->member >= POKEATHLON_TEAM_SIZE) {
         ceremony->member = 0;
         ceremony->team++;
     }
-    return ceremony->team == 4;
+    return ceremony->team == POKEATHLON_PARTICIPANTS;
 }
 
 // Gives the next Pokemon that passes test its points: buffers its name, plays its cry.
@@ -1980,7 +1993,7 @@ static BOOL PokeathlonCourseCeremony_AwardNextMon(PokeathlonCourseData *course, 
             break;
         }
     } while (!PokeathlonCourseCeremony_NextMon(ceremony));
-    if (ceremony->team < 4) {
+    if (ceremony->team < POKEATHLON_PARTICIPANTS) {
         index = ceremony->team * POKEATHLON_TEAM_SIZE + ceremony->member;
         ceremony->awardCounts[ceremony->team]++;
         ceremony->counter++;
@@ -2035,10 +2048,10 @@ static void PokeathlonCourseCeremony_BufferNumber(MessageFormat *msgFormat, s32 
     BufferIntegerAsString(msgFormat, field, value, digits, PRINTING_MODE_LEFT_ALIGN, TRUE);
 }
 
-// Cheer level 0..12 of a value (thresholds sPokeathlonCourseCeremonyCheerThresholds).
+// Cheer level 0..CHEER_LEVEL_MAX of a value (thresholds sPokeathlonCourseCeremonyCheerThresholds).
 static u32 PokeathlonCourseCeremony_GetCheerLevel(s32 value) {
     s32 i;
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < CHEER_LEVEL_MAX; i++) {
         if (sPokeathlonCourseCeremonyCheerThresholds[i] > value) {
             return i;
         }
@@ -2056,7 +2069,7 @@ static void PokeathlonCourseCeremony_GetIntroStats(PokeathlonStatistics *dest, c
     int i;
     u32 sum = 0;
 
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < POKEATHLON_EVENT_COUNT; i++) {
         sum += src->eventFirstPlaces[i];
     }
     dest->playTime = src->coursesJoined;
@@ -2076,7 +2089,7 @@ static void PokeathlonCourseCeremony_GetIntroStats(PokeathlonStatistics *dest, c
     dest->linkCoursesJoined = src->linkCoursesJoined;
     dest->linkCourseFirstPlaces = src->linkCourseFirstPlaces;
     dest->linkCourseLastPlaces = src->linkCourseLastPlaces;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < POKEATHLON_EVENT_COUNT; i++) {
         dest->eventFirstPlaces[i] = src->eventFirstPlaces[i];
     }
     dest->eventLastPlaces = src->monSelfImpedes;
@@ -2086,7 +2099,7 @@ static void PokeathlonCourseCeremony_GetIntroStats(PokeathlonStatistics *dest, c
 // Weighs the statistics (value / sPokeathlonCourseCeremonyIntroStatWeights[i], plus 0..2 at random).
 static void PokeathlonCourseCeremony_WeighIntroStats(u8 *weights, const u32 *stats) {
     int i;
-    for (i = 0; i < 29; i++) {
+    for (i = 0; i < INTRO_STATISTICS; i++) {
         GF_ASSERT(sPokeathlonCourseCeremonyIntroStatWeights[i] != 0);
         weights[i] = MTRandom() % 3;
         if (stats[i] != 0) {
@@ -2097,20 +2110,20 @@ static void PokeathlonCourseCeremony_WeighIntroStats(u8 *weights, const u32 *sta
 
 // One of the statistics with the highest weight; *level 0..3 from the weight.
 static int PokeathlonCourseCeremony_PickIntroStat(const u8 *weights, u8 *level) {
-    u8 candidates[29] = { 0 };
+    u8 candidates[INTRO_STATISTICS] = { 0 };
     u32 max = 0;
     int count = 0;
     int i;
     u8 *candidate;
 
-    for (i = 0; i < 29; i++) {
+    for (i = 0; i < INTRO_STATISTICS; i++) {
         if (max < weights[i]) {
             max = weights[i];
         }
     }
     i = 0;
     candidate = candidates;
-    while (i < 29) {
+    while (i < INTRO_STATISTICS) {
         if (max == weights[i]) {
             *candidate++ = i;
             count++;
@@ -2128,7 +2141,7 @@ static int PokeathlonCourseCeremony_PickIntroStat(const u8 *weights, u8 *level) 
 
 static void PokeathlonCourseCeremony_ChooseOwnIntro(PokeathlonCourseCeremonyIntro *intro, PokeathlonCourseData *course) {
     PokeathlonStatistics stats = { 0 };
-    u8 weights[29] = { 0 };
+    u8 weights[INTRO_STATISTICS] = { 0 };
     u8 level;
     PokeathlonStatistics *records;
     u8 statistic;
@@ -2144,7 +2157,7 @@ static void PokeathlonCourseCeremony_ChooseOwnIntro(PokeathlonCourseCeremonyIntr
 
 static void PokeathlonCourseCeremony_ChooseLinkIntro(PokeathlonCourseCeremonyIntro *intro, PokeathlonCourseData *course, int team) {
     PokeathlonStatistics stats = { 0 };
-    u8 weights[29] = { 0 };
+    u8 weights[INTRO_STATISTICS] = { 0 };
     u8 level;
     PokeathlonStatistics *records;
     u8 statistic;
@@ -2176,8 +2189,8 @@ static void PokeathlonCourseCeremony_ChooseNpcIntro(PokeathlonCourseCeremonyIntr
         total += stats[2] + stats[0] + stats[1] + stats[3] + stats[4] + 5;
     }
     cheer = (int)total / 3 - 8;
-    if (cheer > 12) {
-        cheer = 12;
+    if (cheer > CHEER_LEVEL_MAX) {
+        cheer = CHEER_LEVEL_MAX;
     } else if (cheer < 0) {
         cheer = 0;
     }
@@ -2190,7 +2203,7 @@ static void PokeathlonCourseCeremony_ChooseNpcIntro(PokeathlonCourseCeremonyIntr
 static int PokeathlonCourseCeremony_FindPlace(const PokeathlonCourseCeremonyRank *ranks, u8 team) {
     int i = 0;
     const PokeathlonCourseCeremonyRank *rank = ranks;
-    while (i < 4) {
+    while (i < POKEATHLON_PARTICIPANTS) {
         if (team == rank->team) {
             return ranks[i].place;
         }

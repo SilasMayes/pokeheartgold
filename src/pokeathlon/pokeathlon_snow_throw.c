@@ -920,8 +920,8 @@ static void PokeathlonSnowThrow_PackPacket(PokeathlonSnowThrow *work, Pokeathlon
             *(u16 *)(packetBytes + offsetof(PokeathlonSnowThrowPacket, mons)) = value;
         }
         hits[team] += MON->hits;
-        if (hits[team] > 999) {
-            hits[team] = 999;
+        if (hits[team] > POKEATHLON_SCORE_MAX) {
+            hits[team] = POKEATHLON_SCORE_MAX;
         }
     }
 #undef BALL
@@ -1003,8 +1003,8 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
     u8 mon;
     u8 state;
     u8 size;
-    int x;
-    int z;
+    int fieldX;
+    int fieldZ;
     int i;
     int done;
     f32 factor;
@@ -1020,14 +1020,14 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
         if ((u8)((packet->mons[i] >> 13) & 1) && own == i / SNOW_THROW_MEMBERS) {
             PokeathlonCourseSpritePoolSprite_Show(work->hitMarks[(u8)(i % SNOW_THROW_MEMBERS)], TRUE, TRUE);
             PokeathlonCourseSpritePoolSprite_SetAnim(work->hitMarks[(u8)(i % SNOW_THROW_MEMBERS)], 6);
-            x = packet->mons[i] & 0x3F;
-            z = (packet->mons[i] >> 6) & 0x3F;
-            x++;
-            z++;
+            fieldX = packet->mons[i] & 0x3F;
+            fieldZ = (packet->mons[i] >> 6) & 0x3F;
+            fieldX++;
+            fieldZ++;
             if (own != 0) {
                 turns = SNOW_THROW_TEAMS - own;
-                hitFrom.x = x << FX32_SHIFT;
-                hitFrom.z = z << FX32_SHIFT;
+                hitFrom.x = fieldX << FX32_SHIFT;
+                hitFrom.z = fieldZ << FX32_SHIFT;
                 hitFrom.y = 0;
                 hitFrom.x -= FX32_CONST(SNOW_THROW_FIELD_CENTER);
                 hitFrom.z -= FX32_CONST(SNOW_THROW_FIELD_CENTER);
@@ -1036,10 +1036,10 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
                 MTX_MultVec43(&hitFrom, &hitRotation, &hitTurned);
                 hitTurned.x += FX32_CONST(SNOW_THROW_FIELD_CENTER);
                 hitTurned.z += FX32_CONST(SNOW_THROW_FIELD_CENTER);
-                x = hitTurned.x / FX32_ONE;
-                z = hitTurned.z / FX32_ONE;
+                fieldX = hitTurned.x / FX32_ONE;
+                fieldZ = hitTurned.z / FX32_ONE;
             }
-            PokeathlonSnowThrow_FieldToScreen(x, z, &hitX, &hitY);
+            PokeathlonSnowThrow_FieldToScreen(fieldX, fieldZ, &hitX, &hitY);
             hitPosition.x = hitX << FX32_SHIFT;
             hitPosition.y = hitY << FX32_SHIFT;
             hitPosition.z = 0;
@@ -1313,7 +1313,7 @@ static void PokeathlonSnowThrow_UpdateMons(PokeathlonCourseData *course) {
         }
         if (work->mons[i].stunTimer != 0) {
             work->mons[i].condition = SNOW_THROW_STUNNED;
-        } else if (work->mons[i].energy <= 100) {
+        } else if (work->mons[i].energy <= SNOW_THROW_TIRED_ENERGY) {
             work->mons[i].condition = SNOW_THROW_TIRED;
         } else {
             work->mons[i].condition = SNOW_THROW_FINE;
@@ -1385,8 +1385,8 @@ static void PokeathlonSnowThrow_HitMons(PokeathlonCourseData *course, Pokeathlon
             work->balls[i].state = SNOW_THROW_BALL_SPLASHED;
             ((PokeathlonSnowThrowAddMonCounterFunc)PokeathlonCourse_AddMonCounter)(course, team, i % SNOW_THROW_MEMBERS, 3, 1);
             work->mons[i].hits++;
-            if (work->mons[i].hits > 999) {
-                work->mons[i].hits = 999;
+            if (work->mons[i].hits > POKEATHLON_SCORE_MAX) {
+                work->mons[i].hits = POKEATHLON_SCORE_MAX;
             }
             work->balls[i].hit = TRUE;
             work->mons[j].wasHit = TRUE;
@@ -1510,8 +1510,8 @@ static void PokeathlonSnowThrow_ShowOwnScore(PokeathlonCourseData *course) {
     teams = ((PokeathlonSnowThrowPacket *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + offsetof(PokeathlonSnowThrowLink, packet)))->teams;
     work = PokeathlonCourse_GetWork(course);
     score = (u16)(teams[(u8)PokeathlonCourse_GetNetId(course)] & 0x3FF);
-    if (score > 999) {
-        score = 999;
+    if (score > POKEATHLON_SCORE_MAX) {
+        score = POKEATHLON_SCORE_MAX;
     }
     PokeathlonCourse_SetRecordScore(course, score);
     PokeathlonSnowThrow_PrintScore(work, score);

@@ -9,9 +9,11 @@
 // The CPU of the Relay Run teams without a player: it rates the cells ahead of the team's runner and either flicks
 // the runner towards one of the best cells or hands over to the next member of the team.
 
-#define RELAY_RUN_CPU_CELLS     16
+#define RELAY_RUN_CPU_LANES     4
+#define RELAY_RUN_CPU_COLUMNS   4 // cells ahead of the runner in each lane
+#define RELAY_RUN_CPU_CELLS     (RELAY_RUN_CPU_LANES * RELAY_RUN_CPU_COLUMNS)
 #define RELAY_RUN_CPU_CELL_SIZE 40
-#define RELAY_RUN_CPU_LOOKAHEAD (4 * RELAY_RUN_CPU_CELL_SIZE)
+#define RELAY_RUN_CPU_LOOKAHEAD (RELAY_RUN_CPU_COLUMNS * RELAY_RUN_CPU_CELL_SIZE)
 #define RELAY_RUN_CPU_NONE      RELAY_RUN_TEAMS // PokeathlonRelayRunCpu_Update: no team was looked at
 
 // What the CPU sees of a team: the team and the collision centre of its runner (whole pixels).

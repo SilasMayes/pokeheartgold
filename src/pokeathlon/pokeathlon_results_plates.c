@@ -223,9 +223,9 @@ static void PokeathlonResults_CreatePlateSprites(PokeathlonResultsAnnouncementPl
     NNS_G2D_VRAM_TYPE vramType;
 
     struct {
-        volatile u32 location;
-        volatile u32 offset;
-        volatile u32 paletteLocation;
+        u32 location;
+        u32 offset;
+        u32 paletteLocation;
         volatile u32 paletteOffset;
     } slots;
 

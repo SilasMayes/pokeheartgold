@@ -587,7 +587,7 @@ static void PokeathlonEventIntro_LoadDetailsBg(PokeathlonEventIntro *intro) {
 static void PokeathlonEventIntro_LoadPagePicture(PokeathlonEventIntro *intro, int event) {
     MtxFx22 matrix;
 
-    GF_ASSERT(event < 10);
+    GF_ASSERT(event < POKEATHLON_EVENT_COUNT);
     GfGfxLoader_GXLoadPalFromOpenNarc(intro->narc, event + 32, GF_PAL_LOCATION_SUB_BGEXT, (enum GFPalSlotOffset)0x6000, 0, intro->heapId);
     GfGfxLoader_LoadCharDataFromOpenNarc(intro->narc, event + 42, intro->bgConfig, GF_BG_LYR_SUB_3, 0, 0, TRUE, intro->heapId);
     GfGfxLoader_LoadScrnDataFromOpenNarc(intro->narc, event + 52, intro->bgConfig, GF_BG_LYR_SUB_3, 0, 0, TRUE, intro->heapId);
@@ -655,12 +655,12 @@ static void PokeathlonEventIntro_PrintDetails(PokeathlonEventIntro *intro) {
         if (record == POKEATHLON_NO_RECORD) {
             record = 0;
         }
-        if (intro->event == 0) {
+        if (intro->event == POKEATHLON_EVENT_HURDLE_DASH) {
             // seconds and tenths (30 frames a second)
             MessageFormat *msgFormat = PokeathlonUtil_GetMessageFormat(intro->text);
             BufferIntegerAsString(msgFormat, 0, record / 30, 3, PRINTING_MODE_LEFT_ALIGN, TRUE);
             BufferIntegerAsString(msgFormat, 1, (record % 30) * 10 / 30, 1, PRINTING_MODE_LEFT_ALIGN, TRUE);
-        } else if (intro->event == 6) {
+        } else if (intro->event == POKEATHLON_EVENT_RELAY_RUN) {
             // fx22.10
             PokeathlonUtil_BufferNumber(intro->text, (u32)record >> 10, 2, 0);
             PokeathlonUtil_BufferNumber(intro->text, (record % 1024) * 10 / 1024, 1, 1);

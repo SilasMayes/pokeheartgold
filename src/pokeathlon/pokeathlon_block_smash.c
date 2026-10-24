@@ -494,15 +494,15 @@ BOOL PokeathlonBlockSmash_Init(PokeathlonCourseData *course) {
         break;
     case BLOCK_SMASH_INIT_LOAD_MONS: {
         PokeathlonCourseMonInfo mons[9];
-        int n = 0;
+        int count = 0;
         PokeathlonCourseMonGfxTemplate params = { 0 };
         for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
             if (i != PokeathlonCourse_GetNetId(course)) {
                 for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
-                    GF_ASSERT(n < 9);
-                    PokeathlonCourse_GetMonInfo(course, i, j, &mons[n]);
-                    params.sizeTypes[n] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, i, j));
-                    n++;
+                    GF_ASSERT(count < 9);
+                    PokeathlonCourse_GetMonInfo(course, i, j, &mons[count]);
+                    params.sizeTypes[count] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, i, j));
+                    count++;
                 }
             }
         }

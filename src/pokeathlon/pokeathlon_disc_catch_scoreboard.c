@@ -126,8 +126,8 @@ u8 PokeathlonDiscCatchScoreboard_SetOwnScore(PokeathlonDiscCatchScoreboard *scor
             }
             {
                 s32 total = score + ((u32)scoreboard->wraps << 7);
-                if (total > 999) {
-                    total = 999;
+                if (total > POKEATHLON_SCORE_MAX) {
+                    total = POKEATHLON_SCORE_MAX;
                 } else if (total < 0) {
                     total = 0;
                 }

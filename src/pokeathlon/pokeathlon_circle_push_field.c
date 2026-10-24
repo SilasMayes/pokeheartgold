@@ -56,105 +56,105 @@ static const u16 sPokeathlonCirclePushZoneKind3[2] = { 24, 3 };
 
 static const u16 sPokeathlonCirclePushZoneKind4[2] = { 16, 5 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout0[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout0[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 1, 0x80, 0x60 },
     { 0, 0,    0    },
     { 0, 0,    0    },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout8[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout8[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 2, 0xC0, 0x40 },
     { 3, 0x40, 0x60 },
     { 4, 0xB8, 0x90 },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout1[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout1[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 3, 0x40, 0x40 },
     { 2, 0x90, 0x68 },
     { 0, 0,    0    },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout2[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout2[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 3, 0xC8, 0x40 },
     { 2, 0x60, 0x70 },
     { 0, 0,    0    },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout3[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout3[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 3, 0x80, 0x38 },
     { 2, 0x80, 0x80 },
     { 0, 0,    0    },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout4[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout4[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 2, 0xC0, 0x40 },
     { 3, 0x88, 0x38 },
     { 0, 0,    0    },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout5[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout5[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 2, 0x58, 0x50 },
     { 3, 0xC8, 0x80 },
     { 0, 0,    0    },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout6[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout6[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 2, 0x40, 0x40 },
     { 2, 0xC0, 0x40 },
     { 4, 0x38, 0x88 },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout7[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout7[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 2, 0x48, 0x60 },
     { 3, 0x90, 0x60 },
     { 4, 0xC8, 0x60 },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout12[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout12[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 4, 0xC8, 0x30 },
     { 3, 0x48, 0x60 },
     { 4, 0xB8, 0x90 },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout9[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout9[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 3, 0x90, 0x38 },
     { 2, 0x60, 0x88 },
     { 4, 0xB8, 0x68 },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout10[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout10[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 4, 0xD0, 0x30 },
     { 2, 0x80, 0x60 },
     { 4, 0x30, 0x90 },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout11[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout11[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 4, 0x80, 0x38 },
     { 3, 0x80, 0x60 },
     { 4, 0x80, 0x88 },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout14[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout14[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 4, 0x30, 0x30 },
     { 4, 0xD0, 0x30 },
     { 3, 0x80, 0x80 },
     { 0, 0,    0    },
 };
 
-static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout13[4] = {
+static const PokeathlonCirclePushZone sPokeathlonCirclePushZones_Layout13[CIRCLE_PUSH_LAYOUT_ZONES] = {
     { 4, 0x68, 0x30 },
     { 3, 0xA8, 0x70 },
     { 4, 0x30, 0x90 },
@@ -168,7 +168,7 @@ static const u16 *sPokeathlonCirclePushZoneKinds[4] = {
     sPokeathlonCirclePushZoneKind4,
 };
 
-static const PokeathlonCirclePushZone *sPokeathlonCirclePushLayoutZones[15] = {
+static const PokeathlonCirclePushZone *sPokeathlonCirclePushLayoutZones[CIRCLE_PUSH_LAYOUTS] = {
     sPokeathlonCirclePushZones_Layout0,
     sPokeathlonCirclePushZones_Layout1,
     sPokeathlonCirclePushZones_Layout2,
@@ -199,7 +199,7 @@ void PokeathlonCirclePushZoneMarkers_Free(PokeathlonCirclePushZoneMarkers *marke
 void PokeathlonCirclePushZoneMarkers_CreateSprites(PokeathlonCirclePushZoneMarkers *markers, PokeathlonCourseSpritePool *pool) {
     int i;
     PokeathlonCirclePushZoneMarker *marker = markers->markers;
-    for (i = 0; i < 8; i++, marker++) {
+    for (i = 0; i < CIRCLE_PUSH_ZONE_MARKERS; i++, marker++) {
         marker->sprite = PokeathlonCourseSpritePool_Take(pool, 101, 2);
         Sprite *sprite = PokeathlonCourseSpritePoolSprite_GetSprite(marker->sprite);
         Sprite_SetOamMode(sprite, GX_OAM_MODE_XLU);
@@ -214,7 +214,7 @@ u8 PokeathlonCirclePush_ChooseLayout(u8 layout, int kind) {
     u8 next;
     int count;
     int currentKind;
-    if (layout == 15) {
+    if (layout == CIRCLE_PUSH_LAYOUT_NONE) {
         return 0;
     }
     if (layout < 1) {
@@ -252,12 +252,12 @@ u8 PokeathlonCirclePush_ChooseLayout(u8 layout, int kind) {
 int PokeathlonCirclePush_GetZonePoints(u8 layout, u16 x, u16 y, u8 *zone) {
     u8 i;
     u32 points;
-    if (layout == 15) {
+    if (layout == CIRCLE_PUSH_LAYOUT_NONE) {
         return 0;
     }
     i = 0;
     points = 0;
-    for (; i < 4; i++) {
+    for (; i < CIRCLE_PUSH_LAYOUT_ZONES; i++) {
         const PokeathlonCirclePushZone *zones = sPokeathlonCirclePushLayoutZones[layout];
         const PokeathlonCirclePushZone *entry = &zones[i];
         u32 kind = entry->kind;
@@ -278,10 +278,9 @@ int PokeathlonCirclePush_GetZonePoints(u8 layout, u16 x, u16 y, u8 *zone) {
 
 // Shows the markers of the bonus zones of layout.
 void PokeathlonCirclePushZoneMarkers_Show(PokeathlonCirclePushZoneMarkers *markers, u8 layout) {
-    vs32 savedLayout = layout;
     int i = 0;
-    const PokeathlonCirclePushZone *zone = sPokeathlonCirclePushLayoutZones[savedLayout];
-    for (; i < 4; i++, zone++) {
+    const PokeathlonCirclePushZone *zone = sPokeathlonCirclePushLayoutZones[layout];
+    for (; i < CIRCLE_PUSH_LAYOUT_ZONES; i++, zone++) {
         if (zone->kind) {
             Sprite *sprite;
             VecFx32 position;
@@ -289,7 +288,7 @@ void PokeathlonCirclePushZoneMarkers_Show(PokeathlonCirclePushZoneMarkers *marke
                 PokeathlonCirclePushZoneMarker *marker = &markers->markers[markers->next];
                 GF_ASSERT(marker->shown != TRUE);
                 marker->shown = TRUE;
-                marker->layout = savedLayout;
+                marker->layout = layout;
                 marker->zone = zone;
             }
             sprite = PokeathlonCourseSpritePoolSprite_GetSprite(markers->markers[markers->next].sprite);
@@ -300,8 +299,8 @@ void PokeathlonCirclePushZoneMarkers_Show(PokeathlonCirclePushZoneMarkers *marke
             position.y = zone->y << FX32_SHIFT;
             Sprite_SetMatrix(sprite, &position);
             {
-                s32 next = *(vs32 *)&markers->next + 1;
-                markers->next = next % 8;
+                s32 next = markers->next + 1;
+                markers->next = next % CIRCLE_PUSH_ZONE_MARKERS;
             }
         }
     }
@@ -310,9 +309,9 @@ void PokeathlonCirclePushZoneMarkers_Show(PokeathlonCirclePushZoneMarkers *marke
 void PokeathlonCirclePushZoneMarkers_Hide(PokeathlonCirclePushZoneMarkers *markers, u8 layout) {
     int i;
     PokeathlonCirclePushZoneMarker *marker = markers->markers;
-    for (i = 0; i < 8; i++, marker++) {
+    for (i = 0; i < CIRCLE_PUSH_ZONE_MARKERS; i++, marker++) {
         if (layout == marker->layout) {
-            marker->layout = 15;
+            marker->layout = CIRCLE_PUSH_LAYOUT_NONE;
             marker->zone = NULL;
             marker->shown = FALSE;
             PokeathlonCourseSpritePoolSprite_Show(marker->sprite, FALSE, FALSE);
@@ -343,16 +342,16 @@ int PokeathlonCirclePush_GetPointsEffect(int points) {
 }
 
 static BOOL PokeathlonCirclePush_IsInCircle(int x, int y, int centerX, int centerY, u16 radius) {
-    VecFx32 a;
-    VecFx32 b;
-    a.x = x << FX32_SHIFT;
-    a.y = y << FX32_SHIFT;
-    a.z = 0;
-    b.x = centerX << FX32_SHIFT;
-    b.y = centerY << FX32_SHIFT;
-    b.z = 0;
-    VEC_Subtract(&a, &b, &a);
-    if ((radius << FX32_SHIFT) > VEC_Mag(&a)) {
+    VecFx32 position;
+    VecFx32 center;
+    position.x = x << FX32_SHIFT;
+    position.y = y << FX32_SHIFT;
+    position.z = 0;
+    center.x = centerX << FX32_SHIFT;
+    center.y = centerY << FX32_SHIFT;
+    center.z = 0;
+    VEC_Subtract(&position, &center, &position);
+    if ((radius << FX32_SHIFT) > VEC_Mag(&position)) {
         return TRUE;
     }
     return FALSE;
@@ -362,7 +361,7 @@ static BOOL PokeathlonCirclePush_IsInCircle(int x, int y, int centerX, int cente
 static u8 PokeathlonCirclePush_GetZoneCircles(int layout, PokeathlonCirclePushAiZone *circles) {
     int i;
     u8 count = 0;
-    for (i = 0; i < 4; i++, circles++) {
+    for (i = 0; i < CIRCLE_PUSH_LAYOUT_ZONES; i++, circles++) {
         const PokeathlonCirclePushZone *zones = sPokeathlonCirclePushLayoutZones[layout];
         const PokeathlonCirclePushZone *zone = &zones[i];
         u32 kind = zone->kind;
@@ -455,11 +454,11 @@ int PokeathlonCirclePushAi_Update(PokeathlonCirclePushAi *ai, u8 layout) {
 // bonus zones, cells nobody else wants, staying away from stronger Pokemon.
 
 static void PokeathlonCirclePushAi_ChooseTarget(PokeathlonCirclePushAi *ai, u8 index, u8 layout) {
-    PokeathlonCirclePushAiCell *all[25];
-    PokeathlonCirclePushAiCell *choices[25];
-    PokeathlonCirclePushAiZone zones[4];
-    PokeathlonCirclePushAiCell *near[9];
-    PokeathlonCirclePushAiCell *far[16];
+    PokeathlonCirclePushAiCell *all[CIRCLE_PUSH_AI_AREA_CELLS];
+    PokeathlonCirclePushAiCell *choices[CIRCLE_PUSH_AI_AREA_CELLS];
+    PokeathlonCirclePushAiZone zones[CIRCLE_PUSH_LAYOUT_ZONES];
+    PokeathlonCirclePushAiCell *near[CIRCLE_PUSH_AI_NEAR_CELLS];
+    PokeathlonCirclePushAiCell *far[CIRCLE_PUSH_AI_FAR_CELLS];
     int ownX;
     int ownY;
     int x;
@@ -503,7 +502,7 @@ static void PokeathlonCirclePushAi_ChooseTarget(PokeathlonCirclePushAi *ai, u8 i
     PokeathlonCourseObject_CenterToGround(mon->object, mon->position->x / FX32_ONE, mon->position->y / FX32_ONE, &ownX, &ownY);
     mon->cell = PokeathlonCirclePushAi_GetCell(ownX, ownY);
     PokeathlonCirclePush_GetZoneCircles(layout, zones);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < CIRCLE_PUSH_LAYOUT_ZONES; i++) {
         if (zones[i].radius > 0) {
             work->zoneCells[i] = PokeathlonCirclePushAi_GetCell(zones[i].x, zones[i].y);
         } else {
@@ -515,14 +514,14 @@ static void PokeathlonCirclePushAi_ChooseTarget(PokeathlonCirclePushAi *ai, u8 i
     }
     nearCount = 0;
     farCount = 0;
-    for (i = 0; i < 25; i++) {
+    for (i = 0; i < CIRCLE_PUSH_AI_AREA_CELLS; i++) {
         int dx;
         int dy;
 
         work->cells[i].index = i;
-        work->cells[i].x = i % 5 - 2 + column;
-        work->cells[i].y = i / 5 - 2 + row;
-        if (work->cells[i].x < 0 || work->cells[i].y < 0 || work->cells[i].x >= 7 || work->cells[i].y >= 5) {
+        work->cells[i].x = i % CIRCLE_PUSH_AI_AREA - CIRCLE_PUSH_AI_AREA / 2 + column;
+        work->cells[i].y = i / CIRCLE_PUSH_AI_AREA - CIRCLE_PUSH_AI_AREA / 2 + row;
+        if (work->cells[i].x < 0 || work->cells[i].y < 0 || work->cells[i].x >= CIRCLE_PUSH_AI_COLUMNS || work->cells[i].y >= CIRCLE_PUSH_AI_ROWS) {
             work->cells[i].inRing = FALSE;
         } else {
             work->cells[i].inRing = TRUE;
@@ -536,13 +535,13 @@ static void PokeathlonCirclePushAi_ChooseTarget(PokeathlonCirclePushAi *ai, u8 i
             far[farCount++] = &work->cells[i];
         }
     }
-    GF_ASSERT(nearCount == 9);
-    GF_ASSERT(farCount == 16);
-    PokeathlonCirclePushAi_PlaceInCells(9, near);
-    near[4]->pixelX = ownX;
-    near[4]->pixelY = ownY;
-    PokeathlonCirclePushAi_ScoreCells(work, 9, zones, mon, near);
-    count = PokeathlonCirclePushAi_SortCells(9, near, choices);
+    GF_ASSERT(nearCount == CIRCLE_PUSH_AI_NEAR_CELLS);
+    GF_ASSERT(farCount == CIRCLE_PUSH_AI_FAR_CELLS);
+    PokeathlonCirclePushAi_PlaceInCells(CIRCLE_PUSH_AI_NEAR_CELLS, near);
+    near[CIRCLE_PUSH_AI_NEAR_CELLS / 2]->pixelX = ownX;
+    near[CIRCLE_PUSH_AI_NEAR_CELLS / 2]->pixelY = ownY;
+    PokeathlonCirclePushAi_ScoreCells(work, CIRCLE_PUSH_AI_NEAR_CELLS, zones, mon, near);
+    count = PokeathlonCirclePushAi_SortCells(CIRCLE_PUSH_AI_NEAR_CELLS, near, choices);
     if (choices[0]->score >= 3) {
         choice = choices[(u8)((int)LCRandom() % count)];
         PokeathlonCourseObject_GroundToCenter(mon->object, choice->pixelX, choice->pixelY, &nearX, &nearY);
@@ -551,9 +550,9 @@ static void PokeathlonCirclePushAi_ChooseTarget(PokeathlonCirclePushAi *ai, u8 i
         mon->target->z = 0;
         return;
     }
-    PokeathlonCirclePushAi_PlaceInCells(16, far);
-    PokeathlonCirclePushAi_ScoreCells(work, 25, zones, mon, all);
-    count = PokeathlonCirclePushAi_SortCells(25, all, choices);
+    PokeathlonCirclePushAi_PlaceInCells(CIRCLE_PUSH_AI_FAR_CELLS, far);
+    PokeathlonCirclePushAi_ScoreCells(work, CIRCLE_PUSH_AI_AREA_CELLS, zones, mon, all);
+    count = PokeathlonCirclePushAi_SortCells(CIRCLE_PUSH_AI_AREA_CELLS, all, choices);
     choice = choices[(u8)((int)LCRandom() % count)];
     PokeathlonCourseObject_GroundToCenter(mon->object, choice->pixelX, choice->pixelY, &farX, &farY);
     mon->target->x = (u32)farX << FX32_SHIFT;
@@ -605,8 +604,8 @@ static int PokeathlonCirclePushAi_GetCell(int x, int y) {
     if (column < 0 || row < 0) {
         return -1;
     }
-    cell = row * 7 + column;
-    if (cell > 34) {
+    cell = row * CIRCLE_PUSH_AI_COLUMNS + column;
+    if (cell > CIRCLE_PUSH_AI_COLUMNS * CIRCLE_PUSH_AI_ROWS - 1) {
         cell = -1;
     }
     return cell;
@@ -692,7 +691,7 @@ static BOOL PokeathlonCirclePushAi_IsInZone(PokeathlonCirclePushAiZone *zones, f
     point.x = x;
     point.y = y;
     point.z = 0;
-    for (i = 0; i < 4; i++, zones++) {
+    for (i = 0; i < CIRCLE_PUSH_LAYOUT_ZONES; i++, zones++) {
         if (zones->radius <= 0) {
             break;
         }
@@ -709,7 +708,7 @@ static BOOL PokeathlonCirclePushAi_IsInZone(PokeathlonCirclePushAiZone *zones, f
 
 static BOOL PokeathlonCirclePushAi_IsZoneCell(PokeathlonCirclePushAi *ai, u8 cell) {
     s32 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < CIRCLE_PUSH_LAYOUT_ZONES; i++) {
         s32 zoneCell = ai->zoneCells[i];
         if (zoneCell == -1) {
             break;
@@ -723,7 +722,7 @@ static BOOL PokeathlonCirclePushAi_IsZoneCell(PokeathlonCirclePushAi *ai, u8 cel
 
 static void PokeathlonCirclePushAi_SnapToZone(PokeathlonCirclePushAi *ai, PokeathlonCirclePushAiZone *zones, s32 cell, s32 *x, s32 *y) {
     s32 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < CIRCLE_PUSH_LAYOUT_ZONES; i++) {
         if (cell == ai->zoneCells[i]) {
             *x = zones[i].x;
             *y = zones[i].y;
@@ -829,9 +828,9 @@ void PokeathlonCirclePushDisplay_Free(PokeathlonCirclePushDisplay *display) {
             DestroyMsgData(display->msgData);
             {
                 Window *window;
-                s32 n = 0;
+                s32 windowIndex = 0;
                 window = display->windows;
-                for (; n < 5; n++, window++) {
+                for (; windowIndex < 5; windowIndex++, window++) {
                     RemoveWindow(window);
                 }
             }

@@ -505,7 +505,7 @@ static u16 PokeathlonTrophies_CalcEventRecordTotal(PokeathlonSave *pokeathlon) {
 
     GF_ASSERT(pokeathlon != NULL);
     records = PokeathlonSave_GetSoloEventBestPoints(pokeathlon);
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < POKEATHLON_EVENT_COUNT; i++) {
         sum += records[i];
     }
     return sum;
@@ -516,7 +516,7 @@ static u16 PokeathlonTrophies_CountMedals(const u8 *medals) {
     u16 count = 0;
 
     GF_ASSERT(medals != NULL);
-    for (i = 0; i < 493; i++) {
+    for (i = 0; i < NATIONAL_DEX_COUNT; i++) {
         count += MATH_CountPopulation(medals[i]);
     }
     return count;
@@ -538,7 +538,7 @@ static void PokeathlonTrophies_CreateSummary(PokeathlonTrophies *work, Pokeathlo
     courseRecords = (PokeathlonCourseRecordEntry *)PokeathlonSave_dummy1(pokeathlon);
     recordsSolo = PokeathlonSave_GetRecordsSolo(pokeathlon);
     medals = PokeathlonSave_GetMonMedals(pokeathlon);
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < POKEATHLON_SOLO_COURSES; i++) {
         u16 score = courseRecords[i].totalScore;
         summary->courseScores[i] = score;
         summary->courseRecordTotal += score;
@@ -618,7 +618,7 @@ static u8 PokeathlonTrophies_CountCollectiveTrophies(PokeathlonTrophies *work) {
     int i;
     u8 count = 0;
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < POKEATHLON_SOLO_COURSES; i++) {
         count += PokeathlonUtil_GetCourseMedal(PokeathlonTrophies_GetCourseScore(work->summary, (u8)i));
     }
     return count;

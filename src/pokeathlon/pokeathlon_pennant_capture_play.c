@@ -35,9 +35,9 @@ typedef struct PokeathlonPennantCaptureLinkEntry {
 
 // The field layout (NARC 227): pixel positions / 8; 0, 0 = unused.
 typedef struct PokeathlonPennantCaptureLayout {
-    u8 fieldItems[10][2];
-    u8 obstacles[20][2];
-    u8 pennantSpots[20][2];
+    u8 fieldItems[PENNANT_CAPTURE_FIELD_ITEMS][2];
+    u8 obstacles[PENNANT_CAPTURE_OBSTACLES][2];
+    u8 pennantSpots[PENNANT_CAPTURE_SPOTS][2];
 } PokeathlonPennantCaptureLayout;
 
 static void PokeathlonPennantCapture_HostStep(PokeathlonCourseData *course);
@@ -88,11 +88,11 @@ void PokeathlonPennantCapture_CreateSprites(PokeathlonPennantCapture *work, Poke
     int i;
     u8 j;
 
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_OBSTACLES; i++) {
         work->obstacles[i].sprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 6);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->obstacles[i].sprite, 1);
     }
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_FIELD_ITEMS; i++) {
         work->fieldItems[i].sprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 17);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->fieldItems[i].sprite, 6);
         work->fieldItems[i].shadowSprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 18);
@@ -118,7 +118,7 @@ void PokeathlonPennantCapture_CreateSprites(PokeathlonPennantCapture *work, Poke
         work->dropEffects[i] = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 25);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->dropEffects[i], 4);
     }
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_PENNANTS; i++) {
         work->pennants.pennants[i].poleSprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 26);
         work->pennants.pennants[i].sprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0x68, 16);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->pennants.pennants[i].sprite, 0);
@@ -140,7 +140,7 @@ BOOL PokeathlonPennantCapture_State_Setup(PokeathlonCourseData *course, u8 *stat
         ReadWholeNarcMemberByIdPair(&layout, (NarcId)0xE3, work->layoutFileId);
         spot = layout.pennantSpots[0];
         fieldItem = layout.fieldItems[0];
-        for (i = 0, obstacle = layout.obstacles[0]; i < 20; obstacle += 2, i++) {
+        for (i = 0, obstacle = layout.obstacles[0]; i < PENNANT_CAPTURE_OBSTACLES; obstacle += 2, i++) {
             y = obstacle[1] * 8;
             x = obstacle[0] * 8;
             work->obstaclePositions[i].x = x;
@@ -152,7 +152,7 @@ BOOL PokeathlonPennantCapture_State_Setup(PokeathlonCourseData *course, u8 *stat
                 PokeathlonCourseSpritePoolSprite_Show(work->obstacles[i].sprite, 1, 1);
             }
         }
-        for (i = 0; i < 10; fieldItem += 2, i++) {
+        for (i = 0; i < PENNANT_CAPTURE_FIELD_ITEMS; fieldItem += 2, i++) {
             y = fieldItem[1] * 8;
             x = fieldItem[0] * 8;
             work->fieldItemPositions[i].x = x;
@@ -165,7 +165,7 @@ BOOL PokeathlonPennantCapture_State_Setup(PokeathlonCourseData *course, u8 *stat
                 PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].shadowSprite, 1, 1);
             }
         }
-        for (i = 0; i < 20; i++, spot += 2) {
+        for (i = 0; i < PENNANT_CAPTURE_SPOTS; i++, spot += 2) {
             work->pennants.spots[i].x = spot[0] * 8;
             work->pennants.spots[i].y = spot[1] * 8;
         }
@@ -245,8 +245,8 @@ BOOL PokeathlonPennantCapture_State_End(PokeathlonCourseData *course, u8 *state)
         u16 score = (frame[i] >> 18) & 0x3FF;
         u16 pennants = (((u16 *)frame)[i + 12] >> 11) & 31;
         u16 total = score + pennants;
-        if (total > 999) {
-            total = 999;
+        if (total > POKEATHLON_SCORE_MAX) {
+            total = POKEATHLON_SCORE_MAX;
         }
         PokeathlonCourse_SetEventScore(course, (u8)i, total);
     }
@@ -421,7 +421,7 @@ void PokeathlonPennantCapture_PackFrame(PokeathlonPennantCapture *work, Pokeathl
     u8 *word;
     u16 *spot;
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < PENNANT_CAPTURE_PENNANTS; i++) {
         frame->spots[i] = work->pennants.pennants[i].spot;
     }
     player = work->players;

@@ -48,7 +48,7 @@ static String *PokeathlonEventRecord_GetLinkPlayerName(PokeathlonEventRecordData
 
 static u16 PokeathlonEventRecord_GetEventTotal(PokeathlonEventRecordData *data, u32 event) {
     GF_ASSERT(data != NULL);
-    GF_ASSERT(event < 10);
+    GF_ASSERT(event < POKEATHLON_EVENT_COUNT);
     return ((u16 *)data->args->eventTotals)[event];
 }
 
@@ -646,10 +646,10 @@ static void PokeathlonEventRecord_CopyRecords(PokeathlonEventRecord *work, const
     PokeathlonEventRecordTeam team;
     PokeathlonEventRecordTeam defaultTeam;
 
-    MI_CpuCopy8(src, dst, sizeof(PokeathlonEventRecords) * 10);
+    MI_CpuCopy8(src, dst, sizeof(PokeathlonEventRecords) * POKEATHLON_EVENT_COUNT);
     event = 0;
     defaultTeam = gPokeathlonEventRecordDefaultEntry.team;
-    for (; event < 10; event++) {
+    for (; event < POKEATHLON_EVENT_COUNT; event++) {
         for (rank = 0; rank < 5; rank++) {
             if (!PokeathlonUtil_BeatsEventThreshold((u8)event, 0, src[event].entries[rank].score)) {
                 break;
@@ -686,7 +686,7 @@ static void PokeathlonEventRecord_FreeRecordData(PokeathlonEventRecordData *data
 }
 
 static PokeathlonEventRecords *PokeathlonEventRecord_GetRecords(PokeathlonEventRecordData *data, u32 event, BOOL link) {
-    GF_ASSERT(event < 10);
+    GF_ASSERT(event < POKEATHLON_EVENT_COUNT);
     if (link) {
         return (PokeathlonEventRecords *)&data->args->recordsLink[event];
     }
@@ -704,7 +704,7 @@ static void PokeathlonEventRecord_GetRecordMon(PokeathlonEventRecordData *data, 
 
     GF_ASSERT(data != NULL);
     GF_ASSERT(rank < 5);
-    GF_ASSERT(slot < 3);
+    GF_ASSERT(slot < POKEATHLON_TEAM_SIZE);
     records = PokeathlonEventRecord_GetRecords(data, (u8)event, link)->entries;
     entry = &records[rank];
     value = entry->team.mons[slot];

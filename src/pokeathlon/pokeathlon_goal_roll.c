@@ -48,7 +48,7 @@ typedef struct PokeathlonGoalRollModelSize {
 } PokeathlonGoalRollModelSize;
 
 typedef struct PokeathlonGoalRollVec4 {
-    VecFx32 v[4];
+    VecFx32 positions[GOAL_ROLL_PARTICIPANTS];
 } PokeathlonGoalRollVec4;
 
 typedef struct PokeathlonGoalRollInitWork {
@@ -226,8 +226,8 @@ BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
         goalPalettes[3] = gPokeathlonGoalRollPaletteData.data.goalPalettes[3];
         *(PokeathlonGoalRollVec4 *)work.goalPositions = *(const PokeathlonGoalRollVec4 *)gPokeathlonGoalRollGoalPositions;
         {
-            int n;
-            for (n = 0, goal = goalRoll, goalPosition = work.goalPositions, goalPalette = goalPalettes, markAnim = 2, markPosition = gPokeathlonGoalRollGoalPosts[0], labelPosition = gPokeathlonGoalRollLabelPositions; n < 4; goal = GOAL_CURSOR_NEXT(goal), goalPosition++, goalPalette++, markAnim += 2, markPosition += 2, labelPosition++, n++) {
+            int goalIndex;
+            for (goalIndex = 0, goal = goalRoll, goalPosition = work.goalPositions, goalPalette = goalPalettes, markAnim = 2, markPosition = gPokeathlonGoalRollGoalPosts[0], labelPosition = gPokeathlonGoalRollLabelPositions; goalIndex < GOAL_ROLL_PARTICIPANTS; goal = GOAL_CURSOR_NEXT(goal), goalPosition++, goalPalette++, markAnim += 2, markPosition += 2, labelPosition++, goalIndex++) {
                 goal->goalSprites[0] = PokeathlonCourseSpritePool_CreateAndTake(goalRoll->spritePool, 1, NNS_G2D_VRAM_TYPE_2DMAIN, 101, 5);
                 PokeathlonCourseSpritePoolSprite_Show(goal->goalSprites[0], TRUE, TRUE);
                 PokeathlonCourseSpritePoolSprite_SetAnim(goal->goalSprites[0], 1);

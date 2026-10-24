@@ -124,9 +124,11 @@ typedef struct PokeathlonCourseConfettiPiece {
     PokeathlonCourseConfettiFlags state;
 } PokeathlonCourseConfettiPiece;
 
+#define POKEATHLON_CONFETTI_PIECES 15
+
 typedef struct PokeathlonCourseConfetti {
     enum HeapID heapId;
-    PokeathlonCourseConfettiPiece pieces[15];
+    PokeathlonCourseConfettiPiece pieces[POKEATHLON_CONFETTI_PIECES];
     SpriteSystem *spriteSystem;
     SpriteManager *spriteManager;
     u32 timer;

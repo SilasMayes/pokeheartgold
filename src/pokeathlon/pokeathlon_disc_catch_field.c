@@ -219,36 +219,36 @@ void PokeathlonDiscCatch_InitMons(PokeathlonDiscCatch *work) {
 
 static void PokeathlonDiscCatch_UpdateCollisions(PokeathlonCourseData *course) {
     int i, j;
-    PokeathlonDiscCatchMon *a, *b;
+    PokeathlonDiscCatchMon *mon, *other;
     fx32 power;
     PokeathlonDiscCatch *work = PokeathlonCourse_GetWork(course);
     u8(*touching)[DISC_CATCH_MONS] = work->field.touching;
     for (i = 0; i < DISC_CATCH_MONS; i++) {
-        a = &work->field.teams[i / DISC_CATCH_TEAM_SIZE].mons[i % DISC_CATCH_TEAM_SIZE];
+        mon = &work->field.teams[i / DISC_CATCH_TEAM_SIZE].mons[i % DISC_CATCH_TEAM_SIZE];
         for (j = i + 1; j < DISC_CATCH_MONS; j++) {
-            b = &work->field.teams[j / DISC_CATCH_TEAM_SIZE].mons[j % DISC_CATCH_TEAM_SIZE];
-            if (PokeathlonDiscCatchMon_IsInPlay(a) && PokeathlonDiscCatchMon_IsInPlay(b) && PokeathlonDiscCatchMon_IsTouching(a, b) && !touching[i][j]) {
+            other = &work->field.teams[j / DISC_CATCH_TEAM_SIZE].mons[j % DISC_CATCH_TEAM_SIZE];
+            if (PokeathlonDiscCatchMon_IsInPlay(mon) && PokeathlonDiscCatchMon_IsInPlay(other) && PokeathlonDiscCatchMon_IsTouching(mon, other) && !touching[i][j]) {
                 VecFx32 push = { 0, 0, 0 };
                 touching[i][j] = touching[j][i] = TRUE;
-                VEC_Subtract(&a->position, &b->position, &push);
+                VEC_Subtract(&mon->position, &other->position, &push);
                 VEC_Normalize(&push, &push);
-                power = b->stats->power;
-                if (!a->large) {
+                power = other->stats->power;
+                if (!mon->large) {
                     power = power * 6 / 5;
                 }
-                VEC_MultAdd(power, &push, &a->direction, &a->velocity);
-                power = a->stats->power;
-                if (!b->large) {
+                VEC_MultAdd(power, &push, &mon->direction, &mon->velocity);
+                power = mon->stats->power;
+                if (!other->large) {
                     power = power * 6 / 5;
                 }
-                VEC_MultAdd(power, &push, &b->direction, &b->velocity);
-                b->velocity.x *= -1;
-                b->velocity.y *= -1;
-                PokeathlonDiscCatch_ClampVelocity(&a->velocity, FX32_CONST(8));
-                PokeathlonDiscCatch_ClampVelocity(&b->velocity, FX32_CONST(8));
-                b->facing = PokeathlonDiscCatch_GetFacing(&push);
-                b->knockedBack = TRUE;
-                a->knockedBack = TRUE;
+                VEC_MultAdd(power, &push, &other->direction, &other->velocity);
+                other->velocity.x *= -1;
+                other->velocity.y *= -1;
+                PokeathlonDiscCatch_ClampVelocity(&mon->velocity, FX32_CONST(8));
+                PokeathlonDiscCatch_ClampVelocity(&other->velocity, FX32_CONST(8));
+                other->facing = PokeathlonDiscCatch_GetFacing(&push);
+                other->knockedBack = TRUE;
+                mon->knockedBack = TRUE;
             } else {
                 touching[i][j] = touching[j][i] = FALSE;
             }

@@ -12,6 +12,9 @@
 // Lamp Jump: flicking one of the player's three Pokemon downward on the trampoline launches it upward, and the
 // Pokemon earn points for the lamps they reach. The other participants' points are simulated from their stats.
 
+#define LAMP_JUMP_COLUMNS 128 // of the trampoline
+#define LAMP_JUMP_LAMPS   29
+
 // One of the player's three Pokemon.
 typedef struct PokeathlonLampJumpMon {
     PokeathlonCourseMonObject *sprite;
@@ -47,10 +50,10 @@ typedef struct PokeathlonLampJumpJump {
 
 // The trampoline: a height per column (2 pixels wide); below 0 = pressed down.
 typedef struct PokeathlonLampJumpTrampoline {
-    s32 surface[128];  // the lowest of the dents and lines below
-    s32 dents[POKEATHLON_TEAM_SIZE][128]; // the dent under each Pokemon
-    s32 lines[3][128]; // the cloth between two Pokemon: 0-1, 1-2, 2-0
-    s32 monColumns[POKEATHLON_TEAM_SIZE]; // the column of each Pokemon
+    s32 surface[LAMP_JUMP_COLUMNS];                     // the lowest of the dents and lines below
+    s32 dents[POKEATHLON_TEAM_SIZE][LAMP_JUMP_COLUMNS]; // the dent under each Pokemon
+    s32 lines[3][LAMP_JUMP_COLUMNS];                    // the cloth between two Pokemon: 0-1, 1-2, 2-0
+    s32 monColumns[POKEATHLON_TEAM_SIZE];               // the column of each Pokemon
 } PokeathlonLampJumpTrampoline;
 
 typedef struct PokeathlonLampJump {
@@ -83,8 +86,8 @@ typedef struct PokeathlonLampJump {
 
     union {
         struct {
-            s32 trampolineRows[7][128]; // the trampoline as rows
-            s32 monColumns[POKEATHLON_TEAM_SIZE]; // x / 2 of each Pokemon, in pixels
+            s32 trampolineRows[7][LAMP_JUMP_COLUMNS]; // the trampoline as rows
+            s32 monColumns[POKEATHLON_TEAM_SIZE];     // x / 2 of each Pokemon, in pixels
         };
 
         PokeathlonLampJumpTrampoline trampoline;
@@ -131,7 +134,7 @@ typedef struct PokeathlonLampJumpLamp {
 } PokeathlonLampJumpLamp;
 
 typedef struct PokeathlonLampJumpLamps {
-    PokeathlonLampJumpLamp lamps[29];
+    PokeathlonLampJumpLamp lamps[LAMP_JUMP_LAMPS];
     int relightTimer;
 } PokeathlonLampJumpLamps;
 

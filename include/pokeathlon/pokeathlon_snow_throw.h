@@ -18,6 +18,7 @@
 #define SNOW_THROW_MONS         (SNOW_THROW_TEAMS * SNOW_THROW_MEMBERS)
 #define SNOW_THROW_DURATION     1800 // frames
 #define SNOW_THROW_MAX_ENERGY   120
+#define SNOW_THROW_TIRED_ENERGY 100
 #define SNOW_THROW_FIELD_CENTER 33              // field units; the field is turned around (33, 33) for each player's view
 #define SNOW_THROW_NONE         SNOW_THROW_MONS // no Pokemon / no snowball
 
@@ -30,7 +31,7 @@
 // PokeathlonSnowThrowMon.condition
 #define SNOW_THROW_FINE    0
 #define SNOW_THROW_STUNNED 1
-#define SNOW_THROW_TIRED   2 // energy 100 or less
+#define SNOW_THROW_TIRED   2 // energy SNOW_THROW_TIRED_ENERGY or less
 
 // The snowball of one Pokemon. Field positions are fx32 field units, x and z (y is 0).
 typedef struct PokeathlonSnowThrowBall {
@@ -166,9 +167,9 @@ typedef struct PokeathlonSnowThrow {
     PokeathlonCourseSpritePool *spritePool;
     PokeathlonCourseSpritePoolSprite *frameSprite;
     Sprite *timerDigits[2];
-    void *teamMarks[SNOW_THROW_TEAMS - 1];                  // the colour of each other team
-    PokeathlonCourseSpritePoolSprite *hitMarks[SNOW_THROW_MEMBERS]; // where the own snowballs hit
-    void *tiredMarks[SNOW_THROW_MONS - SNOW_THROW_MEMBERS]; // over the other teams' Pokemon
+    PokeathlonCourseSpritePoolSprite *teamMarks[SNOW_THROW_TEAMS - 1];                  // the colour of each other team
+    PokeathlonCourseSpritePoolSprite *hitMarks[SNOW_THROW_MEMBERS];                     // where the own snowballs hit
+    PokeathlonCourseSpritePoolSprite *tiredMarks[SNOW_THROW_MONS - SNOW_THROW_MEMBERS]; // over the other teams' Pokemon
     PokeathlonCourseMonObject *monObjects[SNOW_THROW_MONS - SNOW_THROW_MEMBERS]; // the other teams' Pokemon (the own are on the top screen)
     PokeathlonSnowThrowBall balls[SNOW_THROW_MONS];
     PokeathlonSnowThrowMon mons[SNOW_THROW_MONS];

@@ -304,7 +304,7 @@ void PokeathlonRingDrop_LoadSpriteResources(PokeathlonRingDrop *ringDrop);
 void PokeathlonRingDrop_InitBgs(PokeathlonRingDrop *ringDrop);
 void PokeathlonRingDrop_FreeBgs(PokeathlonRingDrop *ringDrop);
 void PokeathlonRingDrop_LoadBgGraphics(PokeathlonRingDrop *ringDrop);
-void PokeathlonRingDropDisplay_Init(PokeathlonRingDropDisplay *display, SpriteSystem *spriteSystem, SpriteManager *spriteManager, PokeathlonRingDropUi *ui, void *monObjects, enum HeapID heapId);
+void PokeathlonRingDropDisplay_Init(PokeathlonRingDropDisplay *display, SpriteSystem *spriteSystem, SpriteManager *spriteManager, PokeathlonRingDropUi *ui, PokeathlonCourseMonObjects *monObjects, enum HeapID heapId);
 void PokeathlonRingDropDisplay_Update(PokeathlonRingDropDisplay *display, PokeathlonCourseData *course);
 void PokeathlonRingDropDisplay_Free(PokeathlonRingDropDisplay *display);
 void PokeathlonRingDropDisplay_StopAnimations(PokeathlonRingDropDisplay *display);

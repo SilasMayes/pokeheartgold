@@ -455,7 +455,7 @@ BOOL PokeathlonCirclePush_Init(PokeathlonCourseData *course) {
         PokeathlonCourseSpritePool_LoadAnim(circlePush->spritePool, NARC_a_1_6_7, 30, 105);
         PokeathlonCirclePushDisplay_LoadSpriteResources(circlePush->spritePool, circlePush->display);
         PokeathlonCourseSpritePool_TransferResources(circlePush->spritePool);
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < CIRCLE_PUSH_ZONE_MARKERS; i++) {
             PokeathlonCourseSpritePool_CreateSprite(circlePush->spritePool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 101, 2);
         }
         for (i = 0; i < POKEATHLON_MONS; i++) {
@@ -1566,18 +1566,18 @@ static void PokeathlonCirclePush_UpdateContacts(PokeathlonCirclePush *circlePush
                 gPokeathlonCirclePushContacts[i][j].touching = FALSE;
                 gPokeathlonCirclePushContacts[i][j].other = NULL;
             } else if (j >= i) {
-                PokeathlonCirclePushMon *a = &circlePush->mons[i / POKEATHLON_TEAM_SIZE][i % POKEATHLON_TEAM_SIZE];
-                PokeathlonCirclePushMon *b = &circlePush->mons[j / POKEATHLON_TEAM_SIZE][j % POKEATHLON_TEAM_SIZE];
-                if (a->state != CIRCLE_PUSH_MON_IN_RING || b->state != CIRCLE_PUSH_MON_IN_RING) {
+                PokeathlonCirclePushMon *mon = &circlePush->mons[i / POKEATHLON_TEAM_SIZE][i % POKEATHLON_TEAM_SIZE];
+                PokeathlonCirclePushMon *other = &circlePush->mons[j / POKEATHLON_TEAM_SIZE][j % POKEATHLON_TEAM_SIZE];
+                if (mon->state != CIRCLE_PUSH_MON_IN_RING || other->state != CIRCLE_PUSH_MON_IN_RING) {
                     gPokeathlonCirclePushContacts[i][j].touching = FALSE;
                     gPokeathlonCirclePushContacts[j][i].touching = FALSE;
                     gPokeathlonCirclePushContacts[i][j].other = NULL;
                     gPokeathlonCirclePushContacts[j][i].other = NULL;
-                } else if (PokeathlonCirclePush_MonsCollide(a, b)) {
+                } else if (PokeathlonCirclePush_MonsCollide(mon, other)) {
                     gPokeathlonCirclePushContacts[i][j].touching = TRUE;
                     gPokeathlonCirclePushContacts[j][i].touching = TRUE;
-                    gPokeathlonCirclePushContacts[i][j].other = b;
-                    gPokeathlonCirclePushContacts[j][i].other = a;
+                    gPokeathlonCirclePushContacts[i][j].other = other;
+                    gPokeathlonCirclePushContacts[j][i].other = mon;
                 } else {
                     gPokeathlonCirclePushContacts[i][j].touching = FALSE;
                     gPokeathlonCirclePushContacts[j][i].touching = FALSE;

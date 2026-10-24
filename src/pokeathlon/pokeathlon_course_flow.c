@@ -1113,7 +1113,7 @@ static void PokeathlonCourse_SaveResults(PokeathlonCourseData *course) {
         }
     }
     points = results->totalPoints;
-    if (layout->args->course == 10) { // the link course with random events
+    if (layout->args->course == POKEATHLON_COURSE_LINK_RANDOM) {
         points *= 2;
     }
     PokeathlonSave_AddAthletePoints(pokeathlon, points);
@@ -1153,13 +1153,13 @@ static void PokeathlonCourse_SaveCourseRecord(PokeathlonCourseData *course, Poke
         return;
     }
     record->totalPoints = total;
-    if (record->totalPoints > 999) {
-        record->totalPoints = 999;
+    if (record->totalPoints > POKEATHLON_POINTS_MAX) {
+        record->totalPoints = POKEATHLON_POINTS_MAX;
     }
     for (i = 0; i < 3; i++) {
         record->roundPoints[i] = layout->results.eventPoints[0][i];
-        if (record->roundPoints[i] > 999) {
-            record->roundPoints[i] = 999;
+        if (record->roundPoints[i] > POKEATHLON_POINTS_MAX) {
+            record->roundPoints[i] = POKEATHLON_POINTS_MAX;
         }
     }
     mon = (PokeathlonCourseMon *)PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
@@ -1434,34 +1434,34 @@ void PokeathlonCourse_AddCapped(s32 frameCount, u32 maxValue, PokeathlonStatisti
 // Gives the player's Pokemon the medal of the course.
 static void PokeathlonCourse_SetCourseMedals(PokeathlonCourseData *course) {
     switch (((PokeathlonCourseLayout *)course)->args->course) {
-    case 0:
+    case POKEATHLON_COURSE_SPEED:
         PokeathlonCourse_SetMonMedals(course, POKEATHLON_MEDAL_SPEED);
         break;
-    case 1:
+    case POKEATHLON_COURSE_POWER:
         PokeathlonCourse_SetMonMedals(course, POKEATHLON_MEDAL_POWER);
         break;
-    case 2:
+    case POKEATHLON_COURSE_SKILL:
         PokeathlonCourse_SetMonMedals(course, POKEATHLON_MEDAL_SKILL);
         break;
-    case 3:
+    case POKEATHLON_COURSE_STAMINA:
         PokeathlonCourse_SetMonMedals(course, POKEATHLON_MEDAL_STAMINA);
         break;
-    case 4:
+    case POKEATHLON_COURSE_JUMP:
         PokeathlonCourse_SetMonMedals(course, POKEATHLON_MEDAL_JUMP);
         break;
-    case 5:
+    case POKEATHLON_COURSE_LINK_SPEED_JUMP:
         PokeathlonCourse_SetMonMedals(course, POKEATHLON_MEDAL_SPEED | POKEATHLON_MEDAL_JUMP);
         break;
-    case 6:
+    case POKEATHLON_COURSE_LINK_SKILL_JUMP:
         PokeathlonCourse_SetMonMedals(course, POKEATHLON_MEDAL_SKILL | POKEATHLON_MEDAL_JUMP);
         break;
-    case 7:
+    case POKEATHLON_COURSE_LINK_POWER_SKILL:
         PokeathlonCourse_SetMonMedals(course, POKEATHLON_MEDAL_POWER | POKEATHLON_MEDAL_SKILL);
         break;
-    case 8:
+    case POKEATHLON_COURSE_LINK_POWER_STAMINA:
         PokeathlonCourse_SetMonMedals(course, POKEATHLON_MEDAL_POWER | POKEATHLON_MEDAL_STAMINA);
         break;
-    case 9:
+    case POKEATHLON_COURSE_LINK_SPEED_STAMINA:
         PokeathlonCourse_SetMonMedals(course, POKEATHLON_MEDAL_SPEED | POKEATHLON_MEDAL_STAMINA);
         break;
     }
@@ -1480,7 +1480,7 @@ static void PokeathlonCourse_SetMonMedals(PokeathlonCourseData *course, u32 meda
 static BOOL PokeathlonCourse_HasAllCourseRecords(PokeathlonSave *pokeathlon) {
     PokeathlonCourseBestRecord *records = (PokeathlonCourseBestRecord *)pokeathlon;
     u8 i;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < POKEATHLON_SOLO_COURSES; i++) {
         if (records[i].totalPoints == 0) {
             return FALSE;
         }
@@ -1507,7 +1507,7 @@ static BOOL PokeathlonCourse_HasAllMedalsOfAMon(PokeathlonCourseData *course) {
 static BOOL PokeathlonCourse_BeatsAllEventTargets(PokeathlonCourseData *course) {
     u8 i;
     Pokeathlon_RecordsSolo *records = PokeathlonSave_GetRecordsSolo2(Save_Pokeathlon_Get(((PokeathlonCourseLayout *)course)->args->saveData));
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < POKEATHLON_EVENT_COUNT; i++) {
         u16 record = records[i].entries[0].score;
         if (record == POKEATHLON_NO_RECORD) {
             return FALSE;
@@ -1527,12 +1527,12 @@ static void PokeathlonCourse_ChooseEvents(PokeathlonCourseArgsLayout *args, u32 
     courseId = args->course;
     if (args->mode == POKEATHLON_COURSE_MODE_LINK) {
         switch (courseId) {
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
+        case POKEATHLON_COURSE_LINK_SPEED_JUMP:
+        case POKEATHLON_COURSE_LINK_SKILL_JUMP:
+        case POKEATHLON_COURSE_LINK_POWER_SKILL:
+        case POKEATHLON_COURSE_LINK_POWER_STAMINA:
+        case POKEATHLON_COURSE_LINK_SPEED_STAMINA:
+        case POKEATHLON_COURSE_LINK_RANDOM:
             valid = TRUE;
             break;
         default:
@@ -1541,11 +1541,11 @@ static void PokeathlonCourse_ChooseEvents(PokeathlonCourseArgsLayout *args, u32 
         }
     } else {
         switch (courseId) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
+        case POKEATHLON_COURSE_SPEED:
+        case POKEATHLON_COURSE_POWER:
+        case POKEATHLON_COURSE_SKILL:
+        case POKEATHLON_COURSE_STAMINA:
+        case POKEATHLON_COURSE_JUMP:
             valid = TRUE;
             break;
         default:
@@ -1555,7 +1555,7 @@ static void PokeathlonCourse_ChooseEvents(PokeathlonCourseArgsLayout *args, u32 
     }
     if (valid) {
         u8 i;
-        if (courseId == 10) {
+        if (courseId == POKEATHLON_COURSE_LINK_RANDOM) {
             u8 set = (u8)((s32)LCRandom() % 10);
             for (i = 0; i < rounds; i++) {
                 eventIds[i] = gPokeathlonCourse10EventSets[set][i];
@@ -1786,7 +1786,7 @@ static void PokeathlonCourse_ChooseNpcTeams(u32 count, u8 courseId, u32 hard, u8
     for (i = 0; i < POKEATHLON_PARTICIPANTS - 1; i++) {
         npcTeams[i] = 0;
     }
-    if (courseId == 10) {
+    if (courseId == POKEATHLON_COURSE_LINK_RANDOM) {
         u8 remaining = 25;
         for (i = 0; i < 25; i++) {
             pool25[i] = i;

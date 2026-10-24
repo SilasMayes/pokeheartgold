@@ -165,7 +165,7 @@ void PokeathlonPennantCaptureDisplay_CreateSprites(PokeathlonPennantCaptureDispl
 void PokeathlonPennantCaptureDisplay_LoadIcons(PokeathlonPennantCaptureDisplay *display, const PokeathlonPennantCaptureIconMon *mons) {
     NARC *volatile narc;
     volatile int x;
-    PokeathlonPennantCaptureDisplay *volatile pointRow;
+    PokeathlonPennantCaptureDisplay *pointRow;
     u32 iconNarc;
     int i;
     PokeathlonPennantCaptureDisplay *fileRow;
@@ -423,7 +423,7 @@ void PokeathlonPennantCaptureDisplay_BringToFront(PokeathlonPennantCaptureDispla
 }
 
 void PokeathlonPennantCaptureDisplay_SetPennants(PokeathlonPennantCaptureDisplay *display, int participant, u32 pennants) {
-    GF_ASSERT(pennants <= 9);
+    GF_ASSERT(pennants <= PENNANT_CAPTURE_MAX_CARRIED);
     PokeathlonCourseSpritePoolSprite_SetAnim(display->statusSprites[participant][1], pennants + 9);
 }
 

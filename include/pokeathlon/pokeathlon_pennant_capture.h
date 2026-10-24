@@ -16,6 +16,13 @@
 // Pennant Capture: the Pokemon pick up the pennants that appear around a walled field (at most 9 carried) and
 // score by carrying them into the goal area at the bottom. Running into a Pokemon takes up to two of its pennants.
 
+#define PENNANT_CAPTURE_OBSTACLES   20
+#define PENNANT_CAPTURE_FIELD_ITEMS 10
+#define PENNANT_CAPTURE_PENNANTS    5  // on the field at once
+#define PENNANT_CAPTURE_SPOTS       20 // where the pennants appear, in turn
+#define PENNANT_CAPTURE_MAX_CARRIED 9  // pennants a participant can carry
+#define PENNANT_CAPTURE_CPU_CELLS   48 // the 6x8 cells around a CPU Pokemon it picks a target from
+
 // The movement parameters of one of the three Pokemon (one per team member).
 typedef struct PokeathlonPennantCaptureMoveParams {
     f32 unk00;
@@ -66,7 +73,7 @@ typedef struct PokeathlonPennantCapturePlayer {
     u8 direction;   // 1-4, see PokeathlonPennantCapture_GetDirection
     u8 member;      // team member on the field
     u8 unkB2;
-    u8 touchingPennant[5];
+    u8 touchingPennant[PENNANT_CAPTURE_PENNANTS];
 } PokeathlonPennantCapturePlayer;
 
 // An obstacle block (32 x 32 units).
@@ -102,8 +109,8 @@ typedef struct PokeathlonPennantCapturePoint {
 
 // The five pennants on the field and the 20 spots they appear at, in turn.
 typedef struct PokeathlonPennantCapturePennants {
-    PokeathlonPennantCapturePennant pennants[5];
-    PokeathlonPennantCapturePoint spots[20];
+    PokeathlonPennantCapturePennant pennants[PENNANT_CAPTURE_PENNANTS];
+    PokeathlonPennantCapturePoint spots[PENNANT_CAPTURE_SPOTS];
     u16 nextSpot;
     u16 count;
 } PokeathlonPennantCapturePennants;
@@ -133,15 +140,15 @@ typedef struct PokeathlonPennantCapture {
     struct PokeathlonPennantCaptureDisplay *display;
     u32 layoutChoice; // host: the field layout it picked (0-19), sent to everyone as layoutFileId
     u32 layoutFileId; // field layout member in NARC 227
-    PokeathlonPennantCaptureObstacle obstacles[20];
-    PokeathlonPennantCaptureFieldItem fieldItems[10];
+    PokeathlonPennantCaptureObstacle obstacles[PENNANT_CAPTURE_OBSTACLES];
+    PokeathlonPennantCaptureFieldItem fieldItems[PENNANT_CAPTURE_FIELD_ITEMS];
     u16 timeLeft; // frames until the event ends
     u8 finished;
     u8 unk50F;
     u8 heldTooLong; // stronger friction while set
     u8 bgAnimFrame;
     u8 bgAnimTimer;
-    u8 shownPennantSpots[5];
+    u8 shownPennantSpots[PENNANT_CAPTURE_PENNANTS];
     u8 nextPickupEffect;
     u8 hitReported;
     u8 nextDropEffect;
@@ -155,8 +162,8 @@ typedef struct PokeathlonPennantCapture {
     u32 dropEffectX[4];
     u32 dropEffectY[4];
     PokeathlonPennantCapturePennants pennants;
-    PokeathlonPennantCapturePoint obstaclePositions[20];
-    PokeathlonPennantCapturePoint fieldItemPositions[10];
+    PokeathlonPennantCapturePoint obstaclePositions[PENNANT_CAPTURE_OBSTACLES];
+    PokeathlonPennantCapturePoint fieldItemPositions[PENNANT_CAPTURE_FIELD_ITEMS];
     u8 unk694[0x28];
     u8 pennantsFull[POKEATHLON_PARTICIPANTS]; // touched a pennant while carrying 9
 } PokeathlonPennantCapture;
@@ -170,7 +177,7 @@ typedef struct PokeathlonPennantCapture {
 //             knocked down (9) and points to add (11-15) of participant i.
 typedef struct PokeathlonPennantCaptureFrame {
     u32 words[6];
-    u16 spots[5];
+    u16 spots[PENNANT_CAPTURE_PENNANTS];
     u16 timeLeft;
 } PokeathlonPennantCaptureFrame;
 
@@ -298,11 +305,11 @@ typedef struct PokeathlonPennantCaptureCpuCell {
 // The CPU of the participants without a player (one decision per CPU every `interval` frames).
 typedef struct PokeathlonPennantCaptureCpu {
     PokeathlonPennantCaptureCpuPlayer players[POKEATHLON_PARTICIPANTS];
-    PokeathlonPennantCaptureCpuObject obstacles[20];
-    PokeathlonPennantCaptureCpuObject fieldItems[10];
+    PokeathlonPennantCaptureCpuObject obstacles[PENNANT_CAPTURE_OBSTACLES];
+    PokeathlonPennantCaptureCpuObject fieldItems[PENNANT_CAPTURE_FIELD_ITEMS];
     PokeathlonPennantCapturePennant *pennants;
     u32 unk18C;
-    PokeathlonPennantCaptureCpuCell cells[48];
+    PokeathlonPennantCaptureCpuCell cells[PENNANT_CAPTURE_CPU_CELLS];
     u32 thinking;
     u8 cpuCount;
     u8 cursor;

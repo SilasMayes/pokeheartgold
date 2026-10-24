@@ -10,6 +10,56 @@
 #define POKEATHLON_TEAM_SIZE    3
 #define POKEATHLON_MONS         (POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE)
 
+#define POKEATHLON_EVENT_COUNT 10  // event ids 0..9
+#define POKEATHLON_POINTS_MAX  999 // the cap of the points of a round and of a course
+#define POKEATHLON_SCORE_MAX   999 // the cap of an event score
+
+// The courses: the five solo courses give the medal of their name, the link courses two medals each; the last
+// link course plays one of ten random event sets.
+enum PokeathlonCourseId {
+    POKEATHLON_COURSE_SPEED,
+    POKEATHLON_COURSE_POWER,
+    POKEATHLON_COURSE_SKILL,
+    POKEATHLON_COURSE_STAMINA,
+    POKEATHLON_COURSE_JUMP,
+    POKEATHLON_COURSE_LINK_SPEED_JUMP,
+    POKEATHLON_COURSE_LINK_SKILL_JUMP,
+    POKEATHLON_COURSE_LINK_POWER_SKILL,
+    POKEATHLON_COURSE_LINK_POWER_STAMINA,
+    POKEATHLON_COURSE_LINK_SPEED_STAMINA,
+    POKEATHLON_COURSE_LINK_RANDOM,
+};
+
+#define POKEATHLON_SOLO_COURSES POKEATHLON_COURSE_LINK_SPEED_JUMP // courses 0..4
+
+// The events (gPokeathlonCourseEvents), POKEATHLON_EVENT_COUNT of them.
+enum PokeathlonEventId {
+    POKEATHLON_EVENT_HURDLE_DASH,
+    POKEATHLON_EVENT_PENNANT_CAPTURE,
+    POKEATHLON_EVENT_CIRCLE_PUSH,
+    POKEATHLON_EVENT_BLOCK_SMASH,
+    POKEATHLON_EVENT_DISC_CATCH,
+    POKEATHLON_EVENT_LAMP_JUMP,
+    POKEATHLON_EVENT_RELAY_RUN,
+    POKEATHLON_EVENT_RING_DROP,
+    POKEATHLON_EVENT_SNOW_THROW,
+    POKEATHLON_EVENT_GOAL_ROLL,
+};
+
+// What PokeathlonCourse_AddMonCounter counts for a Pokemon; at the end of the course the counts are added to the
+// saved statistics (PokeathlonStatistics.monInstructions..monSelfImpedes).
+enum PokeathlonMonCounter {
+    POKEATHLON_COUNTER_INSTRUCTIONS,
+    POKEATHLON_COUNTER_FAILURES,
+    POKEATHLON_COUNTER_JUMPS,
+    POKEATHLON_COUNTER_POINTS,
+    POKEATHLON_COUNTER_TACKLES,
+    POKEATHLON_COUNTER_FALLS,
+    POKEATHLON_COUNTER_DASHES,
+    POKEATHLON_COUNTER_SWITCHES,
+    POKEATHLON_COUNTER_SELF_IMPEDES,
+};
+
 typedef struct PokeathlonCourseSpritePoolTemplate PokeathlonCourseSpritePoolTemplate;
 typedef struct PokeathlonCourseSpritePoolSprite PokeathlonCourseSpritePoolSprite;
 typedef struct PokeathlonCourseSpritePool PokeathlonCourseSpritePool;

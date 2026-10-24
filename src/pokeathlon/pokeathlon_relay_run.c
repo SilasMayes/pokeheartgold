@@ -302,12 +302,12 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
         break;
     }
     case RELAY_RUN_INIT_LOAD_MONS: {
-        PokeathlonCourseMonInfo infos[12];
-        PokeathlonCoursePoint mons[12];
+        PokeathlonCourseMonInfo infos[RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS];
+        PokeathlonCoursePoint mons[RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS];
         PokeathlonCourseMonGfxTemplate template;
         int i;
         u8 own;
-        for (i = 0; i < 12; i++) {
+        for (i = 0; i < RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS; i++) {
             int member = i % RELAY_RUN_MEMBERS;
             int team = i / RELAY_RUN_MEMBERS;
             PokeathlonCourse_GetMonInfo(course, team, member, &infos[i]);
@@ -325,7 +325,7 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
         template.vramTransfer = FALSE;
         template.vram = 1;
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
-        PokeathlonCourseMonObjects_Load(relayRun->monObjects, 12, infos, &template, 0, 0);
+        PokeathlonCourseMonObjects_Load(relayRun->monObjects, RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS, infos, &template, 0, 0);
         PokeathlonRelayRunHud_SetDrawPriorities(relayRun->hud, PokeathlonCourse_GetNetId(course));
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
@@ -335,9 +335,9 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
         PokeathlonRelayRunCollision collisions[3];
         PokeathlonCoursePoint ownPosition;
         int centerX, centerY;
-        u8 setup[160];
+        PokeathlonRelayRunSetup setup;
         PokeathlonRelayRunTeam *team;
-        int n;
+        int teamIndex;
         int i, j;
         if (!PokeathlonCourseMonObjects_IsLoaded(relayRun->monObjects)) {
             break;
@@ -346,7 +346,7 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)relayRun->bgConfig);
         PokeathlonCourse_SetEventDrawEnabled(course, 1);
         ReadWholeNarcMemberByIdPair(collisions, NARC_a_1_7_0, 12);
-        for (i = 0; i < 12; i++) {
+        for (i = 0; i < RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS; i++) {
             PokeathlonCourseMonObject *object = PokeathlonCourseMonObjects_Get(relayRun->monObjects, i);
             int member = i % RELAY_RUN_MEMBERS;
             int teamId;
@@ -379,18 +379,18 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
             PokeathlonRelayRunTeam *team = &relayRun->teams[i];
             PokeathlonRelayRunTeam_SetDrawPriority(team, team->position.y / FX32_ONE, i == PokeathlonCourse_GetNetId(course));
         }
-        ReadWholeNarcMemberByIdPair(setup, NARC_a_1_7_0, 2);
+        ReadWholeNarcMemberByIdPair(&setup, NARC_a_1_7_0, 2);
         relayRun->timer = RELAY_RUN_DURATION;
         PokeathlonRelayRunHud_SetTimer(relayRun->hud, relayRun->timer);
-        for (n = 0; n < RELAY_RUN_TEAMS; n++) {
-            relayRun->dragging[n] = FALSE;
+        for (teamIndex = 0; teamIndex < RELAY_RUN_TEAMS; teamIndex++) {
+            relayRun->dragging[teamIndex] = FALSE;
             for (j = 0; j < RELAY_RUN_MEMBERS; j++) {
-                PokeathlonRelayRun_InitMember(course, setup, n, j, &relayRun->teams[n]);
+                PokeathlonRelayRun_InitMember(course, &setup, teamIndex, j, &relayRun->teams[teamIndex]);
             }
             if (PokeathlonCourse_GetNetId(course) == 0) {
-                PokeathlonRelayRunCpu_SetTeam(relayRun->cpu, n, &relayRun->teams[n]);
+                PokeathlonRelayRunCpu_SetTeam(relayRun->cpu, teamIndex, &relayRun->teams[teamIndex]);
             }
-            relayRun->teams[n].owner = n;
+            relayRun->teams[teamIndex].owner = teamIndex;
         }
         if (PokeathlonCourse_GetNetId(course) == 0) {
             PokeathlonRelayRun_PackPacket(relayRun, (PokeathlonRelayRunPacket *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + offsetof(PokeathlonRelayRunLink, packetToSend)));
@@ -1069,27 +1069,27 @@ static void PokeathlonRelayRun_MoveTeams(PokeathlonCourseData *course) {
         }
         team->wallState = result;
         switch (result) {
-        case 2:
+        case RELAY_RUN_HIT_TOP:
             if (team->velocity.y > 0) {
                 team->velocity.y *= -1;
             }
             break;
-        case 3:
+        case RELAY_RUN_HIT_RIGHT:
             if (team->velocity.x < 0) {
                 team->velocity.x *= -1;
             }
             break;
-        case 4:
+        case RELAY_RUN_HIT_BOTTOM:
             if (team->velocity.y < 0) {
                 team->velocity.y *= -1;
             }
             break;
-        case 5:
+        case RELAY_RUN_HIT_LEFT:
             if (team->velocity.x > 0) {
                 team->velocity.x *= -1;
             }
             break;
-        case 6:
+        case RELAY_RUN_HIT_TOP_LEFT:
             if (team->velocity.x > 0) {
                 team->velocity.x *= -1;
             }
@@ -1097,7 +1097,7 @@ static void PokeathlonRelayRun_MoveTeams(PokeathlonCourseData *course) {
                 team->velocity.y *= -1;
             }
             break;
-        case 7:
+        case RELAY_RUN_HIT_TOP_RIGHT:
             if (team->velocity.x < 0) {
                 team->velocity.x *= -1;
             }
@@ -1105,7 +1105,7 @@ static void PokeathlonRelayRun_MoveTeams(PokeathlonCourseData *course) {
                 team->velocity.y *= -1;
             }
             break;
-        case 8:
+        case RELAY_RUN_HIT_BOTTOM_RIGHT:
             if (team->velocity.x < 0) {
                 team->velocity.x *= -1;
             }
@@ -1113,7 +1113,7 @@ static void PokeathlonRelayRun_MoveTeams(PokeathlonCourseData *course) {
                 team->velocity.y *= -1;
             }
             break;
-        case 9:
+        case RELAY_RUN_HIT_BOTTOM_LEFT:
             if (team->velocity.x > 0) {
                 team->velocity.x *= -1;
             }
@@ -1614,8 +1614,7 @@ static void PokeathlonRelayRunTeam_DrawSwap(PokeathlonRelayRunHud *hud, Pokeathl
 
 // Sets up a member of a team from its Pokemon's stats and the event's stat tables (setup->tables[n][stat]).
 
-void PokeathlonRelayRun_InitMember(PokeathlonCourseData *course, void *setupFile, u8 participant, u8 member, PokeathlonRelayRunTeam *team) {
-    PokeathlonRelayRunSetup *setup = setupFile;
+void PokeathlonRelayRun_InitMember(PokeathlonCourseData *course, const PokeathlonRelayRunSetup *setup, u8 participant, u8 member, PokeathlonRelayRunTeam *team) {
     u8 *stats = PokeathlonCourse_GetMonStats(course, participant, member);
     team->members[member].pushPower = (f32)setup->tables[0][stats[0]] / 10.0;
     team->members[member].maxEnergy = setup->tables[1][stats[3]];
@@ -1723,21 +1722,21 @@ static int PokeathlonRelayRun_CollideWithObstacle(VecFx32 *start, VecFx32 *end, 
     VecFx32 delta;
     VecFx32 result;
     Point2D hit;
-    Point2D a;
-    Point2D b;
+    Point2D from;
+    Point2D to;
     int i;
     BOOL onEdge;
     int lo, hi;
     if (shape->kind == RELAY_RUN_OBSTACLE_SLOW_PATCH) {
         return RELAY_RUN_HIT_NONE;
     }
-    a.x = start->x / FX32_ONE;
-    a.y = start->y / FX32_ONE;
-    b.x = end->x / FX32_ONE;
-    b.y = end->y / FX32_ONE;
+    from.x = start->x / FX32_ONE;
+    from.y = start->y / FX32_ONE;
+    to.x = end->x / FX32_ONE;
+    to.y = end->y / FX32_ONE;
     for (i = 0; i < 4; i++) {
         edgeHits = sRelayRunEdgeHits;
-        if (Point2D_CalcSegmentIntersection(&shape->edges[i][0], &shape->edges[i][1], &a, &b, &hit)) {
+        if (Point2D_CalcSegmentIntersection(&shape->edges[i][0], &shape->edges[i][1], &from, &to, &hit)) {
             out->x = hit.x << FX32_SHIFT;
             out->y = hit.y << FX32_SHIFT;
             out->z = 0;
@@ -1746,7 +1745,7 @@ static int PokeathlonRelayRun_CollideWithObstacle(VecFx32 *start, VecFx32 *end, 
         onEdge = FALSE;
         // BUG: i is never both 0 and 2, so every edge takes the second test (the one meant for the vertical edges).
         if (i == 0 && i == 2) {
-            if (a.y == shape->edges[i][0].y) {
+            if (from.y == shape->edges[i][0].y) {
                 if (shape->edges[i][0].x < shape->edges[i][1].x) {
                     lo = shape->edges[i][0].x;
                     hi = shape->edges[i][1].x;
@@ -1754,12 +1753,12 @@ static int PokeathlonRelayRun_CollideWithObstacle(VecFx32 *start, VecFx32 *end, 
                     lo = shape->edges[i][1].x;
                     hi = shape->edges[i][0].x;
                 }
-                if (lo <= a.x && a.x <= hi) {
+                if (lo <= from.x && from.x <= hi) {
                     onEdge = TRUE;
                 }
             }
         } else {
-            if (a.x == shape->edges[i][0].x) {
+            if (from.x == shape->edges[i][0].x) {
                 if (shape->edges[i][0].y < shape->edges[i][1].y) {
                     lo = shape->edges[i][0].y;
                     hi = shape->edges[i][1].y;
@@ -1767,7 +1766,7 @@ static int PokeathlonRelayRun_CollideWithObstacle(VecFx32 *start, VecFx32 *end, 
                     lo = shape->edges[i][1].y;
                     hi = shape->edges[i][0].y;
                 }
-                if (lo <= a.y && a.y <= hi) {
+                if (lo <= from.y && from.y <= hi) {
                     onEdge = TRUE;
                 }
             }
@@ -1784,9 +1783,9 @@ static int PokeathlonRelayRun_CollideWithObstacle(VecFx32 *start, VecFx32 *end, 
         corner.z = 0;
         VEC_Subtract(end, &corner, &diff);
         if (VEC_Mag(&diff) <= radius * FX32_ONE) {
-            fx32 t = PokeathlonRelayRun_CalcCircleEntry(start, end, &corner, radius << FX32_SHIFT);
+            fx32 entry = PokeathlonRelayRun_CalcCircleEntry(start, end, &corner, radius << FX32_SHIFT);
             VEC_Subtract(end, start, &delta);
-            VEC_MultAdd(t, &delta, start, &result);
+            VEC_MultAdd(entry, &delta, start, &result);
             out->x = result.x;
             out->y = result.y;
             out->z = 0;
@@ -1925,17 +1924,17 @@ u16 PokeathlonRelayRun_CollideWithObstacles(PokeathlonRelayRun *relayRun, int wa
 
 // Where along the segment a -> b (0: a, 1: b) it first comes within r of c.
 static fx32 PokeathlonRelayRun_CalcCircleEntry(const VecFx32 *a, const VecFx32 *b, const VecFx32 *c, fx32 r) {
-    VecFx32 d;
-    fx32 s, t, lenSq, dot, m, u;
-    VEC_Subtract(b, a, &d);
-    lenSq = VEC_Mag(&d);
+    VecFx32 segment;
+    fx32 root, entry, lenSq, dot, centerDistance, leave;
+    VEC_Subtract(b, a, &segment);
+    lenSq = VEC_Mag(&segment);
     lenSq = lenSq * lenSq;
-    dot = VEC_DotProduct(&d, c);
-    m = VEC_Mag((VecFx32 *)c);
-    s = FX_Sqrt(dot - (m * m - r * r) * lenSq);
-    t = FX_Div(s - dot, lenSq);
-    u = FX_Div(-(dot + s), lenSq);
-    return t > u ? u : t;
+    dot = VEC_DotProduct(&segment, c);
+    centerDistance = VEC_Mag((VecFx32 *)c);
+    root = FX_Sqrt(dot - (centerDistance * centerDistance - r * r) * lenSq);
+    entry = FX_Div(root - dot, lenSq);
+    leave = FX_Div(-(dot + root), lenSq);
+    return entry > leave ? leave : entry;
 }
 
 // The fastest a flick can make the member run: its speed on a slow patch, when tired, or its speed limit.
@@ -1966,7 +1965,7 @@ void PokeathlonRelayRun_AddFlick(const VecFx32 *velocity, const VecFx32 *flick, 
 BOOL PokeathlonRelayRun_CollideRunners(PokeathlonCourseData *course, PokeathlonRelayRunTeam *teams, VecFx32 *where) {
     VecFx32 posP;
     VecFx32 posQ;
-    VecFx32 d;
+    VecFx32 delta;
     int radP, radQ;
     int px, py, qx, qy;
     PokeathlonCourseMonObject *objectP, *objectQ;
@@ -1977,88 +1976,88 @@ BOOL PokeathlonRelayRun_CollideRunners(PokeathlonCourseData *course, PokeathlonR
     s32 i;
     u8 memberP;
     int j;
-    PokeathlonRelayRunTeam *p, *q;
+    PokeathlonRelayRunTeam *runner, *other;
     result = FALSE;
     posP.z = 0;
     posQ.z = 0;
-    for (i = 0, p = teams; i < RELAY_RUN_TEAMS; i++, p++) {
-        memberP = p->current;
-        if (p->swapping || p->stunTimer != 0) {
+    for (i = 0, runner = teams; i < RELAY_RUN_TEAMS; i++, runner++) {
+        memberP = runner->current;
+        if (runner->swapping || runner->stunTimer != 0) {
             continue;
         }
-        objectP = p->monObjects[memberP];
-        PokeathlonCourseObject_GroundToCenter(objectP, p->position.x / FX32_ONE, p->position.y / FX32_ONE, &px, &py);
-        for (j = 0, q = teams; j < RELAY_RUN_TEAMS; j++, q++) {
+        objectP = runner->monObjects[memberP];
+        PokeathlonCourseObject_GroundToCenter(objectP, runner->position.x / FX32_ONE, runner->position.y / FX32_ONE, &px, &py);
+        for (j = 0, other = teams; j < RELAY_RUN_TEAMS; j++, other++) {
             if (i == j) {
                 continue;
             }
-            if (q->swapping) {
+            if (other->swapping) {
                 continue;
             }
             wrappedPx = px;
-            objectQ = q->monObjects[q->current];
-            PokeathlonCourseObject_GroundToCenter(objectQ, q->position.x / FX32_ONE, q->position.y / FX32_ONE, &qx, &qy);
+            objectQ = other->monObjects[other->current];
+            PokeathlonCourseObject_GroundToCenter(objectQ, other->position.x / FX32_ONE, other->position.y / FX32_ONE, &qx, &qy);
             {
                 // across the start line: compare them on the same lap
-                pX = p->position.x;
-                if (pX > 768.0 * FX32_ONE && q->position.x < 256 * FX32_ONE) {
+                pX = runner->position.x;
+                if (pX > 768.0 * FX32_ONE && other->position.x < 256 * FX32_ONE) {
                     {
-                        double t = qx;
-                        t += 1024.0;
-                        qx = t;
+                        double shifted = qx;
+                        shifted += 1024.0;
+                        qx = shifted;
                     }
-                } else if (q->position.x > 768.0 * FX32_ONE && pX < 256 * FX32_ONE) {
+                } else if (other->position.x > 768.0 * FX32_ONE && pX < 256 * FX32_ONE) {
                     {
-                        double t = wrappedPx;
-                        t += 1024.0;
-                        wrappedPx = t;
+                        double shifted = wrappedPx;
+                        shifted += 1024.0;
+                        wrappedPx = shifted;
                     }
                 }
             }
             PokeathlonCourseObject_GetCollisionCircle(objectQ, qx << FX32_SHIFT, qy << FX32_SHIFT, &posQ.x, &posQ.y, &radQ);
             PokeathlonCourseObject_GetCollisionCircle(objectP, wrappedPx << FX32_SHIFT, py << FX32_SHIFT, &posP.x, &posP.y, &radP);
-            VEC_Subtract(&posQ, &posP, &d);
-            if (VEC_Mag(&d) < (radQ + radP) << FX32_SHIFT) {
-                if (p->bumpedInto[j] != 0) {
+            VEC_Subtract(&posQ, &posP, &delta);
+            if (VEC_Mag(&delta) < (radQ + radP) << FX32_SHIFT) {
+                if (runner->bumpedInto[j] != 0) {
                     continue;
                 }
                 VecFx32 zero = { 0, 0, 0 };
-                if (VEC_DotProduct(&d, &p->velocity) <= 0) {
+                if (VEC_DotProduct(&delta, &runner->velocity) <= 0) {
                     continue;
                 }
-                if (VEC_Mag(&p->velocity) != 0) {
-                    pushMember = p->current;
-                    VEC_MultAdd(4096.0f * p->members[pushMember].pushPower, &p->velocity, &zero, &q->velocity);
-                    if (VEC_Mag(&q->velocity) > FX32_CONST(11)) {
+                if (VEC_Mag(&runner->velocity) != 0) {
+                    pushMember = runner->current;
+                    VEC_MultAdd(4096.0f * runner->members[pushMember].pushPower, &runner->velocity, &zero, &other->velocity);
+                    if (VEC_Mag(&other->velocity) > FX32_CONST(11)) {
                         VecFx32 zero2 = { 0, 0, 0 };
-                        VEC_Normalize(&q->velocity, &q->velocity);
-                        VEC_MultAdd(FX32_CONST(11), &q->velocity, &zero2, &q->velocity);
+                        VEC_Normalize(&other->velocity, &other->velocity);
+                        VEC_MultAdd(FX32_CONST(11), &other->velocity, &zero2, &other->velocity);
                     }
                 }
                 // BUG: memberP is p's running member, so this checks (and exhausts) that member of q's team.
-                if (q->members[memberP].condition == RELAY_RUN_TIRED) {
-                    q->members[memberP].energy = 0;
-                    q->members[memberP].condition = RELAY_RUN_EXHAUSTED;
-                    q->recoveryTimer = q->members[memberP].recoveryTime;
-                    PokeathlonCourse_AddMonCounter(course, q->owner, q->current, POKEATHLON_COUNTER_FAILURES, 1);
+                if (other->members[memberP].condition == RELAY_RUN_TIRED) {
+                    other->members[memberP].energy = 0;
+                    other->members[memberP].condition = RELAY_RUN_EXHAUSTED;
+                    other->recoveryTimer = other->members[memberP].recoveryTime;
+                    PokeathlonCourse_AddMonCounter(course, other->owner, other->current, POKEATHLON_COUNTER_FAILURES, 1);
                 }
                 {
                     VecFx32 stop = { 0, 0, 0 };
-                    p->velocity = stop;
+                    runner->velocity = stop;
                 }
                 // BUG: pushMember is only set when p was moving; otherwise it keeps an older value.
-                if (p->members[pushMember].condition == RELAY_RUN_TIRED) {
-                    p->members[pushMember].energy = 0;
-                    p->members[pushMember].condition = RELAY_RUN_EXHAUSTED;
-                    p->recoveryTimer = p->members[pushMember].recoveryTime;
-                    PokeathlonCourse_AddMonCounter(course, p->owner, p->current, POKEATHLON_COUNTER_FAILURES, 1);
+                if (runner->members[pushMember].condition == RELAY_RUN_TIRED) {
+                    runner->members[pushMember].energy = 0;
+                    runner->members[pushMember].condition = RELAY_RUN_EXHAUSTED;
+                    runner->recoveryTimer = runner->members[pushMember].recoveryTime;
+                    PokeathlonCourse_AddMonCounter(course, runner->owner, runner->current, POKEATHLON_COUNTER_FAILURES, 1);
                 }
-                GF_ASSERT(p->bumpedInto[j] == 0);
-                GF_ASSERT(q->bumpedInto[i] == 0);
+                GF_ASSERT(runner->bumpedInto[j] == 0);
+                GF_ASSERT(other->bumpedInto[i] == 0);
                 // BUG: the asserts above and the reset below use p->bumpedInto[j] and q->bumpedInto[i]; these marks
                 // go to the other two entries.
-                q->bumpedInto[j] = 1;
-                p->bumpedInto[i] = 1;
+                other->bumpedInto[j] = 1;
+                runner->bumpedInto[i] = 1;
                 if (!result) {
                     VecFx32 contact = { 0, 0, 0 };
                     result = TRUE;
@@ -2070,14 +2069,14 @@ BOOL PokeathlonRelayRun_CollideRunners(PokeathlonCourseData *course, PokeathlonR
                     }
                     *where = contact;
                 }
-                q->stunTimer = 6;
-                p->stunTimer = 18;
-                PokeathlonCourse_AddMonCounter(course, q->owner, q->current, POKEATHLON_COUNTER_TACKLES, 1);
-                PokeathlonCourse_AddMonCounter(course, p->owner, p->current, POKEATHLON_COUNTER_TACKLES, 1);
+                other->stunTimer = 6;
+                runner->stunTimer = 18;
+                PokeathlonCourse_AddMonCounter(course, other->owner, other->current, POKEATHLON_COUNTER_TACKLES, 1);
+                PokeathlonCourse_AddMonCounter(course, runner->owner, runner->current, POKEATHLON_COUNTER_TACKLES, 1);
                 break;
             } else {
-                p->bumpedInto[j] = 0;
-                q->bumpedInto[i] = 0;
+                runner->bumpedInto[j] = 0;
+                other->bumpedInto[i] = 0;
             }
         }
     }
