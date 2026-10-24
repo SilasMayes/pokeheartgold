@@ -29,7 +29,7 @@ typedef struct WifiSetupKeyboard {
     WifiSetupOamBlock *buttons[2];
     WifiSetupOamBlock *rowBlocks[4]; // objects showing the current page's rows
     WifiSetupOamBlock *cursor;
-    void *task;
+    WifiSetupTask *task;
     u8 input;      // WIFI_SETUP_KEYBOARD_INPUT_* or the character typed this frame
     u8 page;       // 0: normal, 1: shifted (one character), 2: alternate
     s8 pressedKey; // key the stylus went down on, -1 if none

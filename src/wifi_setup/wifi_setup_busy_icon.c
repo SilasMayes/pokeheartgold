@@ -25,13 +25,13 @@ void WifiSetupBusyIcon_Create(u8 style) {
     SetOamPriority(gWifiSetupBusyIcon->oam, 1);
     SetOamModeAndPalette(gWifiSetupBusyIcon->oam, 0, gWifiSetupBusyIconPalettes[style]);
     SetOamPosition(gWifiSetupBusyIcon->oam, 230, 139);
-    gWifiSetupBusyIcon->task = WifiSetupTask_Create(1, WifiSetupBusyIcon_Task, NULL, 120);
+    gWifiSetupBusyIcon->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupBusyIcon_Task, NULL, 120);
 }
 
 WifiSetupBusyIcon *gWifiSetupBusyIcon;
 
 void WifiSetupBusyIcon_Destroy(void) {
-    WifiSetupTask_Destroy(1, gWifiSetupBusyIcon->task);
+    WifiSetupTask_Destroy(WIFI_SETUP_TASK_QUEUE_VBLANK, gWifiSetupBusyIcon->task);
     WifiSetupOam_Release(gWifiSetupBusyIcon->oam);
     WifiSetupHeap_FreeAndClear(&gWifiSetupBusyIcon);
 }

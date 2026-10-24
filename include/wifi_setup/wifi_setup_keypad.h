@@ -29,7 +29,7 @@ typedef struct WifiSetupKeypad {
     WifiSetupOamBlock *buttons[2];
     WifiSetupOamBlock *rowBlocks[4]; // objects showing the rows' text
     WifiSetupOamBlock *cursor;
-    void *task;
+    WifiSetupTask *task;
     u8 input;      // code of the key typed this frame, 0 if none
     s8 pressedKey; // key the stylus went down on, -1 if none
     s8 hoveredKey; // key drawn highlighted, -1 if none

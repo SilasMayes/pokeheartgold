@@ -11,14 +11,6 @@
 // Access-point setup screens, application core: the setup client request, the entry point and its main loop, text
 // banks and the session started from the screens.
 
-// The setup key sent with the client request.
-typedef struct WifiSetupRequestKey {
-    u8 tag;
-    u8 unused;
-    u16 length;
-    u8 data[256];
-} WifiSetupRequestKey;
-
 extern void GXx_SetMasterBrightness_(vu16 *reg, int brightness);
 
 static void *WifiSetupApp_AossClientAlloc(u32 size);
@@ -35,11 +27,6 @@ static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg);
 // one receive attempt with default timing, from this console's MAC address.
 void WifiSetupApp_StartAossClient(void) {
     WifiSetupRequestKey key;
-    u32 n;
-    u16 *dst;
-    const u16 *src;
-    u16 a, b;
-    u16 *base;
     gWifiSetupClient.request = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupRequest), 4);
     gWifiSetupClient.done = FALSE;
     MIi_CpuClear16(0, (u16 *)&key, sizeof(key));
@@ -47,20 +34,8 @@ void WifiSetupApp_StartAossClient(void) {
     key.length = 12;
     MI_CpuCopy8(gWifiSetupAossClientName, key.data, 12);
     gWifiSetupClient.request->requestMask = 3;
-    // copy the key to request->unk_002.. two halfwords at a time
-    base = (u16 *)gWifiSetupClient.request;
-    dst = base + 1;
-    src = (const u16 *)&key;
-    n = 65;
-    do {
-        a = src[0];
-        b = src[1];
-        src += 2;
-        dst[0] = a;
-        dst[1] = b;
-        dst += 2;
-    } while (--n);
-    base[131] = 1; // connectRetries
+    gWifiSetupClient.request->key = key;
+    gWifiSetupClient.request->connectRetries = 1;
     gWifiSetupClient.request->connectDelay = -1;
     gWifiSetupClient.request->receiveRetries = 1;
     gWifiSetupClient.request->receiveDelay = -1;
@@ -115,7 +90,7 @@ int WifiSetupApp_Run(void *heap, s32 language, s32 flags) {
     do {
         WifiSetupInput_Update();
         gWifiSetupApp.stateFunc();
-        WifiSetupTask_RunQueue(0);
+        WifiSetupTask_RunQueue(WIFI_SETUP_TASK_QUEUE_MAIN);
         WifiSetupInput_UpdateLcdPower();
         WifiSetupLed_SetWirelessPattern();
         OS_WaitVBlankIntr();
@@ -251,31 +226,31 @@ void WifiSetupApp_SetStateFunc(WifiSetupAppStateFunc func) {
     gWifiSetupApp.stateFunc = func;
 }
 
-void WifiSetupApp_SetTransition(int a, int b) {
-    gWifiSetupApp.bannerMode = a;
-    gWifiSetupApp.buttonBarMode = b;
+void WifiSetupApp_SetTransition(int bannerMode, int buttonBarMode) {
+    gWifiSetupApp.bannerMode = bannerMode;
+    gWifiSetupApp.buttonBarMode = buttonBarMode;
 }
 
-void WifiSetupApp_GetTransition(int *a, int *b) {
-    if (a != NULL) {
-        *a = gWifiSetupApp.bannerMode;
+void WifiSetupApp_GetTransition(int *bannerMode, int *buttonBarMode) {
+    if (bannerMode != NULL) {
+        *bannerMode = gWifiSetupApp.bannerMode;
     }
-    if (b != NULL) {
-        *b = gWifiSetupApp.buttonBarMode;
+    if (buttonBarMode != NULL) {
+        *buttonBarMode = gWifiSetupApp.buttonBarMode;
     }
 }
 
-void WifiSetupApp_SetScreenArgs(int a, int b) {
-    gWifiSetupApp.screenArg0 = a;
-    gWifiSetupApp.screenArg1 = b;
+void WifiSetupApp_SetScreenArgs(int arg0, int arg1) {
+    gWifiSetupApp.screenArg0 = arg0;
+    gWifiSetupApp.screenArg1 = arg1;
 }
 
-void WifiSetupApp_GetScreenArgs(int *a, int *b) {
-    if (a != NULL) {
-        *a = gWifiSetupApp.screenArg0;
+void WifiSetupApp_GetScreenArgs(int *arg0, int *arg1) {
+    if (arg0 != NULL) {
+        *arg0 = gWifiSetupApp.screenArg0;
     }
-    if (b != NULL) {
-        *b = gWifiSetupApp.screenArg1;
+    if (arg1 != NULL) {
+        *arg1 = gWifiSetupApp.screenArg1;
     }
 }
 
@@ -361,11 +336,11 @@ void WifiSetupTransfer_Start(WifiSetupSessionCallback callback) {
     if (WifiSetupShare_Start() == 0) {
         OS_Terminate();
     }
-    gWifiSetupSession->task = WifiSetupTask_Create(0, WifiSetupTransfer_Task, NULL, 120);
+    gWifiSetupSession->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupTransfer_Task, NULL, 120);
 }
 
 void WifiSetupTransfer_Cancel(void) {
-    WifiSetupTask_Create(0, WifiSetupTransfer_CancelTask, NULL, 120);
+    WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupTransfer_CancelTask, NULL, 120);
 }
 
 static void WifiSetupTransfer_CancelTask(WifiSetupTask *task, void *arg) {
@@ -373,7 +348,7 @@ static void WifiSetupTransfer_CancelTask(WifiSetupTask *task, void *arg) {
         return;
     }
     gWifiSetupSession->cancelled = 1;
-    WifiSetupTask_DestroyLater(0, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
 }
 
 BOOL WifiSetupTransfer_IsFinished(void) {
@@ -470,7 +445,7 @@ static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg) {
     case 9:
         break;
     case 34:
-        WifiSetupTask_DestroyLater(0, task);
+        WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
         WifiSetupHeap_FreeAndClear(&gWifiSetupSession);
         break;
     }

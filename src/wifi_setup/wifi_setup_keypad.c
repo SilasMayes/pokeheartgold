@@ -73,7 +73,7 @@ void WifiSetupKeypad_Create(void) {
     gWifiSetupKeypad->cursor = WifiSetupOamTemplate_AllocBlock(0, 68, 1);
     WifiSetupOamBlock_SetAffineMode(gWifiSetupKeypad->cursor, -1, 512, 0);
     WifiSetupOamBlock_SetPriority(gWifiSetupKeypad->cursor, -1, 2);
-    gWifiSetupKeypad->task = WifiSetupTask_Create(0, WifiSetupKeypad_SlideInRow0Task, NULL, 120);
+    gWifiSetupKeypad->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupKeypad_SlideInRow0Task, NULL, 120);
     WifiSetupKeypad_SetRowY(0, 192);
 }
 
@@ -107,12 +107,12 @@ BOOL WifiSetupKeypad_Exists(void) {
 
 static void WifiSetupKeypad_SlideInRow0Task(WifiSetupTask *task, void *arg) {
     WifiSetupKeyRowPosition pos;
-    WifiSetupKeyRowPosition *p = &pos;
+    WifiSetupKeyRowPosition *rowPos = &pos;
     u32 attr = gWifiSetupKeypad->keys[0]->attr01;
-    p->x = (attr & 0x1ff0000) >> 16;
-    p->y = (attr & 0xff) - 12;
-    if (p->y > 76) {
-        WifiSetupKeypad_SetRowY(0, p->y);
+    rowPos->x = (attr & 0x1ff0000) >> 16;
+    rowPos->y = (attr & 0xff) - 12;
+    if (rowPos->y > 76) {
+        WifiSetupKeypad_SetRowY(0, rowPos->y);
         return;
     }
     WifiSetupKeypad_SetRowY(0, 76);
@@ -122,12 +122,12 @@ static void WifiSetupKeypad_SlideInRow0Task(WifiSetupTask *task, void *arg) {
 
 static void WifiSetupKeypad_SlideInRow1Task(WifiSetupTask *task, void *arg) {
     WifiSetupKeyRowPosition pos;
-    WifiSetupKeyRowPosition *p = &pos;
+    WifiSetupKeyRowPosition *rowPos = &pos;
     u32 attr = gWifiSetupKeypad->keys[3]->attr01;
-    p->x = (attr & 0x1ff0000) >> 16;
-    p->y = (attr & 0xff) - 12;
-    if (p->y > 99) {
-        WifiSetupKeypad_SetRowY(1, p->y);
+    rowPos->x = (attr & 0x1ff0000) >> 16;
+    rowPos->y = (attr & 0xff) - 12;
+    if (rowPos->y > 99) {
+        WifiSetupKeypad_SetRowY(1, rowPos->y);
         return;
     }
     WifiSetupKeypad_SetRowY(1, 99);
@@ -137,12 +137,12 @@ static void WifiSetupKeypad_SlideInRow1Task(WifiSetupTask *task, void *arg) {
 
 static void WifiSetupKeypad_SlideInRow2Task(WifiSetupTask *task, void *arg) {
     WifiSetupKeyRowPosition pos;
-    WifiSetupKeyRowPosition *p = &pos;
+    WifiSetupKeyRowPosition *rowPos = &pos;
     u32 attr = gWifiSetupKeypad->keys[6]->attr01;
-    p->x = (attr & 0x1ff0000) >> 16;
-    p->y = (attr & 0xff) - 12;
-    if (p->y > 122) {
-        WifiSetupKeypad_SetRowY(2, p->y);
+    rowPos->x = (attr & 0x1ff0000) >> 16;
+    rowPos->y = (attr & 0xff) - 12;
+    if (rowPos->y > 122) {
+        WifiSetupKeypad_SetRowY(2, rowPos->y);
         return;
     }
     WifiSetupKeypad_SetRowY(2, 122);
@@ -152,12 +152,12 @@ static void WifiSetupKeypad_SlideInRow2Task(WifiSetupTask *task, void *arg) {
 
 static void WifiSetupKeypad_SlideInRow3Task(WifiSetupTask *task, void *arg) {
     WifiSetupKeyRowPosition pos;
-    WifiSetupKeyRowPosition *p = &pos;
+    WifiSetupKeyRowPosition *rowPos = &pos;
     u32 attr = gWifiSetupKeypad->keys[9]->attr01;
-    p->x = (attr & 0x1ff0000) >> 16;
-    p->y = (attr & 0xff) - 12;
-    if (p->y > 145) {
-        WifiSetupKeypad_SetRowY(3, p->y);
+    rowPos->x = (attr & 0x1ff0000) >> 16;
+    rowPos->y = (attr & 0xff) - 12;
+    if (rowPos->y > 145) {
+        WifiSetupKeypad_SetRowY(3, rowPos->y);
         return;
     }
     WifiSetupKeypad_SetRowY(3, 145);

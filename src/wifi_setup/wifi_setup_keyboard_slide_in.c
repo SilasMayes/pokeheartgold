@@ -13,12 +13,12 @@ static void WifiSetupKeyboard_SlideInRow2Task(WifiSetupTask *task, void *arg);
 
 void WifiSetupKeyboard_SlideInRow0Task(WifiSetupTask *task, void *arg) {
     WifiSetupKeyRowPosition pos;
-    WifiSetupKeyRowPosition *p = &pos;
+    WifiSetupKeyRowPosition *rowPos = &pos;
     u32 word = gWifiSetupKeyboard->keys[0]->attr01;
-    p->x = (word & 0x1ff0000) >> 16;
-    p->y = (word & 0xff) - 12;
-    if (p->y > 81) {
-        WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 0, p->y);
+    rowPos->x = (word & 0x1ff0000) >> 16;
+    rowPos->y = (word & 0xff) - 12;
+    if (rowPos->y > 81) {
+        WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 0, rowPos->y);
         return;
     }
     WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 0, 81);
@@ -28,12 +28,12 @@ void WifiSetupKeyboard_SlideInRow0Task(WifiSetupTask *task, void *arg) {
 
 static void WifiSetupKeyboard_SlideInRow1Task(WifiSetupTask *task, void *arg) {
     WifiSetupKeyRowPosition pos;
-    WifiSetupKeyRowPosition *p = &pos;
+    WifiSetupKeyRowPosition *rowPos = &pos;
     u32 word = gWifiSetupKeyboard->keys[12]->attr01;
-    p->x = (word & 0x1ff0000) >> 16;
-    p->y = (word & 0xff) - 12;
-    if (p->y > 103) {
-        WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 1, p->y);
+    rowPos->x = (word & 0x1ff0000) >> 16;
+    rowPos->y = (word & 0xff) - 12;
+    if (rowPos->y > 103) {
+        WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 1, rowPos->y);
         return;
     }
     WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 1, 103);
@@ -43,12 +43,12 @@ static void WifiSetupKeyboard_SlideInRow1Task(WifiSetupTask *task, void *arg) {
 
 static void WifiSetupKeyboard_SlideInRow2Task(WifiSetupTask *task, void *arg) {
     WifiSetupKeyRowPosition pos;
-    WifiSetupKeyRowPosition *p = &pos;
+    WifiSetupKeyRowPosition *rowPos = &pos;
     u32 word = gWifiSetupKeyboard->keys[24]->attr01;
-    p->x = (word & 0x1ff0000) >> 16;
-    p->y = (word & 0xff) - 12;
-    if (p->y > 125) {
-        WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 2, p->y);
+    rowPos->x = (word & 0x1ff0000) >> 16;
+    rowPos->y = (word & 0xff) - 12;
+    if (rowPos->y > 125) {
+        WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 2, rowPos->y);
         return;
     }
     WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 2, 125);

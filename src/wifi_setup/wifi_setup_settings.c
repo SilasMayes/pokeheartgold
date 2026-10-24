@@ -79,8 +79,8 @@ void WifiSetupSettings_Init(void) {
         gWifiSetupSettings.work->ssidIcon->attr2 = (gWifiSetupSettings.work->ssidIcon->attr2 & ~0xc00) | 0xc00;
         break;
     }
-    gWifiSetupSettings.work->task2 = WifiSetupTask_Create(1, WifiSetupSettings_ScrollTask, 0, 110);
-    gWifiSetupSettings.work->task = WifiSetupTask_Create(0, WifiSetupSettings_ButtonTask, 0, 120);
+    gWifiSetupSettings.work->vblankTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupSettings_ScrollTask, 0, 110);
+    gWifiSetupSettings.work->buttonTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ButtonTask, 0, 120);
     WifiSetupSettings_DrawRows();
     WifiSetupSettings_ShowCursor();
     WifiSetupApp_SetStateFunc(WifiSetupSettings_FadeIn);
@@ -184,7 +184,7 @@ static void WifiSetupSettings_HandleKeys(void) {
             return;
         }
         WifiSetupSound_Play(19);
-        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(0, WifiSetupSettings_ScrollDownTask, 0, 120);
+        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollDownTask, 0, 120);
         return;
     }
     if (WifiSetupInput_IsKeyReleased(PAD_BUTTON_L)) {
@@ -201,7 +201,7 @@ static void WifiSetupSettings_HandleKeys(void) {
             return;
         }
         WifiSetupSound_Play(19);
-        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(0, WifiSetupSettings_ScrollUpTask, 0, 120);
+        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollUpTask, 0, 120);
         return;
     }
     if (WifiSetupInput_IsKeyReleased(PAD_BUTTON_R)) {
@@ -361,9 +361,9 @@ static void WifiSetupSettings_HandleScrollBar(void) {
             return;
         }
         if (rem < 16) {
-            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(0, WifiSetupSettings_ScrollUpTask, 0, 120);
+            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollUpTask, 0, 120);
         } else {
-            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(0, WifiSetupSettings_ScrollDownTask, 0, 120);
+            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollDownTask, 0, 120);
             return;
         }
         return;
@@ -377,7 +377,7 @@ static void WifiSetupSettings_HandleScrollBar(void) {
             return;
         }
         WifiSetupSound_Play(19);
-        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(0, WifiSetupSettings_ScrollUpTask, 0, 120);
+        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollUpTask, 0, 120);
         return;
     case WIFI_SETUP_SCROLL_BAR_EVENT_DOWN_PRESSED:
         if (gWifiSetupSettings.scroll == WIFI_SETUP_SETTINGS_MAX_SCROLL) {
@@ -389,7 +389,7 @@ static void WifiSetupSettings_HandleScrollBar(void) {
             return;
         }
         WifiSetupSound_Play(19);
-        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(0, WifiSetupSettings_ScrollDownTask, 0, 120);
+        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollDownTask, 0, 120);
         return;
     case WIFI_SETUP_SCROLL_BAR_EVENT_UP_RELEASED:
     case WIFI_SETUP_SCROLL_BAR_EVENT_DOWN_RELEASED:
@@ -422,8 +422,8 @@ static void WifiSetupSettings_Exit(void) {
     if (WifiSetupFade_IsActive(0)) {
         return;
     }
-    WifiSetupTask_Destroy(0, gWifiSetupSettings.work->task);
-    WifiSetupTask_Destroy(1, gWifiSetupSettings.work->task2);
+    WifiSetupTask_Destroy(WIFI_SETUP_TASK_QUEUE_MAIN, gWifiSetupSettings.work->buttonTask);
+    WifiSetupTask_Destroy(WIFI_SETUP_TASK_QUEUE_VBLANK, gWifiSetupSettings.work->vblankTask);
     int i;
     for (i = 0; i < 7; i++) { // rows and the two switches
         WifiSetupOam_Release(gWifiSetupSettings.work->rows[i]);
@@ -724,35 +724,35 @@ static void WifiSetupSettings_SetButtonOam(unsigned type, int option, int row) {
 
 static void WifiSetupSettings_DrawText(u8 *text, int row) {
     u16 buf[17];
-    int n, i, m;
+    int length, i, firstLineLength;
     MI_CpuFill8(buf, 0, 34);
-    n = WifiSetup_StrNLen(text, 32);
-    m = n <= 16 ? n : 16;
-    for (i = 0; i < m; i++) {
-        int c = text[i];
-        if (c == ' ') {
-            buf[i] = 0xe01d;
+    length = WifiSetup_StrNLen(text, 32);
+    firstLineLength = length <= 16 ? length : 16;
+    for (i = 0; i < firstLineLength; i++) {
+        int ch = text[i];
+        if (ch == ' ') {
+            buf[i] = WIFI_SETUP_CHAR_SPACE_MARK;
         } else {
-            buf[i] = c;
+            buf[i] = ch;
         }
     }
     row = row * WIFI_SETUP_SETTINGS_ROW_HEIGHT + 2;
-    if (n <= 16) {
+    if (length <= 16) {
         row += 5;
     }
     WifiSetupText_DrawMonospace(gWifiSetupSettings.work->canvas, 72, row, 2, 8, buf, 1);
-    if (n <= 16) {
+    if (length <= 16) {
         return;
     }
     // second line
     MI_CpuFill8(buf, 0, 34);
-    n -= 16;
-    for (i = 0; i < n; i++) {
-        int c = text[i + 16];
-        if (c == ' ') {
-            buf[i] = 0xe01d;
+    length -= 16;
+    for (i = 0; i < length; i++) {
+        int ch = text[i + 16];
+        if (ch == ' ') {
+            buf[i] = WIFI_SETUP_CHAR_SPACE_MARK;
         } else {
-            buf[i] = c;
+            buf[i] = ch;
         }
     }
     WifiSetupText_DrawMonospace(gWifiSetupSettings.work->canvas, 72, row + 12, 2, 8, buf, 1);
@@ -820,33 +820,33 @@ static const WifiSetupRect sSwitchOffBox = { 0x8F, 0x34, 0x2C, 0x18 };
 static const WifiSetupRect sSwitchOnBox = { 0xC0, 0x34, 0x2C, 0x18 };
 
 int WifiSetupSettings_GetTouchedItem(void) {
-    WifiSetupRect r;
+    WifiSetupRect box;
     int item, i;
     if (!WifiSetupInput_IsTouchPressed(&gWifiSetupInputPanelRect)) {
         return WIFI_SETUP_SETTINGS_ITEM_NONE;
     }
     item = FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
-    r = sRowButtonBox;
+    box = sRowButtonBox;
     for (i = 0; i < 4; i++) {
         if (item != 2 && item != 6) {
-            if (WifiSetupInput_IsTouchPressedInBox(&r)) {
+            if (WifiSetupInput_IsTouchPressedInBox(&box)) {
                 return gWifiSetupSettingsRowItems[item];
             }
         }
-        r.top += WIFI_SETUP_SETTINGS_ROW_HEIGHT;
+        box.top += WIFI_SETUP_SETTINGS_ROW_HEIGHT;
         item++;
     }
     item = FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
     for (i = 0; i < 4; i++) {
         if (item == 2) {
-            r = sSwitchOnBox;
-            r.top += i * WIFI_SETUP_SETTINGS_ROW_HEIGHT;
-            if (WifiSetupInput_IsTouchPressedInBox(&r)) {
+            box = sSwitchOnBox;
+            box.top += i * WIFI_SETUP_SETTINGS_ROW_HEIGHT;
+            if (WifiSetupInput_IsTouchPressedInBox(&box)) {
                 return gWifiSetupSettingsSwitchItems.items[0];
             }
-            r = sSwitchOffBox;
-            r.top += i * WIFI_SETUP_SETTINGS_ROW_HEIGHT;
-            if (WifiSetupInput_IsTouchPressedInBox(&r)) {
+            box = sSwitchOffBox;
+            box.top += i * WIFI_SETUP_SETTINGS_ROW_HEIGHT;
+            if (WifiSetupInput_IsTouchPressedInBox(&box)) {
                 return gWifiSetupSettingsSwitchItems.items[1];
             }
             break;
@@ -856,14 +856,14 @@ int WifiSetupSettings_GetTouchedItem(void) {
     item = FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
     for (i = 0; i < 4; i++) {
         if (item == 6) {
-            r = sSwitchOnBox;
-            r.top += i * WIFI_SETUP_SETTINGS_ROW_HEIGHT;
-            if (WifiSetupInput_IsTouchPressedInBox(&r)) {
+            box = sSwitchOnBox;
+            box.top += i * WIFI_SETUP_SETTINGS_ROW_HEIGHT;
+            if (WifiSetupInput_IsTouchPressedInBox(&box)) {
                 return gWifiSetupSettingsSwitchItems.items[2];
             }
-            r = sSwitchOffBox;
-            r.top += i * WIFI_SETUP_SETTINGS_ROW_HEIGHT;
-            if (WifiSetupInput_IsTouchPressedInBox(&r)) {
+            box = sSwitchOffBox;
+            box.top += i * WIFI_SETUP_SETTINGS_ROW_HEIGHT;
+            if (WifiSetupInput_IsTouchPressedInBox(&box)) {
                 return gWifiSetupSettingsSwitchItems.items[3];
             }
             break;

@@ -30,10 +30,10 @@ void WifiSetup_InitState(WifiSetupRequest *request) {
     WifiSetup_MemFill(gWifiSetupPeerAddress, 0, 8);
     gWifiSetupState.error = 1;
     WifiSetup_MemFill(ov13_0224CFBC, 0, 0x1C);
-    gWifiSetupState.key = request->key;
-    gWifiSetupState.keyLength = request->keyLength;
+    gWifiSetupState.key = request->key.data;
+    gWifiSetupState.keyLength = request->key.length;
     gWifiSetupState.requestedMask = request->requestMask & 0xF;
-    ov13_0224CFB8[0x1D] = request->unk_002;
+    ov13_0224CFB8[0x1D] = request->key.tag;
     gWifiSetupState.receivedMask = 0;
     gWifiSetupState.address = 0xC0A80B01; // 192.168.11.1
     ov13_0224CFB8[0x1C] = 0;

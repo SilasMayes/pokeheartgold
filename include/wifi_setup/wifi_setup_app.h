@@ -61,7 +61,7 @@ typedef struct WifiSetupSession {
     WifiSetupShare share;
     u8 childUser[0x18];
     WifiSetupSessionCallback callback;
-    void *task;
+    WifiSetupTask *task;
     u8 missedEvent; // an event arrived while there was no callback
     u8 cancelled;
 } WifiSetupSession;
@@ -80,10 +80,10 @@ void WifiSetupApp_StartAossClient(void);
 void WifiSetupApp_StopAossClient(BOOL apply);
 int WifiSetupApp_PollAossClient(void);
 void WifiSetupApp_SetStateFunc(WifiSetupAppStateFunc func);
-void WifiSetupApp_SetTransition(int a, int b);
-void WifiSetupApp_GetTransition(int *a, int *b);
-void WifiSetupApp_SetScreenArgs(int a, int b);
-void WifiSetupApp_GetScreenArgs(int *a, int *b);
+void WifiSetupApp_SetTransition(int bannerMode, int buttonBarMode);
+void WifiSetupApp_GetTransition(int *bannerMode, int *buttonBarMode);
+void WifiSetupApp_SetScreenArgs(int arg0, int arg1);
+void WifiSetupApp_GetScreenArgs(int *arg0, int *arg1);
 u8 WifiSetupApp_GetLanguage(void);
 u32 WifiSetupApp_GetKind(void);
 BOOL WifiSetupApp_HasOption(u32 mask);

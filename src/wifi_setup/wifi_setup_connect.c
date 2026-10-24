@@ -22,8 +22,6 @@ typedef struct ApInfo {
 
 extern ConnectSetting gWifiSetupConnectSetting;
 extern ApInfo gWifiSetupConnectApInfo;
-void MI_CpuFill8(void *dest, u8 value, u32 size);
-void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void WCM_ClearApList(void);
 #define APINFO2 ((ApInfo *)((u8 *)&gWifiSetupRuntime + 0x40))
 // @fn WifiSetup_ConnectAccessPoint
@@ -37,7 +35,7 @@ int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, int *out) {
     int retries;
     u32 mode;
     int connected = 0;
-    int n;
+    int ssidLength;
     int i;
 
     if (param->mode == 0) {
@@ -84,8 +82,8 @@ int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, int *out) {
                     } else {
                         WifiSetup_CopyConnectSsid(param, &gWifiSetupConnectApInfo);
                         i = 0;
-                        n = APINFO2->ssidLength;
-                        for (; i < n; i++) {
+                        ssidLength = APINFO2->ssidLength;
+                        for (; i < ssidLength; i++) {
                         }
                         if (!WifiSetupWcm_StartConnect(&gWifiSetupConnectApInfo, &gWifiSetupConnectSetting, mode)) {
                             running = FALSE;

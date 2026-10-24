@@ -328,20 +328,20 @@ static void WifiSetupAddressEntry_FinishConfirm(void) {
 // Pads every field to three characters: empty or zero digits before the last one become spaces,
 // an empty last digit becomes '0'.
 static void WifiSetupAddressEntry_PadFields(void) {
-    u8 *p;
+    u8 *field;
     int i = 0;
     int j;
     int offset = i;
     int space = ' ', digit = '0', zero = i;
     do {
-        p = (u8 *)gWifiSetupAddressEntry + 8 + offset; // digits
+        field = &gWifiSetupAddressEntry->digits[offset];
         j = zero;
         do {
-            u8 c = p[j];
-            if (c != digit && c != space && c != zero) {
+            u8 ch = field[j];
+            if (ch != digit && ch != space && ch != zero) {
                 break;
             }
-            p[j] = j == 2 ? digit : space;
+            field[j] = j == 2 ? digit : space;
             j++;
         } while (j < 3);
         i++;
@@ -357,19 +357,19 @@ static int WifiSetupAddressEntry_IsValid(void) {
     int i;
     int kind;
     u8 address[4];
-    u8 *p;
+    u8 *field;
     int j;
     int zero;
     for (i = 0; i < 4; i++) {
-        p = &gWifiSetupAddressEntry->digits[i * 3];
-        if (p[0] == ' ') {
+        field = &gWifiSetupAddressEntry->digits[i * 3];
+        if (field[0] == ' ') {
             continue;
         }
         for (j = 0; j < 3; j++) {
-            if (p[j] > limit.digits[j]) {
+            if (field[j] > limit.digits[j]) {
                 return 0;
             }
-            if (p[j] < limit.digits[j]) {
+            if (field[j] < limit.digits[j]) {
                 break;
             }
         }

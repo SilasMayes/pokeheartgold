@@ -473,8 +473,8 @@ static inline u32 AlignDown32(u32 value) {
 // Allocates the WCM buffers and room for count access points, starts WCM and waits until it is up.
 // Returns 1, -1 (no memory) or -2.
 int WifiSetupLink_Open(u32 count) {
-    u16 m = 31;
-    s16 k = -32;
+    u16 alignMask = 31;
+    s16 alignClear = -32;
     int event;
     int running = TRUE;
     int result;
@@ -488,10 +488,10 @@ int WifiSetupLink_Open(u32 count) {
     if (!gWifiSetupWork.allocation) {
         return -1;
     }
-    aligned = AlignDown32((u32)gWifiSetupWork.allocation + m);
+    aligned = AlignDown32((u32)gWifiSetupWork.allocation + alignMask);
     apList = aligned + (size + 0x2490);
-    apList += m;
-    apList &= k;
+    apList += alignMask;
+    apList &= alignClear;
     gWifiSetupWork.buffer = (void *)aligned;
     gWifiSetupWork.apList = (WifiSetupApInfo *)apList;
     if (!WifiSetupLink_Init(WifiSetupLink_PushEvent, (u8 *)aligned, size + 0x2490)) {

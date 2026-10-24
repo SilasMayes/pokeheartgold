@@ -141,7 +141,7 @@ void WifiSetupSettings_ScrollUpTask(WifiSetupTask *task, void *arg) {
     WifiSetupScrollBar_Enable();
     WifiSetupSettings_UpdateCursorItem();
     gWifiSetupSettings.work->scrollTask = NULL;
-    WifiSetupTask_DestroyLater(0, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
 }
 
 void WifiSetupSettings_ScrollDownTask(WifiSetupTask *task, void *arg) {
@@ -160,7 +160,7 @@ void WifiSetupSettings_ScrollDownTask(WifiSetupTask *task, void *arg) {
     WifiSetupScrollBar_Enable();
     WifiSetupSettings_UpdateCursorItem();
     gWifiSetupSettings.work->scrollTask = NULL;
-    WifiSetupTask_DestroyLater(0, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
 }
 
 void WifiSetupSettings_ScrollTask(WifiSetupTask *task, void *arg) {
@@ -192,15 +192,15 @@ void WifiSetupSettings_ShowCursor(void) {
 
 void WifiSetupSettings_UpdateCursorItem(void) {
     WifiSetupConnection *save;
-    int n;
+    int row;
     u8 item = gWifiSetupSettings.cursorItem;
     if ((u8)(item + 245) <= 2) { // the buttons 11-13
         WifiSetupSettings_ShowCursor();
         return;
     }
     save = WifiSetupConnections_GetEdit();
-    n = gWifiSetupSettings.cursorRow + FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
-    switch (n) {
+    row = gWifiSetupSettings.cursorRow + FX_DivS32(gWifiSetupSettings.scroll, WIFI_SETUP_SETTINGS_ROW_HEIGHT);
+    switch (row) {
     case 2:
         if (save->autoAddress) {
             gWifiSetupSettings.cursorItem = WIFI_SETUP_SETTINGS_ITEM_AUTO_ADDRESS_ON;
@@ -216,7 +216,7 @@ void WifiSetupSettings_UpdateCursorItem(void) {
         }
         break;
     default:
-        gWifiSetupSettings.cursorItem = gWifiSetupSettingsRowItems[n];
+        gWifiSetupSettings.cursorItem = gWifiSetupSettingsRowItems[row];
         break;
     }
     WifiSetupSettings_ShowCursor();
@@ -301,7 +301,7 @@ void WifiSetupSettings_MoveCursor(int dir) {
                 break;
             }
             WifiSetupSound_Play(0x13);
-            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(0, WifiSetupSettings_ScrollUpTask, NULL, 120);
+            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollUpTask, NULL, 120);
             return;
         }
         if (dir == WIFI_SETUP_CURSOR_DOWN) {
@@ -310,7 +310,7 @@ void WifiSetupSettings_MoveCursor(int dir) {
                 break;
             }
             WifiSetupSound_Play(0x13);
-            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(0, WifiSetupSettings_ScrollDownTask, NULL, 120);
+            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollDownTask, NULL, 120);
             return;
         }
         ret = 2;
@@ -1101,7 +1101,7 @@ static void WifiSetupApScanScreen_Main(void) {
 
 static void WifiSetupApScanScreen_UpdateScan(void) {
     WifiSetupScanEntry *list;
-    int n;
+    int count;
     int i;
 
     gWifiSetupApScanScreen.timer++;
@@ -1109,8 +1109,8 @@ static void WifiSetupApScanScreen_UpdateScan(void) {
         return;
     }
     WifiSetupSound_Stop();
-    n = WifiSetupApScan_GetEntries(&list);
-    if (n == 0) {
+    count = WifiSetupApScan_GetEntries(&list);
+    if (count == 0) {
         gWifiSetupApScanScreen.result = WIFI_SETUP_AP_SCAN_NONE;
         WifiSetupDialog_Open(0xF, 1, 1, -1, 0);
         WifiSetupSound_Play(0x12);
@@ -1118,12 +1118,12 @@ static void WifiSetupApScanScreen_UpdateScan(void) {
         WifiSetupApp_SetStateFunc(WifiSetupApScanScreen_WaitDialog);
         return;
     }
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < count; i++) {
         if (list[i].security != 2) {
             break;
         }
     }
-    if (i == n) {
+    if (i == count) {
         gWifiSetupApScanScreen.result = WIFI_SETUP_AP_SCAN_ONLY_WPA;
         WifiSetupDialog_Open(0xE, 1, 1, -1, 0);
         WifiSetupSound_Play(0x12);

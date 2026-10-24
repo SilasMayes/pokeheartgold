@@ -284,7 +284,7 @@ WifiSetupKeyboard *gWifiSetupKeyboard;
 
 static void WifiSetupKeyboard_DestroyTask(WifiSetupTask *task, void *arg) {
     int page, row;
-    WifiSetupTask_DestroyLater(0, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
     for (page = 0; page < 3; page++) {
         for (row = 0; row < 4; row++) {
             WifiSetupText_FreeObjCanvas(gWifiSetupKeyboard->rows[page][row]);

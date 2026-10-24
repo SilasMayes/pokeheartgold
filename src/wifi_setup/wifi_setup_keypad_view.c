@@ -136,7 +136,7 @@ WifiSetupKeypad *gWifiSetupKeypad;
 
 static void WifiSetupKeypad_DestroyTask(WifiSetupTask *task, void *arg) {
     int i;
-    WifiSetupTask_DestroyLater(0, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
     for (i = 0; i < 4; i++) {
         WifiSetupOamBlock_Free(gWifiSetupKeypad->rowBlocks[i]);
         WifiSetupText_FreeObjCanvas(gWifiSetupKeypad->rows[i]);

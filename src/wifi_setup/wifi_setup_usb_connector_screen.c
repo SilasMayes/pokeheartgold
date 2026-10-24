@@ -189,9 +189,9 @@ static void WifiSetupUsbConnector_WaitNotFoundClosed(void) {
 }
 
 static void WifiSetupUsbConnector_WaitChoice(void) {
-    int r = WifiSetupDialog_GetSelected();
-    if (r != 0) {
-        if (r != 1) {
+    int selected = WifiSetupDialog_GetSelected();
+    if (selected != 0) {
+        if (selected != 1) {
             return;
         }
         gWifiSetupUsbConnectorExit = USB_CONNECTOR_RETRY;
@@ -223,5 +223,5 @@ void WifiSetupBgScreen_Create(void *src) {
     WifiSetupBgScreen *screen = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupBgScreen), 4);
     gWifiSetupBgScreen.screen = screen;
     MIi_CpuCopyFast(src, (u32 *)screen->data, 0x600);
-    gWifiSetupBgScreen.screen->task = WifiSetupTask_Create(1, WifiSetupBgScreen_UpdateTask, NULL, 0x78);
+    gWifiSetupBgScreen.screen->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupBgScreen_UpdateTask, NULL, 0x78);
 }

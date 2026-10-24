@@ -32,7 +32,7 @@
 
 // BG 2 screen copy.
 typedef struct WifiSetupBgScreen {
-    void *task;
+    WifiSetupTask *task;
     u16 data[0x300];
     u8 dirty;
 } WifiSetupBgScreen;
@@ -48,7 +48,7 @@ typedef struct WifiSetupScrollBar {
     WifiSetupOamBlock *thumb;
     int unk_04;
     int unk_08;
-    void *task;
+    WifiSetupTask *task;
     WifiSetupPoint pos;        // top of the track
     WifiSetupPoint touchStart; // touch position when the drag started
     u8 dragStart;              // value when the drag started

@@ -15,7 +15,7 @@ static void WifiSetupPalette_LoadTask(WifiSetupTask *task, void *arg);
 WifiSetupBgScreenState gWifiSetupBgScreen;
 
 void WifiSetupBgScreen_Destroy(void) {
-    WifiSetupTask_Destroy(1, gWifiSetupBgScreen.screen->task);
+    WifiSetupTask_Destroy(WIFI_SETUP_TASK_QUEUE_VBLANK, gWifiSetupBgScreen.screen->task);
     WifiSetupHeap_FreeAndClear(&gWifiSetupBgScreen);
 }
 
@@ -45,22 +45,22 @@ void WifiSetupBgScreen_UpdateTask(WifiSetupTask *task, void *arg) {
 void WifiSetupPalette_LoadRow(u8 *src, int index, int palette) {
     gWifiSetupBgScreen.paletteSrc = src + index * 32;
     gWifiSetupBgScreen.paletteDst = (void *)(palette * 32 + 0x5000000);
-    WifiSetupTask_Create(1, WifiSetupPalette_LoadRowTask, NULL, 0x78);
+    WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupPalette_LoadRowTask, NULL, 0x78);
 }
 
 static void WifiSetupPalette_LoadRowTask(WifiSetupTask *task, void *arg) {
     MIi_CpuCopy16(gWifiSetupBgScreen.paletteSrc, gWifiSetupBgScreen.paletteDst, 0x20);
-    WifiSetupTask_DestroyLater(1, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_VBLANK, task);
 }
 
 void WifiSetupPalette_Load(void *src) {
     gWifiSetupBgScreen.paletteSrc = src;
-    WifiSetupTask_Create(1, WifiSetupPalette_LoadTask, NULL, 0x78);
+    WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupPalette_LoadTask, NULL, 0x78);
 }
 
 static void WifiSetupPalette_LoadTask(WifiSetupTask *task, void *arg) {
     MIi_CpuCopy16(gWifiSetupBgScreen.paletteSrc, (void *)0x5000000, 0x200);
-    WifiSetupTask_DestroyLater(1, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_VBLANK, task);
 }
 
 void WifiSetupScrollBar_Create(int kind, int length, int x, int y, int value) {
@@ -73,5 +73,5 @@ void WifiSetupScrollBar_Create(int kind, int length, int x, int y, int value) {
     gWifiSetupScrollBar->thumb = WifiSetupOamTemplate_AllocBlock(0, gWifiSetupScrollBarThumbTemplates[kind], 1);
     WifiSetupOamBlock_SetPosition(gWifiSetupScrollBar->thumb, -1, x, y + value);
     WifiSetupOamBlock_SetPriority(gWifiSetupScrollBar->thumb, -1, 1);
-    gWifiSetupScrollBar->task = WifiSetupTask_Create(0, WifiSetupScrollBar_Task, NULL, 0x80);
+    gWifiSetupScrollBar->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupScrollBar_Task, NULL, 0x80);
 }

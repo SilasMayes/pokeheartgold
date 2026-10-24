@@ -332,8 +332,8 @@ void WifiSetupConnectionList_ShowCursor(void) {
 
 static void WifiSetupConnectionList_MoveCursor(int dir) {
     BOOL changed = TRUE;
-    u8 c;
-    int c4;
+    u8 column;
+    int columnBelow;
     switch (gWifiSetupConnectionList.selected) {
     case 0:
         gWifiSetupConnectionList.work->column = 0;
@@ -372,12 +372,12 @@ static void WifiSetupConnectionList_MoveCursor(int dir) {
         }
         break;
     case 3:
-        c = gWifiSetupConnectionList.work->column;
-        c4 = c + 4;
+        column = gWifiSetupConnectionList.work->column;
+        columnBelow = column + 4;
         if (dir == WIFI_SETUP_CURSOR_UP) {
-            gWifiSetupConnectionList.selected = c4;
+            gWifiSetupConnectionList.selected = columnBelow;
         } else if (dir == WIFI_SETUP_CURSOR_DOWN) {
-            gWifiSetupConnectionList.selected = c;
+            gWifiSetupConnectionList.selected = column;
         } else {
             changed = FALSE;
         }
@@ -737,7 +737,7 @@ static void WifiSetupConnectionTest_Start(void) {
     if (mode == 0) {
         DWCi_AC_SetUserProfile(connection->index, connection);
     }
-    WifiSetupTask_Create(0, WifiSetupConnectionTest_PollTask, NULL, 120);
+    WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupConnectionTest_PollTask, NULL, 120);
 }
 
 static void WifiSetupConnectionTest_FadeIn(void) {
@@ -809,13 +809,13 @@ static void WifiSetupConnectionTest_End(void) {
 }
 
 static void WifiSetupConnectionTest_PollTask(WifiSetupTask *task, void *arg) {
-    int r = DWC_AC_Process();
-    if (r == 0) {
+    int result = DWC_AC_Process();
+    if (result == 0) {
         return;
     }
     WifiSetupSignalIcon_Destroy();
     WifiSetupSound_Stop();
-    if (r > 0) {
+    if (result > 0) {
         gWifiSetupConnectionTestPassed = 1;
         WifiSetupSound_Play(0x11);
     } else {
@@ -823,7 +823,7 @@ static void WifiSetupConnectionTest_PollTask(WifiSetupTask *task, void *arg) {
         WifiSetupSound_Play(0x12);
     }
     WifiSetupApp_SetStateFunc(WifiSetupConnectionTest_FadeOut);
-    WifiSetupTask_DestroyLater(0, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
 }
 
 #pragma force_active on

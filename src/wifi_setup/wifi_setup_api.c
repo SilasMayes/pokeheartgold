@@ -7,11 +7,11 @@ static int WifiSetup_GetSimpleStartStatus(s32 *status);
 void WifiSetup_EncodeLittleEndian(u8 *dst, const u32 *src, u32 len) {
     u32 i = 0;
     while (i < len) {
-        u8 *p = dst + i;
+        u8 *word = dst + i;
         dst[i] = *src;
-        p[1] = *src >> 8;
-        p[2] = *src >> 16;
-        p[3] = *src++ >> 24;
+        word[1] = *src >> 8;
+        word[2] = *src >> 16;
+        word[3] = *src++ >> 24;
         i += 4;
     }
 }
@@ -34,10 +34,10 @@ void WifiSetup_CopyBytes(u8 *dst, const u8 *src, u32 len) {
 
 void WifiSetup_FillBytes(void *dst, int value, u32 count) {
     u32 i = 0;
-    s8 *p = dst;
+    s8 *out = dst;
     for (; i < count;) {
         i++;
-        *p++ = (s8)value;
+        *out++ = (s8)value;
     }
 }
 
@@ -91,16 +91,16 @@ int WifiSetup_FormatHexByte(char *dst, int value) {
 
 // "XX:XX:XX:XX:XX:XX"
 int WifiSetup_FormatMacAddress(char *dst, const s8 *mac) {
-    char *p = dst;
+    char *cursor = dst;
     int i;
     for (i = 0; i < 6; i++) {
-        p += WifiSetup_FormatHexByte(p, *mac++);
+        cursor += WifiSetup_FormatHexByte(cursor, *mac++);
         if (i < 5) {
-            *p++ = ':';
+            *cursor++ = ':';
         }
     }
-    *p = '\0';
-    return p - dst;
+    *cursor = '\0';
+    return cursor - dst;
 }
 
 // the worker thread changes the state: read and write it as volatile here

@@ -63,7 +63,8 @@ static void WifiSetupErrorScreen_LoadGraphics(void) {
 
 static void WifiSetupErrorScreen_DrawMessage(void) {
     int out, code;
-    void *canvas, *msg;
+    WifiSetupCanvas *canvas;
+    u16 *msg;
     u16 text[8];
     int error;
     WifiSetupApp_GetScreenArgs(0, &out);

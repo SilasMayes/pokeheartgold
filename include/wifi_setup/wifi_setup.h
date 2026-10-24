@@ -36,13 +36,18 @@ typedef struct WifiSetupState {
     u32 netmask;
 } WifiSetupState;
 
+// The setup key sent with a request.
+typedef struct WifiSetupRequestKey {
+    u8 tag;
+    u8 unused;
+    u16 length; // including the terminator
+    u8 data[256];
+} WifiSetupRequestKey;
+
 // Request/result block passed in by the caller of WifiSetup_RunAoss.
 typedef struct WifiSetupRequest {
     u16 requestMask; // which settings to fetch
-    u8 unk_002;
-    u8 unk_003;
-    u16 keyLength; // including the terminator
-    u8 key[256];
+    WifiSetupRequestKey key;
     s16 connectRetries; // -1 = default
     s16 connectDelay;
     s16 receiveRetries;
@@ -210,7 +215,7 @@ void *WifiSetup_SocketAlloc(s32 unused, s32 size);
 void *WifiSetup_SocketFree(s32 unused, s32 ptr);
 int WifiSetup_StartupSocket(u32 address, u32 netmask, u32 gateway);
 int WifiSetup_CleanupSocket(void);
-int WifiSetup_MemCompare(const u8 *a, const u8 *b, int n);
+int WifiSetup_MemCompare(const u8 *lhs, const u8 *rhs, int size);
 void WifiSetup_MemCopy(void *dst, const void *src, u32 size);
 void WifiSetup_MemFill(void *dst, int value, u32 size);
 int WifiSetup_RecvFrom(int socket, void *buffer, int size, int flags, SocAddress *address, int *addressLength);
@@ -228,7 +233,7 @@ s32 WifiSetup_StrLen(const char *str);
 u16 WifiSetup_Random(void);
 void WifiSetup_ClearPollSet(SocPollFd *set);
 void WifiSetup_AddToPollSet(int socket, SocPollFd *set);
-void WifiSetup_CopyConnectSsid(const void *src, void *dst);
+void WifiSetup_CopyConnectSsid(const WifiSetupAossConnectInfo *src, void *dst);
 void WifiSetup_StoreConnectResult(void *dst, const void *src, u32 value);
 BOOL WifiSetup_OnTimeoutAlarm(void *message);
 int WifiSetup_Startup(WifiSetupAllocFunc alloc, WifiSetupFreeFunc free);

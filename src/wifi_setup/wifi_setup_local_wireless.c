@@ -79,14 +79,14 @@ void MB_End(void);
 
 static inline void WifiSetupMbParent_ClearChild(u16 aid) {
     u16 mask = ~(1 << aid);
-    OSIntrMode e = OS_DisableInterrupts();
+    OSIntrMode intrMode = OS_DisableInterrupts();
     gWifiSetupMbParent->head.connectedMask &= mask;
     gWifiSetupMbParent->head.requestedMask &= mask;
     gWifiSetupMbParent->head.waitingMask &= mask;
     gWifiSetupMbParent->head.sendingMask &= mask;
     gWifiSetupMbParent->head.sentMask &= mask;
     gWifiSetupMbParent->head.bootableMask &= mask;
-    OS_RestoreInterrupts(e);
+    OS_RestoreInterrupts(intrMode);
 }
 
 static inline void WifiSetupMbParent_DisconnectChild(u16 aid) {
@@ -2230,7 +2230,7 @@ void WifiSetupBanner_Open(int kind) {
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, -0x2a, gWifiSetupBannerLetterPositions[i].y);
         WifiSetupOamBlock_SetModeAndPalette(gWifiSetupBanner.banner->letters[i], -1, 0, *anim++);
     }
-    gWifiSetupBanner.banner->task = WifiSetupTask_Create(0, WifiSetupBanner_SlideInTask0, NULL, 0x78);
+    gWifiSetupBanner.banner->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupBanner_SlideInTask0, NULL, 0x78);
     WifiSetupBanner_LoadScreen(kind);
     WifiSetupSound_Play(0xd);
 }
@@ -2334,24 +2334,24 @@ static void WifiSetupBanner_SlideInTask4(WifiSetupTask *task, void *arg) {
 #pragma pop
 
 static void WifiSetupBanner_StopTask(WifiSetupTask *task, void *arg) {
-    WifiSetupTask_DestroyLater(0, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
     gWifiSetupBanner.banner->task = NULL;
 }
 
 void WifiSetupBanner_Close(void) {
     gWifiSetupBanner.banner->closing = 1;
-    gWifiSetupBanner.banner->task = WifiSetupTask_Create(0, WifiSetupBanner_SlideOutTask4, 0, 0x78);
+    gWifiSetupBanner.banner->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupBanner_SlideOutTask4, 0, 0x78);
 }
 
-void WifiSetupBanner_SetKind(int n) {
+void WifiSetupBanner_SetKind(int kind) {
     int i;
     for (i = 0; i < 5; i += 2) {
-        WifiSetupOamTemplate_Copy(1, gWifiSetupBannerLetterTemplates[n][i], WifiSetupOamBlock_GetOam(gWifiSetupBanner.banner->letters[i], 0));
+        WifiSetupOamTemplate_Copy(1, gWifiSetupBannerLetterTemplates[kind][i], WifiSetupOamBlock_GetOam(gWifiSetupBanner.banner->letters[i], 0));
         WifiSetupOamBlock_SetPriority(gWifiSetupBanner.banner->letters[i], -1, 0);
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, gWifiSetupBannerLetterPositions[i].x, gWifiSetupBannerLetterPositions[i].y);
-        WifiSetupOamBlock_SetModeAndPalette(gWifiSetupBanner.banner->letters[i], -1, 0, gWifiSetupBannerLetterPalettes[n][i]);
+        WifiSetupOamBlock_SetModeAndPalette(gWifiSetupBanner.banner->letters[i], -1, 0, gWifiSetupBannerLetterPalettes[kind][i]);
     }
-    WifiSetupBanner_LoadScreen(n);
+    WifiSetupBanner_LoadScreen(kind);
 }
 
 BOOL WifiSetupBanner_IsMoving(void) {
@@ -2452,7 +2452,7 @@ static void WifiSetupBanner_SlideOffTask(WifiSetupTask *task, void *arg) {
     if (x < 0x100) {
         return;
     }
-    WifiSetupTask_DestroyLater(0, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
     for (i = 0; i < 5; i++) {
         WifiSetupOamBlock_Free(gWifiSetupBanner.banner->letters[i]);
     }
@@ -2466,16 +2466,16 @@ BOOL WifiSetupBanner_IsNotClosing(void) {
     return gWifiSetupBanner.banner->closing == 0;
 }
 
-void WifiSetupBanner_LoadScreen(int n) {
-    gWifiSetupBanner.screen = WifiSetupFile_Load(WifiSetup_LocalizePath(gWifiSetupBannerScreenPaths[n]), 0, 4);
-    WifiSetupTask_Create(1, WifiSetupBanner_LoadScreenTask, 0, 0x78);
+void WifiSetupBanner_LoadScreen(int kind) {
+    gWifiSetupBanner.screen = WifiSetupFile_Load(WifiSetup_LocalizePath(gWifiSetupBannerScreenPaths[kind]), 0, 4);
+    WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupBanner_LoadScreenTask, 0, 0x78);
 }
 
 static void WifiSetupBanner_LoadScreenTask(WifiSetupTask *task, void *arg) {
     DC_FlushRange(gWifiSetupBanner.screen, 0x600);
     GXS_LoadBG1Scr(gWifiSetupBanner.screen, 0, 0x600);
     WifiSetupFile_Free(gWifiSetupBanner.screen);
-    WifiSetupTask_DestroyLater(1, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_VBLANK, task);
 }
 
 BOOL WifiSetupUsbScan_Start(void (*cb)(int)) {
@@ -2496,7 +2496,7 @@ BOOL WifiSetupUsbScan_Start(void (*cb)(int)) {
         gWifiSetupUsbScan->param.ssid[9] = 1;
         MI_CpuCopy8(info.nickName, &gWifiSetupUsbScan->param.ssid[12], info.nickNameLength * 2);
         if (WifiSetupUsbScan_StartScan()) {
-            gWifiSetupUsbScan->task = WifiSetupTask_Create(0, WifiSetupUsbScan_TimeoutTask, 0, 0x78);
+            gWifiSetupUsbScan->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupUsbScan_TimeoutTask, 0, 0x78);
             return TRUE;
         }
     }
@@ -2523,7 +2523,7 @@ BOOL WifiSetupUsbScan_End(void) {
         return FALSE;
     }
     if (gWifiSetupUsbScan->task != NULL) {
-        WifiSetupTask_Destroy(0, gWifiSetupUsbScan->task);
+        WifiSetupTask_Destroy(WIFI_SETUP_TASK_QUEUE_MAIN, gWifiSetupUsbScan->task);
     }
     while (gWifiSetupUsbScan->endState != 2) {
     }
@@ -2679,7 +2679,7 @@ static void WifiSetupUsbScan_TimeoutTask(WifiSetupTask *task, void *arg) {
     }
     gWifiSetupUsbScan->task = NULL;
     gWifiSetupUsbScan->rescanning = 1;
-    WifiSetupTask_DestroyLater(0, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
 }
 
 void WifiSetupDialog_Open(int message, int kind, u8 fade, int digitPos, int digit) {
@@ -2712,15 +2712,15 @@ void WifiSetupDialog_Open(int message, int kind, u8 fade, int digitPos, int digi
     WifiSetupDialog_SetY(0xC0);
     GX_SetVisibleWnd(GX_WNDMASK_W0 | GX_WNDMASK_W1);
     if (fade) {
-        gWifiSetupDialog->task = WifiSetupTask_Create(1, WifiSetupDialog_FadeInTask, 0, 0x78);
+        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_FadeInTask, 0, 0x78);
     } else {
-        gWifiSetupDialog->task = WifiSetupTask_Create(1, WifiSetupDialog_SlideInTask, 0, 0x78);
+        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_SlideInTask, 0, 0x78);
     }
 }
 
 void WifiSetupDialog_Close(void) {
-    WifiSetupTask_DestroyLater(0, gWifiSetupDialog->task);
-    gWifiSetupDialog->task = WifiSetupTask_Create(1, WifiSetupDialog_CloseDelayTask, 0, 0x78);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, gWifiSetupDialog->task);
+    gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_CloseDelayTask, 0, 0x78);
 }
 
 int WifiSetupDialog_GetSelected(void) {
@@ -2751,11 +2751,11 @@ static void WifiSetupDialog_SlideInTask(WifiSetupTask *task, void *arg) {
     }
     WifiSetupDialog_SetY(gWifiSetupDialogFramePositions[gWifiSetupDialog->kind].y);
     if (gWifiSetupDialog->kind == 5) {
-        gWifiSetupDialog->task = WifiSetupTask_Create(0, WifiSetupDialog_TimerTask, 0, 0x78);
+        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupDialog_TimerTask, 0, 0x78);
     } else {
-        gWifiSetupDialog->task = WifiSetupTask_Create(0, WifiSetupDialog_InputTask, 0, 0x78);
+        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupDialog_InputTask, 0, 0x78);
     }
-    WifiSetupTask_DestroyLater(1, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_VBLANK, task);
 }
 
 static void WifiSetupDialog_InputTask(WifiSetupTask *task, void *arg) {
@@ -2790,8 +2790,8 @@ static void WifiSetupDialog_TimerTask(WifiSetupTask *task, void *arg) {
     if (gWifiSetupDialog->timer < 0x78) {
         return;
     }
-    WifiSetupTask_DestroyLater(0, task);
-    gWifiSetupDialog->task = WifiSetupTask_Create(1, WifiSetupDialog_CloseDelayTask, 0, 0x78);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
+    gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_CloseDelayTask, 0, 0x78);
 }
 
 static void WifiSetupDialog_SetY(int y) {
@@ -2896,7 +2896,7 @@ static void WifiSetupDialog_FreeTask(WifiSetupTask *task, void *arg) {
         }
     }
     WifiSetupText_FreeObjCanvas(gWifiSetupDialog->canvas);
-    WifiSetupTask_DestroyLater(1, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_VBLANK, task);
     WifiSetupHeap_FreeAndClear(&ov13_0224F5B0[2]);
 }
 
@@ -2971,27 +2971,27 @@ static void WifiSetupMbParent_AcceptChild(u16 aid) {
 }
 
 static void WifiSetupMbParent_KickChild(u16 aid) {
-    OSIntrMode e;
+    OSIntrMode intrMode;
     if (!MB_CommResponseRequest(aid, 0)) {
         WifiSetupMbParent_DisconnectChild(aid);
         return;
     }
-    e = OS_DisableInterrupts();
+    intrMode = OS_DisableInterrupts();
     gWifiSetupMbParent->head.requestedMask &= ~(1 << aid);
     gWifiSetupMbParent->head.connectedMask &= ~(1 << aid);
-    OS_RestoreInterrupts(e);
+    OS_RestoreInterrupts(intrMode);
 }
 
 static void WifiSetupMbParent_StartSending(u16 aid) {
-    OSIntrMode e;
+    OSIntrMode intrMode;
     if (!MB_CommResponseRequest(aid, 2)) {
         WifiSetupMbParent_DisconnectChild(aid);
         return;
     }
-    e = OS_DisableInterrupts();
+    intrMode = OS_DisableInterrupts();
     gWifiSetupMbParent->head.waitingMask &= ~(1 << aid);
     gWifiSetupMbParent->head.sendingMask |= 1 << aid;
-    OS_RestoreInterrupts(e);
+    OS_RestoreInterrupts(intrMode);
 }
 
 void WifiSetupMbParent_StartDownload(void) {
@@ -3054,8 +3054,9 @@ static void WifiSetupMbParent_EndIfAllBooted(void) {
 }
 
 static void WifiSetupMbParent_StateCallback(u16 aid, u32 status, void *arg) {
-    WifiSetupMbParentState *w;
-    OSIntrMode e;
+    WifiSetupMbParentConnectArg *connectArg = arg;
+    WifiSetupMbParentState *head;
+    OSIntrMode intrMode;
     void *user;
     u8 *mac;
     switch (status) {
@@ -3070,17 +3071,17 @@ static void WifiSetupMbParent_StateCallback(u16 aid, u32 status, void *arg) {
         if (WifiSetupMbParent_GetState() != 2) {
             break;
         }
-        w = &gWifiSetupMbParent->head;
-        e = OS_DisableInterrupts();
-        w->connectedMask |= 1 << aid;
-        OS_RestoreInterrupts(e);
+        head = &gWifiSetupMbParent->head;
+        intrMode = OS_DisableInterrupts();
+        head->connectedMask |= 1 << aid;
+        OS_RestoreInterrupts(intrMode);
         mac = gWifiSetupMbParent->children[aid - 1].macAddr;
-        mac[0] = ((WifiSetupMbParentConnectArg *)arg)->macAddr[0];
-        mac[1] = ((WifiSetupMbParentConnectArg *)arg)->macAddr[1];
-        mac[2] = ((WifiSetupMbParentConnectArg *)arg)->macAddr[2];
-        mac[3] = ((WifiSetupMbParentConnectArg *)arg)->macAddr[3];
-        mac[4] = ((WifiSetupMbParentConnectArg *)arg)->macAddr[4];
-        mac[5] = ((WifiSetupMbParentConnectArg *)arg)->macAddr[5];
+        mac[0] = connectArg->macAddr[0];
+        mac[1] = connectArg->macAddr[1];
+        mac[2] = connectArg->macAddr[2];
+        mac[3] = connectArg->macAddr[3];
+        mac[4] = connectArg->macAddr[4];
+        mac[5] = connectArg->macAddr[5];
         gWifiSetupMbParent->children[aid - 1].aid = aid;
         break;
     case 3:

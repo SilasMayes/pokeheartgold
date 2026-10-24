@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+#include <nnsys/g2d_canvas_internal.h>
+
 // UI framework of the access-point setup screens: heap, files, lists and pools, OAM and VRAM allocators, fades,
 // text canvases, input and a prioritised task scheduler.
 
@@ -17,6 +19,9 @@ enum WifiSetupCursorDirection {
 // Selection of the button bar and of the dialog besides a button index
 #define WIFI_SETUP_SELECTED_NONE      (-1)
 #define WIFI_SETUP_SELECTED_NOT_SHOWN (-2) // still sliding in
+
+// Font character drawn in place of a space in the text typed on the setup screens
+#define WIFI_SETUP_CHAR_SPACE_MARK 0xE01D
 
 typedef struct WifiSetupListNode {
     struct WifiSetupListNode *prev;
@@ -84,6 +89,12 @@ typedef struct WifiSetupKeyRowCounts {
     u8 counts[5];
 } WifiSetupKeyRowCounts;
 
+// Task queues: the main queue runs once per frame in the main loop, the vblank queue in the vblank interrupt.
+enum WifiSetupTaskQueueId {
+    WIFI_SETUP_TASK_QUEUE_MAIN,
+    WIFI_SETUP_TASK_QUEUE_VBLANK,
+};
+
 typedef struct WifiSetupTask WifiSetupTask;
 
 typedef void (*WifiSetupTaskFunc)(WifiSetupTask *task, void *arg);
@@ -96,50 +107,14 @@ struct WifiSetupTask {
     u8 ownsArg; // arg is freed together with the task
 };
 
-typedef struct WifiSetupFontInfo {
-    u8 unk_00[7];
-    u8 flowDirection;
-} WifiSetupFontInfo;
-
-typedef struct WifiSetupFontResource {
-    u8 unk_00[2];
-    u16 alternateChar;
-    u8 unk_04[4];
-    WifiSetupFontInfo *info;
-} WifiSetupFontResource;
-
-typedef struct WifiSetupFont {
-    WifiSetupFontResource *res;
-    void *unk_04;
-} WifiSetupFont;
-
-typedef struct WifiSetupCharWidths {
-    s8 left;
-    u8 glyphWidth;
-    s8 charWidth;
-} WifiSetupCharWidths;
-
-typedef struct WifiSetupCanvasVtbl {
-    void (*drawChar)(void);
-    void (*clear)(void *charCanvas, int color);
-} WifiSetupCanvasVtbl;
-
-typedef struct WifiSetupTextCanvas {
-    void *charCanvas;
-    WifiSetupFont *font;
-    int hSpace;
-    int vSpace;
-} WifiSetupTextCanvas;
-
 // Character canvas (BG screen or OBJ) with the text canvas drawing into it.
 typedef struct WifiSetupCanvas {
-    u8 charCanvas[0x14];
-    WifiSetupCanvasVtbl *vtable;
-    WifiSetupTextCanvas textCanvas;
+    G2dCharCanvas charCanvas;
+    G2dTextCanvas textCanvas;
     void *charBuf; // BG: character buffer; OBJ: character VRAM block
 
     union {
-        void *task; // BG: transfer task
+        WifiSetupTask *task; // BG: transfer task
 
         struct {
             u16 charNo;
@@ -175,7 +150,7 @@ typedef struct WifiSetupOamTemplateHeader {
 } WifiSetupOamTemplateHeader;
 
 typedef struct WifiSetupFade {
-    void *task;
+    WifiSetupTask *task;
     s16 counter;
     u16 duration;
     u8 kind;
@@ -186,13 +161,8 @@ typedef struct WifiSetupBrightnessTable {
     s8 values[4];
 } WifiSetupBrightnessTable;
 
-typedef struct WifiSetupTextDirection {
-    s8 x;
-    s8 y;
-} WifiSetupTextDirection;
-
 typedef struct WifiSetupTextState {
-    WifiSetupFont fonts[2];
+    G2dFont fonts[2];
     WifiSetupCanvas objCanvases[32];
     WifiSetupCanvas bgCanvases[2];
     WifiSetupPool *objCanvasPool;
@@ -203,7 +173,7 @@ typedef struct WifiSetupTextState {
 typedef struct WifiSetupOamBuffer {
     GXOamAttr oam[2][128];
     WifiSetupPool *pools[2];
-    void *task;
+    WifiSetupTask *task;
 } WifiSetupOamBuffer;
 
 typedef struct WifiSetupCharBlock {
@@ -244,7 +214,7 @@ typedef struct WifiSetupTaskQueue {
     WifiSetupTask tail;
     int capacity;
     u8 enabled;
-    void *taskBuf;
+    WifiSetupTask *taskBuf;
 } WifiSetupTaskQueue;
 
 typedef struct WifiSetupInputState {
@@ -275,7 +245,7 @@ typedef struct WifiSetupIrqSave {
 
 extern WifiSetupArchiveState *gWifiSetupArchive;
 extern WifiSetupOamBlockManager *gWifiSetupOamBlockManager;
-extern void *gWifiSetupOamTemplateFiles[];
+extern WifiSetupOamTemplateHeader *gWifiSetupOamTemplateFiles[];
 extern WifiSetupFade *gWifiSetupFades;
 extern WifiSetupTextState *gWifiSetupText;
 extern NNSFndHeapHandle gWifiSetupHeap;
@@ -340,7 +310,7 @@ void WifiSetupText_FreeCanvas(WifiSetupCanvas *canvas);
 WifiSetupCanvas *WifiSetupText_InitBgCanvas(int screen, int font);
 void WifiSetupText_FreeBgCanvas(int screen);
 void WifiSetupText_Draw(WifiSetupCanvas *canvas, int x, int y, int color, u32 flags, const u16 *text);
-void WifiSetupText_DrawMonospace(void *charCanvas, int x, int y, int color, int advance, const u16 *text, int font);
+void WifiSetupText_DrawMonospace(WifiSetupCanvas *canvas, int x, int y, int color, int advance, const u16 *text, int font);
 void WifiSetupText_DrawInRect(WifiSetupCanvas *canvas, int x, int y, int width, int height, int color, u32 flags, const u16 *text);
 void WifiSetupText_Clear(WifiSetupCanvas *canvas, int color);
 void WifiSetupText_ShowObjCanvas(WifiSetupCanvas *canvas, int x, int y, WifiSetupOamBlock *block, u32 priority);

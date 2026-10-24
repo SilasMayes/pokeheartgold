@@ -79,11 +79,11 @@ int WifiSetup_CleanupSocket(void) {
     return -!!WifiSetup_DisconnectAccessPoint();
 }
 
-int WifiSetup_MemCompare(const u8 *a, const u8 *b, int n) {
+int WifiSetup_MemCompare(const u8 *lhs, const u8 *rhs, int size) {
     int diff = 0;
-    while (n-- > 0 && (diff = *a - *b) == 0) {
-        a++;
-        b++;
+    while (size-- > 0 && (diff = *lhs - *rhs) == 0) {
+        lhs++;
+        rhs++;
     }
     return diff;
 }
@@ -187,44 +187,44 @@ void WifiSetup_AddToPollSet(int socket, SocPollFd *set) {
 }
 
 static void WifiSetup_ConvertBssDesc(const void *src, void *dst) {
-    const ScanRecord *s = src;
-    AccessPointInfo *t = dst;
+    const ScanRecord *record = src;
+    AccessPointInfo *info = dst;
     int i;
     int count;
-    RateMask *p;
+    RateMask *rateMask;
 
-    t->ssidLength = s->ssidLength;
-    MIi_CpuCopy16(s->ssid, t->ssid, 32);
-    t->channel = s->channel;
-    MIi_CpuCopy16(s->mac, t->mac, 6);
+    info->ssidLength = record->ssidLength;
+    MIi_CpuCopy16(record->ssid, info->ssid, 32);
+    info->channel = record->channel;
+    MIi_CpuCopy16(record->mac, info->mac, 6);
     count = 0;
-    p = sWifiSetupRateMasks;
+    rateMask = sWifiSetupRateMasks;
     i = count;
-    for (; i < 12; i++, p++) {
-        if (s->supportedRates & p->mask) {
-            t->rates[count] = p->rate;
-            if (s->basicRates & p->mask) {
-                t->rates[count] |= 128;
+    for (; i < 12; i++, rateMask++) {
+        if (record->supportedRates & rateMask->mask) {
+            info->rates[count] = rateMask->rate;
+            if (record->basicRates & rateMask->mask) {
+                info->rates[count] |= 128;
             }
             count++;
         }
     }
-    t->rateCount = count;
-    t->beaconPeriod = s->beaconPeriod;
-    if ((s->flags & 3) == 1) {
-        t->mode = 1;
-    } else if ((s->flags & 3) == 2) {
-        t->mode = 2;
+    info->rateCount = count;
+    info->beaconPeriod = record->beaconPeriod;
+    if ((record->flags & 3) == 1) {
+        info->mode = 1;
+    } else if ((record->flags & 3) == 2) {
+        info->mode = 2;
     } else {
-        t->mode = 0;
+        info->mode = 0;
     }
 }
 
-void WifiSetup_CopyConnectSsid(const void *src, void *dst) {
-    u8 *p = dst;
-    MIi_CpuClear16(0, (u16 *)(p + 0xC), 0x20);
-    *(u16 *)(p + 0xA) = *(u32 *)src;
-    MI_CpuCopy8((const u8 *)src + 4, p + 0xC, *(u16 *)(p + 0xA));
+void WifiSetup_CopyConnectSsid(const WifiSetupAossConnectInfo *src, void *dst) {
+    u8 *bssDesc = dst;
+    MIi_CpuClear16(0, (u16 *)(bssDesc + 0xC), 0x20);
+    *(u16 *)(bssDesc + 0xA) = src->ssidLength;
+    MI_CpuCopy8(src->ssid, bssDesc + 0xC, *(u16 *)(bssDesc + 0xA));
 }
 
 void WifiSetup_StoreConnectResult(void *dst, const void *src, u32 value) {

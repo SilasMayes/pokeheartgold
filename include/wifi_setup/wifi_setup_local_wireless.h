@@ -16,8 +16,8 @@
 // Title banner, allocated by WifiSetupBanner_Open.
 typedef struct WifiSetupBanner {
     WifiSetupOamBlock *letters[WIFI_SETUP_BANNER_NUM_LETTERS];
-    void *task; // slide task, NULL when the banner is still
-    u8 closing; // set by WifiSetupBanner_Close
+    WifiSetupTask *task; // slide task, NULL when the banner is still
+    u8 closing;          // set by WifiSetupBanner_Close
 } WifiSetupBanner;
 
 typedef struct WifiSetupBannerState {
@@ -40,7 +40,7 @@ typedef struct WifiSetupUsbScan {
     WmScanExParam param;
     WmStatus status;
     OSTick startTick;
-    void *task;
+    WifiSetupTask *task;
     vu8 endState; // 1 ending, 2 ended
     u8 found;
     u8 rescanning; // set once the first scan period is over
@@ -53,7 +53,7 @@ typedef struct WifiSetupDialog {
     WifiSetupOamBlock *textBlock;
     WifiSetupOamBlock *buttons[2];
     WifiSetupCanvas *canvas;
-    void *task;
+    WifiSetupTask *task;
     u16 timer;     // kind 5: frames shown
     s8 brightness; // fade
     s8 selected;   // button index or WIFI_SETUP_SELECTED_*

@@ -13,29 +13,30 @@ static inline int GX_GetVisiblePlane13(void);
 static inline int GXS_GetVisiblePlane13(void);
 static inline void OamSetPosition(GXOamAttr *oam, int x, int y);
 static inline void OamGetPosition(const GXOamAttr *oam, s32 *x, s32 *y);
+static inline const G2dFontGlyph *GetFontGlyph(const G2dFont *font);
 static void WifiSetupArchive_ReadDone(void *arg);
-static BOOL WifiSetup_HasSameSuffix(const char *a, const char *b, int len);
+static BOOL WifiSetup_HasSameSuffix(const char *str1, const char *str2, int len);
 static WifiSetupPool *WifiSetupPool_New(int capacity);
 static void WifiSetupPool_Delete(WifiSetupPool *pool);
 static void WifiSetupFade_Task(WifiSetupTask *task, void *arg);
 static void WifiSetupFade_DelayTask(WifiSetupTask *task, void *arg);
 static void WifiSetupText_BgTransferTask(WifiSetupTask *task, void *arg);
-static void WifiSetupText_DrawChar(void *charCanvas, int x, int y, int color, u16 ch, int font);
+static void WifiSetupText_DrawChar(G2dCharCanvas *charCanvas, int x, int y, int color, u16 ch, int font);
 static void *WifiSetupHeap_Alloc(u32 size, int align);
 static void WifiSetupInput_UpdatePad(void);
 static void WifiSetupInput_UpdateTouch(void);
 static void WifiSetup_VBlankIntr(void);
 static WifiSetupList *WifiSetupList_New(void);
 static void WifiSetupList_Delete(WifiSetupList *list);
-static void WifiSetupList_Remove(void *node);
-static void WifiSetupList_InsertBefore(void *pos, void *node);
-static void WifiSetupList_Append(WifiSetupList *list, void *node);
-static void WifiSetupList_Prepend(WifiSetupList *list, void *node);
+static void WifiSetupList_Remove(WifiSetupListNode *node);
+static void WifiSetupList_InsertBefore(WifiSetupListNode *pos, WifiSetupListNode *node);
+static void WifiSetupList_Append(WifiSetupList *list, WifiSetupListNode *node);
+static void WifiSetupList_Prepend(WifiSetupList *list, WifiSetupListNode *node);
 static void WifiSetupOam_TransferTask(WifiSetupTask *task, void *arg);
 static GXOamAttr *WifiSetupOam_Alloc(int screen);
 static GXOamAttr *WifiSetupOam_Get(int screen, int index);
-static void *WifiSetupCharVram_Alloc(int screen, int size, int fromFront, u32 *outCharNo);
-static void WifiSetupCharVram_Free(void *block);
+static WifiSetupCharBlock *WifiSetupCharVram_Alloc(int screen, int size, int fromFront, u32 *outCharNo);
+static void WifiSetupCharVram_Free(WifiSetupCharBlock *block);
 static void WifiSetup_ClearVram(void);
 static WifiSetupTask *WifiSetupTask_CreateEx(int queue, WifiSetupTaskFunc func, void *arg, u32 priority, u8 ownsArg);
 static void WifiSetupTask_DestroyNow(int queue, WifiSetupTask *task);
@@ -50,6 +51,10 @@ static inline int GXS_GetVisiblePlane13(void) {
 
 static inline void OamSetPosition(GXOamAttr *oam, int x, int y) {
     oam->attr01 = (oam->attr01 & 0xFE00FF00) | (y & 0xFF) | ((x & 0x1FF) << 16);
+}
+
+static inline const G2dFontGlyph *GetFontGlyph(const G2dFont *font) {
+    return font->pRes->pGlyph;
 }
 
 static inline void OamGetPosition(const GXOamAttr *oam, s32 *x, s32 *y) {
@@ -69,17 +74,6 @@ void TP_RequestAutoSamplingStopAsync(void);
 void TP_WaitBusy(u32 flag);
 u32 TP_CheckBusy(u32 flag);
 u16 TP_GetLatestIndexInAuto(void);
-void NNS_G2dFontInitUTF16(WifiSetupFont *font, void *data);
-void NNSi_G2dTextCanvasDrawText(WifiSetupTextCanvas *textCanvas, int x, int y, int color, u32 flags, const u16 *text, WifiSetupTextDirection dir);
-void NNSi_G2dTextCanvasDrawTextRect(WifiSetupTextCanvas *textCanvas, int x, int y, int width, int height, int color, u32 flags, const u16 *text, WifiSetupTextDirection dir);
-void NNS_G2dCharCanvasDrawChar(void *charCanvas, WifiSetupFont *font, int x, int y, int color, u16 ch);
-u16 NNS_G2dFontFindGlyphIndex(WifiSetupFont *font, u16 ch);
-WifiSetupCharWidths *NNS_G2dFontGetCharWidthsFromIndex(WifiSetupFont *font, u16 index);
-void NNS_G2dArrangeOBJ1D(GXOamAttr *oam, int width, int height, int x, int y, int color, int charNo, int vramMode);
-int NNSi_G2dCalcRequiredOBJ(int width, int height);
-void NNS_G2dCharCanvasInitForOBJ1D(void *charCanvas, void *charBase, int width, int height, int colorMode);
-void NNS_G2dCharCanvasInitForBG(void *charCanvas, void *charBase, u32 width, u32 height, int colorMode);
-void NNS_G2dMapScrToCharText(void *screen, u32 width, u32 height, u32 left, u32 top, u32 screenWidth, u32 charNo, u32 palette);
 
 
 void WifiSetupArchive_Unload(void) {
@@ -126,7 +120,7 @@ void *WifiSetupFile_Load(const char *path, u32 *outSize, int align) {
     void *buf;
     FSFile file;
     u32 size;
-    int a;
+    int loadAlign;
     void *out;
 
     WifiSetupPool_Pop(gWifiSetupArchive->filePool);
@@ -140,14 +134,14 @@ void *WifiSetupFile_Load(const char *path, u32 *outSize, int align) {
     }
     // compressed files are loaded with a negative alignment (from the end of the heap)
     if (WifiSetup_HasSameSuffix(path, gWifiSetupCompressedSuffix, 2)) {
-        a = -4;
+        loadAlign = -4;
     } else {
-        a = align;
+        loadAlign = align;
     }
-    buf = WifiSetupHeap_AllocZeroed(size, a);
+    buf = WifiSetupHeap_AllocZeroed(size, loadAlign);
     FS_ReadFile(&file, buf, size);
     FS_CloseFile(&file);
-    if (a > 0) {
+    if (loadAlign > 0) {
         return buf;
     }
     size = *(u32 *)buf >> 8;
@@ -165,25 +159,25 @@ void WifiSetupFile_Free(void *data) {
     WifiSetupPool_Push(gWifiSetupArchive->filePool, data);
 }
 
-static BOOL WifiSetup_HasSameSuffix(const char *a, const char *b, int len) {
-    int lenA = strlen(a);
-    int lenB = strlen(b);
-    if (lenA < len || lenB < len) {
+static BOOL WifiSetup_HasSameSuffix(const char *str1, const char *str2, int len) {
+    int len1 = strlen(str1);
+    int len2 = strlen(str2);
+    if (len1 < len || len2 < len) {
         return FALSE;
     }
-    return memcmp(a + (lenA - len), b + (lenB - len), len) == 0;
+    return memcmp(str1 + (len1 - len), str2 + (len2 - len), len) == 0;
 }
 
 void WifiSetupOamBlock_InitManager(void) {
     int i;
-    gWifiSetupOamBlockManager = WifiSetupHeap_AllocZeroed(0x450, 4);
+    gWifiSetupOamBlockManager = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupOamBlockManager) * 2, 4);
     for (i = 0; i < 2; i++) {
-        gWifiSetupOamBlockManager[i].pool = WifiSetupPool_NewWithItems(32, gWifiSetupOamBlockManager[i].blocks, sizeof(WifiSetupOamBlock));
+        gWifiSetupOamBlockManager[i].pool = WifiSetupPool_NewWithItems(NELEMS(gWifiSetupOamBlockManager[i].blocks), gWifiSetupOamBlockManager[i].blocks, sizeof(WifiSetupOamBlock));
         gWifiSetupOamBlockManager[i].list = WifiSetupList_New();
         gWifiSetupOamBlockManager[i].first.oam = WifiSetupOam_Get(i, 0x40);
         gWifiSetupOamBlockManager[i].last.oam = WifiSetupOam_Get(i, 0x7F) + 1;
-        WifiSetupList_Prepend(gWifiSetupOamBlockManager[i].list, &gWifiSetupOamBlockManager[i].first);
-        WifiSetupList_Append(gWifiSetupOamBlockManager[i].list, &gWifiSetupOamBlockManager[i].last);
+        WifiSetupList_Prepend(gWifiSetupOamBlockManager[i].list, &gWifiSetupOamBlockManager[i].first.node);
+        WifiSetupList_Append(gWifiSetupOamBlockManager[i].list, &gWifiSetupOamBlockManager[i].last.node);
     }
 }
 
@@ -210,7 +204,7 @@ WifiSetupOamBlock *WifiSetupOamBlock_Alloc(int screen, int count, int fromFront)
             GXOamAttr *start = cur->oam + cur->count;
             if (start + count <= next->oam) {
                 block->oam = start;
-                WifiSetupList_InsertBefore(next, block);
+                WifiSetupList_InsertBefore(&next->node, &block->node);
                 break;
             }
             cur = next;
@@ -225,7 +219,7 @@ WifiSetupOamBlock *WifiSetupOamBlock_Alloc(int screen, int count, int fromFront)
             GXOamAttr *start = cur->oam - count;
             if (start >= prev->oam + prev->count) {
                 block->oam = start;
-                WifiSetupList_InsertBefore(cur, block);
+                WifiSetupList_InsertBefore(&cur->node, &block->node);
                 break;
             }
             cur = prev;
@@ -247,8 +241,8 @@ void WifiSetupOamBlock_Free(WifiSetupOamBlock *block) {
         oam->attr01 = (oam->attr01 & 0xC1FFFCFF) | 0x200; // hide
         oam++;
     }
-    WifiSetupList_Remove(block);
-    if ((u32)block >= (u32)&gWifiSetupOamBlockManager[1]) {
+    WifiSetupList_Remove(&block->node);
+    if (block >= gWifiSetupOamBlockManager[1].blocks) {
         screen = 1;
     }
     WifiSetupPool_Push(gWifiSetupOamBlockManager[screen].pool, block);
@@ -361,9 +355,9 @@ void WifiSetupOamTemplate_Free(int slot) {
 }
 
 void WifiSetupOamTemplate_Copy(int slot, int index, GXOamAttr *dst) {
-    u8 *data = gWifiSetupOamTemplateFiles[slot];
-    u8 *src = data + ((WifiSetupOamTemplateHeader *)data)[index].offset;
-    u16 count = ((WifiSetupOamTemplateHeader *)data)[index].count;
+    WifiSetupOamTemplateHeader *headers = gWifiSetupOamTemplateFiles[slot];
+    u8 *src = (u8 *)headers + headers[index].offset;
+    u16 count = headers[index].count;
     GXOamAttr tmp;
     int i;
     MIi_CpuClear32(0, (void *)&tmp, sizeof(GXOamAttr));
@@ -382,7 +376,7 @@ GXOamAttr *WifiSetupOamTemplate_AllocOam(int slot, int index) {
 }
 
 WifiSetupOamBlock *WifiSetupOamTemplate_AllocBlock(int slot, int index, int fromFront) {
-    WifiSetupOamBlock *block = WifiSetupOamBlock_Alloc(slot, ((WifiSetupOamTemplateHeader *)gWifiSetupOamTemplateFiles[slot])[index].count, fromFront);
+    WifiSetupOamBlock *block = WifiSetupOamBlock_Alloc(slot, gWifiSetupOamTemplateFiles[slot][index].count, fromFront);
     WifiSetupOamTemplate_Copy(slot, index, WifiSetupOamBlock_GetOam(block, 0));
     return block;
 }
@@ -433,7 +427,7 @@ void *WifiSetupPool_Pop(WifiSetupPool *pool) {
 }
 
 void WifiSetupFade_Init(void) {
-    gWifiSetupFades = WifiSetupHeap_AllocZeroed(0x18, 4);
+    gWifiSetupFades = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupFade) * 2, 4);
     G2_SetBlendBrightness(0x3F, 0x10);
     G2S_SetBlendBrightness(0x3F, 0x10);
 }
@@ -468,7 +462,7 @@ int WifiSetupFade_Start(int kind, int screen, int planes, int duration) {
     } else {
         G2_SetBlendBrightness(planes, start.values[kind]);
     }
-    fade->task = WifiSetupTask_Create(1, WifiSetupFade_Task, fade, 0xC8);
+    fade->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupFade_Task, fade, 0xC8);
     fade->counter = 0;
     fade->kind = kind;
     fade->duration = duration;
@@ -505,7 +499,7 @@ static void WifiSetupFade_Task(WifiSetupTask *task, void *arg) {
         G2x_ChangeBlendBrightness_((u16 *)&reg_G2_BLDCNT, end.values[fade->kind]);
     }
     fade->active = 0;
-    WifiSetupTask_DestroyLater(1, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_VBLANK, task);
 }
 
 int WifiSetupFade_StartDelay(int duration) {
@@ -513,7 +507,7 @@ int WifiSetupFade_StartDelay(int duration) {
     if (fade->active) {
         return 0;
     }
-    fade->task = WifiSetupTask_Create(1, WifiSetupFade_DelayTask, fade, 0xC8);
+    fade->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupFade_DelayTask, fade, 0xC8);
     fade->counter = 0;
     fade->duration = duration;
     fade->active = 1;
@@ -527,14 +521,14 @@ static void WifiSetupFade_DelayTask(WifiSetupTask *task, void *arg) {
         return;
     }
     fade->active = 0;
-    WifiSetupTask_DestroyLater(1, task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_VBLANK, task);
 }
 
 void WifiSetupText_Init(void) {
     WifiSetupTextState *text;
     int i;
     gWifiSetupText = text = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupTextState), 4);
-    gWifiSetupText->objCanvasPool = WifiSetupPool_NewWithItems(32, text->objCanvases, sizeof(WifiSetupCanvas));
+    gWifiSetupText->objCanvasPool = WifiSetupPool_NewWithItems(NELEMS(text->objCanvases), text->objCanvases, sizeof(WifiSetupCanvas));
     if (WifiSetupApp_GetLanguage() == 6) {
         for (i = 0; i < 2; i++) {
             gWifiSetupText->fontData[i] = WifiSetupFile_Load(gWifiSetupFontPathsKorean[i], NULL, 4);
@@ -568,13 +562,13 @@ WifiSetupCanvas *WifiSetupText_AllocObjCanvas(int screen, int width, int height,
     {
         u32 tile = charNo;
         u32 base = screen == 1 ? 0x6600000 : 0x6400000;
-        NNS_G2dCharCanvasInitForOBJ1D(canvas, (void *)(base + (tile << 7)), width, height, 4);
+        NNS_G2dCharCanvasInitForOBJ1D(&canvas->charCanvas, (void *)(base + (tile << 7)), width, height, 4);
     }
-    canvas->vtable->clear(canvas, 0);
+    canvas->charCanvas.vtable->pClear(&canvas->charCanvas, 0);
     {
-        WifiSetupFont *fontPtr = &gWifiSetupText->fonts[font];
-        canvas->textCanvas.charCanvas = canvas;
-        canvas->textCanvas.font = fontPtr;
+        G2dFont *fontPtr = &gWifiSetupText->fonts[font];
+        canvas->textCanvas.pCanvas = &canvas->charCanvas;
+        canvas->textCanvas.pFont = fontPtr;
     }
     canvas->textCanvas.hSpace = 1;
     canvas->textCanvas.vSpace = 1;
@@ -587,7 +581,7 @@ void WifiSetupText_FreeObjCanvas(WifiSetupCanvas *canvas) {
 }
 
 WifiSetupCanvas *WifiSetupText_InitBgCanvas(int screen, int font) {
-    int height = gWifiSetupTextScreenHeights[screen * 2], width = gWifiSetupTextScreenWidths[screen * 2];
+    u32 height = gWifiSetupTextScreenHeights[screen * 2], width = gWifiSetupTextScreenWidths[screen * 2];
     WifiSetupCanvas *canvas = &gWifiSetupText->bgCanvases[screen];
     void *screenBuf;
     canvas->charBuf = WifiSetupHeap_AllocZeroed(width * height * 32, 32);
@@ -598,12 +592,12 @@ WifiSetupCanvas *WifiSetupText_InitBgCanvas(int screen, int font) {
         G2_BG0Mosaic(FALSE);
         G2_SetBG0Control(GX_BG_SCRSIZE_TEXT_256x256, GX_BG_COLORMODE_16, GX_BG_SCRBASE_0x6000, GX_BG_CHARBASE_0x00000, GX_BG_EXTPLTT_01);
     }
-    NNS_G2dCharCanvasInitForBG(canvas, canvas->charBuf, width, height, 4);
+    NNS_G2dCharCanvasInitForBG(&canvas->charCanvas, canvas->charBuf, width, height, 4);
     {
         WifiSetupTextState *text = gWifiSetupText;
         int sub = screen == 1;
-        canvas->textCanvas.charCanvas = canvas;
-        canvas->textCanvas.font = &text->fonts[font];
+        canvas->textCanvas.pCanvas = &canvas->charCanvas;
+        canvas->textCanvas.pFont = &text->fonts[font];
         canvas->textCanvas.hSpace = 1;
         canvas->textCanvas.vSpace = 1;
         if (sub) {
@@ -614,7 +608,7 @@ WifiSetupCanvas *WifiSetupText_InitBgCanvas(int screen, int font) {
     }
     NNS_G2dMapScrToCharText(screenBuf, width, height, 0, 0, 32, gWifiSetupTextScreenCharBases[screen], 15);
     WifiSetupText_Clear(canvas, 0);
-    canvas->u.task = WifiSetupTask_Create(1, WifiSetupText_BgTransferTask, &gWifiSetupText->bgDirty[screen], 200);
+    canvas->u.task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupText_BgTransferTask, &gWifiSetupText->bgDirty[screen], 200);
     return canvas;
 }
 
@@ -634,7 +628,7 @@ static void WifiSetupText_BgTransferTask(WifiSetupTask *task, void *arg) {
 }
 
 void WifiSetupText_FreeCanvas(WifiSetupCanvas *canvas) {
-    WifiSetupTask_Destroy(1, canvas->u.task);
+    WifiSetupTask_Destroy(WIFI_SETUP_TASK_QUEUE_VBLANK, canvas->u.task);
     if (canvas == &gWifiSetupText->bgCanvases[0]) {
         MIi_CpuClear16(0, G2_GetBG0CharPtr(), 0x6000);
     } else {
@@ -648,9 +642,9 @@ void WifiSetupText_FreeBgCanvas(int screen) {
 }
 
 void WifiSetupText_Draw(WifiSetupCanvas *canvas, int x, int y, int color, u32 flags, const u16 *text) {
-    WifiSetupFont *font = canvas->textCanvas.font;
-    WifiSetupTextDirection dir = { 0, 0 };
-    switch (font->res->info->flowDirection) {
+    const G2dFont *font = canvas->textCanvas.pFont;
+    G2dTextDirection dir = { 0, 0 };
+    switch (GetFontGlyph(font)->rotation) {
     case 0:
     case 7:
         dir.x = 1;
@@ -671,32 +665,32 @@ void WifiSetupText_Draw(WifiSetupCanvas *canvas, int x, int y, int color, u32 fl
     NNSi_G2dTextCanvasDrawText(&canvas->textCanvas, x, y, color, flags, text, dir);
 }
 
-static void WifiSetupText_DrawChar(void *charCanvas, int x, int y, int color, u16 ch, int font) {
+static void WifiSetupText_DrawChar(G2dCharCanvas *charCanvas, int x, int y, int color, u16 ch, int font) {
     NNS_G2dCharCanvasDrawChar(charCanvas, &gWifiSetupText->fonts[font], x, y, color, ch);
 }
 
 // Draws every character centred in a cell of advance pixels.
-void WifiSetupText_DrawMonospace(void *charCanvas, int x, int y, int color, int advance, const u16 *text, int font) {
-    WifiSetupFont *fontPtr;
+void WifiSetupText_DrawMonospace(WifiSetupCanvas *canvas, int x, int y, int color, int advance, const u16 *text, int font) {
+    G2dFont *fontPtr;
     u16 glyph;
-    WifiSetupCharWidths *widths;
+    const G2dCharWidths *widths;
     while (*text != 0) {
         fontPtr = &gWifiSetupText->fonts[font];
         glyph = NNS_G2dFontFindGlyphIndex(fontPtr, *text);
-        if (glyph == 0xFFFF) {
-            glyph = fontPtr->res->alternateChar;
+        if (glyph == G2D_FONT_NO_GLYPH) {
+            glyph = fontPtr->pRes->alterCharIndex;
         }
         widths = NNS_G2dFontGetCharWidthsFromIndex(fontPtr, glyph);
-        WifiSetupText_DrawChar(charCanvas, x + ((advance - widths->charWidth) >> 1), y, color, *text, font);
+        WifiSetupText_DrawChar(&canvas->charCanvas, x + ((advance - widths->charWidth) >> 1), y, color, *text, font);
         text++;
         x += advance;
     }
 }
 
 void WifiSetupText_DrawInRect(WifiSetupCanvas *canvas, int x, int y, int width, int height, int color, u32 flags, const u16 *text) {
-    WifiSetupFont *font = canvas->textCanvas.font;
-    WifiSetupTextDirection dir = { 0, 0 };
-    switch (font->res->info->flowDirection) {
+    const G2dFont *font = canvas->textCanvas.pFont;
+    G2dTextDirection dir = { 0, 0 };
+    switch (GetFontGlyph(font)->rotation) {
     case 0:
     case 7:
         dir.x = 1;
@@ -718,7 +712,7 @@ void WifiSetupText_DrawInRect(WifiSetupCanvas *canvas, int x, int y, int width, 
 }
 
 void WifiSetupText_Clear(WifiSetupCanvas *canvas, int color) {
-    canvas->vtable->clear(canvas, color);
+    canvas->charCanvas.vtable->pClear(&canvas->charCanvas, color);
 }
 
 void WifiSetupText_ShowObjCanvas(WifiSetupCanvas *canvas, int x, int y, WifiSetupOamBlock *block, u32 priority) {
@@ -888,7 +882,7 @@ void WifiSetupInput_Init(void) {
         OS_Terminate();
     }
     TP_SetCalibrateParam(&calibrate);
-    TP_RequestAutoSamplingStartAsync(0, 4, gWifiSetupInput.state->samples, 5);
+    TP_RequestAutoSamplingStartAsync(0, 4, gWifiSetupInput.state->samples, NELEMS(gWifiSetupInput.state->samples));
     TP_WaitBusy(2);
     if (TP_CheckBusy(2)) {
         OS_Terminate();
@@ -938,7 +932,7 @@ static void WifiSetupInput_UpdatePad(void) {
 }
 
 static void WifiSetupInput_UpdateTouch(void) {
-    int n;
+    int tries;
     int index;
     int wasTouching;
     u8 touched;
@@ -949,18 +943,18 @@ static void WifiSetupInput_UpdateTouch(void) {
     touched = 0;
     index = TP_GetLatestIndexInAuto();
     gWifiSetupInput.state->prevTouch = gWifiSetupInput.state->touch;
-    n = 0;
+    tries = 0;
     do {
         TPData *sample = &gWifiSetupInput.state->samples[index];
-        if (sample->touch == 1 && sample->validity == 0) {
+        if (sample->touch == TP_TOUCH_ON && sample->validity == TP_VALIDITY_VALID) {
             touched = 1;
             TP_GetCalibratedPoint(&calibrated, sample);
             WifiSetup_SetPoint(calibrated.x, calibrated.y, &gWifiSetupInput.state->touch);
             break;
         }
-        n++;
+        tries++;
         index = FX_ModS32(index + 4, 5);
-    } while (n < 4);
+    } while (tries < 4);
     changed = touched ^ wasTouching;
     gWifiSetupInput.state->touchTrig = touched & changed;
     gWifiSetupInput.state->touchRelease = wasTouching & changed;
@@ -1133,7 +1127,7 @@ void WifiSetupInput_UpdateLcdPower(void) {
 
 void WifiSetup_InstallVBlankIntr(void) {
     gWifiSetupIrqSave.mask = reg_OS_IE;
-    OS_SetIrqMask(0x40018);
+    OS_SetIrqMask(OS_IE_SPFIFO_RECV | OS_IE_TIMER1 | OS_IE_TIMER0);
     OS_EnableIrqMask(OS_IE_V_BLANK);
     gWifiSetupIrqSave.vblankFunc = OS_GetIrqFunction(OS_IE_V_BLANK);
     OS_SetIrqFunction(OS_IE_V_BLANK, WifiSetup_VBlankIntr);
@@ -1150,7 +1144,7 @@ void WifiSetup_RestoreVBlankIntr(void) {
 
 // Runs the vblank task queue and sets the vblank bit of the interrupt check flags.
 static void WifiSetup_VBlankIntr(void) {
-    WifiSetupTask_RunQueue(1);
+    WifiSetupTask_RunQueue(WIFI_SETUP_TASK_QUEUE_VBLANK);
     OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
 
@@ -1167,32 +1161,29 @@ static void WifiSetupList_Delete(WifiSetupList *list) {
     WifiSetupHeap_FreeAndClear(&list);
 }
 
-static void WifiSetupList_Remove(void *node) {
-    WifiSetupListNode *n = node;
+static void WifiSetupList_Remove(WifiSetupListNode *node) {
     int irq = OS_DisableIrqMask(OS_IE_V_BLANK);
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
-    n->next = NULL;
-    n->prev = NULL;
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+    node->next = NULL;
+    node->prev = NULL;
     OS_EnableIrqMask(irq);
 }
 
-static void WifiSetupList_InsertBefore(void *pos, void *node) {
-    WifiSetupListNode *p = pos;
-    WifiSetupListNode *n = node;
+static void WifiSetupList_InsertBefore(WifiSetupListNode *pos, WifiSetupListNode *node) {
     int irq = OS_DisableIrqMask(OS_IE_V_BLANK);
-    p->prev->next = n;
-    n->prev = p->prev;
-    n->next = p;
-    p->prev = n;
+    pos->prev->next = node;
+    node->prev = pos->prev;
+    node->next = pos;
+    pos->prev = node;
     OS_EnableIrqMask(irq);
 }
 
-static void WifiSetupList_Append(WifiSetupList *list, void *node) {
+static void WifiSetupList_Append(WifiSetupList *list, WifiSetupListNode *node) {
     WifiSetupList_InsertBefore(&list->tail, node);
 }
 
-static void WifiSetupList_Prepend(WifiSetupList *list, void *node) {
+static void WifiSetupList_Prepend(WifiSetupList *list, WifiSetupListNode *node) {
     WifiSetupList_InsertBefore(list->head.next, node);
 }
 
@@ -1200,21 +1191,21 @@ void WifiSetupOam_Init(void) {
     WifiSetupOamBuffer *buffer;
     int i;
     gWifiSetupOamBuffer = buffer = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupOamBuffer), 4);
-    MIi_CpuClearFast(0x200, (void *)buffer, 0x800);
+    MIi_CpuClearFast(0x200, (void *)buffer, sizeof(buffer->oam));
     for (i = 0; i < 2; i++) {
-        gWifiSetupOamBuffer->pools[i] = WifiSetupPool_NewWithItems(0x40, gWifiSetupOamBuffer->oam[i], 8);
+        gWifiSetupOamBuffer->pools[i] = WifiSetupPool_NewWithItems(0x40, gWifiSetupOamBuffer->oam[i], sizeof(GXOamAttr));
     }
-    gWifiSetupOamBuffer->task = WifiSetupTask_Create(1, WifiSetupOam_TransferTask, NULL, 0xC8);
+    gWifiSetupOamBuffer->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupOam_TransferTask, NULL, 0xC8);
 }
 
 static void WifiSetupOam_TransferTask(WifiSetupTask *task, void *arg) {
-    DC_FlushRange(gWifiSetupOamBuffer, 0x800);
-    GX_LoadOAM(gWifiSetupOamBuffer->oam[0], 0, 0x400);
-    GXS_LoadOAM(gWifiSetupOamBuffer->oam[1], 0, 0x400);
+    DC_FlushRange(gWifiSetupOamBuffer, sizeof(gWifiSetupOamBuffer->oam));
+    GX_LoadOAM(gWifiSetupOamBuffer->oam[0], 0, sizeof(gWifiSetupOamBuffer->oam[0]));
+    GXS_LoadOAM(gWifiSetupOamBuffer->oam[1], 0, sizeof(gWifiSetupOamBuffer->oam[1]));
 }
 
 void WifiSetupOam_Free(void) {
-    WifiSetupTask_Destroy(1, gWifiSetupOamBuffer->task);
+    WifiSetupTask_Destroy(WIFI_SETUP_TASK_QUEUE_VBLANK, gWifiSetupOamBuffer->task);
     WifiSetupHeap_FreeAndClear(MODULE_BSS_ADDR(0x0224F608));
 }
 
@@ -1226,7 +1217,7 @@ void WifiSetupOam_Release(GXOamAttr *oam) {
     int screen;
     oam->attr01 = (oam->attr01 & 0xC1FFFCFF) | 0x200; // hide
     screen = 0;
-    if ((u32)oam >= (u32)gWifiSetupOamBuffer->oam[1]) {
+    if (oam >= gWifiSetupOamBuffer->oam[1]) {
         screen = 1;
     }
     WifiSetupPool_Push(gWifiSetupOamBuffer->pools[screen], oam);
@@ -1238,36 +1229,36 @@ static GXOamAttr *WifiSetupOam_Get(int screen, int index) {
 
 void WifiSetupCharVram_Init(void) {
     int i;
-    gWifiSetupCharVram = WifiSetupHeap_AllocZeroed(0x340, 4);
+    gWifiSetupCharVram = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupCharVramManager) * 2, 4);
     for (i = 0; i < 2; i++) {
-        gWifiSetupCharVram[i].pool = WifiSetupPool_NewWithItems(32, gWifiSetupCharVram[i].blocks, sizeof(WifiSetupCharBlock));
+        gWifiSetupCharVram[i].pool = WifiSetupPool_NewWithItems(NELEMS(gWifiSetupCharVram[i].blocks), gWifiSetupCharVram[i].blocks, sizeof(WifiSetupCharBlock));
         gWifiSetupCharVram[i].list = WifiSetupList_New();
         gWifiSetupCharVram[i].first.start = 0x300;
         gWifiSetupCharVram[i].last.start = 0x400;
-        WifiSetupList_Prepend(gWifiSetupCharVram[i].list, &gWifiSetupCharVram[i].first);
-        WifiSetupList_Append(gWifiSetupCharVram[i].list, &gWifiSetupCharVram[i].last);
+        WifiSetupList_Prepend(gWifiSetupCharVram[i].list, &gWifiSetupCharVram[i].first.node);
+        WifiSetupList_Append(gWifiSetupCharVram[i].list, &gWifiSetupCharVram[i].last.node);
     }
 }
 
 // size in bytes; allocated in units of 4 (tile numbers 0x300-0x3FF are managed).
-static void *WifiSetupCharVram_Alloc(int screen, int size, int fromFront, u32 *outCharNo) {
+static WifiSetupCharBlock *WifiSetupCharVram_Alloc(int screen, int size, int fromFront, u32 *outCharNo) {
     WifiSetupCharBlock *block;
     WifiSetupCharBlock *cur;
     int irq;
-    int n;
+    int blockSize;
 
     block = WifiSetupPool_Pop(gWifiSetupCharVram[screen].pool);
-    n = ((size + 3) & ~3) >> 2;
-    block->size = n;
+    blockSize = ((size + 3) & ~3) >> 2;
+    block->size = blockSize;
     irq = OS_DisableIrqMask(OS_IE_V_BLANK);
     if (fromFront) {
         cur = &gWifiSetupCharVram[screen].first;
         while (cur != &gWifiSetupCharVram[screen].last) {
             WifiSetupCharBlock *next = (WifiSetupCharBlock *)cur->node.next;
             int start = cur->start + cur->size;
-            if (start + n <= next->start) {
+            if (start + blockSize <= next->start) {
                 block->start = start;
-                WifiSetupList_InsertBefore(next, block);
+                WifiSetupList_InsertBefore(&next->node, &block->node);
                 break;
             }
             cur = next;
@@ -1279,10 +1270,10 @@ static void *WifiSetupCharVram_Alloc(int screen, int size, int fromFront, u32 *o
         cur = &gWifiSetupCharVram[screen].last;
         while (cur != &gWifiSetupCharVram[screen].first) {
             WifiSetupCharBlock *prev = (WifiSetupCharBlock *)cur->node.prev;
-            int start = cur->start - n;
+            int start = cur->start - blockSize;
             if (start >= prev->start + prev->size) {
                 block->start = start;
-                WifiSetupList_InsertBefore(cur, block);
+                WifiSetupList_InsertBefore(&cur->node, &block->node);
                 break;
             }
             cur = prev;
@@ -1296,10 +1287,10 @@ static void *WifiSetupCharVram_Alloc(int screen, int size, int fromFront, u32 *o
     return block;
 }
 
-static void WifiSetupCharVram_Free(void *block) {
+static void WifiSetupCharVram_Free(WifiSetupCharBlock *block) {
     int screen = 0;
-    WifiSetupList_Remove(block);
-    if ((u32)block >= (u32)&gWifiSetupCharVram[1]) {
+    WifiSetupList_Remove(&block->node);
+    if (block >= gWifiSetupCharVram[1].blocks) {
         screen = 1;
     }
     WifiSetupPool_Push(gWifiSetupCharVram[screen].pool, block);
@@ -1396,18 +1387,18 @@ void WifiSetupLed_SetOn(void) {
 void WifiSetupTask_InitScheduler(void) {
     int i;
     u8 *capacity;
-    gWifiSetupTaskQueues = WifiSetupHeap_AllocZeroed(0x80, 4);
+    gWifiSetupTaskQueues = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupTaskQueue) * 2, 4);
     capacity = gWifiSetupTaskQueueCapacities;
     for (i = 0; i < 2; i++) {
         gWifiSetupTaskQueues[i].capacity = *capacity;
-        gWifiSetupTaskQueues[i].taskBuf = WifiSetupHeap_AllocZeroed(*capacity * 0x14, 4);
-        gWifiSetupTaskQueues[i].taskPool = WifiSetupPool_NewWithItems(*capacity, gWifiSetupTaskQueues[i].taskBuf, 0x14);
+        gWifiSetupTaskQueues[i].taskBuf = WifiSetupHeap_AllocZeroed(*capacity * sizeof(WifiSetupTask), 4);
+        gWifiSetupTaskQueues[i].taskPool = WifiSetupPool_NewWithItems(*capacity, gWifiSetupTaskQueues[i].taskBuf, sizeof(WifiSetupTask));
         gWifiSetupTaskQueues[i].destroyQueue = WifiSetupPool_New(*capacity++);
         gWifiSetupTaskQueues[i].list = WifiSetupList_New();
         gWifiSetupTaskQueues[i].head.priority = 0;
         gWifiSetupTaskQueues[i].tail.priority = 0xFF;
-        WifiSetupList_Prepend(gWifiSetupTaskQueues[i].list, &gWifiSetupTaskQueues[i].head);
-        WifiSetupList_Append(gWifiSetupTaskQueues[i].list, &gWifiSetupTaskQueues[i].tail);
+        WifiSetupList_Prepend(gWifiSetupTaskQueues[i].list, &gWifiSetupTaskQueues[i].head.node);
+        WifiSetupList_Append(gWifiSetupTaskQueues[i].list, &gWifiSetupTaskQueues[i].tail.node);
         gWifiSetupTaskQueues[i].enabled = 1;
     }
 }
@@ -1456,7 +1447,7 @@ static WifiSetupTask *WifiSetupTask_CreateEx(int queue, WifiSetupTaskFunc func, 
     irq = OS_DisableIrqMask(OS_IE_V_BLANK);
     for (cur = (WifiSetupTask *)gWifiSetupTaskQueues[queue].head.node.next;; cur = (WifiSetupTask *)cur->node.next) {
         if (priority < cur->priority) {
-            WifiSetupList_InsertBefore(cur, task);
+            WifiSetupList_InsertBefore(&cur->node, &task->node);
             break;
         }
     }
@@ -1480,7 +1471,7 @@ static void WifiSetupTask_DestroyNow(int queue, WifiSetupTask *task) {
     if (task->ownsArg) {
         WifiSetupHeap_FreeAndClear(&task->arg);
     }
-    WifiSetupList_Remove(task);
+    WifiSetupList_Remove(&task->node);
     WifiSetupPool_Push(gWifiSetupTaskQueues[queue].taskPool, task);
 }
 

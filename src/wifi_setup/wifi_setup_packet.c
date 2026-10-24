@@ -198,12 +198,12 @@ int WifiSetup_SendSetupPacket(int socket, const WifiSetupSockAddr *to, const voi
 static u8 *WifiSetup_GetPacketPayload(u8 *data, u32 *type, u32 *length) {
     u32 sum = 0;
     u8 *end;
-    u8 *p;
+    u8 *byte;
 
     *type = Swap16(*(u16 *)data);
     end = data + 6 + (*length = Swap16(*(u16 *)(data + 2)));
-    for (p = data; p < end; p++) {
-        sum += *p;
+    for (byte = data; byte < end; byte++) {
+        sum += *byte;
     }
     if ((u16)sum != Swap16(*(u16 *)end)) {
         return NULL;
@@ -213,18 +213,18 @@ static u8 *WifiSetup_GetPacketPayload(u8 *data, u32 *type, u32 *length) {
 
 // Next record (type, length, value padded to 8 bytes) of a record list.
 static u8 *WifiSetup_NextRecord(u8 **cursor, u8 *end, u32 *type, u32 *length) {
-    u8 *p = *cursor;
+    u8 *record = *cursor;
     u32 padded;
-    if (p >= end) {
+    if (record >= end) {
         return NULL;
     }
-    *type = Swap16(*(u16 *)p);
-    *length = Swap16(*(u16 *)(p + 2));
-    p += 4;
+    *type = Swap16(*(u16 *)record);
+    *length = Swap16(*(u16 *)(record + 2));
+    record += 4;
     padded = (*length + 11) & ~7;
     padded -= 4;
-    *cursor = p + padded;
-    return p;
+    *cursor = record + padded;
+    return record;
 }
 
 u8 *WifiSetup_FirstRecord(u8 *data, u32 *type, u32 *length) {
@@ -235,7 +235,7 @@ u8 *WifiSetup_FirstRecord(u8 *data, u32 *type, u32 *length) {
 // Builds a packet from a record list, AES-key-wrapped when `key` is given; returns its size.
 u32 WifiSetup_BuildPacket(u8 *dest, u32 type, u8 *data, u32 length, const void *key) {
     u8 *end = dest;
-    u8 *p;
+    u8 *byte;
     u32 sum = 0;
     data[0] = 0;
     data[1] = 0;
@@ -262,8 +262,8 @@ u32 WifiSetup_BuildPacket(u8 *dest, u32 type, u8 *data, u32 length, const void *
     *(u16 *)(dest + 2) = Swap16((u16)length);
     end += 6;
     end += length;
-    for (p = dest; p < end; p++) {
-        sum += *p;
+    for (byte = dest; byte < end; byte++) {
+        sum += *byte;
     }
     *(u16 *)end = Swap16((u16)sum);
     return (u32)(end + 2 - dest);
@@ -442,22 +442,22 @@ int WifiSetup_ParseSettingsRecords(const u8 *data) {
             break;
         case 0x203: {
             int i = 0;
-            u8 *p = gWifiSetupReply;
-            u16 v = Swap16(*(u16 *)value);
+            u8 *entry = gWifiSetupReply;
+            u16 setting = Swap16(*(u16 *)value);
             do {
-                *(u32 *)(p + 0x15c) = v;
-                p += 40;
+                *(u32 *)(entry + 0x15c) = setting;
+                entry += 40;
                 i++;
             } while (i < 4);
             break;
         }
         case 0x204: {
-            u8 *p = gWifiSetupReply;
+            u8 *entry = gWifiSetupReply;
             int i = 0;
-            u16 v = Swap16(*(u16 *)value);
+            u16 setting = Swap16(*(u16 *)value);
             do {
-                *(u32 *)(p + 0x160) = v;
-                p += 40;
+                *(u32 *)(entry + 0x160) = setting;
+                entry += 40;
                 i++;
             } while (i < 4);
             break;
@@ -494,14 +494,14 @@ int WifiSetup_ParseSettingsRecords(const u8 *data) {
 
 static int WifiSetup_HexToBytes(u8 *dst, const char *src, int length) {
     int len = length;
-    int c;
+    int ch;
     int nibble = 0;
     const char *text = src;
     int i = nibble;
 
     for (; i < len; i++) {
-        c = text[i];
-        switch (c) {
+        ch = text[i];
+        switch (ch) {
         case '0':
         case '1':
         case '2':
@@ -512,7 +512,7 @@ static int WifiSetup_HexToBytes(u8 *dst, const char *src, int length) {
         case '7':
         case '8':
         case '9':
-            nibble += c - '0';
+            nibble += ch - '0';
             break;
         case 'a':
         case 'b':
@@ -520,7 +520,7 @@ static int WifiSetup_HexToBytes(u8 *dst, const char *src, int length) {
         case 'd':
         case 'e':
         case 'f':
-            nibble += c - 'a' + 10;
+            nibble += ch - 'a' + 10;
             break;
         case 'A':
         case 'B':
@@ -528,7 +528,7 @@ static int WifiSetup_HexToBytes(u8 *dst, const char *src, int length) {
         case 'D':
         case 'E':
         case 'F':
-            nibble += c - 'A' + 10;
+            nibble += ch - 'A' + 10;
             break;
         default:
             return 0;
@@ -550,7 +550,7 @@ int WifiSetup_StoreSimpleStartResult(void) {
     int i;
     u8 *src;
     char buf[33];
-    char *p;
+    char *key;
     u8 *out;
     strcpy((char *)&gWifiSetupResult, (char *)gWifiSetupRecvSsid);
     switch (gWifiSetupRecvSecurity[0]) {
@@ -566,7 +566,7 @@ int WifiSetup_StoreSimpleStartResult(void) {
         src = (u8 *)gWifiSetupRecvWepKeys;
         out = gWifiSetupResultWepKeys;
         i = 0;
-        p = buf;
+        key = buf;
         for (; i < 4; i++, src += 0x28, out += 0x20) {
             memcpy(buf, src, 0x20);
             buf[32] = 0;
@@ -575,27 +575,27 @@ int WifiSetup_StoreSimpleStartResult(void) {
                 break;
             case 5:
                 *(u32 *)(ov13_0224E0B0 + 0xC) = 1;
-                memcpy(out, p, 5);
+                memcpy(out, key, 5);
                 break;
             case 10:
                 *(u32 *)(ov13_0224E0B0 + 0xC) = 1;
-                WifiSetup_HexToBytes(out, p, 10);
+                WifiSetup_HexToBytes(out, key, 10);
                 break;
             case 13:
                 *(u32 *)(ov13_0224E0B0 + 0xC) = 2;
-                memcpy(out, p, 13);
+                memcpy(out, key, 13);
                 break;
             case 26:
                 *(u32 *)(ov13_0224E0B0 + 0xC) = 2;
-                WifiSetup_HexToBytes(out, p, 26);
+                WifiSetup_HexToBytes(out, key, 26);
                 break;
             case 16:
                 *(u32 *)(ov13_0224E0B0 + 0xC) = 3;
-                memcpy(out, p, 16);
+                memcpy(out, key, 16);
                 break;
             case 32:
                 *(u32 *)(ov13_0224E0B0 + 0xC) = 3;
-                WifiSetup_HexToBytes(out, p, 32);
+                WifiSetup_HexToBytes(out, key, 32);
                 break;
             default:
                 result = -7;

@@ -43,7 +43,7 @@ typedef struct WifiSetupSound {
     NNSSndArc arc;
     NNSSndHandle handle;
     void *data; // sound archive file
-    void *task;
+    struct WifiSetupTask *task;
 } WifiSetupSound;
 
 extern WifiSetupApScan *gWifiSetupApScan;

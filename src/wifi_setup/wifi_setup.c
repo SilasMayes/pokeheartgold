@@ -14,7 +14,7 @@ void WifiSetup_Free(void *ptr) {
 int WifiSetup_RunAoss(WifiSetupRequest *request) {
     int valid;
 
-    if (request->connectRetries == 0 || request->connectRetries < -1 || request->connectDelay < -1 || request->receiveRetries == 0 || request->receiveRetries < -1 || request->receiveDelay < -1 || request->receiveTimeout < -1 || request->keyLength == 0 || request->keyLength > 256 || request->key[request->keyLength - 1] != 0) {
+    if (request->connectRetries == 0 || request->connectRetries < -1 || request->connectDelay < -1 || request->receiveRetries == 0 || request->receiveRetries < -1 || request->receiveDelay < -1 || request->receiveTimeout < -1 || request->key.length == 0 || request->key.length > 256 || request->key.data[request->key.length - 1] != 0) {
         valid = -1;
     } else {
         valid = 0;

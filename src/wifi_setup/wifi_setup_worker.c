@@ -51,7 +51,7 @@ int WifiSetup_RunSession(void) {
     WifiSetupSockAddr bind, recv;
     u32 type, size;
     u32 timestamp;
-    u8 *p;
+    u8 *record;
     int sock;
     int done;
     int result;
@@ -131,10 +131,10 @@ int WifiSetup_RunSession(void) {
                 break;
             }
             if (SOC_RecvFrom(sock, gWifiSetupPacketBuffer, 2048, 4, &recv) > 0 && WifiSetup_ReadPacket(gWifiSetupPacketBuffer, 3, gWifiSetupRecordBuffer, gWifiSetupSessionKey)) {
-                p = WifiSetup_FirstRecord(gWifiSetupRecordBuffer, &type, &size);
+                record = WifiSetup_FirstRecord(gWifiSetupRecordBuffer, &type, &size);
                 if (type == 257) {
                     timestamp = WifiSetup_GetMilliseconds();
-                    *(Id8 *)gWifiSetupSettingsKey = *(Id8 *)p;
+                    *(Id8 *)gWifiSetupSettingsKey = *(Id8 *)record;
                     WifiSetup_CalcMd5(gWifiSetupTimestampDigest, (const u8 *)&timestamp, 4);
                     retry = 0;
                     gWifiSetupWork.step = SESSION_STEP_SEND_KEY;
@@ -142,7 +142,7 @@ int WifiSetup_RunSession(void) {
                     gWifiSetupConfig.deadline = -1;
                     WifiSetup_ReportSimpleStartStatus();
                 }
-                p = NULL;
+                record = NULL;
                 break;
             }
             if (WifiSetup_GetMilliseconds() >= last + 1000) {

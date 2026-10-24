@@ -27,7 +27,7 @@ void WifiSetupScrollBar_GetPartRect(int part, WifiSetupRect *rect);
 WifiSetupScrollBar *gWifiSetupScrollBar;
 
 void WifiSetupScrollBar_Destroy(void) {
-    WifiSetupTask_Destroy(0, gWifiSetupScrollBar->task);
+    WifiSetupTask_Destroy(WIFI_SETUP_TASK_QUEUE_MAIN, gWifiSetupScrollBar->task);
     WifiSetupOamBlock_Free(gWifiSetupScrollBar->thumb);
     WifiSetupHeap_FreeAndClear(&gWifiSetupScrollBar);
 }

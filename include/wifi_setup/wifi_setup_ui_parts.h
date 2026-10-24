@@ -9,7 +9,7 @@
 
 // Animated busy icon in the bottom-right corner of the touch screen.
 typedef struct WifiSetupBusyIcon {
-    void *task;
+    WifiSetupTask *task;
     GXOamAttr *oam;
     u8 style; // index into the palette table
     u8 frameCounter;
@@ -19,8 +19,8 @@ typedef struct WifiSetupBusyIcon {
 typedef struct WifiSetupButtonBar {
     WifiSetupOamBlock *buttons[2];
     WifiSetupOamBlock *bar;
-    void *task;
-    void *pressTask;
+    WifiSetupTask *task;
+    WifiSetupTask *pressTask;
     u16 timer;
     s8 selected; // button index or WIFI_SETUP_SELECTED_*
     u8 type;
@@ -31,7 +31,7 @@ typedef struct WifiSetupButtonBar {
 // Wireless signal strength icon in the top-right corner of the top screen.
 typedef struct WifiSetupSignalIcon {
     GXOamAttr *oam;
-    void *task;
+    WifiSetupTask *task;
     s8 type;
 } WifiSetupSignalIcon;
 
@@ -74,11 +74,11 @@ int WifiSetupButtonBar_IsNotClosing(void);
 void WifiSetupButtonBar_Unlock(void);
 void WifiSetupButtonBar_Lock(void);
 void WifiSetupMessage_Reset(void);
-int WifiSetupMessage_Show(int a, int b, int c);
+int WifiSetupMessage_Show(int index, int pos, int digit);
 int WifiSetupMessage_Hide(void);
 char *WifiSetup_LocalizePath(char *path);
 void WifiSetup_LoadGraphics(char *path, void (*load)(const void *, u32, u32));
-void WifiSetupBanner_Show(int a);
+void WifiSetupBanner_Show(int kind);
 void WifiSetupButtonBar_Show(int type);
 void WifiSetup_PrintMessage(int message);
 void WifiSetup_PrintMessageWithText(const u16 *str, int message);
@@ -90,7 +90,7 @@ void WifiSetupCursor_ShowCorners(int left, int right, int top, int bottom);
 void WifiSetupCursor_Hide(void);
 void WifiSetupBackground_Init(void);
 void WifiSetupBackground_Free(void);
-void WifiSetupBackground_LoadHeader(int n);
+void WifiSetupBackground_LoadHeader(int index);
 void WifiSetupBackground_LoadSlotHeader(void);
 void WifiSetupBackground_LoadSlotListHeader(void);
 void WifiSetupSignalIcon_Create(int type);

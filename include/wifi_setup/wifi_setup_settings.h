@@ -32,19 +32,19 @@ typedef struct WifiSetupSettingsCursorRects {
 } WifiSetupSettingsCursorRects;
 
 typedef struct WifiSetupSettingsWork {
-    void *task;         // queue 0
+    WifiSetupTask *buttonTask;
     u8 buttonStates[4]; // press timers of the switch buttons
     u16 *screenData;    // top screen BG tiles of all items
     void *paletteData;
     void *charData;
-    WifiSetupCanvas *canvas;  // text of the visible rows
-    GXOamAttr *rows[5];       // one object per visible row
-    GXOamAttr *addressSwitch; // buttons of the "obtain address automatically" item
-    GXOamAttr *dnsSwitch;     // buttons of the "obtain DNS automatically" item
-    GXOamAttr *ssidIcon;      // the setup method icon next to the first item, NULL for none
-    void *scrollTask;         // row scroll in progress
-    void *task2;              // queue 1
-    u8 selection;             // item chosen to leave the screen with
+    WifiSetupCanvas *canvas;   // text of the visible rows
+    GXOamAttr *rows[5];        // one object per visible row
+    GXOamAttr *addressSwitch;  // buttons of the "obtain address automatically" item
+    GXOamAttr *dnsSwitch;      // buttons of the "obtain DNS automatically" item
+    GXOamAttr *ssidIcon;       // the setup method icon next to the first item, NULL for none
+    WifiSetupTask *scrollTask; // row scroll in progress
+    WifiSetupTask *vblankTask;
+    u8 selection; // item chosen to leave the screen with
     u8 scrollBarTimer;
     u8 lastButton; // bottom button (12/13) the cursor returns to
     u8 autoDns;    // DNS switch kept while the address is set by hand

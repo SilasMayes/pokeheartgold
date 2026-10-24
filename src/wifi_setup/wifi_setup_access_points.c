@@ -22,7 +22,7 @@ static int WifiSetupApScan_Continue(void);
 static void WifiSetupApScan_Callback(void *arg);
 static void WifiSetupApScan_StoreResults(WMStartScanExCallback *cb);
 static void WifiSetupConnections_WritePage(int index);
-static int WifiSetup_HexDigitValue(u8 c);
+static int WifiSetup_HexDigitValue(u8 ch);
 
 int WifiSetupApScan_Start(void) {
     WifiSetupApScan *scan;
@@ -167,12 +167,12 @@ WifiSetupConnection *WifiSetupConnections_GetEdit(void) {
     return &gWifiSetupConnections->edit;
 }
 
-void WifiSetupConnections_SetAutoAddress(int v) {
-    gWifiSetupConnections->edit.autoAddress = v;
+void WifiSetupConnections_SetAutoAddress(int on) {
+    gWifiSetupConnections->edit.autoAddress = on;
 }
 
-void WifiSetupConnections_SetAutoDns(int v) {
-    gWifiSetupConnections->edit.autoDns = v;
+void WifiSetupConnections_SetAutoDns(int on) {
+    gWifiSetupConnections->edit.autoDns = on;
 }
 
 void WifiSetupConnections_SetSsid(const void *ssid) {
@@ -464,14 +464,14 @@ void WifiSetup_ParseAddress(const char *str, u8 *out) {
     }
 }
 
-static int WifiSetup_HexDigitValue(u8 c) {
-    if (c <= '9') {
-        return c - '0';
+static int WifiSetup_HexDigitValue(u8 ch) {
+    if (ch <= '9') {
+        return ch - '0';
     }
-    if (c <= 'F') {
-        return c - 0x37;
+    if (ch <= 'F') {
+        return ch - 'A' + 10;
     }
-    return c - 0x57;
+    return ch - 'a' + 10;
 }
 
 void WifiSetupSound_Init(void) {
@@ -482,12 +482,12 @@ void WifiSetupSound_Init(void) {
     NNS_SndArcInitOnMemory(&gWifiSetupSound->arc, gWifiSetupSound->data);
     NNS_SndArcPlayerSetup(0);
     NNS_SndHandleInit(&gWifiSetupSound->handle);
-    gWifiSetupSound->task = WifiSetupTask_Create(0, WifiSetupSound_UpdateTask, NULL, 0xc8);
+    gWifiSetupSound->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSound_UpdateTask, NULL, 0xc8);
 }
 
 WifiSetupSound *gWifiSetupSound;
 
 void WifiSetupSound_Free(void) {
-    WifiSetupTask_DestroyLater(0, gWifiSetupSound->task);
+    WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, gWifiSetupSound->task);
     WifiSetupHeap_FreeAndClear(&gWifiSetupSound);
 }

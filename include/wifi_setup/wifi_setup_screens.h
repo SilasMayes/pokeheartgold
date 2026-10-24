@@ -15,11 +15,11 @@ typedef struct WifiSetupListWork {
 
     void *bgScreenFile;
     void *paletteFile;
-    void *buffer;
+    WifiSetupCanvas *canvas;
     GXOamAttr *rowOams[5];
     GXOamAttr *iconOams[5];
-    void *task;
-    void *scrollBgTask;
+    WifiSetupTask *task;
+    WifiSetupTask *scrollBgTask;
     u16 total;           // scroll range
     u16 rowKindChars[3]; // character numbers per row kind
     u16 iconChars[4];
@@ -80,7 +80,7 @@ typedef struct WifiSetupMenu3 {
 typedef struct WifiSetupWaitScreen {
     u8 flag;
     u16 counter;
-    void *task;
+    WifiSetupTask *task;
 } WifiSetupWaitScreen;
 
 typedef struct WifiSetupPaletteRow {
