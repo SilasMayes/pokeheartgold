@@ -1,0 +1,35 @@
+#ifndef POKEHEARTGOLD_HALL_OF_FAME_SHOWCASE_INTERNAL_H
+#define POKEHEARTGOLD_HALL_OF_FAME_SHOWCASE_INTERNAL_H
+
+#include "bg_window.h"
+#include "char_tiles.h"
+#include "gf_gfx_planes.h"
+#include "grid_input_handler.h"
+#include "sprite_system.h"
+#include "touchscreen.h"
+
+extern const TouchscreenHitbox gHallOfFameShowcaseHitboxes[];
+extern const GraphicsModes gHallOfFameShowcaseGraphicsModes;
+extern const OamCharTransferParam gHallOfFameShowcaseOamCharTransferParam;
+extern const SpriteResourceCountsListUnion gHallOfFameShowcaseSpriteResourceCounts;
+extern const OamManagerParam gHallOfFameShowcaseOamManagerParam;
+extern const TileRect gHallOfFameShowcaseMonPicRect;
+extern const GridCallbacks gHallOfFameShowcaseGridCallbacks;
+extern const s16 gHallOfFameShowcaseIconPositions[][2];
+extern const BgTemplate gHallOfFameShowcaseBgTemplate_Main1;
+extern const BgTemplate gHallOfFameShowcaseBgTemplate_Sub0;
+extern const BgTemplate gHallOfFameShowcaseBgTemplate_Sub1;
+extern const BgTemplate gHallOfFameShowcaseBgTemplate_Main0;
+extern const TouchscreenHitbox gHallOfFameShowcaseGridHitboxes[];
+extern const GraphicsBanks gHallOfFameShowcaseGraphicsBanks;
+extern const ManagedSpriteTemplate gHallOfFameShowcasePartyIconSpriteTemplate;
+extern const DpadMenuBox gHallOfFameShowcaseGridDpadBoxes[];
+extern const WindowTemplate gHallOfFameShowcaseWindowTemplates[];
+extern const ManagedSpriteTemplate gHallOfFameShowcaseMonPicSpriteTemplate1;
+extern const ManagedSpriteTemplate gHallOfFameShowcaseMonPicSpriteTemplate2;
+extern const ManagedSpriteTemplate gHallOfFameShowcaseCursorSpriteTemplate;
+extern const ManagedSpriteTemplate gHallOfFameShowcasePrevPageSpriteTemplate;
+extern const ManagedSpriteTemplate gHallOfFameShowcaseNextPageSpriteTemplate;
+extern const ManagedSpriteTemplate gHallOfFameShowcaseExitSpriteTemplate;
+
+#endif // POKEHEARTGOLD_HALL_OF_FAME_SHOWCASE_INTERNAL_H

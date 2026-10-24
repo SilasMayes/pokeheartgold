@@ -101,7 +101,7 @@ typedef struct BoxMonSelector {
     u32 state;
     SpriteList *spriteList;
     G2dRenderer renderer;
-    GF_2DGfxResMan *resManagers[6];
+    GF_2DGfxResMan *resManagers[GF_GFX_RES_TYPE_MAX];
     SpriteResource *spriteResources[4]; // char, palette, cell, anim
     u8 unused_16C[8];
     SpriteResourcesHeader spriteHeader;

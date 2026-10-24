@@ -154,7 +154,7 @@ static BOOL CodeEntry_State_SwitchGroup(CodeEntryApp *app) {
 
     switch (app->subState) {
     case 0:
-        CodeEntry_SetCursorVisible(app, 0, FALSE);
+        CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_DIGIT, FALSE);
         for (i = 0; i < app->digitCount; i++) {
             if (app->digits[i].moveFrames) {
                 ManagedSprite_OffsetPositionXY(app->digits[i].sprite, app->digits[i].velocityX, app->digits[i].velocityY);
@@ -214,7 +214,7 @@ static BOOL CodeEntry_State_SwitchGroup(CodeEntryApp *app) {
             CodeEntry_MoveDigitCursor(app, CodeEntry_GetGroupLastDigit(app, app->pendingArg));
         }
         if (app->selectedGroup) {
-            CodeEntry_SetCursorVisible(app, 0, TRUE);
+            CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_DIGIT, TRUE);
         }
         CodeEntry_ClearPendingAction(app);
         CodeEntry_SetState(app, CODE_ENTRY_STATE_INPUT);
@@ -234,8 +234,8 @@ BOOL CodeEntry_RunState(CodeEntryApp *app) {
 static void CodeEntry_HandleKeys(CodeEntryApp *app) {
     CodeEntryKeyGrid grid = sCodeEntryKeyGrid;
     BOOL moved = FALSE;
-    s16 column = app->cursors[1].column;
-    s16 row = app->cursors[1].row;
+    s16 column = app->cursors[CODE_ENTRY_CURSOR_KEY].column;
+    s16 row = app->cursors[CODE_ENTRY_CURSOR_KEY].row;
     int key = grid.cells[row][column];
     int cursor, group, nextGroup;
 
@@ -250,13 +250,13 @@ static void CodeEntry_HandleKeys(CodeEntryApp *app) {
         app->touchActive = FALSE;
         CodeEntry_MoveKeyCursor(app, key);
         if (key == CODE_ENTRY_KEY_BACK || key == CODE_ENTRY_KEY_OK) {
-            if (app->cursors[1].value != 2) {
-                app->cursors[1].value = 2;
+            if (app->cursors[CODE_ENTRY_CURSOR_KEY].value != CODE_ENTRY_KEY_CURSOR_BUTTON) {
+                app->cursors[CODE_ENTRY_CURSOR_KEY].value = CODE_ENTRY_KEY_CURSOR_BUTTON;
                 return;
             }
         } else {
-            if (app->cursors[1].value != 1) {
-                app->cursors[1].value = 1;
+            if (app->cursors[CODE_ENTRY_CURSOR_KEY].value != CODE_ENTRY_KEY_CURSOR_DIGIT) {
+                app->cursors[CODE_ENTRY_CURSOR_KEY].value = CODE_ENTRY_KEY_CURSOR_DIGIT;
                 return;
             }
         }
@@ -264,34 +264,34 @@ static void CodeEntry_HandleKeys(CodeEntryApp *app) {
     }
     if (gSystem.newAndRepeatedKeys & PAD_KEY_UP) {
         if (row > 0) {
-            app->cursors[1].row--;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].row--;
         } else {
-            app->cursors[1].row = 2;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].row = 2;
         }
         moved = TRUE;
     } else if (gSystem.newAndRepeatedKeys & PAD_KEY_DOWN) {
-        app->cursors[1].row++;
-        app->cursors[1].row %= 3;
+        app->cursors[CODE_ENTRY_CURSOR_KEY].row++;
+        app->cursors[CODE_ENTRY_CURSOR_KEY].row %= 3;
         moved = TRUE;
     } else if (gSystem.newAndRepeatedKeys & PAD_KEY_RIGHT) {
         if (key == CODE_ENTRY_KEY_BACK) {
-            app->cursors[1].column = 3;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column = 3;
         } else if (key == CODE_ENTRY_KEY_OK) {
-            app->cursors[1].column = 0;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column = 0;
         } else {
-            app->cursors[1].column = column + 1;
-            app->cursors[1].column %= 5;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column = column + 1;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column %= 5;
         }
         moved = TRUE;
     } else if (gSystem.newAndRepeatedKeys & PAD_KEY_LEFT) {
         if (key == CODE_ENTRY_KEY_BACK) {
-            app->cursors[1].column = 3;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column = 3;
         } else if (key == CODE_ENTRY_KEY_OK) {
-            app->cursors[1].column = 0;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column = 0;
         } else if (column > 0) {
-            app->cursors[1].column = column - 1;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column = column - 1;
         } else {
-            app->cursors[1].column = 4;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column = 4;
         }
         moved = TRUE;
     } else if (gSystem.newKeys & PAD_BUTTON_A) {
@@ -305,20 +305,20 @@ static void CodeEntry_HandleKeys(CodeEntryApp *app) {
             if (app->selectedGroup == 0) {
                 return;
             }
-            cursor = app->cursors[0].value;
+            cursor = app->cursors[CODE_ENTRY_CURSOR_DIGIT].value;
             app->digits[cursor].value = key + 1;
-            CodeEntry_SetCursorVisible(app, 1, FALSE);
-            CodeEntry_SetCursorVisible(app, 2, TRUE);
-            CodeEntry_MoveCursorToKey(app, key, 2);
+            CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_KEY, FALSE);
+            CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_FLASH, TRUE);
+            CodeEntry_MoveCursorToKey(app, key, CODE_ENTRY_CURSOR_FLASH);
             ManagedSprite_SetAnim(app->digits[cursor].sprite, CodeEntry_GetDigitAnim(app->digits[cursor].value, app->digits[cursor].active));
-            ManagedSprite_SetAnim(app->cursors[2].sprite, 3);
+            ManagedSprite_SetAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite, 3);
             group = app->digits[cursor].group;
             if (cursor + 1 == app->digitCount) {
                 moved = TRUE;
                 app->pendingAction = CODE_ENTRY_ACTION_SELECT_GROUP;
                 app->pendingArg = 0;
-                app->cursors[1].column = 3;
-                app->cursors[1].row = 2;
+                app->cursors[CODE_ENTRY_CURSOR_KEY].column = 3;
+                app->cursors[CODE_ENTRY_CURSOR_KEY].row = 2;
             } else {
                 nextGroup = app->digits[cursor + 1].group;
                 if (group != nextGroup) {
@@ -335,12 +335,12 @@ static void CodeEntry_HandleKeys(CodeEntryApp *app) {
         CodeEntry_Backspace(app);
         PlaySE(SEQ_SE_DP_BUTTON3);
     } else if (gSystem.newAndRepeatedKeys & PAD_BUTTON_L) {
-        if (app->cursors[0].value == app->firstEditable) {
-            app->cursors[0].value = app->digitCount - 1;
+        if (app->cursors[CODE_ENTRY_CURSOR_DIGIT].value == app->firstEditable) {
+            app->cursors[CODE_ENTRY_CURSOR_DIGIT].value = app->digitCount - 1;
         } else {
-            app->cursors[0].value--;
+            app->cursors[CODE_ENTRY_CURSOR_DIGIT].value--;
         }
-        cursor = app->cursors[0].value;
+        cursor = app->cursors[CODE_ENTRY_CURSOR_DIGIT].value;
         if (app->digits[cursor].active == TRUE) {
             app->pendingAction = CODE_ENTRY_ACTION_MOVE_CURSOR;
             app->pendingArg = cursor;
@@ -351,12 +351,12 @@ static void CodeEntry_HandleKeys(CodeEntryApp *app) {
         }
         PlaySE(SEQ_SE_DP_SELECT78);
     } else if (gSystem.newAndRepeatedKeys & PAD_BUTTON_R) {
-        if (app->cursors[0].value == app->digitCount - 1) {
-            app->cursors[0].value = app->firstEditable;
+        if (app->cursors[CODE_ENTRY_CURSOR_DIGIT].value == app->digitCount - 1) {
+            app->cursors[CODE_ENTRY_CURSOR_DIGIT].value = app->firstEditable;
         } else {
-            app->cursors[0].value++;
+            app->cursors[CODE_ENTRY_CURSOR_DIGIT].value++;
         }
-        cursor = app->cursors[0].value;
+        cursor = app->cursors[CODE_ENTRY_CURSOR_DIGIT].value;
         if (app->digits[cursor].active == TRUE) {
             app->pendingAction = CODE_ENTRY_ACTION_MOVE_CURSOR;
             app->pendingArg = cursor;
@@ -368,16 +368,16 @@ static void CodeEntry_HandleKeys(CodeEntryApp *app) {
     }
     if (moved == TRUE) {
         PlaySE(SEQ_SE_DP_SELECT78);
-        key = grid.cells[app->cursors[1].row][app->cursors[1].column];
+        key = grid.cells[app->cursors[CODE_ENTRY_CURSOR_KEY].row][app->cursors[CODE_ENTRY_CURSOR_KEY].column];
         CodeEntry_MoveKeyCursor(app, key);
         if (key == CODE_ENTRY_KEY_BACK || key == CODE_ENTRY_KEY_OK) {
-            if (app->cursors[1].value != 2) {
-                app->cursors[1].value = 2;
+            if (app->cursors[CODE_ENTRY_CURSOR_KEY].value != CODE_ENTRY_KEY_CURSOR_BUTTON) {
+                app->cursors[CODE_ENTRY_CURSOR_KEY].value = CODE_ENTRY_KEY_CURSOR_BUTTON;
                 return;
             }
         } else {
-            if (app->cursors[1].value != 1) {
-                app->cursors[1].value = 1;
+            if (app->cursors[CODE_ENTRY_CURSOR_KEY].value != CODE_ENTRY_KEY_CURSOR_DIGIT) {
+                app->cursors[CODE_ENTRY_CURSOR_KEY].value = CODE_ENTRY_KEY_CURSOR_DIGIT;
             }
         }
     }
@@ -418,14 +418,14 @@ static void CodeEntry_Backspace(CodeEntryApp *app) {
     app->buttons[0].value = 1;
     app->buttons[0].moveFrames = 0;
     if (app->selectedGroup == 0) {
-        app->cursors[0].value = app->digitCount - 1;
-        value = app->digits[app->cursors[0].value].group;
+        app->cursors[CODE_ENTRY_CURSOR_DIGIT].value = app->digitCount - 1;
+        value = app->digits[app->cursors[CODE_ENTRY_CURSOR_DIGIT].value].group;
         app->pendingAction = CODE_ENTRY_ACTION_SELECT_GROUP;
         app->pendingArg = value;
         app->pendingToLast = TRUE;
         return;
     }
-    index = app->cursors[0].value;
+    index = app->cursors[CODE_ENTRY_CURSOR_DIGIT].value;
     app->digits[index].value = 0;
     value = CodeEntry_GetDigitAnim(app->digits[index].value, app->digits[index].active);
     ManagedSprite_SetAnim(app->digits[index].sprite, value);
@@ -500,31 +500,31 @@ static void CodeEntry_OnTouch(u32 index, u32 event, void *arg) {
             return;
         }
         if (index == CODE_ENTRY_HITBOX_BACK) {
-            app->cursors[1].column = 0;
-            app->cursors[1].row = 2;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column = 0;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].row = 2;
             PlaySE(SEQ_SE_DP_BUTTON3);
         } else if (index == CODE_ENTRY_HITBOX_OK) {
-            app->cursors[1].column = 3;
-            app->cursors[1].row = 2;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column = 3;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].row = 2;
             PlaySE(SEQ_SE_DP_PIRORIRO);
         } else {
-            app->cursors[1].column = (index - CODE_ENTRY_HITBOX_KEYS) % 5;
-            app->cursors[1].row = (index - CODE_ENTRY_HITBOX_KEYS) / 5;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].column = (index - CODE_ENTRY_HITBOX_KEYS) % 5;
+            app->cursors[CODE_ENTRY_CURSOR_KEY].row = (index - CODE_ENTRY_HITBOX_KEYS) / 5;
             PlaySE(SEQ_SE_DP_BUTTON3);
         }
         if (index >= CODE_ENTRY_HITBOX_KEYS && index <= CODE_ENTRY_HITBOX_KEYS + 9) {
             if (app->selectedGroup == 0) {
                 return;
             }
-            cursor = app->cursors[0].value;
+            cursor = app->cursors[CODE_ENTRY_CURSOR_DIGIT].value;
             app->digits[cursor].value = index - (CODE_ENTRY_HITBOX_KEYS - 1);
             ManagedSprite_SetAnim(app->digits[cursor].sprite, CodeEntry_GetDigitAnim(app->digits[cursor].value, app->digits[cursor].active));
-            CodeEntry_SetCursorVisible(app, 1, TRUE);
+            CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_KEY, TRUE);
             CodeEntry_MoveKeyCursor(app, index - CODE_ENTRY_HITBOX_KEYS);
-            CodeEntry_SetCursorVisible(app, 1, FALSE);
-            CodeEntry_SetCursorVisible(app, 2, TRUE);
-            CodeEntry_MoveCursorToKey(app, index - CODE_ENTRY_HITBOX_KEYS, 2);
-            ManagedSprite_SetAnim(app->cursors[2].sprite, 3);
+            CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_KEY, FALSE);
+            CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_FLASH, TRUE);
+            CodeEntry_MoveCursorToKey(app, index - CODE_ENTRY_HITBOX_KEYS, CODE_ENTRY_CURSOR_FLASH);
+            ManagedSprite_SetAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite, 3);
             group = app->digits[cursor].group;
             if (cursor + 1 == app->digitCount) {
                 app->pendingAction = CODE_ENTRY_ACTION_SELECT_GROUP;

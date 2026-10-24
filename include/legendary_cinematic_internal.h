@@ -3,7 +3,11 @@
 
 #include "global.h"
 
+#include "field/model_attributes.h"
+
+#include "bg_window.h"
 #include "camera.h"
+#include "filesystem.h"
 #include "legendary_cinematic_manager.h"
 #include "sprite_system.h"
 #include "sys_task.h"

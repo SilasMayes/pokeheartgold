@@ -126,10 +126,10 @@ static BOOL StatsUpload_CheckResponseHash(const char *response, int length) {
     *(SecretKey *)buf = *(SecretKey *)gStatsUploadSecretKey;
     B64Encode(response, buf + 20, bodyLength, 2);
     {
-        int n = StatsUpload_GetBase64Length(bodyLength);
-        u8 *p = buf + 20;
-        p += n;
-        *(SecretKey *)p = *(SecretKey *)gStatsUploadSecretKey;
+        int encodedLength = StatsUpload_GetBase64Length(bodyLength);
+        u8 *keyCopy = buf + 20;
+        keyCopy += encodedLength;
+        *(SecretKey *)keyCopy = *(SecretKey *)gStatsUploadSecretKey;
     }
     MATH_CalcSHA1(digest, buf, StatsUpload_GetBase64Length(bodyLength) + 40);
     DWC_Free(7, buf, 0);
@@ -230,14 +230,14 @@ static int StatsUpload_EncodeData(char *out, const u8 *first, int firstLength, c
         buf[i + 4] = first[i];
     }
     {
-        int n = secondLength;
+        int count = secondLength;
         first = NULL;
-        if (n > 0) {
+        if (count > 0) {
             u8 *dest = buf + firstLength;
             do {
                 (dest + (u32)first)[4] = second[(u32)first];
                 first = (const u8 *)((u32)first + 1);
-            } while ((s32)first < n);
+            } while ((s32)first < count);
         }
     }
     for (i = 0; i < length; i++) {

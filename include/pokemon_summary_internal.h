@@ -47,6 +47,15 @@ enum PokemonSummaryState {
     POKEMON_SUMMARY_STATE_WAIT_FADE_OUT,
 };
 
+// summary->page, and the page lists given to PokemonSummary_SetPages
+enum PokemonSummaryPage {
+    POKEMON_SUMMARY_PAGE_INFO,
+    POKEMON_SUMMARY_PAGE_STATS,     // stats and moves
+    POKEMON_SUMMARY_PAGE_RIBBONS,   // with the Pokeathlon performance once flag 982 is set
+    POKEMON_SUMMARY_PAGE_CONDITION,
+    POKEMON_SUMMARY_PAGE_COUNT,     // ends a page list
+};
+
 // What args->party holds (args->monDataType).
 enum PokemonSummaryMonDataType {
     POKEMON_SUMMARY_MON_ARRAY,

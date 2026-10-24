@@ -155,7 +155,7 @@ void TextOBJ_SetPosition(TextOBJ *object, int x, int y) {
     x = x << FX32_SHIFT;
     y = y << FX32_SHIFT;
     if (object->parent != NULL) {
-        const VecFx32 *parent = Sprite_GetMatrixPtr((Sprite *)object->parent);
+        const VecFx32 *parent = Sprite_GetMatrixPtr(object->parent);
         x += parent->x;
         y += parent->y;
     }
@@ -175,7 +175,7 @@ void TextOBJ_UpdatePosition(TextOBJ *object) {
     if (object->parent != NULL) {
         baseX = object->x << FX32_SHIFT;
         baseY = object->y << FX32_SHIFT;
-        const VecFx32 *parent = Sprite_GetMatrixPtr((Sprite *)object->parent);
+        const VecFx32 *parent = Sprite_GetMatrixPtr(object->parent);
         baseX += parent->x;
         baseY += parent->y;
         position.z = 0;
@@ -555,7 +555,7 @@ static void FontOAMCell_InsertBefore(FontOAMCell *node, FontOAMCell *next) {
     next->prev = node;
 }
 
-void TextOBJ_SetParentSprite(TextOBJ *object, const Sprite *sprite) {
+void TextOBJ_SetParentSprite(TextOBJ *object, Sprite *sprite) {
     object->parent = sprite;
     TextOBJ_UpdatePosition(object);
 }

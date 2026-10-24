@@ -144,19 +144,19 @@ void PokemonSummary_AddPageWindows(PokemonSummary *summary) {
     u32 i;
 
     switch (summary->page) {
-    case 0:
+    case POKEMON_SUMMARY_PAGE_INFO:
         templates = sPokemonSummaryInfoWindowTemplates;
         summary->numPageWindows = 8;
         break;
-    case 1:
+    case POKEMON_SUMMARY_PAGE_STATS:
         templates = sPokemonSummaryStatsWindowTemplates;
         summary->numPageWindows = 18;
         break;
-    case 2:
+    case POKEMON_SUMMARY_PAGE_RIBBONS:
         templates = sPokemonSummaryRibbonWindowTemplates;
         summary->numPageWindows = 8;
         break;
-    case 3:
+    case POKEMON_SUMMARY_PAGE_CONDITION:
         if (summary->args->mode != POKEMON_SUMMARY_MODE_CONDITION && summary->args->mode != POKEMON_SUMMARY_MODE_UPDATE_CONDITION) {
             return;
         }
@@ -175,16 +175,16 @@ void PokemonSummary_AddPageWindows(PokemonSummary *summary) {
 void PokemonSummary_RemovePageWindows(PokemonSummary *summary) {
     u32 i;
     switch (summary->page) {
-    case 0:
-    case 1:
+    case POKEMON_SUMMARY_PAGE_INFO:
+    case POKEMON_SUMMARY_PAGE_STATS:
         for (i = 0; i < summary->numPageWindows; i++) {
             ClearWindowTilemapAndCopyToVram(&summary->pageWindows[i]);
         }
         break;
-    case 2:
+    case POKEMON_SUMMARY_PAGE_RIBBONS:
         ClearWindowTilemapAndCopyToVram(summary->pageWindows);
         break;
-    case 3:
+    case POKEMON_SUMMARY_PAGE_CONDITION:
         if (summary->args->mode != POKEMON_SUMMARY_MODE_CONDITION && summary->args->mode != POKEMON_SUMMARY_MODE_UPDATE_CONDITION) {
             return;
         }
@@ -381,19 +381,19 @@ void PokemonSummary_PrintPage(PokemonSummary *summary) {
     FillBgTilemapRect(summary->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 2, 18, 22, TILEMAP_FILL_KEEP_PAL);
     FillBgTilemapRect(summary->bgConfig, GF_BG_LYR_SUB_0, 0, 0, 1, 18, 23, TILEMAP_FILL_KEEP_PAL);
     switch (summary->page) {
-    case 0:
+    case POKEMON_SUMMARY_PAGE_INFO:
         PokemonSummary_PrintInfo(summary);
         PokemonSummary_PrintMemo(summary);
         break;
-    case 1:
+    case POKEMON_SUMMARY_PAGE_STATS:
         PokemonSummary_PrintStats(summary);
         PokemonSummary_PrintMoves(summary);
         break;
-    case 2:
+    case POKEMON_SUMMARY_PAGE_RIBBONS:
         PokemonSummary_PrintPokeathlonStatLabels(summary);
         PokemonSummary_PrintRibbonCount(summary);
         break;
-    case 3:
+    case POKEMON_SUMMARY_PAGE_CONDITION:
         PokemonSummary_PrintFlavorPreference(summary);
         break;
     }
@@ -675,14 +675,12 @@ void PokemonSummary_PrintRibbonInfo(PokemonSummary *summary) {
 
 // slot 4: the move to learn.
 static void PokemonSummary_PrintMoveSlot(PokemonSummary *summary, int slot) {
-    int offset;
-    u8 *windows;
+    Window *window;
     u32 move;
     u8 pp;
     u8 maxPP;
 
-    windows = (u8 *)summary->pageWindows;
-    offset = (slot + 8) * sizeof(Window);
+    window = &summary->pageWindows[slot + 8];
     if (slot != 4) {
         move = summary->mon.moves[slot];
         pp = summary->mon.pp[slot];
@@ -692,16 +690,16 @@ static void PokemonSummary_PrintMoveSlot(PokemonSummary *summary, int slot) {
         maxPP = pp = GetMoveMaxPP(move, 0);
     }
     ReadMsgDataIntoString(summary->moveNames, move, summary->buffer);
-    AddTextPrinterParameterizedWithColor((Window *)(windows + offset), 0, summary->buffer, 1, 2, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
+    AddTextPrinterParameterizedWithColor(window, 0, summary->buffer, 1, 2, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     if (move != MOVE_NONE) {
         ReadMsgDataIntoString(summary->msgData, msg_0302_00135, summary->buffer);
-        AddTextPrinterParameterizedWithColor((Window *)(windows + offset), 0, summary->buffer, 16, 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
+        AddTextPrinterParameterizedWithColor(window, 0, summary->buffer, 16, 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
         PokemonSummary_PrintValuePair(summary, slot + 8, 117, slot + 136, slot + 141, pp, maxPP, 2, 60, 16);
     } else {
         u32 width;
         ReadMsgDataIntoString(summary->msgData, msg_0302_00153, summary->buffer);
         width = FontID_String_GetWidth(0, summary->buffer, 0);
-        AddTextPrinterParameterizedWithColor((Window *)(windows + offset), 0, summary->buffer, 60 - (width >> 1), 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
+        AddTextPrinterParameterizedWithColor(window, 0, summary->buffer, 60 - (width >> 1), 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     }
 }
 
@@ -773,7 +771,7 @@ void PokemonSummary_PrintSwappedMoves(PokemonSummary *summary) {
 
 void PokemonSummary_PrintCantForgetHMMessage(PokemonSummary *summary) {
     Window *window;
-    if (summary->page == 1) {
+    if (summary->page == POKEMON_SUMMARY_PAGE_STATS) {
         ClearWindowTilemapAndScheduleTransfer(&summary->pageWindows[13]);
         ClearWindowTilemapAndScheduleTransfer(&summary->pageWindows[14]);
         ClearWindowTilemapAndScheduleTransfer(&summary->pageWindows[15]);

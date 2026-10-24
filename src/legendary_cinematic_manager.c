@@ -4,12 +4,8 @@
 
 #include "heap.h"
 #include "legendary_cinematic.h"
+#include "legendary_cinematic_internal.h"
 #include "overlay_manager.h"
-
-typedef struct LegendaryCinematicData {
-    LegendaryCinematicArgs *args;
-    u8 rest[0x418];
-} LegendaryCinematicData;
 
 static int (*const sLegendaryCinematicScripts[])(void *) = {
     ScriptCinematic_HoOh,
@@ -18,19 +14,19 @@ static int (*const sLegendaryCinematicScripts[])(void *) = {
 };
 
 BOOL LegendaryCinematic_Init(OverlayManager *man, int *state) {
-    LegendaryCinematicData *data;
+    LegendaryCinematic *cinematic;
 
     Heap_Create(HEAP_ID_3, HEAP_ID_153, 0x80000);
-    data = OverlayManager_CreateAndGetData(man, sizeof(LegendaryCinematicData), HEAP_ID_153);
-    MI_CpuFill8(data, 0, sizeof(LegendaryCinematicData));
-    data->args = OverlayManager_GetArgs(man);
+    cinematic = OverlayManager_CreateAndGetData(man, sizeof(LegendaryCinematic), HEAP_ID_153);
+    MI_CpuFill8(cinematic, 0, sizeof(LegendaryCinematic));
+    cinematic->args = OverlayManager_GetArgs(man);
     return TRUE;
 }
 
 BOOL LegendaryCinematic_Main(OverlayManager *man, int *state) {
-    LegendaryCinematicData *data = OverlayManager_GetData(man);
+    LegendaryCinematic *cinematic = OverlayManager_GetData(man);
 
-    return !sLegendaryCinematicScripts[data->args->scene](data);
+    return !sLegendaryCinematicScripts[cinematic->args->scene](cinematic);
 }
 
 BOOL LegendaryCinematic_Exit(OverlayManager *man, int *state) {

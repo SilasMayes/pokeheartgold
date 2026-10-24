@@ -16,6 +16,7 @@
 #include "gf_gfx_loader.h"
 #include "gf_gfx_planes.h"
 #include "hall_of_fame.h"
+#include "hall_of_fame_showcase_internal.h"
 #include "heap.h"
 #include "message_format.h"
 #include "msgdata.h"
@@ -37,9 +38,16 @@
 
 // Sprites 2-7 and 8-13 are the two alternating sets of party icons, so a page can be drawn
 // while the previous one is still shown.
+#define HOF_SHOWCASE_SPRITE_CURSOR    14
 #define HOF_SHOWCASE_SPRITE_PREV_PAGE 15
 #define HOF_SHOWCASE_SPRITE_NEXT_PAGE 16
 #define HOF_SHOWCASE_SPRITE_EXIT      17
+
+// Grid inputs 0-5 are the party slots; the last one is the exit button.
+#define HOF_SHOWCASE_GRID_EXIT PARTY_SIZE
+
+// Windows of one Pokemon's details: nickname, species and level, OT, then one per move.
+#define HOF_SHOWCASE_MON_DETAIL_WINDOWS 7
 
 enum HallOfFameShowcaseMainState {
     HOF_SHOWCASE_MAIN_FADE_IN,
@@ -85,30 +93,6 @@ typedef struct HallOfFameShowcase {
     int state;
     int nextState;
 } HallOfFameShowcase;
-
-extern const TouchscreenHitbox gHallOfFameShowcaseHitboxes[];
-extern const GraphicsModes gHallOfFameShowcaseGraphicsModes;
-extern const OamCharTransferParam gHallOfFameShowcaseOamCharTransferParam;
-extern const SpriteResourceCountsListUnion gHallOfFameShowcaseSpriteResourceCounts;
-extern const OamManagerParam gHallOfFameShowcaseOamManagerParam;
-extern const TileRect gHallOfFameShowcaseMonPicRect;
-extern const GridCallbacks gHallOfFameShowcaseGridCallbacks;
-extern const s16 gHallOfFameShowcaseIconPositions[][2];
-extern const BgTemplate gHallOfFameShowcaseBgTemplate_Main1;
-extern const BgTemplate gHallOfFameShowcaseBgTemplate_Sub0;
-extern const BgTemplate gHallOfFameShowcaseBgTemplate_Sub1;
-extern const BgTemplate gHallOfFameShowcaseBgTemplate_Main0;
-extern const TouchscreenHitbox gHallOfFameShowcaseGridHitboxes[];
-extern const GraphicsBanks gHallOfFameShowcaseGraphicsBanks;
-extern const ManagedSpriteTemplate gHallOfFameShowcasePartyIconSpriteTemplate;
-extern const DpadMenuBox gHallOfFameShowcaseGridDpadBoxes[];
-extern const WindowTemplate gHallOfFameShowcaseWindowTemplates[];
-extern const ManagedSpriteTemplate gHallOfFameShowcaseMonPicSpriteTemplate1;
-extern const ManagedSpriteTemplate gHallOfFameShowcaseMonPicSpriteTemplate2;
-extern const ManagedSpriteTemplate gHallOfFameShowcaseCursorSpriteTemplate;
-extern const ManagedSpriteTemplate gHallOfFameShowcasePrevPageSpriteTemplate;
-extern const ManagedSpriteTemplate gHallOfFameShowcaseNextPageSpriteTemplate;
-extern const ManagedSpriteTemplate gHallOfFameShowcaseExitSpriteTemplate;
 
 static void HallOfFameShowcase_VBlankCB(HallOfFameShowcase *showcase);
 static void HallOfFameShowcase_LoadMainObjChar(const void *src, u32 offset, u32 size);
@@ -337,7 +321,7 @@ static void HallOfFameShowcase_InitSprites(HallOfFameShowcase *showcase) {
     showcase->sprites[1] = SpriteSystem_NewSpriteWithYOffset(showcase->spriteSystem, showcase->spriteManager, &gHallOfFameShowcaseMonPicSpriteTemplate2, FX32_CONST(512));
     ManagedSprite_SetDrawFlag(showcase->sprites[0], FALSE);
     ManagedSprite_SetDrawFlag(showcase->sprites[1], FALSE);
-    showcase->sprites[14] = SpriteSystem_NewSprite(showcase->spriteSystem, showcase->spriteManager, &gHallOfFameShowcaseCursorSpriteTemplate);
+    showcase->sprites[HOF_SHOWCASE_SPRITE_CURSOR] = SpriteSystem_NewSprite(showcase->spriteSystem, showcase->spriteManager, &gHallOfFameShowcaseCursorSpriteTemplate);
     showcase->sprites[HOF_SHOWCASE_SPRITE_PREV_PAGE] = SpriteSystem_NewSprite(showcase->spriteSystem, showcase->spriteManager, &gHallOfFameShowcasePrevPageSpriteTemplate);
     showcase->sprites[HOF_SHOWCASE_SPRITE_NEXT_PAGE] = SpriteSystem_NewSprite(showcase->spriteSystem, showcase->spriteManager, &gHallOfFameShowcaseNextPageSpriteTemplate);
     showcase->sprites[HOF_SHOWCASE_SPRITE_EXIT] = SpriteSystem_NewSprite(showcase->spriteSystem, showcase->spriteManager, &gHallOfFameShowcaseExitSpriteTemplate);
@@ -495,7 +479,7 @@ static int HallOfFameShowcase_HandleInput(HallOfFameShowcase *showcase) {
                     PlaySE(SEQ_SE_DP_SELECT);
                 }
                 break;
-            case 6:
+            case HOF_SHOWCASE_GRID_EXIT:
             case GRID_MENU_CANCEL:
                 PlaySE(SEQ_SE_DP_SELECT);
                 showcase->pressedButton = HOF_SHOWCASE_SPRITE_EXIT;
@@ -641,7 +625,7 @@ static inline void HallOfFameShowcase_PrintMonDetail(HallOfFameShowcase *showcas
     u32 i;
     u32 width;
 
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < HOF_SHOWCASE_MON_DETAIL_WINDOWS; i++) {
         FillWindowPixelBuffer(&showcase->windows[firstWindow + i], 0);
     }
     AddTextPrinterParameterizedWithColor(&showcase->windows[firstWindow], 0, showcase->mon.nickname, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 2, 0), NULL);
@@ -674,7 +658,7 @@ static inline void HallOfFameShowcase_PrintMonDetail(HallOfFameShowcase *showcas
             AddTextPrinterParameterizedWithColor(&showcase->windows[firstWindow + 3 + i], 0, showcase->stringBuf, 56 - (width >> 1), 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 2, 0), NULL);
         }
     }
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < HOF_SHOWCASE_MON_DETAIL_WINDOWS; i++) {
         CopyWindowPixelsToVram_TextMode(&showcase->windows[firstWindow + i]);
         ScheduleWindowCopyToVram(&showcase->windows[firstWindow + i]);
     }
@@ -741,14 +725,14 @@ static int HallOfFameShowcase_AnimateButtonPress(HallOfFameShowcase *showcase) {
 static void HallOfFameShowcase_MoveCursor(HallOfFameShowcase *showcase, int target) {
     const DpadMenuBox *box = GridInputHandler_GetDpadBox(showcase->gridInput, target);
 
-    ManagedSprite_SetPositionXY(showcase->sprites[14], box->left, box->top);
-    if (target == 6) {
+    ManagedSprite_SetPositionXY(showcase->sprites[HOF_SHOWCASE_SPRITE_CURSOR], box->left, box->top);
+    if (target == HOF_SHOWCASE_GRID_EXIT) {
         target = 4;
     } else {
         target = 3;
     }
-    ManagedSprite_SetAnimationFrame(showcase->sprites[14], 0);
-    ManagedSprite_SetAnim(showcase->sprites[14], target);
+    ManagedSprite_SetAnimationFrame(showcase->sprites[HOF_SHOWCASE_SPRITE_CURSOR], 0);
+    ManagedSprite_SetAnim(showcase->sprites[HOF_SHOWCASE_SPRITE_CURSOR], target);
 }
 
 static void HallOfFameShowcase_CreatePartyIcon(HallOfFameShowcase *showcase, u32 spriteIndex, u32 position, int charResId, u32 plttResId) {

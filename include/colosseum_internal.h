@@ -56,7 +56,7 @@ typedef struct ColosseumEntry {
     int state;
     int partyMenuResult; // enum ColosseumPartyMenuResult
     u8 partySlot;
-    u8 selectedOrder[6];
+    u8 selectedOrder[PARTY_SIZE];
     u8 timer;
     u8 delay;
     u8 *receivedMons; // the opponent's 3 Pokemon, then their ready flag

@@ -19,6 +19,20 @@
 #define CODE_ENTRY_HITBOX_OK   27
 #define CODE_ENTRY_HITBOX_NUM  28
 
+// CodeEntryApp.cursors
+enum CodeEntryCursor {
+    CODE_ENTRY_CURSOR_DIGIT, // value: the digit index
+    CODE_ENTRY_CURSOR_KEY,   // value: CODE_ENTRY_KEY_CURSOR_*
+    CODE_ENTRY_CURSOR_FLASH, // key press flash
+    CODE_ENTRY_CURSOR_COUNT,
+};
+
+// Key cursor anims: around a digit key, around BACK / OK.
+enum CodeEntryKeyCursorAnim {
+    CODE_ENTRY_KEY_CURSOR_DIGIT = 1,
+    CODE_ENTRY_KEY_CURSOR_BUTTON,
+};
+
 // A digit slot, a group separator, one of the three cursors or a BACK/OK button.
 typedef struct CodeEntryCell {
     int value;  // digit + 1 (0: empty); separator: index of the digit before it; cursor: current anim
@@ -53,7 +67,7 @@ typedef struct CodeEntryButtonLabelAlloc {
 typedef struct CodeEntryApp {
     CodeEntryCell digits[16];
     CodeEntryCell separators[3];
-    CodeEntryCell cursors[3]; // digit cursor (value: digit index), key cursor, key press flash
+    CodeEntryCell cursors[CODE_ENTRY_CURSOR_COUNT];
     CodeEntryCell buttons[2]; // BACK, OK (value: pressed state)
     s16 groupX[5];
     CodeEntryRange groupRanges[5];

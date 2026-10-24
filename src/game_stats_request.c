@@ -262,8 +262,8 @@ void GameStats_Start(void) {
 int GameStats_PrepareRequest(const char *url, int pid, void *payload, int payloadSize, void *response, int responseCapacity) {
     int total;
     int len;
-    int n;
-    char *p;
+    int textLength;
+    char *requestUrl;
 
     if (gGameStatsRequest.state != GAME_STATS_STATE_STARTED) {
         return GAME_STATS_PREPARE_NOT_STARTED;
@@ -275,18 +275,18 @@ int GameStats_PrepareRequest(const char *url, int pid, void *payload, int payloa
     gGameStatsRequest.responseCapacity = responseCapacity;
     total = payloadSize + 8;
     len = strlen(url);
-    n = GameStats_GetBase64Length(total);
-    gGameStatsRequest.url = DWC_Alloc(10, len + 69 + n);
+    textLength = GameStats_GetBase64Length(total);
+    gGameStatsRequest.url = DWC_Alloc(10, len + 69 + textLength);
     if (gGameStatsRequest.url == NULL) {
         return GAME_STATS_PREPARE_NO_MEMORY;
     }
     sprintf(gGameStatsRequest.url, "%s?pid=%d", url, pid);
-    p = gGameStatsRequest.url;
-    len = strlen(p);
-    n = strlen("&hash=");
-    gGameStatsRequest.hashText = p + len + n;
-    n = strlen("&data=");
-    gGameStatsRequest.dataText = gGameStatsRequest.hashText + 40 + n;
+    requestUrl = gGameStatsRequest.url;
+    len = strlen(requestUrl);
+    textLength = strlen("&hash=");
+    gGameStatsRequest.hashText = requestUrl + len + textLength;
+    textLength = strlen("&data=");
+    gGameStatsRequest.dataText = gGameStatsRequest.hashText + 40 + textLength;
     gGameStatsRequest.dataTextSize = GameStats_GetBase64Length(total) + 1;
     gGameStatsRequest.state = GAME_STATS_STATE_PREPARED;
     return GAME_STATS_PREPARE_OK;

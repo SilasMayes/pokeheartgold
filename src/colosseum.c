@@ -174,9 +174,9 @@ static void Colosseum_OpenPartyMenu(ColosseumEntry *entry, enum HeapID heapId) {
         args->minMonsToSelect = 3;
         args->maxMonsToSelect = 3;
     }
-    args->maxLevel = 100;
+    args->maxLevel = MAX_LEVEL;
     args->partySlot = entry->partySlot;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         args->selectedOrder[i] = entry->selectedOrder[i];
     }
     FieldSystem_LaunchApplication(entry->fieldSystem, &gOverlayTemplate_PartyMenu, args);
@@ -187,7 +187,7 @@ BOOL Colosseum_FinishPartyMenu(ColosseumEntry *entry, FieldSystem *fieldSystem) 
     if (FieldSystem_ApplicationIsRunning(fieldSystem)) {
         return FALSE;
     }
-    MI_CpuCopy8(entry->partyMenuArgs->selectedOrder, entry->selectedOrder, 6);
+    MI_CpuCopy8(entry->partyMenuArgs->selectedOrder, entry->selectedOrder, PARTY_SIZE);
     switch (entry->partyMenuArgs->partySlot) {
     case 7:
         entry->partyMenuResult = COLOSSEUM_PARTY_MENU_CANCEL;

@@ -388,7 +388,8 @@ BOOL Sound_SetSceneAndPlayBGM(u8 scene, u16 seqNo, int mode) {
 }
 
 static void Sound_ResetAndLoadSceneSoundEffects(int scene) {
-    GF_Snd_LoadState(*(int *)GF_SdatGetAttrPtr(SOUND_ATTR_SAVED_HEAP_LEVEL_1));
+    int *heapLevel = GF_SdatGetAttrPtr(SOUND_ATTR_SAVED_HEAP_LEVEL_1);
+    GF_Snd_LoadState(*heapLevel);
     GF_Snd_SaveState(GF_SdatGetAttrPtr(SOUND_ATTR_SAVED_HEAP_LEVEL_2));
     Sound_LoadSceneSoundEffects(scene);
     GF_Snd_SaveState(GF_SdatGetAttrPtr(SOUND_ATTR_SAVED_HEAP_LEVEL_3));
@@ -411,7 +412,7 @@ static void Sound_PlayBGMForFieldScene(u16 seqNo, int mode) {
             gSoundSystemFlags.fieldBGMStopped = 1;
         }
         if (currentSeqNo != seqNo) {
-            Sound_SetPlayerPause(1, 0);
+            Sound_SetPlayerPause(PLAYER_FIELD, 0);
             Sound_Stop();
         }
         if (*reload == 1) {
@@ -419,7 +420,7 @@ static void Sound_PlayBGMForFieldScene(u16 seqNo, int mode) {
             Sound_LoadSceneSoundEffects(4);
             GF_Snd_SaveState(GF_SdatGetAttrPtr(SOUND_ATTR_SAVED_HEAP_LEVEL_3));
             if (currentSeqNo != seqNo) {
-                Sound_SetPlayerPause(1, 0);
+                Sound_SetPlayerPause(PLAYER_FIELD, 0);
             }
             Sound_ResumeFieldBGM(seqNo, (u16)playingSeqNo);
         } else {
@@ -437,7 +438,7 @@ static void Sound_ResumeFieldBGM(u16 seqNo, u16 previousSeqNo) {
         GF_Snd_LoadSeqEx(*fieldSeqNo, 6);
     }
     GF_Snd_SaveState(GF_SdatGetAttrPtr(SOUND_ATTR_SAVED_HEAP_LEVEL_4));
-    Sound_SetPlayerPause(1, 0);
+    Sound_SetPlayerPause(PLAYER_FIELD, 0);
     GF_SndStartFadeInBGM(127, 40, 0);
     Sound_SetReloadFieldSeqFlag(0);
 }
@@ -524,7 +525,8 @@ int Sound_GetSavedHeapLevel(int state) {
     GetSoundDataPointer();
     if (state >= 7) {
         GF_ASSERT(FALSE);
-        return *(int *)GF_SdatGetAttrPtr(SOUND_ATTR_SAVED_HEAP_LEVEL_4);
+        level = GF_SdatGetAttrPtr(SOUND_ATTR_SAVED_HEAP_LEVEL_4);
+        return *level;
     }
     // Valid state IDs are 0 through 6.
     switch (state) {
@@ -556,10 +558,10 @@ int Sound_GetSavedHeapLevel(int state) {
 void Sound_SetPlayerPause(u8 playerNo, u8 pause) {
     u8 *flag;
     enum SoundHandleNo handleNo;
-    if (playerNo == 1) {
+    if (playerNo == PLAYER_FIELD) {
         flag = GF_SdatGetAttrPtr(SOUND_ATTR_FIELD_PLAYER_PAUSED);
         handleNo = SND_HANDLE_FIELD;
-    } else if (playerNo == 7) {
+    } else if (playerNo == PLAYER_BGM) {
         flag = GF_SdatGetAttrPtr(SOUND_ATTR_BGM_PLAYER_PAUSED);
         handleNo = SND_HANDLE_BGM;
     } else {
@@ -810,6 +812,7 @@ BOOL Sound_PlayReversedWaveArc(int waveArcNo, int volume, int pan, int channel, 
     u32 size;
     SoundWaveOutParam param;
     BOOL success;
+    u8 *reversedCryStarted;
     GF_ASSERT(channel == 14 || channel == 15);
     info = NNS_SndArcGetWaveArcInfo(waveArcNo);
     if (info == NULL) {
@@ -846,7 +849,8 @@ BOOL Sound_PlayReversedWaveArc(int waveArcNo, int volume, int pan, int channel, 
     param.pan = pan;
     success = Sound_StartWaveOut(&param, channel);
     Sound_SetWaveOutVolume(channel, volume);
-    *(u8 *)GF_SdatGetAttrPtr(SOUND_ATTR_REVERSED_CRY_STARTED) = 1;
+    reversedCryStarted = GF_SdatGetAttrPtr(SOUND_ATTR_REVERSED_CRY_STARTED);
+    *reversedCryStarted = TRUE;
     return success;
 }
 
@@ -914,11 +918,13 @@ void GF_SndSetMonoFlag(int flag) {
 }
 
 void GF_SndSetFadeTimer(u32 frames) {
-    *(u32 *)GF_SdatGetAttrPtr(SOUND_ATTR_FADE_TIMER) = frames;
+    u32 *fadeTimer = GF_SdatGetAttrPtr(SOUND_ATTR_FADE_TIMER);
+    *fadeTimer = frames;
 }
 
 static void GF_SndSetAfterFadeDelayTimer(u32 frames) {
-    *(u32 *)GF_SdatGetAttrPtr(SOUND_ATTR_AFTER_FADE_DELAY_TIMER) = frames;
+    u32 *delayTimer = GF_SdatGetAttrPtr(SOUND_ATTR_AFTER_FADE_DELAY_TIMER);
+    *delayTimer = frames;
 }
 
 BOOL GF_SndGetAfterFadeDelayTimer(void) {
@@ -940,7 +946,8 @@ s8 *Sound_GetChatotBuffer(void) {
 }
 
 void Sound_SetReloadFieldSeqFlag(u16 state) {
-    *(u8 *)GF_SdatGetAttrPtr(SOUND_ATTR_RELOAD_FIELD_SEQ) = state;
+    u8 *reloadFieldSeq = GF_SdatGetAttrPtr(SOUND_ATTR_RELOAD_FIELD_SEQ);
+    *reloadFieldSeq = state;
 }
 
 BOOL GF_NowStartMusicId(u16 seqNo, u16 fadeOutFrames, int delay, u8 reload, int unused) {
@@ -994,7 +1001,7 @@ void Sound_SetBGMPlayerChannels(int mode) {
 static void Sound_PauseOrStopFieldBGM(void) {
     if (GF_SndGetFadeTimer() == 0 && GF_NNS_SndPlayerGetSeqNo(GF_GetSoundHandle(0)) != -1) {
         StopBGMSEAndCry();
-        Sound_SetPlayerPause(1, 1);
+        Sound_SetPlayerPause(PLAYER_FIELD, 1);
     } else {
         Sound_Stop();
     }

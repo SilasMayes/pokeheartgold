@@ -425,6 +425,7 @@ static void PokemonPicWindow_LoadGfx(PokemonPicWindow *picWindow, PokepicTemplat
     void *buffer;
     SpriteResource *resource;
     NNSG2dImageProxy *imageProxy;
+    NNSG2dImagePaletteProxy *paletteProxy;
     u32 location;
 
     buffer = Heap_Alloc((enum HeapID)picWindow->spriteManager.heapID, 2 * POKEMON_PIC_FRAME_SIZE);
@@ -440,8 +441,8 @@ static void PokemonPicWindow_LoadGfx(PokemonPicWindow *picWindow, PokepicTemplat
     Heap_Free(buffer);
     buffer = AllocAndLoadPltt16FromNarc((NarcId) template->narcID, template->palDataID, (enum HeapID)picWindow->spriteManager.heapID);
     resource = SpriteResourceCollection_Find(picWindow->spriteManager.spriteResManagers[GF_GFX_RES_TYPE_PLTT], POKEMON_PIC_WINDOW_RES_ID);
-    imageProxy = (NNSG2dImageProxy *)SpriteTransfer_GetPaletteProxy(resource, imageProxy);
-    location = NNS_G2dGetImagePaletteLocation((NNSG2dImagePaletteProxy *)imageProxy, NNS_G2D_VRAM_TYPE_2DMAIN);
+    paletteProxy = SpriteTransfer_GetPaletteProxy(resource, imageProxy);
+    location = NNS_G2dGetImagePaletteLocation(paletteProxy, NNS_G2D_VRAM_TYPE_2DMAIN);
     DC_FlushRange(buffer, 0x20);
     GX_LoadOBJPltt(buffer, location, 0x20);
     Heap_Free(buffer);

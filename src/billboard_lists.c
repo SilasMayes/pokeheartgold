@@ -200,8 +200,7 @@ BOOL Billboard_HasPendingFree(Billboard *billboard) {
     return TRUE;
 }
 
-void Billboard_ClearPendingFree(void *data) {
-    Billboard *billboard = data;
+void Billboard_ClearPendingFree(Billboard *billboard) {
     if (billboard->state == BILLBOARD_FREE_PENDING) {
         billboard->state = BILLBOARD_FREE_NONE;
     }
@@ -523,8 +522,7 @@ fx32 BillboardObject_GetSequenceFrame(BillboardObject *object) {
     return object->frame - BillboardObject_GetSequenceStart(object, object->sequence);
 }
 
-NNSG3dResMdl *BillboardObject_GetModel(void *arg) {
-    BillboardObject *object = arg;
+NNSG3dResMdl *BillboardObject_GetModel(BillboardObject *object) {
     GF_ASSERT(object != NULL);
     return object->model;
 }

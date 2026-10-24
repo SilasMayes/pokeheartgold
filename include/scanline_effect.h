@@ -16,11 +16,11 @@ typedef struct DoubleBuffer {
 
 // One u32 per scanline (low half: x offset, high half: y offset), written to the destination register by HBlank DMA.
 typedef struct ScanlineEffect {
-    u32 buffers[2][192];
+    u32 buffers[2][GX_LCD_SIZE_Y];
     DoubleBuffer *doubleBuffer;
     SysTask *task;
     u32 unk608;
-    s16 wave[192];
+    s16 wave[GX_LCD_SIZE_Y];
     u8 first;
     u8 last;
     u16 pad78e;
@@ -37,7 +37,7 @@ void *DoubleBuffer_GetOther(DoubleBuffer *doubleBuffer);
 void DoubleBuffer_SetEnabled(DoubleBuffer *doubleBuffer, u8 enabled);
 void DoubleBuffer_Swap(DoubleBuffer *doubleBuffer);
 void HBlankDma_Stop(void);
-void HBlankDma_Start(void *src, void *dst, u32 size, int wide);
+void HBlankDma_Start(void *src, void *dst, u32 size, BOOL wide);
 ScanlineEffect *ScanlineEffect_New(enum HeapID heap);
 void ScanlineEffect_StartWave(ScanlineEffect *effect, u8 first, u8 last, u32 step, fx32 amplitude, s16 speed, void *destination, u32 fill, u32 priority);
 void ScanlineEffect_Stop(ScanlineEffect *effect);

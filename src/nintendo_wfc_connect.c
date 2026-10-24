@@ -215,7 +215,7 @@ struct NintendoWfcConnect {
     u32 rank;
     int roomCount;
     u32 room;
-    u8 downloadBuffer[0xA38];
+    u8 downloadBuffer[NINTENDO_WFC_DOWNLOAD_SIZE];
     FrontierWifiUploadRecord uploadRecord;
     u8 padding_0BBC[0x14];
     MessageFormat *msgFormat;
@@ -245,7 +245,7 @@ struct NintendoWfcConnect {
     int dwcError;
     int dwcErrorCode;
     int dwcErrorType;
-    int httpResult;
+    int httpResult; // enum NintendoWfcHttpResult
     int messageTimer;
     WifiServerProfile profile;
     u32 profileResponse[2];
@@ -343,7 +343,7 @@ BOOL NintendoWfcYesNo_WaitClose(NintendoWfcYesNoMenu *menu);
 
 void NintendoWfcHttp_Init(u32 profileId, u64 friendKey) {
     gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_IDLE;
-    gNintendoWfcHttp.result = 0;
+    gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_OK;
     gNintendoWfcHttp.profileId = profileId;
     gNintendoWfcHttp.friendKey = friendKey;
 }
@@ -366,7 +366,7 @@ void NintendoWfcHttp_Update(void) {
             if (GameStats_GetResponseLength() > 0) {
                 gNintendoWfcHttp.result = gNintendoWfcHttpResponse.status;
             } else {
-                gNintendoWfcHttp.result = -2;
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
             }
             GameStats_Shutdown();
             break;
@@ -381,18 +381,18 @@ void NintendoWfcHttp_Update(void) {
             break;
         case GAME_STATS_STATE_DONE:
             gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
-            if (GameStats_GetResponseLength() == 2616) {
-                gNintendoWfcHttp.result = 0;
+            if (GameStats_GetResponseLength() == NINTENDO_WFC_DOWNLOAD_SIZE) {
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_OK;
             } else {
                 switch (*gNintendoWfcHttpResponse.buffer) {
-                case 2:
-                    gNintendoWfcHttp.result = -3;
+                case NINTENDO_WFC_SERVER_BAD_ROOM:
+                    gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_BAD_ROOM;
                     break;
-                case 5:
-                    gNintendoWfcHttp.result = -2;
+                case NINTENDO_WFC_SERVER_ERROR:
+                    gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
                     break;
                 default:
-                    gNintendoWfcHttp.result = -5;
+                    gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_FATAL;
                     break;
                 }
             }
@@ -410,20 +410,20 @@ void NintendoWfcHttp_Update(void) {
         case GAME_STATS_STATE_DONE:
             gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
             switch (gNintendoWfcHttpResponse.status) {
-            case 1:
-                gNintendoWfcHttp.result = 0;
+            case NINTENDO_WFC_SERVER_OK:
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_OK;
                 break;
-            case 2:
-                gNintendoWfcHttp.result = -3;
+            case NINTENDO_WFC_SERVER_BAD_ROOM:
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_BAD_ROOM;
                 break;
-            case 4:
-                gNintendoWfcHttp.result = -1;
+            case NINTENDO_WFC_SERVER_CROWDED:
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED;
                 break;
-            case 5:
-                gNintendoWfcHttp.result = -2;
+            case NINTENDO_WFC_SERVER_ERROR:
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
                 break;
             default:
-                gNintendoWfcHttp.result = -5;
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_FATAL;
                 break;
             }
             GameStats_Shutdown();
@@ -440,20 +440,20 @@ void NintendoWfcHttp_Update(void) {
         case GAME_STATS_STATE_DONE:
             gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
             switch (gNintendoWfcHttpResponse.status) {
-            case 1:
-                gNintendoWfcHttp.result = 0;
+            case NINTENDO_WFC_SERVER_OK:
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_OK;
                 break;
-            case 3:
-                gNintendoWfcHttp.result = 1;
+            case NINTENDO_WFC_SERVER_MAINTENANCE:
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_MAINTENANCE;
                 break;
-            case 4:
-                gNintendoWfcHttp.result = 2;
+            case NINTENDO_WFC_SERVER_CROWDED:
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_CROWDED;
                 break;
-            case 5:
-                gNintendoWfcHttp.result = -2;
+            case NINTENDO_WFC_SERVER_ERROR:
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
                 break;
             default:
-                gNintendoWfcHttp.result = -5;
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_FATAL;
                 break;
             }
             GameStats_Shutdown();
@@ -470,23 +470,23 @@ void NintendoWfcHttp_Update(void) {
         case GAME_STATS_STATE_DONE:
             gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
             if (GameStats_GetResponseLength() == 8) {
-                gNintendoWfcHttp.result = 0;
+                gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_OK;
             } else {
                 switch (gNintendoWfcHttpResponse.status) {
-                case 1:
-                    gNintendoWfcHttp.result = 0;
+                case NINTENDO_WFC_SERVER_OK:
+                    gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_OK;
                     break;
-                case 3:
-                    gNintendoWfcHttp.result = 1;
+                case NINTENDO_WFC_SERVER_MAINTENANCE:
+                    gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_MAINTENANCE;
                     break;
-                case 4:
-                    gNintendoWfcHttp.result = 2;
+                case NINTENDO_WFC_SERVER_CROWDED:
+                    gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_CROWDED;
                     break;
-                case 5:
-                    gNintendoWfcHttp.result = -2;
+                case NINTENDO_WFC_SERVER_ERROR:
+                    gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
                     break;
                 default:
-                    gNintendoWfcHttp.result = -5;
+                    gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_FATAL;
                     break;
                 }
             }
@@ -500,7 +500,7 @@ void NintendoWfcHttp_Update(void) {
     case 9:
     case 11:
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
-        gNintendoWfcHttp.result = -4;
+        gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_CANCELED;
         GameStats_Shutdown();
         break;
     }
@@ -529,21 +529,21 @@ void NintendoWfcHttp_RequestRoomCount(int rank) {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_ROOM_COUNT;
     } else {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
-        gNintendoWfcHttp.result = -5;
+        gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_FATAL;
         GameStats_Shutdown();
     }
 }
 
-void NintendoWfcHttp_RequestDownload(int rank, int room, void *buffer) {
+void NintendoWfcHttp_RequestDownload(int rank, int room, u8 *buffer) {
     gNintendoWfcHttpResponse.buffer = buffer;
     GameStats_Start();
     gNintendoWfcHttp.rank = rank - 1;
     gNintendoWfcHttp.room = room - 1;
-    if (NintendoWfcHttp_StartRequest(gNintendoWfcDownloadUrl, gNintendoWfcHttpRequestBuffer, 2, buffer, 0xA38)) {
+    if (NintendoWfcHttp_StartRequest(gNintendoWfcDownloadUrl, gNintendoWfcHttpRequestBuffer, 2, buffer, NINTENDO_WFC_DOWNLOAD_SIZE)) {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DOWNLOAD;
     } else {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
-        gNintendoWfcHttp.result = -5;
+        gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_FATAL;
         GameStats_Shutdown();
     }
 }
@@ -551,7 +551,7 @@ void NintendoWfcHttp_RequestDownload(int rank, int room, void *buffer) {
 void NintendoWfcHttp_RequestUpload(int rank, int room, int winCount, FrontierWifiUploadRecord *record) {
     u8 *dst;
     u8 *src;
-    u32 n;
+    u32 count;
     GameStats_Start();
     memcpy(gNintendoWfcHttpRequestBuffer, record, sizeof(FrontierWifiUploadRecord));
     // the request continues after the record: rank, room, winCount and the friend key
@@ -560,15 +560,15 @@ void NintendoWfcHttp_RequestUpload(int rank, int room, int winCount, FrontierWif
     ov72_0223B900[0x1A] = winCount;
     dst = gNintendoWfcHttpUploadFriendKey;
     src = gNintendoWfcHttpFriendKey;
-    n = 8;
+    count = 8;
     do {
         *dst++ = *src++;
-    } while (--n);
+    } while (--count);
     if (NintendoWfcHttp_StartRequest(gNintendoWfcUploadUrl, gNintendoWfcHttpRequestBuffer, 239, gNintendoWfcHttpShortResponse, 2)) {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_UPLOAD;
     } else {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
-        gNintendoWfcHttp.result = -5;
+        gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_FATAL;
         GameStats_Shutdown();
     }
 }
@@ -579,7 +579,7 @@ void NintendoWfcHttp_RequestInfo(void) {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_INFO;
     } else {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
-        gNintendoWfcHttp.result = -5;
+        gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_FATAL;
         GameStats_Shutdown();
     }
 }
@@ -593,7 +593,7 @@ void NintendoWfcHttp_RequestSetProfile(WifiServerProfile *profile, u32 *response
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_SET_PROFILE;
     } else {
         gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_DONE;
-        gNintendoWfcHttp.result = -5;
+        gNintendoWfcHttp.result = NINTENDO_WFC_HTTP_RESULT_FATAL;
         GameStats_Shutdown();
     }
 }
@@ -628,19 +628,19 @@ static int NintendoWfcHttp_ConvertError(int error) {
     case 22:
     case 23:
     case 32:
-        ret = ~4;
+        ret = NINTENDO_WFC_HTTP_RESULT_FATAL;
         break;
     case 2:
     case 8:
     case 25:
-        ret = ~4;
+        ret = NINTENDO_WFC_HTTP_RESULT_FATAL;
         break;
     case 11:
-        ret = ~6;
+        ret = NINTENDO_WFC_HTTP_RESULT_DISCONNECTED;
         break;
     case 12:
     case 13:
-        ret = ~6;
+        ret = NINTENDO_WFC_HTTP_RESULT_DISCONNECTED;
         break;
     case 16:
     case 17:
@@ -651,19 +651,19 @@ static int NintendoWfcHttp_ConvertError(int error) {
     case 28:
     case 29:
     case 31:
-        ret = ~1;
+        ret = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
         break;
     case 15:
     case 30:
-        ret = ~1;
+        ret = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
         break;
     default:
-        ret = ~4;
+        ret = NINTENDO_WFC_HTTP_RESULT_FATAL;
         break;
     }
-    if (ret != ~4) {
-        if (WCM_GetPhase() != 9) {
-            ret = ~5;
+    if (ret != NINTENDO_WFC_HTTP_RESULT_FATAL) {
+        if (WCM_GetPhase() != WCM_PHASE_DCF) {
+            ret = NINTENDO_WFC_HTTP_RESULT_NOT_CONNECTED;
         }
         DWC_ClearError();
     }
@@ -1338,7 +1338,7 @@ int NintendoWfc_WaitConnect(NintendoWfcConnect *wfc) {
             DWC_GetLastError(&lastError);
             NintendoWfc_HideWaitingIcon(wfc);
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
-            wfc->httpResult = -2;
+            wfc->httpResult = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
             break;
         case 4:
             DWC_GetApInfo(&apInfo);
@@ -1426,7 +1426,7 @@ int NintendoWfc_WaitInfo(NintendoWfcConnect *wfc) {
         result = NintendoWfcHttp_GetResult();
         wfc->timeoutCounter = 0;
         switch (result) {
-        case 0:
+        case NINTENDO_WFC_HTTP_RESULT_OK:
             NintendoWfc_HideWaitingIcon(wfc);
             switch (wfc->args->mode) {
             case NINTENDO_WFC_MODE_DOWNLOAD_ROOM:
@@ -1440,25 +1440,25 @@ int NintendoWfc_WaitInfo(NintendoWfcConnect *wfc) {
                 break;
             }
             break;
-        case 1:
+        case NINTENDO_WFC_HTTP_RESULT_MAINTENANCE:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -1:
-        case 2:
+        case NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED:
+        case NINTENDO_WFC_HTTP_RESULT_CROWDED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -7:
-        case -4:
+        case NINTENDO_WFC_HTTP_RESULT_DISCONNECTED:
+        case NINTENDO_WFC_HTTP_RESULT_CANCELED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -6:
-        case -2:
+        case NINTENDO_WFC_HTTP_RESULT_NOT_CONNECTED:
+        case NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
@@ -1470,7 +1470,7 @@ int NintendoWfc_WaitInfo(NintendoWfcConnect *wfc) {
         }
     } else {
         wfc->timeoutCounter++;
-        if (wfc->timeoutCounter == 3600) {
+        if (wfc->timeoutCounter == NINTENDO_WFC_HTTP_TIMEOUT_FRAMES) {
             CommState_ShowRestartErrorAndHalt();
         }
     }
@@ -1491,7 +1491,7 @@ int NintendoWfc_WaitSetProfile(NintendoWfcConnect *wfc) {
         result = NintendoWfcHttp_GetResult();
         wfc->timeoutCounter = 0;
         switch (result) {
-        case 0:
+        case NINTENDO_WFC_HTTP_RESULT_OK:
             NintendoWfc_HideWaitingIcon(wfc);
             switch (wfc->profileResponse[0]) {
             case 0:
@@ -1530,25 +1530,25 @@ int NintendoWfc_WaitSetProfile(NintendoWfcConnect *wfc) {
                 break;
             }
             break;
-        case 1:
+        case NINTENDO_WFC_HTTP_RESULT_MAINTENANCE:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -1:
-        case 2:
+        case NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED:
+        case NINTENDO_WFC_HTTP_RESULT_CROWDED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -7:
-        case -4:
+        case NINTENDO_WFC_HTTP_RESULT_DISCONNECTED:
+        case NINTENDO_WFC_HTTP_RESULT_CANCELED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -6:
-        case -2:
+        case NINTENDO_WFC_HTTP_RESULT_NOT_CONNECTED:
+        case NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
@@ -1560,7 +1560,7 @@ int NintendoWfc_WaitSetProfile(NintendoWfcConnect *wfc) {
         }
     } else {
         wfc->timeoutCounter++;
-        if (wfc->timeoutCounter == 3600) {
+        if (wfc->timeoutCounter == NINTENDO_WFC_HTTP_TIMEOUT_FRAMES) {
             CommState_ShowRestartErrorAndHalt();
         }
     }
@@ -1582,28 +1582,28 @@ int NintendoWfc_WaitRoomCount(NintendoWfcConnect *wfc) {
         value = NintendoWfcHttp_GetResult();
         wfc->timeoutCounter = 0;
         switch (value) {
-        case -1:
+        case NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED:
             wfc->httpResult = value;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             break;
-        case -2:
+        case NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR:
             wfc->httpResult = value;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             break;
-        case -3:
+        case NINTENDO_WFC_HTTP_RESULT_BAD_ROOM:
             wfc->httpResult = value;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             break;
-        case -6:
+        case NINTENDO_WFC_HTTP_RESULT_NOT_CONNECTED:
             wfc->httpResult = value;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             break;
-        case -7:
-        case -4:
+        case NINTENDO_WFC_HTTP_RESULT_DISCONNECTED:
+        case NINTENDO_WFC_HTTP_RESULT_CANCELED:
             wfc->httpResult = value;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             break;
-        case -5:
+        case NINTENDO_WFC_HTTP_RESULT_FATAL:
             wfc->httpResult = value;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
@@ -1619,7 +1619,7 @@ int NintendoWfc_WaitRoomCount(NintendoWfcConnect *wfc) {
         NintendoWfc_HideWaitingIcon(wfc);
     } else {
         wfc->timeoutCounter++;
-        if (wfc->timeoutCounter == 3600) {
+        if (wfc->timeoutCounter == NINTENDO_WFC_HTTP_TIMEOUT_FRAMES) {
             CommState_ShowRestartErrorAndHalt();
         }
     }
@@ -1697,7 +1697,7 @@ int NintendoWfc_WaitTrainersDownload(NintendoWfcConnect *wfc) {
         int result = NintendoWfcHttp_GetResult();
         wfc->timeoutCounter = 0;
         switch (result) {
-        case 0: {
+        case NINTENDO_WFC_HTTP_RESULT_OK: {
             RTCTime time;
             RTCDate date;
             BattleRoomDownload_SetTrainers((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer, (u8)wfc->ownRank, (u8)wfc->room);
@@ -1705,33 +1705,33 @@ int NintendoWfc_WaitTrainersDownload(NintendoWfcConnect *wfc) {
             DWC_GetDateTime(&date, &time);
             BattleRoomDownload_MarkRoom((BattleRoomDownload *)wfc->args->battleRoomDownload, (u8)wfc->rank, (u8)wfc->room, &date);
         } break;
-        case -1:
+        case NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -2:
+        case NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -3:
-        case -4:
+        case NINTENDO_WFC_HTTP_RESULT_BAD_ROOM:
+        case NINTENDO_WFC_HTTP_RESULT_CANCELED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_REQUEST_ROOM_COUNT;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -6:
+        case NINTENDO_WFC_HTTP_RESULT_NOT_CONNECTED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -7:
+        case NINTENDO_WFC_HTTP_RESULT_DISCONNECTED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -5:
+        case NINTENDO_WFC_HTTP_RESULT_FATAL:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
@@ -1740,7 +1740,7 @@ int NintendoWfc_WaitTrainersDownload(NintendoWfcConnect *wfc) {
         }
     } else {
         wfc->timeoutCounter++;
-        if (wfc->timeoutCounter == 3600) {
+        if (wfc->timeoutCounter == NINTENDO_WFC_HTTP_TIMEOUT_FRAMES) {
             CommState_ShowRestartErrorAndHalt();
         }
     }
@@ -1779,37 +1779,37 @@ int NintendoWfc_WaitUpload(NintendoWfcConnect *wfc) {
         result = NintendoWfcHttp_GetResult();
         wfc->timeoutCounter = 0;
         switch (result) {
-        case 0:
+        case NINTENDO_WFC_HTTP_RESULT_OK:
             FrontierData_FlagAction(wfc->args->frontierData, 5, 2);
             NintendoWfc_SetState(wfc, NINTENDO_WFC_STATE_START_SAVE, NINTENDO_WFC_STATE_PRINT_RECORD_SENT);
             break;
-        case -1:
+        case NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -2:
+        case NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -3:
+        case NINTENDO_WFC_HTTP_RESULT_BAD_ROOM:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -6:
+        case NINTENDO_WFC_HTTP_RESULT_NOT_CONNECTED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -7:
-        case -4:
+        case NINTENDO_WFC_HTTP_RESULT_DISCONNECTED:
+        case NINTENDO_WFC_HTTP_RESULT_CANCELED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -5:
+        case NINTENDO_WFC_HTTP_RESULT_FATAL:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
@@ -1818,7 +1818,7 @@ int NintendoWfc_WaitUpload(NintendoWfcConnect *wfc) {
         }
     } else {
         wfc->timeoutCounter++;
-        if (wfc->timeoutCounter == 3600) {
+        if (wfc->timeoutCounter == NINTENDO_WFC_HTTP_TIMEOUT_FRAMES) {
             CommState_ShowRestartErrorAndHalt();
         }
     }
@@ -1914,37 +1914,37 @@ int NintendoWfc_WaitLeadersDownload(NintendoWfcConnect *wfc) {
         int result = NintendoWfcHttp_GetResult();
         wfc->timeoutCounter = 0;
         switch (result) {
-        case 0:
+        case NINTENDO_WFC_HTTP_RESULT_OK:
             BattleRoomDownload_SetLeaders((BattleRoomDownload *)wfc->args->battleRoomDownload, wfc->downloadBuffer + 0x63C, (u8)wfc->rank, (u8)wfc->room);
             NintendoWfc_SetState(wfc, NINTENDO_WFC_STATE_START_SAVE, NINTENDO_WFC_STATE_PRINT_LEADERS_RECEIVED);
             break;
-        case -1:
+        case NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -2:
+        case NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -3:
+        case NINTENDO_WFC_HTTP_RESULT_BAD_ROOM:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_REQUEST_ROOM_COUNT;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -6:
+        case NINTENDO_WFC_HTTP_RESULT_NOT_CONNECTED:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -7:
-        case -4:
+        case NINTENDO_WFC_HTTP_RESULT_DISCONNECTED:
+        case NINTENDO_WFC_HTTP_RESULT_CANCELED:
             wfc->state = NINTENDO_WFC_STATE_REQUEST_ROOM_COUNT;
             wfc->httpResult = result;
             NintendoWfc_HideWaitingIcon(wfc);
             break;
-        case -5:
+        case NINTENDO_WFC_HTTP_RESULT_FATAL:
             wfc->httpResult = result;
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             NintendoWfc_HideWaitingIcon(wfc);
@@ -1953,7 +1953,7 @@ int NintendoWfc_WaitLeadersDownload(NintendoWfcConnect *wfc) {
         }
     } else {
         ++wfc->timeoutCounter;
-        if (wfc->timeoutCounter == 3600) {
+        if (wfc->timeoutCounter == NINTENDO_WFC_HTTP_TIMEOUT_FRAMES) {
             CommState_ShowRestartErrorAndHalt();
         }
     }
@@ -2072,22 +2072,22 @@ int NintendoWfc_UnusedState_HandleYesNo(NintendoWfcConnect *wfc) {
 int NintendoWfc_ShowHttpError(NintendoWfcConnect *wfc) {
     int msgNo = msg_0774_00000;
     switch (wfc->httpResult) {
-    case -6:
-    case -2:
+    case NINTENDO_WFC_HTTP_RESULT_NOT_CONNECTED:
+    case NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR:
         msgNo = msg_0774_00015;
         break;
-    case 1:
+    case NINTENDO_WFC_HTTP_RESULT_MAINTENANCE:
         msgNo = msg_0774_00013;
         break;
-    case -1:
-    case 2:
+    case NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED:
+    case NINTENDO_WFC_HTTP_RESULT_CROWDED:
         msgNo = msg_0774_00014;
         break;
-    case -7:
-    case -4:
+    case NINTENDO_WFC_HTTP_RESULT_DISCONNECTED:
+    case NINTENDO_WFC_HTTP_RESULT_CANCELED:
         msgNo = msg_0774_00016;
         break;
-    case -3:
+    case NINTENDO_WFC_HTTP_RESULT_BAD_ROOM:
         msgNo = msg_0774_00017;
         break;
     }

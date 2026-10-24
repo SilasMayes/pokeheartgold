@@ -1,12 +1,27 @@
 #ifndef POKEHEARTGOLD_SAVE_FASHION_H
 #define POKEHEARTGOLD_SAVE_FASHION_H
 
+#include "constants/accessories.h"
+
 #include "application/dress_up/dress_up_internal.h"
 
 #include "fashion_case.h"
 #include "heap.h"
 #include "pm_string.h"
 #include "pokemon.h"
+
+#define FASHION_ENTRY_COUNT       11
+#define FASHION_LARGE_ENTRY_COUNT 5
+#define FASHION_ENTRY_ITEM_MAX    10
+
+// Accessories below ACCESSORY_COLORED_PARASOL are kept in counts of up to 9, the others as owned flags.
+#define FASHION_ACCESSORY_COUNT            (ACCESSORY_COMET + 1)
+#define FASHION_STACKABLE_ACCESSORY_COUNT  ACCESSORY_COLORED_PARASOL
+#define FASHION_STACKABLE_ACCESSORY_MAX    9
+
+// Wallpapers are kept as their order of receipt; FASHION_WALLPAPER_NOT_OWNED marks one not received yet.
+#define FASHION_WALLPAPER_COUNT     18
+#define FASHION_WALLPAPER_NOT_OWNED FASHION_WALLPAPER_COUNT
 
 typedef struct SaveFashionMon SaveFashionMon;
 

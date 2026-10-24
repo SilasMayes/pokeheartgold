@@ -13,16 +13,11 @@
 #include "launch_application.h"
 #include "ride_cutscene_task.h"
 #include "screen_fade.h"
+#include "ship_departure_cutscene.h"
 #include "sound.h"
 #include "sound_playback.h"
 #include "sound_system.h"
 #include "task.h"
-
-typedef struct NightTaskEnv {
-    u8 port, night;
-    u8 pad02[2];
-    void *modelAttributes;
-} NightTaskEnv;
 
 enum ShipVoyageState {
     SHIP_VOYAGE_FADE_OUT,
@@ -33,7 +28,7 @@ enum ShipVoyageState {
     SHIP_VOYAGE_FREE,
 };
 
-static void CallTask_ShipDepartureCutscene(FieldSystem *fieldSystem, u8 port, void *modelAttributes);
+static void CallTask_ShipDepartureCutscene(FieldSystem *fieldSystem, u8 port, ModelAttributes *modelAttributes);
 static BOOL Task_ShipDepartureCutscene(TaskManager *taskManager);
 static BOOL Task_ShipVoyage(TaskManager *taskManager);
 
@@ -50,24 +45,24 @@ void CallTask_ShipVoyage(FieldSystem *fieldSystem, u8 port, u8 direction, u32 ma
     TaskManager_Call(fieldSystem->taskman, Task_ShipVoyage, env);
 }
 
-static void CallTask_ShipDepartureCutscene(FieldSystem *fieldSystem, u8 port, void *modelAttributes) {
-    NightTaskEnv *env = Heap_AllocAtEnd(HEAP_ID_FIELD2, sizeof(NightTaskEnv));
+static void CallTask_ShipDepartureCutscene(FieldSystem *fieldSystem, u8 port, ModelAttributes *modelAttributes) {
+    ShipDepartureCutsceneArgs *env = Heap_AllocAtEnd(HEAP_ID_FIELD2, sizeof(ShipDepartureCutsceneArgs));
 
     env->modelAttributes = modelAttributes;
     env->port = port;
     switch (Field_GetTimeOfDay(fieldSystem)) {
     case RTC_TIMEOFDAY_MORN:
     case RTC_TIMEOFDAY_DAY:
-        env->night = FALSE;
+        env->isNight = FALSE;
         break;
     case RTC_TIMEOFDAY_EVE:
     case RTC_TIMEOFDAY_NITE:
     case RTC_TIMEOFDAY_LATE:
-        env->night = TRUE;
+        env->isNight = TRUE;
         break;
     default:
         GF_ASSERT(FALSE);
-        env->night = FALSE;
+        env->isNight = FALSE;
         break;
     }
     TaskManager_Call(fieldSystem->taskman, Task_ShipDepartureCutscene, env);
@@ -75,7 +70,7 @@ static void CallTask_ShipDepartureCutscene(FieldSystem *fieldSystem, u8 port, vo
 
 static BOOL Task_ShipDepartureCutscene(TaskManager *taskManager) {
     FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
-    NightTaskEnv *env = TaskManager_GetEnvironment(taskManager);
+    ShipDepartureCutsceneArgs *env = TaskManager_GetEnvironment(taskManager);
     u32 *state = TaskManager_GetStatePtr(taskManager);
 
     switch (*state) {

@@ -49,7 +49,7 @@ static struct {
     ParticleSystem *loadingSystem; // system whose resource is being loaded
     void *emitterParam;            // arg of the running ParticleSystem_CreateEmitterWithParam
 } sParticleSystemCallbackState;
-static ParticleSystem *sParticleSystems[16];
+static ParticleSystem *sParticleSystems[PARTICLE_SYSTEM_MAX];
 
 static void ParticleSystem_LoadResource(ParticleSystem *system);
 static void ParticleSystem_LoadResourceTask(SysTask *task, void *data);
@@ -72,7 +72,7 @@ static void *ParticleSystem_AllocSlot13(u32 size);
 static void *ParticleSystem_AllocSlot14(u32 size);
 static void *ParticleSystem_AllocSlot15(u32 size);
 
-static const ParticleAllocFunc sParticleSystemAllocFuncs[16] = {
+static const ParticleAllocFunc sParticleSystemAllocFuncs[PARTICLE_SYSTEM_MAX] = {
     ParticleSystem_AllocSlot0,
     ParticleSystem_AllocSlot1,
     ParticleSystem_AllocSlot2,
@@ -93,7 +93,7 @@ static const ParticleAllocFunc sParticleSystemAllocFuncs[16] = {
 
 void ParticleSystem_ZeroAll(void) {
     int i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < PARTICLE_SYSTEM_MAX; i++) {
         sParticleSystems[i] = NULL;
     }
 }
@@ -102,12 +102,12 @@ SPLEmitter *ParticleSystem_New(texAllocFun texAlloc, plttAllocFun plttAlloc, voi
     ParticleSystem *system;
     int slot;
 
-    for (slot = 0; slot < 16; slot++) {
+    for (slot = 0; slot < PARTICLE_SYSTEM_MAX; slot++) {
         if (sParticleSystems[slot] == NULL) {
             break;
         }
     }
-    if (slot >= 16) {
+    if (slot >= PARTICLE_SYSTEM_MAX) {
         return NULL;
     }
     system = Heap_Alloc(heapID, sizeof(ParticleSystem));
@@ -148,7 +148,7 @@ void ParticleSystem_Free(SPLEmitter *emitter) {
     if (system->flags & PARTICLE_TEX_VRAM_FRAME) {
         NNS_GfdSetFrmTexVramState(system->texKeys);
     } else if (system->flags & PARTICLE_TEX_VRAM_LINKED) {
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < PARTICLE_VRAM_KEY_MAX; i++) {
             if (system->texKeys[i] != 0) {
                 NNS_GfdFreeLnkTexVram(system->texKeys[i]);
                 system->texKeys[i] = 0;
@@ -158,7 +158,7 @@ void ParticleSystem_Free(SPLEmitter *emitter) {
     if (system->flags & PARTICLE_PLTT_VRAM_FRAME) {
         NNS_GfdSetFrmPlttVramState(system->plttKeys);
     } else if (system->flags & PARTICLE_PLTT_VRAM_LINKED) {
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < PARTICLE_VRAM_KEY_MAX; i++) {
             if (system->plttKeys[i] != 0) {
                 NNS_GfdFreeLnkPlttVram(system->plttKeys[i]);
                 system->plttKeys[i] = 0;
@@ -171,7 +171,7 @@ void ParticleSystem_Free(SPLEmitter *emitter) {
         Heap_Free(system->resource);
         system->resource = NULL;
     }
-    for (j = 0; j < 16; j++) {
+    for (j = 0; j < PARTICLE_SYSTEM_MAX; j++) {
         if (sParticleSystems[j] == system) {
             sParticleSystems[j] = NULL;
             break;
@@ -185,7 +185,7 @@ void ParticleSystem_Free(SPLEmitter *emitter) {
 
 void ParticleSystem_FreeAll(void) {
     int i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < PARTICLE_SYSTEM_MAX; i++) {
         if (sParticleSystems[i] != NULL) {
             ParticleSystem_Free((SPLEmitter *)sParticleSystems[i]);
         }
@@ -238,14 +238,14 @@ void ParticleSystem_SetResource(SPLEmitter *emitter, void *data, u32 flag, BOOL 
     if (flag & PARTICLE_TEX_VRAM_FRAME) {
         NNS_GfdGetFrmTexVramState(system->texKeys);
     } else if (flag & PARTICLE_TEX_VRAM_LINKED) {
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < PARTICLE_VRAM_KEY_MAX; i++) {
             system->texKeys[i] = 0;
         }
     }
     if (flag & PARTICLE_PLTT_VRAM_FRAME) {
         NNS_GfdGetFrmPlttVramState(system->plttKeys);
     } else if (flag & PARTICLE_PLTT_VRAM_LINKED) {
-        for (j = 0; j < 16; j++) {
+        for (j = 0; j < PARTICLE_VRAM_KEY_MAX; j++) {
             system->plttKeys[j] = 0;
         }
     }
@@ -293,7 +293,7 @@ void ParticleSystem_RegisterTexKey(NNSGfdTexKey texKey) {
     GF_ASSERT(texKey != 0);
     GF_ASSERT(sParticleSystemCallbackState.loadingSystem != NULL);
     system = sParticleSystemCallbackState.loadingSystem;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < PARTICLE_VRAM_KEY_MAX; i++) {
         if (system->texKeys[i] == 0) {
             system->texKeys[i] = texKey;
             return;
@@ -309,7 +309,7 @@ void ParticleSystem_RegisterPlttKey(NNSGfdPlttKey plttKey) {
     GF_ASSERT(plttKey != 0);
     GF_ASSERT(sParticleSystemCallbackState.loadingSystem != NULL);
     system = sParticleSystemCallbackState.loadingSystem;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < PARTICLE_VRAM_KEY_MAX; i++) {
         if (system->plttKeys[i] == 0) {
             system->plttKeys[i] = plttKey;
             return;
@@ -338,7 +338,7 @@ void ParticleSystem_Calc(ParticleSystem *system) {
 
 int ParticleSystem_CountActive(void) {
     int count = 0, i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < PARTICLE_SYSTEM_MAX; i++) {
         if (sParticleSystems[i] != NULL) {
             count++;
         }
@@ -348,7 +348,7 @@ int ParticleSystem_CountActive(void) {
 
 int ParticleSystem_DrawAll(void) {
     int count = 0, i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < PARTICLE_SYSTEM_MAX; i++) {
         if (sParticleSystems[i] != NULL) {
             ParticleSystem_Draw(sParticleSystems[i]);
             count++;
@@ -359,7 +359,7 @@ int ParticleSystem_DrawAll(void) {
 
 int ParticleSystem_CalcAll(void) {
     int count = 0, i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < PARTICLE_SYSTEM_MAX; i++) {
         if (sParticleSystems[i] != NULL) {
             ParticleSystem_Calc(sParticleSystems[i]);
             count++;

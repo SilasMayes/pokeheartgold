@@ -161,10 +161,12 @@ static const u16 sGBSoundsSeqPairs[136][2] = {
 };
 
 void Sound_SetKeepPlayingCries(u8 value) {
-    *(u8 *)GF_SdatGetAttrPtr(SOUND_ATTR_KEEP_PLAYING_CRIES) = value;
+    u8 *keepPlayingCries = GF_SdatGetAttrPtr(SOUND_ATTR_KEEP_PLAYING_CRIES);
+    *keepPlayingCries = value;
 }
 void Sound_SetChatotRecordingDisabled(u8 value) {
-    *(u8 *)GF_SdatGetAttrPtr(SOUND_ATTR_CHATOT_RECORDING_DISABLED) = value;
+    u8 *recordingDisabled = GF_SdatGetAttrPtr(SOUND_ATTR_CHATOT_RECORDING_DISABLED);
+    *recordingDisabled = value;
 }
 BOOL GF_SndReadSeqVariable(u16 seqNo, u32 variable, s16 *value) {
     GF_ASSERT(value != NULL);
@@ -180,22 +182,26 @@ void Sound_ApplyFootstepVariation(u16 seqNo) {
     }
 }
 void Sound_SetSelectSEMuted(BOOL enabled) {
-    *(u8 *)GF_SdatGetAttrPtr(SOUND_ATTR_SELECT_SE_MUTED) = enabled;
+    u8 *muted = GF_SdatGetAttrPtr(SOUND_ATTR_SELECT_SE_MUTED);
+    *muted = enabled;
 }
 int Sound_IsSelectSEMuted(void) {
-    return *(u8 *)GF_SdatGetAttrPtr(SOUND_ATTR_SELECT_SE_MUTED);
+    u8 *muted = GF_SdatGetAttrPtr(SOUND_ATTR_SELECT_SE_MUTED);
+    return *muted;
 }
 static void SoundSys_SetGBSoundsState(u8 enabled) {
-    *(u8 *)GF_SdatGetAttrPtr(SOUND_ATTR_GB_SOUNDS_ENABLED) = enabled;
+    u8 *gbSoundsEnabled = GF_SdatGetAttrPtr(SOUND_ATTR_GB_SOUNDS_ENABLED);
+    *gbSoundsEnabled = enabled;
 }
 BOOL SoundSys_GetGBSoundsState(void) {
-    return *(u8 *)GF_SdatGetAttrPtr(SOUND_ATTR_GB_SOUNDS_ENABLED);
+    u8 *gbSoundsEnabled = GF_SdatGetAttrPtr(SOUND_ATTR_GB_SOUNDS_ENABLED);
+    return *gbSoundsEnabled;
 }
 void SoundSys_ToggleGBSounds(void) {
-    if (SoundSys_GetGBSoundsState() == 0) {
-        SoundSys_SetGBSoundsState(1);
+    if (!SoundSys_GetGBSoundsState()) {
+        SoundSys_SetGBSoundsState(TRUE);
     } else {
-        SoundSys_SetGBSoundsState(0);
+        SoundSys_SetGBSoundsState(FALSE);
     }
     if (GF_GetQueuedBGM() == 0) {
         u16 seqNo = GF_GetCurrentPlayingBGM();
@@ -208,7 +214,7 @@ void SoundSys_ToggleGBSounds(void) {
 }
 u16 GBSounds_GetGBSeqNoByDSSeqNo(u16 seqNo) {
     u16 i;
-    for (i = 0; i < 136; i++) {
+    for (i = 0; i < NELEMS(sGBSoundsSeqPairs); i++) {
         if (seqNo == sGBSoundsSeqPairs[i][0]) {
             return sGBSoundsSeqPairs[i][1];
         }
@@ -217,7 +223,7 @@ u16 GBSounds_GetGBSeqNoByDSSeqNo(u16 seqNo) {
 }
 u16 GBSounds_GetDSSeqNoByGBSeqNo(u16 seqNo) {
     u16 i;
-    for (i = 0; i < 136; i++) {
+    for (i = 0; i < NELEMS(sGBSoundsSeqPairs); i++) {
         if (seqNo == sGBSoundsSeqPairs[i][1]) {
             return sGBSoundsSeqPairs[i][0];
         }

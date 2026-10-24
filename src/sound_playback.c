@@ -61,9 +61,9 @@ BOOL PlayBGM(u16 seqNo) {
     int playerNo = GF_GetPlayerNoBySeq(seqNo);
     enum SoundHandleNo handleNo = GF_GetSndHandleByPlayerNo(playerNo);
     BOOL success;
-    if (playerNo == 7) {
+    if (playerNo == PLAYER_BGM) {
         success = PlayBGMOnBGMPlayer(seqNo, playerNo, handleNo);
-    } else if (playerNo == 1) {
+    } else if (playerNo == PLAYER_FIELD) {
         success = PlayBGMOnFieldPlayer(seqNo, playerNo, handleNo);
     } else {
         GF_ASSERT(FALSE);
@@ -107,7 +107,7 @@ BOOL PlayBGMOnBGMPlayerInField(u16 seqNo) {
         GF_ASSERT(FALSE);
         return FALSE;
     }
-    if (GF_GetPlayerNoBySeq(seqNo) != 7) {
+    if (GF_GetPlayerNoBySeq(seqNo) != PLAYER_BGM) {
         GF_ASSERT(FALSE);
         return FALSE;
     }
@@ -297,7 +297,7 @@ void SetPlayerPan(int playerNo, int pan) {
 }
 
 void SetAllSEPan(int pan) {
-    enum SoundHandleNo firstHandle = GF_GetSndHandleByPlayerNo(3);
+    enum SoundHandleNo firstHandle = GF_GetSndHandleByPlayerNo(PLAYER_SE_1);
     for (int i = 0; i < 4; i++) {
         NNS_SndPlayerSetTrackPan(GF_GetSoundHandle(firstHandle + i), 0xFFFF, pan);
     }

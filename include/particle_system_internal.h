@@ -3,6 +3,9 @@
 
 #include "particle_system.h"
 
+#define PARTICLE_SYSTEM_MAX 16
+#define PARTICLE_VRAM_KEY_MAX 16
+
 // The public API (particle_system.h) passes a ParticleSystem * as SPLEmitter *.
 typedef struct ParticleSystem {
     SPLManager *manager;
@@ -22,8 +25,8 @@ typedef struct ParticleSystem {
     VecFx32 pos;
     VecFx32 up;
     VecFx32 target;
-    u32 texKeys[16]; // frame VRAM state or linked VRAM keys
-    u32 plttKeys[16];
+    u32 texKeys[PARTICLE_VRAM_KEY_MAX]; // frame VRAM state or linked VRAM keys
+    u32 plttKeys[PARTICLE_VRAM_KEY_MAX];
     u8 flags; // enum ParticleVramFlags
     u8 unk_D9;
     u8 slot;

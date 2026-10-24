@@ -43,8 +43,8 @@ void HBlankDma_Stop(void) {
     MI_WaitDma(0);
 }
 
-void HBlankDma_Start(void *src, void *dst, u32 size, int wide) {
-    if (wide == 1) {
+void HBlankDma_Start(void *src, void *dst, u32 size, BOOL wide) {
+    if (wide == TRUE) {
         MI_HBlankDmaCopy32(0, src, dst, size);
     } else {
         MI_HBlankDmaCopy16(0, src, dst, size);
@@ -67,7 +67,7 @@ void ScanlineEffect_StartWave(ScanlineEffect *effect, u8 first, u8 last, u32 ste
     effect->speed = speed;
     effect->destination = destination;
     effect->fill = fill;
-    ScanlineEffect_BuildWaveTable(effect->wave, 192, step, amplitude);
+    ScanlineEffect_BuildWaveTable(effect->wave, NELEMS(effect->wave), step, amplitude);
     effect->task = SysTask_CreateOnMainQueue(ScanlineEffect_WaveTask, effect, priority);
     MIi_CpuClear32(effect->fill, effect->buffers[0], sizeof(effect->buffers[0]));
     MIi_CpuClear32(effect->fill, effect->buffers[1], sizeof(effect->buffers[1]));
@@ -113,7 +113,7 @@ void ScanlineEffect_BuildWaveTable(s16 *out, u32 count, u32 step, fx32 amplitude
     u16 angle = 0;
     u32 i;
     for (i = 0; i < count; i++) {
-        *out = FX_Mul(FX_SinIdx(angle), amplitude) >> 12;
+        *out = FX_Mul(FX_SinIdx(angle), amplitude) >> FX32_SHIFT;
         angle += step;
         out++;
     }
@@ -129,13 +129,13 @@ void ScanlineEffect_WaveTask(SysTask *task, void *data) {
         u16 y = (u16)(buffer[i] >> 16);
         x += effect->wave[pos];
         buffer[i] = (y << 16) | (u16)x;
-        pos = (pos + 1) % 192;
+        pos = (pos + 1) % GX_LCD_SIZE_Y;
     }
     effect->phase += effect->speed;
-    if (effect->phase >= 19200) {
-        effect->phase %= 19200;
+    if (effect->phase >= GX_LCD_SIZE_Y * 100) {
+        effect->phase %= GX_LCD_SIZE_Y * 100;
     } else if (effect->phase < 0) {
-        effect->phase += 19200;
+        effect->phase += GX_LCD_SIZE_Y * 100;
     }
 }
 

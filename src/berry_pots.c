@@ -156,13 +156,13 @@ static u32 BerryPots_MainSeq_StartBag(BerryPotsOverlayData *data) {
 
     switch (data->itemAction) {
     case 1:
-        sBerryPotsBagPockets = (u8 *)sBerryPotsItemPockets;
+        sBerryPotsBagPockets = sBerryPotsItemPockets;
 
         data->bagView = Bag_CreateView(bag, sBerryPotsItemPockets, data->heapID);
         BagView_Init(data->bagView, data->args->saveData, 6, data->cursor2, data->args->menuInputStatePtr);
         break;
     case 2:
-        sBerryPotsBagPockets = (u8 *)sBerryPotsBerryPockets;
+        sBerryPotsBagPockets = sBerryPotsBerryPockets;
 
         data->bagView = Bag_CreateView(bag, sBerryPotsBerryPockets, data->heapID);
         BagView_Init(data->bagView, data->args->saveData, 6, data->cursor1, data->args->menuInputStatePtr);

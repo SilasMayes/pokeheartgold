@@ -296,11 +296,11 @@ void ApricornJuice_RankFlavors(ApricornJuice *juice, ApricornJuiceRanking *out) 
     if (count) {
         for (i = 0; i < APRICORN_JUICE_FLAVOR_COUNT; i++) {
             for (j = i + 1; j < APRICORN_JUICE_FLAVOR_COUNT; j++) {
-                u8 b = pairs[j].value, a = pairs[i].value;
-                if (a > b) {
+                u8 other = pairs[j].value, current = pairs[i].value;
+                if (current > other) {
                     continue;
                 }
-                if (a == b && pairs[i].id < pairs[j].id) {
+                if (current == other && pairs[i].id < pairs[j].id) {
                     continue;
                 }
                 tmp = pairs[i];
@@ -564,13 +564,13 @@ static void ApricornBox_AddJuiceMildness(SaveApricornBox *box, u8 amount) {
 
 static void ApricornBox_MixQueuedApricorns(SaveApricornBox *box) {
     s8 values[APRICORN_JUICE_FLAVOR_COUNT], order[APRICORN_JUICE_FLAVOR_COUNT];
-    int n;
+    int slot;
     u8 total, action, max, index;
     u16 actions = box->queuedApricorns;
     int i, j;
     u8 reduce;
     ApricornJuice_GetFlavors(&box->juice, (u8 *)values);
-    for (n = 0; n < APRICORN_QUEUE_SLOT_COUNT; n++) {
+    for (slot = 0; slot < APRICORN_QUEUE_SLOT_COUNT; slot++) {
         reduce = 0;
         action = actions & APRICORN_QUEUE_SLOT_MASK;
         if (action == 0) {
@@ -597,14 +597,14 @@ static void ApricornBox_MixQueuedApricorns(SaveApricornBox *box) {
         {
             s8 value;
             const s8 *row;
-            s8 *v;
+            s8 *flavor;
             s8 change;
             s8 old;
             row = sApricornFlavorDeltas[action];
-            v = &values[0];
+            flavor = &values[0];
             for (i = 0; i < APRICORN_JUICE_FLAVOR_COUNT; i++) {
                 change = *row;
-                old = *v;
+                old = *flavor;
                 value = old + change;
                 if (change > 0 && values[order[0]] != 0 && order[0] != i && values[order[1]] != 0 && order[1] != i) {
                     reduce = 1;
@@ -618,10 +618,10 @@ static void ApricornBox_MixQueuedApricorns(SaveApricornBox *box) {
                     max = value;
                     index = i;
                 }
-                *v = value;
+                *flavor = value;
                 total += value;
                 row++;
-                v++;
+                flavor++;
             }
         }
         actions >>= APRICORN_QUEUE_SLOT_BITS;

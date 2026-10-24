@@ -62,10 +62,36 @@ enum NintendoWfcHttpState {
     NINTENDO_WFC_HTTP_DONE = 12,
 };
 
+#define NINTENDO_WFC_DOWNLOAD_SIZE       0xA38 // a room's trainers and leaders
+#define NINTENDO_WFC_HTTP_TIMEOUT_FRAMES 3600  // frames to wait for a request before the restart error
+
+// Status byte at the start of a Battle Tower server response.
+enum NintendoWfcServerStatus {
+    NINTENDO_WFC_SERVER_OK = 1,
+    NINTENDO_WFC_SERVER_BAD_ROOM,
+    NINTENDO_WFC_SERVER_MAINTENANCE,
+    NINTENDO_WFC_SERVER_CROWDED,
+    NINTENDO_WFC_SERVER_ERROR,
+};
+
+// NintendoWfcHttp_GetResult; a room count request gives the room count instead of OK.
+enum NintendoWfcHttpResult {
+    NINTENDO_WFC_HTTP_RESULT_DISCONNECTED = -7,
+    NINTENDO_WFC_HTTP_RESULT_NOT_CONNECTED,
+    NINTENDO_WFC_HTTP_RESULT_FATAL, // shows the restart error
+    NINTENDO_WFC_HTTP_RESULT_CANCELED,
+    NINTENDO_WFC_HTTP_RESULT_BAD_ROOM,
+    NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR,
+    NINTENDO_WFC_HTTP_RESULT_UPLOAD_CROWDED,
+    NINTENDO_WFC_HTTP_RESULT_OK,
+    NINTENDO_WFC_HTTP_RESULT_MAINTENANCE,
+    NINTENDO_WFC_HTTP_RESULT_CROWDED,
+};
+
 // The HTTP request state of the Wi-Fi Battle Tower (gamestats) requests.
 typedef struct NintendoWfcHttp {
     volatile s32 state; // enum NintendoWfcHttpState
-    s32 result;
+    s32 result; // enum NintendoWfcHttpResult
     u32 profileId;
     u64 friendKey;
     u8 rank; // first byte of the request buffer gNintendoWfcHttpRequestBuffer
@@ -150,7 +176,7 @@ s32 NintendoWfcHttp_GetResult(void);
 void NintendoWfcHttp_Init(u32 profileId, u64 friendKey);
 BOOL NintendoWfcHttp_IsDone(void);
 void NintendoWfcHttp_RequestRoomCount(int rank);
-void NintendoWfcHttp_RequestDownload(int rank, int room, void *buffer);
+void NintendoWfcHttp_RequestDownload(int rank, int room, u8 *buffer);
 void NintendoWfcHttp_RequestUpload(int rank, int room, int winCount, FrontierWifiUploadRecord *record);
 void NintendoWfcHttp_RequestInfo(void);
 void NintendoWfcHttp_RequestSetProfile(WifiServerProfile *profile, u32 *response);

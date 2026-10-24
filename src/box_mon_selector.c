@@ -212,7 +212,7 @@ void BoxMonSelector_Delete(BoxMonSelector *selector) {
     Heap_Free(selector->screenFiles[1]);
     SpriteTransfer_DeleteCharTransferTask(selector->spriteResources[0]);
     SpriteTransfer_DeletePlttTransferTask(selector->spriteResources[1]);
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < GF_GFX_RES_TYPE_MAX; i++) {
         Destroy2DGfxResObjMan(selector->resManagers[i]);
     }
     SpriteList_Delete(selector->spriteList);
@@ -513,7 +513,7 @@ static void BoxMonSelector_InitSpriteResources(BoxMonSelector *selector) {
 
     selector->spriteList = G2dRenderer_Init(43, &selector->renderer, selector->heapId);
     G2dRenderer_SetSubSurfaceCoords(&selector->renderer, 0, 256 * FX32_ONE);
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < GF_GFX_RES_TYPE_MAX; i++) {
         selector->resManagers[i] = Create2DGfxResObjMan(3, (GfGfxResType)i, selector->heapId);
     }
     selector->spriteResources[0] = AddCharResObjFromNarc(selector->resManagers[0], NARC_a_1_5_1, 8, TRUE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, selector->heapId);
@@ -740,24 +740,24 @@ static void BoxMonSelector_SetHitboxRect(TouchscreenHitbox *hitbox, int x, int y
 
 static void BoxMonSelector_CreateBoxIcons(BoxMonSelector *selector) {
     SpriteTemplate template;
-    int col, row, n;
+    int col, row, slot;
 
     BoxMonSelector_InitSpriteTemplate(&template, selector, NNS_G2D_VRAM_TYPE_2DMAIN);
-    n = 0;
+    slot = 0;
     for (row = 0; row < 5; row++) {
         for (col = 0; col < 6; col++) {
-            BoxMonSelector_SetHitboxRect(&selector->hitboxes[n], 20 + col * 24, 40 + row * 24, 24, 24);
+            BoxMonSelector_SetHitboxRect(&selector->hitboxes[slot], 20 + col * 24, 40 + row * 24, 24, 24);
             template.position.x = (20 + col * 24) * FX32_ONE;
             template.position.y = (40 + row * 24) * FX32_ONE;
-            if (selector->boxIcons[n].sprite == NULL) {
-                selector->boxIcons[n].sprite = Sprite_CreateAffine(&template);
+            if (selector->boxIcons[slot].sprite == NULL) {
+                selector->boxIcons[slot].sprite = Sprite_CreateAffine(&template);
             }
-            Sprite_SetAnimActiveFlag(selector->boxIcons[n].sprite, TRUE);
-            Sprite_SetAnimCtrlSeq(selector->boxIcons[n].sprite, n + 7);
-            Sprite_SetPriority(selector->boxIcons[n].sprite, 1);
-            Sprite_SetDrawFlag(selector->boxIcons[n].sprite, FALSE);
-            Sprite_SetDrawPriority(selector->boxIcons[n].sprite, 6);
-            n++;
+            Sprite_SetAnimActiveFlag(selector->boxIcons[slot].sprite, TRUE);
+            Sprite_SetAnimCtrlSeq(selector->boxIcons[slot].sprite, slot + 7);
+            Sprite_SetPriority(selector->boxIcons[slot].sprite, 1);
+            Sprite_SetDrawFlag(selector->boxIcons[slot].sprite, FALSE);
+            Sprite_SetDrawPriority(selector->boxIcons[slot].sprite, 6);
+            slot++;
         }
     }
 

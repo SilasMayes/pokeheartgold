@@ -103,7 +103,7 @@ typedef struct NintendoWfcUnused {
     int rank;
     int roomCount;
     int room;
-    u8 downloadBuffer[0xA38];
+    u8 downloadBuffer[NINTENDO_WFC_DOWNLOAD_SIZE];
     FrontierWifiUploadRecord uploadRecord;
     u8 padding_0BBC[0x14];
     MessageFormat *msgFormat;
@@ -134,7 +134,7 @@ typedef struct NintendoWfcUnused {
     int dwcError;
     int dwcErrorCode;
     int dwcErrorType;
-    int httpResult;
+    int httpResult; // enum NintendoWfcHttpResult
     int messageTimer;
     WifiServerProfile profile;
     u32 profileResponse[2];

@@ -15,7 +15,10 @@
 #include "save.h"
 
 // Fashion save data (save array 0xC): 11 dressed-up Pokemon entries, 5 larger entries and the fashion case
-// (accessory counts, backdrop order). An entry's magic is 0x1234 while empty and 0x2345 once saved.
+// (accessory counts, backdrop order).
+
+#define FASHION_ENTRY_MAGIC_EMPTY 0x1234
+#define FASHION_ENTRY_MAGIC_SAVED 0x2345
 
 struct SaveFashionMon {
     u32 personality;
@@ -36,7 +39,7 @@ typedef struct FashionEntry {
     SaveFashionMon mon;
     u32 mask; // bit n: items[n] is placed
     MailMessage mailMessage;
-    u8 items[10][4]; // accessory id, x, y, z
+    u8 items[FASHION_ENTRY_ITEM_MAX][4]; // accessory id, x, y, z
     u8 backdrop;
     u8 language;
     u8 padding_72[2];
@@ -80,7 +83,7 @@ void MATHi_CRC32InitTableRev(u32 *table, u32 polynomial);
 u32 MATH_CalcCRC32(const u32 *table, const void *data, u32 size);
 
 static BOOL IsValidFashionMagic(u32 value) {
-    if (value == 0x1234 || value == 0x2345) {
+    if (value == FASHION_ENTRY_MAGIC_EMPTY || value == FASHION_ENTRY_MAGIC_SAVED) {
         return TRUE;
     }
     return FALSE;
@@ -138,7 +141,7 @@ static void SetFashionItemPlacement(u8 *dst, u8 accessoryId, u8 x, u8 y, u8 z) {
 static void SetStackableAccessoryCount(u32 *data, int value, u8 index) {
     u8 shift;
     u8 word;
-    GF_ASSERT(index < 61);
+    GF_ASSERT(index < FASHION_STACKABLE_ACCESSORY_COUNT);
     shift = index % 8;
     shift *= 4;
     word = index / 8;
@@ -150,13 +153,13 @@ static u8 GetStackableAccessoryCount(u32 *data, u8 index) {
     u8 word;
     u8 shift;
     u8 value;
-    GF_ASSERT(index < 61);
+    GF_ASSERT(index < FASHION_STACKABLE_ACCESSORY_COUNT);
     word = index / 8;
     shift = index % 8;
     shift *= 4;
     value = (data[word] >> shift) & 15;
-    if (value > 9) {
-        value = 9;
+    if (value > FASHION_STACKABLE_ACCESSORY_MAX) {
+        value = FASHION_STACKABLE_ACCESSORY_MAX;
     }
     return value;
 }
@@ -180,7 +183,7 @@ static u8 GetUniqueAccessoryFlag(u32 *data, u8 index) {
 static void SetWallpaperOrder(u32 *data, u32 value, u8 index) {
     u8 shift;
     u8 word;
-    GF_ASSERT(value <= 18);
+    GF_ASSERT(value <= FASHION_WALLPAPER_COUNT);
     shift = index % 4;
     shift *= 8;
     word = index / 4;
@@ -198,8 +201,8 @@ static u8 GetWallpaperOrder(u32 *data, u8 index) {
 static u8 CountOwnedWallpapers(u32 *data) {
     int i = 0;
     int count = i;
-    for (i = 0; i < 18; i++) {
-        if (GetWallpaperOrder(data, (u8)i) != 18) {
+    for (i = 0; i < FASHION_WALLPAPER_COUNT; i++) {
+        if (GetWallpaperOrder(data, (u8)i) != FASHION_WALLPAPER_NOT_OWNED) {
             count++;
         }
     }
@@ -207,7 +210,7 @@ static u8 CountOwnedWallpapers(u32 *data) {
 }
 
 static BOOL IsStackableAccessory(u32 value) {
-    if (value < 61) {
+    if (value < FASHION_STACKABLE_ACCESSORY_COUNT) {
         return TRUE;
     }
     return FALSE;
@@ -216,34 +219,34 @@ static BOOL IsStackableAccessory(u32 value) {
 static void FashionCase_Init(FashionCase *fashionCase) {
     int i;
     memset(fashionCase, 0, sizeof(FashionCase));
-    for (i = 0; i < 18; i++) {
-        SetWallpaperOrder(&fashionCase->wallpaperOrder[0], 18, (u8)i);
+    for (i = 0; i < FASHION_WALLPAPER_COUNT; i++) {
+        SetWallpaperOrder(&fashionCase->wallpaperOrder[0], FASHION_WALLPAPER_NOT_OWNED, (u8)i);
     }
 }
 
 void Save_FashionData_Init(SaveFashionData *fashionData) {
     int i;
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < FASHION_ENTRY_COUNT; i++) {
         memset(&fashionData->entries[i], 0, sizeof(SaveFashionDataSub));
-        ((FashionEntry *)&fashionData->entries[i])->magic = 0x1234;
+        ((FashionEntry *)&fashionData->entries[i])->magic = FASHION_ENTRY_MAGIC_EMPTY;
     }
     {
         int j = 0;
-        u8 *clear = (u8 *)fashionData + 0x4FC;
+        u8 *clear = (u8 *)fashionData->largeEntries;
         u8 *set = (u8 *)fashionData;
-        u32 magic = 0x1234;
-        for (; j < 5; j++) {
-            memset(clear, 0, 0x98);
-            *(u32 *)(set + 0x4FC) = magic;
-            clear += 0x98;
-            set += 0x98;
+        u32 magic = FASHION_ENTRY_MAGIC_EMPTY;
+        for (; j < FASHION_LARGE_ENTRY_COUNT; j++) {
+            memset(clear, 0, sizeof(SaveFashionDataSub3FC));
+            ((FashionEntryLarge *)(set + offsetof(SaveFashionData, largeEntries)))->magic = magic;
+            clear += sizeof(SaveFashionDataSub3FC);
+            set += sizeof(SaveFashionDataSub3FC);
         }
     }
     FashionCase_Init(&fashionData->fashionCase);
 }
 
 u32 Save_FashionData_sizeof(void) {
-    return 0x834;
+    return sizeof(SaveFashionData);
 }
 
 u32 FashionEntry_sizeof(void) {
@@ -253,12 +256,12 @@ u32 FashionEntry_sizeof(void) {
 SaveFashionDataSub *FashionEntry_New(enum HeapID heapId) {
     SaveFashionDataSub *entry = Heap_Alloc(heapId, sizeof(SaveFashionDataSub));
     memset(entry, 0, sizeof(SaveFashionDataSub));
-    ((FashionEntry *)entry)->magic = 0x1234;
+    ((FashionEntry *)entry)->magic = FASHION_ENTRY_MAGIC_EMPTY;
     return entry;
 }
 
 SaveFashionDataSub *Save_FashionData_GetEntry(SaveFashionData *fashionData, int index) {
-    GF_ASSERT(index < 11);
+    GF_ASSERT(index < FASHION_ENTRY_COUNT);
     GF_ASSERT(IsValidFashionMagic(((FashionEntry *)&fashionData->entries[index])->magic));
     return &fashionData->entries[index];
 }
@@ -268,12 +271,12 @@ FashionCase *Save_FashionData_GetFashionCase(SaveFashionData *fashionData) {
 }
 
 BOOL Save_FashionData_IsEntrySaved(SaveFashionData *fashionData, int index) {
-    GF_ASSERT(index < 11);
+    GF_ASSERT(index < FASHION_ENTRY_COUNT);
     return FashionEntry_IsSaved(&fashionData->entries[index]);
 }
 
 BOOL Save_FashionData_IsLargeEntrySaved(SaveFashionData *fashionData, int index) {
-    GF_ASSERT(index < 5);
+    GF_ASSERT(index < FASHION_LARGE_ENTRY_COUNT);
     return FashionEntryLarge_IsSaved(&fashionData->largeEntries[index]);
 }
 
@@ -281,7 +284,7 @@ int FashionCase_CanGiveAccessory(FashionCase *fashionCase, int id, int quantity)
     BOOL result = TRUE;
     u32 current = FashionCase_GetAccessoryCount(fashionCase, id);
     if (IsStackableAccessory(id)) {
-        if (current + quantity > 9) {
+        if (current + quantity > FASHION_STACKABLE_ACCESSORY_MAX) {
             result = FALSE;
         }
     } else if (current + quantity > 1) {
@@ -291,31 +294,31 @@ int FashionCase_CanGiveAccessory(FashionCase *fashionCase, int id, int quantity)
 }
 
 int FashionCase_HasWallpaper(FashionCase *fashionCase, int index) {
-    if (FashionCase_GetWallpaperOrder(fashionCase, index) != 18) {
+    if (FashionCase_GetWallpaperOrder(fashionCase, index) != FASHION_WALLPAPER_NOT_OWNED) {
         return TRUE;
     }
     return FALSE;
 }
 
 u32 FashionCase_GetAccessoryCount(FashionCase *fashionCase, int id) {
-    GF_ASSERT((u32)id < 100);
+    GF_ASSERT((u32)id < FASHION_ACCESSORY_COUNT);
     if (IsStackableAccessory(id)) {
         return GetStackableAccessoryCount(fashionCase->accessories, (u8)id);
     }
-    GF_ASSERT((u32)id >= 61);
-    id = (u8)(id - 61);
+    GF_ASSERT((u32)id >= FASHION_STACKABLE_ACCESSORY_COUNT);
+    id = (u8)(id - FASHION_STACKABLE_ACCESSORY_COUNT);
     return GetUniqueAccessoryFlag(&fashionCase->accessories[8], (u8)id);
 }
 
 int FashionCase_GetWallpaperOrder(FashionCase *fashionCase, int index) {
-    GF_ASSERT((u32)index < 18);
+    GF_ASSERT((u32)index < FASHION_WALLPAPER_COUNT);
     return GetWallpaperOrder(&fashionCase->wallpaperOrder[0], (u8)index);
 }
 
 u32 FashionCase_CountAccessories(FashionCase *fashionCase) {
     int i = 0;
     u32 count = i;
-    for (i = 0; i < 100; i++) {
+    for (i = 0; i < FASHION_ACCESSORY_COUNT; i++) {
         count += FashionCase_GetAccessoryCount(fashionCase, i);
     }
     return count;
@@ -324,8 +327,8 @@ u32 FashionCase_CountAccessories(FashionCase *fashionCase) {
 u32 FashionCase_CountWallpapers(FashionCase *fashionCase) {
     int i = 0;
     u32 count = i;
-    for (i = 0; i < 18; i++) {
-        if (FashionCase_GetWallpaperOrder(fashionCase, i) != 18) {
+    for (i = 0; i < FASHION_WALLPAPER_COUNT; i++) {
+        if (FashionCase_GetWallpaperOrder(fashionCase, i) != FASHION_WALLPAPER_NOT_OWNED) {
             count++;
         }
     }
@@ -333,12 +336,12 @@ u32 FashionCase_CountWallpapers(FashionCase *fashionCase) {
 }
 
 void FashionCase_GiveFashionItem(FashionCase *fashionCase, int id, int quantity) {
-    GF_ASSERT((u32)id < 100);
+    GF_ASSERT((u32)id < FASHION_ACCESSORY_COUNT);
     if (IsStackableAccessory(id)) {
         u8 count = GetStackableAccessoryCount(fashionCase->accessories, (u8)id);
         count += quantity;
-        if (count > 9) {
-            count = 9;
+        if (count > FASHION_STACKABLE_ACCESSORY_MAX) {
+            count = FASHION_STACKABLE_ACCESSORY_MAX;
         }
         SetStackableAccessoryCount(fashionCase->accessories, count, (u8)id);
     } else {
@@ -347,14 +350,14 @@ void FashionCase_GiveFashionItem(FashionCase *fashionCase, int id, int quantity)
         if (count > 1) {
             count = 1;
         }
-        GF_ASSERT((u32)id >= 61);
-        id = (u8)(id - 61);
+        GF_ASSERT((u32)id >= FASHION_STACKABLE_ACCESSORY_COUNT);
+        id = (u8)(id - FASHION_STACKABLE_ACCESSORY_COUNT);
         SetUniqueAccessoryFlag(&fashionCase->accessories[8], count, (u8)id);
     }
 }
 
 void FashionCase_TakeAccessory(FashionCase *fashionCase, int id, int quantity) {
-    GF_ASSERT((u32)id < 100);
+    GF_ASSERT((u32)id < FASHION_ACCESSORY_COUNT);
     if (IsStackableAccessory(id)) {
         u8 count = GetStackableAccessoryCount(fashionCase->accessories, (u8)id);
         if ((u32)count > (u32)quantity) {
@@ -364,15 +367,15 @@ void FashionCase_TakeAccessory(FashionCase *fashionCase, int id, int quantity) {
         }
         SetStackableAccessoryCount(fashionCase->accessories, count, (u8)id);
     } else {
-        GF_ASSERT((u32)id >= 61);
-        id = (u8)(id - 61);
+        GF_ASSERT((u32)id >= FASHION_STACKABLE_ACCESSORY_COUNT);
+        id = (u8)(id - FASHION_STACKABLE_ACCESSORY_COUNT);
         SetUniqueAccessoryFlag(&fashionCase->accessories[8], 0, (u8)id);
     }
 }
 
 void FashionCase_GiveContestBackground(FashionCase *fashionCase, int id) {
-    GF_ASSERT((u32)id < 18);
-    if (GetWallpaperOrder(&fashionCase->wallpaperOrder[0], (u8)id) == 18) {
+    GF_ASSERT((u32)id < FASHION_WALLPAPER_COUNT);
+    if (GetWallpaperOrder(&fashionCase->wallpaperOrder[0], (u8)id) == FASHION_WALLPAPER_NOT_OWNED) {
         u8 count = CountOwnedWallpapers(&fashionCase->wallpaperOrder[0]);
         SetWallpaperOrder(&fashionCase->wallpaperOrder[0], count, (u8)id);
     }
@@ -381,13 +384,13 @@ void FashionCase_GiveContestBackground(FashionCase *fashionCase, int id) {
 BOOL FashionEntry_IsSaved(SaveFashionDataSub *entry_) {
     FashionEntry *entry = (FashionEntry *)entry_;
     GF_ASSERT(IsValidFashionMagic(entry->magic));
-    return entry->magic == 0x2345;
+    return entry->magic == FASHION_ENTRY_MAGIC_SAVED;
 }
 
 void FashionEntry_MarkSaved(SaveFashionDataSub *entry_) {
     FashionEntry *entry = (FashionEntry *)entry_;
     GF_ASSERT(IsValidFashionMagic(entry->magic));
-    entry->magic = 0x2345;
+    entry->magic = FASHION_ENTRY_MAGIC_SAVED;
     entry->language = gGameLanguage;
 }
 
@@ -395,7 +398,7 @@ void FashionEntry_Clear(SaveFashionDataSub *entry_) {
     FashionEntry *entry = (FashionEntry *)entry_;
     GF_ASSERT(IsValidFashionMagic(entry->magic));
     memset(entry, 0, sizeof(FashionEntry));
-    entry->magic = 0x1234;
+    entry->magic = FASHION_ENTRY_MAGIC_EMPTY;
 }
 
 void FashionEntry_SetMon(SaveFashionDataSub *entry_, Pokemon *mon, DressUpMonPic *monPic) {
@@ -418,7 +421,7 @@ void FashionEntry_PlaceItem(SaveFashionDataSub *entry_, DressUpSlot *source, int
     coords.xCopy = coords.x;
     coords.yCopy = coords.y;
     z = GraphicsObject_GetDepth(source->object);
-    GF_ASSERT(index < 10);
+    GF_ASSERT(index < FASHION_ENTRY_ITEM_MAX);
     GF_ASSERT((s16)coords.xCopy < 256);
     y = (s16)coords.yCopy;
     // y < 256
@@ -458,7 +461,7 @@ void FashionEntry_SetMonSecondText(SaveFashionDataSub *entry_, String *string, u
 
 BOOL FashionEntry_IsItemPlaced(SaveFashionDataSub *entry_, int index) {
     FashionEntry *entry = (FashionEntry *)entry_;
-    GF_ASSERT(index < 10);
+    GF_ASSERT(index < FASHION_ENTRY_ITEM_MAX);
     GF_ASSERT(IsValidFashionMagic(entry->magic));
     return entry->mask & (1 << index);
 }
@@ -471,7 +474,7 @@ SaveFashionMon *FashionEntry_GetMon(SaveFashionDataSub *entry_) {
 
 u8 *FashionEntry_GetItem(SaveFashionDataSub *entry_, int index) {
     FashionEntry *entry = (FashionEntry *)entry_;
-    GF_ASSERT(index < 10);
+    GF_ASSERT(index < FASHION_ENTRY_ITEM_MAX);
     GF_ASSERT(entry->mask & (1 << index));
     GF_ASSERT(IsValidFashionMagic(entry->magic));
     return entry->items[index];
@@ -497,7 +500,7 @@ u16 FashionEntry_GetMailMessageWord(SaveFashionDataSub *entry_) {
 static BOOL FashionEntryLarge_IsSaved(SaveFashionDataSub3FC *entry_) {
     FashionEntryLarge *entry = (FashionEntryLarge *)entry_;
     GF_ASSERT(IsValidFashionMagic(entry->magic));
-    return entry->magic == 0x2345;
+    return entry->magic == FASHION_ENTRY_MAGIC_SAVED;
 }
 
 static void FashionMon_GetSecondText(SaveFashionMon *mon, String *string) {
@@ -544,7 +547,7 @@ static BOOL Save_FashionData_IsNewEntry(SaveFashionData *fashionData, SaveFashio
     if (FashionEntry_IsSaved(candidate) == TRUE) {
         MATHi_CRC32InitTableRev(table, 0xEDB88320);
         crc = MATH_CalcCRC32(table, candidate, sizeof(SaveFashionDataSub));
-        for (i = 0; i < 11; i++) {
+        for (i = 0; i < FASHION_ENTRY_COUNT; i++) {
             SaveFashionDataSub *entry = Save_FashionData_GetEntry(fashionData, i);
             u32 other;
             MATHi_CRC32InitTableRev(table, 0xEDB88320);
@@ -568,8 +571,8 @@ void Save_FashionData_InsertEntries(u8 count, int skip, SaveFashionData *fashion
             accepted++;
         }
     }
-    for (i = 10; i >= 1; i--) {
-        if (i + accepted < 11) {
+    for (i = FASHION_ENTRY_COUNT - 1; i >= 1; i--) {
+        if (i + accepted < FASHION_ENTRY_COUNT) {
             FashionEntry_Copy(Save_FashionData_GetEntry(fashionData, i + accepted), Save_FashionData_GetEntry(fashionData, i));
         }
     }

@@ -123,7 +123,7 @@ void CodeEntry_FreeGraphics(CodeEntryApp *app) {
     for (i = 0; i < 2; i++) {
         Sprite_DeleteAndFreeResources(app->buttons[i].sprite);
     }
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < CODE_ENTRY_CURSOR_COUNT; i++) {
         Sprite_DeleteAndFreeResources(app->cursors[i].sprite);
     }
     CodeEntry_FreeButtonLabels(app);
@@ -216,28 +216,28 @@ void CodeEntry_CreateCursorSprites(CodeEntryApp *app) {
     template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
     template.resIdList[GF_GFX_RES_TYPE_MCEL] = -1;
     template.resIdList[GF_GFX_RES_TYPE_MANM] = -1;
-    app->cursors[0].sprite = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
-    app->cursors[1].sprite = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
-    app->cursors[2].sprite = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
+    app->cursors[CODE_ENTRY_CURSOR_DIGIT].sprite = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
+    app->cursors[CODE_ENTRY_CURSOR_KEY].sprite = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
+    app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
     CodeEntry_MoveDigitCursor(app, app->firstEditable);
-    ManagedSprite_SetAnim(app->cursors[0].sprite, 0);
-    ManagedSprite_TickFrame(app->cursors[0].sprite);
-    app->cursors[1].column = 0;
-    app->cursors[1].row = 0;
-    app->cursors[1].value = 1;
+    ManagedSprite_SetAnim(app->cursors[CODE_ENTRY_CURSOR_DIGIT].sprite, 0);
+    ManagedSprite_TickFrame(app->cursors[CODE_ENTRY_CURSOR_DIGIT].sprite);
+    app->cursors[CODE_ENTRY_CURSOR_KEY].column = 0;
+    app->cursors[CODE_ENTRY_CURSOR_KEY].row = 0;
+    app->cursors[CODE_ENTRY_CURSOR_KEY].value = CODE_ENTRY_KEY_CURSOR_DIGIT;
     CodeEntry_MoveKeyCursor(app, 0);
-    ManagedSprite_SetAnim(app->cursors[1].sprite, app->cursors[1].value);
-    ManagedSprite_TickFrame(app->cursors[1].sprite);
-    ManagedSprite_SetOamMode(app->cursors[1].sprite, GX_OAM_MODE_XLU);
-    app->cursors[2].column = 0;
-    app->cursors[2].row = 0;
-    app->cursors[2].value = 1;
+    ManagedSprite_SetAnim(app->cursors[CODE_ENTRY_CURSOR_KEY].sprite, app->cursors[CODE_ENTRY_CURSOR_KEY].value);
+    ManagedSprite_TickFrame(app->cursors[CODE_ENTRY_CURSOR_KEY].sprite);
+    ManagedSprite_SetOamMode(app->cursors[CODE_ENTRY_CURSOR_KEY].sprite, GX_OAM_MODE_XLU);
+    app->cursors[CODE_ENTRY_CURSOR_FLASH].column = 0;
+    app->cursors[CODE_ENTRY_CURSOR_FLASH].row = 0;
+    app->cursors[CODE_ENTRY_CURSOR_FLASH].value = 1;
     CodeEntry_MoveKeyCursor(app, 0);
-    ManagedSprite_SetAnim(app->cursors[2].sprite, app->cursors[2].value);
-    ManagedSprite_TickFrame(app->cursors[2].sprite);
-    ManagedSprite_SetOamMode(app->cursors[2].sprite, GX_OAM_MODE_XLU);
-    CodeEntry_SetCursorVisible(app, 1, FALSE);
-    CodeEntry_SetCursorVisible(app, 2, FALSE);
+    ManagedSprite_SetAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite, app->cursors[CODE_ENTRY_CURSOR_FLASH].value);
+    ManagedSprite_TickFrame(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite);
+    ManagedSprite_SetOamMode(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite, GX_OAM_MODE_XLU);
+    CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_KEY, FALSE);
+    CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_FLASH, FALSE);
 }
 
 void CodeEntry_CreateButtonSprites(CodeEntryApp *app) {
@@ -284,47 +284,47 @@ void CodeEntry_MoveDigitCursor(CodeEntryApp *app, int digit) {
     s16 x, y;
     if (digit >= app->firstEditable) {
         ManagedSprite *sprite = app->digits[digit].sprite;
-        app->cursors[0].value = digit;
+        app->cursors[CODE_ENTRY_CURSOR_DIGIT].value = digit;
         ManagedSprite_GetPositionXY(sprite, &x, &y);
-        ManagedSprite_SetPositionXY(app->cursors[0].sprite, x, y + 0x10);
+        ManagedSprite_SetPositionXY(app->cursors[CODE_ENTRY_CURSOR_DIGIT].sprite, x, y + 0x10);
     }
 }
 
 void CodeEntry_MoveKeyCursor(CodeEntryApp *app, int key) {
-    ManagedSprite_SetPositionXY(app->cursors[1].sprite, (app->hitboxes[key + 16].rect.left + app->hitboxes[key + 16].rect.right) / 2, (app->hitboxes[key + 16].rect.top + app->hitboxes[key + 16].rect.bottom) / 2);
+    ManagedSprite_SetPositionXY(app->cursors[CODE_ENTRY_CURSOR_KEY].sprite, (app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.left + app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.right) / 2, (app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.top + app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.bottom) / 2);
 }
 
 void CodeEntry_MoveCursorToKey(CodeEntryApp *app, int key, int cursor) {
-    ManagedSprite_SetPositionXY(app->cursors[cursor].sprite, (app->hitboxes[key + 16].rect.left + app->hitboxes[key + 16].rect.right) / 2, (app->hitboxes[key + 16].rect.top + app->hitboxes[key + 16].rect.bottom) / 2);
+    ManagedSprite_SetPositionXY(app->cursors[cursor].sprite, (app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.left + app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.right) / 2, (app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.top + app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.bottom) / 2);
 }
 
 void CodeEntry_UpdateCursors(CodeEntryApp *app) {
     int i;
 
-    ManagedSprite_TickFrame(app->cursors[0].sprite);
-    ManagedSprite_TickFrame(app->cursors[1].sprite);
-    ManagedSprite_TickFrame(app->cursors[2].sprite);
-    for (i = 1; i < 3; i++) {
+    ManagedSprite_TickFrame(app->cursors[CODE_ENTRY_CURSOR_DIGIT].sprite);
+    ManagedSprite_TickFrame(app->cursors[CODE_ENTRY_CURSOR_KEY].sprite);
+    ManagedSprite_TickFrame(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite);
+    for (i = CODE_ENTRY_CURSOR_KEY; i < CODE_ENTRY_CURSOR_COUNT; i++) {
         int anim = ManagedSprite_GetActiveAnim(app->cursors[i].sprite);
         if (anim == 3) {
             if (!ManagedSprite_IsAnimated(app->cursors[i].sprite)) {
                 ManagedSprite_SetAnim(app->cursors[i].sprite, app->cursors[i].value);
                 if (app->touchActive == TRUE) {
-                    CodeEntry_SetCursorVisible(app, 1, FALSE);
+                    CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_KEY, FALSE);
                 } else {
-                    CodeEntry_SetCursorVisible(app, 1, TRUE);
+                    CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_KEY, TRUE);
                 }
-                CodeEntry_SetCursorVisible(app, 2, FALSE);
+                CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_FLASH, FALSE);
             }
         } else {
             if (anim != app->cursors[i].value) {
                 ManagedSprite_SetAnim(app->cursors[i].sprite, app->cursors[i].value);
             }
-            if (ManagedSprite_GetActiveAnim(app->cursors[2].sprite) != 3) {
+            if (ManagedSprite_GetActiveAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite) != 3) {
                 if (app->touchActive == TRUE) {
-                    CodeEntry_SetCursorVisible(app, 1, FALSE);
+                    CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_KEY, FALSE);
                 } else {
-                    CodeEntry_SetCursorVisible(app, 1, TRUE);
+                    CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_KEY, TRUE);
                 }
             }
         }

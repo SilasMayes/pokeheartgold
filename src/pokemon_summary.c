@@ -706,11 +706,11 @@ static int PokemonSummary_HandleInput(PokemonSummary *summary) {
     }
     if (gSystem.newKeys & PAD_BUTTON_A) {
         switch (summary->page) {
-        case 1:
+        case POKEMON_SUMMARY_PAGE_STATS:
             PlaySE(SEQ_SE_DP_SYU01);
             summary->moveSlot = 0;
             return POKEMON_SUMMARY_STATE_SLIDE_IN_MOVE_INFO;
-        case 2:
+        case POKEMON_SUMMARY_PAGE_RIBBONS:
             if (summary->ribbonCount != 0) {
                 PlaySE(SEQ_SE_DP_DECIDE);
                 summary->ribbonCursor = 0;
@@ -719,7 +719,7 @@ static int PokemonSummary_HandleInput(PokemonSummary *summary) {
             break;
         }
     }
-    if (summary->page == 1) {
+    if (summary->page == POKEMON_SUMMARY_PAGE_STATS) {
         selection = PokemonSummary_GetTouchedMove(summary);
         if (selection != -1 && summary->mon.moves[selection] != MOVE_NONE) {
             PlaySE(SEQ_SE_DP_SYU01);
@@ -727,7 +727,7 @@ static int PokemonSummary_HandleInput(PokemonSummary *summary) {
             return POKEMON_SUMMARY_STATE_SLIDE_IN_MOVE_INFO;
         }
     }
-    if (summary->page == 2) {
+    if (summary->page == POKEMON_SUMMARY_PAGE_RIBBONS) {
         selection = PokemonSummary_GetRibbonTouch(summary);
         if (selection != -1 && selection < 9 && selection < summary->ribbonCount) {
             PlaySE(SEQ_SE_DP_DECIDE);
@@ -1386,10 +1386,10 @@ static void PokemonSummary_ShowFirstPage(PokemonSummary *summary) {
     switch (summary->args->mode) {
     case POKEMON_SUMMARY_MODE_NORMAL:
     case POKEMON_SUMMARY_MODE_NO_MOVE_SWAP:
-        summary->page = 0;
+        summary->page = POKEMON_SUMMARY_PAGE_INFO;
         break;
     case POKEMON_SUMMARY_MODE_FORGET_MOVE:
-        summary->page = 1;
+        summary->page = POKEMON_SUMMARY_PAGE_STATS;
         break;
     }
     PokemonSummary_HideSprites0To7And21And22(summary);
@@ -1410,18 +1410,18 @@ static void PokemonSummary_ShowFirstPage(PokemonSummary *summary) {
     PokemonSummary_AlternateBoxMonIcon(summary);
 }
 
-// Which pages can be shown (args->pageFlags, one bit per page): pages lists them, ended by 4.
+// Which pages can be shown (args->pageFlags, one bit per page): pages lists them, ended by POKEMON_SUMMARY_PAGE_COUNT.
 void PokemonSummary_SetPages(PokemonSummaryArgs *args, const u8 *pages) {
     u8 i = 0;
     args->pageFlags = 0;
     do {
         u8 page = pages[i];
-        if (page == 4) {
+        if (page == POKEMON_SUMMARY_PAGE_COUNT) {
             break;
         }
         args->pageFlags |= 1 << page;
         i++;
-    } while (i < 4);
+    } while (i < POKEMON_SUMMARY_PAGE_COUNT);
 }
 
 static void PokemonSummary_SetPage(PokemonSummary *summary, int page) {
@@ -1463,9 +1463,9 @@ static void PokemonSummary_ScrollPage(PokemonSummary *summary, int direction) {
     do {
         page += direction;
         if (page < 0) {
-            page = 2;
-        } else if (page > 2) {
-            page = 0;
+            page = POKEMON_SUMMARY_PAGE_RIBBONS;
+        } else if (page > POKEMON_SUMMARY_PAGE_RIBBONS) {
+            page = POKEMON_SUMMARY_PAGE_INFO;
         }
     } while ((pages & (1 << page)) == 0);
     if (page != summary->page) {
@@ -1528,7 +1528,7 @@ static void PokemonSummary_LoadBgScreen(PokemonSummary *summary, BgConfig *bgCon
 // The current page's backgrounds (gPokemonSummaryPageScreens[page]: main, sub, sub when picking a move to forget
 // or for an egg), the previous/next Pokemon buttons and the HP or EXP bar.
 static void PokemonSummary_LoadPageBgs(PokemonSummary *summary) {
-    if (summary->args->isFlag982Set == FALSE && summary->page == 2) {
+    if (summary->args->isFlag982Set == FALSE && summary->page == POKEMON_SUMMARY_PAGE_RIBBONS) {
         PokemonSummary_LoadBgScreen(summary, summary->bgConfig, 11, GF_BG_LYR_MAIN_3);
     } else {
         PokemonSummary_LoadBgScreen(summary, summary->bgConfig, gPokemonSummaryPageScreens[summary->page][0], GF_BG_LYR_MAIN_3);
@@ -1544,7 +1544,7 @@ static void PokemonSummary_LoadPageBgs(PokemonSummary *summary) {
         PokemonSummary_LoadBgScreen(summary, summary->bgConfig, gPokemonSummaryPageScreens[summary->page][2], GF_BG_LYR_SUB_2);
     } else if (PokemonSummary_HasPage(summary, 2)) {
         PokemonSummary_LoadBgScreen(summary, summary->bgConfig, gPokemonSummaryPageScreens[summary->page][1], GF_BG_LYR_SUB_2);
-    } else if (summary->page == 0) {
+    } else if (summary->page == POKEMON_SUMMARY_PAGE_INFO) {
         PokemonSummary_LoadBgScreen(summary, summary->bgConfig, 77, GF_BG_LYR_SUB_2);
     } else {
         PokemonSummary_LoadBgScreen(summary, summary->bgConfig, 78, GF_BG_LYR_SUB_2);
@@ -1554,9 +1554,9 @@ static void PokemonSummary_LoadPageBgs(PokemonSummary *summary) {
         PokemonSummary_DrawMonButtons(summary);
     }
     if (!summary->mon.isEgg) {
-        if (summary->page == 0) {
+        if (summary->page == POKEMON_SUMMARY_PAGE_INFO) {
             PokemonSummary_DrawExpBar(summary);
-        } else if (summary->page == 1) {
+        } else if (summary->page == POKEMON_SUMMARY_PAGE_STATS) {
             PokemonSummary_DrawHpBar(summary);
         }
     }
@@ -1723,7 +1723,7 @@ static BOOL PokemonSummary_CanShowEgg(PokemonSummary *summary) {
         return FALSE;
     }
     page = summary->page;
-    if (page != 0 && page != 3) {
+    if (page != POKEMON_SUMMARY_PAGE_INFO && page != POKEMON_SUMMARY_PAGE_CONDITION) {
         return FALSE;
     }
     return TRUE;
@@ -1973,7 +1973,7 @@ static void PokemonSummary_UpdateForgetMovePage(PokemonSummary *summary) {
     PokemonSummary_PrintMoveToLearn(summary);
     PokemonSummary_ShowSelectedMoveInfo(summary);
     PokemonSummary_ShowMonIconSprite(summary);
-    if (summary->page == 1) {
+    if (summary->page == POKEMON_SUMMARY_PAGE_STATS) {
         PokemonSummary_HideConditionSprites(summary);
         thunk_Sprite_SetDrawFlag(summary->sprites[11], TRUE);
         if (summary->mon.type1 != summary->mon.type2) {
@@ -2472,7 +2472,7 @@ static void PokemonSummary_UpdateTypeSprites(PokemonSummary *summary) {
         return;
     }
     switch (summary->page) {
-    case 0:
+    case POKEMON_SUMMARY_PAGE_INFO:
         thunk_Sprite_SetDrawFlag(summary->sprites[11], TRUE);
         if (summary->mon.type1 == summary->mon.type2) {
             Sprite_SetPositionXY(summary->sprites[11], 108, 48);
@@ -2482,7 +2482,7 @@ static void PokemonSummary_UpdateTypeSprites(PokemonSummary *summary) {
             Sprite_SetPositionXY(summary->sprites[12], 125, 48);
         }
         break;
-    case 1:
+    case POKEMON_SUMMARY_PAGE_STATS:
         for (u16 i = 0; i < MAX_MON_MOVES; i++) {
             if (summary->mon.moves[i]) {
                 u32 type = GetMoveAttr(summary->mon.moves[i], MOVEATTR_TYPE);
@@ -2592,7 +2592,7 @@ static void PokemonSummary_UpdatePokeathlonStars(PokemonSummary *summary) {
 
     BoxPokemon *mon;
 
-    if (summary->page == 2 && summary->args->isFlag982Set) {
+    if (summary->page == POKEMON_SUMMARY_PAGE_RIBBONS && summary->args->isFlag982Set) {
         mon = PokemonSummary_GetShownMon(summary);
         MI_CpuFill8(&data.aprijuice, 0, sizeof(PartyExtraSub));
         CalcBoxMonPokeathlonPerformance(mon, &data.performance);
@@ -2612,7 +2612,7 @@ static void PokemonSummary_UpdatePokeathlonStars(PokemonSummary *summary) {
 
 static void PokemonSummary_UpdateShinyLeafSprites(PokemonSummary *summary) {
     int i;
-    if (summary->page == 0) {
+    if (summary->page == POKEMON_SUMMARY_PAGE_INFO) {
         if (summary->mon.shinyLeaves[5]) {
             Sprite_SetDrawFlag(summary->sprites[114], TRUE);
             for (i = 0; i < 5; i++) {
@@ -2860,7 +2860,7 @@ static void PokemonSummary_AlternateBoxMonIcon(PokemonSummary *summary) {
 }
 
 static void PokemonSummary_ShowMonIconSprite(PokemonSummary *summary) {
-    if (summary->page == 1) {
+    if (summary->page == POKEMON_SUMMARY_PAGE_STATS) {
         Sprite_SetPositionXY(summary->sprites[19], 160, 16);
     } else {
         Sprite_SetPositionXY(summary->sprites[19], 32, 68);
@@ -2922,7 +2922,7 @@ static void PokemonSummary_ShowRibbonSprites(PokemonSummary *summary) {
     for (i = 54; i <= 66; i++) {
         Sprite_SetDrawFlag(summary->sprites[i], FALSE);
     }
-    if (summary->page == 2) {
+    if (summary->page == POKEMON_SUMMARY_PAGE_RIBBONS) {
         for (i = 0; i < 9; i++) {
             if (i < summary->ribbonCount) {
                 Sprite_SetDrawFlag(summary->sprites[54 + i], TRUE);

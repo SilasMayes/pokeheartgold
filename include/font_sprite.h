@@ -27,7 +27,7 @@ typedef struct TextOBJTemplate {
 typedef struct TextOBJ {
     FontOAMSprite *sprites; // one per OAM cell, NULL while the pool slot is free
     int spriteCount;
-    const Sprite *parent;
+    Sprite *parent;
     int x;
     int y;
 } TextOBJ;
@@ -55,6 +55,6 @@ void FontOAM_Delete(TextOBJ *textObj);
 void TextOBJ_UpdatePosition(TextOBJ *object);
 void TextOBJ_SetPalIndexRespectVramOffset(TextOBJ *object, int value);
 void TextOBJ_SetPriority(TextOBJ *, u8);
-void TextOBJ_SetParentSprite(TextOBJ *, const Sprite *);
+void TextOBJ_SetParentSprite(TextOBJ *, Sprite *);
 
 #endif // POKEHEARTGOLD_FONT_SPRITE_H

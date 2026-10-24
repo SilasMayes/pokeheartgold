@@ -128,10 +128,10 @@ u8 FieldSystem_GetTrainerCardStars(FieldSystem *fieldSystem) {
         || FrontierSave_GetStat(frontier, 8, 0xFF) >= 100) {
         stars++;
     }
-    if (Save_VarsFlags_CheckFlagInArray(varsFlags, 0xF1)) {
+    if (Save_VarsFlags_CheckFlagInArray(varsFlags, FLAG_UNK_0F1)) {
         stars++;
     }
-    if (Save_VarsFlags_CheckFlagInArray(varsFlags, 0x184)) {
+    if (Save_VarsFlags_CheckFlagInArray(varsFlags, FLAG_UNK_184)) {
         stars++;
     }
     return stars;

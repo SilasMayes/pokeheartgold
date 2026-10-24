@@ -98,14 +98,14 @@ void OrbitCursor_Task(SysTask *task, void *data) {
         switch (cursor->sprites[i].orbitPhase) {
         case 0:
             ManagedSprite_GetPositionXYWithSubscreenOffset(cursor->sprites[i].sprite, &pos[1], &pos[0], cursor->yOffset);
-            if (cursor->leadSprite == 0xFF) {
+            if (cursor->leadSprite == ORBIT_CURSOR_NO_LEAD_SPRITE) {
                 int diff;
                 float ax, ay;
                 cursor->leadSprite = i;
                 diff = cursor->sprites[0].x - pos[1];
-                ax = diff > 0 ? 0.5f + (float)(diff << 12) : (float)(diff << 12) - 0.5f;
+                ax = diff > 0 ? 0.5f + (float)(diff << FX32_SHIFT) : (float)(diff << FX32_SHIFT) - 0.5f;
                 diff = cursor->sprites[0].y - pos[0];
-                ay = diff > 0 ? 0.5f + (float)(diff << 12) : (float)(diff << 12) - 0.5f;
+                ay = diff > 0 ? 0.5f + (float)(diff << FX32_SHIFT) : (float)(diff << FX32_SHIFT) - 0.5f;
                 cursor->sprites[i].angle = FX_Atan2Idx((fx32)ay, (fx32)ax);
             } else {
                 cursor->sprites[i].angle = cursor->sprites[cursor->leadSprite].angle - (720 / cursor->count) * cursor->orbitingCount;
@@ -118,8 +118,8 @@ void OrbitCursor_Task(SysTask *task, void *data) {
             cursor->sprites[i].angle += 4;
             cursor->sprites[i].angle %= 720;
             {
-                fx32 x = (cursor->sprites[0].x << 12) + GF_SinDeg(cursor->sprites[i].angle) * cursor->radiusX;
-                fx32 y = (cursor->sprites[0].y << 12) + GF_CosDeg(cursor->sprites[i].angle) * cursor->radiusY;
+                fx32 x = (cursor->sprites[0].x << FX32_SHIFT) + GF_SinDeg(cursor->sprites[i].angle) * cursor->radiusX;
+                fx32 y = (cursor->sprites[0].y << FX32_SHIFT) + GF_CosDeg(cursor->sprites[i].angle) * cursor->radiusY;
                 ManagedSprite_SetPositionFxXYWithSubscreenOffset(cursor->sprites[i].sprite, x, y, cursor->yOffset);
             }
             break;
@@ -225,7 +225,7 @@ BOOL OrbitCursor_SetTarget(OrbitCursor *cursor, int x, int y) {
     int i;
     cursor->sprites[0].x = x;
     cursor->sprites[0].y = y;
-    cursor->leadSprite = 0xFF;
+    cursor->leadSprite = ORBIT_CURSOR_NO_LEAD_SPRITE;
     cursor->orbitingCount = 0;
     for (i = 0; i < cursor->count; i++) {
         cursor->sprites[i].orbitPhase = 0;
@@ -240,7 +240,7 @@ BOOL OrbitCursor_MoveTarget(OrbitCursor *cursor, int x, int y) {
     }
     cursor->sprites[0].x = x;
     cursor->sprites[0].y = y;
-    cursor->leadSprite = 0xFF;
+    cursor->leadSprite = ORBIT_CURSOR_NO_LEAD_SPRITE;
     cursor->orbitingCount = 0;
     for (i = 0; i < cursor->count; i++) {
         cursor->sprites[i].orbitPhase = 0;
@@ -257,7 +257,7 @@ BOOL OrbitCursor_IsNewTarget(OrbitCursor *cursor, int x, int y) {
 
 BOOL OrbitCursor_SetPosition(OrbitCursor *cursor, s16 x, s16 y) {
     int i;
-    cursor->leadSprite = 0xFF;
+    cursor->leadSprite = ORBIT_CURSOR_NO_LEAD_SPRITE;
     cursor->orbitingCount = 0;
     for (i = 0; i < cursor->count; i++) {
         cursor->sprites[i].x = x;

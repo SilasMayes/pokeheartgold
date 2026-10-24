@@ -17,6 +17,8 @@ typedef struct OrbitCursorArgs {
     fx32 yOffset;
 } OrbitCursorArgs;
 
+#define ORBIT_CURSOR_NO_LEAD_SPRITE 0xFF
+
 typedef struct OrbitCursorSprite {
     ManagedSprite *sprite;
     s16 x;
@@ -37,7 +39,7 @@ typedef struct OrbitCursor {
     fx32 yOffset;
     OrbitCursorSprite sprites[12];
     int state;
-    int leadSprite;
+    int leadSprite; // ORBIT_CURSOR_NO_LEAD_SPRITE until a sprite starts orbiting
     int orbitingCount;
     int active;
     SysTask *task;

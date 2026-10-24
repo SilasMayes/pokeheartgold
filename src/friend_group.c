@@ -21,16 +21,16 @@ void Save_FriendGroup_CopyGroup(SAV_FRIEND_GRP *data, u16 src, int dst) {
 void Save_FriendGroup_Init(SAV_FRIEND_GRP *data) {
     int i;
     MI_CpuClearFast(data, sizeof(*data));
-    for (i = 0; i < 6; i++) {
-        data->groups[i].groupName[0] = 0xFFFF;
-        data->groups[i].leaderName[0] = 0xFFFF;
+    for (i = 0; i < FGRP_MAX; i++) {
+        data->groups[i].groupName[0] = EOS;
+        data->groups[i].leaderName[0] = EOS;
     }
     sFriendGroupSave = data;
 }
 
 void Save_FriendGroup_AdvanceSeeds(SAV_FRIEND_GRP *data, int days) {
     u32 i, j;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < FGRP_MAX; i++) {
         for (j = 0; j < days; j++) {
             data->groups[i].seed = PRandom(data->groups[i].seed);
         }
@@ -60,9 +60,9 @@ u16 *Save_FriendGroup_GetName(SAV_FRIEND_GRP *data, int index, int type) {
 
 void Save_FriendGroup_SetName(SAV_FRIEND_GRP *data, int index, int type, String *str) {
     if (type == 0) {
-        CopyStringToU16Array(str, data->groups[index].groupName, 8);
+        CopyStringToU16Array(str, data->groups[index].groupName, NELEMS(data->groups[index].groupName));
     } else {
-        CopyStringToU16Array(str, data->groups[index].leaderName, 8);
+        CopyStringToU16Array(str, data->groups[index].leaderName, NELEMS(data->groups[index].leaderName));
     }
 }
 
@@ -96,11 +96,11 @@ BOOL Save_FriendGroup_IsCurrentGroup(SAV_FRIEND_GRP *data, u16 index) {
 
 BOOL Save_FriendGroup_IsGroupNameTaken(SAV_FRIEND_GRP *data, u16 *name) {
     int i;
-    if (name[0] == 0xFFFF) {
+    if (name[0] == EOS) {
         return FALSE;
     }
-    for (i = 0; i < 6; i++) {
-        if (!StringNotEqualN(name, data->groups[i].groupName, 8)) {
+    for (i = 0; i < FGRP_MAX; i++) {
+        if (!StringNotEqualN(name, data->groups[i].groupName, NELEMS(data->groups[i].groupName))) {
             return TRUE;
         }
     }
@@ -108,20 +108,20 @@ BOOL Save_FriendGroup_IsGroupNameTaken(SAV_FRIEND_GRP *data, u16 *name) {
 }
 
 BOOL FriendGroup_IsEmpty(FRIEND_GROUP *group) {
-    if (group->groupName[0] == 0xFFFF) {
+    if (group->groupName[0] == EOS) {
         return TRUE;
     }
-    if (group->leaderName[0] == 0xFFFF) {
+    if (group->leaderName[0] == EOS) {
         return TRUE;
     }
     return FALSE;
 }
 
 BOOL FriendGroup_Equals(FRIEND_GROUP *a, FRIEND_GROUP *b) {
-    if (StringNotEqualN(a->leaderName, b->leaderName, 8)) {
+    if (StringNotEqualN(a->leaderName, b->leaderName, NELEMS(a->leaderName))) {
         return FALSE;
     }
-    if (StringNotEqualN(a->groupName, b->groupName, 8)) {
+    if (StringNotEqualN(a->groupName, b->groupName, NELEMS(a->groupName))) {
         return FALSE;
     }
     if (a->leaderGender != b->leaderGender) {
