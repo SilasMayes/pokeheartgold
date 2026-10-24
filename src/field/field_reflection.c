@@ -64,7 +64,7 @@ typedef struct BillboardReflectionArgs {
     FieldEffectManager *manager;
     Reflection *reflection;
     BillboardResource record;
-    void *source;
+    BillboardObject *source;
 } BillboardReflectionArgs;
 
 // Only the first sizeof(ReflectionEffect) bytes are cleared: the template is shared in size with the
@@ -174,7 +174,8 @@ void Reflection_Spawn(LocalMapObject *mapObject, int kind) {
 static BOOL ReflectionEffect_Init(FieldEffect *effect, void *state) {
     ReflectionEffect *work = state;
     VecFx32 position;
-    work->args = *(ReflectionEffectArgs *)FieldEffect_GetUserData(effect);
+    ReflectionEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->kind = FieldEffect_GetParam(effect);
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);
@@ -317,7 +318,7 @@ static void ReflectionEffect_CreateBillboard(FieldEffect *effect, ReflectionEffe
 static void BillboardReflectionEffect_CreateBillboard(FieldEffect *effect, BillboardReflectionEffect *work) {
     VecFx32 position;
     BillboardResource record;
-    void *source;
+    BillboardObject *source;
 
     record = work->args.record;
     record.modelFile = FieldEffectManager_GetBillboardResource(work->args.manager, REFLECTION_RESOURCE);
@@ -344,7 +345,7 @@ static void BillboardReflectionEffect_CalcPosition(BillboardReflectionEffect *wo
     }
 }
 
-FieldEffect *Reflection_SpawnForBillboard(FieldEffectManager *manager, const BillboardResource *record, void *source, const VecFx32 *position, int kind, u32 priority) {
+FieldEffect *Reflection_SpawnForBillboard(FieldEffectManager *manager, const BillboardResource *record, BillboardObject *source, const VecFx32 *position, int kind, u32 priority) {
     BillboardReflectionArgs args;
     args.fieldSystem = FieldEffectManager_GetFieldSystem(manager);
     args.manager = manager;
@@ -357,7 +358,8 @@ FieldEffect *Reflection_SpawnForBillboard(FieldEffectManager *manager, const Bil
 static BOOL BillboardReflectionEffect_Init(FieldEffect *effect, void *state) {
     BillboardReflectionEffect *work = state;
     VecFx32 position;
-    work->args = *(BillboardReflectionArgs *)FieldEffect_GetUserData(effect);
+    BillboardReflectionArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->kind = FieldEffect_GetParam(effect);
     work->scale.x = FX32_ONE;
     work->scale.y = FX32_ONE;
@@ -409,7 +411,8 @@ void Reflection_SpawnForFollower(LocalMapObject *mapObject, int kind) {
 static BOOL FollowerReflectionEffect_Init(FieldEffect *effect, void *state) {
     ReflectionEffect *work = state;
     VecFx32 position;
-    work->args = *(ReflectionEffectArgs *)FieldEffect_GetUserData(effect);
+    ReflectionEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->kind = FieldEffect_GetParam(effect);
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);

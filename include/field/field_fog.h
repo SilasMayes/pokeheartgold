@@ -6,6 +6,8 @@
 #include "gf_3d_vramman.h"
 #include "gf_gfx_planes.h"
 
+#define FOG_TABLE_ENTRIES 32 // densities, one byte each
+
 void G3X_SetFogTable(u32 *fogTable);
 
 typedef struct FogData {
@@ -15,7 +17,7 @@ typedef struct FogData {
     int fogOffset;
     u16 color;
     u32 alpha;
-    u32 fogTable[8];
+    u32 fogTable[FOG_TABLE_ENTRIES / 4];
 } FogData;
 
 FogData *Fog_New();

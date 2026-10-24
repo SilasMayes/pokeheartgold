@@ -1243,9 +1243,9 @@ BOOL MapObjectMovementCmd108_Step1(LocalMapObject *object) {
         rounded = (float)(work->step << 12) - 0.5f;
     }
     progress = (int)rounded;
-    position.x = work->data->origin.x + (fx32)(((s64)work->data->stepX * progress + 0x800) >> 12);
+    position.x = work->data->origin.x + FX_MUL(work->data->stepX, progress);
     position.y = 0;
-    position.z = work->data->origin.z + (fx32)(((s64)work->data->stepZ * progress + 0x800) >> 12);
+    position.z = work->data->origin.z + FX_MUL(work->data->stepZ, progress);
     if (FieldSystem_SnapToTerrainHeightEx(MapObject_GetFieldSystem(object), &position, MapObject_CheckFlag29(object))) {
         work->height = position.y;
     } else {
@@ -1253,8 +1253,8 @@ BOOL MapObjectMovementCmd108_Step1(LocalMapObject *object) {
     }
     MapObject_SetPositionVector(object, &position);
     sine = GF_SinDegNoWrap((u16)(work->data->angleStep * work->step));
-    targetY = work->data->origin.y + (fx32)(((s64)work->data->stepY * progress + 0x800) >> 12);
-    targetY += (fx32)(((s64)sine * 0x10000 + 0x800) >> 12);
+    targetY = work->data->origin.y + FX_MUL(work->data->stepY, progress);
+    targetY += FX_MUL(sine, FX32_CONST(16));
     position.y = targetY - position.y;
     position.x = 0;
     position.z = 0;

@@ -1230,7 +1230,7 @@ static void CalcMapPosition(int matrixIndex, int width, MapMatrix *mapMatrix, Ve
     }
 }
 
-MapLoadManager *MapLoadManager_New(MapMatrix *mapMatrix, void *areaDataManager, void *renderObjManager, MapPropAnimationManager *mapPropAnimationManager, void *areaMapAnimation, int mode, SaveData *saveData) {
+MapLoadManager *MapLoadManager_New(MapMatrix *mapMatrix, AreaDataManager *areaDataManager, Field3dRenderObjManager *renderObjManager, MapPropAnimationManager *mapPropAnimationManager, AreaMapAnimation *areaMapAnimation, int mode, SaveData *saveData) {
     MapLoadManager *mapLoadManager = Heap_Alloc(HEAP_ID_FIELD1, sizeof(MapLoadManager));
     BOOL withSecondary;
 

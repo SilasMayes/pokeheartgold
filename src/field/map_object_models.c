@@ -29,7 +29,7 @@ static void LegendaryBirdObject_AnimateFlap(LocalMapObject *object, BillboardObj
 static void LegendaryBirdObject_UpdateVisibility(LocalMapObject *object, BillboardObject *billboard);
 static void LegendaryBirdObject_DeleteBillboard(LocalMapObject *object);
 
-// Per sprite id: the graphics info (terminated by spriteId 0xFFFF) and the effect flags
+// Per sprite id: the graphics info (terminated by spriteId MAP_OBJECT_GFX_ID_INVALID) and the effect flags
 // its effectFlagsIdx field selects.
 
 static const LegendaryBirdAnimateFunc sLegendaryBirdAnimateFuncs[] = {
@@ -243,7 +243,7 @@ void LegendaryBirdObject_Pause(LocalMapObject *object) {
     if (work->billboard != NULL) {
         BillboardObject_SaveState(work->billboard, &work->savedState);
     }
-    MapObject_DeleteBillboard(object, work);
+    MapObject_DeleteBillboard(object, &work->billboard);
     MapObject_SetFlagsBits(object, MAPOBJECTFLAG_UNK21);
 }
 
@@ -254,7 +254,7 @@ void LegendaryBirdObject_Resume(LocalMapObject *object) {
         return;
     }
     if (work->billboard == NULL) {
-        MapObject_CreateBillboard(object, work);
+        MapObject_CreateBillboard(object, &work->billboard);
     }
     if (work->billboard != NULL) {
         BillboardObject_RestoreState(work->billboard, &work->savedState);
@@ -265,7 +265,7 @@ void LegendaryBirdObject_Resume(LocalMapObject *object) {
 
 static void LegendaryBirdObject_CreateBillboard(LocalMapObject *object) {
     LegendaryBirdObject *work = (LegendaryBirdObject *)MapObject_InitDrawData(object, sizeof(LegendaryBirdObject));
-    MapObject_CreateBillboard(object, work);
+    MapObject_CreateBillboard(object, &work->billboard);
 }
 
 static void LegendaryBirdObject_AnimateIdle(LocalMapObject *object, BillboardObject *billboard, LegendaryBirdObject *work) {
@@ -298,7 +298,7 @@ static void LegendaryBirdObject_UpdateVisibility(LocalMapObject *object, Billboa
 
 static void LegendaryBirdObject_DeleteBillboard(LocalMapObject *object) {
     LegendaryBirdObject *work = (LegendaryBirdObject *)MapObject_GetDrawData(object);
-    MapObject_DeleteBillboard(object, work);
+    MapObject_DeleteBillboard(object, &work->billboard);
 }
 
 // Manager flag 1: the render data exists.
@@ -353,7 +353,7 @@ ObjectEventGraphicsInfo *ObjectEvent_GetGraphicsInfo(u32 spriteId) {
             return info;
         }
         info++;
-    } while (info->spriteId != 0xFFFF);
+    } while (info->spriteId != MAP_OBJECT_GFX_ID_INVALID);
     GF_ASSERT(FALSE);
     return NULL;
 }

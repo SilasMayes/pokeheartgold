@@ -213,7 +213,9 @@ static BOOL EmoteBubbleEffect_Init(FieldEffect *effect, void *state) {
     EmoteBubbleEffect *work = state;
     VecFx32 position;
 
-    work->args = *(EmoteBubbleEffectArgs *)FieldEffect_GetUserData(effect);
+    EmoteBubbleEffectArgs *args = FieldEffect_GetUserData(effect);
+
+    work->args = *args;
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);
     work->velocity = FX32_CONST(6);

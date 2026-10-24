@@ -168,7 +168,7 @@ BOOL Bdhc_GetHeight(int mode, fx32 currentY, fx32 x, fx32 z, Bdhc *bdhc, fx32 *y
     BdhcHeightCandidate candidates[BDHC_MAX_HEIGHT_CANDIDATES];
     u16 strip;
     fx32 constant;
-    int n;
+    int candidateCount;
     int best;
     fx32 maxY;
     u16 j;
@@ -185,7 +185,7 @@ BOOL Bdhc_GetHeight(int mode, fx32 currentY, fx32 x, fx32 z, Bdhc *bdhc, fx32 *y
     }
     point.x = x;
     point.z = z;
-    n = 0;
+    candidateCount = 0;
     Bdhc_ResetHeightCandidates(candidates);
     strips = bdhc->strips;
     if (!Bdhc_FindStrip(strips, (u16)bdhc->stripsCount, point.z, &strip)) {
@@ -200,21 +200,21 @@ BOOL Bdhc_GetHeight(int mode, fx32 currentY, fx32 x, fx32 z, Bdhc *bdhc, fx32 *y
         if (Bdhc_IsPointInPlateBounds(&corners[0], &corners[1], &point) == TRUE) {
             Bdhc_GetPlateNormal(bdhc, plate, &normal);
             Bdhc_GetPlateConstant(bdhc, plate, &constant);
-            candidates[n].y = FX_Div(-(constant + (FX_Mul(normal.x, point.x) + FX_Mul(normal.z, point.z))), normal.y);
-            n++;
-            if (n >= BDHC_MAX_HEIGHT_CANDIDATES) {
+            candidates[candidateCount].y = FX_Div(-(constant + (FX_Mul(normal.x, point.x) + FX_Mul(normal.z, point.z))), normal.y);
+            candidateCount++;
+            if (candidateCount >= BDHC_MAX_HEIGHT_CANDIDATES) {
                 break;
             }
         }
         i++;
     }
 
-    if (n > 1) {
+    if (candidateCount > 1) {
         best = 0;
         switch (mode) {
         case BDHC_HEIGHT_HIGHEST:
             maxY = (fx32)0xFF000000;
-            for (j = 0; j < n; j++) {
+            for (j = 0; j < candidateCount; j++) {
                 cur = candidates[j].y;
                 if (maxY < cur) {
                     maxY = cur;
@@ -224,7 +224,7 @@ BOOL Bdhc_GetHeight(int mode, fx32 currentY, fx32 x, fx32 z, Bdhc *bdhc, fx32 *y
             break;
         case BDHC_HEIGHT_LOWEST:
             bestVal = (fx32)0x01000000;
-            for (k = 0; k < n; k++) {
+            for (k = 0; k < candidateCount; k++) {
                 cur = candidates[k].y;
                 if (bestVal > cur) {
                     bestVal = cur;
@@ -235,7 +235,7 @@ BOOL Bdhc_GetHeight(int mode, fx32 currentY, fx32 x, fx32 z, Bdhc *bdhc, fx32 *y
         case BDHC_HEIGHT_NEAREST:
         default:
             bestVal = Math_Max(currentY, candidates[0].y) - Math_Min(currentY, candidates[0].y);
-            for (j = 1; j < n; j++) {
+            for (j = 1; j < candidateCount; j++) {
                 cur = Math_Max(currentY, candidates[j].y) - Math_Min(currentY, candidates[j].y);
                 if (bestVal > cur) {
                     bestVal = cur;
@@ -246,10 +246,10 @@ BOOL Bdhc_GetHeight(int mode, fx32 currentY, fx32 x, fx32 z, Bdhc *bdhc, fx32 *y
         }
         *y = candidates[best].y;
         return TRUE;
-    } else if (n == 1) {
+    } else if (candidateCount == 1) {
         *y = candidates[0].y;
         return TRUE;
-    } else if (n != 0) {
+    } else if (candidateCount != 0) {
         *y = candidates[0].y;
         return TRUE;
     } else {

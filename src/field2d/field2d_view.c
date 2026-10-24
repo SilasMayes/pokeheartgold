@@ -3,6 +3,14 @@
 #include "gf_gfx_loader.h"
 #include "overlay_42.h"
 
+// How a tilemap is split into 32x32-tile screen blocks (Field2DBgLayer_GetScreenBlockLayout)
+enum Field2DScreenBlockLayout {
+    SCREEN_BLOCKS_SINGLE, // up to 32x32 tiles
+    SCREEN_BLOCKS_WIDE,   // two blocks side by side
+    SCREEN_BLOCKS_TALL,   // two blocks, one above the other
+    SCREEN_BLOCKS_2X2,
+};
+
 static const u8 sActionAnimKinds[] = { 0, 3, 2, 4, 0, 5, 6, 8, 7, 8, 2, 6 };
 static const u8 sAnimKindKeepsFrame[] = { 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0 };
 static const BgTemplate sField2DBgLayerBgTemplate = {
@@ -23,7 +31,7 @@ static const BgTemplate sField2DBgLayerBgTemplate = {
 
 s32 Field2DCommand_CheckStand(Field2DObject *object, Field2DMap *map, Field2DObjectManager *objectManager, Field2DCommand *command, Field2DMove *move) {
     int action = Field2DObject_GetParam(object, FIELD2D_OBJECT_PARAM_ACTION);
-    if ((action == 0) || (action == 4)) {
+    if ((action == FIELD2D_ACTION_STAND) || (action == FIELD2D_ACTION_PAUSE)) {
         Field2DMove_Init(move, object, command->action, command->objectId, command->direction);
         return 1;
     }
@@ -464,7 +472,7 @@ void Field2DBgLayer_CopyTilemapRect(BgConfig *bgConfig, u8 bgId, u8 destX, u8 de
     s8 rowsLeft;
     s8 rows;
     u8 layout = Field2DBgLayer_GetScreenBlockLayout(srcWidth, srcHeight);
-    if (layout == 0) {
+    if (layout == SCREEN_BLOCKS_SINGLE) {
         CopyToBgTilemapRect(bgConfig, bgId, destX, destY, destWidth, destHeight, buffer, srcX, srcY, srcWidth, srcHeight);
         return;
     }
@@ -507,23 +515,23 @@ u8 Field2DBgLayer_GetScreenBlockLayout(u8 width, u8 height) {
     GF_ASSERT(height <= 64);
     if (width <= 32) {
         if (height <= 32) {
-            return 0;
+            return SCREEN_BLOCKS_SINGLE;
         }
-        return 2;
+        return SCREEN_BLOCKS_TALL;
     }
     if (height <= 32) {
-        return 1;
+        return SCREEN_BLOCKS_WIDE;
     }
-    return 3;
+    return SCREEN_BLOCKS_2X2;
 }
 
 void *Field2DBgLayer_GetScreenBlock(void *buffer, u8 blockX, u8 blockY, u8 layout, u8 width, u8 height, Field2DPoint *blockSize) {
     switch (layout) {
-    case 0:
+    case SCREEN_BLOCKS_SINGLE:
         blockSize->x = width;
         blockSize->y = height;
         return buffer;
-    case 1:
+    case SCREEN_BLOCKS_WIDE:
         int blockWidth;
         if (((blockX + 1) << 5) <= width) {
             blockWidth = 32;
@@ -533,7 +541,7 @@ void *Field2DBgLayer_GetScreenBlock(void *buffer, u8 blockX, u8 blockY, u8 layou
         blockSize->x = blockWidth;
         blockSize->y = height;
         return buffer + blockX * ((s16)(height << 6));
-    case 2:
+    case SCREEN_BLOCKS_TALL:
         blockSize->x = width;
         int blockHeight;
         if (((blockY + 1) << 5) <= height) {
@@ -543,7 +551,7 @@ void *Field2DBgLayer_GetScreenBlock(void *buffer, u8 blockX, u8 blockY, u8 layou
         }
         blockSize->y = blockHeight;
         return buffer + blockY * ((s16)(width << 6));
-    case 3:
+    case SCREEN_BLOCKS_2X2:
         int extent;
         if (((blockX + 1) << 5) <= width) {
             extent = 32;

@@ -103,7 +103,8 @@ void GroundDust_Spawn(LocalMapObject *mapObject) {
 static BOOL GroundDustEffect_Init(FieldEffect *effect, void *state) {
     GroundDustEffect *work = state;
     VecFx32 position;
-    work->args = *(GroundDustEffectArgs *)FieldEffect_GetUserData(effect);
+    GroundDustEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);
     FieldEffect_GetPosition(effect, &position);

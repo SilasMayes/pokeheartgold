@@ -1,3 +1,5 @@
+#include "constants/sprites.h"
+
 #include "overlay_42.h"
 #include "sprite_transfer.h"
 
@@ -122,7 +124,7 @@ CharSprite *CharSpriteManager_CreateSprite(CharSpriteManager *charSpriteManager,
     spriteTemplate.drawPriority = spriteParams[2];
     spriteTemplate.heapID = heapID;
 
-    if ((charSpriteManager->chars[charIndex].vramType == 3) || (charSpriteManager->chars[charIndex].vramType == 1)) {
+    if ((charSpriteManager->chars[charIndex].vramType == NNS_G2D_VRAM_TYPE_2DBOTH) || (charSpriteManager->chars[charIndex].vramType == NNS_G2D_VRAM_TYPE_2DMAIN)) {
         spriteTemplate.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
     } else {
         spriteTemplate.whichScreen = NNS_G2D_VRAM_TYPE_2DSUB;
@@ -153,7 +155,7 @@ CharSprite *CharSpriteManager_CreateSprite(CharSpriteManager *charSpriteManager,
         spriteTemplate.drawPriority = charSpriteManager->shadowDrawPriority;
         spriteTemplate.heapID = heapID;
 
-        if ((charSpriteManager->chars[charIndex].vramType == 3) || (charSpriteManager->chars[charIndex].vramType == 1)) {
+        if ((charSpriteManager->chars[charIndex].vramType == NNS_G2D_VRAM_TYPE_2DBOTH) || (charSpriteManager->chars[charIndex].vramType == NNS_G2D_VRAM_TYPE_2DMAIN)) {
             spriteTemplate.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
         } else {
             spriteTemplate.whichScreen = NNS_G2D_VRAM_TYPE_2DSUB;
@@ -296,7 +298,7 @@ u16 CharSprite_GetCharIndex(s32 spriteId) {
 
 s32 CharSprite_IsAnimSetAllowed(u32 spriteId, s32 animSet) {
     if (animSet == 0) {
-        if ((spriteId == 0) || (spriteId == 97) || (spriteId == 238) || (spriteId == 239) || (spriteId - 295 <= 1)) {
+        if ((spriteId == SPRITE_HERO) || (spriteId == SPRITE_HEROINE) || (spriteId == SPRITE_HERO_2) || (spriteId == SPRITE_HEROINE_2) || (spriteId - SPRITE_PL_BOY01C <= SPRITE_PL_GIRL01C - SPRITE_PL_BOY01C)) {
             return 1;
         }
         return 0;
@@ -305,8 +307,8 @@ s32 CharSprite_IsAnimSetAllowed(u32 spriteId, s32 animSet) {
 }
 
 s32 CharSprite_GetCellAnimResId(s32 animSet, s32 resType, s32 nonStandardSize) {
-    GF_ASSERT(resType == 2 || resType == 3);
-    s32 variantIndex = resType - 2;
+    GF_ASSERT(resType == GF_GFX_RES_TYPE_CELL || resType == GF_GFX_RES_TYPE_ANIM);
+    s32 variantIndex = resType - GF_GFX_RES_TYPE_CELL;
     if (nonStandardSize == 0) {
         variantIndex += 2;
     }

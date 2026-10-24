@@ -7,6 +7,7 @@
 #include "field/field_camera_zoom.h"
 #include "field/field_effect_helpers.h"
 #include "field/field_move_cut_in.h"
+#include "field/map_prop_anims.h"
 #include "field/fly_landing_effect.h"
 #include "field/sprite_gfx_manager.h"
 #include "overlay_2/overlay_02_field_utils.h"
@@ -144,7 +145,7 @@ typedef struct FlyLanding {
     FieldSystem *fieldSystem;
     SpriteGfxManager gfx;
     Sprite *trainerSprite;
-    void *effectPool;
+    FieldEffectPool *effectPool;
     FieldEffect *landingEffect;
     int unk_178;
 } FlyLanding;
@@ -374,7 +375,7 @@ void CutInScrollSprite_Update(FieldEffect *effect, CutInScrollSprite *work) {
             int visible = FALSE;
             int top = cutIn->windowTop, bottom = cutIn->windowBottom;
             int spriteTop = pos.y - 8192;
-            if (spriteTop >= top && spriteTop <= bottom && pos.y + 8192 >= top && pos.y + 8192 <= bottom) {
+            if (spriteTop >= top && spriteTop <= bottom && pos.y + FX32_CONST(2) >= top && pos.y + FX32_CONST(2) <= bottom) {
                 visible = TRUE;
             }
             Sprite_SetDrawFlag(work->sprite, visible);
@@ -394,7 +395,8 @@ void FieldMoveCutIn_CreateFlyer(FieldMoveCutIn *cutIn) {
 }
 
 u8 FieldMoveCutIn_GetFlyerStatus(FieldMoveCutIn *cutIn) {
-    return ((CutInFlyer *)FieldEffect_GetState(cutIn->flyerEffect))->status;
+    CutInFlyer *flyer = FieldEffect_GetState(cutIn->flyerEffect);
+    return flyer->status;
 }
 
 void FieldMoveCutIn_DestroyFlyer(FieldMoveCutIn *cutIn) {
@@ -410,7 +412,8 @@ void FieldMoveCutIn_DestroyFlyer(FieldMoveCutIn *cutIn) {
 
 BOOL CutInFlyer_Init(FieldEffect *effect, CutInFlyer *flyer) {
     VecFx32 pos;
-    flyer->cutIn = *(FieldMoveCutIn **)FieldEffect_GetUserData(effect);
+    FieldMoveCutIn **userData = FieldEffect_GetUserData(effect);
+    flyer->cutIn = *userData;
     FieldEffect_GetPosition(effect, &pos);
     flyer->sprite = FieldMoveCutIn_CreateFlyerSprite(flyer->cutIn, &pos, 0, 0);
     return TRUE;
@@ -465,12 +468,12 @@ BOOL CutInFlyer_TakeOff(CutInFlyer *flyer) {
     Sprite *sprite = flyer->sprite;
     VecFx32 mtx;
     flyer->distance = flyer->distance + flyer->speed;
-    if (flyer->speed < 0x10000) {
+    if (flyer->speed < FX32_CONST(16)) {
         flyer->speed += 0x4000;
     }
     flyer->offset.x = GF_CosDeg(0x13B) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
-    if (flyer->angle / FX32_ONE < 0x10E) {
+    if (flyer->angle / FX32_ONE < 270) {
         flyer->angle += 0x4000;
     }
     flyer->scale.x = flyer->scale.x + flyer->scaleSpeed;
@@ -490,7 +493,7 @@ BOOL CutInFlyer_TakeOff(CutInFlyer *flyer) {
     mtx.x = flyer->origin.x + flyer->offset.x;
     mtx.y = flyer->origin.y + flyer->offset.y;
     Sprite_SetMatrix(sprite, &mtx);
-    if (mtx.y < -0x40000) {
+    if (mtx.y < -FX32_CONST(64)) {
         Sprite_SetDrawFlag(sprite, FALSE);
         flyer->status = 2;
         flyer->step++;
@@ -561,7 +564,7 @@ BOOL CutInFlyer_SwoopDown(CutInFlyer *flyer) {
     if (flyer->distance < 0) {
         flyer->distance = 0;
     }
-    if (flyer->speed > 0x800) {
+    if (flyer->speed > FX32_CONST(0.5)) {
         flyer->speed -= 0x1800;
     }
     if (flyer->speed < FX32_ONE) {
@@ -569,20 +572,20 @@ BOOL CutInFlyer_SwoopDown(CutInFlyer *flyer) {
     }
     flyer->offset.x = GF_CosDeg(0x13b) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
-    if (flyer->angle / FX32_ONE < 0x10e) {
+    if (flyer->angle / FX32_ONE < 270) {
         flyer->angle += 0x4000;
     }
     flyer->scale.x += flyer->scaleSpeed;
-    if (flyer->scale.x > 0x1800) {
+    if (flyer->scale.x > FX32_CONST(1.5)) {
         flyer->scale.x = 0x1800;
     }
     flyer->scale.y += flyer->scaleSpeed;
-    if (flyer->scale.y > 0x1800) {
+    if (flyer->scale.y > FX32_CONST(1.5)) {
         flyer->scale.y = 0x1800;
     }
     Sprite_SetAffineScale(sprite, &flyer->scale);
     flyer->rotation += 0x8000;
-    if (flyer->rotation / FX32_ONE > 0x168) {
+    if (flyer->rotation / FX32_ONE > 360) {
         flyer->rotation = 0x168000;
     }
     Sprite_SetAffineZRotation(sprite, GF_DegreeToSinCosIdx((u16)(flyer->rotation / FX32_ONE)));
@@ -601,11 +604,11 @@ BOOL CutInFlyer_SwoopDown(CutInFlyer *flyer) {
     sprite = flyer->cutIn->trainerSprite;
     scale = *Sprite_GetScalePtr(sprite);
     scale.x += 0x80;
-    if (scale.x > 0x1400) {
+    if (scale.x > FX32_CONST(1.25)) {
         scale.x = 0x1400;
     }
     scale.y += 0x80;
-    if (scale.y > 0x1400) {
+    if (scale.y > FX32_CONST(1.25)) {
         scale.y = 0x1400;
     }
     Sprite_SetAffineScale(sprite, &scale);
@@ -643,25 +646,25 @@ BOOL CutInFlyer_FlyAway(CutInFlyer *flyer) {
 
     flyer->distance += flyer->speed;
     flyer->speed += FX32_ONE;
-    if (flyer->speed > 0x10000) {
+    if (flyer->speed > FX32_CONST(16)) {
         flyer->speed = 0x10000;
     }
     flyer->offset.x = GF_CosDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg(0x80) * (flyer->distance / FX32_ONE);
-    if (flyer->angle < 0x87000) {
+    if (flyer->angle < FX32_CONST(135)) {
         flyer->angle += FX32_ONE;
     }
     flyer->scale.x += flyer->scaleSpeed;
-    if (flyer->scale.x > 0x2000) {
+    if (flyer->scale.x > FX32_CONST(2)) {
         flyer->scale.x = 0x2000;
     }
     flyer->scale.y += flyer->scaleSpeed;
-    if (flyer->scale.y > 0x2000) {
+    if (flyer->scale.y > FX32_CONST(2)) {
         flyer->scale.y = 0x2000;
     }
     matrix.x = flyer->origin.x + flyer->offset.x;
     matrix.y = flyer->origin.y + flyer->offset.y;
-    if (matrix.y / FX32_ONE >= 0xe6) {
+    if (matrix.y / FX32_ONE >= 230) {
         flyer->status = 2;
         flyer->step++;
     }
@@ -673,11 +676,11 @@ BOOL CutInFlyer_FlyAway(CutInFlyer *flyer) {
     trainerMatrix.y += flyer->trainerOffsetY;
     Sprite_SetMatrix(trainer, &trainerMatrix);
     scale.x += 0x100;
-    if (scale.x > 0x2000) {
+    if (scale.x > FX32_CONST(2)) {
         scale.x = 0x2000;
     }
     scale.y += 0x100;
-    if (scale.y > 0x2000) {
+    if (scale.y > FX32_CONST(2)) {
         scale.y = 0x2000;
     }
     Sprite_SetAffineScale(trainer, &scale);
@@ -690,7 +693,7 @@ BOOL CutInFlyer_Done(CutInFlyer *flyer) {
     return FALSE;
 }
 
-FieldEffect *FieldMoveCutIn_CreateTrainerJumpEffect(void *effectPool, Sprite *trainerSprite) {
+FieldEffect *FieldMoveCutIn_CreateTrainerJumpEffect(FieldEffectPool *effectPool, Sprite *trainerSprite) {
     VecFx32 pos = { 0, 0, 0 };
     TrainerJumpArgs args;
 
@@ -699,7 +702,8 @@ FieldEffect *FieldMoveCutIn_CreateTrainerJumpEffect(void *effectPool, Sprite *tr
 }
 
 static void TrainerJumpEffect_Stop(FieldEffect *effect) {
-    ((TrainerJump *)FieldEffect_GetState(effect))->mode = TRAINER_JUMP_IDLE;
+    TrainerJump *jump = FieldEffect_GetState(effect);
+    jump->mode = TRAINER_JUMP_IDLE;
 }
 
 static void TrainerJumpEffect_StartJump(FieldEffect *effect) {
@@ -788,7 +792,8 @@ SysTask *FlyLanding_Start(FieldSystem *fieldSystem, int gender) {
 }
 
 BOOL FlyLanding_IsDone(SysTask *task) {
-    return ((FlyLanding *)SysTask_GetData(task))->done;
+    FlyLanding *landing = SysTask_GetData(task);
+    return landing->done;
 }
 
 void FlyLanding_Delete(SysTask *task) {
@@ -861,7 +866,7 @@ BOOL FlyLanding_CreateSprites(FlyLanding *landing) {
 }
 
 BOOL FlyLanding_WaitLanding(FlyLanding *landing) {
-    if (FlyLandingEffect_GetStatus(landing->landingEffect) != 2) {
+    if (FlyLandingEffect_GetStatus(landing->landingEffect) != FLY_LANDING_DONE) {
         return FALSE;
     }
     FlyLandingEffect_Delete(landing->landingEffect);
@@ -895,7 +900,8 @@ void FieldMoveCutIn_SetPlayerVisible(FieldMoveCutIn *cutIn, BOOL visible) {
 }
 
 BOOL TrainerClipEffect_Init(FieldEffect *effect, TrainerClip *clip) {
-    *clip = *(TrainerClip *)FieldEffect_GetUserData(effect);
+    TrainerClip *args = FieldEffect_GetUserData(effect);
+    *clip = *args;
     return TRUE;
 }
 
@@ -905,7 +911,7 @@ void TrainerClipEffect_Update(FieldEffect *effect, TrainerClip *clip) {
     fx32 top = cutIn->windowTop;
     fx32 bottom = cutIn->windowBottom;
     if (!cutIn->flyStarted) {
-        if (y - 0x8000 >= top && y + 0x8000 <= bottom) {
+        if (y - FX32_CONST(8) >= top && y + FX32_CONST(8) <= bottom) {
             Sprite_SetDrawFlag(clip->sprite, TRUE);
         } else {
             Sprite_SetDrawFlag(clip->sprite, FALSE);
@@ -941,7 +947,7 @@ static void FieldMoveCutIn_CreateModelEffect(FieldMoveCutIn *cutIn) {
 
 BOOL CutInModelEffect_Init(FieldEffect *effect, CutInModelEffect *work) {
     VecFx32 pos;
-    FieldMoveCutIn **userData = (FieldMoveCutIn **)FieldEffect_GetUserData(effect);
+    FieldMoveCutIn **userData = FieldEffect_GetUserData(effect);
     FieldMoveCutInModel *model;
     work->cutIn = *userData;
     model = &(*userData)->model;
@@ -1011,7 +1017,8 @@ BOOL FieldMoveCutIn_StepShowOtherObject(FieldMoveCutIn *cutIn) {
 }
 
 BOOL FieldMoveCutIn_StepWaitModelEffect(FieldMoveCutIn *cutIn) {
-    if (((CutInModelEffect *)FieldEffect_GetState(cutIn->modelEffect))->done == TRUE) {
+    CutInModelEffect *modelEffect = FieldEffect_GetState(cutIn->modelEffect);
+    if (modelEffect->done == TRUE) {
         FieldEffect_Destroy((int)cutIn->modelEffect);
         FieldMoveCutIn_UnloadModel(cutIn);
         cutIn->state++;
@@ -1085,17 +1092,17 @@ void PokecenterAnimCreate(FieldSystem *fieldSystem, u8 kind) {
     MapProp *prop;
     int idx;
     if (FieldSystem_FindMapProp(fieldSystem, 0x24, &prop, &idx)) {
-        u8 *env = Heap_AllocAtEnd(HEAP_ID_FIELD1, 0x18);
-        env[0xc] = kind;
-        env[0xd] = 0;
-        env[0xe] = 0;
-        env[0xf] = 0;
+        PokecenterAnim *anim = Heap_AllocAtEnd(HEAP_ID_FIELD1, sizeof(PokecenterAnim));
+        anim->ballCount = kind;
+        anim->ballIndex = 0;
+        anim->timer = 0;
+        anim->state = 0;
         Terrain_GetChunkOrigin(idx, MapMatrix_GetWidth(fieldSystem->mapMatrix), &delta);
         MapProp_GetTranslation(&trans, prop);
-        *(VecFx32 *)env = trans;
-        ((VecFx32 *)env)->x += delta.x;
-        ((VecFx32 *)env)->z += delta.z;
-        TaskManager_Call(fieldSystem->taskman, PokecenterAnimRun, env);
+        anim->machinePos = trans;
+        anim->machinePos.x += delta.x;
+        anim->machinePos.z += delta.z;
+        TaskManager_Call(fieldSystem->taskman, PokecenterAnimRun, anim);
     } else {
         GF_ASSERT(FALSE);
     }

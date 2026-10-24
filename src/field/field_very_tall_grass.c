@@ -142,7 +142,9 @@ static BOOL VeryTallGrassEffect_Init(FieldEffect *effect, void *state) {
     VeryTallGrassEffect *work = state;
     VecFx32 position;
 
-    work->args = *(VeryTallGrassEffectArgs *)FieldEffect_GetUserData(effect);
+    VeryTallGrassEffectArgs *args = FieldEffect_GetUserData(effect);
+
+    work->args = *args;
     work->spriteId = MapObject_GetSpriteID(work->args.mapObject);
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);

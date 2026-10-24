@@ -40,6 +40,14 @@ typedef struct GymLeaderIntroWork {
     int timer;
 } GymLeaderIntroWork;
 
+enum EliteFourIntroSprite {
+    ELITE_FOUR_SPRITE_PLAYER,
+    ELITE_FOUR_SPRITE_OPPONENT,
+    ELITE_FOUR_SPRITE_PLAYER_NAMEPLATE,
+    ELITE_FOUR_SPRITE_OPPONENT_NAMEPLATE,
+    ELITE_FOUR_SPRITE_COUNT,
+};
+
 typedef struct EliteFourIntroParams {
     u16 opponentMember; // first of the four sprite resource members
     u8 nameplateMember;
@@ -55,7 +63,7 @@ typedef struct EliteFourIntroWork {
     EncounterEffectInterp fade;
     EncounterEffectSpriteManager spriteManager;
     EncounterEffectSpriteResources resources[4];
-    Sprite *sprites[4];
+    Sprite *sprites[ELITE_FOUR_SPRITE_COUNT];
     VecFx32 playerPos;
     VecFx32 opponentPos;
     ScaleSprites scaleSprites;
@@ -551,15 +559,15 @@ enum EliteFourIntroState {
     ELITE_FOUR_INTRO_STATE_END,
 };
 
-static inline void EliteFourIntro_CreateSprites(EncounterEffectSpriteManager *spriteManager, EncounterEffectSpriteResources resources[4], Sprite *sprites[4]) {
+static inline void EliteFourIntro_CreateSprites(EncounterEffectSpriteManager *spriteManager, EncounterEffectSpriteResources resources[4], Sprite *sprites[ELITE_FOUR_SPRITE_COUNT]) {
     EncounterEffectSpriteResources *cursor = resources;
     int i;
 
-    for (i = 0; i < 4; i++, cursor++) {
+    for (i = 0; i < ELITE_FOUR_SPRITE_COUNT; i++, cursor++) {
         EncounterEffectSpriteResources *selected;
         int animSeq;
 
-        if (i < 3) {
+        if (i < ELITE_FOUR_SPRITE_OPPONENT_NAMEPLATE) {
             selected = cursor;
             animSeq = 0;
         } else {
@@ -573,7 +581,6 @@ static inline void EliteFourIntro_CreateSprites(EncounterEffectSpriteManager *sp
     }
 }
 
-// sprites[0]: player, [1]: opponent, [2] and [3]: their nameplates
 static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum HeapID heapID, const EliteFourIntroParams *params) {
     VecFx32 pos;
     VecFx32 initial;
@@ -608,8 +615,8 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
     case ELITE_FOUR_INTRO_STATE_CREATE_SPRITES:
         EncounterEffect_SetVecFx32(&initial, FX32_CONST(2), FX32_CONST(2), 0);
         EliteFourIntro_CreateSprites(&work->spriteManager, work->resources, work->sprites);
-        LeadersEffect_LoadBlendedSpritePalette(work->sprites[0], heapID, work->playerMember, 14, RGB_BLACK);
-        LeadersEffect_LoadBlendedSpritePalette(work->sprites[1], heapID, params->opponentMember, 14, RGB_BLACK);
+        LeadersEffect_LoadBlendedSpritePalette(work->sprites[ELITE_FOUR_SPRITE_PLAYER], heapID, work->playerMember, 14, RGB_BLACK);
+        LeadersEffect_LoadBlendedSpritePalette(work->sprites[ELITE_FOUR_SPRITE_OPPONENT], heapID, params->opponentMember, 14, RGB_BLACK);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         ScaleSprites_Init(&work->scaleSprites, &work->spriteManager, &work->resources[3], FX32_CONST(128), FX32_CONST(96), heapID);
         EncounterEffect_StartParticleMode(effect->fieldSystem);
@@ -638,20 +645,20 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
     case ELITE_FOUR_INTRO_STATE_START_SLIDE_IN:
         EncounterEffectQuadInterp_Init(&work->x, -FX32_CONST(128), FX32_CONST(56), FX32_CONST(80), 6);
         EncounterEffect_SetVecFx32(&pos, work->x.value, FX32_CONST(92), 0);
-        Sprite_SetMatrix(work->sprites[0], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_PLAYER], &pos);
         pos.y += FX32_CONST(4);
         pos.x += FX32_CONST(16);
-        Sprite_SetMatrix(work->sprites[2], &pos);
-        Sprite_SetDrawFlag(work->sprites[0], TRUE);
-        Sprite_SetDrawFlag(work->sprites[2], TRUE);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_PLAYER_NAMEPLATE], &pos);
+        Sprite_SetDrawFlag(work->sprites[ELITE_FOUR_SPRITE_PLAYER], TRUE);
+        Sprite_SetDrawFlag(work->sprites[ELITE_FOUR_SPRITE_PLAYER_NAMEPLATE], TRUE);
         EncounterEffectQuadInterp_Init(&work->slide, FX32_CONST(384), FX32_CONST(200), -FX32_CONST(80), 6);
         EncounterEffect_SetVecFx32(&pos, work->slide.value, FX32_CONST(92), 0);
-        Sprite_SetMatrix(work->sprites[1], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_OPPONENT], &pos);
         pos.y += FX32_CONST(4);
         pos.x -= FX32_CONST(16);
-        Sprite_SetMatrix(work->sprites[3], &pos);
-        Sprite_SetDrawFlag(work->sprites[1], TRUE);
-        Sprite_SetDrawFlag(work->sprites[3], TRUE);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_OPPONENT_NAMEPLATE], &pos);
+        Sprite_SetDrawFlag(work->sprites[ELITE_FOUR_SPRITE_OPPONENT], TRUE);
+        Sprite_SetDrawFlag(work->sprites[ELITE_FOUR_SPRITE_OPPONENT_NAMEPLATE], TRUE);
         GfGfxLoader_GXLoadPalFromOpenNarc(effect->narc, 16, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_2_OFFSET, 32, heapID);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
         AddWindowParameterized(effect->fieldSystem->bgConfig, &work->window, GF_BG_LYR_MAIN_2, 21, 13, 11, 2, 2, 1);
@@ -675,17 +682,17 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
         EncounterEffectQuadInterp_Update(&work->x);
         EncounterEffect_SetVecFx32(&pos, work->x.value, FX32_CONST(92), 0);
         work->playerPos = pos;
-        Sprite_SetMatrix(work->sprites[0], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_PLAYER], &pos);
         pos.y += FX32_CONST(4);
         pos.x += FX32_CONST(16);
-        Sprite_SetMatrix(work->sprites[2], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_PLAYER_NAMEPLATE], &pos);
         ready = EncounterEffectQuadInterp_Update(&work->slide);
         EncounterEffect_SetVecFx32(&pos, work->slide.value, FX32_CONST(92), 0);
         work->opponentPos = pos;
-        Sprite_SetMatrix(work->sprites[1], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_OPPONENT], &pos);
         pos.y += FX32_CONST(4);
         pos.x -= FX32_CONST(16);
-        Sprite_SetMatrix(work->sprites[3], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_OPPONENT_NAMEPLATE], &pos);
         if (ready == TRUE) {
             effect->state++;
         }
@@ -703,12 +710,12 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
         ready = EncounterEffectInterp_Update(&work->fade);
         EncounterEffect_ApplyMainBrightness(&work->fade);
         if (ready == TRUE) {
-            LeadersEffect_LoadBlendedSpritePalette(work->sprites[0], heapID, work->playerMember, 0, RGB_BLACK);
-            LeadersEffect_LoadBlendedSpritePalette(work->sprites[1], heapID, params->opponentMember, 0, RGB_BLACK);
-            Sprite_SetAnimActiveFlag(work->sprites[2], TRUE);
-            Sprite_SetAnimSpeed(work->sprites[2], FX32_CONST(2));
-            Sprite_SetAnimActiveFlag(work->sprites[3], TRUE);
-            Sprite_SetAnimSpeed(work->sprites[3], FX32_CONST(2));
+            LeadersEffect_LoadBlendedSpritePalette(work->sprites[ELITE_FOUR_SPRITE_PLAYER], heapID, work->playerMember, 0, RGB_BLACK);
+            LeadersEffect_LoadBlendedSpritePalette(work->sprites[ELITE_FOUR_SPRITE_OPPONENT], heapID, params->opponentMember, 0, RGB_BLACK);
+            Sprite_SetAnimActiveFlag(work->sprites[ELITE_FOUR_SPRITE_PLAYER_NAMEPLATE], TRUE);
+            Sprite_SetAnimSpeed(work->sprites[ELITE_FOUR_SPRITE_PLAYER_NAMEPLATE], FX32_CONST(2));
+            Sprite_SetAnimActiveFlag(work->sprites[ELITE_FOUR_SPRITE_OPPONENT_NAMEPLATE], TRUE);
+            Sprite_SetAnimSpeed(work->sprites[ELITE_FOUR_SPRITE_OPPONENT_NAMEPLATE], FX32_CONST(2));
             EncounterEffect_LoadParticles(effect->narc, 152);
             effect->state++;
         }
@@ -749,10 +756,10 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
         if (ready) {
             work->playerPos = pos;
         }
-        Sprite_SetMatrix(work->sprites[0], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_PLAYER], &pos);
         pos.y += FX32_CONST(4);
         pos.x += FX32_CONST(16);
-        Sprite_SetMatrix(work->sprites[2], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_PLAYER_NAMEPLATE], &pos);
         if ((effect->fadeDone / 2) % 2 == 0) {
             EncounterEffect_SetVecFx32(&pos, work->opponentPos.x - work->x.value, work->opponentPos.y - work->y.value, 0);
         } else {
@@ -761,10 +768,10 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
         if (ready) {
             work->opponentPos = pos;
         }
-        Sprite_SetMatrix(work->sprites[1], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_OPPONENT], &pos);
         pos.y += FX32_CONST(4);
         pos.x -= FX32_CONST(16);
-        Sprite_SetMatrix(work->sprites[3], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_OPPONENT_NAMEPLATE], &pos);
         if (ready) {
             effect->state++;
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
@@ -777,15 +784,15 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
         EncounterEffectQuadInterp_Update(&work->x);
         EncounterEffectQuadInterp_Update(&work->y);
         EncounterEffect_SetVecFx32(&pos, work->playerPos.x - work->x.value, work->playerPos.y - work->y.value, 0);
-        Sprite_SetMatrix(work->sprites[0], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_PLAYER], &pos);
         pos.y += FX32_CONST(4);
         pos.x += FX32_CONST(16);
-        Sprite_SetMatrix(work->sprites[2], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_PLAYER_NAMEPLATE], &pos);
         EncounterEffect_SetVecFx32(&pos, work->opponentPos.x + work->x.value, work->opponentPos.y + work->y.value, 0);
-        Sprite_SetMatrix(work->sprites[1], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_OPPONENT], &pos);
         pos.y += FX32_CONST(4);
         pos.x -= FX32_CONST(16);
-        Sprite_SetMatrix(work->sprites[3], &pos);
+        Sprite_SetMatrix(work->sprites[ELITE_FOUR_SPRITE_OPPONENT_NAMEPLATE], &pos);
         if (IsPaletteFadeFinished()) {
             effect->state++;
         }
@@ -797,7 +804,7 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
         }
         ScaleSprites_Delete(&work->scaleSprites);
         RemoveWindow(&work->window);
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < ELITE_FOUR_SPRITE_COUNT; i++) {
             Sprite_Delete(work->sprites[i]);
         }
         for (i = 0, resources = work->resources, spriteManager = &work->spriteManager; i < 4; i++, resources++) {

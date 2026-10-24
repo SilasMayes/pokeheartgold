@@ -179,7 +179,9 @@ FieldEffect *TallGrass_SpawnAt(LocalMapObject *mapObject, BOOL animate, int x, i
 BOOL TallGrassEffect_Init(FieldEffect *effect, TallGrassEffect *work) {
     VecFx32 position;
 
-    work->args = *(TallGrassEffectArgs *)FieldEffect_GetUserData(effect);
+    TallGrassEffectArgs *args = FieldEffect_GetUserData(effect);
+
+    work->args = *args;
     work->spriteId = MapObject_GetSpriteID(work->args.mapObject);
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);
@@ -281,7 +283,9 @@ BOOL TallGrassUnusedEffect_Init(FieldEffect *effect, TallGrassUnusedEffect *work
     VecFx32 position;
     int record;
 
-    work->args = *(TallGrassUnusedEffectArgs *)FieldEffect_GetUserData(effect);
+    TallGrassUnusedEffectArgs *args = FieldEffect_GetUserData(effect);
+
+    work->args = *args;
     work->kind = FieldEffect_GetParam(effect);
     position.x = (work->args.x << 16) + 0x8000;
     position.z = (work->args.z << 16) + 0x9000;

@@ -442,7 +442,7 @@ static BOOL TouchscreenChoiceMenu_MoveListSelection(int *selection, int count, i
 BOOL TouchscreenChoiceMenu_State_ListInput(TouchscreenChoiceMenuData *data) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(gTouchscreenChoiceMenuListHitboxes[data->itemCount - 2]);
 
-    if (hit != -1) {
+    if (hit != TOUCH_MENU_NO_INPUT) {
         data->selection = hit;
         TouchscreenChoiceMenu_SetListCursorPos(data, data->itemCount, data->selection);
         PlaySE(SEQ_SE_DP_SELECT);
@@ -519,7 +519,7 @@ static void TouchscreenChoiceMenu_SetListCursorPressed(TouchscreenChoiceMenuData
 static BOOL TouchscreenChoiceMenu_HandleYesNoInput(TouchscreenChoiceMenuData *data) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(gTouchscreenChoiceMenuYesNoHitboxes);
 
-    if (hit != -1) {
+    if (hit != TOUCH_MENU_NO_INPUT) {
         if (hit == 0) {
             data->selection = 0;
             TouchscreenChoiceMenu_SetYesNoCursorPos(data, data->selection);

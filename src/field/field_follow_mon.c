@@ -394,9 +394,9 @@ void MapObject_SetBillboardSepia(BOOL unused, LocalMapObject *object, BillboardO
     MIi_CpuCopy16(palette, transfer->palette, sizeof(transfer->palette));
     TintPalette_GrayScale(transfer->palette, 16);
     TintPalette_CustomTone(transfer->palette, 16, 256, 180, 0);
-    GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, (u16)BillboardObject_GetPlttKey(billboard) * 8, transfer->palette, sizeof(transfer->palette));
+    GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, NNS_GfdGetPlttKeyAddr(BillboardObject_GetPlttKey(billboard)), transfer->palette, sizeof(transfer->palette));
     texKey = BillboardObject_GetTexKey(billboard);
-    GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_VRAM, (u16)BillboardObject_GetTexKey(billboard) * 8, transfer->texture, ((texKey & 0x7FFF0000) >> 16) * 16);
+    GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_VRAM, NNS_GfdGetTexKeyAddr(BillboardObject_GetTexKey(billboard)), transfer->texture, ((texKey & 0x7FFF0000) >> 16) * 16);
     SysTask_CreateOnVWaitQueue(SepiaBillboardTransfer_FreeWhenDone, transfer, 0);
 }
 
@@ -686,8 +686,8 @@ static BOOL Task_FollowMonRecall(TaskManager *taskMan) {
         LocalMapObject *mapObject = FollowMon_GetMapObject(fieldSystem);
         int member = SpriteId_GetModelNo(MapObject_GetSpriteID(mapObject));
         NNSG3dResFileHeader *file = NARC_AllocAndReadWholeMember(MapObjectManager_GetMapModelNarc(fieldSystem->mapObjectManager), member, HEAP_ID_FIELD2);
-        u8 *texture = (u8 *)NNS_G3dGetTex(file);
-        MIi_CpuCopy16((u16 *)(texture + *(u32 *)(texture + 0x38)), env->palette, sizeof(env->palette));
+        NNSG3dResTex *texture = NNS_G3dGetTex(file);
+        MIi_CpuCopy16((u16 *)((u8 *)texture + texture->plttInfo.ofsPlttData), env->palette, sizeof(env->palette));
         Heap_Free(file);
         FollowMonBall_Spawn(mapObject, FOLLOW_MON_BALL_RECALL_WHITE);
         (*state)++;
@@ -705,7 +705,7 @@ static BOOL Task_FollowMonRecall(TaskManager *taskMan) {
             BillboardObject_SetScale(billboard, &scale);
             plttKey = BillboardObject_GetPlttKey(billboard);
             plttAddr = BillboardObject_GetPlttKey(billboard);
-            GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, (u16)plttAddr << 3, env->palette, ((plttKey & 0xFFFF0000) >> 16) << 3);
+            GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, NNS_GfdGetPlttKeyAddr(plttAddr), env->palette, ((plttKey & 0xFFFF0000) >> 16) << 3);
             FollowMon_Hide(fieldSystem);
             FollowMon_SetPendingHop(FollowMon_GetMapObject(fieldSystem), 0);
             (*state)++;
@@ -835,8 +835,8 @@ static BOOL Task_FollowMonFlash(TaskManager *taskMan) {
     case FLASH_STATE_LOAD_PALETTE: {
         int member = SpriteId_GetModelNo(MapObject_GetSpriteID(FollowMon_GetMapObject(fieldSystem)));
         NNSG3dResFileHeader *file = NARC_AllocAndReadWholeMember(MapObjectManager_GetMapModelNarc(fieldSystem->mapObjectManager), member, HEAP_ID_FIELD2);
-        u8 *texture = (u8 *)NNS_G3dGetTex(file);
-        MIi_CpuCopy16((u16 *)(texture + *(u32 *)(texture + 0x38)), env->original, sizeof(env->original));
+        NNSG3dResTex *texture = NNS_G3dGetTex(file);
+        MIi_CpuCopy16((u16 *)((u8 *)texture + texture->plttInfo.ofsPlttData), env->original, sizeof(env->original));
         Heap_Free(file);
         (*state)++;
         break;
@@ -856,7 +856,7 @@ static BOOL Task_FollowMonFlash(TaskManager *taskMan) {
             billboard = MapObjectManager_GetFollowMonBillboard(fieldSystem->mapObjectManager);
             plttKey = BillboardObject_GetPlttKey(billboard);
             plttAddr = BillboardObject_GetPlttKey(billboard);
-            GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, (u16)plttAddr * 8, env->blended, ((plttKey & 0xFFFF0000) >> 16) * 8);
+            GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, NNS_GfdGetPlttKeyAddr(plttAddr), env->blended, ((plttKey & 0xFFFF0000) >> 16) * 8);
             env->delay = env->period;
         }
         break;
@@ -874,7 +874,7 @@ static BOOL Task_FollowMonFlash(TaskManager *taskMan) {
             billboard = MapObjectManager_GetFollowMonBillboard(fieldSystem->mapObjectManager);
             plttKey = BillboardObject_GetPlttKey(billboard);
             plttAddr = BillboardObject_GetPlttKey(billboard);
-            GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, (u16)plttAddr * 8, env->blended, ((plttKey & 0xFFFF0000) >> 16) * 8);
+            GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, NNS_GfdGetPlttKeyAddr(plttAddr), env->blended, ((plttKey & 0xFFFF0000) >> 16) * 8);
             env->delay = env->period;
         }
         break;

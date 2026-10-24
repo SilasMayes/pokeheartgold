@@ -86,6 +86,17 @@ FS_EXTERN_OVERLAY(ds_protect);
 #define TOUCHSCREEN_MENU_SPRITE_MENU            14
 #define TOUCHSCREEN_MENU_SPRITE_BALL            15
 
+// resObjs[] / headers[] (resource ids 100 + index): 0-6 icons of the layout, then these.
+#define TOUCHSCREEN_MENU_RES_ITEM_1  7
+#define TOUCHSCREEN_MENU_RES_ITEM_2  8
+#define TOUCHSCREEN_MENU_RES_BUTTONS 9
+#define TOUCHSCREEN_MENU_RES_BALL    10
+
+// gTouchscreenMenuIconHitboxes: 0 MENU, 1-7 the icons, then the registered item buttons.
+#define TOUCHSCREEN_MENU_HIT_MENU   0
+#define TOUCHSCREEN_MENU_HIT_ITEM_1 8
+#define TOUCHSCREEN_MENU_HIT_ITEM_2 9
+
 enum TouchscreenMenuLayout {
     TOUCHSCREEN_MENU_LAYOUT_NORMAL,
     TOUCHSCREEN_MENU_LAYOUT_SAFARI,
@@ -813,7 +824,6 @@ static u32 TouchscreenMenu_GetBallItem(u32 layout) {
     return ITEM_SPORT_BALL;
 }
 
-// Resource ids 100 + index: 0-6 icons of the layout, 7/8 registered item icons, 9 the buttons, 10 the ball item.
 static void TouchscreenMenu_LoadIconResources(FieldSystem *fieldSystem, GF_2DGfxResMan **resMans, SpriteResource **resObjs, int index, int resId, int gender, Bag *bag, int layout) {
     u8 icon = gTouchscreenMenuLayouts[layout][index];
     NarcId narcId = NARC_a_0_1_4;
@@ -842,21 +852,21 @@ static void TouchscreenMenu_LoadIconResources(FieldSystem *fieldSystem, GF_2DGfx
             }
         }
     }
-    if (index == 7) {
+    if (index == TOUCHSCREEN_MENU_RES_ITEM_1) {
         compressed = FALSE;
         narcId = NARC_itemtool_itemdata_item_icon;
         plttFileId = GetItemIndexMapping(Bag_GetRegisteredItem1(bag), ITEMNARC_NCLR);
         charFileId = GetItemIndexMapping(Bag_GetRegisteredItem1(bag), ITEMNARC_NCGR);
-    } else if (index == 8) {
+    } else if (index == TOUCHSCREEN_MENU_RES_ITEM_2) {
         compressed = FALSE;
         narcId = NARC_itemtool_itemdata_item_icon;
         plttFileId = GetItemIndexMapping(Bag_GetRegisteredItem2(bag), ITEMNARC_NCLR);
         charFileId = GetItemIndexMapping(Bag_GetRegisteredItem2(bag), ITEMNARC_NCGR);
-    } else if (index == 9) {
+    } else if (index == TOUCHSCREEN_MENU_RES_BUTTONS) {
         plttFileId = 7;
         charFileId = 70;
         plttNum = 4;
-    } else if (index == 10) {
+    } else if (index == TOUCHSCREEN_MENU_RES_BALL) {
         u32 item = TouchscreenMenu_GetBallItem(layout);
         compressed = FALSE;
         narcId = NARC_itemtool_itemdata_item_icon;
@@ -873,33 +883,33 @@ static void TouchscreenMenu_LoadIconResources(FieldSystem *fieldSystem, GF_2DGfx
 
 // Pixel coordinate to fx32, rounded away from zero.
 static inline s32 TouchscreenMenu_RoundToFx32(int x) {
-    float f;
+    float value;
     if (x > 0) {
-        f = 0.5f + (float)(x << FX32_SHIFT);
+        value = 0.5f + (float)(x << FX32_SHIFT);
     } else {
-        f = (float)(x << FX32_SHIFT) - 0.5f;
+        value = (float)(x << FX32_SHIFT) - 0.5f;
     }
-    return (s32)f;
+    return (s32)value;
 }
 
 static inline s32 TouchscreenMenu_PosToFx32(u16 x) {
-    float f;
+    float value;
     if (x != 0) {
-        f = 0.5f + (float)(x << FX32_SHIFT);
+        value = 0.5f + (float)(x << FX32_SHIFT);
     } else {
-        f = (float)(x << FX32_SHIFT) - 0.5f;
+        value = (float)(x << FX32_SHIFT) - 0.5f;
     }
-    return (s32)f;
+    return (s32)value;
 }
 
 static inline s32 TouchscreenMenu_PosToFx32Half(u16 x, float half) {
-    float f;
+    float value;
     if (x != 0) {
-        f = half + (float)(x << FX32_SHIFT);
+        value = half + (float)(x << FX32_SHIFT);
     } else {
-        f = (float)(x << FX32_SHIFT) - half;
+        value = (float)(x << FX32_SHIFT) - half;
     }
-    return (s32)f;
+    return (s32)value;
 }
 
 static void TouchscreenMenu_CreateSprites(TouchscreenMenuData *data) {
@@ -938,7 +948,7 @@ static void TouchscreenMenu_CreateSprites(TouchscreenMenuData *data) {
         TouchscreenMenuData *slot;
         int j;
         float half;
-        for (j = 9, slot = (TouchscreenMenuData *)((u8 *)data + 9 * sizeof(Sprite *)), pos = gTouchscreenMenuButtonPositions, half = 0.5f, header = &data->headers[9]; j < 15; pos++, slot = (TouchscreenMenuData *)((u8 *)slot + sizeof(Sprite *)), j++) {
+        for (j = 9, slot = (TouchscreenMenuData *)((u8 *)data + 9 * sizeof(Sprite *)), pos = gTouchscreenMenuButtonPositions, half = 0.5f, header = &data->headers[TOUCHSCREEN_MENU_RES_BUTTONS]; j < 15; pos++, slot = (TouchscreenMenuData *)((u8 *)slot + sizeof(Sprite *)), j++) {
             template.header = header;
             template.position.x = TouchscreenMenu_PosToFx32Half(pos->x, half);
             template.position.y = TouchscreenMenu_PosToFx32Half(pos->y, half) + FX32_CONST(256);
@@ -953,7 +963,7 @@ static void TouchscreenMenu_CreateSprites(TouchscreenMenuData *data) {
         } else if ((u32)(data->layout - TOUCHSCREEN_MENU_LAYOUT_BUG_CONTEST) <= TOUCHSCREEN_MENU_LAYOUT_PAL_PARK - TOUCHSCREEN_MENU_LAYOUT_BUG_CONTEST) {
             y = 104;
         }
-        template.header = &data->headers[10];
+        template.header = &data->headers[TOUCHSCREEN_MENU_RES_BALL];
         template.position.x = (s32)(0.5f + (float)(ballX << FX32_SHIFT));
         template.position.y = TouchscreenMenu_RoundToFx32(y) + FX32_CONST(256);
         data->sprites[TOUCHSCREEN_MENU_SPRITE_BALL] = Sprite_CreateAffine(&template);
@@ -1081,13 +1091,13 @@ static BOOL TouchscreenMenu_HandleTouchInput(TouchscreenMenuData *data) {
         return TRUE;
     }
     hit = TouchscreenHitbox_FindRectAtTouchNew(gTouchscreenMenuIconHitboxes);
-    if (hit > 0 && hit < 8) {
+    if (hit > TOUCHSCREEN_MENU_HIT_MENU && hit < TOUCHSCREEN_MENU_HIT_ITEM_1) {
         if (!data->icons[hit - 1].shown) {
             return FALSE;
         }
     }
     bag = Save_Bag_Get(data->fieldSystem->saveData);
-    if ((u32)(hit - 8) <= 1) {
+    if ((u32)(hit - TOUCHSCREEN_MENU_HIT_ITEM_1) <= TOUCHSCREEN_MENU_HIT_ITEM_2 - TOUCHSCREEN_MENU_HIT_ITEM_1) {
         if (!data->buttonsActive) {
             return TRUE;
         }
@@ -1095,18 +1105,18 @@ static BOOL TouchscreenMenu_HandleTouchInput(TouchscreenMenuData *data) {
             return TRUE;
         }
     }
-    if (hit == 8) {
+    if (hit == TOUCHSCREEN_MENU_HIT_ITEM_1) {
         if (Bag_GetRegisteredItem1(bag) == ITEM_NONE) {
             return TRUE;
         }
-    } else if (hit == 9 && Bag_GetRegisteredItem2(bag) == ITEM_NONE) {
+    } else if (hit == TOUCHSCREEN_MENU_HIT_ITEM_2 && Bag_GetRegisteredItem2(bag) == ITEM_NONE) {
         return TRUE;
     }
-    if (hit != -1) {
-        if (hit == 0) {
+    if (hit != TOUCH_MENU_NO_INPUT) {
+        if (hit == TOUCHSCREEN_MENU_HIT_MENU) {
             *data->lastTouchMenuInput = 1;
         } else if (data->sprites[hit - 1] != NULL) {
-            if (hit < 8) {
+            if (hit < TOUCHSCREEN_MENU_HIT_ITEM_1) {
                 data->selection = hit - 1;
                 data->fieldSystem->startMenuCursorPos = TouchscreenMenu_GetMenuIndex(data, data->selection);
                 TouchscreenMenu_HighlightIcon(data, data->selection);

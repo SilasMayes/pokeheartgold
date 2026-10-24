@@ -257,7 +257,8 @@ void FieldShadow_CreateFollowMonShadow(LocalMapObject *object) {
 
 static BOOL FieldShadowEffect_Init(FieldEffect *effect, void *state) {
     FieldShadowEffect *work = state;
-    work->args = *(FieldShadowEffectArgs *)FieldEffect_GetUserData(effect);
+    FieldShadowEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->parameter = FieldEffect_GetParam(effect);
     work->spriteId = MapObject_GetSpriteID(work->args.mapObject);
     work->objectId = MapObject_GetID(work->args.mapObject);
@@ -296,7 +297,8 @@ static void FieldShadowEffect_Update(FieldEffect *effect, void *state) {
 
 static BOOL FieldShadowEffect_InitFollowMon(FieldEffect *effect, void *state) {
     FieldShadowEffect *work = state;
-    work->args = *(FieldShadowEffectArgs *)FieldEffect_GetUserData(effect);
+    FieldShadowEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->parameter = FieldEffect_GetParam(effect);
     work->spriteId = MapObject_GetSpriteID(work->args.mapObject);
     work->objectId = MapObject_GetID(work->args.mapObject);

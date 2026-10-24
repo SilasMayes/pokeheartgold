@@ -254,12 +254,12 @@ static int FieldSystem_GetHeightStep(FieldSystem *fieldSystem, VecFx32 *playerPo
     return dir;
 }
 
-BOOL FieldSystem_CheckCollisionAndHeight(FieldSystem *fieldSystem, VecFx32 *playerPos, int xInFront, int yInFront, int outSlope) {
+BOOL FieldSystem_CheckCollisionAndHeight(FieldSystem *fieldSystem, VecFx32 *playerPos, int xInFront, int yInFront, s8 *outSlope) {
     u8 kind;
     BOOL ret;
     int slope = FieldSystem_GetHeightStep(fieldSystem, playerPos, xInFront, yInFront, &kind);
-    if (outSlope != 0) {
-        *(u8 *)outSlope = (u8)slope;
+    if (outSlope != NULL) {
+        *outSlope = slope;
     }
     if (slope == 0) {
         ret = FieldSystem_CheckTileCollision(fieldSystem, xInFront, yInFront);

@@ -21,6 +21,9 @@ typedef struct FieldEffect FieldEffect;
 // A billboard resource (FieldEffectManager_AddRecord); layout in billboard_internal.h.
 struct BillboardResource;
 
+// A loaded model animation; layout in render_animation.h.
+struct RenderAnimation;
+
 typedef BOOL (*FieldEffectInitFunc)(FieldEffect *effect, void *state);
 typedef void (*FieldEffectFunc)(FieldEffect *effect, void *state);
 
@@ -40,7 +43,7 @@ typedef struct {
 
 FieldEffectManager *FieldEffectManager_New(FieldSystem *fieldSystem, u32 rendererCount, enum HeapID heapID);
 void FieldEffectManager_InitAnimManagerList(FieldEffectManager *manager, u32 animManagerCount);
-void FieldEffectManager_InitGfx(FieldEffectManager *manager, enum HeapID heapID, u32 recordCount, u32 resourceCount, u32 sequenceCount, u32 resCount, int resourceHeapSize, int sequenceHeapSize, int a8);
+void FieldEffectManager_InitGfx(FieldEffectManager *manager, enum HeapID heapID, u32 recordCount, u32 resourceCount, u32 sequenceCount, u32 resCount, int resourceHeapSize, int sequenceHeapSize, int unusedHeapSize);
 void FieldEffectManager_InitRenderers(FieldEffectManager *manager, const u32 *ids);
 void FieldEffectManager_Render(FieldEffectManager *manager);
 void FieldEffectManager_Free(FieldEffectManager *manager);
@@ -68,9 +71,9 @@ void FieldEffectManager_LoadBillboardSequence(FieldEffectManager *manager, int i
 void FieldEffectManager_FreeBillboardSequence(FieldEffectManager *manager, int id);
 void FieldEffectManager_LoadTexResource(FieldEffectManager *manager, int id, u32 fileId, BOOL copyWithoutTex);
 void FieldEffectManager_FreeTexResource(FieldEffectManager *manager, int id);
-void FieldEffectManager_LoadRenderModel(FieldEffectManager *manager, void *model, int index, int fileId, BOOL atEnd);
-void FieldEffectManager_LoadRenderAnimation(FieldEffectManager *manager, void *animation, int index, int fileId, BOOL atEnd);
-void FieldEffectManager_InitRenderAnimation(FieldEffectManager *manager, void *animation, void *model, void *anim, int unused);
+void FieldEffectManager_LoadRenderModel(FieldEffectManager *manager, RenderModelStorage *model, int index, int fileId, BOOL atEnd);
+void FieldEffectManager_LoadRenderAnimation(FieldEffectManager *manager, struct RenderAnimation *animation, int index, int fileId, BOOL atEnd);
+void FieldEffectManager_InitRenderAnimation(FieldEffectManager *manager, struct RenderAnimation *animation, RenderModelStorage *model, struct RenderAnimation *source, int unused);
 void FieldEffectManager_LoadModel(FieldEffectManager *manager, u32 fileId, BOOL atEnd, NNSG3dRenderObj *renderObj, NNSG3dResMdl **ppMdl, NNSG3dResFileHeader **ppRes);
 NNSG3dResTex *FieldEffectManager_GetTexture(FieldEffectManager *manager, u32 id);
 

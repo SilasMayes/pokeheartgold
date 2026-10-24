@@ -613,14 +613,14 @@ static BOOL SpinMovement_Turn(LocalMapObject *object, void *data) {
     direction = MapObject_GetFacingDirection(object);
     i = 0;
     if (list->value[0] != -1) {
-        int *p = list->value;
+        int *entry = list->value;
         do {
-            if (direction == *p) {
+            if (direction == *entry) {
                 break;
             }
-            p++;
+            entry++;
             i++;
-        } while (*p != -1);
+        } while (*entry != -1);
     }
     GF_ASSERT(list->value[i] != -1);
     i++;

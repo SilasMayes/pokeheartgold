@@ -10,9 +10,12 @@
 #include "gf_3d_loader.h"
 #include "map_object.h"
 
+// Free entry of the model and sequence id lists, end of the billboard model and sequence NARC member tables
+#define BILLBOARD_ID_NONE 0xFF
+
 // The id lists hold the resident ids first (loaded at init, kept) and the dynamic ids after them (loaded on
-// demand, released when no map object uses them any more). Free entries are 0xFF (models, sequences) or 0xFFFF
-// (textures).
+// demand, released when no map object uses them any more). Free entries are BILLBOARD_ID_NONE (models, sequences)
+// or MAP_OBJECT_GFX_ID_INVALID (textures, by sprite id).
 struct MapObjectRender {
     u32 unused00;
     u32 objectCount;

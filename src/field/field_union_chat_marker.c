@@ -96,7 +96,8 @@ FieldEffect *UnionChatMarker_Spawn(LocalMapObject *mapObject) {
 static BOOL UnionChatMarkerEffect_Init(FieldEffect *effect, void *state) {
     UnionChatMarkerEffect *work = state;
     VecFx32 position = { 0, 0, 0 };
-    work->args = *(UnionChatMarkerEffectArgs *)FieldEffect_GetUserData(effect);
+    UnionChatMarkerEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);
     FieldEffect_SetPosition(effect, &position);

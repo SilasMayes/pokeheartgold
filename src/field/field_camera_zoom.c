@@ -35,7 +35,8 @@ SysTask *FieldCameraZoom_Start(FieldSystem *fieldSystem, enum HeapID heapID) {
 }
 
 BOOL FieldCameraZoom_IsDone(SysTask *task) {
-    return ((FieldCameraZoom *)SysTask_GetData(task))->done;
+    FieldCameraZoom *zoom = SysTask_GetData(task);
+    return zoom->done;
 }
 
 void FieldCameraZoom_End(SysTask *task) {

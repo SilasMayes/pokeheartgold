@@ -367,7 +367,7 @@ void ApricornTreeObject_Update(LocalMapObject *object) {
         MapObject_CancelAndFreeBillboard(object, &state->billboard, state->spriteId);
         state->spriteId = GetApricornTreeSpriteId(FieldSystem_ApricornTree_TryGetApricorn(MapObject_GetFieldSystem(object), object), apricorn);
         MapObject_SetSpriteID(object, state->spriteId);
-        if (state->spriteId != 0xFFFF) {
+        if (state->spriteId != MAP_OBJECT_GFX_ID_INVALID) {
             if (apricorn == 1) {
                 ApricornRegrowth_Spawn(object);
             }
@@ -438,7 +438,7 @@ void ApricornTreeObject_Resume(LocalMapObject *object) {
         return;
     }
     if (state->billboard == NULL) {
-        if (state->spriteId != 0xFFFF) {
+        if (state->spriteId != MAP_OBJECT_GFX_ID_INVALID) {
             MapObject_RequestBillboard(object, &state->billboard, state->spriteId);
         } else {
             GF_ASSERT(FALSE);

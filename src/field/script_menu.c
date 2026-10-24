@@ -87,7 +87,7 @@ static void ScriptMenu_OpenListWindow(ScriptMenu *menu, u32 width);
 static void ScriptMenu_AppendListItem(ScriptMenu *menu, int msgId, int helpMsgId, int value);
 static u32 ScriptMenu_GetListItemsWidth(ScriptMenu *menu);
 static void ScriptMenu_SetupListTemplate(ScriptMenu *menu);
-static void ScriptMenu_ListItemPrintCallback(ScriptMenu *menu, s32 itemId, u8 onInit);
+static void ScriptMenu_ListItemPrintCallback(ListMenu *listMenu, s32 itemId, u8 y);
 static void ScriptMenu_ListMoveCursorCallback(ListMenu *listMenu, s32 itemId, u8 onInit);
 static void ScriptMenu_ListTask(SysTask *task, void *data);
 static void ScriptMenu_CloseList(ScriptMenu *menu);
@@ -176,11 +176,11 @@ void ScriptMenu_ShowMultichoice(ScriptMenu *menu) {
 }
 
 static void ScriptMenu_AppendItem(ScriptMenu *menu, u32 msgId, u32 value) {
-    String *tmp = String_New(80, HEAP_ID_FIELD1);
-    ReadMsgDataIntoString(menu->msgData, msgId, tmp);
-    StringExpandPlaceholders(menu->msgFmt, menu->strbufs[menu->count], tmp);
+    String *template = String_New(80, HEAP_ID_FIELD1);
+    ReadMsgDataIntoString(menu->msgData, msgId, template);
+    StringExpandPlaceholders(menu->msgFmt, menu->strbufs[menu->count], template);
     menu->entries[menu->count].text = menu->strbufs[menu->count];
-    String_Delete(tmp);
+    String_Delete(template);
     menu->entries[menu->count].value = value;
     menu->count++;
 }
@@ -347,11 +347,11 @@ void ScriptMenu_ShowListAtPosition(ScriptMenu *menu, u16 *scroll_p, u16 *row_p) 
 }
 
 static void ScriptMenu_AppendListItem(ScriptMenu *menu, int msgId, int helpMsgId, int value) {
-    String *tmp = String_New(80, HEAP_ID_FIELD1);
-    ReadMsgDataIntoString(menu->msgData, msgId, tmp);
-    StringExpandPlaceholders(menu->msgFmt, menu->strbufs[menu->count], tmp);
+    String *template = String_New(80, HEAP_ID_FIELD1);
+    ReadMsgDataIntoString(menu->msgData, msgId, template);
+    StringExpandPlaceholders(menu->msgFmt, menu->strbufs[menu->count], template);
     menu->items[menu->count].text = menu->strbufs[menu->count];
-    String_Delete(tmp);
+    String_Delete(template);
     if (value == 0xFA) {
         menu->items[menu->count].value = LIST_HEADER;
     } else {
@@ -381,8 +381,8 @@ static u32 ScriptMenu_GetListItemsWidth(ScriptMenu *menu) {
 
 static void ScriptMenu_SetupListTemplate(ScriptMenu *menu) {
     menu->listTemplate.items = menu->items;
-    menu->listTemplate.moveCursorFunc = (LM_MoveCursorFunc_t)ScriptMenu_ListMoveCursorCallback;
-    menu->listTemplate.itemPrintFunc = (LM_ItemPrintFunc_t)ScriptMenu_ListItemPrintCallback;
+    menu->listTemplate.moveCursorFunc = ScriptMenu_ListMoveCursorCallback;
+    menu->listTemplate.itemPrintFunc = ScriptMenu_ListItemPrintCallback;
     menu->listTemplate.window = &menu->window;
     menu->listTemplate.totalItems = menu->count;
     menu->listTemplate.maxShowed = 8;
@@ -401,11 +401,11 @@ static void ScriptMenu_SetupListTemplate(ScriptMenu *menu) {
     menu->listTemplate.data = menu;
 }
 
-static void ScriptMenu_ListItemPrintCallback(ScriptMenu *menu, s32 itemId, u8 onInit) {
+static void ScriptMenu_ListItemPrintCallback(ListMenu *listMenu, s32 itemId, u8 y) {
     if (itemId == LIST_HEADER) {
-        ListMenuOverrideSetColors((ListMenu *)menu, 3, 15, 4);
+        ListMenuOverrideSetColors(listMenu, 3, 15, 4);
     } else {
-        ListMenuOverrideSetColors((ListMenu *)menu, 1, 15, 2);
+        ListMenuOverrideSetColors(listMenu, 1, 15, 2);
     }
 }
 
@@ -480,13 +480,13 @@ static void ScriptMenu_CloseList(ScriptMenu *menu) {
 }
 
 static void ScriptMenu_PrintHelpMessage(ScriptMenu *menu, u32 msgId, u32 textSpeed) {
-    String *tmp = String_New(90, HEAP_ID_FIELD1);
+    String *template = String_New(90, HEAP_ID_FIELD1);
     String *dest = String_New(90, HEAP_ID_FIELD1);
     FillWindowPixelBuffer(menu->printWindow, 15);
-    ReadMsgDataIntoString(menu->msgData, msgId, tmp);
-    StringExpandPlaceholders(menu->msgFmt, dest, tmp);
+    ReadMsgDataIntoString(menu->msgData, msgId, template);
+    StringExpandPlaceholders(menu->msgFmt, dest, template);
     AddTextPrinterParameterized(menu->printWindow, 1, dest, 0, 0, textSpeed, NULL);
-    String_Delete(tmp);
+    String_Delete(template);
     String_Delete(dest);
 }
 
@@ -530,12 +530,12 @@ void PrintCurFloorInNewWindow(FieldSystem *fieldSystem, u8 x, u8 y, u16 *p_ret, 
 #pragma opt_propagation reset
 
 static void ScriptMenu_PrintMessage(ScriptMenu *menu, u16 msgId, u8 x, u8 y) {
-    String *tmp = String_New(90, HEAP_ID_FIELD1);
+    String *template = String_New(90, HEAP_ID_FIELD1);
     String *dest = String_New(90, HEAP_ID_FIELD1);
-    ReadMsgDataIntoString(menu->msgData, msgId, tmp);
-    StringExpandPlaceholders(menu->msgFmt, dest, tmp);
+    ReadMsgDataIntoString(menu->msgData, msgId, template);
+    StringExpandPlaceholders(menu->msgFmt, dest, template);
     AddTextPrinterParameterized(&menu->window, 0, dest, x, y, TEXT_SPEED_NOTRANSFER, NULL);
-    String_Delete(tmp);
+    String_Delete(template);
     String_Delete(dest);
 }
 
@@ -842,19 +842,19 @@ void BattleRegulationWindow_Delete(Window *window) {
 }
 
 void ScriptMenu_PrintItemHelpMessage(ScriptMenu *menu, int idx) {
-    String *tmp;
+    String *template;
     String *dest;
 
     if (menu->msgIds[idx] == SCRIPT_MENU_NO_HELP_MSG) {
         return;
     }
-    tmp = String_New(90, HEAP_ID_FIELD1);
+    template = String_New(90, HEAP_ID_FIELD1);
     dest = String_New(90, HEAP_ID_FIELD1);
     FillWindowPixelBuffer(menu->printWindow, 15);
-    ReadMsgDataIntoString(menu->msgData, menu->msgIds[idx], tmp);
-    StringExpandPlaceholders(menu->msgFmt, dest, tmp);
+    ReadMsgDataIntoString(menu->msgData, menu->msgIds[idx], template);
+    StringExpandPlaceholders(menu->msgFmt, dest, template);
     AddTextPrinterParameterized(menu->printWindow, 1, dest, 0, 0, 0, NULL);
-    String_Delete(tmp);
+    String_Delete(template);
     String_Delete(dest);
 }
 

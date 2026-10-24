@@ -4,6 +4,7 @@
 
 #include "field/area_data.h"
 #include "field/map_prop.h"
+#include "field/map_prop_anims.h"
 #include "field/map_prop_animation.h"
 
 #include "field_system.h"
@@ -26,15 +27,6 @@
 #define ELEVATOR_ANIM_TAG        1
 
 #define HEALING_BALL_DELAY 12 // frames between two Poke Balls
-
-typedef struct PokecenterAnim {
-    VecFx32 machinePos;
-    u8 ballCount;
-    u8 ballIndex;
-    u8 timer;
-    u8 state;
-    u8 ballProps[6];
-} PokecenterAnim;
 
 typedef struct ElevatorAnim {
     u8 length;

@@ -99,7 +99,8 @@ void ShallowWaterRipple_Spawn(LocalMapObject *mapObject, BOOL loop) {
 static BOOL ShallowWaterRippleEffect_Init(FieldEffect *effect, void *state) {
     ShallowWaterRippleEffect *work = state;
     VecFx32 position = { 0, 0, 0 };
-    work->args = *(ShallowWaterRippleEffectArgs *)FieldEffect_GetUserData(effect);
+    ShallowWaterRippleEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->spriteId = MapObject_GetSpriteID(work->args.mapObject);
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);

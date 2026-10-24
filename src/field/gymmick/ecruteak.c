@@ -47,11 +47,11 @@ void GymmickInit_Ecruteak(FieldSystem *fieldSystem) {
     Fog_Set(fieldSystem->fog, -1, TRUE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x0020, 0);
     Fog_SetColor(fieldSystem->fog, -1, 0, 31);
 
-    s8 fogTable[32];
-    for (int i = 0; i < 32; ++i) {
+    s8 fogTable[FOG_TABLE_ENTRIES];
+    for (int i = 0; i < FOG_TABLE_ENTRIES; ++i) {
         fogTable[i] = -1;
     }
-    Fog_SetTable(fieldSystem->fog, (u32 *)fogTable);
+    Fog_SetTable(fieldSystem->fog, fogTable);
     ApplyFogToMapObjects(fieldSystem);
 
     for (int i = 0; i < NUM_CANDLES; ++i) {

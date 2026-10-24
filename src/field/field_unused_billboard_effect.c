@@ -89,7 +89,9 @@ static void UnusedBillboard_FreeGfx(UnusedBillboard *renderer) {
 BOOL UnusedBillboardEffect_Init(FieldEffect *effect, UnusedBillboardEffect *work) {
     VecFx32 position;
 
-    work->args = *(UnusedBillboardEffectArgs *)FieldEffect_GetUserData(effect);
+    UnusedBillboardEffectArgs *args = FieldEffect_GetUserData(effect);
+
+    work->args = *args;
     work->spriteId = MapObject_GetSpriteID(work->args.mapObject);
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);

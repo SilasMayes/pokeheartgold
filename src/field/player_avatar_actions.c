@@ -1343,7 +1343,8 @@ void Field_PlayerMovementSavingClear(SysTask *task) {
 }
 
 static void PlayerMovementSaving_Update(SysTask *task, void *data) {
-    MapObject_CallDrawUpdate(PlayerAvatar_GetMapObject(((PlayerSavingPoseWork *)data)->playerAvatar));
+    PlayerSavingPoseWork *work = data;
+    MapObject_CallDrawUpdate(PlayerAvatar_GetMapObject(work->playerAvatar));
 }
 
 static void FieldMoveAnim_Init(FieldSystem *fieldSystem, Pokemon *mon, FieldMoveAnim *anim) {

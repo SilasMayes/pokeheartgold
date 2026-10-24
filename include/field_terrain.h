@@ -18,7 +18,7 @@ BOOL FieldSystem_FindMapPropOfModels(FieldSystem *fieldSystem, int *models, u32 
 int *FieldSystem_CollectMapPropModelsInRect(FieldSystem *, u32, int, fx32 *, u32);
 void Terrain_GetChunkOrigin(int idx, int width, VecFx32 *pos);
 BOOL MapModelNo_HasNoAreaMapAnimation(u16);
-BOOL FieldSystem_CheckCollisionAndHeight(FieldSystem *fieldSystem, VecFx32 *playerPos, int xInFront, int yInFront, int outSlope);
+BOOL FieldSystem_CheckCollisionAndHeight(FieldSystem *fieldSystem, VecFx32 *playerPos, int xInFront, int yInFront, s8 *outSlope);
 u32 FieldSystem_CheckCollisionHeightAndGimmick(FieldSystem *fieldSystem, VecFx32 *playerPos, u32 x, u32 y, u32 *outSlope);
 void Terrain_MakeTileRect(int, int, int, int, int, int, fx32 *);
 BOOL FieldSystem_FindMapPropInRect(FieldSystem *, int, fx32 *, struct MapProp **);

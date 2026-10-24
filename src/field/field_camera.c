@@ -58,11 +58,11 @@ static const FieldCameraShiftPreset sFieldCameraShiftPresets[1] = {
      },
 };
 
-static const FieldCameraPreset sFieldCameraPresets[17] = {
+static const FieldCameraPreset sFieldCameraPresets[FIELD_CAMERA_PRESET_COUNT] = {
     {
      .distance = FX32_CONST(666.922119140625),
      .angle = { .x = 0xDD62 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x5C1,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1200),
@@ -71,7 +71,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(404.3974609375),
      .angle = { .x = 0xE383 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x981,
      .clipNear = FX32_CONST(134),
      .clipFar = FX32_CONST(1200),
@@ -80,7 +80,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(666.922119140625),
      .angle = { .x = 0xE3C2 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x5C1,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1200),
@@ -89,7 +89,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(666.922119140625),
      .angle = { .x = 0xF242 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x5C1,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1200),
@@ -98,7 +98,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(1563.537841796875),
      .angle = { .x = 0xDC82 },
-     .perspectiveType = 1,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_ORTHOGRAPHIC,
      .perspectiveAngle = 0x281,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1735),
@@ -107,7 +107,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(465.62255859375),
      .angle = { .x = 0xDDA2 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x881,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1160),
@@ -116,7 +116,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(666.922119140625),
      .angle = { .x = 0xDFE2 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x5C1,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1500),
@@ -125,7 +125,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(666.922119140625),
      .angle = { .x = 0xE1E2 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x5C1,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1200),
@@ -134,7 +134,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(515.4560546875),
      .angle = { .x = 0xD922 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x770,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(900),
@@ -143,7 +143,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(667.922119140625),
      .angle = { .x = 0xD582 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x5C1,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1200),
@@ -152,7 +152,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(316.501220703125),
      .angle = { .x = 0xDF42 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0xC81,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1700),
@@ -161,7 +161,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(533.760009765625),
      .angle = { .x = 0xE3C2 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x741,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1200),
@@ -170,7 +170,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(666.922119140625),
      .angle = { .x = 0xDFE2 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x5C1,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1700),
@@ -179,7 +179,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(666.922119140625),
      .angle = { .x = 0xF242 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x5C1,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1700),
@@ -188,7 +188,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(666.922119140625),
      .angle = { .x = 0xD4C2 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x5C1,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1200),
@@ -197,7 +197,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(1563.537841796875),
      .angle = { .x = 0xDC82 },
-     .perspectiveType = 1,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_ORTHOGRAPHIC,
      .perspectiveAngle = 0x281,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(1735),
@@ -206,7 +206,7 @@ static const FieldCameraPreset sFieldCameraPresets[17] = {
     {
      .distance = FX32_CONST(666.922119140625),
      .angle = { .x = 0xD602 },
-     .perspectiveType = 0,
+     .perspectiveType = CAMERA_PERSPECTIVE_TYPE_PERSPECTIVE,
      .perspectiveAngle = 0x5C1,
      .clipNear = FX32_CONST(150),
      .clipFar = FX32_CONST(900),

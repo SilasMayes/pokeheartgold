@@ -154,7 +154,7 @@ void AreaLight_ClearMaterialModifyFlags(NNSG3dResMdl *model) {
 int AreaLight_LoadEntries(const char *path, AreaLightEntry **entriesOut) {
     s8 line[256];
     s8 field[256];
-    const s8 *p;
+    const s8 *cursor;
     long i;
     const s8 *data;
     AreaLightEntry *entry;
@@ -163,45 +163,45 @@ int AreaLight_LoadEntries(const char *path, AreaLightEntry **entriesOut) {
     int j;
 
     data = Sys_AllocAndReadFile(HEAP_ID_FIELD1, path);
-    p = data;
+    cursor = data;
     count = 0;
     do {
-        p = Ascii_GetDelim(p, line, '\r');
+        cursor = Ascii_GetDelim(cursor, line, '\r');
         if (line[0] != 'E' || line[1] != 'O' || line[2] != 'F') {
-            p = Ascii_GetDelim(p, line, '\r');
-            p = Ascii_GetDelim(p, line, '\r');
-            p = Ascii_GetDelim(p, line, '\r');
-            p = Ascii_GetDelim(p, line, '\r');
-            p = Ascii_GetDelim(p, line, '\r');
-            p = Ascii_GetDelim(p, line, '\r');
-            p = Ascii_GetDelim(p, line, '\r');
-            p = Ascii_GetDelim(p, line, '\r');
-            p = Ascii_GetDelim(p, line, '\r');
+            cursor = Ascii_GetDelim(cursor, line, '\r');
+            cursor = Ascii_GetDelim(cursor, line, '\r');
+            cursor = Ascii_GetDelim(cursor, line, '\r');
+            cursor = Ascii_GetDelim(cursor, line, '\r');
+            cursor = Ascii_GetDelim(cursor, line, '\r');
+            cursor = Ascii_GetDelim(cursor, line, '\r');
+            cursor = Ascii_GetDelim(cursor, line, '\r');
+            cursor = Ascii_GetDelim(cursor, line, '\r');
+            cursor = Ascii_GetDelim(cursor, line, '\r');
             count++;
         }
     } while (line[0] != 'E' || line[1] != 'O' || line[2] != 'F');
     size = count * sizeof(AreaLightEntry);
     *entriesOut = Heap_Alloc(HEAP_ID_FIELD1, size);
     MI_CpuFill8(*entriesOut, 0, size);
-    p = data;
+    cursor = data;
     for (i = 0; i < count; i++) {
         entry = &(*entriesOut)[i];
-        p = Ascii_GetDelim(p, line, '\r');
+        cursor = Ascii_GetDelim(cursor, line, '\r');
         Ascii_GetDelim(line, field, ',');
         entry->endTime = Ascii_StrToL(field);
         for (j = 0; j < 4; j++) {
-            p = AreaLight_ParseLight(p, &entry->lightColors[j], entry->lightDirs[j]);
+            cursor = AreaLight_ParseLight(cursor, &entry->lightColors[j], entry->lightDirs[j]);
             if (entry->lightColors[j] != 0xFFFF) {
                 entry->lightMask |= 1 << j;
             } else {
                 entry->lightColors[j] = 0;
             }
         }
-        p = AreaLight_ParseColor(p, &entry->diffuse);
-        p = AreaLight_ParseColor(p, &entry->ambient);
-        p = AreaLight_ParseColor(p, &entry->specular);
-        p = AreaLight_ParseColor(p, &entry->emission);
-        p = Ascii_GetDelim(p, line, '\r');
+        cursor = AreaLight_ParseColor(cursor, &entry->diffuse);
+        cursor = AreaLight_ParseColor(cursor, &entry->ambient);
+        cursor = AreaLight_ParseColor(cursor, &entry->specular);
+        cursor = AreaLight_ParseColor(cursor, &entry->emission);
+        cursor = Ascii_GetDelim(cursor, line, '\r');
     }
     Heap_FreeExplicit(HEAP_ID_FIELD1, (void *)data);
     return count;
@@ -218,19 +218,19 @@ const s8 *AreaLight_ParseLight(const s8 *src, u16 *colorOut, s16 *dirOut) {
     s8 field[256];
     s32 dir[3];
     u16 rgb[3];
-    const s8 *p;
+    const s8 *cursor;
     int i;
 
     src = Ascii_GetDelim(src, line, '\r');
-    p = Ascii_GetDelim(line, field, ',');
+    cursor = Ascii_GetDelim(line, field, ',');
     if (Ascii_StrToL(field) == 1) {
         for (i = 0; i < 3; i++) {
-            p = Ascii_GetDelim(p, field, ',');
+            cursor = Ascii_GetDelim(cursor, field, ',');
             rgb[i] = Ascii_StrToL(field);
         }
         *colorOut = rgb[0] | (rgb[1] << 5) | (rgb[2] << 10);
         for (i = 0; i < 3; i++) {
-            p = Ascii_GetDelim(p, field, ',');
+            cursor = Ascii_GetDelim(cursor, field, ',');
             dir[i] = Ascii_StrToL(field);
         }
         dirOut[0] = dir[0];
@@ -265,13 +265,13 @@ const s8 *AreaLight_ParseColor(const s8 *src, u16 *dest) {
     s8 line[256];
     s8 field[256];
     u16 rgb[3];
-    const s8 *p;
+    const s8 *cursor;
     int i;
 
     src = Ascii_GetDelim(src, line, '\r');
-    p = line;
+    cursor = line;
     for (i = 0; i < 3; i++) {
-        p = Ascii_GetDelim(p, field, ',');
+        cursor = Ascii_GetDelim(cursor, field, ',');
         rgb[i] = Ascii_StrToL(field);
     }
     *dest = rgb[0] | (rgb[1] << 5) | (rgb[2] << 10);

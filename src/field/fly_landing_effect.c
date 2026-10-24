@@ -53,7 +53,7 @@ Sprite *FlyLanding_CreateTrainerSprite(SpriteGfxManager *gfxManager, int gender)
     return sprite;
 }
 
-FieldEffect *FlyLandingEffect_Create(FieldSystem *fieldSystem, void *effectPool, SpriteGfxManager *gfxManager, Sprite *trainerSprite) {
+FieldEffect *FlyLandingEffect_Create(FieldSystem *fieldSystem, FieldEffectPool *effectPool, SpriteGfxManager *gfxManager, Sprite *trainerSprite) {
     VecFx32 pos = { 0, 0, 0 };
     FlyLandingEffectArgs args;
 
@@ -70,7 +70,8 @@ u8 FlyLandingEffect_GetStatus(FieldEffect *effect) {
 }
 
 BOOL FlyLandingEffect_Init(FieldEffect *effect, FlyLandingEffect *landing) {
-    landing->args = *(FlyLandingEffectArgs *)FieldEffect_GetUserData(effect);
+    FlyLandingEffectArgs *args = FieldEffect_GetUserData(effect);
+    landing->args = *args;
     landing->flyerSprite = FlyLanding_CreateFlyerSprite(landing->args.gfxManager);
     return TRUE;
 }

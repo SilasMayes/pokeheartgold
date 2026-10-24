@@ -42,10 +42,6 @@ typedef struct FlashDarknessEffect {
     FlashDarknessEffectArgs args;
 } FlashDarknessEffect;
 
-typedef struct FlashDarknessRotation {
-    fx32 m[9];
-} FlashDarknessRotation;
-
 static void FlashDarkness_LoadModel(FlashDarkness *darkness);
 static void FlashDarkness_FreeModel(FlashDarkness *darkness);
 static BOOL FlashDarknessEffect_Init(FieldEffect *effect, void *state);
@@ -116,7 +112,8 @@ void FlashDarkness_SetScale(FieldEffect *effect, float scale) {
 
 static BOOL FlashDarknessEffect_Init(FieldEffect *effect, void *state) {
     FlashDarknessEffect *work = state;
-    work->args = *(FlashDarknessEffectArgs *)FieldEffect_GetUserData(effect);
+    FlashDarknessEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->param = FieldEffect_GetParam(effect);
     return TRUE;
 }
@@ -135,17 +132,17 @@ static void FlashDarknessEffect_Update(FieldEffect *effect, void *state) {
 
 static void FlashDarknessEffect_Draw(FieldEffect *effect, void *state) {
     FlashDarknessEffect *work = state;
-    static const FlashDarknessRotation sIdentity = {
-        { FX32_ONE, 0, 0, 0, FX32_ONE, 0, 0, 0, FX32_ONE }
+    static const MtxFx33 sIdentity = {
+        FX32_ONE, 0, 0, 0, FX32_ONE, 0, 0, 0, FX32_ONE
     };
     VecFx32 position;
     VecFx32 scale;
-    FlashDarknessRotation rotation;
+    MtxFx33 rotation;
 
     rotation = sIdentity;
     scale.x = (fx32)(FX32_ONE * work->args.darkness->scale);
     scale.y = (fx32)(FX32_ONE * work->args.darkness->scale);
     scale.z = (fx32)(FX32_ONE * work->args.darkness->scale);
     FieldEffect_GetPosition(effect, &position);
-    GF3dRender_DrawModel(&work->args.darkness->renderObj, &position, (MtxFx33 *)&rotation, &scale);
+    GF3dRender_DrawModel(&work->args.darkness->renderObj, &position, &rotation, &scale);
 }

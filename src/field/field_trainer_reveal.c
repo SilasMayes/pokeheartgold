@@ -96,7 +96,8 @@ void TrainerReveal_Spawn(LocalMapObject *mapObject) {
 static BOOL TrainerRevealEffect_Init(FieldEffect *effect, void *state) {
     TrainerRevealEffect *work = state;
     VecFx32 position;
-    work->args = *(TrainerRevealEffectArgs *)FieldEffect_GetUserData(effect);
+    TrainerRevealEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);
     FieldEffect_GetPosition(effect, &position);

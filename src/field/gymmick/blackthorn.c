@@ -14,6 +14,14 @@
 #define PLATFORM_TYPE_1_H    8
 #define PLATFORM_TYPE_1_AREA 24
 
+#define PLATFORM_FLOOR_W    3
+#define PLATFORM_FLOOR_H    6
+#define PLATFORM_FLOOR_AREA (PLATFORM_FLOOR_W * PLATFORM_FLOOR_H)
+
+#define BLACKTHORN_NUM_PLATFORMS 3
+
+#define PLATFORM_NO_COLLISION 0xFF // BlackthornGymmick_CheckWallCollision: every point is clear
+
 typedef enum BlackthornPlatformButtonAction {
     ACTION_NONE,
     ACTION_ROTATE,
@@ -65,18 +73,18 @@ typedef struct BlackthornGymmickPlatformData {
     BlackthornGymXZPoint moveLeftButton;
     BlackthornGymXZPoint moveRightButton;
     BlackthornGymXZPoint unusedCoords;
-    BlackthornGymXZPoint rightWall[8];
-    BlackthornGymXZPoint leftWall[8];
-    BlackthornGymXZPoint bottomWall[5];
-    BlackthornGymXZPoint topWall[5];
-    BlackthornGymXZPoint rotateCollisionCheck[24];
-    BlackthornGymXZPoint rightEdgeOuter[5];
-    BlackthornGymXZPoint floor[18];
+    BlackthornGymXZPoint rightWall[PLATFORM_TYPE_1_H];
+    BlackthornGymXZPoint leftWall[PLATFORM_TYPE_1_H];
+    BlackthornGymXZPoint bottomWall[PLATFORM_TYPE_0_W];
+    BlackthornGymXZPoint topWall[PLATFORM_TYPE_0_W];
+    BlackthornGymXZPoint rotateCollisionCheck[PLATFORM_TYPE_1_AREA];
+    BlackthornGymXZPoint rightEdgeOuter[PLATFORM_TYPE_0_W];
+    BlackthornGymXZPoint floor[PLATFORM_FLOOR_AREA];
 } BlackthornGymmickPlatformData;
 
 typedef struct BlackthornGymmickLocalData {
     FieldSystem *fieldSystem;
-    BlackthornGymmickPlatformData platforms[3];
+    BlackthornGymmickPlatformData platforms[BLACKTHORN_NUM_PLATFORMS];
 } BlackthornGymmickLocalData;
 
 typedef struct BlackthornGymMovePlatformTaskData {
@@ -164,14 +172,14 @@ static const u8 sLeadingEdgeRotationExtents_Type0[] = { 64, 64, 64, 64, 42 };
 static const u8 sLeadingEdgeRotationExtents_Type1[] = { 64, 20, 30, 46 };
 
 void GymmickInit_Blackthorn(FieldSystem *fieldSystem) {
-    int modelIDs[3] = { 120, 121, 120 };
+    int modelIDs[BLACKTHORN_NUM_PLATFORMS] = { 120, 121, 120 };
 
     GymmickUnion *gymmickUnion = Save_Gymmick_AssertMagic_GetData(Save_GetGymmickPtr(FieldSystem_GetSaveData(fieldSystem)), GYMMICK_BLACKTHORN);
     fieldSystem->mapSystems->localData = Heap_Alloc(HEAP_ID_FIELD1, sizeof(BlackthornGymmickLocalData));
     MI_CpuClear8(fieldSystem->mapSystems->localData, sizeof(BlackthornGymmickLocalData));
     BlackthornGymmickLocalData *localData = fieldSystem->mapSystems->localData;
     localData->fieldSystem = fieldSystem;
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < BLACKTHORN_NUM_PLATFORMS; ++i) {
         VecFx32 positionVec = { 0, 48 * FX32_ONE, 0 };
         VecFx32 rotationVec = { 0, 0, 0 };
         rotationVec.y = -4 * FX32_ONE * gymmickUnion->blackthorn.rot[i];
@@ -200,9 +208,9 @@ BOOL BlackthornGymmick_TryStartPlatformAction(FieldSystem *fieldSystem) {
 
 BOOL GymmickCheckCollision_Blackthorn(FieldSystem *fieldSystem, u32 tileX, u32 tileZ, u32 height, BOOL *isColliding) {
     BlackthornGymmickLocalData *localData = fieldSystem->mapSystems->localData;
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < BLACKTHORN_NUM_PLATFORMS; ++i) {
         BlackthornGymmickPlatformData *platform = &localData->platforms[i];
-        for (int j = 0; j < 18; ++j) {
+        for (int j = 0; j < PLATFORM_FLOOR_AREA; ++j) {
             if (tileX == platform->floor[j].x && tileZ == platform->floor[j].z) {
                 *isColliding = FALSE;
                 return TRUE;
@@ -231,13 +239,13 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
     if (index != 1) {
         int i, j;
         platform->shape = 0;
-        platform->width = 5;
-        platform->height = 7;
+        platform->width = PLATFORM_TYPE_0_W;
+        platform->height = PLATFORM_TYPE_0_H;
         basePos.x = x;
         basePos.z = z;
         basePos.x += 3;
         basePos.z -= 2;
-        for (i = 0; i < 7; ++i) {
+        for (i = 0; i < PLATFORM_TYPE_0_H; ++i) {
             platform->rightWall[i] = basePos;
             platform->rightWall[i].z += i;
         }
@@ -245,7 +253,7 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
         basePos.z = z;
         basePos.x -= 3;
         basePos.z -= 2;
-        for (i = 0; i < 7; ++i) {
+        for (i = 0; i < PLATFORM_TYPE_0_H; ++i) {
             platform->leftWall[i] = basePos;
             platform->leftWall[i].z += i;
         }
@@ -253,7 +261,7 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
         basePos.z = z;
         basePos.x -= 2;
         basePos.z += 5;
-        for (i = 0; i < 5; ++i) {
+        for (i = 0; i < PLATFORM_TYPE_0_W; ++i) {
             platform->bottomWall[i] = basePos;
             platform->bottomWall[i].x += i;
         }
@@ -261,7 +269,7 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
         basePos.z = z;
         basePos.x -= 2;
         basePos.z -= 3;
-        for (i = 0; i < 5; ++i) {
+        for (i = 0; i < PLATFORM_TYPE_0_W; ++i) {
             platform->topWall[i] = basePos;
             platform->topWall[i].x += i;
         }
@@ -269,9 +277,9 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
             basePos.x = x - 4;
             basePos.z = z + 4;
             basePos.x -= i;
-            for (j = 0; j < 7; ++j) {
-                platform->rotateCollisionCheck[i * 7 + j] = basePos;
-                platform->rotateCollisionCheck[i * 7 + j].z -= j;
+            for (j = 0; j < PLATFORM_TYPE_0_H; ++j) {
+                platform->rotateCollisionCheck[i * PLATFORM_TYPE_0_H + j] = basePos;
+                platform->rotateCollisionCheck[i * PLATFORM_TYPE_0_H + j].z -= j;
             }
         }
         for (i = 0; i < platform->width; ++i) {
@@ -283,13 +291,13 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
     } else {
         int i, j;
         platform->shape = 1;
-        platform->width = 4;
-        platform->height = 8;
+        platform->width = PLATFORM_TYPE_1_W;
+        platform->height = PLATFORM_TYPE_1_H;
         basePos.x = x;
         basePos.z = z;
         basePos.x += 2;
         basePos.z -= 2;
-        for (i = 0; i < 8; ++i) {
+        for (i = 0; i < PLATFORM_TYPE_1_H; ++i) {
             platform->rightWall[i] = basePos;
             platform->rightWall[i].z += i;
         }
@@ -297,7 +305,7 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
         basePos.z = z;
         basePos.x -= 3;
         basePos.z -= 2;
-        for (i = 0; i < 8; ++i) {
+        for (i = 0; i < PLATFORM_TYPE_1_H; ++i) {
             platform->leftWall[i] = basePos;
             platform->leftWall[i].z += i;
         }
@@ -305,7 +313,7 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
         basePos.z = z;
         basePos.x -= 2;
         basePos.z += 6;
-        for (i = 0; i < 4; ++i) {
+        for (i = 0; i < PLATFORM_TYPE_1_W; ++i) {
             platform->bottomWall[i] = basePos;
             platform->bottomWall[i].x += i;
         }
@@ -313,7 +321,7 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
         basePos.z = z;
         basePos.x -= 2;
         basePos.z -= 3;
-        for (i = 0; i < 4; ++i) {
+        for (i = 0; i < PLATFORM_TYPE_1_W; ++i) {
             platform->topWall[i] = basePos;
             platform->topWall[i].x += i;
         }
@@ -321,9 +329,9 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
             basePos.x = x - 4;
             basePos.z = z + 5;
             basePos.x -= i;
-            for (j = 0; j < 8; ++j) {
-                platform->rotateCollisionCheck[i * 8 + j] = basePos;
-                platform->rotateCollisionCheck[i * 8 + j].z -= j;
+            for (j = 0; j < PLATFORM_TYPE_1_H; ++j) {
+                platform->rotateCollisionCheck[i * PLATFORM_TYPE_1_H + j] = basePos;
+                platform->rotateCollisionCheck[i * PLATFORM_TYPE_1_H + j].z -= j;
             }
         }
         for (i = 0; i < platform->width; ++i) {
@@ -337,10 +345,10 @@ static void BlackthornPlatform_Init(u8 index, u8 rot, u16 x, u16 z, BlackthornGy
         int i, j;
         basePos.x = x - 1;
         basePos.z = z - 1;
-        for (i = 0; i < 6; ++i) {
-            for (j = 0; j < 3; ++j) {
-                platform->floor[i * 3 + j].x = basePos.x + j;
-                platform->floor[i * 3 + j].z = basePos.z + i;
+        for (i = 0; i < PLATFORM_FLOOR_H; ++i) {
+            for (j = 0; j < PLATFORM_FLOOR_W; ++j) {
+                platform->floor[i * PLATFORM_FLOOR_W + j].x = basePos.x + j;
+                platform->floor[i * PLATFORM_FLOOR_W + j].z = basePos.z + i;
             }
         }
     }
@@ -419,13 +427,13 @@ static void BlackthornPlatform_ApplyRotation(const u8 rot, const u16 x, const u1
     for (i = 0; i < width; ++i) {
         BlackthornGymmick_ApplyRotationToPoints(rot, x, z, &platform->rightEdgeOuter[i], &platform->rightEdgeOuter[i]);
     }
-    for (i = 0; i < 18; ++i) {
+    for (i = 0; i < PLATFORM_FLOOR_AREA; ++i) {
         BlackthornGymmick_ApplyRotationToPoints(rot, x, z, &platform->floor[i], &platform->floor[i]);
     }
 }
 
 static BlackthornPlatformButtonAction BlackthornGymmick_GetButtonAction(const BlackthornGymmickLocalData *localData, const u16 x, const u16 z, u8 *out) {
-    for (u8 i = 0; i < 3; ++i) {
+    for (u8 i = 0; i < BLACKTHORN_NUM_PLATFORMS; ++i) {
         if (x == localData->platforms[i].rotateButton.x && z == localData->platforms[i].rotateButton.z) {
             *out = i;
             return ACTION_ROTATE;
@@ -553,7 +561,7 @@ static void BlackthornGymmick_DirectionToVec(int directionId, VecFx32 *direction
 }
 
 static u8 BlackthornGymmick_CheckWallCollision(FieldSystem *fieldSystem, const u8 dim, const BlackthornGymXZPoint *const points) {
-    u8 ret = 0xFF;
+    u8 ret = PLATFORM_NO_COLLISION;
 
     for (int i = 0; i < dim; ++i) {
         if (FieldSystem_CheckTileCollision(fieldSystem, points[i].x, points[i].z)) {
@@ -578,7 +586,7 @@ static u16 BlackthornGymmick_GetMaxRotationExtent(FieldSystem *fieldSystem, cons
         }
         if (isBonk) {
             int val = extentDat[i] << 8;
-            if (val < 0x4000) {
+            if (val < FX_DEG_TO_IDX(FX32_CONST(90))) {
                 ret = val;
                 break;
             }
@@ -690,20 +698,20 @@ static BOOL Task_BlackthornGymmick_RotatePlatform(TaskManager *taskman) {
 
 static BlackthornPlatformRotationBonkState BlackthornPlatform_CheckRotationBonk(FieldSystem *fieldSystem, BlackthornGymmickPlatformData *platform, u16 *out) {
     u8 rightWallMinus1 = platform->width - 1;
-    if (BlackthornGymmick_CheckWallCollision(fieldSystem, platform->width, platform->bottomWall) != 0xFF) {
+    if (BlackthornGymmick_CheckWallCollision(fieldSystem, platform->width, platform->bottomWall) != PLATFORM_NO_COLLISION) {
         return ROTATE_BONK_NO_GO;
     }
-    if (BlackthornGymmick_CheckWallCollision(fieldSystem, platform->width, platform->topWall) != 0xFF) {
+    if (BlackthornGymmick_CheckWallCollision(fieldSystem, platform->width, platform->topWall) != PLATFORM_NO_COLLISION) {
         return ROTATE_BONK_NO_GO;
     }
-    if (BlackthornGymmick_CheckWallCollision(fieldSystem, platform->height, platform->leftWall) != 0xFF) {
+    if (BlackthornGymmick_CheckWallCollision(fieldSystem, platform->height, platform->leftWall) != PLATFORM_NO_COLLISION) {
         return ROTATE_BONK_NO_GO;
     }
-    if (BlackthornGymmick_CheckWallCollision(fieldSystem, rightWallMinus1, platform->rightWall) != 0xFF) {
+    if (BlackthornGymmick_CheckWallCollision(fieldSystem, rightWallMinus1, platform->rightWall) != PLATFORM_NO_COLLISION) {
         return ROTATE_BONK_NO_GO;
     }
     u16 maxAngle = BlackthornGymmick_GetMaximumRotationAngle(fieldSystem, platform);
-    if (maxAngle < 0x4000) {
+    if (maxAngle < FX_DEG_TO_IDX(FX32_CONST(90))) {
         *out = maxAngle;
         return ROTATE_BONK_PARTIAL_GO;
     }
@@ -742,7 +750,7 @@ static void SysTask_BlackthornGymmick_MovePlatform(SysTask *task, void *data) {
     switch (taskData->state) {
     case STATE_MOVE_CHECK:
         taskData->moveStepTimer = 0;
-        if (BlackthornGymmick_CheckWallCollision(fieldSystem, localData->platforms[taskData->platformIdx].height, taskData->leadingWall) == 255) {
+        if (BlackthornGymmick_CheckWallCollision(fieldSystem, localData->platforms[taskData->platformIdx].height, taskData->leadingWall) == PLATFORM_NO_COLLISION) {
             taskData->state = STATE_MOVE_RUN;
         } else {
             taskData->state = STATE_MOVE_BONK_START;

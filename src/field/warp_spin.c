@@ -83,14 +83,14 @@ static void Task_WarpSpinArrival(SysTask *sysTask, void *data) {
     WarpSpinTask *task = data;
     VecFx32 pos;
     LocalMapObject *mapObject = PlayerAvatar_GetMapObject(task->fieldSystem->playerAvatar);
-    int n;
+    int framesLeft;
 
     switch (task->state) {
     case WARP_SPIN_STATE_START:
         MapObject_UnpauseMovement(mapObject);
         MapObject_CopyDrawOffset(mapObject, &pos);
-        n = WARP_SPIN_FRAMES - task->counter;
-        pos.y = WARP_SPIN_HEIGHT(n);
+        framesLeft = WARP_SPIN_FRAMES - task->counter;
+        pos.y = WARP_SPIN_HEIGHT(framesLeft);
         MapObject_SetDrawOffset(mapObject, &pos);
         MapObject_TryUpdateDraw(mapObject);
         PlaySE(SEQ_SE_DP_TELE2);
@@ -100,8 +100,8 @@ static void Task_WarpSpinArrival(SysTask *sysTask, void *data) {
             WarpSpin_RotatePlayer(task);
         }
         MapObject_CopyDrawOffset(mapObject, &pos);
-        n = WARP_SPIN_FRAMES - task->counter;
-        pos.y = WARP_SPIN_HEIGHT(n);
+        framesLeft = WARP_SPIN_FRAMES - task->counter;
+        pos.y = WARP_SPIN_HEIGHT(framesLeft);
         MapObject_SetDrawOffset(mapObject, &pos);
         task->counter++;
         if (task->counter == 2) {

@@ -31,7 +31,7 @@ static const FieldEffectRendererTemplate *FieldEffect_GetRendererTemplate(u32 id
 static void FieldEffectManager_InitEffects(FieldEffectManager *manager);
 static void FieldEffectManager_FreeEffects(FieldEffectManager *manager);
 static void FieldEffectManager_DrawEffects(FieldEffectManager *manager);
-static void FieldEffectManager_CreateGfx(FieldEffectManager *manager, enum HeapID heapID, u32 recordCount, u32 resourceCount, u32 sequenceCount, u32 resCount, int resourceHeapSize, int sequenceHeapSize, int a8);
+static void FieldEffectManager_CreateGfx(FieldEffectManager *manager, enum HeapID heapID, u32 recordCount, u32 resourceCount, u32 sequenceCount, u32 resCount, int resourceHeapSize, int sequenceHeapSize, int unusedHeapSize);
 static void FieldEffectManager_FreeGfx(FieldEffectManager *manager);
 static void FieldEffectGfx_InitRecords(FieldEffectManager *manager, FieldEffectGfx *gfx, u32 count);
 static void FieldEffectGfx_FreeRecords(FieldEffectGfx *gfx);
@@ -60,8 +60,8 @@ void FieldEffectManager_InitAnimManagerList(FieldEffectManager *manager, u32 ani
     FieldEffectManager_InitEffects(manager);
 }
 
-void FieldEffectManager_InitGfx(FieldEffectManager *manager, enum HeapID heapID, u32 recordCount, u32 resourceCount, u32 sequenceCount, u32 resCount, int resourceHeapSize, int sequenceHeapSize, int a8) {
-    FieldEffectManager_CreateGfx(manager, heapID, recordCount, resourceCount, sequenceCount, resCount, resourceHeapSize, sequenceHeapSize, a8);
+void FieldEffectManager_InitGfx(FieldEffectManager *manager, enum HeapID heapID, u32 recordCount, u32 resourceCount, u32 sequenceCount, u32 resCount, int resourceHeapSize, int sequenceHeapSize, int unusedHeapSize) {
+    FieldEffectManager_CreateGfx(manager, heapID, recordCount, resourceCount, sequenceCount, resCount, resourceHeapSize, sequenceHeapSize, unusedHeapSize);
 }
 
 static void FieldEffectManager_InitRenderer(FieldEffectManager *manager, u32 id) {
@@ -267,10 +267,10 @@ void FieldEffectManager_DestroyEffect(int effect) {
     FieldEffect_Destroy(effect);
 }
 
-static void FieldEffectManager_CreateGfx(FieldEffectManager *manager, enum HeapID heapID, u32 recordCount, u32 resourceCount, u32 sequenceCount, u32 resCount, int resourceHeapSize, int sequenceHeapSize, int a8) {
+static void FieldEffectManager_CreateGfx(FieldEffectManager *manager, enum HeapID heapID, u32 recordCount, u32 resourceCount, u32 sequenceCount, u32 resCount, int resourceHeapSize, int sequenceHeapSize, int unusedHeapSize) {
     BillboardCreateParams params;
     FieldEffectGfx *gfx = FieldEffectManager_HeapAllocAndFill(manager, sizeof(FieldEffectGfx), FALSE, 0);
-#pragma unused(a8)
+#pragma unused(unusedHeapSize)
     manager->gfx = gfx;
     gfx->heapID = heapID;
     gfx->recordCount = recordCount;
@@ -487,16 +487,16 @@ static void FieldEffectTexTransfer_FreeHeaderTask(SysTask *task, void *data) {
     }
 }
 
-void FieldEffectManager_LoadRenderModel(FieldEffectManager *manager, void *model, int index, int fileId, BOOL atEnd) {
+void FieldEffectManager_LoadRenderModel(FieldEffectManager *manager, RenderModelStorage *model, int index, int fileId, BOOL atEnd) {
     RenderModel_LoadFromNarc(model, index, manager->narc, fileId, manager->heapID, atEnd);
     RenderModel_BindTexturesOnVBlank(model);
 }
 
-void FieldEffectManager_LoadRenderAnimation(FieldEffectManager *manager, void *animation, int index, int fileId, BOOL atEnd) {
+void FieldEffectManager_LoadRenderAnimation(FieldEffectManager *manager, RenderAnimation *animation, int index, int fileId, BOOL atEnd) {
     RenderAnimation_LoadFromNarc(animation, index, manager->narc, fileId, manager->heapID, atEnd);
 }
 
-void FieldEffectManager_InitRenderAnimation(FieldEffectManager *manager, void *animation, void *model, void *source, int unused) {
+void FieldEffectManager_InitRenderAnimation(FieldEffectManager *manager, RenderAnimation *animation, RenderModelStorage *model, RenderAnimation *source, int unused) {
     RenderAnimation_InitForModel(animation, model, source, unused, manager->heapID);
 }
 

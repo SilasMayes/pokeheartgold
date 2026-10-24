@@ -133,7 +133,8 @@ void ApricornRegrowth_Spawn(LocalMapObject *mapObject) {
 static BOOL ApricornRegrowthEffect_Init(FieldEffect *effect, void *state) {
     ApricornRegrowthEffect *work = state;
     VecFx32 position;
-    work->args = *(ApricornRegrowthEffectArgs *)FieldEffect_GetUserData(effect);
+    ApricornRegrowthEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     ApricornRegrowth_LoadGfxIfUnused(work->args.regrowth);
     FieldEffect_GetPosition(effect, &position);
     work->billboard = FieldEffectManager_CreateBillboardFromRecord(work->args.manager, APRICORN_REGROWTH_RECORD, &position);

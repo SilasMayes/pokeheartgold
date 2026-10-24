@@ -23,7 +23,7 @@ typedef struct TrainerBehaviorState {
 typedef struct ApricornTreeState {
     u32 spriteId;
     u32 apricorns;
-    void *billboard;
+    BillboardObject *billboard;
     BillboardState savedState;
 } ApricornTreeState;
 

@@ -56,6 +56,6 @@ void Fog_SetColor(FogData *fog, u32 mask, u16 color, u32 alpha) {
 }
 
 void Fog_SetTable(FogData *fog, const void *src) {
-    MIi_CpuCopy32(src, fog->fogTable, 32);
+    MIi_CpuCopy32(src, fog->fogTable, sizeof(fog->fogTable));
     G3X_SetFogTable(fog->fogTable);
 }

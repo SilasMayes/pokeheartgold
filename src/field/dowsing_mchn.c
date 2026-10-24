@@ -40,13 +40,15 @@
 // The Dowsing Machine: while the stylus is held in the search circle, four indicators turn toward the nearest hidden
 // item, a signal meter rises and a tile grid lights up around the touch point.
 
-#define DOWSING_MCHN_NUM_STRINGS       5
-#define DOWSING_MCHN_NUM_ANGLES        4
-#define DOWSING_MCHN_GRID_SIZE         15
-#define DOWSING_MCHN_WINDOW_EXIT       4
-#define DOWSING_MCHN_SPRITE_ACTION     0
-#define DOWSING_MCHN_SPRITE_EXIT       3
-#define DOWSING_MCHN_SPRITE_INDICATORS 4
+#define DOWSING_MCHN_NUM_STRINGS        5
+#define DOWSING_MCHN_NUM_ANGLES         4
+#define DOWSING_MCHN_GRID_SIZE          15
+#define DOWSING_MCHN_WINDOW_EXIT        4
+#define DOWSING_MCHN_SPRITE_ACTION      0
+#define DOWSING_MCHN_SPRITE_SHOES       1
+#define DOWSING_MCHN_SPRITE_SHOES_LABEL 2
+#define DOWSING_MCHN_SPRITE_EXIT        3
+#define DOWSING_MCHN_SPRITE_INDICATORS  4
 
 // One indicator direction, in degrees.
 typedef struct DowsingMchnAngle {
@@ -107,10 +109,10 @@ typedef struct DowsingMchnLevelParams {
 } DowsingMchnLevelParams;
 
 extern const DowsingMchnLevelParams gDowsingMchnLevelParams[];
-extern const u8 gDowsingMchnActionSpriteParams[];
-extern const u8 gDowsingMchnRunningShoesSpriteParams[];
-extern const u8 gDowsingMchnRunningShoesSprite2Params[];
-extern const u8 gDowsingMchnExitSpriteParams[];
+extern const DowsingMchnSpriteParams gDowsingMchnActionSpriteParams;
+extern const DowsingMchnSpriteParams gDowsingMchnRunningShoesSpriteParams;
+extern const DowsingMchnSpriteParams gDowsingMchnRunningShoesSprite2Params;
+extern const DowsingMchnSpriteParams gDowsingMchnExitSpriteParams;
 extern void (*const gDowsingMchnStepAngleFuncs[])(DowsingMchnAngle *angle);
 extern const BgTemplate gDowsingMchnBgTemplateSub0;
 extern const BgTemplate gDowsingMchnBgTemplateSub1;
@@ -135,7 +137,7 @@ static void DowsingMchn_CreateResourceManagers(DowsingMchn *dowsing);
 static void DowsingMchn_DestroyResourceManagers(DowsingMchn *dowsing);
 static void DowsingMchn_LoadSpriteResources(SpriteResource **resObjs, GF_2DGfxResMan **resMans, NARC *narc, int charFileId, int plttFileId, int cellFileId, int animFileId, int plttNum, int charId, int plttId, int cellId, int animId);
 static void DowsingMchn_CreateResourcesHeader(SpriteResource **resObjs, GF_2DGfxResMan **resMans, SpriteResourcesHeader *header, int priority);
-static void DowsingMchn_CreateSprite(DowsingMchn *dowsing, int index, SpriteResourcesHeader *header, const u8 *params);
+static void DowsingMchn_CreateSprite(DowsingMchn *dowsing, int index, SpriteResourcesHeader *header, const DowsingMchnSpriteParams *params);
 static void DowsingMchn_CreateButtonSprites(DowsingMchn *dowsing);
 static void DowsingMchn_DestroyButtonSprites(DowsingMchn *dowsing);
 static void DowsingMchn_CreateIndicatorSprites(DowsingMchn *dowsing, NARC *narc);
@@ -352,23 +354,23 @@ static void DowsingMchn_CreateResourcesHeader(SpriteResource **resObjs, GF_2DGfx
 }
 
 // params: {x, y, drawPriority, animSeq}
-static void DowsingMchn_CreateSprite(DowsingMchn *dowsing, int index, SpriteResourcesHeader *header, const u8 *params) {
+static void DowsingMchn_CreateSprite(DowsingMchn *dowsing, int index, SpriteResourcesHeader *header, const DowsingMchnSpriteParams *params) {
     SpriteTemplate template;
 
     template.spriteList = dowsing->spriteList;
     template.header = header;
-    template.position.x = params[0] << FX32_SHIFT;
-    template.position.y = (params[1] << FX32_SHIFT) + FX32_CONST(256);
+    template.position.x = params->x << FX32_SHIFT;
+    template.position.y = (params->y << FX32_SHIFT) + FX32_CONST(256);
     template.position.z = 0;
     template.scale.x = FX32_ONE;
     template.scale.y = FX32_ONE;
     template.scale.z = FX32_ONE;
     template.rotation = 0;
-    template.drawPriority = params[2];
+    template.drawPriority = params->drawPriority;
     template.whichScreen = NNS_G2D_VRAM_TYPE_2DSUB;
     template.heapID = HEAP_ID_8;
     dowsing->sprites[index] = Sprite_CreateAffine(&template);
-    Sprite_SetAnimCtrlSeq(dowsing->sprites[index], params[3]);
+    Sprite_SetAnimCtrlSeq(dowsing->sprites[index], params->animSeq);
 }
 
 // The button graphics are shared with the touchscreen start menu (NARC a/0/1/4).
@@ -380,23 +382,23 @@ static void DowsingMchn_CreateButtonSprites(DowsingMchn *dowsing) {
     DowsingMchn_LoadSpriteResources(dowsing->buttonResObjs, dowsing->resMans, narc, 0x46, 7, 0x44, 0x45, 4, 0x1F2, 0x1F2, 0x1F2, 0x1F2);
     NARC_Delete(narc);
     DowsingMchn_CreateResourcesHeader(dowsing->buttonResObjs, dowsing->resMans, &header, 1);
-    DowsingMchn_CreateSprite(dowsing, 0, &header, gDowsingMchnActionSpriteParams);
-    DowsingMchn_CreateSprite(dowsing, 1, &header, gDowsingMchnRunningShoesSpriteParams);
-    DowsingMchn_CreateSprite(dowsing, 2, &header, gDowsingMchnRunningShoesSprite2Params);
-    DowsingMchn_CreateSprite(dowsing, 3, &header, gDowsingMchnExitSpriteParams);
+    DowsingMchn_CreateSprite(dowsing, DOWSING_MCHN_SPRITE_ACTION, &header, &gDowsingMchnActionSpriteParams);
+    DowsingMchn_CreateSprite(dowsing, 1, &header, &gDowsingMchnRunningShoesSpriteParams);
+    DowsingMchn_CreateSprite(dowsing, 2, &header, &gDowsingMchnRunningShoesSprite2Params);
+    DowsingMchn_CreateSprite(dowsing, DOWSING_MCHN_SPRITE_EXIT, &header, &gDowsingMchnExitSpriteParams);
     if (PlayerAvatar_CheckRunningShoesLock(FieldSystem_GetPlayerAvatar(dowsing->fieldSystem)) == 0) {
-        Sprite_SetAnimCtrlSeq(dowsing->sprites[1], 3);
-        Sprite_SetAnimCtrlSeq(dowsing->sprites[2], 11);
+        Sprite_SetAnimCtrlSeq(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES], 3);
+        Sprite_SetAnimCtrlSeq(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES_LABEL], 11);
     } else {
-        Sprite_SetAnimCtrlSeq(dowsing->sprites[1], 4);
-        Sprite_SetAnimCtrlSeq(dowsing->sprites[2], 7);
+        Sprite_SetAnimCtrlSeq(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES], 4);
+        Sprite_SetAnimCtrlSeq(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES_LABEL], 7);
     }
 }
 
 static void DowsingMchn_DestroyButtonSprites(DowsingMchn *dowsing) {
-    Sprite_Delete(dowsing->sprites[0]);
-    Sprite_Delete(dowsing->sprites[1]);
-    Sprite_Delete(dowsing->sprites[2]);
+    Sprite_Delete(dowsing->sprites[DOWSING_MCHN_SPRITE_ACTION]);
+    Sprite_Delete(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES]);
+    Sprite_Delete(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES_LABEL]);
     SpriteTransfer_DeleteCharTransferTask(dowsing->buttonResObjs[GF_GFX_RES_TYPE_CHAR]);
     SpriteTransfer_DeletePlttTransferTask(dowsing->buttonResObjs[GF_GFX_RES_TYPE_PLTT]);
 }
@@ -410,7 +412,7 @@ static void DowsingMchn_CreateIndicatorSprites(DowsingMchn *dowsing, NARC *narc)
     DowsingMchn_LoadSpriteResources(dowsing->indicatorResObjs, dowsing->resMans, narc, 4, 7, 5, 6, 9, 499, 499, 499, 499);
     DowsingMchn_CreateResourcesHeader(dowsing->indicatorResObjs, dowsing->resMans, &header, 2);
     for (i = 0; i < DOWSING_MCHN_NUM_ANGLES; i++) {
-        DowsingMchn_CreateSprite(dowsing, i + DOWSING_MCHN_SPRITE_INDICATORS, &header, (const u8 *)&params);
+        DowsingMchn_CreateSprite(dowsing, i + DOWSING_MCHN_SPRITE_INDICATORS, &header, &params);
     }
 }
 
@@ -429,10 +431,10 @@ static void DowsingMchn_Task(SysTask *task, void *taskData) {
     if (dowsing->fieldSystem->suppressBottomScreenDim && FieldSystem_IsPlayerMovementAllowed(dowsing->fieldSystem)) {
         dowsing->fieldSystem->suppressBottomScreenDim = FALSE;
     }
-    if (!dowsing->touchActive && TouchscreenHitbox_FindHitboxAtTouchNew(gDowsingMchnSearchAreaHitbox) != -1) {
+    if (!dowsing->touchActive && TouchscreenHitbox_FindHitboxAtTouchNew(gDowsingMchnSearchAreaHitbox) != TOUCH_MENU_NO_INPUT) {
         dowsing->touchActive = TRUE;
     }
-    if (FieldSystem_TaskIsRunning(dowsing->fieldSystem) == TRUE || TouchscreenHitbox_FindHitboxAtTouchHeld(gDowsingMchnSearchAreaHitbox) == -1 || !dowsing->touchActive) {
+    if (FieldSystem_TaskIsRunning(dowsing->fieldSystem) == TRUE || TouchscreenHitbox_FindHitboxAtTouchHeld(gDowsingMchnSearchAreaHitbox) == TOUCH_MENU_NO_INPUT || !dowsing->touchActive) {
         DowsingMchn_UpdateSignal(dowsing, -1);
         DowsingMchn_UpdateGrid(dowsing, FALSE);
         dowsing->anglesInitialized = FALSE;
@@ -884,21 +886,21 @@ static void DowsingMchn_HandleRunningShoesButton(DowsingMchn *dowsing) {
     u16 lock;
 
     if (PlayerAvatar_GetState(dowsing->fieldSystem->playerAvatar) == 1 || DowsingMchn_ShouldHideButtons(dowsing) == TRUE) {
-        Sprite_SetDrawFlag(dowsing->sprites[1], FALSE);
-        Sprite_SetDrawFlag(dowsing->sprites[2], FALSE);
+        Sprite_SetDrawFlag(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES], FALSE);
+        Sprite_SetDrawFlag(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES_LABEL], FALSE);
         return;
     }
-    Sprite_SetDrawFlag(dowsing->sprites[1], TRUE);
-    Sprite_SetDrawFlag(dowsing->sprites[2], TRUE);
+    Sprite_SetDrawFlag(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES], TRUE);
+    Sprite_SetDrawFlag(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES_LABEL], TRUE);
     if (TouchscreenHitbox_TouchNewIsIn(&gDowsingMchnRunningShoesHitbox) == TRUE) {
         avatar = FieldSystem_GetPlayerAvatar(dowsing->fieldSystem);
         lock = PlayerAvatar_CheckRunningShoesLock(avatar);
         if (lock == 0) {
-            Sprite_SetAnimCtrlSeq(dowsing->sprites[1], 4);
-            Sprite_SetAnimCtrlSeq(dowsing->sprites[2], 7);
+            Sprite_SetAnimCtrlSeq(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES], 4);
+            Sprite_SetAnimCtrlSeq(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES_LABEL], 7);
         } else {
-            Sprite_SetAnimCtrlSeq(dowsing->sprites[1], 3);
-            Sprite_SetAnimCtrlSeq(dowsing->sprites[2], 11);
+            Sprite_SetAnimCtrlSeq(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES], 3);
+            Sprite_SetAnimCtrlSeq(dowsing->sprites[DOWSING_MCHN_SPRITE_SHOES_LABEL], 11);
         }
         ((void (*)(PlayerAvatar *, u32))PlayerAvatar_SetRunningShoesLock)(avatar, lock ^ 1);
     }

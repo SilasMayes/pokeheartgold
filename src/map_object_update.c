@@ -96,10 +96,10 @@ static BOOL MapObject_CanUpdateMovement(LocalMapObject *object) {
         return TRUE;
     }
     flags = MapObject_GetFlags(object);
-    if ((flags & (1 << 12)) && !(flags & (1 << 23))) {
+    if ((flags & MAPOBJECTFLAG_UNK12) && !(flags & MAPOBJECTFLAG_IGNORE_HEIGHTS)) {
         return FALSE;
     }
-    if ((flags & (2 << 10)) && !MapObject_CheckIgnoreMetatileBehaviors(object)) {
+    if ((flags & MAPOBJECTFLAG_UNK11) && !MapObject_CheckIgnoreMetatileBehaviors(object)) {
         return FALSE;
     }
     return TRUE;
@@ -210,32 +210,32 @@ static void MapObject_SpawnStepEndEffects(LocalMapObject *object) {
     MapObject_SetSavedPreviousBehavior(object, value);
     MapObject_UpdateMetatileBehaviors(object);
     if (MapObject_IsDrawInitialized(object) == TRUE) {
-        u8 a = MapObject_GetCurrentMetatileBehavior(object);
-        u8 b = MapObject_GetPreviousMetatileBehavior(object);
+        u8 behavior = MapObject_GetCurrentMetatileBehavior(object);
+        u8 prevBehavior = MapObject_GetPreviousMetatileBehavior(object);
         const MapObjectEffectFlags *effect = MapObject_GetEffectFlags(object);
-        MapObject_ResetTileDrawOffset(object, a, b, effect);
-        MapObject_SpawnPuddleSplash(object, a, b, effect);
-        MapObject_SpawnMudSplash(object, a, b, effect);
-        MapObject_UpdateShallowWaterRipple(object, a, b, effect);
-        MapObject_UpdateReflection(object, a, b, effect);
-        MapObject_UpdateShadowVisibility(object, a, b, effect);
+        MapObject_ResetTileDrawOffset(object, behavior, prevBehavior, effect);
+        MapObject_SpawnPuddleSplash(object, behavior, prevBehavior, effect);
+        MapObject_SpawnMudSplash(object, behavior, prevBehavior, effect);
+        MapObject_UpdateShallowWaterRipple(object, behavior, prevBehavior, effect);
+        MapObject_UpdateReflection(object, behavior, prevBehavior, effect);
+        MapObject_UpdateShadowVisibility(object, behavior, prevBehavior, effect);
     }
 }
 
 static void MapObject_SpawnJumpLandEffects(LocalMapObject *object) {
     MapObject_UpdateMetatileBehaviors(object);
     if (MapObject_IsDrawInitialized(object) == TRUE) {
-        u8 a = MapObject_GetCurrentMetatileBehavior(object);
-        u8 b = MapObject_GetPreviousMetatileBehavior(object);
+        u8 behavior = MapObject_GetCurrentMetatileBehavior(object);
+        u8 prevBehavior = MapObject_GetPreviousMetatileBehavior(object);
         const MapObjectEffectFlags *effect = MapObject_GetEffectFlags(object);
-        MapObject_ResetTileDrawOffset(object, a, b, effect);
-        MapObject_SpawnPuddleSplash(object, a, b, effect);
-        MapObject_SpawnMudSplash(object, a, b, effect);
-        MapObject_UpdateShallowWaterRipple(object, a, b, effect);
-        MapObject_UpdateReflection(object, a, b, effect);
-        MapObject_UpdateShadowVisibility(object, a, b, effect);
-        MapObject_SpawnTallGrassOnStep(object, a, b, effect);
-        MapObject_SpawnGroundDust(object, a, b, effect);
+        MapObject_ResetTileDrawOffset(object, behavior, prevBehavior, effect);
+        MapObject_SpawnPuddleSplash(object, behavior, prevBehavior, effect);
+        MapObject_SpawnMudSplash(object, behavior, prevBehavior, effect);
+        MapObject_UpdateShallowWaterRipple(object, behavior, prevBehavior, effect);
+        MapObject_UpdateReflection(object, behavior, prevBehavior, effect);
+        MapObject_UpdateShadowVisibility(object, behavior, prevBehavior, effect);
+        MapObject_SpawnTallGrassOnStep(object, behavior, prevBehavior, effect);
+        MapObject_SpawnGroundDust(object, behavior, prevBehavior, effect);
     }
 }
 
@@ -253,7 +253,7 @@ static void MapObject_SpawnTallGrassStanding(LocalMapObject *object, u8 behavior
     u32 nextBehavior;
 
     if (MetatileBehavior_IsTallGrass(behavior) == TRUE) {
-        if (id != 0xFD || MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) != TRUE) {
+        if (id != obj_partner_poke || MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) != TRUE) {
             TallGrass_Spawn(object, 0);
         } else {
             return;
@@ -287,7 +287,7 @@ static void MapObject_SpawnTallGrassOnStep(LocalMapObject *object, u8 behavior, 
     u32 nextBehavior;
 
     if (MetatileBehavior_IsTallGrass(behavior) == TRUE) {
-        if (id != 0xFD || MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) != TRUE) {
+        if (id != obj_partner_poke || MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) != TRUE) {
             TallGrass_Spawn(object, 1);
         } else {
             return;
@@ -444,14 +444,14 @@ static void MapObject_SpawnGroundDust(LocalMapObject *object, u8 behavior, u8 pr
 
 static void MapObject_SpawnVeryTallGrassStanding(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags) {
     int id = MapObject_GetID(object);
-    if (MetatileBehavior_IsVeryTallGrass(behavior) == 1 && (id != 0xFD || MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) != 1)) {
+    if (MetatileBehavior_IsVeryTallGrass(behavior) == 1 && (id != obj_partner_poke || MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) != 1)) {
         VeryTallGrass_Spawn(object, 0);
     }
 }
 
 static void MapObject_SpawnVeryTallGrassOnStep(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags) {
     int id = MapObject_GetID(object);
-    if (MetatileBehavior_IsVeryTallGrass(behavior) == 1 && (id != 0xFD || MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) != 1)) {
+    if (MetatileBehavior_IsVeryTallGrass(behavior) == 1 && (id != obj_partner_poke || MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) != 1)) {
         VeryTallGrass_Spawn(object, 1);
     }
 }
@@ -668,7 +668,7 @@ static u32 MapObject_CheckCollision(LocalMapObject *object, VecFx32 *position, i
     if (MapObject_IsOutsideMovementRange(object, x, y, z) == TRUE) {
         result |= 1;
     }
-    if (FieldSystem_CheckCollisionAndHeight(MapObject_GetFieldSystem(object), position, x, z, (int)&slope) == TRUE) {
+    if (FieldSystem_CheckCollisionAndHeight(MapObject_GetFieldSystem(object), position, x, z, &slope) == TRUE) {
         result |= 2;
         if (slope != 0) {
             result |= 8;

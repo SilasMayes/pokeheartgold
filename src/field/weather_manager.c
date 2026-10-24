@@ -157,12 +157,14 @@ enum WeatherFlashEndStep {
     FLASH_END_GROW_LIGHT,
 };
 
+#define WEATHER_MAX_OBJECTS 64
+
 struct WeatherWork {
     WeatherSystem *weatherSystem;
     WeatherEntry *entry;
     WeatherSpriteResources *spriteResources;
     WeatherObject linkedListDummy;
-    WeatherObject linkedList[64];
+    WeatherObject linkedList[WEATHER_MAX_OBJECTS];
     SysTask *weatherTask;
     VecFx32 cameraTarget;
     void *taskData;
@@ -1149,15 +1151,15 @@ static void WeatherSystem_InitSpriteTemplate(WeatherSystem *weatherSystem, Weath
         memset(&entry->weatherSpriteResources->spriteTemplate, 0, sizeof(SpriteTemplate));
         entry->weatherSpriteResources->spriteTemplate.spriteList = weatherSystem->weatherDraw.spriteList;
         entry->weatherSpriteResources->spriteTemplate.header = &entry->weatherSpriteResources->spriteResHeader;
-        entry->weatherSpriteResources->spriteTemplate.scale.x = 1 << 12;
-        entry->weatherSpriteResources->spriteTemplate.scale.y = 1 << 12;
-        entry->weatherSpriteResources->spriteTemplate.scale.z = 1 << 12;
+        entry->weatherSpriteResources->spriteTemplate.scale.x = FX32_ONE;
+        entry->weatherSpriteResources->spriteTemplate.scale.y = FX32_ONE;
+        entry->weatherSpriteResources->spriteTemplate.scale.z = FX32_ONE;
         entry->weatherSpriteResources->spriteTemplate.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
     }
 }
 
 static void WeatherWork_CreateSprites(WeatherWork *work) {
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < WEATHER_MAX_OBJECTS; i++) {
         work->linkedList[i].sprite = Sprite_CreateAffine(&work->spriteResources->spriteTemplate);
         Sprite_SetDrawFlag(work->linkedList[i].sprite, FALSE);
         GF_ASSERT(work->linkedList[i].sprite);
@@ -1165,7 +1167,7 @@ static void WeatherWork_CreateSprites(WeatherWork *work) {
 }
 
 static void WeatherWork_DeleteSprites(WeatherWork *work) {
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < WEATHER_MAX_OBJECTS; i++) {
         if (work->linkedList[i].sprite) {
             Sprite_Delete(work->linkedList[i].sprite);
             work->linkedList[i].sprite = NULL;
@@ -1262,9 +1264,9 @@ static void WeatherObject_Delete(WeatherObject *object) {
     Sprite_SetDrawFlag(object->sprite, FALSE);
     WeatherObject_ClearData(object);
 
-    Sprite *temp = object->sprite;
+    Sprite *sprite = object->sprite;
     memset(object, 0, sizeof(WeatherObject));
-    object->sprite = temp;
+    object->sprite = sprite;
 }
 
 static void WeatherObject_DeleteAll(WeatherObject *head) {
@@ -1534,7 +1536,7 @@ static BOOL WeatherFogChange_Step(WeatherFogChange *fogChange) {
 }
 
 static void WeatherFogTableFade_Clear(WeatherFogTableFade *tableFade) {
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < FOG_TABLE_ENTRIES; i++) {
         tableFade->table[i] = 0;
     }
     Fog_SetTable(tableFade->fog, tableFade->table);
@@ -1644,7 +1646,7 @@ static void Weather_SpawnAndPreAdvance(WeatherWork *work, WeatherSpawnFunc spawn
 }
 
 static WeatherObject *WeatherSystem_GetFreeObject(WeatherWork *work) {
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < WEATHER_MAX_OBJECTS; i++) {
         if (work->linkedList[i].weatherSystem == NULL) {
             return &work->linkedList[i];
         }
@@ -2279,8 +2281,8 @@ static void WeatherTask_Flash(SysTask *task, void *data) {
         Fog_Set(fieldSystem->fog, -1, TRUE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x0020, 0);
         Fog_SetColor(fieldSystem->fog, -1, 0, 0);
         {
-            s8 fogTable[32];
-            for (int i = 0; i < 32; i++) {
+            s8 fogTable[FOG_TABLE_ENTRIES];
+            for (int i = 0; i < FOG_TABLE_ENTRIES; i++) {
                 fogTable[i] = -1;
             }
             Fog_SetTable(fieldSystem->fog, fogTable);
@@ -2296,8 +2298,8 @@ static void WeatherTask_Flash(SysTask *task, void *data) {
         Fog_Set(fieldSystem->fog, -1, TRUE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x0020, 0);
         Fog_SetColor(fieldSystem->fog, -1, 0, 0);
         {
-            s8 fogTable[32];
-            for (int i = 0; i < 32; i++) {
+            s8 fogTable[FOG_TABLE_ENTRIES];
+            for (int i = 0; i < FOG_TABLE_ENTRIES; i++) {
                 fogTable[i] = -1;
             }
             Fog_SetTable(fieldSystem->fog, fogTable);
@@ -2356,8 +2358,8 @@ static void WeatherTask_Flash2(SysTask *task, void *data) {
         Fog_Set(fieldSystem->fog, -1, TRUE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x0020, 0);
         Fog_SetColor(fieldSystem->fog, -1, 0, 0);
         {
-            s8 fogTable[32];
-            for (int i = 0; i < 32; i++) {
+            s8 fogTable[FOG_TABLE_ENTRIES];
+            for (int i = 0; i < FOG_TABLE_ENTRIES; i++) {
                 fogTable[i] = -1;
             }
             Fog_SetTable(fieldSystem->fog, fogTable);
@@ -2373,8 +2375,8 @@ static void WeatherTask_Flash2(SysTask *task, void *data) {
         Fog_Set(fieldSystem->fog, -1, TRUE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x0020, 0);
         Fog_SetColor(fieldSystem->fog, -1, 0, 0);
         {
-            s8 fogTable[32];
-            for (int i = 0; i < 32; i++) {
+            s8 fogTable[FOG_TABLE_ENTRIES];
+            for (int i = 0; i < FOG_TABLE_ENTRIES; i++) {
                 fogTable[i] = -1;
             }
             Fog_SetTable(fieldSystem->fog, fogTable);

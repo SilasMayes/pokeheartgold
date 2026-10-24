@@ -265,7 +265,7 @@ typedef struct FollowMonGrowAndShrinkEnv {
 
 extern const ShinyLeafMasks gShinyLeafMasks;
 extern const ShinyLeafMonDataIds gShinyLeafMonDataIds;
-extern const u8 gFollowMonJumpOnSpotMovements[];
+extern const MovementScriptCommand gFollowMonJumpOnSpotMovements[][5]; // per facing direction
 extern const u32 gNatureGroups[];
 extern const VecFx32 gFollowMonGrowScale;
 extern const VecFx32 gFollowMonShrinkScale;
@@ -324,7 +324,7 @@ static int FollowMon_SelectInteraction(FieldSystem *fieldSystem) {
     FollowMonRule *rules;
     int i;
     int j;
-    int n;
+    int count;
     int *cursor;
 
     ReadWholeNarcMemberByIdPair(fieldSystem->followMonInteraction->rules, NARC_a_2_2_0, MapHeader_GetMapSec(fieldSystem->location->mapId) + 1);
@@ -333,24 +333,24 @@ static int FollowMon_SelectInteraction(FieldSystem *fieldSystem) {
     rules = fieldSystem->followMonInteraction->rules;
 
     // Rules 30-41 first, then the map section's rules 0-29, then 42-99.
-    n = 0;
+    count = 0;
     cursor = order;
     for (i = 0; i < 12; i++) {
         *cursor++ = i + 30;
-        n++;
+        count++;
     }
     i = 0;
-    cursor = &order[n];
+    cursor = &order[count];
     do {
         *cursor++ = i;
-        n++;
+        count++;
         i++;
     } while (i < 30);
     i = 42;
-    cursor = &order[n];
+    cursor = &order[count];
     do {
         *cursor++ = i;
-        n++;
+        count++;
         i++;
     } while (i < 100);
 
@@ -1214,27 +1214,27 @@ static BOOL Task_FollowMonInteract(TaskManager *taskManager) {
             fieldSystem->followMonInteraction->state = INTERACTION_STATE_WAIT_CHOICE_APP;
             break;
         case INTERACTION_STATE_WAIT_CHOICE_APP: {
-            int a = FieldSystem_GetBottomScreenAppId(fieldSystem);
-            int b = FieldSystem_GetBottomScreenAppState(fieldSystem);
-            if (a == BOTTOM_SCREEN_APP_CHOICE_MENU && b == BOTTOM_SCREEN_APP_STATE_RUNNING) {
+            int appId = FieldSystem_GetBottomScreenAppId(fieldSystem);
+            int appState = FieldSystem_GetBottomScreenAppState(fieldSystem);
+            if (appId == BOTTOM_SCREEN_APP_CHOICE_MENU && appState == BOTTOM_SCREEN_APP_STATE_RUNNING) {
                 FieldSystem_SetTouchscreenChoiceMenuState(fieldSystem, BOTTOM_SCREEN_APP_CHOICE_MENU, TOUCHSCREEN_CHOICE_MENU_STATE_SHOW_YES_NO, &fieldSystem->followMonInteraction->answer);
                 fieldSystem->followMonInteraction->state = INTERACTION_STATE_WAIT_ANSWER;
             }
             break;
         }
         case INTERACTION_STATE_WAIT_ANSWER: {
-            int a = FieldSystem_GetBottomScreenAppId(fieldSystem);
-            int b = FieldSystem_GetTouchscreenChoiceMenuState(fieldSystem);
-            if (a == BOTTOM_SCREEN_APP_CHOICE_MENU && b == TOUCHSCREEN_CHOICE_MENU_STATE_DONE) {
+            int appId = FieldSystem_GetBottomScreenAppId(fieldSystem);
+            int menuState = FieldSystem_GetTouchscreenChoiceMenuState(fieldSystem);
+            if (appId == BOTTOM_SCREEN_APP_CHOICE_MENU && menuState == TOUCHSCREEN_CHOICE_MENU_STATE_DONE) {
                 FieldSystem_SwitchBottomScreenApp(fieldSystem, BOTTOM_SCREEN_APP_TOUCHSCREEN_MENU, 0);
                 fieldSystem->followMonInteraction->state = INTERACTION_STATE_CLOSE_CHOICE;
             }
             break;
         }
         case INTERACTION_STATE_CLOSE_CHOICE: {
-            int a = FieldSystem_GetBottomScreenAppId(fieldSystem);
-            int b = FieldSystem_GetBottomScreenAppState(fieldSystem);
-            if (a == BOTTOM_SCREEN_APP_TOUCHSCREEN_MENU && b == BOTTOM_SCREEN_APP_STATE_RUNNING) {
+            int appId = FieldSystem_GetBottomScreenAppId(fieldSystem);
+            int appState = FieldSystem_GetBottomScreenAppState(fieldSystem);
+            if (appId == BOTTOM_SCREEN_APP_TOUCHSCREEN_MENU && appState == BOTTOM_SCREEN_APP_STATE_RUNNING) {
                 switch (fieldSystem->followMonInteraction->answer) {
                 case 0:
                     FieldSystem_CloseFollowMonMessage(fieldSystem);
@@ -1594,7 +1594,7 @@ static BOOL Task_FollowMonJumpOnSpot(TaskManager *taskManager) {
         break;
     case 2: {
         u8 direction = MapObject_GetFacingDirection(fieldSystem->followMon.mapObject);
-        env->movement = EventObjectMovementMan_Create(fieldSystem->followMon.mapObject, (const MovementScriptCommand *)(gFollowMonJumpOnSpotMovements + direction * 0x14));
+        env->movement = EventObjectMovementMan_Create(fieldSystem->followMon.mapObject, gFollowMonJumpOnSpotMovements[direction]);
         (*state)++;
         break;
     }

@@ -110,7 +110,7 @@ typedef struct WeatherFogChange {
 
 typedef struct WeatherFogTableFade {
     FogData *fog;
-    u8 table[0x20];
+    u8 table[FOG_TABLE_ENTRIES];
     s32 stepsLeft;
     s32 frameTimer;
     s16 framesPerStep;
@@ -158,7 +158,7 @@ typedef struct WeatherFlashTaskReserved {
 
 typedef struct WeatherFlashTaskData {
     WeatherFlashTaskReserved unk0;
-    void *darkness;
+    struct FieldEffect *darkness;
     u16 scaleFrame;
     u16 endStep;
 } WeatherFlashTaskData;

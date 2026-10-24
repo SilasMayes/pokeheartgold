@@ -249,7 +249,8 @@ void EmoteMark_Hide(FieldEffect *effect) {
 
 BOOL EmoteMarkEffect_Init(FieldEffect *effect, EmoteMarkEffect *work) {
     VecFx32 position;
-    work->args = *(EmoteMarkEffectArgs *)FieldEffect_GetUserData(effect);
+    EmoteMarkEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->velocity = EMOTE_MARK_POP_SPEED;
     EmoteMark_LoadGfxIfUnused(work->args.emoteMark, work->args.kind);
     FieldEffect_GetPosition(effect, &position);
@@ -328,7 +329,8 @@ FieldEffect *EmoteMark_Spawn(LocalMapObject *mapObject, int kind, BOOL playSound
 
 BOOL MapObjectEmoteMarkEffect_Init(FieldEffect *effect, EmoteMarkEffect *work) {
     VecFx32 position;
-    work->args = *(EmoteMarkEffectArgs *)FieldEffect_GetUserData(effect);
+    EmoteMarkEffectArgs *args = FieldEffect_GetUserData(effect);
+    work->args = *args;
     work->objectId = MapObject_GetID(work->args.mapObject);
     work->mapId = MapObject_GetMapID(work->args.mapObject);
     work->velocity = EMOTE_MARK_POP_SPEED;

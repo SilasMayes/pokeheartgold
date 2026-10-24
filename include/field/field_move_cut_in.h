@@ -70,7 +70,7 @@ typedef struct FieldMoveCutIn {
     SpriteResource *plttResources[3];
     SpriteResource *cellResources[4];
     SpriteResource *animResources[2];
-    void *effectPool;
+    FieldEffectPool *effectPool;
     Sprite *trainerSprite;
     Sprite *monSprite;
     FieldEffect *flyerEffect;
@@ -111,7 +111,7 @@ u8 FieldMoveCutIn_GetFlyerStatus(FieldMoveCutIn *cutIn);
 void FieldMoveCutIn_DestroyFlyer(FieldMoveCutIn *cutIn);
 void FieldMoveCutIn_StartFlyerTakeOff(FieldMoveCutIn *cutIn);
 void FieldMoveCutIn_StartFlyerPickUp(FieldMoveCutIn *cutIn);
-FieldEffect *FieldMoveCutIn_CreateTrainerJumpEffect(void *effectPool, Sprite *trainerSprite);
+FieldEffect *FieldMoveCutIn_CreateTrainerJumpEffect(FieldEffectPool *effectPool, Sprite *trainerSprite);
 void TrainerJumpEffect_StartHop(FieldEffect *effect);
 void FieldMoveCutIn_SetPlayerVisible(FieldMoveCutIn *cutIn, BOOL visible);
 void FieldMoveCutIn_CreateTrainerClipEffect(FieldMoveCutIn *cutIn);

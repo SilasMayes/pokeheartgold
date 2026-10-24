@@ -758,7 +758,7 @@ static void TouchMartApp_PrintPageNumber(TouchMartAppData *data) {
 }
 
 static void TouchMartApp_EditListTilemap(BgConfig *bgConfig, int bgId, int itemCount) {
-    void *tilemap = GetBgTilemapBuffer(bgConfig, (u8)bgId);
+    u16 *tilemap = GetBgTilemapBuffer(bgConfig, (u8)bgId);
     int i;
     const TouchMartBgOp *op;
     if (itemCount == TOUCH_MART_ITEMS_PER_PAGE) {
@@ -767,7 +767,7 @@ static void TouchMartApp_EditListTilemap(BgConfig *bgConfig, int bgId, int itemC
     op = sTouchMartListTilemapEdits[itemCount];
     for (i = 0; i < 4; i++, op++) {
         if (op->kind == 1) {
-            LoadRectToBgTilemapRect(bgConfig, (u8)bgId, (u8 *)tilemap + (op->srcX + op->srcY * 32) * 2, op->destX, op->destY, op->width, op->height);
+            LoadRectToBgTilemapRect(bgConfig, (u8)bgId, &tilemap[op->srcX + op->srcY * 32], op->destX, op->destY, op->width, op->height);
         } else if (op->kind == 2) {
             FillBgTilemapRect(bgConfig, (u8)bgId, 0, op->destX, op->destY, op->width, op->height, 0);
         }

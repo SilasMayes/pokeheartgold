@@ -58,17 +58,17 @@ static int PrimoPassword_DecodeWallpaper(WallpaperPasswordBank *bank, u16 traine
         }
         if (k > 0) {
             if (idx[k] >= idx[k - 1]) {
-                int v = idx[k] - idx[k - 1];
-                if (v > 0xff) {
+                int delta = idx[k] - idx[k - 1];
+                if (delta > 0xff) {
                     return -1;
                 }
-                out[k] = v;
+                out[k] = delta;
             } else {
-                int v = count - (idx[k - 1] - idx[k]);
-                if (v > 0xff) {
+                int delta = count - (idx[k - 1] - idx[k]);
+                if (delta > 0xff) {
                     return -1;
                 }
-                out[k] = v;
+                out[k] = delta;
             }
         } else {
             if (idx[0] > 0xff) {
@@ -119,17 +119,17 @@ static int PrimoPassword_DecodeCheck2(WallpaperPasswordBank *bank, u16 trainerId
         }
         if (k > 0) {
             if (idx[k] >= idx[k - 1]) {
-                int v = idx[k] - idx[k - 1];
-                if (v > 0xff) {
+                int delta = idx[k] - idx[k - 1];
+                if (delta > 0xff) {
                     return -1;
                 }
-                out[k] = v;
+                out[k] = delta;
             } else {
-                int v = count - (idx[k - 1] - idx[k]);
-                if (v > 0xff) {
+                int delta = count - (idx[k - 1] - idx[k]);
+                if (delta > 0xff) {
                     return -1;
                 }
-                out[k] = v;
+                out[k] = delta;
             }
         } else {
             if (idx[0] > 0xff) {

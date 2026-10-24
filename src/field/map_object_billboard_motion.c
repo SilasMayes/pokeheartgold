@@ -45,7 +45,7 @@ typedef struct BillboardFrameSteps8 {
     fx32 values[8];
 } BillboardFrameSteps8;
 
-// One sprite ID -> effect model offset entry of the table ending in 0xFFFF
+// One sprite ID -> effect model offset entry of the table ending in MAP_OBJECT_GFX_ID_INVALID
 typedef struct EffectModelOffset {
     u32 spriteId;
     VecFx32 offset;
@@ -343,7 +343,7 @@ void BillboardDraw_Resume(LocalMapObject *object) {
 void FollowMonDraw_Init(LocalMapObject *object) {
     FollowMonBillboardWork *work = (FollowMonBillboardWork *)MapObject_InitDrawData(object, sizeof(FollowMonBillboardWork));
     work->direction = -1;
-    MapObject_CreateBillboard(object, work);
+    MapObject_CreateBillboard(object, &work->billboard);
     work->bobbing = 0;
     work->spriteLoaded = FALSE;
     work->paletteApplied = FALSE;
@@ -353,7 +353,8 @@ void FollowMonDraw_Init(LocalMapObject *object) {
 }
 
 void FollowMonDraw_Delete(LocalMapObject *object) {
-    MapObject_DeleteBillboard(object, MapObject_GetDrawData(object));
+    FollowMonBillboardWork *work = (FollowMonBillboardWork *)MapObject_GetDrawData(object);
+    MapObject_DeleteBillboard(object, &work->billboard);
 }
 
 void FollowMonDraw_Pause(LocalMapObject *object) {
@@ -364,7 +365,7 @@ void FollowMonDraw_Pause(LocalMapObject *object) {
     }
     work->spriteLoaded = FALSE;
     work->paletteApplied = FALSE;
-    MapObject_DeleteBillboard(object, work);
+    MapObject_DeleteBillboard(object, &work->billboard);
     MapObject_SetFlagsBits(object, MAPOBJECTFLAG_UNK21);
 }
 
@@ -408,7 +409,7 @@ void FollowMonDraw_Resume(LocalMapObject *object) {
         return;
     }
     if (work->billboard == NULL) {
-        MapObject_CreateBillboard(object, work);
+        MapObject_CreateBillboard(object, &work->billboard);
     }
     if (work->billboard != NULL) {
         work->paletteApplied = TRUE;
@@ -1304,7 +1305,7 @@ static void MapObject_UpdateBillboardVisibility(LocalMapObject *object, Billboar
 
 static void MapObject_GetEffectModelOffset(u32 spriteId, VecFx32 *offset) {
     const EffectModelOffset *entry = gEffectModelOffsets;
-    while (entry->spriteId != 0xFFFF) {
+    while (entry->spriteId != MAP_OBJECT_GFX_ID_INVALID) {
         if (entry->spriteId == spriteId) {
             *offset = entry->offset;
             return;
