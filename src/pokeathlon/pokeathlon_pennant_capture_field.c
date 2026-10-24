@@ -30,7 +30,7 @@ void PokeathlonCourseMonObject_SetDrawPriority(PokeathlonCourseMonObject *object
 void PokeathlonCourseMonObject_SetAnimStateRaw(PokeathlonCourseMonObject *object, u8 size);
 void PokeathlonCourseMonObject_SetAnimState(PokeathlonCourseMonObject *object, u8 size);
 void PokeathlonCourseMonObject_SetAnim(PokeathlonCourseMonObject *object, int anim);
-void PokeathlonCourseObject_GetCollisionCircle(void *object, int x, int y, int *outX, int *outY, int *outRadius);
+void PokeathlonCourseObject_GetCollisionCircle(PokeathlonCourseMonObject *object, int x, int y, int *outX, int *outY, int *outRadius);
 int PokeathlonCourseObject_GetCollisionRadius(PokeathlonCourseMonObject *object);
 void PokeathlonCourseObject_SetGroundPosition(PokeathlonCourseMonObject *object, int x, int y);
 void PokeathlonCourseObject_GroundToCenter(PokeathlonCourseMonObject *object, int x, int y, int *outX, int *outY);

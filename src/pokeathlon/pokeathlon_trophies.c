@@ -547,7 +547,7 @@ static void PokeathlonTrophies_CreateSummary(PokeathlonTrophies *work, Pokeathlo
     summary->eventRecordTotal = PokeathlonTrophies_CalcEventRecordTotal(pokeathlon);
     summary->medalTotal = PokeathlonTrophies_CountMedals(medals);
     summary->medalistCount = PokeathlonUtil_CountSpeciesWithAllMedals(medals);
-    summary->potentialTrophies = PokeathlonUtil_CountEventTrophies((const u16(*)[22])recordsSolo);
+    summary->potentialTrophies = PokeathlonUtil_CountEventTrophies(recordsSolo);
     summary->totalPoints = summary->courseRecordTotal + summary->eventRecordTotal + summary->medalTotal;
     summary->gender = PlayerProfile_GetTrainerGender(profile);
     work->summary = summary;

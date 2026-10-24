@@ -1,5 +1,7 @@
 #include "global.h"
 
+#include "constants/species.h"
+
 #include "pokeathlon/pokeathlon_util.h"
 
 #include "MATH_pop.h"
@@ -62,12 +64,12 @@ u32 PokeathlonUtil_GetCourseMedal(u32 value) {
 
 u8 PokeathlonUtil_GetMedalistTrophyCount(s32 value) {
     u8 i;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < NELEMS(sPokeathlonMedalistTrophyThresholds); i++) {
         if (sPokeathlonMedalistTrophyThresholds[i] <= value) {
             break;
         }
     }
-    return 10 - i;
+    return NELEMS(sPokeathlonMedalistTrophyThresholds) - i;
 }
 
 u16 PokeathlonUtil_GetEventThreshold(u32 row, u32 column) {
@@ -104,7 +106,7 @@ u32 PokeathlonUtil_CountSpeciesWithAllMedals(const u8 *data) {
     int i;
     u16 count = 0;
     GF_ASSERT(data != NULL);
-    for (i = 0; i < 0x1ED; i++) {
+    for (i = 0; i < NATIONAL_DEX_COUNT; i++) {
         if (MATH_CountPopulation(data[i]) == 5) {
             count++;
         }
@@ -112,11 +114,11 @@ u32 PokeathlonUtil_CountSpeciesWithAllMedals(const u8 *data) {
     return count;
 }
 
-u8 PokeathlonUtil_CountEventTrophies(const u16 (*records)[22]) {
+u8 PokeathlonUtil_CountEventTrophies(const Pokeathlon_RecordsSolo *records) {
     u8 i;
     u8 count = 0;
     for (i = 0; i < 10; i++) {
-        u16 value = PokeathlonUtil_GetRecordScore(&records[i], 0);
+        u16 value = PokeathlonUtil_GetRecordScore(records[i].entries, 0);
         if (PokeathlonUtil_ReachesEventThreshold(i, 1, value)) {
             count++;
         }
@@ -148,7 +150,7 @@ void PokeathlonUtil_DisableDisplay(void) {
 
 u32 PokeathlonUtil_GetDecimalDigit(u32 value, u32 digit) {
     u32 remainder;
-    GF_ASSERT(digit != 0 && digit < 5);
+    GF_ASSERT(digit != 0 && digit < NELEMS(sPokeathlonPowersOfTen));
     remainder = value % sPokeathlonPowersOfTen[digit];
     digit--;
     return remainder / sPokeathlonPowersOfTen[digit];

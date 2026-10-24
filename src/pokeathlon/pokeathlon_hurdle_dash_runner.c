@@ -7,14 +7,14 @@
 #include "assert.h"
 #include "sprite.h"
 
-// Course helpers (pokeathlon_course*.c), declared with untyped objects and the argument types this
+// Course helpers (pokeathlon_course*.c), declared with the argument types this
 // caller passes (u8 member indices; a mon object where the object helpers expect a course object).
 PokeathlonCourseMonObject *PokeathlonCourseMonObjects_Get(PokeathlonCourseMonObjects *objects, u8 index);
 PokeathlonCourseMonGfx *PokeathlonCourseMonObject_GetGfx(PokeathlonCourseMonObject *object);
 PokeathlonCourseMonInfo *PokeathlonCourseMonGfx_GetInfo(PokeathlonCourseMonGfx *gfx);
 u8 *PokeathlonCourse_GetMonStats(PokeathlonCourseData *course, int participant, int mon);
-void *PokeathlonCourse_GetPerformance(PokeathlonCourseData *course, int participant, u8 mon);
-int PokeathlonCourse_GetCollisionSizeClass(void *performance);
+PokeathlonCoursePerformance *PokeathlonCourse_GetPerformance(PokeathlonCourseData *course, int participant, u8 mon);
+int PokeathlonCourse_GetCollisionSizeClass(const PokeathlonCoursePerformance *performance);
 void PokeathlonCourseObject_SetCollision(PokeathlonCourseMonObject *object, u32 offsetY, u32 radius);
 int PokeathlonCourse_GetTouchRadius(void);
 void PokeathlonCourseObject_SetTouchRadius(PokeathlonCourseMonObject *object, u32 radius);

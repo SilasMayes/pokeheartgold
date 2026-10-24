@@ -23,7 +23,7 @@ void MATH_QSort(void *base, u32 count, u32 width, int (*compare)(const void *, c
 
 void PokeathlonCourse_SetRecordScore(PokeathlonCourseData *course, u32 score);
 Sprite *PokeathlonCourseSprites_CreateTimerDigit(PokeathlonCourseSpriteResources *resources, SpriteList *spriteList, int priority, enum HeapID heapId);
-void PokeathlonCourseMonObject_SetDrawPriority(void *object, u32 priority);
+void PokeathlonCourseMonObject_SetDrawPriority(PokeathlonCourseMonObject *object, u32 priority);
 PokeathlonCourseSpritePoolSprite *PokeathlonCourseSpritePool_CreateAndTake(PokeathlonCourseSpritePool *pool, int priority, int whichScreen, int resId, u8 kind);
 void PokeathlonCourseSpritePoolSprite_Show(PokeathlonCourseSpritePoolSprite *sprite, BOOL shown, BOOL show);
 void PokeathlonCourseSpritePoolSprite_SetAnim(PokeathlonCourseSpritePoolSprite *sprite, int anim);

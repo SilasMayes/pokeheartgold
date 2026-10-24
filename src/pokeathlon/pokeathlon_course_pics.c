@@ -359,7 +359,7 @@ void PokeathlonCourse_LoadPlayerTrainerPic(Sprite *sprite, PokeathlonCourseData 
 }
 
 u16 PokeathlonCourse_GetTrainerPicFileId(u32 kind) {
-    GF_ASSERT(kind < 6);
+    GF_ASSERT(kind < NELEMS(sPokeathlonCourseTrainerPicFileIds));
     return sPokeathlonCourseTrainerPicFileIds[kind];
 }
 

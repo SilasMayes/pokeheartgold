@@ -241,6 +241,7 @@ enum PokeathlonMonCounter {
 #define POKEATHLON_COURSE_CMD_RESULTS          0x20
 #define POKEATHLON_COURSE_CMD_JUICE_RECORD     0x21
 #define POKEATHLON_COURSE_CMD_INLINE_SIZE      0x26
+#define POKEATHLON_COURSE_CMD_SLOTS            8 // commands the local queue holds
 
 typedef void (*PokeathlonCourseCmdFunc)(int netId, int size, void *data, void *context);
 typedef int (*PokeathlonCourseCmdSizeFunc)(void);
@@ -261,10 +262,10 @@ typedef struct PokeathlonCourseCmdSlot {
 } PokeathlonCourseCmdSlot;
 
 typedef struct PokeathlonCourseCmdQueue {
-    PokeathlonCourseCmdSlot slots[8];
+    PokeathlonCourseCmdSlot slots[POKEATHLON_COURSE_CMD_SLOTS];
     const PokeathlonCourseCmd *cmds;
     int cmdCount;
-    void *context;
+    PokeathlonCourseData *context;
     SysTask *task;
 } PokeathlonCourseCmdQueue;
 
@@ -429,6 +430,9 @@ typedef struct PokeathlonCourseLayout {
 
 // Saved records (parts of PokeathlonSave)
 
+#define POKEATHLON_RECORD_RANKS  5       // the top 5 of an event ranking
+#define POKEATHLON_STATISTIC_MAX 9999999 // the cap of the play counts and statistics
+
 // A Pokemon of a course record.
 typedef struct PokeathlonCourseSavedMon {
     u32 species : 9;
@@ -452,7 +456,7 @@ typedef struct PokeathlonCourseRankEntry {
     u16 score;
     u16 mons[POKEATHLON_TEAM_SIZE];
     u32 trainerId;
-    u16 name[8];
+    u16 name[PLAYER_NAME_LENGTH + 1];
     u8 language;
     u8 padding[3];
 } PokeathlonCourseRankEntry;
@@ -464,22 +468,22 @@ typedef struct PokeathlonCourseEventRecordRow {
 
 // Top 5 of a solo event (Pokeathlon_RecordsSolo).
 typedef struct PokeathlonCourseEventRecord {
-    PokeathlonCourseEventRecordRow top[5];
+    PokeathlonCourseEventRecordRow top[POKEATHLON_RECORD_RANKS];
     u32 timesPlayed;
 } PokeathlonCourseEventRecord;
 
 typedef struct PokeathlonCourseTrainerRecord {
     u32 trainerId;
-    u16 name[8];
+    u16 name[PLAYER_NAME_LENGTH + 1];
     u8 language;
     u8 padding[3];
 } PokeathlonCourseTrainerRecord;
 
 // Top 5 of a link event (Pokeathlon_RecordsLink).
 typedef struct PokeathlonCourseLinkEventRecord {
-    PokeathlonCourseEventRecordRow top[5];
+    PokeathlonCourseEventRecordRow top[POKEATHLON_RECORD_RANKS];
     u32 timesPlayed;
-    PokeathlonCourseTrainerRecord trainers[5];
+    PokeathlonCourseTrainerRecord trainers[POKEATHLON_RECORD_RANKS];
 } PokeathlonCourseLinkEventRecord;
 
 // An NPC team (NARC a/2/5/8).

@@ -34,13 +34,13 @@ void PokeathlonCourseScoreList_Free(void *ptr) {
 }
 
 static PokeathlonCourseScore *PokeathlonCourseScoreList_AddEntry(PokeathlonCourseScoreList *list) {
-    GF_ASSERT(list->next < 4);
+    GF_ASSERT(list->next < POKEATHLON_PARTICIPANTS);
     GF_ASSERT(list->next < list->count);
     return &list->entries[list->next++];
 }
 
 PokeathlonCourseScore *PokeathlonCourseScoreList_GetEntry(PokeathlonCourseScoreList *list, u32 index) {
-    GF_ASSERT(index < 4);
+    GF_ASSERT(index < POKEATHLON_PARTICIPANTS);
     GF_ASSERT((s32)index < list->count);
     return &list->entries[index];
 }
@@ -153,7 +153,7 @@ void PokeathlonCourseScoreList_Rank(PokeathlonCourseScoreList *list, int mode) {
 }
 
 PokeathlonCourseScore *PokeathlonCourseScoreList_GetRanked(PokeathlonCourseScoreList *list, u8 index) {
-    GF_ASSERT(index < 4);
+    GF_ASSERT(index < POKEATHLON_PARTICIPANTS);
     GF_ASSERT((s32)index < list->count);
     return list->ranking[index];
 }
@@ -252,8 +252,8 @@ void PokeathlonCourseCmd_RecvParticipant(int netId, int size, void *data, void *
         PokeathlonCourse_IncrementReceivedCount(context);
         count = PokeathlonCourse_GetParticipantCount(context);
         if (count == PokeathlonCourse_GetReceivedCount(context)) {
-            if ((u32)PokeathlonCourse_GetReceivedCount(context) < 4) {
-                u32 missing = 4 - PokeathlonCourse_GetReceivedCount(context);
+            if ((u32)PokeathlonCourse_GetReceivedCount(context) < POKEATHLON_PARTICIPANTS) {
+                u32 missing = POKEATHLON_PARTICIPANTS - PokeathlonCourse_GetReceivedCount(context);
                 PokeathlonCourse_SetupNpcParticipants(context, (u8)missing);
             }
             PokeathlonCourse_ResetReceivedCount(context);

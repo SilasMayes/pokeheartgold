@@ -178,7 +178,7 @@ void PokeathlonCourseSpritePool_Free(PokeathlonCourseSpritePool *pool) {
             SpriteTransfer_DeletePlttTransferTask(pool->resources[i].objects[1]);
         }
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(pool->resMans); i++) {
         Destroy2DGfxResObjMan(pool->resMans[i]);
     }
     SpriteList_Delete(pool->spriteList);

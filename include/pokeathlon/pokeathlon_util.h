@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+#include "pokeathlon/pokeathlon_save.h"
+
 #include "bg_window.h"
 #include "font.h"
 #include "gf_gfx_loader.h"
@@ -84,7 +86,7 @@ BOOL PokeathlonUtil_BeatsEventThreshold(u32 direction, u32 column, u16 value);
 BOOL PokeathlonUtil_ReachesEventThreshold(u32 direction, u32 column, u16 value);
 u16 PokeathlonUtil_GetRecordScore(const void *records, u32 index);
 u32 PokeathlonUtil_CountSpeciesWithAllMedals(const u8 *medals);
-u8 PokeathlonUtil_CountEventTrophies(const u16 (*records)[22]);
+u8 PokeathlonUtil_CountEventTrophies(const Pokeathlon_RecordsSolo *records);
 void PokeathlonUtil_ResetDisplay(void);
 void PokeathlonUtil_DisableDisplay(void);
 u32 PokeathlonUtil_GetDecimalDigit(u32 value, u32 digit);

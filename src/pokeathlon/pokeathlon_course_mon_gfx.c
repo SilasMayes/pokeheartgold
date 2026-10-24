@@ -51,7 +51,7 @@ void PokeathlonCourseMonGfx_FreeManager(PokeathlonCourseMonGfxManager *manager) 
         SpriteTransfer_DeleteCharTransferTask(manager->mons[i].charRes);
         SpriteTransfer_DeletePlttTransferTask(manager->mons[i].plttRes);
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(manager->resMans); i++) {
         Destroy2DGfxResObjMan(manager->resMans[i]);
     }
     Heap_Free(manager->mons);
@@ -115,10 +115,10 @@ void PokeathlonCourseMonGfx_SetPalette(PokeathlonCourseMonGfxManager *manager, i
     BOOL loadSub = FALSE;
     NNSG2dImagePaletteProxy *paletteProxy;
 
-    if (vram == 3) {
+    if (vram == NNS_G2D_VRAM_TYPE_2DBOTH) {
         loadMain = TRUE;
         loadSub = TRUE;
-    } else if (vram == 1) {
+    } else if (vram == NNS_G2D_VRAM_TYPE_2DMAIN) {
         loadMain = TRUE;
     } else {
         loadSub = TRUE;
@@ -185,10 +185,10 @@ static void PokeathlonCourseMonGfx_Load(PokeathlonCourseMonGfxManager *manager, 
     charProxy = SpriteTransfer_GetCharProxy(mon->charRes);
     plttProxy = SpriteTransfer_GetPaletteProxy(mon->plttRes, charProxy);
     charData = GF2DGfxResObj_GetCharDataPtr(mon->charRes);
-    if (vram == 3) {
+    if (vram == NNS_G2D_VRAM_TYPE_2DBOTH) {
         loadMain = TRUE;
         loadSub = TRUE;
-    } else if (vram == 1) {
+    } else if (vram == NNS_G2D_VRAM_TYPE_2DMAIN) {
         loadMain = TRUE;
     } else {
         loadSub = TRUE;
