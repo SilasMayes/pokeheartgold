@@ -12,7 +12,6 @@
 #include "sprite.h"
 #include "sprite_resource_header.h"
 #include "sprite_system.h"
-#include "string_util.h"
 
 // The results screen the course shows after an event: the announcer comments on the event, the teams' plates slide
 // in from last to first place and the course points are counted up on the other screen.

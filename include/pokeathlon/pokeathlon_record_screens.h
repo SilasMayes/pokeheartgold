@@ -3,8 +3,6 @@
 
 #include "global.h"
 
-#include "constants/species.h"
-
 #include "pokeathlon/pokeathlon_course_types_def.h"
 #include "pokeathlon/pokeathlon_util.h"
 
@@ -13,7 +11,6 @@
 #include "filesystem.h"
 #include "grid_input_handler.h"
 #include "overlay_99.h"
-#include "screen_fade.h"
 #include "sprite_system.h"
 #include "touchscreen.h"
 

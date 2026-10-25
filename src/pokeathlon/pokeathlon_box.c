@@ -284,7 +284,7 @@ static void PokeathlonBox_CopySelectedMons(PokeathlonBox *data, PokeathlonBoxArg
     PokeathlonBox_BoxMon boxMon;
 
     args->cancelled = data->cancelled;
-    if (data->cancelled == 0) {
+    if (!data->cancelled) {
         for (int i = 0; i < 3; i++) {
             if (data->selectedMons[i].page == NUM_BOXES) {
                 Pokemon *partyMon = Party_GetMonByIndex(SaveArray_Party_Get(args->courseArgs->saveData), data->selectedMons[i].slot);

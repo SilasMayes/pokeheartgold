@@ -330,7 +330,7 @@ BOOL PokeathlonBlockSmash_Intro(PokeathlonCourseData *course, u8 *state) {
         break;
     case BLOCK_SMASH_INTRO_COUNTDOWN:
         if (PokeathlonCourse_RunStartCountdown(course)) {
-            PokeathlonCourseObjects_PauseAnims(work->monPics, 0);
+            PokeathlonCourseObjects_PauseAnims(work->monPics, FALSE);
             PokeathlonCourse_SetNextState(course, BLOCK_SMASH_STATE_PLAY);
         }
         break;
@@ -356,11 +356,11 @@ static BOOL PokeathlonBlockSmash_UpdateGame(PokeathlonCourseData *course) {
         PokeathlonBlockSmashMon_SetAnimate(work->mon, 0);
         PokeathlonBlockSmashRivals_Pause(work->rivals);
         PokeathlonBlockSmashBlocks_Pause(work->blocks);
-        PokeathlonCourseObjects_PauseAnims(work->monPics, 1);
+        PokeathlonCourseObjects_PauseAnims(work->monPics, TRUE);
         return TRUE;
     }
     if (System_GetTouchNew()) {
-        PokeathlonCourse_AddMonCounter(course, (u8)PokeathlonCourse_GetNetId(course), 3, POKEATHLON_COUNTER_INSTRUCTIONS, 1);
+        PokeathlonCourse_AddMonCounter(course, PokeathlonCourse_GetNetId(course), 3, POKEATHLON_COUNTER_INSTRUCTIONS, 1);
     }
     PokeathlonBlockSmash_UpdateTimer(work);
     PokeathlonBlockSmashBlocks_Update(work->blocks);
@@ -377,7 +377,7 @@ static BOOL PokeathlonBlockSmash_UpdateGame(PokeathlonCourseData *course) {
         strongHit = PokeathlonBlockSmashMon_IsGaugeFull(work->mon);
         hitSpot = PokeathlonBlockSmashBlocks_IsSpotTouched(work->blocks, member->kind);
         {
-            int count = PokeathlonBlockSmashBlocks_Hit(work->blocks, PokeathlonBlockSmashMon_GetActiveMemberIndex(work->mon), (s16)(u16)member->power, hitSpot, strongHit, &broken);
+            int count = PokeathlonBlockSmashBlocks_Hit(work->blocks, PokeathlonBlockSmashMon_GetActiveMemberIndex(work->mon), (u16)member->power, hitSpot, strongHit, &broken);
             PokeathlonBlockSmashMon_OnHit(work->mon, hitSpot, count);
         }
         PokeathlonBlockSmash_UpdateScoreDigits(work);
@@ -529,7 +529,7 @@ BOOL PokeathlonBlockSmash_Init(PokeathlonCourseData *course) {
     case BLOCK_SMASH_INIT_CREATE_TEAMS:
         work->mon = PokeathlonBlockSmashMon_New(work->heapId, work->spriteSystem, work->spriteManager, course);
         work->rivals = PokeathlonBlockSmashRivals_New(work->heapId, work->spriteSystem, work->spriteManager, course, work->monPics);
-        PokeathlonCourseObjects_PauseAnims(work->monPics, 1);
+        PokeathlonCourseObjects_PauseAnims(work->monPics, TRUE);
         if (PokeathlonCourse_GetNetId(course) == 0) {
             work->cpu = PokeathlonBlockSmashCpu_New(course, work->heapId);
         }
@@ -649,7 +649,7 @@ static void PokeathlonBlockSmash_CreateHudSprites(PokeathlonBlockSmash *work) {
         Sprite_SetMatrix(work->scoreDigits[i], &position);
         Sprite_SetDrawPriority(work->scoreDigits[i], 2);
         Sprite_SetAnimCtrlSeq(work->scoreDigits[i], 1);
-        Sprite_SetDrawFlag(work->scoreDigits[i], 1);
+        Sprite_SetDrawFlag(work->scoreDigits[i], TRUE);
         x += FX32_CONST(16);
     }
     work->timerFrame = PokeathlonBlockSmash_NewMainSprite(work->spriteSystem, work->spriteManager, 192, 184, 25, 2);
@@ -660,7 +660,7 @@ static void PokeathlonBlockSmash_CreateHudSprites(PokeathlonBlockSmash *work) {
         digitPosition.y = 184 << FX32_SHIFT;
         digitPosition.z = 0;
         Sprite_SetMatrix(work->timerDigits[i], &digitPosition);
-        Sprite_SetDrawFlag(work->timerDigits[i], 1);
+        Sprite_SetDrawFlag(work->timerDigits[i], TRUE);
     }
     work->switchButton = PokeathlonBlockSmash_NewMainSprite(work->spriteSystem, work->spriteManager, 32, 16, 19, 2);
 }
@@ -723,7 +723,7 @@ static void PokeathlonBlockSmash_UpdateScoreDigits(PokeathlonBlockSmash *work) {
         if (score < 10) {
             break;
         }
-        score = (u16)(score / 10);
+        score = score / 10;
     }
 }
 
@@ -741,9 +741,9 @@ static void PokeathlonBlockSmash_InitBgs(BgConfig *bgConfig, enum HeapID heapId)
     {
         PokeathlonBlockSmashBgTemplates templates = sPokeathlonBlockSmashBgTemplates;
         for (i = 0; i < 6; i++) {
-            InitBgFromTemplate(bgConfig, (u8)sPokeathlonBlockSmashBgLayers[i], &templates.templates[i], GF_BG_TYPE_TEXT);
-            BgClearTilemapBufferAndCommit(bgConfig, (u8)sPokeathlonBlockSmashBgLayers[i]);
-            BG_ClearCharDataRange((u8)sPokeathlonBlockSmashBgLayers[i], 0x20, 0, heapId);
+            InitBgFromTemplate(bgConfig, sPokeathlonBlockSmashBgLayers[i], &templates.templates[i], GF_BG_TYPE_TEXT);
+            BgClearTilemapBufferAndCommit(bgConfig, sPokeathlonBlockSmashBgLayers[i]);
+            BG_ClearCharDataRange(sPokeathlonBlockSmashBgLayers[i], 0x20, 0, heapId);
         }
         FontID_Alloc(4, heapId);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
@@ -762,7 +762,7 @@ static void PokeathlonBlockSmash_FreeBgsAndText(PokeathlonBlockSmash *work) {
         RemoveWindow(&work->windows[i]);
     }
     for (i = 0; i < 6; i++) {
-        FreeBgTilemapBuffer(work->bgConfig, (u8)sPokeathlonBlockSmashBgLayers[i]);
+        FreeBgTilemapBuffer(work->bgConfig, sPokeathlonBlockSmashBgLayers[i]);
     }
     FontID_Release(4);
     Heap_Free(work->bgConfig);
@@ -893,7 +893,7 @@ static void PokeathlonBlockSmash_UpdateTeamRows(PokeathlonCourseData *course) {
     participant = 0;
     row = ((PokeathlonBlockSmash *)row)->icons.rows;
     do {
-        int bars = (int)(report->score / 5u);
+        int bars = report->score / 5u;
         int i;
         if (bars > 20) {
             if (!ManagedSprite_GetDrawFlag(row->stars[0])) {
@@ -1023,7 +1023,7 @@ static void PokeathlonBlockSmash_WriteReport(PokeathlonCourseData *course) {
 
 // The host builds the frame from all reports; every participant then writes its own report.
 static void PokeathlonBlockSmash_UpdateLinkData(PokeathlonCourseData *course) {
-    BOOL participant = PokeathlonCourse_GetNetId(course);
+    int netId = PokeathlonCourse_GetNetId(course);
     PokeathlonBlockSmash *work = PokeathlonCourse_GetWork(course);
     u8 *data = PokeathlonCourse_GetDataCopyArea(course);
     PokeathlonBlockSmashReport *out;
@@ -1031,7 +1031,7 @@ static void PokeathlonBlockSmash_UpdateLinkData(PokeathlonCourseData *course) {
     GF_ASSERT(work != NULL);
     GF_ASSERT(work->mon != NULL);
     GF_ASSERT(work->blocks != NULL);
-    if (participant == 0) {
+    if (netId == 0) {
         out = (PokeathlonBlockSmashReport *)PokeathlonCourse_ToBytes(data + POKEATHLON_COURSE_DATA_FRAME_OUT);
         *(PokeathlonBlockSmashLinkBlock *)PokeathlonCourse_ToBytes(data + POKEATHLON_COURSE_DATA_INPUTS) = *(PokeathlonBlockSmashLinkBlock *)PokeathlonCourse_ToBytes(data);
         data += POKEATHLON_COURSE_DATA_INPUTS;
@@ -1056,7 +1056,7 @@ static void PokeathlonBlockSmash_PrintScore(PokeathlonCourseData *course, u32 sc
     work = PokeathlonCourse_GetWork(course);
     msgFormat = work->msgFormat;
     msgData = work->msgData;
-    PokeathlonCourse_SetRecordScore(course, (u16)score);
+    PokeathlonCourse_SetRecordScore(course, score);
     FillWindowPixelBuffer(&work->windows[2], 0);
     BufferIntegerAsString(msgFormat, 0, score, 3, PRINTING_MODE_LEFT_ALIGN, TRUE);
     string = ReadMsgData_ExpandPlaceholders(msgFormat, msgData, msg_0309_00159, work->heapId);
@@ -1080,7 +1080,7 @@ static void PokeathlonBlockSmash_ShakeTask(SysTask *task, void *data) {
     ScheduleSetBgPosText(work->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_Y, offset);
     G2dRenderer_SetMainSurfaceCoords(SpriteSystem_GetRenderer(work->spriteSystem), 0, -offset << FX32_SHIFT);
     work->shakeOffset = (u8)(work->shakeOffset - work->shakeDecay);
-    work->shakeSide = (u8)(work->shakeSide ^ 1);
+    work->shakeSide = work->shakeSide ^ 1;
     if (work->shakeOffset <= 0) {
         ScheduleSetBgPosText(work->bgConfig, GF_BG_LYR_MAIN_0, BG_POS_OP_SET_Y, 16);
         ScheduleSetBgPosText(work->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_Y, 0);
@@ -1096,6 +1096,6 @@ static void PokeathlonBlockSmash_StartShake(PokeathlonBlockSmash *work, int offs
     }
     work->shakeSide = 0;
     work->shakeOffset = (u8)offset;
-    work->shakeDecay = (u8)decay;
+    work->shakeDecay = decay;
     work->shakeTask = SysTask_CreateOnMainQueue(PokeathlonBlockSmash_ShakeTask, work, 2);
 }

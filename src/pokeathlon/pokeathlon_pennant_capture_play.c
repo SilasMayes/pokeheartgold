@@ -149,7 +149,7 @@ BOOL PokeathlonPennantCapture_State_Setup(PokeathlonCourseData *course, u8 *stat
                 work->obstacles[i].placed = TRUE;
                 work->obstacles[i].x = x;
                 work->obstacles[i].y = y;
-                PokeathlonCourseSpritePoolSprite_Show(work->obstacles[i].sprite, 1, 1);
+                PokeathlonCourseSpritePoolSprite_Show(work->obstacles[i].sprite, TRUE, TRUE);
             }
         }
         for (i = 0; i < PENNANT_CAPTURE_FIELD_ITEMS; fieldItem += 2, i++) {
@@ -161,8 +161,8 @@ BOOL PokeathlonPennantCapture_State_Setup(PokeathlonCourseData *course, u8 *stat
                 work->fieldItems[i].placed = TRUE;
                 work->fieldItems[i].x = x;
                 work->fieldItems[i].y = y;
-                PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].sprite, 1, 1);
-                PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].shadowSprite, 1, 1);
+                PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].sprite, TRUE, TRUE);
+                PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].shadowSprite, TRUE, TRUE);
             }
         }
         for (i = 0; i < PENNANT_CAPTURE_SPOTS; i++, spot += 2) {
@@ -471,7 +471,7 @@ static BOOL PokeathlonPennantCapture_SendInput(PokeathlonCourseData *course) {
         finished &= frame->words[4] >> 31;
         if (finished) {
             PokeathlonCourseSpritePool_PauseAnims(work->spritePool, TRUE);
-            PokeathlonCourseObjects_PauseAnims(work->monObjects, 1);
+            PokeathlonCourseObjects_PauseAnims(work->monObjects, TRUE);
             PokeathlonCourse_SetFinishCallback(course, PokeathlonPennantCapture_UpdateOwnScore);
             return TRUE;
         }

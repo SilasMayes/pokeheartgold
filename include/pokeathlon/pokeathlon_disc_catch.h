@@ -10,7 +10,6 @@
 #include "message_format.h"
 #include "msgdata.h"
 #include "sprite_system.h"
-#include "sys_task_api.h"
 
 // Disc Catch: discs fly down from the top screen and the Pokemon catch them by jumping under them as they land
 // (1, 2, 3 or 5 points by the disc). Dragging a Pokemon moves it, tapping it makes it jump.

@@ -814,23 +814,23 @@ void PokeathlonCourseMonObject_SetAnim(PokeathlonCourseMonObject *object, int an
     if (anim != 20 && anim != 21) {
         switch (object->animState) {
         case 1:
-            seq = (u8)anim;
+            seq = anim;
             break;
         case 2:
-            seq = (u8)(anim + 1);
+            seq = anim + 1;
             break;
         case 3:
-            seq = (u8)(anim + 2);
+            seq = anim + 2;
             break;
         case 4:
-            seq = (u8)(anim + 3);
+            seq = anim + 3;
             break;
         default:
             GF_ASSERT(FALSE);
             return;
         }
     } else {
-        seq = (u8)anim;
+        seq = anim;
     }
     Sprite_TryChangeAnimSeq(sprite, seq);
 }
@@ -870,7 +870,7 @@ void PokeathlonCourseMonObject_SetAnimCode(PokeathlonCourseMonObject *object, in
             return;
         }
     } else {
-        seq = (u8)object->anim;
+        seq = object->anim;
     }
     Sprite_TryChangeAnimSeq(sprite, seq);
 }

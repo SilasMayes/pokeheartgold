@@ -20,7 +20,7 @@ void PokeathlonEvent_CalcPointsFromScores(PokeathlonCourseScoreList *list, int e
     if (func != NULL) {
         for (i = 0; i < 4; i++) {
             PokeathlonCourseScore *entry = PokeathlonCourseScoreList_GetRanked(list, i);
-            entry->points = (u16)func((u16)entry->score);
+            entry->points = func((u16)entry->score);
         }
     } else {
         GF_ASSERT(FALSE);
@@ -37,35 +37,35 @@ void PokeathlonEvent_CalcPointsFromRanks(PokeathlonCourseScoreList *list, int ev
 
 // 30 points at 0, approaching 150.
 static float PokeathlonEvent_Saturate(u32 score, float rate) {
-    return (float)(150.0 - 120.0 / (1.0 + (float)score * rate));
+    return 150.0 - 120.0 / (1.0 + (float)score * rate);
 }
 
 static u8 PokeathlonEvent_ClampPoints(float points) {
-    u32 clamped = (u32)points;
+    u32 clamped = points;
     if ((double)clamped > 200.0) {
         clamped = 200;
     }
-    return (u8)clamped;
+    return clamped;
 }
 
 // Event 0 (Hurdle Dash): the score is the time in frames.
 u8 PokeathlonEvent_HurdleDashPoints(u32 frames) {
-    return PokeathlonEvent_ClampPoints((float)(11500.0 / (double)((float)frames / 30.0f)));
+    return PokeathlonEvent_ClampPoints(11500.0 / (double)((float)frames / 30.0f));
 }
 
 // Event 1 (Pennant Capture)
 u8 PokeathlonEvent_PennantCapturePoints(int score) {
-    return PokeathlonEvent_ClampPoints((float)(score * 3));
+    return PokeathlonEvent_ClampPoints(score * 3);
 }
 
 // Event 2 (Circle Push)
 u8 PokeathlonEvent_CirclePushPoints(int score) {
-    return PokeathlonEvent_ClampPoints((float)(score * 3));
+    return PokeathlonEvent_ClampPoints(score * 3);
 }
 
 // Event 3 (Block Smash)
 u8 PokeathlonEvent_BlockSmashPoints(u32 score) {
-    return PokeathlonEvent_ClampPoints((float)score);
+    return PokeathlonEvent_ClampPoints(score);
 }
 
 // Event 4 (Disc Catch)
@@ -75,20 +75,20 @@ u8 PokeathlonEvent_DiscCatchPoints(u32 score) {
 
 // Event 5 (Lamp Jump)
 u8 PokeathlonEvent_LampJumpPoints(u32 score) {
-    return PokeathlonEvent_ClampPoints((float)((double)(float)score / 3.5));
+    return PokeathlonEvent_ClampPoints((double)(float)score / 3.5);
 }
 
 u8 PokeathlonEvent_RelayRunPoints(u32 score) {
-    return PokeathlonEvent_ClampPoints((float)(((double)(float)score / 1024.0) * 10.0));
+    return PokeathlonEvent_ClampPoints(((double)(float)score / 1024.0) * 10.0);
 }
 
 // Event 7 (Ring Drop)
 u8 PokeathlonEvent_RingDropPoints(u32 score) {
     double points = (float)score;
     points *= 1.5;
-    return PokeathlonEvent_ClampPoints((float)points);
+    return PokeathlonEvent_ClampPoints(points);
 }
 
 u8 PokeathlonEvent_SnowThrowPoints(int score) {
-    return PokeathlonEvent_ClampPoints((float)(score * 3));
+    return PokeathlonEvent_ClampPoints(score * 3);
 }

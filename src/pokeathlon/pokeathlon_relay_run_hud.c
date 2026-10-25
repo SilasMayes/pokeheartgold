@@ -192,7 +192,7 @@ void PokeathlonRelayRunHud_LoadMonPics(PokeathlonRelayRunHud *hud, const Pokeath
     int i;
     PokeathlonRelayRunHud *cursor;
     for (i = 0, cursor = hud; i < RELAY_RUN_MEMBERS; i++, mon++, cursor = (PokeathlonRelayRunHud *)((u8 *)cursor + sizeof(PokeathlonRelayRunHudPic))) {
-        GetMonSpriteCharAndPlttNarcIdsEx(&template, mon->species, mon->gender, 2, mon->isShiny, (u8)mon->form, mon->personality);
+        GetMonSpriteCharAndPlttNarcIdsEx(&template, mon->species, mon->gender, 2, mon->isShiny, mon->form, mon->personality);
         cursor->pics[0].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, hud->heapId, mon->personality, FALSE, 2, mon->species);
         cursor->pics[0].palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, hud->heapId);
     }
@@ -247,17 +247,17 @@ void PokeathlonRelayRunHud_PrintDistance(PokeathlonRelayRunHud *hud, u8 laps, u3
     u8 tens;
     u8 ones;
     u8 i;
-    tenths = (u8)((float)x / 102.4);
-    tens = (u8)(laps / 10);
-    srcX[0] = (u8)((tens % 5) * 4);
-    srcY[0] = (u8)((tens / 5) * 8);
-    ones = (u8)(laps % 10);
-    srcX[1] = (u8)((ones % 5) * 4);
-    srcY[1] = (u8)((ones / 5) * 8);
+    tenths = (float)x / 102.4;
+    tens = laps / 10;
+    srcX[0] = (tens % 5) * 4;
+    srcY[0] = (tens / 5) * 8;
+    ones = laps % 10;
+    srcX[1] = (ones % 5) * 4;
+    srcY[1] = (ones / 5) * 8;
     for (i = 0; i < 2; i++) {
-        CopyRectToBgTilemapRect(hud->bgConfig, GF_BG_LYR_SUB_1, (u8)(i * 4 + 14), 8, 4, 8, hud->digitScreen->rawData, srcX[i], srcY[i], 20, 16);
+        CopyRectToBgTilemapRect(hud->bgConfig, GF_BG_LYR_SUB_1, i * 4 + 14, 8, 4, 8, hud->digitScreen->rawData, srcX[i], srcY[i], 20, 16);
     }
-    CopyRectToBgTilemapRect(hud->bgConfig, GF_BG_LYR_SUB_1, 24, 8, 4, 8, hud->digitScreen->rawData, (u8)((tenths % 5) * 4), (u8)((tenths / 5) * 8), 20, 16);
+    CopyRectToBgTilemapRect(hud->bgConfig, GF_BG_LYR_SUB_1, 24, 8, 4, 8, hud->digitScreen->rawData, (tenths % 5) * 4, (tenths / 5) * 8, 20, 16);
     ScheduleBgTilemapBufferTransfer(hud->bgConfig, GF_BG_LYR_SUB_1);
 }
 
@@ -350,7 +350,7 @@ BOOL PokeathlonRelayRunHud_RotateCpuMonPics(PokeathlonRelayRunHud *hud, u32 team
 void PokeathlonRelayRunHud_UpdateTeam(PokeathlonRelayRunHud *hud, u8 teamId, u8 member, u8 swapping, int condition) {
     u8 *shownMembers = hud->shownMembers;
     if (member != shownMembers[teamId]) {
-        shownMembers[teamId] = (u8)member;
+        shownMembers[teamId] = member;
         PokeathlonRelayRunHud_SetMonIcon(hud, teamId, member);
     }
     if (swapping) {
@@ -378,7 +378,7 @@ void PokeathlonRelayRunHud_UpdateTeam(PokeathlonRelayRunHud *hud, u8 teamId, u8 
             break;
         }
     }
-    hud->map.teams[teamId].lastCondition = (u8)condition;
+    hud->map.teams[teamId].lastCondition = condition;
 }
 
 // The tired marks on the pictures of the two members waiting (conditions of the members in the slots).
@@ -400,7 +400,7 @@ void PokeathlonRelayRunHud_SetTimer(PokeathlonRelayRunHud *hud, int frames) {
     u8 seconds;
     u8 fraction;
     seconds = frames / 30;
-    fraction = (u8)(frames % 30);
+    fraction = frames % 30;
     fraction = 100 * fraction / 30;
     Sprite_SetAnimCtrlSeq(hud->timerSprites[0], (u8)(seconds / 60) + 1);
     seconds = seconds % 60;
@@ -423,12 +423,12 @@ void PokeathlonRelayRunHud_SetDrawPriorities(PokeathlonRelayRunHud *hud, int own
     count = 1;
     for (i = 0; i < RELAY_RUN_TEAMS; i++) {
         if (i == own) {
-            order[0] = (u8)i;
+            order[0] = i;
         }
     }
     for (i = 0; i < RELAY_RUN_TEAMS; i++) {
         if (order[0] != i) {
-            order[count++] = (u8)i;
+            order[count++] = i;
         }
     }
     for (i = 0; i < RELAY_RUN_TEAMS; i++) {

@@ -9,6 +9,7 @@
 #include "message_format.h"
 #include "pm_string.h"
 #include "poke_overlay.h"
+#include "screen_fade.h"
 #include "sound_playback.h"
 #include "system.h"
 
@@ -228,7 +229,7 @@ static void PokeathlonEventRecord_ShowEvent(PokeathlonEventRecord *work) {
         altTiles = FALSE;
     }
     PokeathlonEventRecord_PrintEventRecord(work);
-    PokeathlonEventRecord_DrawEventIcon(work, (u8)work->cursor, 26, 0, altTiles, TRUE);
+    PokeathlonEventRecord_DrawEventIcon(work, work->cursor, 26, 0, altTiles, TRUE);
 }
 
 static void PokeathlonEventRecord_LoadModePalette(PokeathlonEventRecord *work) {
@@ -291,7 +292,7 @@ static void PokeathlonEventRecord_PrintRecordValue(PokeathlonEventRecord *work, 
     } else {
         PokeathlonUtil_BufferNumber(work->textContext, value, 3, 0);
     }
-    PokeathlonUtil_PrintMessageAt(work->textContext, window, work->cursor + msg_0314_00086, 0, (u8)highlight);
+    PokeathlonUtil_PrintMessageAt(work->textContext, window, work->cursor + msg_0314_00086, 0, highlight);
 }
 
 static void PokeathlonEventRecord_PrintModeTitle(PokeathlonEventRecord *work) {
@@ -320,7 +321,7 @@ static void PokeathlonEventRecord_PrintEventRecord(PokeathlonEventRecord *work) 
             u32 score = PokeathlonEventRecord_GetRecordScore(work->data, work->cursor, i, work->linkMode);
             PokeathlonEventRecord_PrintRecordValue(work, score, i + 7, work->cursor + 86, highlight);
         } else {
-            PokeathlonUtil_PrintAlignedMessageAtY(work->textContext, i + 7, work->cursor + msg_0314_00096, FALSE, (u8)highlight, 0);
+            PokeathlonUtil_PrintAlignedMessageAtY(work->textContext, i + 7, work->cursor + msg_0314_00096, FALSE, highlight, 0);
         }
     }
     if (work->linkMode) {

@@ -240,12 +240,12 @@ u8 PokeathlonCirclePush_ChooseLayout(u8 layout, int kind) {
         u32 step;
         GF_ASSERT(layout >= first);
         step = LCRandom() % (count - 1);
-        next = (u8)(layout - first + 1);
-        next = (u8)(next + step);
-        next = (u8)(next % (u32)count);
-        return (u8)(next + first);
+        next = layout - first + 1;
+        next = next + step;
+        next = next % (u32)count;
+        return next + first;
     }
-    return (u8)(first + LCRandom() % count);
+    return first + LCRandom() % count;
 }
 
 // Points of the bonus zone of layout that (x, y) lies in (0: none); *zone: its index.
@@ -438,7 +438,7 @@ int PokeathlonCirclePushAi_Update(PokeathlonCirclePushAi *ai, u8 layout) {
         u8 firstTeam = ai->firstTeam;
         mon = 2 - ai->member + (firstTeam + ai->team) * 3;
         GF_ASSERT(mon / POKEATHLON_TEAM_SIZE >= firstTeam);
-        PokeathlonCirclePushAi_ChooseTarget(ai, (u8)mon, layout);
+        PokeathlonCirclePushAi_ChooseTarget(ai, mon, layout);
         result = (u8)mon;
         ai->team++;
         if (ai->team >= ai->teamCount) {
@@ -621,7 +621,7 @@ static int PokeathlonCirclePushAi_ScoreCell(PokeathlonCirclePushAi *ai, Pokeathl
         if (PokeathlonCirclePushAi_IsInZone(zones, x << FX32_SHIFT, y << FX32_SHIFT)) {
             score += 5;
         }
-        if (PokeathlonCirclePushAi_IsZoneCell(ai, (u8)cell)) {
+        if (PokeathlonCirclePushAi_IsZoneCell(ai, cell)) {
             score += 4;
             *inZone = TRUE;
         }
@@ -631,7 +631,7 @@ static int PokeathlonCirclePushAi_ScoreCell(PokeathlonCirclePushAi *ai, Pokeathl
         if (PokeathlonCirclePushAi_IsInZone(zones, x << FX32_SHIFT, y << FX32_SHIFT)) {
             score += 5;
         }
-        if (PokeathlonCirclePushAi_IsZoneCell(ai, (u8)cell)) {
+        if (PokeathlonCirclePushAi_IsZoneCell(ai, cell)) {
             score += 4;
             *inZone = TRUE;
         }

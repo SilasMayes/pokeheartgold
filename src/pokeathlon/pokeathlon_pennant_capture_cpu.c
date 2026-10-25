@@ -62,9 +62,9 @@ void PokeathlonPennantCaptureDisplay_InitWindow(PokeathlonPennantCaptureDisplay 
 }
 
 void PokeathlonPennantCaptureDisplay_ShowStatus(PokeathlonCourseSpritePoolSprite **sprites, int show) {
-    PokeathlonCourseSpritePoolSprite_Show(sprites[0], 1, show);
-    PokeathlonCourseSpritePoolSprite_Show(sprites[2], 1, show);
-    PokeathlonCourseSpritePoolSprite_Show(sprites[1], 1, show);
+    PokeathlonCourseSpritePoolSprite_Show(sprites[0], TRUE, show);
+    PokeathlonCourseSpritePoolSprite_Show(sprites[2], TRUE, show);
+    PokeathlonCourseSpritePoolSprite_Show(sprites[1], TRUE, show);
 }
 
 PokeathlonPennantCaptureCpu *PokeathlonPennantCaptureCpu_New(enum HeapID heapId, int cpuCount, int mode) {

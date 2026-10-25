@@ -13,6 +13,7 @@
 #include "message_format.h"
 #include "poke_overlay.h"
 #include "pokemon.h"
+#include "screen_fade.h"
 #include "sound_playback.h"
 #include "system.h"
 
@@ -122,7 +123,7 @@ static void PokeathlonMedals_ShowSpeciesMedals(PokeathlonMedals *work, u16 speci
 
     for (i = 0; i < 5; i++) {
         ManagedSprite_SetDrawFlag(work->sprites[15 + i], medals & 1);
-        medals = (u8)(medals >> 1);
+        medals = medals >> 1;
     }
 }
 
@@ -298,7 +299,7 @@ static void PokeathlonMedals_ShowSelectedSpecies(PokeathlonMedals *work) {
     PokeathlonMedals_LoadMonPic(work, species);
     PokeathlonMedals_PrintSpeciesName(work, species);
     PokeathlonMedals_ShowSpeciesMedals(work, species);
-    GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, (u8)PokeathlonMedals_HasAllMedals(work, species));
+    GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, PokeathlonMedals_HasAllMedals(work, species));
 }
 
 static void PokeathlonMedals_HideSelectedSpecies(PokeathlonMedals *work) {

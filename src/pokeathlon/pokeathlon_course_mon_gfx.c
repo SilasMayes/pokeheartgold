@@ -292,7 +292,7 @@ static BOOL PokeathlonCourseMonGfx_LoadStep(PokeathlonCourseMonGfxLoad *load) {
     case MON_GFX_LOAD_GRAPHICS:
         // BUG: the infos were copied to infos[0..count) but are read at baseIndex + current; every caller passes
         // a baseIndex of 0.
-        index = (u8)(load->baseIndex + load->current);
+        index = load->baseIndex + load->current;
         PokeathlonCourseMonGfx_Load(load->manager, &load->manager->mons[index], (PokeathlonCourseMonInfo *)((u32)load->infos + (u32)index * sizeof(PokeathlonCourseMonInfo)), load->template.vram, index, load->template.vramTransfer);
         load->manager->mons[index].info = load->infos[index];
         load->manager->mons[index].topRow = PokeathlonCourseMonGfx_FindTopRow(&load->manager->mons[index]);
@@ -314,7 +314,7 @@ static BOOL PokeathlonCourseMonGfx_LoadStep(PokeathlonCourseMonGfxLoad *load) {
     case MON_GFX_LOAD_CREATE_SPRITES:
         // BUG: the infos were copied to infos[0..count) but are read at baseIndex + current; every caller passes
         // a baseIndex of 0.
-        index = (u8)(load->baseIndex + load->current);
+        index = load->baseIndex + load->current;
         PokeathlonCourseMonGfx_CreateSprite(load->manager, load->template.priority, load->template.vramTransfer, load->template.whichScreen, index, index);
         load->current++;
         load->manager->loadedCount++;
@@ -350,7 +350,7 @@ static u8 PokeathlonCourseMonGfx_FindTopRow(PokeathlonCourseMonGfx *mon) {
                 }
             }
             if (min != 255) {
-                result = (u8)(min + y * 8);
+                result = min + y * 8;
                 break;
             }
             base += size;
@@ -411,8 +411,8 @@ void PokeathlonCourseMonGfx_SetScale(PokeathlonCourseMonGfx *mon, f32 x, f32 y) 
     VecFx32 scale = { 0, 0, 0 };
 
     sprite = PokeathlonCourseMonGfx_GetSprite(mon);
-    scale.x = (fx32)(x > 0.0f ? x * 4096.0f + 0.5f : x * 4096.0f - 0.5f);
-    scale.y = (fx32)(y > 0.0f ? y * 4096.0f + 0.5f : y * 4096.0f - 0.5f);
+    scale.x = x > 0.0f ? x * 4096.0f + 0.5f : x * 4096.0f - 0.5f;
+    scale.y = y > 0.0f ? y * 4096.0f + 0.5f : y * 4096.0f - 0.5f;
     Sprite_SetAffineScale(sprite, &scale);
 }
 

@@ -406,7 +406,7 @@ BOOL PokeathlonCourse_RunFinish(PokeathlonCourseData *course) {
             Sprite_SetAnimCtrlSeq(layout->newRecordSprite, 0);
             Sprite_SetDrawFlag(layout->newRecordSprite, TRUE);
         }
-        GfGfx_EngineATogglePlanes((u8)layout->hudPlanes, TRUE);
+        GfGfx_EngineATogglePlanes(layout->hudPlanes, TRUE);
         layout->finishCallback = NULL;
         layout->finishState = FINISH_STATE_WAIT_RESULT;
         break;
@@ -1264,7 +1264,7 @@ static void PokeathlonCourse_SaveSoloEventBests(PokeathlonCourseData *course, Po
     u8 event;
 
     for (i = 0; i < POKEATHLON_SOLO_ROUNDS; i++) {
-        event = (u8)layout->roundEvents[i];
+        event = layout->roundEvents[i];
         if (PokeathlonCourse_BeatsRecord(records[event].entries[0].score, layout->results.eventScores[0][i], gPokeathlonEventScoreOrders[event])) {
             bests[event] = layout->results.eventPoints[0][i];
         }
@@ -1414,11 +1414,11 @@ static void PokeathlonCourse_SaveFriendshipStatues(PokeathlonCourseData *course)
     PokeathlonCourseLayout *layout = (PokeathlonCourseLayout *)course;
     u8 i;
     PokeathlonSave_FriendshipRecords *records = Save_Pokeathlon_FriendshipRecords_Get(layout->args->saveData);
-    u8 netId = (u8)PokeathlonCourse_GetNetId(course);
+    u8 netId = PokeathlonCourse_GetNetId(course);
     PokeathlonCourseMon *mons = layout->participants[netId].mons;
     for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         records->friendshipRoomStatues[i].species = mons[i].species;
-        records->friendshipRoomStatues[i].form = (u8)mons[i].form;
+        records->friendshipRoomStatues[i].form = mons[i].form;
         records->friendshipRoomStatues[i].gender = mons[i].gender;
     }
 }
@@ -1792,7 +1792,7 @@ static void PokeathlonCourse_ChooseNpcTeams(u32 count, u8 courseId, u32 hard, u8
             linkPool[i] = i;
         }
         for (i = 0; i < count; i++) {
-            u8 at = (u8)((s32)LCRandom() % remaining);
+            u8 at = (s32)LCRandom() % remaining;
             npcTeams[i] = linkPool[at];
             npcTeams[i] += POKEATHLON_NPC_TEAMS_LINK_START;
             remaining--;
@@ -1804,7 +1804,7 @@ static void PokeathlonCourse_ChooseNpcTeams(u32 count, u8 courseId, u32 hard, u8
             coursePool[i] = i;
         }
         for (i = 0; i < count; i++) {
-            u8 at = (u8)((s32)LCRandom() % remaining);
+            u8 at = (s32)LCRandom() % remaining;
             npcTeams[i] = coursePool[at];
             npcTeams[i] += courseId * POKEATHLON_NPC_TEAMS_PER_COURSE;
             remaining--;
@@ -1902,7 +1902,7 @@ BOOL PokeathlonCourseLink_GetNetId(void *ptr) {
     if (link->isLink == 1) {
         return Comm_GetLocalNetId();
     }
-    return 0;
+    return FALSE;
 }
 
 static PokeathlonCourseCmdQueue *PokeathlonCourseCmdQueue_New(const PokeathlonCourseCmd *cmds, int cmdCount, PokeathlonCourseData *context, enum HeapID heapId) {

@@ -9,6 +9,7 @@
 #include "heap.h"
 #include "message_format.h"
 #include "poke_overlay.h"
+#include "screen_fade.h"
 #include "sound_playback.h"
 #include "system.h"
 

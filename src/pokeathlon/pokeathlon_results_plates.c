@@ -431,10 +431,10 @@ void PokeathlonResults_InitScoreboard(PokeathlonResultsAnnouncementScoreboard *s
     for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         team = &scoreboard->teams[i];
         team->plate = PokeathlonCourseSpritePool_Take(scoreboard->scene, 104, 3);
-        PokeathlonCourseSpritePoolSprite_Show(team->plate, 1, 1);
+        PokeathlonCourseSpritePoolSprite_Show(team->plate, TRUE, TRUE);
         for (j = 0; j < 3; j++) {
             team->digits[j] = PokeathlonCourseSpritePool_Take(scoreboard->scene, 104, 4);
-            PokeathlonCourseSpritePoolSprite_Show(team->digits[j], 1, 1);
+            PokeathlonCourseSpritePoolSprite_Show(team->digits[j], TRUE, TRUE);
         }
         name = PlayerProfile_GetPlayerName_NewString(PokeathlonCourse_GetPlayerProfileFromData(course, i), scoreboard->heapId);
         sprite = PokeathlonCourseSpritePoolSprite_GetSprite(scoreboard->teams[i].plate);
@@ -448,7 +448,7 @@ void PokeathlonResults_InitScoreboard(PokeathlonResultsAnnouncementScoreboard *s
 void PokeathlonResults_SetScore(PokeathlonResultsAnnouncementScoreboard *scoreboard, u32 points, u32 team) {
     GF_ASSERT(team < 4);
     scoreboard->teams[team].points = points;
-    PokeathlonResults_SetScoreDigits(&scoreboard->teams[team], (s32)points);
+    PokeathlonResults_SetScoreDigits(&scoreboard->teams[team], points);
 }
 
 static void PokeathlonResults_CreateScoreboardText(PokeathlonResultsAnnouncementScoreboard *scoreboard, PokeathlonResultsAnnouncementTextWindow *window, String *string, int x, int dx, int dy, Sprite *parent, PokeathlonResultsAnnouncementText *out) {

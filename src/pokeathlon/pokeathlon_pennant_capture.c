@@ -53,7 +53,7 @@ static inline void PokeathlonPennantCapture_PlaceAtStart(PokeathlonPennantCaptur
     PokeathlonCourseObject_SetGroundPosition(object, x, 96);
     PokeathlonCourseObject_SetTouchRadius(object, PokeathlonCourse_GetTouchRadius());
     fieldX += 208;
-    player->position.x = (fx32)((u32)fieldX << FX32_SHIFT);
+    player->position.x = (u32)fieldX << FX32_SHIFT;
     player->position.y = FX32_CONST(416);
     PokeathlonCourseMonObject_SetDrawPriorityStep(object, 3000);
     if (participant == own && member == 0) {
@@ -200,7 +200,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
             work->dragging[team] = FALSE;
             PokeathlonPennantCapturePlayer *player = &work->players[team];
             for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
-                PokeathlonPennantCapture_SetMoveParams(course, &moveTables, (u8)team, (u8)j, player);
+                PokeathlonPennantCapture_SetMoveParams(course, &moveTables, (u8)team, j, player);
             }
             if (PokeathlonCourse_GetNetId(course) == 0) {
                 PokeathlonPennantCaptureCpu_SetPlayer(work->cpu, team, player);

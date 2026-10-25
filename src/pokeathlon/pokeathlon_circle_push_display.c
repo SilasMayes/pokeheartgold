@@ -143,7 +143,7 @@ void PokeathlonCirclePushDisplay_CreateSprites(PokeathlonCourseSpritePool *scene
     pos.x = FX32_CONST(128);
     pos.y = FX32_CONST(544);
     Sprite_SetMatrix(sprite, &pos);
-    PokeathlonCourseSpritePoolSprite_Show(anim->unkB4, 1, 1);
+    PokeathlonCourseSpritePoolSprite_Show(anim->unkB4, TRUE, TRUE);
 
     anim->roundSprite = PokeathlonCourseSpritePool_Take(scene, 105, 9);
     sprite = PokeathlonCourseSpritePoolSprite_GetSprite(anim->roundSprite);
@@ -152,7 +152,7 @@ void PokeathlonCirclePushDisplay_CreateSprites(PokeathlonCourseSpritePool *scene
     pos.x = FX32_CONST(152);
     pos.y = FX32_CONST(544);
     Sprite_SetMatrix(sprite, &pos);
-    PokeathlonCourseSpritePoolSprite_Show(anim->roundSprite, 1, 1);
+    PokeathlonCourseSpritePoolSprite_Show(anim->roundSprite, TRUE, TRUE);
 
     anim->zoomSprite = PokeathlonCourseSpritePool_Take(scene, 105, 10);
     sprite = PokeathlonCourseSpritePoolSprite_GetSprite(anim->zoomSprite);
@@ -161,7 +161,7 @@ void PokeathlonCirclePushDisplay_CreateSprites(PokeathlonCourseSpritePool *scene
     pos.x = 0;
     pos.y = FX32_CONST(512);
     Sprite_SetMatrix(sprite, &pos);
-    PokeathlonCourseSpritePoolSprite_Show(anim->zoomSprite, 1, 0);
+    PokeathlonCourseSpritePoolSprite_Show(anim->zoomSprite, TRUE, FALSE);
 
     for (i = 0; i < 2; i++) {
         anim->scoreboardSprites[i] = PokeathlonCourseSpritePool_Take(scene, 105, 11);
@@ -171,7 +171,7 @@ void PokeathlonCirclePushDisplay_CreateSprites(PokeathlonCourseSpritePool *scene
         pos.x = (160 * i + 48) << FX32_SHIFT;
         pos.y = FX32_CONST(536);
         Sprite_SetMatrix(scoreboardSprite, &pos);
-        PokeathlonCourseSpritePoolSprite_Show(anim->scoreboardSprites[i], 1, 1);
+        PokeathlonCourseSpritePoolSprite_Show(anim->scoreboardSprites[i], TRUE, TRUE);
     }
     for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         anim->nameplateSprites[i] = PokeathlonCourseSpritePool_Take(scene, 105, 12);
@@ -181,7 +181,7 @@ void PokeathlonCirclePushDisplay_CreateSprites(PokeathlonCourseSpritePool *scene
         pos.x = x[i] << FX32_SHIFT;
         pos.y = (y[i] << FX32_SHIFT) + FX32_CONST(512);
         Sprite_SetMatrix(nameplateSprite, &pos);
-        PokeathlonCourseSpritePoolSprite_Show(anim->nameplateSprites[i], 1, 1);
+        PokeathlonCourseSpritePoolSprite_Show(anim->nameplateSprites[i], TRUE, TRUE);
     }
     for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         anim->playerEventSprites[i] = PokeathlonCourseSpritePool_Take(scene, 105, 13);
@@ -191,7 +191,7 @@ void PokeathlonCirclePushDisplay_CreateSprites(PokeathlonCourseSpritePool *scene
         pos.x = x[i] << FX32_SHIFT;
         pos.y = (y[i] << FX32_SHIFT) + FX32_CONST(512);
         Sprite_SetMatrix(eventSprite, &pos);
-        PokeathlonCourseSpritePoolSprite_Show(anim->playerEventSprites[i], 1, 0);
+        PokeathlonCourseSpritePoolSprite_Show(anim->playerEventSprites[i], TRUE, FALSE);
     }
 }
 
@@ -263,7 +263,7 @@ void PokeathlonCirclePushDisplay_ShowPlayerEvent(PokeathlonCirclePushDisplay *di
     }
     sprites = display->anim.playerEventSprites;
     window = display->windowOfParticipant[participant];
-    PokeathlonCourseSpritePoolSprite_Show(sprites[window], 1, 1);
+    PokeathlonCourseSpritePoolSprite_Show(sprites[window], TRUE, TRUE);
     Sprite_SetAnimCtrlSeq(PokeathlonCourseSpritePoolSprite_GetSprite(sprites[window]), seq);
 }
 
@@ -304,7 +304,7 @@ void PokeathlonCirclePushDisplay_LoadMonPics(PokeathlonCirclePushDisplay *displa
 
     for (i = 0; i < POKEATHLON_MONS; i++) {
         PokeathlonCourse_GetMonInfo(display->course, i / POKEATHLON_TEAM_SIZE, i % POKEATHLON_TEAM_SIZE, &view);
-        GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, view.species, view.gender, 2, view.isShiny, (u8)view.form, view.personality);
+        GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, view.species, view.gender, 2, view.isShiny, view.form, view.personality);
         display->anim.monPics[i].charData = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, display->heapId, view.personality, FALSE, 2, view.species);
         display->anim.monPics[i].paletteData = AllocAndLoadPltt16FromNarc((NarcId)pokepic.narcID, pokepic.palDataID, display->heapId);
     }
@@ -421,7 +421,7 @@ static void PokeathlonCirclePushDisplayAnim_Stop(PokeathlonCirclePushDisplayAnim
     anim->active = FALSE;
     anim->frame = 0;
     for (i = 0; i < 2; i++) {
-        PokeathlonCourseSpritePoolSprite_Show(anim->picSprites[i], 1, 0);
+        PokeathlonCourseSpritePoolSprite_Show(anim->picSprites[i], TRUE, FALSE);
     }
     G2S_BlendNone();
     PokeathlonCirclePushDisplayAnim_HideSprites(anim);
@@ -436,13 +436,13 @@ static void PokeathlonCirclePushDisplayAnim_HideSprites(PokeathlonCirclePushDisp
     u8 i;
 
     for (i = 0; i < 2; i++) {
-        PokeathlonCourseSpritePoolSprite_Show(anim->scoreboardSprites[i], 1, 0);
+        PokeathlonCourseSpritePoolSprite_Show(anim->scoreboardSprites[i], TRUE, FALSE);
     }
     for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
-        PokeathlonCourseSpritePoolSprite_Show(anim->nameplateSprites[i], 1, 0);
-        PokeathlonCourseSpritePoolSprite_Show(anim->playerEventSprites[i], 1, 0);
+        PokeathlonCourseSpritePoolSprite_Show(anim->nameplateSprites[i], TRUE, FALSE);
+        PokeathlonCourseSpritePoolSprite_Show(anim->playerEventSprites[i], TRUE, FALSE);
     }
-    PokeathlonCourseSpritePoolSprite_Show(anim->zoomSprite, 1, 0);
+    PokeathlonCourseSpritePoolSprite_Show(anim->zoomSprite, TRUE, FALSE);
 }
 
 static BOOL PokeathlonCirclePushDisplayAnim_TryStart(PokeathlonCirclePushDisplayAnim *anim, int phase) {
@@ -594,9 +594,9 @@ static void PokeathlonCirclePushDisplay_UpdateZoom(PokeathlonCirclePushDisplay *
         return;
     }
     if (anim->frame == 41) {
-        PokeathlonCourseSpritePoolSprite_Show(anim->zoomSprite, 1, 1);
+        PokeathlonCourseSpritePoolSprite_Show(anim->zoomSprite, TRUE, TRUE);
     } else if (anim->frame == 61) {
-        PokeathlonCourseSpritePoolSprite_Show(anim->zoomSprite, 1, 0);
+        PokeathlonCourseSpritePoolSprite_Show(anim->zoomSprite, TRUE, FALSE);
     }
     frame = anim->frame;
     if (frame <= 40) {
@@ -615,7 +615,7 @@ static void PokeathlonCirclePushDisplay_UpdateZoom(PokeathlonCirclePushDisplay *
         Sprite_SetMatrix(PokeathlonCourseSpritePoolSprite_GetSprite(anim->zoomSprite), &pos);
         return;
     }
-    PokeathlonCourseSpritePoolSprite_Show(anim->zoomSprite, 1, 0);
+    PokeathlonCourseSpritePoolSprite_Show(anim->zoomSprite, TRUE, FALSE);
     alpha = ((anim->frame - 60) << 4) / 20;
     G2S_SetBlendAlpha(GX_BLEND_PLANEMASK_BG3, GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BD, 16 - alpha, alpha);
 }
@@ -651,8 +651,8 @@ static void PokeathlonCirclePushDisplayAnim_SetupMatchup(PokeathlonCirclePushDis
     pos = sCirclePushDisplayPic1Path[0];
     pos.y += FX32_CONST(512);
     Sprite_SetMatrix(sprite, &pos);
-    PokeathlonCourseSpritePoolSprite_Show(anim->picSprites[0], 1, 1);
-    PokeathlonCourseSpritePoolSprite_Show(anim->picSprites[1], 1, 1);
+    PokeathlonCourseSpritePoolSprite_Show(anim->picSprites[0], TRUE, TRUE);
+    PokeathlonCourseSpritePoolSprite_Show(anim->picSprites[1], TRUE, TRUE);
 }
 
 // Moves a picture along path[0] -> path[1] (frames 0-5), -> path[2] (5-45), -> path[3] (45-50).
@@ -706,7 +706,7 @@ static void PokeathlonCirclePushDisplayAnim_SetupMonPic(PokeathlonCirclePushDisp
     pos.y = FX32_CONST(472);
     pos.z = 0;
     Sprite_SetMatrix(sprite, &pos);
-    PokeathlonCourseSpritePoolSprite_Show(anim->picSprites[0], 1, 1);
+    PokeathlonCourseSpritePoolSprite_Show(anim->picSprites[0], TRUE, TRUE);
 }
 
 // Slides a picture in (frames 0-15), holds it (15-60) and slides it out (60-70).
@@ -744,7 +744,7 @@ void PokeathlonCirclePushDisplayAnim_PrintScore(PokeathlonCirclePushDisplayAnim 
     digit = score / 100;
     srcX[0] = digit % 5 * 4;
     srcY[0] = digit / 5 * 8;
-    digit = (u8)(score / 10 - 10 * digit);
+    digit = score / 10 - 10 * digit;
     srcX[1] = digit % 5 * 4;
     srcY[1] = digit / 5 * 8;
     digit = score % 10;

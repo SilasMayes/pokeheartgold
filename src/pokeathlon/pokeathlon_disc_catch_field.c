@@ -564,7 +564,7 @@ static void PokeathlonDiscCatchDiscs_LaunchNext(PokeathlonDiscCatchDiscs *discs,
     }
     for (int i = 0; i < count; i++) {
         if (!discs->discs[i].active) {
-            PokeathlonDiscCatchDisc_Launch(&discs->discs[i], speed, (u8)i);
+            PokeathlonDiscCatchDisc_Launch(&discs->discs[i], speed, i);
             return;
         }
     }

@@ -189,26 +189,26 @@ BOOL PokeathlonBlockSmashBlocks_IsTopBlockTouched(PokeathlonBlockSmashBlocks *bl
         } else {
             converted = (float)(touchX << FX32_SHIFT) - 0.5f;
         }
-        fixedX = (s32)converted;
+        fixedX = converted;
         if (touchY != 0) {
             converted = (float)(touchY << FX32_SHIFT) + 0.5f;
         } else {
             converted = (float)(touchY << FX32_SHIFT) - 0.5f;
         }
-        fixedY = (s32)converted;
+        fixedY = converted;
         for (i = 0; i < 4; i++) {
             if (position[1] + sPokeathlonBlockSmashBlockTouchOffsets[i][0] > 0) {
                 converted = (float)((position[1] + sPokeathlonBlockSmashBlockTouchOffsets[i][0]) << FX32_SHIFT) + 0.5f;
             } else {
                 converted = (float)((position[1] + sPokeathlonBlockSmashBlockTouchOffsets[i][0]) << FX32_SHIFT) - 0.5f;
             }
-            points[i].x = (s32)converted;
+            points[i].x = converted;
             if (position[0] + sPokeathlonBlockSmashBlockTouchOffsets[i][1] > 0) {
                 converted = (float)((position[0] + sPokeathlonBlockSmashBlockTouchOffsets[i][1]) << FX32_SHIFT) + 0.5f;
             } else {
                 converted = (float)((position[0] + sPokeathlonBlockSmashBlockTouchOffsets[i][1]) << FX32_SHIFT) - 0.5f;
             }
-            points[i].y = (s32)converted;
+            points[i].y = converted;
         }
         leftEdgeY = FX_Div(FX_Mul(points[1].y - points[0].y, fixedX - points[0].x), points[1].x - points[0].x);
         leftEdgeY += points[0].y;
@@ -239,7 +239,7 @@ u16 PokeathlonBlockSmashBlocks_Hit(PokeathlonBlockSmashBlocks *blocks, u8 member
     }
     System_GetTouchNewCoords((u32 *)&x, (u32 *)&y);
     anim = 7;
-    ManagedSprite_SetPositionXY(blocks->hitSprite, (s16)x, (s16)y);
+    ManagedSprite_SetPositionXY(blocks->hitSprite, x, y);
     if (hitSpot || strongHit) {
         anim = 18;
     }
@@ -281,7 +281,7 @@ u16 PokeathlonBlockSmashBlocks_Hit(PokeathlonBlockSmashBlocks *blocks, u8 member
         PlaySE(SEQ_SE_GS_W085);
     } else {
         PlaySE(SEQ_SE_GS_W260);
-        ManagedSprite_SetPositionXY(blocks->missSprite, (s16)x, (s16)y);
+        ManagedSprite_SetPositionXY(blocks->missSprite, x, y);
         ManagedSprite_SetAnim(blocks->missSprite, 6);
         ManagedSprite_SetDrawFlag(blocks->missSprite, TRUE);
     }
@@ -296,7 +296,7 @@ u16 PokeathlonBlockSmashBlocks_Hit(PokeathlonBlockSmashBlocks *blocks, u8 member
         }
     }
     *cleared = broken > 0 && blocks->count == 0;
-    return (u16)broken;
+    return broken;
 }
 
 u32 PokeathlonBlockSmashBlocks_GetState(PokeathlonBlockSmashBlocks *blocks) {
@@ -354,10 +354,10 @@ static PokeathlonBlockSmashBlock *PokeathlonBlockSmashBlock_New(enum HeapID heap
     block = Heap_Alloc(heapId, sizeof(PokeathlonBlockSmashBlock));
     MI_CpuFill8(block, 0, sizeof(PokeathlonBlockSmashBlock));
     block->index = index;
-    priority = (u16)(22 - index * 2);
+    priority = 22 - index * 2;
     block->spot = PokeathlonBlockSmash_NewMainSprite(spriteSystem, spriteManager, 0, 0, 4, priority);
     ManagedSprite_SetDrawFlag(block->spot, FALSE);
-    block->sprite = PokeathlonBlockSmash_NewMainSprite(spriteSystem, spriteManager, 120, 0, 1, (u16)(priority + 1));
+    block->sprite = PokeathlonBlockSmash_NewMainSprite(spriteSystem, spriteManager, 120, 0, 1, priority + 1);
     ManagedSprite_SetDrawFlag(block->sprite, FALSE);
     ManagedSprite_SetAnimateFlag(block->sprite, TRUE);
     return block;
@@ -477,7 +477,7 @@ static u32 PokeathlonBlockSmashBlock_GetState(PokeathlonBlockSmashBlock *block) 
 static void PokeathlonBlockSmashFragments_Init(PokeathlonBlockSmashFragment *fragments, SpriteSystem *spriteSystem, SpriteManager *spriteManager) {
     int i;
     for (i = 0; i < 16; i++, fragments++) {
-        fragments->sprite = PokeathlonBlockSmash_NewMainSprite(spriteSystem, spriteManager, 0, 0, (u16)(i % 3 + 28), 1);
+        fragments->sprite = PokeathlonBlockSmash_NewMainSprite(spriteSystem, spriteManager, 0, 0, i % 3 + 28, 1);
         ManagedSprite_SetDrawFlag(fragments->sprite, FALSE);
     }
 }

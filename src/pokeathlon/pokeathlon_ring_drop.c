@@ -478,7 +478,7 @@ static BOOL PokeathlonRingDrop_ReadInput(PokeathlonCourseData *course) {
 
     if (packet->finished == TRUE) {
         PokeathlonRingDropDisplay_StopAnimations(&ringDrop->display);
-        PokeathlonCourseObjects_PauseAnims(ringDrop->monObjects, 1);
+        PokeathlonCourseObjects_PauseAnims(ringDrop->monObjects, TRUE);
         PokeathlonRingDropUi_StopAnimations(ringDrop->ui);
         PokeathlonCourse_SetFinishCallback(course, PokeathlonRingDrop_OnFinish);
         return TRUE;

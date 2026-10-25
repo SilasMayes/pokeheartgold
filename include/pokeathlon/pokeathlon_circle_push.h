@@ -5,11 +5,9 @@
 
 #include "pokeathlon/pokeathlon.h"
 #include "pokeathlon/pokeathlon_circle_push_display.h"
-#include "pokeathlon/pokeathlon_course_objects.h"
 #include "pokeathlon/pokeathlon_course_types_def.h"
 
 #include "bg_window.h"
-#include "sys_task_api.h"
 
 // Circle Push: the twelve Pokemon of the four teams push each other in a ring. Pokemon in the bonus zones score
 // when the round's timer runs out; Pokemon pushed out of the ring come back at their start.

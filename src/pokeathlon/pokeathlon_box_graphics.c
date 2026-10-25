@@ -194,10 +194,10 @@ static void PokeathlonBox_DeleteSprites(PokeathlonBox_SubGraphics *subGraphics) 
 static void PokeathlonBox_LoadBgGraphics(BgConfig *bgConfig, enum HeapID heapID) {
     PokeathlonBox_InitBgFromTemplates(bgConfig);
     GfGfxLoader_GXLoadPal(NARC_a_2_4_1, 0, GF_PAL_LOCATION_SUB_BG, (enum GFPalSlotOffset)0, 0, heapID);
-    GfGfxLoader_LoadCharData(NARC_a_2_4_1, 1, bgConfig, GF_BG_LYR_SUB_3, 0, 0, 1, heapID);
-    GfGfxLoader_LoadScrnData(NARC_a_2_4_1, 2, bgConfig, GF_BG_LYR_SUB_3, 0, 0x600, 1, heapID);
+    GfGfxLoader_LoadCharData(NARC_a_2_4_1, 1, bgConfig, GF_BG_LYR_SUB_3, 0, 0, TRUE, heapID);
+    GfGfxLoader_LoadScrnData(NARC_a_2_4_1, 2, bgConfig, GF_BG_LYR_SUB_3, 0, 0x600, TRUE, heapID);
     BgCommitTilemapBufferToVram(bgConfig, GF_BG_LYR_SUB_3);
-    GfGfxLoader_LoadScrnData(NARC_a_2_4_1, 3, bgConfig, GF_BG_LYR_SUB_2, 0, 0x600, 1, heapID);
+    GfGfxLoader_LoadScrnData(NARC_a_2_4_1, 3, bgConfig, GF_BG_LYR_SUB_2, 0, 0x600, TRUE, heapID);
     BgCommitTilemapBufferToVram(bgConfig, GF_BG_LYR_SUB_2);
     LoadFontPal0(GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_15_OFFSET, heapID);
 }
@@ -293,14 +293,14 @@ static void PokeathlonBox_ShowMonSprites(PokeathlonBox_Graphics *graphics, Pokea
 
     PokeathlonBox_LoadMonPic(&graphics->sub, mon);
     PokeathlonBox_TransferMonPic(&graphics->sub);
-    Sprite_SetDrawFlag(graphics->sub.monPicSprite, 1);
+    Sprite_SetDrawFlag(graphics->sub.monPicSprite, TRUE);
     PokeathlonBox_ShowStatStars(&graphics->sub, mon);
     medalSlots = sPokeathlonBoxMonSpriteRows;
     for (i = 0; i < 5; i++) {
         if (mon->medals[medalSlots[i]] != 0) {
-            Sprite_SetDrawFlag(sub->sprites[medalSlots[i]], 1);
+            Sprite_SetDrawFlag(sub->sprites[medalSlots[i]], TRUE);
         } else {
-            Sprite_SetDrawFlag(sub->sprites[medalSlots[i]], 0);
+            Sprite_SetDrawFlag(sub->sprites[medalSlots[i]], FALSE);
         }
     }
 }
@@ -312,33 +312,33 @@ static void PokeathlonBox_ShowStatStars(PokeathlonBox_SubGraphics *subGraphics, 
     for (i = 0; i < 5; i++) {
         s8 direction = mon->statChanges[i].direction;
         if (direction > 0) {
-            Sprite_SetDrawFlag(subGraphics->statRows[i].sprite, 1);
+            Sprite_SetDrawFlag(subGraphics->statRows[i].sprite, TRUE);
             Sprite_SetAnimCtrlSeq(subGraphics->statRows[i].sprite, 4);
         } else if (direction < 0) {
-            Sprite_SetDrawFlag(subGraphics->statRows[i].sprite, 1);
+            Sprite_SetDrawFlag(subGraphics->statRows[i].sprite, TRUE);
             Sprite_SetAnimCtrlSeq(subGraphics->statRows[i].sprite, 5);
         } else {
-            Sprite_SetDrawFlag(subGraphics->statRows[i].sprite, 0);
+            Sprite_SetDrawFlag(subGraphics->statRows[i].sprite, FALSE);
         }
         for (j = 0; j < 5; j++) {
             switch (mon->statChanges[i].stars[j]) {
             case 0:
-                Sprite_SetDrawFlag(subGraphics->statRows[i].sprites[j], 0);
+                Sprite_SetDrawFlag(subGraphics->statRows[i].sprites[j], FALSE);
                 break;
             case 1:
-                Sprite_SetDrawFlag(subGraphics->statRows[i].sprites[j], 1);
+                Sprite_SetDrawFlag(subGraphics->statRows[i].sprites[j], TRUE);
                 Sprite_SetAnimCtrlSeq(subGraphics->statRows[i].sprites[j], 3);
                 break;
             case 2:
-                Sprite_SetDrawFlag(subGraphics->statRows[i].sprites[j], 1);
+                Sprite_SetDrawFlag(subGraphics->statRows[i].sprites[j], TRUE);
                 Sprite_SetAnimCtrlSeq(subGraphics->statRows[i].sprites[j], 0);
                 break;
             case 3:
-                Sprite_SetDrawFlag(subGraphics->statRows[i].sprites[j], 1);
+                Sprite_SetDrawFlag(subGraphics->statRows[i].sprites[j], TRUE);
                 Sprite_SetAnimCtrlSeq(subGraphics->statRows[i].sprites[j], 1);
                 break;
             case 4:
-                Sprite_SetDrawFlag(subGraphics->statRows[i].sprites[j], 1);
+                Sprite_SetDrawFlag(subGraphics->statRows[i].sprites[j], TRUE);
                 Sprite_SetAnimCtrlSeq(subGraphics->statRows[i].sprites[j], 2);
                 break;
             default:

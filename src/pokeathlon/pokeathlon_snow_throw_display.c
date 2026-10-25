@@ -200,7 +200,7 @@ static void PokeathlonSnowThrowDisplay_LoadMonPics(PokeathlonSnowThrowDisplay *d
     PokepicTemplate template;
 
     do {
-        GetMonSpriteCharAndPlttNarcIdsEx(&template, mons->species, mons->gender, 0, mons->isShiny, (u8)mons->form, mons->personality);
+        GetMonSpriteCharAndPlttNarcIdsEx(&template, mons->species, mons->gender, 0, mons->isShiny, mons->form, mons->personality);
         ((PokeathlonSnowThrowMonPic *)(pic + offsetof(PokeathlonSnowThrowDisplay, monPics)))->character = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, display->heapId, mons->personality, FALSE, 0, mons->species);
         ((PokeathlonSnowThrowMonPic *)(pic + offsetof(PokeathlonSnowThrowDisplay, monPics)))->palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, display->heapId);
         mons++;
@@ -285,7 +285,7 @@ static void PokeathlonSnowThrowDisplay_InitWindow(PokeathlonSnowThrowDisplay *di
 }
 
 static void PokeathlonSnowThrowDisplay_PrintName(PokeathlonSnowThrowDisplay *display) {
-    u8 own = (u8)PokeathlonCourse_GetNetId(display->course);
+    u8 own = PokeathlonCourse_GetNetId(display->course);
     PlayerProfile *profile = PokeathlonCourse_GetPlayerProfileFromData(display->course, own);
     String *name = PlayerProfile_GetPlayerName_NewString(profile, display->heapId);
 
@@ -298,9 +298,9 @@ static void PokeathlonSnowThrowDisplay_PrintName(PokeathlonSnowThrowDisplay *dis
 // perspective.
 
 void PokeathlonSnowThrow_ScreenToField(int screenX, int screenY, float *fieldX, float *fieldZ) {
-    float x = (float)screenX, y = (float)screenY;
-    float zOut = (float)(22.53846153846154 + y * 5.0 / 52.0);
-    float xOut = (float)((x * 0.19375 + y / 8.0 - 15.5 - 10.0) / (0.39402173913043476 + y / 512.0));
+    float x = screenX, y = screenY;
+    float zOut = 22.53846153846154 + y * 5.0 / 52.0;
+    float xOut = (x * 0.19375 + y / 8.0 - 15.5 - 10.0) / (0.39402173913043476 + y / 512.0);
     *fieldZ = zOut;
     *fieldX = xOut;
 }
@@ -308,18 +308,18 @@ void PokeathlonSnowThrow_ScreenToField(int screenX, int screenY, float *fieldX, 
 // Field units to touch screen pixels (the inverse of PokeathlonSnowThrow_ScreenToField).
 
 void PokeathlonSnowThrow_FieldToScreen(float fieldX, float fieldZ, int *screenX, int *screenY) {
-    float y = (float)(4.0 / (1.0 + (fieldZ - 57.0) * (fieldZ - 57.0)) + (11.0 + (fieldZ * fieldZ * fieldZ) / 7600.0 - (24.0 - fieldZ) * (24.0 - fieldZ) * (24.0 - fieldZ) / 4400.0 - 1.0));
+    float y = 4.0 / (1.0 + (fieldZ - 57.0) * (fieldZ - 57.0)) + (11.0 + (fieldZ * fieldZ * fieldZ) / 7600.0 - (24.0 - fieldZ) * (24.0 - fieldZ) * (24.0 - fieldZ) / 4400.0 - 1.0);
     y *= 8.0;
-    *screenY = (int)y;
-    float x = (float)((10.0 + 0.34782608695652173 * fieldX) - (0.6451612903225806 * (y / 8.0 - 10.0) * (64.0 - fieldX) / 64.0));
+    *screenY = y;
+    float x = (10.0 + 0.34782608695652173 * fieldX) - (0.6451612903225806 * (y / 8.0 - 10.0) * (64.0 - fieldX) / 64.0);
     x *= 8.0;
-    *screenX = (int)x;
+    *screenX = x;
 }
 
 // Turns a direction by a random angle of at most `degrees` either way.
 void PokeathlonSnowThrow_AddAimSpread(int degrees, VecFx32 *direction) {
     MtxFx43 rotation;
-    u16 angle = (u16)(0xB6 * (degrees - (LCRandom() % (degrees * 2))));
+    u16 angle = 0xB6 * (degrees - (LCRandom() % (degrees * 2)));
     MTX_RotY43(&rotation, FX_SinIdx(angle), FX_CosIdx(angle));
     MTX_MultVec43(direction, &rotation, direction);
 }
@@ -366,7 +366,7 @@ int PokeathlonSnowThrowCpu_Update(PokeathlonSnowThrowCpu *cpu, int elapsed) {
         mon = cpu->member + team * SNOW_THROW_MEMBERS;
         GF_ASSERT(mon >= cpu->firstCpu);
         if ((cpu->balls[mon]->state == SNOW_THROW_BALL_NONE || cpu->balls[mon]->state == SNOW_THROW_BALL_HELD) && cpu->mons[mon]->condition != SNOW_THROW_STUNNED) {
-            PokeathlonSnowThrowCpu_Think(cpu, (u8)team, (u8)mon, elapsed);
+            PokeathlonSnowThrowCpu_Think(cpu, team, mon, elapsed);
         }
         result = (u8)mon;
         cpu->cursor++;
@@ -441,7 +441,7 @@ static void PokeathlonSnowThrowCpu_Think(PokeathlonSnowThrowCpu *cpu, u8 team, u
         } else if (speed < 1.0) {
             speed = 1.0f;
         }
-        VEC_MultAdd((fx32)(4096.0f * speed), &direction, &zero, &cpu->balls[mon]->velocity);
+        VEC_MultAdd(4096.0f * speed, &direction, &zero, &cpu->balls[mon]->velocity);
         cpu->balls[mon]->state = SNOW_THROW_BALL_FLYING;
         cpu->balls[mon]->position = *home;
     }

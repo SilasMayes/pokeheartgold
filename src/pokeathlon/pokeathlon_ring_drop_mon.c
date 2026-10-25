@@ -144,7 +144,7 @@ void PokeathlonRingDropMon_Update(PokeathlonRingDropMon *mon, PokeathlonCourseDa
         }
         break;
     case RING_DROP_MON_JUMP_RISE:
-        mon->height = (s32)((u32)(s32)gPokeathlonRingDropJumpHeights[mon->member->params->jumpType][mon->jumpFrames] << FX32_SHIFT);
+        mon->height = (u32)(s32)gPokeathlonRingDropJumpHeights[mon->member->params->jumpType][mon->jumpFrames] << FX32_SHIFT;
         mon->jumpFrames++;
         if (mon->jumpFrames >= 10) {
             mon->jumpFrames = 10;
@@ -165,7 +165,7 @@ void PokeathlonRingDropMon_Update(PokeathlonRingDropMon *mon, PokeathlonCourseDa
                 PokeathlonRingDropMon_FallOut(mon);
             }
         } else {
-            mon->height = (s32)((u32)mon->height - ((u32)gPokeathlonRingDropFallSpeeds[mon->member->params->jumpType] << FX32_SHIFT));
+            mon->height = (u32)mon->height - ((u32)gPokeathlonRingDropFallSpeeds[mon->member->params->jumpType] << FX32_SHIFT);
             if (mon->height <= 0) {
                 mon->height = 0;
             }
@@ -350,7 +350,7 @@ void PokeathlonRingDrop_InitMemberParams(PokeathlonCourseData *course) {
     for (int i = 0; i < RING_DROP_PARTICIPANTS; i++) {
         int member = 0;
         float half = 0.5f;
-        participant = (u8)i;
+        participant = i;
         for (; member < RING_DROP_TEAM_SIZE; member++) {
             u8 *stats = PokeathlonCourse_GetMonStats(course, i, member);
             PokeathlonRingDropMemberParams *params = PokeathlonRingDrop_GetMemberParams(course, participant, member);
@@ -390,7 +390,7 @@ void PokeathlonRingDropMon_NextMember(PokeathlonRingDropMon *mon) {
 
 // The own participant's sounds play on player 3, the others' on player 4.
 BOOL PokeathlonRingDrop_PlaySE(u32 seqNo, BOOL own) {
-    return PlaySEOnPlayer((u16)seqNo, own ? 3 : 4);
+    return PlaySEOnPlayer(seqNo, own ? 3 : 4);
 }
 
 void PokeathlonRingDrop_AddScoreWindow(PokeathlonRingDrop *ringDrop) {

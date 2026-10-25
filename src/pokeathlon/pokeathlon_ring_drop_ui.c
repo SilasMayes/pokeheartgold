@@ -226,9 +226,9 @@ void PokeathlonRingDropUi_SetRanks(PokeathlonRingDropUi *ui, u16 participant, u1
 
 // The ranks are hidden in the first and the last ten seconds.
 void PokeathlonRingDropUi_SetTimer(PokeathlonRingDropUi *ui, s32 seconds) {
-    u8 rest = (u8)(seconds % 100);
-    u8 tens = (u8)(rest / 10);
-    u8 ones = (u8)(rest % 10);
+    u8 rest = seconds % 100;
+    u8 tens = rest / 10;
+    u8 ones = rest % 10;
     int i;
     ui->ranksHidden = seconds < 10 || seconds > 55;
     for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
@@ -374,17 +374,17 @@ static void PokeathlonRingDropUi_DrawScore(PokeathlonRingDropUi *ui, s32 score) 
     u8 tileY[3];
     u8 digit;
     u8 i;
-    digit = (u8)(score / 100);
+    digit = score / 100;
     tileX[0] = (digit % 5) * 4;
     tileY[0] = (digit / 5) * 8;
-    digit = (u8)((score - digit * 100) / 10);
+    digit = (score - digit * 100) / 10;
     tileX[1] = (digit % 5) * 4;
     tileY[1] = (digit / 5) * 8;
-    digit = (u8)(score % 10);
+    digit = score % 10;
     tileX[2] = (digit % 5) * 4;
     tileY[2] = (digit / 5) * 8;
     for (i = 0; i < 3; i++) {
-        CopyRectToBgTilemapRect(ui->bgConfig, GF_BG_LYR_SUB_2, (u8)(16 + i * 4), 11, 4, 8, ui->digits->rawData, tileX[i], tileY[i], 20, 16);
+        CopyRectToBgTilemapRect(ui->bgConfig, GF_BG_LYR_SUB_2, 16 + i * 4, 11, 4, 8, ui->digits->rawData, tileX[i], tileY[i], 20, 16);
     }
     ScheduleBgTilemapBufferTransfer(ui->bgConfig, GF_BG_LYR_SUB_2);
 }

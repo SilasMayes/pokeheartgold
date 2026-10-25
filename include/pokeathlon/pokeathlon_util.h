@@ -6,16 +6,11 @@
 #include "pokeathlon/pokeathlon_save.h"
 
 #include "bg_window.h"
-#include "font.h"
-#include "gf_gfx_loader.h"
-#include "gf_gfx_planes.h"
 #include "message_format.h"
 #include "msgdata.h"
 #include "palette.h"
 #include "pm_string.h"
 #include "sprite_system.h"
-#include "system.h"
-#include "touchscreen.h"
 
 // Sprite and text helpers shared by the Pokeathlon course, event and record screens.
 

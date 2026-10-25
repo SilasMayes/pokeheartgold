@@ -4,13 +4,10 @@
 #include "global.h"
 
 #include "pokeathlon/pokeathlon.h"
-#include "pokeathlon/pokeathlon_course_objects.h"
 #include "pokeathlon/pokeathlon_course_types_def.h"
-#include "pokeathlon/pokeathlon_course_ui.h"
 
 #include "bg_window.h"
 #include "sprite_system.h"
-#include "sys_task_api.h"
 
 // The opening and closing ceremonies of a Pokeathlon course. The host decides the introductions and the awards and
 // sends them with the course data; every player shows them in step with the others.

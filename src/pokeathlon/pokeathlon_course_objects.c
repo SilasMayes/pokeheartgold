@@ -284,14 +284,14 @@ void PokeathlonCourseSpritePoolSprite_Show(PokeathlonCourseSpritePoolSprite *ent
         if (shown) {
             entry->shown = 1;
             if (draw) {
-                Sprite_SetDrawFlag(entry->sprite, 1);
+                Sprite_SetDrawFlag(entry->sprite, TRUE);
                 return;
             }
-            Sprite_SetDrawFlag(entry->sprite, 0);
+            Sprite_SetDrawFlag(entry->sprite, FALSE);
             return;
         }
         entry->shown = 0;
-        Sprite_SetDrawFlag(entry->sprite, 0);
+        Sprite_SetDrawFlag(entry->sprite, FALSE);
         return;
     }
     GF_ASSERT(FALSE);

@@ -38,7 +38,7 @@ void PokeathlonCirclePushDisplay_CreatePicSprites(PokeathlonCourseSpritePool *po
     Sprite *sprite;
     VecFx32 position;
     for (i = 0; i < 2; i++) {
-        PokeathlonCourseSpritePool_CreateSprite(pool, 3, NNS_G2D_VRAM_TYPE_2DSUB, (u8)resIds.ids[i], (u8)kinds.ids[i]);
+        PokeathlonCourseSpritePool_CreateSprite(pool, 3, NNS_G2D_VRAM_TYPE_2DSUB, (u8)resIds.ids[i], kinds.ids[i]);
     }
     for (i = 0; i < 2; i++) {
         display->anim.picSprites[i] = PokeathlonCourseSpritePool_Take(pool, (u8)resIds.ids[i], (u8)kinds.ids[i]);

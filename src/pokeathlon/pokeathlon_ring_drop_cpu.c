@@ -75,7 +75,7 @@ PokeathlonRingDropCpu *PokeathlonRingDropCpu_New(PokeathlonCourseData *course, e
     if (i < cpu->count) {
         PokeathlonRingDropCpuPlayer *player = cpu->players;
         do {
-            PokeathlonRingDropCpu_InitPlayer(player, (u8)participant, course);
+            PokeathlonRingDropCpu_InitPlayer(player, participant, course);
             i++;
             participant++;
             player++;
@@ -259,7 +259,7 @@ static void PokeathlonRingDropCpu_GoSwitch(PokeathlonRingDropCpuPlayer *player) 
 static BOOL PokeathlonRingDropCpu_ShouldSwitch(PokeathlonRingDropCpuPlayer *player) {
     s32 roll = MTRandom() % 100;
     s32 chance = 0;
-    u32 stamina = PokeathlonRingDrop_GetMonStaminaPercent(player->course, (u8)player->participant);
+    u32 stamina = PokeathlonRingDrop_GetMonStaminaPercent(player->course, player->participant);
     if (stamina < 10) {
         chance = 100;
     } else if (stamina < 20) {
@@ -277,28 +277,28 @@ static BOOL PokeathlonRingDropCpu_ShouldSwitch(PokeathlonRingDropCpuPlayer *play
 static void PokeathlonRingDropCpu_UpdatePlayer(PokeathlonRingDropCpuPlayer *player) {
     s16 position[2];
 
-    if (PokeathlonRingDrop_IsMonSwitching(player->course, (u8)player->participant)) {
+    if (PokeathlonRingDrop_IsMonSwitching(player->course, player->participant)) {
         return;
     }
     if (player->chasing && !player->goingToSwitch) {
         VecFx32 *chasedPosition;
-        PokeathlonRingDrop_GetMonState(player->course, (u8)player->participant);
-        if (PokeathlonRingDrop_GetMonState(player->course, (u8)player->chased) == RING_DROP_MON_FALLING_OUT || PokeathlonRingDrop_IsMonSwitching(player->course, (u8)player->chased) || PokeathlonRingDrop_IsMonPushed(player->course, (u8)player->participant)) {
-            chasedPosition = PokeathlonRingDrop_GetMonPosition(player->course, (u8)player->participant);
+        PokeathlonRingDrop_GetMonState(player->course, player->participant);
+        if (PokeathlonRingDrop_GetMonState(player->course, player->chased) == RING_DROP_MON_FALLING_OUT || PokeathlonRingDrop_IsMonSwitching(player->course, player->chased) || PokeathlonRingDrop_IsMonPushed(player->course, player->participant)) {
+            chasedPosition = PokeathlonRingDrop_GetMonPosition(player->course, player->participant);
             position[0] = chasedPosition->x >> FX32_SHIFT;
             position[1] = chasedPosition->y >> FX32_SHIFT;
-            PokeathlonRingDrop_SetMonDestination(player->course, (u8)player->participant, position);
+            PokeathlonRingDrop_SetMonDestination(player->course, player->participant, position);
             player->chasing = FALSE;
         } else {
-            chasedPosition = PokeathlonRingDrop_GetMonPosition(player->course, (u8)player->chased);
+            chasedPosition = PokeathlonRingDrop_GetMonPosition(player->course, player->chased);
             position[0] = chasedPosition->x >> FX32_SHIFT;
             position[1] = chasedPosition->y >> FX32_SHIFT;
-            PokeathlonRingDrop_SetMonDestination(player->course, (u8)player->participant, position);
+            PokeathlonRingDrop_SetMonDestination(player->course, player->participant, position);
         }
     }
     if (player->goingToSwitch) {
-        if (PokeathlonRingDrop_CanMonAct(player->course, (u8)player->participant)) {
-            int state = PokeathlonRingDrop_GetMonState(player->course, (u8)player->participant);
+        if (PokeathlonRingDrop_CanMonAct(player->course, player->participant)) {
+            int state = PokeathlonRingDrop_GetMonState(player->course, player->participant);
             PokeathlonRingDropCpu_GoSwitch(player);
             if (state == RING_DROP_MON_FALLING_OUT) {
                 player->goingToSwitch = FALSE;
@@ -313,7 +313,7 @@ static void PokeathlonRingDropCpu_UpdatePlayer(PokeathlonRingDropCpuPlayer *play
             player->period--;
             if (player->period <= 0) {
                 player->period = 3;
-                if (PokeathlonRingDrop_CanMonAct(player->course, (u8)player->participant)) {
+                if (PokeathlonRingDrop_CanMonAct(player->course, player->participant)) {
                     PokeathlonRingDropCpu_Decide(player);
                     player->decisions--;
                     if (player->decisions <= 0) {

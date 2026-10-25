@@ -6,6 +6,7 @@
 
 #include "MATH_pop.h"
 #include "screen_fade.h"
+#include "touchscreen.h"
 
 static void PokeathlonUtil_SetGfxBanks(void);
 

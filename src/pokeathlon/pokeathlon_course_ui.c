@@ -174,7 +174,7 @@ void PokeathlonCourseMessageBox_Free(PokeathlonCourseMessageBox *box) {
 // Returns whether the box is still busy (printing, or holding a printed message in link mode).
 BOOL PokeathlonCourseMessageBox_Update(PokeathlonCourseMessageBox *box) {
     if (box->printerId != -1) {
-        if (!TextPrinterCheckActive((u8)box->printerId)) {
+        if (!TextPrinterCheckActive(box->printerId)) {
             box->holdTimer = 20;
             String_Delete(box->string);
             box->string = NULL;
@@ -184,7 +184,7 @@ BOOL PokeathlonCourseMessageBox_Update(PokeathlonCourseMessageBox *box) {
     } else {
         GF_ASSERT(box->printerId == -1);
         if (box->holdTimer != 0) {
-            if (box->linkMode == 0) {
+            if (!box->linkMode) {
                 box->busy = FALSE;
             } else {
                 box->holdTimer--;
@@ -198,16 +198,16 @@ BOOL PokeathlonCourseMessageBox_Update(PokeathlonCourseMessageBox *box) {
 }
 
 void PokeathlonCourseMessageBox_Print(PokeathlonCourseMessageBox *box, u32 msgId) {
-    box->printerId = PokeathlonCourseMessageBox_PrintToWindow(box->bgConfig, &box->window, &box->string, box->textSpeed, box->msgFormat, box->msgData, msgId, (u8)box->bgLayer, box->heapId);
+    box->printerId = PokeathlonCourseMessageBox_PrintToWindow(box->bgConfig, &box->window, &box->string, box->textSpeed, box->msgFormat, box->msgData, msgId, box->bgLayer, box->heapId);
 }
 
 void PokeathlonCourseMessageBox_PrintNpcLine(PokeathlonCourseMessageBox *box, u32 msgId) {
-    box->printerId = PokeathlonCourseMessageBox_PrintToWindow(box->bgConfig, &box->window, &box->string, box->textSpeed, box->msgFormat, box->npcMsgData, msgId, (u8)box->bgLayer, box->heapId);
+    box->printerId = PokeathlonCourseMessageBox_PrintToWindow(box->bgConfig, &box->window, &box->string, box->textSpeed, box->msgFormat, box->npcMsgData, msgId, box->bgLayer, box->heapId);
 }
 
 void PokeathlonCourseMessageBox_Close(PokeathlonCourseMessageBox *box) {
     if (box->printerId != -1) {
-        RemoveTextPrinter((u8)box->printerId);
+        RemoveTextPrinter(box->printerId);
     }
     if (box->window.bgConfig != NULL) {
         ClearFrameAndWindow2(&box->window, FALSE);

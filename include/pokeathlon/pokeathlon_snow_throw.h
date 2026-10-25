@@ -4,7 +4,6 @@
 #include "global.h"
 
 #include "pokeathlon/pokeathlon.h"
-#include "pokeathlon/pokeathlon_course_internal.h"
 #include "pokeathlon/pokeathlon_course_types_def.h"
 
 #include "bg_window.h"

@@ -13,7 +13,6 @@
 #include "pm_string.h"
 #include "sprite.h"
 #include "sprite_system.h"
-#include "sys_task_api.h"
 
 // Goal Roll: four teams of three Pokemon kick two balls into the goals in the corners of the field. A goal scores
 // for the team that kicked the ball last (2 points for the big ball) and costs the goal's owner a point.

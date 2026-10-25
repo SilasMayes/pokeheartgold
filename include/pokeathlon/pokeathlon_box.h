@@ -11,7 +11,6 @@
 #include "message_format.h"
 #include "msgdata.h"
 #include "overlay_manager.h"
-#include "pokemon_storage_system.h"
 #include "pokemon_types_def.h"
 #include "sprite.h"
 #include "sprite_resource.h"

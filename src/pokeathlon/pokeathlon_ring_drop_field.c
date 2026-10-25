@@ -34,8 +34,8 @@ static BOOL PokeathlonRingDropMon_Push(PokeathlonRingDropMon *target, Pokeathlon
     if (PokeathlonRingDropMon_CanBePushed(target->state, source->state)) {
         if (source->state == RING_DROP_MON_DASH) {
             int score;
-            power = (int)(3.0f * (float)power);
-            damage = (int)(2.0f * (float)damage);
+            power = 3.0f * (float)power;
+            damage = 2.0f * (float)damage;
             score = (int)source->flags.bits.score + 1;
             if (score > 200) {
                 score = 200;
@@ -394,7 +394,7 @@ void PokeathlonRingDrop_UpdateMons(PokeathlonRingDropPlayer *players, Pokeathlon
                     PokeathlonRingDropMon_StartSwitch(mon);
                 }
             } else {
-                int radius = (int)PokeathlonRingDrop_TouchRadius();
+                int radius = PokeathlonRingDrop_TouchRadius();
                 if (!mon->flags.bits.switching && mon->state != RING_DROP_MON_FALL_OUT && PokeathlonRingDrop_IsWithinDistance(&mon->position, &touch, radius)) {
                     record->onMon = 1;
                 }
@@ -686,8 +686,8 @@ static inline void PokeathlonRingDrop_LoadRingEdge(VecFx32 *points) {
     int i = 0;
     cursor = points;
     for (; i < 4; i++) {
-        cursor->x = (s32)((u32)(s32)(*source)[0] << FX32_SHIFT);
-        cursor->y = (s32)((u32)(s32)(*source)[1] << FX32_SHIFT);
+        cursor->x = (u32)(s32)(*source)[0] << FX32_SHIFT;
+        cursor->y = (u32)(s32)(*source)[1] << FX32_SHIFT;
         source++;
         cursor++;
     }

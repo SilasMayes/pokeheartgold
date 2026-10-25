@@ -585,14 +585,14 @@ void PokeathlonDiscCatch_UpdateMonSprites(PokeathlonDiscCatchSprites *sprites, P
     entry = order;
     shift = 0;
     for (; i < DISC_CATCH_MONS; i++) {
-        monPic = PokeathlonCourseMonObjects_Get(work->monPics, (u8)i);
+        monPic = PokeathlonCourseMonObjects_Get(work->monPics, i);
         GF_ASSERT(mon != NULL);
         GF_ASSERT(monPic != NULL);
         monY = frame->monY[i];
         PokeathlonCourseObject_GroundToCenter(monPic, frame->monX[i], monY, &x, &y);
         entry->y = monY;
         entry->monPic = monPic;
-        fallen = (u8)((frame->fallen >> i) & 1);
+        fallen = (frame->fallen >> i) & 1;
         if (fallen == 1 && mon->fallen == 0) {
             PokeathlonDiscCatch_SetMonScaleCenter(monPic, TRUE);
             mon->falling = TRUE;
@@ -600,7 +600,7 @@ void PokeathlonDiscCatch_UpdateMonSprites(PokeathlonDiscCatchSprites *sprites, P
             mon->fallScale = FX32_ONE;
             PlaySE(SEQ_SE_GS_PUSH02);
         } else if (fallen == 0 && mon->fallen == 1) {
-            ManagedSprite_SetPositionXYWithSubscreenOffset(mon->splash, (s16)x, (s16)y, FX32_CONST(480));
+            ManagedSprite_SetPositionXYWithSubscreenOffset(mon->splash, x, y, FX32_CONST(480));
             ManagedSprite_SetDrawFlag(mon->splash, TRUE);
             ManagedSprite_ResetSpriteAnimCtrlState(mon->splash);
             PokeathlonDiscCatch_SetMonScaleCenter(monPic, FALSE);
@@ -628,7 +628,7 @@ void PokeathlonDiscCatch_UpdateMonSprites(PokeathlonDiscCatchSprites *sprites, P
                 }
             }
         } else {
-            u8 facing = (u8)((frame->facings >> shift) & 3);
+            u8 facing = (frame->facings >> shift) & 3;
             PokeathlonCourseObject_SetCenterPosition(monPic, x, y, 1);
             PokeathlonCourseMonObject_SetAnimState(monPic, facing + 1);
             if ((frame->jumped >> i) & 1) {
@@ -636,7 +636,7 @@ void PokeathlonDiscCatch_UpdateMonSprites(PokeathlonDiscCatchSprites *sprites, P
                 int participant;
                 participant = i / DISC_CATCH_TEAM_SIZE;
                 stats = PokeathlonDiscCatch_GetStats(course, (u8)participant, (u8)(i % DISC_CATCH_TEAM_SIZE));
-                if (participant == (int)PokeathlonCourse_GetNetId(course) && mon->jumping == 0 && mon->squashed == 0) {
+                if (participant == PokeathlonCourse_GetNetId(course) && mon->jumping == 0 && mon->squashed == 0) {
                     if (stats->jump == 0) {
                         PlaySE(SEQ_SE_DP_BOX03);
                     } else {
@@ -717,7 +717,7 @@ u32 PokeathlonDiscCatch_Intro(PokeathlonCourseData *course, u8 *state) {
 void PokeathlonDiscCatch_EndGame(PokeathlonCourseData *course) {
     u8 score;
     PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_IN);
-    score = (u8)PokeathlonDiscCatchScoreboard_GetOwnScore(((PokeathlonDiscCatch *)PokeathlonCourse_GetWork(course))->scoreboard);
+    score = PokeathlonDiscCatchScoreboard_GetOwnScore(((PokeathlonDiscCatch *)PokeathlonCourse_GetWork(course))->scoreboard);
     PokeathlonCourse_SetRecordScore(course, score);
     PokeathlonDiscCatch_PrintScore(course, score);
 }
@@ -742,7 +742,7 @@ u32 PokeathlonDiscCatch_Play(PokeathlonCourseData *course, u8 *state) {
         PokeathlonDiscCatchFrame *frame;
         PokeathlonDiscCatch_UpdateHost(course);
         frame = (PokeathlonDiscCatchFrame *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_IN);
-        PokeathlonDiscCatchScoreboard_SetOwnScore(work->scoreboard, (u8)frame->scoreParticipant, (u16)frame->score);
+        PokeathlonDiscCatchScoreboard_SetOwnScore(work->scoreboard, (u8)frame->scoreParticipant, frame->score);
         if (PokeathlonCourse_RunFinish(course)) {
             if (PokeathlonDiscCatchShake_IsDone(&work->shake)) {
                 BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, work->heapId);
@@ -769,7 +769,7 @@ u32 PokeathlonDiscCatch_Finish(PokeathlonCourseData *course, u8 *state) {
                 int i;
                 PokeathlonDiscCatchResult *result;
                 for (i = 0, result = &work->field.teams[0].result; i < DISC_CATCH_PARTICIPANTS; i++) {
-                    PokeathlonCourse_SetEventScore(course, (u8)i, (u16)result->score);
+                    PokeathlonCourse_SetEventScore(course, (u8)i, result->score);
                     result = NEXT_TEAM_RESULT(result);
                 }
             }
@@ -821,7 +821,7 @@ u32 PokeathlonDiscCatch_Init(PokeathlonCourseData *course) {
         }
         break;
     case DISC_CATCH_INIT_START: {
-        u8 participant = (u8)PokeathlonCourse_GetNetId(course);
+        u8 participant = PokeathlonCourse_GetNetId(course);
         work->scoreboard = PokeathlonDiscCatchScoreboard_New(work->spriteSystem, work->spriteManager, work->bgConfig, work->msgData, work->messageFormat, participant, work->heapId, course);
         PokeathlonDiscCatchSprites_Init(&work->sprites, work->spriteSystem, work->spriteManager, work->scoreboard);
         work->cpu = PokeathlonDiscCatchCpu_New(course, work->heapId);
@@ -889,8 +889,8 @@ u32 PokeathlonDiscCatch_Exit(PokeathlonCourseData *course) {
 
 // x of a disc on its path: a slant by the path (0..14, 7 straight down) plus a wave.
 s16 PokeathlonDiscCatch_GetDiscX(int progress, int path) {
-    s16 x = (s16)(_s32_div_f(38 * (progress * (path - 7)), 1000) + 128);
-    return (s16)(x + ((GF_SinDeg((u16)(progress << 1)) << 6) >> 16));
+    s16 x = _s32_div_f(38 * (progress * (path - 7)), 1000) + 128;
+    return x + ((GF_SinDeg(progress << 1) << 6) >> 16);
 }
 
 BOOL PokeathlonDiscCatch_IsMonInPlay(PokeathlonDiscCatch *work, u32 participant, u32 member) {
@@ -919,8 +919,8 @@ void PokeathlonDiscCatch_GetMonPosition(PokeathlonDiscCatch *work, u32 participa
     GF_ASSERT(participant < DISC_CATCH_PARTICIPANTS);
     GF_ASSERT(member < DISC_CATCH_TEAM_SIZE);
     mon = &work->field.teams[participant].mons[member];
-    position[0] = (s16)(mon->position.x >> FX32_SHIFT);
-    position[1] = (s16)(mon->position.y >> FX32_SHIFT);
+    position[0] = mon->position.x >> FX32_SHIFT;
+    position[1] = mon->position.y >> FX32_SHIFT;
     *radius = PokeathlonCourseObject_GetCollisionRadius(mon->monPic);
 }
 
@@ -935,10 +935,10 @@ u8 PokeathlonDiscCatch_CountTeamsAhead(PokeathlonCourseData *course, u32 partici
     work = PokeathlonCourse_GetWork(course);
     GF_ASSERT(work != NULL);
     i = 0;
-    score = (u16)work->field.teams[participant].result.score;
+    score = work->field.teams[participant].result.score;
     result = &work->field.teams[0].result;
     for (; i < DISC_CATCH_PARTICIPANTS; i++) {
-        u16 other = (u16)result->score;
+        u16 other = result->score;
         if (i != (int)participant && score < other) {
             count++;
         }
@@ -996,7 +996,7 @@ static int PokeathlonDiscCatch_GetJumpOffset(PokeathlonDiscCatchStats *stats, in
         } else {
             height = (f32)(stats->jumpHeight << FX32_SHIFT) - 0.5f;
         }
-        fxHeight = (int)height;
+        fxHeight = height;
         if (fxHeight != 0) {
             offset = (fxHeight / 10) * curve;
             if (offset <= FX32_CONST(-24)) {
@@ -1076,7 +1076,7 @@ void PokeathlonDiscCatch_StopAnims(PokeathlonDiscCatch *work) {
     BOOL animate0;
     BOOL animate1;
 
-    PokeathlonCourseObjects_PauseAnims(work->monPics, 1);
+    PokeathlonCourseObjects_PauseAnims(work->monPics, TRUE);
     PokeathlonDiscCatchScoreboard_Pause(work->scoreboard);
 
     for (i = 0; i < DISC_CATCH_MONS; i++) {
@@ -1172,9 +1172,9 @@ static void PokeathlonDiscCatch_InitBgs(PokeathlonDiscCatch *work) {
 
     PokeathlonDiscCatchBgTemplates templates = gPokeathlonDiscCatchBgTemplates;
     for (i = 0; i < 7; i++) {
-        InitBgFromTemplate(bgConfig, (u8)gPokeathlonDiscCatchBgLayers[i], &templates.templates[i], GF_BG_TYPE_TEXT);
-        BgClearTilemapBufferAndCommit(bgConfig, (u8)gPokeathlonDiscCatchBgLayers[i]);
-        BG_ClearCharDataRange((u8)gPokeathlonDiscCatchBgLayers[i], 0x20, 0, heapId);
+        InitBgFromTemplate(bgConfig, gPokeathlonDiscCatchBgLayers[i], &templates.templates[i], GF_BG_TYPE_TEXT);
+        BgClearTilemapBufferAndCommit(bgConfig, gPokeathlonDiscCatchBgLayers[i]);
+        BG_ClearCharDataRange(gPokeathlonDiscCatchBgLayers[i], 0x20, 0, heapId);
     }
     work->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0309_bin, work->heapId);
     work->messageFormat = MessageFormat_New(work->heapId);
@@ -1189,7 +1189,7 @@ static void PokeathlonDiscCatch_FreeBgs(PokeathlonDiscCatch *work) {
     MessageFormat_Delete(work->messageFormat);
     DestroyMsgData(work->msgData);
     for (i = 0; i < 7; i++) {
-        FreeBgTilemapBuffer(work->bgConfig, (u8)gPokeathlonDiscCatchBgLayers[i]);
+        FreeBgTilemapBuffer(work->bgConfig, gPokeathlonDiscCatchBgLayers[i]);
     }
     FontID_Release(4);
     Heap_Free(work->bgConfig);
@@ -1221,7 +1221,7 @@ static void PokeathlonDiscCatch_AnimateBg(u8 *timer, BgConfig *bgConfig, enum He
     if (timer[0] >= 4) {
         GfGfxLoader_LoadScrnData(NARC_a_2_3_5, timer[1] + 5, bgConfig, GF_BG_LYR_MAIN_0, 0, 0, TRUE, heapId);
         GfGfxLoader_LoadScrnData(NARC_a_2_3_5, timer[1] + 5, bgConfig, GF_BG_LYR_SUB_0, 0, 0, TRUE, heapId);
-        timer[1] = (u8)((timer[1] + 1) % 6);
+        timer[1] = (timer[1] + 1) % 6;
         timer[0] = 0;
     }
 }

@@ -8,6 +8,8 @@
 
 #include "char_tiles.h"
 #include "filesystem_files_def.h"
+#include "font.h"
+#include "gf_gfx_loader.h"
 #include "heap.h"
 #include "pokemon.h"
 #include "pokemon_icon_idx.h"

@@ -2,6 +2,7 @@
 
 #include "global.h"
 
+#include "pokeathlon/pokeathlon_course_internal.h"
 #include "pokeathlon/pokeathlon_course_objects.h"
 #include "pokeathlon/pokeathlon_course_types_def.h"
 
@@ -12,8 +13,6 @@
 #include "heap.h"
 #include "math_util.h"
 #include "sprite_transfer.h"
-
-typedef char PokeathlonRelayRunCpuSizeCheck[(sizeof(PokeathlonRelayRunCpu) == 0x3E8 && offsetof(PokeathlonRelayRunCpu, cells) == 0x29C && offsetof(PokeathlonRelayRunCpu, thinking) == 0x3DC) ? 1 : -1];
 
 // Sprite resource ids of the touch screen (pairs: the two Pokemon pictures are entries 6 and 7).
 extern const u32 gPokeathlonRelayRunPicIds[];

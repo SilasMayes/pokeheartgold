@@ -297,7 +297,7 @@ BOOL PokeathlonResults_Init(PokeathlonCourseData *course) {
         PokeathlonCourseSpritePool_SetSurfaceCoords(announcement->scene, 0, 0, 0, FX32_CONST(300));
         scoreList = PokeathlonCourse_GetGraphicsSystem(course);
         value = PokeathlonCourseScoreList_GetCount(scoreList);
-        PokeathlonResults_StartRanking(&announcement->ranking, course, (u8)value, PokeathlonCourseScoreList_GetField04(scoreList));
+        PokeathlonResults_StartRanking(&announcement->ranking, course, value, PokeathlonCourseScoreList_GetField04(scoreList));
         announcement->scoreboard = PokeathlonResults_NewScoreboard(announcement->heapId, announcement->bgConfig, announcement->scene);
         PokeathlonResults_LoadScoreboardResources(announcement->scoreboard, 2);
         PokeathlonCourseSpritePool_TransferResources(announcement->scene);
@@ -797,8 +797,8 @@ static BOOL PokeathlonResults_WaitForPlayers(PokeathlonCourseData *course) {
     u8 *data = PokeathlonCourse_GetDataCopyArea(course);
     u8 *out = PokeathlonCourse_ToBytes(data + POKEATHLON_COURSE_DATA_FRAME_OUT); // the host's block for the others
     u8 *host = PokeathlonCourse_ToBytes(data + POKEATHLON_COURSE_DATA_FRAME_IN);
-    u8 self = (u8)PokeathlonCourse_GetNetId(course);
-    u8 progress = (u8)announcement->messageCount;
+    u8 self = PokeathlonCourse_GetNetId(course);
+    u8 progress = announcement->messageCount;
     BOOL behind = FALSE;
     if (self == 0) {
         BOOL allFinished = TRUE;
@@ -838,8 +838,8 @@ static BOOL PokeathlonResults_WaitForPlayers(PokeathlonCourseData *course) {
     }
     out = PokeathlonCourse_ToBytes(data); // this player's block
     out[0] = progress;
-    out[1] = (u8)PokeathlonCourseMessageBox_IsBusy(announcement->messageBox);
-    out[2] = (u8)announcement->finished;
+    out[1] = PokeathlonCourseMessageBox_IsBusy(announcement->messageBox);
+    out[2] = announcement->finished;
     if (host[3] != 0 && progress >= host[1]) {
         return TRUE;
     }

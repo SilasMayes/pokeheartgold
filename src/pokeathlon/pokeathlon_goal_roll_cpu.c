@@ -10,6 +10,7 @@
 #include "math_util.h"
 #include "sprite_resource_header.h"
 #include "sprite_system.h"
+#include "sys_task_api.h"
 
 // The roles of a CPU team's Pokemon, in the order they move (PokeathlonGoalRollCpuTeam.order).
 enum PokeathlonGoalRollCpuRole {
@@ -61,7 +62,7 @@ void PokeathlonGoalRollDisplay_UpdateTimer(PokeathlonGoalRollDisplay *display, s
             display->secondWindShown = TRUE;
         }
     } else {
-        seconds = (u8)(timer / 30);
+        seconds = timer / 30;
         Sprite_SetAnimCtrlSeq(display->timerDigits[0], (u8)(seconds / 10) + 1);
         Sprite_SetAnimCtrlSeq(display->timerDigits[1], (u8)(seconds % 10) + 1);
     }
@@ -74,15 +75,15 @@ void PokeathlonGoalRollDisplay_DrawScore(PokeathlonGoalRollDisplay *display, s32
     u8 digit;
     u8 i;
 
-    digit = (u8)(score / 10);
+    digit = score / 10;
     srcX[0] = (digit % 5) * 4;
     srcY[0] = (digit / 5) * 8;
-    digit = (u8)(score % 10);
+    digit = score % 10;
     srcX[1] = (digit % 5) * 4;
     srcY[1] = (digit / 5) * 8;
 
     for (i = 0; i < 2; i++) {
-        CopyRectToBgTilemapRect(display->bgConfig, GF_BG_LYR_SUB_2, (u8)(i * 4 + 6), 10, 4, 8, display->digitScreen->rawData, srcX[i], srcY[i], 20, 16);
+        CopyRectToBgTilemapRect(display->bgConfig, GF_BG_LYR_SUB_2, i * 4 + 6, 10, 4, 8, display->digitScreen->rawData, srcX[i], srcY[i], 20, 16);
     }
     ScheduleBgTilemapBufferTransfer(display->bgConfig, GF_BG_LYR_SUB_2);
 }
@@ -584,10 +585,10 @@ static void PokeathlonGoalRollCpu_Think(PokeathlonCourseData *course, Pokeathlon
     // BUG: the role is passed where the Pokemon's team slot is expected, so dashes are counted for the wrong Pokemon.
     switch (role) {
     case GOAL_ROLL_CPU_ROLE_GUARD:
-        slot->wait = (u32)PokeathlonGoalRollCpu_ThinkGuard(course, participant, role, slot->mon, cpu->balls);
+        slot->wait = PokeathlonGoalRollCpu_ThinkGuard(course, participant, role, slot->mon, cpu->balls);
         break;
     case GOAL_ROLL_CPU_ROLE_CHASER:
-        slot->wait = (u32)PokeathlonGoalRollCpu_ThinkChaser(course, participant, role, slot->mon, cpu->balls);
+        slot->wait = PokeathlonGoalRollCpu_ThinkChaser(course, participant, role, slot->mon, cpu->balls);
         break;
     case GOAL_ROLL_CPU_ROLE_FLEX:
         slot->wait = PokeathlonGoalRollCpu_ThinkFlex(course, participant, role, slot->mon, cpu->balls, cpu->teams);

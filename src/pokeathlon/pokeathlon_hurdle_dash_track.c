@@ -112,8 +112,8 @@ void PokeathlonHurdle_GetRect(PokeathlonHurdle *hurdle, PokeathlonHurdleDashRect
     const VecFx32 *position = Sprite_GetMatrixPtr(PokeathlonCourseSpritePoolSprite_GetSprite(hurdle->standingSprite));
     rect->width = 64;
     rect->height = 16;
-    rect->x = (s16)(position->x / FX32_ONE - 32);
-    rect->y = (s16)(position->y / FX32_ONE - 16);
+    rect->x = position->x / FX32_ONE - 32;
+    rect->y = position->y / FX32_ONE - 16;
 }
 
 // Places the next of the lane's four hurdles y pixels below the top of the screen.
@@ -226,7 +226,7 @@ void PokeathlonHurdleDashTrack_RevealHurdles(PokeathlonHurdleDashTrack *track, i
 // The host picks one of the three hurdle layouts.
 void PokeathlonHurdleDashTrack_LoadRandomLayout(PokeathlonHurdleDashTrack *track) {
     u8 layout = LCRandom() % 3;
-    ReadWholeNarcMemberByIdPair(track->layoutToSend, NARC_a_2_2_6, (u8)layout);
+    ReadWholeNarcMemberByIdPair(track->layoutToSend, NARC_a_2_2_6, layout);
 }
 
 // The flag of the layout at position, -1 if there is no hurdle there.

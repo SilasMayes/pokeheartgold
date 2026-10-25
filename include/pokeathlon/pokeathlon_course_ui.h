@@ -4,7 +4,6 @@
 #include "global.h"
 
 #include "pokeathlon/pokeathlon.h"
-#include "pokeathlon/pokeathlon_course_objects.h"
 #include "pokeathlon/pokeathlon_course_types_def.h"
 
 #include "bg_window.h"
@@ -14,7 +13,6 @@
 #include "pm_string.h"
 #include "render_window.h"
 #include "sprite.h"
-#include "sprite_system.h"
 
 // Screen helpers shared by the course screens: the banner with an event's picture and name,
 // the commentator's message box, and pictures of trainers and Pokemon loaded into sprites.

@@ -12,7 +12,6 @@
 #include "msgdata.h"
 #include "pm_string.h"
 #include "sprite_system.h"
-#include "sys_task_api.h"
 #include "touchscreen.h"
 
 // Block Smash: every participant breaks stacks of ten blocks by tapping them; each hit takes the active Pokemon's

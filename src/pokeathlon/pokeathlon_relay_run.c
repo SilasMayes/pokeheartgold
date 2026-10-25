@@ -58,11 +58,6 @@ enum PokeathlonRelayRunInitState {
     RELAY_RUN_INIT_DONE,
 };
 
-typedef char PokeathlonRelayRunSizeCheck[(sizeof(PokeathlonRelayRun) == 0x648 && sizeof(PokeathlonRelayRunTeam) == 0xD4 && sizeof(PokeathlonRelayRunMember) == 0x1C && sizeof(PokeathlonRelayRunPacket) == 0x28 && sizeof(PokeathlonRelayRunTouch) == 0x24 && sizeof(PokeathlonRelayRunLink) == 0x118) ? 1 : -1];
-typedef char PokeathlonRelayRunLayoutCheck[(offsetof(PokeathlonRelayRun, teams) == 0x30 && offsetof(PokeathlonRelayRun, finished) == 0x3C0 && offsetof(PokeathlonRelayRun, cpu) == 0x3DC && offsetof(PokeathlonRelayRun, obstacles) == 0x4D4 && offsetof(PokeathlonRelayRun, timer) == 0x640 && offsetof(PokeathlonRelayRunTeam, position) == 0x7C && offsetof(PokeathlonRelayRunTeam, laps) == 0x9C && offsetof(PokeathlonRelayRunTeam, owner) == 0xD0) ? 1 : -1];
-
-fx32 FX_Sqrt(fx32 x);
-
 f32 _fflt(int value);
 
 static void PokeathlonRelayRun_SetGfxBanks(void);
@@ -655,7 +650,7 @@ BOOL PokeathlonRelayRun_SaveScores(PokeathlonCourseData *course, u8 *state) {
         return TRUE;
     }
     for (i = 0, team = (PokeathlonRelayRunTeam *)((u8 *)team + offsetof(PokeathlonRelayRun, teams)); i < RELAY_RUN_TEAMS; i++, team++) {
-        PokeathlonCourse_SetEventScore(savedCourse, (u8)i, (u16)(team->position.x / FX32_ONE + (team->laps << 10)));
+        PokeathlonCourse_SetEventScore(savedCourse, (u8)i, team->position.x / FX32_ONE + (team->laps << 10));
     }
     return TRUE;
 }
@@ -731,7 +726,7 @@ static void PokeathlonRelayRun_UpdateHost(PokeathlonCourseData *course) {
             pressCursor->presses[0].pressed = FALSE;
             pressCursor->presses[0].held = FALSE;
         }
-        PokeathlonRelayRun_UpdateSwapSign(relayRun, (u8)i, PokeathlonRelayRun_IsTouchingSwapButton(relayRun, touch->x, touch->y));
+        PokeathlonRelayRun_UpdateSwapSign(relayRun, i, PokeathlonRelayRun_IsTouchingSwapButton(relayRun, touch->x, touch->y));
         if (teamCursor->teams[0].swapping) {
             if (teamCursor->teams[0].swapPhase == RELAY_RUN_SWAP_LEAVE && touch->displayPhase == RELAY_RUN_SWAP_LEAVE) {
                 teamCursor->teams[0].current = (teamCursor->teams[0].current + 1) % RELAY_RUN_MEMBERS;
@@ -798,7 +793,7 @@ static void PokeathlonRelayRun_UpdateHost(PokeathlonCourseData *course) {
             acceleration = teamCursor->teams[0].members[teamCursor->teams[0].current].acceleration;
             weight = teamCursor->teams[0].members[teamCursor->teams[0].current].weight;
             maxSpeed = PokeathlonRelayRunTeam_GetMaxSpeed(runner, teamCursor->teams[0].current);
-            scale = (fx32)(4096.0 * ((double)(acceleration * weight) / 8.0));
+            scale = 4096.0 * ((double)(acceleration * weight) / 8.0);
             VEC_Subtract(dragEnd, dragStart, &work.flick);
             if (work.flick.x < 0) {
                 if (work.flick.x < FX32_CONST(-16)) {
@@ -823,7 +818,7 @@ static void PokeathlonRelayRun_UpdateHost(PokeathlonCourseData *course) {
                     *zero = 0;
                 }
                 VEC_Normalize(&work.combined, &work.combined);
-                VEC_MultAdd((fx32)(4096.0f * maxSpeed), &work.combined, &work.limitBase, velocity);
+                VEC_MultAdd(4096.0f * maxSpeed, &work.combined, &work.limitBase, velocity);
             } else {
                 PokeathlonRelayRun_AddFlick(velocity2, &work.flick, velocity);
             }
@@ -1450,9 +1445,9 @@ void PokeathlonRelayRun_ScrollObstacles(PokeathlonRelayRun *relayRun, int x) {
         y = shifted->obstacles[0].y;
         screenX = x - shifted->obstacles[0].x;
         if ((double)screenX >= 768.0) {
-            screenX = (int)(80.0 + (1024.0 - (double)screenX));
+            screenX = 80.0 + (1024.0 - (double)screenX);
         } else if ((double)screenX <= -768.0) {
-            screenX = (int)(80.0 - (1024.0 + (double)screenX));
+            screenX = 80.0 - (1024.0 + (double)screenX);
         } else {
             screenX = RELAY_RUN_RUNNER_X - screenX;
         }
@@ -1940,12 +1935,12 @@ static fx32 PokeathlonRelayRun_CalcCircleEntry(const VecFx32 *a, const VecFx32 *
 // The fastest a flick can make the member run: its speed on a slow patch, when tired, or its speed limit.
 f32 PokeathlonRelayRunTeam_GetMaxSpeed(PokeathlonRelayRunTeam *team, int member) {
     if (team->onPatch) {
-        return (f32)team->members[member].patchSpeed;
+        return team->members[member].patchSpeed;
     }
     if (team->members[member].energy <= 40.0) {
-        return (f32)team->members[member].tiredSpeed;
+        return team->members[member].tiredSpeed;
     }
-    return (f32)team->members[member].speedLimit;
+    return team->members[member].speedLimit;
 }
 
 // Adds a flick to a velocity: x always adds up, y only when it goes the same way (else the flick's y wins).
@@ -2211,7 +2206,7 @@ static void PokeathlonRelayRun_PrintResult(PokeathlonRelayRun *relayRun, int lap
     String *string;
     int tenths;
     FillWindowPixelBuffer(&relayRun->window, 0);
-    tenths = (int)(x * 10 / 1024.0);
+    tenths = x * 10 / 1024.0;
     GF_ASSERT(tenths <= 9);
     msgData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0309_bin, relayRun->heapId);
     msgFormat = MessageFormat_New(relayRun->heapId);
@@ -2229,7 +2224,7 @@ static void PokeathlonRelayRun_PrintResult(PokeathlonRelayRun *relayRun, int lap
 // belongs to the player's own team.
 void PokeathlonRelayRun_PlaySEIfOnScreen(int x, int seqNo, int isOwn) {
     if (x >= 0 && x < 256) {
-        PlaySEOnPlayer((u16)seqNo, isOwn ? 3 : 4);
+        PlaySEOnPlayer(seqNo, isOwn ? 3 : 4);
     }
 }
 
@@ -2273,12 +2268,12 @@ void PokeathlonRelayRun_UpdateSwapSign(PokeathlonRelayRun *relayRun, u8 teamId, 
 void PokeathlonRelayRun_SaveResult(PokeathlonCourseData *course) {
     PokeathlonRelayRunPacket *packet = (PokeathlonRelayRunPacket *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + offsetof(PokeathlonRelayRunLink, packet));
     PokeathlonRelayRun *relayRun = PokeathlonCourse_GetWork(course);
-    u8 own = (u8)PokeathlonCourse_GetNetId(course);
-    u8 laps = (u8)(packet->laps[own] & 0x7F);
+    u8 own = PokeathlonCourse_GetNetId(course);
+    u8 laps = packet->laps[own] & 0x7F;
     u16 x = packet->x[own];
     if (laps > RELAY_RUN_MAX_LAPS) {
         laps = RELAY_RUN_MAX_LAPS;
     }
-    PokeathlonCourse_SetRecordScore(course, (u16)(x + (laps << 10)));
+    PokeathlonCourse_SetRecordScore(course, x + (laps << 10));
     PokeathlonRelayRun_PrintResult(relayRun, laps, x);
 }

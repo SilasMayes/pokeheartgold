@@ -573,8 +573,8 @@ void PokeathlonGoalRoll_CheckGoals(PokeathlonCourseData *course) {
             Point2D point;
             int goal, index, participant, member, points;
             PokeathlonGoalRollMon *kicker;
-            point.x = (s32)ball->position.x / FX32_ONE;
-            point.y = (s32)ball->position.y / FX32_ONE;
+            point.x = ball->position.x / FX32_ONE;
+            point.y = ball->position.y / FX32_ONE;
             goal = PokeathlonGoalRoll_GetBallQuadrant(ball);
             if (!(u8)Point2D_IsLeftOfLine(&gPokeathlonGoalRollGoalLines[goal][0], &gPokeathlonGoalRollGoalLines[goal][1], &point)) {
                 continue;
@@ -884,7 +884,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
         }
     }
     if (position->y < 0x70000) {
-        s32 edge = (s32)((u32)radius + 16);
+        s32 edge = (u32)radius + 16;
         if (position->y < TO_FX32(edge) && previous->y == TO_FX32((s32)(16U - (u32)radius))) {
             *out = *previous;
             return GOAL_ROLL_WALL_TOP;
@@ -907,7 +907,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
             return GOAL_ROLL_WALL_TOP;
         }
         if (position->x < 0x80000) {
-            radius = (s32)((u32)radius + 8);
+            radius = (u32)radius + 8;
             if (position->x < TO_FX32(radius) && previous->x == TO_FX32(radius)) {
                 *out = *previous;
                 return GOAL_ROLL_WALL_LEFT;
@@ -930,7 +930,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
                 return GOAL_ROLL_WALL_LEFT;
             }
         } else {
-            s32 edge = (s32)(247U - (u32)radius);
+            s32 edge = 247U - (u32)radius;
             if (position->x > TO_FX32(edge) && previous->x == TO_FX32(edge)) {
                 *out = *previous;
                 return GOAL_ROLL_WALL_RIGHT;
@@ -954,7 +954,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
             }
         }
     } else {
-        s32 edge = (s32)(183U - (u32)radius);
+        s32 edge = 183U - (u32)radius;
         if (position->y > TO_FX32(edge) && previous->y == TO_FX32(edge)) {
             *out = *previous;
             return GOAL_ROLL_WALL_BOTTOM;
@@ -977,7 +977,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
             return GOAL_ROLL_WALL_BOTTOM;
         }
         if (position->x < 0x80000) {
-            radius = (s32)((u32)radius + 8);
+            radius = (u32)radius + 8;
             if (position->x < TO_FX32(radius) && previous->x == TO_FX32(radius)) {
                 *out = *previous;
                 return GOAL_ROLL_WALL_LEFT;
@@ -1000,7 +1000,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
                 return GOAL_ROLL_WALL_LEFT;
             }
         } else {
-            s32 edge = (s32)(247U - (u32)radius);
+            s32 edge = 247U - (u32)radius;
             if (position->x > TO_FX32(edge) && previous->x == TO_FX32(edge)) {
                 *out = *previous;
                 return GOAL_ROLL_WALL_RIGHT;
@@ -1055,17 +1055,17 @@ static BOOL PokeathlonGoalRoll_IntersectWall(const VecFx32 *a, const VecFx32 *b,
     VEC_Subtract(b, a, &direction);
     VEC_Normalize(&direction, &direction);
     if (a->y == b->y) {
-        distC = (s32)((u32)a->y - (u32)c->y);
+        distC = (u32)a->y - (u32)c->y;
         if (distC < 0) {
             u32 minusOne = 0;
             minusOne = ~minusOne;
-            distC = (s32)((u32)distC * minusOne);
+            distC = (u32)distC * minusOne;
         };
-        distD = (s32)((u32)a->y - (u32)d->y);
+        distD = (u32)a->y - (u32)d->y;
         if (distD < 0) {
             u32 minusOne = 0;
             minusOne = ~minusOne;
-            distD = (s32)((u32)distD * minusOne);
+            distD = (u32)distD * minusOne;
         };
         if (!distD) {
             return FALSE;
@@ -1073,28 +1073,28 @@ static BOOL PokeathlonGoalRoll_IntersectWall(const VecFx32 *a, const VecFx32 *b,
         fx32 x = c->x;
         point.y = a->y;
         point.x = x;
-        VEC_MultAdd(FX_Div(distC, (s32)((u32)distC + (u32)distD)), &direction, &point, out);
+        VEC_MultAdd(FX_Div(distC, (u32)distC + (u32)distD), &direction, &point, out);
         return TRUE;
     }
     if (a->x == b->x) {
-        distC = (s32)((u32)a->x - (u32)c->x);
+        distC = (u32)a->x - (u32)c->x;
         if (distC < 0) {
             u32 minusOne = 0;
             minusOne = ~minusOne;
-            distC = (s32)((u32)distC * minusOne);
+            distC = (u32)distC * minusOne;
         };
-        distD = (s32)((u32)a->x - (u32)d->x);
+        distD = (u32)a->x - (u32)d->x;
         if (distD < 0) {
             u32 minusOne = 0;
             minusOne = ~minusOne;
-            distD = (s32)((u32)distD * minusOne);
+            distD = (u32)distD * minusOne;
         };
         if (!distD) {
             return FALSE;
         }
         point.x = a->x;
         point.y = c->y;
-        VEC_MultAdd(FX_Div(distC, (s32)((u32)distC + (u32)distD)), &direction, &point, out);
+        VEC_MultAdd(FX_Div(distC, (u32)distC + (u32)distD), &direction, &point, out);
         return TRUE;
     }
     GF_ASSERT(FALSE);
@@ -1142,7 +1142,7 @@ u8 PokeathlonGoalRoll_EncodeBallY(PokeathlonGoalRollBall *ball) {
             result = y / FX32_ONE;
         } else {
             u32 goal = PokeathlonGoalRoll_GetBallQuadrant(ball);
-            result = PokeathlonGoalRoll_GetGoalCode(goal, (u8)(ball->lastKicker / GOAL_ROLL_TEAM_SIZE));
+            result = PokeathlonGoalRoll_GetGoalCode(goal, ball->lastKicker / GOAL_ROLL_TEAM_SIZE);
         }
     } else {
         y = ball->position.y;
@@ -1201,7 +1201,7 @@ void PokeathlonGoalRoll_PlayGoalAreaSE(PokeathlonGoalRoll *goalRoll, u32 ballInd
     if (code < 0xD8) {
         if (goalRoll->ballInGoalArea[ballIndex] == 0) {
             goalRoll->ballInGoalArea[ballIndex] = 1;
-            if (ballIndex == 0 && bigBall != 0) {
+            if (ballIndex == 0 && bigBall) {
                 PlaySE(SEQ_SE_GS_APPEAR);
                 return;
             }
