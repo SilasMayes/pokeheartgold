@@ -852,7 +852,7 @@ static BOOL Task_FollowMonFlash(TaskManager *taskMan) {
                 env->blend = 16;
                 (*state)++;
             }
-            BlendPalette(env->original, env->blended, 32, (u8)env->blend, 0xFFFF);
+            BlendPalette(env->original, env->blended, 32, env->blend, 0xFFFF);
             billboard = MapObjectManager_GetFollowMonBillboard(fieldSystem->mapObjectManager);
             plttKey = BillboardObject_GetPlttKey(billboard);
             plttAddr = BillboardObject_GetPlttKey(billboard);
@@ -870,7 +870,7 @@ static BOOL Task_FollowMonFlash(TaskManager *taskMan) {
             if (env->blend <= 0) {
                 (*state)++;
             }
-            BlendPalette(env->original, env->blended, 32, (u8)env->blend, 0xFFFF);
+            BlendPalette(env->original, env->blended, 32, env->blend, 0xFFFF);
             billboard = MapObjectManager_GetFollowMonBillboard(fieldSystem->mapObjectManager);
             plttKey = BillboardObject_GetPlttKey(billboard);
             plttAddr = BillboardObject_GetPlttKey(billboard);

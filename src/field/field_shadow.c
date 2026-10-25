@@ -72,7 +72,6 @@ static void FieldShadowEffect_Update(FieldEffect *effect, void *state);
 static BOOL FieldShadowEffect_InitFollowMon(FieldEffect *effect, void *state);
 static void FieldShadowEffect_Draw(FieldEffect *effect, void *state);
 static void FieldShadowEffect_DrawFollowMon(FieldEffect *effect, void *state);
-void FieldShadow_CreateFriendShadow(LocalMapObject *object, int index);
 static void FieldShadowEffect_UpdateFriendShadow(FieldEffect *effect, void *state);
 static void FieldShadowEffect_DrawFriendShadow(FieldEffect *effect, void *state);
 
@@ -365,7 +364,7 @@ static void FieldShadowEffect_DrawFollowMon(FieldEffect *effect, void *state) {
     RenderObj_Draw(renderObj, &pos, &scale, &mtx);
 }
 
-void FieldShadow_CreateFriendShadow(LocalMapObject *object, int index) {
+FieldEffect *FieldShadow_CreateFriendShadow(LocalMapObject *object, int index) {
     FieldShadowEffectArgs args;
     VecFx32 pos;
     FieldEffectManager *manager = FieldEffectManager_GetFromMapObject(object);
@@ -373,7 +372,7 @@ void FieldShadow_CreateFriendShadow(LocalMapObject *object, int index) {
     args.shadow = FieldEffectManager_GetRendererData(manager, FIELD_EFFECT_RENDERER_SHADOW);
     args.mapObject = object;
     MapObject_CopyPositionVector(object, &pos);
-    FieldEffectManager_CreateEffect(manager, &sFriendShadowTemplate, &pos, index, &args, MapObject_GetPriorityPlusValue(object, 2));
+    return FieldEffectManager_CreateEffect(manager, &sFriendShadowTemplate, &pos, index, &args, MapObject_GetPriorityPlusValue(object, 2));
 }
 
 static void FieldShadowEffect_UpdateFriendShadow(FieldEffect *effect, void *state) {

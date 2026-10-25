@@ -608,7 +608,7 @@ static void TouchMartApp_AddWindows(TouchMartAppData *data) {
 static void TouchMartApp_AddItemWindows(TouchMartAppData *data) {
     int i;
     for (i = 0; i < TOUCH_MART_ITEMS_PER_PAGE; i++) {
-        AddWindowParameterized(data->bgConfig, &data->windows[i], GF_BG_LYR_SUB_0, (u8)sTouchMartItemWindowPositions[i].x, (u8)sTouchMartItemWindowPositions[i].y, 11, 4, 12, (u16)sTouchMartItemWindowPositions[i].baseTile);
+        AddWindowParameterized(data->bgConfig, &data->windows[i], GF_BG_LYR_SUB_0, sTouchMartItemWindowPositions[i].x, sTouchMartItemWindowPositions[i].y, 11, 4, 12, sTouchMartItemWindowPositions[i].baseTile);
     }
 }
 
@@ -658,7 +658,7 @@ static void TouchMartApp_PrintItemList(TouchMartAppData *data) {
             if (TouchMartApp_IsItemPurchasable(data->martData, index, itemId)) {
                 int price;
                 martData2 = data->martData;
-                price = MartData_GetItemPrice(martData2, (u16)itemId);
+                price = MartData_GetItemPrice(martData2, itemId);
                 TouchMartApp_PrintPrice(data->messageFormat, data->msgData, window, price, martData2->martType);
             }
             i++;
@@ -759,7 +759,7 @@ static void TouchMartApp_PrintPageNumber(TouchMartAppData *data) {
 }
 
 static void TouchMartApp_EditListTilemap(BgConfig *bgConfig, int bgId, int itemCount) {
-    u16 *tilemap = GetBgTilemapBuffer(bgConfig, (u8)bgId);
+    u16 *tilemap = GetBgTilemapBuffer(bgConfig, bgId);
     int i;
     const TouchMartBgOp *op;
     if (itemCount == TOUCH_MART_ITEMS_PER_PAGE) {
@@ -768,9 +768,9 @@ static void TouchMartApp_EditListTilemap(BgConfig *bgConfig, int bgId, int itemC
     op = sTouchMartListTilemapEdits[itemCount];
     for (i = 0; i < 4; i++, op++) {
         if (op->kind == 1) {
-            LoadRectToBgTilemapRect(bgConfig, (u8)bgId, &tilemap[op->srcX + op->srcY * 32], op->destX, op->destY, op->width, op->height);
+            LoadRectToBgTilemapRect(bgConfig, bgId, &tilemap[op->srcX + op->srcY * 32], op->destX, op->destY, op->width, op->height);
         } else if (op->kind == 2) {
-            FillBgTilemapRect(bgConfig, (u8)bgId, 0, op->destX, op->destY, op->width, op->height, 0);
+            FillBgTilemapRect(bgConfig, bgId, 0, op->destX, op->destY, op->width, op->height, 0);
         }
     }
 }
@@ -928,7 +928,7 @@ static void TouchMartApp_PrintHowMany(TouchMartAppData *data) {
     template = NewString_ReadMsgData(data->msgData, msg_0435_00012);
     StringExpandPlaceholders(data->messageFormat, data->string, template);
     String_Delete(template);
-    LoadUserFrameGfx2(data->bgConfig, GF_BG_LYR_SUB_0, 437, 5, (u8)Options_GetFrame(data->options), HEAP_ID_FIELD1);
+    LoadUserFrameGfx2(data->bgConfig, GF_BG_LYR_SUB_0, 437, 5, Options_GetFrame(data->options), HEAP_ID_FIELD1);
     DrawFrameAndWindow2(&data->windows[TOUCH_MART_WINDOW_PROMPT], TRUE, 437, 5);
     data->martData->printerID = AddTextPrinterParameterized(&data->windows[TOUCH_MART_WINDOW_PROMPT], 1, data->string, 0, 0, Options_GetTextFrameDelay(data->options), NULL);
 }
@@ -946,7 +946,7 @@ static void TouchMartApp_PrintConfirmPurchase(TouchMartAppData *data) {
     }
     StringExpandPlaceholders(data->messageFormat, data->string, template);
     String_Delete(template);
-    LoadUserFrameGfx2(data->bgConfig, GF_BG_LYR_SUB_0, 437, 5, (u8)Options_GetFrame(data->options), HEAP_ID_FIELD1);
+    LoadUserFrameGfx2(data->bgConfig, GF_BG_LYR_SUB_0, 437, 5, Options_GetFrame(data->options), HEAP_ID_FIELD1);
     DrawFrameAndWindow2(&data->windows[TOUCH_MART_WINDOW_PROMPT], TRUE, 437, 5);
     data->printerId = AddTextPrinterParameterized(&data->windows[TOUCH_MART_WINDOW_PROMPT], 1, data->string, 0, 0, Options_GetTextFrameDelay(data->options), NULL);
 }
@@ -1085,7 +1085,7 @@ static String *TouchMartApp_GetNoRoomMessage(const MartData *martData, MsgData *
         String_Delete(string_);                                                                                                   \
         FillWindowPixelBuffer(&(data)->messageWindow, 15);                                                                        \
         frame_ = Options_GetFrame((data)->options);                                                                               \
-        LoadUserFrameGfx2((data)->bgConfig, GF_BG_LYR_SUB_0, 437, 5, (u8)frame_, HEAP_ID_FIELD1);                                 \
+        LoadUserFrameGfx2((data)->bgConfig, GF_BG_LYR_SUB_0, 437, 5, frame_, HEAP_ID_FIELD1);                                     \
         DrawFrameAndWindow2(&(data)->messageWindow, TRUE, 437, 5);                                                                \
         delay_ = Options_GetTextFrameDelay((data)->options);                                                                      \
         (data)->martData->printerID = AddTextPrinterParameterized(&(data)->messageWindow, 1, (data)->string, 0, 0, delay_, NULL); \

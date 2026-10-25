@@ -167,7 +167,7 @@ void ScriptMenu_ShowMultichoice(ScriptMenu *menu) {
     if (menu->anchorBottom) {
         menu->y -= menu->count * 2;
     }
-    AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, (u8)width, (u8)(menu->count * 2), 13, 0x3D);
+    AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, width, menu->count * 2, 13, 0x3D);
     LoadUserFrameGfx1(menu->fieldSystem->bgConfig, GF_BG_LYR_MAIN_3, 0x3D9, 11, 0, HEAP_ID_FIELD1);
     DrawFrameAndWindow1(&menu->window, TRUE, 0x3D9, 11);
     ScriptMenu_SetupMultichoiceTemplate(menu);
@@ -300,9 +300,9 @@ void ScriptMenu_ShowListWithWidth(ScriptMenu *menu, u16 width) {
 
 static void ScriptMenu_OpenListWindow(ScriptMenu *menu, u32 width) {
     if (menu->count > 8) {
-        AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, (u8)width, 16, 13, 0x3D);
+        AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, width, 16, 13, 0x3D);
     } else {
-        AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, (u8)width, (u8)(menu->count * 2), 13, 0x3D);
+        AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, width, menu->count * 2, 13, 0x3D);
     }
     LoadUserFrameGfx1(menu->fieldSystem->bgConfig, GF_BG_LYR_MAIN_3, 0x3D9, 11, 0, HEAP_ID_FIELD1);
     DrawFrameAndWindow1(&menu->window, TRUE, 0x3D9, 11);
@@ -331,9 +331,9 @@ void ScriptMenu_ShowListAtPosition(ScriptMenu *menu, u16 *scroll_p, u16 *row_p) 
         }
     }
     if (menu->count > 8) {
-        AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, (u8)tiles, 16, 13, 0x3D);
+        AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, tiles, 16, 13, 0x3D);
     } else {
-        AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, (u8)tiles, (u8)(menu->count * 2), 13, 0x3D);
+        AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, tiles, menu->count * 2, 13, 0x3D);
     }
     LoadUserFrameGfx1(menu->fieldSystem->bgConfig, GF_BG_LYR_MAIN_3, 0x3D9, 11, 0, HEAP_ID_FIELD1);
     DrawFrameAndWindow1(&menu->window, TRUE, 0x3D9, 11);
@@ -523,7 +523,7 @@ void PrintCurFloorInNewWindow(FieldSystem *fieldSystem, u8 x, u8 y, u16 *p_ret, 
     FillWindowPixelRect(&menu->window, 15, 0, 0, tiles * 8, 32);
     ScriptMenu_PrintMessage(menu, msg_0191_00016, 0, 0);
     msg = GetFloorNameMessage(fieldSystem->location->mapId, floor, &flag);
-    ScriptMenu_PrintMessage(menu, (u16)msg, flag, 16);
+    ScriptMenu_PrintMessage(menu, msg, flag, 16);
     menu->menu2d.window = &menu->window;
     CopyWindowToVram(&menu->window);
     menu->task = SysTask_CreateOnMainQueue(ScriptMenu_FloorWindowTask, menu, 0);
@@ -649,7 +649,7 @@ void ScriptMenu_ShowMultichoiceGrid(ScriptMenu *menu, u8 numColumns) {
     if (menu->count % numColumns) {
         numRows++;
     }
-    AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, (u8)(itemWidth * numColumns), (u8)(numRows * 2), 13, 0x3D);
+    AddWindowParameterized(menu->fieldSystem->bgConfig, &menu->window, GF_BG_LYR_MAIN_3, menu->x, menu->y, itemWidth * numColumns, numRows * 2, 13, 0x3D);
     LoadUserFrameGfx1(menu->fieldSystem->bgConfig, GF_BG_LYR_MAIN_3, 0x3D9, 11, 0, HEAP_ID_FIELD1);
     DrawFrameAndWindow1(&menu->window, TRUE, 0x3D9, 11);
     ScriptMenu_SetupGridTemplate(menu, numColumns, numRows);

@@ -1037,7 +1037,7 @@ static int WaterfallUp_Init(WaterfallWork *work) {
     int z = MapObject_GetZCoord(work->mapObject) + (GetDeltaYByFacingDirection(DIR_NORTH) << 1);
     SetPositionToTileCenter(x, z, &work->targetPos);
     work->targetPos.y = Terrain_CalcHeightWithMode(work->fieldSystem, 1, work->targetPos.y, work->targetPos.x, work->targetPos.z, &kind);
-    GF_ASSERT(kind != 0);
+    GF_ASSERT(kind != CALCULATED_HEIGHT_SOURCE_NONE);
     work->targetX = x;
     work->targetY = (work->targetPos.y >> 3) / FX32_ONE;
     work->targetZ = z;

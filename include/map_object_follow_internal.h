@@ -3,6 +3,7 @@
 
 #include "field_system.h"
 #include "map_object.h"
+#include "map_object_follow.h"
 
 // Movement state of the follow-player movement types (the following Pokemon and objects that trail the player).
 typedef struct FollowPlayerMovementState {
@@ -63,13 +64,11 @@ void FollowPlayerMovement_Delete(LocalMapObject *object);
 u8 FollowPlayerMovement_GetHopFrame(LocalMapObject *object);
 u32 FollowPlayerMovement_GetHopSpeed(LocalMapObject *object);
 void FollowPlayerMovement_DisableBallEffect(LocalMapObject *object);
-void FollowPlayerMovement_Reset(LocalMapObject *object);
 
 void FollowPartnerMovement_Init(LocalMapObject *object);
 void FollowPartnerMovement_Update(LocalMapObject *object);
 void FollowPartnerMovement_Delete(LocalMapObject *object);
 void FollowPartnerMovement_Resume(LocalMapObject *object);
-LocalMapObject *MapObject_FindTrainerPartner(LocalMapObject *object);
 
 void HiddenObjectMovement_InitCover0(LocalMapObject *object);
 void HiddenObjectMovement_InitCover1(LocalMapObject *object);
@@ -78,11 +77,7 @@ void HiddenObjectMovement_InitCover3(LocalMapObject *object);
 void HiddenObjectMovement_Update(LocalMapObject *object);
 void HiddenObjectMovement_Delete(LocalMapObject *object);
 void HiddenObjectMovement_Resume(LocalMapObject *object);
-int HiddenObjectMovement_SetCoverEffect(LocalMapObject *object, int effect);
 int HiddenObjectMovement_GetCoverEffect(LocalMapObject *object);
 void HiddenObjectMovement_SetRevealed(LocalMapObject *object);
-
-
-int HiddenObjectCover_Spawn(LocalMapObject *object, int coverType);
 
 #endif // POKEHEARTGOLD_MAP_OBJECT_FOLLOW_INTERNAL_H

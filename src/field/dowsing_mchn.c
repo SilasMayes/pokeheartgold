@@ -502,8 +502,8 @@ static void DowsingMchn_FindNearestHiddenItem(DowsingMchn *dowsing) {
 
 // Point on the circle of radius 68 around (84, 100) of the sub screen.
 static void DowsingMchn_GetIndicatorPos(VecFx32 *pos, int deg) {
-    pos->x = FX_Mul(GF_CosDeg((u16)deg), FX32_CONST(68)) + FX32_CONST(84);
-    pos->y = FX_Mul(GF_SinDeg((u16)deg), FX32_CONST(68)) + FX32_CONST(256 + 100);
+    pos->x = FX_Mul(GF_CosDeg(deg), FX32_CONST(68)) + FX32_CONST(84);
+    pos->y = FX_Mul(GF_SinDeg(deg), FX32_CONST(68)) + FX32_CONST(256 + 100);
 }
 
 static u16 DowsingMchn_GetTouchAngle(int x, int y) {
@@ -629,7 +629,7 @@ static void DowsingMchn_UpdateTargetAngles(DowsingMchn *dowsing) {
         for (i = 0; i < DOWSING_MCHN_NUM_ANGLES; i++) {
             dowsing->angles[i].target %= 360;
             dowsing->angles[i].displayed %= 360;
-            if (abs((s32)(dowsing->angles[i].target - dowsing->angles[i].displayed)) >= 180) {
+            if (abs(dowsing->angles[i].target - dowsing->angles[i].displayed) >= 180) {
                 if (dowsing->angles[i].target > dowsing->angles[i].displayed) {
                     dowsing->angles[i].displayed += 360;
                 } else if (dowsing->angles[i].target < dowsing->angles[i].displayed) {
@@ -686,7 +686,7 @@ static void DowsingMchn_UpdateIndicatorAppearance(DowsingMchn *dowsing) {
 }
 
 static void DowsingMchn_SetSpriteRotation(Sprite *sprite, int deg) {
-    Sprite_SetRotationAndAffineType(sprite, GF_DegreeToSinCosIdx((u16)deg), 2);
+    Sprite_SetRotationAndAffineType(sprite, GF_DegreeToSinCosIdx(deg), 2);
 }
 
 // Moves the indicators one step: the last step lands on the target, the others on `next`.

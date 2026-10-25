@@ -460,7 +460,7 @@ void FieldMoveCutIn_StartFlyerTakeOff(FieldMoveCutIn *cutIn) {
     flyer->speed = FX32_CONST(2);
     Sprite_SetMatrix(flyer->sprite, &origin);
     Sprite_SetAffineScale(flyer->sprite, &scale);
-    Sprite_SetAffineZRotation(flyer->sprite, GF_DegreeToSinCosIdx((u16)(flyer->rotation / FX32_ONE)));
+    Sprite_SetAffineZRotation(flyer->sprite, GF_DegreeToSinCosIdx(flyer->rotation / FX32_ONE));
     Sprite_SetDrawFlag(flyer->sprite, TRUE);
 }
 
@@ -472,7 +472,7 @@ BOOL CutInFlyer_TakeOff(CutInFlyer *flyer) {
         flyer->speed += FX32_CONST(4);
     }
     flyer->offset.x = GF_CosDeg(0x13B) * (flyer->distance / FX32_ONE);
-    flyer->offset.y = GF_SinDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
+    flyer->offset.y = GF_SinDeg(flyer->angle / FX32_ONE) * (flyer->distance / FX32_ONE);
     if (flyer->angle / FX32_ONE < 270) {
         flyer->angle += FX32_CONST(4);
     }
@@ -489,7 +489,7 @@ BOOL CutInFlyer_TakeOff(CutInFlyer *flyer) {
     if (flyer->rotation / FX32_ONE < 0) {
         flyer->rotation = 0;
     }
-    Sprite_SetAffineZRotation(sprite, GF_DegreeToSinCosIdx((u16)(flyer->rotation / FX32_ONE)));
+    Sprite_SetAffineZRotation(sprite, GF_DegreeToSinCosIdx(flyer->rotation / FX32_ONE));
     mtx.x = flyer->origin.x + flyer->offset.x;
     mtx.y = flyer->origin.y + flyer->offset.y;
     Sprite_SetMatrix(sprite, &mtx);
@@ -530,12 +530,12 @@ void FieldMoveCutIn_StartFlyerPickUp(FieldMoveCutIn *cutIn) {
     flyer->distance = FX32_CONST(192);
     flyer->speed = FX32_CONST(32);
     flyer->offset.x = GF_CosDeg(0x13b) * (flyer->distance / FX32_ONE);
-    flyer->offset.y = GF_SinDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
+    flyer->offset.y = GF_SinDeg(flyer->angle / FX32_ONE) * (flyer->distance / FX32_ONE);
     position.x = flyer->origin.x + flyer->offset.x;
     position.y = flyer->origin.y + flyer->offset.y;
     Sprite_SetMatrix(flyer->sprite, &position);
     Sprite_SetAffineScale(flyer->sprite, &scale);
-    Sprite_SetAffineZRotation(flyer->sprite, GF_DegreeToSinCosIdx((u16)(flyer->rotation / FX32_ONE)));
+    Sprite_SetAffineZRotation(flyer->sprite, GF_DegreeToSinCosIdx(flyer->rotation / FX32_ONE));
     Sprite_SetDrawFlag(flyer->sprite, TRUE);
     flyer->trainerJumpEffect = FieldMoveCutIn_CreateTrainerJumpEffect(cutIn->effectPool, cutIn->trainerSprite);
     cutIn->flyStarted = TRUE;
@@ -571,7 +571,7 @@ BOOL CutInFlyer_SwoopDown(CutInFlyer *flyer) {
         flyer->speed = FX32_ONE;
     }
     flyer->offset.x = GF_CosDeg(0x13b) * (flyer->distance / FX32_ONE);
-    flyer->offset.y = GF_SinDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
+    flyer->offset.y = GF_SinDeg(flyer->angle / FX32_ONE) * (flyer->distance / FX32_ONE);
     if (flyer->angle / FX32_ONE < 270) {
         flyer->angle += FX32_CONST(4);
     }
@@ -588,7 +588,7 @@ BOOL CutInFlyer_SwoopDown(CutInFlyer *flyer) {
     if (flyer->rotation / FX32_ONE > 360) {
         flyer->rotation = FX32_CONST(360);
     }
-    Sprite_SetAffineZRotation(sprite, GF_DegreeToSinCosIdx((u16)(flyer->rotation / FX32_ONE)));
+    Sprite_SetAffineZRotation(sprite, GF_DegreeToSinCosIdx(flyer->rotation / FX32_ONE));
     matrix.x = flyer->origin.x + flyer->offset.x;
     matrix.y = flyer->origin.y + flyer->offset.y;
     Sprite_SetMatrix(sprite, &matrix);
@@ -649,7 +649,7 @@ BOOL CutInFlyer_FlyAway(CutInFlyer *flyer) {
     if (flyer->speed > FX32_CONST(16)) {
         flyer->speed = FX32_CONST(16);
     }
-    flyer->offset.x = GF_CosDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
+    flyer->offset.x = GF_CosDeg(flyer->angle / FX32_ONE) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg(0x80) * (flyer->distance / FX32_ONE);
     if (flyer->angle < FX32_CONST(135)) {
         flyer->angle += FX32_ONE;
@@ -1033,7 +1033,7 @@ void Roamers_UpdateAfterBattle(FieldSystem *fieldSystem, BattleSetup *setup) {
     u32 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     Roamer *roamer = Roamers_GetActiveRoamerBySpecies(roamerSave, species);
     if (roamer != NULL) {
-        u32 roamerIdx = SpeciesToRoamerIdx((u16)species);
+        u32 roamerIdx = SpeciesToRoamerIdx(species);
         u16 hp = (u16)GetMonData(mon, MON_DATA_HP, NULL);
         u8 status = (u8)GetMonData(mon, MON_DATA_STATUS, NULL);
         u32 winFlag = setup->winFlag;

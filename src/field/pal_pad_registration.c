@@ -110,7 +110,7 @@ static BOOL PalPadRegistration_NextPartner(PalPadRegistration *registration) {
 }
 
 static BOOL PalPadRegistration_WaitAskRegister(PalPadRegistration *registration) {
-    if (!TextPrinterCheckActive((u8)registration->printerId)) {
+    if (!TextPrinterCheckActive(registration->printerId)) {
         registration->yesNoState = 0;
         registration->state = PAL_PAD_REGISTRATION_STATE_ANSWER_REGISTER;
     }
@@ -143,7 +143,7 @@ static BOOL PalPadRegistration_AnswerRegister(PalPadRegistration *registration) 
 }
 
 static BOOL PalPadRegistration_WaitAskDelete(PalPadRegistration *registration) {
-    if (!TextPrinterCheckActive((u8)registration->printerId)) {
+    if (!TextPrinterCheckActive(registration->printerId)) {
         registration->yesNoState = 0;
         registration->state = PAL_PAD_REGISTRATION_STATE_ANSWER_DELETE;
     }
@@ -165,7 +165,7 @@ static BOOL PalPadRegistration_AnswerDelete(PalPadRegistration *registration) {
 }
 
 static BOOL PalPadRegistration_WaitAskGiveUp(PalPadRegistration *registration) {
-    if (!TextPrinterCheckActive((u8)registration->printerId)) {
+    if (!TextPrinterCheckActive(registration->printerId)) {
         registration->yesNoState = 0;
         registration->state = PAL_PAD_REGISTRATION_STATE_ANSWER_GIVE_UP;
     }
@@ -227,7 +227,7 @@ static BOOL PalPadRegistration_HandleFriendRosterChoice(PalPadRegistration *regi
 }
 
 static BOOL PalPadRegistration_WaitConfirmDelete(PalPadRegistration *registration) {
-    if (!TextPrinterCheckActive((u8)registration->printerId)) {
+    if (!TextPrinterCheckActive(registration->printerId)) {
         registration->yesNoState = 0;
         registration->state = PAL_PAD_REGISTRATION_STATE_ANSWER_CONFIRM_DELETE;
     }

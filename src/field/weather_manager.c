@@ -58,7 +58,7 @@ static void WeatherSystem_LoadBgChars(WeatherSystem *weatherSystem, u16 bgGfxId)
 static void WeatherSystem_LoadBgScreen(WeatherSystem *weatherSystem, u16 bgGfxId);
 static void WeatherObject_InitData(WeatherObject *object, int size);
 static void WeatherObject_ClearData(WeatherObject *object);
-static void *WeatherSystem_AddObject(WeatherWork *work, int size);
+static WeatherObject *WeatherSystem_AddObject(WeatherWork *work, int size);
 static void WeatherSystem_InitSpriteResourcesHeader(SpriteResourcesHeader *header, WeatherSystem *weatherSystem, WeatherSpriteResources *spriteResources, u32 transfer, u32 priority);
 static void WeatherObject_Delete(WeatherObject *object);
 static void WeatherObject_DeleteAll(WeatherObject *head);
@@ -1216,18 +1216,18 @@ static void WeatherSystem_LoadBgScreen(WeatherSystem *weatherSystem, u16 bgGfxId
 }
 
 static void WeatherObject_InitData(WeatherObject *object, int size) {
-    GF_ASSERT(object->data == NULL);
+    GF_ASSERT(object->particle == NULL);
     GF_ASSERT(size > 0);
     GF_ASSERT(size <= sizeof(object->dataBuffer));
-    object->data = object->dataBuffer;
+    object->particle = &object->dataBuffer.particle;
 }
 
 static void WeatherObject_ClearData(WeatherObject *object) {
-    object->data = NULL;
-    memset(object->dataBuffer, 0, sizeof(object->dataBuffer));
+    object->particle = NULL;
+    memset(&object->dataBuffer, 0, sizeof(object->dataBuffer));
 }
 
-static void *WeatherSystem_AddObject(WeatherWork *work, int size) {
+static WeatherObject *WeatherSystem_AddObject(WeatherWork *work, int size) {
     WeatherSystem *weatherSystem = work->weatherSystem;
     WeatherObject *object = WeatherSystem_GetFreeObject(work);
     if (object == NULL) {
@@ -1240,7 +1240,7 @@ static void *WeatherSystem_AddObject(WeatherWork *work, int size) {
     work->linkedListDummy.prev = object;
 
     WeatherObject_InitData(object, size);
-    if (object->data == NULL) {
+    if (object->particle == NULL) {
         return NULL;
     }
 
@@ -1401,10 +1401,10 @@ static void WeatherSpawnRamp_Init(WeatherSpawnRamp *ramp, WeatherWork *work, s16
     ramp->timer = 0;
     ramp->interval = interval;
     ramp->countTimer = 0;
-    ramp->targetCount = (s16)targetCount;
-    ramp->targetInterval = (s16)targetInterval;
-    ramp->intervalStep = (s16)intervalStep;
-    ramp->countStepSpawns = (s16)countStepSpawns;
+    ramp->targetCount = targetCount;
+    ramp->targetInterval = targetInterval;
+    ramp->intervalStep = intervalStep;
+    ramp->countStepSpawns = countStepSpawns;
     ramp->countStep = countStep;
     ramp->spawnFunc = spawnFunc;
 }
@@ -1423,8 +1423,8 @@ static s32 WeatherSpawnRamp_Update(WeatherSpawnRamp *ramp) {
     s16 targetInterval;
     s16 targetCount;
     s32 countStep;
-    s32 intervalDecreasing;
-    s32 countDecreasing;
+    BOOL intervalDecreasing;
+    BOOL countDecreasing;
     s32 doneFlags;
 
     intervalStep = ramp->intervalStep;
@@ -1432,14 +1432,14 @@ static s32 WeatherSpawnRamp_Update(WeatherSpawnRamp *ramp) {
     if (intervalStep == 0) {
         doneFlags |= WEATHER_SPAWN_RAMP_INTERVAL_DONE;
     } else {
-        if ((s32)intervalStep <= 0) {
-            intervalDecreasing = 1;
+        if (intervalStep <= 0) {
+            intervalDecreasing = TRUE;
         } else {
-            intervalDecreasing = 0;
+            intervalDecreasing = FALSE;
         }
         targetInterval = ramp->targetInterval;
         interval = ramp->interval;
-        if ((((s32)interval >= (s32)targetInterval) && (intervalDecreasing == 0)) || (((s32)interval <= (s32)targetInterval) && (intervalDecreasing == 1))) {
+        if ((interval >= targetInterval && intervalDecreasing == FALSE) || (interval <= targetInterval && intervalDecreasing == TRUE)) {
             doneFlags |= WEATHER_SPAWN_RAMP_INTERVAL_DONE;
             ramp->interval = targetInterval;
         }
@@ -1449,29 +1449,29 @@ static s32 WeatherSpawnRamp_Update(WeatherSpawnRamp *ramp) {
         doneFlags |= WEATHER_SPAWN_RAMP_COUNT_DONE;
     } else {
         if (countStep <= 0) {
-            countDecreasing = 1;
+            countDecreasing = TRUE;
         } else {
-            countDecreasing = 0;
+            countDecreasing = FALSE;
         }
         targetCount = ramp->targetCount;
         count = ramp->count;
-        if ((((s32)count >= (s32)targetCount) && (countDecreasing == 0)) || (((s32)count <= (s32)targetCount) && (countDecreasing == 1))) {
+        if ((count >= targetCount && countDecreasing == FALSE) || (count <= targetCount && countDecreasing == TRUE)) {
             doneFlags |= WEATHER_SPAWN_RAMP_COUNT_DONE;
             ramp->count = targetCount;
         }
     }
-    ramp->timer = (s16)(ramp->timer - 1);
-    if ((s32)ramp->timer <= 0) {
+    ramp->timer--;
+    if (ramp->timer <= 0) {
         ramp->spawnFunc(ramp->work, ramp->count);
-        ramp->timer = (s16)ramp->interval;
-        if (!(WEATHER_SPAWN_RAMP_INTERVAL_DONE & doneFlags)) {
-            ramp->interval = (s16)(ramp->interval + ramp->intervalStep);
+        ramp->timer = ramp->interval;
+        if (!(doneFlags & WEATHER_SPAWN_RAMP_INTERVAL_DONE)) {
+            ramp->interval += ramp->intervalStep;
         }
-        if (!(WEATHER_SPAWN_RAMP_COUNT_DONE & doneFlags)) {
-            ramp->countTimer = (s16)(ramp->countTimer + 1);
-            if ((s32)ramp->countTimer >= (s32)ramp->countStepSpawns) {
+        if (!(doneFlags & WEATHER_SPAWN_RAMP_COUNT_DONE)) {
+            ramp->countTimer++;
+            if (ramp->countTimer >= ramp->countStepSpawns) {
                 ramp->countTimer = 0;
-                ramp->count = (s16)(ramp->count + ramp->countStep);
+                ramp->count += ramp->countStep;
             }
         }
     }
@@ -1582,12 +1582,12 @@ static BOOL WeatherFogTableFade_Step(WeatherFogTableFade *tableFade) {
     done = FALSE;
     if (tableFade->direction == 0) {
         done = TRUE;
-    } else if ((s32)tableFade->stepsLeft <= 0) {
+    } else if (tableFade->stepsLeft <= 0) {
         done = TRUE;
     } else {
         frameTimer = tableFade->frameTimer + 1;
         tableFade->frameTimer = frameTimer;
-        if (frameTimer >= (s32)tableFade->framesPerStep) {
+        if (frameTimer >= tableFade->framesPerStep) {
             tableFade->frameTimer = 0;
             WeatherFogTableFade_BuildTable(tableFade);
             stepsLeft = tableFade->stepsLeft - 1;
@@ -1633,7 +1633,7 @@ static void Weather_SpawnAndPreAdvance(WeatherWork *work, WeatherSpawnFunc spawn
         for (j = 0; j < advanceCount; j++) {
             updateFunc(cur);
 
-            if (cur->data == NULL) {
+            if (cur->particle == NULL) {
                 break;
             }
         }
@@ -1693,15 +1693,15 @@ static void WeatherTask_Rain(SysTask *task, void *data) {
         WeatherSpawnRamp_Init(&taskData->spawnRamp, work, 1, 8, 20, 1, -1, 1, 2, Rain_AddDrops);
         WeatherFog_Start(&taskData->fogChange, &taskData->fogTableFade, work->weatherSystem->fieldSystem->fog, GX_FOGSLOPE_0x1000, 0x726F, 0x6b5a, 1, work->fogMode);
 
-        taskData->data[0] = 0;
+        taskData->fogDelay = 0;
         work->seDelayTask = SysTask_CreateOnMainQueue(WeatherTask_DelayedRainSE, work, 100);
         work->seDelay = 30;
         work->state = WEATHER_STATE_FADE_IN;
         break;
     case WEATHER_STATE_FADE_IN:
         int rampDone = WeatherSpawnRamp_Update(&taskData->spawnRamp);
-        if (taskData->data[0] > 0) {
-            taskData->data[0]--;
+        if (taskData->fogDelay > 0) {
+            taskData->fogDelay--;
         } else {
             BOOL fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
             if (fogDone == TRUE && rampDone == WEATHER_SPAWN_RAMP_DONE) {
@@ -1736,15 +1736,15 @@ static void WeatherTask_Rain(SysTask *task, void *data) {
             if (work->fogMode) {
                 WeatherFogTableFade_Start(&taskData->fogTableFade, 1, 0);
             }
-            taskData->data[0] = 0;
+            taskData->fogDelay = 0;
             work->state = WEATHER_STATE_FADE_OUT;
             Weather_StopLoopSE(work);
         }
         break;
     case WEATHER_STATE_FADE_OUT:
         int ret = WeatherSpawnRamp_Update(&taskData->spawnRamp);
-        if (taskData->data[0] > 0) {
-            taskData->data[0]--;
+        if (taskData->fogDelay > 0) {
+            taskData->fogDelay--;
         } else {
             BOOL fogFadeDone;
             if (work->fogMode) {
@@ -1782,26 +1782,26 @@ static void Rain_AddDrops(WeatherWork *work, int count) {
             break;
         }
 
-        u32 *data = object->data;
+        WeatherParticle *particle = object->particle;
         u32 rand = MTRandom();
 
-        data[0] = 0;
+        particle->timer = 0;
         int frame = rand % 3;
         Sprite_SetAnimationFrame(object->sprite, frame);
 
         int jitter = rand % 20;
-        data[2] = 10 * (frame + 1) + jitter;
+        particle->speedY = 10 * (frame + 1) + jitter;
         if (frame == 2) {
-            data[2] += 10;
+            particle->speedY += 10;
         }
 
         jitter /= -5;
-        data[4] = -5 * (frame + 1) + jitter;
+        particle->speedX = -5 * (frame + 1) + jitter;
         if (frame == 2) {
-            data[4] -= 5;
+            particle->speedX -= 5;
         }
-        data[3] = 0;
-        data[1] = 1 + (rand % 3);
+        particle->state = 0;
+        particle->duration = 1 + (rand % 3);
 
         VecFx32 vec;
 
@@ -1814,21 +1814,21 @@ static void Rain_AddDrops(WeatherWork *work, int count) {
 
 static void Rain_UpdateDrop(WeatherObject *object) {
     int i;
-    s32 *data = object->data;
+    WeatherParticle *particle = object->particle;
     VecFx32 vec;
     vec = WeatherObject_GetPosition(object);
-    switch (data[3]) {
+    switch (particle->state) {
     case 0:
         for (i = 0; i < 2; i++) {
-            vec.x += data[4] << FX32_SHIFT;
-            vec.y += data[2] << FX32_SHIFT;
+            vec.x += particle->speedX << FX32_SHIFT;
+            vec.y += particle->speedY << FX32_SHIFT;
 
-            if (data[0]++ > data[1]) {
-                if (((u32)MTRandom() % 10) < 7) {
-                    data[3] = 2;
+            if (particle->timer++ > particle->duration) {
+                if (MTRandom() % 10 < 7) {
+                    particle->state = 2;
                 } else {
-                    data[3] = 1;
-                    data[0] = 4;
+                    particle->state = 1;
+                    particle->timer = 4;
                     Sprite_SetAnimationFrame(object->sprite, 3);
                 }
             }
@@ -1836,8 +1836,8 @@ static void Rain_UpdateDrop(WeatherObject *object) {
         WeatherDraw_SetSpriteMatrix(object->sprite, &vec);
         break;
     case 1:
-        if (data[0]-- <= 0) {
-            data[3] = 2;
+        if (particle->timer-- <= 0) {
+            particle->state = 2;
         }
         break;
     case 2:
@@ -1857,14 +1857,14 @@ static void WeatherTask_Snow(SysTask *task, void *data) {
 
         WeatherFog_Start(&taskData->fogChange, &taskData->fogTableFade, work->weatherSystem->fieldSystem->fog, GX_FOGSLOPE_0x1000, 0x726F, GX_RGB(24, 24, 24), 2, work->fogMode);
 
-        taskData->data[0] = 8;
-        taskData->data[1] = 0;
+        taskData->fogDelay = 8;
+        taskData->flakeCount = 0;
         work->state = WEATHER_STATE_FADE_IN;
         break;
     case WEATHER_STATE_FADE_IN:
         int rampDone = WeatherSpawnRamp_Update(&taskData->spawnRamp);
-        if (taskData->data[0] > 0) {
-            taskData->data[0]--;
+        if (taskData->fogDelay > 0) {
+            taskData->fogDelay--;
         } else {
             BOOL fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
             if (fogDone == TRUE && rampDone == WEATHER_SPAWN_RAMP_DONE) {
@@ -1881,7 +1881,7 @@ static void WeatherTask_Snow(SysTask *task, void *data) {
             WeatherFogTableFade_SetFull(&taskData->fogTableFade);
         }
 
-        taskData->data[1] = 0;
+        taskData->flakeCount = 0;
 
         Weather_SpawnAndPreAdvance(work, Snow_AddFlakes, 20, 2, 3, Snow_UpdateFlake);
 
@@ -1899,14 +1899,14 @@ static void WeatherTask_Snow(SysTask *task, void *data) {
             if (work->fogMode) {
                 WeatherFogTableFade_Start(&taskData->fogTableFade, 1, 0);
             }
-            taskData->data[0] = 0;
+            taskData->fogDelay = 0;
             work->state = WEATHER_STATE_FADE_OUT;
         }
         break;
     case WEATHER_STATE_FADE_OUT:
         int ret = WeatherSpawnRamp_Update(&taskData->spawnRamp);
-        if (taskData->data[0] > 0) {
-            taskData->data[0]--;
+        if (taskData->fogDelay > 0) {
+            taskData->fogDelay--;
         } else {
             BOOL fogFadeDone;
             if (work->fogMode) {
@@ -1953,24 +1953,24 @@ static void Snow_AddFlakes(WeatherWork *work, int count) {
             break;
         }
 
-        s32 *data = object->data;
+        WeatherParticle *particle = object->particle;
 
-        taskData->data[1]++;
-        if (taskData->data[1] >= 800) {
-            taskData->data[1] = 0;
+        taskData->flakeCount++;
+        if (taskData->flakeCount >= 800) {
+            taskData->flakeCount = 0;
         }
-        int index = taskData->data[1] / 200;
-        data[5] = table0[index];
+        int index = taskData->flakeCount / 200;
+        particle->slowdownInterval = table0[index];
 
-        data[0] = 0;
-        data[1] = 4 + (MTRandom() % 42);
+        particle->timer = 0;
+        particle->duration = 4 + (MTRandom() % 42);
 
-        int frame = (data[1] - 4) / 15;
+        int frame = (particle->duration - 4) / 15;
         Sprite_SetAnimationFrame(object->sprite, frame);
 
-        data[4] = -(frame + 1);
-        data[2] = table1[index] * (frame + 1);
-        data[3] = 0;
+        particle->speedX = -(frame + 1);
+        particle->speedY = table1[index] * (frame + 1);
+        particle->state = 0;
 
         VecFx32 vec = WeatherObject_GetPosition(object);
 
@@ -1985,23 +1985,23 @@ static void Snow_AddFlakes(WeatherWork *work, int count) {
 }
 
 static void Snow_UpdateFlake(WeatherObject *object) {
-    s32 *data = object->data;
+    WeatherParticle *particle = object->particle;
     VecFx32 vec = WeatherObject_GetPosition(object);
 
-    switch (data[3]) {
+    switch (particle->state) {
     case 0:
-        vec.x += data[4] << FX32_SHIFT;
-        vec.y += data[2] << FX32_SHIFT;
+        vec.x += particle->speedX << FX32_SHIFT;
+        vec.y += particle->speedY << FX32_SHIFT;
 
-        if (data[0]++ > data[1]) {
-            data[3] = 1;
+        if (particle->timer++ > particle->duration) {
+            particle->state = 1;
         }
 
-        if (data[0] % data[5] == 0) {
-            data[4]--;
+        if (particle->timer % particle->slowdownInterval == 0) {
+            particle->speedX--;
 
-            if (data[2] > 1) {
-                data[2]--;
+            if (particle->speedY > 1) {
+                particle->speedY--;
             }
         }
 
@@ -2024,13 +2024,13 @@ static void WeatherTask_DiamondDust(SysTask *task, void *data) {
 
         WeatherFog_Start(&taskData->fogChange, &taskData->fogTableFade, work->weatherSystem->fieldSystem->fog, GX_FOGSLOPE_0x1000, 0x716F, GX_RGB(26, 26, 26), 1, work->fogMode);
 
-        taskData->data[0] = 0;
+        taskData->fogDelay = 0;
         work->state = WEATHER_STATE_FADE_IN;
         break;
     case WEATHER_STATE_FADE_IN:
         int rampDone = WeatherSpawnRamp_Update(&taskData->spawnRamp);
-        if (taskData->data[0] > 0) {
-            taskData->data[0]--;
+        if (taskData->fogDelay > 0) {
+            taskData->fogDelay--;
         } else {
             BOOL fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
             if (fogDone == TRUE && rampDone == WEATHER_SPAWN_RAMP_DONE) {
@@ -2063,14 +2063,14 @@ static void WeatherTask_DiamondDust(SysTask *task, void *data) {
             if (work->fogMode) {
                 WeatherFogTableFade_Start(&taskData->fogTableFade, 1, 0);
             }
-            taskData->data[0] = 20;
+            taskData->fogDelay = 20;
             work->state = WEATHER_STATE_FADE_OUT;
         }
         break;
     case WEATHER_STATE_FADE_OUT:
         int ret = WeatherSpawnRamp_Update(&taskData->spawnRamp);
-        if (taskData->data[0] > 0) {
-            taskData->data[0]--;
+        if (taskData->fogDelay > 0) {
+            taskData->fogDelay--;
         } else {
             BOOL fogFadeDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
 
@@ -2104,28 +2104,28 @@ static void DiamondDust_AddSparkles(WeatherWork *work, int count) {
             break;
         }
 
-        u32 *data = object->data;
+        WeatherParticle *particle = object->particle;
 
-        data[0] = 0;
-        data[1] = 7 + (MTRandom() % 5);
+        particle->timer = 0;
+        particle->duration = 7 + (MTRandom() % 5);
 
         int rand = MTRandom() % 1000;
 
         if ((rand % 2) == 0) {
-            data[2] = 1;
+            particle->speedY = 1;
         } else {
-            data[2] = -1;
+            particle->speedY = -1;
         }
 
-        data[3] = 1;
-        data[4] = 3 + (MTRandom() % 6);
-        data[5] = 4 + (MTRandom() % 5);
+        particle->state = 1;
+        particle->speedX = 3 + (MTRandom() % 6);
+        particle->slowdownInterval = 4 + (MTRandom() % 5);
 
         int frame = MTRandom() % 20;
 
         vec = WeatherObject_GetPosition(object);
         vec.x = -64 + (MTRandom() % 384);
-        vec.y = -8 + ((u32)MTRandom() % 256);
+        vec.y = -8 + (MTRandom() % 256);
         vec.x <<= FX32_SHIFT;
         vec.y <<= FX32_SHIFT;
         vec.z = 0;
@@ -2144,7 +2144,7 @@ static void DiamondDust_AddSparkles(WeatherWork *work, int count) {
         }
 
         if (bandStart <= vec.y && bandEnd >= vec.y) {
-            data[1] *= 2;
+            particle->duration *= 2;
         } else {
             frame = MTRandom() & 3;
         }
@@ -2153,9 +2153,9 @@ static void DiamondDust_AddSparkles(WeatherWork *work, int count) {
 }
 
 static void DiamondDust_UpdateSparkle(WeatherObject *object) {
-    s32 *data = object->data;
+    WeatherParticle *particle = object->particle;
     WeatherObject_GetPosition(object);
-    if (++data[0] >= data[1]) {
+    if (++particle->timer >= particle->duration) {
         WeatherObject_Delete(object);
     }
 }

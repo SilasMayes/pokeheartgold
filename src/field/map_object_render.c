@@ -334,7 +334,7 @@ void BillboardObject_SaveState(BillboardObject *billboard, BillboardState *state
 }
 
 void BillboardObject_RestoreState(BillboardObject *billboard, BillboardState *state) {
-    BillboardObject_SetVisible(billboard, (u8)state->visible);
+    BillboardObject_SetVisible(billboard, state->visible);
     BillboardObject_SetSequence(billboard, state->sequence);
     BillboardObject_SetFrame(billboard, state->frame);
 }
@@ -1150,7 +1150,7 @@ void MapObject_SetBillboardVisibleFromFlags(LocalMapObject *object, BillboardObj
     if (MapObject_TestFlagsBits(object, MAPOBJECTFLAG_UNK12) == TRUE && !MapObject_TestFlagsBits(object, MAPOBJECTFLAG_UNK13)) {
         visible = FALSE;
     }
-    BillboardObject_SetVisible(billboard, (u8)visible);
+    BillboardObject_SetVisible(billboard, visible);
 }
 
 u32 Facing_GetBillboardStandSequence(u32 facing) {

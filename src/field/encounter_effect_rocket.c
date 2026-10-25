@@ -220,7 +220,7 @@ static void RocketEffect_LoadBgScreen(EncounterEffectTask *effect, u8 bgId, int 
     NNSG2dScreenData *screen;
     void *file = GfGfxLoader_GetScrnDataFromOpenNarc(effect->narc, member, FALSE, &screen, HEAP_ID_FIELD1);
 
-    LoadRectToBgTilemapRect(effect->fieldSystem->bgConfig, bgId, screen->rawData, 0, 0, (u8)(screen->screenWidth >> 3), (u8)(screen->screenHeight >> 3));
+    LoadRectToBgTilemapRect(effect->fieldSystem->bgConfig, bgId, screen->rawData, 0, 0, screen->screenWidth >> 3, screen->screenHeight >> 3);
     Heap_Free(file);
     BgCommitTilemapBufferToVram(effect->fieldSystem->bgConfig, bgId);
 }

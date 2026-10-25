@@ -269,11 +269,11 @@ static void MapObject_SpawnTallGrassStanding(LocalMapObject *object, u8 behavior
     }
     MapObject_GetCoordsBehind(object, &x, &z);
     nextBehavior = GetMetatileBehavior(fieldSystem, x, z);
-    if (MetatileBehavior_IsTallGrass((u8)nextBehavior) == TRUE) {
+    if (MetatileBehavior_IsTallGrass(nextBehavior) == TRUE) {
         TallGrass_SpawnAt(object, 0, x, z, 1);
         return;
     }
-    if (MetatileBehavior_IsVeryTallGrass((u8)nextBehavior) == TRUE) {
+    if (MetatileBehavior_IsVeryTallGrass(nextBehavior) == TRUE) {
         VeryTallGrass_SpawnAt(object, 0, x, z, 1);
     }
 }
@@ -303,11 +303,11 @@ static void MapObject_SpawnTallGrassOnStep(LocalMapObject *object, u8 behavior, 
     }
     MapObject_GetCoordsBehind(object, &x, &z);
     nextBehavior = GetMetatileBehavior(fieldSystem, x, z);
-    if (MetatileBehavior_IsTallGrass((u8)nextBehavior) == TRUE) {
+    if (MetatileBehavior_IsTallGrass(nextBehavior) == TRUE) {
         TallGrass_SpawnAt(object, 1, x, z, 1);
         return;
     }
-    if (MetatileBehavior_IsVeryTallGrass((u8)nextBehavior) == TRUE) {
+    if (MetatileBehavior_IsVeryTallGrass(nextBehavior) == TRUE) {
         VeryTallGrass_SpawnAt(object, 1, x, z, 1);
     }
 }
@@ -416,7 +416,7 @@ static void MapObject_UpdateShadowVisibility(LocalMapObject *object, u8 behavior
     }
     if (flags->shadow == 2) {
         previous = (u16)((u32(*)(LocalMapObject *))MapObject_GetSavedPreviousBehavior)(object);
-        if (MetatileBehavior_IsTallGrass(behavior) == 1 || MetatileBehavior_IsVeryTallGrass(behavior) == 1 || MetatileBehavior_IsTallGrass((u8)previous) == 1 || MetatileBehavior_IsVeryTallGrass((u8)previous) == 1 || MapObject_CheckWaterBehavior(object, behavior) == 1 || MetatileBehavior_IsPuddle(behavior) == 1 || MetatileBehavior_IsShallowWater(behavior) == 1 || MapObject_CheckSnowBehavior(object, behavior) == 1 || MetatileBehavior_IsMud(behavior) == 1 || MetatileBehavior_IsReflective(behavior)) {
+        if (MetatileBehavior_IsTallGrass(behavior) == 1 || MetatileBehavior_IsVeryTallGrass(behavior) == 1 || MetatileBehavior_IsTallGrass(previous) == 1 || MetatileBehavior_IsVeryTallGrass(previous) == 1 || MapObject_CheckWaterBehavior(object, behavior) == 1 || MetatileBehavior_IsPuddle(behavior) == 1 || MetatileBehavior_IsShallowWater(behavior) == 1 || MapObject_CheckSnowBehavior(object, behavior) == 1 || MetatileBehavior_IsMud(behavior) == 1 || MetatileBehavior_IsReflective(behavior)) {
             MapObject_SetFlagsBits(object, MAPOBJECTFLAG_UNK20);
         } else {
             MapObject_ClearFlagsBits(object, MAPOBJECTFLAG_UNK20);

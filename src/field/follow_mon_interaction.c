@@ -909,7 +909,7 @@ static int FollowMonInteraction_Run(FieldSystem *fieldSystem, FollowMonInteracti
         }
         break;
     case INTERACTION_STATE_WAIT_MESSAGE:
-        if (DialogBox_IsPrintFinished((u8)interaction->printerId) == TRUE) {
+        if (DialogBox_IsPrintFinished(interaction->printerId) == TRUE) {
             if (interaction->stepCount > interaction->stepIndex + 1) {
                 if (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
                     FollowMonInteraction_CloseMessage(fieldSystem, interaction);
@@ -941,7 +941,7 @@ static BOOL FollowMonInteraction_StepHasMovement(FollowMonInteraction *interacti
 
 static BOOL FollowMonInteraction_TryShowEmote(FieldSystem *fieldSystem, FollowMonInteraction *interaction, FollowMonInteractionStep *step) {
     u8 emote;
-    if (MetatileBehavior_Is113Or114Or46((u8)fieldSystem->followMonInteraction->metatileBehavior)) {
+    if (MetatileBehavior_Is113Or114Or46(fieldSystem->followMonInteraction->metatileBehavior)) {
         return FALSE;
     }
     emote = step->emote;
@@ -1080,9 +1080,9 @@ static void FollowMon_TryShakeGrass(FollowMonInteraction *interaction, LocalMapO
     fieldSystem = MapObject_GetFieldSystem(object);
     FollowMon_GetCoordsInDirection(object, interaction->savedFacing, &x, &z);
     behavior = GetMetatileBehavior(fieldSystem, x, z);
-    if (MetatileBehavior_IsTallGrass((u8)behavior) == TRUE) {
+    if (MetatileBehavior_IsTallGrass(behavior) == TRUE) {
         TallGrass_SpawnAt(object, 0, x, z, 1);
-    } else if (MetatileBehavior_IsVeryTallGrass((u8)behavior) == TRUE) {
+    } else if (MetatileBehavior_IsVeryTallGrass(behavior) == TRUE) {
         VeryTallGrass_SpawnAt(object, 0, x, z, 1);
     }
 }
@@ -1312,7 +1312,7 @@ static BOOL Task_FollowMonInteract(TaskManager *taskManager) {
         break;
     }
     case FOLLOW_MON_TASK_STATE_WAIT_GIFT_MESSAGE:
-        if (DialogBox_IsPrintFinished((u8)fieldSystem->followMonInteraction->printerId) == TRUE && !IsFanfarePlaying() && (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B))) {
+        if (DialogBox_IsPrintFinished(fieldSystem->followMonInteraction->printerId) == TRUE && !IsFanfarePlaying() && (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B))) {
             FieldSystem_CloseFollowMonMessage(fieldSystem);
             MapObject_PauseMovement(fieldSystem->followMon.mapObject);
             return TRUE;
@@ -1343,7 +1343,7 @@ static void FollowMon_ApplyInteractionEffects(FieldSystem *fieldSystem, FollowMo
     } else if (value < -127) {
         value = -127;
     }
-    FollowMonMood_Set(fieldSystem->followMonMood, (s8)value);
+    FollowMonMood_Set(fieldSystem->followMonMood, value);
     value = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
     value += fieldSystem->followMonInteraction->friendshipChange;
     if (value > FRIENDSHIP_MAX) {

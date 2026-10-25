@@ -52,12 +52,6 @@ static int Terrain_AbsDiff(int lhs, int rhs) {
 #define MAP_TILES_COUNT_Z    32
 #define MAP_OBJECT_TILE_SIZE FX32_CONST(16)
 
-enum CalculatedHeightSource {
-    CALCULATED_HEIGHT_SOURCE_NONE = 0,
-    CALCULATED_HEIGHT_SOURCE_BDHC,
-    CALCULATED_HEIGHT_SOURCE_DYNAMIC
-};
-
 static int Terrain_CalcHeight(FieldSystem *fieldSystem, int objectHeightMode, int objectHeight, fx32 objectX, fx32 objectZ, u8 *newObjectHeightSourceOut) {
     BOOL dynHeightPlateFound;
     u32 tileX, tileZ;
@@ -157,7 +151,7 @@ int Terrain_CalcHeightWithMode(FieldSystem *fieldSystem, int objectHeightMode, i
 static int Terrain_GetHeight_Simple(FieldSystem *fieldSystem, int objectHeight, fx32 x, fx32 z, u8 *outKind) {
     BOOL ok = MapLoadManager_GetMapSlotAt(fieldSystem->mapLoadManager, x / 0x10000, z / 0x10000, NULL);
     if (outKind != NULL) {
-        *outKind = ok ? 1 : 0;
+        *outKind = ok ? CALCULATED_HEIGHT_SOURCE_BDHC : CALCULATED_HEIGHT_SOURCE_NONE;
     }
     return 0;
 }
@@ -264,7 +258,7 @@ BOOL FieldSystem_CheckCollisionAndHeight(FieldSystem *fieldSystem, VecFx32 *play
     }
     if (slope == 0) {
         ret = FieldSystem_CheckTileCollision(fieldSystem, xInFront, yInFront);
-        if (!ret && kind == 2) {
+        if (!ret && kind == CALCULATED_HEIGHT_SOURCE_DYNAMIC) {
             GetMetatileBehavior(fieldSystem, xInFront, yInFront);
         }
         return ret;
@@ -282,7 +276,7 @@ u32 FieldSystem_CheckCollisionHeightAndGimmick(FieldSystem *fieldSystem, VecFx32
     if (slope == 0) {
         if (!Gymmick_CheckCollision(fieldSystem, x, y, playerPos->y, &ret)) {
             ret = FieldSystem_CheckTileCollision(fieldSystem, x, y);
-            if (!ret && kind == 2) {
+            if (!ret && kind == CALCULATED_HEIGHT_SOURCE_DYNAMIC) {
                 GetMetatileBehavior(fieldSystem, x, y);
             }
             return ret;

@@ -11,6 +11,7 @@ FieldShadow *FieldShadow_New(FieldEffectManager *manager);
 void FieldShadow_Free(FieldShadow *shadow);
 void FieldShadow_CreateMapObjectShadow(LocalMapObject *object);
 void FieldShadow_CreateFollowMonShadow(LocalMapObject *object);
+FieldEffect *FieldShadow_CreateFriendShadow(LocalMapObject *object, int index);
 void FieldShadow_OffsetByFacing(u32 direction, VecFx32 *pos);
 
 #endif // POKEHEARTGOLD_FIELD_SHADOW_H

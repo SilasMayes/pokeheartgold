@@ -1252,7 +1252,7 @@ BOOL MapObjectMovementCmd108_Step1(LocalMapObject *object) {
         position.y = work->height;
     }
     MapObject_SetPositionVector(object, &position);
-    sine = GF_SinDegNoWrap((u16)(work->data->angleStep * work->step));
+    sine = GF_SinDegNoWrap(work->data->angleStep * work->step);
     targetY = work->data->origin.y + FX_MUL(work->data->stepY, progress);
     targetY += FX_MUL(sine, FX32_CONST(16));
     position.y = targetY - position.y;

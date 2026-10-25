@@ -30,6 +30,6 @@ BOOL MapObject_UpdateMetatileBehaviors(LocalMapObject *object);
 void OffsetPositionInDirection(int direction, VecFx32 *position, int distance);
 void MapObject_UpdateHiddenMovement(LocalMapObject *object);
 int GetDirectionTowards(int x, int z, int targetX, int targetZ);
-BOOL FieldSystem_SnapToTerrainHeightEx(FieldSystem *fieldSystem, VecFx32 *position, BOOL allowType2);
+BOOL FieldSystem_SnapToTerrainHeightEx(FieldSystem *fieldSystem, VecFx32 *position, BOOL allowDynamicHeight);
 
 #endif // POKEHEARTGOLD_MAP_OBJECT_MOVEMENT_UTILITIES_INTERNAL_H

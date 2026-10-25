@@ -126,12 +126,12 @@ void FlyLandingEffect_Start(FieldEffect *effect) {
     landing->radius = FX32_CONST(192);
     landing->radiusSpeed = FX32_CONST(32);
     landing->offset.x = GF_CosDeg(45) * (landing->radius / FX32_ONE);
-    landing->offset.y = GF_SinDeg((u16)(landing->angle / FX32_ONE)) * (landing->radius / FX32_ONE);
+    landing->offset.y = GF_SinDeg(landing->angle / FX32_ONE) * (landing->radius / FX32_ONE);
     position.x = landing->center.x + landing->offset.x;
     position.y = landing->center.y + landing->offset.y;
     Sprite_SetMatrix(landing->flyerSprite, &position);
     Sprite_SetAffineScale(landing->flyerSprite, &scale);
-    Sprite_SetAffineZRotation(landing->flyerSprite, GF_DegreeToSinCosIdx((u16)(landing->rotation / FX32_ONE)));
+    Sprite_SetAffineZRotation(landing->flyerSprite, GF_DegreeToSinCosIdx(landing->rotation / FX32_ONE));
     Sprite_SetDrawPriority(landing->flyerSprite, 0x84);
     Sprite_SetDrawFlag(landing->flyerSprite, TRUE);
     landing->trainerJumpEffect = FieldMoveCutIn_CreateTrainerJumpEffect(landing->args.effectPool, landing->args.trainerSprite);
@@ -170,7 +170,7 @@ BOOL FlyLandingEffect_SwoopIn(FlyLandingEffect *landing) {
         landing->radiusSpeed = FX32_ONE;
     }
     landing->offset.x = GF_CosDeg(45) * (landing->radius / FX32_ONE);
-    landing->offset.y = GF_SinDeg((u16)(landing->angle / FX32_ONE)) * (landing->radius / FX32_ONE);
+    landing->offset.y = GF_SinDeg(landing->angle / FX32_ONE) * (landing->radius / FX32_ONE);
     if (landing->angle / FX32_ONE < 90) {
         landing->angle += FX32_CONST(4);
     }
@@ -219,13 +219,13 @@ BOOL FlyLandingEffect_Climb(FlyLandingEffect *landing) {
     if (landing->radiusSpeed > FX32_CONST(16)) {
         landing->radiusSpeed = FX32_CONST(16);
     }
-    landing->offset.x = GF_CosDeg((u16)(landing->angle / FX32_ONE)) * (landing->radius / FX32_ONE);
+    landing->offset.x = GF_CosDeg(landing->angle / FX32_ONE) * (landing->radius / FX32_ONE);
     landing->offset.y = GF_SinDeg(128) * (landing->radius / FX32_ONE);
     if (landing->angle < FX32_CONST(160)) {
         landing->angle += FX32_ONE;
     }
     landing->rotation += FX32_CONST(2);
-    Sprite_SetAffineZRotation(flyer, GF_DegreeToSinCosIdx((u16)(landing->rotation / FX32_ONE)));
+    Sprite_SetAffineZRotation(flyer, GF_DegreeToSinCosIdx(landing->rotation / FX32_ONE));
     landing->scale.x += landing->scaleSpeed;
     if (landing->scale.x > FX32_ONE) {
         landing->scale.x = FX32_ONE;
@@ -274,7 +274,7 @@ BOOL FlyLandingEffect_StartFlyAway(FlyLandingEffect *landing) {
     landing->radiusSpeed = FX32_CONST(2);
     Sprite_SetMatrix(landing->flyerSprite, &center);
     Sprite_SetAffineScale(landing->flyerSprite, &scale);
-    Sprite_SetAffineZRotation(landing->flyerSprite, GF_DegreeToSinCosIdx((u16)(landing->rotation / FX32_ONE)));
+    Sprite_SetAffineZRotation(landing->flyerSprite, GF_DegreeToSinCosIdx(landing->rotation / FX32_ONE));
     Sprite_SetDrawFlag(landing->flyerSprite, TRUE);
     Sprite_SetAnimCtrlSeq(landing->args.trainerSprite, 6);
     Sprite_SetAnimActiveFlag(landing->args.trainerSprite, TRUE);
@@ -295,7 +295,7 @@ BOOL FlyLandingEffect_FlyAway(FlyLandingEffect *landing) {
         landing->radius = 0;
     }
     landing->offset.x = GF_CosDeg(315) * (landing->radius / FX32_ONE);
-    landing->offset.y = GF_SinDeg((u16)(landing->angle / FX32_ONE)) * (landing->radius / FX32_ONE);
+    landing->offset.y = GF_SinDeg(landing->angle / FX32_ONE) * (landing->radius / FX32_ONE);
     if (landing->angle / FX32_ONE < 180) {
         landing->angle -= FX32_CONST(4);
     }
@@ -312,7 +312,7 @@ BOOL FlyLandingEffect_FlyAway(FlyLandingEffect *landing) {
     if (landing->rotation / FX32_ONE > 60) {
         landing->rotation = FX32_CONST(60);
     }
-    Sprite_SetAffineZRotation(flyer, GF_DegreeToSinCosIdx((u16)(landing->rotation / FX32_ONE)));
+    Sprite_SetAffineZRotation(flyer, GF_DegreeToSinCosIdx(landing->rotation / FX32_ONE));
     pos.x = landing->center.x + landing->offset.x;
     pos.y = landing->center.y + landing->offset.y;
     Sprite_SetMatrix(flyer, &pos);

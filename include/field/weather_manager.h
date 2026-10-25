@@ -57,11 +57,25 @@ typedef struct WeatherSystem WeatherSystem;
 typedef struct WeatherEntry WeatherEntry;
 typedef struct WeatherWork WeatherWork;
 typedef struct WeatherObject WeatherObject;
+
+// The state of one rain drop, snowflake or diamond dust sparkle
+typedef struct WeatherParticle {
+    s32 timer;
+    s32 duration;
+    s32 speedY;
+    s32 state;
+    s32 speedX;
+    s32 slowdownInterval;
+} WeatherParticle;
+
 struct WeatherObject {
     WeatherSystem *weatherSystem;
     Sprite *sprite;
-    u32 *data;
-    u32 dataBuffer[10];
+    WeatherParticle *particle;
+    union {
+        WeatherParticle particle;
+        u32 words[10];
+    } dataBuffer;
     WeatherObject *next;
     WeatherObject *prev;
 };
@@ -121,7 +135,9 @@ typedef struct WeatherParticleTaskData {
     WeatherSpawnRamp spawnRamp;
     WeatherFogTableFade fogTableFade;
     WeatherFogChange fogChange;
-    s32 data[10];
+    s32 fogDelay; // frames before the fog starts to change
+    s32 flakeCount; // snowflakes spawned, wrapping at 800; picks the snowfall phase
+    s32 unused[8];
 } WeatherParticleTaskData;
 
 typedef struct WeatherFogTaskData {

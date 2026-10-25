@@ -79,7 +79,7 @@ static NNSG3dRenderObj *HiddenObjectCover_GetRenderObj(HiddenObjectCover *cover,
     return &cover->renderObjs[index];
 }
 
-void HiddenObjectCover_Spawn(LocalMapObject *mapObject, int index) {
+FieldEffect *HiddenObjectCover_Spawn(LocalMapObject *mapObject, int coverType) {
     VecFx32 position;
     HiddenObjectCoverEffectArgs args;
 
@@ -92,16 +92,16 @@ void HiddenObjectCover_Spawn(LocalMapObject *mapObject, int index) {
     SetPositionToTileCenter(x, z, &position);
     FieldSystem_SnapToTerrainHeight(fieldSystem, &position);
 
-    args.coverIndex = index;
+    args.coverIndex = coverType;
     args.manager = manager;
 
     HiddenObjectCover *cover = FieldEffectManager_GetRendererData(manager, FIELD_EFFECT_RENDERER_HIDDEN_OBJECT_COVER);
     args.cover = cover;
     args.mapObject = mapObject;
-    args.renderObj = HiddenObjectCover_GetRenderObj(cover, index);
+    args.renderObj = HiddenObjectCover_GetRenderObj(cover, coverType);
 
     int priority = MapObject_GetPriorityPlusValue(mapObject, 2);
-    FieldEffectManager_CreateEffect(manager, &sHiddenObjectCoverEffectTemplate, &position, 0, &args, priority);
+    return FieldEffectManager_CreateEffect(manager, &sHiddenObjectCoverEffectTemplate, &position, 0, &args, priority);
 }
 
 static BOOL HiddenObjectCoverEffect_Init(FieldEffect *effect, void *state) {

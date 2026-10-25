@@ -333,22 +333,22 @@ int GetDirectionTowards(int x, int z, int targetX, int targetZ) {
 }
 
 BOOL FieldSystem_SnapToTerrainHeight(FieldSystem *fieldSystem, VecFx32 *position) {
-    u8 behavior;
-    int y = FieldSystem_GetTerrainHeight(fieldSystem, position->y, position->x, position->z, &behavior);
-    if (behavior == 0) {
+    u8 heightSource;
+    int y = FieldSystem_GetTerrainHeight(fieldSystem, position->y, position->x, position->z, &heightSource);
+    if (heightSource == CALCULATED_HEIGHT_SOURCE_NONE) {
         return FALSE;
     }
     position->y = y;
     return TRUE;
 }
 
-BOOL FieldSystem_SnapToTerrainHeightEx(FieldSystem *fieldSystem, VecFx32 *position, BOOL allowType2) {
-    u8 behavior;
-    int y = FieldSystem_GetTerrainHeight(fieldSystem, position->y, position->x, position->z, &behavior);
-    if (behavior == 0) {
+BOOL FieldSystem_SnapToTerrainHeightEx(FieldSystem *fieldSystem, VecFx32 *position, BOOL allowDynamicHeight) {
+    u8 heightSource;
+    int y = FieldSystem_GetTerrainHeight(fieldSystem, position->y, position->x, position->z, &heightSource);
+    if (heightSource == CALCULATED_HEIGHT_SOURCE_NONE) {
         return FALSE;
     }
-    if (behavior == 2 && !allowType2) {
+    if (heightSource == CALCULATED_HEIGHT_SOURCE_DYNAMIC && !allowDynamicHeight) {
         return FALSE;
     }
     position->y = y;

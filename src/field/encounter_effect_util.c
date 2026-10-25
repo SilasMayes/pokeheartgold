@@ -231,7 +231,7 @@ void EncounterEffect_FillWindowRect(Window *window, s16 top, s16 bottom, s16 lef
     if (bottom > 256) {
         bottom = 256;
     }
-    FillWindowPixelRect(window, fill, (u16)left, (u16)top, (u16)(right - left), (u16)(bottom - top));
+    FillWindowPixelRect(window, fill, left, top, right - left, bottom - top);
 }
 
 BlockWipe *BlockWipe_New(enum HeapID heapID) {

@@ -78,7 +78,9 @@ typedef struct MovementListEntry {
     const int *list;
 } MovementListEntry;
 
-typedef BOOL (*MovementStateFunc)(LocalMapObject *object, void *data);
+typedef BOOL (*SpinMovementStateFunc)(LocalMapObject *object, SpinMovementState *state);
+typedef BOOL (*BackAndForthMovementStateFunc)(LocalMapObject *object, BackAndForthMovementState *state);
+typedef BOOL (*PathMovementStateFunc)(LocalMapObject *object, MovementPathState *state);
 
 enum RandomWalkState {
     RANDOM_WALK_FACE,
@@ -88,21 +90,21 @@ enum RandomWalkState {
     RANDOM_WALK_WAIT_STEP,
 };
 
-static BOOL SpinMovement_FaceNearbyPlayer(LocalMapObject *object, void *data);
-static BOOL SpinMovement_WaitFace(LocalMapObject *object, void *data);
-static BOOL SpinMovement_Wait(LocalMapObject *object, void *data);
-static BOOL SpinMovement_Turn(LocalMapObject *object, void *data);
-static BOOL AlternatingSpinMovement_Face(LocalMapObject *object, void *data);
-static BOOL AlternatingSpinMovement_WaitFace(LocalMapObject *object, void *data);
-static BOOL AlternatingSpinMovement_Wait(LocalMapObject *object, void *data);
-static BOOL AlternatingSpinMovement_Turn(LocalMapObject *object, void *data);
-static BOOL BackAndForthMovement_FaceStart(LocalMapObject *object, void *data);
-static BOOL BackAndForthMovement_Step(LocalMapObject *mapObject, void *data);
-static BOOL BackAndForthMovement_WaitStep(LocalMapObject *object, void *data);
-static BOOL PathMovement_Step(LocalMapObject *object, void *data);
-static BOOL PathMovement_WaitStep(LocalMapObject *object, void *data);
+static BOOL SpinMovement_FaceNearbyPlayer(LocalMapObject *object, SpinMovementState *state);
+static BOOL SpinMovement_WaitFace(LocalMapObject *object, SpinMovementState *state);
+static BOOL SpinMovement_Wait(LocalMapObject *object, SpinMovementState *state);
+static BOOL SpinMovement_Turn(LocalMapObject *object, SpinMovementState *state);
+static BOOL AlternatingSpinMovement_Face(LocalMapObject *object, SpinMovementState *state);
+static BOOL AlternatingSpinMovement_WaitFace(LocalMapObject *object, SpinMovementState *state);
+static BOOL AlternatingSpinMovement_Wait(LocalMapObject *object, SpinMovementState *state);
+static BOOL AlternatingSpinMovement_Turn(LocalMapObject *object, SpinMovementState *state);
+static BOOL BackAndForthMovement_FaceStart(LocalMapObject *object, BackAndForthMovementState *state);
+static BOOL BackAndForthMovement_Step(LocalMapObject *mapObject, BackAndForthMovementState *state);
+static BOOL BackAndForthMovement_WaitStep(LocalMapObject *object, BackAndForthMovementState *state);
+static BOOL PathMovement_Step(LocalMapObject *object, MovementPathState *state);
+static BOOL PathMovement_WaitStep(LocalMapObject *object, MovementPathState *state);
 
-static const MovementStateFunc sPathMovementStateFuncs[] = {
+static const PathMovementStateFunc sPathMovementStateFuncs[] = {
     PathMovement_Step,
     PathMovement_WaitStep,
 };
@@ -115,7 +117,7 @@ static const int sDirectionTable02[] = { DIR_NORTH, DIR_EAST, DIR_NONE };
 
 static const int sDirectionTable12[] = { DIR_NORTH, DIR_SOUTH, DIR_NONE };
 
-static const MovementStateFunc sBackAndForthMovementStateFuncs[] = {
+static const BackAndForthMovementStateFunc sBackAndForthMovementStateFuncs[] = {
     BackAndForthMovement_FaceStart,
     BackAndForthMovement_Step,
     BackAndForthMovement_WaitStep,
@@ -161,7 +163,7 @@ static const int sDirectionTable14[] = { DIR_NORTH, DIR_EAST, DIR_WEST, DIR_SOUT
 
 static const int sDirectionTable15[] = { DIR_EAST, DIR_WEST, DIR_SOUTH, DIR_NORTH };
 
-static const MovementStateFunc sAlternatingSpinMovementStateFuncs[] = {
+static const SpinMovementStateFunc sAlternatingSpinMovementStateFuncs[] = {
     AlternatingSpinMovement_Face,
     AlternatingSpinMovement_WaitFace,
     AlternatingSpinMovement_Wait,
@@ -172,7 +174,7 @@ static const int sDirectionTable29[] = { DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORT
 
 static const int sDirectionTable30[] = { DIR_NORTH, DIR_WEST, DIR_SOUTH, DIR_EAST };
 
-static const MovementStateFunc sSpinMovementStateFuncs[] = {
+static const SpinMovementStateFunc sSpinMovementStateFuncs[] = {
     SpinMovement_FaceNearbyPlayer,
     SpinMovement_WaitFace,
     SpinMovement_Wait,
@@ -564,8 +566,7 @@ void SpinMovement_Update(LocalMapObject *object) {
     }
 }
 
-static BOOL SpinMovement_FaceNearbyPlayer(LocalMapObject *object, void *data) {
-    SpinMovementState *state = data;
+static BOOL SpinMovement_FaceNearbyPlayer(LocalMapObject *object, SpinMovementState *state) {
     int direction = MapObject_GetAllowedDirectionToNearbyPlayer(object, 0x26, -1);
     if (direction == DIR_NONE) {
         direction = MapObject_GetFacingDirection(object);
@@ -575,8 +576,7 @@ static BOOL SpinMovement_FaceNearbyPlayer(LocalMapObject *object, void *data) {
     return TRUE;
 }
 
-static BOOL SpinMovement_WaitFace(LocalMapObject *object, void *data) {
-    SpinMovementState *state = data;
+static BOOL SpinMovement_WaitFace(LocalMapObject *object, SpinMovementState *state) {
     if (!MapObject_RunForcedMovement(object)) {
         return FALSE;
     }
@@ -585,8 +585,7 @@ static BOOL SpinMovement_WaitFace(LocalMapObject *object, void *data) {
     return TRUE;
 }
 
-static BOOL SpinMovement_Wait(LocalMapObject *object, void *data) {
-    SpinMovementState *state = data;
+static BOOL SpinMovement_Wait(LocalMapObject *object, SpinMovementState *state) {
     if (state->timer != 0 && MapObject_GetAllowedDirectionToNearbyPlayer(object, 0x26, -1) != DIR_NONE) {
         state->state = 0;
         return TRUE;
@@ -599,8 +598,7 @@ static BOOL SpinMovement_Wait(LocalMapObject *object, void *data) {
     return TRUE;
 }
 
-static BOOL SpinMovement_Turn(LocalMapObject *object, void *data) {
-    SpinMovementState *state = data;
+static BOOL SpinMovement_Turn(LocalMapObject *object, SpinMovementState *state) {
     DirectionCycle listA = sSpinCounterclockwiseOrder;
     DirectionCycle listB = sSpinClockwiseOrder;
     int i;
@@ -641,16 +639,14 @@ void AlternatingSpinMovement_Update(LocalMapObject *object) {
     while (sAlternatingSpinMovementStateFuncs[state->state](object, state) == TRUE) {}
 }
 
-static BOOL AlternatingSpinMovement_Face(LocalMapObject *object, void *data) {
-    SpinMovementState *state = data;
+static BOOL AlternatingSpinMovement_Face(LocalMapObject *object, SpinMovementState *state) {
     u32 facing = MapObject_GetFacingDirection(object);
     MapObject_ForceSetHeldMovement(object, GetMovementForDirection(facing, MOVEMENT_FACE_UP));
     state->state = 1;
     return TRUE;
 }
 
-static BOOL AlternatingSpinMovement_WaitFace(LocalMapObject *object, void *data) {
-    SpinMovementState *state = data;
+static BOOL AlternatingSpinMovement_WaitFace(LocalMapObject *object, SpinMovementState *state) {
     if (!MapObject_RunForcedMovement(object)) {
         return FALSE;
     }
@@ -659,8 +655,7 @@ static BOOL AlternatingSpinMovement_WaitFace(LocalMapObject *object, void *data)
     return TRUE;
 }
 
-static BOOL AlternatingSpinMovement_Wait(LocalMapObject *object, void *data) {
-    SpinMovementState *state = data;
+static BOOL AlternatingSpinMovement_Wait(LocalMapObject *object, SpinMovementState *state) {
     state->timer++;
     if (state->timer < 24) {
         return FALSE;
@@ -669,8 +664,7 @@ static BOOL AlternatingSpinMovement_Wait(LocalMapObject *object, void *data) {
     return TRUE;
 }
 
-static BOOL AlternatingSpinMovement_Turn(LocalMapObject *object, void *data) {
-    SpinMovementState *state = data;
+static BOOL AlternatingSpinMovement_Turn(LocalMapObject *object, SpinMovementState *state) {
     DirectionCycle orderA = sAlternatingSpinCounterclockwiseOrder;
     DirectionCycle orderB = sAlternatingSpinClockwiseOrder;
     int i;
@@ -721,8 +715,7 @@ void BackAndForthMovement_Update(LocalMapObject *object) {
     while (sBackAndForthMovementStateFuncs[state->state](object, state) == TRUE) {}
 }
 
-static BOOL BackAndForthMovement_FaceStart(LocalMapObject *object, void *data) {
-    BackAndForthMovementState *state = data;
+static BOOL BackAndForthMovement_FaceStart(LocalMapObject *object, BackAndForthMovementState *state) {
     u32 direction = MapObject_GetInitialFacingDirection(object);
     if (state->turn == 1) {
         direction = GetOppositeDirection(direction);
@@ -735,8 +728,7 @@ static BOOL BackAndForthMovement_FaceStart(LocalMapObject *object, void *data) {
     return TRUE;
 }
 
-static BOOL BackAndForthMovement_Step(LocalMapObject *mapObject, void *data) {
-    BackAndForthMovementState *state = data;
+static BOOL BackAndForthMovement_Step(LocalMapObject *mapObject, BackAndForthMovementState *state) {
     int direction;
     int result;
     int kind;
@@ -777,8 +769,7 @@ static BOOL BackAndForthMovement_Step(LocalMapObject *mapObject, void *data) {
     return TRUE;
 }
 
-static BOOL BackAndForthMovement_WaitStep(LocalMapObject *object, void *data) {
-    BackAndForthMovementState *state = data;
+static BOOL BackAndForthMovement_WaitStep(LocalMapObject *object, BackAndForthMovementState *state) {
     if (MapObject_RunForcedMovement(object) == TRUE) {
         MapObject_ClearSingleMovement(object);
         if (MapObject_SpinsWhileWalking(object) == TRUE) {
@@ -868,8 +859,7 @@ void PathMovement_Update(LocalMapObject *object) {
     while (sPathMovementStateFuncs[state->state](object, state) == TRUE) {}
 }
 
-static BOOL PathMovement_Step(LocalMapObject *object, void *data) {
-    MovementPathState *state = data;
+static BOOL PathMovement_Step(LocalMapObject *object, MovementPathState *state) {
     const int *list;
     int direction;
     u32 collision;
@@ -924,8 +914,7 @@ static BOOL PathMovement_Step(LocalMapObject *object, void *data) {
     return TRUE;
 }
 
-static BOOL PathMovement_WaitStep(LocalMapObject *object, void *data) {
-    MovementPathState *state = data;
+static BOOL PathMovement_WaitStep(LocalMapObject *object, MovementPathState *state) {
     if (MapObject_RunForcedMovement(object) == TRUE) {
         MapObject_ClearSingleMovement(object);
         if (MapObject_SpinsWhileWalking(object) == TRUE) {

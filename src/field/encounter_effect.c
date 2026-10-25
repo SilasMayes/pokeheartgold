@@ -250,7 +250,7 @@ void EncounterEffectInterp_InitFx(EncounterEffectInterp *interp, s32 start, s32 
 
 BOOL EncounterEffectInterp_UpdateFx(EncounterEffectInterp *interp) {
     s64 product = (s64)interp->delta * (interp->frame << FX32_SHIFT);
-    s32 value = FX_Div((s32)((product + FX32_HALF) >> FX32_SHIFT), interp->duration << FX32_SHIFT);
+    s32 value = FX_Div((product + FX32_HALF) >> FX32_SHIFT, interp->duration << FX32_SHIFT);
     value += interp->start;
     interp->value = value;
     if (interp->frame + 1 <= interp->duration) {

@@ -3,6 +3,7 @@
 
 #include "map_object.h"
 
+void FollowPlayerMovement_Reset(LocalMapObject *object);
 LocalMapObject *MapObject_FindTrainerPartner(LocalMapObject *object);
 int HiddenObjectMovement_SetCoverEffect(LocalMapObject *object, int effect);
 

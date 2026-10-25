@@ -5,6 +5,7 @@
 #include "field/field_effect_manager.h"
 #include "field/field_follow_mon.h"
 
+#include "field_hidden_object_cover.h"
 #include "field_system.h"
 #include "field_tall_grass.h"
 #include "field_terrain.h"
@@ -620,7 +621,7 @@ void HiddenObjectMovement_Resume(LocalMapObject *object) {
 
 static BOOL HiddenObjectState_CreateCover(LocalMapObject *object, HiddenObjectMovementState *state) {
     if (!state->revealed) {
-        HiddenObjectMovement_SetCoverEffect(object, HiddenObjectCover_Spawn(object, state->coverType));
+        HiddenObjectMovement_SetCoverEffect(object, (int)HiddenObjectCover_Spawn(object, state->coverType));
     }
     MapObject_ClearSingleMovement(object);
     MapObject_ClearEndMovement(object);
@@ -631,7 +632,7 @@ static BOOL HiddenObjectState_CreateCover(LocalMapObject *object, HiddenObjectMo
 static BOOL HiddenObjectState_Wait(LocalMapObject *object, HiddenObjectMovementState *state) {
     if (!state->revealed) {
         if (HiddenObjectMovement_GetCoverEffect(object) == 0 && MapObject_IsDrawInitialized(object) == TRUE) {
-            HiddenObjectMovement_SetCoverEffect(object, HiddenObjectCover_Spawn(object, state->coverType));
+            HiddenObjectMovement_SetCoverEffect(object, (int)HiddenObjectCover_Spawn(object, state->coverType));
         }
         MapObject_SetFlagsBits(object, MAPOBJECTFLAG_UNK20);
     }

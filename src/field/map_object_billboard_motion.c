@@ -290,16 +290,16 @@ void *MapObject_GetBillboard(LocalMapObject *object) {
     case SPRITE_RHEROINE:
     case SPRITE_RBANZAIHERO:
     case SPRITE_RBANZAIINE:
-        return ((void **)MapObject_GetDrawData(object))[1];
+        return ((PlayerDrawWork *)MapObject_GetDrawData(object))->billboard;
     }
 
     if (spriteId >= SPRITE_FOLLOWER_MON_BULBASAUR && spriteId <= SPRITE_FOLLOWER_MON_ARCEUS_DARK) {
-        return ((void **)MapObject_GetDrawData(object))[0];
+        return ((FollowMonBillboardWork *)MapObject_GetDrawData(object))->billboard;
     }
     if (spriteId >= SPRITE_BONGURI && spriteId <= SPRITE_BONGURI_BK) {
         return ApricornTreeObject_GetBillboard(object);
     }
-    return ((void **)MapObject_GetDrawData(object))[1];
+    return ((BillboardDrawWork *)MapObject_GetDrawData(object))->billboard;
 }
 
 void BillboardDraw_Init(LocalMapObject *object) {

@@ -76,7 +76,7 @@ void FieldSystem_GetFacingObject(FieldSystem *fieldSystem, LocalMapObject **ret_
             break;
         }
     }
-    *ret_p = MapObjectManager_GetFirstObjectWithXAndZ(fieldSystem->mapObjectManager, (u32)x, (u32)z, FALSE);
+    *ret_p = MapObjectManager_GetFirstObjectWithXAndZ(fieldSystem->mapObjectManager, x, z, FALSE);
 }
 
 // The object on the facing tile, if it can be talked to (flag 19 clear) and stands at the player's height.

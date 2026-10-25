@@ -101,7 +101,7 @@ BOOL FieldSystem_CanPlaceSafariObject(FieldSystem *fieldSystem) {
     }
     PlayerAvatar_CopyPositionVector(fieldSystem->playerAvatar, &pos);
     height = Terrain_GetHeight_Bdhc(fieldSystem, pos.y, pos.x, pos.z, &kind);
-    if (kind != 1) {
+    if (kind != CALCULATED_HEIGHT_SOURCE_BDHC) {
         return FALSE;
     }
     vz = (newZ << 4) + 8;
@@ -117,7 +117,7 @@ BOOL FieldSystem_CanPlaceSafariObject(FieldSystem *fieldSystem) {
         fx = (f32)(vx << 12) - 0.5f;
     }
     newHeight = Terrain_GetHeight_Bdhc(fieldSystem, pos.y, (s32)fx, (s32)fz, &kind);
-    if (kind != 1) {
+    if (kind != CALCULATED_HEIGHT_SOURCE_BDHC) {
         return FALSE;
     }
     return height == newHeight;
@@ -160,7 +160,7 @@ SafariDecorationArgs *SafariDecoration_CreateArgs(FieldSystem *fieldSystem, enum
     PlayerAvatar_CopyPositionVector(fieldSystem->playerAvatar, &pos);
     args->area = (u8)SafariZone_GetAreaIndexAt(x, z);
     pos.y = Terrain_GetHeight_Bdhc(fieldSystem, pos.y, pos.x, pos.z, &kind);
-    if (kind != 1) {
+    if (kind != CALCULATED_HEIGHT_SOURCE_BDHC) {
         return args;
     }
     args->height = (u8)(pos.y >> FX32_SHIFT);
@@ -292,7 +292,7 @@ static BOOL SafariZone_FindSpotFor1x2Object(FieldSystem *fieldSystem, s16 x, s16
             blocked = FieldSystem_CheckTileCollision(fieldSystem, x, testZ);
             if (SafariZone_CanPlaceObjectOn(behavior, blocked, onWater)) {
                 height = Terrain_GetHeight_Bdhc(fieldSystem, y, GRID_TO_FX32(x), GRID_TO_FX32(testZ), query);
-                if (query[0] == 1 && height == y) {
+                if (query[0] == CALCULATED_HEIGHT_SOURCE_BDHC && height == y) {
                     count++;
                 }
             }
@@ -313,7 +313,7 @@ static BOOL SafariZone_FindSpotFor1x2Object(FieldSystem *fieldSystem, s16 x, s16
         behavior = GetMetatileBehavior(fieldSystem, x, z);
         blocked = FieldSystem_CheckTileCollision(fieldSystem, x, z);
         height = Terrain_GetHeight_Bdhc(fieldSystem, y, GRID_TO_FX32(x), GRID_TO_FX32(z), query);
-        if (!SafariZone_CanPlaceObjectOn(behavior, blocked, onWater) || query[0] != 1 || height != y) {
+        if (!SafariZone_CanPlaceObjectOn(behavior, blocked, onWater) || query[0] != CALCULATED_HEIGHT_SOURCE_BDHC || height != y) {
             return FALSE;
         }
         for (delta = (s8 *)&query[1], i = 0; (int)i < 2; delta++, i++) {
@@ -321,7 +321,7 @@ static BOOL SafariZone_FindSpotFor1x2Object(FieldSystem *fieldSystem, s16 x, s16
             behavior = GetMetatileBehavior(fieldSystem, x, testZ);
             blocked = FieldSystem_CheckTileCollision(fieldSystem, x, testZ);
             height = Terrain_GetHeight_Bdhc(fieldSystem, y, GRID_TO_FX32(x), GRID_TO_FX32(testZ), query);
-            if (SafariZone_CanPlaceObjectOn(behavior, blocked, onWater) && query[0] == 1 && height == y) {
+            if (SafariZone_CanPlaceObjectOn(behavior, blocked, onWater) && query[0] == CALCULATED_HEIGHT_SOURCE_BDHC && height == y) {
                 *outX = x;
                 *outZ = z + i;
                 return TRUE;
@@ -355,7 +355,7 @@ static BOOL SafariZone_FindSpotFor2x1Object(FieldSystem *fieldSystem, s16 x, s16
         behavior = GetMetatileBehavior(fieldSystem, x, z);
         blocked = FieldSystem_CheckTileCollision(fieldSystem, x, z);
         height = Terrain_GetHeight_Bdhc(fieldSystem, y, GRID_TO_FX32(x), GRID_TO_FX32(z), query);
-        if (!SafariZone_CanPlaceObjectOn(behavior, blocked, onWater) || query[0] != 1 || height != y) {
+        if (!SafariZone_CanPlaceObjectOn(behavior, blocked, onWater) || query[0] != CALCULATED_HEIGHT_SOURCE_BDHC || height != y) {
             return FALSE;
         }
         for (delta = (s8 *)&query[1], i = 0; i < 2; delta++, i++) {
@@ -363,7 +363,7 @@ static BOOL SafariZone_FindSpotFor2x1Object(FieldSystem *fieldSystem, s16 x, s16
             behavior = GetMetatileBehavior(fieldSystem, testX, z);
             blocked = FieldSystem_CheckTileCollision(fieldSystem, testX, z);
             height = Terrain_GetHeight_Bdhc(fieldSystem, y, GRID_TO_FX32(testX), GRID_TO_FX32(z), query);
-            if (SafariZone_CanPlaceObjectOn(behavior, blocked, onWater) && query[0] == 1 && height == y) {
+            if (SafariZone_CanPlaceObjectOn(behavior, blocked, onWater) && query[0] == CALCULATED_HEIGHT_SOURCE_BDHC && height == y) {
                 *outX = x - i;
                 *outZ = z;
                 return TRUE;
@@ -383,7 +383,7 @@ static BOOL SafariZone_FindSpotFor2x1Object(FieldSystem *fieldSystem, s16 x, s16
             blocked = FieldSystem_CheckTileCollision(fieldSystem, (s16)(start + i), z);
             if (SafariZone_CanPlaceObjectOn(behavior, blocked, onWater)) {
                 height = Terrain_GetHeight_Bdhc(fieldSystem, y, GRID_TO_FX32((s16)(start + i)), GRID_TO_FX32(z), query);
-                if (query[0] == 1 && height == y) {
+                if (query[0] == CALCULATED_HEIGHT_SOURCE_BDHC && height == y) {
                     count++;
                 }
             }

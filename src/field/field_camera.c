@@ -225,7 +225,7 @@ void FieldCamera_Create(const VecFx32 *target, FieldSystem *fieldSystem, u32 pre
     const FieldCameraPreset *preset = &sFieldCameraPresets[presetNo];
     GF_ASSERT(presetNo < FIELD_CAMERA_PRESET_COUNT);
     fieldSystem->camera = Camera_New(HEAP_ID_FIELD1);
-    Camera_Init_FromTargetDistanceAndAngle((VecFx32 *)target, preset->distance, &preset->angle, preset->perspectiveAngle, (u8)preset->perspectiveType, TRUE, fieldSystem->camera);
+    Camera_Init_FromTargetDistanceAndAngle((VecFx32 *)target, preset->distance, &preset->angle, preset->perspectiveAngle, preset->perspectiveType, TRUE, fieldSystem->camera);
     Camera_SetStaticPtr(fieldSystem->camera);
     Camera_SetPerspectiveClippingPlane(preset->clipNear, preset->clipFar, fieldSystem->camera);
     Camera_OffsetLookAtPosAndTarget(&preset->lookAtOffset, fieldSystem->camera);
