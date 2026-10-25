@@ -19,15 +19,9 @@ typedef struct PokeathlonPennantCaptureCpuPoint {
     int x;
 } PokeathlonPennantCaptureCpuPoint;
 
-typedef struct PokeathlonPennantCaptureCellNode {
-    struct PokeathlonPennantCaptureCellNode *prev;
-    struct PokeathlonPennantCaptureCellNode *next;
-    PokeathlonPennantCaptureCpuCell *cell;
-} PokeathlonPennantCaptureCellNode;
-
 static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu *cpu, u8 who);
-static PokeathlonPennantCaptureCpuCell *PokeathlonPennantCaptureCpu_PickBestCell(PokeathlonPennantCaptureCpu *cpu);
-static u8 PokeathlonPennantCaptureCpu_SortCells(PokeathlonPennantCaptureCpuCell **cells, PokeathlonPennantCaptureCpuCell **out);
+static PokeathlonCourseCpuCell *PokeathlonPennantCaptureCpu_PickBestCell(PokeathlonPennantCaptureCpu *cpu);
+static u8 PokeathlonPennantCaptureCpu_SortCells(PokeathlonCourseCpuCell **cells, PokeathlonCourseCpuCell **out);
 
 static const WindowTemplate sPokeathlonPennantCaptureWindowTemplate = {
     .bgId = GF_BG_LYR_SUB_0,
@@ -145,7 +139,7 @@ static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu
     PokeathlonPennantCapturePennant *pennants;
     PokeathlonPennantCapturePlayer *player;
     PokeathlonPennantCaptureCpuPoint raw, screen, chosen;
-    PokeathlonPennantCaptureCpuCell *best;
+    PokeathlonCourseCpuCell *best;
     int i, j, k;
     player = cpu->players[who].player;
     if (player->depositing || player->knockedDown == 1 || player->freezeTimer) {
@@ -186,7 +180,7 @@ static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu
         }
     }
     for (i = 0; i < PENNANT_CAPTURE_CPU_CELLS; i++) {
-        PokeathlonPennantCaptureCpuCell *cell = &cpu->cells[i];
+        PokeathlonCourseCpuCell *cell = &cpu->cells[i];
         {
             PokeathlonPennantCapturePennant *pennant = pennants;
             for (j = 0; j < PENNANT_CAPTURE_PENNANTS; j++, pennant++) {
@@ -263,9 +257,9 @@ static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu
     }
 }
 
-static PokeathlonPennantCaptureCpuCell *PokeathlonPennantCaptureCpu_PickBestCell(PokeathlonPennantCaptureCpu *cpu) {
-    PokeathlonPennantCaptureCpuCell *sorted[48];
-    PokeathlonPennantCaptureCpuCell *list[PENNANT_CAPTURE_CPU_CELLS];
+static PokeathlonCourseCpuCell *PokeathlonPennantCaptureCpu_PickBestCell(PokeathlonPennantCaptureCpu *cpu) {
+    PokeathlonCourseCpuCell *sorted[48];
+    PokeathlonCourseCpuCell *list[PENNANT_CAPTURE_CPU_CELLS];
     s32 i;
     s32 count;
     u8 index;
@@ -279,12 +273,12 @@ static PokeathlonPennantCaptureCpuCell *PokeathlonPennantCaptureCpu_PickBestCell
 }
 
 // Sorts the cells by score (insertion into a linked list, best first); returns how many share the best score.
-static u8 PokeathlonPennantCaptureCpu_SortCells(PokeathlonPennantCaptureCpuCell **cells, PokeathlonPennantCaptureCpuCell **out) {
-    PokeathlonPennantCaptureCellNode nodes[PENNANT_CAPTURE_CPU_CELLS + 1];
+static u8 PokeathlonPennantCaptureCpu_SortCells(PokeathlonCourseCpuCell **cells, PokeathlonCourseCpuCell **out) {
+    PokeathlonCourseCpuCellNode nodes[PENNANT_CAPTURE_CPU_CELLS + 1];
     u8 count;
     u8 i, j;
-    PokeathlonPennantCaptureCellNode *node;
-    PokeathlonPennantCaptureCellNode *cur;
+    PokeathlonCourseCpuCellNode *node;
+    PokeathlonCourseCpuCellNode *cur;
 
     nodes[0].prev = &nodes[1];
     nodes[0].next = &nodes[1];
@@ -312,7 +306,7 @@ static u8 PokeathlonPennantCaptureCpu_SortCells(PokeathlonPennantCaptureCpuCell 
         }
     }
     {
-        PokeathlonPennantCaptureCellNode *it;
+        PokeathlonCourseCpuCellNode *it;
         s16 first;
         first = nodes[0].next->cell->score;
         for (j = 0, it = &nodes[0]; j < PENNANT_CAPTURE_CPU_CELLS; j++) {

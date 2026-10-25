@@ -130,7 +130,7 @@ PokeathlonResultsAnnouncementPlate *PokeathlonResults_ShowPlate(PokeathlonResult
     PokeathlonResults_PrintPlateText(plates, score->text, plate);
     PokeathlonResults_PrintPlateName(plates, score->participant, plate);
     plates->firstPlace = plate->rank == 0;
-    GF_ASSERT((s32)plate->participant < 4);
+    GF_ASSERT((s32)plate->participant < POKEATHLON_PARTICIPANTS);
     if (isNpc) {
         u32 picture = PokeathlonCourse_GetNpcTrainerPicFileId(PokeathlonCourse_GetNpcTeamSpriteId((u8) * (s32 *)participant));
         PokeathlonCourse_LoadTrainerPicIntoSprite(plate->sprites[3], picture, 11, plates->heapId);
@@ -446,7 +446,7 @@ void PokeathlonResults_InitScoreboard(PokeathlonResultsAnnouncementScoreboard *s
 }
 
 void PokeathlonResults_SetScore(PokeathlonResultsAnnouncementScoreboard *scoreboard, u32 points, u32 team) {
-    GF_ASSERT(team < 4);
+    GF_ASSERT(team < POKEATHLON_PARTICIPANTS);
     scoreboard->teams[team].points = points;
     PokeathlonResults_SetScoreDigits(&scoreboard->teams[team], points);
 }

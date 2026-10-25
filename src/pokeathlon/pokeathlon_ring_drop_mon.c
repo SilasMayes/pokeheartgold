@@ -345,7 +345,7 @@ static inline float PokeathlonRingDrop_ToFx32(int value, float half) {
 
 void PokeathlonRingDrop_InitMemberParams(PokeathlonCourseData *course) {
     int table[6][5] = { 0 };
-    ReadWholeNarcMemberByIdPair(table, (NarcId)170, 9);
+    ReadWholeNarcMemberByIdPair(table, NARC_a_1_7_0, 9);
     u8 participant;
     for (int i = 0; i < RING_DROP_PARTICIPANTS; i++) {
         int member = 0;

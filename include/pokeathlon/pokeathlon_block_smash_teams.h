@@ -7,6 +7,10 @@
 // Block Smash: the own team's Pokemon, the other teams' rows on the touch screen and the CPU participants. Every
 // hit costs stamina; hitting the weak spot fills the gauge, and a full gauge gives every hit +150 power for 90 frames.
 
+#define BLOCK_SMASH_GAUGE_MAX         100
+#define BLOCK_SMASH_FULL_GAUGE_FRAMES 90
+#define BLOCK_SMASH_RIVALS            (POKEATHLON_PARTICIPANTS - 1) // the other teams' rows
+
 enum PokeathlonBlockSmashMonMode {
     BLOCK_SMASH_MON_READY,
     BLOCK_SMASH_MON_HIT,       // the hit animation (10 frames)
@@ -60,7 +64,7 @@ struct PokeathlonBlockSmashRivals {
     SpriteManager *spriteManager;
     PokeathlonCourseData *course;
     PokeathlonCourseMonObjects *monPics;
-    PokeathlonBlockSmashRival rows[3];
+    PokeathlonBlockSmashRival rows[BLOCK_SMASH_RIVALS];
 };
 
 enum PokeathlonBlockSmashCpuMode {

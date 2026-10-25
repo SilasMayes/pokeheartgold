@@ -305,18 +305,18 @@ void PokeathlonCirclePushDisplay_LoadMonPics(PokeathlonCirclePushDisplay *displa
     for (i = 0; i < POKEATHLON_MONS; i++) {
         PokeathlonCourse_GetMonInfo(display->course, i / POKEATHLON_TEAM_SIZE, i % POKEATHLON_TEAM_SIZE, &view);
         GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, view.species, view.gender, 2, view.isShiny, view.form, view.personality);
-        display->anim.monPics[i].charData = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, display->heapId, view.personality, FALSE, 2, view.species);
-        display->anim.monPics[i].paletteData = AllocAndLoadPltt16FromNarc((NarcId)pokepic.narcID, pokepic.palDataID, display->heapId);
+        display->anim.monPics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, display->heapId, view.personality, FALSE, 2, view.species);
+        display->anim.monPics[i].palette = AllocAndLoadPltt16FromNarc((NarcId)pokepic.narcID, pokepic.palDataID, display->heapId);
     }
 }
 
 static void PokeathlonCirclePushDisplayAnim_LoadMonPic(PokeathlonCirclePushDisplayAnim *anim, u32 slot, u32 mon) {
     GF_ASSERT(slot < 2);
     GF_ASSERT(mon < POKEATHLON_MONS);
-    DC_FlushRange(anim->monPics[mon].charData, 0xC80);
-    GXS_LoadOBJ(anim->monPics[mon].charData, anim->picImageLocations[slot], 0xC80);
-    DC_FlushRange(anim->monPics[mon].paletteData, 0x20);
-    GXS_LoadOBJPltt(anim->monPics[mon].paletteData, anim->picPaletteLocations[slot], 0x20);
+    DC_FlushRange(anim->monPics[mon].chars, 0xC80);
+    GXS_LoadOBJ(anim->monPics[mon].chars, anim->picImageLocations[slot], 0xC80);
+    DC_FlushRange(anim->monPics[mon].palette, 0x20);
+    GXS_LoadOBJPltt(anim->monPics[mon].palette, anim->picPaletteLocations[slot], 0x20);
 }
 
 void PokeathlonCirclePushDisplay_CreateWindows(PokeathlonCirclePushDisplay *display) {

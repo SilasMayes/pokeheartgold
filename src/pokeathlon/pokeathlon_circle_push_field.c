@@ -804,8 +804,8 @@ PokeathlonCirclePushDisplay *PokeathlonCirclePushDisplay_New(enum HeapID heapId,
 void PokeathlonCirclePushDisplay_Free(PokeathlonCirclePushDisplay *display) {
     s32 i;
     for (i = 0; i < POKEATHLON_MONS; i++) {
-        Heap_Free(display->anim.monPics[i].charData);
-        Heap_Free(display->anim.monPics[i].paletteData);
+        Heap_Free(display->anim.monPics[i].chars);
+        Heap_Free(display->anim.monPics[i].palette);
     }
     {
         PokeathlonCirclePushDisplay *fileView;

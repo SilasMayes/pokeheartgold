@@ -609,7 +609,7 @@ void PokeathlonCourseMonObjects_Load(PokeathlonCourseMonObjects *objects, int co
         }
         if (PokeathlonCourseSprites_HasGroup(objects->resources, 0x004)) {
             objects->objects[i].markerSprite = PokeathlonCourseMonObjects_CreateSprite(objects, template->priority, template->whichScreen, 0x15);
-            GF_ASSERT(infos[i].participant < 4);
+            GF_ASSERT(infos[i].participant < POKEATHLON_PARTICIPANTS);
             Sprite_SetAnimCtrlSeq(objects->objects[i].markerSprite, infos[i].participant);
             switch (template->sizeTypes[i]) {
             case 1:

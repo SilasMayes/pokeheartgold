@@ -505,7 +505,7 @@ static void PokeathlonEventRecord_SetMonIconsVisible(PokeathlonEventRecord *work
             ManagedSprite_SetDrawFlag(row->sprites[22], visible);
             slot++;
             row = (PokeathlonEventRecord *)((u8 *)row + sizeof(ManagedSprite *));
-        } while (slot < 3);
+        } while (slot < POKEATHLON_TEAM_SIZE);
         rank++;
         base += 3;
     } while (rank < 5);

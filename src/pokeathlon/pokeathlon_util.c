@@ -51,12 +51,12 @@ static const TileRect sPokeathlonMonPicRect = { 0, 0, 10, 10 };
 
 static const u32 sPokeathlonUtilScreenVramTypes[2] = { NNS_G2D_VRAM_TYPE_2DSUB, NNS_G2D_VRAM_TYPE_2DMAIN };
 
-void *PokeathlonUtil_GetSpriteSystem(PokeathlonSpriteContext *ctx) {
+SpriteSystem *PokeathlonUtil_GetSpriteSystem(PokeathlonSpriteContext *ctx) {
     GF_ASSERT(ctx != NULL);
     return ctx->spriteSystem;
 }
 
-void *PokeathlonUtil_GetSpriteManager(PokeathlonSpriteContext *ctx) {
+SpriteManager *PokeathlonUtil_GetSpriteManager(PokeathlonSpriteContext *ctx) {
     GF_ASSERT(ctx != NULL);
     return ctx->spriteManager;
 }
@@ -402,7 +402,7 @@ void PokeathlonUtil_SetWindowY(PokeathlonTextContext *ctx, u32 index, u8 y) {
     SetWindowY(&ctx->windows[index], y);
 }
 
-void *PokeathlonUtil_GetMessageFormat(PokeathlonTextContext *ctx) {
+MessageFormat *PokeathlonUtil_GetMessageFormat(PokeathlonTextContext *ctx) {
     GF_ASSERT(ctx != NULL);
     GF_ASSERT(ctx->msgFormat != NULL);
     return ctx->msgFormat;

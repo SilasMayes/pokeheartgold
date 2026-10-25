@@ -137,7 +137,7 @@ BOOL PokeathlonPennantCapture_State_Setup(PokeathlonCourseData *course, u8 *stat
     switch (*state) {
     case PENNANT_CAPTURE_SETUP_LAYOUT:
         PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + 0xF0);
-        ReadWholeNarcMemberByIdPair(&layout, (NarcId)0xE3, work->layoutFileId);
+        ReadWholeNarcMemberByIdPair(&layout, NARC_a_2_2_5, work->layoutFileId);
         spot = layout.pennantSpots[0];
         fieldItem = layout.fieldItems[0];
         for (i = 0, obstacle = layout.obstacles[0]; i < PENNANT_CAPTURE_OBSTACLES; obstacle += 2, i++) {
@@ -515,7 +515,7 @@ static BOOL PokeathlonPennantCapture_IsTouchOnOwnMon(PokeathlonPennantCapture *w
     int monY;
     PokeathlonCourseMonObject *object;
 
-    GF_ASSERT(player->member < 3);
+    GF_ASSERT(player->member < POKEATHLON_TEAM_SIZE);
     object = player->monObjects[player->member];
     PokeathlonCourseObject_GroundToCenter(object, 128, 96, &monX, &monY);
     if (PokeathlonCourseObject_IsInTouchRange(object, monX << FX32_SHIFT, monY << FX32_SHIFT, x, y)) {

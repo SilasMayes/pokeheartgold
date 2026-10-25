@@ -713,7 +713,7 @@ static void PokeathlonRelayRun_UpdateHost(PokeathlonCourseData *course) {
     dragEnd = &relayRun->teams[0].dragEnd;
     velocity = &relayRun->teams[0].velocity;
     velocity2 = &relayRun->teams[0].velocity;
-    for (; i < RELAY_RUN_TEAMS; pressCursor = (PokeathlonRelayRun *)((u8 *)pressCursor + sizeof(PokeathlonRelayRunPress)), cursor += sizeof(PokeathlonRelayRunTouchBlock), teamCursor = (PokeathlonRelayRun *)((u8 *)teamCursor + sizeof(PokeathlonRelayRunTeam)), runner++, dragCursor = (PokeathlonRelayRun *)((u8 *)dragCursor + sizeof(BOOL)), dragStart = (VecFx32 *)((u8 *)dragStart + sizeof(PokeathlonRelayRunTeam)), dragEnd = (VecFx32 *)((u8 *)dragEnd + sizeof(PokeathlonRelayRunTeam)), velocity = (VecFx32 *)((u8 *)velocity + sizeof(PokeathlonRelayRunTeam)), velocity2 = (VecFx32 *)((u8 *)velocity2 + sizeof(PokeathlonRelayRunTeam)), i++) {
+    for (; i < RELAY_RUN_TEAMS; pressCursor = (PokeathlonRelayRun *)((u8 *)pressCursor + sizeof(PokeathlonCourseTouch)), cursor += sizeof(PokeathlonRelayRunTouchBlock), teamCursor = (PokeathlonRelayRun *)((u8 *)teamCursor + sizeof(PokeathlonRelayRunTeam)), runner++, dragCursor = (PokeathlonRelayRun *)((u8 *)dragCursor + sizeof(BOOL)), dragStart = (VecFx32 *)((u8 *)dragStart + sizeof(PokeathlonRelayRunTeam)), dragEnd = (VecFx32 *)((u8 *)dragEnd + sizeof(PokeathlonRelayRunTeam)), velocity = (VecFx32 *)((u8 *)velocity + sizeof(PokeathlonRelayRunTeam)), velocity2 = (VecFx32 *)((u8 *)velocity2 + sizeof(PokeathlonRelayRunTeam)), i++) {
         PokeathlonRelayRunTouch *touch = (PokeathlonRelayRunTouch *)PokeathlonCourse_ToBytes(cursor);
         if (touch->held) {
             if (pressCursor->presses[0].pressed && pressCursor->presses[0].held) {

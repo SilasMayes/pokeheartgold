@@ -157,16 +157,10 @@ BOOL PokeathlonBlockSmashBlocks_IsSpotTouched(PokeathlonBlockSmashBlocks *blocks
     return FALSE;
 }
 
-typedef struct PokeathlonBlockSmashVec {
-    fx32 x;
-    fx32 y;
-    fx32 z;
-} PokeathlonBlockSmashVec;
-
 // Whether the new touch is on the top block: within its height and inside the trapezoid
 // sPokeathlonBlockSmashBlockTouchOffsets (offsets from the block's position).
 BOOL PokeathlonBlockSmashBlocks_IsTopBlockTouched(PokeathlonBlockSmashBlocks *blocks) {
-    PokeathlonBlockSmashVec points[4];
+    VecFx32 points[4];
     u32 touchX;
     u32 touchY;
     s16 position[2];

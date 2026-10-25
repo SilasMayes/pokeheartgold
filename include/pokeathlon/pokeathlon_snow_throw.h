@@ -67,13 +67,6 @@ typedef struct PokeathlonSnowThrowMon {
     u16 throwShown; // drawing: the throw animation was started
 } PokeathlonSnowThrowMon;
 
-// What the host keeps of one participant's stylus.
-typedef struct PokeathlonSnowThrowPress {
-    BOOL pressed; // on the frame the stylus touches the screen
-    BOOL held;
-    u32 unk8;
-} PokeathlonSnowThrowPress;
-
 // The stylus of a player.
 typedef struct PokeathlonSnowThrowTouch {
     BOOL held;
@@ -105,10 +98,6 @@ typedef struct PokeathlonSnowThrowLink {
 } PokeathlonSnowThrowLink;
 
 // The top screen: the own team's pictures, the score and the player's name.
-typedef struct PokeathlonSnowThrowMonPic {
-    void *character;
-    void *palette;
-} PokeathlonSnowThrowMonPic;
 
 typedef struct PokeathlonSnowThrowDisplay {
     enum HeapID heapId;
@@ -117,7 +106,7 @@ typedef struct PokeathlonSnowThrowDisplay {
     Window nameWindow;
     void *scoreScreenFile;
     NNSG2dScreenData *scoreScreen; // the score digits (5 x 2 of 4 x 8 tiles)
-    PokeathlonSnowThrowMonPic monPics[SNOW_THROW_MEMBERS];
+    PokeathlonCourseMonPic monPics[SNOW_THROW_MEMBERS];
     u32 picCharOffsets[SNOW_THROW_MEMBERS];
     u32 picPlttOffsets[SNOW_THROW_MEMBERS];
     PokeathlonCourseSpritePoolSprite *picSprites[SNOW_THROW_MEMBERS];
@@ -173,7 +162,7 @@ typedef struct PokeathlonSnowThrow {
     PokeathlonSnowThrowBall balls[SNOW_THROW_MONS];
     PokeathlonSnowThrowMon mons[SNOW_THROW_MONS];
     void *sortBuffer; // MATH_QSort work area
-    PokeathlonSnowThrowPress presses[SNOW_THROW_TEAMS];
+    PokeathlonCourseTouch presses[SNOW_THROW_TEAMS];
     u8 heldBall[SNOW_THROW_TEAMS]; // the snowball each participant is making / aiming
     u8 finished;
     u8 unk5D1[3];

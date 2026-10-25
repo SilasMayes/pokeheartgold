@@ -352,7 +352,7 @@ void PokeathlonBlockSmashRivals_Delete(PokeathlonBlockSmashRivals *rivals) {
     s32 i;
     s32 j;
     GF_ASSERT(rivals != NULL);
-    for (j = 0; j < 3; j++) {
+    for (j = 0; j < BLOCK_SMASH_RIVALS; j++) {
         for (i = 0; i < 6; i++) {
             if (rivals->rows[j].sprites[i] != NULL) {
                 Sprite_DeleteAndFreeResources(rivals->rows[j].sprites[i]);
@@ -365,7 +365,7 @@ void PokeathlonBlockSmashRivals_Delete(PokeathlonBlockSmashRivals *rivals) {
 void PokeathlonBlockSmashRivals_Update(PokeathlonBlockSmashRivals *rivals) {
     s32 i;
     PokeathlonBlockSmashRival *row;
-    for (i = 0, row = rivals->rows; i < 3; i++, row++) {
+    for (i = 0, row = rivals->rows; i < BLOCK_SMASH_RIVALS; i++, row++) {
         PokeathlonBlockSmashRival_Update(row);
     }
 }
@@ -374,7 +374,7 @@ void PokeathlonBlockSmashRivals_Pause(PokeathlonBlockSmashRivals *rivals) {
     s32 i;
     PokeathlonBlockSmashRival *row;
     s32 j;
-    for (j = 0, row = rivals->rows; j < 3; j++, row++) {
+    for (j = 0, row = rivals->rows; j < BLOCK_SMASH_RIVALS; j++, row++) {
         PokeathlonCourseMonObject_SetAnim(row->monPics[row->member], 12);
         if (row->switchTask != NULL) {
             SysTask_Destroy(row->switchTask);
@@ -553,7 +553,7 @@ static void PokeathlonBlockSmashMon_UpdateTired(PokeathlonBlockSmashMon *mon) {
             mon->tired = FALSE;
         } else {
             next = mon->member + 1;
-            if (next >= 3) {
+            if (next >= POKEATHLON_TEAM_SIZE) {
                 next = 0;
             }
             sprite = mon->sprites[7 + (next == i)];
@@ -798,7 +798,7 @@ static void PokeathlonBlockSmashRival_Update(PokeathlonBlockSmashRival *row) {
     }
     PokeathlonBlockSmashRival_UpdateScore(row, &reports[participant]);
     if (!row->switching && row->member != reports[participant].member) {
-        GF_ASSERT(reports[participant].member < 3);
+        GF_ASSERT(reports[participant].member < POKEATHLON_TEAM_SIZE);
         row->newMember = reports[participant].member;
         PokeathlonBlockSmashRival_StartSwitch(row);
     }
@@ -858,8 +858,8 @@ static void PokeathlonBlockSmashMon_SetMode(PokeathlonBlockSmashMon *mon, int mo
         PokeathlonCourse_AddMonCounter(mon->course, PokeathlonCourse_GetNetId(mon->course), mon->member, POKEATHLON_COUNTER_SWITCHES, 1);
         mon->switchFrames = 0;
         gauge = mon->gauge - 10;
-        if (gauge > 100) {
-            gauge = 100;
+        if (gauge > BLOCK_SMASH_GAUGE_MAX) {
+            gauge = BLOCK_SMASH_GAUGE_MAX;
         } else if (gauge < 0) {
             gauge = 0;
         }
@@ -868,7 +868,7 @@ static void PokeathlonBlockSmashMon_SetMode(PokeathlonBlockSmashMon *mon, int mo
             PokeathlonBlockSmashMon_EndFullGauge(mon);
         }
         mon->member = mon->member + 1;
-        if (mon->member >= 3) {
+        if (mon->member >= POKEATHLON_TEAM_SIZE) {
             mon->member = 0;
         }
         break;
@@ -885,7 +885,7 @@ static void PokeathlonBlockSmashMon_UpdateGauge(PokeathlonBlockSmashMon *mon) {
     }
     if (mon->gaugeFull) {
         mon->gaugeTimer++;
-        if (mon->gaugeTimer >= 90) {
+        if (mon->gaugeTimer >= BLOCK_SMASH_FULL_GAUGE_FRAMES) {
             PokeathlonBlockSmashMon_EndFullGauge(mon);
         }
     } else if (mon->gauge != 0) {
@@ -907,10 +907,10 @@ static void PokeathlonBlockSmashMon_AddGauge(PokeathlonBlockSmashMon *mon, BOOL 
     if (hitSpot) {
         mon->gauge += 30;
     }
-    if (mon->gauge > 100) {
-        mon->gauge = 100;
+    if (mon->gauge > BLOCK_SMASH_GAUGE_MAX) {
+        mon->gauge = BLOCK_SMASH_GAUGE_MAX;
     }
-    if (mon->gauge >= 100) {
+    if (mon->gauge >= BLOCK_SMASH_GAUGE_MAX) {
         PokeathlonBlockSmashMon_StartFullGauge(mon);
     }
 }
@@ -1209,14 +1209,14 @@ static void PokeathlonBlockSmashCpuPlayer_SetMode(PokeathlonBlockSmashCpuPlayer 
         }
     } else {
         int gauge = player->gauge - 10;
-        if (gauge > 100) {
-            gauge = 100;
+        if (gauge > BLOCK_SMASH_GAUGE_MAX) {
+            gauge = BLOCK_SMASH_GAUGE_MAX;
         } else if (gauge < 0) {
             gauge = 0;
         }
         player->gauge = gauge;
         player->member++;
-        if (player->member >= 3) {
+        if (player->member >= POKEATHLON_TEAM_SIZE) {
             player->member = 0;
         }
     }
@@ -1286,10 +1286,10 @@ static void PokeathlonBlockSmashCpuPlayer_AddGauge(PokeathlonBlockSmashCpuPlayer
     if (hitSpot) {
         player->gauge += 30;
     }
-    if (player->gauge > 100) {
-        player->gauge = 100;
+    if (player->gauge > BLOCK_SMASH_GAUGE_MAX) {
+        player->gauge = BLOCK_SMASH_GAUGE_MAX;
     }
-    if (player->gauge >= 100) {
+    if (player->gauge >= BLOCK_SMASH_GAUGE_MAX) {
         player->gaugeFull = TRUE;
         player->gaugeTimer = 0;
     }
@@ -1298,7 +1298,7 @@ static void PokeathlonBlockSmashCpuPlayer_AddGauge(PokeathlonBlockSmashCpuPlayer
 static void PokeathlonBlockSmashCpuPlayer_UpdateGauge(PokeathlonBlockSmashCpuPlayer *player) {
     if (player->gaugeFull) {
         player->gaugeTimer++;
-        if (player->gaugeTimer >= 90) {
+        if (player->gaugeTimer >= BLOCK_SMASH_FULL_GAUGE_FRAMES) {
             PokeathlonBlockSmashCpuPlayer_EndFullGauge(player);
         }
     } else if (player->gauge != 0) {

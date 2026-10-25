@@ -58,7 +58,7 @@ void PokeathlonPennantCaptureDisplay_Delete(PokeathlonPennantCaptureDisplay *dis
     int i;
 
     for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
-        Heap_Free(display->monPics[i].character);
+        Heap_Free(display->monPics[i].chars);
         Heap_Free(display->monPics[i].palette);
     }
     {
@@ -238,16 +238,16 @@ void PokeathlonPennantCaptureDisplay_LoadMonPics(PokeathlonPennantCaptureDisplay
 
     for (; i < POKEATHLON_TEAM_SIZE; i++) {
         GetMonSpriteCharAndPlttNarcIdsEx(&template, mons[i].species, mons[i].gender, 2, mons[i].shiny, mons[i].form, mons[i].personality);
-        display->monPics[i].character = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)template.narcID, template.charDataID, display->heapId, mons[i].personality, FALSE, 2, mons[i].species);
+        display->monPics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)template.narcID, template.charDataID, display->heapId, mons[i].personality, FALSE, 2, mons[i].species);
         display->monPics[i].palette = AllocAndLoadPltt16FromNarc((NarcId)template.narcID, template.palDataID, display->heapId);
     }
 }
 
 void PokeathlonPennantCaptureDisplay_LoadMonPicToVram(PokeathlonPennantCaptureDisplay *display, u32 slot, u32 member) {
     GF_ASSERT(slot < 2);
-    GF_ASSERT(member < 3);
-    DC_FlushRange(display->monPics[member].character, 0xC80);
-    GXS_LoadOBJ(display->monPics[member].character, display->picCharOffsets[slot], 0xC80);
+    GF_ASSERT(member < POKEATHLON_TEAM_SIZE);
+    DC_FlushRange(display->monPics[member].chars, 0xC80);
+    GXS_LoadOBJ(display->monPics[member].chars, display->picCharOffsets[slot], 0xC80);
     DC_FlushRange(display->monPics[member].palette, 0x20);
     GXS_LoadOBJPltt(display->monPics[member].palette, display->picPlttOffsets[slot], 0x20);
 }
@@ -337,7 +337,7 @@ BOOL PokeathlonPennantCaptureDisplay_SlideMonPic(PokeathlonPennantCaptureDisplay
 }
 
 BOOL PokeathlonPennantCaptureDisplay_StepSwapWait(PokeathlonPennantCaptureDisplay *display, u32 participant) {
-    GF_ASSERT(participant != 0 && participant < 4);
+    GF_ASSERT(participant != 0 && participant < POKEATHLON_PARTICIPANTS);
     participant--;
     display->counters[participant].x += 0x20;
     if (display->counters[participant].x >= 0x58) {

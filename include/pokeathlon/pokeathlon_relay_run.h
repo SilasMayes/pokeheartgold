@@ -120,13 +120,6 @@ typedef struct PokeathlonRelayRunTeam {
     u8 speedSoundPlayed;
 } PokeathlonRelayRunTeam;
 
-// What the host keeps of one participant's stylus.
-typedef struct PokeathlonRelayRunPress {
-    BOOL pressed; // on the frame the stylus touches the screen
-    BOOL held;
-    u32 unk8;
-} PokeathlonRelayRunPress;
-
 // An obstacle on the track. The host loads the obstacle layout (NARC a/2/2/7, one of ten).
 typedef struct PokeathlonRelayRunObstacle {
     BOOL active;
@@ -209,7 +202,7 @@ typedef struct PokeathlonRelayRun {
     PokeathlonCourseSpritePoolSprite *signSprite;
     PokeathlonRelayRunLapCounter lapCounter;
     PokeathlonRelayRunTeam teams[RELAY_RUN_TEAMS];
-    PokeathlonRelayRunPress presses[RELAY_RUN_TEAMS];
+    PokeathlonCourseTouch presses[RELAY_RUN_TEAMS];
     BOOL dragging[RELAY_RUN_TEAMS];
     u8 finished;
     u8 unk3C1;
@@ -241,12 +234,6 @@ typedef struct PokeathlonRelayRunHudTeam {
     u8 unk11[0xF];
 } PokeathlonRelayRunHudTeam;
 
-// A member's picture (char and palette data, loaded into one of the two picture slots when needed).
-typedef struct PokeathlonRelayRunHudPic {
-    void *chars;
-    void *palette;
-} PokeathlonRelayRunHudPic;
-
 // The touch screen.
 typedef struct PokeathlonRelayRunHud {
     enum HeapID heapId;
@@ -271,7 +258,7 @@ typedef struct PokeathlonRelayRunHud {
 
     NNSG2dCharacterData *iconChars[RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS];
     u8 iconPalettes[RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS];
-    PokeathlonRelayRunHudPic pics[RELAY_RUN_MEMBERS]; // the player's own members
+    PokeathlonCourseMonPic pics[RELAY_RUN_MEMBERS]; // the player's own members
     u32 picCharLocations[2];                          // VRAM of the two picture slots
     u32 picPaletteLocations[2];
     PokeathlonCourseSpritePoolSprite *picFrames[2]; // the picture slots

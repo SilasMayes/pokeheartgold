@@ -78,12 +78,6 @@ enum PokeathlonCirclePushInitState {
 
 void MATH_QSort(void *head, u32 num, u32 width, int (*compare)(const void *, const void *), void *stackBuffer);
 
-// Where each Pokemon of each team starts.
-typedef struct CirclePushStartPosition {
-    u16 x;
-    u16 y;
-} CirclePushStartPosition;
-
 typedef struct CirclePushTimerTiles {
     u16 tiles[8];
 } CirclePushTimerTiles;
@@ -332,7 +326,8 @@ static const GraphicsBanks sPokeathlonCirclePushGraphicsBanks = {
     .texpltt = GX_VRAM_TEXPLTT_NONE,
 };
 
-static const CirclePushStartPosition sPokeathlonCirclePushMonStartPositions[4][3] = {
+// Where each Pokemon of each team starts.
+static const PokeathlonCoursePoint sPokeathlonCirclePushMonStartPositions[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE] = {
     {
      { 0x28, 0x28 },
      { 0x28, 0x48 },

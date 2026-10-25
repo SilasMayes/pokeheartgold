@@ -43,8 +43,8 @@ typedef struct PokeathlonMonInfo {
     u32 personality;
 } PokeathlonMonInfo;
 
-void *PokeathlonUtil_GetSpriteSystem(PokeathlonSpriteContext *ctx);
-void *PokeathlonUtil_GetSpriteManager(PokeathlonSpriteContext *ctx);
+SpriteSystem *PokeathlonUtil_GetSpriteSystem(PokeathlonSpriteContext *ctx);
+SpriteManager *PokeathlonUtil_GetSpriteManager(PokeathlonSpriteContext *ctx);
 PokeathlonSpriteContext *PokeathlonUtil_CreateSpriteContext(enum HeapID heapId, SpriteResourceCountsListUnion *counts, int maxSprites);
 void PokeathlonUtil_FreeSpriteContext(PokeathlonSpriteContext *ctx, ManagedSprite **sprites, u32 count);
 void PokeathlonUtil_DrawSprites(PokeathlonSpriteContext *ctx);
@@ -71,7 +71,7 @@ void PokeathlonUtil_ClearAndCopyWindow(PokeathlonTextContext *ctx, u32 window);
 void PokeathlonUtil_PrintString(PokeathlonTextContext *ctx, u32 window, String *string, u32 x, u8 y);
 void PokeathlonUtil_ClearWindowTilemap(PokeathlonTextContext *ctx, u32 window);
 void PokeathlonUtil_SetWindowY(PokeathlonTextContext *ctx, u32 window, u8 y);
-void *PokeathlonUtil_GetMessageFormat(PokeathlonTextContext *ctx);
+MessageFormat *PokeathlonUtil_GetMessageFormat(PokeathlonTextContext *ctx);
 
 BOOL PokeathlonUtil_CheckExitInput(void);
 u32 PokeathlonUtil_GetCourseMedal(u32 value);

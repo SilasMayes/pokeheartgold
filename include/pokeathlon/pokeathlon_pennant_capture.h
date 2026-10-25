@@ -116,12 +116,6 @@ typedef struct PokeathlonPennantCapturePennants {
 } PokeathlonPennantCapturePennants;
 
 // The event's work (PokeathlonCourse_GetWork).
-typedef struct PokeathlonPennantCaptureTouch {
-    BOOL pressed; // touched this frame
-    BOOL held;
-    u32 unk8;
-} PokeathlonPennantCaptureTouch;
-
 typedef struct PokeathlonPennantCapture {
     BgConfig *bgConfig;
     Window scoreWindow;
@@ -130,7 +124,7 @@ typedef struct PokeathlonPennantCapture {
     NNSG2dCharacterData *bgChars; // the animated BG0 tiles (6 frames)
     PokeathlonCourseSpritePool *spritePool;
     PokeathlonPennantCapturePlayer players[POKEATHLON_PARTICIPANTS];
-    PokeathlonPennantCaptureTouch touches[POKEATHLON_PARTICIPANTS]; // host: the participants' touch state
+    PokeathlonCourseTouch touches[POKEATHLON_PARTICIPANTS]; // host: the participants' touch state
     BOOL dragging[POKEATHLON_PARTICIPANTS];                         // the touch started on the own Pokemon
     PokeathlonCourseSpriteResources *monResources;
     PokeathlonCourseMonObjects *monObjects;
@@ -197,12 +191,6 @@ typedef struct PokeathlonPennantCaptureDisplayMon {
     u8 unk0D[0xF];
 } PokeathlonPennantCaptureDisplayMon;
 
-// One of the three team members' battle pictures (two are kept in VRAM, slid in and out in turn).
-typedef struct PokeathlonPennantCaptureMonPic {
-    void *character;
-    void *palette;
-} PokeathlonPennantCaptureMonPic;
-
 typedef struct PokeathlonPennantCaptureCounter {
     u16 x;
     u16 y;
@@ -231,7 +219,7 @@ typedef struct PokeathlonPennantCaptureDisplay {
 
     NNSG2dCharacterData *iconChars[POKEATHLON_MONS];
     u8 iconPalettes[POKEATHLON_MONS];
-    PokeathlonPennantCaptureMonPic monPics[POKEATHLON_TEAM_SIZE];
+    PokeathlonCourseMonPic monPics[POKEATHLON_TEAM_SIZE];
     u32 picCharOffsets[2];
     u32 picPlttOffsets[2];
     PokeathlonCourseSpritePoolSprite *picSprites[2];
@@ -292,16 +280,6 @@ typedef struct PokeathlonPennantCaptureCpuObject {
     int y;
 } PokeathlonPennantCaptureCpuObject;
 
-// One of the 6 x 8 cells (32 x 32) around the CPU's Pokemon, rated each time it picks a new target.
-typedef struct PokeathlonPennantCaptureCpuCell {
-    int x; // cell centre
-    int y;
-    int targetX; // a random point of the cell
-    int targetY;
-    s16 score;
-    s16 index;
-} PokeathlonPennantCaptureCpuCell;
-
 // The CPU of the participants without a player (one decision per CPU every `interval` frames).
 typedef struct PokeathlonPennantCaptureCpu {
     PokeathlonPennantCaptureCpuPlayer players[POKEATHLON_PARTICIPANTS];
@@ -309,7 +287,7 @@ typedef struct PokeathlonPennantCaptureCpu {
     PokeathlonPennantCaptureCpuObject fieldItems[PENNANT_CAPTURE_FIELD_ITEMS];
     PokeathlonPennantCapturePennant *pennants;
     u32 unk18C;
-    PokeathlonPennantCaptureCpuCell cells[PENNANT_CAPTURE_CPU_CELLS];
+    PokeathlonCourseCpuCell cells[PENNANT_CAPTURE_CPU_CELLS]; // 6 x 8 cells (32 x 32) around the Pokemon
     BOOL thinking;
     u8 cpuCount;
     u8 cursor;
@@ -380,8 +358,8 @@ int PokeathlonPennantCaptureCpu_Update(PokeathlonPennantCaptureCpu *cpu);
 extern const VecFx32 gPokeathlonPennantCaptureInitialPosition;
 
 // Checks of the CPU on the target of one of its field cells.
-BOOL PokeathlonPennantCaptureCpu_IsNearCellTarget(PokeathlonPennantCaptureCpuCell *cell, s32 x, s32 y);
-BOOL PokeathlonPennantCaptureCpu_IsCellTargetOnField(PokeathlonPennantCaptureCpuCell *cell);
+BOOL PokeathlonPennantCaptureCpu_IsNearCellTarget(PokeathlonCourseCpuCell *cell, s32 x, s32 y);
+BOOL PokeathlonPennantCaptureCpu_IsCellTargetOnField(PokeathlonCourseCpuCell *cell);
 
 // The Pokemon picture sprites of the display.
 void PokeathlonPennantCaptureDisplay_CreatePicSprites(PokeathlonCourseSpritePool *pool, PokeathlonPennantCaptureDisplay *display);

@@ -15,12 +15,6 @@
 
 #define CIRCLE_PUSH_NO_MON 12 // "no Pokemon" in the 0..11 mon indices
 
-// Front picture of one of the 12 Pokemon, uncompressed, for upload into a picture sprite.
-typedef struct PokeathlonCirclePushMonPic {
-    void *charData;
-    void *paletteData;
-} PokeathlonCirclePushMonPic;
-
 // Positions of the nameplate sprites (pixels).
 typedef struct PokeathlonCirclePushNameplateCoords {
     u8 y[4];
@@ -57,7 +51,7 @@ typedef struct PokeathlonCirclePushDisplayAnim {
     u32 phase;                // enum PokeathlonCirclePushDisplayPhase
     u32 picImageLocations[2]; // VRAM of the two picture sprites
     u32 picPaletteLocations[2];
-    PokeathlonCirclePushMonPic monPics[POKEATHLON_MONS]; // participant * 3 + team member
+    PokeathlonCourseMonPic monPics[POKEATHLON_MONS]; // participant * 3 + team member
     PokeathlonCourseSpritePoolSprite *picSprites[2];
     NNSG2dScreenData *zoomBg3Screen;
     NNSG2dScreenData *matchupBg3Screen;

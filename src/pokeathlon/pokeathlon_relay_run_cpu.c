@@ -19,7 +19,7 @@ extern const u32 gPokeathlonRelayRunPicIds[];
 
 static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, PokeathlonRelayRunCpu *cpu, u8 index, s32 timer);
 static void PokeathlonRelayRunCpu_WrapX(s32 *x, s32 delta);
-static PokeathlonRelayRunCpuCell *PokeathlonRelayRunCpu_PickBestCell(PokeathlonRelayRunCpu *cpu);
+static PokeathlonCourseCpuCell *PokeathlonRelayRunCpu_PickBestCell(PokeathlonRelayRunCpu *cpu);
 
 static const WindowTemplate sRelayRunLapsWindowTemplate = {
     .bgId = GF_BG_LYR_SUB_0,
@@ -159,7 +159,7 @@ static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, Pokeathlon
     PokeathlonRelayRunCpuTeam *self;
     int i, j, lane, firstCell, laneTop;
     PokeathlonRelayRunTeam *team;
-    PokeathlonRelayRunCpuCell *cell;
+    PokeathlonCourseCpuCell *cell;
     u8 column, next;
     int distance, cellX, cellY;
 
@@ -309,9 +309,9 @@ static void PokeathlonRelayRunCpu_WrapX(s32 *x, s32 delta) {
 }
 
 // A random one of the cells with the best score.
-static PokeathlonRelayRunCpuCell *PokeathlonRelayRunCpu_PickBestCell(PokeathlonRelayRunCpu *cpu) {
-    PokeathlonRelayRunCpuCell *sorted[RELAY_RUN_CPU_CELLS];
-    PokeathlonRelayRunCpuCell *list[RELAY_RUN_CPU_CELLS];
+static PokeathlonCourseCpuCell *PokeathlonRelayRunCpu_PickBestCell(PokeathlonRelayRunCpu *cpu) {
+    PokeathlonCourseCpuCell *sorted[RELAY_RUN_CPU_CELLS];
+    PokeathlonCourseCpuCell *list[RELAY_RUN_CPU_CELLS];
     int i;
     s32 count;
     u8 pick;
@@ -326,8 +326,8 @@ static PokeathlonRelayRunCpuCell *PokeathlonRelayRunCpu_PickBestCell(PokeathlonR
 
 // Insertion sort of the cells by score, best first (into a linked list). Returns how many share the best score.
 
-u8 PokeathlonRelayRunCpu_SortCells(PokeathlonRelayRunCpuCell **cells, PokeathlonRelayRunCpuCell **out) {
-    PokeathlonRelayRunCpuCellNode nodes[RELAY_RUN_CPU_CELLS + 1];
+u8 PokeathlonRelayRunCpu_SortCells(PokeathlonCourseCpuCell **cells, PokeathlonCourseCpuCell **out) {
+    PokeathlonCourseCpuCellNode nodes[RELAY_RUN_CPU_CELLS + 1];
     u8 count, i, j;
 
     nodes[0].prev = &nodes[1];
@@ -335,8 +335,8 @@ u8 PokeathlonRelayRunCpu_SortCells(PokeathlonRelayRunCpuCell **cells, Pokeathlon
     count = 0;
     nodes[0].cell = NULL;
     for (i = 0; i < RELAY_RUN_CPU_CELLS; i++) {
-        PokeathlonRelayRunCpuCellNode *node = &nodes[i + 1];
-        PokeathlonRelayRunCpuCellNode *cur;
+        PokeathlonCourseCpuCellNode *node = &nodes[i + 1];
+        PokeathlonCourseCpuCellNode *cur;
 
         node->cell = cells[i];
         node->next = NULL;
@@ -358,8 +358,8 @@ u8 PokeathlonRelayRunCpu_SortCells(PokeathlonRelayRunCpuCell **cells, Pokeathlon
         }
     }
     {
-        PokeathlonRelayRunCpuCellNode *first = nodes[0].next;
-        PokeathlonRelayRunCpuCellNode *it;
+        PokeathlonCourseCpuCellNode *first = nodes[0].next;
+        PokeathlonCourseCpuCellNode *it;
         s16 best;
 
         i = 0;

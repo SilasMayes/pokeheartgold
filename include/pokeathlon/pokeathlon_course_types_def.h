@@ -96,6 +96,13 @@ struct PokeathlonCourseMonInfo {
     u32 personality;
 };
 
+// A Pokemon's front picture: char and palette data loaded uncompressed from its NARC, uploaded into a picture
+// sprite's VRAM when needed.
+typedef struct PokeathlonCourseMonPic {
+    void *chars;
+    void *palette;
+} PokeathlonCourseMonPic;
+
 // A Pokemon on a course screen: its sprite plus a shadow and a player marker. Created by the course
 // sprite factory (PokeathlonCourseMonObjects_Load).
 struct PokeathlonCourseMonObject {
@@ -150,6 +157,30 @@ enum PokeathlonCourseMode {
     POKEATHLON_COURSE_MODE_SOLO,
     POKEATHLON_COURSE_MODE_LINK,
 };
+
+// What the host keeps of one participant's stylus.
+typedef struct PokeathlonCourseTouch {
+    BOOL pressed; // on the frame the stylus touches the screen
+    BOOL held;
+    u32 unk8;
+} PokeathlonCourseTouch;
+
+// One of the cells around a CPU Pokemon, rated each time the Pennant Capture and Relay Run CPUs pick a target.
+typedef struct PokeathlonCourseCpuCell {
+    int x; // cell centre
+    int y;
+    int targetX; // a random point of the cell
+    int targetY;
+    s16 score;
+    s16 index;
+} PokeathlonCourseCpuCell;
+
+// A node of the list the CPUs sort their cells with (node 0 is the head).
+typedef struct PokeathlonCourseCpuCellNode {
+    struct PokeathlonCourseCpuCellNode *prev;
+    struct PokeathlonCourseCpuCellNode *next;
+    PokeathlonCourseCpuCell *cell;
+} PokeathlonCourseCpuCellNode;
 
 // One step of a course scene; returns TRUE when the step is done.
 typedef BOOL (*PokeathlonCourseStepFunc)(struct PokeathlonCourseData *course, u8 *state);

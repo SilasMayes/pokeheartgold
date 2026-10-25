@@ -80,7 +80,7 @@ void PokeathlonSnowThrowDisplay_Delete(PokeathlonSnowThrowDisplay *display) {
     int i;
 
     for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
-        Heap_Free(display->monPics[i].character);
+        Heap_Free(display->monPics[i].chars);
         Heap_Free(display->monPics[i].palette);
     }
     Heap_Free(display->scoreScreenFile);
@@ -201,10 +201,10 @@ static void PokeathlonSnowThrowDisplay_LoadMonPics(PokeathlonSnowThrowDisplay *d
 
     do {
         GetMonSpriteCharAndPlttNarcIdsEx(&template, mons->species, mons->gender, 0, mons->isShiny, mons->form, mons->personality);
-        ((PokeathlonSnowThrowMonPic *)(pic + offsetof(PokeathlonSnowThrowDisplay, monPics)))->character = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, display->heapId, mons->personality, FALSE, 0, mons->species);
-        ((PokeathlonSnowThrowMonPic *)(pic + offsetof(PokeathlonSnowThrowDisplay, monPics)))->palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, display->heapId);
+        ((PokeathlonCourseMonPic *)(pic + offsetof(PokeathlonSnowThrowDisplay, monPics)))->chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, display->heapId, mons->personality, FALSE, 0, mons->species);
+        ((PokeathlonCourseMonPic *)(pic + offsetof(PokeathlonSnowThrowDisplay, monPics)))->palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, display->heapId);
         mons++;
-        pic += sizeof(PokeathlonSnowThrowMonPic);
+        pic += sizeof(PokeathlonCourseMonPic);
         i++;
     } while (i < SNOW_THROW_MEMBERS);
 }
@@ -249,8 +249,8 @@ static void PokeathlonSnowThrowDisplay_TransferMonPics(PokeathlonSnowThrowDispla
     u8 i;
 
     for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
-        DC_FlushRange(display->monPics[i].character, 3200);
-        GXS_LoadOBJ(display->monPics[i].character, display->picCharOffsets[i], 3200);
+        DC_FlushRange(display->monPics[i].chars, 3200);
+        GXS_LoadOBJ(display->monPics[i].chars, display->picCharOffsets[i], 3200);
         DC_FlushRange(display->monPics[i].palette, 32);
         GXS_LoadOBJPltt(display->monPics[i].palette, display->picPlttOffsets[i], 32);
     }

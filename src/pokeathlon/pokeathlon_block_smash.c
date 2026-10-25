@@ -273,7 +273,7 @@ static const PokeathlonBlockSmashBgTemplates sPokeathlonBlockSmashBgTemplates = 
      },
 };
 
-BOOL PokeathlonPennantCaptureCpu_IsNearCellTarget(PokeathlonPennantCaptureCpuCell *cell, s32 x, s32 y) {
+BOOL PokeathlonPennantCaptureCpu_IsNearCellTarget(PokeathlonCourseCpuCell *cell, s32 x, s32 y) {
     s32 left = cell->targetX - 16;
     s32 right = cell->targetX + 16;
     s32 top = cell->targetY - 16;
@@ -285,7 +285,7 @@ BOOL PokeathlonPennantCaptureCpu_IsNearCellTarget(PokeathlonPennantCaptureCpuCel
 }
 
 // The field is narrower below y = 392 (the goal opening).
-BOOL PokeathlonPennantCaptureCpu_IsCellTargetOnField(PokeathlonPennantCaptureCpuCell *cell) {
+BOOL PokeathlonPennantCaptureCpu_IsCellTargetOnField(PokeathlonCourseCpuCell *cell) {
     s32 y = cell->targetY;
     BOOL right;
     BOOL left;
@@ -933,7 +933,7 @@ static void PokeathlonBlockSmash_UpdateTeamRows(PokeathlonCourseData *course) {
         row++;
         report++;
         participant++;
-    } while (participant < 4);
+    } while (participant < POKEATHLON_PARTICIPANTS);
 }
 
 static void PokeathlonBlockSmash_SetTeamRowIcon(PokeathlonCourseData *course, u32 participant, u32 member) {

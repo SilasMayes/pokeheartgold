@@ -191,7 +191,7 @@ void PokeathlonRelayRunHud_LoadMonPics(PokeathlonRelayRunHud *hud, const Pokeath
     PokepicTemplate template;
     int i;
     PokeathlonRelayRunHud *cursor;
-    for (i = 0, cursor = hud; i < RELAY_RUN_MEMBERS; i++, mon++, cursor = (PokeathlonRelayRunHud *)((u8 *)cursor + sizeof(PokeathlonRelayRunHudPic))) {
+    for (i = 0, cursor = hud; i < RELAY_RUN_MEMBERS; i++, mon++, cursor = (PokeathlonRelayRunHud *)((u8 *)cursor + sizeof(PokeathlonCourseMonPic))) {
         GetMonSpriteCharAndPlttNarcIdsEx(&template, mon->species, mon->gender, 2, mon->isShiny, mon->form, mon->personality);
         cursor->pics[0].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, hud->heapId, mon->personality, FALSE, 2, mon->species);
         cursor->pics[0].palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, hud->heapId);
