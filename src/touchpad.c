@@ -166,7 +166,7 @@ int GF_TouchpadStartAutoSampling(u32 frequency) {
     int retries = 0;
     u32 busy;
     do {
-        TP_RequestAutoSamplingStartAsync(0, (u16)frequency, gTouchpadState.samples, NELEMS(gTouchpadState.samples));
+        TP_RequestAutoSamplingStartAsync(0, frequency, gTouchpadState.samples, NELEMS(gTouchpadState.samples));
         TP_WaitBusy(2);
         busy = TP_CheckBusy(2);
         if (busy) {

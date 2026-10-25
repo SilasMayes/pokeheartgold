@@ -57,10 +57,10 @@ static void OamManager_CreateExact(int first, int count, int affineFirst, int af
     sOamManager = Heap_Alloc(heapID, sizeof(OamManager));
     GF_ASSERT(sOamManager != NULL);
     sOamManager->heapID = heapID;
-    if (!NNS_G2dGetNewOamManagerInstance(&sOamManager->main, (u16)first, (u16)count, (u16)affineFirst, (u16)affineCount, 0)) {
+    if (!NNS_G2dGetNewOamManagerInstance(&sOamManager->main, first, count, affineFirst, affineCount, 0)) {
         GF_ASSERT(FALSE);
     }
-    if (!NNS_G2dGetNewOamManagerInstance(&sOamManager->sub, (u16)subFirst, (u16)subCount, (u16)subAffineFirst, (u16)subAffineCount, 1)) {
+    if (!NNS_G2dGetNewOamManagerInstance(&sOamManager->sub, subFirst, subCount, subAffineFirst, subAffineCount, 1)) {
         GF_ASSERT(FALSE);
     }
 }

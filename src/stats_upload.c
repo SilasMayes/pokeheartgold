@@ -291,7 +291,7 @@ static void StatsUpload_SetFailed(void) {
 // Advances the upload; returns the state.
 int StatsUpload_Process(void) {
     int request;
-    switch ((u32)gStatsUpload.state) {
+    switch (gStatsUpload.state) {
     case STATS_UPLOAD_NONE:
     case STATS_UPLOAD_STOPPED:
     case STATS_UPLOAD_READY:

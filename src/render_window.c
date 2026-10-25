@@ -40,14 +40,14 @@ void LoadUserFrameGfx1(BgConfig *bgConfig, enum GFBgLayer layer, u32 baseTile, u
 }
 
 void DrawFrame1Tilemap(BgConfig *bgConfig, u8 bgId, u8 x, u8 y, u8 width, u8 height, u8 paletteNum, u16 baseTile) {
-    FillBgTilemapRect(bgConfig, bgId, baseTile, (u8)(x - 1), (u8)(y - 1), 1, 1, paletteNum);
-    FillBgTilemapRect(bgConfig, bgId, (u16)(baseTile + 1), x, (u8)(y - 1), width, 1, paletteNum);
-    FillBgTilemapRect(bgConfig, bgId, (u16)(baseTile + 2), (u8)(x + width), (u8)(y - 1), 1, 1, paletteNum);
-    FillBgTilemapRect(bgConfig, bgId, (u16)(baseTile + 3), (u8)(x - 1), y, 1, height, paletteNum);
-    FillBgTilemapRect(bgConfig, bgId, (u16)(baseTile + 5), (u8)(x + width), y, 1, height, paletteNum);
-    FillBgTilemapRect(bgConfig, bgId, (u16)(baseTile + 6), (u8)(x - 1), (u8)(y + height), 1, 1, paletteNum);
-    FillBgTilemapRect(bgConfig, bgId, (u16)(baseTile + 7), x, (u8)(y + height), width, 1, paletteNum);
-    FillBgTilemapRect(bgConfig, bgId, (u16)(baseTile + 8), (u8)(x + width), (u8)(y + height), 1, 1, paletteNum);
+    FillBgTilemapRect(bgConfig, bgId, baseTile, x - 1, y - 1, 1, 1, paletteNum);
+    FillBgTilemapRect(bgConfig, bgId, baseTile + 1, x, y - 1, width, 1, paletteNum);
+    FillBgTilemapRect(bgConfig, bgId, baseTile + 2, x + width, y - 1, 1, 1, paletteNum);
+    FillBgTilemapRect(bgConfig, bgId, baseTile + 3, x - 1, y, 1, height, paletteNum);
+    FillBgTilemapRect(bgConfig, bgId, baseTile + 5, x + width, y, 1, height, paletteNum);
+    FillBgTilemapRect(bgConfig, bgId, baseTile + 6, x - 1, y + height, 1, 1, paletteNum);
+    FillBgTilemapRect(bgConfig, bgId, baseTile + 7, x, y + height, width, 1, paletteNum);
+    FillBgTilemapRect(bgConfig, bgId, baseTile + 8, x + width, y + height, 1, 1, paletteNum);
 }
 
 void DrawFrameAndWindow1(Window *window, BOOL dontCopyToVram, u16 baseTile, u8 paletteNum) {
@@ -114,7 +114,7 @@ void DrawFrame2AroundWindow(Window *window, u32 baseTile, u32 paletteNum) {
     u8 width = GetWindowWidth(window);
     u8 height = GetWindowHeight(window);
 
-    DrawFrame2Tilemap(window->bgConfig, bgId, x, y, width, height, (u8)paletteNum, (u16)baseTile);
+    DrawFrame2Tilemap(window->bgConfig, bgId, x, y, width, height, paletteNum, baseTile);
 }
 
 void DrawFrameAndWindow2(Window *window, BOOL dontCopyToVram, u32 baseTile, u32 paletteNum) {

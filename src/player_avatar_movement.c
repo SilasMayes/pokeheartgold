@@ -444,7 +444,7 @@ static int PlayerAvatar_GetForcedMovementKind(PlayerAvatar *avatar, int value) {
         return FORCED_MOVEMENT_NONE;
     }
     do {
-        if (sPlayerForcedMovementBehaviors[i].matches((u8)behavior) == TRUE) {
+        if (sPlayerForcedMovementBehaviors[i].matches(behavior) == TRUE) {
             return sPlayerForcedMovementBehaviors[i].kind;
         }
         i++;
@@ -695,12 +695,12 @@ static void PlayerAvatar_FootStep(PlayerAvatar *avatar, LocalMapObject *mapObjec
             if (PlayerSaveData_CheckRunningShoes(PlayerAvatar_GetPlayerSaveData(avatar)) == TRUE && IsRunButtonHeld(avatar, heldKeys) == TRUE) {
                 kind = 0x58;
             }
-            movement = PlayerAvatar_AdjustMovementDummy(mapObject, (u8)MapObject_GetCurrentMetatileBehavior(mapObject), kind);
+            movement = PlayerAvatar_AdjustMovementDummy(mapObject, MapObject_GetCurrentMetatileBehavior(mapObject), kind);
             PlayerAvatar_CountStep(avatar);
             PlayerAvatar_SetFlag6(avatar);
         }
     } else if (collision == 0 || collision == PLAYER_COLLISION_WATER) {
-        movement = PlayerAvatar_AdjustMovementDummy(mapObject, (u8)MapObject_GetCurrentMetatileBehavior(mapObject), MOVEMENT_RUN_UP);
+        movement = PlayerAvatar_AdjustMovementDummy(mapObject, MapObject_GetCurrentMetatileBehavior(mapObject), MOVEMENT_RUN_UP);
         PlayerAvatar_CountStep(avatar);
         PlayerAvatar_SetFlag6(avatar);
     } else {

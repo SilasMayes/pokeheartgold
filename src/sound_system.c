@@ -422,7 +422,7 @@ static void Sound_PlayBGMForFieldScene(u16 seqNo, int mode) {
             if (currentSeqNo != seqNo) {
                 Sound_SetPlayerPause(PLAYER_FIELD, 0);
             }
-            Sound_ResumeFieldBGM(seqNo, (u16)playingSeqNo);
+            Sound_ResumeFieldBGM(seqNo, playingSeqNo);
         } else {
             PlayBGM(seqNo);
         }
@@ -584,7 +584,7 @@ void Sound_ClearBGMPauseFlags(void) {
 void GF_SndHandleMoveVolume(int handleNo, int volume, int frames) {
     NNS_SndPlayerMoveVolume(GF_GetSoundHandle(handleNo), volume, frames);
     if (handleNo == 0) {
-        GF_SndWorkSetGbSoundsVolume((u8)volume);
+        GF_SndWorkSetGbSoundsVolume(volume);
     }
 }
 
@@ -599,7 +599,7 @@ void GF_SndHandleSetInitialVolume(s32 handleNo, s32 volume) {
 }
 
 void Sound_ApplyVoiceChatVolumeForSeq(int seqNo) {
-    Sound_ApplyVoiceChatVolume(seqNo, GF_GetSndHandleByPlayerNo(GF_GetPlayerNoBySeq((u16)seqNo)));
+    Sound_ApplyVoiceChatVolume(seqNo, GF_GetSndHandleByPlayerNo(GF_GetPlayerNoBySeq(seqNo)));
 }
 
 void Sound_ApplyVoiceChatVolume(int seqNo, enum SoundHandleNo handleNo) {

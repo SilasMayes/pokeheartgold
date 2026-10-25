@@ -66,7 +66,7 @@ TextureAnimation *TextureAnimationPool_Add(TextureAnimationPool *pool, const Bil
     animation->paletteKey = paletteKey;
     animation->textureIndex = 255;
     animation->paletteIndex = 255;
-    TextureAnimation_SetFrameIndex(animation, (u16)(frame >> FX32_SHIFT));
+    TextureAnimation_SetFrameIndex(animation, frame >> FX32_SHIFT);
     return animation;
 }
 void TextureAnimation_Remove(TextureAnimation *animation) {
@@ -79,7 +79,7 @@ static void TextureAnimationPool_Clear(TextureAnimationPool *pool) {
     }
 }
 void TextureAnimation_SetFrame(TextureAnimation *animation, fx32 frame) {
-    TextureAnimation_SetFrameIndex(animation, (u16)(frame >> FX32_SHIFT));
+    TextureAnimation_SetFrameIndex(animation, frame >> FX32_SHIFT);
 }
 static void TextureAnimation_Reset(TextureAnimation *animation) {
     animation->gfxSequence = NULL;

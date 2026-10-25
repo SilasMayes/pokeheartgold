@@ -156,7 +156,7 @@ void BgCellManager_DrawCellAt(BgCellManager *manager, int index, int x, int y) {
     if (endY >= yMax) {
         copyHeight -= endY - yMax;
     }
-    CopyToBgTilemapRect(manager->bgConfig, cell->bgId, destX, destY, copyWidth, copyHeight, cell->tilemap, srcX, srcY, (u8)width, (u8)height);
+    CopyToBgTilemapRect(manager->bgConfig, cell->bgId, destX, destY, copyWidth, copyHeight, cell->tilemap, srcX, srcY, width, height);
     sBgCellTransferFuncs[manager->transferMode](manager->bgConfig, cell->bgId);
     cell->hidden = 0;
 }

@@ -945,7 +945,7 @@ BOOL Task_ColosseumTrainerCard(TaskManager *taskManager) {
         env->state++;
     } break;
     case COLOSSEUM_CARD_STATE_WAIT_INPUT:
-        if (DialogBox_IsPrintFinished((u8)env->printerId) && gSystem.newKeys & PAD_BUTTON_A) {
+        if (DialogBox_IsPrintFinished(env->printerId) && gSystem.newKeys & PAD_BUTTON_A) {
             DestroyMsgData(env->msgData);
             MessageFormat_Delete(env->msgFormat);
             String_Delete(env->strings[0]);

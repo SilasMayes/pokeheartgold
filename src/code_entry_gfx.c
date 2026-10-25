@@ -106,7 +106,7 @@ void CodeEntry_LoadGraphics(CodeEntryApp *app) {
     SpriteSystem_LoadCellResObjFromOpenNarc(spriteSystem, spriteManager, narc, 10, FALSE, 1002);
     SpriteSystem_LoadAnimResObjFromOpenNarc(spriteSystem, spriteManager, narc, 11, FALSE, 1002);
     int frame = Options_GetFrame(app->args.options);
-    LoadUserFrameGfx2(bgConfig, GF_BG_LYR_SUB_0, 1, 10, (u8)frame, HEAP_ID_108);
+    LoadUserFrameGfx2(bgConfig, GF_BG_LYR_SUB_0, 1, 10, frame, HEAP_ID_108);
     PaletteData_LoadNarc(paletteData, NARC_a_0_3_8, GetUserFrameGfx2PaletteMember(frame), HEAP_ID_108, PLTTBUF_SUB_BG, 0x20, 0xB0);
     PaletteData_LoadNarc(paletteData, NARC_graphic_font, 8, HEAP_ID_108, PLTTBUF_SUB_BG, 0x20, 0xC0);
 }
@@ -537,7 +537,7 @@ static void CodeEntry_CreateButtonLabel(CodeEntryApp *app, int button, int x, in
 
 void CodeEntry_CreatePromptWindow(BgConfig *bgConfig, Window *window, int bgId, int x, int y, int width, int height, int baseTile, int msgNo) {
     InitWindow(window);
-    AddWindowParameterized(bgConfig, window, (u8)bgId, (u8)x, (u8)y, (u8)width, height, 12, (u16)baseTile);
+    AddWindowParameterized(bgConfig, window, bgId, x, y, width, height, 12, baseTile);
     DrawFrameAndWindow2(window, TRUE, 1, 11);
     FillWindowPixelBuffer(window, 15);
     CopyWindowToVram(window);
