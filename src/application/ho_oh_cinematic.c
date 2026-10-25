@@ -26,7 +26,17 @@ static const GXRgb sHoOhCinematicEdgeColors[] = {
     GX_RGB(4, 4, 4),
 };
 
-static int (*const sScriptCinematicSubs_HoOh[6])(LegendaryCinematic *) = {
+enum HoOhCinematicState {
+    HO_OH_CINEMATIC_INIT,
+    HO_OH_CINEMATIC_EXIT,
+    HO_OH_CINEMATIC_WAIT_FADE,
+    HO_OH_CINEMATIC_PLAY_FIRST_SCENE,
+    HO_OH_CINEMATIC_LOAD_SECOND_SCENE,
+    HO_OH_CINEMATIC_PLAY_SECOND_SCENE,
+    HO_OH_CINEMATIC_DONE,
+};
+
+static int (*const sScriptCinematicSubs_HoOh[HO_OH_CINEMATIC_DONE])(LegendaryCinematic *) = {
     HoOhCinematic_Init,
     HoOhCinematic_Exit,
     HoOhCinematic_WaitFade,
@@ -77,7 +87,7 @@ static const LegendaryCinematicCamera sHoOhCinematicSecondSceneCamera = {
 
 int ScriptCinematic_HoOh(LegendaryCinematic *cinematic) {
     cinematic->state = sScriptCinematicSubs_HoOh[cinematic->state](cinematic);
-    if (cinematic->state == 6) {
+    if (cinematic->state == HO_OH_CINEMATIC_DONE) {
         return FALSE;
     }
     LegendaryCinematic_DrawModels(cinematic);
@@ -92,28 +102,28 @@ static int HoOhCinematic_Init(LegendaryCinematic *cinematic) {
     LegendaryCinematic_SetCamera(cinematic, &sHoOhCinematicCamera);
     variant = cinematic->args->timeOfDay;
     LegendaryCinematic_LoadModels(cinematic, NARC_a_2_4_3, &sHoOhCinematicModels[variant], 1);
-    LegendaryCinematic_FadeInFromWhite(cinematic, 6, 1, 3);
-    return 2;
+    LegendaryCinematic_FadeInFromWhite(cinematic, 6, 1, HO_OH_CINEMATIC_PLAY_FIRST_SCENE);
+    return HO_OH_CINEMATIC_WAIT_FADE;
 }
 
 static int HoOhCinematic_Exit(LegendaryCinematic *cinematic) {
     LegendaryCinematic_FreeModels(cinematic);
     LegendaryCinematic_Free3D(cinematic);
-    return 6;
+    return HO_OH_CINEMATIC_DONE;
 }
 
 static int HoOhCinematic_WaitFade(LegendaryCinematic *cinematic) {
     if (IsPaletteFadeFinished() == TRUE) {
         return cinematic->nextState;
     }
-    return 2;
+    return HO_OH_CINEMATIC_WAIT_FADE;
 }
 
 static int HoOhCinematic_PlayFirstScene(LegendaryCinematic *cinematic) {
     u32 frame;
     if (!LegendaryCinematic_AreModelsAnimating(cinematic) && IsPaletteFadeFinished() == TRUE) {
         cinematic->frame = 0;
-        return 4;
+        return HO_OH_CINEMATIC_LOAD_SECOND_SCENE;
     }
     frame = cinematic->frame;
     if (frame == 0) {
@@ -126,10 +136,10 @@ static int HoOhCinematic_PlayFirstScene(LegendaryCinematic *cinematic) {
     } else if (frame == 98) {
         PlaySE(SEQ_SE_GS_HAKKOUTAI_HIROGARI);
     } else if (frame == 129) {
-        LegendaryCinematic_FadeOutToBlack(cinematic, 6, 1, 3);
+        LegendaryCinematic_FadeOutToBlack(cinematic, 6, 1, HO_OH_CINEMATIC_PLAY_FIRST_SCENE);
     }
     cinematic->frame++;
-    return 3;
+    return HO_OH_CINEMATIC_PLAY_FIRST_SCENE;
 }
 
 static int HoOhCinematic_LoadSecondScene(LegendaryCinematic *cinematic) {
@@ -138,21 +148,21 @@ static int HoOhCinematic_LoadSecondScene(LegendaryCinematic *cinematic) {
     LegendaryCinematic_SetCamera(cinematic, &sHoOhCinematicSecondSceneCamera);
     variant = cinematic->args->timeOfDay;
     LegendaryCinematic_LoadModels(cinematic, NARC_a_2_4_3, &sHoOhCinematicSecondSceneModels[variant], 1);
-    LegendaryCinematic_FadeInFromBlack(cinematic, 6, 1, 5);
-    return 2;
+    LegendaryCinematic_FadeInFromBlack(cinematic, 6, 1, HO_OH_CINEMATIC_PLAY_SECOND_SCENE);
+    return HO_OH_CINEMATIC_WAIT_FADE;
 }
 
 static int HoOhCinematic_PlaySecondScene(LegendaryCinematic *cinematic) {
     if (!LegendaryCinematic_AreModelsAnimating(cinematic) && IsPaletteFadeFinished() == TRUE) {
         cinematic->frame = 0;
-        return 1;
+        return HO_OH_CINEMATIC_EXIT;
     }
     if ((cinematic->frame & 0x3F) == 0) {
         PlaySE(SEQ_SE_GS_HOUOUHABATAKI_APRI);
     }
     if (cinematic->frame == 190) {
-        LegendaryCinematic_FadeOutToWhite(cinematic, 10, 1, 1);
+        LegendaryCinematic_FadeOutToWhite(cinematic, 10, 1, HO_OH_CINEMATIC_EXIT);
     }
     cinematic->frame++;
-    return 5;
+    return HO_OH_CINEMATIC_PLAY_SECOND_SCENE;
 }

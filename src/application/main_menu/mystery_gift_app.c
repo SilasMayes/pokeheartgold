@@ -783,13 +783,9 @@ static void MysteryGiftApp_CreateListMenu(OverlayManager *manager, const Mystery
     }
     data->listMenuItems = ListMenuItems_New(count, HEAP_ID_84);
     data->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0247_bin, HEAP_ID_84);
-    int i = 0;
-    if (count > 0) {
-        do {
-            ListMenuItems_AppendFromMsgData(data->listMenuItems, data->msgData, items->msgId, (int)items->func);
-            i++;
-            items++;
-        } while (i < count);
+    int i;
+    for (i = 0; i < count; i++) {
+        ListMenuItems_AppendFromMsgData(data->listMenuItems, data->msgData, items[i].msgId, (int)items[i].func);
     }
     DestroyMsgData(data->msgData);
     ListMenuTemplate template = sMysteryGiftListMenuTemplate;

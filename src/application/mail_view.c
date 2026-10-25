@@ -132,8 +132,8 @@ static BOOL MailView_HandleWriteTouch(MailView *mailView);
 static void MailView_InitYesNoPrompt(MailView *mailView);
 static int MailView_HandleYesNoPrompt(MailView *mailView);
 static BOOL MailView_Run(MailView *mailView);
-static void MailView_VBlankCB(MailView *mailView);
-static void MailView_CursorBlinkTask(SysTask *task, MailView *mailView);
+static void MailView_VBlankCB(void *data);
+static void MailView_CursorBlinkTask(SysTask *task, void *data);
 static BOOL MailView_SetupGraphics(MailView *mailView);
 static BOOL MailView_FreeGraphics(MailView *mailView);
 static void MailView_SetGfxBanks(void);
@@ -656,7 +656,7 @@ static BOOL MailView_Run(MailView *mailView) {
         if (!MailView_SetupGraphics(mailView)) {
             return FALSE;
         }
-        Main_SetVBlankIntrCB((GFIntrCB)MailView_VBlankCB, mailView);
+        Main_SetVBlankIntrCB(MailView_VBlankCB, mailView);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         SetMasterBrightnessNeutral(PM_LCD_TOP);
         G2_SetBlendAlpha(GX_BLEND_PLANEMASK_BG2, GX_BLEND_PLANEMASK_BG3, 28, 4);
@@ -704,7 +704,8 @@ static BOOL MailView_Run(MailView *mailView) {
     return FALSE;
 }
 
-static void MailView_VBlankCB(MailView *mailView) {
+static void MailView_VBlankCB(void *data) {
+    MailView *mailView = data;
     if (mailView->palette != NULL) {
         PaletteData_PushTransparentBuffers(mailView->palette);
     }
@@ -716,7 +717,8 @@ static void MailView_VBlankCB(MailView *mailView) {
     OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
 
-static void MailView_CursorBlinkTask(SysTask *task, MailView *mailView) {
+static void MailView_CursorBlinkTask(SysTask *task, void *data) {
+    MailView *mailView = data;
     u8 level;
 
     if (mailView->palette == NULL) {
@@ -885,7 +887,7 @@ static void MailView_LoadBgGraphics(MailView *mailView) {
         ScheduleBgTilemapBufferTransfer(mailView->bgConfig, GF_BG_LYR_MAIN_2);
         mailView->cursorBlinkLevel = 0;
         mailView->cursorBlinkFalling = 0;
-        SysTask_CreateOnMainQueue((SysTaskFunc)MailView_CursorBlinkTask, mailView, 0);
+        SysTask_CreateOnMainQueue(MailView_CursorBlinkTask, mailView, 0);
         mailView->onSwitchToKeys = MailView_OnSwitchToKeys;
         mailView->onSwitchToTouch = MailView_OnSwitchToTouch;
     }

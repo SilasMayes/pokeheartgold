@@ -566,13 +566,8 @@ static void WonderCardAlbum_CreateListMenu(WonderCardAlbum *album, const Mystery
     }
     album->listMenuItems = ListMenuItems_New(count, HEAP_ID_85);
     album->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0247_bin, HEAP_ID_85);
-    i = 0;
-    if (count > 0) {
-        do {
-            ListMenuItems_AppendFromMsgData(album->listMenuItems, album->msgData, items->msgId, (int)items->func);
-            i++;
-            items++;
-        } while (i < count);
+    for (i = 0; i < count; i++) {
+        ListMenuItems_AppendFromMsgData(album->listMenuItems, album->msgData, items[i].msgId, (int)items[i].func);
     }
     DestroyMsgData(album->msgData);
     template = sWonderCardAlbumListMenuTemplate;

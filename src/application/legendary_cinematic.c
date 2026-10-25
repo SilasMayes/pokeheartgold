@@ -18,8 +18,8 @@ static void LegendaryCinematic_InitCameraAndLights(LegendaryCinematic *cinematic
 static void LegendaryCinematic_FreeCamera(LegendaryCinematic *cinematic);
 static LegendaryCinematicCapture *LegendaryCinematic_StartCapture(const LegendaryCinematicCaptureConfig *config);
 static void LegendaryCinematic_StopCapture(LegendaryCinematicCapture *capture, GXDispMode dispMode, GXBGMode bgMode, GXBG0As bg0As);
-static void LegendaryCinematic_CaptureTask(SysTask *task, LegendaryCinematicCapture *capture);
-static void LegendaryCinematic_CaptureStartTask(SysTask *task, LegendaryCinematicCapture *capture);
+static void LegendaryCinematic_CaptureTask(SysTask *task, void *data);
+static void LegendaryCinematic_CaptureStartTask(SysTask *task, void *data);
 static void LegendaryCinematic_InitCapture(LegendaryCinematicCaptureConfig *config);
 
 u32 GX_GetBankForLCDC(void);
@@ -275,14 +275,14 @@ static void LegendaryCinematic_FreeCamera(LegendaryCinematic *cinematic) {
 }
 
 static LegendaryCinematicCapture *LegendaryCinematic_StartCapture(const LegendaryCinematicCaptureConfig *config) {
-    SysTask *task = CreateSysTaskAndEnvironment((SysTaskFunc)LegendaryCinematic_CaptureTask, sizeof(LegendaryCinematicCapture), 5, config->heapID);
+    SysTask *task = CreateSysTaskAndEnvironment(LegendaryCinematic_CaptureTask, sizeof(LegendaryCinematicCapture), 5, config->heapID);
     LegendaryCinematicCapture *capture = SysTask_GetData(task);
     capture->config = *config;
     capture->task = task;
     capture->started = FALSE;
     capture->savedLcdcBanks = GX_GetBankForLCDC();
     LegendaryCinematic_InitCapture(&capture->config);
-    SysTask_CreateOnVWaitQueue((SysTaskFunc)LegendaryCinematic_CaptureStartTask, capture, 0);
+    SysTask_CreateOnVWaitQueue(LegendaryCinematic_CaptureStartTask, capture, 0);
     return capture;
 }
 
@@ -309,13 +309,15 @@ static void LegendaryCinematic_StopCapture(LegendaryCinematicCapture *capture, G
     DestroySysTaskAndEnvironment(capture->task);
 }
 
-static void LegendaryCinematic_CaptureTask(SysTask *task, LegendaryCinematicCapture *capture) {
+static void LegendaryCinematic_CaptureTask(SysTask *task, void *data) {
+    LegendaryCinematicCapture *capture = data;
     if (capture->started) {
         LegendaryCinematic_SetCaptureRegister(capture->config.size, capture->config.mode, capture->config.srcA, capture->config.srcB, capture->config.dest, capture->config.eva, capture->config.evb);
     }
 }
 
-static void LegendaryCinematic_CaptureStartTask(SysTask *task, LegendaryCinematicCapture *capture) {
+static void LegendaryCinematic_CaptureStartTask(SysTask *task, void *data) {
+    LegendaryCinematicCapture *capture = data;
     switch (capture->config.dispMode) {
     case GX_DISPMODE_VRAM_A:
         GX_SetBankForLCDC(GX_VRAM_LCDC_A);

@@ -122,7 +122,7 @@ static void LockCapsuleCard_LoadScreenData(LockCapsuleCardView *view, int fileId
 static void LockCapsuleCard_LoadCardBg(LockCapsuleCardView *view, int page);
 static void LockCapsuleCard_HandleListMenuInput(OverlayManager *manager, int *state, MysteryGiftMenuFunc cancelFunc);
 static void LockCapsuleCard_CreateMonIconSprites(LockCapsuleCardView *view);
-static void LockCapsuleCard_FlipEffectTask(SysTask *task, WonderCardFlipEffect *effect);
+static void LockCapsuleCard_FlipEffectTask(SysTask *task, void *data);
 static void LockCapsuleCard_StartFlipEffect(LockCapsuleCardView *view, int mode, fx32 speed, fx32 accel);
 static void LockCapsuleCard_StopFlipEffect(LockCapsuleCardView *view);
 static BOOL LockCapsuleCard_UpdateFlipEffect(LockCapsuleCardView *view);
@@ -559,7 +559,8 @@ static BOOL LockCapsuleCard_Init(OverlayManager *manager, int *state) {
     return TRUE;
 }
 
-static void LockCapsuleCard_FlipEffectTask(SysTask *task, WonderCardFlipEffect *effect) {
+static void LockCapsuleCard_FlipEffectTask(SysTask *task, void *data) {
+    WonderCardFlipEffect *effect = data;
     void *buffer;
 
     HBlankDma_Stop();
@@ -577,7 +578,7 @@ static void LockCapsuleCard_StartFlipEffect(LockCapsuleCardView *view, int mode,
         effect->doubleBuffer = DoubleBuffer_New(HEAP_ID_85, effect->buffers[0], effect->buffers[1]);
     }
     if (effect->task == NULL) {
-        effect->task = SysTask_CreateOnVBlankQueue((SysTaskFunc)LockCapsuleCard_FlipEffectTask, effect, 1024);
+        effect->task = SysTask_CreateOnVBlankQueue(LockCapsuleCard_FlipEffectTask, effect, 1024);
     }
     effect->active = TRUE;
 }

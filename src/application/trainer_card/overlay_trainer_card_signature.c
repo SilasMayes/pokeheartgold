@@ -60,7 +60,7 @@ enum TrainerCardSignatureState {
 
 typedef int (*TrainerCardSignatureStateFunc)(TrainerCardSignature *signature, int state);
 
-static void TrainerCardSignature_VBlankCB(BgConfig *bgConfig);
+static void TrainerCardSignature_VBlankCB(void *data);
 static void TrainerCardSignature_SetGfxBanks(void);
 static void TrainerCardSignature_InitBgLayers(BgConfig *bgConfig);
 static void TrainerCardSignature_InitStrings(TrainerCardSignature *signature);
@@ -279,7 +279,7 @@ BOOL TrainerCardSignature_Init(OverlayManager *manager, int *state) {
         TrainerCardSignature_LoadBgGraphics(signature, narc);
         GF_TouchpadResetSampling();
         GF_TouchpadStartSampling(1);
-        Main_SetVBlankIntrCB((GFIntrCB)TrainerCardSignature_VBlankCB, signature->bgConfig);
+        Main_SetVBlankIntrCB(TrainerCardSignature_VBlankCB, signature->bgConfig);
         FontID_Alloc(2, HEAP_ID_39);
         TrainerCardSignature_InitStrings(signature);
         TrainerCardSignature_InitObjTransfer();
@@ -360,7 +360,8 @@ BOOL TrainerCardSignature_Exit(OverlayManager *manager, int *state) {
     return TRUE;
 }
 
-static void TrainerCardSignature_VBlankCB(BgConfig *bgConfig) {
+static void TrainerCardSignature_VBlankCB(void *data) {
+    BgConfig *bgConfig = data;
     GF_RunVramTransferTasks();
     OamManager_ApplyAndResetBuffers();
     DoScheduledBgGpuUpdates(bgConfig);

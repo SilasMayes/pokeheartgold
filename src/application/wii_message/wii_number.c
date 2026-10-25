@@ -46,13 +46,13 @@ void WiiNumber_ToWiiAddress(String *wiiNumber, char *address, enum HeapID heapID
             address[len] = 0;
             break;
         }
-        for (j = 0; j < 10; j++) {
+        for (j = 0; j < NELEMS(sWiiNumberDigitChars); j++) {
             if (sWiiNumberDigitChars[j].charCode == chars[i]) {
                 address[len] = sWiiNumberDigitChars[j].digit;
                 break;
             }
         }
-        GF_ASSERT(j < 10);
+        GF_ASSERT(j < NELEMS(sWiiNumberDigitChars));
         len++;
     }
     i = 0;

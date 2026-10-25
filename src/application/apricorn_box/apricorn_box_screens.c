@@ -93,7 +93,7 @@ static int ApricornBoxScreen_HandleYesNo(ApricornBoxScreen *screen);
 static BOOL ApricornBoxScreen_AnimateHand(ApricornBoxScreen *screen, int active);
 static inline int ApricornBoxScreen_Abs(int n);
 static void ApricornBoxScreen_StartMoveTask(ApricornBoxScreen *screen, int index, int type);
-static void ApricornBoxScreen_VBlankCB(ApricornBoxScreen *screen);
+static void ApricornBoxScreen_VBlankCB(void *data);
 static void ApricornBoxScreen_SetGfxBanks(void);
 static void ApricornBoxScreen_InitBgs(ApricornBoxScreen *screen);
 static void ApricornBoxScreen_FreeBgs(ApricornBoxScreen *screen);
@@ -111,7 +111,7 @@ static void ApricornBoxScreen_InitSprites(ApricornBoxScreen *screen);
 static void ApricornBoxScreen_FreeSprites(ApricornBoxScreen *screen);
 static void ApricornBoxScreen_CreateSprites(ApricornBoxScreen *screen);
 static void ApricornBoxScreen_DeleteSprites(ApricornBoxScreen *screen);
-static void ApricornBoxScreen_MoveTask(SysTask *task, ApricornBoxMoveTask *move);
+static void ApricornBoxScreen_MoveTask(SysTask *task, void *data);
 static void ApricornBoxScreen_ReadMessage(ApricornBoxScreen *screen, int msgNo);
 static u16 ApricornBoxScreen_GetJuiceTasteMsg(ApricornBoxScreen *screen, ApricornJuiceEntry *entry, int line);
 
@@ -666,7 +666,7 @@ static void ApricornBoxScreen_InitGraphics(ApricornBoxScreen *screen) {
     ApricornBoxScreen_AddWindows(screen);
     ApricornBoxScreen_CreateListMenuItems(screen);
     ApricornBoxScreen_InitSprites(screen);
-    Main_SetVBlankIntrCB((GFIntrCB)ApricornBoxScreen_VBlankCB, screen);
+    Main_SetVBlankIntrCB(ApricornBoxScreen_VBlankCB, screen);
 }
 
 static void ApricornBoxScreen_FreeGraphics(ApricornBoxScreen *screen) {
@@ -1124,11 +1124,12 @@ static void ApricornBoxScreen_StartMoveTask(ApricornBoxScreen *screen, int index
         frames = (float)(move->frames << FX32_SHIFT) - 0.5f;
     }
     move->dy = FX_Div(dy > 0 ? 0.5f + (float)(dy << FX32_SHIFT) : (float)(dy << FX32_SHIFT) - 0.5f, (int)frames);
-    SysTask_CreateOnMainQueue((SysTaskFunc)ApricornBoxScreen_MoveTask, move, 0);
+    SysTask_CreateOnMainQueue(ApricornBoxScreen_MoveTask, move, 0);
     screen->activeTasks++;
 }
 
-static void ApricornBoxScreen_VBlankCB(ApricornBoxScreen *screen) {
+static void ApricornBoxScreen_VBlankCB(void *data) {
+    ApricornBoxScreen *screen = data;
     if (screen->spriteSystem != NULL) {
         SpriteSystem_TransferOam();
     }
@@ -1406,7 +1407,8 @@ static void ApricornBoxScreen_DeleteSprites(ApricornBoxScreen *screen) {
     }
 }
 
-static void ApricornBoxScreen_MoveTask(SysTask *task, ApricornBoxMoveTask *move) {
+static void ApricornBoxScreen_MoveTask(SysTask *task, void *data) {
+    ApricornBoxMoveTask *move = data;
     ApricornBoxScreen *owner = move->owner;
     switch (move->state) {
     case 0: {

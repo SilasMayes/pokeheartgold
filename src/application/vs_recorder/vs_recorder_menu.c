@@ -258,33 +258,29 @@ static BOOL VsRecorder_MenuSelect(VsRecorderWork *work) {
         MI_CpuFill8(newMenuMove, 0, sizeof(VsRecorderMenuMove));
         work->screenWork = newMenuMove;
         newMenuMove->started = FALSE;
-        i = 0;
-        if (work->choiceCount > 0) {
-            do {
-                move = Heap_Alloc(HEAP_ID_109, sizeof(VsRecorderRowMove));
-                memset(move, 0, sizeof(VsRecorderRowMove));
-                VsRecorder_GetSpritePos(work->choiceRows[i].sprite, &move->x, &move->y);
-                move->sprite = work->choiceRows[i].sprite;
-                move->text = work->choiceRows[i].text;
-                move->busy = &newMenuMove->busy;
-                move->arrived = &newMenuMove->arrived;
-                if (i == work->menuCursor) {
-                    move->cursor = work->orbitCursors[0];
-                    move->targetX = move->x;
-                    move->targetY = -48;
-                    move->frames = 8;
-                } else {
-                    move->cursor = NULL;
-                    move->targetX = move->x;
-                    move->targetY = 205 + (5 - work->choiceCount) * 16;
-                    if (move->targetY >= 221) {
-                        move->targetY = 221;
-                    }
-                    move->frames = 8;
+        for (i = 0; i < work->choiceCount; i++) {
+            move = Heap_Alloc(HEAP_ID_109, sizeof(VsRecorderRowMove));
+            memset(move, 0, sizeof(VsRecorderRowMove));
+            VsRecorder_GetSpritePos(work->choiceRows[i].sprite, &move->x, &move->y);
+            move->sprite = work->choiceRows[i].sprite;
+            move->text = work->choiceRows[i].text;
+            move->busy = &newMenuMove->busy;
+            move->arrived = &newMenuMove->arrived;
+            if (i == work->menuCursor) {
+                move->cursor = work->orbitCursors[0];
+                move->targetX = move->x;
+                move->targetY = -48;
+                move->frames = 8;
+            } else {
+                move->cursor = NULL;
+                move->targetX = move->x;
+                move->targetY = 205 + (5 - work->choiceCount) * 16;
+                if (move->targetY >= 221) {
+                    move->targetY = 221;
                 }
-                SysTask_CreateOnMainQueue(VsRecorder_RowMoveTask, move, 0x2000);
-                i++;
-            } while (i < work->choiceCount);
+                move->frames = 8;
+            }
+            SysTask_CreateOnMainQueue(VsRecorder_RowMoveTask, move, 0x2000);
         }
         newMenuMove->blend = 0;
         work->step++;
@@ -329,17 +325,13 @@ static BOOL VsRecorder_MenuSelect(VsRecorderWork *work) {
             menuMove->busy = menuMove->arrived;
             menuMove->arrived = FALSE;
         }
-        i = 0;
-        if (work->menuDepth > 0) {
-            do {
-                // the current entry's row is not in this range, so every path row is dimmed
-                if (i == work->menuDepth) {
-                    ManagedSprite_SetPaletteOverrideOffset(work->pathRows[i].sprite, 1);
-                } else {
-                    ManagedSprite_SetPaletteOverrideOffset(work->pathRows[i].sprite, 2);
-                }
-                i++;
-            } while (i < work->menuDepth);
+        for (i = 0; i < work->menuDepth; i++) {
+            // the current entry's row is not in this range, so every path row is dimmed
+            if (i == work->menuDepth) {
+                ManagedSprite_SetPaletteOverrideOffset(work->pathRows[i].sprite, 1);
+            } else {
+                ManagedSprite_SetPaletteOverrideOffset(work->pathRows[i].sprite, 2);
+            }
         }
         if (!menuMove->busy) {
             work->step++;

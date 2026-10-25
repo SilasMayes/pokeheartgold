@@ -28,7 +28,15 @@ static const GXRgb sLugiaCinematicEdgeColors[] = {
     GX_RGB(4, 4, 4),
 };
 
-static int (*const sScriptCinematicSubs_Lugia[4])(LegendaryCinematic *) = {
+enum LugiaCinematicState {
+    LUGIA_CINEMATIC_INIT,
+    LUGIA_CINEMATIC_EXIT,
+    LUGIA_CINEMATIC_WAIT_FADE,
+    LUGIA_CINEMATIC_PLAY,
+    LUGIA_CINEMATIC_DONE,
+};
+
+static int (*const sScriptCinematicSubs_Lugia[LUGIA_CINEMATIC_DONE])(LegendaryCinematic *) = {
     LugiaCinematic_Init,
     LugiaCinematic_Exit,
     LugiaCinematic_WaitFade,
@@ -56,7 +64,7 @@ static const LegendaryCinematicCamera sLugiaCinematicCamera = {
 
 int ScriptCinematic_Lugia(LegendaryCinematic *cinematic) {
     cinematic->state = sScriptCinematicSubs_Lugia[cinematic->state](cinematic);
-    if (cinematic->state == 4) {
+    if (cinematic->state == LUGIA_CINEMATIC_DONE) {
         return FALSE;
     }
     LegendaryCinematic_DrawModels(cinematic);
@@ -69,21 +77,21 @@ static int LugiaCinematic_Init(LegendaryCinematic *cinematic) {
     LegendaryCinematic_SetLights((ModelAttributes *)&cinematic->args->modelAttributes);
     LegendaryCinematic_SetEdgeMarking(sLugiaCinematicEdgeColors);
     LegendaryCinematic_LoadModels(cinematic, NARC_a_2_4_4, sLugiaCinematicModels, 2);
-    LegendaryCinematic_FadeInFromBlack(cinematic, 6, 1, 3);
-    return 2;
+    LegendaryCinematic_FadeInFromBlack(cinematic, 6, 1, LUGIA_CINEMATIC_PLAY);
+    return LUGIA_CINEMATIC_WAIT_FADE;
 }
 
 static int LugiaCinematic_Exit(LegendaryCinematic *cinematic) {
     LegendaryCinematic_FreeModels(cinematic);
     LegendaryCinematic_Free3D(cinematic);
-    return 4;
+    return LUGIA_CINEMATIC_DONE;
 }
 
 static int LugiaCinematic_WaitFade(LegendaryCinematic *cinematic) {
     if (IsPaletteFadeFinished() == TRUE) {
         return cinematic->nextState;
     }
-    return 2;
+    return LUGIA_CINEMATIC_WAIT_FADE;
 }
 
 static int LugiaCinematic_Play(LegendaryCinematic *cinematic) {
@@ -91,7 +99,7 @@ static int LugiaCinematic_Play(LegendaryCinematic *cinematic) {
         cinematic->frame = 0;
         StopSE(SEQ_SE_GS_TAKI_RUGIADEMO, 0);
         LegendaryCinematic_StopMotionBlur(cinematic->capture);
-        return 1;
+        return LUGIA_CINEMATIC_EXIT;
     }
     if (cinematic->frame == 0) {
         PlaySE_SetVolume(SEQ_SE_GS_TAKI_RUGIADEMO, 0);
@@ -101,7 +109,7 @@ static int LugiaCinematic_Play(LegendaryCinematic *cinematic) {
         PlayCry(SPECIES_LUGIA, 0);
         cinematic->capture = LegendaryCinematic_StartMotionBlur(5, 13);
     } else if (cinematic->frame == 232) {
-        LegendaryCinematic_FadeOutToBlack(cinematic, 6, 1, 1);
+        LegendaryCinematic_FadeOutToBlack(cinematic, 6, 1, LUGIA_CINEMATIC_EXIT);
     }
     // the waterfall sound fades in over the first ten frames
     if (cinematic->frame != 0) {
@@ -112,5 +120,5 @@ static int LugiaCinematic_Play(LegendaryCinematic *cinematic) {
         }
     }
     cinematic->frame++;
-    return 3;
+    return LUGIA_CINEMATIC_PLAY;
 }

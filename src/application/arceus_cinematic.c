@@ -46,7 +46,7 @@ enum ArceusScriptCmdId {
 
 typedef int (*ArceusScriptCmd)(LegendaryCinematic *cinematic, const int *cmd);
 
-static void ArceusCinematic_VBlank(ArceusCinematic *arceus);
+static void ArceusCinematic_VBlank(void *data);
 static void ArceusCinematic_SetBanks(void);
 static void ArceusCinematic_InitBgs(ArceusCinematic *arceus);
 static void ArceusCinematic_FreeBgs(ArceusCinematic *arceus);
@@ -93,7 +93,16 @@ static const GraphicsModes sArceusCinematicGraphicsModes = {
     ._2d3dMode = GX_BG0_AS_2D,
 };
 
-static int (*const sScriptCinematicSubs_Arceus[5])(LegendaryCinematic *) = {
+enum ArceusCinematicState {
+    ARCEUS_CINEMATIC_INIT,
+    ARCEUS_CINEMATIC_EXIT,
+    ARCEUS_CINEMATIC_WAIT_FADE,
+    ARCEUS_CINEMATIC_BLEND,
+    ARCEUS_CINEMATIC_RUN_SCRIPT,
+    ARCEUS_CINEMATIC_DONE,
+};
+
+static int (*const sScriptCinematicSubs_Arceus[ARCEUS_CINEMATIC_DONE])(LegendaryCinematic *) = {
     ArceusCinematic_Init,
     ArceusCinematic_Exit,
     ArceusCinematic_WaitFade,
@@ -779,7 +788,7 @@ static const int sArceusCinematicScript[] = {
 int ScriptCinematic_Arceus(LegendaryCinematic *cinematic) {
     ArceusCinematic *arceus;
     cinematic->state = sScriptCinematicSubs_Arceus[cinematic->state](cinematic);
-    if (cinematic->state == 5) {
+    if (cinematic->state == ARCEUS_CINEMATIC_DONE) {
         return FALSE;
     }
     arceus = cinematic->arceus;
@@ -788,7 +797,8 @@ int ScriptCinematic_Arceus(LegendaryCinematic *cinematic) {
     return TRUE;
 }
 
-static void ArceusCinematic_VBlank(ArceusCinematic *arceus) {
+static void ArceusCinematic_VBlank(void *data) {
+    ArceusCinematic *arceus = data;
     ArceusCinematic_TransferBgPalettes(arceus);
     DoScheduledBgGpuUpdates(arceus->bgConfig);
     SpriteSystem_TransferOam();
@@ -974,8 +984,8 @@ static int ArceusCinematic_Init(LegendaryCinematic *cinematic) {
     ArceusCinematic_SetBanks();
     ArceusCinematic_InitBgs(arceus);
     ArceusCinematic_InitSprites(cinematic);
-    Main_SetVBlankIntrCB((GFIntrCB)ArceusCinematic_VBlank, cinematic->arceus);
-    return 4;
+    Main_SetVBlankIntrCB(ArceusCinematic_VBlank, cinematic->arceus);
+    return ARCEUS_CINEMATIC_RUN_SCRIPT;
 }
 
 static int ArceusCinematic_Exit(LegendaryCinematic *cinematic) {
@@ -985,14 +995,14 @@ static int ArceusCinematic_Exit(LegendaryCinematic *cinematic) {
     ArceusCinematic_FreeBgs(arceus);
     NARC_Delete(arceus->narc);
     Heap_Free(cinematic->arceus);
-    return 5;
+    return ARCEUS_CINEMATIC_DONE;
 }
 
 static int ArceusCinematic_WaitFade(LegendaryCinematic *cinematic) {
     if (IsPaletteFadeFinished() == TRUE) {
         return cinematic->nextState;
     }
-    return 2;
+    return ARCEUS_CINEMATIC_WAIT_FADE;
 }
 
 // Moves the first blend target's EV from blendStartEv to blendTargetEv over blendDuration frames
@@ -1026,7 +1036,7 @@ static int ArceusCinematic_Blend(LegendaryCinematic *cinematic) {
         }
         G2_SetBlendAlpha(arceus->blendPlane1, arceus->blendPlane2, ev, abs(15 - ev));
         cinematic->frame++;
-        return 3;
+        return ARCEUS_CINEMATIC_BLEND;
     }
 }
 
@@ -1037,7 +1047,7 @@ static int ArceusCinematic_RunScript(LegendaryCinematic *cinematic) {
         int opcode = *cmd;
         int result;
         if (opcode == ARCEUS_CMD_END) {
-            return 1;
+            return ARCEUS_CINEMATIC_EXIT;
         }
         result = sArceusCinematicScriptCmds[opcode](cinematic, cmd);
         if (result == ARCEUS_SCRIPT_WAIT) {
@@ -1094,32 +1104,32 @@ static int ArceusScriptCmd_Wait(LegendaryCinematic *cinematic, const int *cmd) {
 
 static int ArceusScriptCmd_FadeInFromBlack(LegendaryCinematic *cinematic, const int *cmd) {
     GF_ASSERT(cmd[0] == ARCEUS_CMD_FADE_IN_FROM_BLACK);
-    LegendaryCinematic_FadeInFromBlack(cinematic, cmd[1], cmd[2], 4);
+    LegendaryCinematic_FadeInFromBlack(cinematic, cmd[1], cmd[2], ARCEUS_CINEMATIC_RUN_SCRIPT);
     return ARCEUS_SCRIPT_CONTINUE;
 }
 
 static int ArceusScriptCmd_FadeOutToBlack(LegendaryCinematic *cinematic, const int *cmd) {
     GF_ASSERT(cmd[0] == ARCEUS_CMD_FADE_OUT_TO_BLACK);
-    LegendaryCinematic_FadeOutToBlack(cinematic, cmd[1], cmd[2], 4);
+    LegendaryCinematic_FadeOutToBlack(cinematic, cmd[1], cmd[2], ARCEUS_CINEMATIC_RUN_SCRIPT);
     return ARCEUS_SCRIPT_CONTINUE;
 }
 
 static int ArceusScriptCmd_FadeInFromWhite(LegendaryCinematic *cinematic, const int *cmd) {
     GF_ASSERT(cmd[0] == ARCEUS_CMD_FADE_IN_FROM_WHITE);
-    LegendaryCinematic_FadeInFromWhite(cinematic, cmd[1], cmd[2], 4);
+    LegendaryCinematic_FadeInFromWhite(cinematic, cmd[1], cmd[2], ARCEUS_CINEMATIC_RUN_SCRIPT);
     return ARCEUS_SCRIPT_CONTINUE;
 }
 
 static int ArceusScriptCmd_FadeOutToWhite(LegendaryCinematic *cinematic, const int *cmd) {
     GF_ASSERT(cmd[0] == ARCEUS_CMD_FADE_OUT_TO_WHITE);
-    LegendaryCinematic_FadeOutToWhite(cinematic, cmd[1], cmd[2], 4);
+    LegendaryCinematic_FadeOutToWhite(cinematic, cmd[1], cmd[2], ARCEUS_CINEMATIC_RUN_SCRIPT);
     return ARCEUS_SCRIPT_CONTINUE;
 }
 
 static int ArceusScriptCmd_WaitFade(LegendaryCinematic *cinematic, const int *cmd) {
     GF_ASSERT(cmd[0] == ARCEUS_CMD_WAIT_FADE);
-    cinematic->state = 2;
-    cinematic->nextState = 4;
+    cinematic->state = ARCEUS_CINEMATIC_WAIT_FADE;
+    cinematic->nextState = ARCEUS_CINEMATIC_RUN_SCRIPT;
     return ARCEUS_SCRIPT_YIELD;
 }
 
@@ -1162,8 +1172,8 @@ static int ArceusScriptCmd_StartBlend(LegendaryCinematic *cinematic, const int *
     GF_ASSERT(cmd[0] == ARCEUS_CMD_START_BLEND);
     arceus->blendTargetEv = cmd[1];
     arceus->blendDuration = cmd[2];
-    cinematic->state = 3;
-    cinematic->nextState = 4;
+    cinematic->state = ARCEUS_CINEMATIC_BLEND;
+    cinematic->nextState = ARCEUS_CINEMATIC_RUN_SCRIPT;
     return ARCEUS_SCRIPT_YIELD;
 }
 

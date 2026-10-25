@@ -24,8 +24,7 @@ struct ListMenuCursor *ListMenuCursorNew(enum HeapID heapID) {
     return cursor;
 }
 
-void DestroyListMenuCursorObj(struct ListMenuCursor *cursor_) {
-    ListMenuCursor *cursor = cursor_;
+void DestroyListMenuCursorObj(struct ListMenuCursor *cursor) {
     GF_ASSERT(cursor != NULL);
     if (cursor != NULL) {
         if (cursor->string != NULL) {
@@ -35,16 +34,14 @@ void DestroyListMenuCursorObj(struct ListMenuCursor *cursor_) {
     }
 }
 
-void ListMenuCursorSetColor(struct ListMenuCursor *cursor_, u32 color) {
-    ListMenuCursor *cursor = cursor_;
+void ListMenuCursorSetColor(struct ListMenuCursor *cursor, u32 color) {
     GF_ASSERT(cursor != NULL);
     if (cursor != NULL) {
         cursor->color = color;
     }
 }
 
-void ListMenuUpdateCursorObj(struct ListMenuCursor *cursor_, Window *window, u8 x, u8 y) {
-    ListMenuCursor *cursor = cursor_;
+void ListMenuUpdateCursorObj(struct ListMenuCursor *cursor, Window *window, u8 x, u8 y) {
     AddTextPrinterParameterizedWithColor(window, 0, cursor->string, x, y, TEXT_SPEED_NOTRANSFER, cursor->color, NULL);
     CopyWindowPixelsToVram_TextMode(window);
 }
