@@ -1,16 +1,14 @@
 #ifndef POKEHEARTGOLD_FIELD_FIELD_MOVE_CUT_IN_H
 #define POKEHEARTGOLD_FIELD_FIELD_MOVE_CUT_IN_H
 
-#include "field/field_effect_manager.h"
 #include "field/field_3d_model.h"
-#include "field/sprite_gfx_manager.h"
+#include "field/field_effect_manager.h"
 
 #include "field_system.h"
 #include "pokemon.h"
 #include "sprite.h"
-#include "sys_task.h"
-#include "sprite_resource_header.h"
 #include "sprite_resource.h"
+#include "sys_task.h"
 
 // The field move cut-in: the banner with the Pokemon flying across the screen when a field move is used, and the
 // Fly take-off animations (the trainer, alone or with another map object, carried away by the flying Pokemon).

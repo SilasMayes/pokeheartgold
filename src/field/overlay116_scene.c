@@ -1,5 +1,11 @@
 #include "field/overlay116_scene_internal.h"
 
+#include "brightness.h"
+#include "camera.h"
+#include "gf_gfx_planes.h"
+#include "heap.h"
+#include "screen_fade_legacy.h"
+
 static void LegendaryEffect_ApplyCameraKey(FieldSystem *fieldSystem, const Ov116CameraKey *key);
 static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTask *task, const Ov116Sequence *seq);
 
@@ -71,7 +77,7 @@ void EncounterEffect_Legendary(SysTask *sysTask, EncounterEffectTask *task) {
         task->state++;
         break;
     case LEGENDARY_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, 0x10, 0x10, &task->fadeDone, 1);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, 0x10, 0x10, &task->fadeDone, 1);
         task->state++;
         break;
     case LEGENDARY_STATE_WAIT_FLASH:
@@ -97,7 +103,7 @@ void EncounterEffect_Legendary(SysTask *sysTask, EncounterEffectTask *task) {
         }
         break;
     case LEGENDARY_STATE_START_FADE:
-        BeginNormalPaletteFade(3, 0, 0, 0x7FFF, 10, 1, HEAP_ID_FIELD1);
+        BeginNormalPaletteFade(3, 0, 0, RGB_WHITE, 10, 1, HEAP_ID_FIELD1);
         task->state++;
         break;
     case LEGENDARY_STATE_WAIT_FADE:
@@ -107,14 +113,14 @@ void EncounterEffect_Legendary(SysTask *sysTask, EncounterEffectTask *task) {
         }
         break;
     case LEGENDARY_STATE_END:
-        SetMasterBrightnessByColor(PM_LCD_BOTTOM, 0x7FFF);
+        SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_WHITE);
         FieldMotionBlur_Stop(&work->motionBlur);
         *(vu16 *)0x04000050 = 0;
         if (task->done != NULL) {
             *task->done = 1;
         }
         EncounterEffect_Finish(task, sysTask);
-        SetMasterBrightnessByColor(PM_LCD_BOTTOM, 0x7FFF);
+        SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_WHITE);
         break;
     }
 }
@@ -132,7 +138,7 @@ static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTas
         task->state++;
         break;
     case LEGENDARY_BIRD_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, 0x10, 0x10, &task->fadeDone, 1);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, 0x10, 0x10, &task->fadeDone, 1);
         task->state++;
         break;
     case LEGENDARY_BIRD_STATE_WAIT_FLASH:
@@ -173,7 +179,7 @@ static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTas
         }
         break;
     case LEGENDARY_BIRD_STATE_START_FADE:
-        BeginNormalPaletteFade(3, 0, 0, 0x7FFF, seq->fadeFrames, 1, HEAP_ID_FIELD1);
+        BeginNormalPaletteFade(3, 0, 0, RGB_WHITE, seq->fadeFrames, 1, HEAP_ID_FIELD1);
         task->state++;
         break;
     case LEGENDARY_BIRD_STATE_WAIT_FADE:
@@ -183,14 +189,14 @@ static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTas
         }
         break;
     case LEGENDARY_BIRD_STATE_END:
-        SetMasterBrightnessByColor(PM_LCD_BOTTOM, 0x7FFF);
+        SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_WHITE);
         FieldMotionBlur_Stop(&work->motionBlur);
         *(vu16 *)0x04000050 = 0;
         if (task->done != NULL) {
             *task->done = 1;
         }
         EncounterEffect_Finish(task, sysTask);
-        SetMasterBrightnessByColor(PM_LCD_BOTTOM, 0x7FFF);
+        SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_WHITE);
         break;
     }
 }

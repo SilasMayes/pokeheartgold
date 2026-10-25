@@ -3,6 +3,7 @@
 #include "field/encounter_effect.h"
 
 #include "bg_window.h"
+#include "brightness.h"
 #include "camera.h"
 #include "gf_gfx_planes.h"
 #include "heap.h"
@@ -137,7 +138,7 @@ void EncounterEffect_TrainerSpinZoom(SysTask *task, EncounterEffectTask *effect)
         effect->state++;
         break;
     case SPIN_ZOOM_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, -16, -16, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, -16, -16, &effect->fadeDone, 2);
         effect->state++;
         break;
     case SPIN_ZOOM_STATE_WAIT_FLASH:
@@ -257,7 +258,7 @@ void EncounterEffect_TrainerSpinApart(SysTask *task, EncounterEffectTask *effect
         effect->state++;
         break;
     case SPIN_APART_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, 16, -16, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, 16, -16, &effect->fadeDone, 2);
         effect->state++;
         break;
     case SPIN_APART_STATE_WAIT_FLASH:
@@ -365,7 +366,7 @@ void EncounterEffect_TrainerFadeSpin(SysTask *task, EncounterEffectTask *effect)
         effect->state++;
         break;
     case FADE_SPIN_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, -16, -16, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, -16, -16, &effect->fadeDone, 2);
         effect->state++;
         break;
     case FADE_SPIN_STATE_WAIT_FLASH:
@@ -403,7 +404,7 @@ void EncounterEffect_TrainerFadeSpin(SysTask *task, EncounterEffectTask *effect)
         if (done != TRUE) {
             break;
         }
-        reg_G2_BLDCNT = 0;
+        G2_BlendNone();
         for (i = 0; i < 2; i++) {
             Sprite_SetOamMode(work->sprites[i], GX_OAM_MODE_NORMAL);
         }
@@ -437,7 +438,7 @@ void EncounterEffect_TrainerFadeSpin(SysTask *task, EncounterEffectTask *effect)
         }
         break;
     case FADE_SPIN_STATE_END:
-        SetMasterBrightnessByColor(1, RGB_BLACK);
+        SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_BLACK);
         if (effect->done != NULL) {
             *effect->done = TRUE;
         }
@@ -504,7 +505,7 @@ void EncounterEffect_TrainerBallDrop(SysTask *task, EncounterEffectTask *effect)
         effect->state++;
         break;
     case BALL_DROP_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, 16, -16, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, 16, -16, &effect->fadeDone, 2);
         effect->state++;
         break;
     case BALL_DROP_STATE_WAIT_FLASH:
@@ -641,7 +642,7 @@ void EncounterEffect_TrainerRisingBall(SysTask *task, EncounterEffectTask *effec
         effect->state++;
         break;
     case RISING_BALL_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, -16, -16, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, -16, -16, &effect->fadeDone, 2);
         effect->state++;
         break;
     case RISING_BALL_STATE_WAIT_FLASH:
@@ -691,7 +692,7 @@ void EncounterEffect_TrainerRisingBall(SysTask *task, EncounterEffectTask *effec
         }
         break;
     case RISING_BALL_STATE_END:
-        SetMasterBrightnessByColor(1, RGB_BLACK);
+        SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_BLACK);
         HBlankSystem_Start(effect->fieldSystem->mapSystems->hBlankSystem);
         if (effect->done != NULL) {
             *effect->done = TRUE;
@@ -753,7 +754,7 @@ void EncounterEffect_TrainerBallFall(SysTask *task, EncounterEffectTask *effect)
         effect->state++;
         break;
     case BALL_FALL_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, 16, -16, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, 16, -16, &effect->fadeDone, 2);
         effect->state++;
         break;
     case BALL_FALL_STATE_WAIT_FLASH:

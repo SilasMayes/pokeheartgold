@@ -150,10 +150,12 @@ static void ShallowWaterRippleEffect_Update(FieldEffect *effect, void *state) {
 
 static void ShallowWaterRippleEffect_Draw(FieldEffect *effect, void *state) {
     ShallowWaterRippleEffect *work = state;
+
     struct {
         VecFx32 facing;
         VecFx32 position;
     } vecs;
+
     LocalMapObject *mapObject = work->args.mapObject;
 
     if (!MapObject_CheckSpriteIDAndMap(mapObject, work->spriteId, work->objectId, work->mapId)) {
@@ -164,6 +166,6 @@ static void ShallowWaterRippleEffect_Draw(FieldEffect *effect, void *state) {
     MapObject_CopyFacingVector(mapObject, &vecs.facing);
     vecs.position.x += vecs.facing.x;
     vecs.position.z += vecs.facing.z;
-    vecs.position.z += 0x8000;
+    vecs.position.z += FX32_CONST(8);
     BillboardObject_SetPosition(work->billboard, &vecs.position);
 }

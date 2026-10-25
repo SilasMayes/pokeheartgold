@@ -355,7 +355,7 @@ BOOL MapObjectMovementCmd098_Step2(LocalMapObject *object) {
 
 void MapObject_StartFaceMovement(LocalMapObject *object, u32 direction) {
     MapObject_SetFacingDirection(object, direction);
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_SetPreviousCoordsToCurrent(object);
     MapObject_IncrementMovementStep(object);
 }
@@ -406,148 +406,148 @@ BOOL MapObjectMovementCmd090_Step1(LocalMapObject *object) {
     MapObject_SetFlagsBits(object, (MapObjectFlagBits)(MAPOBJECTFLAG_END_MOVEMENT | MAPOBJECTFLAG_UNK5));
     MapObject_SetPreviousCoordsToCurrent(object);
     MapObject_CallDrawUpdate(object);
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_IncrementMovementStep(object);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd004_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_NORTH, 0x800, 32, 1);
+    MapObject_StartWalkMovement(object, DIR_NORTH, FX32_CONST(0.5), 32, MAP_OBJECT_ANIM_WALK_SLOWER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd005_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_SOUTH, 0x800, 32, 1);
+    MapObject_StartWalkMovement(object, DIR_SOUTH, FX32_CONST(0.5), 32, MAP_OBJECT_ANIM_WALK_SLOWER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd006_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_WEST, 0x800, 32, 1);
+    MapObject_StartWalkMovement(object, DIR_WEST, FX32_CONST(0.5), 32, MAP_OBJECT_ANIM_WALK_SLOWER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd007_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_EAST, 0x800, 32, 1);
+    MapObject_StartWalkMovement(object, DIR_EAST, FX32_CONST(0.5), 32, MAP_OBJECT_ANIM_WALK_SLOWER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd008_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_NORTH, 0x1000, 16, 2);
+    MapObject_StartWalkMovement(object, DIR_NORTH, FX32_ONE, 16, MAP_OBJECT_ANIM_WALK_SLOW);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd009_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_SOUTH, 0x1000, 16, 2);
+    MapObject_StartWalkMovement(object, DIR_SOUTH, FX32_ONE, 16, MAP_OBJECT_ANIM_WALK_SLOW);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd010_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_WEST, 0x1000, 16, 2);
+    MapObject_StartWalkMovement(object, DIR_WEST, FX32_ONE, 16, MAP_OBJECT_ANIM_WALK_SLOW);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd011_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_EAST, 0x1000, 16, 2);
+    MapObject_StartWalkMovement(object, DIR_EAST, FX32_ONE, 16, MAP_OBJECT_ANIM_WALK_SLOW);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd012_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_NORTH, 0x2000, 8, 3);
+    MapObject_StartWalkMovement(object, DIR_NORTH, FX32_CONST(2), 8, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd013_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_SOUTH, 0x2000, 8, 3);
+    MapObject_StartWalkMovement(object, DIR_SOUTH, FX32_CONST(2), 8, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd014_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_WEST, 0x2000, 8, 3);
+    MapObject_StartWalkMovement(object, DIR_WEST, FX32_CONST(2), 8, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd015_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_EAST, 0x2000, 8, 3);
+    MapObject_StartWalkMovement(object, DIR_EAST, FX32_CONST(2), 8, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd016_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_NORTH, 0x4000, 4, 4);
+    MapObject_StartWalkMovement(object, DIR_NORTH, FX32_CONST(4), 4, MAP_OBJECT_ANIM_WALK_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd017_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_SOUTH, 0x4000, 4, 4);
+    MapObject_StartWalkMovement(object, DIR_SOUTH, FX32_CONST(4), 4, MAP_OBJECT_ANIM_WALK_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd018_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_WEST, 0x4000, 4, 4);
+    MapObject_StartWalkMovement(object, DIR_WEST, FX32_CONST(4), 4, MAP_OBJECT_ANIM_WALK_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd019_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_EAST, 0x4000, 4, 4);
+    MapObject_StartWalkMovement(object, DIR_EAST, FX32_CONST(4), 4, MAP_OBJECT_ANIM_WALK_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd020_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_NORTH, 0x8000, 2, 5);
+    MapObject_StartWalkMovement(object, DIR_NORTH, FX32_CONST(8), 2, MAP_OBJECT_ANIM_WALK_FASTER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd021_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_SOUTH, 0x8000, 2, 5);
+    MapObject_StartWalkMovement(object, DIR_SOUTH, FX32_CONST(8), 2, MAP_OBJECT_ANIM_WALK_FASTER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd022_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_WEST, 0x8000, 2, 5);
+    MapObject_StartWalkMovement(object, DIR_WEST, FX32_CONST(8), 2, MAP_OBJECT_ANIM_WALK_FASTER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd023_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_EAST, 0x8000, 2, 5);
+    MapObject_StartWalkMovement(object, DIR_EAST, FX32_CONST(8), 2, MAP_OBJECT_ANIM_WALK_FASTER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd084_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_NORTH, 0x10000, 1, 0);
+    MapObject_StartWalkMovement(object, DIR_NORTH, FX32_CONST(16), 1, MAP_OBJECT_ANIM_STAND);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd085_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_SOUTH, 0x10000, 1, 0);
+    MapObject_StartWalkMovement(object, DIR_SOUTH, FX32_CONST(16), 1, MAP_OBJECT_ANIM_STAND);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd086_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_WEST, 0x10000, 1, 0);
+    MapObject_StartWalkMovement(object, DIR_WEST, FX32_CONST(16), 1, MAP_OBJECT_ANIM_STAND);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd087_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_EAST, 0x10000, 1, 0);
+    MapObject_StartWalkMovement(object, DIR_EAST, FX32_CONST(16), 1, MAP_OBJECT_ANIM_STAND);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd088_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_NORTH, 0x4000, 4, 9);
+    MapObject_StartWalkMovement(object, DIR_NORTH, FX32_CONST(4), 4, MAP_OBJECT_ANIM_RUN);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd089_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_SOUTH, 0x4000, 4, 9);
+    MapObject_StartWalkMovement(object, DIR_SOUTH, FX32_CONST(4), 4, MAP_OBJECT_ANIM_RUN);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd090_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_WEST, 0x4000, 4, 9);
+    MapObject_StartWalkMovement(object, DIR_WEST, FX32_CONST(4), 4, MAP_OBJECT_ANIM_RUN);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd091_Step0(LocalMapObject *object) {
-    MapObject_StartWalkMovement(object, DIR_EAST, 0x4000, 4, 9);
+    MapObject_StartWalkMovement(object, DIR_EAST, FX32_CONST(4), 4, MAP_OBJECT_ANIM_RUN);
     return TRUE;
 }
 
@@ -570,108 +570,108 @@ BOOL MapObjectMovementCmd040_Step1(LocalMapObject *object) {
         return FALSE;
     }
     MapObject_SetFlagsBits(object, MAPOBJECTFLAG_UNK5);
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_IncrementMovementStep(object);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd024_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_NORTH, 32, 1);
+    MapObject_StartWalkInPlaceMovement(object, DIR_NORTH, 32, MAP_OBJECT_ANIM_WALK_SLOWER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd025_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_SOUTH, 32, 1);
+    MapObject_StartWalkInPlaceMovement(object, DIR_SOUTH, 32, MAP_OBJECT_ANIM_WALK_SLOWER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd026_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_WEST, 32, 1);
+    MapObject_StartWalkInPlaceMovement(object, DIR_WEST, 32, MAP_OBJECT_ANIM_WALK_SLOWER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd027_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_EAST, 32, 1);
+    MapObject_StartWalkInPlaceMovement(object, DIR_EAST, 32, MAP_OBJECT_ANIM_WALK_SLOWER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd028_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_NORTH, 16, 2);
+    MapObject_StartWalkInPlaceMovement(object, DIR_NORTH, 16, MAP_OBJECT_ANIM_WALK_SLOW);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd029_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_SOUTH, 16, 2);
+    MapObject_StartWalkInPlaceMovement(object, DIR_SOUTH, 16, MAP_OBJECT_ANIM_WALK_SLOW);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd030_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_WEST, 16, 2);
+    MapObject_StartWalkInPlaceMovement(object, DIR_WEST, 16, MAP_OBJECT_ANIM_WALK_SLOW);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd031_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_EAST, 16, 2);
+    MapObject_StartWalkInPlaceMovement(object, DIR_EAST, 16, MAP_OBJECT_ANIM_WALK_SLOW);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd032_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_NORTH, 8, 3);
+    MapObject_StartWalkInPlaceMovement(object, DIR_NORTH, 8, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd033_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_SOUTH, 8, 3);
+    MapObject_StartWalkInPlaceMovement(object, DIR_SOUTH, 8, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd034_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_WEST, 8, 3);
+    MapObject_StartWalkInPlaceMovement(object, DIR_WEST, 8, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd035_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_EAST, 8, 3);
+    MapObject_StartWalkInPlaceMovement(object, DIR_EAST, 8, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd036_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_NORTH, 4, 4);
+    MapObject_StartWalkInPlaceMovement(object, DIR_NORTH, 4, MAP_OBJECT_ANIM_WALK_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd037_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_SOUTH, 4, 4);
+    MapObject_StartWalkInPlaceMovement(object, DIR_SOUTH, 4, MAP_OBJECT_ANIM_WALK_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd038_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_WEST, 4, 4);
+    MapObject_StartWalkInPlaceMovement(object, DIR_WEST, 4, MAP_OBJECT_ANIM_WALK_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd039_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_EAST, 4, 4);
+    MapObject_StartWalkInPlaceMovement(object, DIR_EAST, 4, MAP_OBJECT_ANIM_WALK_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd040_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_NORTH, 2, 5);
+    MapObject_StartWalkInPlaceMovement(object, DIR_NORTH, 2, MAP_OBJECT_ANIM_WALK_FASTER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd041_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_SOUTH, 2, 5);
+    MapObject_StartWalkInPlaceMovement(object, DIR_SOUTH, 2, MAP_OBJECT_ANIM_WALK_FASTER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd042_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_WEST, 2, 5);
+    MapObject_StartWalkInPlaceMovement(object, DIR_WEST, 2, MAP_OBJECT_ANIM_WALK_FASTER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd043_Step0(LocalMapObject *object) {
-    MapObject_StartWalkInPlaceMovement(object, DIR_EAST, 2, 5);
+    MapObject_StartWalkInPlaceMovement(object, DIR_EAST, 2, MAP_OBJECT_ANIM_WALK_FASTER);
     return TRUE;
 }
 
@@ -742,7 +742,7 @@ BOOL MapObjectMovementCmd092_Step1(LocalMapObject *object) {
     MapObject_SetFlagsBits(object, (MapObjectFlagBits)(MAPOBJECTFLAG_UNK17 | MAPOBJECTFLAG_END_MOVEMENT | MAPOBJECTFLAG_UNK5));
     MapObject_SetPreviousCoordsToCurrent(object);
     MapObject_CallDrawUpdate(object);
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_IncrementMovementStep(object);
     if (!MapObject_CheckVisible(object)) {
         PlaySE(SEQ_SE_DP_SUTYA2);
@@ -751,102 +751,102 @@ BOOL MapObjectMovementCmd092_Step1(LocalMapObject *object) {
 }
 
 BOOL MapObjectMovementCmd044_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_NORTH, 0, 16, 2, 0, 0x100);
+    MapObject_StartJumpMovement(object, DIR_NORTH, 0, 16, MAP_OBJECT_ANIM_WALK_SLOW, 0, 0x100);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd045_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_SOUTH, 0, 16, 2, 0, 0x100);
+    MapObject_StartJumpMovement(object, DIR_SOUTH, 0, 16, MAP_OBJECT_ANIM_WALK_SLOW, 0, 0x100);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd046_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_WEST, 0, 16, 2, 0, 0x100);
+    MapObject_StartJumpMovement(object, DIR_WEST, 0, 16, MAP_OBJECT_ANIM_WALK_SLOW, 0, 0x100);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd047_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_EAST, 0, 16, 2, 0, 0x100);
+    MapObject_StartJumpMovement(object, DIR_EAST, 0, 16, MAP_OBJECT_ANIM_WALK_SLOW, 0, 0x100);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd048_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_NORTH, 0, 8, 3, 0, 0x200);
+    MapObject_StartJumpMovement(object, DIR_NORTH, 0, 8, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x200);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd049_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_SOUTH, 0, 8, 3, 0, 0x200);
+    MapObject_StartJumpMovement(object, DIR_SOUTH, 0, 8, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x200);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd050_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_WEST, 0, 8, 3, 0, 0x200);
+    MapObject_StartJumpMovement(object, DIR_WEST, 0, 8, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x200);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd051_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_EAST, 0, 8, 3, 0, 0x200);
+    MapObject_StartJumpMovement(object, DIR_EAST, 0, 8, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x200);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd052_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_NORTH, 0x2000, 8, 3, 0, 0x200);
+    MapObject_StartJumpMovement(object, DIR_NORTH, FX32_CONST(2), 8, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x200);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd053_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_SOUTH, 0x2000, 8, 3, 0, 0x200);
+    MapObject_StartJumpMovement(object, DIR_SOUTH, FX32_CONST(2), 8, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x200);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd054_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_WEST, 0x2000, 8, 3, 0, 0x200);
+    MapObject_StartJumpMovement(object, DIR_WEST, FX32_CONST(2), 8, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x200);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd055_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_EAST, 0x2000, 8, 3, 0, 0x200);
+    MapObject_StartJumpMovement(object, DIR_EAST, FX32_CONST(2), 8, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x200);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd056_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_NORTH, 0x2000, 16, 3, 0, 0x100);
+    MapObject_StartJumpMovement(object, DIR_NORTH, FX32_CONST(2), 16, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x100);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd057_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_SOUTH, 0x2000, 16, 3, 0, 0x100);
+    MapObject_StartJumpMovement(object, DIR_SOUTH, FX32_CONST(2), 16, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x100);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd058_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_WEST, 0x2000, 16, 3, 0, 0x100);
+    MapObject_StartJumpMovement(object, DIR_WEST, FX32_CONST(2), 16, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x100);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd059_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_EAST, 0x2000, 16, 3, 0, 0x100);
+    MapObject_StartJumpMovement(object, DIR_EAST, FX32_CONST(2), 16, MAP_OBJECT_ANIM_WALK_NORMAL, 0, 0x100);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd092_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_WEST, 0x1000, 16, 10, 0, 0xF0);
+    MapObject_StartJumpMovement(object, DIR_WEST, FX32_ONE, 16, MAP_OBJECT_ANIM_JUMP_NEAR_SLOW, 0, 0xF0);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd093_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_EAST, 0x1000, 16, 10, 0, 0xF0);
+    MapObject_StartJumpMovement(object, DIR_EAST, FX32_ONE, 16, MAP_OBJECT_ANIM_JUMP_NEAR_SLOW, 0, 0xF0);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd094_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_WEST, 0x4000, 12, 11, 0, 0x140);
+    MapObject_StartJumpMovement(object, DIR_WEST, FX32_CONST(4), 12, MAP_OBJECT_ANIM_JUMP_FARTHER, 0, 0x140);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd095_Step0(LocalMapObject *object) {
-    MapObject_StartJumpMovement(object, DIR_EAST, 0x4000, 12, 11, 0, 0x140);
+    MapObject_StartJumpMovement(object, DIR_EAST, FX32_CONST(4), 12, MAP_OBJECT_ANIM_JUMP_FARTHER, 0, 0x140);
     return TRUE;
 }
 
@@ -906,7 +906,7 @@ BOOL MapObjectMovementCmd066_Step0(LocalMapObject *object) {
 BOOL MapObjectMovementCmd067_Step0(LocalMapObject *object) {
     RiseMovementWork *work = (RiseMovementWork *)MapObject_InitMovementCmdData(object, sizeof(RiseMovementWork));
     work->delta = FX32_ONE * 16;
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_IncrementMovementStep(object);
     return TRUE;
 }
@@ -928,7 +928,7 @@ BOOL MapObjectMovementCmd068_Step0(LocalMapObject *object) {
     RiseMovementWork *work = (RiseMovementWork *)MapObject_InitMovementCmdData(object, sizeof(RiseMovementWork));
     work->height = FX32_ONE * 320;
     work->delta = -FX32_ONE * 16;
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_IncrementMovementStep(object);
     return TRUE;
 }
@@ -1035,28 +1035,28 @@ static BOOL MapObject_UpdateVariableSpeedWalk(LocalMapObject *object, const u32 
     MapObject_SetFlagsBits(object, (MapObjectFlagBits)(MAPOBJECTFLAG_END_MOVEMENT | MAPOBJECTFLAG_UNK5));
     MapObject_SetPreviousCoordsToCurrent(object);
     MapObject_CallDrawUpdate(object);
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_IncrementMovementStep(object);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd076_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_NORTH, 6, 6);
+    MapObject_StartVariableSpeedWalk(object, DIR_NORTH, 6, MAP_OBJECT_ANIM_WALK_SLIGHTLY_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd077_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_SOUTH, 6, 6);
+    MapObject_StartVariableSpeedWalk(object, DIR_SOUTH, 6, MAP_OBJECT_ANIM_WALK_SLIGHTLY_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd078_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_WEST, 6, 6);
+    MapObject_StartVariableSpeedWalk(object, DIR_WEST, 6, MAP_OBJECT_ANIM_WALK_SLIGHTLY_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd079_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_EAST, 6, 6);
+    MapObject_StartVariableSpeedWalk(object, DIR_EAST, 6, MAP_OBJECT_ANIM_WALK_SLIGHTLY_FAST);
     return TRUE;
 }
 
@@ -1068,22 +1068,22 @@ BOOL MapObjectMovementCmd076_Step1(LocalMapObject *object) {
 }
 
 BOOL MapObjectMovementCmd080_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_NORTH, 3, 7);
+    MapObject_StartVariableSpeedWalk(object, DIR_NORTH, 3, MAP_OBJECT_ANIM_WALK_SLIGHTLY_FASTER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd081_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_SOUTH, 3, 7);
+    MapObject_StartVariableSpeedWalk(object, DIR_SOUTH, 3, MAP_OBJECT_ANIM_WALK_SLIGHTLY_FASTER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd082_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_WEST, 3, 7);
+    MapObject_StartVariableSpeedWalk(object, DIR_WEST, 3, MAP_OBJECT_ANIM_WALK_SLIGHTLY_FASTER);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd083_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_EAST, 3, 7);
+    MapObject_StartVariableSpeedWalk(object, DIR_EAST, 3, MAP_OBJECT_ANIM_WALK_SLIGHTLY_FASTER);
     return TRUE;
 }
 
@@ -1095,22 +1095,22 @@ BOOL MapObjectMovementCmd082_Step1(LocalMapObject *object) {
 }
 
 BOOL MapObjectMovementCmd096_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_NORTH, 7, 8);
+    MapObject_StartVariableSpeedWalk(object, DIR_NORTH, 7, MAP_OBJECT_ANIM_WALK_EVER_SO_SLIGHTLY_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd097_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_SOUTH, 7, 8);
+    MapObject_StartVariableSpeedWalk(object, DIR_SOUTH, 7, MAP_OBJECT_ANIM_WALK_EVER_SO_SLIGHTLY_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd098_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_WEST, 7, 8);
+    MapObject_StartVariableSpeedWalk(object, DIR_WEST, 7, MAP_OBJECT_ANIM_WALK_EVER_SO_SLIGHTLY_FAST);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd099_Step0(LocalMapObject *object) {
-    MapObject_StartVariableSpeedWalk(object, DIR_EAST, 7, 8);
+    MapObject_StartVariableSpeedWalk(object, DIR_EAST, 7, MAP_OBJECT_ANIM_WALK_EVER_SO_SLIGHTLY_FAST);
     return TRUE;
 }
 
@@ -1123,7 +1123,7 @@ BOOL MapObjectMovementCmd098_Step1(LocalMapObject *object) {
 
 BOOL MapObjectMovementCmd100_Step0(LocalMapObject *object) {
     MapObject_InitMovementCmdData(object, sizeof(s32));
-    MapObject_SetAnimation(object, 9);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_NURSE_BOW);
     MapObject_IncrementMovementStep(object);
     return FALSE;
 }
@@ -1133,7 +1133,7 @@ BOOL MapObjectMovementCmd100_Step1(LocalMapObject *object) {
     (*timer)++;
     if (*timer >= 8) {
         MapObject_SetFacingDirection(object, DIR_SOUTH);
-        MapObject_SetAnimation(object, 0);
+        MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
         MapObject_IncrementMovementStep(object);
     }
     return FALSE;
@@ -1177,14 +1177,14 @@ BOOL MapObjectMovementCmd101_Step1(LocalMapObject *object) {
 
 BOOL MapObjectMovementCmd102_Step0(LocalMapObject *object) {
     MapObject_InitMovementCmdData(object, sizeof(u32));
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_IncrementMovementStep(object);
     return FALSE;
 }
 
 BOOL MapObjectMovementCmd104_Step0(LocalMapObject *object) {
     MapObject_InitMovementCmdData(object, sizeof(u32));
-    MapObject_SetAnimation(object, 1);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_WALK_SLOWER);
     MapObject_IncrementMovementStep(object);
     return FALSE;
 }
@@ -1293,7 +1293,7 @@ BOOL MapObjectMovementCmd108_Step1(LocalMapObject *object) {
     MapObject_SetFlagsBits(object, (MapObjectFlagBits)(MAPOBJECTFLAG_UNK17 | MAPOBJECTFLAG_END_MOVEMENT));
     MapObject_SetPreviousCoordsToCurrent(object);
     MapObject_CallDrawUpdate(object);
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_IncrementMovementStep(object);
     if (!MapObject_CheckVisible(object)) {
         PlaySE(SEQ_SE_DP_SUTYA2);
@@ -1303,146 +1303,146 @@ BOOL MapObjectMovementCmd108_Step1(LocalMapObject *object) {
 }
 
 BOOL MapObjectMovementCmd105_Step0(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 0, 1, 5, DIR_SOUTH, 15, 3);
+    MapObject_StartJumpByOffsetMovement(object, 0, 1, 5, DIR_SOUTH, 15, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd105_Step2(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 4, 0, 0, DIR_EAST, 12, 3);
+    MapObject_StartJumpByOffsetMovement(object, 4, 0, 0, DIR_EAST, 12, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd105_Step4(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 0, 0, -5, DIR_NORTH, 15, 3);
+    MapObject_StartJumpByOffsetMovement(object, 0, 0, -5, DIR_NORTH, 15, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd105_Step6(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, -2, 0, -3, DIR_NORTH, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, -2, 0, -3, DIR_NORTH, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd105_Step8(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, -4, 1, -4, DIR_WEST, 12, 3);
+    MapObject_StartJumpByOffsetMovement(object, -4, 1, -4, DIR_WEST, 12, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd106_Step0(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 2, 1, 0, DIR_EAST, 6, 3);
+    MapObject_StartJumpByOffsetMovement(object, 2, 1, 0, DIR_EAST, 6, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd106_Step2(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, -1, 0, 5, DIR_SOUTH, 12, 3);
+    MapObject_StartJumpByOffsetMovement(object, -1, 0, 5, DIR_SOUTH, 12, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd106_Step4(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, -3, 0, 0, DIR_WEST, 6, 3);
+    MapObject_StartJumpByOffsetMovement(object, -3, 0, 0, DIR_WEST, 6, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd106_Step6(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, -3, 0, 0, DIR_WEST, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, -3, 0, 0, DIR_WEST, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd107_Step0(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 3, 1, -1, DIR_EAST, 6, 3);
+    MapObject_StartJumpByOffsetMovement(object, 3, 1, -1, DIR_EAST, 6, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd107_Step2(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 0, 0, 4, DIR_SOUTH, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, 0, 0, 4, DIR_SOUTH, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd107_Step4(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, -4, 0, 0, DIR_WEST, 12, 3);
+    MapObject_StartJumpByOffsetMovement(object, -4, 0, 0, DIR_WEST, 12, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd107_Step6(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 0, -1, -4, DIR_NORTH, 6, 3);
+    MapObject_StartJumpByOffsetMovement(object, 0, -1, -4, DIR_NORTH, 6, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd107_Step8(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 1, 1, -3, DIR_NORTH, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, 1, 1, -3, DIR_NORTH, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd107_Step10(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 3, 0, 0, DIR_EAST, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, 3, 0, 0, DIR_EAST, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd107_Step12(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 0, 0, 4, DIR_SOUTH, 12, 3);
+    MapObject_StartJumpByOffsetMovement(object, 0, 0, 4, DIR_SOUTH, 12, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd109_Step12(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 0, 0, 5, DIR_SOUTH, 12, 3);
+    MapObject_StartJumpByOffsetMovement(object, 0, 0, 5, DIR_SOUTH, 12, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd108_Step0(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 2, 1, 5, DIR_SOUTH, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, 2, 1, 5, DIR_SOUTH, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd110_Step0(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 2, 1, 4, DIR_SOUTH, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, 2, 1, 4, DIR_SOUTH, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd108_Step2(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 1, 0, 5, DIR_SOUTH, 12, 3);
+    MapObject_StartJumpByOffsetMovement(object, 1, 0, 5, DIR_SOUTH, 12, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd111_Step0(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 0, 0, 2, DIR_SOUTH, 6, 3);
+    MapObject_StartJumpByOffsetMovement(object, 0, 0, 2, DIR_SOUTH, 6, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd111_Step2(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 2, 0, 0, DIR_EAST, 6, 3);
+    MapObject_StartJumpByOffsetMovement(object, 2, 0, 0, DIR_EAST, 6, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd111_Step4(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 3, 0, 0, DIR_EAST, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, 3, 0, 0, DIR_EAST, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd111_Step6(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 0, 0, 2, DIR_SOUTH, 6, 3);
+    MapObject_StartJumpByOffsetMovement(object, 0, 0, 2, DIR_SOUTH, 6, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd111_Step10(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, -3, 0, 0, DIR_WEST, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, -3, 0, 0, DIR_WEST, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd111_Step14(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 0, 0, -2, DIR_NORTH, 6, 3);
+    MapObject_StartJumpByOffsetMovement(object, 0, 0, -2, DIR_NORTH, 6, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd111_Step16(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 0, 0, -3, DIR_NORTH, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, 0, 0, -3, DIR_NORTH, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd111_Step18(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 3, 0, 1, DIR_SOUTH, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, 3, 0, 1, DIR_SOUTH, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }
 
 BOOL MapObjectMovementCmd112_Step0(LocalMapObject *object) {
-    MapObject_StartJumpByOffsetMovement(object, 4, 0, 0, DIR_EAST, 9, 3);
+    MapObject_StartJumpByOffsetMovement(object, 4, 0, 0, DIR_EAST, 9, MAP_OBJECT_ANIM_WALK_NORMAL);
     return TRUE;
 }

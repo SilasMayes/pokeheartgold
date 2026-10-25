@@ -133,6 +133,6 @@ static void GroundDustEffect_Draw(FieldEffect *effect, void *state) {
     GroundDustEffect *work = state;
     VecFx32 position;
     FieldEffect_GetPosition(effect, &position);
-    position.z += 0x8000;
+    position.z += FX32_CONST(8);
     BillboardObject_SetPosition(work->billboard, &position);
 }

@@ -114,7 +114,7 @@ static BOOL TouchscreenChoiceMenu_HandleYesNoInput(TouchscreenChoiceMenuData *da
 
 SysTask *TouchscreenChoiceMenu_Create(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, u16 *result);
 void TouchscreenChoiceMenu_Destroy(BgConfig *bgConfig, SysTask *task);
-BOOL TouchscreenChoiceMenu_IsExitDone(void *unused);
+BOOL TouchscreenChoiceMenu_IsExitDone(BgConfig *bgConfig);
 void TouchscreenChoiceMenu_SetCallback(SysTask *task, void (*callback)(void *arg, int selection), void *arg);
 BOOL TouchscreenChoiceMenu_State_Init(TouchscreenChoiceMenuData *data);
 BOOL TouchscreenChoiceMenu_State_ShowYesNo(TouchscreenChoiceMenuData *data);
@@ -132,13 +132,12 @@ BOOL TouchscreenChoiceMenu_State_CancelYesNo(TouchscreenChoiceMenuData *data);
 SysTask *TouchscreenChoiceMenu_Create(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, u16 *result) {
     SysTask *task;
     TouchscreenChoiceMenuData *data;
-    vu32 *dispCnt = &reg_GXS_DB_DISPCNT;
 
     Heap_Create(HEAP_ID_3, HEAP_ID_8, 0x18000);
     GXS_SetGraphicsMode(GX_BGMODE_0);
     GX_SetBankForSubBG(GX_VRAM_SUB_BG_32_H);
     GX_SetBankForSubOBJ(GX_VRAM_SUB_OBJ_16_I);
-    *dispCnt = (*dispCnt & 0xFFCFFFEF) | GX_OBJVRAMMODE_CHAR_1D_32K;
+    GXS_SetOBJVRamModeChar(GX_OBJVRAMMODE_CHAR_1D_32K);
     InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_0, &gTouchscreenChoiceMenuBgTemplate_Sub0, GF_BG_TYPE_TEXT);
     InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_1, &gTouchscreenChoiceMenuBgTemplate_Sub1, GF_BG_TYPE_TEXT);
     InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_2, &gTouchscreenChoiceMenuBgTemplate_Sub2, GF_BG_TYPE_TEXT);
@@ -166,7 +165,7 @@ SysTask *TouchscreenChoiceMenu_Create(BgConfig *bgConfig, u16 *lastTouchMenuInpu
     TouchscreenChoiceMenu_LoadBgGraphics(data);
     TouchscreenChoiceMenu_LoadSpriteResources(data);
     TouchscreenChoiceMenu_CreateCursor(data, 0);
-    *dispCnt &= 0xFFFF1FFF; // no windows
+    GXS_SetVisibleWnd(GX_WNDMASK_NONE);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
@@ -195,7 +194,7 @@ void TouchscreenChoiceMenu_Destroy(BgConfig *bgConfig, SysTask *task) {
     Heap_Destroy(HEAP_ID_8);
 }
 
-BOOL TouchscreenChoiceMenu_IsExitDone(void *unused) {
+BOOL TouchscreenChoiceMenu_IsExitDone(BgConfig *bgConfig) {
     return TRUE;
 }
 

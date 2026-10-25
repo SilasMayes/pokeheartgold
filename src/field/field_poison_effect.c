@@ -53,7 +53,7 @@ static void PoisonEffect_SwapBuffersTask(SysTask *task, void *data);
 static void PoisonEffect_SwapBuffers(PoisonEffect *effect);
 static void PoisonEffect_Stop(PoisonEffect *effect);
 
-void *PoisonEffect_New(enum HeapID heapID, HBlankSystem *hBlankSystem) {
+PoisonEffect *PoisonEffect_New(enum HeapID heapID, HBlankSystem *hBlankSystem) {
     PoisonEffect *effect = Heap_Alloc(heapID, sizeof(PoisonEffect));
     memset(effect, 0, sizeof(PoisonEffect));
     effect->state = POISON_EFFECT_IDLE;

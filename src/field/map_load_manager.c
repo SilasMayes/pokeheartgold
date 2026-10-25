@@ -1436,7 +1436,7 @@ BOOL MapLoadManager_GetMapSlotAt(MapLoadManager *mapLoadManager, int x, int z, u
     u32 slot;
     int stride, tileRow;
 
-    if (matrixIndex >= mapLoadManager->width * mapLoadManager->height && CommState_SetError(1) != 0) {
+    if (matrixIndex >= mapLoadManager->width * mapLoadManager->height && CommState_SetError(1)) {
         return FALSE;
     }
     GF_ASSERT(matrixIndex < mapLoadManager->width * mapLoadManager->height);

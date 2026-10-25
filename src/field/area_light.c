@@ -236,23 +236,23 @@ const s8 *AreaLight_ParseLight(const s8 *src, u16 *colorOut, s16 *dirOut) {
         dirOut[0] = dir[0];
         dirOut[1] = dir[1];
         dirOut[2] = dir[2];
-        if (dirOut[0] > 0x1000) {
-            dirOut[0] = 0x1000;
+        if (dirOut[0] > FX16_ONE) {
+            dirOut[0] = FX16_ONE;
         }
-        if (dirOut[0] < -0x1000) {
-            dirOut[0] = -0x1000;
+        if (dirOut[0] < -FX16_ONE) {
+            dirOut[0] = -FX16_ONE;
         }
-        if (dirOut[1] > 0x1000) {
-            dirOut[1] = 0x1000;
+        if (dirOut[1] > FX16_ONE) {
+            dirOut[1] = FX16_ONE;
         }
-        if (dirOut[1] < -0x1000) {
-            dirOut[1] = -0x1000;
+        if (dirOut[1] < -FX16_ONE) {
+            dirOut[1] = -FX16_ONE;
         }
-        if (dirOut[2] > 0x1000) {
-            dirOut[2] = 0x1000;
+        if (dirOut[2] > FX16_ONE) {
+            dirOut[2] = FX16_ONE;
         }
-        if (dirOut[2] < -0x1000) {
-            dirOut[2] = -0x1000;
+        if (dirOut[2] < -FX16_ONE) {
+            dirOut[2] = -FX16_ONE;
         }
     } else {
         *colorOut = 0xFFFF;

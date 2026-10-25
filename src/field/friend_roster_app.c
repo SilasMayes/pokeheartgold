@@ -70,7 +70,7 @@ typedef struct FriendRosterAppBlink {
 
 typedef struct FriendRosterAppData {
     BgConfig *bgConfig;
-    void *lastTouchMenuInput;
+    u16 *lastTouchMenuInput;
     FieldSystem *fieldSystem;
     int *unk_0C;
     SysTask *task;
@@ -127,8 +127,8 @@ static int FriendRosterApp_StartNameBlink(FriendRosterAppData *data, u8 x, u8 y,
 static void FriendRosterApp_GridNoop(void *data, int newTarget, int prevTarget);
 static void FriendRosterApp_OnCursorMove(void *data, int newTarget, int prevTarget);
 
-SysTask *FriendRosterApp_Init(BgConfig *bgConfig, void *lastTouchMenuInput, FieldSystem *fieldSystem, int *result);
-void FriendRosterApp_Exit(void *unused, SysTask *task);
+SysTask *FriendRosterApp_Init(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, int *result);
+void FriendRosterApp_Exit(BgConfig *bgConfig, SysTask *task);
 BOOL FriendRosterApp_IsExitDone(void);
 
 static const BgTemplate sFriendRosterAppBgTemplateSub0 = {
@@ -242,7 +242,7 @@ static const TouchscreenHitbox sFriendRosterAppPageArrowHitboxes[] = {
     { .rect = { TOUCHSCREEN_RECTLIST_END } },
 };
 
-SysTask *FriendRosterApp_Init(BgConfig *bgConfig, void *lastTouchMenuInput, FieldSystem *fieldSystem, int *result) {
+SysTask *FriendRosterApp_Init(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, int *result) {
     SysTask *task;
     FriendRosterAppData *data;
     NARC *narc;
@@ -272,7 +272,7 @@ SysTask *FriendRosterApp_Init(BgConfig *bgConfig, void *lastTouchMenuInput, Fiel
     return task;
 }
 
-void FriendRosterApp_Exit(void *unused, SysTask *task) {
+void FriendRosterApp_Exit(BgConfig *bgConfig, SysTask *task) {
     FriendRosterAppData *data = SysTask_GetData(task);
     FriendRosterApp_FreeGridInput(data);
     FriendRosterApp_FreeSprites(data);

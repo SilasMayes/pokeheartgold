@@ -4,6 +4,8 @@
 
 #include "global.h"
 
+#include "constants/items.h"
+
 #include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0435.h"
 #include "pokeathlon/pokeathlon_save.h"
@@ -95,7 +97,7 @@ typedef struct TouchMartAppData {
     u32 state;
     u32 unk_10;
     MartData *martData;
-    void *lastTouchMenuInput;
+    u16 *lastTouchMenuInput;
     FieldSystem *fieldSystem;
     u8 unk_20[0x10];
     u32 unk_30;
@@ -307,7 +309,7 @@ static TouchMartBgOp sTouchMartListTilemapEdits[TOUCH_MART_ITEMS_PER_PAGE][4] = 
      },
 };
 
-SysTask *TouchMartApp_Init(BgConfig *bgConfig, void *lastTouchMenuInput, FieldSystem *fieldSystem, MartData *martData) {
+SysTask *TouchMartApp_Init(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, MartData *martData) {
     SysTask *task;
     TouchMartAppData *data;
 
@@ -333,7 +335,7 @@ SysTask *TouchMartApp_Init(BgConfig *bgConfig, void *lastTouchMenuInput, FieldSy
     TouchMartApp_PrintPageNumber(data);
     TouchMartApp_PrintItemList(data);
     MartData_CreateSprites(data->martData);
-    reg_GXS_DB_DISPCNT &= 0xFFFF1FFF;
+    GXS_SetVisibleWnd(GX_WNDMASK_NONE);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
@@ -558,11 +560,10 @@ static int TouchMartApp_GetTouchedButton(TouchMartAppData *data, int buttonSet) 
 }
 
 static void TouchMartApp_SetupBgs(TouchMartAppData *data) {
-    vu32 *dispcnt = &reg_GXS_DB_DISPCNT;
     GXS_SetGraphicsMode(GX_BGMODE_0);
     GX_SetBankForSubBG(GX_VRAM_SUB_BG_32_H);
     GX_SetBankForSubOBJ(GX_VRAM_SUB_OBJ_16_I);
-    *dispcnt = (*dispcnt & 0xFFCFFFEF) | 0x10;
+    GXS_SetOBJVRamModeChar(GX_OBJVRAMMODE_CHAR_1D_32K);
     InitBgFromTemplate(data->bgConfig, GF_BG_LYR_SUB_0, &sTouchMartBgTemplates[0], GF_BG_TYPE_TEXT);
     InitBgFromTemplate(data->bgConfig, GF_BG_LYR_SUB_1, &sTouchMartBgTemplates[1], GF_BG_TYPE_TEXT);
     InitBgFromTemplate(data->bgConfig, GF_BG_LYR_SUB_2, &sTouchMartBgTemplates[2], GF_BG_TYPE_TEXT);
@@ -571,7 +572,7 @@ static void TouchMartApp_SetupBgs(TouchMartAppData *data) {
 }
 
 static void TouchMartApp_LoadGraphics(TouchMartAppData *data) {
-    reg_G2S_DB_BLDCNT = 0;
+    G2S_BlendNone();
     GfGfxLoader_GXLoadPal(NARC_a_0_6_0, 15, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_0_OFFSET, 0, HEAP_ID_8);
     GfGfxLoader_LoadCharData(NARC_a_0_6_0, 16, data->bgConfig, GF_BG_LYR_SUB_1, 0, 0, FALSE, HEAP_ID_8);
     TouchMartApp_LoadMainTilemap(data, TOUCH_MART_SCREEN_LIST);
@@ -681,7 +682,7 @@ static void TouchMartApp_PrintItemName(TouchMartAppData *data, Window *window, S
 static void TouchMartApp_PrintPrice(MessageFormat *messageFormat, MsgData *msgData, Window *window, s32 price, int martType) {
     int msgId = msg_0435_00018;
     String *string;
-    if ((u32)(martType - 3) <= 1) {
+    if ((u32)(martType - MART_TYPE_3) <= 1) {
         msgId = msg_0435_00019;
     }
     BufferIntegerAsString(messageFormat, 0, price, 4, PRINTING_MODE_LEFT_ALIGN, TRUE);
@@ -784,11 +785,11 @@ static void TouchMartApp_LoadListTilemap(TouchMartAppData *data, int itemCount) 
 }
 
 static BOOL TouchMartApp_IsItemPurchasable(MartData *martData, int index, int itemId) {
-    if (martData->martType == 3) {
-        return PokeathlonSave_IsDailyItemBought(martData->pokeathlonSave, index) == 0;
+    if (martData->martType == MART_TYPE_3) {
+        return !PokeathlonSave_IsDailyItemBought(martData->pokeathlonSave, index);
     }
-    if (martData->martType == 4) {
-        return PokeathlonSave_IsDataCardBought(martData->pokeathlonSave, index + ((itemId - 505) / 6) * 6) == 0;
+    if (martData->martType == MART_TYPE_4) {
+        return !PokeathlonSave_IsDataCardBought(martData->pokeathlonSave, index + ((itemId - ITEM_DATA_CARD_01) / 6) * 6);
     }
     return TRUE;
 }
@@ -1002,7 +1003,7 @@ static void TouchMartApp_PrintPurchaseDone(TouchMartAppData *data) {
         BufferPocketName(data->messageFormat, 1, GetItemAttr(data->martData->item, ITEMATTR_FIELD_POCKET, HEAP_ID_FIELD2));
         break;
     case MART_TYPE_3:
-        if (data->martData->item >= 485 && data->martData->item <= 491) {
+        if (data->martData->item >= ITEM_RED_APRICORN && data->martData->item <= ITEM_BLK_APRICORN) {
             template = NewString_ReadMsgData(data->msgData, msg_0435_00049);
         } else {
             template = NewString_ReadMsgData(data->msgData, msg_0435_00015);

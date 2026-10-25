@@ -123,14 +123,14 @@ void FollowMonBillboard_AddFacingOffset(LocalMapObject *object, u32 direction, V
 void FollowMonBillboard_SetShadowAnchored(LocalMapObject *object, BOOL anchored) {
     FollowMonBillboardWork *work;
     VecFx32 offset;
-    fx32 *p;
+    fx32 *coords;
 
     work = (FollowMonBillboardWork *)MapObject_GetDrawData(object);
     if (anchored) {
-        p = (fx32 *)&offset;
-        p[0] = 0;
-        p[1] = 0;
-        p[2] = 0;
+        coords = (fx32 *)&offset;
+        coords[0] = 0;
+        coords[1] = 0;
+        coords[2] = 0;
         work->shadowAnchored = TRUE;
         FieldShadow_OffsetByFacing(MapObject_GetFacingDirection(object), &offset);
         work->shadowOffsetX = offset.x / FX32_ONE;

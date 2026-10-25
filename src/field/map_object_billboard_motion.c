@@ -18,6 +18,7 @@
 #include "map_object.h"
 #include "map_object_behavior_internal.h"
 #include "map_object_movement_commands.h"
+#include "map_object_movement_commands_internal.h"
 #include "party.h"
 #include "pokemon.h"
 #include "script_pokemon_util.h"
@@ -85,7 +86,6 @@ typedef struct LadderBillboardMotions {
 } LadderBillboardMotions;
 
 extern const EffectModelOffset gEffectModelOffsets[];
-
 
 static void BillboardMotion_Stand(LocalMapObject *object, BillboardObject *billboard, BillboardDrawWork *work, int facing);
 static void BillboardMotion_AnimateHalfSpeed(LocalMapObject *object, BillboardObject *billboard, BillboardDrawWork *work, int facing);
@@ -254,7 +254,7 @@ static inline void BillboardMotion_Walk(LocalMapObject *object, BillboardObject 
     if (facing != work->facing) {
         BillboardObject_SetSequence(billboard, Facing_GetBillboardStandSequence(facing));
         BillboardObject_SetSequenceFrame(billboard, 0);
-    } else if (work->movement == 9) {
+    } else if (work->movement == MAP_OBJECT_ANIM_RUN) {
         BillboardObject_SetSequenceKeepAlignedFrameTo8(billboard, Facing_GetBillboardStandSequence(facing));
     }
     if (!MapObject_IsBillboardAnimPaused(object)) {
@@ -611,7 +611,7 @@ static void BillboardMotion_WalkSlightlyFast(LocalMapObject *object, BillboardOb
         BillboardObject_SetSequenceFrame(billboard, 0);
         work->step = 0;
     }
-    if (work->movement != 6) {
+    if (work->movement != MAP_OBJECT_ANIM_WALK_SLIGHTLY_FAST) {
         work->step = 0;
     }
     if (!MapObject_IsBillboardAnimPaused(object)) {
@@ -630,7 +630,7 @@ static void BillboardMotion_WalkSlightlyFaster(LocalMapObject *object, Billboard
         BillboardObject_SetSequenceFrame(billboard, 0);
         work->step = 0;
     }
-    if (work->movement != 7) {
+    if (work->movement != MAP_OBJECT_ANIM_WALK_SLIGHTLY_FASTER) {
         work->step = 0;
     }
     if (!MapObject_IsBillboardAnimPaused(object)) {
@@ -649,7 +649,7 @@ static void BillboardMotion_WalkEverSoSlightlyFast(LocalMapObject *object, Billb
         BillboardObject_SetSequenceFrame(billboard, 0);
         work->step = 0;
     }
-    if (work->movement != 8) {
+    if (work->movement != MAP_OBJECT_ANIM_WALK_EVER_SO_SLIGHTLY_FAST) {
         work->step = 0;
     }
     if (!MapObject_IsBillboardAnimPaused(object)) {
@@ -682,7 +682,7 @@ void BillboardDraw_UpdatePcWoman(LocalMapObject *object) {
 }
 
 static void BillboardMotion_PcWomanStand(LocalMapObject *object, BillboardObject *billboard, BillboardDrawWork *work, int facing) {
-    if (facing != work->facing || work->movement == 9) {
+    if (facing != work->facing || work->movement == MAP_OBJECT_ANIM_NURSE_BOW) {
         BillboardObject_SetSequence(billboard, Facing_GetBillboardStandSequence(facing));
         BillboardObject_SetSequenceFrame(billboard, 0);
     } else {
@@ -692,7 +692,7 @@ static void BillboardMotion_PcWomanStand(LocalMapObject *object, BillboardObject
 }
 
 static void BillboardMotion_PcWomanBow(LocalMapObject *object, BillboardObject *billboard, BillboardDrawWork *work, int facing) {
-    if (work->movement != 9) {
+    if (work->movement != MAP_OBJECT_ANIM_NURSE_BOW) {
         BillboardObject_SetSequence(billboard, 4);
         BillboardObject_SetSequenceFrame(billboard, 0);
     }
@@ -796,7 +796,7 @@ static void PlayerBillboardMotion_Stand(LocalMapObject *object, BillboardObject 
         work->held = 0;
         return;
     }
-    if (work->movement == 9) {
+    if (work->movement == MAP_OBJECT_ANIM_RUN) {
         work->held = 1;
         return;
     }
@@ -812,7 +812,7 @@ static void PlayerBillboardMotion_AnimateHalfSpeed(LocalMapObject *object, Billb
     if (facing != work->facing) {
         BillboardObject_SetSequence(billboard, Facing_GetBillboardStandSequence(facing));
         BillboardObject_SetSequenceFrame(billboard, 0);
-    } else if (work->movement == 9) {
+    } else if (work->movement == MAP_OBJECT_ANIM_RUN) {
         work->held = 1;
         return;
     } else if (work->held == 1) {
@@ -841,10 +841,10 @@ static void PlayerBillboardMotion_WalkSlightlyFast(LocalMapObject *object, Billb
         BillboardObject_SetSequence(billboard, Facing_GetBillboardStandSequence(facing));
         BillboardObject_SetSequenceFrame(billboard, 0);
         work->step = 0;
-    } else if (work->movement == 9) {
+    } else if (work->movement == MAP_OBJECT_ANIM_RUN) {
         BillboardObject_SetSequenceKeepAlignedFrameTo8(billboard, Facing_GetBillboardStandSequence(facing));
     }
-    if (work->movement != 6) {
+    if (work->movement != MAP_OBJECT_ANIM_WALK_SLIGHTLY_FAST) {
         work->step = 0;
     }
     if (!MapObject_IsBillboardAnimPaused(object)) {
@@ -862,10 +862,10 @@ static void PlayerBillboardMotion_WalkSlightlyFaster(LocalMapObject *object, Bil
         BillboardObject_SetSequence(billboard, Facing_GetBillboardStandSequence(facing));
         BillboardObject_SetSequenceFrame(billboard, 0);
         work->step = 0;
-    } else if (work->movement == 9) {
+    } else if (work->movement == MAP_OBJECT_ANIM_RUN) {
         BillboardObject_SetSequenceKeepAlignedFrameTo8(billboard, Facing_GetBillboardStandSequence(facing));
     }
-    if (work->movement != 7) {
+    if (work->movement != MAP_OBJECT_ANIM_WALK_SLIGHTLY_FASTER) {
         work->step = 0;
     }
     if (!MapObject_IsBillboardAnimPaused(object)) {
@@ -883,10 +883,10 @@ static void PlayerBillboardMotion_WalkEverSoSlightlyFast(LocalMapObject *object,
         BillboardObject_SetSequence(billboard, Facing_GetBillboardStandSequence(facing));
         BillboardObject_SetSequenceFrame(billboard, 0);
         work->step = 0;
-    } else if (work->movement == 9) {
+    } else if (work->movement == MAP_OBJECT_ANIM_RUN) {
         BillboardObject_SetSequenceKeepAlignedFrameTo8(billboard, Facing_GetBillboardStandSequence(facing));
     }
-    if (work->movement != 8) {
+    if (work->movement != MAP_OBJECT_ANIM_WALK_EVER_SO_SLIGHTLY_FAST) {
         work->step = 0;
     }
     if (!MapObject_IsBillboardAnimPaused(object)) {
@@ -903,7 +903,7 @@ static void PlayerBillboardMotion_Run(LocalMapObject *object, BillboardObject *b
     if (facing != work->facing) {
         BillboardObject_SetSequence(billboard, Facing_GetBillboardWalkSequence(facing));
         BillboardObject_SetSequenceFrame(billboard, 0);
-    } else if (work->movement != 9) {
+    } else if (work->movement != MAP_OBJECT_ANIM_RUN) {
         BillboardObject_SetSequenceKeepAlignedFrame(billboard, Facing_GetBillboardWalkSequence(facing), 4);
     }
     if (!MapObject_IsBillboardAnimPaused(object)) {
@@ -919,7 +919,7 @@ void PlayerDraw_UpdateCycling(LocalMapObject *object) {
         facing = MapObject_GetFacingDirection(object);
         movement = MapObject_GetAnimation(object);
         GF_ASSERT(movement < 12);
-        if (work->movement == 0 && movement != work->movement && work->held == 0) {
+        if (work->movement == MAP_OBJECT_ANIM_STAND && movement != work->movement && work->held == 0) {
             work->facing = -1;
         }
         sPlayerCyclingBillboardMotions[movement](object, billboard, work, facing);
@@ -951,10 +951,10 @@ static void PlayerBillboardMotion_CyclingStand(LocalMapObject *object, Billboard
 
 static void PlayerBillboardMotion_CyclingAnimateHalfSpeed(LocalMapObject *object, BillboardObject *billboard, PlayerDrawWork *work, int facing) {
     u32 sequence = MapObjectRender_GetFacingSequence(facing);
-    if (facing != work->facing || work->movement != 0) {
+    if (facing != work->facing || work->movement != MAP_OBJECT_ANIM_STAND) {
         BillboardObject_SetSequence(billboard, sequence);
         BillboardObject_SetSequenceFrame(billboard, 0);
-    } else if (work->movement != 10) {
+    } else if (work->movement != MAP_OBJECT_ANIM_JUMP_NEAR_SLOW) {
         BillboardObject_SetSequence(billboard, sequence);
         BillboardObject_SetSequenceFrame(billboard, 0);
     } else if (BillboardObject_GetSequence(billboard) != sequence) {
@@ -971,7 +971,7 @@ static void PlayerBillboardMotion_CyclingAnimateNormalSpeed(LocalMapObject *obje
     if (facing != work->facing) {
         BillboardObject_SetSequence(billboard, sequence);
         BillboardObject_SetSequenceFrame(billboard, 0);
-    } else if (work->movement != 11) {
+    } else if (work->movement != MAP_OBJECT_ANIM_JUMP_FARTHER) {
         BillboardObject_SetSequence(billboard, sequence);
         BillboardObject_SetSequenceFrame(billboard, 0);
     } else if (BillboardObject_GetSequence(billboard) != sequence) {

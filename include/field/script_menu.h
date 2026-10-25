@@ -6,7 +6,6 @@
 #include "list_menu.h"
 #include "message_format.h"
 #include "msgdata.h"
-#include "sys_task.h"
 
 // Script menus (multichoice, list, floor display) and the money, points and savings boxes.
 typedef struct ScriptMenu ScriptMenu;

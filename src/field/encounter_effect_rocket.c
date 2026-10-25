@@ -135,7 +135,7 @@ void EncounterEffect_TeamRocket(SysTask *task, EncounterEffectTask *effect) {
         effect->state++;
         break;
     case TEAM_ROCKET_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, -16, -16, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, -16, -16, &effect->fadeDone, 2);
         effect->state++;
         break;
     case TEAM_ROCKET_STATE_WAIT_FLASH:
@@ -181,7 +181,7 @@ void EncounterEffect_TeamRocket(SysTask *task, EncounterEffectTask *effect) {
         }
         break;
     case TEAM_ROCKET_STATE_END:
-        SetMasterBrightnessByColor(1, RGB_BLACK);
+        SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_BLACK);
         HBlankSystem_Start(effect->fieldSystem->mapSystems->hBlankSystem);
         if (effect->done != NULL) {
             *effect->done = TRUE;
@@ -279,6 +279,7 @@ enum RocketExecutiveState {
 // The trainer's picture slides in behind a window that opens from the middle of the screen,
 // with the trainer's name in a text window.
 #pragma opt_propagation off
+
 static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *effect, const RocketExecutiveIntroParams *params) {
     enum HeapID heapID = HEAP_ID_FIELD1;
     RocketExecutiveEffectWork *work = effect->work;
@@ -322,7 +323,7 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
             G2_SetWnd0Position(0, 96, 255, 96);
         }
         EncounterEffectHBlankWave_Init(&work->wave, HEAP_ID_FIELD1);
-        EncounterEffect_StartFlash(1, 16, -16, &effect->fadeDone, 1);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, 16, -16, &effect->fadeDone, 1);
         effect->state++;
         break;
     }
@@ -338,7 +339,7 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
         }
         break;
     case ROCKET_EXECUTIVE_STATE_START_OPEN_WINDOW:
-        reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xFFFF1FFF) | REG_GX_DISPCNT_W0_MASK;
+        GX_SetVisibleWnd(GX_WNDMASK_W0);
         ToggleBgLayer(GF_BG_LYR_MAIN_3, GF_PLANE_TOGGLE_ON);
         EncounterEffectQuadInterp_Init(&work->slide, 0, FX32_CONST(96), FX32_CONST(4), 4);
         effect->state++;
@@ -351,7 +352,7 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
             reg_G2_WIN0H = 255;
             reg_G2_WIN0V = (((96 - height) << 8) & 0xFF00) | ((u8)(height + 96));
         } else {
-            reg_GX_DISPCNT &= 0xFFFF1FFF;
+            GX_SetVisibleWnd(GX_WNDMASK_NONE);
             BgSetPosTextAndCommit(effect->fieldSystem->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_X, 0);
             work->timer = 13;
             effect->state++;
@@ -386,7 +387,7 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
         if ((work->position.x >> FX32_SHIFT) <= 130) {
             work->position.x = FX32_CONST(128);
             if (blendDone == TRUE) {
-                StartBrightnessTransition(8, 0, 16, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ), 1);
+                StartBrightnessTransition(8, 0, 16, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ), SCREEN_MASK_MAIN);
                 BG_SetMaskColor(GF_BG_LYR_MAIN_0, RGB(5, 5, 5));
                 ToggleBgLayer(GF_BG_LYR_MAIN_0, GF_PLANE_TOGGLE_OFF);
                 effect->state++;
@@ -400,7 +401,7 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
         break;
     }
     case ROCKET_EXECUTIVE_STATE_WAIT_BRIGHTNESS:
-        if (IsBrightnessTransitionActive(1)) {
+        if (IsBrightnessTransitionActive(SCREEN_MASK_MAIN)) {
             work->timer = 16;
             effect->state++;
         }
@@ -426,7 +427,7 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
         }
         Sprite_SetMatrix(work->sprite, &work->position);
         if (EncounterEffectQuadInterp_Update(&work->slide)) {
-            reg_GXS_DB_DISPCNT &= 0xFFFEFFFF;
+            GXS_DispOff();
             BG_SetMaskColor(GF_BG_LYR_SUB_0, RGB_BLACK);
             BeginNormalPaletteFade(0, 0, 0, RGB_WHITE, 4, 1, HEAP_ID_FIELD1);
             effect->state++;
@@ -461,4 +462,5 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
         SpriteList_RenderAndAnimateSprites(work->spriteManager.spriteList);
     }
 }
+
 #pragma opt_propagation reset

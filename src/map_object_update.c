@@ -342,7 +342,7 @@ static void MapObject_SpawnFootprints(LocalMapObject *object, u8 behavior, u8 pr
 
 static void MapObject_UpdateShallowWaterRipple(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags) {
     if (MetatileBehavior_IsShallowWater(behavior) == 1) {
-        if (MapObject_CheckFlag26(object) == 0) {
+        if (!MapObject_CheckFlag26(object)) {
             ShallowWaterRipple_Spawn(object, 1);
             MapObject_SetFlag26(object, TRUE);
         }
@@ -653,7 +653,7 @@ static void MapObject_UpdateReflection(LocalMapObject *object, u8 behavior, u8 p
 static void MapObject_UpdateOnBridgeFlag(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags) {
     if (MetatileBehavior_IsBridgeStart(behavior) == 1) {
         MapObject_SetFlag28(object, TRUE);
-    } else if (MapObject_CheckFlag28(object) == 1 && MetatileBehavior_IsBridge(behavior) == 0) {
+    } else if (MapObject_CheckFlag28(object) == 1 && !MetatileBehavior_IsBridge(behavior)) {
         MapObject_SetFlag28(object, FALSE);
     }
 }

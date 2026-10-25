@@ -11,7 +11,7 @@
 
 typedef struct PoisonEffect PoisonEffect;
 
-void *PoisonEffect_New(enum HeapID heapID, HBlankSystem *hBlankSystem);
+PoisonEffect *PoisonEffect_New(enum HeapID heapID, HBlankSystem *hBlankSystem);
 void PoisonEffect_Delete(PoisonEffect *effect);
 void FieldSystem_DoPoisonEffect(PoisonEffect *effect);
 

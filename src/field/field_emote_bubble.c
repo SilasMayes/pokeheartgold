@@ -265,7 +265,7 @@ static void EmoteBubbleEffect_Update(FieldEffect *effect, void *state) {
     result.x = tileOffset.x + (drawOffset.x + (position.x + facing.x));
     result.y = tileOffset.y + (position.y + drawOffset.y);
     result.z = tileOffset.z + (drawOffset.z + (position.z + facing.z));
-    result.y += 0x20000;
+    result.y += FX32_CONST(32);
     result.z += FX32_ONE;
     switch (work->state) {
     case EMOTE_BUBBLE_STATE_RISE:

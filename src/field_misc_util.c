@@ -236,8 +236,8 @@ static BOOL Task_SpinMapObject(TaskManager *taskManager) {
 
     TaskManager_GetFieldSystem(taskManager);
     environment = TaskManager_GetEnvironment(taskManager);
-    position.x = 0x8000;
-    position.z = 0x8000;
+    position.x = FX32_CONST(8);
+    position.z = FX32_CONST(8);
     radius = environment->xRadius;
     product = GF_SinDegNoWrap(environment->angle);
     product *= radius;

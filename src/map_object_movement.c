@@ -295,7 +295,7 @@ static void RandomLookMovement_Init(LocalMapObject *object, u32 value) {
     RandomLookMovementState *state = (RandomLookMovementState *)MapObject_InitMovementData(object, sizeof(RandomLookMovementState));
     state->delay = DirectionList_GetRandom(sRandomLookDelays, -1);
     state->tableId = value;
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_ClearSingleMovement(object);
 }
 
@@ -379,7 +379,7 @@ static void RandomWalkMovement_Init(LocalMapObject *object, u32 heldMovement, u3
     state->restrictToRange = restrictToRange;
     state->heldMovement = heldMovement;
     state->directionTable = directionTable;
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_ClearSingleMovement(object);
 }
 
@@ -508,7 +508,7 @@ static BOOL MapObject_IsWithinMovementBounds(LocalMapObject *object, int directi
 static void FaceDirectionMovement_Init(LocalMapObject *object, u32 direction) {
     FaceDirectionMovementState *state = (FaceDirectionMovementState *)MapObject_InitMovementData(object, sizeof(FaceDirectionMovementState));
     state->direction = direction;
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_ClearSingleMovement(object);
     MapObject_SetPreviousCoordsToCurrent(object);
 }
@@ -544,7 +544,7 @@ void FaceDirectionMovement_InitRight(LocalMapObject *object) {
 static void SpinMovement_Init(LocalMapObject *object, u32 order) {
     SpinMovementState *state = (SpinMovementState *)MapObject_InitMovementData(object, sizeof(SpinMovementState));
     state->order = order;
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_ClearSingleMovement(object);
     MapObject_SetPreviousCoordsToCurrent(object);
 }
@@ -750,7 +750,7 @@ static BOOL BackAndForthMovement_Step(LocalMapObject *mapObject, void *data) {
         if (initialX == x && initialZ == z) {
             direction = GetOppositeDirection(MapObject_GetNextFacingDirection(mapObject));
             MapObject_SetNextFacingDirection(mapObject, direction);
-            if (MapObject_SpinsWhileWalking(mapObject) == 0) {
+            if (!MapObject_SpinsWhileWalking(mapObject)) {
                 MapObject_SetFacingDirection(mapObject, direction);
             }
             state->turn = 0;

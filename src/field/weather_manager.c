@@ -78,9 +78,9 @@ static void WeatherFogChange_Init(WeatherFogChange *fogChange, FogData *fog, s32
 static BOOL WeatherFogChange_Step(WeatherFogChange *fogChange);
 static void WeatherFogTableFade_Clear(WeatherFogTableFade *tableFade);
 static void WeatherFogTableFade_Start(WeatherFogTableFade *tableFade, s32 framesPerStep, s32 direction);
-static s32 WeatherFogTableFade_Update(WeatherFogTableFade *tableFade);
+static BOOL WeatherFogTableFade_Update(WeatherFogTableFade *tableFade);
 static void WeatherFogTableFade_SetFull(WeatherFogTableFade *tableFade);
-static s32 WeatherFogTableFade_Step(WeatherFogTableFade *tableFade);
+static BOOL WeatherFogTableFade_Step(WeatherFogTableFade *tableFade);
 static void WeatherFogTableFade_BuildTable(WeatherFogTableFade *tableFade);
 static void Weather_SpawnAndPreAdvance(WeatherWork *work, WeatherSpawnFunc spawnFunc, int count, int groupSize, int advanceStep, WeatherObjectFunc updateFunc);
 static WeatherObject *WeatherSystem_GetFreeObject(WeatherWork *work);
@@ -158,6 +158,8 @@ enum WeatherFlashEndStep {
 };
 
 #define WEATHER_MAX_OBJECTS 64
+
+#define WEATHER_FOG_FADE_STEPS 0x7F // steps of a fog density table fade
 
 struct WeatherWork {
     WeatherSystem *weatherSystem;
@@ -370,13 +372,13 @@ static BOOL Weather_ShouldOverlapChange(u32 weather, u32 nextWeather) {
 }
 
 static void WeatherDraw_Init(WeatherDraw *weatherDraw) {
-    GF_InitG2dRenderer(&weatherDraw->instance, 0xFFFFF000);
+    GF_InitG2dRenderer(&weatherDraw->instance, -FX32_ONE);
 
     NNSG2dViewRect rect;
     rect.posTopLeft.x = 0;
     rect.posTopLeft.y = 0;
-    rect.sizeView.x = 0xFF000;
-    rect.sizeView.y = 0xC0000;
+    rect.sizeView.x = FX32_CONST(255);
+    rect.sizeView.y = FX32_CONST(192);
 
     OamManager_InitRenderSurface(&weatherDraw->surface, &rect, NNS_G2D_VRAM_TYPE_2DMAIN, &weatherDraw->instance);
 
@@ -386,13 +388,13 @@ static void WeatherDraw_Init(WeatherDraw *weatherDraw) {
 
     weatherDraw->header = Heap_Alloc(HEAP_ID_FIELD1, 4 * GF2DGfxResHeader_sizeof());
 
-    Weather_Init2DGfxRes(weatherDraw->header, 0, 0x39);
-    Weather_Init2DGfxRes(weatherDraw->header, 1, 0x3A);
-    Weather_Init2DGfxRes(weatherDraw->header, 2, 0x37);
-    Weather_Init2DGfxRes(weatherDraw->header, 3, 0x38);
+    Weather_Init2DGfxRes(weatherDraw->header, GF_GFX_RES_TYPE_CHAR, 0x39);
+    Weather_Init2DGfxRes(weatherDraw->header, GF_GFX_RES_TYPE_PLTT, 0x3A);
+    Weather_Init2DGfxRes(weatherDraw->header, GF_GFX_RES_TYPE_CELL, 0x37);
+    Weather_Init2DGfxRes(weatherDraw->header, GF_GFX_RES_TYPE_ANIM, 0x38);
 
     SpriteListParam param;
-    param.num = 0x40;
+    param.num = WEATHER_MAX_OBJECTS;
     param.rendererInstance = &weatherDraw->instance;
     param.heapID = HEAP_ID_FIELD1;
 
@@ -430,16 +432,16 @@ static void WeatherDraw_Delete(WeatherDraw *weatherDraw) {
 }
 
 static void WeatherDraw_SetSpriteMatrix(Sprite *sprite, VecFx32 *matrix) {
-    if (matrix->x > 0x13F000) {
-        matrix->x %= 0x13F000;
-    } else if (matrix->x < (int)0xFFFC0000) {
-        matrix->x += 0x13F000;
+    if (matrix->x > FX32_CONST(319)) {
+        matrix->x %= FX32_CONST(319);
+    } else if (matrix->x < -FX32_CONST(64)) {
+        matrix->x += FX32_CONST(319);
     }
 
-    if (matrix->y > 0x100000) {
-        matrix->y %= 0x100000;
-    } else if (matrix->y < (int)0xFFFC0000) {
-        matrix->y += 0x100000;
+    if (matrix->y > FX32_CONST(256)) {
+        matrix->y %= FX32_CONST(256);
+    } else if (matrix->y < -FX32_CONST(64)) {
+        matrix->y += FX32_CONST(256);
     }
 
     Sprite_SetMatrix(sprite, matrix);
@@ -815,15 +817,15 @@ static SpriteResource *Weather_AddResObjFromOpenNarc(GF_2DGfxResHeader *headerLi
 
 static void WeatherSystem_FreeSpriteResources(WeatherSystem *weatherSystem, s32 headerIndex, WeatherSpriteResources *spriteResources) {
     if (headerIndex != WEATHER_GFX_NONE) {
-        if (spriteResources->charResObj[GF_GFX_RES_TYPE_CHAR] != 0) {
+        if (spriteResources->charResObj[GF_GFX_RES_TYPE_CHAR] != NULL) {
             SpriteTransfer_DeleteCharTransferTask(spriteResources->charResObj[GF_GFX_RES_TYPE_CHAR]);
         }
-        if (spriteResources->charResObj[GF_GFX_RES_TYPE_PLTT] != 0) {
+        if (spriteResources->charResObj[GF_GFX_RES_TYPE_PLTT] != NULL) {
             SpriteTransfer_DeletePlttTransferTask(spriteResources->charResObj[GF_GFX_RES_TYPE_PLTT]);
         }
 
         for (int i = 0; i < 4; i++) {
-            if (spriteResources->charResObj[i] != 0) {
+            if (spriteResources->charResObj[i] != NULL) {
                 DestroySingle2DGfxResObj(weatherSystem->weatherDraw.resMan[i], spriteResources->charResObj[i]);
             }
         }
@@ -832,7 +834,7 @@ static void WeatherSystem_FreeSpriteResources(WeatherSystem *weatherSystem, s32 
 
 static BOOL WeatherSystem_Init(WeatherSystem *weatherSystem, int weather) {
     WeatherEntry *entry = &weatherSystem->entries[weather];
-    if (entry->work == 0) {
+    if (entry->work == NULL) {
         if (!WeatherSystem_AllocWork(weatherSystem, entry)) {
             return FALSE;
         }
@@ -876,7 +878,7 @@ static BOOL WeatherSystem_LoadAsync(WeatherSystem *weatherSystem, int weather) {
 static BOOL WeatherSystem_Start(WeatherSystem *weatherSystem, int weather, u32 state, u32 fogMode) {
     WeatherEntry *entry = &weatherSystem->entries[weather];
 
-    if (entry->spriteResId != WEATHER_GFX_NONE && entry->weatherSpriteResources == 0) {
+    if (entry->spriteResId != WEATHER_GFX_NONE && entry->weatherSpriteResources == NULL) {
         return FALSE;
     }
 
@@ -1214,15 +1216,15 @@ static void WeatherSystem_LoadBgScreen(WeatherSystem *weatherSystem, u16 bgGfxId
 }
 
 static void WeatherObject_InitData(WeatherObject *object, int size) {
-    GF_ASSERT(object->data == 0);
+    GF_ASSERT(object->data == NULL);
     GF_ASSERT(size > 0);
-    GF_ASSERT(size <= 0x28u);
+    GF_ASSERT(size <= sizeof(object->dataBuffer));
     object->data = object->dataBuffer;
 }
 
 static void WeatherObject_ClearData(WeatherObject *object) {
     object->data = NULL;
-    memset(object->dataBuffer, 0, 10 * sizeof(u32));
+    memset(object->dataBuffer, 0, sizeof(object->dataBuffer));
 }
 
 static void *WeatherSystem_AddObject(WeatherWork *work, int size) {
@@ -1254,7 +1256,7 @@ static void WeatherSystem_InitSpriteResourcesHeader(SpriteResourcesHeader *heade
         resID[i] = GF2DGfxResObj_GetResID(spriteResources->charResObj[i]);
     }
 
-    CreateSpriteResourcesHeader(header, resID[0], resID[1], resID[2], resID[3], -1, -1, transfer, priority, weatherSystem->weatherDraw.resMan[0], weatherSystem->weatherDraw.resMan[1], weatherSystem->weatherDraw.resMan[2], weatherSystem->weatherDraw.resMan[3], NULL, NULL);
+    CreateSpriteResourcesHeader(header, resID[GF_GFX_RES_TYPE_CHAR], resID[GF_GFX_RES_TYPE_PLTT], resID[GF_GFX_RES_TYPE_CELL], resID[GF_GFX_RES_TYPE_ANIM], -1, -1, transfer, priority, weatherSystem->weatherDraw.resMan[GF_GFX_RES_TYPE_CHAR], weatherSystem->weatherDraw.resMan[GF_GFX_RES_TYPE_PLTT], weatherSystem->weatherDraw.resMan[GF_GFX_RES_TYPE_CELL], weatherSystem->weatherDraw.resMan[GF_GFX_RES_TYPE_ANIM], NULL, NULL);
 }
 
 static void WeatherObject_Delete(WeatherObject *object) {
@@ -1484,21 +1486,21 @@ static void WeatherFog_Start(WeatherFogChange *fogChange, WeatherFogTableFade *t
             WeatherFogTableFade_Clear(tableFade);
             WeatherFogTableFade_Start(tableFade, framesPerStep, 1);
         } else if (fogMode == WEATHER_FOG_BLEND) {
-            WeatherFogChange_Init(fogChange, fog, fogSlope, fogOffset, rgb, 0x7F * framesPerStep);
+            WeatherFogChange_Init(fogChange, fog, fogSlope, fogOffset, rgb, WEATHER_FOG_FADE_STEPS * framesPerStep);
         }
     }
 }
 
 static BOOL WeatherFog_Update(WeatherFogChange *fogChange, WeatherFogTableFade *tableFade, s32 fogMode) {
-    s32 done;
+    BOOL done;
 
-    done = 1;
+    done = TRUE;
     if (fogMode != WEATHER_FOG_NONE) {
         if (fogMode == WEATHER_FOG_TABLE_FADE) {
             done = WeatherFogTableFade_Update(tableFade);
         } else if (fogMode == WEATHER_FOG_BLEND) {
             if (!WeatherFogChange_Step(fogChange)) {
-                done = 0;
+                done = FALSE;
             }
         }
     }
@@ -1543,7 +1545,7 @@ static void WeatherFogTableFade_Clear(WeatherFogTableFade *tableFade) {
 }
 
 static void WeatherFogTableFade_Start(WeatherFogTableFade *tableFade, s32 framesPerStep, s32 direction) {
-    tableFade->stepsLeft = 0x7F;
+    tableFade->stepsLeft = WEATHER_FOG_FADE_STEPS;
     tableFade->frameTimer = 0;
     tableFade->framesPerStep = framesPerStep;
     if (direction == 1) {
@@ -1553,8 +1555,8 @@ static void WeatherFogTableFade_Start(WeatherFogTableFade *tableFade, s32 frames
     tableFade->direction = -1;
 }
 
-static s32 WeatherFogTableFade_Update(WeatherFogTableFade *tableFade) {
-    s32 done;
+static BOOL WeatherFogTableFade_Update(WeatherFogTableFade *tableFade) {
+    BOOL done;
 
     done = WeatherFogTableFade_Step(tableFade);
     if (tableFade->frameTimer == 0) {
@@ -1572,16 +1574,16 @@ static void WeatherFogTableFade_SetFull(WeatherFogTableFade *tableFade) {
     Fog_SetTable(tableFade->fog, tableFade->table);
 }
 
-static s32 WeatherFogTableFade_Step(WeatherFogTableFade *tableFade) {
+static BOOL WeatherFogTableFade_Step(WeatherFogTableFade *tableFade) {
     s32 stepsLeft;
     s32 frameTimer;
-    s32 done;
+    BOOL done;
 
-    done = 0;
+    done = FALSE;
     if (tableFade->direction == 0) {
-        done = 1;
+        done = TRUE;
     } else if ((s32)tableFade->stepsLeft <= 0) {
-        done = 1;
+        done = TRUE;
     } else {
         frameTimer = tableFade->frameTimer + 1;
         tableFade->frameTimer = frameTimer;
@@ -1591,7 +1593,7 @@ static s32 WeatherFogTableFade_Step(WeatherFogTableFade *tableFade) {
             stepsLeft = tableFade->stepsLeft - 1;
             tableFade->stepsLeft = stepsLeft;
             if (stepsLeft <= 0) {
-                done = 1;
+                done = TRUE;
             }
         }
     }
@@ -1604,13 +1606,13 @@ static void WeatherFogTableFade_BuildTable(WeatherFogTableFade *tableFade) {
     int steps;
 
     if (tableFade->direction < 0) {
-        steps = 0x7F - tableFade->stepsLeft;
+        steps = WEATHER_FOG_FADE_STEPS - tableFade->stepsLeft;
     } else {
         steps = tableFade->stepsLeft;
     }
 
     minIndex = steps / 4;
-    for (i = 31; i > minIndex; i--) {
+    for (i = FOG_TABLE_ENTRIES - 1; i > minIndex; i--) {
         tableFade->table[i] = (i - minIndex) * 4;
     }
 }
@@ -1701,7 +1703,7 @@ static void WeatherTask_Rain(SysTask *task, void *data) {
         if (taskData->data[0] > 0) {
             taskData->data[0]--;
         } else {
-            int fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
+            BOOL fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
             if (fogDone == TRUE && rampDone == WEATHER_SPAWN_RAMP_DONE) {
                 work->state = WEATHER_STATE_RUNNING;
             }
@@ -1744,7 +1746,7 @@ static void WeatherTask_Rain(SysTask *task, void *data) {
         if (taskData->data[0] > 0) {
             taskData->data[0]--;
         } else {
-            int fogFadeDone;
+            BOOL fogFadeDone;
             if (work->fogMode) {
                 fogFadeDone = WeatherFogTableFade_Update(&taskData->fogTableFade);
             } else {
@@ -1864,7 +1866,7 @@ static void WeatherTask_Snow(SysTask *task, void *data) {
         if (taskData->data[0] > 0) {
             taskData->data[0]--;
         } else {
-            int fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
+            BOOL fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
             if (fogDone == TRUE && rampDone == WEATHER_SPAWN_RAMP_DONE) {
                 work->state = WEATHER_STATE_RUNNING;
             }
@@ -1906,7 +1908,7 @@ static void WeatherTask_Snow(SysTask *task, void *data) {
         if (taskData->data[0] > 0) {
             taskData->data[0]--;
         } else {
-            int fogFadeDone;
+            BOOL fogFadeDone;
             if (work->fogMode) {
                 fogFadeDone = WeatherFogTableFade_Update(&taskData->fogTableFade);
             } else {
@@ -2030,7 +2032,7 @@ static void WeatherTask_DiamondDust(SysTask *task, void *data) {
         if (taskData->data[0] > 0) {
             taskData->data[0]--;
         } else {
-            int fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
+            BOOL fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
             if (fogDone == TRUE && rampDone == WEATHER_SPAWN_RAMP_DONE) {
                 work->state = WEATHER_STATE_RUNNING;
             }
@@ -2070,7 +2072,7 @@ static void WeatherTask_DiamondDust(SysTask *task, void *data) {
         if (taskData->data[0] > 0) {
             taskData->data[0]--;
         } else {
-            int fogFadeDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
+            BOOL fogFadeDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
 
             if (fogFadeDone == TRUE && ret == WEATHER_SPAWN_RAMP_DONE) {
                 if (work->linkedListDummy.next == &work->linkedListDummy) {
@@ -2165,7 +2167,7 @@ static void WeatherTask_RunFogOnly(WeatherWork *work, WeatherFogTaskData *taskDa
         work->state = WEATHER_STATE_FADE_IN;
         break;
     case WEATHER_STATE_FADE_IN:
-        int fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
+        BOOL fogDone = WeatherFog_Update(&taskData->fogChange, &taskData->fogTableFade, work->fogMode);
         if (fogDone == TRUE) {
             work->state = WEATHER_STATE_RUNNING;
         }
@@ -2220,8 +2222,8 @@ static void WeatherTask_Mist(SysTask *task, void *data) {
         work->state = WEATHER_STATE_FADE_IN;
         break;
     case WEATHER_STATE_FADE_IN:
-        int fogDone = WeatherFogTableFade_Update(&taskData->fogTableFade);
-        int blendDone = WeatherLerp_Step(&taskData->blendLerp);
+        BOOL fogDone = WeatherFogTableFade_Update(&taskData->fogTableFade);
+        BOOL blendDone = WeatherLerp_Step(&taskData->blendLerp);
         Weather_SetBlendAlpha(taskData->blendLerp.value, 16 - taskData->blendLerp.value);
         if (fogDone == TRUE && blendDone == TRUE) {
             work->state = WEATHER_STATE_RUNNING;
@@ -2247,14 +2249,14 @@ static void WeatherTask_Mist(SysTask *task, void *data) {
         }
         break;
     case WEATHER_STATE_FADE_OUT:
-        int fogOutDone;
+        BOOL fogOutDone;
         if (work->fogMode != WEATHER_FOG_NONE) {
             fogOutDone = WeatherFogTableFade_Update(&taskData->fogTableFade);
         } else {
-            fogOutDone = 1;
+            fogOutDone = TRUE;
         }
 
-        int blendOutDone = WeatherLerp_Step(&taskData->blendLerp);
+        BOOL blendOutDone = WeatherLerp_Step(&taskData->blendLerp);
         Weather_SetBlendAlpha(taskData->blendLerp.value, 16 - taskData->blendLerp.value);
         if (fogOutDone == 1 && blendOutDone == 1) {
             work->state = WEATHER_STATE_END;

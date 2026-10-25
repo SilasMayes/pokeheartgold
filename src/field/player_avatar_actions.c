@@ -24,6 +24,7 @@
 #include "field_rock_climb_effect.h"
 #include "field_surf_mount.h"
 #include "field_system.h"
+#include "field_terrain.h"
 #include "follow_mon.h"
 #include "heap.h"
 #include "map_object.h"

@@ -8,7 +8,6 @@
 #include "filesystem.h"
 #include "gf_3d_loader.h"
 #include "heap.h"
-#include "sys_task_api.h"
 
 #include "field/field_effect_manager.h"
 #include "field/resource_bank.h"

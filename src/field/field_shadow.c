@@ -19,7 +19,6 @@
 
 // Map object ground shadows: four shadow models whose alpha and scale follow the time of day.
 
-
 enum FieldShadowState {
     FIELD_SHADOW_STATE_INIT,
     FIELD_SHADOW_STATE_WAIT,
@@ -146,7 +145,7 @@ static void FieldShadow_GetScale(FieldShadow *shadow, VecFx32 *dest) {
 }
 
 static int FieldShadow_FxToAlpha(fx32 value) {
-    return value / 0x1000;
+    return value / FX32_ONE;
 }
 
 static void FieldShadow_SetTimeOfDayParams(FieldShadow *shadow, int timeOfDay) {
@@ -324,9 +323,9 @@ static void FieldShadowEffect_Draw(FieldEffect *effect, void *state) {
     shadow = work->args.shadow;
     FieldShadow_GetScale(shadow, &scale);
     FieldEffect_GetPosition(effect, &pos);
-    pos.x -= 0x800;
-    pos.y -= 0x4000;
-    pos.z += 0x1000;
+    pos.x -= FX32_CONST(0.5);
+    pos.y -= FX32_CONST(4);
+    pos.z += FX32_ONE;
     RenderObj_Draw(&shadow->renderObjs[0], &pos, &scale, &mtx);
 }
 
@@ -350,18 +349,18 @@ static void FieldShadowEffect_DrawFollowMon(FieldEffect *effect, void *state) {
     FieldShadow_GetScale(shadow, &scale);
     if (FollowMonBillboard_IsShadowFollowing(object)) {
         FieldEffect_GetPosition(effect, &pos);
-        pos.x -= 0x800;
-        pos.y -= 0x4000;
-        pos.z += 0x1000;
+        pos.x -= FX32_CONST(0.5);
+        pos.y -= FX32_CONST(4);
+        pos.z += FX32_ONE;
         FieldShadow_OffsetByFacing(MapObject_GetFacingDirection(object), &pos);
     } else {
         MapObject_CopyPositionVector(object, &pos);
         FollowMonBillboard_GetShadowOffset(object, &offset);
         pos.x += offset.x;
         pos.z += offset.z;
-        pos.x -= 0x800;
-        pos.y -= 0x4000;
-        pos.z += 0x1000;
+        pos.x -= FX32_CONST(0.5);
+        pos.y -= FX32_CONST(4);
+        pos.z += FX32_ONE;
     }
     RenderObj_Draw(renderObj, &pos, &scale, &mtx);
 }
@@ -406,9 +405,9 @@ static void FieldShadowEffect_DrawFriendShadow(FieldEffect *effect, void *state)
         FieldShadow *shadow = work->args.shadow;
         NNSG3dRenderObj *renderObj = &shadow->renderObjs[index];
         FieldEffect_GetPosition(effect, &pos);
-        pos.x -= 0x800;
-        pos.y -= 0x4000;
-        pos.z += 0x1000;
+        pos.x -= FX32_CONST(0.5);
+        pos.y -= FX32_CONST(4);
+        pos.z += FX32_ONE;
         RenderObj_DrawAt(renderObj, &pos);
     }
 }
@@ -416,16 +415,16 @@ static void FieldShadowEffect_DrawFriendShadow(FieldEffect *effect, void *state)
 void FieldShadow_OffsetByFacing(u32 direction, VecFx32 *pos) {
     switch (direction) {
     case DIR_NORTH:
-        pos->z += 0x2000;
+        pos->z += FX32_CONST(2);
         break;
     case DIR_SOUTH:
-        pos->z -= 0x2000;
+        pos->z -= FX32_CONST(2);
         break;
     case DIR_WEST:
-        pos->x += 0x6000;
+        pos->x += FX32_CONST(6);
         break;
     case DIR_EAST:
-        pos->x -= 0x6000;
+        pos->x -= FX32_CONST(6);
         break;
     }
 }

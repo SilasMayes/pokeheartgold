@@ -7,8 +7,8 @@
 #include "field/field_camera_zoom.h"
 #include "field/field_effect_helpers.h"
 #include "field/field_move_cut_in.h"
-#include "field/map_prop_anims.h"
 #include "field/fly_landing_effect.h"
+#include "field/map_prop_anims.h"
 #include "field/sprite_gfx_manager.h"
 #include "overlay_2/overlay_02_field_utils.h"
 
@@ -208,7 +208,7 @@ void Task_FieldMoveCutIn_UpdateWindow(SysTask *task, void *data) {
     if (!cutIn->windowUpdate) {
         return;
     }
-    reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xFFFF1FFF) | (cutIn->windowEnabled << 13);
+    GX_SetVisibleWnd(cutIn->windowEnabled);
     winin = (reg_G2_WININ & ~0x3f) | cutIn->windowInsidePlanes;
     if (cutIn->windowInsideEffects) {
         winin |= 0x20;
@@ -452,12 +452,12 @@ void FieldMoveCutIn_StartFlyerTakeOff(FieldMoveCutIn *cutIn) {
     flyer->offset.x = 0;
     flyer->offset.y = 0;
     flyer->offset.z = 0;
-    flyer->rotation = 0x3c000;
+    flyer->rotation = FX32_CONST(60);
     flyer->scale = scale;
-    flyer->scaleSpeed = 0x200;
-    flyer->angle = 0xb4000;
+    flyer->scaleSpeed = FX32_CONST(0.125);
+    flyer->angle = FX32_CONST(180);
     flyer->distance = 0;
-    flyer->speed = 0x2000;
+    flyer->speed = FX32_CONST(2);
     Sprite_SetMatrix(flyer->sprite, &origin);
     Sprite_SetAffineScale(flyer->sprite, &scale);
     Sprite_SetAffineZRotation(flyer->sprite, GF_DegreeToSinCosIdx((u16)(flyer->rotation / FX32_ONE)));
@@ -469,12 +469,12 @@ BOOL CutInFlyer_TakeOff(CutInFlyer *flyer) {
     VecFx32 mtx;
     flyer->distance = flyer->distance + flyer->speed;
     if (flyer->speed < FX32_CONST(16)) {
-        flyer->speed += 0x4000;
+        flyer->speed += FX32_CONST(4);
     }
     flyer->offset.x = GF_CosDeg(0x13B) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
     if (flyer->angle / FX32_ONE < 270) {
-        flyer->angle += 0x4000;
+        flyer->angle += FX32_CONST(4);
     }
     flyer->scale.x = flyer->scale.x + flyer->scaleSpeed;
     if (flyer->scale.x > FX32_ONE) {
@@ -485,7 +485,7 @@ BOOL CutInFlyer_TakeOff(CutInFlyer *flyer) {
         flyer->scale.y = FX32_ONE;
     }
     Sprite_SetAffineScale(sprite, &flyer->scale);
-    flyer->rotation -= 0x6000;
+    flyer->rotation -= FX32_CONST(6);
     if (flyer->rotation / FX32_ONE < 0) {
         flyer->rotation = 0;
     }
@@ -523,12 +523,12 @@ void FieldMoveCutIn_StartFlyerPickUp(FieldMoveCutIn *cutIn) {
     flyer->offset.x = 0;
     flyer->offset.y = 0;
     flyer->offset.z = 0;
-    flyer->rotation = 0x13b000;
+    flyer->rotation = FX32_CONST(315);
     flyer->scale = scale;
     flyer->scaleSpeed = 0x100;
-    flyer->angle = 0xe1000;
-    flyer->distance = 0xc0000;
-    flyer->speed = 0x20000;
+    flyer->angle = FX32_CONST(225);
+    flyer->distance = FX32_CONST(192);
+    flyer->speed = FX32_CONST(32);
     flyer->offset.x = GF_CosDeg(0x13b) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
     position.x = flyer->origin.x + flyer->offset.x;
@@ -565,7 +565,7 @@ BOOL CutInFlyer_SwoopDown(CutInFlyer *flyer) {
         flyer->distance = 0;
     }
     if (flyer->speed > FX32_CONST(0.5)) {
-        flyer->speed -= 0x1800;
+        flyer->speed -= FX32_CONST(1.5);
     }
     if (flyer->speed < FX32_ONE) {
         flyer->speed = FX32_ONE;
@@ -573,20 +573,20 @@ BOOL CutInFlyer_SwoopDown(CutInFlyer *flyer) {
     flyer->offset.x = GF_CosDeg(0x13b) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
     if (flyer->angle / FX32_ONE < 270) {
-        flyer->angle += 0x4000;
+        flyer->angle += FX32_CONST(4);
     }
     flyer->scale.x += flyer->scaleSpeed;
     if (flyer->scale.x > FX32_CONST(1.5)) {
-        flyer->scale.x = 0x1800;
+        flyer->scale.x = FX32_CONST(1.5);
     }
     flyer->scale.y += flyer->scaleSpeed;
     if (flyer->scale.y > FX32_CONST(1.5)) {
-        flyer->scale.y = 0x1800;
+        flyer->scale.y = FX32_CONST(1.5);
     }
     Sprite_SetAffineScale(sprite, &flyer->scale);
-    flyer->rotation += 0x8000;
+    flyer->rotation += FX32_CONST(8);
     if (flyer->rotation / FX32_ONE > 360) {
-        flyer->rotation = 0x168000;
+        flyer->rotation = FX32_CONST(360);
     }
     Sprite_SetAffineZRotation(sprite, GF_DegreeToSinCosIdx((u16)(flyer->rotation / FX32_ONE)));
     matrix.x = flyer->origin.x + flyer->offset.x;
@@ -605,11 +605,11 @@ BOOL CutInFlyer_SwoopDown(CutInFlyer *flyer) {
     scale = *Sprite_GetScalePtr(sprite);
     scale.x += 0x80;
     if (scale.x > FX32_CONST(1.25)) {
-        scale.x = 0x1400;
+        scale.x = FX32_CONST(1.25);
     }
     scale.y += 0x80;
     if (scale.y > FX32_CONST(1.25)) {
-        scale.y = 0x1400;
+        scale.y = FX32_CONST(1.25);
     }
     Sprite_SetAffineScale(sprite, &scale);
     return FALSE;
@@ -628,9 +628,9 @@ BOOL CutInFlyer_PickUpTrainer(CutInFlyer *flyer) {
     TrainerJumpEffect_Stop(flyer->trainerJumpEffect);
     FieldCameraZoom_Set(flyer->cameraZoom, 2, 0, 0xc);
     flyer->scaleSpeed = 0x100;
-    flyer->angle = 0x80000;
+    flyer->angle = FX32_CONST(128);
     flyer->distance = 0;
-    flyer->speed = 0x800;
+    flyer->speed = FX32_CONST(0.5);
     flyer->status = 3;
     flyer->step++;
     return TRUE;
@@ -647,7 +647,7 @@ BOOL CutInFlyer_FlyAway(CutInFlyer *flyer) {
     flyer->distance += flyer->speed;
     flyer->speed += FX32_ONE;
     if (flyer->speed > FX32_CONST(16)) {
-        flyer->speed = 0x10000;
+        flyer->speed = FX32_CONST(16);
     }
     flyer->offset.x = GF_CosDeg((u16)(flyer->angle / FX32_ONE)) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg(0x80) * (flyer->distance / FX32_ONE);
@@ -656,11 +656,11 @@ BOOL CutInFlyer_FlyAway(CutInFlyer *flyer) {
     }
     flyer->scale.x += flyer->scaleSpeed;
     if (flyer->scale.x > FX32_CONST(2)) {
-        flyer->scale.x = 0x2000;
+        flyer->scale.x = FX32_CONST(2);
     }
     flyer->scale.y += flyer->scaleSpeed;
     if (flyer->scale.y > FX32_CONST(2)) {
-        flyer->scale.y = 0x2000;
+        flyer->scale.y = FX32_CONST(2);
     }
     matrix.x = flyer->origin.x + flyer->offset.x;
     matrix.y = flyer->origin.y + flyer->offset.y;
@@ -677,11 +677,11 @@ BOOL CutInFlyer_FlyAway(CutInFlyer *flyer) {
     Sprite_SetMatrix(trainer, &trainerMatrix);
     scale.x += 0x100;
     if (scale.x > FX32_CONST(2)) {
-        scale.x = 0x2000;
+        scale.x = FX32_CONST(2);
     }
     scale.y += 0x100;
     if (scale.y > FX32_CONST(2)) {
-        scale.y = 0x2000;
+        scale.y = FX32_CONST(2);
     }
     Sprite_SetAffineScale(trainer, &scale);
     Sprite_SetAffineScale(sprite, &flyer->scale);

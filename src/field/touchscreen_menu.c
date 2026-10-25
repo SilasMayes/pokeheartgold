@@ -2,6 +2,7 @@
 
 #include "global.h"
 
+#include "constants/field/map_load.h"
 #include "constants/global_fieldmap.h"
 #include "constants/items.h"
 #include "constants/player_avatar.h"
@@ -103,7 +104,7 @@ enum TouchscreenMenuLayout {
     TOUCHSCREEN_MENU_LAYOUT_BUG_CONTEST,
     TOUCHSCREEN_MENU_LAYOUT_PAL_PARK,
     TOUCHSCREEN_MENU_LAYOUT_4, // bottomScreenType == 3
-    TOUCHSCREEN_MENU_LAYOUT_5, // mapLoadType == 3
+    TOUCHSCREEN_MENU_LAYOUT_COLOSSEUM,
     TOUCHSCREEN_MENU_LAYOUT_BATTLE_TOWER_PARTNER_ROOM,
 };
 
@@ -280,7 +281,7 @@ static void TouchscreenMenu_OnDummyCheckDummy(void);
 
 SysTask *TouchscreenMenu_Create(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, void *args);
 void TouchscreenMenu_Destroy(BgConfig *bgConfig, SysTask *task);
-BOOL TouchscreenMenu_IsExitDone(void *unused);
+BOOL TouchscreenMenu_IsExitDone(BgConfig *bgConfig);
 void TouchscreenMenu_RequestSelectedIconAnim(SysTask *task);
 void TouchscreenMenu_RequestRegisteredItemAnim(SysTask *task, int item);
 
@@ -387,7 +388,7 @@ void TouchscreenMenu_Destroy(BgConfig *bgConfig, SysTask *task) {
     FS_UnloadOverlay(MI_PROCESSOR_ARM9, FS_OVERLAY_ID(ds_protect));
 }
 
-BOOL TouchscreenMenu_IsExitDone(void *unused) {
+BOOL TouchscreenMenu_IsExitDone(BgConfig *bgConfig) {
     return TRUE;
 }
 
@@ -655,7 +656,7 @@ static BOOL TouchscreenMenu_IsFieldBusy(FieldSystem *fieldSystem) {
 // While the field is busy the buttons are drawn translucent over a dimmed bottom screen.
 static void TouchscreenMenu_SetDimmed(TouchscreenMenuData *data, BOOL dimmed) {
     if (dimmed) {
-        if (data->layout == TOUCHSCREEN_MENU_LAYOUT_5 && data->fieldSystem->startMenuState == 0) {
+        if (data->layout == TOUCHSCREEN_MENU_LAYOUT_COLOSSEUM && data->fieldSystem->startMenuState == 0) {
             TouchscreenMenu_HighlightIcon(data, TOUCHSCREEN_MENU_NO_HIGHLIGHT);
         }
         Sprite_SetOamMode(data->sprites[TOUCHSCREEN_MENU_SPRITE_SHOES], GX_OAM_MODE_XLU);
@@ -1078,7 +1079,7 @@ static BOOL TouchscreenMenu_HandleTouchInput(TouchscreenMenuData *data) {
     if (PlayerAvatar_GetPlayerMoveState(data->fieldSystem->playerAvatar) != PLAYER_MOVE_STATE_NONE || (gSystem.newKeys & PAD_PLUS_KEY_MASK) != 0) {
         return TRUE;
     }
-    if (data->layout == TOUCHSCREEN_MENU_LAYOUT_5) {
+    if (data->layout == TOUCHSCREEN_MENU_LAYOUT_COLOSSEUM) {
         u32 netId = Comm_GetLocalNetId();
         if (!CommClubLink_IsWalkingInRoom() || !CommClubLink_CardExchangeFinished() || !CommPlayerManager_IsInitialized() || !CommPlayerManager_IsLocalPlayerConnected() || CommPlayerManager_GetMoveTimer(netId) || Comm_IsSendingMoveKeys()) {
             return TRUE;
@@ -1283,8 +1284,8 @@ static int TouchscreenMenu_GetLayout(FieldSystem *fieldSystem) {
     if (fieldSystem->bottomScreenType == 3) {
         return TOUCHSCREEN_MENU_LAYOUT_4;
     }
-    if (fieldSystem->mapLoadType == 3) {
-        return TOUCHSCREEN_MENU_LAYOUT_5;
+    if (fieldSystem->mapLoadType == MAP_LOAD_TYPE_COLOSSEUM) {
+        return TOUCHSCREEN_MENU_LAYOUT_COLOSSEUM;
     }
     return TOUCHSCREEN_MENU_LAYOUT_NORMAL;
 }

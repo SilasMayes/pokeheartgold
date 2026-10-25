@@ -3,6 +3,7 @@
 #include "field/encounter_effect.h"
 
 #include "bg_window.h"
+#include "brightness.h"
 #include "gf_gfx_planes.h"
 #include "heap.h"
 #include "screen_fade_internal.h"
@@ -44,7 +45,7 @@ void EncounterEffect_KimonoGirl(SysTask *task, EncounterEffectTask *effect) {
         work = effect->work;
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG3, GF_PLANE_TOGGLE_ON);
-        reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xFFFFE0FF) | 0x1500;
+        GX_SetVisiblePlane(GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
         FreeBgTilemapBuffer(effect->fieldSystem->bgConfig, GF_BG_LYR_MAIN_1);
         InitBgFromTemplate(effect->fieldSystem->bgConfig, GF_BG_LYR_MAIN_1, (const BgTemplate *)gKimonoGirlEffectBg1Template, GF_BG_TYPE_TEXT);
         BgClearTilemapBufferAndCommit(effect->fieldSystem->bgConfig, GF_BG_LYR_MAIN_1);
@@ -61,7 +62,7 @@ void EncounterEffect_KimonoGirl(SysTask *task, EncounterEffectTask *effect) {
         effect->state = KIMONO_GIRL_STATE_START_FLASH;
         break;
     case KIMONO_GIRL_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, -16, -16, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, -16, -16, &effect->fadeDone, 2);
         effect->state = KIMONO_GIRL_STATE_WAIT_FLASH;
         break;
     case KIMONO_GIRL_STATE_WAIT_FLASH:

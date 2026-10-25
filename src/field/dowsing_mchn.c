@@ -102,6 +102,7 @@ extern const TouchscreenHitbox gDowsingMchnActionButtonHitbox;
 extern const TouchscreenHitbox gDowsingMchnExitButtonHitbox;
 extern const TouchscreenHitbox gDowsingMchnRunningShoesHitbox;
 extern const TouchscreenHitbox gDowsingMchnSearchAreaHitbox[];
+
 // Interleaved {signalCap, gridValue} pairs, one per level.
 typedef struct DowsingMchnLevelParams {
     u8 signalCap;
@@ -173,7 +174,7 @@ static void DowsingMchn_HandleExitButton(DowsingMchn *dowsing);
 static BOOL DowsingMchn_ShouldHideButtons(DowsingMchn *dowsing);
 
 SysTask *DowsingMchn_Init(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, void *args);
-void DowsingMchn_Exit(void *unused, SysTask *task);
+void DowsingMchn_Exit(BgConfig *bgConfig, SysTask *task);
 BOOL DowsingMchn_IsExitDone(void);
 void DowsingMchn_StepAngleLevel0(DowsingMchnAngle *angle);
 void DowsingMchn_StepAngleLevel1(DowsingMchnAngle *angle);
@@ -215,7 +216,7 @@ SysTask *DowsingMchn_Init(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSyst
     return task;
 }
 
-void DowsingMchn_Exit(void *unused, SysTask *task) {
+void DowsingMchn_Exit(BgConfig *bgConfig, SysTask *task) {
     DowsingMchn *dowsing = SysTask_GetData(task);
     DowsingMchn_FreeHiddenItemLocs(dowsing);
     DowsingMchn_DestroySprites(dowsing);

@@ -49,7 +49,7 @@ static void FollowMon_SpawnGrassEffects(LocalMapObject *object);
 void FollowPlayerMovement_Init(LocalMapObject *object) {
     FollowPlayerMovementState *state = (FollowPlayerMovementState *)MapObject_InitMovementData(object, sizeof(FollowPlayerMovementState));
     FollowPlayerMovement_CheckPlayer(object, state);
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_ClearSingleMovement(object);
     MapObject_ClearFlag18(object, FALSE);
 }
@@ -429,7 +429,7 @@ static BOOL FollowPlayerMovement_StartMirrorStep(LocalMapObject *object) {
 void FollowPartnerMovement_Init(LocalMapObject *object) {
     FollowPartnerMovementState *state = (FollowPartnerMovementState *)MapObject_InitMovementData(object, sizeof(FollowPartnerMovementState));
     FollowPartnerMovement_FindPartner(object, state);
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_ClearSingleMovement(object);
     state->partnerKnown = FALSE;
 }
@@ -569,7 +569,7 @@ static BOOL FollowPartnerMovement_StartStep(LocalMapObject *object, FollowPartne
 static void HiddenObjectMovement_Init(LocalMapObject *object, int coverType) {
     HiddenObjectMovementState *state = (HiddenObjectMovementState *)MapObject_InitMovementData(object, sizeof(HiddenObjectMovementState));
     state->coverType = coverType;
-    MapObject_SetAnimation(object, 0);
+    MapObject_SetAnimation(object, MAP_OBJECT_ANIM_STAND);
     MapObject_ClearSingleMovement(object);
     MapObject_SetFlagsBits(object, MAPOBJECTFLAG_UNK20);
     VecFx32 offset = gHiddenObjectOffset;

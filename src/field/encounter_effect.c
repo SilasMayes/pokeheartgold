@@ -4,6 +4,7 @@
 
 #include "global.h"
 
+#include "brightness.h"
 #include "filesystem.h"
 #include "heap.h"
 #include "overlay_manager.h"
@@ -57,6 +58,7 @@ static BOOL BrightnessInterp_Update(BrightnessInterp *interp);
 static void Task_ApplyBrightness(SysTask *task, void *data);
 
 static void Task_RunEncounterEffect(SysTask *task, void *data);
+
 static void Task_RunEncounterEffect(SysTask *task, void *data) {
     EncounterEffectTask *effect = data;
     gEncounterEffectFuncs[gEncounterEffectState.effect](task, effect);
@@ -171,10 +173,10 @@ static void Task_EncounterEffectFlash(SysTask *task, void *data) {
     EncounterEffectFlash *flash = data;
     switch (flash->state) {
     case ENCOUNTER_FLASH_STATE_FADE_OTHER:
-        if (flash->screen == 1) {
-            BrightnessInterp_Init(&flash->otherFade, 0, flash->otherBrightness, 2, 8);
-        } else if (flash->screen == 2) {
-            BrightnessInterp_Init(&flash->otherFade, 0, flash->otherBrightness, 1, 8);
+        if (flash->screen == SCREEN_MASK_MAIN) {
+            BrightnessInterp_Init(&flash->otherFade, 0, flash->otherBrightness, SCREEN_MASK_SUB, 8);
+        } else if (flash->screen == SCREEN_MASK_SUB) {
+            BrightnessInterp_Init(&flash->otherFade, 0, flash->otherBrightness, SCREEN_MASK_MAIN, 8);
         }
         ++flash->state;
         break;
@@ -288,7 +290,7 @@ BOOL EncounterEffectQuadInterp_Update(EncounterEffectQuadInterp *interp) {
 }
 
 static void EncounterEffect_SetMasterBrightness(int screen, s32 brightness) {
-    if (screen == 1) {
+    if (screen == SCREEN_MASK_MAIN) {
         GXx_SetMasterBrightness_(&reg_GX_MASTER_BRIGHT, brightness);
     } else {
         GXx_SetMasterBrightness_(&reg_GXS_DB_MASTER_BRIGHT, brightness);

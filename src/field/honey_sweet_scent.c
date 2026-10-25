@@ -290,7 +290,7 @@ BOOL Task_HoneyOrSweetScent(TaskManager *taskManager) {
     case HONEY_SWEET_SCENT_STATE_WAIT_FADE_OUT:
         if (HoneySweetScent_IsFadeDone(env->task) != 0) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
-            reg_G2_BLDCNT = 0;
+            G2_BlendNone();
             SetBgPriority(GF_BG_LYR_MAIN_2, 3);
             env->state = HONEY_SWEET_SCENT_STATE_NOTHING_HAPPENED;
         }

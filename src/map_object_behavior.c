@@ -1,5 +1,6 @@
 #include "global.h"
 
+#include "constants/sprites.h"
 #include "constants/std_script.h"
 
 #include "field/field_effect_helpers.h"
@@ -38,7 +39,7 @@ static int TrainerSight_GetDistanceNorth(LocalMapObject *object, int range, int 
 static int TrainerSight_GetDistanceSouth(LocalMapObject *object, int range, int targetX, int targetZ, int unused);
 static int TrainerSight_GetDistanceWest(LocalMapObject *object, int range, int targetX, int targetZ, int unused);
 static int TrainerSight_GetDistanceEast(LocalMapObject *object, int range, int targetX, int targetZ, int unused);
-static int TrainerSight_IsPathBlocked(LocalMapObject *object, int direction, int distance);
+static BOOL TrainerSight_IsPathBlocked(LocalMapObject *object, int direction, int distance);
 static u32 MapObject_GetTrainerNum(LocalMapObject *object);
 static LocalMapObject *MapObjectManager_FindTrainerPartner(FieldSystem *unused, MapObjectManager *manager, LocalMapObject *exclude, u32 trainerNum);
 static SysTask *TrainerApproach_CreateTask(FieldSystem *fieldSystem, LocalMapObject *trainer, PlayerAvatar *player, int movement, int remaining, int unk10, int encounterType, int trainerIndex);
@@ -202,7 +203,7 @@ BOOL TypeBehavior_LookSidewaysCheck(LocalMapObject *object) {
         }
         break;
     case TRAINER_CHECK_STATE_WAIT_ON_TILE:
-        if (MapObject_IsOnPreviousTile(object) == 0) {
+        if (!MapObject_IsOnPreviousTile(object)) {
             break;
         }
         state->count++;
@@ -240,7 +241,7 @@ BOOL TypeBehavior_LookSidewaysUpdate(LocalMapObject *object) {
         state->turnState++;
     }
     case TRAINER_TURN_STATE_WAIT_TURN:
-        if (MapObject_RunForcedMovement(object) == 0) {
+        if (!MapObject_RunForcedMovement(object)) {
             return TRUE;
         }
         state->turnState++;
@@ -279,7 +280,7 @@ BOOL TypeBehavior_SpinCheck(LocalMapObject *object) {
         }
         break;
     case TRAINER_CHECK_STATE_WAIT_ON_TILE:
-        if (MapObject_IsOnPreviousTile(object) == 0) {
+        if (!MapObject_IsOnPreviousTile(object)) {
             break;
         }
         state->count++;
@@ -321,7 +322,7 @@ BOOL TypeBehavior_SpinUpdate(LocalMapObject *object) {
         MapObject_ForceSetHeldMovement(object, GetMovementForDirection(spinOrders.values[state->sequence][state->index], MOVEMENT_FACE_UP));
         state->turnState++;
     case TRAINER_TURN_STATE_WAIT_TURN:
-        if (MapObject_RunForcedMovement(object) == 0) {
+        if (!MapObject_RunForcedMovement(object)) {
             return TRUE;
         }
         state->turnState++;
@@ -347,7 +348,7 @@ BOOL TypeBehavior_SpinUpdate(LocalMapObject *object) {
 
 void ApricornTreeObject_Init(LocalMapObject *object) {
     ApricornTreeState *state = (ApricornTreeState *)MapObject_InitDrawData(object, sizeof(ApricornTreeState));
-    state->spriteId = 0x106;
+    state->spriteId = SPRITE_BONGURI;
     state->apricorns = 0;
     MapObject_CallDrawUpdate(object);
 }
@@ -385,7 +386,7 @@ void ApricornTreeObject_Update(LocalMapObject *object) {
         return;
     }
     MapObject_UpdateBillboardPosition(object, state->billboard);
-    if (MapObject_IsBillboardAnimPaused(object) == 0) {
+    if (!MapObject_IsBillboardAnimPaused(object)) {
         switch (MapObject_GetAnimation(object)) {
         case 0:
             if (BillboardObject_GetSequence(state->billboard) != 0) {
@@ -462,7 +463,7 @@ void *ApricornTreeObject_GetBillboard(LocalMapObject *object) {
 
 static u32 GetApricornTreeSpriteId(int apricorn, int apricornCount) {
     if (apricornCount == 0) {
-        return 0x106;
+        return SPRITE_BONGURI;
     }
     GF_ASSERT(apricorn != 0);
     return gApricornTreeSpriteIds[apricorn];
@@ -561,7 +562,7 @@ static int TrainerSight_FindPlayer(LocalMapObject *object, PlayerAvatar *player,
         int dir = MapObject_GetFacingDirection(object);
         int param = MapObject_GetParam(object, 0);
         int dist = TrainerSight_GetDistanceInDirection(object, dir, param, x, z, 0);
-        if (dist != -1 && TrainerSight_IsPathBlocked(object, dir, dist) == 0) {
+        if (dist != -1 && !TrainerSight_IsPathBlocked(object, dir, dist)) {
             *outDir = dir;
             return dist;
         }
@@ -574,7 +575,7 @@ static int TrainerSight_FindPlayer(LocalMapObject *object, PlayerAvatar *player,
         int dir;
         for (dir = 0; dir < 4; dir++) {
             int dist = TrainerSight_GetDistanceInDirection(object, dir, param, x, z, 0);
-            if (dist != -1 && TrainerSight_IsPathBlocked(object, dir, dist) == 0) {
+            if (dist != -1 && !TrainerSight_IsPathBlocked(object, dir, dist)) {
                 *outDir = dir;
                 return dist;
             }
@@ -632,7 +633,7 @@ static int TrainerSight_GetDistanceEast(LocalMapObject *object, int range, int t
     return -1;
 }
 
-static int TrainerSight_IsPathBlocked(LocalMapObject *object, int direction, int distance) {
+static BOOL TrainerSight_IsPathBlocked(LocalMapObject *object, int direction, int distance) {
     int x;
     int y;
     int z;

@@ -4,6 +4,7 @@
 
 #include "field/bdhc.h"
 #include "field/map_load_manager.h"
+#include "field/map_load_manager_internal.h"
 #include "field/map_prop.h"
 
 #include "field_metatile_query_internal.h"
@@ -279,7 +280,7 @@ u32 FieldSystem_CheckCollisionHeightAndGimmick(FieldSystem *fieldSystem, VecFx32
         *(u8 *)outSlope = (u8)slope;
     }
     if (slope == 0) {
-        if (Gymmick_CheckCollision(fieldSystem, x, y, playerPos->y, &ret) == 0) {
+        if (!Gymmick_CheckCollision(fieldSystem, x, y, playerPos->y, &ret)) {
             ret = FieldSystem_CheckTileCollision(fieldSystem, x, y);
             if (!ret && kind == 2) {
                 GetMetatileBehavior(fieldSystem, x, y);
@@ -478,8 +479,8 @@ int *FieldSystem_CollectMapPropModelsInRect(FieldSystem *fieldSystem, u32 heapId
 }
 
 void Terrain_GetChunkOrigin(int idx, int width, VecFx32 *pos) {
-    pos->x = 0x100000;
-    pos->z = 0x100000;
+    pos->x = FX32_CONST(256);
+    pos->z = FX32_CONST(256);
     pos->x = pos->x + ((u16)(idx % width) << 21);
     pos->z = pos->z + ((u16)(idx / width) << 21);
 }

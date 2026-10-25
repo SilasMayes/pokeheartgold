@@ -315,7 +315,7 @@ static BOOL LeadersEffect_RunGymLeaderIntro(EncounterEffectTask *effect, enum He
         effect->state++;
         break;
     case GYM_LEADER_INTRO_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, 16, 16, &effect->fadeDone, 1);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, 16, 16, &effect->fadeDone, 1);
         effect->state++;
         break;
     case GYM_LEADER_INTRO_STATE_WAIT_FLASH:
@@ -376,7 +376,7 @@ static BOOL LeadersEffect_RunGymLeaderIntro(EncounterEffectTask *effect, enum He
             EncounterEffect_ApplyMainBrightness(&work->brightness);
             if (done == TRUE) {
                 LeadersEffect_LoadBlendedSpritePalette(work->leaderSprite, heapID, params->spriteMembers[0], 0, RGB_BLACK);
-                SetBlendBrightness(-14, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BD), 1);
+                SetBlendBrightness(-14, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BD), SCREEN_MASK_MAIN);
                 ScheduleSetBgPosText(effect->fieldSystem->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_X, -((work->slide.value >> FX32_SHIFT) - 92));
                 GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
                 effect->state++;
@@ -410,7 +410,7 @@ static BOOL LeadersEffect_RunGymLeaderIntro(EncounterEffectTask *effect, enum He
         }
         break;
     case GYM_LEADER_INTRO_STATE_END:
-        SetMasterBrightnessByColor(1, RGB_WHITE);
+        SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_WHITE);
         if (effect->done) {
             *effect->done = TRUE;
         }
@@ -420,8 +420,8 @@ static BOOL LeadersEffect_RunGymLeaderIntro(EncounterEffectTask *effect, enum He
         EncounterEffect_FreeSpriteResources(&work->spriteManager, &work->scaleSpriteResources);
         EncounterEffect_FreeSprites(&work->spriteManager);
         RemoveWindow(&work->window);
-        reg_GX_DISPCNT &= 0xFFFF1FFF;
-        SetBlendBrightness(0, GX_BLEND_PLANEMASK_NONE, 1);
+        GX_SetVisibleWnd(GX_WNDMASK_NONE);
+        SetBlendBrightness(0, GX_BLEND_PLANEMASK_NONE, SCREEN_MASK_MAIN);
         BgSetPosTextAndCommit(effect->fieldSystem->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_X, 0);
         return TRUE;
     }
@@ -623,7 +623,7 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
         effect->state++;
         break;
     case ELITE_FOUR_INTRO_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, 16, 16, &effect->fadeDone, 1);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, 16, 16, &effect->fadeDone, 1);
         effect->timer = 0;
         effect->state++;
         break;
@@ -798,7 +798,7 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
         }
         break;
     case ELITE_FOUR_INTRO_STATE_END:
-        SetMasterBrightnessByColor(1, RGB_WHITE);
+        SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_WHITE);
         if (effect->done) {
             *effect->done = TRUE;
         }
@@ -813,7 +813,7 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
         EncounterEffect_FreeSprites(&work->spriteManager);
         EncounterEffect_FreeParticles();
         EncounterEffect_EndParticleMode();
-        reg_G2_BLDCNT = 0;
+        G2_BlendNone();
         return TRUE;
     }
     if (effect->state != ELITE_FOUR_INTRO_STATE_END) {

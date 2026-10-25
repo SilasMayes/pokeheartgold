@@ -7,6 +7,7 @@
 
 #include "field_metatile_query_internal.h"
 #include "field_system.h"
+#include "field_terrain.h"
 #include "heap.h"
 #include "map_object_movement_utilities.h"
 #include "metatile_behavior.h"
@@ -75,10 +76,10 @@ BOOL FieldSystem_CanPlaceSafariObject(FieldSystem *fieldSystem) {
 
     LocalFieldData_GetCurrentPosition(Save_LocalFieldData_Get(fieldSystem->saveData));
     safariZone = Save_SafariZone_Get(fieldSystem->saveData);
-    if (MapId_IsSafariZone(fieldSystem->location->mapId) == FALSE) {
+    if (!MapId_IsSafariZone(fieldSystem->location->mapId)) {
         return FALSE;
     }
-    if (Save_VarsFlags_CheckSafariSysFlag(varsFlags) == FALSE) {
+    if (!Save_VarsFlags_CheckSafariSysFlag(varsFlags)) {
         return FALSE;
     }
     if (SafariZone_GetActiveAreaSet(safariZone) != 0) {

@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "camera_translation.h"
 #include "field_metatile_query_internal.h"
+#include "field_terrain.h"
 #include "field_transition_effects.h"
 #include "follow_mon.h"
 #include "heap.h"
@@ -639,10 +640,12 @@ static BOOL Task_WaitDoorAnimation(TaskManager *taskman) {
 // Loads the animations of the door prop in front of (x, z) into the one-shot animation slot tag.
 void DoorAnimation_Load(FieldSystem *fieldSystem, int x, int z, u8 tag) {
     fx32 rect[4];
+
     struct {
         MapProp *prop;
         DoorAnimListEntry entry;
     } door;
+
     NARC *narc;
     int found;
     int modelId;

@@ -6,11 +6,6 @@
 #include "field/encounter_effect.h"
 #include "field/field_motion_blur.h"
 
-#include "camera.h"
-#include "gf_gfx_planes.h"
-#include "heap.h"
-#include "screen_fade_legacy.h"
-
 typedef struct {
     u32 distance;
     u16 angleX;

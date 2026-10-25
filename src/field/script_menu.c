@@ -227,14 +227,14 @@ static void ScriptMenu_MultichoiceTask(SysTask *task, void *data) {
     if (IsPaletteFadeFinished()) {
         int input = Handle2dMenuInput(menu->menu2dPtr);
         switch (input) {
-        case -2:
+        case LIST_CANCEL:
             if (menu->cancellable == 1) {
                 *menu->ret_p = 0xfffe;
                 ScriptMenu_CloseMultichoice(menu);
                 return;
             }
             break;
-        case -1:
+        case LIST_NOTHING_CHOSEN:
             break;
         default:
             *menu->ret_p = input;
@@ -443,7 +443,7 @@ static void ScriptMenu_ListTask(SysTask *task, void *data) {
             ScriptMenu_PrintCursorHelpMessage(menu);
         }
         switch (input) {
-        case -2:
+        case LIST_CANCEL:
             if (menu->cancellable == 1) {
                 PlaySE(SEQ_SE_DP_SELECT);
                 *menu->ret_p = 0xfffe;
@@ -451,7 +451,7 @@ static void ScriptMenu_ListTask(SysTask *task, void *data) {
                 return;
             }
             break;
-        case -1:
+        case LIST_NOTHING_CHOSEN:
             break;
         default:
             PlaySE(SEQ_SE_DP_SELECT);
@@ -498,6 +498,7 @@ static void ScriptMenu_PrintCursorHelpMessage(ScriptMenu *menu) {
 }
 
 #pragma opt_propagation off
+
 void PrintCurFloorInNewWindow(FieldSystem *fieldSystem, u8 x, u8 y, u16 *p_ret, MessageFormat *msgFmt, u16 floor) {
     u32 tiles;
     u8 flag;
@@ -527,6 +528,7 @@ void PrintCurFloorInNewWindow(FieldSystem *fieldSystem, u8 x, u8 y, u16 *p_ret, 
     CopyWindowToVram(&menu->window);
     menu->task = SysTask_CreateOnMainQueue(ScriptMenu_FloorWindowTask, menu, 0);
 }
+
 #pragma opt_propagation reset
 
 static void ScriptMenu_PrintMessage(ScriptMenu *menu, u16 msgId, u8 x, u8 y) {

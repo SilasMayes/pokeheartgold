@@ -142,7 +142,7 @@ CharSprite *CharSpriteManager_CreateSprite(CharSpriteManager *charSpriteManager,
     charSprite->animFrames = 0;
     charSprite->direction = 1;
     charSprite->resource = &charSpriteManager->chars[charIndex].sharedPalette;
-    if (CharSprite_HasShadowResources(charSpriteManager->shadowResources) != 0) {
+    if (CharSprite_HasShadowResources(charSpriteManager->shadowResources)) {
         memset(&spriteTemplate, 0, sizeof(SpriteTemplate));
         spriteTemplate.spriteList = charSpriteManager->spriteList;
         spriteTemplate.header = &charSpriteManager->shadowHeader;
@@ -344,10 +344,10 @@ void CharSpriteManager_LoadCharWithPalette(CharSpriteManager *charSpriteManager,
             charData->szByte = 6144;
         }
     }
-    if (SpriteTransfer_CreateCharTransferTask_UpdateMappingTypeFromHW_AllocAtEnd(charSpriteManager->chars[charIndex].charResource) == 0) {
+    if (!SpriteTransfer_CreateCharTransferTask_UpdateMappingTypeFromHW_AllocAtEnd(charSpriteManager->chars[charIndex].charResource)) {
         GF_ASSERT(FALSE);
     }
-    if (SpriteTransfer_CreatePlttTransferTask(charSpriteManager->chars[charIndex].plttResource) == 0) {
+    if (!SpriteTransfer_CreatePlttTransferTask(charSpriteManager->chars[charIndex].plttResource)) {
         GF_ASSERT(FALSE);
     }
     if (charSpriteManager->paletteData != 0) {
@@ -427,7 +427,7 @@ void CharSpriteManager_LoadShadowResources(CharSpriteManager *charSpriteManager,
         charSpriteManager->shadowResources[i + 2] = AddCellOrAnimResObjFromOpenNarc(charSpriteManager->resManagers[i + 2], charSpriteManager->charNarc, i, 0, 288, (GfGfxResType)(i + 2), heapID);
     }
     charSpriteManager->shadowResources[0] = AddCharResObjFromOpenNarc(charSpriteManager->resManagers[0], charSpriteManager->charNarc, 2, 0, 288, vramType, heapID);
-    if (SpriteTransfer_CreateCharTransferTask_UpdateMappingTypeFromHW_AllocAtEnd(charSpriteManager->shadowResources[0]) == 0) {
+    if (!SpriteTransfer_CreateCharTransferTask_UpdateMappingTypeFromHW_AllocAtEnd(charSpriteManager->shadowResources[0])) {
         GF_ASSERT(FALSE);
     }
     GF2DGfxResObj_FreeData(charSpriteManager->shadowResources[0]);

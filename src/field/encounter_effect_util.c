@@ -325,8 +325,8 @@ SysTask *ZigzagWipe_Start(EncounterEffectTask *effect, ZigzagWipe *wipe, s32 dur
             wipe->lines[i] = width - x;
         }
     }
-    reg_G2_WININ = (reg_G2_WININ & ~0x3F) | insidePlanes | 0x20;
-    reg_G2_WINOUT = (reg_G2_WINOUT & ~0x3F) | outsidePlanes;
+    G2_SetWnd0InsidePlane(insidePlanes, TRUE);
+    G2_SetWndOutsidePlane(outsidePlanes, FALSE);
     reg_G2_WIN0H = 0;
     reg_G2_WIN0V = 192;
     GX_SetVisibleWnd(GX_WNDMASK_W0);
@@ -382,7 +382,7 @@ static void ZigzagWipe_End(ZigzagWipe *wipe) {
 // diagonals (4-5) in caves; the black variant (odd ids) at night; trainer battles use the trainer range (6-11).
 int EncounterEffect_GetDefaultEffect(BattleSetup *setup) {
     u32 battleType = setup->battleType;
-    int trainer = TRUE;
+    BOOL trainer = TRUE;
     int effect;
     if ((battleType & BATTLE_TYPE_TRAINER) == 0) {
         if ((battleType & (BATTLE_TYPE_SAFARI | BATTLE_TYPE_ROAMER | BATTLE_TYPE_PAL_PARK | BATTLE_TYPE_TUTORIAL | BATTLE_TYPE_BUG_CONTEST)) != 0 || battleType == BATTLE_TYPE_NONE) {

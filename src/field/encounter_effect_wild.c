@@ -3,6 +3,7 @@
 #include "field/encounter_effect.h"
 
 #include "bg_window.h"
+#include "brightness.h"
 #include "gf_gfx_loader.h"
 #include "gf_gfx_planes.h"
 #include "heap.h"
@@ -511,7 +512,7 @@ void EncounterEffect_PkmnTrainerRed(SysTask *task, EncounterEffectTask *effect) 
         break;
     }
     case WILD_EFFECT_STATE_START_FLASH:
-        EncounterEffect_StartFlash(1, -16, -16, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, -16, -16, &effect->fadeDone, 2);
         effect->state = WILD_EFFECT_STATE_WAIT_FLASH;
         break;
     case WILD_EFFECT_STATE_WAIT_FLASH:
@@ -665,7 +666,7 @@ static void WildEffect_RunCellGridRows(SysTask *task, EncounterEffectTask *effec
     }
     case WILD_EFFECT_STATE_START_FLASH:
         brightness = white ? 16 : -16;
-        EncounterEffect_StartFlash(1, brightness, brightness, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, brightness, brightness, &effect->fadeDone, 2);
         effect->state = WILD_EFFECT_STATE_WAIT_FLASH;
         break;
     case WILD_EFFECT_STATE_WAIT_FLASH:
@@ -737,7 +738,7 @@ static void WildEffect_RunCellGridDiagonals(SysTask *task, EncounterEffectTask *
     }
     case WILD_EFFECT_STATE_START_FLASH:
         brightness = white ? 16 : -16;
-        EncounterEffect_StartFlash(1, brightness, brightness, &effect->fadeDone, 2);
+        EncounterEffect_StartFlash(SCREEN_MASK_MAIN, brightness, brightness, &effect->fadeDone, 2);
         effect->state = WILD_EFFECT_STATE_WAIT_FLASH;
         break;
     case WILD_EFFECT_STATE_WAIT_FLASH:
@@ -873,7 +874,7 @@ static void WildEffect_RunWave(SysTask *task, EncounterEffectTask *effect, BOOL 
         work = effect->work;
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG3, GF_PLANE_TOGGLE_ON);
-        reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xFFFFE0FF) | 0x1500;
+        GX_SetVisiblePlane(GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
         FreeBgTilemapBuffer(effect->fieldSystem->bgConfig, GF_BG_LYR_MAIN_1);
         InitBgFromTemplate(effect->fieldSystem->bgConfig, GF_BG_LYR_MAIN_1, &gWildEffectWaveBgTemplate_Main1, GF_BG_TYPE_TEXT);
         BgClearTilemapBufferAndCommit(effect->fieldSystem->bgConfig, GF_BG_LYR_MAIN_1);
@@ -906,7 +907,7 @@ static void WildEffect_RunWave(SysTask *task, EncounterEffectTask *effect, BOOL 
             } else {
                 brightness = -16;
             }
-            EncounterEffect_StartFlash(1, brightness, brightness, &effect->fadeDone, 2);
+            EncounterEffect_StartFlash(SCREEN_MASK_MAIN, brightness, brightness, &effect->fadeDone, 2);
         }
         effect->state = WAVE_EFFECT_STATE_WAIT_FLASH;
         break;

@@ -5,6 +5,25 @@
 #include "map_object_movement_commands.h"
 #include "sys_task_api.h"
 
+// The map object animations (MapObject_SetAnimation) the movement commands start; the draw callbacks pick the
+// billboard motion by them.
+enum MapObjectAnim {
+    MAP_OBJECT_ANIM_STAND,
+    MAP_OBJECT_ANIM_WALK_SLOWER,
+    MAP_OBJECT_ANIM_WALK_SLOW,
+    MAP_OBJECT_ANIM_WALK_NORMAL,
+    MAP_OBJECT_ANIM_WALK_FAST,
+    MAP_OBJECT_ANIM_WALK_FASTER,
+    MAP_OBJECT_ANIM_WALK_SLIGHTLY_FAST,
+    MAP_OBJECT_ANIM_WALK_SLIGHTLY_FASTER,
+    MAP_OBJECT_ANIM_WALK_EVER_SO_SLIGHTLY_FAST,
+    MAP_OBJECT_ANIM_RUN,
+    MAP_OBJECT_ANIM_JUMP_NEAR_SLOW,
+    MAP_OBJECT_ANIM_JUMP_FARTHER,
+
+    MAP_OBJECT_ANIM_NURSE_BOW = MAP_OBJECT_ANIM_RUN, // the Pokemon Center nurse's draw shows it as her bow
+};
+
 typedef BOOL (*MovementCommandFunc)(LocalMapObject *object);
 
 typedef struct EventObjectMovementWork EventObjectMovementWork;
