@@ -13,7 +13,7 @@ typedef struct BoxTestBounds {
     fx32 scaleZ;
 } BoxTestBounds;
 
-BOOL GF3d_BoundsBoxTest(const VecFx32 *, const BoxTestBounds *);
+BOOL GF3d_BoundsBoxTest(const VecFx32 *translation, const BoxTestBounds *bounds);
 BOOL GF3d_ModelBoxTest(NNSG3dResMdl *mdl, const VecFx32 *vec, const MtxFx33 *mtx, VecFx32 *scale);
 
 #endif // POKEHEARTGOLD_MODEL_BOX_TEST_H

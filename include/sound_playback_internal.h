@@ -3,14 +3,14 @@
 
 #include "global.h"
 
-BOOL PlayBGMDirect(u16);
+BOOL PlayBGMDirect(u16 seqNo);
 void StopBGMSEAndCry(void);
-BOOL PlaySEOnPlayer(u16, int);
-BOOL PlaySE_SetVolume(u16, u16);
-void SetSeqTrackPan(u16, u32, int);
-u32 GF_SndCountPlayingSeqOnPlayer(u32);
-void SetPlayerPan(int, int);
-void SetAllSEPan(int);
+BOOL PlaySEOnPlayer(u16 seqNo, int playerNo);
+BOOL PlaySE_SetVolume(u16 seqNo, u16 volume);
+void SetSeqTrackPan(u16 seqNo, u32 trackMask, int pan);
+u32 GF_SndCountPlayingSeqOnPlayer(u32 playerNo);
+void SetPlayerPan(int playerNo, int pan);
+void SetAllSEPan(int pan);
 BOOL IsFanfarePlayingOrWaiting(void);
 
 #endif // POKEHEARTGOLD_SOUND_PLAYBACK_INTERNAL_H

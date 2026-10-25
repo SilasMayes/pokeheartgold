@@ -117,12 +117,12 @@ void HallOfFameShowcase_GridOnTouch(HallOfFameShowcase *showcase, int target);
 void HallOfFameShowcase_GridOnKeyMove(HallOfFameShowcase *showcase, int target);
 static void HallOfFameShowcase_BeginFadeIn(void);
 static void HallOfFameShowcase_BeginFadeOut(void);
-static int HallOfFameShowcase_HandleInput(HallOfFameShowcase *showcase);
+static BOOL HallOfFameShowcase_HandleInput(HallOfFameShowcase *showcase);
 static void HallOfFameShowcase_DeletePartyIcons(HallOfFameShowcase *showcase);
 static void HallOfFameShowcase_ChangeRecord(HallOfFameShowcase *showcase, int delta);
 static void HallOfFameShowcase_HideMonDetail(HallOfFameShowcase *showcase);
 static void HallOfFameShowcase_ShowMonDetail(HallOfFameShowcase *showcase, u32 index);
-static int HallOfFameShowcase_AnimateButtonPress(HallOfFameShowcase *showcase);
+static BOOL HallOfFameShowcase_AnimateButtonPress(HallOfFameShowcase *showcase);
 static void HallOfFameShowcase_MoveCursor(HallOfFameShowcase *showcase, int target);
 static void HallOfFameShowcase_CreatePartyIcon(HallOfFameShowcase *showcase, u32 spriteIndex, u32 position, int charResId, u32 plttResId);
 static int HallOfFameShowcase_GetOverworldModelFileId(int species, int form, int isFemale);
@@ -186,7 +186,7 @@ BOOL HallOfFameShowcase_Main(OverlayManager *man, int *state) {
         }
         break;
     case HOF_SHOWCASE_MAIN_INPUT:
-        if (HallOfFameShowcase_HandleInput(showcase) == FALSE) {
+        if (!HallOfFameShowcase_HandleInput(showcase)) {
             (*state)++;
         }
         break;
@@ -451,7 +451,7 @@ static inline void HallOfFameShowcase_StartNextPage(HallOfFameShowcase *showcase
     PlaySE(SEQ_SE_DP_SELECT);
 }
 
-static int HallOfFameShowcase_HandleInput(HallOfFameShowcase *showcase) {
+static BOOL HallOfFameShowcase_HandleInput(HallOfFameShowcase *showcase) {
     u32 input;
 
     switch (showcase->state) {
@@ -709,7 +709,7 @@ static void HallOfFameShowcase_ShowMonDetail(HallOfFameShowcase *showcase, u32 i
     showcase->monDetailSet ^= 1;
 }
 
-static int HallOfFameShowcase_AnimateButtonPress(HallOfFameShowcase *showcase) {
+static BOOL HallOfFameShowcase_AnimateButtonPress(HallOfFameShowcase *showcase) {
     if (showcase->buttonAnimTimer == 0) {
         ManagedSprite_SetPaletteOverride(showcase->sprites[showcase->pressedButton], 1);
     } else if (showcase->buttonAnimTimer == 4) {

@@ -9,7 +9,6 @@
 #include "message_format.h"
 #include "msgdata.h"
 #include "overlay_trainer_card.h"
-#include "party.h"
 #include "party_menu.h"
 #include "player_data.h"
 #include "pokemon_summary.h"

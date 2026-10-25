@@ -6,7 +6,6 @@
 #include "bg_cell_manager.h"
 #include "bg_window.h"
 #include "filesystem.h"
-#include "gf_gfx_planes.h"
 #include "message_format.h"
 #include "message_printer.h"
 #include "msgdata.h"
@@ -168,10 +167,10 @@ typedef struct PokemonSummary {
     u32 numPageWindows;
     PokemonSummaryArgs *args;
     PokemonSummaryMon mon;
-    void *camera;
+    struct Camera *camera;
     PokepicManager *pokepicManager;
     PokepicAnimScript pokepicAnimScript[10];
-    void *pokepicAnimManager;
+    struct PokepicAnimManager *pokepicAnimManager;
     Pokepic *pokepic;
     u32 pokepicAnimReverseX;
     ConditionChartQuad conditionChartFrom[4];
@@ -214,7 +213,7 @@ typedef struct PokemonSummary {
     u8 flashTimer;
     u8 flashNextState;
     BgCellManager *cellManager;
-    u32 boxIconSprite; // which of sprites 73/74 shows the box Pokemon's icon next
+    u32 boxIconSprite; // which of the first two party icon sprites shows the box Pokemon's icon next
 } PokemonSummary;
 
 void PokemonSummary_Init3D(PokemonSummary *summary);
@@ -242,14 +241,14 @@ void PokemonSummary_ReadMon(PokemonSummary *summary, Pokemon *mon, PokemonSummar
 
 void *PokemonSummary_GetShownMon(PokemonSummary *summary); // Pokemon, or BoxPokemon for POKEMON_SUMMARY_BOX_MON_ARRAY
 
-void PokemonSummary_DrawPokepic(PokemonSummary *);
-void PokemonSummary_FreePokepicAndCamera(PokemonSummary *);
-void PokemonSummary_CreateCamera(PokemonSummary *);
-void PokemonSummary_InitConditionChart(PokemonSummary *);
-void PokemonSummary_CreatePokepic(PokemonSummary *);
-void PokemonSummary_StartPokepicAnim(PokemonSummary *);
-void PokemonSummary_ReloadPokepic(PokemonSummary *);
-u8 PokemonSummary_CheckTouchedButton(PokemonSummary *);
+void PokemonSummary_DrawPokepic(PokemonSummary *summary);
+void PokemonSummary_FreePokepicAndCamera(PokemonSummary *summary);
+void PokemonSummary_CreateCamera(PokemonSummary *summary);
+void PokemonSummary_InitConditionChart(PokemonSummary *summary);
+void PokemonSummary_CreatePokepic(PokemonSummary *summary);
+void PokemonSummary_StartPokepicAnim(PokemonSummary *summary);
+void PokemonSummary_ReloadPokepic(PokemonSummary *summary);
+u8 PokemonSummary_CheckTouchedButton(PokemonSummary *summary);
 
 BOOL PokemonSummary_IsPokeathlonUnlocked(SaveData *saveData);
 BOOL PokemonSummary_Init(OverlayManager *manager, int *state);

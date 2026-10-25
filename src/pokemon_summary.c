@@ -1278,7 +1278,7 @@ void PokemonSummary_ReadMon(PokemonSummary *summary, Pokemon *mon, PokemonSummar
     out->level = GetMonData(mon, MON_DATA_LEVEL, NULL);
     out->isEgg = GetMonData(mon, MON_DATA_IS_EGG, NULL);
 
-    if (GetMonData(mon, MON_DATA_NO_PRINT_GENDER, NULL) == TRUE && out->isEgg == FALSE) {
+    if (GetMonData(mon, MON_DATA_NO_PRINT_GENDER, NULL) == TRUE && !out->isEgg) {
         out->noPrintGender = 0;
     } else {
         out->noPrintGender = 1;
@@ -1371,7 +1371,7 @@ void PokemonSummary_ReadMon(PokemonSummary *summary, Pokemon *mon, PokemonSummar
 
 static void PokemonSummary_PlayCry(PokemonSummary *summary) {
     u8 delay;
-    if (summary->mon.isEgg == FALSE) {
+    if (!summary->mon.isEgg) {
         NARC_ReadPokepicCryDelay(summary->pokepicAnimNarc, &delay, summary->mon.species, 1);
         if (summary->mon.species == SPECIES_CHATOT) {
             Chatot_PlayCryWithDelayedFallback((SOUND_CHATOT *)summary->args->chatot, 0, 100, 0, delay);
@@ -1528,7 +1528,7 @@ static void PokemonSummary_LoadBgScreen(PokemonSummary *summary, BgConfig *bgCon
 // The current page's backgrounds (gPokemonSummaryPageScreens[page]: main, sub, sub when picking a move to forget
 // or for an egg), the previous/next Pokemon buttons and the HP or EXP bar.
 static void PokemonSummary_LoadPageBgs(PokemonSummary *summary) {
-    if (summary->args->isFlag982Set == FALSE && summary->page == POKEMON_SUMMARY_PAGE_RIBBONS) {
+    if (!summary->args->isFlag982Set && summary->page == POKEMON_SUMMARY_PAGE_RIBBONS) {
         PokemonSummary_LoadBgScreen(summary, summary->bgConfig, 11, GF_BG_LYR_MAIN_3);
     } else {
         PokemonSummary_LoadBgScreen(summary, summary->bgConfig, gPokemonSummaryPageScreens[summary->page][0], GF_BG_LYR_MAIN_3);
@@ -2738,7 +2738,7 @@ static void PokemonSummary_UpdateMarkingSprites(PokemonSummary *summary) {
             Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_MARKINGS + i], 0);
         }
     }
-    if (summary->mon.shiny == TRUE && summary->mon.isEgg == FALSE) {
+    if (summary->mon.shiny == TRUE && !summary->mon.isEgg) {
         thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY], TRUE);
     } else {
         thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY], FALSE);

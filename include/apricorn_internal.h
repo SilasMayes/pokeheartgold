@@ -7,7 +7,6 @@
 #include "heap.h"
 #include "msgdata.h"
 #include "player_data.h"
-#include "string_util.h"
 
 typedef struct ApricornRecord {
     u32 trainerId;
@@ -78,22 +77,22 @@ struct SaveApricornBox {
     ApricornRecord juiceRecords[APRICORN_JUICE_RECORD_COUNT];
 };
 
-int ApricornBox_CountQueuedApricorns(SaveApricornBox *);
-BOOL ApricornBox_GetJuice(SaveApricornBox *, int, ApricornJuice *);
-int ApricornJuice_GetFlavorTotal(ApricornJuice *);
-void ApricornJuice_RankFlavors(ApricornJuice *, ApricornJuiceRanking *);
-void ApricornBox_SetMixState(SaveApricornBox *, u32);
-int ApricornJuice_GetFlavorNameIndex(ApricornJuice *);
+int ApricornBox_CountQueuedApricorns(SaveApricornBox *box);
+BOOL ApricornBox_GetJuice(SaveApricornBox *box, int index, ApricornJuice *out);
+int ApricornJuice_GetFlavorTotal(ApricornJuice *data);
+void ApricornJuice_RankFlavors(ApricornJuice *juice, ApricornJuiceRanking *out);
+void ApricornBox_SetMixState(SaveApricornBox *apricornBox, u32 value);
+int ApricornJuice_GetFlavorNameIndex(ApricornJuice *juice);
 u32 Save_ApricornBox_sizeof(void);
 u32 ApricornJuiceRecord_sizeof(void);
-void Save_ApricornBox_Init(SaveApricornBox *);
-u32 ApricornBox_GetMixState(SaveApricornBox *);
-BOOL ApricornBox_QueueApricorn(SaveApricornBox *, int, u32);
-int ApricornBox_GetMixProgressLevel(SaveApricornBox *);
-u8 ApricornBox_GetJuiceServings(SaveApricornBox *);
-int ApricornJuice_GetTopMixIndex(ApricornJuice *);
-int ApricornBox_UseJuiceServing(SaveApricornBox *);
-ApricornRecord *ApricornRecord_New(SaveApricornBox *, PlayerProfile *, u32, enum HeapID);
-void ApricornBox_StoreJuiceRecords(SaveApricornBox *, ApricornRecord *, int, int);
+void Save_ApricornBox_Init(SaveApricornBox *apricornBox);
+u32 ApricornBox_GetMixState(SaveApricornBox *apricornBox);
+BOOL ApricornBox_QueueApricorn(SaveApricornBox *box, int apricorn, u32 value);
+int ApricornBox_GetMixProgressLevel(SaveApricornBox *box);
+u8 ApricornBox_GetJuiceServings(SaveApricornBox *box);
+int ApricornJuice_GetTopMixIndex(ApricornJuice *juice);
+int ApricornBox_UseJuiceServing(SaveApricornBox *box);
+ApricornRecord *ApricornRecord_New(SaveApricornBox *box, PlayerProfile *profile, u32 value, enum HeapID heapId);
+void ApricornBox_StoreJuiceRecords(SaveApricornBox *box, ApricornRecord *records, int count, int skip);
 
 #endif // POKEHEARTGOLD_APRICORN_INTERNAL_H

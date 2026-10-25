@@ -364,8 +364,8 @@ static int BoxMonSelector_HandleInput(BoxMonSelector *selector) {
         }
     }
 
-    if (keys == 0 && selector->keyDragging == FALSE) {
-        if (System_GetTouchNew() && selector->dragging == FALSE) {
+    if (keys == 0 && !selector->keyDragging) {
+        if (System_GetTouchNew() && !selector->dragging) {
             selector->touchStarted = TRUE;
             hit = TouchscreenHitbox_FindRectAtTouchNew(selector->hitboxes);
             if (hit != -1) {
@@ -667,7 +667,7 @@ static void BoxMonSelector_CreateButtons(BoxMonSelector *selector) {
     BoxMonSelector_SetHitboxRect(&selector->hitboxes[HITBOX_CANCEL], 224, 176, 50, 32);
     selector->cancelButton = BoxMonSelector_CreateSprite(selector, 224, 176, 4, TRUE);
     Sprite_SetPriority(selector->cancelButton, 3);
-    if (selector->canCancel == FALSE) {
+    if (!selector->canCancel) {
         Sprite_SetDrawFlag(selector->cancelButton, FALSE);
     }
 
@@ -893,7 +893,7 @@ static int BoxMonSelector_PointAtBoxSlot(BoxMonSelector *selector, int slot) {
 
 static int BoxMonSelector_GetBoxSlotState(BoxMonSelector *selector, int slot) {
     int i, found;
-    if (selector->boxIcons[slot].sprite && Sprite_GetDrawFlag(selector->boxIcons[slot].sprite) == FALSE) {
+    if (selector->boxIcons[slot].sprite && !Sprite_GetDrawFlag(selector->boxIcons[slot].sprite)) {
         return SLOT_INVALID;
     }
     if (selector->boxIcons[slot].mon.isEgg) {
@@ -980,7 +980,7 @@ static void BoxMonSelector_UpdateTouchDrag(BoxMonSelector *selector) {
     u32 x, y;
     VecFx32 pos, iconPos;
 
-    if (selector->dragging != FALSE) {
+    if (selector->dragging) {
         System_GetTouchHeldCoords(&x, &y);
         pos.x = x << FX32_SHIFT;
         pos.y = y << FX32_SHIFT;
@@ -995,7 +995,7 @@ static void BoxMonSelector_UpdateTouchDrag(BoxMonSelector *selector) {
 }
 
 static void BoxMonSelector_Drop(BoxMonSelector *selector) {
-    if (selector->dragging != FALSE) {
+    if (selector->dragging) {
         BoxMonSelector_EndDrag(selector, BoxMonSelector_HandleDrop(selector));
     }
 }
@@ -1266,7 +1266,7 @@ static void BoxMonSelector_DeleteSprites(BoxMonSelector *selector) {
 static void BoxMonSelector_UpdateCursorSprite(BoxMonSelector *selector) {
     VecFx32 pos;
     VecFx32 iconPos;
-    int moved = FALSE;
+    BOOL moved = FALSE;
     int panel = GridCursor_GetPanel(selector->cursor);
     int index = GridCursor_GetIndex(selector->cursor);
     pos.z = 0;

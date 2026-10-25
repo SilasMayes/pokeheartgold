@@ -7,11 +7,11 @@
 static IGTCounter sIGTCounter;
 
 void IGTCounter_Init(void) {
-    sIGTCounter.active = 0;
+    sIGTCounter.active = FALSE;
 }
 
 void IGTCounter_Start(IGT *igt) {
-    sIGTCounter.active = 1;
+    sIGTCounter.active = TRUE;
     sIGTCounter.unk10 = 0;
     sIGTCounter.unk14 = 0;
     sIGTCounter.countedSeconds = 0;
@@ -20,7 +20,7 @@ void IGTCounter_Start(IGT *igt) {
 }
 
 void IGTCounter_Update(void) {
-    if (sIGTCounter.active == 0) {
+    if (!sIGTCounter.active) {
         return;
     }
 

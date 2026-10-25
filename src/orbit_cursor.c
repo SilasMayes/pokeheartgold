@@ -30,7 +30,7 @@ OrbitCursor *OrbitCursor_New(OrbitCursorArgs args, SpriteSystem *spriteSys, Spri
     motion->radiusX = 15;
     motion->radiusY = 15;
     motion->task = NULL;
-    motion->active = 0;
+    motion->active = FALSE;
     return motion;
 }
 
@@ -78,7 +78,7 @@ void OrbitCursor_Task(SysTask *task, void *data) {
     int i;
     int done;
     float fx, fy;
-    if (cursor->active == 0) {
+    if (!cursor->active) {
         return;
     }
     done = 0;

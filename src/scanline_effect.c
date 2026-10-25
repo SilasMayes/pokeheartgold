@@ -89,13 +89,13 @@ void ScanlineEffect_Delete(ScanlineEffect *effect) {
     Heap_Free(effect);
 }
 
-void *ScanlineEffect_GetBuffer(ScanlineEffect *effect) {
+u32 *ScanlineEffect_GetBuffer(ScanlineEffect *effect) {
     return DoubleBuffer_GetCurrent(effect->doubleBuffer);
 }
 
 void ScanlineEffect_SwapBuffers(ScanlineEffect *effect) {
     if (effect && effect->task) {
-        void *buffer;
+        u32 *buffer;
         DoubleBuffer_Swap(effect->doubleBuffer);
         buffer = DoubleBuffer_GetCurrent(effect->doubleBuffer);
         MIi_CpuClear32(effect->fill, buffer, sizeof(effect->buffers[0]));
@@ -144,9 +144,9 @@ void ScanlineEffect_StopDma(void) {
 }
 
 void ScanlineEffect_StartDma(ScanlineEffect *effect) {
-    void *buffer;
+    u32 *buffer;
     GF_ASSERT(effect);
     buffer = DoubleBuffer_GetOther(effect->doubleBuffer);
     DC_FlushRange(buffer, sizeof(effect->buffers[0]));
-    HBlankDma_Start(buffer, effect->destination, 4, 1);
+    HBlankDma_Start(buffer, effect->destination, sizeof(u32), TRUE);
 }

@@ -84,7 +84,7 @@ enum PlayerAvatarSlope {
     PLAYER_AVATAR_SLOPE_DOWN,
 };
 
-static int PlayerAvatar_IsReadyToMove(PlayerAvatar *avatar, int direction);
+static BOOL PlayerAvatar_IsReadyToMove(PlayerAvatar *avatar, int direction);
 static void PlayerAvatar_StoreHeldDirections(PlayerAvatar *avatar, int direction, int keys, int heldKeys);
 static void PlayerAvatar_ClearFlag1IfFlag6Moving(PlayerAvatar *avatar);
 static void PlayerAvatar_PlayTerrainSounds(PlayerAvatar *avatar);
@@ -166,7 +166,7 @@ static const FootstepSound sPlayerFootstepSounds[] = {
     { SEQ_SE_DP_BOX01,          0 },
 };
 
-void PlayerAvatar_MoveControl(PlayerAvatar *avatar, MapLoadManager *mapLoadManager, int direction, u16 keys, u16 heldKeys, int allowTurn) {
+void PlayerAvatar_MoveControl(PlayerAvatar *avatar, MapLoadManager *mapLoadManager, int direction, u16 keys, u16 heldKeys, BOOL allowTurn) {
     if (direction == DIR_NONE) {
         direction = PlayerAvatar_ChooseInputDirection(avatar, keys, heldKeys);
     }
@@ -190,11 +190,11 @@ void PlayerAvatar_MoveControl(PlayerAvatar *avatar, MapLoadManager *mapLoadManag
     }
 }
 
-int PlayerAvatar_CheckReadyToMove(PlayerAvatar *avatar, int direction) {
+BOOL PlayerAvatar_CheckReadyToMove(PlayerAvatar *avatar, int direction) {
     return PlayerAvatar_IsReadyToMove(avatar, direction);
 }
 
-static int PlayerAvatar_IsReadyToMove(PlayerAvatar *avatar, int direction) {
+static BOOL PlayerAvatar_IsReadyToMove(PlayerAvatar *avatar, int direction) {
     LocalMapObject *mapObject = PlayerAvatar_GetMapObject(avatar);
 
     if (MapObject_AreBitsSetForMovementScriptInit(mapObject) == TRUE) {
@@ -261,7 +261,7 @@ static void PlayerAvatar_PlayTerrainSounds(PlayerAvatar *avatar) {
 
     movement = MapObject_GetMovementCommand(object);
     PlayerAvatar_GetState(avatar);
-    if (IsWallBumpMovement(movement) == FALSE) {
+    if (!IsWallBumpMovement(movement)) {
         if (MetatileBehavior_IsVeryTallGrass(behavior) == TRUE || MetatileBehavior_IsVeryTallGrass(previous) == TRUE) {
             PlaySE(SEQ_SE_DP_KUSA);
         }
@@ -279,7 +279,7 @@ static void PlayerAvatar_PlayFootstepSound(LocalMapObject *object, PlayerAvatar 
     u16 sequence;
     int state;
 
-    if (MetatileBehavior_IsVeryTallGrass(current) != FALSE || MetatileBehavior_IsPuddle(current) == TRUE || MetatileBehavior_IsShallowWater(current) == TRUE || MetatileBehavior_IsTallGrass(current) != FALSE) {
+    if (MetatileBehavior_IsVeryTallGrass(current) || MetatileBehavior_IsPuddle(current) == TRUE || MetatileBehavior_IsShallowWater(current) == TRUE || MetatileBehavior_IsTallGrass(current)) {
         return;
     }
     if (direction != DIR_NONE) {
@@ -475,13 +475,13 @@ static BOOL ForcedMovement_Ice(PlayerAvatar *avatar, int value) {
         FieldSystem *fieldSystem = MapObject_GetFieldSystem(mapObject);
         PlayerAvatar_SetFlag1(avatar, TRUE);
         PlayerAvatar_SetMoveState(avatar, AVATAR_MOVE_STATE_NONE);
-        if (FieldSystem_TryPushIceBlock(fieldSystem) == FALSE) {
+        if (!FieldSystem_TryPushIceBlock(fieldSystem)) {
             PlayerAvatar_EndForcedMovement(avatar);
             return FALSE;
         }
         return TRUE;
     }
-    if (PlayerAvatar_AdjustSpeedForSlope(avatar, slope) == FALSE) {
+    if (!PlayerAvatar_AdjustSpeedForSlope(avatar, slope)) {
         PlayerAvatar_EndForcedMovement(avatar);
         direction = GetOppositeDirection(direction);
         if (PlayerAvatar_CheckCollision(avatar, mapObject, direction) != 0) {
@@ -667,7 +667,7 @@ static void PlayerAvatar_FootStand(PlayerAvatar *avatar, LocalMapObject *mapObje
 }
 
 static void PlayerAvatar_FootStep(PlayerAvatar *avatar, LocalMapObject *mapObject, int direction, u16 keys, u16 heldKeys) {
-    int blocked = FALSE;
+    BOOL blocked = FALSE;
     int movement;
     int collision = PlayerAvatar_CheckCollision(avatar, mapObject, direction);
 
@@ -1068,7 +1068,7 @@ static BOOL MapObject_IsWaterInDirection(PlayerAvatar *avatar, LocalMapObject *m
         z = MapObject_GetZCoord(mapObject);
         dz = GetDeltaYByFacingDirection(direction);
         behavior = GetMetatileBehavior(fieldSystem, x + dx, z + dz);
-        if (MapObject_CheckWaterBehavior(mapObject, behavior) != FALSE) {
+        if (MapObject_CheckWaterBehavior(mapObject, behavior)) {
             return TRUE;
         }
     }

@@ -3,7 +3,6 @@
 
 #include "field/field_effect_manager.h"
 #include "player_data.h"
-#include "pokemon_types_def.h"
 
 enum RenderAnimationFlags {
     RENDER_ANIMATION_OWNS_FILE = 1 << 0, // the file is freed with the animation
@@ -21,18 +20,18 @@ typedef struct RenderAnimation {
     NNSFndAllocator allocator;
 } RenderAnimation;
 
-void RenderAnimation_LoadFromNarc(RenderAnimation *, int, NARC *, int, enum HeapID, BOOL);
-void RenderAnimation_FreeFile(RenderAnimation *);
-void RenderAnimation_AllocObjectForModel(RenderAnimation *, RenderModelStorage *, enum HeapID);
-void RenderAnimation_InitObjectForModel(RenderAnimation *, RenderModelStorage *);
-void RenderAnimation_InitForModel(RenderAnimation *, RenderModelStorage *, RenderAnimation *, int, enum HeapID);
-void RenderAnimation_Free(RenderAnimation *);
-BOOL RenderAnimation_Advance(RenderAnimation *, fx32, BOOL);
-BOOL RenderAnimation_IsDone(RenderAnimation *);
+void RenderAnimation_LoadFromNarc(RenderAnimation *animation, int unused, NARC *narc, int fileId, enum HeapID heapID, BOOL atEnd);
+void RenderAnimation_FreeFile(RenderAnimation *animation);
+void RenderAnimation_AllocObjectForModel(RenderAnimation *animation, RenderModelStorage *model, enum HeapID heapID);
+void RenderAnimation_InitObjectForModel(RenderAnimation *animation, RenderModelStorage *data);
+void RenderAnimation_InitForModel(RenderAnimation *animation, RenderModelStorage *model, RenderAnimation *source, int unused, enum HeapID heapID);
+void RenderAnimation_Free(RenderAnimation *animation);
+BOOL RenderAnimation_Advance(RenderAnimation *animation, fx32 step, BOOL loop);
+BOOL RenderAnimation_IsDone(RenderAnimation *animation);
 void RenderObj_InitFromModel(NNSG3dRenderObj *object, RenderModelStorage *model);
-void RenderObj_InitWithAnimation(NNSG3dRenderObj *, RenderModelStorage *, RenderAnimation *);
-void RenderObj_Draw(NNSG3dRenderObj *, const VecFx32 *, const VecFx32 *, const MtxFx33 *);
+void RenderObj_InitWithAnimation(NNSG3dRenderObj *object, RenderModelStorage *model, RenderAnimation *animation);
+void RenderObj_Draw(NNSG3dRenderObj *object, const VecFx32 *position, const VecFx32 *scale, const MtxFx33 *rotation);
 void RenderObj_DrawAt(NNSG3dRenderObj *object, VecFx32 *position);
-void RenderObj_DrawRotated(NNSG3dRenderObj *, const VecFx32 *, const VecFx32 *, const u16 *);
+void RenderObj_DrawRotated(NNSG3dRenderObj *object, const VecFx32 *position, const VecFx32 *scale, const u16 *angles);
 
 #endif // POKEHEARTGOLD_RENDER_ANIMATION_H

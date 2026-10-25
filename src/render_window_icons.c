@@ -219,7 +219,7 @@ void DrawFrameAndWindow3(Window *window, BOOL dontCopyToVram, u16 baseTile, u8 p
         u8 height = GetWindowHeight(window);
         DrawFrame2Tilemap(window->bgConfig, bgId, x, y, width, height, paletteNum, baseTile);
     }
-    if (dontCopyToVram == FALSE) {
+    if (!dontCopyToVram) {
         CopyWindowToVram(window);
     }
     TextPrinter_SetDownArrowBaseTile(baseTile);

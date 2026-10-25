@@ -11,8 +11,14 @@
 #include "obj_char_transfer.h"
 #include "save_wii_message.h"
 #include "sprite.h"
-#include "sys_task_api.h"
 #include "touchscreen.h"
+
+// NintendoWifiConnectArgs.mode
+enum NintendoWfcMode {
+    NINTENDO_WFC_MODE_DOWNLOAD_ROOM,
+    NINTENDO_WFC_MODE_UPLOAD_RECORD,
+    NINTENDO_WFC_MODE_CHECK_LEADERS,
+};
 
 enum NintendoWfcPaletteScreens {
     NINTENDO_WFC_PALETTE_BOTH_SCREENS,
@@ -26,7 +32,7 @@ enum NintendoWfcPaletteScreens {
 
 typedef struct NintendoWfcPaletteCycle {
     SysTask *task;
-    int active;
+    BOOL active;
     u16 basePltt[64];
     u16 cyclePltt[NINTENDO_WFC_PALETTE_CYCLE_STEPS * 16];
     s16 index;
@@ -256,5 +262,9 @@ int NintendoWfc_NumberInput_Teardown(NintendoWfcConnect *wfc);
 int NintendoWfc_NumberInput_WaitButtonFlash(NintendoWfcConnect *wfc);
 int NintendoWfc_NumberInput_WaitFadeOut(NintendoWfcConnect *wfc);
 int NintendoWfc_NumberInput_Finish(void);
+int NintendoWfcYesNo_Start(NintendoWfcYesNoMenu *menu);
+int NintendoWfcYesNo_HandleInput(NintendoWfcYesNoMenu *menu);
+int NintendoWfcYesNo_UnusedState2(void);
+BOOL NintendoWfcYesNo_WaitClose(NintendoWfcYesNoMenu *menu);
 
 #endif // POKEHEARTGOLD_NINTENDO_WFC_CONNECT_INTERNAL_H

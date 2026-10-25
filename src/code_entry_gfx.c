@@ -373,7 +373,7 @@ void CodeEntry_UpdateButtons(CodeEntryApp *app) {
 
 int CodeEntry_GetDigitAnim(int value, int active) {
     int add = 0;
-    if (active == FALSE) {
+    if (!active) {
         add = 11;
     }
     return add + value;

@@ -13,12 +13,12 @@ typedef struct ParticleScene ParticleScene;
 
 void ParticleScene_HidePlanes(void);
 void ParticleScene_SetBlend(void);
-GF3DVramMan *ParticleScene_CreateVramMan(enum HeapID);
+GF3DVramMan *ParticleScene_CreateVramMan(enum HeapID heapID);
 void ParticleScene_ReserveVram(void);
 void ParticleScene_DrawAndSwap(void);
-ParticleScene *ParticleScene_New(ParticleSceneParam *);
-void ParticleScene_CreateEmitter(ParticleScene *, int);
-BOOL ParticleScene_IsActive(ParticleScene *);
-void ParticleScene_Free(ParticleScene *);
+ParticleScene *ParticleScene_New(ParticleSceneParam *param);
+void ParticleScene_CreateEmitter(ParticleScene *scene, int resource);
+BOOL ParticleScene_IsActive(ParticleScene *scene);
+void ParticleScene_Free(ParticleScene *scene);
 
 #endif // POKEHEARTGOLD_PARTICLE_SCENE_H

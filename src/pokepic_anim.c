@@ -80,7 +80,7 @@ enum PokepicScriptAnimState {
 typedef struct PokepicScriptAnim PokepicScriptAnim;
 
 typedef struct PokepicMotion {
-    u32 active;
+    BOOL active;
 
     union { // read from the script; the argument count is per motion type (sPokepicMotionTypes)
         int args[7];
@@ -128,10 +128,10 @@ struct PokepicScriptAnim {
     SysTask *task;
     u32 *script;
     u32 *cursor; // current script word
-    u32 active;
+    BOOL active;
     u32 scriptId; // NARC member
     u32 yield;    // set by a command that ends the frame
-    u32 done;     // the script ended
+    BOOL done;    // the script ended
     u32 state;
     s32 vars[8];
     s32 commandCount; // commands run this frame
@@ -302,7 +302,7 @@ void PokepicAnimManager_StartAnim(void *managerArg, void *picArg, struct Pokepic
     GF_ASSERT(index < mgr->count);
     GF_ASSERT(!mgr->anims[index].active);
     MI_CpuFill8(&mgr->anims[index], 0, sizeof(PokepicScriptAnim));
-    mgr->anims[index].active = 1;
+    mgr->anims[index].active = TRUE;
     mgr->anims[index].pic = pic;
     if (scriptId >= 143) {
         scriptId = 0;
@@ -312,7 +312,7 @@ void PokepicAnimManager_StartAnim(void *managerArg, void *picArg, struct Pokepic
     mgr->anims[index].reverseX = mgr->allowReverse ? params->reverseX : 0;
     mgr->anims[index].script = AllocAtEndAndReadWholeNarcMemberByIdPair(NARC_a_0_9_0, mgr->anims[index].scriptId, mgr->heapId);
     mgr->anims[index].cursor = mgr->anims[index].script;
-    mgr->anims[index].done = 0;
+    mgr->anims[index].done = FALSE;
     mgr->anims[index].state = POKEPIC_SCRIPT_ANIM_RUNNING;
     mgr->anims[index].runMotions = 0;
     mgr->anims[index].scaleMode = POKEPIC_SCALE_CENTERED;
@@ -340,7 +340,7 @@ void PokepicAnimManager_StopAnim(PokepicAnimManager *mgr, u32 index) {
         SysTask_Destroy(mgr->anims[index].task);
         mgr->anims[index].task = NULL;
         mgr->anims[index].state = POKEPIC_SCRIPT_ANIM_IDLE;
-        mgr->anims[index].active = 0;
+        mgr->anims[index].active = FALSE;
         Heap_Free(mgr->anims[index].script);
     }
 }
@@ -352,9 +352,9 @@ static void PokepicScriptAnim_Task(SysTask *task, void *data) {
     } else {
         anim->delay--;
     }
-    if (anim->done != 0) {
+    if (anim->done) {
         anim->state = POKEPIC_SCRIPT_ANIM_IDLE;
-        anim->active = 0;
+        anim->active = FALSE;
         SysTask_Destroy(task);
         anim->task = NULL;
         Heap_Free(anim->script);
@@ -370,7 +370,7 @@ static void PokepicScriptAnim_RunFrame(PokepicScriptAnim *anim) {
     ended = 0;
     for (i = 0; i < 4; i++) {
         PokepicMotion *motion = &anim->motions[i];
-        if (motion->active != 0) {
+        if (motion->active) {
             if (motion->delay == 0) {
                 motion->update(motion, anim);
             } else {
@@ -399,7 +399,7 @@ static void PokepicScriptAnim_RunFrame(PokepicScriptAnim *anim) {
         anim->commandCount++;
         GF_ASSERT(*anim->cursor < NELEMS(sPokepicAnimCommands));
         sPokepicAnimCommands[*anim->cursor](anim);
-        if (anim->done != 0) {
+        if (anim->done) {
             return;
         }
         anim->cursor++;
@@ -413,7 +413,7 @@ static void PokepicScriptAnim_RunFrame(PokepicScriptAnim *anim) {
         }
     } while (anim->commandCount < 0x100);
     GF_ASSERT(FALSE);
-    anim->done = 1;
+    anim->done = TRUE;
 }
 
 static u32 PokepicScriptAnim_GetScriptWordAt(u32 *array, int index, int expected) {
@@ -435,7 +435,7 @@ static PokepicMotion *PokepicScriptAnim_AllocMotion(PokepicScriptAnim *anim, int
 
     for (i = 0; i < 4; i++) {
         PokepicMotion *motion = &anim->motions[i];
-        if (motion->active == 0) {
+        if (!motion->active) {
             MI_CpuFill8(motion, 0, sizeof(PokepicMotion));
             motion->active = 1;
             motion->update = sPokepicMotionTypes[type].update;
@@ -557,7 +557,7 @@ static void PokepicScriptAnim_AdjustYForScale(PokepicScriptAnim *anim) {
 static void PokepicScriptAnimCmd_End(PokepicScriptAnim *anim) {
     PokepicScriptAnimCmd_ResetTransform(anim);
     anim->yield = 1;
-    anim->done = 1;
+    anim->done = TRUE;
 }
 
 static void PokepicScriptAnimCmd_Yield(PokepicScriptAnim *anim) {

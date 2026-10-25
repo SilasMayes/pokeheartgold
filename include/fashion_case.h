@@ -37,7 +37,7 @@ void FashionCase_GiveFashionItem(FashionCase *fashionCase, int id, int quantity)
 int FashionCase_CanGiveAccessory(FashionCase *fashionCase, int id, int quantity);
 u32 FashionCase_GetAccessoryCount(FashionCase *fashionCase, int id);
 void FashionCase_GiveContestBackground(FashionCase *fashionCase, int id);
-int FashionCase_HasWallpaper(FashionCase *fashionCase, int index);
+BOOL FashionCase_HasWallpaper(FashionCase *fashionCase, int index);
 void FashionCase_TakeAccessory(FashionCase *fashionCase, int id, int quantity);
 
 #endif // POKEHEARTGOLD_FASHION_CASE_H

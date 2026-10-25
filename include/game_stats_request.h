@@ -23,6 +23,17 @@ enum GameStatsPrepareResult {
     GAME_STATS_PREPARE_NO_MEMORY,
 };
 
+// GameStats_GetError: the codes below 26 come from the HTTP request, these from the server's answer
+enum GameStatsError {
+    GAME_STATS_ERROR_CHECK_SUM = 26,
+    GAME_STATS_ERROR_PID,
+    GAME_STATS_ERROR_DATA_LENGTH,
+    GAME_STATS_ERROR_TOKEN_NOT_FOUND,
+    GAME_STATS_ERROR_TOKEN_EXPIRED,
+    GAME_STATS_ERROR_INCORRECT_HASH,
+    GAME_STATS_ERROR_RESPONSE_TOO_LONG,
+};
+
 typedef struct GameStatsRequest {
     int state;     // GameStatsRequestState
     int requestId; // HTTP library request handle, -1 when none

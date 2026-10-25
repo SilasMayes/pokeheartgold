@@ -65,7 +65,7 @@ void EraseFrameAndWindow1(Window *window, BOOL dontCopyToVram) {
     u8 height = GetWindowHeight(window);
 
     FillBgTilemapRect(window->bgConfig, bgId, 0, x - 1, y - 1, width + 2, height + 2, 0);
-    if (dontCopyToVram == FALSE) {
+    if (!dontCopyToVram) {
         ClearWindowTilemapAndCopyToVram(window);
     }
 }
@@ -119,7 +119,7 @@ void DrawFrame2AroundWindow(Window *window, u32 baseTile, u32 paletteNum) {
 
 void DrawFrameAndWindow2(Window *window, BOOL dontCopyToVram, u32 baseTile, u32 paletteNum) {
     DrawFrame2AroundWindow(window, baseTile, paletteNum);
-    if (dontCopyToVram == FALSE) {
+    if (!dontCopyToVram) {
         CopyWindowToVram(window);
     }
     TextPrinter_SetDownArrowBaseTile(baseTile);
@@ -133,7 +133,7 @@ void ClearFrameAndWindow2(Window *window, BOOL dontCopyToVram) {
     u8 height = GetWindowHeight(window);
 
     FillBgTilemapRect(window->bgConfig, bgId, 0, x - 2, y - 1, width + 5, height + 2, 0);
-    if (dontCopyToVram == FALSE) {
+    if (!dontCopyToVram) {
         ClearWindowTilemapAndCopyToVram(window);
     }
 }

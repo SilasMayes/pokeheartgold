@@ -8,6 +8,7 @@
 
 #include "global.h"
 
+#include "constants/dwc_status.h"
 #include "constants/sndseq.h"
 
 #include "msgdata/msg.naix"
@@ -68,10 +69,16 @@ enum NintendoWfcDisconnectStep {
     NINTENDO_WFC_DISCONNECT_WAIT_PRINT,
 };
 
-enum NintendoWfcMode {
-    NINTENDO_WFC_MODE_DOWNLOAD_ROOM,
-    NINTENDO_WFC_MODE_UPLOAD_RECORD,
-    NINTENDO_WFC_MODE_CHECK_LEADERS,
+// Number pad cursor positions: the digit keys 0..9, then the buttons below them. gNintendoWfcPadNeighbors also
+// holds markers for moving up or down from a button, resolved by the column the cursor came from.
+enum NintendoWfcPadKey {
+    NINTENDO_WFC_PAD_KEY_BACK = 10,
+    NINTENDO_WFC_PAD_KEY_OK,
+    NINTENDO_WFC_PAD_KEY_CANCEL,
+    NINTENDO_WFC_PAD_UP_FROM_LEFT_BUTTON,
+    NINTENDO_WFC_PAD_DOWN_FROM_LEFT_BUTTON,
+    NINTENDO_WFC_PAD_UP_FROM_RIGHT_BUTTON,
+    NINTENDO_WFC_PAD_DOWN_FROM_RIGHT_BUTTON,
 };
 
 enum NintendoWfcMainState {
@@ -335,11 +342,6 @@ static void NintendoWfcYesNo_AddWindows(NintendoWfcYesNoMenu *menu);
 static void NintendoWfcYesNo_RemoveWindows(NintendoWfcYesNoMenu *menu);
 static void NintendoWfcYesNo_ShowCursor(NintendoWfcYesNoMenu *menu);
 static void NintendoWfcYesNo_MoveCursor(NintendoWfcYesNoMenu *menu, int choice);
-
-int NintendoWfcYesNo_Start(NintendoWfcYesNoMenu *menu);
-int NintendoWfcYesNo_HandleInput(NintendoWfcYesNoMenu *menu);
-int NintendoWfcYesNo_UnusedState2(void);
-BOOL NintendoWfcYesNo_WaitClose(NintendoWfcYesNoMenu *menu);
 
 void NintendoWfcHttp_Init(u32 profileId, u64 friendKey) {
     gNintendoWfcHttp.state = NINTENDO_WFC_HTTP_IDLE;
@@ -627,7 +629,7 @@ static int NintendoWfcHttp_ConvertError(int error) {
     case 21:
     case 22:
     case 23:
-    case 32:
+    case GAME_STATS_ERROR_RESPONSE_TOO_LONG:
         ret = NINTENDO_WFC_HTTP_RESULT_FATAL;
         break;
     case 2:
@@ -646,15 +648,15 @@ static int NintendoWfcHttp_ConvertError(int error) {
     case 17:
     case 18:
     case 19:
-    case 26:
-    case 27:
-    case 28:
-    case 29:
-    case 31:
+    case GAME_STATS_ERROR_CHECK_SUM:
+    case GAME_STATS_ERROR_PID:
+    case GAME_STATS_ERROR_DATA_LENGTH:
+    case GAME_STATS_ERROR_TOKEN_NOT_FOUND:
+    case GAME_STATS_ERROR_INCORRECT_HASH:
         ret = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
         break;
     case 15:
-    case 30:
+    case GAME_STATS_ERROR_TOKEN_EXPIRED:
         ret = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
         break;
     default:
@@ -937,7 +939,7 @@ static void NintendoWfc_SetSpritePosition(Sprite *sprite, int x, int y) {
 
 static void NintendoWfc_MovePadCursor(Sprite *sprite, int key) {
     NintendoWfc_SetSpritePosition(sprite, gNintendoWfcPadCursorPositions[key][0], gNintendoWfcPadCursorPositions[key][1] + 256);
-    if (key < 10) {
+    if (key < NINTENDO_WFC_PAD_KEY_BACK) {
         Sprite_SetAnimCtrlSeq(sprite, 1);
     } else {
         Sprite_SetAnimCtrlSeq(sprite, 2);
@@ -1051,12 +1053,12 @@ int NintendoWfc_SessionExit(NintendoWfcConnect *wfc, int state) {
     if (wfc->paletteCycle.task != NULL) {
         SysTask_Destroy(wfc->paletteCycle.task);
         wfc->paletteCycle.task = NULL;
-        wfc->paletteCycle.active = 0;
+        wfc->paletteCycle.active = FALSE;
     }
     NintendoWfc_FreeStrings(wfc);
     NintendoWfc_RemoveWindows(wfc);
     NintendoWfc_FreeBgs(wfc->bgConfig);
-    wfc->paletteCycle.active = 0;
+    wfc->paletteCycle.active = FALSE;
     wfc->screen = wfc->nextScreen;
     if (wfc->screen == 0) {
         return NINTENDO_WFC_MAIN_DONE;
@@ -1177,7 +1179,7 @@ static void NintendoWfc_LoadBgGraphics(NintendoWfcConnect *wfc) {
         outer++;
     }
     DC_FlushRange(wfc->paletteCycle.cyclePltt, sizeof(wfc->paletteCycle.cyclePltt));
-    wfc->paletteCycle.active = 1;
+    wfc->paletteCycle.active = TRUE;
     wfc->paletteCycle.screens = NINTENDO_WFC_PALETTE_BOTH_SCREENS;
     wfc->paletteCycle.task = SysTask_CreateOnVBlankQueue(NintendoWfc_PaletteCycleTask, &wfc->paletteCycle, 20);
     NARC_Delete(narc);
@@ -1185,7 +1187,7 @@ static void NintendoWfc_LoadBgGraphics(NintendoWfcConnect *wfc) {
 
 static void NintendoWfc_PaletteCycleTask(SysTask *task, void *data) {
     NintendoWfcPaletteCycle *cycle = data;
-    if (cycle->active != 0) {
+    if (cycle->active) {
         cycle->tick ^= 1;
         if (cycle->tick & 1) {
             return;
@@ -1259,7 +1261,7 @@ int NintendoWfc_AskConnect(NintendoWfcConnect *wfc) {
 int NintendoWfc_HandleConnectChoice(NintendoWfcConnect *wfc) {
     int choice = NintendoWfcYesNo_Run(&wfc->yesNoMenu);
     if (choice) {
-        if (choice == 2) {
+        if (choice == YESNORESPONSE_NO) {
             CommState_FreeWfcSession();
             NintendoWfc_SetNextScreen(wfc, 0, 0);
             wfc->state = NINTENDO_WFC_STATE_START_EXIT;
@@ -1280,15 +1282,15 @@ int NintendoWfc_AskLogOut(NintendoWfcConnect *wfc) {
 
 int NintendoWfc_HandleLogOutChoice(NintendoWfcConnect *wfc) {
     int result = NintendoWfcYesNo_Run(&wfc->yesNoMenu);
-    if (result != 0) {
-        if (result == 2) {
-            if (DWC_CheckInet() == 0) {
+    if (result) {
+        if (result == YESNORESPONSE_NO) {
+            if (!DWC_CheckInet()) {
                 wfc->state = NINTENDO_WFC_STATE_ASK_CONNECT;
             } else {
                 wfc->state = NINTENDO_WFC_STATE_PRINT_DISCONNECTING;
             }
         } else {
-            if (DWC_CheckInet() == 0) {
+            if (!DWC_CheckInet()) {
                 NintendoWfc_SetNextScreen(wfc, 0, 0);
                 wfc->state = NINTENDO_WFC_STATE_START_EXIT;
             } else {
@@ -1316,9 +1318,9 @@ int NintendoWfc_WaitConnect(NintendoWfcConnect *wfc) {
     int lastError;
     NetApInfo apInfo;
     DWC_ProcessInet();
-    if (DWC_CheckInet() != 0) {
+    if (DWC_CheckInet()) {
         switch (DWC_GetInetStatus()) {
-        case 7:
+        case DWC_CONNECTINET_STATE_ERROR:
             wfc->dwcError = DWC_GetLastError(&errorCode);
             wfc->dwcErrorCode = errorCode;
             DWC_ClearError();
@@ -1326,20 +1328,20 @@ int NintendoWfc_WaitConnect(NintendoWfcConnect *wfc) {
             NintendoWfc_HideWaitingIcon(wfc);
             wfc->state = NINTENDO_WFC_STATE_SHOW_DWC_ERROR;
             break;
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 5:
-        case 6:
-        case 8:
+        case DWC_CONNECTINET_STATE_NOT_INITIALIZED:
+        case DWC_CONNECTINET_STATE_IDLE:
+        case DWC_CONNECTINET_STATE_OPERATING:
+        case DWC_CONNECTINET_STATE_OPERATED:
+        case DWC_CONNECTINET_STATE_DISCONNECTING:
+        case DWC_CONNECTINET_STATE_DISCONNECTED:
+        case DWC_CONNECTINET_STATE_FATAL_ERROR:
         default:
             DWC_GetLastError(&lastError);
             NintendoWfc_HideWaitingIcon(wfc);
             wfc->state = NINTENDO_WFC_STATE_SHOW_HTTP_ERROR;
             wfc->httpResult = NINTENDO_WFC_HTTP_RESULT_SERVER_ERROR;
             break;
-        case 4:
+        case DWC_CONNECTINET_STATE_CONNECTED:
             DWC_GetApInfo(&apInfo);
             wfc->state = NINTENDO_WFC_STATE_START_AUTH;
             break;
@@ -1355,43 +1357,43 @@ int NintendoWfc_StartAuth(NintendoWfcConnect *wfc) {
 }
 
 int NintendoWfc_WaitAuth(NintendoWfcConnect *wfc) {
-    int value;
-    u32 category;
+    int errorCode;
+    u32 errorType;
     switch (DWC_NASLoginProcess()) {
-    case 3:
+    case DWC_NASLOGIN_STATE_SUCCESS:
         wfc->state = NINTENDO_WFC_STATE_INIT_HTTP;
         break;
-    case 0:
-    case 4:
-    case 5:
+    case DWC_NASLOGIN_STATE_DIRTY:
+    case DWC_NASLOGIN_STATE_ERROR:
+    case DWC_NASLOGIN_STATE_CANCELED:
         NintendoWfc_HideWaitingIcon(wfc);
-        wfc->dwcError = DWC_GetLastErrorEx(&value, &category);
-        wfc->dwcErrorCode = value;
+        wfc->dwcError = DWC_GetLastErrorEx(&errorCode, &errorType);
+        wfc->dwcErrorCode = errorCode;
         DWC_ClearError();
         DWC_CleanupInet();
         wfc->state = NINTENDO_WFC_STATE_SHOW_DWC_ERROR;
-        switch (category) {
-        case 1:
-        case 2:
+        switch (errorType) {
+        case DWC_ETYPE_LIGHT:
+        case DWC_ETYPE_SHOW_ERROR:
             wfc->state = NINTENDO_WFC_STATE_SHOW_DWC_ERROR;
             break;
-        case 4:
+        case DWC_ETYPE_SHUTDOWN_GHTTP:
             DWC_ShutdownGHTTP();
             wfc->state = NINTENDO_WFC_STATE_SHOW_DWC_ERROR;
             break;
-        case 6:
+        case DWC_ETYPE_DISCONNECT:
             wfc->state = NINTENDO_WFC_STATE_SHOW_DWC_ERROR;
             break;
-        case 3:
+        case DWC_ETYPE_SHUTDOWN_FM:
             DWC_ShutdownFriendsMatch();
             wfc->state = NINTENDO_WFC_STATE_SHOW_DWC_ERROR;
             break;
-        case 5:
-        case 7:
+        case DWC_ETYPE_SHUTDOWN_ND:
+        case DWC_ETYPE_FATAL:
             CommState_ShowRestartErrorAndHalt();
             break;
         }
-        if (value < -20000 && value >= -29999) {
+        if (errorCode < -20000 && errorCode >= -29999) {
             wfc->state = NINTENDO_WFC_STATE_SHOW_DWC_ERROR;
         }
         break;
@@ -1979,7 +1981,7 @@ int NintendoWfc_StartSave(NintendoWfcConnect *wfc) {
 }
 
 int NintendoWfc_Save(NintendoWfcConnect *wfc) {
-    if (Save_WriteFileAsync(wfc->args->saveData) == 2) {
+    if (Save_WriteFileAsync(wfc->args->saveData) == WRITE_STATUS_SUCCESS) {
         wfc->state = wfc->nextState;
         NintendoWfc_HideWaitingIcon(wfc);
     }
@@ -1995,7 +1997,7 @@ int NintendoWfc_AskCancelChallenge(NintendoWfcConnect *wfc) {
 int NintendoWfc_HandleCancelChallengeChoice(NintendoWfcConnect *wfc) {
     int result = NintendoWfcYesNo_Run(&wfc->yesNoMenu);
     if (result) {
-        if (result == 2) {
+        if (result == YESNORESPONSE_NO) {
             wfc->state = NINTENDO_WFC_STATE_ASK_CHALLENGE_ROOM;
         } else {
             wfc->state = NINTENDO_WFC_STATE_PRINT_DISCONNECTING;
@@ -2014,7 +2016,7 @@ int NintendoWfc_AskCancelDownload(NintendoWfcConnect *wfc) {
 int NintendoWfc_HandleCancelDownloadChoice(NintendoWfcConnect *wfc) {
     int result = NintendoWfcYesNo_Run(&wfc->yesNoMenu);
     if (result) {
-        if (result == 2) {
+        if (result == YESNORESPONSE_NO) {
             wfc->state = NINTENDO_WFC_STATE_ASK_LEADERS_RANK;
         } else {
             wfc->state = NINTENDO_WFC_STATE_PRINT_DISCONNECTING;
@@ -2058,8 +2060,8 @@ int NintendoWfc_StartExit(NintendoWfcConnect *wfc) {
 
 int NintendoWfc_UnusedState_HandleYesNo(NintendoWfcConnect *wfc) {
     int response = NintendoWfc_HandleYesNoPrompt(wfc->yesNoPrompt);
-    if (response != 0) {
-        if (response == 2) {
+    if (response) {
+        if (response == YESNORESPONSE_NO) {
             wfc->state = NINTENDO_WFC_STATE_ASK_CONNECT;
         } else {
             wfc->state = NINTENDO_WFC_STATE_PRINT_DISCONNECTING;
@@ -2344,21 +2346,21 @@ static int NintendoWfc_GetTouchedPadKey(NintendoWfcConnect *wfc) {
 static u8 NintendoWfc_GetPadNeighbor(u32 key, u32 direction, u16 *padColumn) {
     u8 next = gNintendoWfcPadNeighbors[key][direction];
 
-    if (next == 13) {
+    if (next == NINTENDO_WFC_PAD_UP_FROM_LEFT_BUTTON) {
         next = gNintendoWfcPadKeysUpFromLeftButton[padColumn[0]];
-    } else if (next == 14) {
+    } else if (next == NINTENDO_WFC_PAD_DOWN_FROM_LEFT_BUTTON) {
         next = gNintendoWfcPadKeysDownFromLeftButton[padColumn[0]];
-    } else if (next == 15) {
+    } else if (next == NINTENDO_WFC_PAD_UP_FROM_RIGHT_BUTTON) {
         next = gNintendoWfcPadKeysUpFromRightButton[padColumn[1]];
-    } else if (next == 16) {
+    } else if (next == NINTENDO_WFC_PAD_DOWN_FROM_RIGHT_BUTTON) {
         next = gNintendoWfcPadKeysDownFromRightButton[padColumn[1]];
-    } else if (next == 10) {
+    } else if (next == NINTENDO_WFC_PAD_KEY_BACK) {
         if (key == 5 || key == 0) {
             padColumn[0] = 0;
         } else if (key == 1 || key == 6) {
             padColumn[0] = 1;
         }
-    } else if (next == 12) {
+    } else if (next == NINTENDO_WFC_PAD_KEY_CANCEL) {
         if (key == 3 || key == 8) {
             padColumn[1] = 0;
         } else if (key == 4 || key == 9) {
@@ -2374,7 +2376,7 @@ static int NintendoWfc_GetEnteredNumber(NintendoWfcNumberInput *input, int newDi
     int placeValue = 100;
     int digitCount = 3;
     int outputCount;
-    int started;
+    BOOL started;
     int i;
     int sum;
 
@@ -2387,7 +2389,7 @@ static int NintendoWfc_GetEnteredNumber(NintendoWfcNumberInput *input, int newDi
     outputCount = 0;
     started = FALSE;
     for (i = 0; i < 3; i++) {
-        if ((input->digits[i] == 0 && started == FALSE) || digits[i] < 0) {
+        if ((input->digits[i] == 0 && !started) || digits[i] < 0) {
             placeValue /= 10;
             digitCount--;
         } else {
@@ -2421,7 +2423,7 @@ static BOOL NintendoWfc_AreDigitsComplete(NintendoWfcNumberInput *input) {
 
 static u8 NintendoWfc_GetCursorAfterDigit(NintendoWfcNumberInput *input) {
     if (NintendoWfc_AreDigitsComplete(input)) {
-        return 11;
+        return NINTENDO_WFC_PAD_KEY_OK;
     }
     return input->cursor;
 }
@@ -2699,9 +2701,9 @@ static void NintendoWfcYesNo_Init(NintendoWfcYesNoMenu *menu) {
 static int NintendoWfcYesNo_Run(NintendoWfcYesNoMenu *menu) {
     int result = gNintendoWfcYesNoStates[menu->state](menu);
     if (result == 1) {
-        return menu->choice + 1;
+        return menu->choice + YESNORESPONSE_YES;
     }
-    return 0;
+    return YESNORESPONSE_WAIT;
 }
 
 int NintendoWfcYesNo_Start(NintendoWfcYesNoMenu *menu) {

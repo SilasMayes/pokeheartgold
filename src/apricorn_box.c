@@ -458,7 +458,7 @@ static BOOL ApricornRecord_IsSameTrainer(ApricornRecord *a, ApricornRecord *b) {
     if (a->language != b->language) {
         return FALSE;
     }
-    if (StringNotEqual(a->name, b->name) == FALSE) {
+    if (!StringNotEqual(a->name, b->name)) {
         return TRUE;
     }
     return FALSE;

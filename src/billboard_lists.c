@@ -163,7 +163,7 @@ BOOL Billboard_Delete(Billboard *billboard) {
         GF_ASSERT(FALSE);
         return FALSE;
     }
-    if (billboard->initialized != FALSE) {
+    if (billboard->initialized) {
         Billboard_DeleteAllObjects(billboard);
         Heap_Free(billboard->objects);
         Heap_Free(billboard->freeObjects);
@@ -181,7 +181,7 @@ static BOOL Billboard_DeleteAllObjects(Billboard *billboard) {
         GF_ASSERT(billboard != NULL);
         return FALSE;
     }
-    if (billboard->initialized != FALSE) {
+    if (billboard->initialized) {
         object = billboard->root.next;
         while (object != &billboard->root) {
             next = object->next;

@@ -61,8 +61,6 @@ int StatsUpload_RandomByte(void) {
 // (multiplier 8n + 5, odd increment, power of two modulus) used by the uploads.
 BOOL StatsUpload_SetKey(char *gameName, char *secretKey, u32 multiplier, u32 increment, u32 modulus, u32 checksumKey) {
     int i, bits;
-    u32 count;
-    u8 *dst;
     gStatsUpload.keyReady = FALSE;
     if (strlen(gameName) >= 32) {
         return FALSE;
@@ -86,17 +84,7 @@ BOOL StatsUpload_SetKey(char *gameName, char *secretKey, u32 multiplier, u32 inc
         return FALSE;
     }
     strncpy(gStatsUploadGameName, gameName, 32);
-    count = 10;
-    dst = gStatsUploadSecretKey;
-    {
-        do {
-            u8 x = ((u8 *)secretKey)[0], y = ((u8 *)secretKey)[1];
-            secretKey += 2;
-            dst[0] = x;
-            dst[1] = y;
-            dst += 2;
-        } while (--count != 0);
-    }
+    *(SecretKey *)gStatsUploadSecretKey = *(SecretKey *)secretKey;
     gStatsUpload.multiplier = multiplier;
     gStatsUpload.increment = increment;
     gStatsUpload.modulus = modulus;

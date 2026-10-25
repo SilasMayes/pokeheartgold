@@ -25,32 +25,32 @@
 
 typedef struct SaveFashionMon SaveFashionMon;
 
-void Save_FashionData_Init(SaveFashionData *);
+void Save_FashionData_Init(SaveFashionData *fashionData);
 u32 Save_FashionData_sizeof(void);
 u32 FashionEntry_sizeof(void);
-SaveFashionDataSub *FashionEntry_New(enum HeapID);
-BOOL FashionEntry_IsSaved(SaveFashionDataSub *);
-int FashionCase_GetWallpaperOrder(FashionCase *, int);
-void FashionEntry_MarkSaved(SaveFashionDataSub *);
-void FashionEntry_Clear(SaveFashionDataSub *);
-void FashionEntry_SetMon(SaveFashionDataSub *, Pokemon *, DressUpMonPic *);
-void FashionEntry_PlaceItem(SaveFashionDataSub *, DressUpSlot *, int);
-void FashionEntry_SetBackdrop(SaveFashionDataSub *, int);
-void FashionEntry_SetMonSecondText(SaveFashionDataSub *, String *, u32);
-BOOL FashionEntry_IsItemPlaced(SaveFashionDataSub *, int);
-SaveFashionMon *FashionEntry_GetMon(SaveFashionDataSub *);
-u8 *FashionEntry_GetItem(SaveFashionDataSub *, int);
-void FashionEntry_GetMonSecondText(SaveFashionDataSub *, String *);
-u8 FashionEntry_GetBackdrop(SaveFashionDataSub *);
-u16 FashionEntry_GetMailMessageWord(SaveFashionDataSub *);
-s8 FashionMon_GetZ(SaveFashionMon *);
-u8 FashionMon_GetX(SaveFashionMon *);
-u8 FashionMon_GetY(SaveFashionMon *);
-void FashionMon_ToPokemon(SaveFashionMon *, Pokemon *);
-u8 FashionItem_GetId(u8 *);
-u8 FashionItem_GetX(u8 *);
-u8 FashionItem_GetY(u8 *);
-s8 FashionItem_GetZ(s8 *);
-void Save_FashionData_InsertEntries(u8, int, SaveFashionData *, SaveFashionDataSub **);
+SaveFashionDataSub *FashionEntry_New(enum HeapID heapId);
+BOOL FashionEntry_IsSaved(SaveFashionDataSub *entry_);
+int FashionCase_GetWallpaperOrder(FashionCase *fashionCase, int index);
+void FashionEntry_MarkSaved(SaveFashionDataSub *entry_);
+void FashionEntry_Clear(SaveFashionDataSub *entry_);
+void FashionEntry_SetMon(SaveFashionDataSub *entry_, Pokemon *mon, DressUpMonPic *monPic);
+void FashionEntry_PlaceItem(SaveFashionDataSub *entry_, DressUpSlot *source, int index);
+void FashionEntry_SetBackdrop(SaveFashionDataSub *entry_, int value);
+void FashionEntry_SetMonSecondText(SaveFashionDataSub *entry_, String *string, u32 gender);
+BOOL FashionEntry_IsItemPlaced(SaveFashionDataSub *entry_, int index);
+SaveFashionMon *FashionEntry_GetMon(SaveFashionDataSub *entry_);
+u8 *FashionEntry_GetItem(SaveFashionDataSub *entry_, int index);
+void FashionEntry_GetMonSecondText(SaveFashionDataSub *entry_, String *string);
+u8 FashionEntry_GetBackdrop(SaveFashionDataSub *entry_);
+u16 FashionEntry_GetMailMessageWord(SaveFashionDataSub *entry_);
+s8 FashionMon_GetZ(SaveFashionMon *mon);
+u8 FashionMon_GetX(SaveFashionMon *mon);
+u8 FashionMon_GetY(SaveFashionMon *mon);
+void FashionMon_ToPokemon(SaveFashionMon *mon, Pokemon *pokemon);
+u8 FashionItem_GetId(u8 *data);
+u8 FashionItem_GetX(u8 *data);
+u8 FashionItem_GetY(u8 *data);
+s8 FashionItem_GetZ(s8 *data);
+void Save_FashionData_InsertEntries(u8 count, int skip, SaveFashionData *fashionData, SaveFashionDataSub **entries);
 
 #endif // POKEHEARTGOLD_SAVE_FASHION_H

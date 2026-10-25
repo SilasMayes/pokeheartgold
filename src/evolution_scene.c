@@ -465,7 +465,7 @@ static void EvolutionScene_ShowMenu(EvolutionTaskData *data, BOOL deleteMoveProm
     int bottomMsg = msg_0197_01182; // Keep old moves!
 
     GF_ASSERT(data->spritesReady);
-    if (deleteMovePrompt == FALSE) {
+    if (!deleteMovePrompt) {
         BufferMoveName(data->msgFormat, 0, data->newMove);
         topMsg = msg_0197_01186;    // Give up on <move>!
         bottomMsg = msg_0197_01187; // Don't give up on <move>!
@@ -863,7 +863,7 @@ static void EvolutionScene_Run(EvolutionTaskData *data) {
             Pokedex_SetMonCaughtFlag(data->pokedex, data->mon);
             GameStats_Inc(data->gameStats, GAME_STAT_UNIQUE_MONS_CAUGHT);
             GameStats_AddScore(data->gameStats, SCORE_EVENT_REGISTER_SPECIES_CAUGHT);
-            if (GetMonData(data->mon, MON_DATA_HAS_NICKNAME, NULL) == FALSE) {
+            if (!GetMonData(data->mon, MON_DATA_HAS_NICKNAME, NULL)) {
                 SetMonData(data->mon, MON_DATA_SPECIES_NAME, NULL);
             }
             data->state++;

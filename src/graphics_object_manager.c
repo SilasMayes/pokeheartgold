@@ -62,7 +62,7 @@ void GraphicsManager_DrawObjects(GraphicsManager *manager) {
     int i;
     G3_PushMtx();
     for (i = 0; i < manager->objectCount; i++) {
-        if (manager->objects[i].visible != FALSE) {
+        if (manager->objects[i].visible) {
             GraphicsObject_Draw(&manager->objects[i]);
         }
     }
@@ -182,7 +182,7 @@ static void GraphicsObject_SetPaletteSlot(GraphicsObject *object, u32 slot) {
 }
 
 static void GraphicsObject_SetFlip(GraphicsObject *object, BOOL vertical, BOOL flip) {
-    if (vertical == FALSE) {
+    if (!vertical) {
         object->flipX = flip;
     } else {
         object->flipY = flip;
@@ -242,7 +242,7 @@ static GraphicsPalette *GraphicsPalettes_New(int count, enum HeapID heapId) {
 static GraphicsObject *GraphicsManager_FindFreeObject(GraphicsManager *manager) {
     int i;
     for (i = 0; i < manager->objectCount; i++) {
-        if (manager->objects[i].active == FALSE) {
+        if (!manager->objects[i].active) {
             return &manager->objects[i];
         }
     }

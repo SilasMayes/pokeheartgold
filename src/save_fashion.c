@@ -293,7 +293,7 @@ int FashionCase_CanGiveAccessory(FashionCase *fashionCase, int id, int quantity)
     return result;
 }
 
-int FashionCase_HasWallpaper(FashionCase *fashionCase, int index) {
+BOOL FashionCase_HasWallpaper(FashionCase *fashionCase, int index) {
     if (FashionCase_GetWallpaperOrder(fashionCase, index) != FASHION_WALLPAPER_NOT_OWNED) {
         return TRUE;
     }

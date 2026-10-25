@@ -14,7 +14,7 @@ void Save_FriendGroup_SetName(SAV_FRIEND_GRP *group, int index, int type, String
 void Save_FriendGroup_SetLeaderGender(SAV_FRIEND_GRP *group, int index, u32 gender);
 void Save_FriendGroup_SetLanguage(SAV_FRIEND_GRP *group, int index, int language);
 BOOL Save_FriendGroup_IsGroupNameTaken(SAV_FRIEND_GRP *group, u16 *name);
-BOOL FriendGroup_IsEmpty(FRIEND_GROUP *);
-BOOL FriendGroup_Equals(FRIEND_GROUP *, FRIEND_GROUP *);
+BOOL FriendGroup_IsEmpty(FRIEND_GROUP *group);
+BOOL FriendGroup_Equals(FRIEND_GROUP *a, FRIEND_GROUP *b);
 
 #endif // POKEHEARTGOLD_FRIEND_GROUP_ACCESS_H

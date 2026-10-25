@@ -14,19 +14,19 @@ enum PlayerAvatarCollision {
 
 void PlayerAvatar_GetCoordsInFront(PlayerAvatar *playerAvatar, int *x, int *z);
 void PlayerAvatar_UpdateMovement(PlayerAvatar *playerAvatar);
-void PlayerAvatar_MoveControl(PlayerAvatar *playerAvatar, MapLoadManager *mapLoadManager, int direction, u16 keys, u16 heldKeys, int allowTurn);
-int PlayerAvatar_CheckReadyToMove(PlayerAvatar *, int);
+void PlayerAvatar_MoveControl(PlayerAvatar *playerAvatar, MapLoadManager *mapLoadManager, int direction, u16 keys, u16 heldKeys, BOOL allowTurn);
+BOOL PlayerAvatar_CheckReadyToMove(PlayerAvatar *avatar, int direction);
 void PlayerAvatar_ResetMovement(PlayerAvatar *playerAvatar);
 BOOL PlayerAvatar_IsBetweenSteps(PlayerAvatar *playerAvatar);
 void PlayerAvatar_StopAndFace(PlayerAvatar *playerAvatar, int direction);
-u32 PlayerAvatar_CheckCollision(PlayerAvatar *, LocalMapObject *, int);
+u32 PlayerAvatar_CheckCollision(PlayerAvatar *avatar, LocalMapObject *mapObject, int direction);
 int PlayerAvatar_GetInputDirection(PlayerAvatar *avatar, u16 newKeys, u16 heldKeys);
-BOOL PlayerAvatar_IsReadyOrBumpingWall(PlayerAvatar *);
+BOOL PlayerAvatar_IsReadyOrBumpingWall(PlayerAvatar *avatar);
 BOOL PlayerAvatar_IsRunning(PlayerAvatar *playerAvatar);
-int PlayerAvatar_GetMoveStateForDirection(PlayerAvatar *, int);
-u32 PlayerAvatar_GetMovementFromInput(PlayerAvatar *, int, int, u32, int, int);
-BOOL PlayerAvatar_IsReadyForMovement(PlayerAvatar *);
-void PlayerAvatar_SetMovement(PlayerAvatar *, int);
-int PlayerAvatar_GetMetatileBehaviorInDirection(PlayerAvatar *, int);
+int PlayerAvatar_GetMoveStateForDirection(PlayerAvatar *avatar, int direction);
+u32 PlayerAvatar_GetMovementFromInput(PlayerAvatar *avatar, int keys, int heldKeys, u32 speed, int allowRun, int collision);
+BOOL PlayerAvatar_IsReadyForMovement(PlayerAvatar *avatar);
+void PlayerAvatar_SetMovement(PlayerAvatar *avatar, int movement);
+int PlayerAvatar_GetMetatileBehaviorInDirection(PlayerAvatar *avatar, int direction);
 
 #endif // POKEHEARTGOLD_PLAYER_AVATAR_MOVEMENT_H

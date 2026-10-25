@@ -41,7 +41,7 @@ typedef struct OrbitCursor {
     int state;
     int leadSprite; // ORBIT_CURSOR_NO_LEAD_SPRITE until a sprite starts orbiting
     int orbitingCount;
-    int active;
+    BOOL active;
     SysTask *task;
     int unk_F8;
     int radiusX;

@@ -4,7 +4,7 @@
 #include "igt.h"
 
 typedef struct IGTCounter {
-    u32 active;
+    BOOL active;
     IGT *igt;
     u64 countedSeconds;
     u32 unk10;

@@ -37,7 +37,7 @@ enum CodeEntryKeyCursorAnim {
 typedef struct CodeEntryCell {
     int value;  // digit + 1 (0: empty); separator: index of the digit before it; cursor: current anim
     int group;  // 1-based group of a digit
-    int active; // digit is in the selected group (drawn large)
+    BOOL active; // digit is in the selected group (drawn large)
     ManagedSprite *sprite;
     TouchscreenHitbox *hitbox;
     union {
@@ -90,14 +90,14 @@ typedef struct CodeEntryApp {
     PaletteData *paletteData;
     TouchHitboxController *touchController;
     TouchscreenHitbox hitboxes[CODE_ENTRY_HITBOX_NUM];
-    int touchActive;
+    BOOL touchActive;
     FontSystem *fontSystem;
     TextOBJ *buttonLabels[2];
     CodeEntryButtonLabelAlloc buttonLabelAllocs[2];
     Window promptWindow;
     int pendingAction;
     int pendingArg;
-    int pendingToLast;
+    BOOL pendingToLast;
     CodeEntryArgs args;
     int separatorCount;
     int firstEditable;

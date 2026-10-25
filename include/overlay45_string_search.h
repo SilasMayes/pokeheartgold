@@ -19,7 +19,7 @@ typedef char StringSearchSize12[sizeof(StringSearch)==12?1:-1];
 extern "C" {
 #endif
 int LobbyString_Find(const StringSearch *,const StringSearch *,u32);
-u32 LobbyString_FindChars(const StringSearch *,const s8 *,u32,u32);
+u32 LobbyString_FindChars(const StringSearch *s, const s8 *needle, u32 start, u32 count);
 #ifdef __cplusplus
 }
 #endif

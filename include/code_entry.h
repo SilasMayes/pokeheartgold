@@ -26,8 +26,8 @@ extern const OverlayManagerTemplate gOverlayTemplate_CodeEntry;
 BOOL CodeEntry_Init(OverlayManager *manager, int *state);
 BOOL CodeEntry_Main(OverlayManager *manager, int *state);
 BOOL CodeEntry_Exit(OverlayManager *manager, int *state);
-CodeEntryArgs *CodeEntryArgs_New(enum HeapID, u32, const int *, Options *, int, u32);
-CodeEntryArgs *CodeEntryArgs_NewWithFixedDigits(enum HeapID, u32, const int *, Options *, int, u32, int, u32);
-void CodeEntryArgs_Delete(CodeEntryArgs *);
+CodeEntryArgs *CodeEntryArgs_New(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, u32 showWirelessIcon);
+CodeEntryArgs *CodeEntryArgs_NewWithFixedDigits(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, u32 showWirelessIcon, int fixedGroups, u32 fixedValue);
+void CodeEntryArgs_Delete(CodeEntryArgs *args);
 
 #endif // POKEHEARTGOLD_CODE_ENTRY_H

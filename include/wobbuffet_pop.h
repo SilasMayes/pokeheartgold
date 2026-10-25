@@ -16,7 +16,6 @@
 #include "particle_system.h"
 #include "pm_string.h"
 #include "sprite_system.h"
-#include "sys_task_api.h"
 
 // WOBBUFFET Pop, the Wi-Fi Plaza balloon game: every player pumps air into a balloon by
 // touching the lower screen.

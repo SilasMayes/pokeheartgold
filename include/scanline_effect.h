@@ -42,7 +42,7 @@ ScanlineEffect *ScanlineEffect_New(enum HeapID heap);
 void ScanlineEffect_StartWave(ScanlineEffect *effect, u8 first, u8 last, u32 step, fx32 amplitude, s16 speed, void *destination, u32 fill, u32 priority);
 void ScanlineEffect_Stop(ScanlineEffect *effect);
 void ScanlineEffect_Delete(ScanlineEffect *effect);
-void *ScanlineEffect_GetBuffer(ScanlineEffect *effect);
+u32 *ScanlineEffect_GetBuffer(ScanlineEffect *effect);
 void ScanlineEffect_SwapBuffers(ScanlineEffect *effect);
 void ScanlineEffect_RestartDma(ScanlineEffect *effect);
 void ScanlineEffect_BuildWaveTable(s16 *out, u32 count, u32 step, fx32 amplitude);

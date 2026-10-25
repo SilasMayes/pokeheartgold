@@ -64,7 +64,7 @@ typedef struct BoxMonSelectorPick {
     u32 page;
     u32 slot;
     u32 markIndex;
-    u32 active;
+    BOOL active;
 } BoxMonSelectorPick;
 
 typedef struct BoxMonSelectorDropArea {
@@ -72,7 +72,7 @@ typedef struct BoxMonSelectorDropArea {
     u8 left;
     u8 bottom;
     u8 right;
-    u32 occupied;
+    BOOL occupied;
 } BoxMonSelectorDropArea;
 
 // One element of the caller's result array.

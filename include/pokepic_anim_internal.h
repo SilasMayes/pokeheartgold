@@ -5,7 +5,6 @@
 
 #include "heap.h"
 #include "pokepic.h"
-#include "sys_task_api.h"
 
 typedef struct PokepicAnimManager PokepicAnimManager;
 

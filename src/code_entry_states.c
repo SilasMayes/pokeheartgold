@@ -587,7 +587,7 @@ static int CodeEntry_GetGroupFirstDigit(CodeEntryApp *app, int group) {
 
 static int CodeEntry_GetGroupLastDigit(CodeEntryApp *app, int group) {
     int i;
-    int found = FALSE;
+    BOOL found = FALSE;
     int count = app->digitCount;
     for (i = 0; i < count; i++) {
         if (app->digits[i].group == group) {
