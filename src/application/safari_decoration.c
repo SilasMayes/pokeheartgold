@@ -966,7 +966,7 @@ static int SafariDecoration_HandleListButtons(SafariDecoration *decor) {
 static int SafariDecoration_HandleListTouch(SafariDecoration *decor, u32 *touched) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariDecorationListHitboxes);
 
-    if (hit == -1) {
+    if (hit == TOUCH_MENU_NO_INPUT) {
         *touched = FALSE;
         return SAFARI_DECORATION_SELECT_INPUT;
     }

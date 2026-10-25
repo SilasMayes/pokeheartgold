@@ -391,19 +391,15 @@ BOOL PokedexApp_HitTestSpecialAreaMarkers(PokedexAppData *pokedexApp, u32 start,
     u32 end;
     s16 pos[2];
 
-    i = start;
     end = start + 4;
-    if (i < end) {
-        do {
-            if (ManagedSprite_GetDrawFlag(pokedexApp->sprites[i])) {
-                PokedexApp_GetSpritePos(pokedexApp, i, &pos[1], &pos[0], 2);
-                if (x >= pos[1] - (s32)((u32)gPokedexAreaMarkerSizes[0][0] >> 1) && x < pos[1] + (s32)((u32)gPokedexAreaMarkerSizes[0][0] >> 1)
-                    && y >= pos[0] - (s32)((u32)gPokedexAreaMarkerSizes[0][1] >> 1) && y < pos[0] + (s32)((u32)gPokedexAreaMarkerSizes[0][1] >> 1)) {
-                    return TRUE;
-                }
+    for (i = start; i < end; i++) {
+        if (ManagedSprite_GetDrawFlag(pokedexApp->sprites[i])) {
+            PokedexApp_GetSpritePos(pokedexApp, i, &pos[1], &pos[0], 2);
+            if (x >= pos[1] - (s32)((u32)gPokedexAreaMarkerSizes[0][0] >> 1) && x < pos[1] + (s32)((u32)gPokedexAreaMarkerSizes[0][0] >> 1)
+                && y >= pos[0] - (s32)((u32)gPokedexAreaMarkerSizes[0][1] >> 1) && y < pos[0] + (s32)((u32)gPokedexAreaMarkerSizes[0][1] >> 1)) {
+                return TRUE;
             }
-            i++;
-        } while (i < end);
+        }
     }
     return FALSE;
 }

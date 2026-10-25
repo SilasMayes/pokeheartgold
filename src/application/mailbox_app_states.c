@@ -28,7 +28,19 @@
 
 FS_EXTERN_OVERLAY(OVY_55);
 
-#define MAILBOX_STATE_FINISHED 25
+// Questions asked with a yes / no prompt (rows of sMailboxYesNoHandlers)
+enum MailboxQuestion {
+    MAILBOX_QUESTION_ERASE_MAIL,
+    MAILBOX_QUESTION_HOLD_MAIL,
+};
+
+// Apps the mailbox hands over to (rows of sMailboxSubApps)
+enum MailboxSubApp {
+    MAILBOX_SUB_APP_GIVE_MAIL,
+    MAILBOX_SUB_APP_SELECT_MON_FOR_MAIL,
+    MAILBOX_SUB_APP_USE_MAIL,
+    MAILBOX_SUB_APP_PARTY_MENU,
+};
 
 typedef int (*MailboxAppStateFunc)(MailboxApp *app);
 
@@ -303,10 +315,10 @@ static int MailboxApp_State_SelectMail(MailboxApp *app) {
         }
         break;
     case 10:
-    case -2:
+    case GRID_MENU_CANCEL:
         PlaySE(SEQ_SE_DP_DECIDE);
         return MailboxApp_StartSpriteFlash(app, 3, MAILBOX_STATE_QUIT);
-    case -1:
+    case GRID_MENU_NOTHING_CHOSEN:
         input = GridInputHandler_GetNextInput(app->data->gridInput);
         if ((gSystem.newAndRepeatedKeys & PAD_KEY_RIGHT) && (input == 1 || input == 3 || input == 5 || input == 7 || input == 9) && app->page != app->data->lastPage) {
             app->page++;
@@ -380,19 +392,19 @@ static int MailboxApp_State_MailMenu(MailboxApp *app) {
     case 2: // GIVE
         MailboxApp_CloseMailMenu(app);
         itemId = MailToItemId(Mail_GetType(app->data->mail[app->selectedMail]));
-        MailboxApp_CreatePartyMenuArgs(app, 14, itemId, 0);
-        app->subAppId = 0;
+        MailboxApp_CreatePartyMenuArgs(app, PARTY_MENU_CONTEXT_GIVE_MAIL_FROM_MAILBOX, itemId, 0);
+        app->subAppId = MAILBOX_SUB_APP_GIVE_MAIL;
         app->nextState = MAILBOX_STATE_START_SUB_APP;
         return MailboxApp_StartFadeOut(app, MAILBOX_STATE_TEARDOWN);
     case 3: // CANCEL
-    case -2:
+    case LIST_CANCEL:
         MailboxApp_CloseMailMenu(app);
         MailboxApp_ClearMessageBox(app);
         BgCellManager_EraseCell(app->data->cellManager, MAILBOX_CELL_SELECTED);
         MailboxAppData_SetListDimmed(app->data, FALSE);
         MailboxAppData_SetSpriteDrawFlag(app->data, 2, TRUE);
         return MAILBOX_STATE_SELECT_MAIL;
-    case -1:
+    case LIST_NOTHING_CHOSEN:
     default:
         return MAILBOX_STATE_MAIL_MENU;
     }
@@ -416,7 +428,7 @@ static int MailboxApp_State_CloseMail(MailboxApp *app) {
 }
 
 static int MailboxApp_State_ConfirmErase(MailboxApp *app) {
-    return MailboxApp_AskYesNo(app, 0);
+    return MailboxApp_AskYesNo(app, MAILBOX_QUESTION_ERASE_MAIL);
 }
 
 static int MailboxApp_State_PrintHoldMailPrompt(MailboxApp *app) {
@@ -425,15 +437,15 @@ static int MailboxApp_State_PrintHoldMailPrompt(MailboxApp *app) {
 }
 
 static int MailboxApp_State_ConfirmHoldMail(MailboxApp *app) {
-    return MailboxApp_AskYesNo(app, 1);
+    return MailboxApp_AskYesNo(app, MAILBOX_QUESTION_HOLD_MAIL);
 }
 
 static int MailboxApp_State_SelectMonForMailDone(MailboxApp *app) {
-    if (app->partyMenuAction != 6) {
+    if (app->partyMenuAction != PARTY_MENU_ACTION_RETURN_6) {
         app->nextState = MAILBOX_STATE_FADE_IN_DIMMED_LIST;
         return MAILBOX_STATE_SETUP;
     }
-    app->subAppId = 2;
+    app->subAppId = MAILBOX_SUB_APP_USE_MAIL;
     return MAILBOX_STATE_START_SUB_APP;
 }
 
@@ -453,8 +465,8 @@ static int MailboxApp_State_UseMailDone(MailboxApp *app) {
         app->nextState = MAILBOX_STATE_FADE_IN_DIMMED_LIST;
         return MAILBOX_STATE_SETUP;
     }
-    MailboxApp_CreatePartyMenuArgs(app, 11, app->itemId, app->partySlot);
-    app->subAppId = 3;
+    MailboxApp_CreatePartyMenuArgs(app, PARTY_MENU_CONTEXT_11, app->itemId, app->partySlot);
+    app->subAppId = MAILBOX_SUB_APP_PARTY_MENU;
     return MAILBOX_STATE_START_SUB_APP;
 }
 
@@ -656,8 +668,8 @@ static int MailboxApp_EraseMail(MailboxApp *app) {
 }
 
 static int MailboxApp_SelectMonToHoldMail(MailboxApp *app) {
-    MailboxApp_CreatePartyMenuArgs(app, 9, app->itemId, 0);
-    app->subAppId = 1;
+    MailboxApp_CreatePartyMenuArgs(app, PARTY_MENU_CONTEXT_9, app->itemId, 0);
+    app->subAppId = MAILBOX_SUB_APP_SELECT_MON_FOR_MAIL;
     app->nextState = MAILBOX_STATE_START_SUB_APP;
     return MailboxApp_StartFadeOut(app, MAILBOX_STATE_TEARDOWN);
 }

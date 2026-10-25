@@ -33,7 +33,7 @@ u8 PokewalkerIr_GetTotalProgress(void) {
 // Returns the error of the last request and resets it (to 1 = not connected when the link is down).
 u32 PokewalkerIr_GetAndClearError(void) {
     u32 error = gPokewalkerIrWork.error;
-    if (PokewalkerIr_IsConnected() != 0) {
+    if (PokewalkerIr_IsConnected()) {
         gPokewalkerIrWork.error = 0;
     } else {
         gPokewalkerIrWork.error = 1;

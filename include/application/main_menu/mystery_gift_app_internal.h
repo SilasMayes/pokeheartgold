@@ -14,6 +14,13 @@
 #include "save.h"
 #include "sprite.h"
 
+// Where the Mystery Gift app goes when it ends
+enum MysteryGiftExitTarget {
+    MYSTERY_GIFT_EXIT_TO_TITLE,
+    MYSTERY_GIFT_EXIT_TO_ALBUM, // Wonder Card viewer
+    MYSTERY_GIFT_EXIT_TO_LOCK_CAPSULE_CARD,
+};
+
 // The data of the Mystery Gift app, also used by the download over Nintendo Wi-Fi Connection.
 
 struct MysteryGiftAppData {
@@ -40,7 +47,7 @@ struct MysteryGiftAppData {
     int timeout;
     int channel; // partner found by the wireless search
     int timer;
-    int exitTarget; // 0: title screen, 1: Wonder Card viewer, 2: Lock Capsule card
+    enum MysteryGiftExitTarget exitTarget;
     u8 unk_0444[0x180];
     Sprite *sprite;
     int beaconWatchState;

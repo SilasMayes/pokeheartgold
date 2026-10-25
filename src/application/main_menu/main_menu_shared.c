@@ -152,7 +152,7 @@ void MainMenuUtil_ListMenuCursorCallback(ListMenu *list, s32 index, u8 onInit) {
 
 // Cartridge interrupt: the GBA cartridge was pulled out
 static void MainMenuUtil_CartridgeIrqHandler(void) {
-    if (((*(vu16 *)HW_BUTTON_XY_BUF & 0x8000) >> 15) == 0 && !CTRDG_IsAgbCartridge()) {
+    if (!PAD_DetectFold() && !CTRDG_IsAgbCartridge()) {
         CTRDG_TerminateForPulledOut();
     }
 }

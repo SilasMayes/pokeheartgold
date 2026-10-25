@@ -4,6 +4,7 @@
 
 #include "constants/gx.h"
 
+#include "bg_window.h"
 #include "heap.h"
 #include "screen_fade_effects.h"
 #include "screen_fade_internal.h"
@@ -20,7 +21,7 @@ typedef void (*FadeHBlankCallback)(void *data);
 struct FadeBlankPair {
     void *data[2];
     FadeHBlankCallback callbacks[2];
-    u32 active[2];
+    BOOL active[2];
 };
 
 typedef struct FadeBlankStartArgs {
@@ -35,12 +36,18 @@ typedef struct FadeBlankStopArgs {
     int screen;
 } FadeBlankStopArgs;
 
+enum PaletteFadeOrder {
+    PALETTE_FADE_BOTH_SCREENS,
+    PALETTE_FADE_MAIN_FIRST,
+    PALETTE_FADE_SUB_FIRST,
+};
+
 typedef struct PaletteFade {
-    u32 order; // 0: both screens at once, 1: the main screen first, 2: the sub screen first
-    u32 mainActive;
-    u32 subActive;
-    u32 mainEnabled; // the screens taking part in the fade
-    u32 subEnabled;
+    enum PaletteFadeOrder order;
+    BOOL mainActive;
+    BOOL subActive;
+    BOOL mainEnabled; // the screens taking part in the fade
+    BOOL subEnabled;
     ScreenFade main;
     ScreenFade sub;
     FadeBlankPair blankPair;
@@ -55,10 +62,10 @@ typedef BOOL (*FadeFunc)(ScreenFade *fade);
 
 static void HandleEndFade(PaletteFade *fade);
 static BOOL DoFadeUpdateFrame(PaletteFade *fade, ScreenFade *main, ScreenFade *sub);
-static void FadeWork_UpdateFrame(u32 *active, ScreenFade *fade);
+static void FadeWork_UpdateFrame(BOOL *active, ScreenFade *fade);
 static BOOL CallFadeFunc(ScreenFade *fade);
 static void PaletteFade_SetMode(enum FadeMode mode, PaletteFade *fade);
-static void PaletteFade_SetScreenOrder(PaletteFade *fade, u32 order, u32 main, u32 sub);
+static void PaletteFade_SetScreenOrder(PaletteFade *fade, enum PaletteFadeOrder order, BOOL main, BOOL sub);
 static void ScreenFade_Init(ScreenFade *fade, u32 type, int steps, int framesPerStep, int state, void *effect, int screen, WindowRegisterQueue *regQueue, FadeBlankPair *blankPair, enum HeapID heapId, u16 color);
 static void FadeBlankPair_Init(FadeBlankPair *blankPair);
 static void FadeBlankPair_HBlankCallback(void *data);
@@ -134,16 +141,16 @@ void BeginNormalPaletteFade(enum FadeMode mode, enum FadeType mainType, enum Fad
         PaletteFade_SetMode(mode, &sPaletteFade);
         FadeBlankPair_Init(&sPaletteFade.blankPair);
         color = PaletteFade_ResolveColor(&sPaletteFade, color);
-        ScreenFade_Init(&sPaletteFade.main, mainType, steps, framesPerStep, SCREEN_FADE_STATE_START, NULL, 0, &sPaletteFade.regQueue, &sPaletteFade.blankPair, heapId, color);
-        ScreenFade_Init(&sPaletteFade.sub, subType, steps, framesPerStep, SCREEN_FADE_STATE_START, NULL, 1, &sPaletteFade.regQueue, &sPaletteFade.blankPair, heapId, color);
+        ScreenFade_Init(&sPaletteFade.main, mainType, steps, framesPerStep, SCREEN_FADE_STATE_START, NULL, SCREEN_MAIN, &sPaletteFade.regQueue, &sPaletteFade.blankPair, heapId, color);
+        ScreenFade_Init(&sPaletteFade.sub, subType, steps, framesPerStep, SCREEN_FADE_STATE_START, NULL, SCREEN_SUB, &sPaletteFade.regQueue, &sPaletteFade.blankPair, heapId, color);
         sPaletteFade.active = 1;
         FadeWork_UpdateFrame(&sPaletteFade.mainActive, &sPaletteFade.main);
         FadeWork_UpdateFrame(&sPaletteFade.subActive, &sPaletteFade.sub);
-        if (sPaletteFade.mainEnabled != 0) {
+        if (sPaletteFade.mainEnabled) {
             ScreenFade_QueueBrightnessReset(&fade->main);
             fade->mainFaded = 1;
         }
-        if (fade->subEnabled != 0) {
+        if (fade->subEnabled) {
             ScreenFade_QueueBrightnessReset(&fade->sub);
             fade->subFaded = 1;
         }
@@ -165,12 +172,12 @@ BOOL IsPaletteFadeFinished(void) {
 
 // Ends the fade at once: both screens skip to their effect's clean-up.
 void StopPaletteFade(void) {
-    FadeBlankPair_Stop(&sPaletteFade.blankPair, 0);
-    FadeBlankPair_Stop(&sPaletteFade.blankPair, 1);
-    if (sPaletteFade.mainActive != 0) {
+    FadeBlankPair_Stop(&sPaletteFade.blankPair, SCREEN_MAIN);
+    FadeBlankPair_Stop(&sPaletteFade.blankPair, SCREEN_SUB);
+    if (sPaletteFade.mainActive) {
         sPaletteFade.main.state = SCREEN_FADE_STATE_CLEANUP;
     }
-    if (sPaletteFade.subActive != 0) {
+    if (sPaletteFade.subActive) {
         sPaletteFade.sub.state = SCREEN_FADE_STATE_CLEANUP;
     }
     FadeWork_UpdateFrame(&sPaletteFade.mainActive, &sPaletteFade.main);
@@ -212,7 +219,7 @@ void FillScreenWithColor(int screen, u16 color) {
     if (color == 0xFFFF) {
         color = sPaletteFade.color;
     }
-    if (screen == 0) {
+    if (screen == SCREEN_MAIN) {
         GX_LoadBGPltt(&color, 0, sizeof(u16));
     } else {
         GXS_LoadBGPltt(&color, 0, sizeof(u16));
@@ -239,13 +246,13 @@ void SetMasterBrightness(int screen, int brightness) {
 static void HandleEndFade(PaletteFade *fade) {
     fade->active = 0;
     fade->color = PaletteFade_GetEndColor(fade);
-    if (fade->mainEnabled != 0) {
+    if (fade->mainEnabled) {
         ScreenFade_HoldFadeColor(&fade->main);
         if (!fade->main.fadeOut) {
             sPaletteFade.mainFaded = 0;
         }
     }
-    if (fade->subEnabled != 0) {
+    if (fade->subEnabled) {
         ScreenFade_HoldFadeColor(&fade->sub);
         if (!fade->main.fadeOut) { // the main screen's, even for the sub screen
             sPaletteFade.subFaded = 0;
@@ -256,34 +263,34 @@ static void HandleEndFade(PaletteFade *fade) {
 
 static BOOL DoFadeUpdateFrame(PaletteFade *fade, ScreenFade *main, ScreenFade *sub) {
     switch (fade->order) {
-    case 0:
+    case PALETTE_FADE_BOTH_SCREENS:
         FadeWork_UpdateFrame(&fade->mainActive, main);
         FadeWork_UpdateFrame(&fade->subActive, sub);
         break;
-    case 1:
-        if (fade->mainActive != 0) {
+    case PALETTE_FADE_MAIN_FIRST:
+        if (fade->mainActive) {
             FadeWork_UpdateFrame(&fade->mainActive, main);
         } else {
             FadeWork_UpdateFrame(&fade->subActive, sub);
         }
         break;
-    case 2:
-        if (fade->subActive != 0) {
+    case PALETTE_FADE_SUB_FIRST:
+        if (fade->subActive) {
             FadeWork_UpdateFrame(&fade->subActive, sub);
         } else {
             FadeWork_UpdateFrame(&fade->mainActive, main);
         }
         break;
     }
-    if (fade->mainActive == 0 && fade->subActive == 0) {
+    if (!fade->mainActive && !fade->subActive) {
         return TRUE;
     }
     return FALSE;
 }
 
-static void FadeWork_UpdateFrame(u32 *active, ScreenFade *fade) {
-    if (*active != 0 && CallFadeFunc(fade) == TRUE) {
-        *active = 0;
+static void FadeWork_UpdateFrame(BOOL *active, ScreenFade *fade) {
+    if (*active && CallFadeFunc(fade) == TRUE) {
+        *active = FALSE;
     }
 }
 
@@ -294,24 +301,24 @@ static BOOL CallFadeFunc(ScreenFade *fade) {
 static void PaletteFade_SetMode(enum FadeMode mode, PaletteFade *fade) {
     switch (mode) {
     case FADE_BOTH_SCREENS:
-        PaletteFade_SetScreenOrder(fade, 0, 1, 1);
+        PaletteFade_SetScreenOrder(fade, PALETTE_FADE_BOTH_SCREENS, TRUE, TRUE);
         break;
     case FADE_MAIN_THEN_SUB:
-        PaletteFade_SetScreenOrder(fade, 1, 1, 1);
+        PaletteFade_SetScreenOrder(fade, PALETTE_FADE_MAIN_FIRST, TRUE, TRUE);
         break;
     case FADE_SUB_THEN_MAIN:
-        PaletteFade_SetScreenOrder(fade, 2, 1, 1);
+        PaletteFade_SetScreenOrder(fade, PALETTE_FADE_SUB_FIRST, TRUE, TRUE);
         break;
     case FADE_MAIN_ONLY:
-        PaletteFade_SetScreenOrder(fade, 1, 1, 0);
+        PaletteFade_SetScreenOrder(fade, PALETTE_FADE_MAIN_FIRST, TRUE, FALSE);
         break;
     case FADE_SUB_ONLY:
-        PaletteFade_SetScreenOrder(fade, 2, 0, 1);
+        PaletteFade_SetScreenOrder(fade, PALETTE_FADE_SUB_FIRST, FALSE, TRUE);
         break;
     }
 }
 
-static void PaletteFade_SetScreenOrder(PaletteFade *fade, u32 order, u32 main, u32 sub) {
+static void PaletteFade_SetScreenOrder(PaletteFade *fade, enum PaletteFadeOrder order, BOOL main, BOOL sub) {
     fade->order = order;
     fade->mainActive = main;
     fade->subActive = sub;
@@ -337,7 +344,7 @@ static void FadeBlankPair_Init(FadeBlankPair *blankPair) {
     for (i = 0; i < 2; i++) {
         blankPair->data[i] = NULL;
         blankPair->callbacks[i] = FadeBlankPair_DummyCallback;
-        blankPair->active[i] = 0;
+        blankPair->active[i] = FALSE;
     }
 }
 
@@ -351,11 +358,11 @@ static void FadeBlankPair_HBlankCallback(void *data) {
 
 static void FadeBlankPair_Start(FadeBlankPair *blankPair, void *data, FadeHBlankCallback callback, int screen) {
     u8 installed = TRUE;
-    u32 *active = &blankPair->active[screen];
+    BOOL *active = &blankPair->active[screen];
 
-    GF_ASSERT(*active == 0);
+    GF_ASSERT(!*active);
     GF_ASSERT(blankPair->callbacks[screen] != NULL);
-    if (blankPair->active[0] == 0 && blankPair->active[1] == 0) {
+    if (!blankPair->active[SCREEN_MAIN] && !blankPair->active[SCREEN_SUB]) {
         installed = Main_SetHBlankIntrCB(FadeBlankPair_HBlankCallback, blankPair);
     }
     GF_ASSERT(installed == TRUE);
@@ -369,8 +376,8 @@ static void FadeBlankPair_Start(FadeBlankPair *blankPair, void *data, FadeHBlank
 }
 
 static void FadeBlankPair_Stop(FadeBlankPair *blankPair, int screen) {
-    blankPair->active[screen] = 0;
-    if (blankPair->active[0] == 0 && blankPair->active[1] == 0) {
+    blankPair->active[screen] = FALSE;
+    if (!blankPair->active[SCREEN_MAIN] && !blankPair->active[SCREEN_SUB]) {
         HBlankInterruptDisable();
     }
     blankPair->callbacks[screen] = FadeBlankPair_DummyCallback;

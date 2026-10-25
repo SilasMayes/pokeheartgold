@@ -986,7 +986,7 @@ static void HatchEggYesNoMenu_UpdateCursor(HatchEggYesNoMenu *menu) {
 static BOOL HatchEggYesNoMenu_HandleInput(HatchEggYesNoMenu *menu) {
     BOOL pressed = FALSE;
     int hit = TouchscreenHitbox_FindRectAtTouchNew(sHatchEggYesNoHitboxes);
-    if (hit != -1) {
+    if (hit != TOUCH_MENU_NO_INPUT) {
         PlaySE(SEQ_SE_DP_SELECT);
         switch (hit) {
         case 0:

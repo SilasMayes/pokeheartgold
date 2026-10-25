@@ -559,17 +559,11 @@ static void VsRecorder_NumberPadLoadGfx(VsRecorderNumberPad *pad) {
 }
 
 static void VsRecorder_NumberPadShowSprites(VsRecorderNumberPad *pad) {
-    int i = 0;
-    VsRecorderNumberPadDigit *digit;
-    if (pad->count > 0) {
-        digit = pad->digits;
-        do {
-            if (digit->sprite != NULL) {
-                ManagedSprite_SetDrawFlag(digit->sprite, TRUE);
-            }
-            i++;
-            digit++;
-        } while (i < pad->count);
+    int i;
+    for (i = 0; i < pad->count; i++) {
+        if (pad->digits[i].sprite != NULL) {
+            ManagedSprite_SetDrawFlag(pad->digits[i].sprite, TRUE);
+        }
     }
     for (i = 0; i < 2; i++) {
         if (pad->separators[i].sprite != NULL) {
@@ -579,15 +573,9 @@ static void VsRecorder_NumberPadShowSprites(VsRecorderNumberPad *pad) {
 }
 
 static void VsRecorder_NumberPadFreeSprites(VsRecorderNumberPad *pad) {
-    int i = 0;
-    VsRecorderNumberPadDigit *digit;
-    if (pad->count > 0) {
-        digit = pad->digits;
-        do {
-            Sprite_DeleteAndFreeResources(digit->sprite);
-            i++;
-            digit++;
-        } while (i < pad->count);
+    int i;
+    for (i = 0; i < pad->count; i++) {
+        Sprite_DeleteAndFreeResources(pad->digits[i].sprite);
     }
     for (i = 0; i < 2; i++) {
         Sprite_DeleteAndFreeResources(pad->separators[i].sprite);

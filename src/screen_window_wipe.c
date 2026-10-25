@@ -3,6 +3,8 @@
 #include <nitro/fx/fx_trig.h>
 #include <nitro/gx/g2.h>
 
+#include "bg_window.h"
+
 static void ClockWipe_BuildScanlines(ClockWipe *wipe);
 static BOOL ClockWipe_Step(ClockWipe *wipe);
 static void ScreenWindow_SetInsideTask(SysTask *task, void *data);
@@ -67,7 +69,7 @@ void ClockWipe_Init(ClockWipe *wipe, const ClockWipeConfig *config, int steps, i
     SysTask_CreateOnVWaitQueue(ScreenWipeScanlines_CommitTask, wipe, 0x3FF);
     buffer = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
     // first scanline's span
-    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[0], 0, buffer->nextRight[0], 192, wipe->queued);
+    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[0], 0, buffer->nextRight[0], GX_LCD_SIZE_Y, wipe->queued);
     if (config->window == 0) {
         ScreenFade_SetWindowVisible(regQueue, GX_WNDMASK_W0, screen, wipe->queued);
     } else {
@@ -193,14 +195,14 @@ static void ClockWipe_GetScanlineSpan(int unused, int centerX, int centerY, int 
     }
 }
 
-// Writes the spans of all 192 scanlines for the next frame
+// Writes the spans of all the scanlines for the next frame
 static void ClockWipe_BuildScanlines(ClockWipe *wipe) {
     WipeScanlineBuffer *buffer = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
     s32 i;
     s32 left;
     s32 right;
 
-    for (i = 0; i < 192; i++) {
+    for (i = 0; i < GX_LCD_SIZE_Y; i++) {
         ClockWipe_GetScanlineSpan(wipe->unused14, wipe->centerX, wipe->centerY, i, wipe->startAngle, wipe->angle, &left, &right);
         buffer->nextLeft[i] = left;
         buffer->nextRight[i] = right;
@@ -208,7 +210,7 @@ static void ClockWipe_BuildScanlines(ClockWipe *wipe) {
 }
 
 void ScreenWindow_SetVisible(u32 mask, int screen) {
-    if (screen == 0) {
+    if (screen == SCREEN_MAIN) {
         GX_SetVisibleWnd(mask);
     } else {
         GXS_SetVisibleWnd(mask);
@@ -217,30 +219,30 @@ void ScreenWindow_SetVisible(u32 mask, int screen) {
 
 void ScreenWindow_SetInside(u32 planeMask, BOOL effect, int window, int screen) {
     if (window == 0) {
-        if (screen == 0) {
-            u32 value = (reg_G2_WININ & ~0x3F) | planeMask;
+        if (screen == SCREEN_MAIN) {
+            u32 value = (reg_G2_WININ & ~REG_G2_WININ_WIN0IN_MASK) | planeMask;
             if (effect) {
                 value |= 0x20;
             }
             reg_G2_WININ = value;
         } else {
-            u32 value = (reg_G2S_DB_WININ & ~0x3F) | planeMask;
+            u32 value = (reg_G2S_DB_WININ & ~REG_G2S_DB_WININ_WIN0IN_MASK) | planeMask;
             if (effect) {
                 value |= 0x20;
             }
             reg_G2S_DB_WININ = value;
         }
     } else {
-        if (screen == 0) {
-            u32 value = (reg_G2_WININ & ~0x3F00) | (planeMask << 8);
+        if (screen == SCREEN_MAIN) {
+            u32 value = (reg_G2_WININ & ~REG_G2_WININ_WIN1IN_MASK) | (planeMask << REG_G2_WININ_WIN1IN_SHIFT);
             if (effect) {
-                value |= 0x2000;
+                value |= 0x20 << REG_G2_WININ_WIN1IN_SHIFT;
             }
             reg_G2_WININ = value;
         } else {
-            u32 value = (reg_G2S_DB_WININ & ~0x3F00) | (planeMask << 8);
+            u32 value = (reg_G2S_DB_WININ & ~REG_G2S_DB_WININ_WIN1IN_MASK) | (planeMask << REG_G2S_DB_WININ_WIN1IN_SHIFT);
             if (effect) {
-                value |= 0x2000;
+                value |= 0x20 << REG_G2S_DB_WININ_WIN1IN_SHIFT;
             }
             reg_G2S_DB_WININ = value;
         }
@@ -248,14 +250,14 @@ void ScreenWindow_SetInside(u32 planeMask, BOOL effect, int window, int screen) 
 }
 
 void ScreenWindow_SetOutside(u32 planeMask, BOOL effect, int screen) {
-    if (screen == 0) {
-        u32 value = (reg_G2_WINOUT & ~0x3F) | planeMask;
+    if (screen == SCREEN_MAIN) {
+        u32 value = (reg_G2_WINOUT & ~REG_G2_WINOUT_WINOUT_MASK) | planeMask;
         if (effect) {
             value |= 0x20;
         }
         reg_G2_WINOUT = value;
     } else {
-        u32 value = (reg_G2S_DB_WINOUT & ~0x3F) | planeMask;
+        u32 value = (reg_G2S_DB_WINOUT & ~REG_G2S_DB_WINOUT_WINOUT_MASK) | planeMask;
         if (effect) {
             value |= 0x20;
         }
@@ -270,13 +272,13 @@ static inline GXWndPlane GetWindowPlane(volatile GXWndPlane *reg) {
 s8 ScreenWindow_GetInside(int window, int screen) {
     GXWndPlane plane;
     if (window == 0) {
-        if (screen == 0) {
+        if (screen == SCREEN_MAIN) {
             plane = GetWindowPlane((volatile GXWndPlane *)&reg_G2_WININ);
         } else {
             plane = GetWindowPlane((volatile GXWndPlane *)&reg_G2S_DB_WININ);
         }
     } else {
-        if (screen == 0) {
+        if (screen == SCREEN_MAIN) {
             plane = GetWindowPlane((volatile GXWndPlane *)&reg_G2_WININ + 1);
         } else {
             plane = GetWindowPlane((volatile GXWndPlane *)&reg_G2S_DB_WININ + 1);
@@ -287,7 +289,7 @@ s8 ScreenWindow_GetInside(int window, int screen) {
 
 s8 ScreenWindow_GetOutside(int screen) {
     GXWndPlane plane;
-    if (screen == 0) {
+    if (screen == SCREEN_MAIN) {
         plane = GetWindowPlane((volatile GXWndPlane *)&reg_G2_WINOUT);
     } else {
         plane = GetWindowPlane((volatile GXWndPlane *)&reg_G2S_DB_WINOUT);
@@ -297,7 +299,7 @@ s8 ScreenWindow_GetOutside(int screen) {
 
 void ScreenWindow_SetRect(int left, int top, int right, int bottom, int window, int screen) {
     if (window == 0) {
-        if (screen == 0) {
+        if (screen == SCREEN_MAIN) {
             u32 horizontal = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
             u32 vertical = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);
             reg_G2_WIN0H = horizontal;
@@ -309,7 +311,7 @@ void ScreenWindow_SetRect(int left, int top, int right, int bottom, int window, 
             reg_G2S_DB_WIN0V = vertical;
         }
     } else {
-        if (screen == 0) {
+        if (screen == SCREEN_MAIN) {
             u32 horizontal = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
             u32 vertical = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);
             reg_G2_WIN1H = horizontal;

@@ -15,7 +15,12 @@ NarcId Pokefoot_GetNarcId(void);
 int Pokefoot_GetCharFileId(int species);
 int Pokefoot_GetPlttFileId(void);
 
-// align: 0 left, 1 right (x is the right edge), 2 centred on x
+enum PokedexTextAlign {
+    POKEDEX_TEXT_ALIGN_LEFT,
+    POKEDEX_TEXT_ALIGN_RIGHT,  // x is the right edge
+    POKEDEX_TEXT_ALIGN_CENTER, // centred on x
+};
+
 void PokedexApp_PrintString(Window *window, String *string, u32 x, u32 y, u32 fontId, u32 color, u32 align);
 void PokedexApp_PrintMessage(Window *window, MsgData *msgData, u32 msgId, u32 x, u32 y, u32 fontId, u32 color, u32 align);
 u32 PokedexApp_GetTypeIconCharFile(u32 type);

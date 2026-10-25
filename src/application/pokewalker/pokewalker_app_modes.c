@@ -58,7 +58,7 @@ enum StrollReportState {
     STROLL_REPORT_PRINT_ITEMS_PLACED,
     STROLL_REPORT_ITEMS_FADE_OUT,
     STROLL_REPORT_WAIT_ITEMS_FADE_OUT,
-    STROLL_REPORT_GIFTS_FADE_OUT, // linkAction == 2
+    STROLL_REPORT_GIFTS_FADE_OUT, // receiving a gift
     STROLL_REPORT_WAIT_GIFTS_FADE_OUT,
     STROLL_REPORT_SHOW_GIFTS,
     STROLL_REPORT_WAIT_GIFTS_FADE,
@@ -66,7 +66,7 @@ enum StrollReportState {
     STROLL_REPORT_PRINT_GIFT_ROUTE_FOUND,
     STROLL_REPORT_GIFTS_DONE_FADE_OUT,
     STROLL_REPORT_WAIT_GIFTS_DONE_FADE_OUT,
-    STROLL_REPORT_RECORDS_FADE_OUT, // linkAction == 3
+    STROLL_REPORT_RECORDS_FADE_OUT, // after a Stroll started
     STROLL_REPORT_WAIT_RECORDS_FADE_OUT,
     STROLL_REPORT_SHOW_RECORDS,
     STROLL_REPORT_WAIT_RECORDS_FADE,
@@ -86,15 +86,15 @@ enum BoxDisplayWindow {
 };
 
 static void PokewalkerApp_InitSpriteTemplate(SpriteTemplate *template, SpriteList *spriteList, const SpriteResourcesHeader *header, NNS_G2D_VRAM_TYPE whichScreen, enum HeapID heapId);
-static BOOL PokewalkerApp_SelectMon_GetBoxMonIcon(PCStorage *storage, u32 box, u32 slot, PokewalkerBoxMon *mon);
-static void PokewalkerApp_SelectMon_GetBoxName(String *dest, PCStorage *storage, u32 box);
+static BOOL PokewalkerApp_SelectMon_GetBoxMonIcon(void *storage, u32 box, int slot, BoxMonSelectorMon *selectorMon);
+static void PokewalkerApp_SelectMon_GetBoxName(String *dest, void *storage, int box);
 static void PokewalkerApp_SelectMon_InitOam(PokewalkerSelectMonWork *work);
 static void PokewalkerApp_SelectMon_InitObjTransfer(void);
 static void PokewalkerApp_SelectMon_SetGraphicsModes(BgConfig *bgConfig);
 static void PokewalkerApp_SelectMon_SetGxBanks(void);
-static void PokewalkerApp_SelectMon_ShowMonInfo(int box, int slot, PokewalkerApp *app);
+static void PokewalkerApp_SelectMon_ShowMonInfo(int box, int slot, void *arg);
 static void PokewalkerApp_SelectMon_StoreSelection(PokewalkerSelectMonWork *work, PokewalkerApp *app);
-static void PokewalkerApp_SelectMon_VBlankCB(PokewalkerSelectMonWork *work);
+static void PokewalkerApp_SelectMon_VBlankCB(void *data);
 static Sprite *PokewalkerBoxDisplay_CreateSprite(PokewalkerBoxDisplaySprites *sprites, int resId, int drawPriority, int priority, int x, int y, int anim, BOOL visible);
 static void PokewalkerBoxDisplay_CreateSprites(PokewalkerBoxDisplaySprites *sprites);
 static void PokewalkerBoxDisplay_DeleteSprites(PokewalkerBoxDisplaySprites *sprites);
@@ -127,7 +127,7 @@ enum LinkSaveState {
 
 int PokewalkerApp_LinkSave_Enter(PokewalkerApp *app) {
     app->strollMon = NULL;
-    if (app->linkAction == 1) {
+    if (app->linkAction == POKEWALKER_LINK_RETURN_FROM_STROLL) {
         PokewalkerApp_ReturnStrollMon(app);
         PokewalkerApp_ReceiveMons(app, TRUE);
         PokewalkerApp_ReceiveItems(app);
@@ -146,16 +146,16 @@ int PokewalkerApp_LinkSave_Enter(PokewalkerApp *app) {
             app->monPicAlpha = 31;
         }
         PokewalkerApp_UnlockNextCourse(app);
-        app->state = 0;
-    } else if (app->linkAction == 2) {
+        app->state = LINK_SAVE_PRINT_SAVING;
+    } else if (app->linkAction == POKEWALKER_LINK_RECEIVE_GIFT) {
         PokewalkerApp_ReceiveItems(app);
         PokewalkerApp_ReceiveMons(app, FALSE);
-        app->state = 5;
-    } else if (app->linkAction == 4) {
+        app->state = LINK_SAVE_PRINT_SAVING2;
+    } else if (app->linkAction == POKEWALKER_LINK_SEND_MON_BACK) {
         PokewalkerApp_ReturnStrollMon(app);
         PokewalkerApp_LoadMonPicture(app->strollMon, app->monSpriteBuffer, &app->monPicTemplate, 0);
         PokewalkerApp_ShowMonPicture(app);
-        app->state = 0;
+        app->state = LINK_SAVE_PRINT_SAVING;
         Pokewalker_SetStrollState(app->pokewalker, 1, 0);
     }
     app->peerIdentity.hasWalkerMon = 0;
@@ -204,7 +204,7 @@ int PokewalkerApp_LinkSave_EndSave(PokewalkerApp *app) {
 }
 
 int PokewalkerApp_LinkSave_SetNextMode(PokewalkerApp *app) {
-    app->nextMode = app->linkAction == 4 ? POKEWALKER_APP_MODE_MAIN_MENU : POKEWALKER_APP_MODE_EVENT_LOG;
+    app->nextMode = app->linkAction == POKEWALKER_LINK_SEND_MON_BACK ? POKEWALKER_APP_MODE_MAIN_MENU : POKEWALKER_APP_MODE_EVENT_LOG;
     return LINK_SAVE_END;
 }
 
@@ -259,17 +259,17 @@ int PokewalkerApp_SelectMon_Enter(PokewalkerApp *app) {
     case 1:
         app->bgConfig = BgConfig_Alloc(HEAP_ID_154);
         PokewalkerApp_SelectMon_SetGxBanks();
-        *(void **)SELECT_MON_WORK(app, boxSelector) = BoxMonSelector_New(HEAP_ID_154, 1, 18);
-        *(void **)SELECT_MON_WORK(app, boxDisplay) = PokewalkerBoxDisplay_New(HEAP_ID_154);
+        *(BoxMonSelector **)SELECT_MON_WORK(app, boxSelector) = BoxMonSelector_New(HEAP_ID_154, 1, NUM_BOXES);
+        *(PokewalkerBoxDisplay **)SELECT_MON_WORK(app, boxDisplay) = PokewalkerBoxDisplay_New(HEAP_ID_154);
         PokewalkerApp_SelectMon_SetGraphicsModes(app->bgConfig);
         PokewalkerApp_SelectMon_InitObjTransfer();
         PokewalkerApp_SelectMon_InitOam((PokewalkerSelectMonWork *)&app->selectMonState);
         app->selectMonState = 0;
         storage = SaveArray_PCStorage_Get(app->saveData);
         party = SaveArray_Party_Get(app->saveData);
-        BoxMonSelector_Init(*(void **)SELECT_MON_WORK(app, boxSelector), app->bgConfig, storage, party, 0, 0, TRUE, 0, PokewalkerApp_SelectMon_GetBoxMonIcon, PokewalkerApp_SelectMon_GetBoxName, SELECT_MON_WORK(app, box), PokewalkerApp_SelectMon_ShowMonInfo, app);
-        PokewalkerBoxDisplay_Init(*(void **)SELECT_MON_WORK(app, boxDisplay), app->bgConfig);
-        Main_SetVBlankIntrCB((GFIntrCB)PokewalkerApp_SelectMon_VBlankCB, (PokewalkerSelectMonWork *)&app->selectMonState);
+        BoxMonSelector_Init(*(BoxMonSelector **)SELECT_MON_WORK(app, boxSelector), app->bgConfig, storage, party, 0, 0, TRUE, 0, PokewalkerApp_SelectMon_GetBoxMonIcon, PokewalkerApp_SelectMon_GetBoxName, (BoxMonSelectorResult *)SELECT_MON_WORK(app, selection), PokewalkerApp_SelectMon_ShowMonInfo, app);
+        PokewalkerBoxDisplay_Init(*(PokewalkerBoxDisplay **)SELECT_MON_WORK(app, boxDisplay), app->bgConfig);
+        Main_SetVBlankIntrCB(PokewalkerApp_SelectMon_VBlankCB, &app->selectMonState);
         *(int *)SELECT_MON_WORK(app, state) = 0;
         return POKEWALKER_APP_STATE_UPDATE;
     }
@@ -296,10 +296,10 @@ int PokewalkerApp_SelectMon_Update(PokewalkerApp *app) {
         break;
     case 3: {
         int result = BoxMonSelector_Run(work->boxSelector);
-        if (result == 2) {
+        if (result == BOX_MON_SELECTOR_DONE) {
             work->cancelled = FALSE;
             work->state = 4;
-        } else if (result == 3) {
+        } else if (result == BOX_MON_SELECTOR_CANCEL) {
             work->cancelled = TRUE;
             work->state = 4;
         }
@@ -387,7 +387,8 @@ static BOOL PokewalkerApp_SelectMon_GetBoxMon(PCStorage *storage, u32 box, u32 s
 }
 
 // Only what the box icons need.
-static BOOL PokewalkerApp_SelectMon_GetBoxMonIcon(PCStorage *storage, u32 box, u32 slot, PokewalkerBoxMon *mon) {
+static BOOL PokewalkerApp_SelectMon_GetBoxMonIcon(void *storage, u32 box, int slot, BoxMonSelectorMon *selectorMon) {
+    PokewalkerBoxMon *mon = (PokewalkerBoxMon *)selectorMon;
     BoxPokemon *boxMon = PCStorage_GetMonByIndexPair(storage, box, slot);
     if (GetBoxMonData(boxMon, MON_DATA_SPECIES_EXISTS, NULL)) {
         mon->species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
@@ -415,19 +416,20 @@ static BOOL PokewalkerApp_SelectMon_GetBoxMonIcon(PCStorage *storage, u32 box, u
     return FALSE;
 }
 
-static void PokewalkerApp_SelectMon_GetBoxName(String *dest, PCStorage *storage, u32 box) {
+static void PokewalkerApp_SelectMon_GetBoxName(String *dest, void *storage, int box) {
     PCStorage_GetBoxName(storage, box, dest);
 }
 
-static void PokewalkerApp_SelectMon_VBlankCB(PokewalkerSelectMonWork *work) {
+static void PokewalkerApp_SelectMon_VBlankCB(void *data) {
+    PokewalkerSelectMonWork *work = data;
     BoxMonSelector_VBlank(work->boxSelector);
 }
 
 static void PokewalkerApp_SelectMon_StoreSelection(PokewalkerSelectMonWork *work, PokewalkerApp *app) {
     if (!work->cancelled) {
-        u32 box = work->box;
-        if (box == 18) {
-            Pokemon *mon = Party_GetMonByIndex(SaveArray_Party_Get(app->saveData), work->slot);
+        u32 box = work->selection.page;
+        if (box == BOX_MON_SELECTOR_PARTY_PAGE) {
+            Pokemon *mon = Party_GetMonByIndex(SaveArray_Party_Get(app->saveData), work->selection.slot);
             work->species = GetMonData(mon, MON_DATA_SPECIES, NULL);
             work->form = GetMonData(mon, MON_DATA_FORM, NULL);
             GetMonData(mon, MON_DATA_NICKNAME, work->nickname);
@@ -437,14 +439,14 @@ static void PokewalkerApp_SelectMon_StoreSelection(PokewalkerSelectMonWork *work
             app->strollMon = NULL;
         } else {
             PCStorage *storage = SaveArray_PCStorage_Get(app->saveData);
-            BoxPokemon *boxMon = PCStorage_GetMonByIndexPair(storage, box, work->slot);
+            BoxPokemon *boxMon = PCStorage_GetMonByIndexPair(storage, box, work->selection.slot);
             PokewalkerBoxMon boxMonInfo;
             if (GetBoxMonData(boxMon, MON_DATA_SPECIES_EXISTS, NULL) != 0) {
                 app->strollMon = boxMon;
                 app->strollPartyMon = NULL;
             }
             storage = SaveArray_PCStorage_Get(app->saveData);
-            PokewalkerApp_SelectMon_GetBoxMon(storage, work->box, work->slot, &boxMonInfo);
+            PokewalkerApp_SelectMon_GetBoxMon(storage, work->selection.page, work->selection.slot, &boxMonInfo);
             work->species = boxMonInfo.species;
             work->form = boxMonInfo.form;
             CopyU16StringArrayN(work->nickname, boxMonInfo.nickname, POKEMON_NAME_LENGTH + 1);
@@ -454,13 +456,14 @@ static void PokewalkerApp_SelectMon_StoreSelection(PokewalkerSelectMonWork *work
     }
 }
 
-static void PokewalkerApp_SelectMon_ShowMonInfo(int box, int slot, PokewalkerApp *app) {
+static void PokewalkerApp_SelectMon_ShowMonInfo(int box, int slot, void *arg) {
+    PokewalkerApp *app = arg;
     PokewalkerSelectMonWork *work = (PokewalkerSelectMonWork *)&app->selectMonState;
     PokewalkerSelectMonInfo info;
 
     if (box != -1 && slot != -1) {
         info.state = 2;
-        if (box == 18) {
+        if (box == BOX_MON_SELECTOR_PARTY_PAGE) {
             Pokemon *mon = Party_GetMonByIndex(SaveArray_Party_Get(app->saveData), slot);
             u8 i;
             s32 markings;
@@ -597,10 +600,10 @@ int PokewalkerApp_StrollReport_Exit(PokewalkerApp *app) {
 
 int PokewalkerApp_StrollReport_Start(PokewalkerApp *app) {
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
-    if (app->linkAction == 2) {
+    if (app->linkAction == POKEWALKER_LINK_RECEIVE_GIFT) {
         return STROLL_REPORT_GIFTS_FADE_OUT;
     }
-    if (app->linkAction == 3) {
+    if (app->linkAction == POKEWALKER_LINK_STROLL_STARTED) {
         return STROLL_REPORT_RECORDS_FADE_OUT;
     }
     PokewalkerApp_LoadTilemap(app, GF_BG_LYR_MAIN_2, 15);

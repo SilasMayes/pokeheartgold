@@ -111,7 +111,7 @@ void MailboxApp_MoveCursor(MailboxApp *app, u32 input) {
 
 // The mail being read is closed by touching the CLOSE button or pressing A or B.
 BOOL MailboxApp_IsCloseMailInput(void) {
-    if (TouchscreenHitbox_FindRectAtTouchNew(sMailboxCloseMailHitboxes) != -1) {
+    if (TouchscreenHitbox_FindRectAtTouchNew(sMailboxCloseMailHitboxes) != TOUCH_MENU_NO_INPUT) {
         return TRUE;
     }
     if (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {

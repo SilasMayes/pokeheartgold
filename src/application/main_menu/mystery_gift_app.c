@@ -426,7 +426,7 @@ static int MysteryGiftApp_AcceptGift(OverlayManager *manager) {
     if (state == 1) {
         return MYSTERY_GIFT_STATE_CANNOT_RECEIVE;
     }
-    if ((u32)(state - 2) <= 2) {
+    if (state == 2 || state == 3 || state == 4) {
         return MYSTERY_GIFT_STATE_CANNOT_RECEIVE;
     }
     if (state == 5) {
@@ -646,7 +646,7 @@ static int MysteryGiftApp_ConfirmWirelessSearch(OverlayManager *manager) {
 static int MysteryGiftApp_ConfirmReceiveGift(OverlayManager *manager) {
     MysteryGiftAppData *data = OverlayManager_GetData(manager);
 
-    if ((u32)(data->giftCheckResult - 2) <= 2) {
+    if (data->giftCheckResult == 2 || data->giftCheckResult == 3 || data->giftCheckResult == 4) {
         return MYSTERY_GIFT_STATE_CANNOT_RECEIVE;
     }
     MysteryGiftApp_EraseWindowIfInUse(&data->windows[2], FALSE);
@@ -2174,15 +2174,15 @@ static BOOL MysteryGiftApp_Main(OverlayManager *manager, int *state) {
         break;
     case MYSTERY_GIFT_STATE_EXIT_TO_TITLE:
         MysteryGiftApp_FreeGraphics(manager);
-        data->exitTarget = 0;
+        data->exitTarget = MYSTERY_GIFT_EXIT_TO_TITLE;
         return TRUE;
     case MYSTERY_GIFT_STATE_EXIT_TO_ALBUM:
         MysteryGiftApp_FreeGraphics(manager);
-        data->exitTarget = 1;
+        data->exitTarget = MYSTERY_GIFT_EXIT_TO_ALBUM;
         return TRUE;
     case MYSTERY_GIFT_STATE_EXIT_TO_LOCK_CAPSULE_CARD:
         MysteryGiftApp_FreeGraphics(manager);
-        data->exitTarget = 2;
+        data->exitTarget = MYSTERY_GIFT_EXIT_TO_LOCK_CAPSULE_CARD;
         return TRUE;
     case MYSTERY_GIFT_STATE_WAIT_FINISH:
         if (gSystem.newKeys) {
@@ -2232,11 +2232,11 @@ static BOOL MysteryGiftApp_Exit(OverlayManager *manager, int *state) {
     MysteryGiftAppData *data = OverlayManager_GetData(manager);
     int exitTarget = data->exitTarget;
 
-    if (exitTarget == 0) {
+    if (exitTarget == MYSTERY_GIFT_EXIT_TO_TITLE) {
         RegisterMainOverlay(FS_OVERLAY_ID(intro_title), &gApplication_TitleScreen);
-    } else if (exitTarget == 1) {
+    } else if (exitTarget == MYSTERY_GIFT_EXIT_TO_ALBUM) {
         RegisterMainOverlay(FS_OVERLAY_ID(OVY_74), &sWonderCardAlbumOverlayTemplate);
-    } else if (exitTarget == 2) {
+    } else if (exitTarget == MYSTERY_GIFT_EXIT_TO_LOCK_CAPSULE_CARD) {
         RegisterMainOverlay(FS_OVERLAY_ID(OVY_74), &sLockCapsuleCardOverlayTemplate);
     }
     Heap_Destroy(HEAP_ID_89);

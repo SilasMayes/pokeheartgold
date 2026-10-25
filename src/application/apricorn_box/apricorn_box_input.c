@@ -173,7 +173,7 @@ static int ApricornBoxScreen_ViewKeys(ApricornBoxScreen *screen) {
 
 static int ApricornBoxScreen_ViewTouch(ApricornBoxScreen *screen, int *hit) {
     int input = TouchscreenHitbox_FindHitboxAtTouchNew(sApricornBoxHitboxes);
-    if (input == -1 || input == 7) {
+    if (input == TOUCH_MENU_NO_INPUT || input == 7) {
         return APRICORN_BOX_SCREEN_STATE_VIEW;
     }
     *hit = 1;
@@ -321,7 +321,7 @@ static int ApricornBoxScreen_KurtKeys(ApricornBoxScreen *screen) {
 
 static int ApricornBoxScreen_KurtTouch(ApricornBoxScreen *screen, int *hit) {
     int input = TouchscreenHitbox_FindHitboxAtTouchNew(sApricornBoxHitboxes);
-    if (input == -1 || input == 7) {
+    if (input == TOUCH_MENU_NO_INPUT || input == 7) {
         return APRICORN_BOX_SCREEN_STATE_KURT;
     }
     *hit = 1;
@@ -426,10 +426,10 @@ static int ApricornBoxScreen_QuantityKeys(ApricornBoxScreen *screen) {
 
 static int ApricornBoxScreen_QuantityTouch(ApricornBoxScreen *screen, int *hit) {
     int input = TouchscreenHitbox_FindHitboxAtTouchNew(sApricornBoxQuantityHitboxes);
-    if (input == -1) {
+    if (input == TOUCH_MENU_NO_INPUT) {
         return 6;
     }
-    if ((u32)(input - 4) <= 1 && screen->maxQuantity < 10) {
+    if ((input == 4 || input == 5) && screen->maxQuantity < 10) {
         return 6;
     }
     if (input >= 2) {

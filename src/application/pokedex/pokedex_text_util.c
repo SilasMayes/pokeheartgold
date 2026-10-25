@@ -2,20 +2,22 @@
 
 #include "global.h"
 
+#include "constants/pokemon.h"
+
 #include "font.h"
 #include "gf_gfx_loader.h"
 #include "heap.h"
 
 u8 AddTextPrinterParameterizedWithColor(Window *window, u32 fontId, String *string, u32 x, u32 y, u32 textSpeed, u32 color, PrinterCallback_t callback);
 
-static const u8 sTypeIconPaletteNums[18] = { 0, 2, 0, 3, 1, 1, 3, 2, 0, 0, 2, 2, 1, 1, 1, 0, 2, 3 };
+static const u8 sTypeIconPaletteNums[NUMBER_OF_MON_TYPES] = { 0, 2, 0, 3, 1, 1, 3, 2, 0, 0, 2, 2, 1, 1, 1, 0, 2, 3 };
 
-static const u32 sTypeIconCharFiles[18] = { 36, 42, 50, 46, 44, 41, 47, 43, 45, 36, 37, 39, 38, 40, 51, 49, 52, 48 };
+static const u32 sTypeIconCharFiles[NUMBER_OF_MON_TYPES] = { 36, 42, 50, 46, 44, 41, 47, 43, 45, 36, 37, 39, 38, 40, 51, 49, 52, 48 };
 
 void PokedexApp_PrintString(Window *window, String *string, u32 x, u32 y, u32 fontId, u32 color, u32 align) {
-    if (align == 1) {
+    if (align == POKEDEX_TEXT_ALIGN_RIGHT) {
         x -= FontID_String_GetWidth(fontId, string, 0);
-    } else if (align == 2) {
+    } else if (align == POKEDEX_TEXT_ALIGN_CENTER) {
         x -= FontID_String_GetWidth(fontId, string, 0) >> 1;
     }
     AddTextPrinterParameterizedWithColor(window, fontId, string, x, y, 0xFF, color, NULL); // TEXT_SPEED_NOTRANSFER

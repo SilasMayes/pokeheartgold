@@ -199,7 +199,7 @@ void CircleWipe_Init(CircleWipe *wipe, const CircleWipeConfig *config, int steps
     CircleWipe_BuildScanlines(wipe);
     SysTask_CreateOnVWaitQueue(ScreenWipeScanlines_CommitTask, wipe, 0x3FF);
     buffer = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
-    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[0], 0, buffer->nextRight[0], 192, wipe->queued);
+    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[0], 0, buffer->nextRight[0], GX_LCD_SIZE_Y, wipe->queued);
     if (config->window == 0) {
         ScreenFade_SetWindowVisible(regQueue, GX_WNDMASK_W0, screen, wipe->queued);
     } else {
@@ -260,7 +260,7 @@ static void CircleWipe_BuildScanlines(CircleWipe *wipe) {
     WipeScanlineBuffer *buffer = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
     int y;
 
-    for (y = 0; y < 192; y++) {
+    for (y = 0; y < GX_LCD_SIZE_Y; y++) {
         int left;
         int right;
 
@@ -327,7 +327,7 @@ void WedgeWipe_Init(WedgeWipe *wipe, const AngleWipeConfig *config, int steps, i
     WedgeWipe_BuildScanlines(wipe);
     SysTask_CreateOnVWaitQueue(ScreenWipeScanlines_CommitTask, wipe, 0x3FF);
     buffer = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
-    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[0], 0, buffer->nextRight[0], 192, wipe->queued);
+    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[0], 0, buffer->nextRight[0], GX_LCD_SIZE_Y, wipe->queued);
     if (config->window == 0) {
         ScreenFade_SetWindowVisible(regQueue, GX_WNDMASK_W0, screen, wipe->queued);
     } else {
@@ -355,12 +355,12 @@ static BOOL WedgeWipe_Step(WedgeWipe *wipe) {
 }
 
 static void WedgeWipe_BuildScanlines(WedgeWipe *wipe) {
-    s32 halfWidths[192];
+    s32 halfWidths[GX_LCD_SIZE_Y];
     int y;
     WipeScanlineBuffer *buffer = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
 
-    ScreenFade_FillMulTan(wipe->angle / 128, halfWidths, 192, 0);
-    for (y = 0; y < 192; y++) {
+    ScreenFade_FillMulTan(wipe->angle / 128, halfWidths, GX_LCD_SIZE_Y, 0);
+    for (y = 0; y < GX_LCD_SIZE_Y; y++) {
         buffer->nextLeft[y] = ScreenFade_AddClamped(128, -halfWidths[y]);
         buffer->nextRight[y] = ScreenFade_AddClamped(128, halfWidths[y]);
     }
@@ -415,7 +415,7 @@ void SlopeWipe_Init(SlopeWipe *wipe, const AngleWipeConfig *config, int steps, i
     SlopeWipe_BuildScanlines(wipe);
     SysTask_CreateOnVWaitQueue(ScreenWipeScanlines_CommitTask, wipe, 0x3FF);
     buffer = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
-    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[96], 0, buffer->nextRight[96], 192, wipe->queued);
+    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[96], 0, buffer->nextRight[96], GX_LCD_SIZE_Y, wipe->queued);
     if (config->window == 0) {
         ScreenFade_SetWindowVisible(regQueue, GX_WNDMASK_W0, screen, wipe->queued);
     } else {
@@ -443,7 +443,7 @@ static BOOL SlopeWipe_Step(SlopeWipe *wipe) {
 }
 
 static void SlopeWipe_BuildScanlines(SlopeWipe *wipe) {
-    s32 slope[192];
+    s32 slope[GX_LCD_SIZE_Y];
     s32 halfWidth;
     int count;
     WipeScanlineBuffer *buffer;
@@ -457,7 +457,7 @@ static void SlopeWipe_BuildScanlines(SlopeWipe *wipe) {
     int angle = 65535 * (180 - ((halfWidth * 2 / 21) + 1) * 2) / 360 / 2;
     count = ScreenFade_HalfDivTan(angle, 256) >> FX32_SHIFT;
     int y;
-    GF_ASSERT(count < 192);
+    GF_ASSERT(count < GX_LCD_SIZE_Y);
     ScreenFade_FillMulTan(angle, slope, count, 0);
     for (y = 0; y < 96; y++) {
         int pos = count - (y + 1);
@@ -531,7 +531,7 @@ void MultiRectWipe_Init(MultiRectWipe *wipe, const MultiRectWipeConfig *config, 
     MultiRectWipe_BuildScanlines(wipe);
     SysTask_CreateOnVWaitQueue(ScreenWipeScanlines_CommitTask, wipe, 0x3FF);
     buffer = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
-    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[0], 0, buffer->nextRight[0], 192, wipe->queued);
+    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[0], 0, buffer->nextRight[0], GX_LCD_SIZE_Y, wipe->queued);
     if (config->window == 0) {
         ScreenFade_SetWindowVisible(wipe->regQueue, GX_WNDMASK_W0, screen, wipe->queued);
     } else {
@@ -567,7 +567,7 @@ static void MultiRectWipe_BuildScanlines(MultiRectWipe *wipe) {
     s32 i;
 
     // clears nextLeft and nextRight
-    memset(ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0)->nextLeft, 0, sizeof(s16) * 192 * 2);
+    memset(ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0)->nextLeft, 0, sizeof(s16) * GX_LCD_SIZE_Y * 2);
     for (i = wipe->count - 1; i >= 0; i--) {
         MultiRectWipe_DrawRect(wipe, &wipe->rects[i]);
     }
@@ -650,8 +650,8 @@ void SectorWipe_Init(SectorWipe *wipe, const SectorWipeConfig *config, int steps
 
     buffer0 = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
     buffer1 = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 1);
-    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, 0, screen, buffer0->nextLeft[0], 0, buffer0->nextRight[0], 192, wipe->queued);
-    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, 1, screen, buffer1->nextLeft[0], 0, buffer1->nextRight[0], 192, wipe->queued);
+    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, 0, screen, buffer0->nextLeft[0], 0, buffer0->nextRight[0], GX_LCD_SIZE_Y, wipe->queued);
+    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, 1, screen, buffer1->nextLeft[0], 0, buffer1->nextRight[0], GX_LCD_SIZE_Y, wipe->queued);
     ScreenFade_SetWindowVisible(regQueue, GX_WNDMASK_W0 | GX_WNDMASK_W1, screen, wipe->queued);
     FadeBlankPair_StartOnVBlank(wipe->blankPair, wipe, ScreenWipeScanlines_HBlankCallback, screen, heapId);
 }
@@ -706,7 +706,7 @@ static void SectorWipe_BuildScanlines(SectorWipe *wipe) {
     }
     inv = 0x3FFF - phase;
 
-    for (y = 96; y < 192; y++) {
+    for (y = 96; y < GX_LCD_SIZE_Y; y++) {
         if (wipe->phase.value < 0x3FFF) {
             buffer0->nextLeft[191 - y] = 128;
             buffer0->nextRight[191 - y] = 128;
@@ -783,8 +783,8 @@ void MirroredSectorWipe_Init(SectorWipe *wipe, const SectorWipeConfig *config, i
     SysTask_CreateOnVWaitQueue(ScreenWipeScanlines_CommitTask, wipe, 0x3FF);
     ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
     ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 1);
-    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, 0, screen, 0, 0, 255, 192, wipe->queued);
-    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, 1, screen, 0, 0, 255, 192, wipe->queued);
+    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, 0, screen, 0, 0, 255, GX_LCD_SIZE_Y, wipe->queued);
+    ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, 1, screen, 0, 0, 255, GX_LCD_SIZE_Y, wipe->queued);
     ScreenFade_SetWindowVisible(regQueue, GX_WNDMASK_W0 | GX_WNDMASK_W1, screen, wipe->queued);
     FadeBlankPair_StartOnVBlank(wipe->blankPair, wipe, ScreenWipeScanlines_HBlankCallback, screen, heapId);
 }
@@ -891,11 +891,11 @@ BOOL LineShutterWipe_Update(ScreenFade *fade) {
 void LineShutterWipe_Init(LineShutterWipe *wipe, const LineShutterConfig *config, int steps, int framesPerStep, int screen, WindowRegisterQueue *regQueue, FadeBlankPair *blankPair, enum HeapID heapId) {
     LineMask_Init(&wipe->mask, screen, 1, 0, 0);
     if (config->queued == 0) {
-        memset(wipe->mask.windows[0].lines, 1, 192);
-        memset(wipe->mask.windows[0].latched, 1, 192);
+        memset(wipe->mask.windows[0].lines, 1, sizeof(wipe->mask.windows[0].lines));
+        memset(wipe->mask.windows[0].latched, 1, sizeof(wipe->mask.windows[0].latched));
     } else {
-        memset(wipe->mask.windows[0].lines, 0, 192);
-        memset(wipe->mask.windows[0].latched, 0, 192);
+        memset(wipe->mask.windows[0].lines, 0, sizeof(wipe->mask.windows[0].lines));
+        memset(wipe->mask.windows[0].latched, 0, sizeof(wipe->mask.windows[0].latched));
     }
     wipe->ranges = config->ranges;
     wipe->rangeCount = config->rangeCount;

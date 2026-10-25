@@ -630,17 +630,8 @@ static void AprijuiceScreen_LoadParty(AprijuiceScreen *screen) {
 
 static void AprijuiceScreen_FreeParty(AprijuiceScreen *screen) {
     int i;
-    int count;
-    AprijuiceMon *entry;
-    i = 0;
-    count = screen->numMons;
-    if (count > 0) {
-        entry = screen->mons;
-        do {
-            AprijuiceMon_Free(entry);
-            i++;
-            entry++;
-        } while (i < screen->numMons);
+    for (i = 0; i < screen->numMons; i++) {
+        AprijuiceMon_Free(&screen->mons[i]);
     }
 }
 
@@ -860,7 +851,7 @@ static int AprijuiceScreen_HandleKeys(AprijuiceScreen *screen) {
 
 static int AprijuiceScreen_HandleTouch(AprijuiceScreen *screen, int *hit) {
     int input = TouchscreenHitbox_FindHitboxAtTouchNew(sAprijuiceHitboxes);
-    if (input == -1) {
+    if (input == TOUCH_MENU_NO_INPUT) {
         return 2;
     }
     *hit = 1;
@@ -991,15 +982,10 @@ static void AprijuiceScreen_AddWindows(AprijuiceScreen *screen) {
 
 static void AprijuiceScreen_RemoveWindows(AprijuiceScreen *screen) {
     int i;
-    Window *window;
-    i = 0;
-    window = screen->windows;
-    do {
-        ClearWindowTilemapAndCopyToVram(window);
-        RemoveWindow(window);
-        i++;
-        window++;
-    } while (i < 10);
+    for (i = 0; i < 10; i++) {
+        ClearWindowTilemapAndCopyToVram(&screen->windows[i]);
+        RemoveWindow(&screen->windows[i]);
+    }
     YesNoPrompt_Destroy(screen->yesNoPrompt);
 }
 

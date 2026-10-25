@@ -856,7 +856,7 @@ static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *customiz
 static int SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *customizer) {
     s32 hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariAreaCustomizerSlotHitboxes);
 
-    if (hit == -1) {
+    if (hit == TOUCH_MENU_NO_INPUT) {
         return SAC_INPUT_STATE_WAIT;
     }
     if (hit == 6) {
@@ -970,7 +970,7 @@ static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *customiz
 static int SafariAreaCustomizer_HandleAreaTouch(SafariAreaCustomizer *customizer) {
     s32 hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariAreaCustomizerAreaHitboxes);
 
-    if (hit == -1) {
+    if (hit == TOUCH_MENU_NO_INPUT) {
         return SAC_INPUT_STATE_WAIT;
     }
     switch (hit) {
@@ -1081,7 +1081,7 @@ static int SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *customiz
 static int SafariAreaCustomizer_HandleMoveTouch(SafariAreaCustomizer *customizer) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariAreaCustomizerSlotHitboxes);
 
-    if (hit == -1) {
+    if (hit == TOUCH_MENU_NO_INPUT) {
         return SAC_INPUT_STATE_WAIT;
     }
     if (hit == 6) {

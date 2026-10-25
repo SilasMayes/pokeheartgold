@@ -38,10 +38,10 @@ typedef struct ScreenFade {
 // One window's horizontal span per scanline. The wipes write the next frame's spans to nextLeft/nextRight,
 // which a VBlank task copies to left/right for the HBlank callback.
 typedef struct WipeScanlineBuffer {
-    s16 left[192];
-    s16 right[192];
-    s16 nextLeft[192];
-    s16 nextRight[192];
+    s16 left[GX_LCD_SIZE_Y];
+    s16 right[GX_LCD_SIZE_Y];
+    s16 nextLeft[GX_LCD_SIZE_Y];
+    s16 nextRight[GX_LCD_SIZE_Y];
     u32 window; // 0 = WIN0, 1 = WIN1
 } WipeScanlineBuffer;
 
@@ -53,8 +53,8 @@ typedef struct ScreenWipeScanlines {
 
 // One window's on/off flag per scanline, copied to latched in VBlank and applied per HBlank
 typedef struct LineMaskWindow {
-    u8 lines[192];
-    u8 latched[192];
+    u8 lines[GX_LCD_SIZE_Y];
+    u8 latched[GX_LCD_SIZE_Y];
     int window;
 } LineMaskWindow;
 

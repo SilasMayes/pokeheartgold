@@ -592,7 +592,7 @@ static void TrainerCardSignature_HandleTouch(TrainerCardSignature *signature) {
     int i;
     int hit = TouchscreenHitbox_FindRectAtTouchNew(sTrainerCardSignatureButtonHitboxes);
 
-    if (hit != -1) {
+    if (hit != TOUCH_MENU_NO_INPUT) {
         if (hit == 0) {
             if (signature->state == TRAINER_CARD_SIGNATURE_STATE_DRAW) {
                 TrainerCardSignature_PrintMessage(signature, msg_0252_00010);
@@ -605,7 +605,7 @@ static void TrainerCardSignature_HandleTouch(TrainerCardSignature *signature) {
             TrainerCardSignature_SetDoneButtonSpriteSeq(&signature->doneButtonSprite, hit);
         }
     }
-    if (TouchscreenHitbox_FindRectAtTouchHeld(sTrainerCardSignatureCanvasHitbox) != -1) {
+    if (TouchscreenHitbox_FindRectAtTouchHeld(sTrainerCardSignatureCanvasHitbox) != TOUCH_MENU_NO_INPUT) {
         TrainerCardSignature_UpdatePenSound(signature);
     }
     if (GF_TouchpadUpdate(&touches, 4, 1) == 1) {

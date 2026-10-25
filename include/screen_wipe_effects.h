@@ -29,7 +29,7 @@ typedef struct RectWipe {
     int stepsLeft;
     int framesPerStep;
     int frameCounter;
-    int queued;
+    BOOL queued;
     WindowRegisterQueue *regQueue;
 } RectWipe;
 
@@ -60,7 +60,7 @@ typedef struct CircleWipe {
     int framesPerStep;
     int frameCounter;
     enum HeapID heapId;
-    int queued;
+    BOOL queued;
     WindowRegisterQueue *regQueue;
     FadeBlankPair *blankPair;
 } CircleWipe;
@@ -82,7 +82,7 @@ typedef struct WedgeWipe {
     int stepsLeft;
     int framesPerStep;
     int frameCounter;
-    int queued;
+    BOOL queued;
     WindowRegisterQueue *regQueue;
     FadeBlankPair *blankPair;
     enum HeapID heapId;
@@ -98,7 +98,7 @@ typedef struct SlopeWipe {
     int stepsLeft;
     int framesPerStep;
     int frameCounter;
-    int queued;
+    BOOL queued;
     WindowRegisterQueue *regQueue;
     FadeBlankPair *blankPair;
     enum HeapID heapId;
@@ -128,7 +128,7 @@ typedef struct MultiRectWipe {
     int stepsLeft;
     int framesPerStep;
     int frameCounter;
-    int queued;
+    BOOL queued;
     WindowRegisterQueue *regQueue;
     FadeBlankPair *blankPair;
     enum HeapID heapId;
@@ -156,7 +156,7 @@ typedef struct SectorWipe {
     int step;
     int framesPerStep;
     int frameCounter;
-    int queued;
+    BOOL queued;
     enum HeapID heapId;
     WindowRegisterQueue *regQueue;
     FadeBlankPair *blankPair;
@@ -183,7 +183,7 @@ typedef struct LineShutterWipe {
     int step;
     int framesPerStep;
     int frameCounter;
-    int queued;
+    BOOL queued;
     enum HeapID heapId;
     WindowRegisterQueue *regQueue;
     FadeBlankPair *blankPair;

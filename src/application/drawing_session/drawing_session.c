@@ -769,7 +769,7 @@ static void DrawingSession_HandleTouch(DrawingSessionWork *work) {
 
     changed = 0;
     hit = TouchscreenHitbox_FindRectAtTouchNew(sDrawingSessionButtonHitboxes);
-    if (hit != -1) {
+    if (hit != TOUCH_MENU_NO_INPUT) {
         switch (hit) {
         case 0:
         case 1:
@@ -840,7 +840,7 @@ static void DrawingSession_HandleTouch(DrawingSessionWork *work) {
     }
     hit = TouchscreenHitbox_FindRectAtTouchHeld(sDrawingSessionCanvasHitbox);
     Sprite_SetDrawFlag(work->penCursors[Comm_GetLocalNetId()], FALSE);
-    if (hit != -1) {
+    if (hit != TOUCH_MENU_NO_INPUT) {
         DrawingSession_SetPenCursorPos(work->penCursors[Comm_GetLocalNetId()], gSystem.touchX, gSystem.touchY);
         Sprite_SetDrawFlag(work->penCursors[Comm_GetLocalNetId()], TRUE);
     }
@@ -1675,7 +1675,7 @@ static void DrawingSession_HideYesNo(DrawingSessionWork *work) {
 }
 
 static BOOL DrawingSession_IsYesNoAreaTouched(DrawingSessionWork *work) {
-    if (TouchscreenHitbox_FindRectAtTouchNew(sDrawingSessionYesNoHitbox) != -1) {
+    if (TouchscreenHitbox_FindRectAtTouchNew(sDrawingSessionYesNoHitbox) != TOUCH_MENU_NO_INPUT) {
         return TRUE;
     }
     return FALSE;

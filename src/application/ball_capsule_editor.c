@@ -3002,7 +3002,7 @@ static int BallCapsuleEditor_GetTouchedCapsule(BallCapsuleEditor *editor) {
         y += 56;
     }
     found = TouchscreenHitbox_FindRectAtTouchNew(gBallCapsuleEditorExitButtonHitboxes);
-    if (found == -1) {
+    if (found == TOUCH_MENU_NO_INPUT) {
         return -1;
     }
     local.pixel = 1023;

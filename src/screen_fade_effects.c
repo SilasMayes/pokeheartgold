@@ -4,6 +4,7 @@
 #include <nitro/gx/g2.h>
 #include <string.h>
 
+#include "bg_window.h"
 #include "screen_wipe_effects.h"
 
 // The fade effects (FadeFunc_NN runs enum FadeType NN), the fixed-point helpers of the window wipes, the master
@@ -1010,10 +1011,10 @@ void ScreenWipeScanlines_HBlankCallback(void *data) {
 
     GF_ASSERT(scanlines != NULL);
     line = reg_GX_VCOUNT;
-    if (line < 192) {
+    if (line < GX_LCD_SIZE_Y) {
         line++;
         if (line > 191) {
-            line -= 192;
+            line -= GX_LCD_SIZE_Y;
         }
         if (scanlines->count == 1) {
             ApplyScanlineSpan(ScreenWipeScanlines_GetBuffer(scanlines, 0), line, scanlines);
@@ -1169,7 +1170,7 @@ static inline int GX_IsHBlank(void) {
 }
 
 static inline void SetOutsidePlane(int planes, BOOL effect, int screen) {
-    if (screen == 0) {
+    if (screen == SCREEN_MAIN) {
         if (GX_IsHBlank()) {
             G2_SetWndOutsidePlane(planes, effect);
         }
@@ -1182,7 +1183,7 @@ static inline void SetOutsidePlane(int planes, BOOL effect, int screen) {
 
 static inline void SetInsidePlane(int planes, BOOL effect, int window, int screen) {
     if (window == 0) {
-        if (screen == 0) {
+        if (screen == SCREEN_MAIN) {
             if (GX_IsHBlank()) {
                 G2_SetWnd0InsidePlane(planes, effect);
             }
@@ -1192,7 +1193,7 @@ static inline void SetInsidePlane(int planes, BOOL effect, int window, int scree
             }
         }
     } else {
-        if (screen == 0) {
+        if (screen == SCREEN_MAIN) {
             if (GX_IsHBlank()) {
                 G2_SetWnd1InsidePlane(planes, effect);
             }
@@ -1225,10 +1226,10 @@ static void LineMask_HBlankCallback(void *data) {
 
     GF_ASSERT(data != NULL);
     line = GX_GetVCount();
-    if (line < 192) {
+    if (line < GX_LCD_SIZE_Y) {
         line++;
         if (line > 191) {
-            line -= 192;
+            line -= GX_LCD_SIZE_Y;
         }
         if (mask->count == 1) {
             ApplyLine(mask, line, 0);

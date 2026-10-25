@@ -1531,7 +1531,7 @@ static BOOL MigrateFromAgb_Main(OverlayManager *man, int *state) {
         break;
     case MIGRATE_STATE_PICK_MONS: {
         int hit = TouchscreenHitbox_FindRectAtTouchNew(app->hitboxes);
-        if (hit != -1) {
+        if (hit != TOUCH_MENU_NO_INPUT) {
             if (hit < AGB_BOX_MON_COUNT) {
                 int result = MigrateFromAgb_TogglePick(app, hit);
                 if (result == PICK_RESULT_ADDED) {

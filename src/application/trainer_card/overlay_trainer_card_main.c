@@ -935,13 +935,12 @@ static void TrainerCardMain_ClearBackSideRect(TrainerCardMain *cardMain) {
 
 static void TrainerCardMain_UnpackSignature(u8 *signature, u8 *pixels) {
     int count = 0x3000;
-    int i = 0;
-    do {
+    int i;
+    for (i = 0; i < count; i++) {
         u8 col = (i / 8) % 8;
         u8 bit = i % 8;
         pixels[i] = (signature[(i / 64) * 8 + col] >> bit) & 1;
-        i++;
-    } while (i < count);
+    }
 }
 
 static void TrainerCardMain_DrawSignature(BgConfig *bgConfig, int bgId, u8 *pixels) {
@@ -954,12 +953,10 @@ static void TrainerCardMain_DrawSignature(BgConfig *bgConfig, int bgId, u8 *pixe
     tilemap = GetBgTilemapBuffer(bgConfig, bgId);
     tile = 0;
     for (y = 0; y < 8; y++) {
-        x = 0;
-        do {
+        for (x = 0; x < 24; x++) {
             tile++;
             tilemap[(y + 12) * 32 + x + 4] = tile;
-            x++;
-        } while (x < 24);
+        }
     }
     ScheduleBgTilemapBufferTransfer(bgConfig, bgId);
 }
@@ -991,11 +988,10 @@ static void TrainerCardMain_SetButtonsHidden(TrainerCardMain *cardMain, BOOL hid
 
 static void TrainerCardMain_CreateWindows(TrainerCardMain *cardMain) {
     const WindowTemplate *templates = sTrainerCardWindowTemplates;
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 14; i++) {
         AddWindow(cardMain->bgConfig, &cardMain->windows[i], &templates[i]);
-        i++;
-    } while (i < 14);
+    }
     BG_FillCharDataRange(cardMain->bgConfig, GF_BG_LYR_SUB_3, 0, 1, 0);
     BG_FillCharDataRange(cardMain->bgConfig, GF_BG_LYR_SUB_0, 0, 1, 0);
     LoadUserFrameGfx2(cardMain->bgConfig, GF_BG_LYR_SUB_0, 0x3e1, 13, cardMain->frame, HEAP_ID_25);

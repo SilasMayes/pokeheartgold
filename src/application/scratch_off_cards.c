@@ -198,8 +198,6 @@ typedef struct ScratchOffCardsWork {
     u8 unk_99FA[2];
 } ScratchOffCardsWork;
 
-#define NEXT_SPRITE_SLOT(cursor) ((ScratchOffCardsWork *)((u8 *)(cursor) + sizeof(void *)))
-
 typedef struct ScratchOffCardsPos {
     s16 x;
     s16 y;
@@ -510,7 +508,7 @@ static BOOL ScratchOffCards_SelectCard(ScratchOffCardsWork *work) {
             work->delay--;
         }
         hit = TouchscreenHitbox_FindRectAtTouchHeld(gScratchOffCardsCardChoiceHitboxes);
-        if (hit != -1) {
+        if (hit != TOUCH_MENU_NO_INPUT) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
             ScratchOffCardsSprite_SetVisible(work->messageSprite, FALSE);
             PlaySE(SEQ_SE_DP_BUTTON9);
@@ -611,19 +609,15 @@ static BOOL ScratchOffCards_ShowCard(ScratchOffCardsWork *work) {
     case SCRATCH_OFF_CARDS_SHOW_PLACE_SPRITES: {
         int j = 0;
         int y = 26;
-        ScratchOffCardsWork *cursor = work;
         for (; j < 4; j++) {
-            ScratchOffCardsSprite_SetPosition(cursor->cardIconSprites[0], work->slideX + 60, y);
-            ScratchOffCardsSprite_SetVisible(cursor->cardIconSprites[0], TRUE);
+            ScratchOffCardsSprite_SetPosition(work->cardIconSprites[j], work->slideX + 60, y);
+            ScratchOffCardsSprite_SetVisible(work->cardIconSprites[j], TRUE);
             y += 42;
-            cursor = NEXT_SPRITE_SLOT(cursor);
         }
         {
             int k = 0;
-            cursor = work;
             for (; k < 3; k++) {
-                ScratchOffCardsSprite_SetPalette(cursor->highlightSprites[0], 1);
-                cursor = NEXT_SPRITE_SLOT(cursor);
+                ScratchOffCardsSprite_SetPalette(work->highlightSprites[k], 1);
             }
         }
         {
@@ -634,13 +628,11 @@ static BOOL ScratchOffCards_ShowCard(ScratchOffCardsWork *work) {
             work->revealed[0] = 177;
             work->revealed[1] = 178;
             work->revealed[2] = 179;
-            cursor = work;
             for (; k < 9; k++) {
-                ScratchOffCardsSprite_SetPosition(cursor->cellSprites[0], work->slideX + pos[0], pos[1]);
-                ScratchOffCardsSprite_SetVisible(cursor->cellSprites[0], TRUE);
-                ScratchOffCardsSprite_SetAnim(cursor->cellSprites[0], work->cells[k]);
+                ScratchOffCardsSprite_SetPosition(work->cellSprites[k], work->slideX + pos[0], pos[1]);
+                ScratchOffCardsSprite_SetVisible(work->cellSprites[k], TRUE);
+                ScratchOffCardsSprite_SetAnim(work->cellSprites[k], work->cells[k]);
                 pos += 2;
-                cursor = NEXT_SPRITE_SLOT(cursor);
             }
         }
         ScratchOffCards_SetBgPalette(work, GF_BG_LYR_MAIN_1, (u8)(work->chosenCards[work->cardNo] + 4), 32, 24);
@@ -658,23 +650,18 @@ static BOOL ScratchOffCards_ShowCard(ScratchOffCardsWork *work) {
             work->subState = SCRATCH_OFF_CARDS_SHOW_DONE;
         } else {
             int y;
-            ScratchOffCardsWork *cursor;
             const s16 *pos;
             i = 0;
             y = 26;
-            cursor = work;
             for (; i < 4; i++) {
-                ScratchOffCardsSprite_SetPosition(cursor->cardIconSprites[0], work->slideX + 60, y);
+                ScratchOffCardsSprite_SetPosition(work->cardIconSprites[i], work->slideX + 60, y);
                 y += 42;
-                cursor = NEXT_SPRITE_SLOT(cursor);
             }
             pos = &gScratchOffCardsCellPositions[0].x;
             i = 0;
-            cursor = work;
             for (; i < 9; i++) {
-                ScratchOffCardsSprite_SetPosition(cursor->cellSprites[0], work->slideX + pos[0], pos[1]);
+                ScratchOffCardsSprite_SetPosition(work->cellSprites[i], work->slideX + pos[0], pos[1]);
                 pos += 2;
-                cursor = NEXT_SPRITE_SLOT(cursor);
             }
         }
         work->slideX += 16;
@@ -730,7 +717,7 @@ static BOOL ScratchOffCards_PlayCard(ScratchOffCardsWork *work) {
     case SCRATCH_OFF_CARDS_PLAY_SCRATCH:
         GF_TouchpadUpdate(&work->touch, 4, 2);
         hit = TouchscreenHitbox_FindRectAtTouchHeld(gScratchOffCardsCellHitboxes);
-        if (hit != -1) {
+        if (hit != TOUCH_MENU_NO_INPUT) {
             if (ScratchOffCards_CountTouchedCells(work) < 3) {
                 work->touchedCells[hit] = TRUE;
             }
@@ -771,7 +758,7 @@ static BOOL ScratchOffCards_PlayCard(ScratchOffCardsWork *work) {
             ScratchOffCards_AnimateMatch(work);
         }
         if (work->cardNo == 2) {
-            if (TouchscreenHitbox_FindRectAtTouchNew(gScratchOffCardsLastCardButtonHitbox) == -1) {
+            if (TouchscreenHitbox_FindRectAtTouchNew(gScratchOffCardsLastCardButtonHitbox) == TOUCH_MENU_NO_INPUT) {
                 break;
             }
             ScratchOffCardsSprite_SetAnimActive(work->buttonSprite, TRUE);
@@ -782,7 +769,7 @@ static BOOL ScratchOffCards_PlayCard(ScratchOffCardsWork *work) {
             ScratchOffCards_ShowYesNoPrompt(work);
             work->subState = SCRATCH_OFF_CARDS_PLAY_CONFIRM_STOP;
         } else {
-            if (TouchscreenHitbox_FindRectAtTouchNew(gScratchOffCardsNextCardButtonHitbox) == -1) {
+            if (TouchscreenHitbox_FindRectAtTouchNew(gScratchOffCardsNextCardButtonHitbox) == TOUCH_MENU_NO_INPUT) {
                 break;
             }
             ScratchOffCardsSprite_SetAnimActive(work->buttonSprite, TRUE);
@@ -1497,12 +1484,8 @@ static void ScratchOffCards_ScratchCell(ScratchOffCardsWork *work, int cellNo) {
 
 static void ScratchOffCards_MarkTouchedArea(ScratchOffCardsWork *work) {
     int i;
-    i = 0;
-    if (i < work->touch.count) {
-        do {
-            ScratchOffCards_MarkArea(work, (u8)work->touch.samples[i].x, (u8)work->touch.samples[i].y);
-            i++;
-        } while (i < work->touch.count);
+    for (i = 0; i < work->touch.count; i++) {
+        ScratchOffCards_MarkArea(work, (u8)work->touch.samples[i].x, (u8)work->touch.samples[i].y);
     }
 }
 

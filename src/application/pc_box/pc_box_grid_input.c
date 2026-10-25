@@ -37,7 +37,7 @@ u32 PCBox_GetDepositMenuInput(PCBoxWork *work) {
         return input;
     }
     if (PCBox_IsActionMenuOpen(work->view->panels) == 1) {
-        if (input == 6 || input == -2) {
+        if (input == 6 || input == GRID_MENU_CANCEL) {
             return 11;
         }
     }
@@ -154,7 +154,7 @@ u32 PCBox_GetWithdrawMenuInput(PCBoxWork *work) {
         return input;
     }
     if (PCBox_IsActionMenuOpen(work->view->panels) == 1) {
-        if (input == 33 || input == -2) {
+        if (input == 33 || input == GRID_MENU_CANCEL) {
             return 38;
         }
     }
@@ -203,7 +203,7 @@ u32 PCBox_GetMoveModeMenuInput(PCBoxWork *work) {
             PCBox_PlaceCursorOnGridInput(work, nextInput);
             return -1;
         }
-        if (input == 35 || input == -2) {
+        if (input == 35 || input == GRID_MENU_CANCEL) {
             return 41;
         }
     }
@@ -364,7 +364,7 @@ u32 PCBox_GetMoveModePartyMenuInput(PCBoxWork *work) {
             PCBox_PlaceCursorOnGridInput(work, nextInput);
             return -1;
         }
-    } else if (input == 7 || input == -2) {
+    } else if (input == 7 || input == GRID_MENU_CANCEL) {
         return 13;
     }
     return input;
@@ -421,7 +421,7 @@ u32 PCBox_GetItemModeMenuInput(PCBoxWork *work) {
             PCBox_PlaceCursorOnGridInput(work, nextInput);
             return -1;
         }
-        if (input == 35 || input == -2) {
+        if (input == 35 || input == GRID_MENU_CANCEL) {
             return 37;
         }
     }
@@ -476,7 +476,7 @@ u32 PCBox_GetItemModePartyMenuInput(PCBoxWork *work) {
             PCBox_PlaceCursorOnGridInput(work, nextInput);
             return -1;
         }
-    } else if (input == 7 || input == -2) {
+    } else if (input == 7 || input == GRID_MENU_CANCEL) {
         return 9;
     }
     return input;

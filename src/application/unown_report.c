@@ -763,7 +763,7 @@ static int UnownReport_HandleKeys(UnownReportApp *app) {
 static int UnownReport_HandleTouch(UnownReportApp *app, BOOL *touched) {
     int hitbox = TouchscreenHitbox_FindHitboxAtTouchNew(gUnownReportHitboxes);
 
-    if (hitbox == -1) {
+    if (hitbox == TOUCH_MENU_NO_INPUT) {
         return UNOWN_REPORT_MAIN_INPUT;
     }
     *touched = TRUE;

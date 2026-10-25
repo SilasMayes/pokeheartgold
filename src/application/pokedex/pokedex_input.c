@@ -438,7 +438,7 @@ int PokedexApp_HandleListMenuInput(PokedexAppData *pokedexApp) {
     pokedexApp->keyInput = 0;
     if (System_GetTouchNew() == TRUE) {
         int hit = TouchscreenHitbox_FindRectAtTouchNew(sPokedexListMenuHitboxes);
-        if (hit == -1) {
+        if (hit == TOUCH_MENU_NO_INPUT) {
             return -1;
         }
         int input = sPokedexListMenuHitResults[hit];
@@ -484,7 +484,7 @@ int PokedexApp_HandleListInput(PokedexAppData *pokedexApp, int mode) {
     pokedexApp->keyInput = 0;
     if (System_GetTouchNewCoords(&x, &y) == TRUE) {
         int hit = TouchscreenHitbox_FindRectAtTouchNew(sPokedexListHitboxes);
-        if (hit == -1) {
+        if (hit == TOUCH_MENU_NO_INPUT) {
             return -1;
         }
         input = sPokedexListHitResults[hit];
@@ -685,7 +685,7 @@ typedef void (*GridSetInputsU8Func)(GridInputHandler *inputHandler, u8 nextInput
 // Moving up or down from OK / cancel lands in the letter column the cursor left from.
 void PokedexApp_OnSearchNameGridMove(void *data, int target, int input) {
     PokedexAppData *pokedexApp = data;
-    if ((u32)(input - 27) <= 1) {
+    if (input == 27 || input == 28) {
         int previous = pokedexApp->prevGridInput;
         u8 left = sSearchNameDpadBoxes[previous].left;
         if (target == 0 || target == 6) {
@@ -1065,7 +1065,7 @@ u32 PokedexApp_HandleSearchResultListInput(PokedexAppData *pokedexApp, int mode)
 
     if (System_GetTouchNewCoords(&x, &y) == TRUE) {
         int hit = TouchscreenHitbox_FindRectAtTouchNew(sPokedexListHitboxes);
-        if (hit == -1) {
+        if (hit == TOUCH_MENU_NO_INPUT) {
             return -1;
         }
         input = sPokedexListHitResults[hit];
@@ -1175,7 +1175,7 @@ int PokedexApp_HandleEntryTabTouch(PokedexAppData *pokedexApp, u32 *touched) {
 
     if (System_GetTouchNew() == TRUE) {
         hit = TouchscreenHitbox_FindRectAtTouchNew(sPokedexEntryTabHitboxes);
-        if (hit == -1) {
+        if (hit == TOUCH_MENU_NO_INPUT) {
             return -1;
         }
         System_GetTouchNewCoords(&coords[1], &coords[0]);
@@ -1201,7 +1201,7 @@ u32 PokedexApp_HandleAreaInput(PokedexAppData *pokedexApp, u32 *touched) {
     }
     if (System_GetTouchNew() == TRUE) {
         ret = TouchscreenHitbox_FindHitboxAtTouchNew(sPokedexAreaHitboxes);
-        if (ret == -1) {
+        if (ret == TOUCH_MENU_NO_INPUT) {
             return -1;
         }
         *touched = 1;
@@ -1271,7 +1271,7 @@ u32 PokedexApp_HandleFormsInput(PokedexAppData *pokedexApp, u32 *touched) {
     }
     if (System_GetTouchNew() == TRUE) {
         ret = TouchscreenHitbox_FindRectAtTouchNew(sPokedexFormsHitboxes);
-        if (ret == -1) {
+        if (ret == TOUCH_MENU_NO_INPUT) {
             return -1;
         }
         *touched = 1;
@@ -1304,7 +1304,7 @@ u32 PokedexApp_HandleFormCompareInput(PokedexAppData *pokedexApp, u32 *touched) 
 
     if (System_GetTouchNew() == TRUE) {
         ret = TouchscreenHitbox_FindRectAtTouchNew(sPokedexFormCompareHitboxes);
-        if (ret == -1) {
+        if (ret == TOUCH_MENU_NO_INPUT) {
             return -1;
         }
         *touched = 1;
@@ -1345,7 +1345,7 @@ u32 PokedexApp_HandleEntryMenuInput(PokedexAppData *pokedexApp, u32 *touched) {
     }
     if (System_GetTouchNew() == TRUE) {
         ret = TouchscreenHitbox_FindHitboxAtTouchNew(sPokedexEntryMenuHitboxes);
-        if (ret == -1) {
+        if (ret == TOUCH_MENU_NO_INPUT) {
             return -1;
         }
         *touched = 1;

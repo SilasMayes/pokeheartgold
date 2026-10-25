@@ -6,6 +6,7 @@
 
 #include "bag.h"
 #include "bg_window.h"
+#include "box_mon_selector.h"
 #include "font_types_def.h"
 #include "message_format.h"
 #include "msgdata.h"
@@ -41,6 +42,15 @@ enum PokewalkerAppState {
     POKEWALKER_APP_STATE_UPDATE,
     POKEWALKER_APP_STATE_EXIT,
     POKEWALKER_APP_STATE_FADE_OUT,
+};
+
+// What the link with the Pokewalker is for (chosen in the main menu).
+enum PokewalkerLinkAction {
+    POKEWALKER_LINK_GO_FOR_STROLL,
+    POKEWALKER_LINK_RETURN_FROM_STROLL,
+    POKEWALKER_LINK_RECEIVE_GIFT,
+    POKEWALKER_LINK_STROLL_STARTED,
+    POKEWALKER_LINK_SEND_MON_BACK,
 };
 
 // A Pokemon that can be found on a Pokewalker course.
@@ -155,7 +165,7 @@ typedef struct PokewalkerApp {
     enum PokewalkerAppMode nextMode;
     int state;     // state of the current mode
     int nextState; // state to go to after a message or the cursor animation
-    int linkAction;
+    enum PokewalkerLinkAction linkAction;
     u16 linkError;     // error of the IR link (message id once shown), 0 = none
     u16 linkConnected; // the Pokewalker answered (message 6 shown)
     BgConfig *bgConfig;
@@ -186,10 +196,9 @@ typedef struct PokewalkerApp {
     u16 linkProgress; // highest transfer progress while connected
     u8 unk_1D762[2];
     int selectMonState; // PC box selection (mode 7)
-    void *boxSelector;
-    void *boxDisplay;
-    u32 selectedBox; // 18 = party
-    u32 selectedSlot;
+    BoxMonSelector *boxSelector;
+    struct PokewalkerBoxDisplay *boxDisplay;
+    BoxMonSelectorResult strollMonSelection;
     u32 selectMonCancelled;
     u16 strollMonSpecies;
     u8 unk_1D77E[0x16];

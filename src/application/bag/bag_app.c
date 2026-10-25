@@ -887,7 +887,7 @@ static int BagApp_State_HandleInput(BagApp *app) {
     }
     pressed[0] = FALSE;
     result = BagApp_GetTouchedButton(app, 0);
-    if (result != -1) {
+    if (result != TOUCH_MENU_NO_INPUT) {
         if (BagApp_ShouldMoveCursorToButton(app, result)) {
             if ((u32)result < BAG_BUTTON_FIRST_SLOT) {
                 if (BagApp_FindPocketIndex(app, result) != -1) {
@@ -1328,7 +1328,7 @@ static int BagApp_State_MoveItemInput(BagApp *app) {
         }
     }
     button = BagApp_GetTouchedButton(app, 2);
-    if (button != -1) {
+    if (button != TOUCH_MENU_NO_INPUT) {
         if (button == 8) {
             result = BagApp_GetMoveTargetResult(app, button);
             BagApp_SetMoveCursorPosition(app, button);
@@ -1514,7 +1514,7 @@ static int BagApp_HandleItemMenuInput(BagApp *app) {
         return -1;
     }
     selected = BagApp_GetTouchedButton(app, 1);
-    if (selected != -1) {
+    if (selected != TOUCH_MENU_NO_INPUT) {
         BagApp_SetMenuInputState(app, MENU_INPUT_STATE_TOUCH);
         app->menuCursor = selected;
         BagApp_SetCursorPosition(app, gItemMenuCursorButtons[selected]);
@@ -1861,7 +1861,7 @@ static int BagApp_State_TrashQuantityInput(BagApp *app) {
     int result = 0;
     int button = BagApp_GetTouchedButton(app, 3);
 
-    if (button != -1) {
+    if (button != TOUCH_MENU_NO_INPUT) {
         switch (BagApp_GetUnusedDigitCount(app->maxQuantity)) {
         case 1:
             if (button == 0 || button == 3) {
@@ -2189,7 +2189,7 @@ static int BagApp_State_HoldItemSelectInput(BagApp *app) {
     }
     itemChosen = FALSE;
     result = BagApp_GetTouchedButton(app, 0);
-    if (result != -1) {
+    if (result != TOUCH_MENU_NO_INPUT) {
         if (BagApp_ShouldMoveCursorToButton(app, result)) {
             if ((u32)result < BAG_BUTTON_FIRST_SLOT) {
                 if (BagApp_FindPocketIndex(app, result) != -1) {
@@ -2342,7 +2342,7 @@ static int BagApp_State_SellSelectInput(BagApp *app) {
     }
     itemChosen = FALSE;
     result = BagApp_GetTouchedButton(app, 0);
-    if (result != -1) {
+    if (result != TOUCH_MENU_NO_INPUT) {
         if (BagApp_ShouldMoveCursorToButton(app, result)) {
             if ((u32)result < BAG_BUTTON_FIRST_SLOT) {
                 if (BagApp_FindPocketIndex(app, result) != -1) {
@@ -2458,7 +2458,7 @@ static int BagApp_State_SellQuantityInput(BagApp *app) {
     int result = 0;
     int button = BagApp_GetTouchedButton(app, 4);
 
-    if (button != -1) {
+    if (button != TOUCH_MENU_NO_INPUT) {
         if (BagApp_GetUnusedDigitCount(app->maxQuantity) == 2) {
             if (button == 0 || button == 2) {
                 button = -1;

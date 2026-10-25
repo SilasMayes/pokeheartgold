@@ -41,10 +41,9 @@ typedef struct PokewalkerSelectMonInfo {
 // species, nickname, form and gender (PokewalkerApp strollMonSpecies .. strollMonGender).
 typedef struct PokewalkerSelectMonWork {
     int state;
-    void *boxSelector;
+    BoxMonSelector *boxSelector;
     struct PokewalkerBoxDisplay *boxDisplay;
-    u32 box; // 18 = party
-    u32 slot;
+    BoxMonSelectorResult selection;
     u32 cancelled;
     u16 species;
     u16 nickname[POKEMON_NAME_LENGTH + 1];
@@ -86,13 +85,6 @@ typedef struct PokewalkerBoxDisplay {
     String *string;
     PokewalkerBoxDisplaySprites sprites;
 } PokewalkerBoxDisplay;
-
-void *BoxMonSelector_New(enum HeapID heapId, int count, int flag);
-void BoxMonSelector_Delete(void *boxSelector);
-void BoxMonSelector_Init(void *boxSelector, BgConfig *bgConfig, PCStorage *storage, Party *party, u32 unused11, u32 unused12, BOOL canCancel, u32 initialPage, void *getMon, void *getBoxName, void *selection, void *onCursorMove, void *arg);
-void BoxMonSelector_VBlank(void *boxSelector);
-int BoxMonSelector_Run(void *boxSelector);
-void BoxMonSelector_RenderSprites(void *boxSelector);
 
 // Modes of the app's mode table: enter / update / exit.
 int PokewalkerApp_LinkSave_Enter(PokewalkerApp *app);

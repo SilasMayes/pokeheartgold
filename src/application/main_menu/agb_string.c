@@ -1,5 +1,7 @@
 #include "global.h"
 
+#include "constants/charcode.h"
+
 #include "application/main_menu/agb_cartridge.h"
 
 // Conversion of Ruby/Sapphire/Emerald/FireRed/LeafGreen strings to this game's characters (Migrate from GBA).
@@ -12,9 +14,9 @@ static u16 AgbString_GetCloseQuoteChar(u32 language);
 static u32 AgbString_GetSpaceChar(u32 language) {
     u32 result;
     if (language == LANGUAGE_JAPANESE) {
-        result = 1;
+        result = CHAR_JP_SPACE;
     } else {
-        result = 0x1DE;
+        result = CHAR_SPACE;
     }
     return (u16)result;
 }
@@ -24,15 +26,15 @@ static u16 AgbString_GetOpenQuoteChar(u32 language) {
     switch (language) {
     case LANGUAGE_JAPANESE:
     default:
-        return 0xEA;
+        return CHAR_JP_OPEN_DQUOT;
     case LANGUAGE_ENGLISH:
     case LANGUAGE_ITALIAN:
     case LANGUAGE_SPANISH:
-        return 0x1B4;
+        return CHAR_LDQUOT;
     case LANGUAGE_FRENCH:
-        return 0x1B7;
+        return CHAR_FR_LQUOT;
     case LANGUAGE_GERMAN:
-        return 0x1B6;
+        return CHAR_LOW_RDQUOT;
     }
 }
 
@@ -41,15 +43,15 @@ static u16 AgbString_GetCloseQuoteChar(u32 language) {
     switch (language) {
     case LANGUAGE_JAPANESE:
     default:
-        return 0xEB;
+        return CHAR_JP_CLOSE_DQUOT;
     case LANGUAGE_ENGLISH:
     case LANGUAGE_ITALIAN:
     case LANGUAGE_SPANISH:
-        return 0x1B5;
+        return CHAR_RDQUOT;
     case LANGUAGE_FRENCH:
-        return 0x1B8;
+        return CHAR_FR_RQUOT;
     case LANGUAGE_GERMAN:
-        return 0x1B4;
+        return CHAR_LDQUOT;
     }
 }
 
@@ -64,19 +66,19 @@ BOOL ConvertRSStringToDPStringInternational(const u8 *src, u16 *dst, u32 length,
             int invalidStrLen = (length - 1 < 10) ? length - 1 : 10;
             int j;
             for (j = 0; j < invalidStrLen; j++) {
-                dst[j] = 0x1AC;
+                dst[j] = CHAR_QMARK;
             }
-            dst[j] = 0xFFFF;
+            dst[j] = EOS;
             return FALSE;
         }
         switch (sAgbToDpCharMap[src[i]][nonJa]) {
-        case 1:
+        case CHAR_JP_SPACE:
             dst[i] = AgbString_GetSpaceChar(language);
             break;
-        case 0xEA:
+        case CHAR_JP_OPEN_DQUOT:
             dst[i] = AgbString_GetOpenQuoteChar(language);
             break;
-        case 0xEB:
+        case CHAR_JP_CLOSE_DQUOT:
             dst[i] = AgbString_GetCloseQuoteChar(language);
             break;
         default:
@@ -84,6 +86,6 @@ BOOL ConvertRSStringToDPStringInternational(const u8 *src, u16 *dst, u32 length,
             break;
         }
     }
-    dst[i] = 0xFFFF;
+    dst[i] = EOS;
     return TRUE;
 }

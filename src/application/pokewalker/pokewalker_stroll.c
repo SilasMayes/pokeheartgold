@@ -57,8 +57,8 @@ int PokewalkerApp_WaitKeyToSave_Exit(PokewalkerApp *app) {
 
 int PokewalkerApp_StartStroll_Enter(PokewalkerApp *app) {
     PCStorage *pcStorage = SaveArray_PCStorage_Get(app->saveData);
-    int box = app->selectedBox;
-    int slot = app->selectedSlot;
+    int box = app->strollMonSelection.page;
+    int slot = app->strollMonSelection.slot;
     ((void (*)(POKEWALKER *, int, int))Pokewalker_SetStrollState)(app->pokewalker, 2, box);
     ((void (*)(POKEWALKER *, int))Pokewalker_SetCourse)(app->pokewalker, app->courseId);
     Pokewalker_SetBoxMon(app->pokewalker, PCStorage_GetMonByIndexPair(pcStorage, box, slot));
@@ -110,7 +110,7 @@ int PokewalkerApp_StartStroll_CheckFirstStroll(PokewalkerApp *app) {
         return START_STROLL_PRINT_REGISTERED;
     }
     app->nextMode = POKEWALKER_APP_MODE_STROLL_REPORT;
-    app->linkAction = 3;
+    app->linkAction = POKEWALKER_LINK_STROLL_STARTED;
     return START_STROLL_END;
 }
 

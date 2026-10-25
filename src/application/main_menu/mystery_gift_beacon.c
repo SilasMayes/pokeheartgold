@@ -11,11 +11,6 @@
 
 #define MYSTERY_GIFT_BEACON_GGID 0x400318
 
-// WM results (only the ones this module tests)
-#define WM_ERRCODE_SUCCESS    0
-#define WM_ERRCODE_OPERATING  2
-#define WM_ERRCODE_FIFO_ERROR 8
-
 #define MYSTERY_GIFT_BEACON_ASSERT(cond) (void)((cond) || (OS_Terminate(), 0))
 
 // WM_StartScan callback argument: a station found (state 5) with its beacon

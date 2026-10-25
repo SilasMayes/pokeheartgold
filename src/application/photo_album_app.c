@@ -814,7 +814,7 @@ static int PhotoAlbumApp_HandleGridSelection(PhotoAlbumApp *app, int input) {
 
 static int PhotoAlbumApp_HandleGridTouch(PhotoAlbumApp *app, int *done) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(sPhotoAlbumGridHitboxes);
-    if (hit == -1) {
+    if (hit == TOUCH_MENU_NO_INPUT) {
         return PHOTO_ALBUM_STATE_GRID;
     }
     if (app->nextMenuState == 0) {
@@ -988,7 +988,7 @@ static int PhotoAlbumApp_HandleMoveSelection(PhotoAlbumApp *app, u32 input) {
 
 static int PhotoAlbumApp_HandleMoveTouch(PhotoAlbumApp *app, int *done) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(sPhotoAlbumGridHitboxes);
-    if (hit == -1) {
+    if (hit == TOUCH_MENU_NO_INPUT) {
         return PHOTO_ALBUM_STATE_MOVE_PHOTO;
     }
     if (app->nextMenuState == 0) {

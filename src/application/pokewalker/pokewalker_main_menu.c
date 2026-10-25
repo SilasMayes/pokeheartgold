@@ -96,7 +96,7 @@ int PokewalkerApp_MainMenu_Start(PokewalkerApp *app) {
     case 0:
         app->nextMode = POKEWALKER_APP_MODE_LINK;
         app->strollMonSpecies = SPECIES_NONE;
-        app->linkAction = 0;
+        app->linkAction = POKEWALKER_LINK_GO_FOR_STROLL;
         PokewalkerApp_RemoveWindowBank(app, 3);
         PokewalkerApp_AddWindowBank(app, 1);
         FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
@@ -105,7 +105,7 @@ int PokewalkerApp_MainMenu_Start(PokewalkerApp *app) {
         return MAIN_MENU_PRINT_WELCOME;
     case 1:
         app->strollMonSpecies = SPECIES_NONE;
-        app->linkAction = 0;
+        app->linkAction = POKEWALKER_LINK_GO_FOR_STROLL;
         PokewalkerApp_RemoveWindowBank(app, 3);
         PokewalkerApp_AddWindowBank(app, 7);
         FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
@@ -166,7 +166,7 @@ static void PokewalkerApp_ShowWalkerRecords(PokewalkerApp *app, BOOL onStroll) {
 }
 
 int PokewalkerApp_MainMenu_WaitFade(PokewalkerApp *app) {
-    return IsPaletteFadeFinished() == TRUE ? 4 : 2;
+    return IsPaletteFadeFinished() == TRUE ? MAIN_MENU_PRINT_WELCOME : MAIN_MENU_SHOW_TOP_MENU;
 }
 
 // Top menu: 6 items (cursor positions gTopMenuCursorPositions).
@@ -215,7 +215,7 @@ int PokewalkerApp_MainMenu_HandleTopMenu(PokewalkerApp *app) {
         case 1:
             app->nextMode = POKEWALKER_APP_MODE_LINK;
             app->strollMonSpecies = SPECIES_NONE;
-            app->linkAction = 0;
+            app->linkAction = POKEWALKER_LINK_GO_FOR_STROLL;
             PokewalkerApp_RemoveWindowBank(app, 3);
             PokewalkerApp_AddWindowBank(app, 1);
             FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
@@ -225,7 +225,7 @@ int PokewalkerApp_MainMenu_HandleTopMenu(PokewalkerApp *app) {
         case 2:
             Pokewalker_SetStrollState(app->pokewalker, 1, 1);
             app->strollMonSpecies = SPECIES_NONE;
-            app->linkAction = 0;
+            app->linkAction = POKEWALKER_LINK_GO_FOR_STROLL;
             PokewalkerApp_RemoveWindowBank(app, 3);
             PokewalkerApp_AddWindowBank(app, 7);
             FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
@@ -249,18 +249,18 @@ int PokewalkerApp_MainMenu_HandleTopMenu(PokewalkerApp *app) {
 }
 
 int PokewalkerApp_MainMenu_PrintWelcome(PokewalkerApp *app) {
-    PokewalkerApp_StartMessage(app, 2, msg_0274_00000, 6);
+    PokewalkerApp_StartMessage(app, 2, msg_0274_00000, MAIN_MENU_PRINT_STROLL_READY);
     return MAIN_MENU_WAIT_MESSAGE;
 }
 
 int PokewalkerApp_MainMenu_WaitWelcome(PokewalkerApp *app) {
-    return !TextPrinterCheckActive(app->textPrinterId) ? 7 : 5;
+    return !TextPrinterCheckActive(app->textPrinterId) ? MAIN_MENU_SHOW_STROLL_MENU : MAIN_MENU_WAIT_WELCOME;
 }
 
 int PokewalkerApp_MainMenu_PrintStrollReady(PokewalkerApp *app) {
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_1);
-    PokewalkerApp_StartMessage(app, 0, msg_0274_00008, 7);
+    PokewalkerApp_StartMessage(app, 0, msg_0274_00008, MAIN_MENU_SHOW_STROLL_MENU);
     return MAIN_MENU_WAIT_MESSAGE;
 }
 
@@ -324,12 +324,12 @@ int PokewalkerApp_MainMenu_EndStrollMenu(PokewalkerApp *app) {
 }
 
 int PokewalkerApp_MainMenu_PrintReceive(PokewalkerApp *app) {
-    PokewalkerApp_StartMessage(app, 0, msg_0274_00002, 12);
+    PokewalkerApp_StartMessage(app, 0, msg_0274_00002, MAIN_MENU_SHOW_RECEIVE_MENU);
     return MAIN_MENU_WAIT_MESSAGE;
 }
 
 int PokewalkerApp_MainMenu_WaitReceive(PokewalkerApp *app) {
-    return !TextPrinterCheckActive(app->textPrinterId) ? 12 : 11;
+    return !TextPrinterCheckActive(app->textPrinterId) ? MAIN_MENU_SHOW_RECEIVE_MENU : MAIN_MENU_WAIT_RECEIVE;
 }
 
 // "Return from a Stroll" / "Receive a gift" / exit.
@@ -389,11 +389,11 @@ int PokewalkerApp_MainMenu_EndReceiveMenu(PokewalkerApp *app) {
     switch (app->menuSelection) {
     case 0:
         app->nextMode = POKEWALKER_APP_MODE_LINK;
-        app->linkAction = 1;
+        app->linkAction = POKEWALKER_LINK_RETURN_FROM_STROLL;
         break;
     case 1:
         app->nextMode = POKEWALKER_APP_MODE_LINK;
-        app->linkAction = 2;
+        app->linkAction = POKEWALKER_LINK_RECEIVE_GIFT;
         break;
     case 2:
         app->nextMode = POKEWALKER_APP_MODE_EXIT;
@@ -406,12 +406,12 @@ int PokewalkerApp_MainMenu_EndReceiveMenu(PokewalkerApp *app) {
 }
 
 int PokewalkerApp_MainMenu_PrintStrollReady2(PokewalkerApp *app) {
-    PokewalkerApp_StartMessage(app, 0, msg_0274_00008, 17);
+    PokewalkerApp_StartMessage(app, 0, msg_0274_00008, MAIN_MENU_SHOW_FULL_MENU);
     return MAIN_MENU_WAIT_MESSAGE;
 }
 
 int PokewalkerApp_MainMenu_WaitStrollReady2(PokewalkerApp *app) {
-    return !TextPrinterCheckActive(app->textPrinterId) ? 17 : 16;
+    return !TextPrinterCheckActive(app->textPrinterId) ? MAIN_MENU_SHOW_FULL_MENU : MAIN_MENU_WAIT_STROLL_READY2;
 }
 
 // "Go for a Stroll" / "Receive a gift" / "Return from a Stroll" / exit.
@@ -471,15 +471,15 @@ int PokewalkerApp_MainMenu_EndFullMenu(PokewalkerApp *app) {
     switch (app->menuSelection) {
     case 0:
         app->nextMode = POKEWALKER_APP_MODE_LINK;
-        app->linkAction = 0;
+        app->linkAction = POKEWALKER_LINK_GO_FOR_STROLL;
         break;
     case 1:
         app->nextMode = POKEWALKER_APP_MODE_LINK;
-        app->linkAction = 1;
+        app->linkAction = POKEWALKER_LINK_RETURN_FROM_STROLL;
         break;
     case 2:
         app->nextMode = POKEWALKER_APP_MODE_LINK;
-        app->linkAction = 2;
+        app->linkAction = POKEWALKER_LINK_RECEIVE_GIFT;
         break;
     case 3:
         app->nextMode = POKEWALKER_APP_MODE_EXIT;
@@ -497,7 +497,7 @@ int PokewalkerApp_MainMenu_PrintBoxesFull(PokewalkerApp *app) {
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_2);
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_1);
-    PokewalkerApp_StartMessage(app, 2, msg_0274_00015, 22);
+    PokewalkerApp_StartMessage(app, 2, msg_0274_00015, MAIN_MENU_QUIT);
     return MAIN_MENU_WAIT_MESSAGE;
 }
 
@@ -520,7 +520,7 @@ int PokewalkerApp_MainMenu_PrintNoPokemon(PokewalkerApp *app) {
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_2);
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_1);
-    PokewalkerApp_StartMessage(app, 2, msg_0274_00022, 22);
+    PokewalkerApp_StartMessage(app, 2, msg_0274_00022, MAIN_MENU_QUIT);
     return MAIN_MENU_WAIT_MESSAGE;
 }
 
@@ -565,7 +565,7 @@ static BOOL PokewalkerApp_MainMenu_TrySendMonBack(PokewalkerApp *app, int bank) 
         return FALSE;
     }
     app->nextMode = POKEWALKER_APP_MODE_LINK;
-    app->linkAction = 4;
+    app->linkAction = POKEWALKER_LINK_SEND_MON_BACK;
     PokewalkerApp_RemoveWindowBank(app, bank);
     PokewalkerApp_AddWindowBank(app, 1);
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);

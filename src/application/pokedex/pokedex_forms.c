@@ -116,7 +116,7 @@ void PokedexApp_DrawFormListIcons(PokedexAppData *pokedexApp) {
     int y = 14;
     u32 entry;
 
-    do {
+    for (; (u32)i < 6; i++) {
         entry = pokedexApp->selectedForm + i - 2;
         if (entry >= (u32)pokedexApp->numSeenForms) {
             PokedexApp_SetSpriteVisible(pokedexApp, i + 14, FALSE);
@@ -125,9 +125,8 @@ void PokedexApp_DrawFormListIcons(PokedexAppData *pokedexApp) {
             PokedexApp_SetFormListIcon(pokedexApp, i + 14, entry);
         }
         PokedexApp_SetSpritePos(pokedexApp, i + 14, 0x30, y, 0);
-        i++;
         y += 24;
-    } while ((u32)i < 6);
+    }
 }
 
 // Recycles the icon that scrolled out (y -10 or 134) for the entry coming in.
@@ -195,17 +194,12 @@ void PokedexApp_SetScrollbarSizeAnim(PokedexAppData *pokedexApp, int sprite, int
 
 // The scrollbar's size animations start at 14; the first threshold not below count picks one.
 int PokedexApp_GetScrollbarSizeAnim(PokedexAppData *pokedexApp, int count, const u16 *thresholds, u32 numSizes) {
-    u32 i = 0;
+    u32 i;
 
-    if (numSizes > i) {
-        do {
-            u16 threshold = *thresholds;
-            if (count <= threshold) {
-                break;
-            }
-            i++;
-            thresholds++;
-        } while (i < numSizes);
+    for (i = 0; i < numSizes; i++) {
+        if (count <= thresholds[i]) {
+            break;
+        }
     }
     return i + 14;
 }
