@@ -147,7 +147,7 @@ static void DrawingSessionLink_ReceivePictureChunk(int netId, int size, void *da
         } else {
             MIi_CpuCopyFast((const u32 *)chunk->data, (u32 *)(work->picture + offset), 0x3e8);
         }
-        MIi_CpuCopyFast((const u32 *)work->picture, (u32 *)work->canvasWindow.pixelBuffer, 0x3840);
+        MIi_CpuCopyFast((const u32 *)work->picture, work->canvasWindow.pixelBuffer, 0x3840);
         CopyWindowToVram(&work->canvasWindow);
     } else {
         if (work->pictureChunkIndex * 0x3e8 < 0x3840) {

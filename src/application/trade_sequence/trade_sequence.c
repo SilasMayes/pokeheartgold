@@ -527,7 +527,7 @@ void TradeSequence_LoadMonPicToBg(TradeSequence *ts, u32 whichMon, u32 bgId, u32
         }
         CharTiles_LoadMonRectAsObjFromNarc((NarcId)local.template.narcID, local.template.charDataID, HEAP_ID_56, &local.settings, buffer, personality, large, 2, species);
         DC_FlushRange(buffer, size);
-        BG_LoadCharTilesData(ts->bgConfig, (u8)bgId, buffer, size, 0);
+        BG_LoadCharTilesData(ts->bgConfig, bgId, buffer, size, 0);
         ReleaseBoxMonLock(boxMon, lock);
         Heap_Free(buffer);
     }

@@ -1429,7 +1429,7 @@ void WiFiPlazaModels_UpdateMatchSign(WiFiPlazaModels *models, int match, u32 pla
 }
 
 static BOOL WiFiPlazaProp_IsAt(WiFiPlazaProp *prop, u8 x, u8 y) {
-    s16 cellY = (s16)(y * 16);
+    s16 cellY = y * 16;
     WiFiPlazaModelsPos pos = WiFiPlazaProp_UnpackPos(WiFiPlazaProp_GetPos(prop));
 
     return pos.x == (s16)(x * 16) && pos.y == cellY;

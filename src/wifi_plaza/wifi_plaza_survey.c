@@ -364,7 +364,7 @@ static void WiFiPlazaSurvey_FreeBgs(WiFiPlazaSurveyWork *work) {
     int i;
     const u32 *layer = sWiFiPlazaSurveyBgLayers;
     for (i = 0; i < 4; i++, layer++) {
-        FreeBgTilemapBuffer(work->bgConfig, (u8)*layer);
+        FreeBgTilemapBuffer(work->bgConfig, *layer);
     }
     Heap_Free(work->bgConfig);
 }

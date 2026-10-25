@@ -906,7 +906,7 @@ static void GtsSelectMon_MoveCursor(GtsApp *app) {
         next = sGtsSelectMonCursorMoves[app->selectedSlot][direction - 1];
         if (next != app->selectedSlot) {
             if (next == GTS_SELECT_MON_MOVE_BOX - 1 || next == GTS_SELECT_MON_MOVE_BOX + 1) {
-                arrow = (u8)(next != GTS_SELECT_MON_MOVE_BOX + 1);
+                arrow = next != GTS_SELECT_MON_MOVE_BOX + 1;
                 Sprite_SetAnimActiveFlag(app->arrowSprites[arrow], TRUE);
                 Sprite_SetAnimCtrlSeq(app->arrowSprites[arrow], arrow + 38);
                 app->selectedBox = GtsSelectMon_StepIndex(app->selectedBox, GTS_BOX_PARTY + 1, next - GTS_SELECT_MON_MOVE_BOX);
@@ -1282,7 +1282,7 @@ static void GtsSelectMon_ShowSlotMon(BoxPokemon *boxMon, Sprite *iconSprite, Spr
         Sprite_SetDrawFlag(iconSprite, TRUE);
         if (item != ITEM_NONE) {
             Sprite_SetDrawFlag(itemSprite, TRUE);
-            if (ItemIdIsMail((u16)item)) {
+            if (ItemIdIsMail(item)) {
                 Sprite_SetAnimCtrlSeq(itemSprite, 41);
             } else {
                 Sprite_SetAnimCtrlSeq(itemSprite, 40);

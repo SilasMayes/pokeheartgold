@@ -11,7 +11,7 @@ int VoiceChat_AddConferenceClients(u32 aidMask, int skipAid) {
     }
     for (i = 0; i < 4; i++) {
         if (i != skipAid && (aidMask & (1 << i)) && gVoiceChat.work->conferenceClients[i] != 1) {
-            if (VCT_AddConferenceClient((u8)i) != 0) {
+            if (VCT_AddConferenceClient(i) != 0) {
                 return 0;
             }
             gVoiceChat.work->conferenceClients[i] = 1;

@@ -287,10 +287,10 @@ static void GtsSearchResult_CreateWindows(GtsApp *app) {
     window = app->infoWindows;
     for (; i < 16; i++, template ++, window++) {
         if (template->bgId == GF_BG_LYR_MAIN_0) {
-            AddWindowParameterized(app->bgConfig, window, (u8) template->bgId, (u8) template->x, (u8) template->y, (u8) template->width, (u8) template->height, 13, (u16)mainBaseTile);
+            AddWindowParameterized(app->bgConfig, window, template->bgId, template->x, template->y, template->width, template->height, 13, mainBaseTile);
             mainBaseTile += template->width * template->height;
         } else {
-            AddWindowParameterized(app->bgConfig, window, (u8) template->bgId, (u8) template->x, (u8) template->y, (u8) template->width, (u8) template->height, 1, (u16)subBaseTile);
+            AddWindowParameterized(app->bgConfig, window, template->bgId, template->x, template->y, template->width, template->height, 1, subBaseTile);
             subBaseTile += template->width * template->height;
         }
         FillWindowPixelBuffer(window, 0);

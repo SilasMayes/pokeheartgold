@@ -467,9 +467,9 @@ static void PlazaNewsGraphics_InitBgs(PlazaNewsGraphics *graphics, enum HeapID h
     gSystem.screensFlipped = FALSE;
     GfGfx_SwapDisplay();
     for (i = 0; i < 5; i++) {
-        InitBgFromTemplate(graphics->bgConfig, (u8)sPlazaNewsBgIds[i], &sPlazaNewsBgTemplates[i], GF_BG_TYPE_TEXT);
-        BG_ClearCharDataRange((u8)sPlazaNewsBgIds[i], 0x20, 0, heapID);
-        BgClearTilemapBufferAndCommit(graphics->bgConfig, (u8)sPlazaNewsBgIds[i]);
+        InitBgFromTemplate(graphics->bgConfig, sPlazaNewsBgIds[i], &sPlazaNewsBgTemplates[i], GF_BG_TYPE_TEXT);
+        BG_ClearCharDataRange(sPlazaNewsBgIds[i], 0x20, 0, heapID);
+        BgClearTilemapBufferAndCommit(graphics->bgConfig, sPlazaNewsBgIds[i]);
     }
     GfGfxLoader_GXLoadPalFromOpenNarc(graphics->narc, 0, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_0_OFFSET, 0, heapID);
     LoadFontPal1(GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_10_OFFSET, heapID);
@@ -485,7 +485,7 @@ static void PlazaNewsGraphics_FreeBgs(PlazaNewsGraphics *graphics) {
     int i;
 
     for (i = 0; i < 5; i++) {
-        FreeBgTilemapBuffer(graphics->bgConfig, (u8)sPlazaNewsBgIds[i]);
+        FreeBgTilemapBuffer(graphics->bgConfig, sPlazaNewsBgIds[i]);
     }
     Heap_Free(graphics->bgConfig);
     gSystem.screensFlipped = FALSE;
@@ -498,7 +498,7 @@ static void PlazaNewsGraphics_InitSprites(PlazaNewsGraphics *graphics, enum Heap
 
     NNS_G2dInitOamManagerModule();
     OamManager_Create(0, 0x7E, 0, 0x1F, 0, 0x7E, 0, 0x1F, heapID);
-    ObjCharTransfer_InitEx((ObjCharTransferTemplate *)&sPlazaNewsObjCharTransfer, (GXOBJVRamModeChar)mode, (GXOBJVRamModeChar)(u8)mode);
+    ObjCharTransfer_InitEx(&sPlazaNewsObjCharTransfer, (GXOBJVRamModeChar)mode, (GXOBJVRamModeChar)(u8)mode);
     ObjPlttTransfer_Init(0x20, heapID);
     ObjCharTransfer_ClearBuffers();
     ObjPlttTransfer_Reset();
@@ -536,7 +536,7 @@ static void PlazaNewsTileset_Free(PlazaNewsTileset *tileset) {
 
 static void PlazaNewsClock_DrawCell(PlazaNewsTileset *tileset, PlazaNewsGraphics *graphics, u32 tile, u8 col, u8 row) {
     NNSG2dScreenData *screen = tileset->screenData;
-    CopyToBgTilemapRect(graphics->bgConfig, GF_BG_LYR_MAIN_3, (u8)(col + 5), (u8)(row * 2 + 4), 1, 2, screen->rawData, (u8)(tile + 6), 0, (u8)(screen->screenWidth >> 3), (u8)(screen->screenHeight >> 3));
+    CopyToBgTilemapRect(graphics->bgConfig, GF_BG_LYR_MAIN_3, col + 5, row * 2 + 4, 1, 2, screen->rawData, tile + 6, 0, screen->screenWidth >> 3, screen->screenHeight >> 3);
     ScheduleBgTilemapBufferTransfer(graphics->bgConfig, GF_BG_LYR_MAIN_3);
 }
 
@@ -555,11 +555,11 @@ static void PlazaNewsPeople_DrawIcon(PlazaNewsTileset *tileset, PlazaNewsGraphic
     screen = tileset->screenData;
     y = row * 2 + 4;
     x = col * 2 + 0x15;
-    CopyToBgTilemapRect(graphics->bgConfig, GF_BG_LYR_MAIN_3, (u8)x, (u8)y, 2, 2, screen->rawData, (u8)(srcX * 2), (u8)(srcY * 2), (u8)(screen->screenWidth >> 3), (u8)(screen->screenHeight >> 3));
+    CopyToBgTilemapRect(graphics->bgConfig, GF_BG_LYR_MAIN_3, x, y, 2, 2, screen->rawData, srcX * 2, srcY * 2, screen->screenWidth >> 3, screen->screenHeight >> 3);
     if (usePalette4 != 0) {
-        BgTilemapRectChangePalette(graphics->bgConfig, GF_BG_LYR_MAIN_3, (u8)x, (u8)y, 2, 2, 4);
+        BgTilemapRectChangePalette(graphics->bgConfig, GF_BG_LYR_MAIN_3, x, y, 2, 2, 4);
     } else if (usePalette3 != 0) {
-        BgTilemapRectChangePalette(graphics->bgConfig, GF_BG_LYR_MAIN_3, (u8)x, (u8)y, 2, 2, 3);
+        BgTilemapRectChangePalette(graphics->bgConfig, GF_BG_LYR_MAIN_3, x, y, 2, 2, 3);
     }
     ScheduleBgTilemapBufferTransfer(graphics->bgConfig, GF_BG_LYR_MAIN_3);
 }
@@ -986,7 +986,7 @@ static void PlazaNewsTicker_Draw(PlazaNewsTicker *ticker, Window *window) {
         }
     }
     FillWindowPixelRect(window, 0, 0, 0, 255, 16);
-    BlitBitmapRect(window, ticker->bitmap.pixelBuffer, (u16)srcX, 0, 1440, 16, (u16)x, 0, (u16)scroll, 16, 15);
+    BlitBitmapRect(window, ticker->bitmap.pixelBuffer, srcX, 0, 1440, 16, x, 0, scroll, 16, 15);
     ScheduleWindowCopyToVram(window);
 }
 
@@ -1115,7 +1115,7 @@ static void PlazaNewsFlash_Update(PlazaNewsFlash *flash) {
         int amount;
         u16 color;
         if (flash->timer == 0) {
-            PlaySE((u16)flash->sound);
+            PlaySE(flash->sound);
         }
         if (flash->timer < 2) {
             amount = (flash->timer * 16) / 2;
@@ -1125,7 +1125,7 @@ static void PlazaNewsFlash_Update(PlazaNewsFlash *flash) {
             amount = 16 - ((flash->timer - 14) * 16) / 14;
         }
         color = 14;
-        BlendPalette(&color, &flash->color, 1, (u8)amount, 25);
+        BlendPalette(&color, &flash->color, 1, amount, 25);
         DC_FlushRange(&flash->color, 2);
         GX_LoadBGPltt(&flash->color, flash->paletteOffset, 2);
         flash->timer++;

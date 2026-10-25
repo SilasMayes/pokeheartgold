@@ -604,9 +604,9 @@ static BOOL MimeJrTopGame_RunDemo(MimeJrTopGame *game) {
     } else {
         MimeJrTopGame_RubDemo(game, x + 0x80, y + 0x80);
         if (x != 0) {
-            ((MimeJrTopStartBurstFunc)MimeJrTopGame_StartBurst)(game, (s16)(x + 0x58), (s16)(y + 0x80));
+            ((MimeJrTopStartBurstFunc)MimeJrTopGame_StartBurst)(game, x + 0x58, y + 0x80);
         } else {
-            ((MimeJrTopStartBurstFunc)MimeJrTopGame_StartBurst)(game, (s16)(x + 0x80), (s16)(y + 0x80));
+            ((MimeJrTopStartBurstFunc)MimeJrTopGame_StartBurst)(game, x + 0x80, y + 0x80);
         }
     }
     if (frame == 0 && game->demoFrame != frame) {
@@ -1146,7 +1146,7 @@ static void MimeJrTop_DrawScene(MimeJrTopApp *app) {
     Camera_PushLookAtToNNSGlb();
     light = gMimeJrTopLightVector;
     VEC_Normalize(&light, &light);
-    NNS_G3dGlbLightVector(GX_LIGHTID_0, (s16)light.x, (s16)light.y, (s16)light.z);
+    NNS_G3dGlbLightVector(GX_LIGHTID_0, light.x, light.y, light.z);
     NNS_G3dGlbLightColor(GX_LIGHTID_0, 32767);
     NNS_G3dGlbMaterialColorDiffAmb(32767, 32767, FALSE);
     NNS_G3dGlbMaterialColorSpecEmi(32767, 32767, FALSE);
@@ -1411,7 +1411,7 @@ static void MimeJrTop_LoadPlayerPalettes(MimeJrTopApp *app, int index) {
     int i;
     MimeJrTopPlayerPalettes *entry = &gMimeJrTopPlayerPalettes[index];
     for (i = 0; i < 4; i++) {
-        PaletteData_LoadFromNarc(palette, NARC_a_1_9_3, 73, HEAP_ID_113, PLTTBUF_SUB_BG, 32, (u16)((i + 1) << 4), (u16)((*(int *)((u32)entry + app->game->playerCount * 80 + i * 4 - 76)) << 4));
+        PaletteData_LoadFromNarc(palette, NARC_a_1_9_3, 73, HEAP_ID_113, PLTTBUF_SUB_BG, 32, (i + 1) << 4, (*(int *)((u32)entry + app->game->playerCount * 80 + i * 4 - 76)) << 4);
     }
 }
 
@@ -1451,7 +1451,7 @@ static void MimeJrTopGame_ShowRivalNames(MimeJrTopApp *app, MimeJrTopGame *game)
                 InitWindow(window);
                 s16 *coords = (s16 *)((u8 *)table + game->playerCount * 24 + rival * 8);
                 int width = coords[-22], height = coords[-21];
-                AddWindowParameterized(game->resources->bgConfig, window, GF_BG_LYR_SUB_3, (u8)coords[-24], (u8)coords[-23], (u8)width, (u8)height, 14, (u16)tile);
+                AddWindowParameterized(game->resources->bgConfig, window, GF_BG_LYR_SUB_3, coords[-24], coords[-23], width, height, 14, tile);
                 tile += width * height;
                 FillWindowPixelBuffer(window, 255);
                 String *name = PlayerProfile_GetPlayerName_NewString(profile, HEAP_ID_113);
@@ -2431,14 +2431,14 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
                 oldY = game->kickY.value;
                 kickXDone = MimeJrTopTween_UpdateAccel(&game->kickX);
                 kickYDone = MimeJrTopTween_UpdateAccel(&game->kickY);
-                x = (s16)((game->kickX.value - oldX) >> 12);
+                x = (game->kickX.value - oldX) >> 12;
                 y = (s16)((game->kickY.value - oldY) >> 12);
                 if (kickXDone == 1 || kickYDone == 1) {
                     game->kickX.value -= oldX;
                     game->kickY.value -= oldY;
                 }
             } else {
-                x = (s16)(game->kickX.value >> 12);
+                x = game->kickX.value >> 12;
                 y = (s16)(game->kickY.value >> 12);
             }
         } else {
@@ -2447,7 +2447,7 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
             oldY = game->settleY.value;
             s1 = MimeJrTopTween_UpdateAccel(&game->settleX);
             s2 = MimeJrTopTween_UpdateAccel(&game->settleY);
-            x = (s16)((game->settleX.value - oldX) >> 12);
+            x = (game->settleX.value - oldX) >> 12;
             y = (s16)((game->settleY.value - oldY) >> 12);
             if ((s1 == 1 || s2 == 1) && !game->settled) {
                 game->settled = TRUE;
@@ -2470,7 +2470,7 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
     }
     if (!game->touched && game->settled == TRUE) {
         y = (s16)(game->settleY.value >> 12);
-        x = (s16)(game->settleX.value >> 12);
+        x = game->settleX.value >> 12;
         MimeJrTopModel_Turn(&game->top, 0, 0, x, y, 1.88f, FALSE);
         if (MimeJrTopModel_Turn(&game->mimeJr[0], 0, 0, x, y, 0.8f, FALSE)) {
             settleAxis = gMimeJrTopSettleTiltAxis;
@@ -2478,7 +2478,7 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
         }
     } else if (game->touched == TRUE && game->settled == TRUE) {
         y = (s16)(game->settleY.value >> 12);
-        x = (s16)(game->settleX.value >> 12);
+        x = game->settleX.value >> 12;
         MimeJrTopModel_Turn(&game->top, 0, 0, x, y, 1.88f, FALSE);
         if (MimeJrTopModel_Turn(&game->mimeJr[0], 0, 0, x, y, 0.8f, FALSE)) {
             settleTouchAxis = gMimeJrTopSettleTouchTiltAxis;
@@ -3091,8 +3091,8 @@ static void MimeJrTopStage_UpdateFlash(MimeJrTopStageEffect *effect) {
                 *level = 4;
                 effect->state++;
             }
-            PaletteData_BlendPalettes(palette, PLTTBUF_MAIN_BG, 1, (u8)(*level + *base), RGB_BLACK);
-            PaletteData_BlendPalettes(palette, PLTTBUF_SUB_BG, 1, (u8)(*level + *base), RGB_BLACK);
+            PaletteData_BlendPalettes(palette, PLTTBUF_MAIN_BG, 1, *level + *base, RGB_BLACK);
+            PaletteData_BlendPalettes(palette, PLTTBUF_SUB_BG, 1, *level + *base, RGB_BLACK);
             break;
         case MIME_JR_TOP_FLASH_SHOW_STAGE:
             ModelInstance_SetVisible(&stage->instance, TRUE);
@@ -3111,8 +3111,8 @@ static void MimeJrTopStage_UpdateFlash(MimeJrTopStageEffect *effect) {
                 *level = 0;
                 effect->state++;
             }
-            PaletteData_BlendPalettes(palette, PLTTBUF_MAIN_BG, 1, (u8)(*level + *base), RGB_BLACK);
-            PaletteData_BlendPalettes(palette, PLTTBUF_SUB_BG, 1, (u8)(*level + *base), RGB_BLACK);
+            PaletteData_BlendPalettes(palette, PLTTBUF_MAIN_BG, 1, *level + *base, RGB_BLACK);
+            PaletteData_BlendPalettes(palette, PLTTBUF_SUB_BG, 1, *level + *base, RGB_BLACK);
             break;
         default:
             effect->stop = FALSE;
@@ -3541,14 +3541,14 @@ void MimeJrTopDance_Routine1(SysTask *sysTask, MimeJrTopDance *dance) {
         dance->dancers[2].radiusY = 24;
         ManagedSprite_SetDrawFlag(dance->dancers[2].sprite, TRUE);
         ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[0].sprite, &x, &y, FX32_CONST(256));
-        ax = (dance->dancers[0].baseX << 12) + GF_SinDeg((u16)dance->dancers[0].angle) * dance->dancers[0].radiusX;
-        ay = (dance->dancers[0].baseY << 12) + GF_CosDeg((u16)dance->dancers[0].angle) * dance->dancers[0].radiusY;
+        ax = (dance->dancers[0].baseX << 12) + GF_SinDeg(dance->dancers[0].angle) * dance->dancers[0].radiusX;
+        ay = (dance->dancers[0].baseY << 12) + GF_CosDeg(dance->dancers[0].angle) * dance->dancers[0].radiusY;
         ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[0].sprite, ax, ay, FX32_CONST(256));
         MimeJrTopTween_Init(&dance->dancers[0].tweenX, ax, ax + (45 << 14), MimeJrTop_GetDanceStepFrames(dance->frontSpeed));
         MimeJrTopTween_Init(&dance->dancers[0].tweenY, ay, ay - (6 << 14), MimeJrTop_GetDanceStepFrames(dance->frontSpeed));
         ManagedSprite_GetPositionFxXYWithSubscreenOffset(dance->dancers[2].sprite, &x, &y, FX32_CONST(256));
-        bx = (dance->dancers[2].baseX << 12) + GF_SinDeg((u16)dance->dancers[2].angle) * dance->dancers[2].radiusX;
-        by = (dance->dancers[2].baseY << 12) - GF_CosDeg((u16)dance->dancers[2].angle) * dance->dancers[2].radiusY;
+        bx = (dance->dancers[2].baseX << 12) + GF_SinDeg(dance->dancers[2].angle) * dance->dancers[2].radiusX;
+        by = (dance->dancers[2].baseY << 12) - GF_CosDeg(dance->dancers[2].angle) * dance->dancers[2].radiusY;
         ManagedSprite_SetPositionFxXYWithSubscreenOffset(dance->dancers[2].sprite, bx, by, FX32_CONST(256));
         MimeJrTopTween_Init(&dance->dancers[2].tweenX, bx, bx - (45 << 14), MimeJrTop_GetDanceStepFrames(dance->backSpeed));
         MimeJrTopTween_Init(&dance->dancers[2].tweenY, by, by + (6 << 14), MimeJrTop_GetDanceStepFrames(dance->backSpeed));

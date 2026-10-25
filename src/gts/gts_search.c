@@ -408,7 +408,7 @@ static void GtsSearch_CreateWindows(GtsApp *app) {
     baseTile = 1;
     window = app->infoWindows;
     for (; i < 6; i++, baseTile += 22, position++, window++) {
-        AddWindowParameterized(app->bgConfig, window, GF_BG_LYR_MAIN_3, (u8)position->x, (u8)position->y, 11, 2, 13, (u16)baseTile);
+        AddWindowParameterized(app->bgConfig, window, GF_BG_LYR_MAIN_3, position->x, position->y, 11, 2, 13, baseTile);
         FillWindowPixelBuffer(window, 0);
     }
     position = sGtsSearchLineWindowPositions;
@@ -416,7 +416,7 @@ static void GtsSearch_CreateWindows(GtsApp *app) {
     baseTile = 133;
     window = app->wideWindows;
     for (; i < 2; i++, baseTile += 56, position++, window++) {
-        AddWindowParameterized(app->bgConfig, window, GF_BG_LYR_MAIN_3, (u8)position->x, (u8)position->y, 28, 2, 13, (u16)baseTile);
+        AddWindowParameterized(app->bgConfig, window, GF_BG_LYR_MAIN_3, position->x, position->y, 28, 2, 13, baseTile);
         FillWindowPixelBuffer(window, 0);
     }
     i = 0;
@@ -425,7 +425,7 @@ static void GtsSearch_CreateWindows(GtsApp *app) {
     position = sGtsSearchValueWindowPositions;
     for (; i < 3; i++, baseTile += 20, position++) {
         int index = i + 6;
-        AddWindowParameterized(app->bgConfig, &window[index], GF_BG_LYR_MAIN_3, (u8)position->x, (u8)position->y, 10, 2, 13, (u16)baseTile);
+        AddWindowParameterized(app->bgConfig, &window[index], GF_BG_LYR_MAIN_3, position->x, position->y, 10, 2, 13, baseTile);
         FillWindowPixelBuffer(&window[index], 0);
     }
     Gts_CreatePanelWindow(app, 4);

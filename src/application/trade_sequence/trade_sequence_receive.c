@@ -279,7 +279,7 @@ static BOOL TradeSequenceReceive_SetupScreens(TradeSequenceReceive *receive, u32
     G2_SetBG0Priority(1);
     BG_FillCharDataRange(receive->bgConfig, GF_BG_LYR_MAIN_1, 0, 1, 0);
     FillBgTilemapRect(receive->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 32, 0);
-    LoadUserFrameGfx2(receive->bgConfig, GF_BG_LYR_MAIN_1, 109, 2, (u8)TradeSequence_GetFrameType(receive->ts), HEAP_ID_57);
+    LoadUserFrameGfx2(receive->bgConfig, GF_BG_LYR_MAIN_1, 109, 2, TradeSequence_GetFrameType(receive->ts), HEAP_ID_57);
     AddWindowParameterized(receive->bgConfig, &receive->window, GF_BG_LYR_MAIN_1, 2, 19, 27, 4, 1, 1);
     FillWindowPixelBuffer(&receive->window, 15);
     GfGfxLoader_GXLoadPal(NARC_graphic_font, 8, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_1_OFFSET, 32, HEAP_ID_57);
@@ -342,7 +342,7 @@ static BOOL TradeSequenceReceive_ShowMon(TradeSequenceReceive *receive, u32 *sta
                 NARC_ReadPokepicCryDelay(receive->pokeAnimNarc, cryDelay, TradeSequence_GetReceivedSpecies(receive->ts), 1);
                 u16 species = TradeSequence_GetReceivedSpecies(receive->ts);
                 int form = TradeSequence_GetReceivedForm(receive->ts);
-                PlayCryDelayed(species, cryDelay[0], (u8)form);
+                PlayCryDelayed(species, cryDelay[0], form);
                 Pokepic_StartAnim(receive->pokepic, 1);
             }
             receive->timer = 0;

@@ -725,7 +725,7 @@ static int EasyChatApp_GetMessageMenuTouch(EasyChatApp *app) {
             app->dragging = FALSE;
             return -1;
         }
-        x = (s16)gSystem.touchX;
+        x = gSystem.touchX;
         if (x < 28) {
             x = 28;
         } else if (x > 226) {
@@ -1554,7 +1554,7 @@ static void EasyChatApp_SubHandler_ConfirmFinish(EasyChatApp *app, u32 *state) {
                 MailMsg_SetTrailingFieldsEmpty(&app->message);
             }
             EasyChatArgs_SetResult(app->args, (MailMessage *)app->words, &app->message);
-            EasyChatApp_SetHandler(app, (EasyChatAppHandler)EasyChatApp_Handler_Exit);
+            EasyChatApp_SetHandler(app, EasyChatApp_Handler_Exit);
             *state = 3;
             break;
         }
@@ -1587,7 +1587,7 @@ static void EasyChatApp_SubHandler_ConfirmQuit(EasyChatApp *app, u32 *state) {
             *state = 2;
             break;
         case 1:
-            EasyChatApp_SetHandler(app, (EasyChatAppHandler)EasyChatApp_Handler_Exit);
+            EasyChatApp_SetHandler(app, EasyChatApp_Handler_Exit);
             *state = 2;
             break;
         }

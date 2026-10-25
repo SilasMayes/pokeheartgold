@@ -322,7 +322,7 @@ static void PalPadRoster_Show(PalPadRoster *roster, PalPadShared *shared, PalPad
 
     PalPadGfx_PrintTitle(gfx, &gfx->titleWindow, msg_0779_00005);
     screen = gfx->screens.data[1];
-    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_MAIN_0, 17, 20, 14, 4, screen->rawData, 3, 0, (u8)(screen->screenWidth >> 3), (u8)(screen->screenHeight >> 3));
+    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_MAIN_0, 17, 20, 14, 4, screen->rawData, 3, 0, screen->screenWidth >> 3, screen->screenHeight >> 3);
     ScheduleWindowCopyToVram(&roster->returnWindow);
     ScheduleBgTilemapBufferTransfer(gfx->bgConfig, GF_BG_LYR_MAIN_0);
     PalPadGfx_SetArrowsVisible(gfx, TRUE);
@@ -343,8 +343,8 @@ static void PalPadRoster_Hide(PalPadRoster *roster, PalPadShared *shared, PalPad
     PalPadGfx_SetCursor(gfx, FALSE, 0xFF);
     PalPadGfx_SetCursorPriority(gfx, 1, 9);
     PalPadGfx_SetArrowsVisible(gfx, FALSE);
-    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_MAIN_0, 17, 20, 14, 4, gfx->screens.data[1]->rawData, 17, 0, (u8)(gfx->screens.data[1]->screenWidth >> 3), (u8)(gfx->screens.data[1]->screenHeight >> 3));
-    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_MAIN_0, 16, 0, 16, 4, gfx->screens.data[1]->rawData, 16, 4, (u8)(gfx->screens.data[1]->screenWidth >> 3), (u8)(gfx->screens.data[1]->screenHeight >> 3));
+    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_MAIN_0, 17, 20, 14, 4, gfx->screens.data[1]->rawData, 17, 0, gfx->screens.data[1]->screenWidth >> 3, gfx->screens.data[1]->screenHeight >> 3);
+    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_MAIN_0, 16, 0, 16, 4, gfx->screens.data[1]->rawData, 16, 4, gfx->screens.data[1]->screenWidth >> 3, gfx->screens.data[1]->screenHeight >> 3);
     ScheduleBgTilemapBufferTransfer(gfx->bgConfig, GF_BG_LYR_MAIN_0);
 }
 
@@ -600,7 +600,7 @@ static void PalPadRoster_OpenFriendMenu(PalPadRoster *roster, PalPadShared *shar
     }
     header.bgConfig = gfx->bgConfig;
     header.numWindows = 4;
-    roster->menu = TouchscreenListMenu_CreateWithCallback(gfx->listMenuSpawner, &header, (u8)shared->inputState, 13, 5, 17, 0, PalPadRoster_MenuCallback, NULL, TRUE);
+    roster->menu = TouchscreenListMenu_CreateWithCallback(gfx->listMenuSpawner, &header, shared->inputState, 13, 5, 17, 0, PalPadRoster_MenuCallback, NULL, TRUE);
     PalPadGfx_BufferFriendName(gfx, shared->saveData, slots[index], heapId);
     PalPadRoster_PrintMessage(roster, gfx, msg_0779_00012, heapId);
     PalPadGfx_SetArrowsVisible(gfx, FALSE);
@@ -945,7 +945,7 @@ static void PalPadRosterPage_DrawEmptySlot(PalPadRosterPage *page, PalPadGfx *gf
     }
     screen = screens->data[1];
     offset *= 10; // sizeof(PalPadSlotRect)
-    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_MAIN_2, (u8)AddTiles(*(s16 *)((u8 *)gPalPadRosterSlotRects + offset), x), (u8)AddTiles(*(s16 *)((u8 *)gPalPadRosterSlotY + offset), y), 3, 4, screen->rawData, 0, 0, (u8)(screen->screenWidth >> 3), (u8)(screen->screenHeight >> 3));
+    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_MAIN_2, AddTiles(*(s16 *)((u8 *)gPalPadRosterSlotRects + offset), x), AddTiles(*(s16 *)((u8 *)gPalPadRosterSlotY + offset), y), 3, 4, screen->rawData, 0, 0, screen->screenWidth >> 3, screen->screenHeight >> 3);
     ScheduleBgTilemapBufferTransfer(gfx->bgConfig, GF_BG_LYR_MAIN_2);
 }
 

@@ -286,13 +286,13 @@ u8 WiFiPlazaEvent_GetMoverState(WiFiPlazaEvent *event, u32 index, int field) {
 // Lobby value 1-6 -> colour set 0-5
 static int WiFiPlazaEvent_GetColorSet(int value) {
     switch (value) {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-        return value - 1;
+    case WIFI_PLAZA_EVENT_NEON_A0:
+    case WIFI_PLAZA_EVENT_NEON_A1:
+    case WIFI_PLAZA_EVENT_NEON_A2:
+    case WIFI_PLAZA_EVENT_NEON_A3:
+    case WIFI_PLAZA_EVENT_NEON_A4:
+    case WIFI_PLAZA_EVENT_NEON_A5:
+        return value - WIFI_PLAZA_EVENT_NEON_A0;
     default:
         GF_ASSERT(FALSE);
         return 0;
@@ -302,11 +302,11 @@ static int WiFiPlazaEvent_GetColorSet(int value) {
 // Lobby value 7-10 -> light 1 colour 0-3
 static int WiFiPlazaEvent_GetLight1Set(int value) {
     switch (value) {
-    case 7:
-    case 8:
-    case 9:
-    case 10:
-        return value - 7;
+    case WIFI_PLAZA_EVENT_NEON_B0:
+    case WIFI_PLAZA_EVENT_NEON_B1:
+    case WIFI_PLAZA_EVENT_NEON_B2:
+    case WIFI_PLAZA_EVENT_NEON_B3:
+        return value - WIFI_PLAZA_EVENT_NEON_B0;
     default:
         GF_ASSERT(FALSE);
         return 0;
@@ -315,11 +315,11 @@ static int WiFiPlazaEvent_GetLight1Set(int value) {
 
 static int WiFiPlazaEvent_GetThirdSet(int value) {
     switch (value) {
-    case 11:
-    case 12:
-    case 13:
-    case 14:
-        return value - 11;
+    case WIFI_PLAZA_EVENT_NEON_C0:
+    case WIFI_PLAZA_EVENT_NEON_C1:
+    case WIFI_PLAZA_EVENT_NEON_C2:
+    case WIFI_PLAZA_EVENT_NEON_C3:
+        return value - WIFI_PLAZA_EVENT_NEON_C0;
     default:
         GF_ASSERT(FALSE);
         return 0;
@@ -905,7 +905,7 @@ BOOL WiFiPlazaEventWobble_Step(WiFiPlazaEventWobble *wobble, WiFiPlazaModels *mo
             done = TRUE;
         }
     }
-    angle = (u16)((wobble->frame * 0xFFFF) / wobble->duration);
+    angle = (wobble->frame * 0xFFFF) / wobble->duration;
     if (wobble->maxAngle != 0) {
         rounded = (float)(wobble->maxAngle << 12) + 0.5f;
     } else {

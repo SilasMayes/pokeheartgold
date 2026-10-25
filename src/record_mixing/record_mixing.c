@@ -765,7 +765,7 @@ static void RecordMixing_HandleInput(RecordMixingApp *app) {
     index = TouchscreenHitbox_FindRectAtTouchNew(sRecordMixingButtonHitboxes);
     packet.pixel = 0xFFD5;
     if (index != TOUCH_MENU_NO_INPUT && DoesPixelAtScreenXYMatchPtrVal(app->bgConfig, GF_BG_LYR_MAIN_1, gSystem.touchX, gSystem.touchY, &packet.pixel)) {
-        button = (u8)(index + 1);
+        button = index + 1;
     }
     if ((gSystem.newKeys & PAD_BUTTON_A) || button == 1) {
         if (!Comm_GetLocalNetId()) {
@@ -1212,7 +1212,7 @@ static int RecordMixing_State_PrintMemberLeft(RecordMixingApp *app, int state) {
     RecordMixing_SetButtonState(app, 1, 2);
     ScheduleBgTilemapBufferTransfer(app->bgConfig, GF_BG_LYR_MAIN_1);
     if (app->printerId != 0xFF && !RecordMixing_IsPrinterDone(app->printerId)) {
-        RemoveTextPrinter((u8)app->printerId);
+        RemoveTextPrinter(app->printerId);
     }
     RecordMixing_PrintMessage(app, msg_0422_00015, TRUE);
     app->state = RECORD_MIXING_STATE_START_MEMBER_LEFT_WAIT;
@@ -1270,7 +1270,7 @@ void RecordMixing_SetStateFromLink(RecordMixingApp *app, int state, int netId) {
         break;
     case RECORD_MIXING_STATE_WAIT_RECORDS:
         if (!RecordMixing_IsPrinterDone(app->printerId)) {
-            RemoveTextPrinter((u8)app->printerId);
+            RemoveTextPrinter(app->printerId);
         }
         RecordMixing_SetButtonState(app, 1, 2);
         ScheduleBgTilemapBufferTransfer(app->bgConfig, GF_BG_LYR_MAIN_1);
@@ -1500,7 +1500,7 @@ static BOOL RecordMixing_IsPrinterDone(u32 printerId) {
     if (printerId == 0xFF) {
         return TRUE;
     }
-    if (!TextPrinterCheckActive((u8)printerId)) {
+    if (!TextPrinterCheckActive(printerId)) {
         return TRUE;
     }
     return FALSE;

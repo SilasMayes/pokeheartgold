@@ -259,7 +259,7 @@ static BOOL TradeSequenceSend_SetupScreens(TradeSequenceSend *send, u32 *state) 
     G2_SetBG0Priority(1);
     BG_FillCharDataRange(send->bgConfig, GF_BG_LYR_MAIN_1, 0, 1, 0);
     FillBgTilemapRect(send->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 32, 0);
-    LoadUserFrameGfx2(send->bgConfig, GF_BG_LYR_MAIN_1, 109, 2, (u8)TradeSequence_GetFrameType(send->ts), HEAP_ID_57);
+    LoadUserFrameGfx2(send->bgConfig, GF_BG_LYR_MAIN_1, 109, 2, TradeSequence_GetFrameType(send->ts), HEAP_ID_57);
     AddWindowParameterized(send->bgConfig, &send->window, GF_BG_LYR_MAIN_1, 2, 19, 27, 4, 1, 1);
     FillWindowPixelBuffer(&send->window, 15);
     GfGfxLoader_GXLoadPal(NARC_graphic_font, 8, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_1_OFFSET, 32, HEAP_ID_57);
@@ -333,7 +333,7 @@ static BOOL TradeSequenceSend_ShowMessages(TradeSequenceSend *send, u32 *state) 
                 Pokepic_StartAnim(send->pokepic, 1);
                 NARC_ReadPokepicCryDelay(send->pokeAnimNarc, &cryDelay, TradeSequence_GetSentSpecies(send->ts), 1);
                 u16 species = TradeSequence_GetSentSpecies(send->ts);
-                PlayCryDelayed(species, cryDelay, (u8)TradeSequence_GetSentForm(send->ts));
+                PlayCryDelayed(species, cryDelay, TradeSequence_GetSentForm(send->ts));
             }
             FillWindowPixelBuffer(&send->window, 15);
             AddTextPrinterParameterized(&send->window, 1, send->msgString, 0, 0, TEXT_SPEED_NOTRANSFER, NULL);

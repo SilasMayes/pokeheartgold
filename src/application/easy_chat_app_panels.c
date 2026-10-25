@@ -1578,7 +1578,7 @@ static void EasyChatBgScroll_Start(EasyChatBgScroll *scroll, BgConfig *bgConfig,
         scroll->position = Bg_GetYpos(bgConfig, (GFBgLayer)layer);
         scroll->op = BG_POS_OP_SET_Y;
     }
-    scroll->target = (int)(((u32)scroll->position + (u32)delta) & 511u);
+    scroll->target = ((u32)scroll->position + (u32)delta) & 511u;
     delta = (s32)((u32)delta << FX32_SHIFT);
     scroll->position = (s32)((u32)scroll->position << FX32_SHIFT);
     scroll->step = delta / frames;

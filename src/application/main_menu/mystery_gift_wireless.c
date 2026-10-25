@@ -3,12 +3,14 @@
 #include "global.h"
 
 #include "application/main_menu/mystery_gift_app.h"
+#include "application/main_menu/mystery_gift_app_internal.h"
 
 #include "comm_wireless.h"
 #include "communication_command.h"
 #include "communication_player_state.h"
 #include "heap.h"
 #include "link_synchronization.h"
+#include "main.h"
 #include "mystery_gift.h"
 #include "overlay_manager.h"
 #include "player_data.h"
@@ -146,8 +148,8 @@ int MysteryGiftWireless_SendCard(void *data, void *size) {
 
 void MysteryGiftComm_StartChild(void *owner, int linkMode) {
     if (!Comm_IsActive()) {
-        void **args = OverlayManager_GetArgs(MysteryGiftApp_GetOverlayManager());
-        CommState_StartMysteryGiftChild(args[2], linkMode);
+        MainOverlayArgs *args = OverlayManager_GetArgs(MysteryGiftApp_GetOverlayManager());
+        CommState_StartMysteryGiftChild(args->saveData, linkMode);
         MysteryGiftComm_Start(owner);
         MysteryGiftComm_SetState(MysteryGiftComm_ChildWaitStartup, 0);
     }
@@ -158,13 +160,13 @@ void MysteryGiftComm_ConnectToChannel(int channel) {
     MysteryGiftComm_SetState(MysteryGiftComm_ChildConnect, 0);
 }
 
-// Copies the info block of the first partner that has one; returns its index.
-int MysteryGiftComm_GetFirstParentInfo(void *dst) {
+// Copies the gift header of the first partner that sends one; returns its index.
+int MysteryGiftComm_GetFirstParentInfo(MysteryGiftAppData *data) {
     int i;
     for (i = 0; i < 16; i++) {
-        u8 *src = CommWireless_GetParentMail(i);
-        if (src != NULL && *(u16 *)(src + 0x4C) != 0) {
-            memcpy((u8 *)dst + 0x8C, src, 0x50);
+        WonderCardInfo *info = CommWireless_GetParentMail(i);
+        if (info != NULL && info->id != 0) {
+            memcpy(&data->receivedHeader, info, sizeof(WonderCardInfo));
             return i;
         }
     }

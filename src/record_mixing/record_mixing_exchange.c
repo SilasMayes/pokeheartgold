@@ -73,7 +73,7 @@ void *RecordMixing_Fashion_Load(SaveData *saveData, enum HeapID heapID, u32 size
 void RecordMixing_Fashion_Merge(RecordMixingMergeArgs *args) {
     SaveData *saveData = args->saveData;
     SaveFashionData *fashionData = Save_FashionData_Get(saveData);
-    Save_FashionData_InsertEntries((u8)args->numPlayers, args->localId, fashionData, (SaveFashionDataSub **)args->records);
+    Save_FashionData_InsertEntries(args->numPlayers, args->localId, fashionData, (SaveFashionDataSub **)args->records);
 }
 
 void RecordMixing_Block23_Merge(RecordMixingMergeArgs *args) {
@@ -88,7 +88,7 @@ SaveRankingsEntry *RecordMixing_Rankings_Load(SaveData *saveData, enum HeapID he
 void RecordMixing_Rankings_Merge(RecordMixingMergeArgs *args) {
     Save_Rankings_Get(args->saveData);
     // the local id is passed without truncation to u8
-    ((void (*)(SaveData *, int, u8, SaveRankingsEntry **, enum HeapID))Save_UpdateRankingsFromMixing)(args->saveData, args->localId, (u8)args->numPlayers, (SaveRankingsEntry **)args->records, args->heapID);
+    ((void (*)(SaveData *, int, u8, SaveRankingsEntry **, enum HeapID))Save_UpdateRankingsFromMixing)(args->saveData, args->localId, args->numPlayers, (SaveRankingsEntry **)args->records, args->heapID);
 }
 
 void *RecordMixing_BattleRoomTrainer_Load(SaveData *saveData, enum HeapID heapID, u32 size) {

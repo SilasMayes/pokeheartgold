@@ -372,7 +372,7 @@ int WifiConnection_SendToHost(void *data, int size) {
     }
     if (DWC_GetMyAID() == 0) {
         if (sWifiConnection->recvLocalCallback != NULL) {
-            sWifiConnection->recvLocalCallback(0, data, (u16)size);
+            sWifiConnection->recvLocalCallback(0, data, size);
         }
         return 1;
     }
@@ -408,7 +408,7 @@ int WifiConnection_SendFromHost(void *data, int size) {
         return 0;
     }
     if (sWifiConnection->recvCallback != NULL) {
-        sWifiConnection->recvCallback(0, data, (u16)size);
+        sWifiConnection->recvCallback(0, data, size);
     }
     return 1;
 }
@@ -432,7 +432,7 @@ int WifiConnection_SendToAll(void *data, int size) {
         return 0;
     }
     if (sWifiConnection->recvCallback != NULL) {
-        sWifiConnection->recvCallback(DWC_GetMyAID(), data, (u16)size);
+        sWifiConnection->recvCallback(DWC_GetMyAID(), data, size);
     }
     return 1;
 }
@@ -487,12 +487,12 @@ static void WifiConnection_ResetKeepAliveTimers(void) {
 static void WifiConnection_SetRecvTimeouts(void) {
     int i;
     for (i = 0; i < 4; i++) {
-        DWC_SetRecvTimeoutTime((u8)i, 0);
+        DWC_SetRecvTimeoutTime(i, 0);
     }
     if (DWC_GetMyAID() == 0) {
         for (i = 0; i < sWifiConnection->maxPlayers; i++) {
             if (i != DWC_GetMyAID() && (DWC_GetAIDBitmap() & (1 << i))) {
-                if (!DWC_SetRecvTimeoutTime((u8)i, 10000)) {
+                if (!DWC_SetRecvTimeoutTime(i, 10000)) {
                     GF_ASSERT(FALSE);
                 }
             }
@@ -712,7 +712,7 @@ static int WifiConnection_CanSendToAll(void) {
         do {
             if (i != DWC_GetMyAID() && DWC_IsValidAID((u8)i)) {
                 found = 1;
-                if (!DWC_IsSendableReliable((u8)i)) {
+                if (!DWC_IsSendableReliable(i)) {
                     return 0;
                 }
             }
@@ -724,7 +724,7 @@ static int WifiConnection_CanSendToAll(void) {
 
 static int WifiConnection_SendKeepAlive(int aid) {
     if (sWifiConnection->sendBusy == 0 && WifiConnection_CanSendToAll()) {
-        u32 mask = (u32)DWC_GetAIDBitmap();
+        u32 mask = DWC_GetAIDBitmap();
         if ((mask & 0xFFFE) != 0) {
             sWifiConnection->sendBusy = 1;
             *(u32 *)sWifiConnection->sendBuffer = 2 | ((u32)sWifiConnection->ownVoiceFlag << 8);
@@ -1239,7 +1239,7 @@ static void WifiConnection_AllocRecvBuffer(int aid) {
             sWifiConnection->recvBuffers[aid] = WifiConnection_Alloc(0, 0x1000, 32);
             sWifiConnection->recvBufferFromGameHeap[aid] = 0;
         }
-        DWC_SetRecvBuffer((u8)aid, (void *)(((u32)sWifiConnection->recvBuffers[aid] + 31) & ~31), 0x1000);
+        DWC_SetRecvBuffer(aid, (void *)(((u32)sWifiConnection->recvBuffers[aid] + 31) & ~31), 0x1000);
     }
 }
 

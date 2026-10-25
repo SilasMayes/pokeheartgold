@@ -926,7 +926,7 @@ static BOOL SwalotPlopGame_RunIntro(SwalotPlopGame *game, BOOL ready) {
     BOOL result = TRUE;
     if (game->gfx.intro.state >= SWALOT_PLOP_INTRO_WAIT_READY) {
         int speed = game->options[1] ? -120 : 120;
-        SwalotPlopBody_SetSpin(&game->body, (u16)(game->body.spin + speed));
+        SwalotPlopBody_SetSpin(&game->body, game->body.spin + speed);
     }
     SwalotPlopGfx_SetScenePos(&game->gfx, &game->body);
     SwalotPlopScene_SetSpin(&game->gfx.scene, &game->body);
@@ -1039,7 +1039,7 @@ static BOOL SwalotPlopGame_RunFinish(SwalotPlopGame *game, BOOL ready) {
         break;
     }
     int speed = game->options[1] ? -120 : 120;
-    SwalotPlopBody_SetSpin(&game->body, (u16)(game->body.spin + speed));
+    SwalotPlopBody_SetSpin(&game->body, game->body.spin + speed);
     SwalotPlopScene_SetPos(&game->gfx.scene, &game->body);
     SwalotPlopScene_SetSpin(&game->gfx.scene, &game->body);
     SwalotPlopScene_Animate(&game->gfx.scene, &game->body, game->phase);
@@ -1399,13 +1399,13 @@ static void SwalotPlopIntro_Init(SwalotPlopIntro *intro, SwalotPlopGfx *gfx, Swa
         if (i != localIndex) {
             x = table[-8];
             u32 y = table[-7];
-            BgTilemapRectChangePalette(gfx->bgConfig, GF_BG_LYR_MAIN_2, (u8)(x - 1), (u8)(y - 1), 10, 4, (u8)i);
+            BgTilemapRectChangePalette(gfx->bgConfig, GF_BG_LYR_MAIN_2, x - 1, y - 1, 10, 4, i);
             FillWindowPixelBuffer(&window, 15);
             u32 color = shared->nameFlags[i] == 1 ? MAKE_TEXT_COLOR(5, 6, 15) : MAKE_TEXT_COLOR(1, 2, 15);
             PlayerName_FlatToString(shared->profiles[i], string);
-            SetWindowX(&window, (u8)x);
-            SetWindowY(&window, (u8)y);
-            window.baseTile = (u16)baseTile;
+            SetWindowX(&window, x);
+            SetWindowY(&window, y);
+            window.baseTile = baseTile;
             u32 width = FontID_String_GetWidth(0, string, 0);
             AddTextPrinterParameterizedWithColor(&window, 0, string, (64 - width) >> 1, 0, TEXT_SPEED_INSTANT, color, NULL);
             baseTile += 16;
@@ -1517,7 +1517,7 @@ static void SwalotPlopBody_Update(SwalotPlopGame *game, SwalotPlopBody *body) {
     SwalotPlopBody_SetTilt(body, tilt);
     body->mouthDepth = SwalotPlopBody_CalcMouthDepth(body, body->tilt);
     body->height = SwalotPlopBody_CalcHeight(body, body->tilt);
-    SwalotPlopBody_SetSpin(body, (u16)(body->spin + body->spinSpeed));
+    SwalotPlopBody_SetSpin(body, body->spin + body->spinSpeed);
 }
 
 static void SwalotPlopBody_SetActive(SwalotPlopBody *body, u8 active) {
@@ -2297,9 +2297,9 @@ static void SwalotPlopGame_ApplyLevel(SwalotPlopGame *game, SwalotPlopLevelBlend
 
 static void SwalotPlopGame_ApplyLevelParams(SwalotPlopGame *game, SwalotPlopLevelBlend *blend) {
     SwalotPlopLevel *level = (SwalotPlopLevel *)blend->current;
-    SwalotPlopBody_SetSpinSpeed(&game->body, (u16)level->spinSpeed);
+    SwalotPlopBody_SetSpinSpeed(&game->body, level->spinSpeed);
     SwalotPlopGfx_SetCameraHeight(&game->gfx, level->cameraHeight);
-    SwalotPlopGfx_SetCameraPitch(&game->gfx, (u16)level->cameraPitch);
+    SwalotPlopGfx_SetCameraPitch(&game->gfx, level->cameraPitch);
     SwalotPlopBody_SetMouthOffset(&game->body, level->mouthOffset);
     SwalotPlopBody_SetScale(&game->body, level->scale);
 }
@@ -2516,7 +2516,7 @@ static void SwalotPlopGame_InitGfx(SwalotPlopGame *game, enum HeapID heapId) {
     SwalotPlopIntro_Init(&game->gfx.intro, &game->gfx, game->shared, game->playerCount, game->localIndex, narc, heapId);
     SwalotPlopFinish_Init(&game->gfx, game->playerCount, game->localIndex, heapId);
     SwalotPlopPopups_Init(game->gfx.popups, &game->gfx, game->playerCount, game->localIndex, heapId);
-    SwalotPlopBgFade_Init(&game->gfx.bgFade, (u8)game->localIndex);
+    SwalotPlopBgFade_Init(&game->gfx.bgFade, game->localIndex);
     SwalotPlopCombo_Init(&game->gfx.combo, &game->gfx, narc, heapId);
     NARC_Delete(narc);
     game->gfx.sign = PlazaGameSign_New(game->gfx.spriteList, heapId);
@@ -2742,10 +2742,10 @@ static void SwalotPlopGfx_LoadSubBgs(SwalotPlopGfx *gfx, NARC *narc, int localIn
     GfGfxLoader_GXLoadPalFromOpenNarc(narc, 13, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_0_OFFSET, 384, heapId);
     BgTilemapRectChangePalette(gfx->bgConfig, GF_BG_LYR_SUB_3, 0, 0, 32, 32, sSwalotPlopSubBgPalettes[localIndex]);
     palette = localIndex * 2;
-    BgTilemapRectChangePalette(gfx->bgConfig, GF_BG_LYR_SUB_2, 0, 0, 32, 32, (u8)(palette + 2));
+    BgTilemapRectChangePalette(gfx->bgConfig, GF_BG_LYR_SUB_2, 0, 0, 32, 32, palette + 2);
     palette = localIndex * 2 + 1;
-    BgTilemapRectChangePalette(gfx->bgConfig, GF_BG_LYR_SUB_1, 0, 0, 32, 32, (u8)palette);
-    BgTilemapRectChangePalette(gfx->bgConfig, GF_BG_LYR_SUB_0, 0, 0, 32, 32, (u8)palette);
+    BgTilemapRectChangePalette(gfx->bgConfig, GF_BG_LYR_SUB_1, 0, 0, 32, 32, palette);
+    BgTilemapRectChangePalette(gfx->bgConfig, GF_BG_LYR_SUB_0, 0, 0, 32, 32, palette);
     BgCommitTilemapBufferToVram(gfx->bgConfig, GF_BG_LYR_SUB_0);
     BgCommitTilemapBufferToVram(gfx->bgConfig, GF_BG_LYR_SUB_1);
     BgCommitTilemapBufferToVram(gfx->bgConfig, GF_BG_LYR_SUB_2);
@@ -2873,7 +2873,7 @@ static void SwalotPlopScene_SetSpin(SwalotPlopScene *scene, SwalotPlopBody *body
     model = scene->models;
     spin = body->spin;
     for (i = 0; i < 3; i++, model++) {
-        ModelInstance_SetRotation(model, (u16)spin, 1);
+        ModelInstance_SetRotation(model, spin, 1);
     }
 }
 
@@ -3226,7 +3226,7 @@ static inline s64 SinCosComponent(s32 value, s32 scale) {
 }
 
 static void SwalotPlopShotView_Spin(SwalotPlopShotView *view) {
-    view->timer = (s16)(view->timer - 1);
+    view->timer = view->timer - 1;
     if (view->timer < 0) {
         int speed = SwalotPlopShot_GetSpeed(view->shot);
         int angle = (FX_Atan2Idx(view->shot->params.direction.z, view->shot->params.direction.x) >> 4) * 2;

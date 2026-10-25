@@ -768,7 +768,7 @@ static void GeonetGlobe_LoadLocations(GeonetGlobe *globe) {
     i = 1;
     for (; i < numEntries; i++) {
         if (country->kind != 2) {
-            GeonetGlobe_SetLocation(work, work->numLocations, country->x, country->y, (u16)i, 0);
+            GeonetGlobe_SetLocation(work, work->numLocations, country->x, country->y, i, 0);
             work->numLocations++;
         }
         country++;
@@ -782,7 +782,7 @@ static void GeonetGlobe_LoadLocations(GeonetGlobe *globe) {
         region = (const GeonetRegionPlace *)((u8 *)regionFile + sizeof(GeonetRegionPlace));
         j = 1;
         for (; j < numEntries; j++) {
-            GeonetGlobe_SetLocation(work, work->numLocations, region->x, region->y, (u16)LocationGmmDatGetCountryMsgNo(i), (u16)j);
+            GeonetGlobe_SetLocation(work, work->numLocations, region->x, region->y, LocationGmmDatGetCountryMsgNo(i), j);
             work->numLocations++;
             region++;
         }
@@ -798,8 +798,8 @@ static void GeonetGlobe_SetLocation(GeonetGlobe *globe, u32 index, s32 x, s32 y,
 
     work = globe;
     rotation = sGeonetLocationRotationInit;
-    work->locations[index].x = (s16)x;
-    work->locations[index].y = (s16)y;
+    work->locations[index].x = x;
+    work->locations[index].y = y;
     angle.x = x;
     angle.y = y;
     angle.z = 0;
@@ -925,7 +925,7 @@ static void GeonetGlobe_InitBgs(GeonetGlobe *globe, NARC *narc) {
     GfGfxLoader_LoadCharDataFromOpenNarc(narc, 5, globe->bgConfig, GF_BG_LYR_SUB_3, 0, 0, FALSE, globe->heapID);
     GfGfxLoader_GXLoadPalFromOpenNarc(narc, 6, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_0_OFFSET, 0x80, globe->heapID);
     GfGfxLoader_LoadScrnDataFromOpenNarc(narc, 7, globe->bgConfig, GF_BG_LYR_SUB_3, 0, 0, FALSE, globe->heapID);
-    LoadUserFrameGfx2(globe->bgConfig, GF_BG_LYR_SUB_2, 482, 6, (u8)Options_GetFrame(globe->options), globe->heapID);
+    LoadUserFrameGfx2(globe->bgConfig, GF_BG_LYR_SUB_2, 482, 6, Options_GetFrame(globe->options), globe->heapID);
     LoadUserFrameGfx1(globe->bgConfig, GF_BG_LYR_SUB_2, 473, 7, 0, globe->heapID);
     LoadFontPal0(GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_4_OFFSET, globe->heapID);
     BG_ClearCharDataRange(GF_BG_LYR_SUB_2, 0x20, 0, globe->heapID);
@@ -990,7 +990,7 @@ static BOOL GeonetGlobe_PrintMessage(GeonetGlobe *globe, int msgId, BOOL noWait)
         globe->printState = 1;
         break;
     case 1:
-        if (!TextPrinterCheckActive((u8)globe->printerId)) {
+        if (!TextPrinterCheckActive(globe->printerId)) {
             String_Delete(globe->printString);
             globe->printState = 2;
         }
@@ -1120,8 +1120,8 @@ static BOOL GeonetGlobe_FindNearestLocation(GeonetGlobe *globe, int *index) {
     u32 best = globe->numLocations;
     u32 i;
 
-    origin.values[0] = (int)globe->rotation.x;
-    origin.values[1] = (int)globe->rotation.y;
+    origin.values[0] = globe->rotation.x;
+    origin.values[1] = globe->rotation.y;
     GeonetGlobe_WrapPosition(origin.values);
     {
         // The y range wrapped around: also search the range on the other side of the seam.
@@ -1150,17 +1150,17 @@ static BOOL GeonetGlobe_FindNearestLocation(GeonetGlobe *globe, int *index) {
             && ((globe->locations[i].y > minY && globe->locations[i].y < maxY) || (globe->locations[i].y > minY2 && globe->locations[i].y < maxY2))
             && globe->locations[i].seenState) {
             u32 distance;
-            position.point.x = (u32)globe->locations[i].x;
-            position.point.y = (u32)globe->locations[i].y;
+            position.point.x = globe->locations[i].x;
+            position.point.y = globe->locations[i].y;
             GeonetGlobe_WrapPosition(position.values);
-            distance = (u32)GeonetGlobe_CalcDistance(&origin.point, &position.point);
+            distance = GeonetGlobe_CalcDistance(&origin.point, &position.point);
             if (distance < bestDistance) {
                 bestDistance = distance;
                 best = i;
             }
         }
     }
-    *index = (int)best;
+    *index = best;
     if (best != globe->numLocations) {
         found = TRUE;
     }
@@ -1255,7 +1255,7 @@ static void GeonetGlobe_InitLight(GeonetGlobe *globe) {
     globe->lightVector.x = 0;
     globe->lightVector.y = 0;
     globe->lightVector.z = -0xFFF;
-    NNS_G3dGlbLightVector(GX_LIGHTID_0, (s16)globe->lightVector.x, (s16)globe->lightVector.y, (s16)globe->lightVector.z);
+    NNS_G3dGlbLightVector(GX_LIGHTID_0, globe->lightVector.x, globe->lightVector.y, globe->lightVector.z);
 }
 
 static void GeonetGlobe_CalcGlobeRotation(MtxFx33 *dst, const GeonetGlobeAngle *angle) {
@@ -1282,8 +1282,8 @@ static BOOL GeonetGlobe_HandleRotationInput(GeonetGlobe *globe, u32 newKeys, u32
     BOOL moved = FALSE;
     u16 stepY;
     u16 stepX;
-    s16 angleX = (s16)globe->rotation.x;
-    s16 angleY = (s16)globe->rotation.y;
+    s16 angleX = globe->rotation.x;
+    s16 angleY = globe->rotation.y;
 
     if ((newKeys & PAD_BUTTON_A) || (globe->touch.input & PAD_BUTTON_A)) {
         if (globe->freeRotation == TRUE) {
@@ -1298,15 +1298,15 @@ static BOOL GeonetGlobe_HandleRotationInput(GeonetGlobe *globe, u32 newKeys, u32
 
     if (!globe->zoomedIn) {
         if (globe->touch.dx != 0 || globe->touch.dy != 0) {
-            stepY = (u16)(globe->touch.dx * 85);
-            stepX = (u16)(globe->touch.dy * 85);
+            stepY = globe->touch.dx * 85;
+            stepX = globe->touch.dy * 85;
         } else {
             stepX = stepY = 0x200;
         }
     } else {
         if (globe->touch.dx != 0 || globe->touch.dy != 0) {
-            stepY = (u16)(globe->touch.dx * 10);
-            stepX = (u16)(globe->touch.dy * 10);
+            stepY = globe->touch.dx * 10;
+            stepX = globe->touch.dy * 10;
         } else {
             stepX = stepY = 32;
         }

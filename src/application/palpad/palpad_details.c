@@ -220,7 +220,7 @@ static int PalPadDetails_HandleTouch(PalPadDetails *details, PalPadShared *share
         *touched = TRUE;
         return PalPadDetails_HandleAction(details, shared, gfx, DETAILS_INPUT_BACK);
     }
-    delta = (s16)((hit - 2) - details->page);
+    delta = (hit - 2) - details->page;
     if (delta == 0) {
         return PALPAD_DETAILS_STATE_INPUT;
     }
@@ -502,7 +502,7 @@ static void PalPadDetails_DrawTabs(PalPadDetails *details, PalPadGfx *gfx, int s
 static void PalPadDetails_ClearTabs(PalPadDetails *details, PalPadGfx *gfx) {
     NNSG2dScreenData *screen = gfx->screens.data[1];
 
-    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_MAIN_2, 0, 20, 32, 4, screen->rawData, 0, 28, (u8)(screen->screenWidth >> 3), (u8)(screen->screenHeight >> 3));
+    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_MAIN_2, 0, 20, 32, 4, screen->rawData, 0, 28, screen->screenWidth >> 3, screen->screenHeight >> 3);
     ScheduleBgTilemapBufferTransfer(gfx->bgConfig, GF_BG_LYR_MAIN_2);
 }
 
@@ -606,12 +606,12 @@ static void PalPadDetailsSlot_AddWindows(PalPadDetailsSlot *slot, PalPadGfx *gfx
 
     slot->windows[page] = AllocWindows(heapId, (u8)count);
     slot->windowCounts[page] = count;
-    baseTile = (u16)slot->baseTile;
+    baseTile = slot->baseTile;
     for (i = 0; i < count; i++) {
         InitWindow(&slot->windows[page][i]);
         AddWindowParameterized(gfx->bgConfig, &slot->windows[page][i], GF_BG_LYR_MAIN_3, specs[i].x + Abs16(slot->layout.x), specs[i].y + Abs16(slot->layout.y), specs[i].width, specs[i].height, 11, baseTile);
         FillWindowPixelBuffer(&slot->windows[page][i], 0);
-        baseTile = (u16)(baseTile + specs[i].width * specs[i].height);
+        baseTile = baseTile + specs[i].width * specs[i].height;
     }
 }
 

@@ -867,7 +867,7 @@ BOOL WiFiPlazaTalk_Start(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, u
         break;
     }
     case WIFI_PLAZA_TALK_SAY_ANSWER: // "Oh, your favorite color's ..."; our answer goes out once the partner asks for it
-        WiFiPlazaTalkReply_Start(&talk->reply, lobby, (u16)(talk->myAnswer + 6), WIFI_PLAZA_TALK_STATE_ASKER_TURN);
+        WiFiPlazaTalkReply_Start(&talk->reply, lobby, talk->myAnswer + 6, WIFI_PLAZA_TALK_STATE_ASKER_TURN);
         WiFiPlazaRoom_BufferPlayerName(room, talk->partner, 0);
         WiFiPlazaRoom_PrintMessage(room, WiFiPlazaTalk_GetMsg(room, talk->partner, msg_0766_00357 + talk->myAnswer));
         WiFiPlazaTalk_SetNextStep(talk, 128, WIFI_PLAZA_TALK_IF_IT_WERE_ME, state, WIFI_PLAZA_TALK_WAIT_MESSAGE);
@@ -950,7 +950,7 @@ BOOL WiFiPlazaTalk_Start(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, u
         } else if (wait > 255) {
             wait = 255;
         }
-        WiFiPlazaTalk_SetNextStep(talk, (u8)wait, WIFI_PLAZA_TALK_END, state, WIFI_PLAZA_TALK_WAIT_TIMER);
+        WiFiPlazaTalk_SetNextStep(talk, wait, WIFI_PLAZA_TALK_END, state, WIFI_PLAZA_TALK_WAIT_TIMER);
         WiFiPlazaWork_EndTalk(lobby);
         break;
     }
@@ -1324,7 +1324,7 @@ BOOL WiFiPlazaTalk_Answer(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, 
         } else if (duration > 255) {
             duration = 255;
         }
-        WiFiPlazaTalk_SetNextStep(talk, (u8)duration, WIFI_PLAZA_ANSWER_END, state, WIFI_PLAZA_ANSWER_WAIT_TIMER);
+        WiFiPlazaTalk_SetNextStep(talk, duration, WIFI_PLAZA_ANSWER_END, state, WIFI_PLAZA_ANSWER_WAIT_TIMER);
         WiFiPlazaWork_EndTalk(lobby);
         break;
     }

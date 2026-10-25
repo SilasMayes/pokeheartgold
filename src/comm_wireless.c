@@ -663,7 +663,7 @@ static void CommWireless_Update(int count, CommWirelessWork *unused) {
             sCommWireless.tgid = WM_GetNextTgid();
         }
         CommWireless_BuildBeacon();
-        maxEntry = Comm_GetMaxChildren((u16)CommState_GetLinkMode());
+        maxEntry = Comm_GetMaxChildren(CommState_GetLinkMode());
         beaconPeriod = CommWireless_GetBeaconPeriod((u16)CommState_GetLinkMode());
         Wireless_StartParent(0, sCommWireless.tgid, saved, maxEntry, beaconPeriod, sCommWireless.work->entryFlag);
         sCommWireless.work->currentChannel = saved;
@@ -696,7 +696,7 @@ static int CommWireless_CountConnected(void) {
     int count = 0;
     int i;
     for (i = 0; i < 8; i++) {
-        if (CommWireless_IsAidConnected((u16)i)) {
+        if (CommWireless_IsAidConnected(i)) {
             count++;
         }
     }

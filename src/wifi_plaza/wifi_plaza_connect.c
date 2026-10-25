@@ -549,9 +549,9 @@ static void WiFiPlazaConnect_InitGraphics(WiFiPlazaConnectWork *work, enum HeapI
     work->bgConfig = BgConfig_Alloc(heapID);
     for (i = 0; i < WIFI_PLAZA_CONNECT_NUM_BG_LAYERS; i++) {
         template = &sWiFiPlazaConnectBgTemplates[i];
-        InitBgFromTemplate(work->bgConfig, (u8)sWiFiPlazaConnectBgLayers[i], template, GF_BG_TYPE_TEXT);
-        BG_ClearCharDataRange((u8)sWiFiPlazaConnectBgLayers[i], 32, 0, heapID);
-        BgClearTilemapBufferAndCommit(work->bgConfig, (u8)sWiFiPlazaConnectBgLayers[i]);
+        InitBgFromTemplate(work->bgConfig, sWiFiPlazaConnectBgLayers[i], template, GF_BG_TYPE_TEXT);
+        BG_ClearCharDataRange(sWiFiPlazaConnectBgLayers[i], 32, 0, heapID);
+        BgClearTilemapBufferAndCommit(work->bgConfig, sWiFiPlazaConnectBgLayers[i]);
     }
     frame = Options_GetFrame(Save_PlayerData_GetOptionsAddr(work->saveData));
     LoadFontPal0(GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_10_OFFSET, heapID);
@@ -644,7 +644,7 @@ static void WiFiPlazaConnect_PaletteCycleTask(SysTask *task, void *data) {
 static void WiFiPlazaConnect_FreeBgs(WiFiPlazaConnectWork *work) {
     int i;
     for (i = 0; i < WIFI_PLAZA_CONNECT_NUM_BG_LAYERS; i++) {
-        FreeBgTilemapBuffer(work->bgConfig, (u8)sWiFiPlazaConnectBgLayers[i]);
+        FreeBgTilemapBuffer(work->bgConfig, sWiFiPlazaConnectBgLayers[i]);
     }
     Heap_Free(work->bgConfig);
 }
@@ -661,12 +661,12 @@ static void WiFiPlazaConnect_InitMessageBox(WiFiPlazaConnectMessageBox *box, BgC
     box->frameType = frameType;
     box->textSpeed = Options_GetTextFrameDelay(Save_PlayerData_GetOptionsAddr(saveData));
     box->printerId = 0;
-    AddWindowParameterized(bgConfig, &box->window, GF_BG_LYR_MAIN_1, (u8)x, (u8)y, (u8)width, (u8)height, 9, (u16)baseTile);
+    AddWindowParameterized(bgConfig, &box->window, GF_BG_LYR_MAIN_1, x, y, width, height, 9, baseTile);
 }
 
 static void WiFiPlazaConnect_PrintMessage(WiFiPlazaConnectMessageBox *box, int msgId) {
-    if (TextPrinterCheckActive((u8)box->printerId)) {
-        RemoveTextPrinter((u8)box->printerId);
+    if (TextPrinterCheckActive(box->printerId)) {
+        RemoveTextPrinter(box->printerId);
     }
     FillWindowPixelBuffer(&box->window, 15);
     ReadMsgDataIntoString(box->msgData, msgId, box->raw);
@@ -681,8 +681,8 @@ static void WiFiPlazaConnect_PrintMessage(WiFiPlazaConnectMessageBox *box, int m
 }
 
 static void WiFiPlazaConnect_ClearMessageBox(WiFiPlazaConnectMessageBox *box) {
-    if (TextPrinterCheckActive((u8)box->printerId)) {
-        RemoveTextPrinter((u8)box->printerId);
+    if (TextPrinterCheckActive(box->printerId)) {
+        RemoveTextPrinter(box->printerId);
     }
     if (box->frameType == 0) {
         EraseFrameAndWindow1(&box->window, TRUE);
@@ -712,8 +712,8 @@ static void WiFiPlazaConnect_StopWaitingIcon(WiFiPlazaConnectMessageBox *box) {
 }
 
 static void WiFiPlazaConnect_FreeMessageBox(WiFiPlazaConnectMessageBox *box) {
-    if (TextPrinterCheckActive((u8)box->printerId)) {
-        RemoveTextPrinter((u8)box->printerId);
+    if (TextPrinterCheckActive(box->printerId)) {
+        RemoveTextPrinter(box->printerId);
     }
     if (box->waitingIcon != NULL) {
         WiFiPlazaConnect_StopWaitingIcon(box);

@@ -440,11 +440,11 @@ static void TradeSequenceApproach_UpdateFlight(TradeSequenceApproachFlight *flig
         }
 
         radius = flight->radiusX;
-        product = GF_CosDegNoWrap((u16)angle);
+        product = GF_CosDegNoWrap(angle);
         product *= radius;
         flight->offset.x = (product + 0x800) >> FX32_SHIFT;
         radius = flight->radiusY;
-        product = GF_SinDegNoWrap((u16)angle);
+        product = GF_SinDegNoWrap(angle);
         product *= radius;
         flight->offset.y = (product + 0x800) >> FX32_SHIFT;
         flight->offset.z = 0;

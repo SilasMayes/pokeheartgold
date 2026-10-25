@@ -203,7 +203,7 @@ static void GtsWanted_CreateWindows(GtsApp *app) {
     baseTile = 150;
     window = app->infoWindows;
     for (; i < 6; i++, baseTile += 22, position++, window++) {
-        AddWindowParameterized(app->bgConfig, window, GF_BG_LYR_MAIN_3, (u8)position->x, (u8)position->y, 11, 2, 13, (u16)baseTile);
+        AddWindowParameterized(app->bgConfig, window, GF_BG_LYR_MAIN_3, position->x, position->y, 11, 2, 13, baseTile);
         FillWindowPixelBuffer(window, 0);
         CopyWindowToVram(window);
     }

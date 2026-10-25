@@ -163,7 +163,7 @@ BOOL MagnetTrainCutscene_Main(OverlayManager *man, int *state) {
         break;
     }
     if (model->anmObj[0]->frame == 0) {
-        PlaySE((u16)work->seTable[work->step]);
+        PlaySE(work->seTable[work->step]);
         if (work->step == 2) {
             Sound_SetSceneAndPlayBGM(0x44, SEQ_GS_E_LINEAR, 1);
         }

@@ -686,11 +686,11 @@ static void PlazaGameBg_Init(PlazaGameBg *bg, const GraphicsModes *modes, const 
     bgTemplate = templates;
     for (i = 0; i < count; i++) {
         current = &templates[i];
-        InitBgFromTemplate(bg->bgConfig, (u8)current->bgId, &bgTemplate->template, GF_BG_TYPE_TEXT);
-        BG_ClearCharDataRange((u8)current->bgId, 0x20, 0, heapId);
-        BgClearTilemapBufferAndCommit(bg->bgConfig, (u8)current->bgId);
-        BgSetPosTextAndCommit(bg->bgConfig, (u8)current->bgId, BG_POS_OP_SET_X, 0);
-        BgSetPosTextAndCommit(bg->bgConfig, (u8)current->bgId, BG_POS_OP_SET_Y, 0);
+        InitBgFromTemplate(bg->bgConfig, current->bgId, &bgTemplate->template, GF_BG_TYPE_TEXT);
+        BG_ClearCharDataRange(current->bgId, 0x20, 0, heapId);
+        BgClearTilemapBufferAndCommit(bg->bgConfig, current->bgId);
+        BgSetPosTextAndCommit(bg->bgConfig, current->bgId, BG_POS_OP_SET_X, 0);
+        BgSetPosTextAndCommit(bg->bgConfig, current->bgId, BG_POS_OP_SET_Y, 0);
         bgTemplate++;
     }
 }
@@ -699,7 +699,7 @@ static void PlazaGameBg_Free(PlazaGameBg *bg) {
     u32 i;
     BgSetPosTextAndCommit(bg->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_SET_Y, 0);
     for (i = 0; i < bg->count; i++) {
-        FreeBgTilemapBuffer(bg->bgConfig, (u8)bg->templates[i].bgId);
+        FreeBgTilemapBuffer(bg->bgConfig, bg->templates[i].bgId);
     }
     Heap_Free(bg->bgConfig);
 }
@@ -876,8 +876,8 @@ static void PlazaGameMessageBox_Show(PlazaGameMessageBox *messageBox, PlazaGameT
         }
     }
     printerId = messageBox->printerIds[index];
-    if (TextPrinterCheckActive((u8)printerId)) {
-        RemoveTextPrinter((u8)messageBox->printerIds[index]);
+    if (TextPrinterCheckActive(printerId)) {
+        RemoveTextPrinter(messageBox->printerIds[index]);
     }
     PlazaGameMessageBox_HideWaitingIcon(messageBox, index);
     window = &messageBox->windows[index];
@@ -2343,7 +2343,7 @@ static void PlazaGameBalloons_Init(PlazaGameBalloons *balloons, PlazaGameBg *bg,
         spriteY = y;
         for (; col < 5; col++, x += 24) {
             PlazaGameBalloons *slot = (PlazaGameBalloons *)((u8 *)balloons + 4 * (col + base));
-            slot->sprites[0] = PlazaGameGfx_CreateSprite(balloons->gfxRes, sprites->spriteList, (s16)x, spriteY, 0, heapId);
+            slot->sprites[0] = PlazaGameGfx_CreateSprite(balloons->gfxRes, sprites->spriteList, x, spriteY, 0, heapId);
             Sprite_SetDrawFlag(slot->sprites[0], FALSE);
             Sprite_SetAnimCtrlSeq(slot->sprites[0], row);
             Sprite_SetPriority(slot->sprites[0], 0);
@@ -2555,7 +2555,7 @@ static void PlazaGameSignWindow_Init(PlazaGameSignWindow *window, PlazaGameGfxRe
     window->offset = 0;
     window->task = NULL;
     for (i = 0; i < 2; i++) {
-        window->sprites[i] = PlazaGameGfx_CreateSprite(gfxRes, spriteList, (s16)(gPlazaGameSignWindowSpritePositions[i].x >> FX32_SHIFT), (s16)(gPlazaGameSignWindowSpritePositions[i].y >> FX32_SHIFT), 0, heapId);
+        window->sprites[i] = PlazaGameGfx_CreateSprite(gfxRes, spriteList, gPlazaGameSignWindowSpritePositions[i].x >> FX32_SHIFT, gPlazaGameSignWindowSpritePositions[i].y >> FX32_SHIFT, 0, heapId);
         Sprite_SetAnimCtrlSeq(window->sprites[i], 5);
         Sprite_SetPriority(window->sprites[i], 0);
     }

@@ -706,7 +706,7 @@ static void SpinTradeGroup_CreateAvatarSprites(SpinTradeGroupApp *app) {
     int i;
 
     CreateSpriteResourcesHeader(&app->resHeader, 2, 2, 2, 2, -1, -1, 0, 1, app->resMan[0], app->resMan[1], app->resMan[2], app->resMan[3], NULL, NULL);
-    tmpl.spriteList = (SpriteList *)app->spriteList;
+    tmpl.spriteList = app->spriteList;
     tmpl.header = &app->resHeader;
     tmpl.position.z = 0;
     tmpl.scale.x = 0x1000;
@@ -745,7 +745,7 @@ static void SpinTradeGroup_InitWindows(SpinTradeGroupApp *app) {
 static void SpinTradeGroup_PrintTitle(Window *window, String *str, u32 speed) {
     u32 width = FontID_String_GetWidth(1, str, 0);
     FillWindowPixelBuffer(window, 0);
-    AddTextPrinterParameterizedWithColor(window, 1, str, (u32)((0xD0 - (int)width) / 2), 1, speed, 0x10400, NULL);
+    AddTextPrinterParameterizedWithColor(window, 1, str, (0xD0 - (int)width) / 2, 1, speed, 0x10400, NULL);
 }
 
 static void SpinTradeGroup_RemoveWindows(SpinTradeGroupApp *app) {
@@ -906,7 +906,7 @@ static int SpinTradeGroup_State_HandleCancelYesNo(SpinTradeGroupApp *app, int st
         } else {
             MI_CpuFill8(buf, 0, 4);
             buf[2] = 0;
-            buf[0] = (u8)Comm_GetLocalNetId();
+            buf[0] = Comm_GetLocalNetId();
             app->leaveRequested = 1;
             app->leaveWaitFrames = 0;
             app->subState = SPIN_TRADE_GROUP_STATE_RESET_LEAVE_WAIT;
@@ -936,7 +936,7 @@ static int SpinTradeGroup_State_SendLeave(SpinTradeGroupApp *app, int state) {
         u8 buf[4];
         MI_CpuFill8(buf, 0, 4);
         buf[2] = 1;
-        buf[0] = (u8)Comm_GetLocalNetId();
+        buf[0] = Comm_GetLocalNetId();
         SpinTradeLink_SendCommand(app->menu, SPIN_TRADE_CMD_JOIN_REQUEST, buf, 4);
         app->leaveWaitFrames = 0;
         app->subState = SPIN_TRADE_GROUP_STATE_SHOW_CANCELED;
@@ -978,7 +978,7 @@ static int SpinTradeGroup_State_HandleConfirmYesNo(SpinTradeGroupApp *app, int s
                 SpinTradeGroup_WaitPrinterThen(app, SPIN_TRADE_GROUP_STATE_SHOW_PROMPT);
             } else if (Comm_GetLocalNetId() == 0) {
                 app->subState = SPIN_TRADE_GROUP_STATE_SEND_START_SYNC;
-                app->startMemberCount = (u8)SpinTradeGroup_CountMembers();
+                app->startMemberCount = SpinTradeGroup_CountMembers();
                 UnionRoom_SetBeaconActivity(0xC);
             } else {
                 GF_ASSERT(FALSE);
@@ -1157,7 +1157,7 @@ static int SpinTradeGroup_State_WaitMemberDropped(SpinTradeGroupApp *app, int st
 
 static int SpinTradeGroup_State_ShowMemberLeft(SpinTradeGroupApp *app, int state) {
     if (app->printerId != 0xFF && !SpinTradeGroup_IsPrinterDone(app->printerId)) {
-        RemoveTextPrinter((u8)app->printerId);
+        RemoveTextPrinter(app->printerId);
     }
     SpinTradeGroup_PrintMessage(app, msg_0207_00015, 1);
     app->subState = SPIN_TRADE_GROUP_STATE_START_MEMBER_LEFT_WAIT;
@@ -1228,7 +1228,7 @@ void SpinTradeGroup_HandleLinkEvent(SpinTradeGroupApp *app, int msg, int value) 
         break;
     case 0x19:
         if (!SpinTradeGroup_IsPrinterDone(app->printerId)) {
-            RemoveTextPrinter((u8)app->printerId);
+            RemoveTextPrinter(app->printerId);
         }
         SpinTradeGroup_PrintMessage(app, msg_0207_00012, 0);
         if (app->yesNoMenu != NULL) {
@@ -1254,7 +1254,7 @@ void SpinTradeGroup_HandleLinkEvent(SpinTradeGroupApp *app, int msg, int value) 
         break;
     case 0x1F:
         if (!SpinTradeGroup_IsPrinterDone(app->printerId)) {
-            RemoveTextPrinter((u8)app->printerId);
+            RemoveTextPrinter(app->printerId);
         }
         if (app->yesNoMenu != NULL) {
             Clear2dMenuWindowAndDelete(app->yesNoMenu, HEAP_ID_102);
@@ -1310,7 +1310,7 @@ static void SpinTradeGroup_CycleHighlightColor(u16 *p) {
     if (*p > 360) {
         *p = 0;
     }
-    color = (u16)((((GF_SinDeg(*p) * 10) / 0x1000) + 15) << 5 | 29);
+    color = (((GF_SinDeg(*p) * 10) / 0x1000) + 15) << 5 | 29;
     GX_LoadOBJPltt(&color, 10, 2);
     GX_LoadOBJPltt(&color, 42, 2);
 }
@@ -1343,7 +1343,7 @@ static BOOL SpinTradeGroup_PrintMemberList(Window *window, u32 unused, u32 color
         if (app->members[i].profile != NULL) {
             tid = PlayerProfile_GetTrainerID_VisibleHalf(app->members[i].profile);
             PlayerName_FlatToString(app->members[i].profile, app->names[i]);
-            BufferIntegerAsString(app->msgFormat, 0, (s32)tid, 5, PRINTING_MODE_LEADING_ZEROS, TRUE);
+            BufferIntegerAsString(app->msgFormat, 0, tid, 5, PRINTING_MODE_LEADING_ZEROS, TRUE);
             str = ReadMsgData_ExpandPlaceholders(app->msgFormat, app->msgData, msg_0207_00001, HEAP_ID_102);
             if (sel == i) {
                 AddTextPrinterParameterizedWithColor(window, 0, app->names[i], 5, i * 0x12 + 1, TEXT_SPEED_NOTRANSFER, 0x20300, NULL);
@@ -1443,7 +1443,7 @@ static BOOL SpinTradeGroup_IsPrinterDone(u32 printerId) {
     if (printerId == 0xFF) {
         return TRUE;
     }
-    if (!TextPrinterCheckActive((u8)printerId)) {
+    if (!TextPrinterCheckActive(printerId)) {
         return TRUE;
     }
     return FALSE;
@@ -1495,10 +1495,10 @@ static void SpinTradeGroup_UpdateAvatars(SpinTradeGroupApp *app) {
 }
 
 static void SpinTradeGroup_LoadAvatarGraphics(SpinTradeGroupApp *app, NARC *narc) {
-    app->plttFiles[0] = GfGfxLoader_GetPlttData(NARC_a_1_0_0, 9, (NNSG2dPaletteData **)&app->pltts[0], HEAP_ID_102);
-    app->plttFiles[1] = GfGfxLoader_GetPlttDataFromOpenNarc(narc, 7, (NNSG2dPaletteData **)&app->pltts[1], HEAP_ID_102);
-    app->charFiles[0] = GfGfxLoader_GetCharData(NARC_a_1_0_0, 0x2B, TRUE, (NNSG2dCharacterData **)&app->chars[0], HEAP_ID_102);
-    app->charFiles[1] = GfGfxLoader_GetCharDataFromOpenNarc(narc, 9, TRUE, (NNSG2dCharacterData **)&app->chars[1], HEAP_ID_102);
+    app->plttFiles[0] = GfGfxLoader_GetPlttData(NARC_a_1_0_0, 9, &app->pltts[0], HEAP_ID_102);
+    app->plttFiles[1] = GfGfxLoader_GetPlttDataFromOpenNarc(narc, 7, &app->pltts[1], HEAP_ID_102);
+    app->charFiles[0] = GfGfxLoader_GetCharData(NARC_a_1_0_0, 0x2B, TRUE, &app->chars[0], HEAP_ID_102);
+    app->charFiles[1] = GfGfxLoader_GetCharDataFromOpenNarc(narc, 9, TRUE, &app->chars[1], HEAP_ID_102);
 }
 
 static void SpinTradeGroup_LoadAvatar(NNSG2dCharacterData **chars, NNSG2dPaletteData **pltts, int slot, int avatar, int gender) {

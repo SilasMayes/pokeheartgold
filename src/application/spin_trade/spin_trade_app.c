@@ -1245,7 +1245,7 @@ BOOL SpinTrade_State_GiveBonusBerry(SpinTradeApp *app) {
         item = high;
     }
     SpinTrade_PrintItemMessage(app, msg_0206_00003, item);
-    result = Bag_AddItem(Save_Bag_Get(app->args->input.saveData), (u16)item, 1, HEAP_ID_102);
+    result = Bag_AddItem(Save_Bag_Get(app->args->input.saveData), item, 1, HEAP_ID_102);
     PlayFanfare(SEQ_ME_ITEM);
     if (result == 1) {
         app->state = SPIN_TRADE_STATE_WAIT_BERRY_FANFARE;
@@ -2402,7 +2402,7 @@ static void SpinTradeWobble_Update(SpinTradeWobble *wobble) {
         wobble->speed = FX32_CONST(20);
         wobble->state++;
     case 1: {
-        int sine = GF_SinDegNoWrap((u16)(wobble->phase / FX32_ONE));
+        int sine = GF_SinDegNoWrap(wobble->phase / FX32_ONE);
         int amplitude = wobble->amplitude / FX32_ONE;
         int value = amplitude * sine;
         egg->rotationFx[2] = 0;

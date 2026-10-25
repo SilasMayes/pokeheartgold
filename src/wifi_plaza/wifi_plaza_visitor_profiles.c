@@ -847,7 +847,7 @@ static void VisitorProfilesPlaces_Load(VisitorProfilesPlaces *places, void *visi
     country = (const VisitorProfilesCountryRecord *)countries + 1;
     for (; i < num; i++) {
         if (country->type != 2) {
-            VisitorProfilesPlaces_Set(places, places->count, country->latitude, country->longitude, (u16)i, 0, visitors);
+            VisitorProfilesPlaces_Set(places, places->count, country->latitude, country->longitude, i, 0, visitors);
             places->count++;
         }
         country++;
@@ -861,7 +861,7 @@ static void VisitorProfilesPlaces_Load(VisitorProfilesPlaces *places, void *visi
         j = 1;
         region = (const VisitorProfilesRegionRecord *)regions + 1;
         for (; j < num; j++) {
-            VisitorProfilesPlaces_Set(places, places->count, region->latitude, region->longitude, (u16)LocationGmmDatGetCountryMsgNo(i), (u16)j, visitors);
+            VisitorProfilesPlaces_Set(places, places->count, region->latitude, region->longitude, LocationGmmDatGetCountryMsgNo(i), j, visitors);
             places->count++;
             region++;
         }
@@ -875,18 +875,18 @@ static void VisitorProfilesPlaces_Set(VisitorProfilesPlaces *places, u32 index, 
     VecFx32 rotation;
 
     mtx = sVisitorProfilesIdentityMtx;
-    places->places[index].latitude = (s16)latitude;
-    places->places[index].longitude = (s16)longitude;
+    places->places[index].latitude = latitude;
+    places->places[index].longitude = longitude;
     rotation.x = latitude;
     rotation.y = longitude;
     rotation.z = 0;
     VisitorProfiles_CalcPlaceMatrix(&mtx, &rotation);
     places->places[index].rotation = mtx;
     if (visitors != NULL) {
-        places->places[index].marker = (s16)VisitorProfiles_GetVisitorMarker(visitors, country, region);
+        places->places[index].marker = VisitorProfiles_GetVisitorMarker(visitors, country, region);
     }
-    places->places[index].country = (s16)country;
-    places->places[index].region = (s16)region;
+    places->places[index].country = country;
+    places->places[index].region = region;
 }
 
 static void VisitorProfiles_CalcGlobeMatrix(MtxFx33 *mtx, VecFx32 *rotation) {
@@ -1366,7 +1366,7 @@ static void VisitorProfiles_InitBgs(VisitorProfilesGraphics *gfx, Options *optio
     LoadFontPal1(GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_11_OFFSET, heapID);
     LoadUserFrameGfx1(gfx->bgConfig, GF_BG_LYR_MAIN_1, 31, 0, 0, heapID);
     LoadUserFrameGfx1(gfx->bgConfig, GF_BG_LYR_MAIN_1, 31, 0, 0, heapID);
-    frame = (u8)Options_GetFrame(options);
+    frame = Options_GetFrame(options);
     LoadUserFrameGfx2(gfx->bgConfig, GF_BG_LYR_SUB_0, 10, 10, frame, heapID);
     LoadUserFrameGfx2(gfx->bgConfig, GF_BG_LYR_MAIN_1, 1, 2, frame, heapID);
     BG_SetMaskColor(GF_BG_LYR_MAIN_0, RGB(10, 22, 28));
@@ -1543,10 +1543,10 @@ static void VisitorProfilesPlaces_Draw(VisitorProfilesPlaces *places, VisitorPro
 static int VisitorProfiles_GetVisitorMarker(void *visitors, int country, int region) {
     int i;
     for (i = 0; i < VISITOR_PROFILES_NUM_VISITORS; i++) {
-        if (WiFiPlazaPlaces_IsOccupied(visitors, (u8)i)) {
-            int flag = WiFiPlazaPlaces_GetValue(visitors, (u8)i);
-            u8 visitorCountry = WiFiPlazaPlaces_GetCountry(visitors, (u8)i);
-            int visitorRegion = WiFiPlazaPlaces_GetRegion(visitors, (u8)i);
+        if (WiFiPlazaPlaces_IsOccupied(visitors, i)) {
+            int flag = WiFiPlazaPlaces_GetValue(visitors, i);
+            u8 visitorCountry = WiFiPlazaPlaces_GetCountry(visitors, i);
+            int visitorRegion = WiFiPlazaPlaces_GetRegion(visitors, i);
             if (visitorCountry == country && visitorRegion == region) {
                 if (flag == 1) {
                     return 1;
@@ -1779,8 +1779,8 @@ static void VisitorProfilesExitPrompt_Init(VisitorProfilesExitPrompt *prompt, Vi
 }
 
 static void VisitorProfilesExitPrompt_Free(VisitorProfilesExitPrompt *prompt) {
-    if (TextPrinterCheckActive((u8)prompt->printerId)) {
-        RemoveTextPrinter((u8)prompt->printerId);
+    if (TextPrinterCheckActive(prompt->printerId)) {
+        RemoveTextPrinter(prompt->printerId);
     }
     String_Delete(prompt->string);
     YesNoPrompt_Destroy(prompt->prompt);
@@ -1802,7 +1802,7 @@ static int VisitorProfilesExitPrompt_HandleInput(VisitorProfilesExitPrompt *prom
     case VISITOR_PROFILES_EXIT_PROMPT_WAIT_PRINT: {
         YesNoPromptTemplate template;
         result = YESNORESPONSE_WAIT;
-        if (TextPrinterCheckActive((u8)prompt->printerId)) {
+        if (TextPrinterCheckActive(prompt->printerId)) {
             break;
         }
         template = sVisitorProfilesYesNoTemplate;
@@ -2089,7 +2089,7 @@ static BOOL VisitorProfilesPanel_UpdateRow(VisitorProfilesPanel *panel, int row,
 static void VisitorProfilesPanel_CopyBaseRow(VisitorProfilesPanel *panel, int row, VisitorProfilesGraphics *gfx) {
     NNSG2dScreenData *screen = panel->baseScreen;
 
-    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_SUB_2, 0, (u8)row, 32, 1, screen->rawData, 0, (u8)row, (u8)(screen->screenWidth >> 3), (u8)(screen->screenHeight >> 3));
+    CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_SUB_2, 0, row, 32, 1, screen->rawData, 0, row, screen->screenWidth >> 3, screen->screenHeight >> 3);
     ScheduleBgTilemapBufferTransfer(gfx->bgConfig, GF_BG_LYR_SUB_2);
 }
 
@@ -2161,7 +2161,7 @@ static void VisitorProfilesPanel_AddWindows(VisitorProfilesPanel *panel, Visitor
     y = i;
     window = panel->placeWindows;
     for (; i < VISITOR_PROFILES_NUM_SHOWN_PLACES; i++, y += 6, window++) {
-        AddWindowParameterized(gfx->bgConfig, window, GF_BG_LYR_SUB_1, 0, (u8)y, 27, 6, 14, (u16)baseTile);
+        AddWindowParameterized(gfx->bgConfig, window, GF_BG_LYR_SUB_1, 0, y, 27, 6, 14, baseTile);
         baseTile += 162;
         FillWindowPixelBuffer(window, 0);
         CopyWindowToVram(window);
@@ -2283,7 +2283,7 @@ static void VisitorProfilesBgAnim_DisableAll(VisitorProfilesBgAnim *anim) {
 static void VisitorProfilesBgAnim_CopyRow(VisitorProfilesBgAnim *anim, int row, VisitorProfilesGraphics *gfx) {
     if (anim->numScreens) {
         NNSG2dScreenData *screen = anim->screens[anim->curScreen];
-        CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_SUB_2, 0, (u8)row, 32, 1, screen->rawData, 0, (u8)row, screen->screenWidth >> 3, screen->screenHeight >> 3);
+        CopyToBgTilemapRect(gfx->bgConfig, GF_BG_LYR_SUB_2, 0, row, 32, 1, screen->rawData, 0, row, screen->screenWidth >> 3, screen->screenHeight >> 3);
         ScheduleBgTilemapBufferTransfer(gfx->bgConfig, GF_BG_LYR_SUB_2);
     }
 }
@@ -2502,7 +2502,7 @@ static void VisitorProfilesHourSpriteMotion_CalcPosition(VisitorProfilesHourSpri
     motion->x = startX + (motion->path[2] - startX) * motion->step / motion->path[4];
     motion->y = startY + (endY - startY) * motion->step / motion->path[4];
 
-    angle = (u16)((0xFFFF * motion->phase) / motion->path[6]);
+    angle = (0xFFFF * motion->phase) / motion->path[6];
     sine = FX_SinCosTable_[(angle >> 4) * 2];
     if (motion->path[5] > 0) {
         amplitudeFloat = (float)(motion->path[5] << FX32_SHIFT) + 0.5f;
@@ -2592,7 +2592,7 @@ static String *VisitorProfilesMsg_GetRegionName(VisitorProfilesMsg *msg, u32 cou
 static s32 VisitorProfiles_FindFirstVisitor(void *visitors) {
     s32 i;
     for (i = 0; i < VISITOR_PROFILES_NUM_VISITORS; i++) {
-        if ((u8)WiFiPlazaPlaces_IsOccupied(visitors, (u8)i) == 1) {
+        if ((u8)WiFiPlazaPlaces_IsOccupied(visitors, i) == 1) {
             return i;
         }
     }

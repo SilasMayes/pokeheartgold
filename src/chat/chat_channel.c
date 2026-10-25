@@ -134,7 +134,7 @@ void ciChannelEntering(ChatConnection *chat, const char *channel) {
 }
 
 static int ciEnteringChannelCompareFn(const void *a, const void *b) {
-    return strnicmp((const char *)a, (const char *)b);
+    return strnicmp(a, b);
 }
 
 BOOL ciIsEnteringChannel(ChatConnection *chat, const char *channel) {

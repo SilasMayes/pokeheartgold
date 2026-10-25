@@ -263,7 +263,7 @@ static void CommClubButtons_DrawButtons(CommClubButtonsData *data) {
     layout = &sCommClubButtonsLayouts[data->count - 1];
 
     for (i = 0; i < data->count; i++) {
-        LoadRectToBgTilemapRect(data->bgConfig, GF_BG_LYR_SUB_1, data->tilemap, layout->x, (u8)(layout->y + (layout->spacing + 6) * i), 0x20, 6);
+        LoadRectToBgTilemapRect(data->bgConfig, GF_BG_LYR_SUB_1, data->tilemap, layout->x, layout->y + (layout->spacing + 6) * i, 0x20, 6);
         str = NewString_ReadMsgData(msgData, data->args->msgIds[i]);
         halfWidth = GetWindowWidth(&data->windows[i]) * 8 / 2;
         x = halfWidth - FontID_String_GetWidth(4, str, 0) / 2;
@@ -280,6 +280,6 @@ static void CommClubButtons_DrawButtons(CommClubButtonsData *data) {
 
 static void CommClubButtons_SetButtonPalette(CommClubButtonsData *data, u8 palette) {
     const CommClubButtonsLayout *layout = &sCommClubButtonsLayouts[data->count - 1];
-    BgTilemapRectChangePalette(data->bgConfig, GF_BG_LYR_SUB_1, layout->x, (u8)(layout->y + (layout->spacing + 6) * data->pressedButton), 0x20, 6, palette);
+    BgTilemapRectChangePalette(data->bgConfig, GF_BG_LYR_SUB_1, layout->x, layout->y + (layout->spacing + 6) * data->pressedButton, 0x20, 6, palette);
     ScheduleBgTilemapBufferTransfer(data->bgConfig, GF_BG_LYR_SUB_1);
 }

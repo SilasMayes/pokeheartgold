@@ -82,7 +82,7 @@ int GtsTrade_Main(GtsApp *app, int state) {
         kind = app->nextScreenArg;
         if (kind == ret + 6) { // kind 9
             mon = GtsTrade_GetReceivedMon(app, kind);
-            species = GetMonEvolution(NULL, mon, EVOCTX_TRADE, (u16)GetMonData(mon, MON_DATA_HELD_ITEM, NULL), &method);
+            species = GetMonEvolution(NULL, mon, EVOCTX_TRADE, GetMonData(mon, MON_DATA_HELD_ITEM, NULL), &method);
             if (species != SPECIES_NONE) {
                 GtsArgs *args = app->args;
                 app->evolutionTask = EvolutionScene_New(NULL, mon, species, args->options, args->unk38, args->pokedex, args->bag, args->gameStats, method, EVO_FLAG_TRADE, HEAP_ID_61);
@@ -96,7 +96,7 @@ int GtsTrade_Main(GtsApp *app, int state) {
             deposited = AllocMonZeroed(HEAP_ID_61);
             GtsSave_GetStoredMon((void *)app->args->gtsSave, deposited);
             if (GetMonData(mon, MON_DATA_SPECIES, NULL) != GetMonData(deposited, MON_DATA_SPECIES, NULL) || GetMonData(mon, MON_DATA_PERSONALITY, NULL) != GetMonData(deposited, MON_DATA_PERSONALITY, NULL)) {
-                species = GetMonEvolution(NULL, mon, EVOCTX_TRADE, (u16)GetMonData(mon, MON_DATA_HELD_ITEM, NULL), &methodAfterCheck);
+                species = GetMonEvolution(NULL, mon, EVOCTX_TRADE, GetMonData(mon, MON_DATA_HELD_ITEM, NULL), &methodAfterCheck);
                 if (species != SPECIES_NONE) {
                     GtsArgs *args = app->args;
                     app->evolutionTask = EvolutionScene_New(NULL, mon, species, args->options, args->unk38, args->pokedex, args->bag, args->gameStats, methodAfterCheck, EVO_FLAG_TRADE, HEAP_ID_61);

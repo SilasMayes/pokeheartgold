@@ -290,7 +290,7 @@ void VoiceChat_Init(int heapId, int codec, int count) {
     gVoiceChat.work->mode = config.mode;
     config.data = gVoiceChat.work->sessions;
     config.count = count;
-    config.id = (u8)DWC_GetMyAID();
+    config.id = DWC_GetMyAID();
     // BUG: id is a u8, so it never equals -1 and this assert never fails.
     GF_ASSERT(config.id != -1);
     if (gVoiceChat.work->mode == VOICE_CHAT_MODE_CONFERENCE) {

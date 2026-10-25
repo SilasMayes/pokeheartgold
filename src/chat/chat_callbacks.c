@@ -709,194 +709,194 @@ void ciCallCallback(ChatConnection *chat, ChatCallback *callback) {
     switch (callback->type) {
     case CALLBACK_RAW: {
         ChatRawArgs *args = callback->param;
-        ChatRawCallback func = (ChatRawCallback)callback->callback;
+        ChatRawCallback func = callback->callback;
         func(chat, args->raw, user);
         break;
     }
     case CALLBACK_DISCONNECTED: {
         ChatDisconnectedArgs *args = callback->param;
-        ChatDisconnectedCallback func = (ChatDisconnectedCallback)callback->callback;
+        ChatDisconnectedCallback func = callback->callback;
         func(chat, args->reason, user);
         break;
     }
     case CALLBACK_PRIVATE_MESSAGE: {
         ChatPrivateMessageArgs *args = callback->param;
-        ChatPrivateMessageCallback func = (ChatPrivateMessageCallback)callback->callback;
+        ChatPrivateMessageCallback func = callback->callback;
         func(chat, args->nick, args->message, args->type, user);
         break;
     }
     case CALLBACK_INVITED: {
         ChatInviteArgs *args = callback->param;
-        ChatInvitedCallback func = (ChatInvitedCallback)callback->callback;
+        ChatInvitedCallback func = callback->callback;
         func(chat, args->channel, args->nick, user);
         break;
     }
     case CALLBACK_CHANNEL_MESSAGE: {
         ChatChannelMessageArgs *args = callback->param;
-        ChatChannelMessageCallback func = (ChatChannelMessageCallback)callback->callback;
+        ChatChannelMessageCallback func = callback->callback;
         func(chat, args->channel, args->sender, args->message, args->type, user);
         break;
     }
     case CALLBACK_KICKED: {
         ChatKickedArgs *args = callback->param;
-        ChatKickedCallback func = (ChatKickedCallback)callback->callback;
+        ChatKickedCallback func = callback->callback;
         func(chat, args->channel, args->kicker, args->reason, user);
         break;
     }
     case CALLBACK_USER_JOINED: {
         ChatUserJoinedArgs *args = callback->param;
-        ChatUserJoinedCallback func = (ChatUserJoinedCallback)callback->callback;
+        ChatUserJoinedCallback func = callback->callback;
         func(chat, args->channel, args->nick, args->mode, user);
         break;
     }
     case CALLBACK_USER_PARTED: {
         ChatUserLeftArgs *args = callback->param;
-        ChatUserPartedCallback func = (ChatUserPartedCallback)callback->callback;
+        ChatUserPartedCallback func = callback->callback;
         func(chat, args->channel, args->nick, args->reason, args->message, args->kicker, user);
         break;
     }
     case CALLBACK_USER_CHANGED_NICK: {
         ChatNickChangeArgs *args = callback->param;
-        ChatUserChangedNickCallback func = (ChatUserChangedNickCallback)callback->callback;
+        ChatUserChangedNickCallback func = callback->callback;
         func(chat, args->channel, args->oldNick, args->newNick, user);
         break;
     }
     case CALLBACK_TOPIC_CHANGED: {
         ChatTopicArgs *args = callback->param;
-        ChatTopicChangedCallback func = (ChatTopicChangedCallback)callback->callback;
+        ChatTopicChangedCallback func = callback->callback;
         func(chat, args->channel, args->topic, user);
         break;
     }
     case CALLBACK_CHANNEL_MODE_CHANGED: {
         ChatChannelModeChangedArgs *args = callback->param;
-        ChatChannelModeChangedCallback func = (ChatChannelModeChangedCallback)callback->callback;
+        ChatChannelModeChangedCallback func = callback->callback;
         func(chat, args->channel, args->mode, user);
         break;
     }
     case CALLBACK_USER_MODE_CHANGED: {
         ChatUserModeArgs *args = callback->param;
-        ChatUserModeChangedCallback func = (ChatUserModeChangedCallback)callback->callback;
+        ChatUserModeChangedCallback func = callback->callback;
         func(chat, args->channel, args->nick, args->mode, user);
         break;
     }
     case CALLBACK_USER_LIST_UPDATED: {
         ChatUsersChangedArgs *args = callback->param;
-        ChatUserListUpdatedCallback func = (ChatUserListUpdatedCallback)callback->callback;
+        ChatUserListUpdatedCallback func = callback->callback;
         func(chat, args->channel, user);
         break;
     }
     case CALLBACK_ENUM_CHANNELS_EACH: {
         ChatChannelListEntryArgs *args = callback->param;
-        ChatEnumChannelsEachCallback func = (ChatEnumChannelsEachCallback)callback->callback;
+        ChatEnumChannelsEachCallback func = callback->callback;
         func(chat, args->success, args->index, args->channel, args->topic, args->numUsers, user);
         break;
     }
     case CALLBACK_ENUM_CHANNELS_ALL: {
         ChatChannelListArgs *args = callback->param;
-        ChatEnumChannelsAllCallback func = (ChatEnumChannelsAllCallback)callback->callback;
+        ChatEnumChannelsAllCallback func = callback->callback;
         func(chat, args->success, args->numChannels, args->channels, args->topics, args->numUsers, user);
         break;
     }
     case CALLBACK_ENTER_CHANNEL: {
         ChatEnterChannelArgs *args = callback->param;
-        ChatEnterChannelCallback func = (ChatEnterChannelCallback)callback->callback;
+        ChatEnterChannelCallback func = callback->callback;
         ciJoinCallbackCalled(chat, args->channel);
         func(chat, args->success, args->result, args->channel, user);
         break;
     }
     case CALLBACK_GET_CHANNEL_TOPIC: {
         ChatGetTopicArgs *args = callback->param;
-        ChatGetChannelTopicCallback func = (ChatGetChannelTopicCallback)callback->callback;
+        ChatGetChannelTopicCallback func = callback->callback;
         func(chat, args->success, args->channel, args->topic, user);
         break;
     }
     case CALLBACK_GET_CHANNEL_MODE: {
         ChatChannelModeArgs *args = callback->param;
-        ChatGetChannelModeCallback func = (ChatGetChannelModeCallback)callback->callback;
+        ChatGetChannelModeCallback func = callback->callback;
         func(chat, args->success, args->channel, args->mode, user);
         break;
     }
     case CALLBACK_GET_CHANNEL_PASSWORD: {
         ChatGetPasswordArgs *args = callback->param;
-        ChatGetChannelPasswordCallback func = (ChatGetChannelPasswordCallback)callback->callback;
+        ChatGetChannelPasswordCallback func = callback->callback;
         func(chat, args->success, args->channel, args->enabled, args->password, user);
         break;
     }
     case CALLBACK_ENUM_USERS: {
         ChatEnumUsersArgs *args = callback->param;
-        ChatEnumUsersCallback func = (ChatEnumUsersCallback)callback->callback;
+        ChatEnumUsersCallback func = callback->callback;
         func(chat, args->success, args->channel, args->numUsers, args->users, args->modes, user);
         break;
     }
     case CALLBACK_GET_USER_INFO: {
         ChatGetUserInfoArgs *args = callback->param;
-        ChatGetUserInfoCallback func = (ChatGetUserInfoCallback)callback->callback;
+        ChatGetUserInfoCallback func = callback->callback;
         func(chat, args->success, args->nick, args->user, args->name, args->address, args->numChannels, args->channels, user);
         break;
     }
     case CALLBACK_GET_BASIC_USER_INFO: {
         ChatGetBasicUserInfoArgs *args = callback->param;
-        ChatGetBasicUserInfoCallback func = (ChatGetBasicUserInfoCallback)callback->callback;
+        ChatGetBasicUserInfoCallback func = callback->callback;
         func(chat, args->success, args->nick, args->user, args->address, user);
         break;
     }
     case CALLBACK_GET_CHANNEL_BASIC_USER_INFO: {
         ChatGetChannelBasicUserInfoArgs *args = callback->param;
-        ChatGetChannelBasicUserInfoCallback func = (ChatGetChannelBasicUserInfoCallback)callback->callback;
+        ChatGetChannelBasicUserInfoCallback func = callback->callback;
         func(chat, args->success, args->channel, args->nick, args->user, args->address, user);
         break;
     }
     case CALLBACK_GET_USER_MODE: {
         ChatGetUserModeArgs *args = callback->param;
-        ChatGetUserModeCallback func = (ChatGetUserModeCallback)callback->callback;
+        ChatGetUserModeCallback func = callback->callback;
         func(chat, args->success, args->channel, args->user, args->mode, user);
         break;
     }
     case CALLBACK_ENUM_CHANNEL_BANS: {
         ChatEnumBansArgs *args = callback->param;
-        ChatEnumChannelBansCallback func = (ChatEnumChannelBansCallback)callback->callback;
+        ChatEnumChannelBansCallback func = callback->callback;
         func(chat, args->success, args->channel, args->numBans, args->bans, user);
         break;
     }
     case CALLBACK_NICK_ERROR: {
         ChatNickErrorArgs *args = callback->param;
-        ChatNickErrorCallback func = (ChatNickErrorCallback)callback->callback;
+        ChatNickErrorCallback func = callback->callback;
         func(chat, args->type, args->nick, args->numSuggestedNicks, args->suggestedNicks, user);
         break;
     }
     case CALLBACK_CHANGE_NICK: {
         ChatChangeNickArgs *args = callback->param;
-        ChatChangeNickCallback func = (ChatChangeNickCallback)callback->callback;
+        ChatChangeNickCallback func = callback->callback;
         func(chat, args->success, args->oldNick, args->newNick, user);
         break;
     }
     case CALLBACK_NEW_USER_LIST: {
         ChatNewUserListArgs *args = callback->param;
-        ChatNewUserListCallback func = (ChatNewUserListCallback)callback->callback;
+        ChatNewUserListCallback func = callback->callback;
         func(chat, args->channel, args->numUsers, args->users, args->modes, user);
         break;
     }
     case CALLBACK_BROADCAST_KEY_CHANGED: {
         ChatBroadcastKeyArgs *args = callback->param;
-        ChatBroadcastKeyChangedCallback func = (ChatBroadcastKeyChangedCallback)callback->callback;
+        ChatBroadcastKeyChangedCallback func = callback->callback;
         func(chat, args->channel, args->nick, args->key, args->value, user);
         break;
     }
     case CALLBACK_GET_GLOBAL_KEYS: {
         ChatGetGlobalKeysArgs *args = callback->param;
-        ChatGetGlobalKeysCallback func = (ChatGetGlobalKeysCallback)callback->callback;
+        ChatGetGlobalKeysCallback func = callback->callback;
         func(chat, args->success, args->user, args->num, args->keys, args->values, user);
         break;
     }
     case CALLBACK_GET_CHANNEL_KEYS: {
         ChatGetChannelKeysArgs *args = callback->param;
-        ChatGetChannelKeysCallback func = (ChatGetChannelKeysCallback)callback->callback;
+        ChatGetChannelKeysCallback func = callback->callback;
         func(chat, args->success, args->channel, args->user, args->num, args->keys, args->values, user);
         break;
     }
     case CALLBACK_AUTHENTICATE_CDKEY: {
         ChatAuthenticateCDKeyArgs *args = callback->param;
-        ChatAuthenticateCDKeyCallback func = (ChatAuthenticateCDKeyCallback)callback->callback;
+        ChatAuthenticateCDKeyCallback func = callback->callback;
         func(chat, args->result, args->message, user);
         break;
     }

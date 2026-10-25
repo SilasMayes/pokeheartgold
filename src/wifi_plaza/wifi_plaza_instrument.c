@@ -255,9 +255,9 @@ static void WiFiPlazaInstrument_PlaySE(WiFiPlazaInstrumentManager *manager, WiFi
     WiFiPlazaObj *ownPlayer = WiFiPlazaObj_GetOwnPlayer(manager->objManager);
 
     if (obj == ownPlayer) {
-        PlaySEOnPlayer((u16)seq, 5);
+        PlaySEOnPlayer(seq, 5);
     } else if (!WiFiPlazaObj_IsCulled(obj)) {
-        PlaySE((u16)seq);
+        PlaySE(seq);
     }
 }
 
@@ -1039,10 +1039,10 @@ static void WiFiPlazaInstrument_InitBalloon(WiFiPlazaInstrumentManager *manager,
         WiFiPlazaCamera_ClearFollowObject(manager->camera);
     }
     packed = ((u32(*)(WiFiPlazaObj *))WiFiPlazaObj_GetGridPos)(effect->obj);
-    original.x = (s16)packed;
-    original.y = (s16)(packed >> 16);
+    original.x = packed;
+    original.y = packed >> 16;
     copy = original;
-    effect->work.hop.onTile42 = WiFiPlazaMap_GetTileAttr(manager->map, (u16)(copy.x / 16), (u16)(copy.y / 16)) == 42;
+    effect->work.hop.onTile42 = WiFiPlazaMap_GetTileAttr(manager->map, copy.x / 16, copy.y / 16) == 42;
     switch (count) {
     case 1:
         WiFiPlazaInstrument_SetModel(manager, effect, 0, gWiFiPlazaInstrumentBalloonModel0);
@@ -1150,8 +1150,8 @@ static BOOL WiFiPlazaInstrument_UpdateBalloonRise(WiFiPlazaInstrumentManager *ma
         if (direction != 4) {
             WiFiPlazaObj_SetDirection(effect->obj, direction);
             packed = ((u32(*)(WiFiPlazaObj *))WiFiPlazaObj_GetGridPos)(effect->obj);
-            position.x = (s16)packed;
-            position.y = (s16)(packed >> 16);
+            position.x = packed;
+            position.y = packed >> 16;
             WiFiPlazaObj_SetGridPosAndDir(effect->obj, position, direction);
         }
     }

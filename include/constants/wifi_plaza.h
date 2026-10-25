@@ -25,4 +25,40 @@ enum WiFiPlazaTalkRole {
     WIFI_PLAZA_TALK_ROLE_ANSWERER,
 };
 
+// Lobby schedule events (WiFiPlaza_OnLobbyEvent): the room locks, the steps of the three lighting sequences, the
+// mini-games close, the fireworks, the parade and the closing
+enum WiFiPlazaLobbyEvent {
+    WIFI_PLAZA_EVENT_LOCK,
+    WIFI_PLAZA_EVENT_NEON_A0,
+    WIFI_PLAZA_EVENT_NEON_A1,
+    WIFI_PLAZA_EVENT_NEON_A2,
+    WIFI_PLAZA_EVENT_NEON_A3,
+    WIFI_PLAZA_EVENT_NEON_A4,
+    WIFI_PLAZA_EVENT_NEON_A5,
+    WIFI_PLAZA_EVENT_NEON_B0,
+    WIFI_PLAZA_EVENT_NEON_B1,
+    WIFI_PLAZA_EVENT_NEON_B2,
+    WIFI_PLAZA_EVENT_NEON_B3,
+    WIFI_PLAZA_EVENT_NEON_C0,
+    WIFI_PLAZA_EVENT_NEON_C1,
+    WIFI_PLAZA_EVENT_NEON_C2,
+    WIFI_PLAZA_EVENT_NEON_C3,
+    WIFI_PLAZA_EVENT_MINIGAME_END,
+    WIFI_PLAZA_EVENT_FIREWORKS_START,
+    WIFI_PLAZA_EVENT_FIREWORKS_END,
+    WIFI_PLAZA_EVENT_PARADE,
+    WIFI_PLAZA_EVENT_CLOSE,
+};
+
+// WiFiPlazaLobbyClient_GetScheduleValue fields: the room settings of the schedule and the times of three events
+enum WiFiPlazaScheduleField {
+    WIFI_PLAZA_SCHEDULE_LOCK_TIME = 0,
+    WIFI_PLAZA_SCHEDULE_ROOM_TYPE = 2,
+    WIFI_PLAZA_SCHEDULE_SEASON,
+    WIFI_PLAZA_SCHEDULE_ARCEUS,
+    WIFI_PLAZA_SCHEDULE_CLOSE_TIME,
+    WIFI_PLAZA_SCHEDULE_FIREWORKS_START_TIME,
+    WIFI_PLAZA_SCHEDULE_FIREWORKS_END_TIME,
+};
+
 #endif // POKEHEARTGOLD_CONSTANTS_WIFI_PLAZA_H

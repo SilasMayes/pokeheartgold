@@ -384,7 +384,7 @@ SaveData *WiFiPlazaWork_GetSaveData(WiFiPlazaWork *work) {
 
 int WiFiPlazaWork_IsArceusFootprintShown(WiFiPlazaWork *work) {
     GF_ASSERT(work != NULL);
-    return WiFiPlazaLobbyClient_GetScheduleValue(4);
+    return WiFiPlazaLobbyClient_GetScheduleValue(WIFI_PLAZA_SCHEDULE_ARCEUS);
 }
 
 BOOL WiFiPlazaWork_HasAnsweredSurvey(WiFiPlazaWork *work) {
@@ -445,21 +445,21 @@ u32 WiFiPlazaWork_GetColorEvent(WiFiPlazaWork *work) {
     if (work->eventSchedule.lightingDelay <= 0) {
         return work->eventSchedule.colorEvent;
     }
-    return 1;
+    return WIFI_PLAZA_EVENT_NEON_A0;
 }
 
 u32 WiFiPlazaWork_GetLight1Event(WiFiPlazaWork *work) {
     if (work->eventSchedule.lightingDelay <= 0) {
         return work->eventSchedule.light1Event;
     }
-    return 7;
+    return WIFI_PLAZA_EVENT_NEON_B0;
 }
 
 u32 WiFiPlazaWork_GetThirdEvent(WiFiPlazaWork *work) {
     if (work->eventSchedule.lightingDelay <= 0) {
         return work->eventSchedule.thirdEvent;
     }
-    return 11;
+    return WIFI_PLAZA_EVENT_NEON_C0;
 }
 
 void WiFiPlazaWork_StartGameEntryCooldown(WiFiPlazaWork *work) {
@@ -981,7 +981,7 @@ void WiFiPlaza_SendMinigameResultNews(WiFiPlazaWork *work, int game, int count, 
 }
 
 int WiFiPlazaWork_GetScheduleValue3(WiFiPlazaWork *work) {
-    int value = WiFiPlazaLobbyClient_GetScheduleValue(3);
+    int value = WiFiPlazaLobbyClient_GetScheduleValue(WIFI_PLAZA_SCHEDULE_SEASON);
     if ((u32)value >= 5) {
         value = 0;
     }
@@ -989,7 +989,7 @@ int WiFiPlazaWork_GetScheduleValue3(WiFiPlazaWork *work) {
 }
 
 int WiFiPlazaWork_GetScheduleValue2(WiFiPlazaWork *work) {
-    int value = WiFiPlazaLobbyClient_GetScheduleValue(2);
+    int value = WiFiPlazaLobbyClient_GetScheduleValue(WIFI_PLAZA_SCHEDULE_ROOM_TYPE);
     if ((u32)value >= 5) {
         value = 0;
     }
@@ -997,7 +997,7 @@ int WiFiPlazaWork_GetScheduleValue2(WiFiPlazaWork *work) {
 }
 
 int WiFiPlazaWork_GetOpenDuration(WiFiPlazaWork *work) {
-    return WiFiPlazaLobbyClient_GetScheduleValue(5) + 30;
+    return WiFiPlazaLobbyClient_GetScheduleValue(WIFI_PLAZA_SCHEDULE_CLOSE_TIME) + 30;
 }
 
 u8 WiFiPlazaWork_HasPlayedTapToy(WiFiPlazaWork *work, u32 index) {
@@ -1422,7 +1422,7 @@ static void WiFiPlaza_OnPlayerUpdate(int id, WiFiPlazaPlayer *player, WiFiPlazaW
     }
 }
 
-// Lobby callback: a lobby event (0: the lobby opened); most of them start a timer in WiFiPlazaWork.eventSchedule.
+// Lobby callback: a lobby event (WIFI_PLAZA_EVENT_LOCK: the lobby opened); most of them start a timer in WiFiPlazaWork.eventSchedule.
 static void WiFiPlaza_OnLobbyEvent(u32 event, WiFiPlazaWork *work) {
     PPWLobbyTimeInfo now;
     int notify = 0;
@@ -1431,79 +1431,79 @@ static void WiFiPlaza_OnLobbyEvent(u32 event, WiFiPlazaWork *work) {
     WiFiPlaza_SecondsToTime(&work->currentTime.word, &now.currentTime);
     work->lobbyTime = now.currentTime;
     switch (event) {
-    case 0:
+    case WIFI_PLAZA_EVENT_LOCK:
         WiFiPlazaNews_SetOpenTime(work->news, &work->currentTime.word);
         work->lobbyOpenTime = work->lobbyTime;
         work->eventSchedule.flag0 = 1;
         work->changeFlags[2] |= 1;
         break;
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
+    case WIFI_PLAZA_EVENT_NEON_A1:
+    case WIFI_PLAZA_EVENT_NEON_A2:
+    case WIFI_PLAZA_EVENT_NEON_A3:
+    case WIFI_PLAZA_EVENT_NEON_A4:
+    case WIFI_PLAZA_EVENT_NEON_A5:
         if (!work->lightingStarted) {
             work->lightingStarted = 1;
             notify = 1;
             which = 0;
             work->eventSchedule.lightingDelay = 300;
         }
-    case 1:
+    case WIFI_PLAZA_EVENT_NEON_A0:
         work->eventSchedule.colorEvent = event;
         work->changeFlags[2] |= 2;
         break;
-    case 8:
-    case 9:
-    case 10:
+    case WIFI_PLAZA_EVENT_NEON_B1:
+    case WIFI_PLAZA_EVENT_NEON_B2:
+    case WIFI_PLAZA_EVENT_NEON_B3:
         if (!work->lightingStarted) {
             work->lightingStarted = 1;
             notify = 1;
             which = 0;
             work->eventSchedule.lightingDelay = 300;
         }
-    case 7:
+    case WIFI_PLAZA_EVENT_NEON_B0:
         work->eventSchedule.light1Event = event;
         work->changeFlags[2] |= 4;
         break;
-    case 12:
-    case 13:
-    case 14:
+    case WIFI_PLAZA_EVENT_NEON_C1:
+    case WIFI_PLAZA_EVENT_NEON_C2:
+    case WIFI_PLAZA_EVENT_NEON_C3:
         if (!work->lightingStarted) {
             work->lightingStarted = 1;
             notify = 1;
             which = 0;
             work->eventSchedule.lightingDelay = 300;
         }
-    case 11:
+    case WIFI_PLAZA_EVENT_NEON_C0:
         work->eventSchedule.thirdEvent = event;
         work->changeFlags[2] |= 8;
         break;
-    case 16: {
+    case WIFI_PLAZA_EVENT_FIREWORKS_START: {
         int start;
         int end;
         notify = 1;
         which = 1;
-        start = WiFiPlazaLobbyClient_GetScheduleValue(6);
-        end = WiFiPlazaLobbyClient_GetScheduleValue(7);
+        start = WiFiPlazaLobbyClient_GetScheduleValue(WIFI_PLAZA_SCHEDULE_FIREWORKS_START_TIME);
+        end = WiFiPlazaLobbyClient_GetScheduleValue(WIFI_PLAZA_SCHEDULE_FIREWORKS_END_TIME);
         WiFiPlazaTimer_Init(&work->timer, start, end);
         work->eventSchedule.fireworksDelay = 300;
     } break;
-    case 17:
+    case WIFI_PLAZA_EVENT_FIREWORKS_END:
         work->eventSchedule.mode2 = 2;
         work->changeFlags[2] |= 32;
         break;
-    case 18:
+    case WIFI_PLAZA_EVENT_PARADE:
         notify = 1;
         which = 2;
         work->eventSchedule.paradeDelay = 300;
         break;
-    case 19:
+    case WIFI_PLAZA_EVENT_CLOSE:
         notify = 1;
         which = 4;
         work->eventSchedule.flag7 = 1;
         work->eventSchedule.closeTimer = 900;
         break;
-    case 15:
+    case WIFI_PLAZA_EVENT_MINIGAME_END:
         work->eventSchedule.mode5 = 1;
         work->changeFlags[2] |= 16;
         break;
@@ -1546,8 +1546,8 @@ static void WiFiPlaza_FillPlaces(WiFiPlazaProfile *profile, WiFiPlazaPlace *out)
         }
     }
     for (i = 0; i < WIFI_PLAZA_MAX_PLAYERS; i++) {
-        u8 entryCountry = (u8)WiFiPlazaLobbyClient_GetLocationCountry((u8)i);
-        WiFiPlazaPlaces_Add(out, entryCountry, WiFiPlazaLobbyClient_GetLocationRegion((u8)i), 1);
+        u8 entryCountry = WiFiPlazaLobbyClient_GetLocationCountry((u8)i);
+        WiFiPlazaPlaces_Add(out, entryCountry, WiFiPlazaLobbyClient_GetLocationRegion(i), 1);
     }
 }
 
@@ -1713,9 +1713,9 @@ static void WiFiPlazaEventSchedule_Init(WiFiPlazaEventSchedule *state) {
     state->flag4 = 0;
     state->mode5 = 0;
     state->flag7 = 0;
-    state->colorEvent = 1;
-    state->light1Event = 7;
-    state->thirdEvent = 11;
+    state->colorEvent = WIFI_PLAZA_EVENT_NEON_A0;
+    state->light1Event = WIFI_PLAZA_EVENT_NEON_B0;
+    state->thirdEvent = WIFI_PLAZA_EVENT_NEON_C0;
     state->closeTimer = -1;
     state->lightingDelay = -1;
     state->fireworksDelay = -1;

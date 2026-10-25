@@ -390,7 +390,7 @@ static void GtsMainMenu_CreateWindows(GtsApp *app) {
     y = 6;
     window = app->windows; // the three buttons
     for (; i < 3; i++) {
-        AddWindowParameterized(app->bgConfig, window, GF_BG_LYR_MAIN_1, 9, (u8)y, 15, 2, 1, (u16)baseTile);
+        AddWindowParameterized(app->bgConfig, window, GF_BG_LYR_MAIN_1, 9, y, 15, 2, 1, baseTile);
         FillWindowPixelBuffer(window, 0);
         baseTile += 30;
         y += 5;

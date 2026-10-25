@@ -700,7 +700,7 @@ static void WirelessTradeSelectMon_GetMonInfo(Pokemon *mon, WirelessTradeMonInfo
         info->flip = GetMonBaseStat_HandleAlternateForm(info->species, info->form, BASE_FLIP);
     }
     if (heldItem != ITEM_NONE) {
-        info->heldItem = ItemIdIsMail((u16)heldItem) + 1;
+        info->heldItem = ItemIdIsMail(heldItem) + 1;
     }
 }
 
@@ -895,10 +895,10 @@ static void WirelessTradeSelectMon_InitBgs(BgConfig *bgConfig) {
     BG_ClearCharDataRange(GF_BG_LYR_MAIN_1, 32, 0, HEAP_ID_26);
     BG_ClearCharDataRange(GF_BG_LYR_SUB_0, 32, 0, HEAP_ID_26);
     for (i = 0; i < 4; i++) {
-        BgSetPosTextAndCommit(bgConfig, (u8)i, BG_POS_OP_SET_X, 0);
-        BgSetPosTextAndCommit(bgConfig, (u8)i, BG_POS_OP_SET_Y, 0);
-        BgSetPosTextAndCommit(bgConfig, (u8)(i + 4), BG_POS_OP_SET_X, 0);
-        BgSetPosTextAndCommit(bgConfig, (u8)(i + 4), BG_POS_OP_SET_Y, 0);
+        BgSetPosTextAndCommit(bgConfig, i, BG_POS_OP_SET_X, 0);
+        BgSetPosTextAndCommit(bgConfig, i, BG_POS_OP_SET_Y, 0);
+        BgSetPosTextAndCommit(bgConfig, i + 4, BG_POS_OP_SET_X, 0);
+        BgSetPosTextAndCommit(bgConfig, i + 4, BG_POS_OP_SET_Y, 0);
     }
     ToggleBgLayer(GF_BG_LYR_MAIN_0, GF_PLANE_TOGGLE_OFF);
     ToggleBgLayer(GF_BG_LYR_MAIN_1, GF_PLANE_TOGGLE_OFF);
@@ -973,8 +973,8 @@ static void WirelessTradeSelectMon_LoadScreenData(NARC *narc, int memberNo, BgCo
             if (size == 0) {
                 size = screen->szByte;
             }
-            if (GetBgTilemapBuffer(bgConfig, (u8)layer)) {
-                BG_LoadScreenTilemapData(bgConfig, (u8)layer, screen->rawData, size);
+            if (GetBgTilemapBuffer(bgConfig, layer)) {
+                BG_LoadScreenTilemapData(bgConfig, layer, screen->rawData, size);
             }
         }
         Heap_Free(raw);
@@ -1139,7 +1139,7 @@ static void WirelessTradeSelectMon_ShowMonDetails(Window *windows, int side, Par
         FillWindowPixelBuffer((Window *)((u8 *)windows + f.windowOffset), 0);
         ReadMsgDataIntoString(work->msgData, msg_0183_00041, string); // "Lv."
         WirelessTradeSelectMon_PrintString((Window *)((u8 *)windows + f.windowOffset), string, 9, 255, 6, 0);
-        value = (u16)GetMonData(Party_GetMonByIndex(f.party, f.slot), MON_DATA_LEVEL, NULL);
+        value = GetMonData(Party_GetMonByIndex(f.party, f.slot), MON_DATA_LEVEL, NULL);
         String16_FormatInteger(string, value, 3, PRINTING_MODE_LEFT_ALIGN, TRUE);
         WirelessTradeSelectMon_PrintString((Window *)((u8 *)windows + f.windowOffset), string, 9, 0, 30, 0);
         String_Delete(string);
@@ -1148,7 +1148,7 @@ static void WirelessTradeSelectMon_ShowMonDetails(Window *windows, int side, Par
     }
 
     WirelessTradeSelectMon_PrintString(&windows[side + 30], work->itemLabel, 7, 0, 3, 0);
-    value = (u16)GetMonData(Party_GetMonByIndex(f.party, f.slot), MON_DATA_HELD_ITEM, NULL);
+    value = GetMonData(Party_GetMonByIndex(f.party, f.slot), MON_DATA_HELD_ITEM, NULL);
     side += 32;
     FillWindowPixelBuffer(&windows[side], 0);
     string = String_New(20, HEAP_ID_26);
@@ -1297,7 +1297,7 @@ static void WirelessTradeSelectMon_PlayCryOnTouch(WirelessTradeSelectMon *work) 
     if (species == SPECIES_CHATOT) {
         Chatot_PlayCryWithFallback(Save_Chatot_Get(work->saveData), 0, 100, 0);
     } else {
-        PlayCry(species, (u8)form);
+        PlayCry(species, form);
     }
     Sprite_SetAnimActiveFlag(work->detailSprites[0], TRUE);
     Sprite_SetAnimCtrlSeq(work->detailSprites[0], 4);
@@ -1310,7 +1310,7 @@ static void WirelessTradeSelectMon_UpdateCursorBlink(u16 *angle) {
     if (*angle > 360) {
         *angle = 0;
     }
-    color = (u16)(((GF_SinDeg(*angle) * 10 / FX32_ONE) + 15) * 32 | 29);
+    color = ((GF_SinDeg(*angle) * 10 / FX32_ONE) + 15) * 32 | 29;
     GX_LoadOBJPltt(&color, 0x3A, sizeof(color));
 }
 
@@ -1390,7 +1390,7 @@ static void *WirelessTradeSelectMon_GetPartyChunk(void *party, u32 chunk) {
 }
 
 void WirelessTradeSelectMon_SendPartyChunk(u32 netId, void *party, u32 chunk) {
-    if (Comm_IsNetIdConnected((u16)netId)) {
+    if (Comm_IsNetIdConnected(netId)) {
         Comm_SendCommandNoCopy(WIRELESS_TRADE_CMD_PARTY_CHUNK, WirelessTradeSelectMon_GetPartyChunk(party, chunk), WIRELESS_TRADE_PARTY_CHUNK_SIZE);
     }
 }
@@ -1760,8 +1760,8 @@ static TouchscreenListMenu *WirelessTradeSelectMon_CreateTouchMenu(WirelessTrade
     header.template = sWirelessTradeSelectMonTouchMenuTemplate;
     header.listMenuItems = work->menuItems;
     header.bgConfig = work->bgConfig;
-    header.numWindows = (u8)numItems;
-    menu = TouchscreenListMenu_Create(work->touchMenuSpawner, &header, 0, 17, (u8)y, 13, 0);
+    header.numWindows = numItems;
+    menu = TouchscreenListMenu_Create(work->touchMenuSpawner, &header, 0, 17, y, 13, 0);
     WirelessTradeSelectMon_StartMenuDim();
     return menu;
 }

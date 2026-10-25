@@ -790,7 +790,7 @@ static void Comm_SendChildFrame(void) {
     if (sCommSendStages.stage[1] == 2 || sCommSendStages.stage[1] == 0) {
         if (Comm_GetLocalNetId()) {
             sCommSendStages.stage[1]++;
-            if (!Wireless_SendData(sCommCore.work->childFrames[sCommCore.work->childFrameIndex], (u16)frameSize, 14, Comm_OnChildFrameSent)) {
+            if (!Wireless_SendData(sCommCore.work->childFrames[sCommCore.work->childFrameIndex], frameSize, 14, Comm_OnChildFrameSent)) {
                 sCommSendStages.stage[1]--;
                 return;
             }

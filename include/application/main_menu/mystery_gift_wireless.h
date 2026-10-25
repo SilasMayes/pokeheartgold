@@ -3,6 +3,8 @@
 
 #include "sys_task.h"
 
+struct MysteryGiftAppData;
+
 typedef void (*MysteryGiftCommStateFunc)(void);
 
 void MysteryGiftComm_Start(void *owner);
@@ -19,7 +21,7 @@ void MysteryGiftComm_StartParent(void *owner, void *saveData, void *linkMode);
 int MysteryGiftWireless_SendCard(void *data, void *size);
 void MysteryGiftComm_StartChild(void *owner, int linkMode);
 void MysteryGiftComm_ConnectToChannel(int channel);
-int MysteryGiftComm_GetFirstParentInfo(void *dst);
+int MysteryGiftComm_GetFirstParentInfo(struct MysteryGiftAppData *data);
 void MysteryGiftComm_HandleReceived(int netId, int size, void *data, void *context);
 u8 MysteryGiftComm_IsReceived(void);
 u32 MysteryGiftComm_GetRecvBufferSize(void);

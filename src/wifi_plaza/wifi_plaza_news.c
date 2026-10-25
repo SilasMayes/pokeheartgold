@@ -156,7 +156,7 @@ void WiFiPlazaNews_AddMinigameEntryEvent(WiFiPlazaNews *news, WiFiPlazaGroupFlag
         return;
     }
     rank = sWiFiPlazaNewsMinigameEntryRanks[type];
-    event = WiFiPlazaNewsEventList_GetFreeEvent(&news->events, (u16)rank);
+    event = WiFiPlazaNewsEventList_GetFreeEvent(&news->events, rank);
     if (event != NULL) {
         WiFiPlazaNewsEvent_Set(event, type, req->count, req->flag, req->profiles[0], req->profiles[1], req->profiles[2], req->profiles[3], req->slots[0], req->slots[1], req->slots[2], req->slots[3], 900, rank, WIFI_PLAZA_NEWS_EVENT_MINIGAME_ENTRY);
         WiFiPlazaNewsEventList_Insert(&news->events, event);
@@ -168,7 +168,7 @@ void WiFiPlazaNews_AddFootprintStampEvent(WiFiPlazaNews *news, WiFiPlazaSingleRe
     if (req->option != 3 && req->option != 4) {
         return;
     }
-    event = WiFiPlazaNewsEventList_GetFreeEvent(&news->events, (u16)(req->option + 5));
+    event = WiFiPlazaNewsEventList_GetFreeEvent(&news->events, req->option + 5);
     if (event != NULL) {
         WiFiPlazaNewsEvent_Set(event, req->option, req->count, 0, req->profile, NULL, NULL, NULL, req->slot, 0, 0, 0, 900, req->option + 5, WIFI_PLAZA_NEWS_EVENT_FOOTPRINT_STAMP);
         WiFiPlazaNewsEventList_Insert(&news->events, event);

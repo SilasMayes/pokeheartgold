@@ -39,7 +39,7 @@ void LinkSync_RecvRequest(int sender, int size, void *data, void *context) {
     Comm_SendFixedParentCommand(18, packet);
     sLinkSync->states[sender] = state;
     for (i = 0; i < 8; i++) {
-        if (Comm_IsNetIdConnected((u16)i) && state != sLinkSync->states[i]) {
+        if (Comm_IsNetIdConnected(i) && state != sLinkSync->states[i]) {
             return;
         }
     }

@@ -227,10 +227,10 @@ static BOOL Packet_WriteHeader(PacketNode *node, ByteWriter *writer) {
     }
     ByteWriter_PutByte(writer, node->command);
     if (size == 0xFFFF) {
-        ByteWriter_PutByte(writer, (u8)(node->size >> 8));
-        ByteWriter_PutByte(writer, (u8)node->size);
+        ByteWriter_PutByte(writer, node->size >> 8);
+        ByteWriter_PutByte(writer, node->size);
     } else {
-        node->size = (u16)size;
+        node->size = size;
     }
     node->flags.b.headerWritten = 1;
     return FALSE;
@@ -296,8 +296,8 @@ BOOL PacketPool_Enqueue(PacketPool *pool, int command, u8 *data, int size, int a
         ByteRing_Commit(pool->ring);
         node->flags.raw |= 2;
     }
-    node->size = (u16)packetSize;
-    node->command = (u8)command;
+    node->size = packetSize;
+    node->command = command;
     node->data = data;
     if (pool->queue.tail == NULL) {
         pool->queue.tail = node;
@@ -589,7 +589,7 @@ static void CommCmd_RecvReady(int netId, int size, void *data, void *context) {
     if (Comm_GetLocalNetId() == 0) {
         sCommCommandTable->ready[netId] = 1;
         for (i = 0; i < 8; i++) {
-            if (Comm_IsNetIdConnected((u16)i) && sCommCommandTable->ready[i] == 0) {
+            if (Comm_IsNetIdConnected(i) && sCommCommandTable->ready[i] == 0) {
                 return;
             }
         }
