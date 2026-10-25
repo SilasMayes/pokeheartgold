@@ -338,7 +338,7 @@ WiFiPlazaNews *WiFiPlazaWork_GetNews(WiFiPlazaWork *work) {
     return work->news;
 }
 
-void *WiFiPlazaWork_GetPlaces(WiFiPlazaWork *work) {
+WiFiPlazaPlace *WiFiPlazaWork_GetPlaces(WiFiPlazaWork *work) {
     WiFiPlaza_FillPlaces(&work->profile, work->places);
     return work->places;
 }
@@ -721,7 +721,7 @@ u8 WiFiPlazaPlayer_GetHistoryId(WiFiPlazaPlayer *player, u32 index) {
 
 #pragma opt_common_subs reset
 
-void *WiFiPlazaPlayer_GetHistoryValue(WiFiPlazaPlayer *player, u32 index) {
+int WiFiPlazaPlayer_GetHistoryValue(WiFiPlazaPlayer *player, u32 index) {
     int seen, i;
     GF_ASSERT(index < 12);
     seen = 0;
@@ -734,7 +734,7 @@ void *WiFiPlazaPlayer_GetHistoryValue(WiFiPlazaPlayer *player, u32 index) {
             return player->slotData[i];
         }
     }
-    return (void *)-1;
+    return -1;
 }
 
 u32 WiFiPlazaPlayer_GetLobbyId(WiFiPlazaPlayer *player) {
@@ -756,7 +756,7 @@ int WiFiPlazaPlayer_GetAvatarIndex(WiFiPlazaPlayer *player) {
     return 24;
 }
 
-void *WiFiPlazaPlayer_GetLocalTime(WiFiPlazaPlayer *player) {
+u32 WiFiPlazaPlayer_GetLocalTime(WiFiPlazaPlayer *player) {
     return player->localTime;
 }
 
@@ -862,7 +862,7 @@ void WiFiPlazaPlayer_GetSurvey(WiFiPlazaPlayer *player, WiFiPlazaPlayerSurvey *o
     *out = player->survey;
 }
 
-void *WiFiPlazaWork_GetOwnPlayerProfile(WiFiPlazaWork *work) {
+PlayerProfile *WiFiPlazaWork_GetOwnPlayerProfile(WiFiPlazaWork *work) {
     return work->ownProfileData.profile;
 }
 
@@ -1005,7 +1005,7 @@ u8 WiFiPlazaWork_HasPlayedTapToy(WiFiPlazaWork *work, u32 index) {
     return work->tapToyPlayed[index];
 }
 
-void WiFiPlazaWork_SendTapToyPlayed(void *unused, u32 value) {
+void WiFiPlazaWork_SendTapToyPlayed(WiFiPlazaWork *work, u32 value) {
     u32 data[1];
     data[0] = value;
     WiFiPlazaLobbyClient_SendToLobby(5, data, sizeof(data));
@@ -1607,7 +1607,7 @@ static void WiFiPlazaProfile_InitFromSave(WiFiPlazaProfile *profile, SaveData *s
     profile->player.unk_44 = rtc->seconds_since_nitro_epoch;
     for (i = 0; i < 12; i++) {
         profile->player.slots[i] = 24;
-        profile->player.slotData[i] = (void *)-1;
+        profile->player.slotData[i] = -1;
     }
     for (j = 0; j < 2; j++) {
         profile->player.favoriteTypes[j] = 0;
@@ -1625,7 +1625,7 @@ static void WiFiPlazaWork_SendOwnRecord(WiFiPlazaWork *work) {
     }
     for (i = 0; i < 12; i++) {
         work->profile.player.slots[i] = WiFiPlazaHistory_GetId(&work->history, i);
-        work->profile.player.slotData[i] = (void *)WiFiPlazaHistory_GetValue(&work->history, i);
+        work->profile.player.slotData[i] = WiFiPlazaHistory_GetValue(&work->history, i);
     }
     MI_CpuCopy8(work->profile.lobbyName, work->profile.player.name, sizeof(work->profile.player.name));
     WiFiPlazaLobbyClient_SetOwnPlayer(&work->profile.player);

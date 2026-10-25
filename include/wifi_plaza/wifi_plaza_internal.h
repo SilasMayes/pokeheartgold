@@ -44,7 +44,7 @@ typedef struct WiFiPlazaPlayer {
     u32 trainerId;
     u16 name[8];
     u32 entryTime;   // WiFiPlaza_SecondsToTime of the entry time
-    void *localTime; // WiFiPlazaTime: local time of the location
+    u32 localTime; // WiFiPlazaTime: local time of the location
     u16 species[6];
     u8 forms[6];
     u8 isEgg[6];
@@ -60,7 +60,7 @@ typedef struct WiFiPlazaPlayer {
     u8 activity;  // < 15
     s64 unk_44;   // SysInfo_RTC.seconds_since_nitro_epoch
     u8 slots[12]; // < 24: used
-    void *slotData[12];
+    s32 slotData[12];
     u16 favoriteTypes[2]; // < 18
     WiFiPlazaPlayerSurvey survey;
 } WiFiPlazaPlayer;
@@ -598,7 +598,7 @@ typedef struct WiFiPlazaLobbyClient {
 BOOL WiFiPlazaWork_HasError(WiFiPlazaWork *work);
 BOOL WiFiPlazaWork_TakeExcessFlood(WiFiPlazaWork *work);
 WiFiPlazaNews *WiFiPlazaWork_GetNews(WiFiPlazaWork *work);
-void *WiFiPlazaWork_GetPlaces(WiFiPlazaWork *work);
+WiFiPlazaPlace *WiFiPlazaWork_GetPlaces(WiFiPlazaWork *work);
 WiFiPlazaTime *WiFiPlazaWork_GetCurrentTimePtr(WiFiPlazaWork *work);
 BOOL WiFiPlazaWork_TakePlayerEntered(WiFiPlazaWork *work, int bit);
 BOOL WiFiPlazaWork_TakePlayerLeft(WiFiPlazaWork *work, int bit);
@@ -646,10 +646,10 @@ void WiFiPlazaWork_SetSurveyAnswer(WiFiPlazaWork *work, u32 a, u32 b);
 void WiFiPlazaPlayer_CopyToProfile(WiFiPlazaPlayer *player, PlayerProfile *profile, enum HeapID heapID);
 int WiFiPlazaPlayer_GetActivity(WiFiPlazaPlayer *player);
 u8 WiFiPlazaPlayer_GetHistoryId(WiFiPlazaPlayer *player, u32 index);
-void *WiFiPlazaPlayer_GetHistoryValue(WiFiPlazaPlayer *player, u32 index);
+int WiFiPlazaPlayer_GetHistoryValue(WiFiPlazaPlayer *player, u32 index);
 u32 WiFiPlazaPlayer_GetLobbyId(WiFiPlazaPlayer *player);
 int WiFiPlazaPlayer_GetAvatarIndex(WiFiPlazaPlayer *player);
-void *WiFiPlazaPlayer_GetLocalTime(WiFiPlazaPlayer *player);
+u32 WiFiPlazaPlayer_GetLocalTime(WiFiPlazaPlayer *player);
 u32 WiFiPlazaPlayer_GetGender(WiFiPlazaPlayer *player);
 u32 WiFiPlazaPlayer_GetLanguage(WiFiPlazaPlayer *player);
 BOOL WiFiPlazaPlayer_IsLanguageValid(WiFiPlazaPlayer *player);
@@ -662,7 +662,7 @@ BOOL WiFiPlazaPlayer_HasTapToy(WiFiPlazaPlayer *player);
 u16 WiFiPlazaPlayer_GetFavoriteType(WiFiPlazaPlayer *player, u32 index);
 void WiFiPlazaPlayer_GetSurvey(WiFiPlazaPlayer *player, WiFiPlazaPlayerSurvey *out);
 
-void *WiFiPlazaWork_GetOwnPlayerProfile(WiFiPlazaWork *work);
+PlayerProfile *WiFiPlazaWork_GetOwnPlayerProfile(WiFiPlazaWork *work);
 BOOL WiFiPlazaWork_IsSpecialVisitor(WiFiPlazaWork *work, int slot);
 void WiFiPlazaWork_GetSpecialVisitors(WiFiPlazaWork *work, u8 *dest);
 BOOL WiFiPlazaWork_HasWordSet(WiFiPlazaWork *work, int slot);
@@ -677,7 +677,7 @@ int WiFiPlazaWork_GetScheduleValue3(WiFiPlazaWork *work);
 int WiFiPlazaWork_GetScheduleValue2(WiFiPlazaWork *work);
 int WiFiPlazaWork_GetOpenDuration(WiFiPlazaWork *work);
 u8 WiFiPlazaWork_HasPlayedTapToy(WiFiPlazaWork *work, u32 index);
-void WiFiPlazaWork_SendTapToyPlayed(void *unused, u32 value);
+void WiFiPlazaWork_SendTapToyPlayed(WiFiPlazaWork *work, u32 value);
 int WiFiPlazaWork_GetGroupState(WiFiPlazaWork *work, int group);
 int WiFiPlazaWork_GetGroupCounter(WiFiPlazaWork *work, int group);
 int WiFiPlazaWork_GetGroupDuration(WiFiPlazaWork *work);

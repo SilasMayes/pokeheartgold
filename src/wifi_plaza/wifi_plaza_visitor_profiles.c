@@ -312,8 +312,8 @@ enum VisitorProfilesMode {
 };
 
 
-static void VisitorProfilesPlaces_Load(VisitorProfilesPlaces *places, void *visitors, enum HeapID heapID);
-static void VisitorProfilesPlaces_Set(VisitorProfilesPlaces *places, u32 index, s32 latitude, s32 longitude, u16 country, u16 region, void *visitors);
+static void VisitorProfilesPlaces_Load(VisitorProfilesPlaces *places, WiFiPlazaPlace *visitors, enum HeapID heapID);
+static void VisitorProfilesPlaces_Set(VisitorProfilesPlaces *places, u32 index, s32 latitude, s32 longitude, u16 country, u16 region, WiFiPlazaPlace *visitors);
 static void VisitorProfiles_CalcGlobeMatrix(MtxFx33 *mtx, VecFx32 *rotation);
 static void VisitorProfiles_CalcPlaceMatrix(MtxFx33 *mtx, VecFx32 *rotation);
 static void VisitorProfiles_GetTouchDrag(s32 x, s32 y, u32 *dirX, u32 *distX, u32 *dirY, u32 *distY);
@@ -349,10 +349,10 @@ static void VisitorProfilesGlobe_GetPosition(VisitorProfilesGlobe *globe, VecFx3
 static void VisitorProfilesGlobe_GetMatrix(VisitorProfilesGlobe *globe, MtxFx33 *mtx);
 static void VisitorProfilesGlobe_GetRotation(VisitorProfilesGlobe *globe, VecFx32 *dst);
 static void VisitorProfilesGlobe_SetRotation(VisitorProfilesGlobe *globe, VecFx32 *src);
-static void VisitorProfilesPlaces_Init(VisitorProfilesPlaces *places, void *visitors, VisitorProfilesGraphics *gfx, VisitorProfilesSettings settings, enum HeapID heapID);
+static void VisitorProfilesPlaces_Init(VisitorProfilesPlaces *places, WiFiPlazaPlace *visitors, VisitorProfilesGraphics *gfx, VisitorProfilesSettings settings, enum HeapID heapID);
 static void VisitorProfilesPlaces_Free(VisitorProfilesPlaces *places);
 static void VisitorProfilesPlaces_Draw(VisitorProfilesPlaces *places, VisitorProfilesGlobe *globe);
-static int VisitorProfiles_GetVisitorMarker(void *visitors, int country, int region);
+static int VisitorProfiles_GetVisitorMarker(WiFiPlazaPlace *visitors, int country, int region);
 static u16 VisitorProfilesPlaces_Find(VisitorProfilesPlaces *places, u16 country, u16 region, VecFx32 *coords);
 static u32 VisitorProfilesPlaces_FindIndex(VisitorProfilesPlaces *places, int country, int region);
 static void VisitorProfilesPlaces_GetCoords(VisitorProfilesPlaces *places, VecFx32 *coords, u32 index);
@@ -441,7 +441,7 @@ static String *VisitorProfilesMsg_Get(VisitorProfilesMsg *msg, s32 msgId);
 static void VisitorProfilesMsg_Read(VisitorProfilesMsg *msg, s32 msgId, String *dest);
 static String *VisitorProfilesMsg_GetCountryName(VisitorProfilesMsg *msg, u32 country);
 static String *VisitorProfilesMsg_GetRegionName(VisitorProfilesMsg *msg, u32 country, u32 region);
-static s32 VisitorProfiles_FindFirstVisitor(void *visitors);
+static s32 VisitorProfiles_FindFirstVisitor(WiFiPlazaPlace *visitors);
 
 
 static const u8 sVisitorProfilesBgAnimPeriods[VISITOR_PROFILES_NUM_BG_ANIMS] = { 30, 30, 30, 30, 30 };
@@ -826,7 +826,7 @@ typedef struct VisitorProfilesRegionRecord {
     s16 longitude;
 } VisitorProfilesRegionRecord;
 
-static void VisitorProfilesPlaces_Load(VisitorProfilesPlaces *places, void *visitors, enum HeapID heapID) {
+static void VisitorProfilesPlaces_Load(VisitorProfilesPlaces *places, WiFiPlazaPlace *visitors, enum HeapID heapID) {
     u32 countriesSize;
     u32 regionsSize;
     NARC *narc;
@@ -870,7 +870,7 @@ static void VisitorProfilesPlaces_Load(VisitorProfilesPlaces *places, void *visi
     NARC_Delete(narc);
 }
 
-static void VisitorProfilesPlaces_Set(VisitorProfilesPlaces *places, u32 index, s32 latitude, s32 longitude, u16 country, u16 region, void *visitors) {
+static void VisitorProfilesPlaces_Set(VisitorProfilesPlaces *places, u32 index, s32 latitude, s32 longitude, u16 country, u16 region, WiFiPlazaPlace *visitors) {
     MtxFx33 mtx;
     VecFx32 rotation;
 
@@ -1479,7 +1479,7 @@ static void VisitorProfilesGlobe_SetRotation(VisitorProfilesGlobe *globe, VecFx3
     globe->rotation = *src;
 }
 
-static void VisitorProfilesPlaces_Init(VisitorProfilesPlaces *places, void *visitors, VisitorProfilesGraphics *gfx, VisitorProfilesSettings settings, enum HeapID heapID) {
+static void VisitorProfilesPlaces_Init(VisitorProfilesPlaces *places, WiFiPlazaPlace *visitors, VisitorProfilesGraphics *gfx, VisitorProfilesSettings settings, enum HeapID heapID) {
     int i;
 
     VisitorProfilesPlaces_Load(places, visitors, heapID);
@@ -1540,7 +1540,7 @@ static void VisitorProfilesPlaces_Draw(VisitorProfilesPlaces *places, VisitorPro
 }
 
 // Marker of a place: 1 or 0 for a place where a visitor lives (by the visitor's flag), else VISITOR_PROFILES_NO_MARKER.
-static int VisitorProfiles_GetVisitorMarker(void *visitors, int country, int region) {
+static int VisitorProfiles_GetVisitorMarker(WiFiPlazaPlace *visitors, int country, int region) {
     int i;
     for (i = 0; i < VISITOR_PROFILES_NUM_VISITORS; i++) {
         if (WiFiPlazaPlaces_IsOccupied(visitors, i)) {
@@ -2589,7 +2589,7 @@ static String *VisitorProfilesMsg_GetRegionName(VisitorProfilesMsg *msg, u32 cou
     return msg->buffer;
 }
 
-static s32 VisitorProfiles_FindFirstVisitor(void *visitors) {
+static s32 VisitorProfiles_FindFirstVisitor(WiFiPlazaPlace *visitors) {
     s32 i;
     for (i = 0; i < VISITOR_PROFILES_NUM_VISITORS; i++) {
         if ((u8)WiFiPlazaPlaces_IsOccupied(visitors, i) == 1) {
