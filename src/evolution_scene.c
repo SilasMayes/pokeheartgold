@@ -622,7 +622,7 @@ EvolutionTaskData *EvolutionScene_New(Party *party, Pokemon *mon, int species, O
     data->flags = flags;
     EvolutionScene_CreatePokepics(data);
 
-    PaletteData_BeginPaletteFade(data->paletteData, 0xF, 0xFFFF, 1, 16, 0, RGB_BLACK);
+    PaletteData_BeginPaletteFade(data->paletteData, PLTTBUF_MAIN_BG_F | PLTTBUF_SUB_BG_F | PLTTBUF_MAIN_OBJ_F | PLTTBUF_SUB_OBJ_F, 0xFFFF, 1, 16, 0, RGB_BLACK);
     Pokepic_StartPaletteFadeAll(data->pokepicManager, 16, 0, 0, RGB_BLACK);
     data->paletteBlink = PaletteBlink_New(data->paletteData, PM_LCD_TOP, 11, heapID);
     PaletteBlink_SetState(data->paletteBlink, 1);
@@ -709,7 +709,7 @@ static void EvolutionScene_Run(EvolutionTaskData *data) {
         }
     }
     if ((data->flags & EVO_FLAG_CAN_CANCEL) && data->state == EVO_STATE_OSCILLATE && (gSystem.newKeys & PAD_BUTTON_B)) {
-        PaletteData_BeginPaletteFade(data->paletteData, 0xF, 0xF3FF, 0, 0, 16, RGB_WHITE);
+        PaletteData_BeginPaletteFade(data->paletteData, PLTTBUF_MAIN_BG_F | PLTTBUF_SUB_BG_F | PLTTBUF_MAIN_OBJ_F | PLTTBUF_SUB_OBJ_F, 0xF3FF, 0, 0, 16, RGB_WHITE);
         data->state = EVO_STATE_CANCEL;
     }
 
@@ -810,7 +810,7 @@ static void EvolutionScene_Run(EvolutionTaskData *data) {
             ParticleScene_CreateEmitter(data->particleScene, 5);
             ParticleScene_CreateEmitter(data->particleScene, 6);
             ParticleScene_CreateEmitter(data->particleScene, 10);
-            PaletteData_BeginPaletteFade(data->paletteData, 0xF, 0xF3FF, 2, 0, 16, RGB_WHITE);
+            PaletteData_BeginPaletteFade(data->paletteData, PLTTBUF_MAIN_BG_F | PLTTBUF_SUB_BG_F | PLTTBUF_MAIN_OBJ_F | PLTTBUF_SUB_OBJ_F, 0xF3FF, 2, 0, 16, RGB_WHITE);
             Pokepic_SetAttr(data->oldPokepic, POKEPIC_AFFINEW, 0);
             Pokepic_SetAttr(data->oldPokepic, POKEPIC_AFFINEH, 0);
             Pokepic_SetAttr(data->newPokepic, POKEPIC_AFFINEW, 256);
@@ -828,7 +828,7 @@ static void EvolutionScene_Run(EvolutionTaskData *data) {
         }
         if (PaletteData_GetSelectedBuffersBitmask(data->paletteData) == 0 && --data->timer == 0) {
             ParticleScene_CreateEmitter(data->particleScene, 12);
-            PaletteData_BeginPaletteFade(data->paletteData, 0xF, 0xF3FF, 4, 16, 0, RGB_WHITE);
+            PaletteData_BeginPaletteFade(data->paletteData, PLTTBUF_MAIN_BG_F | PLTTBUF_SUB_BG_F | PLTTBUF_MAIN_OBJ_F | PLTTBUF_SUB_OBJ_F, 0xF3FF, 4, 16, 0, RGB_WHITE);
             Pokepic_StartPaletteFadeAll(data->pokepicManager, 16, 0, 3, RGB_WHITE);
             PlaySE(SEQ_SE_DP_W080);
             data->state++;
@@ -929,7 +929,7 @@ static void EvolutionScene_Run(EvolutionTaskData *data) {
         switch (EvolutionScene_RunMenu(data)) {
         case EVO_MENU_TOP:
             data->state = EVO_STATE_OPEN_SUMMARY;
-            PaletteData_BeginPaletteFade(data->paletteData, 0xF, 0xFFFF, 1, 0, 16, RGB_BLACK);
+            PaletteData_BeginPaletteFade(data->paletteData, PLTTBUF_MAIN_BG_F | PLTTBUF_SUB_BG_F | PLTTBUF_MAIN_OBJ_F | PLTTBUF_SUB_OBJ_F, 0xFFFF, 1, 0, 16, RGB_BLACK);
             Pokepic_StartPaletteFadeAll(data->pokepicManager, 0, 16, 0, RGB_BLACK);
             break;
         case EVO_MENU_BOTTOM:
@@ -972,7 +972,7 @@ static void EvolutionScene_Run(EvolutionTaskData *data) {
             Pokepic_SetAttr(data->newPokepic, POKEPIC_VANISHED, FALSE);
             Pokepic_ScheduleReloadFromNarc(data->oldPokepic);
             Pokepic_ScheduleReloadFromNarc(data->newPokepic);
-            PaletteData_BeginPaletteFade(data->paletteData, 0xF, 0xFFFF, 1, 16, 0, RGB_BLACK);
+            PaletteData_BeginPaletteFade(data->paletteData, PLTTBUF_MAIN_BG_F | PLTTBUF_SUB_BG_F | PLTTBUF_MAIN_OBJ_F | PLTTBUF_SUB_OBJ_F, 0xFFFF, 1, 16, 0, RGB_BLACK);
             Pokepic_StartPaletteFadeAll(data->pokepicManager, 16, 0, 0, RGB_BLACK);
             WirelessStatusIcon_Create();
             data->state++;
@@ -1059,7 +1059,7 @@ static void EvolutionScene_Run(EvolutionTaskData *data) {
         }
         break;
     case EVO_STATE_FADE_OUT:
-        PaletteData_BeginPaletteFade(data->paletteData, 0xF, 0xFFFF, 1, 0, 16, RGB_BLACK);
+        PaletteData_BeginPaletteFade(data->paletteData, PLTTBUF_MAIN_BG_F | PLTTBUF_SUB_BG_F | PLTTBUF_MAIN_OBJ_F | PLTTBUF_SUB_OBJ_F, 0xFFFF, 1, 0, 16, RGB_BLACK);
         Pokepic_StartPaletteFadeAll(data->pokepicManager, 0, 16, 0, RGB_BLACK);
         data->state++;
         break;
@@ -1077,7 +1077,7 @@ static void EvolutionScene_Run(EvolutionTaskData *data) {
             Pokepic_SetAttr(data->newPokepic, POKEPIC_AFFINEW, 0);
             Pokepic_SetAttr(data->newPokepic, POKEPIC_AFFINEH, 0);
             Pokepic_SetAttr(data->newPokepic, POKEPIC_VANISHED, TRUE);
-            PaletteData_BeginPaletteFade(data->paletteData, 0xF, 0xF3FF, 0, 16, 0, RGB_WHITE);
+            PaletteData_BeginPaletteFade(data->paletteData, PLTTBUF_MAIN_BG_F | PLTTBUF_SUB_BG_F | PLTTBUF_MAIN_OBJ_F | PLTTBUF_SUB_OBJ_F, 0xF3FF, 0, 16, 0, RGB_WHITE);
             Pokepic_StartPaletteFadeAll(data->pokepicManager, 16, 0, 0, RGB_WHITE);
             data->wnd0Left = 0;
             data->wnd0Top = 0;
@@ -1111,7 +1111,7 @@ static void EvolutionScene_Run(EvolutionTaskData *data) {
         break;
     case EVO_STATE_CANCEL_WAIT_MESSAGE:
         if (!TextPrinterCheckActive(data->printerId) && --data->timer == 0) {
-            PaletteData_BeginPaletteFade(data->paletteData, 0xF, 0xFFFF, 1, 0, 16, RGB_BLACK);
+            PaletteData_BeginPaletteFade(data->paletteData, PLTTBUF_MAIN_BG_F | PLTTBUF_SUB_BG_F | PLTTBUF_MAIN_OBJ_F | PLTTBUF_SUB_OBJ_F, 0xFFFF, 1, 0, 16, RGB_BLACK);
             Pokepic_StartPaletteFadeAll(data->pokepicManager, 0, 16, 0, RGB_BLACK);
             data->state++;
         }
@@ -1281,13 +1281,13 @@ static void EvolutionScene_CreatePokepics(EvolutionTaskData *data) {
     PokepicTemplate template;
     Pokemon *newMon;
 
-    GetPokemonSpriteCharAndPlttNarcIds(&template, data->mon, 2);
+    GetPokemonSpriteCharAndPlttNarcIds(&template, data->mon, MON_PIC_FACING_FRONT);
     data->oldPokepic = PokepicManager_CreatePokepic(data->pokepicManager, &template, 128, 80, 0, 0, NULL, NULL);
     newMon = AllocMonZeroed(data->heapId);
     CopyPokemonToPokemon(data->mon, newMon);
     SetMonData(newMon, MON_DATA_SPECIES, &data->newSpecies);
     CalcMonLevelAndStats(newMon);
-    GetPokemonSpriteCharAndPlttNarcIds(&template, newMon, 2);
+    GetPokemonSpriteCharAndPlttNarcIds(&template, newMon, MON_PIC_FACING_FRONT);
     Heap_Free(newMon);
     data->newPokepic = PokepicManager_CreatePokepic(data->pokepicManager, &template, 128, 80, 0, 0, NULL, NULL);
     Pokepic_SetAttr(data->newPokepic, POKEPIC_AFFINEW, 0);

@@ -230,10 +230,11 @@ u16 GBSounds_GetDSSeqNoByGBSeqNo(u16 seqNo) {
     }
     return seqNo;
 }
+
 void GBSounds_SetAllocatableChannels(void) {
-    NNS_SndPlayerSetTrackAllocatableChannel(GF_GetSoundHandle(0), 15, 0xA7FE);
-    NNS_SndPlayerSetTrackAllocatableChannel(GF_GetSoundHandle(7), 15, 0xA7FE);
-    NNS_SndPlayerSetTrackAllocatableChannel(GF_GetSoundHandle(2), 15, 0xA7FE);
+    NNS_SndPlayerSetTrackAllocatableChannel(GF_GetSoundHandle(SND_HANDLE_FIELD), 15, 0xA7FE);
+    NNS_SndPlayerSetTrackAllocatableChannel(GF_GetSoundHandle(SND_HANDLE_BGM), 15, 0xA7FE);
+    NNS_SndPlayerSetTrackAllocatableChannel(GF_GetSoundHandle(SND_HANDLE_ME), 15, 0xA7FE);
 }
 void Sound_SetFieldBGMStopOnce(BOOL enabled) {
     gSoundSystemFlags.fieldBGMStopOnce = enabled;

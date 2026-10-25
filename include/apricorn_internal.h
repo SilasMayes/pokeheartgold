@@ -15,7 +15,7 @@ typedef struct ApricornRecord {
     u8 language;
     u8 version;
     u8 padding;
-    u16 name[8];
+    u16 name[PLAYER_NAME_LENGTH + 1];
     ApricornJuice data;
 } ApricornRecord;
 

@@ -413,7 +413,7 @@ static void PokemonPicWindow_LoadSpeciesGfx(PokemonPicWindow *picWindow, u16 spe
 static void PokemonPicWindow_LoadMonGfx(PokemonPicWindow *picWindow, Pokemon *mon) {
     PokepicTemplate template;
     PokepicManager *pokepicManager = PokepicManager_Create((enum HeapID)picWindow->spriteManager.heapID);
-    GetPokemonSpriteCharAndPlttNarcIds(&template, mon, 2);
+    GetPokemonSpriteCharAndPlttNarcIds(&template, mon, MON_PIC_FACING_FRONT);
     PokemonPicWindow_LoadGfx(picWindow, &template);
     PokepicManager_Delete(pokepicManager);
 }

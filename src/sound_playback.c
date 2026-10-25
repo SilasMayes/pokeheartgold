@@ -280,7 +280,7 @@ u32 GF_SndCountPlayingSeqOnPlayer(u32 playerNo) {
 
 BOOL GF_IsAnySEPlaying(void) {
     for (int i = 0; i < 4; i++) {
-        if (GF_SndPlayerCountPlayingSeqByPlayerNo(i + 3) == 1) {
+        if (GF_SndPlayerCountPlayingSeqByPlayerNo(PLAYER_SE_1 + i) == 1) {
             return TRUE;
         }
     }
@@ -366,7 +366,7 @@ BOOL IsCryFinished(void) {
     if (*secondActive == 1) {
         return Sound_IsWaveOutPlaying(15);
     }
-    return GF_SndPlayerCountPlayingSeqByPlayerNo(0);
+    return GF_SndPlayerCountPlayingSeqByPlayerNo(PLAYER_PV);
 }
 
 BOOL PlayCryEx(u32 pattern, u16 species, int pan, int volume, int heapId, u8 form) {
@@ -702,7 +702,7 @@ BOOL PlayFanfare(u16 seqNo) {
 
 BOOL IsFanfarePlayingOrWaiting(void) {
     u16 *waitTimer = GF_SdatGetAttrPtr(SOUND_ATTR_AFTER_FANFARE_WAIT_TIMER);
-    if (GF_SndPlayerCountPlayingSeqByPlayerNo(2) != 0) {
+    if (GF_SndPlayerCountPlayingSeqByPlayerNo(PLAYER_ME) != 0) {
         return TRUE;
     }
     if (*waitTimer != 0) {

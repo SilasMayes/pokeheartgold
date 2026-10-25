@@ -18,7 +18,7 @@ typedef struct TrainerCardData {
     u8 unk_04_5 : 3;
     u8 caseVariant; // union room avatar; 0xFF = default front
     u16 badges;     // one bit per badge
-    u16 name[8];
+    u16 name[PLAYER_NAME_LENGTH + 1];
     IGT *igt;
     u32 money;
     u32 pokedexCount;

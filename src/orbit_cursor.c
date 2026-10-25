@@ -156,14 +156,14 @@ void OrbitCursor_LoadResources(OrbitCursor *cursor, int palette) {
         } else {
             SpriteSystem_LoadPaletteBufferFromOpenNarc(plttData, PLTTBUF_MAIN_OBJ, spriteSys, spriteMan, narc, 0x60, FALSE, 1, NNS_G2D_VRAM_TYPE_2DMAIN, resId);
         }
-        SpriteSystem_LoadCharResObjFromOpenNarc(spriteSys, spriteMan, narc, 0x5F, FALSE, 1, resId);
+        SpriteSystem_LoadCharResObjFromOpenNarc(spriteSys, spriteMan, narc, 0x5F, FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, resId);
     } else {
         if (cursor->fixedPalette == 0) {
             SpriteSystem_LoadPaletteBufferFromOpenNarc(plttData, PLTTBUF_SUB_OBJ, spriteSys, spriteMan, narc, gOrbitCursorPaletteMembers[palette], FALSE, 1, NNS_G2D_VRAM_TYPE_2DSUB, resId);
         } else {
             SpriteSystem_LoadPaletteBufferFromOpenNarc(plttData, PLTTBUF_SUB_OBJ, spriteSys, spriteMan, narc, 0x60, FALSE, 1, NNS_G2D_VRAM_TYPE_2DSUB, resId);
         }
-        SpriteSystem_LoadCharResObjFromOpenNarc(spriteSys, spriteMan, narc, 0x5F, FALSE, 2, resId);
+        SpriteSystem_LoadCharResObjFromOpenNarc(spriteSys, spriteMan, narc, 0x5F, FALSE, NNS_G2D_VRAM_TYPE_2DSUB, resId);
     }
     SpriteSystem_LoadCellResObjFromOpenNarc(spriteSys, spriteMan, narc, 0x5D, FALSE, resId);
     SpriteSystem_LoadAnimResObjFromOpenNarc(spriteSys, spriteMan, narc, 0x5E, FALSE, resId);

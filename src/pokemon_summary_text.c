@@ -785,7 +785,7 @@ void PokemonSummary_PrintCantForgetHMMessage(PokemonSummary *summary) {
     ScheduleWindowCopyToVram(window);
 }
 
-void PokemonSummary_ShowForgetLabel(PokemonSummary *summary, int show) {
+void PokemonSummary_ShowForgetLabel(PokemonSummary *summary, BOOL show) {
     if (show == TRUE) {
         FillWindowPixelBuffer(&summary->pageWindows[16], 0);
         ReadMsgDataIntoString(summary->msgData, msg_0302_00193, summary->buffer);
@@ -802,7 +802,7 @@ void PokemonSummary_ShowForgetLabel(PokemonSummary *summary, int show) {
     }
 }
 
-void PokemonSummary_ShowSwitchLabel(PokemonSummary *summary, int show) {
+void PokemonSummary_ShowSwitchLabel(PokemonSummary *summary, BOOL show) {
     if (show == TRUE) {
         FillWindowPixelBuffer(&summary->pageWindows[17], 0);
         ReadMsgDataIntoString(summary->msgData, msg_0302_00194, summary->buffer);

@@ -144,9 +144,9 @@ static int PokemonSummary_GetForgetConfirmTouch(PokemonSummary *summary);
 static int PokemonSummary_GetMonButtonTouch(PokemonSummary *summary);
 static int PokemonSummary_GetRibbonTouch(PokemonSummary *summary);
 static int PokemonSummary_ShowForgetConfirm(PokemonSummary *summary);
-static void PokemonSummary_DrawForgetConfirm(PokemonSummary *summary, int show);
+static void PokemonSummary_DrawForgetConfirm(PokemonSummary *summary, BOOL show);
 static void PokemonSummary_ClearForgetButton(PokemonSummary *summary);
-static void PokemonSummary_DrawSwitchButton(PokemonSummary *summary, int value);
+static void PokemonSummary_DrawSwitchButton(PokemonSummary *summary, BOOL show);
 static int PokemonSummary_StartButtonFlash(PokemonSummary *summary, u8 bgId, u8 x, u8 y, u8 width, u8 height, u8 palette, u8 restorePalette, u8 nextState);
 static int PokemonSummary_FlashCancelButton(PokemonSummary *summary, u8 nextState);
 static int PokemonSummary_FlashConfirmButton(PokemonSummary *summary, u8 nextState);
@@ -757,7 +757,7 @@ static int PokemonSummary_HandleInput(PokemonSummary *summary) {
 
 static int PokemonSummary_WaitSlideInMoveInfo(PokemonSummary *summary) {
     if (PokemonSummary_SlideInMoveInfo(summary) == TRUE) {
-        PokemonSummary_DrawSwitchButton(summary, 1);
+        PokemonSummary_DrawSwitchButton(summary, TRUE);
         return POKEMON_SUMMARY_STATE_MOVE_SELECT_INPUT;
     }
     return POKEMON_SUMMARY_STATE_SLIDE_IN_MOVE_INFO;
@@ -797,7 +797,7 @@ static int PokemonSummary_HandleMoveSelectInput(PokemonSummary *summary) {
     }
     if (keys & PAD_BUTTON_B) {
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        PokemonSummary_DrawSwitchButton(summary, 0);
+        PokemonSummary_DrawSwitchButton(summary, FALSE);
         return PokemonSummary_FlashCancelButton(summary, POKEMON_SUMMARY_STATE_SLIDE_OUT_MOVE_INFO);
     }
     index = PokemonSummary_GetMoveSelectTouch(summary);
@@ -808,7 +808,7 @@ static int PokemonSummary_HandleMoveSelectInput(PokemonSummary *summary) {
         }
     } else if (index == 5) {
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        PokemonSummary_DrawSwitchButton(summary, 0);
+        PokemonSummary_DrawSwitchButton(summary, FALSE);
         return PokemonSummary_FlashCancelButton(summary, POKEMON_SUMMARY_STATE_SLIDE_OUT_MOVE_INFO);
     } else if (index != -1 && summary->mon.moves[index] != MOVE_NONE) {
         summary->moveSlot = index;
@@ -821,7 +821,7 @@ static int PokemonSummary_HandleMoveSelectInput(PokemonSummary *summary) {
 
 // State 7: show the swap cursor on the picked move.
 static int PokemonSummary_StartMoveSwap(PokemonSummary *summary) {
-    PokemonSummary_DrawSwitchButton(summary, 0);
+    PokemonSummary_DrawSwitchButton(summary, FALSE);
     PokemonSummary_ShowSwapCursorSprite(summary);
     summary->swapMoveSlot = summary->moveSlot;
     return POKEMON_SUMMARY_STATE_MOVE_SWAP_INPUT;
@@ -846,8 +846,8 @@ static int PokemonSummary_HandleMoveSwapInput(PokemonSummary *summary) {
         return POKEMON_SUMMARY_STATE_MOVE_SWAP_INPUT;
     }
     if (gSystem.newKeys & PAD_BUTTON_A) {
-        PokemonSummary_DrawSwitchButton(summary, 1);
-        Sprite_SetDrawFlag(summary->sprites[10], FALSE);
+        PokemonSummary_DrawSwitchButton(summary, TRUE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], FALSE);
         if (summary->moveSlot != summary->swapMoveSlot) {
             PlaySE(SEQ_SE_DP_DECIDE);
             PokemonSummary_SwapMoves(summary);
@@ -861,20 +861,20 @@ static int PokemonSummary_HandleMoveSwapInput(PokemonSummary *summary) {
     }
     if (gSystem.newKeys & PAD_BUTTON_B) {
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        PokemonSummary_DrawSwitchButton(summary, 1);
-        Sprite_SetDrawFlag(summary->sprites[10], FALSE);
+        PokemonSummary_DrawSwitchButton(summary, TRUE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], FALSE);
         return PokemonSummary_FlashCancelButton(summary, POKEMON_SUMMARY_STATE_MOVE_SELECT_INPUT);
     }
     index = PokemonSummary_GetMoveSwapTouch(summary);
     if (index == 4) {
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        PokemonSummary_DrawSwitchButton(summary, 1);
-        Sprite_SetDrawFlag(summary->sprites[10], FALSE);
+        PokemonSummary_DrawSwitchButton(summary, TRUE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], FALSE);
         return PokemonSummary_FlashCancelButton(summary, POKEMON_SUMMARY_STATE_MOVE_SELECT_INPUT);
     }
     if (index != -1 && summary->mon.moves[index] != MOVE_NONE) {
-        PokemonSummary_DrawSwitchButton(summary, 1);
-        Sprite_SetDrawFlag(summary->sprites[10], FALSE);
+        PokemonSummary_DrawSwitchButton(summary, TRUE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], FALSE);
         if (index != summary->swapMoveSlot) {
             summary->moveSlot = index;
             PlaySE(SEQ_SE_DP_DECIDE);
@@ -920,7 +920,7 @@ static int PokemonSummary_HandleForgetMoveInput(PokemonSummary *summary) {
             return POKEMON_SUMMARY_STATE_START_FADE_OUT;
         }
         if (MoveIsHM(summary->mon.moves[index]) == TRUE && summary->args->moveToLearn != MOVE_NONE) {
-            thunk_Sprite_SetDrawFlag(summary->sprites[18], FALSE);
+            thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_CATEGORY], FALSE);
             PokemonSummary_PrintCantForgetHMMessage(summary);
             return POKEMON_SUMMARY_STATE_FORGET_MOVE_INPUT;
         }
@@ -954,7 +954,7 @@ static int PokemonSummary_HandleForgetMoveInput(PokemonSummary *summary) {
         if (MoveIsHM(summary->mon.moves[index]) == TRUE && summary->args->moveToLearn != MOVE_NONE) {
             PlaySE(SEQ_SE_DP_DECIDE);
             summary->moveSlot = index;
-            thunk_Sprite_SetDrawFlag(summary->sprites[18], FALSE);
+            thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_CATEGORY], FALSE);
             PokemonSummary_UpdateMoveCursorSprite(summary);
             PokemonSummary_PrintCantForgetHMMessage(summary);
             return POKEMON_SUMMARY_STATE_FORGET_MOVE_INPUT;
@@ -987,9 +987,9 @@ static int PokemonSummary_HandleForgetMoveConfirmInput(PokemonSummary *arg) {
     }
     if (keys & PAD_BUTTON_B) {
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        Sprite_SetAnimCtrlSeq(summary->sprites[9], 0);
-        Sprite_SetDrawFlag(summary->sprites[10], FALSE);
-        PokemonSummary_DrawForgetConfirm(summary, 0);
+        Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 0);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], FALSE);
+        PokemonSummary_DrawForgetConfirm(summary, FALSE);
         return PokemonSummary_FlashCancelButton(summary, POKEMON_SUMMARY_STATE_FORGET_MOVE_INPUT);
     }
     input = PokemonSummary_GetForgetConfirmTouch(summary);
@@ -1002,9 +1002,9 @@ static int PokemonSummary_HandleForgetMoveConfirmInput(PokemonSummary *arg) {
             return PokemonSummary_FlashConfirmButton(summary, POKEMON_SUMMARY_STATE_START_FADE_OUT);
         case 1:
             PlaySE(SEQ_SE_GS_GEARCANCEL);
-            Sprite_SetAnimCtrlSeq(summary->sprites[9], 0);
-            Sprite_SetDrawFlag(summary->sprites[10], FALSE);
-            PokemonSummary_DrawForgetConfirm(summary, 0);
+            Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 0);
+            Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], FALSE);
+            PokemonSummary_DrawForgetConfirm(summary, FALSE);
             return PokemonSummary_FlashCancelButton(summary, POKEMON_SUMMARY_STATE_FORGET_MOVE_INPUT);
         default:
             break;
@@ -1029,7 +1029,7 @@ static int PokemonSummary_CloseRibbonList(PokemonSummary *summary) {
     return POKEMON_SUMMARY_STATE_CLOSE_RIBBON_LIST;
 }
 
-// State 12: move the ribbon cursor; the arrows (sprites 64, 65) scroll by a page.
+// State 12: move the ribbon cursor; the arrows scroll by a page.
 static int PokemonSummary_HandleRibbonInput(PokemonSummary *summary) {
     int selection;
 
@@ -1058,16 +1058,16 @@ static int PokemonSummary_HandleRibbonInput(PokemonSummary *summary) {
     case -1:
         break;
     case 9:
-        if (Sprite_GetDrawFlag(summary->sprites[64]) == TRUE) {
+        if (Sprite_GetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP]) == TRUE) {
             PlaySE(SEQ_SE_DP_SELECT);
-            Sprite_SetAnimCtrlSeq(summary->sprites[64], 2);
+            Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP], 2);
             return POKEMON_SUMMARY_STATE_RIBBON_PAGE_UP;
         }
         break;
     case 10:
-        if (Sprite_GetDrawFlag(summary->sprites[65]) == TRUE) {
+        if (Sprite_GetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN]) == TRUE) {
             PlaySE(SEQ_SE_DP_SELECT);
-            Sprite_SetAnimCtrlSeq(summary->sprites[65], 3);
+            Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN], 3);
             return POKEMON_SUMMARY_STATE_RIBBON_PAGE_DOWN;
         }
         break;
@@ -1087,7 +1087,7 @@ static int PokemonSummary_HandleRibbonInput(PokemonSummary *summary) {
 
 // State 13: the up arrow was touched; scroll up a page once its animation ends.
 static int PokemonSummary_WaitRibbonPageUp(PokemonSummary *summary) {
-    if (Sprite_IsAnimated(summary->sprites[64]) == FALSE) {
+    if (Sprite_IsAnimated(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP]) == FALSE) {
         PokemonSummary_MoveRibbonCursor(summary, -9);
         return POKEMON_SUMMARY_STATE_RIBBON_INPUT;
     }
@@ -1096,7 +1096,7 @@ static int PokemonSummary_WaitRibbonPageUp(PokemonSummary *summary) {
 
 // State 14: the same for the down arrow.
 static int PokemonSummary_WaitRibbonPageDown(PokemonSummary *summary) {
-    if (Sprite_IsAnimated(summary->sprites[65]) == FALSE) {
+    if (Sprite_IsAnimated(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN]) == FALSE) {
         PokemonSummary_MoveRibbonCursor(summary, 9);
         return POKEMON_SUMMARY_STATE_RIBBON_INPUT;
     }
@@ -1802,8 +1802,8 @@ void *PokemonSummary_GetShownMon(PokemonSummary *summary) {
 static BOOL PokemonSummary_SlideInMoveInfo(PokemonSummary *summary) {
     switch (summary->unk7BE) {
     case 0:
-        Sprite_SetDrawFlag(summary->sprites[9], FALSE);
-        Sprite_SetAnimCtrlSeq(summary->sprites[9], 0);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], FALSE);
+        Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 0);
         ScheduleSetBgPosText(summary->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_X, 0);
         ScheduleSetBgPosText(summary->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_Y, 0);
         ClearWindowTilemapAndScheduleTransfer(&summary->windows[4]);
@@ -1820,12 +1820,12 @@ static BOOL PokemonSummary_SlideInMoveInfo(PokemonSummary *summary) {
     case 2:
         PokemonSummary_PrintMoveToLearn(summary);
         PokemonSummary_ShowSelectedMoveInfo(summary);
-        thunk_Sprite_SetDrawFlag(summary->sprites[11], TRUE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_1], TRUE);
         PokemonSummary_ShowMonIconSprite(summary);
         if (summary->mon.type1 != summary->mon.type2) {
-            thunk_Sprite_SetDrawFlag(summary->sprites[12], TRUE);
+            thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_2], TRUE);
         }
-        Sprite_SetDrawFlag(summary->sprites[9], TRUE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], TRUE);
         summary->unk7BE = 0;
         return TRUE;
     }
@@ -1836,11 +1836,11 @@ static BOOL PokemonSummary_SlideInMoveInfo(PokemonSummary *summary) {
 static BOOL PokemonSummary_SlideOutMoveInfo(PokemonSummary *summary) {
     switch (summary->unk7BE) {
     case 0:
-        thunk_Sprite_SetDrawFlag(summary->sprites[11], FALSE);
-        thunk_Sprite_SetDrawFlag(summary->sprites[12], FALSE);
-        thunk_Sprite_SetDrawFlag(summary->sprites[18], FALSE);
-        thunk_Sprite_SetDrawFlag(summary->sprites[19], FALSE);
-        Sprite_SetDrawFlag(summary->sprites[9], FALSE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_1], FALSE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_2], FALSE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_CATEGORY], FALSE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MON_ICON], FALSE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], FALSE);
         PokemonSummary_ScheduleMainBg1Transfer(summary);
         PokemonSummary_ClearMoveInfo(summary);
         summary->unk7BE = 1;
@@ -1858,7 +1858,7 @@ static BOOL PokemonSummary_SlideOutMoveInfo(PokemonSummary *summary) {
         ScheduleWindowCopyToVram(&summary->windows[6]);
         ScheduleWindowCopyToVram(&summary->windows[31]);
         ScheduleWindowCopyToVram(&summary->windows[4]);
-        Sprite_SetDrawFlag(summary->sprites[9], TRUE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], TRUE);
         PokemonSummary_UpdatePartySlotSprite(summary);
         summary->unk7BE = 0;
         return TRUE;
@@ -1927,12 +1927,12 @@ static void PokemonSummary_ShowSelectedMoveInfo(PokemonSummary *summary) {
 static void PokemonSummary_ShowMoveInfo(PokemonSummary *summary, int move) {
     if (move == -1) {
         PokemonSummary_ClearMoveInfo(summary);
-        thunk_Sprite_SetDrawFlag(summary->sprites[18], FALSE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_CATEGORY], FALSE);
         return;
     }
     PokemonSummary_PrintMoveInfo_Int(summary, move);
     PokemonSummary_SetMoveCategorySprite_Int(summary, move);
-    thunk_Sprite_SetDrawFlag(summary->sprites[18], TRUE);
+    thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_CATEGORY], TRUE);
 }
 
 static void PokemonSummary_SwapMoves(PokemonSummary *summary) {
@@ -1961,12 +1961,12 @@ static void PokemonSummary_InitForgetMove(PokemonSummary *summary) {
     ScheduleSetBgPosText(summary->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_X, 0);
     PokemonSummary_PrintMoveToLearn(summary);
     PokemonSummary_ShowSelectedMoveInfo(summary);
-    thunk_Sprite_SetDrawFlag(summary->sprites[11], TRUE);
+    thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_1], TRUE);
     PokemonSummary_ShowMonIconSprite(summary);
     if (summary->mon.type1 != summary->mon.type2) {
-        thunk_Sprite_SetDrawFlag(summary->sprites[12], TRUE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_2], TRUE);
     }
-    Sprite_SetDrawFlag(summary->sprites[9], TRUE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], TRUE);
 }
 
 static void PokemonSummary_UpdateForgetMovePage(PokemonSummary *summary) {
@@ -1975,9 +1975,9 @@ static void PokemonSummary_UpdateForgetMovePage(PokemonSummary *summary) {
     PokemonSummary_ShowMonIconSprite(summary);
     if (summary->page == POKEMON_SUMMARY_PAGE_STATS) {
         PokemonSummary_HideConditionSprites(summary);
-        thunk_Sprite_SetDrawFlag(summary->sprites[11], TRUE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_1], TRUE);
         if (summary->mon.type1 != summary->mon.type2) {
-            thunk_Sprite_SetDrawFlag(summary->sprites[12], TRUE);
+            thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_2], TRUE);
         }
         ScheduleSetBgPosText(summary->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_Y, 0);
     } else {
@@ -1992,8 +1992,8 @@ static BOOL PokemonSummary_SlideInRibbonList(PokemonSummary *summary) {
     case 0:
         ScheduleSetBgPosText(summary->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_X, 0);
         ScheduleSetBgPosText(summary->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_Y, 0);
-        Sprite_SetPriority(summary->sprites[9], 3);
-        thunk_Sprite_SetPaletteOverride(summary->sprites[9], 0);
+        Sprite_SetPriority(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 3);
+        thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 0);
         ClearWindowTilemapAndScheduleTransfer(&summary->windows[29]);
         ClearWindowTilemapAndScheduleTransfer(&summary->windows[23]);
         ClearWindowTilemapAndScheduleTransfer(summary->pageWindows);
@@ -2009,7 +2009,7 @@ static BOOL PokemonSummary_SlideInRibbonList(PokemonSummary *summary) {
         }
         break;
     case 2:
-        Sprite_SetDrawFlag(summary->sprites[63], TRUE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_CURSOR], TRUE);
         Sprite_SetDrawFlag(summary->sprites[66], TRUE);
         PokemonSummary_MoveRibbonCursor(summary, 0);
         summary->unk7BE = 0;
@@ -2041,8 +2041,8 @@ static BOOL PokemonSummary_SlideOutRibbonList(PokemonSummary *summary) {
         ScheduleWindowCopyToVram(&summary->windows[29]);
         ScheduleWindowCopyToVram(&summary->windows[23]);
         ScheduleWindowCopyToVram(summary->pageWindows);
-        Sprite_SetPriority(summary->sprites[9], 0);
-        thunk_Sprite_SetPaletteOverride(summary->sprites[9], 2);
+        Sprite_SetPriority(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 0);
+        thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 2);
         summary->unk7BE = 0;
         return TRUE;
     }
@@ -2099,14 +2099,14 @@ static void PokemonSummary_MoveRibbonCursor(PokemonSummary *summary, int directi
     }
     PokemonSummary_PrintRibbonInfo(summary);
     if (summary->ribbonRow != 0) {
-        Sprite_SetDrawFlag(summary->sprites[64], TRUE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP], TRUE);
     } else {
-        Sprite_SetDrawFlag(summary->sprites[64], FALSE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP], FALSE);
     }
     if ((summary->ribbonRow + 1) * 9 < summary->ribbonCount) {
-        Sprite_SetDrawFlag(summary->sprites[65], TRUE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN], TRUE);
     } else {
-        Sprite_SetDrawFlag(summary->sprites[65], FALSE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN], FALSE);
     }
 }
 
@@ -2252,27 +2252,27 @@ static int PokemonSummary_GetRibbonTouch(PokemonSummary *summary) {
 
 // State 8: the move to forget was picked; ask to confirm.
 static int PokemonSummary_ShowForgetConfirm(PokemonSummary *summary) {
-    Sprite_SetAnimCtrlSeq(summary->sprites[9], 1);
-    Sprite_SetDrawFlag(summary->sprites[10], TRUE);
+    Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 1);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], TRUE);
     PokemonSummary_ResetSwapCursorSprite(summary);
-    PokemonSummary_DrawForgetConfirm(summary, 1);
+    PokemonSummary_DrawForgetConfirm(summary, TRUE);
     return POKEMON_SUMMARY_STATE_FORGET_MOVE_CONFIRM_INPUT;
 }
 
-static void PokemonSummary_DrawForgetConfirm(PokemonSummary *summary, int show) {
-    if (show == 1) {
+static void PokemonSummary_DrawForgetConfirm(PokemonSummary *summary, BOOL show) {
+    if (show == TRUE) {
         BgCellManager_DrawCellAt(summary->cellManager, 0, 0, 18);
-        Sprite_SetDrawFlag(summary->sprites[17], FALSE);
-        PokemonSummary_ShowForgetLabel(summary, 1);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TO_LEARN_TYPE], FALSE);
+        PokemonSummary_ShowForgetLabel(summary, TRUE);
         return;
     }
     if (summary->args->moveToLearn != MOVE_NONE) {
         BgCellManager_DrawCellAt(summary->cellManager, 1, 0, 18);
-        Sprite_SetDrawFlag(summary->sprites[17], TRUE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TO_LEARN_TYPE], TRUE);
     } else {
         PokemonSummary_ClearForgetButton(summary);
     }
-    PokemonSummary_ShowForgetLabel(summary, 0);
+    PokemonSummary_ShowForgetLabel(summary, FALSE);
 }
 
 static void PokemonSummary_ClearForgetButton(PokemonSummary *summary) {
@@ -2280,17 +2280,17 @@ static void PokemonSummary_ClearForgetButton(PokemonSummary *summary) {
     ScheduleBgTilemapBufferTransfer(summary->bgConfig, GF_BG_LYR_SUB_2);
 }
 
-static void PokemonSummary_DrawSwitchButton(PokemonSummary *summary, int value) {
+static void PokemonSummary_DrawSwitchButton(PokemonSummary *summary, BOOL show) {
     if (summary->args->mode == POKEMON_SUMMARY_MODE_NO_MOVE_SWAP) {
         return;
     }
-    if (value == 1) {
+    if (show == TRUE) {
         BgCellManager_DrawCellAt(summary->cellManager, 2, 1, 16);
-        PokemonSummary_ShowSwitchLabel(summary, 1);
+        PokemonSummary_ShowSwitchLabel(summary, TRUE);
         return;
     }
     BgCellManager_DrawCellAt(summary->cellManager, 3, 1, 16);
-    PokemonSummary_ShowSwitchLabel(summary, 0);
+    PokemonSummary_ShowSwitchLabel(summary, FALSE);
 }
 
 // Starts flashing a touched button (a tilemap rect of bgId, palette then restorePalette) for PokemonSummary_FlashButton,
@@ -2376,8 +2376,8 @@ static void PokemonSummary_FreeSpriteSystem(PokemonSummary *summary) {
 static void PokemonSummary_UpdateSpriteAnims(PokemonSummary *summary) {
     Sprite_UpdateAnim(summary->sprites[21], FX32_ONE);
     Sprite_UpdateAnim(summary->sprites[22], FX32_ONE);
-    Sprite_UpdateAnim(summary->sprites[64], FX32_ONE);
-    Sprite_UpdateAnim(summary->sprites[65], FX32_ONE);
+    Sprite_UpdateAnim(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP], FX32_ONE);
+    Sprite_UpdateAnim(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN], FX32_ONE);
 }
 
 static void PokemonSummary_CreateSprites(PokemonSummary *summary) {
@@ -2385,18 +2385,18 @@ static void PokemonSummary_CreateSprites(PokemonSummary *summary) {
         summary->sprites[i] = SpriteSystem_CreateSpriteFromResourceHeader(summary->spriteSystem, summary->spriteManager, &sPokemonSummarySpriteTemplates[i]);
     }
     PokemonSummary_LoadTypeAndIconSprites(summary);
-    Sprite_SetDrawFlag(summary->sprites[10], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[41], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[42], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[43], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[44], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[45], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_CHANGES], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_CHANGES + 1], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_CHANGES + 2], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_CHANGES + 3], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_CHANGES + 4], FALSE);
     Sprite_SetDrawFlag(summary->sprites[46], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[47], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[48], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[49], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[50], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[51], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_COOL], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_BEAUTY], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_CUTE], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_SMART], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_TOUGH], FALSE);
     Sprite_SetDrawFlag(summary->sprites[67], FALSE);
     Sprite_SetDrawFlag(summary->sprites[68], FALSE);
     Sprite_SetDrawFlag(summary->sprites[69], FALSE);
@@ -2404,16 +2404,16 @@ static void PokemonSummary_CreateSprites(PokemonSummary *summary) {
     Sprite_SetDrawFlag(summary->sprites[71], FALSE);
     PokemonSummary_HidePokeathlonStars(summary);
     PokemonSummary_InitShinyLeafSprites(summary);
-    Sprite_SetDrawFlag(summary->sprites[72], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_POKERUS], FALSE);
 }
 
-// Sprite 9 marks the shown Pokemon's party slot (not for a box Pokemon).
+// The cursor marks the shown Pokemon's party slot (not for a box Pokemon).
 static void PokemonSummary_UpdatePartySlotSprite(PokemonSummary *summary) {
     if (summary->args->monDataType != POKEMON_SUMMARY_BOX_MON_ARRAY) {
-        Sprite_SetPositionXY(summary->sprites[9], sPokemonSummaryPartySlotPositions[summary->args->partySlot][0], sPokemonSummaryPartySlotPositions[summary->args->partySlot][1]);
-        Sprite_SetAnimCtrlSeq(summary->sprites[9], 2);
+        Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], sPokemonSummaryPartySlotPositions[summary->args->partySlot][0], sPokemonSummaryPartySlotPositions[summary->args->partySlot][1]);
+        Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 2);
     } else {
-        Sprite_SetDrawFlag(summary->sprites[9], FALSE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], FALSE);
     }
 }
 
@@ -2434,21 +2434,20 @@ static void PokemonSummary_LoadBallSprite(PokemonSummary *summary) {
     SpriteSystem_ReplacePlttResObj(summary->spriteSystem, summary->spriteManager, NARC_a_1_6_2, sPokemonSummaryBallPalettes[summary->mon.pokeball] + 49, FALSE, 6);
 }
 
-// Sprite 20 is the status condition icon, sprite 72 the Pokerus mark (shown in its place while infected).
 static void PokemonSummary_UpdateStatusSprite(PokemonSummary *summary) {
     if (summary->mon.status == PARTY_MON_STATUS_ICON_OK) {
-        Sprite_SetDrawFlag(summary->sprites[20], FALSE);
-        Sprite_SetDrawFlag(summary->sprites[72], FALSE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_STATUS], FALSE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_POKERUS], FALSE);
         return;
     }
     if (summary->mon.status != PARTY_MON_STATUS_ICON_UNSET) {
-        Sprite_SetDrawFlag(summary->sprites[72], FALSE);
-        Sprite_SetDrawFlag(summary->sprites[20], TRUE);
-        Sprite_SetAnimCtrlSeq(summary->sprites[20], summary->mon.status);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_POKERUS], FALSE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_STATUS], TRUE);
+        Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_STATUS], summary->mon.status);
         return;
     }
-    Sprite_SetDrawFlag(summary->sprites[72], TRUE);
-    Sprite_SetDrawFlag(summary->sprites[20], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_POKERUS], TRUE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_STATUS], FALSE);
 }
 
 static void PokemonSummary_LoadTypeAndIconSprites(PokemonSummary *summary) {
@@ -2457,15 +2456,15 @@ static void PokemonSummary_LoadTypeAndIconSprites(PokemonSummary *summary) {
     for (i = 0; i < MAX_MON_MOVES; i++) {
         u16 move = summary->mon.moves[i];
         if (move != MOVE_NONE) {
-            PokemonSummary_SetTypeSprite(summary, (u8)(i + 13), (u8)(i + 5), (u8)GetMoveAttr(move, MOVEATTR_TYPE));
+            PokemonSummary_SetTypeSprite(summary, (u8)(i + POKEMON_SUMMARY_SPRITE_MOVE_TYPES), (u8)(i + 5), (u8)GetMoveAttr(move, MOVEATTR_TYPE));
         }
     }
     PokemonSummary_LoadShownMonIcon(summary);
 }
 
-// Type sprites: 11 and 12 the Pokemon's types, 13..16 its moves', 17 the move to learn; 18 the move category.
+// Shows the type sprites (and the move category sprite) of the current page.
 static void PokemonSummary_UpdateTypeSprites(PokemonSummary *summary) {
-    for (u16 i = 11; i <= 19; i++) {
+    for (u16 i = POKEMON_SUMMARY_SPRITE_TYPE_1; i <= POKEMON_SUMMARY_SPRITE_MON_ICON; i++) {
         thunk_Sprite_SetDrawFlag(summary->sprites[i], FALSE);
     }
     if (summary->mon.isEgg) {
@@ -2473,57 +2472,55 @@ static void PokemonSummary_UpdateTypeSprites(PokemonSummary *summary) {
     }
     switch (summary->page) {
     case POKEMON_SUMMARY_PAGE_INFO:
-        thunk_Sprite_SetDrawFlag(summary->sprites[11], TRUE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_1], TRUE);
         if (summary->mon.type1 == summary->mon.type2) {
-            Sprite_SetPositionXY(summary->sprites[11], 108, 48);
+            Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_1], 108, 48);
         } else {
-            Sprite_SetPositionXY(summary->sprites[11], 91, 48);
-            thunk_Sprite_SetDrawFlag(summary->sprites[12], TRUE);
-            Sprite_SetPositionXY(summary->sprites[12], 125, 48);
+            Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_1], 91, 48);
+            thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_2], TRUE);
+            Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_2], 125, 48);
         }
         break;
     case POKEMON_SUMMARY_PAGE_STATS:
         for (u16 i = 0; i < MAX_MON_MOVES; i++) {
             if (summary->mon.moves[i]) {
                 u32 type = GetMoveAttr(summary->mon.moves[i], MOVEATTR_TYPE);
-                PokemonSummary_SetTypeSprite(summary, (u8)(i + 13), (u8)(i + 5), (u8)type);
-                thunk_Sprite_SetDrawFlag(summary->sprites[i + 13], TRUE);
-                Sprite_SetPositionXY(summary->sprites[i + 13], 24, (s16)(32 * i + 16));
+                PokemonSummary_SetTypeSprite(summary, (u8)(i + POKEMON_SUMMARY_SPRITE_MOVE_TYPES), (u8)(i + 5), (u8)type);
+                thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TYPES + i], TRUE);
+                Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TYPES + i], 24, (s16)(32 * i + 16));
             }
         }
         if (summary->args->moveToLearn) {
             u32 type = GetMoveAttr(summary->args->moveToLearn, MOVEATTR_TYPE);
-            PokemonSummary_SetTypeSprite(summary, 17, 9, (u8)type);
-            thunk_Sprite_SetDrawFlag(summary->sprites[17], TRUE);
-            Sprite_SetPositionXY(summary->sprites[17], 24, 160);
+            PokemonSummary_SetTypeSprite(summary, POKEMON_SUMMARY_SPRITE_MOVE_TO_LEARN_TYPE, 9, (u8)type);
+            thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TO_LEARN_TYPE], TRUE);
+            Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TO_LEARN_TYPE], 24, 160);
         } else {
-            thunk_Sprite_SetDrawFlag(summary->sprites[17], FALSE);
+            thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TO_LEARN_TYPE], FALSE);
         }
-        Sprite_SetPositionXY(summary->sprites[11], 200, 24);
-        Sprite_SetPositionXY(summary->sprites[12], 234, 24);
-        Sprite_SetPositionXY(summary->sprites[18], 232, 40);
+        Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_1], 200, 24);
+        Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_TYPE_2], 234, 24);
+        Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_CATEGORY], 232, 40);
         break;
     }
 }
 
-// Sprites 79..103: 5 stars for each of the 5 Pokeathlon stats; 104..108: each stat's Aprijuice modifier.
 static void PokemonSummary_HidePokeathlonStars(PokemonSummary *summary) {
     int i;
     for (i = 0; i < 25; i++) {
-        Sprite_SetDrawFlag(summary->sprites[79 + i], FALSE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_POKEATHLON_STARS + i], FALSE);
     }
     for (i = 0; i < 5; i++) {
-        Sprite_SetDrawFlag(summary->sprites[104 + i], FALSE);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_POKEATHLON_MODIFIERS + i], FALSE);
     }
 }
 
-// Sprites 109..114: the 5 shiny leaves and the crown.
 static void PokemonSummary_InitShinyLeafSprites(PokemonSummary *summary) {
     int i;
     for (i = 0; i < 6; i++) {
-        Sprite_SetDrawFlag(summary->sprites[109 + i], FALSE);
-        Sprite_SetAnimActiveFlag(summary->sprites[109 + i], TRUE);
-        Sprite_SetDrawPriority(summary->sprites[109 + i], 6 - i);
+        Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY_LEAVES + i], FALSE);
+        Sprite_SetAnimActiveFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY_LEAVES + i], TRUE);
+        Sprite_SetDrawPriority(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY_LEAVES + i], 6 - i);
     }
 }
 
@@ -2600,11 +2597,11 @@ static void PokemonSummary_UpdatePokeathlonStars(PokemonSummary *summary) {
             Party_GetMonAprijuiceModifiers(summary->args->party, &data.aprijuice, summary->args->partySlot);
         }
         CalcBoxmonPokeathlonStars((struct PokeathlonPerformanceStars *)&data.stars, mon, (s8 *)&data.aprijuice, HEAP_ID_19);
-        PokemonSummary_SetPokeathlonStatStars(summary->sprites, 79, data.performance.stats[4].hi, data.stars.stat4, data.stars.color[4], (s8)data.aprijuice.stats[4], 104);
-        PokemonSummary_SetPokeathlonStatStars(summary->sprites, 84, data.performance.stats[0].hi, data.stars.stat0, data.stars.color[0], (s8)data.aprijuice.stats[0], 105);
-        PokemonSummary_SetPokeathlonStatStars(summary->sprites, 89, data.performance.stats[2].hi, data.stars.stat2, data.stars.color[2], (s8)data.aprijuice.stats[2], 106);
-        PokemonSummary_SetPokeathlonStatStars(summary->sprites, 94, data.performance.stats[1].hi, data.stars.stat1, data.stars.color[1], (s8)data.aprijuice.stats[1], 107);
-        PokemonSummary_SetPokeathlonStatStars(summary->sprites, 99, data.performance.stats[3].hi, data.stars.stat3, data.stars.color[3], (s8)data.aprijuice.stats[3], 108);
+        PokemonSummary_SetPokeathlonStatStars(summary->sprites, POKEMON_SUMMARY_SPRITE_POKEATHLON_STARS, data.performance.stats[4].hi, data.stars.stat4, data.stars.color[4], (s8)data.aprijuice.stats[4], POKEMON_SUMMARY_SPRITE_POKEATHLON_MODIFIERS);
+        PokemonSummary_SetPokeathlonStatStars(summary->sprites, POKEMON_SUMMARY_SPRITE_POKEATHLON_STARS + 5, data.performance.stats[0].hi, data.stars.stat0, data.stars.color[0], (s8)data.aprijuice.stats[0], POKEMON_SUMMARY_SPRITE_POKEATHLON_MODIFIERS + 1);
+        PokemonSummary_SetPokeathlonStatStars(summary->sprites, POKEMON_SUMMARY_SPRITE_POKEATHLON_STARS + 10, data.performance.stats[2].hi, data.stars.stat2, data.stars.color[2], (s8)data.aprijuice.stats[2], POKEMON_SUMMARY_SPRITE_POKEATHLON_MODIFIERS + 2);
+        PokemonSummary_SetPokeathlonStatStars(summary->sprites, POKEMON_SUMMARY_SPRITE_POKEATHLON_STARS + 15, data.performance.stats[1].hi, data.stars.stat1, data.stars.color[1], (s8)data.aprijuice.stats[1], POKEMON_SUMMARY_SPRITE_POKEATHLON_MODIFIERS + 3);
+        PokemonSummary_SetPokeathlonStatStars(summary->sprites, POKEMON_SUMMARY_SPRITE_POKEATHLON_STARS + 20, data.performance.stats[3].hi, data.stars.stat3, data.stars.color[3], (s8)data.aprijuice.stats[3], POKEMON_SUMMARY_SPRITE_POKEATHLON_MODIFIERS + 4);
     } else {
         PokemonSummary_HidePokeathlonStars(summary);
     }
@@ -2614,30 +2611,30 @@ static void PokemonSummary_UpdateShinyLeafSprites(PokemonSummary *summary) {
     int i;
     if (summary->page == POKEMON_SUMMARY_PAGE_INFO) {
         if (summary->mon.shinyLeaves[5]) {
-            Sprite_SetDrawFlag(summary->sprites[114], TRUE);
+            Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY_LEAF_CROWN], TRUE);
             for (i = 0; i < 5; i++) {
-                Sprite_SetDrawFlag(summary->sprites[109 + i], FALSE);
+                Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY_LEAVES + i], FALSE);
             }
         } else {
             for (i = 0; i < 5; i++) {
                 if (summary->mon.shinyLeaves[i]) {
-                    Sprite_SetDrawFlag(summary->sprites[109 + i], TRUE);
+                    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY_LEAVES + i], TRUE);
                 } else {
-                    Sprite_SetDrawFlag(summary->sprites[109 + i], FALSE);
+                    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY_LEAVES + i], FALSE);
                 }
             }
-            Sprite_SetDrawFlag(summary->sprites[114], FALSE);
+            Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY_LEAF_CROWN], FALSE);
         }
     } else {
         for (i = 0; i < 6; i++) {
-            Sprite_SetDrawFlag(summary->sprites[109 + i], FALSE);
+            Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY_LEAVES + i], FALSE);
         }
     }
 }
 
 static void PokemonSummary_SetMonTypeSprites(PokemonSummary *summary) {
-    PokemonSummary_SetTypeSprite(summary, 11, 3, summary->mon.type1);
-    PokemonSummary_SetTypeSprite(summary, 12, 4, summary->mon.type2);
+    PokemonSummary_SetTypeSprite(summary, POKEMON_SUMMARY_SPRITE_TYPE_1, 3, summary->mon.type1);
+    PokemonSummary_SetTypeSprite(summary, POKEMON_SUMMARY_SPRITE_TYPE_2, 4, summary->mon.type2);
 }
 
 static void PokemonSummary_SetTypeSprite(PokemonSummary *summary, u8 sprite, u8 resId, u8 type) {
@@ -2647,12 +2644,12 @@ static void PokemonSummary_SetTypeSprite(PokemonSummary *summary, u8 sprite, u8 
     thunk_Sprite_SetPaletteOverride(summary->sprites[sprite], TypeIcon_GetPalette(type) + 3);
 }
 
-// Finds the move type sprite (13..16) shown in the given move slot row; *slot becomes its index.
+// Finds the move type sprite shown in the given move slot row; *slot becomes its index.
 static void PokemonSummary_FindMoveTypeSprite(PokemonSummary *summary, u8 *slot, s16 *x, s16 *y) {
     s16 targetY = (s16)((*slot << 5) + 16);
     s16 i;
     for (i = 0; i < MAX_MON_MOVES; i++) {
-        Sprite_GetPositionXY(summary->sprites[13 + i], x, y);
+        Sprite_GetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TYPES + i], x, y);
         if (targetY == *y) {
             *slot = i;
             return;
@@ -2665,8 +2662,8 @@ static void PokemonSummary_SwapMoveTypeSprites(PokemonSummary *summary, u8 slotA
     s16 posB[2];
     PokemonSummary_FindMoveTypeSprite(summary, &slotA, &posA[1], &posA[0]);
     PokemonSummary_FindMoveTypeSprite(summary, &slotB, &posB[1], &posB[0]);
-    Sprite_SetPositionXY(summary->sprites[slotA + 13], posB[1], posB[0]);
-    Sprite_SetPositionXY(summary->sprites[slotB + 13], posA[1], posA[0]);
+    Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TYPES + slotA], posB[1], posB[0]);
+    Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TYPES + slotB], posA[1], posA[0]);
 }
 
 static void PokemonSummary_SetMoveCategorySprite(PokemonSummary *summary, u16 move) {
@@ -2674,48 +2671,46 @@ static void PokemonSummary_SetMoveCategorySprite(PokemonSummary *summary, u16 mo
     NarcId narc = MoveCategoryIcon_GetNarc();
     int charFile = MoveCategoryIcon_GetCharFile(category);
     SpriteSystem_ReplaceCharResObj(summary->spriteSystem, summary->spriteManager, narc, charFile, TRUE, 10);
-    thunk_Sprite_SetPaletteOverride(summary->sprites[18], MoveCategoryIcon_GetPalette(category) + 3);
+    thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_CATEGORY], MoveCategoryIcon_GetPalette(category) + 3);
 }
 
-// Sprite 9 is also the move cursor on the moves page; slot 4 is the move to learn, 5 the cancel button.
+// Move slot 4 is the move to learn, 5 the cancel button.
 static void PokemonSummary_UpdateMoveCursorSprite(PokemonSummary *summary) {
     u32 slot = summary->moveSlot;
     switch (slot) {
     case 4:
         if (summary->args->mode == POKEMON_SUMMARY_MODE_FORGET_MOVE) {
-            Sprite_SetPositionXY(summary->sprites[9], 68, (s16)(slot * 32 + 40));
+            Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 68, (s16)(slot * 32 + 40));
         } else {
-            Sprite_SetPositionXY(summary->sprites[9], 68, (s16)(slot * 32 + 24));
+            Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 68, (s16)(slot * 32 + 24));
         }
-        Sprite_SetAnimCtrlSeq(summary->sprites[9], 0);
+        Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 0);
         break;
     case 5:
         if (summary->args->mode == POKEMON_SUMMARY_MODE_FORGET_MOVE) {
-            Sprite_SetPositionXY(summary->sprites[9], 220, 176);
-            Sprite_SetAnimCtrlSeq(summary->sprites[9], 3);
+            Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 220, 176);
+            Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 3);
         }
         break;
     default:
-        Sprite_SetPositionXY(summary->sprites[9], 68, (s16)(slot * 32 + 24));
-        Sprite_SetAnimCtrlSeq(summary->sprites[9], 0);
+        Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 68, (s16)(slot * 32 + 24));
+        Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 0);
         break;
     }
 }
 
-// Sprite 10 stays on the first move picked for a swap.
 static void PokemonSummary_ShowSwapCursorSprite(PokemonSummary *summary) {
     s16 pos[2];
-    Sprite_GetPositionXY(summary->sprites[9], &pos[1], &pos[0]);
-    Sprite_SetPositionXY(summary->sprites[10], pos[1], pos[0]);
-    Sprite_SetDrawFlag(summary->sprites[10], TRUE);
+    Sprite_GetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], &pos[1], &pos[0]);
+    Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], pos[1], pos[0]);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], TRUE);
 }
 
 static void PokemonSummary_ResetSwapCursorSprite(PokemonSummary *summary) {
-    Sprite_SetPositionXY(summary->sprites[10], 68, 168);
-    Sprite_SetAnimCtrlSeq(summary->sprites[10], 0);
+    Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], 68, 168);
+    Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_SWAP_CURSOR], 0);
 }
 
-// Sprites 29..40: the sheen sparkles, one per 1/12 of the sheen.
 static void PokemonSummary_InitSheenSparkles(PokemonSummary *summary) {
     u32 i;
     summary->sparkleState = 0;
@@ -2728,31 +2723,30 @@ static void PokemonSummary_InitSheenSparkles(PokemonSummary *summary) {
     } else {
         summary->numSparkles = (12 * summary->mon.contestStats[5]) >> 8;
     }
-    for (i = 29; i <= 40; i++) {
+    for (i = POKEMON_SUMMARY_SPRITE_SHEEN_SPARKLES; i <= POKEMON_SUMMARY_SPRITE_SHEEN_SPARKLES + 11; i++) {
         Sprite_SetDrawFlag(summary->sprites[i], FALSE);
         Sprite_SetAnimationFrame(summary->sprites[i], 0);
     }
 }
 
-// Sprites 23..28: the markings; 52: the shiny star; 53: the cured Pokerus mark.
 static void PokemonSummary_UpdateMarkingSprites(PokemonSummary *summary) {
     u32 i;
     for (i = 0; i < 6; i++) {
         if (summary->mon.markings & (1 << i)) {
-            Sprite_SetAnimCtrlSeq(summary->sprites[23 + i], 1);
+            Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_MARKINGS + i], 1);
         } else {
-            Sprite_SetAnimCtrlSeq(summary->sprites[23 + i], 0);
+            Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_MARKINGS + i], 0);
         }
     }
     if (summary->mon.shiny == TRUE && summary->mon.isEgg == FALSE) {
-        thunk_Sprite_SetDrawFlag(summary->sprites[52], TRUE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY], TRUE);
     } else {
-        thunk_Sprite_SetDrawFlag(summary->sprites[52], FALSE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_SHINY], FALSE);
     }
     if (summary->mon.pokerus == POKEMON_SUMMARY_POKERUS_CURED) {
-        thunk_Sprite_SetDrawFlag(summary->sprites[53], TRUE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_POKERUS_CURED], TRUE);
     } else {
-        thunk_Sprite_SetDrawFlag(summary->sprites[53], FALSE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_POKERUS_CURED], FALSE);
     }
 }
 
@@ -2760,7 +2754,7 @@ static void PokemonSummary_ShowConditionChangeSprites(PokemonSummary *summary) {
     u8 i;
     for (i = 0; i < 5; i++) {
         if ((summary->unk7BE & (1 << i)) != 0) {
-            Sprite_SetDrawFlag(summary->sprites[41 + i], TRUE);
+            Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_CHANGES + i], TRUE);
         }
     }
 }
@@ -2782,17 +2776,16 @@ static void PokemonSummary_LoadMonIcon(PokemonSummary *summary, void *mon, int s
     Heap_Free(file);
 }
 
-// Sprite 19: the shown Pokemon's icon.
 static void PokemonSummary_LoadShownMonIcon(PokemonSummary *summary) {
     void *mon = PokemonSummary_GetShownMon(summary);
     int palette;
-    PokemonSummary_LoadMonIcon(summary, mon, 19);
+    PokemonSummary_LoadMonIcon(summary, mon, POKEMON_SUMMARY_SPRITE_MON_ICON);
     palette = GetMonIconPaletteEx(summary->mon.species, summary->mon.form, summary->mon.isEgg);
-    thunk_Sprite_SetPaletteOverride(summary->sprites[19], palette + 12);
-    Sprite_SetFlipMode_Int(summary->sprites[19], 1 ^ GetMonBaseStat_HandleAlternateForm(summary->mon.species, summary->mon.form, BASE_FLIP));
+    thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_MON_ICON], palette + 12);
+    Sprite_SetFlipMode_Int(summary->sprites[POKEMON_SUMMARY_SPRITE_MON_ICON], 1 ^ GetMonBaseStat_HandleAlternateForm(summary->mon.species, summary->mon.form, BASE_FLIP));
 }
 
-// Sprites 73..78: the party's icons (only the shown Pokemon's when not viewing a party).
+// The party's icons (only the shown Pokemon's when not viewing a party).
 static void PokemonSummary_LoadPartyIcons(PokemonSummary *summary) {
     void *mon = PokemonSummary_GetShownMon(summary);
     int count;
@@ -2813,32 +2806,32 @@ static void PokemonSummary_LoadPartyIcons(PokemonSummary *summary) {
         switch (summary->args->monDataType) {
         case POKEMON_SUMMARY_MON_ARRAY:
             mon = PokemonSummary_GetShownMon(summary);
-            thunk_Sprite_SetPaletteOverride(summary->sprites[73 + i], Pokemon_GetIconPalette(mon) + 12);
+            thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS + i], Pokemon_GetIconPalette(mon) + 12);
             break;
         case POKEMON_SUMMARY_BOX_MON_ARRAY:
-            thunk_Sprite_SetPaletteOverride(summary->sprites[73 + i], Boxmon_GetIconPalette(mon) + 12);
+            thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS + i], Boxmon_GetIconPalette(mon) + 12);
             break;
         case POKEMON_SUMMARY_PARTY:
             mon = Party_GetMonByIndex(summary->args->party, i);
-            thunk_Sprite_SetPaletteOverride(summary->sprites[73 + i], Pokemon_GetIconPalette(mon) + 12);
+            thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS + i], Pokemon_GetIconPalette(mon) + 12);
             break;
         }
-        PokemonSummary_LoadMonIcon(summary, mon, i + 73);
+        PokemonSummary_LoadMonIcon(summary, mon, POKEMON_SUMMARY_SPRITE_PARTY_ICONS + i);
     }
     for (; i < PARTY_SIZE; i++) {
-        thunk_Sprite_SetDrawFlag(summary->sprites[73 + i], FALSE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS + i], FALSE);
     }
 }
 
 static void PokemonSummary_SetBoxMonIconPos(PokemonSummary *summary) {
     PokemonSummaryArgs *args = summary->args;
     if (args->monDataType == POKEMON_SUMMARY_BOX_MON_ARRAY) {
-        Sprite_SetPositionXY(summary->sprites[73], 215, 80);
-        Sprite_SetPositionXY(summary->sprites[74], 215, 80);
+        Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS], 215, 80);
+        Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS + 1], 215, 80);
     }
 }
 
-// A box Pokemon's icon alternates between sprites 73 and 74.
+// A box Pokemon's icon alternates between the first two party icon sprites.
 static void PokemonSummary_AlternateBoxMonIcon(PokemonSummary *summary) {
     void *mon;
     if (summary->args->monDataType != POKEMON_SUMMARY_BOX_MON_ARRAY) {
@@ -2846,26 +2839,26 @@ static void PokemonSummary_AlternateBoxMonIcon(PokemonSummary *summary) {
     }
     mon = PokemonSummary_GetShownMon(summary);
     if (summary->boxIconSprite == 0) {
-        thunk_Sprite_SetDrawFlag(summary->sprites[73], TRUE);
-        thunk_Sprite_SetDrawFlag(summary->sprites[74], FALSE);
-        PokemonSummary_LoadMonIcon(summary, mon, 73);
-        thunk_Sprite_SetPaletteOverride(summary->sprites[73], Boxmon_GetIconPalette(mon) + 12);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS], TRUE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS + 1], FALSE);
+        PokemonSummary_LoadMonIcon(summary, mon, POKEMON_SUMMARY_SPRITE_PARTY_ICONS);
+        thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS], Boxmon_GetIconPalette(mon) + 12);
     } else {
-        thunk_Sprite_SetDrawFlag(summary->sprites[73], FALSE);
-        thunk_Sprite_SetDrawFlag(summary->sprites[74], TRUE);
-        PokemonSummary_LoadMonIcon(summary, mon, 74);
-        thunk_Sprite_SetPaletteOverride(summary->sprites[74], Boxmon_GetIconPalette(mon) + 12);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS], FALSE);
+        thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS + 1], TRUE);
+        PokemonSummary_LoadMonIcon(summary, mon, POKEMON_SUMMARY_SPRITE_PARTY_ICONS + 1);
+        thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_PARTY_ICONS + 1], Boxmon_GetIconPalette(mon) + 12);
     }
     summary->boxIconSprite ^= 1;
 }
 
 static void PokemonSummary_ShowMonIconSprite(PokemonSummary *summary) {
     if (summary->page == POKEMON_SUMMARY_PAGE_STATS) {
-        Sprite_SetPositionXY(summary->sprites[19], 160, 16);
+        Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_MON_ICON], 160, 16);
     } else {
-        Sprite_SetPositionXY(summary->sprites[19], 32, 68);
+        Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_MON_ICON], 32, 68);
     }
-    thunk_Sprite_SetDrawFlag(summary->sprites[19], TRUE);
+    thunk_Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_MON_ICON], TRUE);
 }
 
 // A condition chart corner: from the chart's center towards its tip, by the contest stat.
@@ -2881,51 +2874,49 @@ static s16 PokemonSummary_GetConditionPoint(int stat, s16 tip, s16 center) {
     return center + (s16)delta;
 }
 
-// Sprites 47..51: the corners of the condition chart (cool, beauty, cute, smart, tough).
 static void PokemonSummary_ShowConditionSprites(PokemonSummary *summary) {
     s16 x;
     x = PokemonSummary_GetConditionPoint(summary->mon.contestStats[0], 88, 88);
-    Sprite_SetPositionXY(summary->sprites[47], x, PokemonSummary_GetConditionPoint(summary->mon.contestStats[0], 49, 73));
+    Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_COOL], x, PokemonSummary_GetConditionPoint(summary->mon.contestStats[0], 49, 73));
     x = PokemonSummary_GetConditionPoint(summary->mon.contestStats[1], 110, 88);
-    Sprite_SetPositionXY(summary->sprites[48], x, PokemonSummary_GetConditionPoint(summary->mon.contestStats[1], 65, 73));
+    Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_BEAUTY], x, PokemonSummary_GetConditionPoint(summary->mon.contestStats[1], 65, 73));
     x = PokemonSummary_GetConditionPoint(summary->mon.contestStats[2], 103, 88);
-    Sprite_SetPositionXY(summary->sprites[49], x, PokemonSummary_GetConditionPoint(summary->mon.contestStats[2], 92, 73));
+    Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_CUTE], x, PokemonSummary_GetConditionPoint(summary->mon.contestStats[2], 92, 73));
     x = PokemonSummary_GetConditionPoint(summary->mon.contestStats[3], 72, 87);
-    Sprite_SetPositionXY(summary->sprites[50], x, PokemonSummary_GetConditionPoint(summary->mon.contestStats[3], 92, 73));
+    Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_SMART], x, PokemonSummary_GetConditionPoint(summary->mon.contestStats[3], 92, 73));
     x = PokemonSummary_GetConditionPoint(summary->mon.contestStats[4], 65, 87);
-    Sprite_SetPositionXY(summary->sprites[51], x, PokemonSummary_GetConditionPoint(summary->mon.contestStats[4], 65, 73));
-    Sprite_SetDrawFlag(summary->sprites[47], TRUE);
-    Sprite_SetDrawFlag(summary->sprites[48], TRUE);
-    Sprite_SetDrawFlag(summary->sprites[49], TRUE);
-    Sprite_SetDrawFlag(summary->sprites[50], TRUE);
-    Sprite_SetDrawFlag(summary->sprites[51], TRUE);
+    Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_TOUGH], x, PokemonSummary_GetConditionPoint(summary->mon.contestStats[4], 65, 73));
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_COOL], TRUE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_BEAUTY], TRUE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_CUTE], TRUE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_SMART], TRUE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_TOUGH], TRUE);
 }
 
 static void PokemonSummary_HideConditionSprites(PokemonSummary *summary) {
-    Sprite_SetDrawFlag(summary->sprites[47], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[48], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[49], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[50], FALSE);
-    Sprite_SetDrawFlag(summary->sprites[51], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_COOL], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_BEAUTY], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_CUTE], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_SMART], FALSE);
+    Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_CONDITION_TOUGH], FALSE);
 }
 
-// Sprites 54..62: the 9 ribbons of the current ribbon row page; 63 the ribbon cursor.
 static void PokemonSummary_SetRibbonSprite(PokemonSummary *summary, int ribbon, int index) {
     int attr = GetRibbonAttr_Int(ribbon, RIBBONDAT_NCGR);
     SpriteSystem_ReplaceCharResObj(summary->spriteSystem, summary->spriteManager, NARC_a_0_3_9, attr, FALSE, index + 25);
     attr = GetRibbonAttr_Int(ribbon, RIBBONDAT_NCLR);
-    thunk_Sprite_SetPaletteOverride(summary->sprites[index + 54], attr + 7);
+    thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBONS + index], attr + 7);
 }
 
 static void PokemonSummary_ShowRibbonSprites(PokemonSummary *summary) {
     u16 i;
-    for (i = 54; i <= 66; i++) {
+    for (i = POKEMON_SUMMARY_SPRITE_RIBBONS; i <= 66; i++) {
         Sprite_SetDrawFlag(summary->sprites[i], FALSE);
     }
     if (summary->page == POKEMON_SUMMARY_PAGE_RIBBONS) {
         for (i = 0; i < 9; i++) {
             if (i < summary->ribbonCount) {
-                Sprite_SetDrawFlag(summary->sprites[54 + i], TRUE);
+                Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBONS + i], TRUE);
                 PokemonSummary_SetRibbonSprite(summary, PokemonSummary_GetRibbonAt(summary, (u8)i), (u8)i);
             }
         }
@@ -2937,10 +2928,10 @@ static void PokemonSummary_UpdateRibbonSprites(PokemonSummary *summary) {
     u16 i;
     for (i = 0; i < 9; i++) {
         if (summary->ribbonRow * 9 + i < summary->ribbonCount) {
-            Sprite_SetDrawFlag(summary->sprites[54 + i], TRUE);
+            Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBONS + i], TRUE);
             PokemonSummary_SetRibbonSprite(summary, PokemonSummary_GetRibbonAt(summary, (u8)i), (u8)i);
         } else {
-            Sprite_SetDrawFlag(summary->sprites[54 + i], FALSE);
+            Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBONS + i], FALSE);
         }
     }
 }
@@ -2949,7 +2940,7 @@ static void PokemonSummary_UpdateRibbonCursorSprite(PokemonSummary *summary) {
     int cursor = summary->ribbonCursor;
     int column = cursor % 3;
     int row = cursor / 3;
-    Sprite_SetPositionXY(summary->sprites[63], (s16)(column * 32 + 32), (s16)(row * 40 + 24));
+    Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_CURSOR], (s16)(column * 32 + 32), (s16)(row * 40 + 24));
 }
 
 static void PokemonSummary_AnimateRibbonSprite66(PokemonSummary *summary) {

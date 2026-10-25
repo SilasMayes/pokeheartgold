@@ -246,15 +246,15 @@ void PokemonSummary_CreatePokepic(PokemonSummary *summary) {
     summary->pokepicManager = PokepicManager_Create(HEAP_ID_19);
     mon = PokemonSummary_GetShownMon(summary);
     if (summary->args->monDataType == POKEMON_SUMMARY_BOX_MON_ARRAY) {
-        GetBoxmonSpriteCharAndPlttNarcIds(&pokepicTemplate, mon, 2, FALSE);
+        GetBoxmonSpriteCharAndPlttNarcIds(&pokepicTemplate, mon, MON_PIC_FACING_FRONT, FALSE);
     } else {
-        GetPokemonSpriteCharAndPlttNarcIds(&pokepicTemplate, mon, 2);
+        GetPokemonSpriteCharAndPlttNarcIds(&pokepicTemplate, mon, MON_PIC_FACING_FRONT);
     }
     NARC_ReadPokepicAnimScript(summary->pokepicAnimNarc, summary->pokepicAnimScript, summary->mon.species, 1);
     summary->pokepicAnimReverseX = 0;
     summary->pokepic = PokepicManager_CreatePokepic(summary->pokepicManager, &pokepicTemplate, 0xd0, 0x68, 0, 0, summary->pokepicAnimScript, NULL);
-    Pokepic_SetAttr(summary->pokepic, 6, 1);
-    Pokepic_SetAttr(summary->pokepic, 0x23, 0);
+    Pokepic_SetAttr(summary->pokepic, POKEPIC_VANISHED, 1);
+    Pokepic_SetAttr(summary->pokepic, POKEPIC_HFLIP, 0);
 }
 
 void PokemonSummary_StartPokepicAnim(PokemonSummary *summary) {

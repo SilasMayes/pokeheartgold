@@ -19,7 +19,39 @@
 
 // Pokemon summary screen work.
 
-#define POKEMON_SUMMARY_SPRITE_COUNT 115
+// summary->sprites, in the order of the sprite templates
+enum PokemonSummarySprite {
+    POKEMON_SUMMARY_SPRITE_CURSOR = 9,                  // the party slot marker; the move cursor on the moves page
+    POKEMON_SUMMARY_SPRITE_SWAP_CURSOR = 10,            // stays on the first move picked for a swap
+    POKEMON_SUMMARY_SPRITE_TYPE_1 = 11,
+    POKEMON_SUMMARY_SPRITE_TYPE_2 = 12,
+    POKEMON_SUMMARY_SPRITE_MOVE_TYPES = 13,             // one per move slot
+    POKEMON_SUMMARY_SPRITE_MOVE_TO_LEARN_TYPE = 17,
+    POKEMON_SUMMARY_SPRITE_MOVE_CATEGORY = 18,
+    POKEMON_SUMMARY_SPRITE_MON_ICON = 19,
+    POKEMON_SUMMARY_SPRITE_STATUS = 20,
+    POKEMON_SUMMARY_SPRITE_MARKINGS = 23,               // 6
+    POKEMON_SUMMARY_SPRITE_SHEEN_SPARKLES = 29,         // 12, one per 1/12 of the sheen
+    POKEMON_SUMMARY_SPRITE_CONDITION_CHANGES = 41,      // 5, cool..tough
+    POKEMON_SUMMARY_SPRITE_CONDITION_COOL = 47,         // the corners of the condition chart
+    POKEMON_SUMMARY_SPRITE_CONDITION_BEAUTY = 48,
+    POKEMON_SUMMARY_SPRITE_CONDITION_CUTE = 49,
+    POKEMON_SUMMARY_SPRITE_CONDITION_SMART = 50,
+    POKEMON_SUMMARY_SPRITE_CONDITION_TOUGH = 51,
+    POKEMON_SUMMARY_SPRITE_SHINY = 52,
+    POKEMON_SUMMARY_SPRITE_POKERUS_CURED = 53,
+    POKEMON_SUMMARY_SPRITE_RIBBONS = 54,                // 9, the current ribbon row page
+    POKEMON_SUMMARY_SPRITE_RIBBON_CURSOR = 63,
+    POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP = 64,
+    POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN = 65,
+    POKEMON_SUMMARY_SPRITE_POKERUS = 72,                // shown in place of the status icon while infected
+    POKEMON_SUMMARY_SPRITE_PARTY_ICONS = 73,            // 6; a box Pokemon's icon alternates between the first two
+    POKEMON_SUMMARY_SPRITE_POKEATHLON_STARS = 79,       // 5 stars for each of the 5 Pokeathlon stats
+    POKEMON_SUMMARY_SPRITE_POKEATHLON_MODIFIERS = 104,  // each stat's Aprijuice modifier
+    POKEMON_SUMMARY_SPRITE_SHINY_LEAVES = 109,          // 5
+    POKEMON_SUMMARY_SPRITE_SHINY_LEAF_CROWN = 114,
+    POKEMON_SUMMARY_SPRITE_COUNT,
+};
 
 enum PokemonSummaryState {
     POKEMON_SUMMARY_STATE_START_FADE_IN,
@@ -201,8 +233,8 @@ void PokemonSummary_PrintMoveToLearn(PokemonSummary *summary);
 void PokemonSummary_ScheduleMainBg1Transfer(PokemonSummary *summary);
 void PokemonSummary_PrintSwappedMoves(PokemonSummary *summary);
 void PokemonSummary_PrintCantForgetHMMessage(PokemonSummary *summary);
-void PokemonSummary_ShowForgetLabel(PokemonSummary *summary, int show);
-void PokemonSummary_ShowSwitchLabel(PokemonSummary *summary, int show);
+void PokemonSummary_ShowForgetLabel(PokemonSummary *summary, BOOL show);
+void PokemonSummary_ShowSwitchLabel(PokemonSummary *summary, BOOL show);
 void PokemonSummary_PrintConditionChangeMessage(PokemonSummary *summary, int result);
 
 int PokemonSummary_FlashButton(PokemonSummary *summary);

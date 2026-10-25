@@ -434,8 +434,8 @@ ApricornRecord *ApricornRecord_New(SaveApricornBox *box, PlayerProfile *profile,
     record->gender = PlayerProfile_GetTrainerGender(profile);
     record->language = PlayerProfile_GetLanguage(profile);
     record->version = PlayerProfile_GetVersion(profile);
-    StringFillEOS(record->name, 8);
-    CopyU16StringArrayN(record->name, PlayerProfile_GetNamePtr(profile), 7);
+    StringFillEOS(record->name, PLAYER_NAME_LENGTH + 1);
+    CopyU16StringArrayN(record->name, PlayerProfile_GetNamePtr(profile), PLAYER_NAME_LENGTH);
     ApricornBox_GetJuice(box, APRICORN_JUICE_OWN, &record->data);
     if (value > 0xFFFF) {
         record->data.fanCount = 0xFFFF;

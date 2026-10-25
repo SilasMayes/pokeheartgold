@@ -985,7 +985,7 @@ static void Sound_PrepareBGMChange(int scene, u16 seqNo, u16 fadeOutFrames, int 
 }
 
 static void GF_SndSetAllocatableChannelForBGMPlayer(u32 channels) {
-    NNS_SndPlayerSetAllocatableChannel(7, channels);
+    NNS_SndPlayerSetAllocatableChannel(PLAYER_BGM, channels);
 }
 
 void Sound_SetBGMPlayerChannels(int mode) {
