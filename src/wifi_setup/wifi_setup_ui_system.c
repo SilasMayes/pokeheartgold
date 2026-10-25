@@ -438,7 +438,7 @@ void WifiSetupFade_Free(void) {
 
 u8 WifiSetupFade_IsActive(int screen) {
     WifiSetupFade *fade;
-    if (screen == 1) {
+    if (screen == WIFI_SETUP_SCREEN_SUB) {
         fade = &gWifiSetupFades[0];
     } else {
         fade = &gWifiSetupFades[1];
@@ -446,18 +446,18 @@ u8 WifiSetupFade_IsActive(int screen) {
     return fade->active;
 }
 
-int WifiSetupFade_Start(int kind, int screen, int planes, int duration) {
+BOOL WifiSetupFade_Start(int kind, int screen, int planes, int duration) {
     WifiSetupBrightnessTable start = gWifiSetupFadeTables[2];
     WifiSetupFade *fade;
-    if (screen == 1) {
+    if (screen == WIFI_SETUP_SCREEN_SUB) {
         fade = &gWifiSetupFades[0];
     } else {
         fade = &gWifiSetupFades[1];
     }
     if (fade->active) {
-        return 0;
+        return FALSE;
     }
-    if (screen == 1) {
+    if (screen == WIFI_SETUP_SCREEN_SUB) {
         G2S_SetBlendBrightness(planes, start.values[kind]);
     } else {
         G2_SetBlendBrightness(planes, start.values[kind]);
@@ -467,7 +467,7 @@ int WifiSetupFade_Start(int kind, int screen, int planes, int duration) {
     fade->kind = kind;
     fade->duration = duration;
     fade->active = 1;
-    return 1;
+    return TRUE;
 }
 
 static void WifiSetupFade_Task(WifiSetupTask *task, void *arg) {
@@ -502,16 +502,16 @@ static void WifiSetupFade_Task(WifiSetupTask *task, void *arg) {
     WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_VBLANK, task);
 }
 
-int WifiSetupFade_StartDelay(int duration) {
+BOOL WifiSetupFade_StartDelay(int duration) {
     WifiSetupFade *fade = gWifiSetupFades;
     if (fade->active) {
-        return 0;
+        return FALSE;
     }
     fade->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupFade_DelayTask, fade, 0xC8);
     fade->counter = 0;
     fade->duration = duration;
     fade->active = 1;
-    return 1;
+    return TRUE;
 }
 
 static void WifiSetupFade_DelayTask(WifiSetupTask *task, void *arg) {
@@ -561,7 +561,7 @@ WifiSetupCanvas *WifiSetupText_AllocObjCanvas(int screen, int width, int height,
     *numObjs = NNSi_G2dCalcRequiredOBJ(width, height);
     {
         u32 tile = charNo;
-        u32 base = screen == 1 ? 0x6600000 : 0x6400000;
+        u32 base = screen == WIFI_SETUP_SCREEN_SUB ? HW_DB_OBJ_VRAM : HW_OBJ_VRAM;
         NNS_G2dCharCanvasInitForOBJ1D(&canvas->charCanvas, (void *)(base + (tile << 7)), width, height, 4);
     }
     canvas->charCanvas.vtable->pClear(&canvas->charCanvas, 0);
@@ -585,7 +585,7 @@ WifiSetupCanvas *WifiSetupText_InitBgCanvas(int screen, int font) {
     WifiSetupCanvas *canvas = &gWifiSetupText->bgCanvases[screen];
     void *screenBuf;
     canvas->charBuf = WifiSetupHeap_AllocZeroed(width * height * 32, 32);
-    if (screen == 1) {
+    if (screen == WIFI_SETUP_SCREEN_SUB) {
         G2S_BG0Mosaic(FALSE);
         G2S_SetBG0Control(GX_BG_SCRSIZE_TEXT_256x256, GX_BG_COLORMODE_16, GX_BG_SCRBASE_0x6000, GX_BG_CHARBASE_0x00000, GX_BG_EXTPLTT_01);
     } else {
@@ -595,7 +595,7 @@ WifiSetupCanvas *WifiSetupText_InitBgCanvas(int screen, int font) {
     NNS_G2dCharCanvasInitForBG(&canvas->charCanvas, canvas->charBuf, width, height, 4);
     {
         WifiSetupTextState *text = gWifiSetupText;
-        int sub = screen == 1;
+        int sub = screen == WIFI_SETUP_SCREEN_SUB;
         canvas->textCanvas.pCanvas = &canvas->charCanvas;
         canvas->textCanvas.pFont = &text->fonts[font];
         canvas->textCanvas.hSpace = 1;
@@ -751,7 +751,7 @@ void WifiSetup_RectFromPosSize(const WifiSetupPoint *pos, const WifiSetupPoint *
 }
 
 void WifiSetupDisplay_ShowPlanes(int screen, int planes) {
-    if (screen == 1) {
+    if (screen == WIFI_SETUP_SCREEN_SUB) {
         GXS_SetVisiblePlane(planes | GXS_GetVisiblePlane13());
     } else {
         GX_SetVisiblePlane(planes | GX_GetVisiblePlane13());
@@ -759,7 +759,7 @@ void WifiSetupDisplay_ShowPlanes(int screen, int planes) {
 }
 
 void WifiSetupDisplay_HidePlanes(int screen, int planes) {
-    if (screen == 1) {
+    if (screen == WIFI_SETUP_SCREEN_SUB) {
         GXS_SetVisiblePlane(~planes & GXS_GetVisiblePlane13());
     } else {
         GX_SetVisiblePlane(~planes & GX_GetVisiblePlane13());
@@ -767,7 +767,7 @@ void WifiSetupDisplay_HidePlanes(int screen, int planes) {
 }
 
 void WifiSetupDisplay_SetWindowRect(int screen, int window, WifiSetupRect *rect) {
-    if (screen == 1) {
+    if (screen == WIFI_SETUP_SCREEN_SUB) {
         if (window == 0) {
             G2S_SetWnd0Position(rect->left, rect->top, rect->right, rect->bottom);
         } else {
@@ -786,21 +786,21 @@ void WifiSetupDisplay_SetWindowRect(int screen, int window, WifiSetupRect *rect)
 void WifiSetupDisplay_SetWindowPlanes(int screen, int window, int planes, BOOL effect) {
     switch (window) {
     case 0:
-        if (screen == 1) {
+        if (screen == WIFI_SETUP_SCREEN_SUB) {
             G2S_SetWnd0InsidePlane(planes, effect);
         } else {
             G2_SetWnd0InsidePlane(planes, effect);
         }
         break;
     case 1:
-        if (screen == 1) {
+        if (screen == WIFI_SETUP_SCREEN_SUB) {
             G2S_SetWnd1InsidePlane(planes, effect);
         } else {
             G2_SetWnd1InsidePlane(planes, effect);
         }
         break;
     case 2:
-        if (screen == 1) {
+        if (screen == WIFI_SETUP_SCREEN_SUB) {
             u32 tmp = (reg_G2S_DB_WINOUT & ~0x3F00) | (planes << 8);
             if (effect) {
                 tmp |= 0x2000;
@@ -815,7 +815,7 @@ void WifiSetupDisplay_SetWindowPlanes(int screen, int window, int planes, BOOL e
         }
         break;
     case 3:
-        if (screen == 1) {
+        if (screen == WIFI_SETUP_SCREEN_SUB) {
             G2S_SetWndOutsidePlane(planes, effect);
         } else {
             G2_SetWndOutsidePlane(planes, effect);

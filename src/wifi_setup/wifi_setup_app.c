@@ -23,7 +23,7 @@ static u8 WifiSetupApp_GetLanguageCode(void);
 static void WifiSetupTransfer_CancelTask(WifiSetupTask *task, void *arg);
 static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg);
 
-// Starts the setup client: requests settings 0 and 1 with the setup key, one connection attempt and
+// Starts the setup client: requests settings WEP64 and WEP128 with the setup key, one connection attempt and
 // one receive attempt with default timing, from this console's MAC address.
 void WifiSetupApp_StartAossClient(void) {
     WifiSetupRequestKey key;
@@ -33,7 +33,7 @@ void WifiSetupApp_StartAossClient(void) {
     key.tag = 'P';
     key.length = 12;
     MI_CpuCopy8(gWifiSetupAossClientName, key.data, 12);
-    gWifiSetupClient.request->requestMask = 3;
+    gWifiSetupClient.request->requestMask = WIFI_SETUP_AOSS_SETTING_WEP64 | WIFI_SETUP_AOSS_SETTING_WEP128;
     gWifiSetupClient.request->key = key;
     gWifiSetupClient.request->connectRetries = 1;
     gWifiSetupClient.request->connectDelay = -1;
@@ -49,8 +49,8 @@ void WifiSetupApp_StartAossClient(void) {
 // Stops the setup client; with `apply`, the settings it received are taken over.
 void WifiSetupApp_StopAossClient(BOOL apply) {
     WifiSetup_Cleanup();
-    if (apply && gWifiSetupClient.request->error == 0 && gWifiSetupClient.done == TRUE) {
-        WifiSetupConnections_SetFromInfo(gWifiSetupClient.request->result);
+    if (apply && gWifiSetupClient.request->error == WIFI_SETUP_AOSS_REQUEST_OK && gWifiSetupClient.done == TRUE) {
+        WifiSetupConnections_SetFromInfo(&gWifiSetupClient.request->result);
     }
     WifiSetupHeap_FreeAndClear(&ov13_0224F4C8);
 }
@@ -62,7 +62,7 @@ int WifiSetupApp_PollAossClient(void) {
         return WIFI_SETUP_CLIENT_DONE;
     }
     error = gWifiSetupClient.request->error;
-    if (error == 1 || (u8)(error + 253) <= 2) { // 1, 3-5
+    if (error == 1 || (u8)(error + 253) <= 2) { // not found yet, or a step timed out (1, 3-5)
         return WIFI_SETUP_CLIENT_BUSY;
     }
     return WIFI_SETUP_CLIENT_FAILED;

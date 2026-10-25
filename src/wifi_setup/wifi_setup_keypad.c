@@ -58,7 +58,7 @@ void WifiSetupKeypad_Create(void) {
     label[1] = (u16)i;
     for (; i < 4; i++) {
         int j;
-        gWifiSetupKeypad->rows[i] = WifiSetupText_AllocObjCanvas(0, 12, 4, 0, &numObjs, 0);
+        gWifiSetupKeypad->rows[i] = WifiSetupText_AllocObjCanvas(WIFI_SETUP_SCREEN_MAIN, 12, 4, 0, &numObjs, 0);
         labelIndex = firstLabel;
         box[0] = 0;
         for (j = 0; j < 3; j++) {
@@ -67,7 +67,7 @@ void WifiSetupKeypad_Create(void) {
             box[0] += 32;
             labelIndex++;
         }
-        gWifiSetupKeypad->rowBlocks[i] = WifiSetupOamBlock_Alloc(0, numObjs, 0);
+        gWifiSetupKeypad->rowBlocks[i] = WifiSetupOamBlock_Alloc(WIFI_SETUP_SCREEN_MAIN, numObjs, 0);
         firstLabel += 3;
     }
     gWifiSetupKeypad->cursor = WifiSetupOamTemplate_AllocBlock(0, 68, 1);

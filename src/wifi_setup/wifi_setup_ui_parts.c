@@ -84,22 +84,22 @@ void WifiSetupButtonBar_SetSelected(int button) {
     gWifiSetupButtonBar->selected = button;
 }
 
-int WifiSetupButtonBar_IsNotClosing(void) {
+BOOL WifiSetupButtonBar_IsNotClosing(void) {
     if (!gWifiSetupButtonBar) {
-        return 1;
+        return TRUE;
     }
-    if (gWifiSetupButtonBar->closing == 0) {
-        return 1;
+    if (!gWifiSetupButtonBar->closing) {
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 void WifiSetupButtonBar_Unlock(void) {
-    gWifiSetupButtonBar->locked = 0;
+    gWifiSetupButtonBar->locked = FALSE;
 }
 
 void WifiSetupButtonBar_Lock(void) {
-    gWifiSetupButtonBar->locked = 1;
+    gWifiSetupButtonBar->locked = TRUE;
 }
 
 static void WifiSetupButtonBar_SetY(int y) {
@@ -135,13 +135,13 @@ static void WifiSetupButtonBar_WaitTask(WifiSetupTask *task, void *arg) {
 static void WifiSetupButtonBar_InputTask(WifiSetupTask *task, void *arg) {
     WifiSetupRect rect;
     int count = gWifiSetupButtonBarButtonCounts[gWifiSetupButtonBar->type], i;
-    if (gWifiSetupButtonBar->locked == 0) {
+    if (!gWifiSetupButtonBar->locked) {
         if (gWifiSetupButtonBar->selected != WIFI_SETUP_SELECTED_NONE) {
             return;
         }
         for (i = 0; i < count; i++) {
             WifiSetup_RectFromPosSize((WifiSetupPoint *)(gWifiSetupButtonBarButtonX + (gWifiSetupButtonBarPositions + gWifiSetupButtonBar->type * 2)[i] * 2), (WifiSetupPoint *)gWifiSetupButtonBarButtonSize, &rect);
-            if (WifiSetupInput_IsTouchPressed(&rect) != 0) {
+            if (WifiSetupInput_IsTouchPressed(&rect)) {
                 int templ;
                 GXOamAttr *oam;
                 if (gWifiSetupButtonBar->pressTask) {
@@ -218,31 +218,31 @@ void WifiSetupMessage_Reset(void) {
 
 // Shows message index of the message bank, with digit written at character pos when pos >= 0, in the window at
 // the top of the top screen.
-int WifiSetupMessage_Show(int index, int pos, int digit) {
+BOOL WifiSetupMessage_Show(int index, int pos, int digit) {
     WifiSetupCanvas *canvas;
     u16 *text;
     u32 flags;
     if (gWifiSetupMessageShown) {
-        return 0;
+        return FALSE;
     }
     WifiSetup_LoadGraphics(sStr_CharJtNullNscL, GXS_LoadBG0Scr);
     G2S_SetBG0Offset(0, 402);
-    canvas = WifiSetupText_InitBgCanvas(1, 0);
+    canvas = WifiSetupText_InitBgCanvas(WIFI_SETUP_SCREEN_SUB, 0);
     text = WifiSetupText_GetStringWithDigit(gWifiSetupTextBank, index, pos, digit);
     flags = WifiSetup_GetTextFlags();
     WifiSetupText_DrawInRect(canvas, 20, 0, 216, 64, 2, flags, text);
     WifiSetupText_MarkDirty(canvas);
     gWifiSetupMessageShown = 1;
-    return 1;
+    return TRUE;
 }
 
-int WifiSetupMessage_Hide(void) {
+BOOL WifiSetupMessage_Hide(void) {
     if (!gWifiSetupMessageShown) {
-        return 0;
+        return FALSE;
     }
-    WifiSetupText_FreeBgCanvas(1);
+    WifiSetupText_FreeBgCanvas(WIFI_SETUP_SCREEN_SUB);
     gWifiSetupMessageShown = 0;
-    return 1;
+    return TRUE;
 }
 
 // Language variant of a file name: character 5 is replaced by the language letter, unless it is 'x'
@@ -273,18 +273,18 @@ void WifiSetup_LoadGraphics(char *path, void (*load)(const void *, u32, u32)) {
 
 void WifiSetupBanner_Show(int kind) {
     int type;
-    WifiSetupApp_GetTransition(&type, 0);
-    if (type == 1) {
+    WifiSetupApp_GetTransition(&type, NULL);
+    if (type == WIFI_SETUP_BANNER_OPEN) {
         WifiSetupBanner_Open(kind);
-    } else if (type == 2) {
+    } else if (type == WIFI_SETUP_BANNER_CHANGE) {
         WifiSetupBanner_SetKind(kind);
     }
 }
 
 void WifiSetupButtonBar_Show(int type) {
     int barType;
-    WifiSetupApp_GetTransition(0, &barType);
-    if (barType == 1) {
+    WifiSetupApp_GetTransition(NULL, &barType);
+    if (barType == WIFI_SETUP_BUTTON_BAR_CREATE) {
         WifiSetupButtonBar_Create(type);
     }
 }
@@ -292,7 +292,7 @@ void WifiSetupButtonBar_Show(int type) {
 void WifiSetup_PrintMessage(int message) {
     void *canvas, *text;
     u32 flags;
-    canvas = WifiSetupText_InitBgCanvas(0, 0);
+    canvas = WifiSetupText_InitBgCanvas(WIFI_SETUP_SCREEN_MAIN, 0);
     text = WifiSetupText_GetString(gWifiSetupTextBank, message);
     flags = WifiSetup_GetTextFlags();
     WifiSetupText_DrawInRect(canvas, 13, 40, 230, 112, 2, flags, text);
@@ -303,7 +303,7 @@ void WifiSetup_PrintMessageWithText(const u16 *str, int message) {
     void *canvas, *text;
     u32 flags;
     int x, y;
-    canvas = WifiSetupText_InitBgCanvas(0, 0);
+    canvas = WifiSetupText_InitBgCanvas(WIFI_SETUP_SCREEN_MAIN, 0);
     text = WifiSetupText_GetString(gWifiSetupTextBank, message);
     flags = WifiSetup_GetTextFlags();
     WifiSetupText_DrawInRect(canvas, 13, 60, 230, 94, 2, flags, text);
@@ -487,7 +487,7 @@ void WifiSetupKeyboard_Create(void) {
     for (; i < 3; i++) {
         offset = 0;
         for (j = 0; j < 4; j++) {
-            gWifiSetupKeyboard->rows[i][j] = WifiSetupText_AllocObjCanvas(0, 28, 2, 0, &numObjs, 0);
+            gWifiSetupKeyboard->rows[i][j] = WifiSetupText_AllocObjCanvas(WIFI_SETUP_SCREEN_MAIN, 28, 2, 0, &numObjs, 0);
             box.x = 0;
             {
                 int index = 0;
@@ -500,7 +500,7 @@ void WifiSetupKeyboard_Create(void) {
                 }
             }
             if (i == 0) {
-                gWifiSetupKeyboard->rowBlocks[j] = WifiSetupOamBlock_Alloc(0, numObjs, 1);
+                gWifiSetupKeyboard->rowBlocks[j] = WifiSetupOamBlock_Alloc(WIFI_SETUP_SCREEN_MAIN, numObjs, 1);
             }
             offset += 12;
         }

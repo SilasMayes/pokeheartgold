@@ -20,7 +20,7 @@ void WifiSetupBgScreen_Destroy(void) {
 }
 
 void WifiSetupBgScreen_MarkDirty(void) {
-    gWifiSetupBgScreen.screen->dirty = 1;
+    gWifiSetupBgScreen.screen->dirty = TRUE;
 }
 
 void WifiSetupBgScreen_CopyRect(u16 *src, int offset, int width, int rows) {
@@ -34,12 +34,12 @@ void WifiSetupBgScreen_CopyRect(u16 *src, int offset, int width, int rows) {
 }
 
 void WifiSetupBgScreen_UpdateTask(WifiSetupTask *task, void *arg) {
-    if (gWifiSetupBgScreen.screen->dirty == 0) {
+    if (!gWifiSetupBgScreen.screen->dirty) {
         return;
     }
     DC_FlushRange(gWifiSetupBgScreen.screen->data, 0x600);
     GX_LoadBG2Scr(gWifiSetupBgScreen.screen->data, 0, 0x600);
-    gWifiSetupBgScreen.screen->dirty = 0;
+    gWifiSetupBgScreen.screen->dirty = FALSE;
 }
 
 void WifiSetupPalette_LoadRow(u8 *src, int index, int palette) {

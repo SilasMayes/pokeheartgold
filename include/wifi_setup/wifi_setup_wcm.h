@@ -29,6 +29,8 @@
 #define WIFI_SETUP_WCM_EVENT_CONNECT_FAILED    13
 #define WIFI_SETUP_WCM_EVENT_DISCONNECTED      14
 #define WIFI_SETUP_WCM_EVENT_DISCONNECT_FAILED 15
+#define WIFI_SETUP_WCM_EVENT_CONNECT_TIMEOUT   18 // sent by the access point connection's timeout alarm
+#define WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT    19 // sent by the access point search's timeout alarm
 #define WIFI_SETUP_WCM_EVENT_CLEANED_UP        20
 
 // Event passed to the WCM callback
@@ -75,11 +77,11 @@ int WCM_LockApList(int lock);
 int WCM_CountApList(void);
 void *WCM_PointApList(u16 index);
 s32 WifiSetup_NotifyStatus(s32 arg);
-int WifiSetupWcm_StartCleanup(void);
-int WifiSetupWcm_StartDisconnect(void);
-int WifiSetupWcm_StopSearch(void);
+BOOL WifiSetupWcm_StartCleanup(void);
+BOOL WifiSetupWcm_StartDisconnect(void);
+BOOL WifiSetupWcm_StopSearch(void);
 int WifiSetupWcm_CopyApList(u8 *dst, int max);
-int WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int option);
-int WifiSetupWcm_StartConnect(void *ap, void *key, int option);
+BOOL WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int option);
+BOOL WifiSetupWcm_StartConnect(void *ap, void *key, int option);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_WCM_H

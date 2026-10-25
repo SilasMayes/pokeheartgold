@@ -2339,7 +2339,7 @@ static void WifiSetupBanner_StopTask(WifiSetupTask *task, void *arg) {
 }
 
 void WifiSetupBanner_Close(void) {
-    gWifiSetupBanner.banner->closing = 1;
+    gWifiSetupBanner.banner->closing = TRUE;
     gWifiSetupBanner.banner->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupBanner_SlideOutTask4, 0, 0x78);
 }
 
@@ -2701,14 +2701,14 @@ void WifiSetupDialog_Open(int message, int kind, u8 fade, int digitPos, int digi
         WifiSetupOamBlock_SetPosition(gWifiSetupDialog->buttons[i], -1, 0x100, 0);
         WifiSetupOamBlock_SetPriority(gWifiSetupDialog->buttons[i], -1, 0);
     }
-    gWifiSetupDialog->canvas = WifiSetupText_AllocObjCanvas(0, 0x20, 0xC, 1, &numObjs, 0);
-    gWifiSetupDialog->textBlock = WifiSetupOamBlock_Alloc(0, numObjs, 0);
+    gWifiSetupDialog->canvas = WifiSetupText_AllocObjCanvas(WIFI_SETUP_SCREEN_MAIN, 0x20, 0xC, 1, &numObjs, 0);
+    gWifiSetupDialog->textBlock = WifiSetupOamBlock_Alloc(WIFI_SETUP_SCREEN_MAIN, numObjs, 0);
     WifiSetupText_DrawInRect(gWifiSetupDialog->canvas, 0, 0, gWifiSetupDialogTextSizes[kind].x, gWifiSetupDialogTextSizes[kind].y, 2, WifiSetup_GetTextFlags(), text);
     WifiSetupText_ShowObjCanvas(gWifiSetupDialog->canvas, 0x100, 0, gWifiSetupDialog->textBlock, 0);
-    WifiSetupDisplay_SetWindowPlanes(0, 0, GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_BG3 | GX_WND_PLANEMASK_OBJ, 0);
-    WifiSetupDisplay_SetWindowPlanes(0, 1, GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_BG3 | GX_WND_PLANEMASK_OBJ, tbl.planes[gWifiSetupDialog->kind]);
-    WifiSetupDisplay_SetWindowPlanes(0, 3, GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_BG3 | GX_WND_PLANEMASK_OBJ, 1);
-    WifiSetupDisplay_SetWindowRect(0, 1, &gWifiSetupDialogWindowRect);
+    WifiSetupDisplay_SetWindowPlanes(WIFI_SETUP_SCREEN_MAIN, 0, GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_BG3 | GX_WND_PLANEMASK_OBJ, 0);
+    WifiSetupDisplay_SetWindowPlanes(WIFI_SETUP_SCREEN_MAIN, 1, GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_BG3 | GX_WND_PLANEMASK_OBJ, tbl.planes[gWifiSetupDialog->kind]);
+    WifiSetupDisplay_SetWindowPlanes(WIFI_SETUP_SCREEN_MAIN, 3, GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_BG3 | GX_WND_PLANEMASK_OBJ, 1);
+    WifiSetupDisplay_SetWindowRect(WIFI_SETUP_SCREEN_MAIN, 1, &gWifiSetupDialogWindowRect);
     WifiSetupDialog_SetY(0xC0);
     GX_SetVisibleWnd(GX_WNDMASK_W0 | GX_WNDMASK_W1);
     if (fade) {
@@ -2824,7 +2824,7 @@ static void WifiSetupDialog_SetY(int y) {
         bottom = 0xC0;
     }
     ((void (*)(int, int, int, int, WifiSetupRect *))WifiSetup_SetRect)(left, top, right, bottom, &win);
-    WifiSetupDisplay_SetWindowRect(0, 0, &win);
+    WifiSetupDisplay_SetWindowRect(WIFI_SETUP_SCREEN_MAIN, 0, &win);
 }
 
 static void WifiSetupDialog_ClipBlock(WifiSetupOamBlock *obj, int y) {

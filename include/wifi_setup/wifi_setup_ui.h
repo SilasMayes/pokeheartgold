@@ -8,6 +8,20 @@
 // UI framework of the access-point setup screens: heap, files, lists and pools, OAM and VRAM allocators, fades,
 // text canvases, input and a prioritised task scheduler.
 
+// Screen argument of the display, text, OAM and fade helpers
+enum WifiSetupScreen {
+    WIFI_SETUP_SCREEN_MAIN,
+    WIFI_SETUP_SCREEN_SUB,
+};
+
+// Fades started by WifiSetupFade_Start (see gWifiSetupFadeTables)
+enum WifiSetupFadeKind {
+    WIFI_SETUP_FADE_IN_FROM_BLACK,
+    WIFI_SETUP_FADE_OUT_TO_BLACK,
+    WIFI_SETUP_FADE_IN_FROM_WHITE,
+    WIFI_SETUP_FADE_OUT_TO_WHITE,
+};
+
 // Direction of a cursor move on the setup screens
 enum WifiSetupCursorDirection {
     WIFI_SETUP_CURSOR_LEFT,
@@ -299,8 +313,8 @@ void *WifiSetupPool_Pop(WifiSetupPool *pool);
 void WifiSetupFade_Init(void);
 void WifiSetupFade_Free(void);
 u8 WifiSetupFade_IsActive(int screen);
-int WifiSetupFade_Start(int kind, int screen, int planes, int duration);
-int WifiSetupFade_StartDelay(int duration);
+BOOL WifiSetupFade_Start(int kind, int screen, int planes, int duration);
+BOOL WifiSetupFade_StartDelay(int duration);
 
 void WifiSetupText_Init(void);
 void WifiSetupText_Free(void);

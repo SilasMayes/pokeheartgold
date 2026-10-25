@@ -57,18 +57,18 @@ void WifiSetupAddressEntry_LoadGraphics(void) {
 }
 
 void WifiSetupAddressEntry_FadeIn(void) {
-    WifiSetupFade_Start(2, 1, GX_BLEND_PLANEMASK_BG0, 8);
-    WifiSetupFade_Start(2, 0, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
-    WifiSetupDisplay_ShowPlanes(1, GX_PLANEMASK_BG0);
-    WifiSetupDisplay_ShowPlanes(0, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
+    WifiSetupFade_Start(WIFI_SETUP_FADE_IN_FROM_WHITE, WIFI_SETUP_SCREEN_SUB, GX_BLEND_PLANEMASK_BG0, 8);
+    WifiSetupFade_Start(WIFI_SETUP_FADE_IN_FROM_WHITE, WIFI_SETUP_SCREEN_MAIN, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
+    WifiSetupDisplay_ShowPlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
+    WifiSetupDisplay_ShowPlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     WifiSetupApp_SetStateFunc(WifiSetupAddressEntry_OpenKeypad);
 }
 
 void WifiSetupAddressEntry_OpenKeypad(void) {
-    if (WifiSetupFade_IsActive(1)) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_SUB)) {
         return;
     }
-    if (WifiSetupFade_IsActive(0)) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_MAIN)) {
         return;
     }
     WifiSetupKeypad_Create();
@@ -213,7 +213,7 @@ static void WifiSetupAddressEntry_StartClose(void) {
 }
 
 static void WifiSetupAddressEntry_CloseKeypad(void) {
-    if (WifiSetupFade_IsActive(1)) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_SUB)) {
         return;
     }
     WifiSetupKeypad_Close();
@@ -242,15 +242,15 @@ static void WifiSetupAddressEntry_Exit(void) {
     int kind;
     WifiSetupMessage_Hide();
     WifiSetupOam_Release(gWifiSetupAddressEntry->cursor);
-    WifiSetupText_FreeBgCanvas(0);
+    WifiSetupText_FreeBgCanvas(WIFI_SETUP_SCREEN_MAIN);
     WifiSetup_LoadGraphics(gWifiSetupAddressEntryYbObjMainNclPath, GX_LoadOBJPltt);
-    WifiSetupDisplay_HidePlanes(1, GX_PLANEMASK_BG0);
-    WifiSetupDisplay_HidePlanes(0, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
+    WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
+    WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     WifiSetupApp_GetScreenArgs(&kind, 0);
     if (kind >= 3) {
         kind++;
     }
-    WifiSetupApp_SetTransition(2, 1);
+    WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_CREATE);
     WifiSetupApp_SetScreenArgs(0, kind + 3);
     WifiSetupApp_SetStateFunc(WifiSetupSettings_Init);
     WifiSetupHeap_FreeAndClear(&gWifiSetupTextEntry[1]); // &gWifiSetupAddressEntry

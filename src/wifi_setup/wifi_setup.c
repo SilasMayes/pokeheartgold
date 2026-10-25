@@ -23,17 +23,17 @@ int WifiSetup_RunAoss(WifiSetupRequest *request) {
         valid = -1;
     }
     if (valid == -1) {
-        request->error = 15;
+        request->error = WIFI_SETUP_AOSS_REQUEST_FAILED;
         WifiSetup_FreeWorkBuffers();
         return -1;
     }
     gWifiSetupState.data = WifiSetup_Alloc(1528);
     if (gWifiSetupState.data == NULL) {
-        request->error = 15;
+        request->error = WIFI_SETUP_AOSS_REQUEST_FAILED;
         WifiSetup_FreeWorkBuffers();
         return -1;
     }
-    WifiSetup_SetStatus(-1);
+    WifiSetup_SetStatus(WIFI_SETUP_AOSS_STATUS_RESET);
     int result = WifiSetup_RunAossSession(request);
     WifiSetup_Free(gWifiSetupState.data);
     WifiSetup_FreeWorkBuffers();

@@ -26,20 +26,7 @@ typedef struct ScanRecord {
     u16 channel;
 } ScanRecord;
 
-typedef struct AccessPointInfo {
-    u32 ssidLength;
-    u16 ssid[16];
-    u32 channel;
-    u8 unk_28[8];
-    u16 mac[3];
-    u8 unk_36[2];
-    int rateCount;
-    u8 rates[16];
-    int beaconPeriod;
-    int mode;
-} AccessPointInfo;
-
-static void WifiSetup_ConvertBssDesc(const void *src, void *dst);
+static void WifiSetup_ConvertBssDesc(const void *src, WifiSetupAossApEntry *info);
 static BOOL WifiSetup_OnWcmNotify(void *message);
 static int WifiSetup_DisconnectAccessPoint(void);
 
@@ -158,9 +145,9 @@ s32 WifiSetup_StrLen(const char *str) {
 
 u16 WifiSetup_Random(void) {
     u32 time[3];
-    if (gWifiSetupState.randomSeeded == 0) {
+    if (!gWifiSetupState.randomSeeded) {
         u32 seed = 0;
-        WifiSetup_MemFill(time, 0, 12);
+        WifiSetup_MemFill(time, 0, sizeof(time));
         if (RTC_GetTime(time) == 0) {
             seed += time[0] << 10;
             seed += time[1] << 3;
@@ -169,7 +156,7 @@ u16 WifiSetup_Random(void) {
         gWifiSetupState.randomState = seed;
         gWifiSetupState.randomMultiplier = 0x5D588B65;
         gWifiSetupState.randomIncrement = 0x269EC3;
-        gWifiSetupState.randomSeeded = 1;
+        gWifiSetupState.randomSeeded = TRUE;
     }
     gWifiSetupState.randomState = gWifiSetupState.randomMultiplier * gWifiSetupState.randomState + gWifiSetupState.randomIncrement;
     return (u16)(((gWifiSetupState.randomState >> 16) * 0x7FFF) >> 16);
@@ -186,17 +173,16 @@ void WifiSetup_AddToPollSet(int socket, SocPollFd *set) {
     set->events = 1;
 }
 
-static void WifiSetup_ConvertBssDesc(const void *src, void *dst) {
+static void WifiSetup_ConvertBssDesc(const void *src, WifiSetupAossApEntry *info) {
     const ScanRecord *record = src;
-    AccessPointInfo *info = dst;
     int i;
     int count;
     RateMask *rateMask;
 
     info->ssidLength = record->ssidLength;
-    MIi_CpuCopy16(record->ssid, info->ssid, 32);
+    MI_CpuCopy16(record->ssid, info->ssid, sizeof(info->ssid));
     info->channel = record->channel;
-    MIi_CpuCopy16(record->mac, info->mac, 6);
+    MI_CpuCopy16(record->mac, info->mac, sizeof(info->mac));
     count = 0;
     rateMask = sWifiSetupRateMasks;
     i = count;
@@ -227,9 +213,9 @@ void WifiSetup_CopyConnectSsid(const WifiSetupAossConnectInfo *src, void *dst) {
     MI_CpuCopy8(src->ssid, bssDesc + 0xC, *(u16 *)(bssDesc + 0xA));
 }
 
-void WifiSetup_StoreConnectResult(void *dst, const void *src, u32 value) {
-    *(u32 *)dst = value;
-    WifiSetup_ConvertBssDesc(src, (u8 *)dst + 4);
+void WifiSetup_StoreConnectResult(WifiSetupAossConnectResult *dst, const void *src, u32 value) {
+    dst->connected = value;
+    WifiSetup_ConvertBssDesc(src, &dst->accessPoint);
 }
 
 static BOOL WifiSetup_OnWcmNotify(void *message) {
@@ -332,8 +318,8 @@ int WifiSetup_Cleanup(void) {
         case WIFI_SETUP_WCM_EVENT_DISCONNECT_FAILED:
         case 16:
         case 17:
-        case 18:
-        case 19:
+        case WIFI_SETUP_WCM_EVENT_CONNECT_TIMEOUT:
+        case WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT:
         default:
             running = FALSE;
             break;
@@ -355,7 +341,7 @@ static int WifiSetup_DisconnectAccessPoint(void) {
     if (WifiSetupWcm_StartDisconnect()) {
         do {
             OS_ReceiveMessage(&gWifiSetupMessageQueue, &message, OS_MESSAGE_BLOCK);
-            if ((u32)message == 14) {
+            if ((u32)message == WIFI_SETUP_WCM_EVENT_DISCONNECTED) {
                 running = FALSE;
                 result = running;
             } else {
@@ -373,7 +359,7 @@ typedef struct ScanLocals {
     OSAlarm alarm;
 } ScanLocals;
 
-int WifiSetup_SearchAccessPoints(void **output) {
+int WifiSetup_SearchAccessPoints(WifiSetupAossApList **output) {
     ScanLocals local;
     local.result = -1;
     local.running = TRUE;
@@ -400,11 +386,11 @@ int WifiSetup_SearchAccessPoints(void **output) {
 started:
 
     OS_CreateAlarm(&local.alarm);
-    OS_SetAlarm(&local.alarm, 0x003FEC42, (OSAlarmHandler)WifiSetup_OnTimeoutAlarm, (void *)0x13);
+    OS_SetAlarm(&local.alarm, 0x003FEC42, (OSAlarmHandler)WifiSetup_OnTimeoutAlarm, (void *)WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT);
     do {
         OS_ReceiveMessage(&gWifiSetupMessageQueue, &local.message, OS_MESSAGE_BLOCK);
         switch ((u32)local.message) {
-        case 19:
+        case WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT:
             if (state == 0) {
                 if (count != 0) {
                     records = WifiSetupWcm_CopyApList(buffer, 0x40);
@@ -436,7 +422,7 @@ started:
             break;
         case 4:
         case WIFI_SETUP_WCM_EVENT_SEARCH_STARTED:
-        case 18:
+        case WIFI_SETUP_WCM_EVENT_CONNECT_TIMEOUT:
             break;
         case 0:
         case WIFI_SETUP_WCM_EVENT_UNKNOWN:
@@ -457,7 +443,7 @@ started:
         }
     } while (local.running);
 
-    void *allocation;
+    WifiSetupAossApList *allocation;
     if (records != 0) {
         allocation = gWifiSetupRuntime.alloc((records - 1) * 0x54 + 0x58);
         if (allocation != NULL) {
@@ -471,18 +457,18 @@ started:
         }
     }
 allocated: {
-    u8 *dst;
+    WifiSetupAossApEntry *dst;
     int i = 0;
 
     *output = allocation;
-    *(u32 *)allocation = records;
+    allocation->count = records;
     if (records > 0) {
-        dst = (u8 *)allocation + 4;
+        dst = allocation->entries;
         do {
             WifiSetup_ConvertBssDesc(buffer, dst);
             i++;
             buffer += 0xc0;
-            dst += 0x54;
+            dst++;
         } while (i < records);
     }
 }

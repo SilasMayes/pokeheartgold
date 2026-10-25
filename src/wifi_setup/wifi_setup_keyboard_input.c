@@ -127,8 +127,8 @@ static void WifiSetupKeyboard_HandleTouchRelease(void) {
                 return;
             }
             gWifiSetupKeyboard->input = gWifiSetupKeyboardPageKeyCodes[gWifiSetupKeyboard->page][i];
-            if (gWifiSetupKeyboard->page == 1) {
-                WifiSetupKeyboard_SetPage(0);
+            if (gWifiSetupKeyboard->page == WIFI_SETUP_KEYBOARD_PAGE_SHIFTED) {
+                WifiSetupKeyboard_SetPage(WIFI_SETUP_KEYBOARD_PAGE_NORMAL);
             }
             gWifiSetupKeyboard->cursorKey = i;
             WifiSetupKeyboard_UpdateCursor();
@@ -142,8 +142,8 @@ static void WifiSetupKeyboard_HandleTouchRelease(void) {
                 return;
             }
             gWifiSetupKeyboard->input = gWifiSetupKeyboardExtraKeyCodes[i];
-            if (gWifiSetupKeyboard->page == 1) {
-                WifiSetupKeyboard_SetPage(0);
+            if (gWifiSetupKeyboard->page == WIFI_SETUP_KEYBOARD_PAGE_SHIFTED) {
+                WifiSetupKeyboard_SetPage(WIFI_SETUP_KEYBOARD_PAGE_NORMAL);
             }
             gWifiSetupKeyboard->cursorKey = i + WIFI_SETUP_KEYBOARD_NUM_CHAR_KEYS;
             WifiSetupKeyboard_UpdateCursor();
@@ -184,12 +184,12 @@ static void WifiSetupKeyboard_HandleTouchRelease(void) {
 }
 
 static void WifiSetupKeyboard_ToggleAltPage(void) {
-    WifiSetupKeyboard_SetPage(gWifiSetupKeyboard->page == 2 ? 0 : 2);
+    WifiSetupKeyboard_SetPage(gWifiSetupKeyboard->page == WIFI_SETUP_KEYBOARD_PAGE_ALT ? WIFI_SETUP_KEYBOARD_PAGE_NORMAL : WIFI_SETUP_KEYBOARD_PAGE_ALT);
     WifiSetupSound_Play(1);
 }
 
 static void WifiSetupKeyboard_ToggleShift(void) {
-    WifiSetupKeyboard_SetPage(gWifiSetupKeyboard->page != 1 ? 1 : 0);
+    WifiSetupKeyboard_SetPage(gWifiSetupKeyboard->page != WIFI_SETUP_KEYBOARD_PAGE_SHIFTED ? WIFI_SETUP_KEYBOARD_PAGE_SHIFTED : WIFI_SETUP_KEYBOARD_PAGE_NORMAL);
     WifiSetupSound_Play(1);
 }
 
@@ -288,8 +288,8 @@ static void WifiSetupKeyboard_HandleButtons(void) {
                 return;
             }
             gWifiSetupKeyboard->input = gWifiSetupKeyboardPageKeyCodes[gWifiSetupKeyboard->page][key];
-            if (gWifiSetupKeyboard->page == 1) {
-                WifiSetupKeyboard_SetPage(0);
+            if (gWifiSetupKeyboard->page == WIFI_SETUP_KEYBOARD_PAGE_SHIFTED) {
+                WifiSetupKeyboard_SetPage(WIFI_SETUP_KEYBOARD_PAGE_NORMAL);
             }
             return;
         }
@@ -316,8 +316,8 @@ static void WifiSetupKeyboard_HandleButtons(void) {
             default:
                 break;
             }
-            if (gWifiSetupKeyboard->page == 1) {
-                WifiSetupKeyboard_SetPage(0);
+            if (gWifiSetupKeyboard->page == WIFI_SETUP_KEYBOARD_PAGE_SHIFTED) {
+                WifiSetupKeyboard_SetPage(WIFI_SETUP_KEYBOARD_PAGE_NORMAL);
             }
             gWifiSetupKeyboard->input = gWifiSetupKeyboardExtraKeyCodes[key - WIFI_SETUP_KEYBOARD_NUM_CHAR_KEYS];
             return;

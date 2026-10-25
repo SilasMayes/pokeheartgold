@@ -10,6 +10,43 @@
 typedef void *(*WifiSetupWorkAllocFunc)(u32 size);
 typedef void (*WifiSetupWorkFreeFunc)(void *ptr);
 
+// WifiSetupWork.state, reported to the status callback
+enum WifiSetupSimpleStartState {
+    WIFI_SETUP_SIMPLE_START_STARTED = 1,
+    WIFI_SETUP_SIMPLE_START_SEARCHING,         // no access point picked yet, searching again
+    WIFI_SETUP_SIMPLE_START_CONNECTING,        // access point picked
+    WIFI_SETUP_SIMPLE_START_EXCHANGING_KEYS,   // version packet received
+    WIFI_SETUP_SIMPLE_START_GETTING_SETTINGS,  // settings key received
+    WIFI_SETUP_SIMPLE_START_SUCCEEDED,
+    WIFI_SETUP_SIMPLE_START_STOPPED,           // failed, or not started
+};
+
+// Packet types of the simple start exchange (WifiSetup_BuildPacket / WifiSetup_ReadPacket)
+enum WifiSetupSimpleStartPacket {
+    WIFI_SETUP_PACKET_VERSION = 1,     // from the access point
+    WIFI_SETUP_PACKET_VERSION_REQUEST, // answer, with the client's version records
+    WIFI_SETUP_PACKET_KEY,             // from the access point: WIFI_SETUP_RECORD_SETTINGS_KEY
+    WIFI_SETUP_PACKET_KEY_REPLY,       // WIFI_SETUP_RECORD_TIMESTAMP_DIGEST
+    WIFI_SETUP_PACKET_SETTINGS,        // from the access point: the settings records
+    WIFI_SETUP_PACKET_RESULT,          // WIFI_SETUP_RECORD_RESULT
+};
+
+// Record types of the simple start packets
+enum WifiSetupSimpleStartRecord {
+    WIFI_SETUP_RECORD_MAC_ADDRESS = 4,
+    WIFI_SETUP_RECORD_EXTENDED = 5, // version packet: >= 1 asks for the MAC address
+    WIFI_SETUP_RECORD_SETTINGS_KEY = 0x101,
+    WIFI_SETUP_RECORD_TIMESTAMP_DIGEST = 0x102,
+    WIFI_SETUP_RECORD_SSID = 0x201,
+    WIFI_SETUP_RECORD_SECURITY = 0x202,
+    WIFI_SETUP_RECORD_WEP_KEY_0 = 0x206,
+    WIFI_SETUP_RECORD_WEP_KEY_1 = 0x207,
+    WIFI_SETUP_RECORD_WEP_KEY_2 = 0x208,
+    WIFI_SETUP_RECORD_WEP_KEY_3 = 0x209,
+    WIFI_SETUP_RECORD_WPA_KEY = 0x20A,
+    WIFI_SETUP_RECORD_RESULT = 0x301,
+};
+
 // Access point found by the scan (in WifiSetupWork.apList)
 typedef struct WifiSetupApInfo {
     u8 unk_00[4];
@@ -50,7 +87,7 @@ typedef struct WifiSetupWork {
     int wcmState;     // see wifi_setup_wcm.h
     void *threadStack;
     u32 recordLength;
-    s32 state;     // 1-5 while the worker thread runs
+    s32 state;     // WIFI_SETUP_SIMPLE_START_*
     void *wcmWork; // WCM_Init work area
     void *buffer;  // aligned start of allocation
     void *searchBssid;
@@ -158,7 +195,7 @@ extern WifiSetupSettings64 gWifiSetupResultWpaKey;
 
 // Connection manager events
 int WifiSetupLink_CopyApList(WifiSetupApInfo *dst, int max);
-int WifiSetupLink_StartSearch(const u8 *bssid, const u8 *ssid, int len, int option);
+BOOL WifiSetupLink_StartSearch(const u8 *bssid, const u8 *ssid, int len, int option);
 int WifiSetupLink_GetState(void);
 void *WifiSetupLink_Alloc(int unused, int size);
 void WifiSetupLink_Free(int unused, void *ptr, int size);
@@ -178,7 +215,7 @@ int WifiSetup_SendSetupPacket(int socket, const WifiSetupSockAddr *to, const voi
 u8 *WifiSetup_FirstRecord(u8 *data, u32 *type, u32 *length);
 u32 WifiSetup_BuildPacket(u8 *dest, u32 type, u8 *data, u32 length, const void *key);
 u32 WifiSetup_BuildSingleRecordList(u8 *dst, u16 type, const void *src, u32 length);
-int WifiSetup_CheckVersionReply(void *data, int *extended);
+BOOL WifiSetup_CheckVersionReply(void *data, int *extended);
 int WifiSetup_ReadPacket(u8 *data, u32 expectedType, void *dst, const u8 *key);
 u32 WifiSetup_BuildVersionRequest(void *dst);
 BOOL WifiSetup_BuildMacPair(WifiSetupMacPair *pair, void *unused);

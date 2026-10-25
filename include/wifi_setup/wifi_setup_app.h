@@ -13,6 +13,18 @@
 #define WIFI_SETUP_CLIENT_DONE   1
 #define WIFI_SETUP_CLIENT_FAILED 2
 
+// How the next screen shows the banner and the button bar (WifiSetupApp_SetTransition)
+enum WifiSetupBannerMode {
+    WIFI_SETUP_BANNER_KEEP,
+    WIFI_SETUP_BANNER_OPEN,
+    WIFI_SETUP_BANNER_CHANGE,
+};
+
+enum WifiSetupButtonBarMode {
+    WIFI_SETUP_BUTTON_BAR_KEEP,
+    WIFI_SETUP_BUTTON_BAR_CREATE,
+};
+
 typedef void (*WifiSetupAppStateFunc)(void);
 
 typedef union WifiSetupAppFlags {

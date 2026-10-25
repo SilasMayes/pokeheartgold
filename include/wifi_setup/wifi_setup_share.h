@@ -210,9 +210,9 @@ void WifiSetupWh_Init(u8 *work);
 int WifiSetupWh_StartConnection(u32 mode, u16 tgid, u16 channel);
 
 void WifiSetupShare_Init(WifiSetupShare *share, const WifiSetupSessionParams *params);
-int WifiSetupShare_Cancel(void);
-int WifiSetupShare_Start(void);
-int WifiSetupShare_StartDownload(void);
+BOOL WifiSetupShare_Cancel(void);
+BOOL WifiSetupShare_Start(void);
+BOOL WifiSetupShare_StartDownload(void);
 void WifiSetupShare_Update(void);
 void WifiSetupShare_GetState(u8 *state, u8 *changed);
 void *WifiSetupShare_GetChildUser(void);

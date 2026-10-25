@@ -27,9 +27,9 @@ void WifiSetupKeyboard_SetPage(int page) {
     for (i = 0, key = 0; i < 4; i++, key += 12) {
         WifiSetupKeyboard_SetRowY(page, i, gWifiSetupKeyboardKeyPositions[key].y);
     }
-    if (page == 2) {
+    if (page == WIFI_SETUP_KEYBOARD_PAGE_ALT) {
         altPage = TRUE;
-    } else if (page == 1) {
+    } else if (page == WIFI_SETUP_KEYBOARD_PAGE_SHIFTED) {
         shift = TRUE;
     }
     WifiSetupKeyboard_SetKeyHighlight(WIFI_SETUP_KEY_ALT_PAGE, altPage);
@@ -63,14 +63,14 @@ void WifiSetupKeyboard_UpdateCursor(void) {
     case WIFI_SETUP_KEY_SHIFT:
         templ = 0x41;
         break;
-    case 49:
+    case WIFI_SETUP_KEY_SPACE:
         templ = 0x43;
         break;
     case WIFI_SETUP_KEY_DELETE:
         templ = 0x41;
         break;
     case WIFI_SETUP_KEY_BUTTON_0:
-    case 52:
+    case WIFI_SETUP_KEY_BUTTON_1:
         templ = 0x45;
         break;
     default:
@@ -92,7 +92,7 @@ void WifiSetupKeyboard_MoveCursor(int direction) {
         gWifiSetupKeyboard->returnKey = old;
     } else if (gWifiSetupKeyboard->cursorKey == WIFI_SETUP_KEY_BUTTON_0 && (direction == WIFI_SETUP_CURSOR_UP || direction == WIFI_SETUP_CURSOR_DOWN)) {
         gWifiSetupKeyboard->returnKey = old;
-    } else if (gWifiSetupKeyboard->cursorKey == 52 && (direction == WIFI_SETUP_CURSOR_UP || direction == WIFI_SETUP_CURSOR_DOWN)) {
+    } else if (gWifiSetupKeyboard->cursorKey == WIFI_SETUP_KEY_BUTTON_1 && (direction == WIFI_SETUP_CURSOR_UP || direction == WIFI_SETUP_CURSOR_DOWN)) {
         if (old != 46) {
             gWifiSetupKeyboard->returnKey = old;
         }
@@ -105,8 +105,8 @@ void WifiSetupKeyboard_MoveCursor(int direction) {
     } else if (gWifiSetupKeyboard->cursorKey == -2) {
         switch (gWifiSetupKeyboard->returnKey) {
         case 0:
-        case 49:
-            gWifiSetupKeyboard->cursorKey = 49;
+        case WIFI_SETUP_KEY_SPACE:
+            gWifiSetupKeyboard->cursorKey = WIFI_SETUP_KEY_SPACE;
             break;
         case 1:
         case 36:
@@ -159,7 +159,7 @@ void WifiSetupKeyboard_MoveCursor(int direction) {
     } else if (gWifiSetupKeyboard->cursorKey == -4) {
         switch (gWifiSetupKeyboard->returnKey) {
         case 0:
-        case 49:
+        case WIFI_SETUP_KEY_SPACE:
             gWifiSetupKeyboard->cursorKey = 0;
             break;
         case 1:
@@ -285,10 +285,10 @@ WifiSetupKeyboard *gWifiSetupKeyboard;
 static void WifiSetupKeyboard_DestroyTask(WifiSetupTask *task, void *arg) {
     int page, row;
     WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
-    for (page = 0; page < 3; page++) {
+    for (page = 0; page < WIFI_SETUP_KEYBOARD_NUM_PAGES; page++) {
         for (row = 0; row < 4; row++) {
             WifiSetupText_FreeObjCanvas(gWifiSetupKeyboard->rows[page][row]);
-            if (page == 0) {
+            if (page == WIFI_SETUP_KEYBOARD_PAGE_NORMAL) {
                 WifiSetupOamBlock_Free(gWifiSetupKeyboard->rowBlocks[row]);
             }
         }

@@ -8,6 +8,93 @@
 // Access-point setup client: scans for the access point, exchanges UDP packets with it on the local network and
 // reads the connection settings it hands out.
 
+// UDP port and addresses of the AOSS exchange on the access point's network
+#define WIFI_SETUP_AOSS_PORT         0x5790
+#define WIFI_SETUP_AOSS_AP_ADDRESS   0xC0A80B01 // 192.168.11.1
+#define WIFI_SETUP_AOSS_HOST_ADDRESS 0xC0A80B65 // 192.168.11.101
+
+// Protocol number in the header of every AOSS packet
+#define WIFI_SETUP_AOSS_PROTOCOL 0x11
+
+// Settings of WifiSetupRequest.requestMask and WifiSetupState.requestedMask / receivedMask
+#define WIFI_SETUP_AOSS_SETTING_WEP64    (1 << 0)
+#define WIFI_SETUP_AOSS_SETTING_WEP128   (1 << 1)
+#define WIFI_SETUP_AOSS_SETTING_WPA_TKIP (1 << 2)
+#define WIFI_SETUP_AOSS_SETTING_WPA_AES  (1 << 3)
+
+// Steps of the exchange: the request sent next (WifiSetup_SendRequest) and the reply it waits for
+// (WifiSetup_HandlePacket)
+enum WifiSetupAossStep {
+    WIFI_SETUP_AOSS_STEP_FAILED = -1,
+    WIFI_SETUP_AOSS_STEP_JOIN = 0,
+    WIFI_SETUP_AOSS_STEP_SETTINGS,
+    WIFI_SETUP_AOSS_STEP_DONE,
+    WIFI_SETUP_AOSS_STEP_FINISHED = 100,
+};
+
+// Packet kinds: the requests and the access point's replies to them
+enum WifiSetupAossPacketKind {
+    WIFI_SETUP_AOSS_KIND_JOIN = 0x1000,
+    WIFI_SETUP_AOSS_KIND_JOIN_REPLY = 0x1010,
+    WIFI_SETUP_AOSS_KIND_SETTINGS = 0x2000,
+    WIFI_SETUP_AOSS_KIND_SETTINGS_REPLY = 0x2010,
+    WIFI_SETUP_AOSS_KIND_DONE = 0x3000,
+    WIFI_SETUP_AOSS_KIND_DONE_REPLY = 0x3010,
+};
+
+// Record types of a packet body
+enum WifiSetupAossRecordType {
+    WIFI_SETUP_AOSS_RECORD_JOIN = 1,
+    WIFI_SETUP_AOSS_RECORD_SETTINGS = 2,
+    WIFI_SETUP_AOSS_RECORD_STATUS = 7,
+};
+
+// Progress reported through WifiSetup_SetStatus
+enum WifiSetupAossStatus {
+    WIFI_SETUP_AOSS_STATUS_RESET = -1,
+    WIFI_SETUP_AOSS_STATUS_SEARCHING = 0,
+    WIFI_SETUP_AOSS_STATUS_CONNECTING,
+    WIFI_SETUP_AOSS_STATUS_JOINING,
+    WIFI_SETUP_AOSS_STATUS_GETTING_SETTINGS,
+    WIFI_SETUP_AOSS_STATUS_RECONNECTING,
+    WIFI_SETUP_AOSS_STATUS_FINISHING,
+};
+
+// Results of WifiSetup_FindAossAccessPoint
+enum WifiSetupAossScanResult {
+    WIFI_SETUP_AOSS_SCAN_FOUND = 0,
+    WIFI_SETUP_AOSS_SCAN_SEVERAL = 4,
+    WIFI_SETUP_AOSS_SCAN_NONE = 5,
+};
+
+// Errors recorded with WifiSetup_SetError; a request that cannot be sent records
+// WIFI_SETUP_AOSS_ERROR_SEND + its step
+enum WifiSetupAossError {
+    WIFI_SETUP_AOSS_ERROR_UNKNOWN = 1,
+    WIFI_SETUP_AOSS_ERROR_OUT_OF_MEMORY = 2,
+    WIFI_SETUP_AOSS_ERROR_JOIN_PAYLOAD = 3,
+    WIFI_SETUP_AOSS_ERROR_SOCKET_OPTION = 11,
+    WIFI_SETUP_AOSS_ERROR_SOCKET_STARTUP = 12,
+    WIFI_SETUP_AOSS_ERROR_JOIN_TIMEOUT = 15,
+    WIFI_SETUP_AOSS_ERROR_SETTINGS_TIMEOUT = 16,
+    WIFI_SETUP_AOSS_ERROR_DONE_TIMEOUT = 17,
+    WIFI_SETUP_AOSS_ERROR_CHECKSUM = 18,
+    WIFI_SETUP_AOSS_ERROR_WEP64_NOT_REQUESTED = 19,
+    WIFI_SETUP_AOSS_ERROR_SEND = 0x1000,
+};
+
+// WifiSetupRequest.error
+enum WifiSetupAossRequestError {
+    WIFI_SETUP_AOSS_REQUEST_OK = 0,
+    WIFI_SETUP_AOSS_REQUEST_NOT_FOUND = 1,
+    WIFI_SETUP_AOSS_REQUEST_SEVERAL_FOUND = 2,
+    WIFI_SETUP_AOSS_REQUEST_JOIN_TIMEOUT = 3,
+    WIFI_SETUP_AOSS_REQUEST_SETTINGS_TIMEOUT = 4,
+    WIFI_SETUP_AOSS_REQUEST_DONE_TIMEOUT = 5,
+    WIFI_SETUP_AOSS_REQUEST_STORE_FAILED = 6,
+    WIFI_SETUP_AOSS_REQUEST_FAILED = 15,
+};
+
 typedef void *(*WifiSetupAllocFunc)(u32 size);
 typedef void (*WifiSetupFreeFunc)(void *ptr);
 
@@ -18,24 +105,6 @@ typedef struct WifiSetupRuntime {
     WifiSetupFreeFunc free;
 } WifiSetupRuntime;
 
-typedef struct WifiSetupState {
-    int encryptBody;
-    void *connection;
-    BOOL randomSeeded;
-    int *status;
-    int error;
-    void *data;
-    u32 randomState;
-    u32 randomMultiplier;
-    u32 randomIncrement;
-    void *key;
-    int keyLength;
-    u32 requestedMask; // settings the caller asked for
-    u32 receivedMask;  // settings received so far
-    u32 address;
-    u32 netmask;
-} WifiSetupState;
-
 // The setup key sent with a request.
 typedef struct WifiSetupRequestKey {
     u8 tag;
@@ -43,6 +112,18 @@ typedef struct WifiSetupRequestKey {
     u16 length; // including the terminator
     u8 data[256];
 } WifiSetupRequestKey;
+
+// Settings received by the AOSS client: the keys and the SSID of each security mode
+typedef struct WifiSetupAossResult {
+    u8 wep64Keys[4][6];
+    u8 wep64Ssid[33];
+    u8 wep128Keys[4][14];
+    u8 wep128Ssid[33];
+    u8 wpaTkipKey[64];
+    u8 wpaTkipSsid[33];
+    u8 wpaAesKey[64];
+    u8 wpaAesSsid[33];
+} WifiSetupAossResult;
 
 // Request/result block passed in by the caller of WifiSetup_RunAoss.
 typedef struct WifiSetupRequest {
@@ -55,7 +136,7 @@ typedef struct WifiSetupRequest {
     s16 receiveTimeout;
     u8 macAddress[6];
     u8 error;
-    u8 result[0x154];
+    WifiSetupAossResult result;
 } WifiSetupRequest;
 
 typedef struct WifiSetupCipher {
@@ -135,15 +216,15 @@ typedef struct WifiSetupAossReceived {
 typedef struct WifiSetupKeyRecord {
     u32 unused;
     int length;
-    u8 text[40];
-    u8 fields[4][64];
+    u8 ssid[40];
+    u8 keys[4][64];
 } WifiSetupKeyRecord;
 
 // WPA key received from the setup access point
 typedef struct WifiSetupWpaKeyRecord {
     u32 unused;
     int length;
-    u8 text[40];
+    u8 ssid[40];
     u8 key[64];
 } WifiSetupWpaKeyRecord;
 
@@ -157,17 +238,30 @@ typedef struct WifiSetupAossKeyRecords {
     u8 padding_348[8];
 } WifiSetupAossKeyRecords;
 
-// Access point found by the AOSS scan
+// Access point found by the AOSS scan (see WifiSetup_SearchAccessPoints)
 typedef struct WifiSetupAossApEntry {
-    u32 length;
-    u8 data[76];
-    u32 flags;
+    u32 ssidLength;
+    u8 ssid[32];
+    u32 channel;
+    u8 unk_28[8];
+    u8 mac[6];
+    u8 unk_36[2];
+    int rateCount;
+    u8 rates[16];
+    int beaconPeriod;
+    int mode;
 } WifiSetupAossApEntry;
 
 typedef struct WifiSetupAossApList {
     u32 count;
     WifiSetupAossApEntry entries[64];
 } WifiSetupAossApList;
+
+// Result of WifiSetup_ConnectAccessPoint
+typedef struct WifiSetupAossConnectResult {
+    u32 connected;
+    WifiSetupAossApEntry accessPoint;
+} WifiSetupAossConnectResult;
 
 typedef struct WifiSetupPollTime {
     int seconds;
@@ -181,8 +275,26 @@ typedef struct WifiSetupSocketState {
     SocConfig config;
 } WifiSetupSocketState;
 
+typedef struct WifiSetupState {
+    int encryptBody;
+    WifiSetupAossApList *connection; // access points found by the last search
+    BOOL randomSeeded;
+    WifiSetupAossConnectResult *connectResult;
+    int error;
+    void *data;
+    u32 randomState;
+    u32 randomMultiplier;
+    u32 randomIncrement;
+    void *key;
+    int keyLength;
+    u32 requestedMask; // settings the caller asked for
+    u32 receivedMask;  // settings received so far
+    u32 address;
+    u32 netmask;
+} WifiSetupState;
+
 extern WifiSetupState gWifiSetupState;
-extern void *ov13_0224CF9C;
+extern WifiSetupAossApList *ov13_0224CF9C;
 extern s8 ov13_0224CFB8[];
 extern u8 ov13_0224CFBC[];
 extern u8 gWifiSetupPeerAddress[8];
@@ -234,16 +346,16 @@ u16 WifiSetup_Random(void);
 void WifiSetup_ClearPollSet(SocPollFd *set);
 void WifiSetup_AddToPollSet(int socket, SocPollFd *set);
 void WifiSetup_CopyConnectSsid(const WifiSetupAossConnectInfo *src, void *dst);
-void WifiSetup_StoreConnectResult(void *dst, const void *src, u32 value);
+void WifiSetup_StoreConnectResult(WifiSetupAossConnectResult *dst, const void *src, u32 value);
 BOOL WifiSetup_OnTimeoutAlarm(void *message);
 int WifiSetup_Startup(WifiSetupAllocFunc alloc, WifiSetupFreeFunc free);
 int WifiSetup_Cleanup(void);
-int WifiSetup_SearchAccessPoints(void **output);
-int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, int *out);
+int WifiSetup_SearchAccessPoints(WifiSetupAossApList **output);
+int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, WifiSetupAossConnectResult *out);
 int WifiSetup_CheckPrintable(const u8 *data, int length);
 int WifiSetup_FindAossAccessPoint(WifiSetupAossApList *list);
 int WifiSetup_InitAossConnectInfo(WifiSetupAossConnectInfo *info);
-void WifiSetup_InitPacketAddresses(int count, WifiSetupAossPacketParams *params, const void *mac);
+void WifiSetup_InitPacketAddresses(int count, WifiSetupAossPacketParams *params, const u8 *mac);
 int WifiSetup_HandlePacket(int state, WifiSetupAossReceived *received, int *counter, WifiSetupAossPacketParams *params, int socket);
 int WifiSetup_SendRequest(int which, void *unused, WifiSetupAossPacketParams *params, int socket);
 

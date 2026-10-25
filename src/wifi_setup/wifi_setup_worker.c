@@ -74,7 +74,7 @@ int WifiSetup_RunSession(void) {
                 done = 1;
                 break;
             }
-            gWifiSetupWork.state = 3;
+            gWifiSetupWork.state = WIFI_SETUP_SIMPLE_START_CONNECTING;
             WifiSetup_ReportSimpleStartStatus();
             gWifiSetupWork.step = SESSION_STEP_CONNECT_AP;
             break;
@@ -113,7 +113,7 @@ int WifiSetup_RunSession(void) {
             if (SOC_RecvFrom(sock, gWifiSetupPacketBuffer, 2048, 4, &recv) > 0 && WifiSetup_CheckVersionReply(gWifiSetupPacketBuffer, gWifiSetupExtendedRequest)) {
                 gWifiSetupConfig.deadline = WifiSetup_GetMilliseconds() + 30000;
                 gWifiSetupWork.step = SESSION_STEP_SEND_VERSION_REQUEST;
-                gWifiSetupWork.state = 4;
+                gWifiSetupWork.state = WIFI_SETUP_SIMPLE_START_EXCHANGING_KEYS;
                 WifiSetup_ReportSimpleStartStatus();
             }
             break;
@@ -130,15 +130,15 @@ int WifiSetup_RunSession(void) {
                 done = 1;
                 break;
             }
-            if (SOC_RecvFrom(sock, gWifiSetupPacketBuffer, 2048, 4, &recv) > 0 && WifiSetup_ReadPacket(gWifiSetupPacketBuffer, 3, gWifiSetupRecordBuffer, gWifiSetupSessionKey)) {
+            if (SOC_RecvFrom(sock, gWifiSetupPacketBuffer, 2048, 4, &recv) > 0 && WifiSetup_ReadPacket(gWifiSetupPacketBuffer, WIFI_SETUP_PACKET_KEY, gWifiSetupRecordBuffer, gWifiSetupSessionKey)) {
                 record = WifiSetup_FirstRecord(gWifiSetupRecordBuffer, &type, &size);
-                if (type == 257) {
+                if (type == WIFI_SETUP_RECORD_SETTINGS_KEY) {
                     timestamp = WifiSetup_GetMilliseconds();
                     *(Id8 *)gWifiSetupSettingsKey = *(Id8 *)record;
                     WifiSetup_CalcMd5(gWifiSetupTimestampDigest, (const u8 *)&timestamp, 4);
                     retry = 0;
                     gWifiSetupWork.step = SESSION_STEP_SEND_KEY;
-                    gWifiSetupWork.state = 5;
+                    gWifiSetupWork.state = WIFI_SETUP_SIMPLE_START_GETTING_SETTINGS;
                     gWifiSetupConfig.deadline = -1;
                     WifiSetup_ReportSimpleStartStatus();
                 }
@@ -150,8 +150,8 @@ int WifiSetup_RunSession(void) {
             }
             break;
         case SESSION_STEP_SEND_KEY:
-            gWifiSetupWork.recordLength = WifiSetup_BuildSingleRecordList(gWifiSetupRecordBuffer, 258, gWifiSetupTimestampDigest, 8);
-            gWifiSetupWork.packetLength = WifiSetup_BuildPacket(gWifiSetupPacketBuffer, 4, gWifiSetupRecordBuffer, gWifiSetupWork.recordLength, gWifiSetupSessionKey);
+            gWifiSetupWork.recordLength = WifiSetup_BuildSingleRecordList(gWifiSetupRecordBuffer, WIFI_SETUP_RECORD_TIMESTAMP_DIGEST, gWifiSetupTimestampDigest, 8);
+            gWifiSetupWork.packetLength = WifiSetup_BuildPacket(gWifiSetupPacketBuffer, WIFI_SETUP_PACKET_KEY_REPLY, gWifiSetupRecordBuffer, gWifiSetupWork.recordLength, gWifiSetupSessionKey);
             WifiSetup_SendSetupPacket(sock, &recv, gWifiSetupPacketBuffer, gWifiSetupWork.packetLength);
             last = WifiSetup_GetMilliseconds();
             memset(&gWifiSetupReply, 0, sizeof(gWifiSetupReply));
@@ -159,7 +159,7 @@ int WifiSetup_RunSession(void) {
             break;
         case SESSION_STEP_WAIT_SETTINGS:
             if (SOC_RecvFrom(sock, gWifiSetupPacketBuffer, 2048, 4, &recv) > 0) {
-                gWifiSetupWork.recordLength = WifiSetup_ReadPacket(gWifiSetupPacketBuffer, 5, gWifiSetupRecordBuffer, gWifiSetupSettingsKey);
+                gWifiSetupWork.recordLength = WifiSetup_ReadPacket(gWifiSetupPacketBuffer, WIFI_SETUP_PACKET_SETTINGS, gWifiSetupRecordBuffer, gWifiSetupSettingsKey);
                 if (gWifiSetupWork.recordLength && WifiSetup_ParseSettingsRecords(gWifiSetupRecordBuffer)) {
                     if (gWifiSetupClientSettings.ssid[0]) {
                         gWifiSetupWork.unk_00 = 1;
@@ -183,9 +183,9 @@ int WifiSetup_RunSession(void) {
             }
             break;
         case SESSION_STEP_SEND_RESULT:
-            gWifiSetupWork.recordLength = WifiSetup_BuildSingleRecordList(gWifiSetupRecordBuffer, 769, gWifiSetupWcmSearchSsid + 0x20, 1);
-            gWifiSetupWork.packetLength = WifiSetup_BuildPacket(gWifiSetupPacketBuffer, 6, gWifiSetupRecordBuffer, gWifiSetupWork.recordLength, gWifiSetupSettingsKey);
-            if (WifiSetupLink_GetState() != 7) {
+            gWifiSetupWork.recordLength = WifiSetup_BuildSingleRecordList(gWifiSetupRecordBuffer, WIFI_SETUP_RECORD_RESULT, gWifiSetupWcmSearchSsid + 0x20, 1);
+            gWifiSetupWork.packetLength = WifiSetup_BuildPacket(gWifiSetupPacketBuffer, WIFI_SETUP_PACKET_RESULT, gWifiSetupRecordBuffer, gWifiSetupWork.recordLength, gWifiSetupSettingsKey);
+            if (WifiSetupLink_GetState() != WIFI_SETUP_WCM_STATE_CONNECTED) {
                 last = WifiSetup_GetMilliseconds() + 1000;
                 retry = 10;
                 gWifiSetupWork.step = SESSION_STEP_RESEND_RESULT;

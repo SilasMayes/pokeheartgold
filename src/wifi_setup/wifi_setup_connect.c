@@ -27,7 +27,7 @@ void WCM_ClearApList(void);
 // @fn WifiSetup_ConnectAccessPoint
 #pragma optimization_level 2
 #pragma opt_propagation off
-int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, int *out) {
+int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, WifiSetupAossConnectResult *out) {
     OSAlarm alarm;
     OSMessage message;
     BOOL running = TRUE;
@@ -60,16 +60,16 @@ int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, int *out) {
     if (WifiSetupWcm_StartSearch(NULL, param->ssid, param->ssidLength, 0x0030BFFE)) {
         retries = 0;
         OS_CreateAlarm(&alarm);
-        OS_SetAlarm(&alarm, 0x003FEC42, (OSAlarmHandler)WifiSetup_OnTimeoutAlarm, (void *)0x12);
+        OS_SetAlarm(&alarm, 0x003FEC42, (OSAlarmHandler)WifiSetup_OnTimeoutAlarm, (void *)WIFI_SETUP_WCM_EVENT_CONNECT_TIMEOUT);
         while (running) {
             OS_ReceiveMessage(&gWifiSetupMessageQueue, &message, OS_MESSAGE_BLOCK);
             switch ((u32)message) {
-            case 18:
+            case WIFI_SETUP_WCM_EVENT_CONNECT_TIMEOUT:
                 if (!connected) {
                     running = FALSE;
                 }
                 break;
-            case 19:
+            case WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT:
                 if (connected) {
                     break;
                 }

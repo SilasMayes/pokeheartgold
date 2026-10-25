@@ -85,9 +85,9 @@ void WifiSetup_SimpleStartThread(void *arg) {
     gWifiSetupWork.error = result;
     WifiSetupLink_DisconnectAp();
     if (result == 1) {
-        gWifiSetupWork.state = 6;
+        gWifiSetupWork.state = WIFI_SETUP_SIMPLE_START_SUCCEEDED;
     } else {
-        gWifiSetupWork.state = 7;
+        gWifiSetupWork.state = WIFI_SETUP_SIMPLE_START_STOPPED;
     }
     gWifiSetupConfig.deadline = -1;
     WifiSetup_ReportSimpleStartStatus();

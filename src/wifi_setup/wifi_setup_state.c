@@ -16,9 +16,9 @@ u32 WifiSetup_NextHostAddress(u32 value, u32 mask) {
 }
 
 void WifiSetup_FreeWorkBuffers(void) {
-    if (gWifiSetupState.status != NULL) {
-        WifiSetup_Free(gWifiSetupState.status);
-        gWifiSetupState.status = NULL;
+    if (gWifiSetupState.connectResult != NULL) {
+        WifiSetup_Free(gWifiSetupState.connectResult);
+        gWifiSetupState.connectResult = NULL;
     }
     if (gWifiSetupState.connection != NULL) {
         WifiSetup_Free(gWifiSetupState.connection);
@@ -28,14 +28,14 @@ void WifiSetup_FreeWorkBuffers(void) {
 
 void WifiSetup_InitState(WifiSetupRequest *request) {
     WifiSetup_MemFill(gWifiSetupPeerAddress, 0, 8);
-    gWifiSetupState.error = 1;
+    gWifiSetupState.error = WIFI_SETUP_AOSS_ERROR_UNKNOWN;
     WifiSetup_MemFill(ov13_0224CFBC, 0, 0x1C);
     gWifiSetupState.key = request->key.data;
     gWifiSetupState.keyLength = request->key.length;
     gWifiSetupState.requestedMask = request->requestMask & 0xF;
     ov13_0224CFB8[0x1D] = request->key.tag;
     gWifiSetupState.receivedMask = 0;
-    gWifiSetupState.address = 0xC0A80B01; // 192.168.11.1
+    gWifiSetupState.address = WIFI_SETUP_AOSS_AP_ADDRESS;
     ov13_0224CFB8[0x1C] = 0;
 }
 

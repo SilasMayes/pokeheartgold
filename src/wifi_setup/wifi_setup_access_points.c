@@ -3,6 +3,7 @@
 #include "global.h"
 
 #include "dwc/dwc_bm_internal.h"
+#include "wifi_setup/wifi_setup.h"
 #include "nnsys/snd_arc_internal.h"
 #include "wifi_setup/wifi_setup_local_wireless.h"
 #include "wifi_setup/wifi_setup_ui.h"
@@ -44,21 +45,21 @@ static int WifiSetupApScan_Continue(void) {
     return WM_StartScanEx(WifiSetupApScan_Callback, &gWifiSetupApScan->param) == WM_ERRCODE_OPERATING ? 1 : 0;
 }
 
-int WifiSetupApScan_End(void) {
+BOOL WifiSetupApScan_End(void) {
     gWifiSetupApScan->ending = 1;
     WM_ReadStatus(&gWifiSetupApScan->status);
     if (gWifiSetupApScan->status.state != 2) {
         if (WM_Reset(WifiSetupApScan_Callback) != WM_ERRCODE_OPERATING) {
-            return 0;
+            return FALSE;
         }
         do {
             WM_ReadStatus(&gWifiSetupApScan->status);
         } while (gWifiSetupApScan->status.state != 2);
     }
     if (WM_End(WifiSetupApScan_Callback) != WM_ERRCODE_OPERATING) {
-        return 0;
+        return FALSE;
     }
-    return 1;
+    return TRUE;
 }
 
 int WifiSetupApScan_GetEntries(WifiSetupScanEntry **out) {
@@ -361,19 +362,19 @@ void WifiSetupConnections_SetFromClientResult(WifiSetupResult *src) {
     WifiSetupConnections_SaveEdit();
 }
 
-void WifiSetupConnections_SetFromInfo(u8 *src) {
+void WifiSetupConnections_SetFromInfo(const WifiSetupAossResult *src) {
     WifiSetupConnection *work = &gWifiSetupConnections->edit;
     MI_CpuFill8(work, 0, offsetof(WifiSetupConnection, usedMask));
-    MI_CpuCopy8(src, &work->wep40Keys[0], 5);
-    MI_CpuCopy8(src + 6, &work->wep40Keys[5], 5);
-    MI_CpuCopy8(src + 0xc, &work->wep40Keys[10], 5);
-    MI_CpuCopy8(src + 0x12, &work->wep40Keys[15], 5);
-    MI_CpuCopy8(src + 0x18, work->unk_60, 0x20);
-    MI_CpuCopy8(src + 0x39, work->wepKeys[0], 0xd);
-    MI_CpuCopy8(src + 0x47, work->wepKeys[1], 0xd);
-    MI_CpuCopy8(src + 0x55, work->wepKeys[2], 0xd);
-    MI_CpuCopy8(src + 0x63, work->wepKeys[3], 0xd);
-    MI_CpuCopy8(src + 0x71, work->ssid, 0x20);
+    MI_CpuCopy8(src->wep64Keys[0], &work->wep40Keys[0], 5);
+    MI_CpuCopy8(src->wep64Keys[1], &work->wep40Keys[5], 5);
+    MI_CpuCopy8(src->wep64Keys[2], &work->wep40Keys[10], 5);
+    MI_CpuCopy8(src->wep64Keys[3], &work->wep40Keys[15], 5);
+    MI_CpuCopy8(src->wep64Ssid, work->unk_60, sizeof(work->unk_60));
+    MI_CpuCopy8(src->wep128Keys[0], work->wepKeys[0], 13);
+    MI_CpuCopy8(src->wep128Keys[1], work->wepKeys[1], 13);
+    MI_CpuCopy8(src->wep128Keys[2], work->wepKeys[2], 13);
+    MI_CpuCopy8(src->wep128Keys[3], work->wepKeys[3], 13);
+    MI_CpuCopy8(src->wep128Ssid, work->ssid, sizeof(work->ssid));
     work->keyType = WM_WEPMODE_104BIT;
     work->keyFormat = 0;
     work->setupMethod = WIFI_SETUP_METHOD_COPIED;

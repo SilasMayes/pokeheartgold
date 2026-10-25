@@ -35,13 +35,13 @@ static void WifiSetupUsbConnector_WaitChoice(void);
 static void WifiSetupUsbConnector_WaitChoiceClosed(void);
 
 void WifiSetupUsbConnector_Start(void) {
-    WifiSetupFade_Start(2, 0, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
-    WifiSetupDisplay_ShowPlanes(0, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
+    WifiSetupFade_Start(WIFI_SETUP_FADE_IN_FROM_WHITE, WIFI_SETUP_SCREEN_MAIN, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
+    WifiSetupDisplay_ShowPlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     WifiSetupApp_SetStateFunc(WifiSetupUsbConnector_WaitFadeIn);
 }
 
 static void WifiSetupUsbConnector_WaitFadeIn(void) {
-    if (WifiSetupFade_IsActive(0) != 0) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_MAIN)) {
         return;
     }
     WifiSetupButtonBar_Show(2);
@@ -95,45 +95,45 @@ static void WifiSetupUsbConnector_Exit(void) {
 }
 
 static void WifiSetupUsbConnector_WaitFadeOut(void) {
-    if (WifiSetupFade_IsActive(1) != 0) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_SUB)) {
         return;
     }
     WifiSetupButtonBar_Close();
     if (gWifiSetupUsbConnectorExit == USB_CONNECTOR_BACK || gWifiSetupUsbConnectorExit == USB_CONNECTOR_RETRY) {
-        WifiSetupFade_Start(3, 1, GX_BLEND_PLANEMASK_BG0, 8);
+        WifiSetupFade_Start(WIFI_SETUP_FADE_OUT_TO_WHITE, WIFI_SETUP_SCREEN_SUB, GX_BLEND_PLANEMASK_BG0, 8);
     }
-    WifiSetupFade_Start(3, 0, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
+    WifiSetupFade_Start(WIFI_SETUP_FADE_OUT_TO_WHITE, WIFI_SETUP_SCREEN_MAIN, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
     WifiSetupApp_SetStateFunc(WifiSetupUsbConnector_End);
 }
 
 static void WifiSetupUsbConnector_End(void) {
-    if (WifiSetupFade_IsActive(0) != 0) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_MAIN)) {
         return;
     }
     if (gWifiSetupUsbConnectorExit == USB_CONNECTOR_BACK) {
-        if (WifiSetupFade_IsActive(1) != 0) {
+        if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_SUB)) {
             return;
         }
     }
-    if (WifiSetupButtonBar_IsNotClosing() == 0) {
+    if (!WifiSetupButtonBar_IsNotClosing()) {
         return;
     }
     WifiSetupUsbScan_End();
     WifiSetupBusyIcon_Destroy();
-    WifiSetupText_FreeBgCanvas(0);
+    WifiSetupText_FreeBgCanvas(WIFI_SETUP_SCREEN_MAIN);
     if (gWifiSetupUsbConnectorExit == USB_CONNECTOR_BACK || gWifiSetupUsbConnectorExit == USB_CONNECTOR_RETRY) {
         WifiSetupMessage_Hide();
-        WifiSetupDisplay_HidePlanes(1, GX_PLANEMASK_BG0);
+        WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
     }
-    WifiSetupDisplay_HidePlanes(0, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
+    WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     if (gWifiSetupUsbConnectorExit == USB_CONNECTOR_BACK) {
-        WifiSetupApp_SetTransition(2, 1);
+        WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_CREATE);
         WifiSetupApp_SetStateFunc(WifiSetupConnectionList_Init);
     } else if (gWifiSetupUsbConnectorExit == USB_CONNECTOR_RETRY) {
-        WifiSetupApp_SetTransition(2, 1);
+        WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_CREATE);
         WifiSetupApp_SetStateFunc(WifiSetupUsbConnectorIntro_Init);
     } else {
-        WifiSetupApp_SetTransition(0, 0);
+        WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_KEEP, WIFI_SETUP_BUTTON_BAR_KEEP);
         WifiSetupApp_SetStateFunc(WifiSetupUsbConnectorDone_Init);
     }
 }
@@ -182,7 +182,7 @@ static void WifiSetupUsbConnector_WaitNotFound(void) {
 }
 
 static void WifiSetupUsbConnector_WaitNotFoundClosed(void) {
-    if (WifiSetupDialog_IsOpen() != 0) {
+    if (WifiSetupDialog_IsOpen()) {
         return;
     }
     WifiSetupApp_SetStateFunc(WifiSetupUsbConnector_Exit);
@@ -205,7 +205,7 @@ static void WifiSetupUsbConnector_WaitChoice(void) {
 }
 
 static void WifiSetupUsbConnector_WaitChoiceClosed(void) {
-    if (WifiSetupDialog_IsOpen() != 0) {
+    if (WifiSetupDialog_IsOpen()) {
         return;
     }
     if (gWifiSetupUsbConnectorExit == USB_CONNECTOR_DONE) {

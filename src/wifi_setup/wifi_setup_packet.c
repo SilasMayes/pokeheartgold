@@ -3,6 +3,8 @@
 #include "nitrowifi/socl_internal.h"
 #include "wifi_setup/wifi_setup_internal.h"
 
+#include "WM.h"
+
 // Swaps the two bytes of a 16-bit value (network byte order).
 #define Swap16(value) ((u16)((u8)((value) >> 8) | (((value) << 8) & 0xff00)))
 
@@ -31,7 +33,7 @@ static u8 *WifiSetup_GetPacketPayload(u8 *data, u32 *type, u32 *length);
 static u8 *WifiSetup_NextRecord(u8 **cursor, u8 *end, u32 *type, u32 *length);
 static u8 *WifiSetup_AppendRecord(u8 *out, int tag, const void *source, int size);
 static BOOL WifiSetup_GetOwnMacAddress(u8 *mac);
-static int WifiSetup_HexToBytes(u8 *dst, const char *src, int length);
+static BOOL WifiSetup_HexToBytes(u8 *dst, const char *src, int length);
 
 #pragma optimization_level 3
 
@@ -77,7 +79,7 @@ int WifiSetup_FindSetupAccessPoint(void) {
             goto done;
         }
         OS_CreateAlarm(&alarm);
-        OS_SetAlarm(&alarm, 0xFFB10, (OSAlarmHandler)WifiSetupLink_PostEvent, (void *)19);
+        OS_SetAlarm(&alarm, 0xFFB10, (OSAlarmHandler)WifiSetupLink_PostEvent, (void *)WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT);
         running = TRUE;
         result = 0;
         do {
@@ -87,27 +89,27 @@ int WifiSetup_FindSetupAccessPoint(void) {
             }
             while ((event = WifiSetupLink_PopEvent()) != 0) {
                 switch (event) {
-                case 19:
+                case WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT:
                     running = FALSE;
                     break;
-                case 5:
+                case WIFI_SETUP_WCM_EVENT_FOUND_AP:
                     found = WifiSetupLink_CopyApList(gWifiSetupWork.apList, gWifiSetupWork.apListCount);
                     if (found > result) {
                         result = found;
                         OS_CancelAlarm(&alarm);
-                        OS_SetAlarm(&alarm, 0xFFB10, (OSAlarmHandler)WifiSetupLink_PostEvent, (void *)19);
+                        OS_SetAlarm(&alarm, 0xFFB10, (OSAlarmHandler)WifiSetupLink_PostEvent, (void *)WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT);
                     }
                     break;
-                case 10:
+                case WIFI_SETUP_WCM_EVENT_SEARCH_ENDED:
                     running = FALSE;
                     break;
                 case 4:
-                case 8:
-                case 18:
+                case WIFI_SETUP_WCM_EVENT_SEARCH_STARTED:
+                case WIFI_SETUP_WCM_EVENT_CONNECT_TIMEOUT:
                     break;
                 case 0:
-                case 1:
-                case 2:
+                case WIFI_SETUP_WCM_EVENT_UNKNOWN:
+                case WIFI_SETUP_WCM_EVENT_FAILED:
                 case 3:
                 default:
                     running = FALSE;
@@ -140,7 +142,7 @@ int WifiSetup_FindSetupAccessPoint(void) {
             }
         }
         out->count = result;
-        if (gWifiSetupWork.state != 1 && WifiSetup_PickSetupAccessPoint(out, previous, &selected)) {
+        if (gWifiSetupWork.state != WIFI_SETUP_SIMPLE_START_STARTED && WifiSetup_PickSetupAccessPoint(out, previous, &selected)) {
             WifiSetupApEntry *entry = &out->entries[selected];
             gWifiSetupWork.selection = selected;
             strcpy(gWifiSetupApSsid, entry->ssid);
@@ -149,7 +151,7 @@ int WifiSetup_FindSetupAccessPoint(void) {
             break;
         }
         memcpy(previous, out, size);
-        gWifiSetupWork.state = 2;
+        gWifiSetupWork.state = WIFI_SETUP_SIMPLE_START_SEARCHING;
         WifiSetup_ReportSimpleStartStatus();
     }
     if (attempt >= 30 || WifiSetup_GetMilliseconds() > gWifiSetupConfig.deadline) {
@@ -304,7 +306,7 @@ u32 WifiSetup_BuildSingleRecordList(u8 *dst, u16 type, const void *src, u32 leng
 }
 
 // Reply of type 1: records 1 and 2 must be 1; record 5 >= 1 asks for the extended request.
-int WifiSetup_CheckVersionReply(void *data, int *extended) {
+BOOL WifiSetup_CheckVersionReply(void *data, int *extended) {
     u32 type;
     u32 length;
     u32 tag;
@@ -319,10 +321,10 @@ int WifiSetup_CheckVersionReply(void *data, int *extended) {
     cursor = blob;
     record2 = 0;
     if (!blob) {
-        return 0;
+        return FALSE;
     }
-    if (type != 1) {
-        return 0;
+    if (type != WIFI_SETUP_PACKET_VERSION) {
+        return FALSE;
     }
     end = blob + length;
     cursor = blob + 8;
@@ -334,20 +336,20 @@ int WifiSetup_CheckVersionReply(void *data, int *extended) {
         case 2:
             record2 = Swap16(*value);
             break;
-        case 5:
+        case WIFI_SETUP_RECORD_EXTENDED:
             record5 = Swap16(*value);
             break;
         }
     }
     if (record1 != 1 || record2 != 1) {
-        return 0;
+        return FALSE;
     }
     if (record5 >= 1) {
         *extended = 1;
     } else {
         *extended = 0;
     }
-    return 1;
+    return TRUE;
 }
 
 // Copies the payload of a packet of `expectedType`, AES-key-unwrapped when `key` is given.
@@ -378,13 +380,13 @@ u32 WifiSetup_BuildVersionRequest(void *dst) {
     ptr = WifiSetup_AppendRecord(gWifiSetupConfig.packetBuffer, 1, &record, 2);
     ptr = WifiSetup_AppendRecord(ptr, 2, &record, 2);
     if (gWifiSetupWork.extendedRequest) {
-        ptr = WifiSetup_AppendRecord(ptr, 5, &record, 2);
+        ptr = WifiSetup_AppendRecord(ptr, WIFI_SETUP_RECORD_EXTENDED, &record, 2);
     }
     ptr = WifiSetup_AppendRecord(ptr, 3, &record.version, 7);
     if (gWifiSetupWork.extendedRequest) {
-        ptr = WifiSetup_AppendRecord(ptr, 4, gWifiSetupOwnMacAddress, 6);
+        ptr = WifiSetup_AppendRecord(ptr, WIFI_SETUP_RECORD_MAC_ADDRESS, gWifiSetupOwnMacAddress, sizeof(gWifiSetupOwnMacAddress));
     }
-    return WifiSetup_BuildPacket(dst, 2, gWifiSetupRecordBuffer, ptr - gWifiSetupConfig.packetBuffer + 8, NULL);
+    return WifiSetup_BuildPacket(dst, WIFI_SETUP_PACKET_VERSION_REQUEST, gWifiSetupRecordBuffer, ptr - gWifiSetupConfig.packetBuffer + 8, NULL);
 }
 
 static BOOL WifiSetup_GetOwnMacAddress(u8 *mac) {
@@ -432,12 +434,12 @@ int WifiSetup_ParseSettingsRecords(const u8 *data) {
     value = WifiSetup_NextRecord(&pos, start + bytes, &type, &length);
     while (value) {
         switch (type) {
-        case 0x201:
+        case WIFI_SETUP_RECORD_SSID:
             memset(gWifiSetupRecvSsid, 0, sizeof(gWifiSetupRecvSsid));
             memcpy(gWifiSetupRecvSsid, value, length);
             result = 1;
             break;
-        case 0x202:
+        case WIFI_SETUP_RECORD_SECURITY:
             gWifiSetupRecvSecurity[0] = Swap16(*(u16 *)value);
             break;
         case 0x203: {
@@ -465,24 +467,24 @@ int WifiSetup_ParseSettingsRecords(const u8 *data) {
         case 0x205:
             gWifiSetupRecvSecurity[1] = Swap16(*(u16 *)value);
             break;
-        case 0x206:
-        case 0x207:
-        case 0x208:
-        case 0x209: {
+        case WIFI_SETUP_RECORD_WEP_KEY_0:
+        case WIFI_SETUP_RECORD_WEP_KEY_1:
+        case WIFI_SETUP_RECORD_WEP_KEY_2:
+        case WIFI_SETUP_RECORD_WEP_KEY_3: {
             u8 *out;
             int i;
-            memset(gWifiSetupRecvWepKeys[type - 0x206], 0, 32);
+            memset(gWifiSetupRecvWepKeys[type - WIFI_SETUP_RECORD_WEP_KEY_0], 0, 32);
             if (gWifiSetupRecvSecurity[12] == 1) {
-                out = gWifiSetupRecvWepKeys[type - 0x206];
+                out = gWifiSetupRecvWepKeys[type - WIFI_SETUP_RECORD_WEP_KEY_0];
                 for (i = 0; i < (int)length; i++) {
                     out += WifiSetup_FormatHexByte((char *)out, *(s8 *)value++);
                 }
             } else {
-                memcpy(gWifiSetupRecvWepKeys[type - 0x206], value, length);
+                memcpy(gWifiSetupRecvWepKeys[type - WIFI_SETUP_RECORD_WEP_KEY_0], value, length);
             }
             break;
         }
-        case 0x20a:
+        case WIFI_SETUP_RECORD_WPA_KEY:
             memset(gWifiSetupRecvWpaKey, 0, sizeof(gWifiSetupRecvWpaKey));
             memcpy(gWifiSetupRecvWpaKey, value, length);
             break;
@@ -492,7 +494,7 @@ int WifiSetup_ParseSettingsRecords(const u8 *data) {
     return result;
 }
 
-static int WifiSetup_HexToBytes(u8 *dst, const char *src, int length) {
+static BOOL WifiSetup_HexToBytes(u8 *dst, const char *src, int length) {
     int len = length;
     int ch;
     int nibble = 0;
@@ -531,7 +533,7 @@ static int WifiSetup_HexToBytes(u8 *dst, const char *src, int length) {
             nibble += ch - 'A' + 10;
             break;
         default:
-            return 0;
+            return FALSE;
         }
         if ((i % 2) == 0) {
             nibble <<= 4;
@@ -540,7 +542,7 @@ static int WifiSetup_HexToBytes(u8 *dst, const char *src, int length) {
             nibble = 0;
         }
     }
-    return 1;
+    return TRUE;
 }
 
 // Copies the received settings into the result block; WEP keys of 5/13/16 characters or
@@ -555,7 +557,7 @@ int WifiSetup_StoreSimpleStartResult(void) {
     strcpy((char *)&gWifiSetupResult, (char *)gWifiSetupRecvSsid);
     switch (gWifiSetupRecvSecurity[0]) {
     case 0:
-        *(u32 *)(ov13_0224E0B0 + 0xC) = 0;
+        *(u32 *)(ov13_0224E0B0 + 0xC) = WM_WEPMODE_NO;
         break;
     case 1:
         if (gWifiSetupRecvSecurity[1] == 0) {
@@ -574,27 +576,27 @@ int WifiSetup_StoreSimpleStartResult(void) {
             case 0:
                 break;
             case 5:
-                *(u32 *)(ov13_0224E0B0 + 0xC) = 1;
+                *(u32 *)(ov13_0224E0B0 + 0xC) = WM_WEPMODE_40BIT;
                 memcpy(out, key, 5);
                 break;
             case 10:
-                *(u32 *)(ov13_0224E0B0 + 0xC) = 1;
+                *(u32 *)(ov13_0224E0B0 + 0xC) = WM_WEPMODE_40BIT;
                 WifiSetup_HexToBytes(out, key, 10);
                 break;
             case 13:
-                *(u32 *)(ov13_0224E0B0 + 0xC) = 2;
+                *(u32 *)(ov13_0224E0B0 + 0xC) = WM_WEPMODE_104BIT;
                 memcpy(out, key, 13);
                 break;
             case 26:
-                *(u32 *)(ov13_0224E0B0 + 0xC) = 2;
+                *(u32 *)(ov13_0224E0B0 + 0xC) = WM_WEPMODE_104BIT;
                 WifiSetup_HexToBytes(out, key, 26);
                 break;
             case 16:
-                *(u32 *)(ov13_0224E0B0 + 0xC) = 3;
+                *(u32 *)(ov13_0224E0B0 + 0xC) = WM_WEPMODE_128BIT;
                 memcpy(out, key, 16);
                 break;
             case 32:
-                *(u32 *)(ov13_0224E0B0 + 0xC) = 3;
+                *(u32 *)(ov13_0224E0B0 + 0xC) = WM_WEPMODE_128BIT;
                 WifiSetup_HexToBytes(out, key, 32);
                 break;
             default:

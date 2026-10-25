@@ -8,7 +8,7 @@ extern u8 WCM_Bssid_Any[]; // BSSID ff:ff:ff:ff:ff:ff (any)
 extern u8 WCM_Essid_Any[]; // SSID of 0xFF bytes (any)
 
 static void WifiSetupWcm_HandleEvent(WifiSetupWcmEvent *event);
-static int WifiSetupWcm_ReturnToIdle(void);
+static BOOL WifiSetupWcm_ReturnToIdle(void);
 
 BOOL WifiSetupWcm_Init(void (*callback)(int event, int arg), void *allocation, u32 size);
 
@@ -194,21 +194,21 @@ static void WifiSetupWcm_HandleEvent(WifiSetupWcmEvent *event) {
 }
 
 // Starts the request that leads back to the idle state (stop the search, disconnect, or start up).
-static int WifiSetupWcm_ReturnToIdle(void) {
+static BOOL WifiSetupWcm_ReturnToIdle(void) {
     switch (gWifiSetupWcm.state) {
     case WIFI_SETUP_WCM_STATE_SEARCHING:
         if (WCM_SearchAsync(NULL, NULL, 0) != 3) {
-            return 0;
+            return FALSE;
         }
         break;
     case WIFI_SETUP_WCM_STATE_CONNECTED:
         if (WCM_DisconnectAsync() != 3) {
-            return 0;
+            return FALSE;
         }
         break;
     case WIFI_SETUP_WCM_STATE_READY:
         if (WCM_StartupAsync(gWifiSetupWcm.config, WifiSetupWcm_HandleEvent) != 3) {
-            return 0;
+            return FALSE;
         }
         break;
     case WIFI_SETUP_WCM_STATE_NONE:
@@ -218,9 +218,9 @@ static int WifiSetupWcm_ReturnToIdle(void) {
     case WIFI_SETUP_WCM_STATE_SEARCH_STARTING:
     case WIFI_SETUP_WCM_STATE_CONNECTING:
     default:
-        return 0;
+        return FALSE;
     }
-    return 1;
+    return TRUE;
 }
 
 // Copies up to max access point descriptions; returns how many were found.
@@ -246,7 +246,7 @@ int WifiSetupWcm_CopyApList(u8 *dst, int max) {
     return count;
 }
 
-int WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int option) {
+BOOL WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int option) {
     OSIntrMode irq;
     int i;
     irq = OS_DisableInterrupts();
@@ -276,60 +276,60 @@ int WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int optio
         if (WCM_SearchAsync(gWifiSetupWcm.searchBssid, gWifiSetupWcm.searchSsid, gWifiSetupWcm.searchOption) == 3) {
             gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_SEARCH_STARTING;
             OS_RestoreInterrupts(irq);
-            return 1;
+            return TRUE;
         }
     } else if (WifiSetupWcm_ReturnToIdle() == 1) {
         gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_SEARCH_STARTING;
         OS_RestoreInterrupts(irq);
-        return 1;
+        return TRUE;
     }
     OS_RestoreInterrupts(irq);
-    return 0;
+    return FALSE;
 }
 
-int WifiSetupWcm_StopSearch(void) {
+BOOL WifiSetupWcm_StopSearch(void) {
     OSIntrMode irq = OS_DisableInterrupts();
     if (gWifiSetupWcm.state == WIFI_SETUP_WCM_STATE_SEARCHING && WCM_SearchAsync(NULL, NULL, 0) == 3) {
         gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_BUSY;
         OS_RestoreInterrupts(irq);
-        return 1;
+        return TRUE;
     }
     OS_RestoreInterrupts(irq);
-    return 0;
+    return FALSE;
 }
 
-int WifiSetupWcm_StartDisconnect(void) {
+BOOL WifiSetupWcm_StartDisconnect(void) {
     OSIntrMode irq = OS_DisableInterrupts();
     if (gWifiSetupWcm.state == WIFI_SETUP_WCM_STATE_CONNECTED && WCM_DisconnectAsync() == 3) {
         gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_BUSY;
         OS_RestoreInterrupts(irq);
-        return 1;
+        return TRUE;
     }
     OS_RestoreInterrupts(irq);
-    return 0;
+    return FALSE;
 }
 
-int WifiSetupWcm_StartCleanup(void) {
+BOOL WifiSetupWcm_StartCleanup(void) {
     OSIntrMode irq = OS_DisableInterrupts();
     if (gWifiSetupWcm.state == WIFI_SETUP_WCM_STATE_IDLE) {
         if (WCM_CleanupAsync() != 3) {
             OS_RestoreInterrupts(irq);
-            return 0;
+            return FALSE;
         }
         gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_CLEANUP;
         OS_RestoreInterrupts(irq);
-        return 1;
+        return TRUE;
     }
     if (WifiSetupWcm_ReturnToIdle() == 1) {
         gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_CLEANUP;
         OS_RestoreInterrupts(irq);
-        return 1;
+        return TRUE;
     }
     OS_RestoreInterrupts(irq);
-    return 0;
+    return FALSE;
 }
 
-int WifiSetupWcm_StartConnect(void *ap, void *key, int option) {
+BOOL WifiSetupWcm_StartConnect(void *ap, void *key, int option) {
     OSIntrMode irq;
     irq = OS_DisableInterrupts();
     gWifiSetupWcm.connectOption = option;
@@ -342,15 +342,15 @@ int WifiSetupWcm_StartConnect(void *ap, void *key, int option) {
     if (WifiSetupWcm_ReturnToIdle() == 1) {
         gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_CONNECTING;
         OS_RestoreInterrupts(irq);
-        return 1;
+        return TRUE;
     }
     if (gWifiSetupWcm.state == WIFI_SETUP_WCM_STATE_IDLE && WCM_ConnectAsync(gWifiSetupWcm.connectAp, gWifiSetupWcm.connectKey, gWifiSetupWcm.connectOption) == 3) {
         gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_CONNECTING;
         OS_RestoreInterrupts(irq);
-        return 1;
+        return TRUE;
     }
     OS_RestoreInterrupts(irq);
-    return 0;
+    return FALSE;
 }
 
 // Carves the key, start-up config, WCM work area and connect buffer out of allocation, then

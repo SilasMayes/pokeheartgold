@@ -111,11 +111,11 @@ int WifiSetup_StartSimpleStart(u32 priority, u32 count, void (*statusCallback)(s
     int state;
 
     state = WORK_STATE;
-    if (state >= 1 && state <= 5) {
+    if (state >= WIFI_SETUP_SIMPLE_START_STARTED && state <= WIFI_SETUP_SIMPLE_START_GETTING_SETTINGS) {
         return -10;
     }
     gWifiSetupConfig.count = count;
-    WORK_STATE = 7;
+    WORK_STATE = WIFI_SETUP_SIMPLE_START_STOPPED;
     gWifiSetupWork.statusCallback = statusCallback;
     gWifiSetupWork.alloc = alloc;
     gWifiSetupWork.free = free;
@@ -136,13 +136,13 @@ int WifiSetup_StartSimpleStart(u32 priority, u32 count, void (*statusCallback)(s
         return -9;
     }
     OS_CreateThread(&gWifiSetupThread, WifiSetup_SimpleStartThread, NULL, (u8 *)gWifiSetupWork.threadStack + (gWifiSetupConfig.threadStackSize & ~7), gWifiSetupConfig.threadStackSize, priority);
-    WORK_STATE = 1;
+    WORK_STATE = WIFI_SETUP_SIMPLE_START_STARTED;
     gWifiSetupConfig.deadline = WifiSetup_GetMilliseconds() + 60000;
     gWifiSetupWork.stop = 0;
     memset(&gWifiSetupResult, 0, sizeof(gWifiSetupResult));
     WifiSetup_ReportSimpleStartStatus();
     OS_WakeupThreadDirect(&gWifiSetupThread);
-    gWifiSetupWork.active = 1;
+    gWifiSetupWork.active = TRUE;
     return 1;
 }
 
@@ -150,10 +150,10 @@ int WifiSetup_StartSimpleStart(u32 priority, u32 count, void (*statusCallback)(s
 
 int WifiSetup_StopSimpleStart(void) {
     s32 old;
-    if (gWifiSetupWork.active != 0) {
+    if (gWifiSetupWork.active) {
         old = gWifiSetupWork.state;
         gWifiSetupWork.stop = 1;
-        while (gWifiSetupWork.state >= 1 && gWifiSetupWork.state <= 5) {
+        while (gWifiSetupWork.state >= WIFI_SETUP_SIMPLE_START_STARTED && gWifiSetupWork.state <= WIFI_SETUP_SIMPLE_START_GETTING_SETTINGS) {
             OS_Sleep(100);
         }
         OS_Sleep(500);
@@ -165,7 +165,7 @@ int WifiSetup_StopSimpleStart(void) {
             gWifiSetupWork.free(gWifiSetupWork.threadStack);
             gWifiSetupWork.threadStack = NULL;
         }
-        gWifiSetupWork.active = 0;
+        gWifiSetupWork.active = FALSE;
         if (old != gWifiSetupWork.state) {
             WifiSetup_ReportSimpleStartStatus();
         }

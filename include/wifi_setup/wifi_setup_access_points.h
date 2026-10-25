@@ -8,6 +8,8 @@
 #include "wifi_setup/wifi_setup_connection.h"
 #include "wifi_setup/wifi_setup_internal.h"
 
+struct WifiSetupAossResult;
+
 // Access-point data of the access-point setup: the scan for nearby access points, the saved connection settings
 // (four backup pages, the first three editable) with an edit copy of one of them, and the sound archive.
 
@@ -58,7 +60,7 @@ extern char gWifiSetupConnectionsAddressFormat[];
 extern char gWifiSetupSoundArchivePath[];
 
 int WifiSetupApScan_Start(void);
-int WifiSetupApScan_End(void);
+BOOL WifiSetupApScan_End(void);
 int WifiSetupApScan_GetEntries(WifiSetupScanEntry **out);
 void WifiSetupConnections_Load(void);
 void WifiSetupConnections_Free(void);
@@ -82,7 +84,7 @@ u8 WifiSetupConnections_GetSetupMethod(int index);
 void WifiSetupConnections_Edit(int index);
 void WifiSetupConnections_SaveEdit(void);
 void WifiSetupConnections_SetFromClientResult(WifiSetupResult *result);
-void WifiSetupConnections_SetFromInfo(u8 *info);
+void WifiSetupConnections_SetFromInfo(const struct WifiSetupAossResult *result);
 WifiSetupConnections *WifiSetupConnections_Get(void);
 void WifiSetupConnections_Erase(int index);
 void WifiSetupConnections_Reset(void);

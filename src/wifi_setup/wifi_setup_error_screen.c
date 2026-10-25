@@ -141,7 +141,7 @@ static void WifiSetupErrorScreen_DrawMessage(void) {
     } else {
         code = 0;
     }
-    canvas = WifiSetupText_InitBgCanvas(0, gWifiSetupErrorScreenFonts[WifiSetupApp_GetLanguage()]);
+    canvas = WifiSetupText_InitBgCanvas(WIFI_SETUP_SCREEN_MAIN, gWifiSetupErrorScreenFonts[WifiSetupApp_GetLanguage()]);
     msg = WifiSetupText_GetString(gWifiSetupTextBank, code);
     swprintf(text, 8, gWifiSetupErrorCodeFormat, -gWifiSetupErrorCode);
     {
@@ -156,16 +156,16 @@ static void WifiSetupErrorScreen_DrawMessage(void) {
 }
 
 static void WifiSetupErrorScreen_FadeIn(void) {
-    WifiSetupFade_Start(2, 0, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
-    WifiSetupDisplay_ShowPlanes(0, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
+    WifiSetupFade_Start(WIFI_SETUP_FADE_IN_FROM_WHITE, WIFI_SETUP_SCREEN_MAIN, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
+    WifiSetupDisplay_ShowPlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     WifiSetupApp_SetStateFunc(WifiSetupErrorScreen_WaitFadeIn);
 }
 
 static void WifiSetupErrorScreen_WaitFadeIn(void) {
-    if (WifiSetupFade_IsActive(1)) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_SUB)) {
         return;
     }
-    if (WifiSetupFade_IsActive(0)) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_MAIN)) {
         return;
     }
     WifiSetupButtonBar_Show(4);
@@ -211,36 +211,36 @@ static void WifiSetupErrorScreen_StartClose(void) {
 }
 
 static void WifiSetupErrorScreen_CloseButtonBar(void) {
-    if (WifiSetupFade_IsActive(1)) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_SUB)) {
         return;
     }
     WifiSetupButtonBar_Close();
-    WifiSetupFade_Start(3, 1, GX_BLEND_PLANEMASK_BG0, 8);
-    WifiSetupFade_Start(3, 0, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
+    WifiSetupFade_Start(WIFI_SETUP_FADE_OUT_TO_WHITE, WIFI_SETUP_SCREEN_SUB, GX_BLEND_PLANEMASK_BG0, 8);
+    WifiSetupFade_Start(WIFI_SETUP_FADE_OUT_TO_WHITE, WIFI_SETUP_SCREEN_MAIN, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
     WifiSetupApp_SetStateFunc(WifiSetupErrorScreen_Exit);
 }
 
 static void WifiSetupErrorScreen_Exit(void) {
     int x;
-    if (WifiSetupFade_IsActive(1)) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_SUB)) {
         return;
     }
-    if (WifiSetupFade_IsActive(0)) {
+    if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_MAIN)) {
         return;
     }
     if (!WifiSetupButtonBar_IsNotClosing()) {
         return;
     }
-    WifiSetupText_FreeBgCanvas(0);
+    WifiSetupText_FreeBgCanvas(WIFI_SETUP_SCREEN_MAIN);
     WifiSetupMessage_Hide();
-    WifiSetupDisplay_HidePlanes(1, GX_PLANEMASK_BG0);
-    WifiSetupDisplay_HidePlanes(0, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
+    WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
+    WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     WifiSetupApp_GetScreenArgs(0, &x);
     if (x) {
-        WifiSetupApp_SetTransition(2, 1);
+        WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_CREATE);
         WifiSetupApp_SetStateFunc(WifiSetupConnectionList_Init);
     } else {
-        WifiSetupApp_SetTransition(2, 0);
+        WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_KEEP);
         WifiSetupApp_SetScreenArgs(0, 0);
         WifiSetupSettings_SetFromMenu(0);
         WifiSetupApp_SetStateFunc(WifiSetupSettings_Init);
