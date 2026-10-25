@@ -36,16 +36,16 @@ typedef struct Session {
     u32 channel;
     s64 time;
     u32 unk10;
-    u32 systemProfileChanged;
+    BOOL systemProfileChanged;
     u32 userProfileData;
     u32 userProfileSize;
     u32 userProfileCapacity;
-    u32 userProfileChanged;
+    BOOL userProfileChanged;
     int state;
     int id;
-    u32 systemProfileReceived;
-    u32 userProfileReceived;
-    u32 entered;
+    BOOL systemProfileReceived;
+    BOOL userProfileReceived;
+    BOOL entered;
 } Session;
 
 typedef struct Node {

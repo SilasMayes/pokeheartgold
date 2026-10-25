@@ -27,7 +27,7 @@ typedef struct {
     u8 padding_04[0x4C - 0x04];
     u32 userId;
     u8 padding_50[0x68 - 0x50];
-    int recruiting;
+    BOOL recruiting;
     u8 padding_6C[0x74 - 0x6C];
     Packet recruitInfo;
     u8 padding_B8[0x134 - 0xB8];
@@ -36,12 +36,12 @@ typedef struct {
 
 extern Work *volatile gPPWLobbyWork;
 
-static inline int release(Work *w) {
+static inline BOOL release(Work *w) {
     if (w->recruiting) {
-        w->recruiting = 0;
-        return 1;
+        w->recruiting = FALSE;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 extern void PPWLobby_SendMessage(int, int, int, int, int, void *, int);

@@ -205,16 +205,16 @@ struct SystemProfile : SystemProfileHead {
 // PPWLobbyPlayer.systemProfile and systemProfileChanged.
 struct SystemProfileEntry {
     SystemProfile profile;
-    int changed;
+    BOOL changed;
 
     SystemProfileEntry(const SystemProfile &newProfile)
         : profile(newProfile)
-        , changed(1) {
+        , changed(TRUE) {
     }
 
     void Assign(const SystemProfile &newProfile) {
         profile = newProfile;
-        changed = 1;
+        changed = TRUE;
     }
 };
 
@@ -223,12 +223,12 @@ struct PlayerView {
     const void *vtable;
     SystemProfileEntry systemProfile;
     LobbyCharVector userProfile;
-    int userProfileChanged;
+    BOOL userProfileChanged;
     int state;
     int id;
-    int systemProfileReceived;
-    int userProfileReceived;
-    int entered;
+    BOOL systemProfileReceived;
+    BOOL userProfileReceived;
+    BOOL entered;
 };
 
 // What onPlayerRecordChanged reports of a player: the channel time and the channel.
@@ -348,7 +348,7 @@ extern "C" int PPW_LobbySubmitQuestionnaire(int mode) {
         return PPW_LOBBY_RESULT_ERROR_PARAM;
     }
     Out out;
-    if (!PPWLobbySchedule_GetQuestionnaire(&w->schedule, &out) || gPPWLobbyWork->submittingQuestionnaire != 0) {
+    if (!PPWLobbySchedule_GetQuestionnaire(&w->schedule, &out) || gPPWLobbyWork->submittingQuestionnaire) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     const Data *d = GetData(gPPWLobbyWork);
@@ -379,7 +379,7 @@ extern "C" int PPW_LobbySubmitQuestionnaire(int mode) {
         new (request) WebRequest(server, key, page, pid, (const u8 *)&p, (const u8 *)&p + sizeof(p), PPWLobby_OnSubmitQuestionnaire, FALSE);
         SendWebRequest(request);
     }
-    gPPWLobbyWork->submittingQuestionnaire = 1;
+    gPPWLobbyWork->submittingQuestionnaire = TRUE;
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 }
@@ -736,8 +736,8 @@ inline PPWString MakeMainChannelName(PPWString t) {
 struct Channel {
     int kind;
     u32 nm[3];
-    int usersEnumerated;
-    int modeReady;
+    BOOL usersEnumerated;
+    BOOL modeReady;
 
     PPWString &name() {
         return *(PPWString *)nm;
@@ -754,8 +754,8 @@ inline void SetSelfChannel(const PPWString &n) {
     Channel *p = &c;
     c.kind = PPW_LOBBY_CHANNEL_KIND_MAIN;
     LobbyString_InitCopy(&c.name().str, &n.str);
-    p->usersEnumerated = 0;
-    p->modeReady = 0;
+    p->usersEnumerated = FALSE;
+    p->modeReady = FALSE;
     w = gPPWLobbyWork;
     w->mainChannel.kind = c.kind;
     LobbyString_Assign(&w->mainChannel.name, &c.name().str);
@@ -842,7 +842,7 @@ inline int Find(PPWLobbyWork *w, const PPWString &name) {
 }
 
 inline int IsActive(PPWLobbyPlayer *s) {
-    return s != 0 && s->entered != 0;
+    return s != NULL && s->entered;
 }
 
 #pragma opt_common_subs off
@@ -1103,7 +1103,7 @@ inline void Rec::SetQuad(const u8 *d) {
 }
 
 static inline void SetChannelTime(PPWLobbyWork *work, Val time) {
-    work->schedule.hasTime = 1;
+    work->schedule.hasTime = TRUE;
     work->schedule.time = time;
 }
 
@@ -1145,7 +1145,7 @@ extern "C" int PPWLobby_HandleLibraryData(BOOL success, BOOL broadcast, int kind
         }
         r->SetQuad(data);
         if (r->valid && r->q.changed) {
-            r->q.changed = 0;
+            r->q.changed = FALSE;
             Triple t = r->GetTriple();
             gPPWLobbyWork->callbacks.onPlayerRecordChanged(userId, &t);
         }
@@ -1181,7 +1181,7 @@ typedef struct {
 PPWLobbyPlayer *PPWLobbyPlayers_Find(void *, int);
 
 static inline BOOL RecordValid(PPWLobbyPlayer *r) {
-    return r && r->entered != 0;
+    return r && r->entered;
 }
 
 int PPWLobby_HandleSystemMessage(Obj *, int, int, void *, int);
@@ -1238,8 +1238,6 @@ done:
 }
 
 extern "C" {
-extern int PPWLobbyPlayers_AllHaveProfiles(void *);
-
 static inline int enough(s32 n) {
     int result;
     if (n >= PPW_LOBBY_SCHEDULE_STATE_LOADED) {
@@ -1250,7 +1248,7 @@ static inline int enough(s32 n) {
     return result;
 }
 
-int PPWLobby_IsMainChannelReady(void) {
+BOOL PPWLobby_IsMainChannelReady(void) {
     Str local;
     int empty;
     PPWLobbyWork *c;
@@ -1258,20 +1256,20 @@ int PPWLobby_IsMainChannelReady(void) {
     empty = LobbyChat_IsInChannel(!local.l.isLong ? local.s.buf : local.l.ptr) == 0;
     LobbyString_Destroy(&local);
     if (empty) {
-        return 0;
+        return FALSE;
     }
     c = gPPWLobbyWork;
-    if (c->mainChannel.usersEnumerated == 0) {
-        return 0;
+    if (!c->mainChannel.usersEnumerated) {
+        return FALSE;
     }
-    if (c->mainChannel.modeReady == 0) {
-        return 0;
+    if (!c->mainChannel.modeReady) {
+        return FALSE;
     }
-    if (c->schedule.hasTime == 0) {
-        return 0;
+    if (!c->schedule.hasTime) {
+        return FALSE;
     }
     if (!enough(c->schedule.state)) {
-        return 0;
+        return FALSE;
     }
     return PPWLobbyPlayers_AllHaveProfiles(&c->players) != 0;
 }
@@ -1285,10 +1283,10 @@ extern "C" {
 static inline int flush(PPWLobbyWork *work) {
     u32 userId;
     void *buf;
-    if (work->players.self.userProfileChanged == 0) {
+    if (!work->players.self.userProfileChanged) {
         return 1;
     }
-    work->players.self.userProfileChanged = 0;
+    work->players.self.userProfileChanged = FALSE;
     userId = gPPWLobbyWork->userId;
     buf = LobbyByteVector_Data(&work->players.self.userProfile);
     PPWLobby_SetChannelData(userId, PPW_LOBBY_CHANNEL_KIND_MAIN, gLobbyStr_b_lib_u_user, buf, work->players.self.userProfile.size);
@@ -1316,7 +1314,7 @@ int PPWLobby_TimerUploadSystemProfile(void) {
     if (!work->players.self.systemProfileChanged) {
         return 1;
     }
-    work->players.self.systemProfileChanged = 0;
+    work->players.self.systemProfileChanged = FALSE;
     PPWLobby_SetChannelData(gPPWLobbyWork->userId, PPW_LOBBY_CHANNEL_KIND_MAIN, gLobbyStr_b_lib_u_system, &work->players.self.systemProfile, 16);
     return 1;
 }
@@ -1340,7 +1338,7 @@ int PPWLobby_TimerPollChannelMode(void) {
 
 int PPWLobby_TimerRequestChannelTime(void) {
     Str s;
-    if (gPPWLobbyWork->schedule.hasTime != 0) {
+    if (gPPWLobbyWork->schedule.hasTime) {
         return 0;
     }
     PPWLobbyChannel_GetName(&s, &gPPWLobbyWork->mainChannel);
@@ -1735,7 +1733,7 @@ void PPWLobby_OnSubmitQuestionnaire(BOOL status, u8 *data, u32 size, void *param
     if (!gPPWLobbyWork || gPPWLobbyWork->state == PPW_LOBBY_STATE_CLOSED) {
         return;
     }
-    gPPWLobbyWork->submittingQuestionnaire = 0;
+    gPPWLobbyWork->submittingQuestionnaire = FALSE;
     gPPWLobbyWork->callbacks.onSurveySubmitted(status ? PPW_LOBBY_WEB_RESULT_SUCCESS : PPW_LOBBY_WEB_RESULT_INVALID);
 }
 }
@@ -2057,7 +2055,7 @@ struct Work {
     u8 pade8[0xfc - 0xe8];
     SystemProfileEntry systemProfile;
     u8 pad110[0x128 - 0x110];
-    int systemProfileReceived;
+    BOOL systemProfileReceived;
 };
 
 extern "C" Work *gPPWLobbyWork;
@@ -2095,7 +2093,7 @@ extern "C" void PPWLobby_OnEnterSubChannel(int result, int unused, int arg, int 
         LobbyChat_SetChannelMode(arg, name);
         {
             Work *w = gPPWLobbyWork;
-            w->systemProfile.changed = 0;
+            w->systemProfile.changed = FALSE;
             SystemProfile info;
             info = w->systemProfile.profile;
             info.channel = kind;
@@ -2104,7 +2102,7 @@ extern "C" void PPWLobby_OnEnterSubChannel(int result, int unused, int arg, int 
             if (!(w->systemProfile.profile == ni)) {
                 w->systemProfile.Assign(ni);
             }
-            w->systemProfileReceived = 1;
+            w->systemProfileReceived = TRUE;
         }
     } else {
         gPPWLobbyWork->peer.Reset();
@@ -2141,7 +2139,7 @@ inline int Find(PPWLobbyWork *w, const Str &name) {
 }
 
 inline void UpdatePlayerChannel(PlayerView *s, SystemProfile &info, PlayerRecord &arg, int kind) {
-    s->systemProfile.changed = 0;
+    s->systemProfile.changed = FALSE;
     info = s->systemProfile.profile;
     info.channel = kind;
     SystemProfileEntry e(info);
@@ -2149,8 +2147,8 @@ inline void UpdatePlayerChannel(PlayerView *s, SystemProfile &info, PlayerRecord
     if (!(s->systemProfile.profile == ni)) {
         s->systemProfile.Assign(ni);
     }
-    s->systemProfileReceived = 1;
-    s->systemProfile.changed = 0;
+    s->systemProfileReceived = TRUE;
+    s->systemProfile.changed = FALSE;
 }
 
 inline void MakeSummary(PlayerView *s, PlayerRecord &arg) {
@@ -2218,7 +2216,7 @@ inline int Find(PPWLobbyWork *w, const Str &name) {
 }
 
 inline void UpdatePlayerChannel(PlayerView *s, SystemProfile &info, PlayerRecord &arg) {
-    s->systemProfile.changed = 0;
+    s->systemProfile.changed = FALSE;
     info = s->systemProfile.profile;
     info.channel = PPW_LOBBY_CHANNEL_KIND_INVALID;
     SystemProfileEntry e(info);
@@ -2226,8 +2224,8 @@ inline void UpdatePlayerChannel(PlayerView *s, SystemProfile &info, PlayerRecord
     if (!(s->systemProfile.profile == ni)) {
         s->systemProfile.Assign(ni);
     }
-    s->systemProfileReceived = 1;
-    s->systemProfile.changed = 0;
+    s->systemProfileReceived = TRUE;
+    s->systemProfile.changed = FALSE;
 }
 
 inline void MakeSummary(PlayerView *s, PlayerRecord &arg) {
@@ -2252,7 +2250,7 @@ extern "C" void PPWLobby_OnPlayerLeft(char *channel, int id) {
     }
     if (kind == PPW_LOBBY_CHANNEL_KIND_MAIN) {
         PlayerView *s = PPWLobbyPlayers_Find(&gPPWLobbyWork->players, id);
-        if (s == 0 || s->entered == 0) {
+        if (s == NULL || !s->entered) {
             return;
         }
         gPPWLobbyWork->callbacks.onPlayerLeave(id);
@@ -2446,7 +2444,7 @@ void PPWLobby_OnEnumChannels(int valid, int count, char **names, int unused, int
         }
         LobbyString_Assign(&gPPWLobbyWork->channelBaseName, &text);
         LobbyString_Destroy(&text);
-        gPPWLobbyWork->isNewChannel = 0;
+        gPPWLobbyWork->isNewChannel = FALSE;
         gPPWLobbyWork->state = PPW_LOBBY_STATE_ENTER_MAIN_CHANNEL;
         LobbyStringVector_Destroy(&parts);
         return;
@@ -2454,7 +2452,7 @@ void PPWLobby_OnEnumChannels(int valid, int count, char **names, int unused, int
     PPWLobby_GenerateChannelBaseName(&empty);
     LobbyString_Assign(&gPPWLobbyWork->channelBaseName, &empty);
     LobbyString_Destroy(&empty);
-    gPPWLobbyWork->isNewChannel = 1;
+    gPPWLobbyWork->isNewChannel = TRUE;
     gPPWLobbyWork->state = PPW_LOBBY_STATE_ENTER_MAIN_CHANNEL;
 }
 }
@@ -2624,7 +2622,7 @@ extern "C" void PPWLobby_OnEnumUsers(int success, char *channel, int count, int 
             LobbyChat_GetChannelKeysAsync(channel, ids[i], gLobbyStr_b_lib_u_system, PPWLobby_OnGetChannelKeys, 0);
         }
     }
-    gPPWLobbyWork->mainChannel.usersEnumerated = 1;
+    gPPWLobbyWork->mainChannel.usersEnumerated = TRUE;
 }
 
 #pragma opt_common_subs reset
@@ -2640,7 +2638,7 @@ void PPWLobby_OnGetChannelMode(int success, int channel, u32 *mode) {
         return;
     }
     if (mode[7] == PPW_LOBBY_MAX_PLAYERS) {
-        gPPWLobbyWork->mainChannel.modeReady = 1;
+        gPPWLobbyWork->mainChannel.modeReady = TRUE;
         timerId = PPW_LOBBY_TIMER_POLL_CHANNEL_MODE;
         LobbyTimerMap_EraseKey(&gPPWLobbyWork->timers, &timerId);
         return;
@@ -2682,7 +2680,7 @@ extern "C" void PPWLobby_OnGetChannelTime(BOOL result, const char *channel, int 
     {
         Stamp s = *(Stamp *)LobbyByteVector_Data(&data);
         PPWLobbyWork *w = gPPWLobbyWork;
-        w->schedule.hasTime = 1;
+        w->schedule.hasTime = TRUE;
         w->schedule.time.seconds = s.v;
         u32 timerId = PPW_LOBBY_TIMER_REQUEST_CHANNEL_TIME;
         LobbyTimerMap_EraseKey(&gPPWLobbyWork->timers, &timerId);

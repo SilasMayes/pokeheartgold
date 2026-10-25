@@ -118,7 +118,7 @@ struct Work {
     u8 pad[0x110 - 8];
     Field userProfile;
     u8 pad2[0x12c - 0x120];
-    int userProfileReceived;
+    BOOL userProfileReceived;
 };
 
 extern "C" Work *gPPWLobbyWork;
@@ -150,6 +150,6 @@ extern "C" int PPW_LobbyUpdateMyProfile(const void *profile, u32 len, int flag) 
         w->userProfile.dirty = 1;
     }
     f.v.Destroy();
-    w->userProfileReceived = 1;
+    w->userProfileReceived = TRUE;
     return PPW_LOBBY_RESULT_SUCCESS;
 }

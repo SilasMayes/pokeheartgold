@@ -42,6 +42,14 @@ enum PPWLobbyScheduleState {
     PPW_LOBBY_SCHEDULE_STATE_STARTED = 5,       // the lobby events run
 };
 
+// PPWLobbyPlayer.state: how far a player of the lobby has come (PPWLobbyPlayer_UpdateState)
+enum PPWLobbyPlayerState {
+    PPW_LOBBY_PLAYER_STATE_NEW,
+    PPW_LOBBY_PLAYER_STATE_HAS_PROFILES, // its system and user profiles have arrived
+    PPW_LOBBY_PLAYER_STATE_READY,        // its system profile says it is in the main channel
+    PPW_LOBBY_PLAYER_STATE_ENTERED,      // the game has been told (onPlayerEnter)
+};
+
 // The keys of the lobby timers (the chat's timer map and gPPWLobbyWork->timers), named after what they run
 enum PPWLobbyTimer {
     PPW_LOBBY_TIMER_CONNECT_TIMEOUT,

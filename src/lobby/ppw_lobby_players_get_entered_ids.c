@@ -33,7 +33,7 @@ void PPWLobbyPlayers_GetEnteredIds(LobbyU32Vector *out, SessionMgr *m) {
     it.current = m->list.leftmost;
     while (it.current != hdr) {
         Session *s = ((Node *)it.current)->val;
-        if (s->entered != 0) {
+        if (s->entered) {
             id = s->id;
             TouchTag();
             if (out->size < out->capacity) {

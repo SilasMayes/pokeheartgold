@@ -29,8 +29,8 @@ typedef struct PPWLobbyCallbacks {
 typedef struct PPWLobbyChannel {
     int kind;
     Str name;
-    int usersEnumerated;
-    int modeReady;
+    BOOL usersEnumerated;
+    BOOL modeReady;
 } PPWLobbyChannel;
 
 // Channel time in seconds (RTC_ConvertDateTimeToSecond).
@@ -51,14 +51,14 @@ typedef struct PPWLobbySystemProfile {
 typedef struct PPWLobbyPlayer {
     const void *vtable;
     PPWLobbySystemProfile systemProfile;
-    int systemProfileChanged;
+    BOOL systemProfileChanged;
     LobbyCharVector userProfile;
-    int userProfileChanged;
+    BOOL userProfileChanged;
     int state;
     int id;
-    int systemProfileReceived;
-    int userProfileReceived;
-    int entered;
+    BOOL systemProfileReceived;
+    BOOL userProfileReceived;
+    BOOL entered;
 } PPWLobbyPlayer;
 
 // The other players, a tree of PPWLobbyPlayer keyed by user id.
@@ -100,7 +100,7 @@ typedef struct PPWLobbyScheduleRecord {
 // The event schedule the server sends for the lobby, and the questionnaire.
 typedef struct PPWLobbySchedule {
     int state;
-    int hasTime;
+    BOOL hasTime;
     PPWLobbyTime time;
     s64 startTime;
     BOOL startRequested;
@@ -124,9 +124,9 @@ typedef struct PPWLobbyWork {
     u32 prefix;
     u32 unk_54;
     Str channelBaseName;
-    int isNewChannel;
-    int recruiting;
-    int submittingQuestionnaire;
+    BOOL isNewChannel;
+    BOOL recruiting;
+    BOOL submittingQuestionnaire;
     u32 unk_70;
     u8 recruitInfo[0x44];
     PPWLobbyChannel mainChannel;
@@ -256,9 +256,10 @@ BOOL PPWLobbySchedule_ValidateVipRecords(PPWLobbySchedule *schedule, const void 
 BOOL PPWLobbySchedule_SetVipRecords(PPWLobbySchedule *schedule, const void *data, u32 size);
 void PPWLobbyPlayers_Clear(PPWLobbyPlayers *);
 void PPWLobbyPlayers_UpdateStates(PPWLobbyPlayers *);
+BOOL PPWLobbyPlayers_AllHaveProfiles(PPWLobbyPlayers *players);
 void PPWLobby_MakeChannelName(Str *out, u32 kind, Str *baseName);
 int PPWLobby_EnterMainChannel(void);
-int PPWLobby_IsMainChannelReady(void);
+BOOL PPWLobby_IsMainChannelReady(void);
 
 #ifdef __cplusplus
 }

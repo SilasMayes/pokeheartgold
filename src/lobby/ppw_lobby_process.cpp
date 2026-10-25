@@ -351,7 +351,7 @@ static inline int Lobby_Process(void) {
     case PPW_LOBBY_STATE_WAIT_MAIN_CHANNEL:
         if (PPWLobby_IsMainChannelReady()) {
             PPWLobbyPlayer *self = &gPPWLobbyWork->players.self;
-            self->systemProfileChanged = 0;
+            self->systemProfileChanged = FALSE;
             TrackedProfile profile(self->systemProfile.channel, self->systemProfile.time, 1, TRUE);
             SetSystemProfile(self, profile);
             self->systemProfileReceived = TRUE;

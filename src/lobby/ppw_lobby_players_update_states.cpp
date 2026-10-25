@@ -2,6 +2,8 @@
 
 #include <nitro/code32.h>
 
+#include "ppw_lobby_state.h"
+
 struct Triple {
     u32 a, b, c;
 };
@@ -95,11 +97,11 @@ extern "C" void PPWLobbyPlayers_UpdateStates(Map *m) {
         do {
             PPWLobbyPlayer_UpdateState(it.n->value);
             switch (it.n->value->state) {
-            case 0:
-            case 1:
-            case 3:
+            case PPW_LOBBY_PLAYER_STATE_NEW:
+            case PPW_LOBBY_PLAYER_STATE_HAS_PROFILES:
+            case PPW_LOBBY_PLAYER_STATE_ENTERED:
                 break;
-            case 2: {
+            case PPW_LOBBY_PLAYER_STATE_READY: {
                 Obj *obj = it.n->value;
                 obj->systemProfileChanged = zero;
                 o2 = it.n->value;
@@ -110,7 +112,7 @@ extern "C" void PPWLobbyPlayers_UpdateStates(Map *m) {
                 y = it.n->value->id;
                 Handler *h = PPWLobby_GetWork();
                 h->onPlayerEnter(y, &b, LobbyByteVector_Data(o2->userProfile), x);
-                it.n->value->entered = 1;
+                it.n->value->entered = TRUE;
                 break;
             }
             }

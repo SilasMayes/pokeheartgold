@@ -23,7 +23,7 @@ void LobbyStringVectorBuffer_EraseAtEnd(LobbyStringVectorBuffer *buffer, u32 cou
 
 PPWLobbySchedule *PPWLobbySchedule_Init(PPWLobbySchedule *schedule) {
     schedule->state = PPW_LOBBY_SCHEDULE_STATE_NONE;
-    schedule->hasTime = 0;
+    schedule->hasTime = FALSE;
     schedule->time.seconds = 0;
     schedule->startTime = 0;
     schedule->startRequested = FALSE;

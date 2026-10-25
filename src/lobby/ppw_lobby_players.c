@@ -7,22 +7,22 @@
 
 void PPWLobbyPlayer_UpdateState(Session *s) {
     switch (s->state) {
-    case 0:
-        s->state = (s->systemProfileReceived != 0 && s->userProfileReceived != 0) ? 1 : 0;
-        if (s->state == 0) {
+    case PPW_LOBBY_PLAYER_STATE_NEW:
+        s->state = (s->systemProfileReceived && s->userProfileReceived) ? PPW_LOBBY_PLAYER_STATE_HAS_PROFILES : PPW_LOBBY_PLAYER_STATE_NEW;
+        if (s->state == PPW_LOBBY_PLAYER_STATE_NEW) {
             return;
         }
-    case 1:
+    case PPW_LOBBY_PLAYER_STATE_HAS_PROFILES:
         if (s->unk10 != 0) {
-            s->state = 2;
+            s->state = PPW_LOBBY_PLAYER_STATE_READY;
         }
         return;
-    case 2:
-        if (s->entered != 0) {
-            s->state = 3;
+    case PPW_LOBBY_PLAYER_STATE_READY:
+        if (s->entered) {
+            s->state = PPW_LOBBY_PLAYER_STATE_ENTERED;
         }
         return;
-    case 3:
+    case PPW_LOBBY_PLAYER_STATE_ENTERED:
         return;
     }
 }
@@ -43,16 +43,16 @@ BOOL PPWLobbyPlayers_Add(SessionMgr *m, int id) {
         n->unk10 = 0;
         DWC_GetDateTime(&date, &time);
         n->time = RTC_ConvertDateTimeToSecond(&date, &time);
-        n->systemProfileChanged = 1;
+        n->systemProfileChanged = TRUE;
         n->userProfileData = 0;
         n->userProfileSize = 0;
         n->userProfileCapacity = 0;
-        n->userProfileChanged = 1;
-        n->state = 0;
+        n->userProfileChanged = TRUE;
+        n->state = PPW_LOBBY_PLAYER_STATE_NEW;
         n->id = id;
-        n->systemProfileReceived = 0;
-        n->userProfileReceived = 0;
-        n->entered = 0;
+        n->systemProfileReceived = FALSE;
+        n->userProfileReceived = FALSE;
+        n->entered = FALSE;
     }
     s = n;
     PPWLobbyPlayerSet_Insert(&res, &m->list, &s);
