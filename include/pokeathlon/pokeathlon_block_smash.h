@@ -54,7 +54,7 @@ typedef struct PokeathlonBlockSmashBlock {
 // A fragment thrown off a broken block.
 typedef struct PokeathlonBlockSmashFragment {
     ManagedSprite *sprite;
-    int active;
+    BOOL active;
     fx32 velocityX;
     fx32 velocityY;
     s16 x;

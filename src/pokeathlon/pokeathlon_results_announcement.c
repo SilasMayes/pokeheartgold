@@ -381,7 +381,7 @@ BOOL PokeathlonResults_Exit(PokeathlonCourseData *course) {
     Main_SetVBlankIntrCB(NULL, NULL);
     Main_SetHBlankIntrCB(NULL, NULL);
     FontID_Release(4);
-    G2_SetBlendBrightness(0x3F, 0);
+    G2_SetBlendBrightness(GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD, 0);
     PokeathlonEventBanner_Free(announcement->banner);
     RemoveWindow(&announcement->window);
     PokeathlonCourseMessageBox_Free(announcement->messageBox);

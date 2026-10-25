@@ -92,7 +92,7 @@ typedef struct PokeathlonHurdleDashPacket {
 
 // The host's packet (block 1 sent, block 6 received).
 typedef struct PokeathlonHurdleDashStatus {
-    u32 allDone;
+    BOOL allDone;
     u16 distances[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE];
     u8 ranks[6]; // a nibble per Pokemon, the low one first
 } PokeathlonHurdleDashStatus;
@@ -105,7 +105,7 @@ typedef struct PokeathlonHurdleDashRankNode {
     u16 index;
     u16 finishTime;
     u16 finished;
-    u32 tied; // same rank as the node before it
+    BOOL tied; // same rank as the node before it
 } PokeathlonHurdleDashRankNode;
 
 // The ranking of the 12 Pokemon by their team rank (the standings bar).

@@ -484,7 +484,7 @@ BOOL PokeathlonBlockSmash_Init(PokeathlonCourseData *course) {
         break;
     case BLOCK_SMASH_INIT_LOAD_BGS:
         work->bgConfig = BgConfig_Alloc(work->heapId);
-        PokeathlonCourse_SetHudPlanes(course, 4);
+        PokeathlonCourse_SetHudPlanes(course, GX_PLANEMASK_BG2);
         PokeathlonBlockSmash_InitBgs(work->bgConfig, work->heapId);
         PokeathlonBlockSmash_InitText(course);
         PokeathlonBlockSmash_LoadBgGraphics(work);

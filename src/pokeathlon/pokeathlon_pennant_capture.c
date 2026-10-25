@@ -98,7 +98,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
         MI_CpuFill8(data, 0, sizeof(PokeathlonPennantCapture));
         data->bgConfig = BgConfig_Alloc(HEAP_ID_139);
         PokeathlonCourse_SetEventDataTransfer(course, (u32)&data->layoutChoice, (u32)&data->layoutFileId, sizeof(data->layoutFileId));
-        PokeathlonCourse_SetHudPlanes(course, 8);
+        PokeathlonCourse_SetHudPlanes(course, GX_PLANEMASK_BG3);
         charTransfer.maxTasks = 202;
         charTransfer.sizeMain = 0x40000;
         charTransfer.sizeSub = 0x4000;

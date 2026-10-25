@@ -1823,10 +1823,10 @@ static u32 PokeathlonCourseCeremony_ChooseEffortPrizeKind(PokeathlonCourseData *
     s32 tries;
     s32 team;
     {
-        s32 found;
+        BOOL found;
         s32 kind;
 
-        found = 0;
+        found = FALSE;
         kind = MTRandom() & 3;
         for (tries = 0; tries < EFFORT_PRIZE_KIND_COUNT; tries++) {
             for (team = 0; team < POKEATHLON_PARTICIPANTS; team++) {
@@ -1834,7 +1834,7 @@ static u32 PokeathlonCourseCeremony_ChooseEffortPrizeKind(PokeathlonCourseData *
 
                 for (member = 0; member < POKEATHLON_TEAM_SIZE; member++) {
                     if (PokeathlonCourseCeremony_GetMonStat(course, kind, team, member)) {
-                        found = 1;
+                        found = TRUE;
                         break;
                     }
                 }
@@ -2239,7 +2239,7 @@ static void PokeathlonCourseCeremony_BreakTie(PokeathlonCourseCeremonyRank *rank
 // Link: the host waits until every player's text is as far as its own. Returns TRUE while the
 // players have to wait.
 static inline BOOL SyncMessages(PokeathlonCourseData *course, BOOL closing) {
-    u32 allFinished;
+    BOOL allFinished;
     u32 waiting;
     u8 *received;
     u8 *sent;
@@ -2259,7 +2259,7 @@ static inline BOOL SyncMessages(PokeathlonCourseData *course, BOOL closing) {
     waiting = 0;
 
     if (netId == 0) {
-        allFinished = 1;
+        allFinished = TRUE;
         if (closing) {
             ((PokeathlonCourseCeremonyClosingData *)sent)->messageCount = messageCount;
         } else {
@@ -2280,16 +2280,16 @@ static inline BOOL SyncMessages(PokeathlonCourseData *course, BOOL closing) {
                 waiting = 1;
             }
             if (sync->finished == 0) {
-                allFinished = 0;
+                allFinished = FALSE;
             }
         }
         if (closing) {
-            if (allFinished != 0) {
+            if (allFinished) {
                 ((PokeathlonCourseCeremonyClosingData *)sent)->allFinished = 1;
             }
             ((PokeathlonCourseCeremonyClosingData *)sent)->waiting = waiting;
         } else {
-            if (allFinished != 0) {
+            if (allFinished) {
                 ((PokeathlonCourseCeremonyOpeningData *)sent)->allFinished = 1;
             }
             ((PokeathlonCourseCeremonyOpeningData *)sent)->waiting = waiting;

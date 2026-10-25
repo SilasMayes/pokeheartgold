@@ -417,12 +417,12 @@ void PokeathlonRingDropMon_UpdateStatus(PokeathlonRingDropMon *mon, PokeathlonRi
     PokeathlonRingDropMon *self = mon;
     s32 stamina = member->stamina >> FX32_SHIFT;
     u8 *status = &self->status;
-    int tired;
+    BOOL tired;
     u32 newStatus;
     if (stamina < 30) {
-        tired = 1;
+        tired = TRUE;
     } else {
-        tired = 0;
+        tired = FALSE;
     }
     if (PokeathlonRingDropMon_CanSwitch(self)) {
         if (tired) {

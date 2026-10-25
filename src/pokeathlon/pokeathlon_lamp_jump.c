@@ -337,7 +337,7 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
         lampJump = PokeathlonCourse_AllocWork(course, sizeof(PokeathlonLampJump));
         MI_CpuFill8(lampJump, 0, sizeof(PokeathlonLampJump));
         lampJump->bgConfig = BgConfig_Alloc(HEAP_ID_143);
-        PokeathlonCourse_SetHudPlanes(course, 8);
+        PokeathlonCourse_SetHudPlanes(course, GX_PLANEMASK_BG3);
         spriteConfig.maxTasks = 213;
         spriteConfig.sizeMain = 0x40000;
         spriteConfig.sizeSub = 0x4000;

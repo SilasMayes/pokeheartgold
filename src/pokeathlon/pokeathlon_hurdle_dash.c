@@ -206,7 +206,7 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
         layout = PokeathlonHurdleDashTrack_GetLayout(hurdleDash->track);
         layoutSize = PokeathlonHurdleDashTrack_GetLayoutSize(hurdleDash->track);
         PokeathlonCourse_SetEventDataTransfer(course, (u32)layoutToSend, (u32)layout, layoutSize);
-        PokeathlonCourse_SetHudPlanes(course, 8);
+        PokeathlonCourse_SetHudPlanes(course, GX_PLANEMASK_BG3);
         charTransfer.maxTasks = 107;
         charTransfer.sizeMain = 0x40000;
         charTransfer.sizeSub = 0x4000;

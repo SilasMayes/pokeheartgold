@@ -69,7 +69,7 @@ void PokeathlonCourseScoreList_Rank(PokeathlonCourseScoreList *list, int mode) {
     PokeathlonCourseScoreNode *ranked;
     int prevScore;
     int rank;
-    int tie;
+    BOOL tie;
     nodes[0].next = nodes[0].prev = &nodes[1];
     nodes[0].entry = NULL;
     switch (mode) {
@@ -132,7 +132,7 @@ void PokeathlonCourseScoreList_Rank(PokeathlonCourseScoreList *list, int mode) {
     }
     ranked = &nodes[0];
     prevScore = -1;
-    tie = 0;
+    tie = FALSE;
     rank = -1;
     for (i = 0; i < list->count; i++) {
         ranked = ranked->next;
@@ -141,12 +141,12 @@ void PokeathlonCourseScoreList_Rank(PokeathlonCourseScoreList *list, int mode) {
             prevScore = ranked->entry->score;
             if (tie) {
                 rank = i;
-                tie = 0;
+                tie = FALSE;
             } else {
                 rank++;
             }
         } else {
-            tie = 1;
+            tie = TRUE;
         }
         list->ranking[i]->rank = rank;
     }

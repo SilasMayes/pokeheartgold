@@ -141,7 +141,7 @@ BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
         goalRoll->sortWork = Heap_Alloc(HEAP_ID_147, 40);
         MI_CpuFill8(goalRoll->sortWork, 0, 40);
         goalRoll->bgConfig = BgConfig_Alloc(HEAP_ID_147);
-        PokeathlonCourse_SetHudPlanes(course, 8);
+        PokeathlonCourse_SetHudPlanes(course, GX_PLANEMASK_BG3);
         work.charTransfer.maxTasks = 133;
         work.charTransfer.sizeMain = 0x40000;
         work.charTransfer.sizeSub = 0x4000;
@@ -553,7 +553,7 @@ static BOOL PokeathlonGoalRoll_HandleInput(PokeathlonCourseData *course) {
     PokeathlonGoalRollInput *input = (PokeathlonGoalRollInput *)PokeathlonCourse_ToBytes(area);
     PokeathlonGoalRollFramePacket *frame;
 
-    input->touching = 0;
+    input->touching = FALSE;
     frame = (PokeathlonGoalRollFramePacket *)PokeathlonCourse_ToBytes(area + POKEATHLON_COURSE_DATA_FRAME_IN);
     u8 timeUp = 1;
     timeUp &= frame->flags >> 24;
@@ -570,7 +570,7 @@ static BOOL PokeathlonGoalRoll_HandleInput(PokeathlonCourseData *course) {
     if (System_GetTouchHeld()) {
         input->x = gSystem.touchX;
         input->y = gSystem.touchY;
-        input->touching = 1;
+        input->touching = TRUE;
     }
     PokeathlonGoalRoll_ApplyFrame(course);
     return FALSE;

@@ -529,7 +529,7 @@ void PokeathlonHurdleDash_SyncRace(PokeathlonCourseData *course) {
             }
         }
         if (done == PokeathlonCourse_GetParticipantCount(course)) {
-            status->allDone = 1;
+            status->allDone = TRUE;
         }
         PokeathlonHurdleDash_CalcRanks(course);
     }
@@ -700,7 +700,7 @@ static void PokeathlonHurdleDash_CalcRanks(PokeathlonCourseData *course) {
     head.index = 0;
     head.finishTime = 0;
     head.finished = 0;
-    head.tied = 0;
+    head.tied = FALSE;
     block += 2 * sizeof(PokeathlonCoursePacket);
     base = participant;
     for (; participant < POKEATHLON_PARTICIPANTS; participant++) {
@@ -715,7 +715,7 @@ static void PokeathlonHurdleDash_CalcRanks(PokeathlonCourseData *course) {
             node->finishTime = packet->finishTimes[0];
             node->index = index;
             node->finished = packet->finished[0];
-            node->tied = 0;
+            node->tied = FALSE;
             j = 0;
             node->next = (void *)j;
             if (index > 0) {
@@ -755,7 +755,7 @@ static void PokeathlonHurdleDash_CalcRanks(PokeathlonCourseData *course) {
         for (i = 0; i < POKEATHLON_MONS; i++) {
             node = node->next;
             GF_ASSERT(node != NULL);
-            if (node->tied == 0) {
+            if (!node->tied) {
                 rank += step;
                 step = 1;
             } else {
@@ -775,10 +775,10 @@ static BOOL PokeathlonHurdleDashRankNode_InsertFinished(PokeathlonHurdleDashRank
         } else if (at->finishTime == node->finishTime) {
             if (at->index > node->index) {
                 LIST_INSERT_BEFORE(node, at);
-                at->tied = 1;
+                at->tied = TRUE;
                 return TRUE;
             } else {
-                node->tied = 1;
+                node->tied = TRUE;
             }
         }
     } else {
@@ -800,10 +800,10 @@ static BOOL PokeathlonHurdleDashRankNode_InsertRunning(PokeathlonHurdleDashRankN
         } else if (at->finishTime == node->finishTime) {
             if (at->index > node->index) {
                 LIST_INSERT_BEFORE(node, at);
-                at->tied = 1;
+                at->tied = TRUE;
                 return TRUE;
             } else {
-                node->tied = 1;
+                node->tied = TRUE;
             }
         }
     }

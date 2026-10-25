@@ -212,7 +212,7 @@ BOOL PokeathlonRingDrop_Init(PokeathlonCourseData *course) {
         break;
     case RING_DROP_INIT_LOAD_BGS:
         ringDrop->bgConfig = BgConfig_Alloc(ringDrop->heapId);
-        PokeathlonCourse_SetHudPlanes(course, 8);
+        PokeathlonCourse_SetHudPlanes(course, GX_PLANEMASK_BG3);
         PokeathlonRingDrop_InitBgs(ringDrop);
         PokeathlonRingDrop_LoadBgGraphics(ringDrop);
         PokeathlonRingDrop_AddScoreWindow(ringDrop);

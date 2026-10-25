@@ -92,11 +92,11 @@ void PokeathlonPennantCaptureCpu_SetObstacles(PokeathlonPennantCaptureCpu *cpu, 
     for (i = 0; i < PENNANT_CAPTURE_OBSTACLES; i++) {
         u16 x = spots[0] << 3, y = spots[1] << 3;
         if (x && y) {
-            cpu->obstacles[i].active = 1;
+            cpu->obstacles[i].active = TRUE;
             cpu->obstacles[i].x = x;
             cpu->obstacles[i].y = y;
         } else {
-            cpu->obstacles[i].active = 0;
+            cpu->obstacles[i].active = FALSE;
         }
         spots += 2;
     }
@@ -118,11 +118,11 @@ int PokeathlonPennantCaptureCpu_Update(PokeathlonPennantCaptureCpu *cpu) {
 
     cpu->timer++;
     if (cpu->timer >= cpu->interval) {
-        cpu->thinking = 1;
+        cpu->thinking = TRUE;
         cpu->timer = 0;
     }
 
-    if (cpu->thinking != 0) {
+    if (cpu->thinking) {
         participant = cpu->firstCpu + cpu->cursor;
         GF_ASSERT(participant >= cpu->firstCpu);
         PokeathlonPennantCaptureCpu_ChooseTarget(cpu, participant);
@@ -130,7 +130,7 @@ int PokeathlonPennantCaptureCpu_Update(PokeathlonPennantCaptureCpu *cpu) {
         cpu->cursor++;
         if (cpu->cursor >= cpu->cpuCount) {
             cpu->cursor = 0;
-            cpu->thinking = 0;
+            cpu->thinking = FALSE;
         }
     }
     return result;

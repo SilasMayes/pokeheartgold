@@ -400,7 +400,7 @@ BOOL PokeathlonCirclePush_Init(PokeathlonCourseData *course) {
         circlePush->sortBuffer = Heap_Alloc(HEAP_ID_140, 40);
         MI_CpuFill8(circlePush->sortBuffer, 0, 40);
         circlePush->bgConfig = BgConfig_Alloc(HEAP_ID_140);
-        PokeathlonCourse_SetHudPlanes(course, 8);
+        PokeathlonCourse_SetHudPlanes(course, GX_PLANEMASK_BG3);
         charTemplate.maxTasks = 104;
         charTemplate.sizeMain = 0x40000;
         charTemplate.sizeSub = 0x4000;

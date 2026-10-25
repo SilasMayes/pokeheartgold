@@ -196,7 +196,7 @@ typedef struct PokeathlonGoalRollMonParams {
 
 // A participant's input (in the course's data copy area).
 typedef struct PokeathlonGoalRollInput {
-    u32 touching;
+    BOOL touching;
     u8 x;
     u8 y;
 } PokeathlonGoalRollInput;

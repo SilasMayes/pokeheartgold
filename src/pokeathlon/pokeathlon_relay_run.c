@@ -251,7 +251,7 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
         MI_CpuFill8(data, 0, sizeof(PokeathlonRelayRun));
         data->bgConfig = BgConfig_Alloc(HEAP_ID_144);
         PokeathlonCourse_SetEventDataTransfer(course, (u32)data->layoutToSend, (u32)data->layout, sizeof(data->layout));
-        PokeathlonCourse_SetHudPlanes(course, 8);
+        PokeathlonCourse_SetHudPlanes(course, GX_PLANEMASK_BG3);
         ObjCharTransferTemplate charTransfer;
         charTransfer.maxTasks = 151;
         charTransfer.sizeMain = 0x40000;
@@ -2152,12 +2152,12 @@ void PokeathlonRelayRun_UpdateStartLine(BgConfig *bgConfig, int x) {
 // Shows the lap count for a second (60 frames) each time it goes up.
 void PokeathlonRelayRun_UpdateLapCounter(PokeathlonRelayRunLapCounter *counter, u8 laps) {
     VecFx32 platePosition = sRelayRunLapCounterPlatePos, firstPosition = sRelayRunLapCounterFirstDigitPos, secondPosition = sRelayRunLapCounterSecondDigitPos;
-    int changed;
+    BOOL changed;
     if (counter->laps < laps) {
         counter->laps = laps;
-        changed = 1;
+        changed = TRUE;
     } else {
-        changed = 0;
+        changed = FALSE;
     }
     if (changed) {
         u8 tens = laps / 10;

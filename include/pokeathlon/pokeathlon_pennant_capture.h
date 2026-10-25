@@ -287,7 +287,7 @@ typedef struct PokeathlonPennantCaptureCpuPlayer {
 } PokeathlonPennantCaptureCpuPlayer;
 
 typedef struct PokeathlonPennantCaptureCpuObject {
-    int active;
+    BOOL active;
     int x;
     int y;
 } PokeathlonPennantCaptureCpuObject;
@@ -310,7 +310,7 @@ typedef struct PokeathlonPennantCaptureCpu {
     PokeathlonPennantCapturePennant *pennants;
     u32 unk18C;
     PokeathlonPennantCaptureCpuCell cells[PENNANT_CAPTURE_CPU_CELLS];
-    u32 thinking;
+    BOOL thinking;
     u8 cpuCount;
     u8 cursor;
     u8 timer;

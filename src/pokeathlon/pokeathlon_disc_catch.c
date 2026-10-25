@@ -763,9 +763,9 @@ u32 PokeathlonDiscCatch_Finish(PokeathlonCourseData *course, u8 *state) {
     PokeathlonDiscCatch *work = PokeathlonCourse_GetWork(course);
     if (*state == 0) {
         if (IsPaletteFadeFinished()) {
-            u32 isGuest = PokeathlonCourse_GetNetId(course);
+            BOOL isGuest = PokeathlonCourse_GetNetId(course);
             work = PokeathlonCourse_GetWork(course);
-            if (isGuest == 0) {
+            if (!isGuest) {
                 int i;
                 PokeathlonDiscCatchResult *result;
                 for (i = 0, result = &work->field.teams[0].result; i < DISC_CATCH_PARTICIPANTS; i++) {
@@ -804,7 +804,7 @@ u32 PokeathlonDiscCatch_Init(PokeathlonCourseData *course) {
         break;
     case DISC_CATCH_INIT_LOAD_BGS:
         work->bgConfig = BgConfig_Alloc(work->heapId);
-        PokeathlonCourse_SetHudPlanes(course, 4);
+        PokeathlonCourse_SetHudPlanes(course, GX_PLANEMASK_BG2);
         PokeathlonDiscCatch_InitBgs(work);
         PokeathlonDiscCatch_LoadBgGraphics(work);
         PokeathlonDiscCatch_AddScoreWindow(work);

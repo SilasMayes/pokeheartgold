@@ -47,7 +47,7 @@ typedef struct PokeathlonBoxArgs_SelectedMon {
 
 typedef struct PokeathlonBoxArgs {
     PokeathlonCourseArgs *courseArgs;
-    u32 cancelled;
+    BOOL cancelled;
     u32 npcTeam;
     PokeathlonBoxArgs_SelectedMon selectedMons[3];
     u32 courseId;

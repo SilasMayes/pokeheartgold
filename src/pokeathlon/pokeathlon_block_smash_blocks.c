@@ -495,8 +495,8 @@ static void PokeathlonBlockSmashFragments_Spawn(PokeathlonBlockSmashFragment *fr
     int i;
     int spawned = 0;
     for (i = 0; i < 16; i++, fragments++) {
-        if (fragments->active == 0) {
-            fragments->active = 1;
+        if (!fragments->active) {
+            fragments->active = TRUE;
             fragments->x = x;
             fragments->y = y;
             fragments->velocityX = FX32_CONST(MTRandom() % 8 + 4) * (i % 2 == 0 ? 1 : -1);
@@ -530,7 +530,7 @@ static void PokeathlonBlockSmashFragments_Update(PokeathlonBlockSmashFragment *f
     for (i = 0; i < 16; i++, fragments++) {
         if (fragments->active == 1 && PokeathlonBlockSmashFragment_Update(fragments)) {
             ManagedSprite_SetDrawFlag(fragments->sprite, FALSE);
-            fragments->active = 0;
+            fragments->active = FALSE;
         }
     }
 }
