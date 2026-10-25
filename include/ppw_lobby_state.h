@@ -65,6 +65,14 @@ enum PPWLobbyResult {
     PPW_LOBBY_RESULT_ERROR_CONDITION, // the library is in PPW_LOBBY_STATE_ERROR
 };
 
+// Results of the lobby's web requests (PPWLobby_ParseWebResponse), as the own record, schedule, special visitor and
+// questionnaire callbacks receive them
+enum PPWLobbyWebResult {
+    PPW_LOBBY_WEB_RESULT_SUCCESS,
+    PPW_LOBBY_WEB_RESULT_SERVER_ERROR, // the server answered with error code 6
+    PPW_LOBBY_WEB_RESULT_INVALID,      // no answer, a short or unexpected answer, or another server error code
+};
+
 // PPW_LobbyGetLastError
 enum PPWLobbyError {
     PPW_LOBBY_ERROR_NONE,

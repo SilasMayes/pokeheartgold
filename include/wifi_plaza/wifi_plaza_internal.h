@@ -406,7 +406,14 @@ typedef struct WiFiPlazaLobbyPlayerRecord {
     u32 channel; // lobby library channel, WIFI_PLAZA_LOBBY_LIB_CHANNEL_NONE = none
 } WiFiPlazaLobbyPlayerRecord;
 
-// The ids of the players in the lobby (list 0) and in the own channel (list 1), -1 = free.
+// The lobby as a whole and the own channel: the index of gWiFiPlazaLobbyClient->idLists and commandTables.
+enum WiFiPlazaLobbyScope {
+    WIFI_PLAZA_LOBBY_SCOPE_LOBBY,
+    WIFI_PLAZA_LOBBY_SCOPE_CHANNEL,
+    WIFI_PLAZA_LOBBY_SCOPE_COUNT,
+};
+
+// The ids of the players in the lobby or in the own channel, -1 = free.
 typedef struct WiFiPlazaLobbyIdList {
     s16 count;
     u16 capacity;
@@ -568,7 +575,7 @@ typedef struct WiFiPlazaLobbyClient {
     u8 *playerData;    // playerDataSize bytes per lobby slot
     u32 playerDataSize;
     WiFiPlazaLobbyPlayerRecord records[WIFI_PLAZA_MAX_PLAYERS];
-    WiFiPlazaLobbyIdList idLists[2];
+    WiFiPlazaLobbyIdList idLists[WIFI_PLAZA_LOBBY_SCOPE_COUNT];
     u8 state;        // WIFI_PLAZA_LOBBY_STATE_*
     u8 channel;      // WIFI_PLAZA_LOBBY_CHANNEL_NONE = none
     u8 channelState; // WIFI_PLAZA_CHANNEL_STATE_*
@@ -578,7 +585,7 @@ typedef struct WiFiPlazaLobbyClient {
     u8 requestError;
     u8 ownRecordError;
     WiFiPlazaLobbyLocation locations[WIFI_PLAZA_MAX_PLAYERS];
-    WiFiPlazaLobbyCommandTable commandTables[2]; // lobby, channel
+    WiFiPlazaLobbyCommandTable commandTables[WIFI_PLAZA_LOBBY_SCOPE_COUNT];
     PPWLobbyTimeInfo time;                       // refreshed every frame
     WiFiPlazaLobbySchedule schedule; // received with PPW_LobbyGetSchedule
     u32 scheduleSize;
@@ -861,7 +868,7 @@ int WiFiPlazaLobbyClient_SlotToId(int slot);
 int WiFiPlazaLobbyClient_ChannelSlotToId(int slot);
 void WiFiPlazaLobbyClient_GetTime(s64 *time);
 u32 WiFiPlazaLobbyClient_GetScheduleValue(int field);
-int WiFiPlazaLobbyClient_StartAddOwnLocation(void);
+BOOL WiFiPlazaLobbyClient_StartAddOwnLocation(void);
 BOOL WiFiPlazaLobbyClient_IsOwnLocationAdded(void);
 u32 WiFiPlazaLobbyClient_GetLocationCountry(u8 slot);
 u8 WiFiPlazaLobbyClient_GetLocationRegion(u8 slot);
@@ -885,7 +892,7 @@ BOOL WiFiPlazaLobbyClient_JoinMatch(int index);
 u32 WiFiPlazaLobbyClient_GetMatchTimer(int index);
 int WiFiPlazaLobbyClient_GetMatchHostId(void);
 u8 WiFiPlazaLobbyClient_IsMatchHost(void);
-int WiFiPlazaLobbyClient_IsSpecialVisitor(int id);
+BOOL WiFiPlazaLobbyClient_IsSpecialVisitor(int id);
 int WiFiPlazaLobbyClient_GetSpecialVisitorCode(int id);
 void WiFiPlazaLobbyClient_SubmitSurveyAnswer(int index);
 u32 WiFiPlazaLobbyClient_GetSurveySubmitState(void);
@@ -904,10 +911,10 @@ void WiFiPlazaLobbyClient_ClearPlayerData(WiFiPlazaLobbyClient *client, int id);
 void WiFiPlazaLobbyClient_SetPlayerRecord(WiFiPlazaLobbyClient *client, int id, const WiFiPlazaLobbyPlayerRecord *record);
 WiFiPlazaLobbyPlayerRecord *WiFiPlazaLobbyClient_GetPlayerRecord(WiFiPlazaLobbyClient *client, int id);
 void WiFiPlazaLobbyClient_ClearPlayerRecord(WiFiPlazaLobbyClient *client, int id);
-void WiFiPlazaLobbyClient_AddToIdList(WiFiPlazaLobbyClient *client, int id, int which);
-void WiFiPlazaLobbyClient_RemoveFromIdList(WiFiPlazaLobbyClient *client, int id, int which);
-int WiFiPlazaLobbyClient_FindInIdList(WiFiPlazaLobbyClient *client, int id, int which);
-int WiFiPlazaLobbyClient_GetIdListEntry(WiFiPlazaLobbyClient *client, int slot, int which);
+void WiFiPlazaLobbyClient_AddToIdList(WiFiPlazaLobbyClient *client, int id, int scope);
+void WiFiPlazaLobbyClient_RemoveFromIdList(WiFiPlazaLobbyClient *client, int id, int scope);
+int WiFiPlazaLobbyClient_FindInIdList(WiFiPlazaLobbyClient *client, int id, int scope);
+int WiFiPlazaLobbyClient_GetIdListEntry(WiFiPlazaLobbyClient *client, int slot, int scope);
 void WiFiPlazaLobbyClient_RebuildChannelList(WiFiPlazaLobbyClient *client, u32 channel);
 
 BOOL WiFiPlazaLobbyClient_HasChannelRoom(WiFiPlazaLobbyClient *client, int channel);
@@ -953,7 +960,7 @@ WiFiPlazaPlayerObject *WiFiPlazaPlayerObjects_Add(WiFiPlazaPlayerObjects *object
 void WiFiPlazaPlayerObject_Delete(WiFiPlazaPlayerObject *object);
 void WiFiPlazaPlayerObject_SetMode(WiFiPlazaPlayerObject *object, u32 mode);
 void WiFiPlazaPlayerObject_SetLightFlags(WiFiPlazaPlayerObject *object, u32 lightFlags);
-u32 WiFiPlazaPlayerObject_IsCulled(WiFiPlazaPlayerObject *object);
+BOOL WiFiPlazaPlayerObject_IsCulled(WiFiPlazaPlayerObject *object);
 void WiFiPlazaPlayerObject_SetGridPosition(WiFiPlazaPlayerObject *object, const Field2DPoint *gridPos);
 void WiFiPlazaPlayerObject_SetPosition(WiFiPlazaPlayerObject *object, const VecFx32 *position);
 void WiFiPlazaPlayerObject_GetPosition(WiFiPlazaPlayerObject *object, VecFx32 *position);
@@ -961,8 +968,8 @@ void WiFiPlazaPlayerObject_SetStandingSequence(WiFiPlazaPlayerObject *object, u3
 void WiFiPlazaPlayerObject_StartEffect(WiFiPlazaPlayerObject *object, u32 effect);
 void WiFiPlazaPlayerObject_StopEffect(WiFiPlazaPlayerObject *object);
 void WiFiPlazaPlayerObject_SetEffectStep(WiFiPlazaPlayerObject *object, u8 step);
-void WiFiPlazaPlayerObject_SetVisible(WiFiPlazaPlayerObject *object, int visible);
-u32 WiFiPlazaPlayerObject_IsVisible(WiFiPlazaPlayerObject *object);
+void WiFiPlazaPlayerObject_SetVisible(WiFiPlazaPlayerObject *object, BOOL visible);
+BOOL WiFiPlazaPlayerObject_IsVisible(WiFiPlazaPlayerObject *object);
 void WiFiPlazaPlayerObject_ShowStandingSprite(WiFiPlazaPlayerObject *object);
 void WiFiPlazaPlayerObject_PlayStandingSequence(WiFiPlazaPlayerObject *object);
 void WiFiPlazaPlayerObject_HoldWalkFrameThenRestart(WiFiPlazaPlayerObject *object);

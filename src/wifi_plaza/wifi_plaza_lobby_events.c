@@ -2,9 +2,13 @@
 
 #include "global.h"
 
+#include "data/mmodel/mmodel.naix"
+
+#include "field2d/field2d_object.h"
 #include "wifi_plaza/wifi_plaza_internal.h"
 
 #include "assert.h"
+#include "ppw_lobby_state.h"
 #include "wifi_connection.h"
 
 static inline BOOL IsSameId(int id, int other);
@@ -12,9 +16,9 @@ static void WiFiPlazaLobbyMatches_Set(WiFiPlazaLobbyClient *client, int index, i
 static u16 WiFiPlazaLobbyMatches_CalcTimer(WiFiPlazaLobbyClient *client, int index);
 static void WiFiPlazaLobbyMatchInfo_GetStartTime(const WiFiPlazaLobbyMatchInfo *info, s64 *time);
 static void WiFiPlazaLobbyIdValueList_Set(WiFiPlazaLobbyIdValueList *list, const void *data, u32 count);
-static void WiFiPlazaLobbyClient_CopySurveyData(u32 *dest, const void *data);
+static void WiFiPlazaLobbyClient_CopySurveyData(WiFiPlazaLobbySurveyData *dest, const void *data);
 static const WiFiPlazaSpriteConfig *WiFiPlaza_GetSpriteConfig(int spriteId);
-static u32 WiFiPlaza_GetSpriteSequence(int standing, u32 sequence);
+static u32 WiFiPlaza_GetSpriteSequence(BOOL standing, u32 sequence);
 static u32 WiFiPlaza_CalcSequenceFrame(u32 divisor, u16 value, u32 factor);
 static void WiFiPlazaObjectModel_Load(WiFiPlazaObjectModel *model, NARC *narc, int fileId, enum HeapID heapID);
 static void WiFiPlazaObjectModel_Free(WiFiPlazaObjectModel *model);
@@ -38,7 +42,7 @@ static void WiFiPlazaPlayerObject_ApplyLightFlags(BillboardObject *billboard, vo
 // The callbacks the lobby library calls: channel joined, players entering, leaving and updating, messages, the
 // location list, match updates and the results of the library's requests.
 
-static const u16 sWiFiPlazaSpriteSequenceFiles[2] = { 0x118, 0x119 };
+static const u16 sWiFiPlazaSpriteSequenceFiles[2] = { NARC_mmodel_mmodel_00000280_bin, NARC_mmodel_mmodel_00000281_bin };
 
 static const u8 sWiFiPlazaChannelCapacities[4] = { 8, 8, 4, 4 };
 
@@ -96,8 +100,8 @@ BOOL WiFiPlazaLobbyClient_HasChannelRoom(WiFiPlazaLobbyClient *client, int chann
     GF_ASSERT(channel < 4);
     libChannel = WiFiPlazaLobbyClient_ChannelToLib(channel);
     count = 0;
-    for (i = 0; i < client->idLists[0].capacity; i++) {
-        int id = WiFiPlazaLobbyClient_GetIdListEntry(client, i, 0);
+    for (i = 0; i < client->idLists[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].capacity; i++) {
+        int id = WiFiPlazaLobbyClient_GetIdListEntry(client, i, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
         if (id != -1 && libChannel == client->records[i].channel) {
             count++;
         }
@@ -105,14 +109,14 @@ BOOL WiFiPlazaLobbyClient_HasChannelRoom(WiFiPlazaLobbyClient *client, int chann
     return sWiFiPlazaChannelCapacities[channel] > count;
 }
 
-// Entered the lobby (libChannel 0) or a channel.
+// Entered the lobby or a channel.
 void WiFiPlazaLobbyClient_OnEnterChannel(int result, u32 libChannel) {
     WiFiPlazaLobbyClient *client;
 
-    if (libChannel == 0) {
+    if (libChannel == PPW_LOBBY_CHANNEL_KIND_MAIN) {
         gWiFiPlazaLobbyClient->scheduleSize = sizeof(gWiFiPlazaLobbyClient->schedule);
         GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbyGetSchedule(&gWiFiPlazaLobbyClient->schedule.record, &gWiFiPlazaLobbyClient->scheduleSize)));
-        PPW_LobbyGetChannelDataAsync(-1, 0, gWiFiPlazaLocationListKey, 0);
+        PPW_LobbyGetChannelDataAsync(-1, PPW_LOBBY_CHANNEL_KIND_MAIN, gWiFiPlazaLocationListKey, 0);
         return;
     }
     client = gWiFiPlazaLobbyClient;
@@ -120,7 +124,7 @@ void WiFiPlazaLobbyClient_OnEnterChannel(int result, u32 libChannel) {
         if (result == 1) {
             client->joinChannelResult = WIFI_PLAZA_JOIN_CHANNEL_DONE;
             WiFiPlazaLobbyClient_RebuildChannelList(gWiFiPlazaLobbyClient, gWiFiPlazaLobbyClient->channel);
-            WiFiPlazaLobbyClient_AddToIdList(gWiFiPlazaLobbyClient, PPW_LobbyGetMyUserId(), 1);
+            WiFiPlazaLobbyClient_AddToIdList(gWiFiPlazaLobbyClient, PPW_LobbyGetMyUserId(), WIFI_PLAZA_LOBBY_SCOPE_CHANNEL);
         } else {
             client->joinChannelResult = WIFI_PLAZA_JOIN_CHANNEL_FAILED;
         }
@@ -141,7 +145,7 @@ void WiFiPlazaLobbyClient_OnPlayerEnter(int id, const void *record, const void *
     } else {
         isOwn = FALSE;
     }
-    WiFiPlazaLobbyClient_AddToIdList(gWiFiPlazaLobbyClient, id, 0);
+    WiFiPlazaLobbyClient_AddToIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
     WiFiPlazaLobbyClient_CopyPlayerData(gWiFiPlazaLobbyClient, id, data, size);
     WiFiPlazaLobbyClient_SetPlayerRecord(gWiFiPlazaLobbyClient, id, record);
     client = gWiFiPlazaLobbyClient;
@@ -152,7 +156,7 @@ void WiFiPlazaLobbyClient_OnPlayerEnter(int id, const void *record, const void *
 void WiFiPlazaLobbyClient_OnPlayerLeave(int id) {
     int i;
 
-    if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0) == -1) {
+    if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY) == -1) {
         return;
     }
     for (i = 0; i < WIFI_PLAZA_LOBBY_MATCH_COUNT; i++) {
@@ -163,36 +167,36 @@ void WiFiPlazaLobbyClient_OnPlayerLeave(int id) {
     gWiFiPlazaLobbyClient->callbacks.onPlayerLeave(id, gWiFiPlazaLobbyClient->callbackArg);
     WiFiPlazaLobbyClient_ClearPlayerRecord(gWiFiPlazaLobbyClient, id);
     WiFiPlazaLobbyClient_ClearPlayerData(gWiFiPlazaLobbyClient, id);
-    WiFiPlazaLobbyClient_RemoveFromIdList(gWiFiPlazaLobbyClient, id, 0);
-    WiFiPlazaLobbyClient_RemoveFromIdList(gWiFiPlazaLobbyClient, id, 1);
+    WiFiPlazaLobbyClient_RemoveFromIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
+    WiFiPlazaLobbyClient_RemoveFromIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_CHANNEL);
 }
 
 void WiFiPlazaLobbyClient_OnEvent3Dummy(int id, int libChannel, int type, const void *data) {
 }
 
-// A message of the given type from a player: calls the receive callback of the lobby (libChannel 0 / 5) or channel
-// table.
+// A message of the given type from a player: calls the receive callback of the lobby (sent to the lobby or to the
+// player) or channel table.
 void WiFiPlazaLobbyClient_OnMessage(int id, u32 libChannel, u32 type, const void *data, u32 size) {
     int table;
 
-    if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0) == -1) {
+    if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY) == -1) {
         return;
     }
     switch (libChannel) {
-    case 0:
-        table = 0;
+    case PPW_LOBBY_CHANNEL_KIND_MAIN:
+        table = WIFI_PLAZA_LOBBY_SCOPE_LOBBY;
         break;
-    case 1:
-    case 2:
-    case 3:
-    case 4:
+    case PPW_LOBBY_CHANNEL_KIND_FOOT1:
+    case PPW_LOBBY_CHANNEL_KIND_FOOT2:
+    case PPW_LOBBY_CHANNEL_KIND_CLOCK:
+    case PPW_LOBBY_CHANNEL_KIND_NEWS:
         if (gWiFiPlazaLobbyClient->channel != WiFiPlazaLobbyClient_ChannelFromLib(libChannel)) {
             return;
         }
-        table = 1;
+        table = WIFI_PLAZA_LOBBY_SCOPE_CHANNEL;
         break;
-    case 5:
-        table = 0;
+    case PPW_LOBBY_CHANNEL_KIND_INVALID:
+        table = WIFI_PLAZA_LOBBY_SCOPE_LOBBY;
         break;
     default:
         return;
@@ -209,7 +213,7 @@ void WiFiPlazaLobbyClient_OnLocationsChanged(BOOL success, BOOL broadcast, int c
     if (strcmp(key, gWiFiPlazaLocationListKey) == 0) {
         memcpy(gWiFiPlazaLobbyClient->locations, data, sizeof(gWiFiPlazaLobbyClient->locations));
         if (gWiFiPlazaLobbyClient->addingLocation) {
-            gWiFiPlazaLobbyClient->addingLocation = 0;
+            gWiFiPlazaLobbyClient->addingLocation = FALSE;
         }
     }
 }
@@ -217,16 +221,16 @@ void WiFiPlazaLobbyClient_OnLocationsChanged(BOOL success, BOOL broadcast, int c
 // A player's record changed: follows the player into or out of the own channel.
 void WiFiPlazaLobbyClient_OnPlayerRecordChanged(int id, const void *data) {
     const WiFiPlazaLobbyPlayerRecord *record = data;
-    if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0) != -1) {
+    if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY) != -1) {
         if (gWiFiPlazaLobbyClient->channel != WIFI_PLAZA_LOBBY_CHANNEL_NONE) {
             int current, old = WiFiPlazaLobbyClient_GetPlayerRecord(gWiFiPlazaLobbyClient, id)->channel;
             current = record->channel;
             {
                 int own = WiFiPlazaLobbyClient_ChannelToLib(gWiFiPlazaLobbyClient->channel);
                 if (old == WIFI_PLAZA_LOBBY_LIB_CHANNEL_NONE && current == own) {
-                    WiFiPlazaLobbyClient_AddToIdList(gWiFiPlazaLobbyClient, id, 1);
+                    WiFiPlazaLobbyClient_AddToIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_CHANNEL);
                 } else if (old == own && current != own) {
-                    WiFiPlazaLobbyClient_RemoveFromIdList(gWiFiPlazaLobbyClient, id, 1);
+                    WiFiPlazaLobbyClient_RemoveFromIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_CHANNEL);
                 }
             }
         }
@@ -235,7 +239,7 @@ void WiFiPlazaLobbyClient_OnPlayerRecordChanged(int id, const void *data) {
 }
 
 void WiFiPlazaLobbyClient_OnPlayerUpdate(int id, const void *data, u32 size) {
-    if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0) != -1) {
+    if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY) != -1) {
         WiFiPlazaLobbyClient_SetPlayerData(gWiFiPlazaLobbyClient, id, data);
         gWiFiPlazaLobbyClient->callbacks.onPlayerUpdate(id, (WiFiPlazaPlayer *)data, gWiFiPlazaLobbyClient->callbackArg);
     }
@@ -250,7 +254,7 @@ void WiFiPlazaLobbyClient_OnMatchInfo(int id, void *data) {
     WiFiPlazaLobbyMatchInfo *info = data;
     s64 current;
     s64 received;
-    int slot = WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0);
+    int slot = WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
     if (slot != -1) {
         if (IsSameId(WiFiPlazaLobbyClient_GetOwnId(), id)) {
         } else if (gWiFiPlazaLobbyClient->isMatchHost && gWiFiPlazaLobbyClient->currentMatch == info->index) {
@@ -259,7 +263,7 @@ void WiFiPlazaLobbyClient_OnMatchInfo(int id, void *data) {
             if (current < received) {
                 return;
             }
-            gWiFiPlazaLobbyClient->matchCancelled = 1;
+            gWiFiPlazaLobbyClient->matchCancelled = TRUE;
             WiFiPlazaLobbyClient_StopMatch();
         }
         WiFiPlazaLobbyMatches_Set(gWiFiPlazaLobbyClient, info->index, id, info);
@@ -268,13 +272,13 @@ void WiFiPlazaLobbyClient_OnMatchInfo(int id, void *data) {
 
 void WiFiPlazaLobbyClient_OnMatchClosed(int id, const void *data) {
     const WiFiPlazaLobbyMatchInfo *info = data;
-    int result;
-    if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0) == -1) {
+    BOOL removed;
+    if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY) == -1) {
         return;
     }
-    result = WiFiPlazaLobbyMatches_Remove(gWiFiPlazaLobbyClient, info->index, id);
-    if (gWiFiPlazaLobbyClient->currentMatch == info->index && result == 1) {
-        gWiFiPlazaLobbyClient->matchCancelled = 1;
+    removed = WiFiPlazaLobbyMatches_Remove(gWiFiPlazaLobbyClient, info->index, id);
+    if (gWiFiPlazaLobbyClient->currentMatch == info->index && removed == TRUE) {
+        gWiFiPlazaLobbyClient->matchCancelled = TRUE;
     }
 }
 
@@ -283,34 +287,34 @@ void WiFiPlazaLobbyClient_OnLobbyEvent(u32 event) {
 }
 
 void WiFiPlazaLobbyClient_OnOwnRecord(int result, const void *data, u32 size) {
-    if (result != 0) {
-        gWiFiPlazaLobbyClient->ownRecordError = 1;
+    if (result != PPW_LOBBY_WEB_RESULT_SUCCESS) {
+        gWiFiPlazaLobbyClient->ownRecordError = TRUE;
     } else {
         gWiFiPlazaLobbyClient->callbacks.onOwnRecord(data, size, gWiFiPlazaLobbyClient->callbackArg);
     }
 }
 
 BOOL WiFiPlazaLobbyClient_OnScheduleReceived(int result, const void *schedule) {
-    if (result == 0) {
+    if (result == PPW_LOBBY_WEB_RESULT_SUCCESS) {
         return TRUE;
     }
-    gWiFiPlazaLobbyClient->requestError = 1;
+    gWiFiPlazaLobbyClient->requestError = TRUE;
     return FALSE;
 }
 
 void WiFiPlazaLobbyClient_OnSpecialVisitorsReceived(int result, const void *data, u32 size) {
-    if (result == 0) {
+    if (result == PPW_LOBBY_WEB_RESULT_SUCCESS) {
         WiFiPlazaLobbyIdValueList_Set(&gWiFiPlazaLobbyClient->specialVisitors, data, size);
     } else {
-        gWiFiPlazaLobbyClient->requestError = 1;
+        gWiFiPlazaLobbyClient->requestError = TRUE;
     }
 }
 
 void WiFiPlazaLobbyClient_OnSurveyReceived(int result, const void *data) {
-    if (result == 0) {
-        WiFiPlazaLobbyClient_CopySurveyData(&gWiFiPlazaLobbyClient->surveyData.surveys[0].surveyId, data);
+    if (result == PPW_LOBBY_WEB_RESULT_SUCCESS) {
+        WiFiPlazaLobbyClient_CopySurveyData(&gWiFiPlazaLobbyClient->surveyData, data);
     } else {
-        gWiFiPlazaLobbyClient->requestError = 1;
+        gWiFiPlazaLobbyClient->requestError = TRUE;
     }
 }
 
@@ -320,7 +324,7 @@ void WiFiPlazaLobbyClient_OnSurveySubmitted(s32 result) {
 }
 
 void WiFiPlazaLobbyClient_OnExcessFlood(int id) {
-    gWiFiPlazaLobbyClient->excessFlood = 1;
+    gWiFiPlazaLobbyClient->excessFlood = TRUE;
 }
 
 void WiFiPlazaLobbyClient_InitMatches(WiFiPlazaLobbyClient *client) {
@@ -336,8 +340,8 @@ static void WiFiPlazaLobbyMatches_Set(WiFiPlazaLobbyClient *client, int index, i
         return;
     }
     client->matches[index].info = *info;
-    if (client->matches[index].active == 0) {
-        client->matches[index].active = 1;
+    if (!client->matches[index].active) {
+        client->matches[index].active = TRUE;
         client->matches[index].hostId = hostId;
         client->matches[index].timer = WiFiPlazaLobbyMatches_CalcTimer(client, index);
     }
@@ -348,7 +352,7 @@ BOOL WiFiPlazaLobbyMatches_Remove(WiFiPlazaLobbyClient *client, int index, int h
     GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
     if (WiFiPlazaLobbyMatches_IsActive(client, index) == TRUE) {
         if (hostId == client->matches[index].hostId) {
-            client->matches[index].active = 0;
+            client->matches[index].active = FALSE;
             return TRUE;
         }
     }
@@ -429,7 +433,7 @@ void WiFiPlazaLobbyClient_OnMatchDisconnect(int result, void *arg) {
     if (client->isMatchHost == 1) {
         WiFiPlazaLobbyClient_StopMatch();
     } else if (result == 0) {
-        gWiFiPlazaLobbyClient->matchCancelled = 1;
+        gWiFiPlazaLobbyClient->matchCancelled = TRUE;
     }
 }
 
@@ -484,8 +488,8 @@ u32 WiFiPlazaLobbyIdValueList_GetValue(WiFiPlazaLobbyIdValueList *list, int id) 
     return 0;
 }
 
-static void WiFiPlazaLobbyClient_CopySurveyData(u32 *dest, const void *data) {
-    memcpy(dest, data, 0x2D8);
+static void WiFiPlazaLobbyClient_CopySurveyData(WiFiPlazaLobbySurveyData *dest, const void *data) {
+    memcpy(dest, data, sizeof(*dest));
 }
 
 WiFiPlazaPlayerObjects *WiFiPlazaPlayerObjects_New(u32 count, BOOL mode, enum HeapID heapID, enum HeapID loadHeapID) {
@@ -507,8 +511,8 @@ WiFiPlazaPlayerObjects *WiFiPlazaPlayerObjects_New(u32 count, BOOL mode, enum He
     }
 
     objects->models = GF2dGfxRawResMan_Create(1, heapID);
-    objects->sequences = GF2dGfxRawResMan_Create(2, heapID);
-    objects->textures = GF3dGfxRawResMan_Create(20, heapID);
+    objects->sequences = GF2dGfxRawResMan_Create(NELEMS(sWiFiPlazaSpriteSequenceFiles), heapID);
+    objects->textures = GF3dGfxRawResMan_Create(NELEMS(sWiFiPlazaSpriteConfigs), heapID);
     BillboardLists_Create(1, heapID);
     params.count = count;
     params.heapId = heapID;
@@ -615,14 +619,14 @@ WiFiPlazaPlayerObject *WiFiPlazaPlayerObjects_Add(WiFiPlazaPlayerObjects *object
     object->player = player;
     VecFx32 position = { 0, 0, 0 };
     VecFx32 scale = sWiFiPlazaPlayerSpriteScale;
-    config = WiFiPlaza_GetSpriteConfig(Field2DObject_GetParam(player, 7));
+    config = WiFiPlaza_GetSpriteConfig(Field2DObject_GetParam(player, FIELD2D_OBJECT_PARAM_SPRITE_ID));
     modelFile = GF2dGfxRawResObj_GetData(GF2dGfxRawResMan_GetObjById(objects->models, 0x7F));
     texture = GF3dGfxRawResMan_GetObjById(objects->textures, config->fileId);
     tex = GF3dGfxRawResObj_GetTex(texture);
     if (config->ownTexture == 1) {
-        texKey = 0x119;
+        texKey = NARC_mmodel_mmodel_00000281_bin;
     } else {
-        texKey = 0x118;
+        texKey = NARC_mmodel_mmodel_00000280_bin;
     }
     BillboardGfxSequence_Init(GF2dGfxRawResObj_GetData(GF2dGfxRawResMan_GetObjById(objects->sequences, texKey)), &sequence);
     if (config->ownTexture == 1) {
@@ -644,8 +648,8 @@ WiFiPlazaPlayerObject *WiFiPlazaPlayerObjects_Add(WiFiPlazaPlayerObjects *object
     WiFiPlaza_InitModelInstance(&objects->model.resource, &object->model);
     ModelInstance_SetPosition(&object->model, position.x, FX32_ONE * 2, position.z - FX32_ONE * 8);
     object->mode = 1;
-    object->visible = 1;
-    object->culled = 0;
+    object->visible = TRUE;
+    object->culled = FALSE;
     object->lightFlags = objects->lightFlags;
     return object;
 }
@@ -663,7 +667,7 @@ void WiFiPlazaPlayerObject_SetLightFlags(WiFiPlazaPlayerObject *object, u32 ligh
     object->lightFlags = lightFlags;
 }
 
-u32 WiFiPlazaPlayerObject_IsCulled(WiFiPlazaPlayerObject *object) {
+BOOL WiFiPlazaPlayerObject_IsCulled(WiFiPlazaPlayerObject *object) {
     return object->culled;
 }
 
@@ -684,31 +688,31 @@ void WiFiPlazaPlayerObject_GetPosition(WiFiPlazaPlayerObject *object, VecFx32 *p
 }
 
 void WiFiPlazaPlayerObject_SetStandingSequence(WiFiPlazaPlayerObject *object, u32 sequence) {
-    BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(1, sequence));
+    BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(TRUE, sequence));
     BillboardObject_SetSequenceFrame(object->billboard, 0);
 }
 
 void WiFiPlazaPlayerObject_StartEffect(WiFiPlazaPlayerObject *object, u32 effect) {
-    object->effectActive = 1;
+    object->effectActive = TRUE;
     object->effect = effect;
     object->timer = 0;
     object->step = 1;
 }
 
 void WiFiPlazaPlayerObject_StopEffect(WiFiPlazaPlayerObject *object) {
-    object->effectActive = 0;
+    object->effectActive = FALSE;
 }
 
 void WiFiPlazaPlayerObject_SetEffectStep(WiFiPlazaPlayerObject *object, u8 step) {
     object->step = step;
 }
 
-void WiFiPlazaPlayerObject_SetVisible(WiFiPlazaPlayerObject *object, int visible) {
+void WiFiPlazaPlayerObject_SetVisible(WiFiPlazaPlayerObject *object, BOOL visible) {
     object->visible = visible;
     WiFiPlazaPlayerObject_ApplyVisibility(object);
 }
 
-u32 WiFiPlazaPlayerObject_IsVisible(WiFiPlazaPlayerObject *object) {
+BOOL WiFiPlazaPlayerObject_IsVisible(WiFiPlazaPlayerObject *object) {
     return object->visible;
 }
 
@@ -724,7 +728,7 @@ static const WiFiPlazaSpriteConfig *WiFiPlaza_GetSpriteConfig(int spriteId) {
 }
 
 // Sequence of a sprite: the walking one (+4) or the standing one.
-static u32 WiFiPlaza_GetSpriteSequence(int standing, u32 sequence) {
+static u32 WiFiPlaza_GetSpriteSequence(BOOL standing, u32 sequence) {
     return standing == 0 ? sequence + 4 : sequence;
 }
 
@@ -788,14 +792,14 @@ static void WiFiPlazaPlayerObject_DrawModel(WiFiPlazaPlayerObject *object) {
     ModelInstance_Draw(&object->model);
 }
 
-// Follows the player's action (field 5) and its frame (field 8) and moves the sprite to the player's position.
+// Follows the player's action and its frame and moves the sprite to the player's position.
 static void WiFiPlazaPlayerObject_FollowPlayer(WiFiPlazaPlayerObject *object) {
     int action;
     u32 actionFrame;
     Field2DPoint gridPos;
     if (object->mode) {
-        action = Field2DObject_GetParam(object->player, 5);
-        actionFrame = Field2DObject_GetParam(object->player, 8);
+        action = Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_ACTION);
+        actionFrame = Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_ACTION_FRAME);
         if (object->actionFrame > actionFrame || object->action != action) {
             if (WiFiPlazaPlayerObject_ActionKeepsSequence(object->action) == TRUE) {
                 object->savedSequence = BillboardObject_GetSequence(object->billboard);
@@ -811,17 +815,17 @@ static void WiFiPlazaPlayerObject_FollowPlayer(WiFiPlazaPlayerObject *object) {
 }
 
 void WiFiPlazaPlayerObject_ShowStandingSprite(WiFiPlazaPlayerObject *object) {
-    u32 index = Field2DObject_GetParam(object->player, 6);
-    u32 sequence = WiFiPlaza_GetSpriteSequence(1, index);
+    u32 index = Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_DIRECTION);
+    u32 sequence = WiFiPlaza_GetSpriteSequence(TRUE, index);
     BillboardObject_SetSequence(object->billboard, sequence);
     BillboardObject_SetSequenceFrame(object->billboard, 0);
 }
 
 void WiFiPlazaPlayerObject_PlayStandingSequence(WiFiPlazaPlayerObject *object) {
-    u32 index = Field2DObject_GetParam(object->player, 6);
-    u32 sequence = WiFiPlaza_GetSpriteSequence(1, index);
-    u16 duration = Field2DObject_GetParam(object->player, 9);
-    u16 frame = Field2DObject_GetParam(object->player, 8);
+    u32 index = Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_DIRECTION);
+    u32 sequence = WiFiPlaza_GetSpriteSequence(TRUE, index);
+    u16 duration = Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_ACTION_DURATION);
+    u16 frame = Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_ACTION_FRAME);
     s32 offset = WiFiPlaza_CalcSequenceFrame(duration, frame, 8);
     BillboardObject_SetSequence(object->billboard, sequence);
     if (object->savedSequence == sequence) {
@@ -834,20 +838,20 @@ void WiFiPlazaPlayerObject_PlayStandingSequence(WiFiPlazaPlayerObject *object) {
 }
 
 void WiFiPlazaPlayerObject_HoldWalkFrameThenRestart(WiFiPlazaPlayerObject *object) {
-    u16 frame = Field2DObject_GetParam(object->player, 8);
+    u16 frame = Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_ACTION_FRAME);
     if (frame < 4) {
         BillboardObject_SetSequenceFrame(object->billboard, FX32_ONE * 4);
         return;
     }
-    BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(1, Field2DObject_GetParam(object->player, 6)));
+    BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(TRUE, Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_DIRECTION)));
     BillboardObject_SetSequenceFrame(object->billboard, 0);
 }
 
 void WiFiPlazaPlayerObject_PlayWalkingSequence(WiFiPlazaPlayerObject *object) {
-    u32 index = Field2DObject_GetParam(object->player, 6);
-    u32 sequence = WiFiPlaza_GetSpriteSequence(0, index);
-    u16 duration = Field2DObject_GetParam(object->player, 9);
-    u16 frame = Field2DObject_GetParam(object->player, 8);
+    u32 index = Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_DIRECTION);
+    u32 sequence = WiFiPlaza_GetSpriteSequence(FALSE, index);
+    u16 duration = Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_ACTION_DURATION);
+    u16 frame = Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_ACTION_FRAME);
     s32 offset = WiFiPlaza_CalcSequenceFrame(duration, frame, 4);
     BillboardObject_SetSequence(object->billboard, sequence);
     if (object->savedSequence == sequence) {
@@ -865,10 +869,10 @@ static void WiFiPlazaPlayerObject_UpdateEffect(WiFiPlazaPlayerObject *object) {
     }
 }
 
-// Effect 1 (sWiFiPlazaPlayerObjectEffects): turns around, one direction every 4 ticks.
+// Effect 0 (sWiFiPlazaPlayerObjectEffects): turns around, one direction every 4 ticks.
 static void WiFiPlazaPlayerObject_EffectTurnAround(WiFiPlazaPlayerObject *object) {
     if (((int)object->timer) % 4 == 0) {
-        BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(1, sWiFiPlazaTurnAroundDirections[(u32)object->timer >> 2]));
+        BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(TRUE, sWiFiPlazaTurnAroundDirections[(u32)object->timer >> 2]));
         BillboardObject_SetSequenceFrame(object->billboard, 0);
     }
     if (object->timer + object->step < 16) {
@@ -880,8 +884,8 @@ static void WiFiPlazaPlayerObject_EffectTurnAround(WiFiPlazaPlayerObject *object
 
 static void WiFiPlazaPlayerObject_EffectSetWalkFrameOnce(WiFiPlazaPlayerObject *object) {
     if (object->timer == 0) {
-        Field2DObject_GetParam(object->player, 6);
-        BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(1, Field2DObject_GetParam(object->player, 6)));
+        Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_DIRECTION);
+        BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(TRUE, Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_DIRECTION)));
         BillboardObject_SetSequenceFrame(object->billboard, FX32_ONE * 4);
         object->timer++;
     }
@@ -889,10 +893,10 @@ static void WiFiPlazaPlayerObject_EffectSetWalkFrameOnce(WiFiPlazaPlayerObject *
 
 static void WiFiPlazaPlayerObject_EffectWalkInPlace(WiFiPlazaPlayerObject *object) {
     if (object->timer == 0) {
-        BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(1, Field2DObject_GetParam(object->player, 6)));
+        BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(TRUE, Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_DIRECTION)));
         BillboardObject_SetSequenceFrame(object->billboard, FX32_ONE * 4);
     } else if (object->timer == 4) {
-        BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(1, Field2DObject_GetParam(object->player, 6)));
+        BillboardObject_SetSequence(object->billboard, WiFiPlaza_GetSpriteSequence(TRUE, Field2DObject_GetParam(object->player, FIELD2D_OBJECT_PARAM_DIRECTION)));
         BillboardObject_SetSequenceFrame(object->billboard, FX32_ONE * 12);
     }
     object->timer = (object->timer + 1) % 8;
@@ -900,12 +904,12 @@ static void WiFiPlazaPlayerObject_EffectWalkInPlace(WiFiPlazaPlayerObject *objec
 
 static BOOL WiFiPlazaPlayerObject_ActionKeepsSequence(u32 action) {
     switch (action) {
-    case 2:
-    case 3:
-    case 5:
-    case 6:
-    case 10:
-    case 11:
+    case FIELD2D_ACTION_WALK:
+    case FIELD2D_ACTION_RUN:
+    case FIELD2D_ACTION_BUMP:
+    case FIELD2D_ACTION_WALK_SLOW:
+    case FIELD2D_ACTION_WALK_IN_PLACE:
+    case FIELD2D_ACTION_WALK_IN_PLACE_SLOW:
         return TRUE;
     default:
         return FALSE;
@@ -915,9 +919,9 @@ static BOOL WiFiPlazaPlayerObject_ActionKeepsSequence(u32 action) {
 static void WiFiPlazaPlayerObject_UpdateCulling(WiFiPlazaPlayerObject *object) {
     if (WiFiPlazaPlayerObject_IsUsed(object)) {
         if (WiFiPlaza_IsBillboardInView(object->billboard) == FALSE) {
-            object->culled = 1;
+            object->culled = TRUE;
         } else {
-            object->culled = 0;
+            object->culled = FALSE;
         }
         WiFiPlazaPlayerObject_ApplyVisibility(object);
     }

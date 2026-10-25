@@ -1375,16 +1375,16 @@ extern "C" {
 int PPWLobby_GetWebResultError(u32 type) {
     switch (type) {
     case 0:
-        return 0;
+        return PPW_LOBBY_WEB_RESULT_SUCCESS;
     case 6:
-        return 1;
+        return PPW_LOBBY_WEB_RESULT_SERVER_ERROR;
     case 7:
     case 8:
     case 9:
     case 10:
-        return 2;
+        return PPW_LOBBY_WEB_RESULT_INVALID;
     default:
-        return 2;
+        return PPW_LOBBY_WEB_RESULT_INVALID;
     }
 }
 
@@ -1393,16 +1393,16 @@ int PPWLobby_ParseWebResponse(BOOL valid, u8 *data, u32 size, void **output, u32
     *output = 0;
     *length = 0;
     if (!valid) {
-        return 2;
+        return PPW_LOBBY_WEB_RESULT_INVALID;
     }
     if (size < 4) {
-        return 2;
+        return PPW_LOBBY_WEB_RESULT_INVALID;
     }
     e = PPWLobby_GetWebResultError(*data);
-    if (e == 2) {
+    if (e == PPW_LOBBY_WEB_RESULT_INVALID) {
         return e;
     }
-    if (e == 1) {
+    if (e == PPW_LOBBY_WEB_RESULT_SERVER_ERROR) {
         return e;
     }
     *output = data + 4;
@@ -1441,14 +1441,14 @@ extern "C" void PPWLobby_OnCheckProfile(BOOL success, u8 *response, u32 response
     buf = 0;
     len = 0;
     int r = PPWLobby_ParseWebResponse(success, response, responseSize, &buf, &len);
-    if (r == 0 && len != 0x94) {
-        r = 2;
+    if (r == PPW_LOBBY_WEB_RESULT_SUCCESS && len != 0x94) {
+        r = PPW_LOBBY_WEB_RESULT_INVALID;
     }
-    if (r == 0) {
+    if (r == PPW_LOBBY_WEB_RESULT_SUCCESS) {
         PPW_LobbyUpdateMyProfile(buf, len, 0);
     }
     gPPWLobbyWork->callbacks.onOwnRecord(r, buf, len);
-    if (r != 0) {
+    if (r != PPW_LOBBY_WEB_RESULT_SUCCESS) {
         PPWLobbyWork *g = gPPWLobbyWork;
         g->error = PPW_LOBBY_ERROR_CHECK_PROFILE;
         g->state = PPW_LOBBY_STATE_ERROR;
@@ -1577,11 +1577,11 @@ extern "C" void PPWLobby_OnGetSchedule(BOOL success, u8 *response, u32 responseS
     buf = 0;
     len = 0;
     int r = PPWLobby_ParseWebResponse(success, response, responseSize, &buf, &len);
-    if (r == 0 && !PPWLobbySchedule_IsSizeValid(&gPPWLobbyWork->schedule, buf, len)) {
-        r = 2;
+    if (r == PPW_LOBBY_WEB_RESULT_SUCCESS && !PPWLobbySchedule_IsSizeValid(&gPPWLobbyWork->schedule, buf, len)) {
+        r = PPW_LOBBY_WEB_RESULT_INVALID;
     }
     int ok2 = gPPWLobbyWork->callbacks.onScheduleReceived(r, buf);
-    if (r != 0) {
+    if (r != PPW_LOBBY_WEB_RESULT_SUCCESS) {
         PPWLobbyWork *g = gPPWLobbyWork;
         g->error = PPW_LOBBY_ERROR_SCHEDULE;
         g->state = PPW_LOBBY_STATE_ERROR;
@@ -1671,9 +1671,9 @@ extern "C" void PPWLobby_OnGetVip(BOOL success, u8 *response, u32 responseSize, 
     len = 0;
     int r = PPWLobby_ParseWebResponse(success, response, responseSize, &buf, &len);
     if (!PPWLobbySchedule_ValidateVipRecords(&gPPWLobbyWork->schedule, buf, len)) {
-        r = 2;
+        r = PPW_LOBBY_WEB_RESULT_INVALID;
     }
-    if (r != 0) {
+    if (r != PPW_LOBBY_WEB_RESULT_SUCCESS) {
         PPWLobbyWork *g = gPPWLobbyWork;
         g->error = PPW_LOBBY_ERROR_VIP;
         g->state = PPW_LOBBY_STATE_ERROR;
@@ -1713,10 +1713,10 @@ void PPWLobby_OnGetQuestionnaire(BOOL success, u8 *response, u32 responseSize, v
     data = 0;
     size = 0;
     result = PPWLobby_ParseWebResponse(success, response, responseSize, &data, &size);
-    if (size != 0x2d8) {
-        result = 2;
+    if (size != sizeof(gPPWLobbyWork->schedule.questionnaire)) {
+        result = PPW_LOBBY_WEB_RESULT_INVALID;
     }
-    if (result) {
+    if (result != PPW_LOBBY_WEB_RESULT_SUCCESS) {
         {
             PPWLobbyWork *target = gPPWLobbyWork;
             target->error = PPW_LOBBY_ERROR_QUESTIONNAIRE;
@@ -1736,7 +1736,7 @@ void PPWLobby_OnSubmitQuestionnaire(BOOL status, u8 *data, u32 size, void *param
         return;
     }
     gPPWLobbyWork->submittingQuestionnaire = 0;
-    gPPWLobbyWork->callbacks.onSurveySubmitted(status ? 0 : 2);
+    gPPWLobbyWork->callbacks.onSurveySubmitted(status ? PPW_LOBBY_WEB_RESULT_SUCCESS : PPW_LOBBY_WEB_RESULT_INVALID);
 }
 }
 

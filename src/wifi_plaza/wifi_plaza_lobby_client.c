@@ -18,7 +18,7 @@ static void WiFiPlazaLobbyClient_AllocPlayerData(WiFiPlazaLobbyClient *client, u
 static void WiFiPlazaLobbyClient_FreePlayerData(WiFiPlazaLobbyClient *client);
 static void WiFiPlazaLobbyClient_AllocIdLists(WiFiPlazaLobbyClient *client, u32 lobbyCapacity, u32 channelCapacity, enum HeapID heapID);
 static void WiFiPlazaLobbyClient_FreeIdLists(WiFiPlazaLobbyClient *client);
-static void WiFiPlazaLobbyClient_ClearIdList(WiFiPlazaLobbyClient *client, int which);
+static void WiFiPlazaLobbyClient_ClearIdList(WiFiPlazaLobbyClient *client, int scope);
 
 // The lobby client of the Wi-Fi Plaza, on top of the lobby library: the lobby state, the location of every lobby
 // slot, the message tables, the lobby time and up to three matchmaking sessions.
@@ -30,7 +30,7 @@ const char *gWiFiPlazaLocationListKey = "b_lby_wlddata";
 // Slot getter of news event type 8 (gWiFiPlazaNewsEventSlotGetters).
 u16 WiFiPlazaNewsEvent_GetMinigameResultSlot(WiFiPlazaNewsEvent *event, u32 index) {
     if (event->b <= index) {
-        return 20;
+        return WIFI_PLAZA_NEWS_NO_SLOT;
     }
     return event->slots[index];
 }
@@ -62,7 +62,7 @@ void WiFiPlazaLobbyClient_Init(enum HeapID heapID, SaveData *save, u32 count, Wi
     WiFiPlazaLobbyClient_AllocIdLists(gWiFiPlazaLobbyClient, WIFI_PLAZA_MAX_PLAYERS, 8, heapID);
     WiFiPlazaLobbyClient_InitMatches(gWiFiPlazaLobbyClient);
     WiFiPlazaLobbyIdValueList_Init(&gWiFiPlazaLobbyClient->specialVisitors, 128, heapID);
-    gWiFiPlazaLobbyClient->initResult = 0;
+    gWiFiPlazaLobbyClient->initResult = PPW_LOBBY_RESULT_SUCCESS;
 }
 
 void WiFiPlazaLobbyClient_Free(void) {
@@ -78,7 +78,7 @@ void WiFiPlazaLobbyClient_Free(void) {
 // matchmaking sessions.
 int WiFiPlazaLobbyClient_Update(void) {
     if (gWiFiPlazaLobbyClient == NULL) {
-        return 0;
+        return WIFI_PLAZA_LOBBY_STATE_DISCONNECTED;
     }
     switch (PPW_LobbyProcess()) {
     case PPW_LOBBY_STATE_NOT_INITIALIZED:
@@ -129,7 +129,7 @@ int WiFiPlazaLobbyClient_Update(void) {
 
 u32 WiFiPlazaLobbyClient_GetLastError(void) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    if (gWiFiPlazaLobbyClient->initResult != 0) {
+    if (gWiFiPlazaLobbyClient->initResult != PPW_LOBBY_RESULT_SUCCESS) {
         return PPW_LobbyInitResultToLastError(gWiFiPlazaLobbyClient->initResult);
     } else {
         return PPW_LobbyGetLastError();
@@ -221,7 +221,7 @@ void WiFiPlazaLobbyClient_SetOwnPlayer(WiFiPlazaPlayer *player) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     ownId = PPW_LobbyGetMyUserId();
     WiFiPlazaLobbyClient_SetPlayerData(gWiFiPlazaLobbyClient, ownId, player);
-    PPW_LobbyUpdateMyProfile(player, gWiFiPlazaLobbyClient->playerDataSize, 0);
+    PPW_LobbyUpdateMyProfile(player, gWiFiPlazaLobbyClient->playerDataSize, FALSE);
 }
 
 WiFiPlazaPlayer *WiFiPlazaLobbyClient_GetPlayer(int id) {
@@ -248,7 +248,7 @@ int WiFiPlazaLobbyClient_GetOldestPlayer(void) {
     oldest = 0x0FFFFFFFFFFFFFFFLL;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     for (slot = 0; slot < WIFI_PLAZA_MAX_PLAYERS; slot++) {
-        int id = WiFiPlazaLobbyClient_GetIdListEntry(gWiFiPlazaLobbyClient, slot, 0);
+        int id = WiFiPlazaLobbyClient_GetIdListEntry(gWiFiPlazaLobbyClient, slot, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
         if (id != -1) {
             WiFiPlazaLobbyClient_GetEntryTime(id, &time);
             if (time < oldest) {
@@ -271,7 +271,7 @@ int WiFiPlazaLobbyClient_GetOldestOtherPlayer(int excluded) {
     oldest = 0x0FFFFFFFFFFFFFFFLL;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     for (slot = 0; slot < WIFI_PLAZA_MAX_PLAYERS; slot++) {
-        int id = WiFiPlazaLobbyClient_GetIdListEntry(gWiFiPlazaLobbyClient, slot, 0);
+        int id = WiFiPlazaLobbyClient_GetIdListEntry(gWiFiPlazaLobbyClient, slot, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
         if (id != -1 && id != excluded) {
             WiFiPlazaLobbyClient_GetEntryTime(id, &time);
             if (time < oldest) {
@@ -322,31 +322,31 @@ BOOL WiFiPlazaLobbyClient_CanJoinChannel(int channel) {
 
 void WiFiPlazaLobbyClient_GetPlayerList(WiFiPlazaPlayerList *list) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    list->count = gWiFiPlazaLobbyClient->idLists[0].count;
-    list->ids = gWiFiPlazaLobbyClient->idLists[0].ids;
+    list->count = gWiFiPlazaLobbyClient->idLists[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].count;
+    list->ids = gWiFiPlazaLobbyClient->idLists[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].ids;
 }
 
 void WiFiPlazaLobbyClient_GetChannelPlayerList(u32 *out) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    out[0] = gWiFiPlazaLobbyClient->idLists[1].count;
-    out[1] = (u32)gWiFiPlazaLobbyClient->idLists[1].ids;
+    out[0] = gWiFiPlazaLobbyClient->idLists[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].count;
+    out[1] = (u32)gWiFiPlazaLobbyClient->idLists[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].ids;
 }
 
 // Lobby player id <-> lobby slot.
 int WiFiPlazaLobbyClient_IdToSlot(int id) {
-    return WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 0);
+    return WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
 }
 
 int WiFiPlazaLobbyClient_IdToChannelSlot(int id) {
-    return WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, 1);
+    return WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_CHANNEL);
 }
 
 int WiFiPlazaLobbyClient_SlotToId(int slot) {
-    return WiFiPlazaLobbyClient_GetIdListEntry(gWiFiPlazaLobbyClient, slot, 0);
+    return WiFiPlazaLobbyClient_GetIdListEntry(gWiFiPlazaLobbyClient, slot, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
 }
 
 int WiFiPlazaLobbyClient_ChannelSlotToId(int slot) {
-    return WiFiPlazaLobbyClient_GetIdListEntry(gWiFiPlazaLobbyClient, slot, 1);
+    return WiFiPlazaLobbyClient_GetIdListEntry(gWiFiPlazaLobbyClient, slot, WIFI_PLAZA_LOBBY_SCOPE_CHANNEL);
 }
 
 void WiFiPlazaLobbyClient_GetTime(s64 *time) {
@@ -396,19 +396,19 @@ u32 WiFiPlazaLobbyClient_GetScheduleValue(int field) {
     return result;
 }
 
-int WiFiPlazaLobbyClient_StartAddOwnLocation(void) {
+BOOL WiFiPlazaLobbyClient_StartAddOwnLocation(void) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     {
-        int result = WiFiPlazaLobbyClient_AddOwnLocation(gWiFiPlazaLobbyClient);
+        BOOL result = WiFiPlazaLobbyClient_AddOwnLocation(gWiFiPlazaLobbyClient);
         if (result) {
-            gWiFiPlazaLobbyClient->addingLocation = 1;
+            gWiFiPlazaLobbyClient->addingLocation = TRUE;
         }
         return result;
     }
 }
 
 BOOL WiFiPlazaLobbyClient_IsOwnLocationAdded(void) {
-    return gWiFiPlazaLobbyClient->addingLocation == 0;
+    return !gWiFiPlazaLobbyClient->addingLocation;
 }
 
 u32 WiFiPlazaLobbyClient_GetLocationCountry(u8 slot) {
@@ -428,23 +428,23 @@ u8 WiFiPlazaLobbyClient_GetLocationRegion(u8 slot) {
 // The message types sent with WiFiPlazaLobbyClient_SendToLobby / SendToPlayer (each with the size of its data).
 void WiFiPlazaLobbyClient_SetLobbyCommands(const void *commands, u32 count, void *arg) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    gWiFiPlazaLobbyClient->commandTables[0].commands = commands;
-    gWiFiPlazaLobbyClient->commandTables[0].count = count;
-    gWiFiPlazaLobbyClient->commandTables[0].arg = arg;
+    gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].commands = commands;
+    gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].count = count;
+    gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].arg = arg;
 }
 
 // The message types sent with WiFiPlazaLobbyClient_SendToChannel.
 void WiFiPlazaLobbyClient_SetChannelCommands(const void *commands, u32 count, void *arg) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    gWiFiPlazaLobbyClient->commandTables[1].commands = commands;
-    gWiFiPlazaLobbyClient->commandTables[1].count = count;
-    gWiFiPlazaLobbyClient->commandTables[1].arg = arg;
+    gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].commands = commands;
+    gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].count = count;
+    gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].arg = arg;
 }
 
 void WiFiPlazaLobbyClient_ClearLobbyCommands(void) {
     u8 *bytes;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    bytes = (u8 *)&gWiFiPlazaLobbyClient->commandTables[0];
+    bytes = (u8 *)&gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_LOBBY];
     bytes[0] = 0;
     bytes[1] = 0;
     bytes[2] = 0;
@@ -462,7 +462,7 @@ void WiFiPlazaLobbyClient_ClearLobbyCommands(void) {
 void WiFiPlazaLobbyClient_ClearChannelCommands(void) {
     u8 *bytes;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    bytes = (u8 *)&gWiFiPlazaLobbyClient->commandTables[1];
+    bytes = (u8 *)&gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL];
     bytes[0] = 0;
     bytes[1] = 0;
     bytes[2] = 0;
@@ -480,17 +480,17 @@ void WiFiPlazaLobbyClient_ClearChannelCommands(void) {
 void WiFiPlazaLobbyClient_SendToLobby(int type, const void *data, int size) {
     const WiFiPlazaLobbyCommand *command;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    GF_ASSERT(gWiFiPlazaLobbyClient->commandTables[0].count > (u32)type);
-    command = &gWiFiPlazaLobbyClient->commandTables[0].commands[type];
+    GF_ASSERT(gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].count > (u32)type);
+    command = &gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].commands[type];
     GF_ASSERT(size == command->size);
-    GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbySendChannelBinaryMessage(0, type, data, size)) == TRUE);
+    GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbySendChannelBinaryMessage(PPW_LOBBY_CHANNEL_KIND_MAIN, type, data, size)) == TRUE);
 }
 
 void WiFiPlazaLobbyClient_SendToPlayer(int type, int id, const void *data, int size) {
     const WiFiPlazaLobbyCommand *command;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    GF_ASSERT(gWiFiPlazaLobbyClient->commandTables[0].count > (u32)type);
-    command = &gWiFiPlazaLobbyClient->commandTables[0].commands[type];
+    GF_ASSERT(gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].count > (u32)type);
+    command = &gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].commands[type];
     GF_ASSERT(size == command->size);
     GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbySendPlayerBinaryMessage(id, type, data, size)) == TRUE);
 }
@@ -498,8 +498,8 @@ void WiFiPlazaLobbyClient_SendToPlayer(int type, int id, const void *data, int s
 void WiFiPlazaLobbyClient_SendToChannel(int type, const void *data, int size) {
     const WiFiPlazaLobbyCommand *command;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    GF_ASSERT(gWiFiPlazaLobbyClient->commandTables[1].count > (u32)type);
-    command = &gWiFiPlazaLobbyClient->commandTables[1].commands[type];
+    GF_ASSERT(gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].count > (u32)type);
+    command = &gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].commands[type];
     GF_ASSERT(size == command->size);
     GF_ASSERT(gWiFiPlazaLobbyClient->channel != WIFI_PLAZA_LOBBY_CHANNEL_NONE);
     GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbySendChannelBinaryMessage(WiFiPlazaLobbyClient_ChannelToLib(gWiFiPlazaLobbyClient->channel), type, data, size)) == TRUE);
@@ -522,12 +522,12 @@ BOOL WiFiPlazaLobbyClient_HostMatch(int index, int maxPlayers) {
     gWiFiPlazaLobbyClient->matches[index].info.state = WIFI_PLAZA_MATCH_OPEN;
     WiFiPlazaLobbyMatchInfo_SetStartTime(&gWiFiPlazaLobbyClient->matches[index].info, &gWiFiPlazaLobbyClient->time.currentTime);
     GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbyStartRecruit(&gWiFiPlazaLobbyClient->matches[index])));
-    gWiFiPlazaLobbyClient->matches[index].active = 1;
+    gWiFiPlazaLobbyClient->matches[index].active = TRUE;
     gWiFiPlazaLobbyClient->matches[index].hostId = PPW_LobbyGetMyUserId();
     gWiFiPlazaLobbyClient->matches[index].timer = 1800;
     gWiFiPlazaLobbyClient->currentMatch = index;
-    gWiFiPlazaLobbyClient->isMatchHost = 1;
-    gWiFiPlazaLobbyClient->matchCancelled = 0;
+    gWiFiPlazaLobbyClient->isMatchHost = TRUE;
+    gWiFiPlazaLobbyClient->matchCancelled = FALSE;
     WifiConnection_StartAnybodyMatchmaking(gWiFiPlazaLobbyClient->matches[index].info.name, maxPlayers, 1, gWiFiPlazaLobbyClient->matches[index].timer / 30);
     WifiConnection_SetClientCallback(WiFiPlazaLobbyClient_OnMatchClientDummy, gWiFiPlazaLobbyClient);
     WifiConnection_SetDisconnectCallback(WiFiPlazaLobbyClient_OnMatchDisconnect, gWiFiPlazaLobbyClient);
@@ -545,7 +545,7 @@ void WiFiPlazaLobbyClient_StopMatch(void) {
         client = gWiFiPlazaLobbyClient;
         ownId = PPW_LobbyGetMyUserId();
         GF_ASSERT(WiFiPlazaLobbyMatches_Remove(client, client->currentMatch, ownId));
-        gWiFiPlazaLobbyClient->isMatchHost = 0;
+        gWiFiPlazaLobbyClient->isMatchHost = FALSE;
     }
 }
 
@@ -655,7 +655,7 @@ u8 WiFiPlazaLobbyClient_IsMatchHost(void) {
     return gWiFiPlazaLobbyClient->isMatchHost;
 }
 
-int WiFiPlazaLobbyClient_IsSpecialVisitor(int id) {
+BOOL WiFiPlazaLobbyClient_IsSpecialVisitor(int id) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     return WiFiPlazaLobbyIdValueList_Contains(&gWiFiPlazaLobbyClient->specialVisitors, id);
 }
@@ -733,11 +733,11 @@ void *WiFiPlazaLobbyClient_GetSurveyText(int field) {
 u8 WiFiPlazaLobbyClient_GetSurveyFlag(int which, int index) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     GF_ASSERT(which < 2);
-    GF_ASSERT((u32)index < 12);
+    GF_ASSERT((u32)index < NELEMS(gWiFiPlazaLobbyClient->surveyData.surveys[0].languageFlags));
     if (which >= 2) {
         return 0;
     }
-    if ((u32)index >= 12) {
+    if ((u32)index >= NELEMS(gWiFiPlazaLobbyClient->surveyData.surveys[0].languageFlags)) {
         return 0;
     }
     if (which == 0) {
@@ -752,8 +752,8 @@ void WiFiPlazaLobbyClient_EndMatch(void) {
     WifiConnection_SetClientCallback(NULL, NULL);
     WifiConnection_SetDisconnectCallback(NULL, NULL);
     gWiFiPlazaLobbyClient->currentMatch = WIFI_PLAZA_LOBBY_MATCH_NONE;
-    gWiFiPlazaLobbyClient->isMatchHost = 0;
-    gWiFiPlazaLobbyClient->matchCancelled = 0;
+    gWiFiPlazaLobbyClient->isMatchHost = FALSE;
+    gWiFiPlazaLobbyClient->matchCancelled = FALSE;
 }
 
 // TRUE when a lobby library call succeeded (PPW_LOBBY_RESULT_SUCCESS).
@@ -785,14 +785,14 @@ BOOL WiFiPlazaLobbyClient_CheckResult(int result) {
 }
 
 static void WiFiPlazaLobbyClient_ClearErrors(void) {
-    gWiFiPlazaLobbyClient->ownRecordError = 0;
-    gWiFiPlazaLobbyClient->requestError = 0;
+    gWiFiPlazaLobbyClient->ownRecordError = FALSE;
+    gWiFiPlazaLobbyClient->requestError = FALSE;
 }
 
-// Channel <-> lobby library channel (4 = none).
+// Channel <-> lobby library channel.
 int WiFiPlazaLobbyClient_ChannelFromLib(int libChannel) {
     libChannel--;
-    return libChannel < 0 ? 4 : libChannel;
+    return libChannel < 0 ? WIFI_PLAZA_LOBBY_CHANNEL_NONE : libChannel;
 }
 
 int WiFiPlazaLobbyClient_ChannelToLib(int channel) {
@@ -824,8 +824,8 @@ static BOOL WiFiPlazaLobbyClient_AddOwnLocation(WiFiPlazaLobbyClient *client) {
     }
     client->locations[i].country = country;
     client->locations[i].region = region;
-    client->locations[i].active = 1;
-    return WiFiPlazaLobbyClient_CheckResult(PPW_LobbySetChannelData(-1, 0, gWiFiPlazaLocationListKey, client->locations, sizeof(client->locations)));
+    client->locations[i].active = TRUE;
+    return WiFiPlazaLobbyClient_CheckResult(PPW_LobbySetChannelData(-1, PPW_LOBBY_CHANNEL_KIND_MAIN, gWiFiPlazaLocationListKey, client->locations, sizeof(client->locations)));
 }
 
 static void WiFiPlazaLobbyClient_AllocPlayerData(WiFiPlazaLobbyClient *client, u32 size, enum HeapID heapID) {
@@ -848,7 +848,7 @@ void WiFiPlazaLobbyClient_CopyPlayerData(WiFiPlazaLobbyClient *client, int id, c
     u32 stride;
     u32 offset;
     u8 *base;
-    slot = WiFiPlazaLobbyClient_FindInIdList(client, id, 0);
+    slot = WiFiPlazaLobbyClient_FindInIdList(client, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
     GF_ASSERT(slot != -1);
     stride = client->playerDataSize;
     base = client->playerData;
@@ -862,19 +862,19 @@ void WiFiPlazaLobbyClient_CopyPlayerData(WiFiPlazaLobbyClient *client, int id, c
 }
 
 WiFiPlazaPlayer *WiFiPlazaLobbyClient_GetPlayerData(WiFiPlazaLobbyClient *client, int id) {
-    int slot = WiFiPlazaLobbyClient_FindInIdList(client, id, 0);
+    int slot = WiFiPlazaLobbyClient_FindInIdList(client, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
     GF_ASSERT(slot != -1);
     return (WiFiPlazaPlayer *)(client->playerData + client->playerDataSize * slot);
 }
 
 void WiFiPlazaLobbyClient_ClearPlayerData(WiFiPlazaLobbyClient *client, int id) {
-    int slot = WiFiPlazaLobbyClient_FindInIdList(client, id, 0);
+    int slot = WiFiPlazaLobbyClient_FindInIdList(client, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
     GF_ASSERT(slot != -1);
     memset(client->playerData + client->playerDataSize * slot, 0, client->playerDataSize);
 }
 
 void WiFiPlazaLobbyClient_SetPlayerRecord(WiFiPlazaLobbyClient *client, int id, const WiFiPlazaLobbyPlayerRecord *record) {
-    int slot = WiFiPlazaLobbyClient_FindInIdList(client, id, 0);
+    int slot = WiFiPlazaLobbyClient_FindInIdList(client, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
     WiFiPlazaLobbyPlayerRecord *dest;
     GF_ASSERT(slot != -1);
     dest = &client->records[slot];
@@ -882,13 +882,13 @@ void WiFiPlazaLobbyClient_SetPlayerRecord(WiFiPlazaLobbyClient *client, int id, 
 }
 
 WiFiPlazaLobbyPlayerRecord *WiFiPlazaLobbyClient_GetPlayerRecord(WiFiPlazaLobbyClient *client, int id) {
-    int slot = WiFiPlazaLobbyClient_FindInIdList(client, id, 0);
+    int slot = WiFiPlazaLobbyClient_FindInIdList(client, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
     GF_ASSERT(slot != -1);
     return &client->records[slot];
 }
 
 void WiFiPlazaLobbyClient_ClearPlayerRecord(WiFiPlazaLobbyClient *client, int id) {
-    int slot = WiFiPlazaLobbyClient_FindInIdList(client, id, 0);
+    int slot = WiFiPlazaLobbyClient_FindInIdList(client, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
     u8 *bytes;
     GF_ASSERT(slot != -1);
     bytes = (u8 *)&client->records[slot];
@@ -909,15 +909,15 @@ void WiFiPlazaLobbyClient_ClearPlayerRecord(WiFiPlazaLobbyClient *client, int id
 static void WiFiPlazaLobbyClient_AllocIdLists(WiFiPlazaLobbyClient *client, u32 lobbyCapacity, u32 channelCapacity, enum HeapID heapID) {
     int i;
     u32 capacity;
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < WIFI_PLAZA_LOBBY_SCOPE_COUNT; i++) {
         GF_ASSERT(client->idLists[i].ids == NULL);
-        if (i == 0) {
+        if (i == WIFI_PLAZA_LOBBY_SCOPE_LOBBY) {
             capacity = lobbyCapacity;
         } else {
             capacity = channelCapacity;
         }
         client->idLists[i].count = 0;
-        client->idLists[i].ids = Heap_Alloc(heapID, capacity * 4);
+        client->idLists[i].ids = Heap_Alloc(heapID, capacity * sizeof(s32));
         client->idLists[i].capacity = capacity;
         WiFiPlazaLobbyClient_ClearIdList(client, i);
     }
@@ -925,72 +925,72 @@ static void WiFiPlazaLobbyClient_AllocIdLists(WiFiPlazaLobbyClient *client, u32 
 
 static void WiFiPlazaLobbyClient_FreeIdLists(WiFiPlazaLobbyClient *client) {
     int i;
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < WIFI_PLAZA_LOBBY_SCOPE_COUNT; i++) {
         GF_ASSERT(client->idLists[i].ids != NULL);
         Heap_Free(client->idLists[i].ids);
         client->idLists[i].ids = NULL;
     }
 }
 
-static void WiFiPlazaLobbyClient_ClearIdList(WiFiPlazaLobbyClient *client, int which) {
+static void WiFiPlazaLobbyClient_ClearIdList(WiFiPlazaLobbyClient *client, int scope) {
     int i;
-    client->idLists[which].count = 0;
-    for (i = 0; i < client->idLists[which].capacity; i++) {
-        client->idLists[which].ids[i] = -1;
+    client->idLists[scope].count = 0;
+    for (i = 0; i < client->idLists[scope].capacity; i++) {
+        client->idLists[scope].ids[i] = -1;
     }
 }
 
-void WiFiPlazaLobbyClient_AddToIdList(WiFiPlazaLobbyClient *client, int id, int which) {
+void WiFiPlazaLobbyClient_AddToIdList(WiFiPlazaLobbyClient *client, int id, int scope) {
     int i;
     int freeSlot;
-    if (WiFiPlazaLobbyClient_FindInIdList(client, id, which) == -1) {
-        GF_ASSERT(client->idLists[which].count < client->idLists[which].capacity);
-        if (client->idLists[which].count < client->idLists[which].capacity) {
-            for (i = 0; i < client->idLists[which].capacity; i++) {
-                if (client->idLists[which].ids[i] == -1) {
+    if (WiFiPlazaLobbyClient_FindInIdList(client, id, scope) == -1) {
+        GF_ASSERT(client->idLists[scope].count < client->idLists[scope].capacity);
+        if (client->idLists[scope].count < client->idLists[scope].capacity) {
+            for (i = 0; i < client->idLists[scope].capacity; i++) {
+                if (client->idLists[scope].ids[i] == -1) {
                     freeSlot = i;
                     break;
                 }
             }
-            client->idLists[which].ids[freeSlot] = id;
-            client->idLists[which].count++;
+            client->idLists[scope].ids[freeSlot] = id;
+            client->idLists[scope].count++;
         }
     }
 }
 
-void WiFiPlazaLobbyClient_RemoveFromIdList(WiFiPlazaLobbyClient *client, int id, int which) {
-    int i = WiFiPlazaLobbyClient_FindInIdList(client, id, which);
+void WiFiPlazaLobbyClient_RemoveFromIdList(WiFiPlazaLobbyClient *client, int id, int scope) {
+    int i = WiFiPlazaLobbyClient_FindInIdList(client, id, scope);
     if (i != -1) {
-        client->idLists[which].ids[i] = -1;
-        client->idLists[which].count--;
+        client->idLists[scope].ids[i] = -1;
+        client->idLists[scope].count--;
     }
 }
 
 // Lobby slot of a player id, -1 if not in the list.
-int WiFiPlazaLobbyClient_FindInIdList(WiFiPlazaLobbyClient *client, int id, int which) {
+int WiFiPlazaLobbyClient_FindInIdList(WiFiPlazaLobbyClient *client, int id, int scope) {
     int i;
-    for (i = 0; i < client->idLists[which].capacity; i++) {
-        if (client->idLists[which].ids[i] == id) {
+    for (i = 0; i < client->idLists[scope].capacity; i++) {
+        if (client->idLists[scope].ids[i] == id) {
             return i;
         }
     }
     return -1;
 }
 
-int WiFiPlazaLobbyClient_GetIdListEntry(WiFiPlazaLobbyClient *client, int slot, int which) {
-    GF_ASSERT(slot < client->idLists[which].capacity);
-    return client->idLists[which].ids[slot];
+int WiFiPlazaLobbyClient_GetIdListEntry(WiFiPlazaLobbyClient *client, int slot, int scope) {
+    GF_ASSERT(slot < client->idLists[scope].capacity);
+    return client->idLists[scope].ids[slot];
 }
 
 // Rebuilds the channel list from the players' channels.
 void WiFiPlazaLobbyClient_RebuildChannelList(WiFiPlazaLobbyClient *client, u32 channel) {
     int i;
     u32 libChannel = WiFiPlazaLobbyClient_ChannelToLib(channel);
-    WiFiPlazaLobbyClient_ClearIdList(client, 1);
-    for (i = 0; i < client->idLists[0].capacity; i++) {
-        int id = WiFiPlazaLobbyClient_GetIdListEntry(client, i, 0);
+    WiFiPlazaLobbyClient_ClearIdList(client, WIFI_PLAZA_LOBBY_SCOPE_CHANNEL);
+    for (i = 0; i < client->idLists[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].capacity; i++) {
+        int id = WiFiPlazaLobbyClient_GetIdListEntry(client, i, WIFI_PLAZA_LOBBY_SCOPE_LOBBY);
         if (id != -1 && libChannel == client->records[i].channel) {
-            WiFiPlazaLobbyClient_AddToIdList(client, id, 1);
+            WiFiPlazaLobbyClient_AddToIdList(client, id, WIFI_PLAZA_LOBBY_SCOPE_CHANNEL);
         }
     }
 }
