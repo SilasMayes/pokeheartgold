@@ -41,7 +41,7 @@ typedef struct FrontierMapObject {
     FrontierMapObjectTemplate template;
     FrontierMapObjectMovement movement;
     u8 unk_36[2];
-    void *movementTask;
+    SysTask *movementTask;
 } FrontierMapObject;
 
 // Object graphics loaded into the map's object graphics manager (24 slots)

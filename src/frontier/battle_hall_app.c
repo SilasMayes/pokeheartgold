@@ -122,7 +122,7 @@ typedef struct BattleHallApp {
     u32 summaryResult;
     u16 *resultOut;
     Party *party;
-    void *hallRecords;
+    u8 *hallRecords;
     u16 *partnerLevel;
     NARC *narc;
     u16 linkCommand;

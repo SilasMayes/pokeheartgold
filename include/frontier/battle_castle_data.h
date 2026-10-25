@@ -4,6 +4,8 @@
 #include "frontier/frontier_system.h"
 #include "frontier/frontier_trainers.h"
 
+#include "frontier_save_access.h"
+
 #define CASTLE_PARTY_SIZE       3
 #define CASTLE_OPPONENT_COUNT   4
 #define CASTLE_LINK_MON_BUFFER_SIZE 0x200
@@ -11,7 +13,7 @@
 typedef struct BattleCastleData {
     enum HeapID heapId;
     SaveData *saveData;
-    void *challenge;
+    CastleChallenge *challenge;
     BattleSetup *battleSetup;
     u8 type;     // single / double / multi / link multi
     u8 battleNo; // battle in the current round (0-6)

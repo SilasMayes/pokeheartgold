@@ -1,6 +1,7 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_CASTLE_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_CASTLE_H
 
+#include "frontier_save_access.h"
 #include "grid_input_handler.h"
 #include "message_printer.h"
 #include "overlay_manager.h"
@@ -102,7 +103,7 @@ typedef struct BattleCastlePartyApp {
     MessagePrinter *msgPrinter;
     Options *options;
     SaveData *saveData;
-    void *castleChallenge;
+    CastleChallenge *castleChallenge;
     u32 castleFlags;
     BattleCastleSpriteGfx spriteGfx;
     BattleCastleSprite *unk_734;
@@ -296,7 +297,7 @@ typedef struct BattleCastleOpponentApp {
     MessagePrinter *msgPrinter;
     Options *options;
     SaveData *saveData;
-    void *castleChallenge;
+    CastleChallenge *castleChallenge;
     u32 castleFlags;
     BattleCastleSpriteGfx spriteGfx;
     BattleCastleSprite *monIcons[4];

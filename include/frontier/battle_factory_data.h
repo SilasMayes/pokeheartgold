@@ -3,6 +3,8 @@
 
 #include "frontier/frontier_trainers.h"
 
+#include "frontier_save_access.h"
+
 #define FACTORY_RENTAL_COUNT   6
 #define FACTORY_OPPONENT_COUNT 4
 
@@ -40,7 +42,7 @@ typedef struct BattleFactoryData {
     Party *opponentParty;
     u16 selection[6]; // result of the factory app (picked rentals / trade slots)
     u16 partySetIds[6];
-    void *challenge;
+    FactoryChallenge *challenge;
     SaveData *saveData;
     BattleSetup *battleSetup;
     SysTask *scrollTask;

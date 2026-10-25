@@ -3,6 +3,8 @@
 
 #include "frontier/frontier_trainers.h"
 
+#include "frontier_save_access.h"
+
 #define HALL_TRAINER_COUNT         20 // 2 per battle of a round (the second for the partner), 10 battles
 #define HALL_CELL_COUNT            18 // type cells of the board with a rank (the others are the Hall Matron's)
 #define HALL_TYPE_RANKS_SIZE       9  // 18 ranks of 4 bits
@@ -37,7 +39,7 @@ typedef struct BattleHallData {
     u8 cellType; // Pokemon type of the cell
     u8 cell;     // cursor clamped to the ranked cells
     u8 padding_6F6[2];
-    void *challenge;
+    HallChallenge *challenge;
     SaveData *saveData;
     BattleSetup *battleSetup;
     u8 typeRanks[4][HALL_TYPE_RANKS_SIZE]; // per type
@@ -60,7 +62,7 @@ typedef struct BattleHallAppArgs {
     u8 mode; // BattleHallData.type
     u8 cursor;
     u16 result;        // the picked cell
-    void *hallRecords; // the type ranks of the type
+    u8 *hallRecords; // the type ranks of the type
     Party *party;
     BattleHallData *data;
     u16 *partnerLevel;
