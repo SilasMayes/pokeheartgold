@@ -693,13 +693,13 @@ static void HallOfFameShowcase_ShowMonDetail(HallOfFameShowcase *showcase, u32 i
     Save_HOF_GetMonStatsByIndexPair(showcase->hallOfFame, showcase->record, index, &showcase->mon);
     gender = GetGenderBySpeciesAndPersonality(showcase->mon.species, showcase->mon.personality);
     ((void (*)(NARC *, s8 *, u16))NARC_ReadPokepicShadowHeight)(showcase->pokegraNarc, yOffset, showcase->mon.species);
-    height = GetMonPicHeightBySpeciesGenderForm(showcase->mon.species, (u8)gender, 2, showcase->mon.form, showcase->mon.personality);
+    height = GetMonPicHeightBySpeciesGenderForm(showcase->mon.species, gender, 2, showcase->mon.form, showcase->mon.personality);
     sprites = showcase->sprites;
-    ManagedSprite_SetPositionXYWithSubscreenOffset(showcase->sprites[slot], 64, (s16)(height + 64 - yOffset[0]), FX32_CONST(512));
+    ManagedSprite_SetPositionXYWithSubscreenOffset(showcase->sprites[slot], 64, height + 64 - yOffset[0], FX32_CONST(512));
     shiny = CalcShininessByOtIdAndPersonality(showcase->mon.otid, showcase->mon.personality) != 0;
     buffer = Heap_AllocAtEnd(HEAP_ID_59, 3200);
     personality = showcase->mon.personality;
-    GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, showcase->mon.species, GetGenderBySpeciesAndPersonality(showcase->mon.species, personality), 2, (u8)shiny, showcase->mon.form, personality);
+    GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, showcase->mon.species, GetGenderBySpeciesAndPersonality(showcase->mon.species, personality), 2, shiny, showcase->mon.form, personality);
     CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_59, &picRect, buffer, showcase->mon.personality, FALSE, 2, showcase->mon.species);
     HallOfFameShowcase_LoadSubObjChar(buffer, NNS_G2dGetImageLocation(Sprite_GetImageProxy(sprites[slot]->sprite), NNS_G2D_VRAM_TYPE_2DSUB), 3200);
     Heap_Free(buffer);

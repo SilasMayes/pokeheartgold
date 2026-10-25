@@ -252,7 +252,7 @@ void BoxMonSelector_Init(BoxMonSelector *selector, BgConfig *bgConfig, void *sto
     LoadFontPal0(GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_12_OFFSET, selector->heapId);
     selector->unused_11 = unused11;
     selector->unused_12 = unused12;
-    GridCursor_Init(selector->cursor, (u8)canCancel);
+    GridCursor_Init(selector->cursor, canCancel);
     GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_BOX, 0);
     BoxMonSelector_CreatePickSlots(selector);
     selector->getMon = getMon;
@@ -371,7 +371,7 @@ static int BoxMonSelector_HandleInput(BoxMonSelector *selector) {
             if (hit != -1) {
                 if (hit < BOX_MON_SELECTOR_BOX_SLOTS) {
                     if (selector->page != BOX_MON_SELECTOR_PARTY_PAGE || hit < PARTY_SIZE) {
-                        GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_BOX, (u8)hit);
+                        GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_BOX, hit);
                         if (BoxMonSelector_PointAtBoxSlot(selector, hit) == SLOT_SELECTABLE) {
                             PlaySE(SEQ_SE_DP_BOX02);
                             BoxMonSelector_StartDrag(selector, DRAG_FROM_BOX, hit);
@@ -379,7 +379,7 @@ static int BoxMonSelector_HandleInput(BoxMonSelector *selector) {
                         }
                     }
                 } else if (hit >= HITBOX_PICKS && hit < HITBOX_PICKS + selector->maxPicks) {
-                    GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_PICKS, (u8)(hit - HITBOX_PICKS));
+                    GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_PICKS, hit - HITBOX_PICKS);
                     if (BoxMonSelector_PointAtPick(selector, hit - HITBOX_PICKS) == SLOT_SELECTABLE) {
                         PlaySE(SEQ_SE_DP_BOX02);
                         BoxMonSelector_StartDrag(selector, DRAG_FROM_PICKS, hit - HITBOX_PICKS);
@@ -578,7 +578,7 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
                 u32 y = selector->touchY;
                 u32 left = selector->pickDropAreas[i].left, top = selector->pickDropAreas[i].top, bottom = selector->pickDropAreas[i].bottom, right = selector->pickDropAreas[i].right;
                 if ((u32)(selector->touchX - left) < (u32)(right - left) && (u32)(y - top) < (u32)(bottom - top)) {
-                    BoxMonSelector_AddPick(selector, (u8)i);
+                    BoxMonSelector_AddPick(selector, i);
                     return 1;
                 }
             } else {
@@ -586,7 +586,7 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
                 u32 left = selector->pickDropAreas[i].left, top = selector->pickDropAreas[i].top, bottom = selector->pickDropAreas[i].bottom, right = selector->pickDropAreas[i].right;
                 if ((u32)(selector->touchX - left) < (u32)(right - left) && (u32)(y - top) < (u32)(bottom - top)) {
                     BoxMonSelector_RemovePick(selector, i);
-                    BoxMonSelector_AddPick(selector, (u8)i);
+                    BoxMonSelector_AddPick(selector, i);
                     return 1;
                 }
             }
@@ -606,7 +606,7 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
                 if (!selector->pickDropAreas[i].occupied) {
                     u32 left = selector->pickDropAreas[i].left, top = selector->pickDropAreas[i].top, bottom = selector->pickDropAreas[i].bottom, right = selector->pickDropAreas[i].right;
                     if ((u32)(x - left) < (u32)(right - left) && (u32)(y - top) < (u32)(bottom - top)) {
-                        BoxMonSelector_MovePick(selector, (u8)selector->dragIndex, (u8)i);
+                        BoxMonSelector_MovePick(selector, selector->dragIndex, i);
                         return 3;
                     }
                 }
@@ -1028,9 +1028,9 @@ static void BoxMonSelector_EndDrag(BoxMonSelector *selector, int result) {
     } else {
         position = selector->dragOrigin;
         if (selector->dragSource == DRAG_FROM_PICKS) {
-            GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_PICKS, (u8)selector->dragIndex);
+            GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_PICKS, selector->dragIndex);
         } else {
-            GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_BOX, (u8)selector->dragIndex);
+            GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_BOX, selector->dragIndex);
         }
     }
     Sprite_SetMatrix(selector->dragIcons[selector->dragIndex].sprite, &selector->dragOrigin);
@@ -1331,7 +1331,7 @@ static int BoxMonSelector_HandleAButton(BoxMonSelector *selector) {
                     iconPos.y = (s32)((u32)iconPos.y - 4 * FX32_ONE);
                     Sprite_SetMatrix(selector->dragIcons[selector->dragIndex].sprite, &iconPos);
                     Sprite_SetMatrix(selector->handCursor, &pos);
-                    GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_PLACE, (u8)i);
+                    GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_PLACE, i);
                     break;
                 }
             }

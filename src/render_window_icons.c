@@ -118,7 +118,7 @@ void LoadDownArrowTiles(Window *window, u32 baseTile) {
 // Same tiles as LoadUserFrameGfx2, with the transparent pixels set to color.
 void LoadUserFrameGfx2WithFill(BgConfig *bgConfig, u8 bgId, u16 baseTile, u8 color, u8 frame, enum HeapID heapId) {
     NNSG2dCharacterData *charData;
-    void *charFile = GfGfxLoader_GetCharData(NARC_a_0_3_8, (s32)GetUserFrameGfx2TilesMember(frame), FALSE, &charData, heapId);
+    void *charFile = GfGfxLoader_GetCharData(NARC_a_0_3_8, GetUserFrameGfx2TilesMember(frame), FALSE, &charData, heapId);
     u8 *tiles = Heap_Alloc(heapId, 0x240);
     u32 i;
 
@@ -197,7 +197,7 @@ static void DrawSignpostGraphicTilemap(Window *window, u16 baseTile, u8 paletteN
     for (row = 0; row < 4; row++) {
         u16 col;
         for (col = 0; col < 6; col++) {
-            FillBgTilemapRect(window->bgConfig, bgId, baseTile + row * 6 + col, (u8)(x + col), y + row, 1, 1, paletteNum);
+            FillBgTilemapRect(window->bgConfig, bgId, baseTile + row * 6 + col, x + col, y + row, 1, 1, paletteNum);
         }
     }
 }
@@ -211,7 +211,7 @@ void DrawFrameAndWindow3(Window *window, BOOL dontCopyToVram, u16 baseTile, u8 p
         u8 width = GetWindowWidth(window);
         u8 height = GetWindowHeight(window);
         DrawSignpostFrameTilemap(window->bgConfig, bgId, x, y, width, height, paletteNum, baseTile);
-        DrawSignpostGraphicTilemap(window, (u16)(baseTile + 0x1E), paletteNum);
+        DrawSignpostGraphicTilemap(window, baseTile + 0x1E, paletteNum);
     } else {
         u8 x = GetWindowX(window);
         u8 y = GetWindowY(window);
@@ -449,19 +449,19 @@ static void PokemonPicWindow_LoadGfx(PokemonPicWindow *picWindow, PokepicTemplat
 }
 
 static void PokemonPicWindow_DrawFrame(PokemonPicWindow *picWindow, u8 paletteNum, u16 baseTile) {
-    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile, (u8)(picWindow->x - 1), (u8)(picWindow->y - 1), 1, 1, paletteNum);
-    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 1, picWindow->x, (u8)(picWindow->y - 1), 10, 1, paletteNum);
-    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 2, (u8)(picWindow->x + 10), (u8)(picWindow->y - 1), 1, 1, paletteNum);
+    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile, picWindow->x - 1, picWindow->y - 1, 1, 1, paletteNum);
+    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 1, picWindow->x, picWindow->y - 1, 10, 1, paletteNum);
+    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 2, picWindow->x + 10, picWindow->y - 1, 1, 1, paletteNum);
     FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 4, picWindow->x, picWindow->y, 10, 10, paletteNum);
-    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 3, (u8)(picWindow->x - 1), picWindow->y, 1, 10, paletteNum);
-    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 5, (u8)(picWindow->x + 10), picWindow->y, 1, 10, paletteNum);
-    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 6, (u8)(picWindow->x - 1), (u8)(picWindow->y + 10), 1, 1, paletteNum);
-    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 7, picWindow->x, (u8)(picWindow->y + 10), 10, 1, paletteNum);
-    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 8, (u8)(picWindow->x + 10), (u8)(picWindow->y + 10), 1, 1, paletteNum);
+    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 3, picWindow->x - 1, picWindow->y, 1, 10, paletteNum);
+    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 5, picWindow->x + 10, picWindow->y, 1, 10, paletteNum);
+    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 6, picWindow->x - 1, picWindow->y + 10, 1, 1, paletteNum);
+    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 7, picWindow->x, picWindow->y + 10, 10, 1, paletteNum);
+    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, baseTile + 8, picWindow->x + 10, picWindow->y + 10, 1, 1, paletteNum);
     ScheduleBgTilemapBufferTransfer(picWindow->bgConfig, picWindow->layer);
 }
 
 static void PokemonPicWindow_ClearFrame(PokemonPicWindow *picWindow) {
-    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, 0, (u8)(picWindow->x - 1), (u8)(picWindow->y - 1), 12, 12, 0);
+    FillBgTilemapRect(picWindow->bgConfig, picWindow->layer, 0, picWindow->x - 1, picWindow->y - 1, 12, 12, 0);
     ScheduleBgTilemapBufferTransfer(picWindow->bgConfig, picWindow->layer);
 }

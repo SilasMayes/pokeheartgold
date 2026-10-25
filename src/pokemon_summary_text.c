@@ -556,7 +556,7 @@ static void PokemonSummary_PrintStats(PokemonSummary *summary) {
     FillWindowPixelBuffer(&summary->pageWindows[5], 0);
     FillWindowPixelBuffer(&summary->pageWindows[6], 0);
     FillWindowPixelBuffer(&summary->pageWindows[7], 0);
-    PokemonSummary_PrintValuePair(summary, 0, 117, 119, 118, summary->mon.hp, summary->mon.maxHp, 3, (u8)(GetWindowWidth(summary->pageWindows) * 4), 0);
+    PokemonSummary_PrintValuePair(summary, 0, 117, 119, 118, summary->mon.hp, summary->mon.maxHp, 3, (GetWindowWidth(summary->pageWindows) * 4), 0);
     PokemonSummary_FormatNumber(summary, msg_0302_00120, summary->mon.attack, 3, PRINTING_MODE_LEFT_ALIGN);
     PokemonSummary_PrintBuffer(summary, &summary->pageWindows[1], MAKE_TEXT_COLOR(1, 2, 0), 1);
     PokemonSummary_FormatNumber(summary, msg_0302_00121, summary->mon.defense, 3, PRINTING_MODE_LEFT_ALIGN);

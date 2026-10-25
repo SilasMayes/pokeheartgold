@@ -130,7 +130,7 @@ BOOL Point2D_CalcSegmentIntersection(Point2D *a, Point2D *b, Point2D *c, Point2D
         out->x = 0xFFFF;
         out->y = 0xFFFF;
     }
-    if (Point2D_SegmentsIntersect(a, b, c, d) == 0) {
+    if (!Point2D_SegmentsIntersect(a, b, c, d)) {
         return FALSE;
     }
     Point2D_CalcLineThroughPoints(line1, a->x, a->y, b->x, b->y);

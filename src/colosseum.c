@@ -216,7 +216,7 @@ static BOOL Colosseum_FinishSummary(ColosseumEntry *entry, FieldSystem *fieldSys
 }
 
 static BOOL Colosseum_WaitFieldResumed(ColosseumEntry *entry) {
-    if (FieldSystem_IsOverworldRestored(entry->fieldSystem) != 0) {
+    if (FieldSystem_IsOverworldRestored(entry->fieldSystem)) {
         FieldMap_FadeScreen(FADE_TYPE_BRIGHTNESS_IN);
         CommPlayerManager_ResyncLocalPlayer();
         return TRUE;

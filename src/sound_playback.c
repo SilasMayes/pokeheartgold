@@ -560,7 +560,7 @@ static void CryStopTask(SysTask *task, void *arg) {
         GF_SndHandleMoveVolume(SND_HANDLE_CHORUS, 0, data->frames);
     }
     data->frames--;
-    if (IsCryFinished() == 0) {
+    if (!IsCryFinished()) {
         data->frames = 0;
     }
     if (data->frames <= 0) {

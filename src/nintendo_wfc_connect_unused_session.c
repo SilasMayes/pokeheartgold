@@ -1339,7 +1339,7 @@ static int NintendoWfcUnused_Disconnect(NintendoWfcUnused *wfc) {
         wfc->subState++;
         break;
     case NINTENDO_WFC_UNUSED_DISCONNECT_CLEANUP:
-        if (!TextPrinterCheckActive((u8)wfc->textPrinterId)) {
+        if (!TextPrinterCheckActive(wfc->textPrinterId)) {
             CommState_FreeWfcSession();
             DWC_CleanupInet();
             wfc->subState++;
@@ -1350,7 +1350,7 @@ static int NintendoWfcUnused_Disconnect(NintendoWfcUnused *wfc) {
         wfc->subState++;
         break;
     case NINTENDO_WFC_UNUSED_DISCONNECT_WAIT_PRINT:
-        if (!TextPrinterCheckActive((u8)wfc->textPrinterId)) {
+        if (!TextPrinterCheckActive(wfc->textPrinterId)) {
             wfc->subState++;
         }
         break;
@@ -1366,14 +1366,14 @@ static int NintendoWfcUnused_Disconnect(NintendoWfcUnused *wfc) {
 }
 
 static int NintendoWfcUnused_WaitMessage(NintendoWfcUnused *wfc) {
-    if (!TextPrinterCheckActive((u8)wfc->textPrinterId)) {
+    if (!TextPrinterCheckActive(wfc->textPrinterId)) {
         wfc->state = wfc->nextState;
     }
     return NINTENDO_WFC_UNUSED_MAIN_SESSION_MAIN;
 }
 
 static int NintendoWfcUnused_WaitMessageAndDelay(NintendoWfcUnused *wfc) {
-    if (!TextPrinterCheckActive((u8)wfc->textPrinterId)) {
+    if (!TextPrinterCheckActive(wfc->textPrinterId)) {
         if (wfc->messageTimer > 30) {
             wfc->state = wfc->nextState;
         }
@@ -1383,7 +1383,7 @@ static int NintendoWfcUnused_WaitMessageAndDelay(NintendoWfcUnused *wfc) {
 }
 
 static int NintendoWfcUnused_OpenYesNoPrompt(NintendoWfcUnused *wfc) {
-    if (!TextPrinterCheckActive((u8)wfc->textPrinterId)) {
+    if (!TextPrinterCheckActive(wfc->textPrinterId)) {
         wfc->yesNoPrompt = NintendoWfcUnused_CreateYesNoPrompt(wfc->bgConfig, 10, 0x244);
         wfc->state = wfc->nextState;
     }

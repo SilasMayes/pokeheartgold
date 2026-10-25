@@ -114,7 +114,7 @@ BOOL NintendoWfcUnused_Init(OverlayManager *man, int *state) {
         SetKeyRepeatTimers(4, 8);
         NintendoWfcUnused_InitArgs(wfc, man);
         NintendoWfcUnused_InitGraphics(wfc);
-        Sound_SetSceneAndPlayBGM(52, 0, 0);
+        Sound_SetSceneAndPlayBGM(52, SEQ_NONE, 0);
         heapMem = Heap_Alloc(HEAP_ID_150, 0x20020);
         wfc->heapMem = heapMem;
         wfc->expHeap = NNS_FndCreateExpHeapEx((void *)(((u32)heapMem + 31) & ~31), 0x20000, 0);

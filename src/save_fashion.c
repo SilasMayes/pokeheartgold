@@ -117,7 +117,7 @@ static void FashionMon_Init(SaveFashionMon *dst, Pokemon *mon, u8 x, u8 y, s8 z)
 static void FashionMon_InitAtObject(SaveFashionMon *dst, Pokemon *mon, DressUpMonPic *monPic) {
     u8 x, y, z;
     GetFashionObjectPlacement(monPic, &x, &y, &z);
-    FashionMon_Init(dst, mon, x, y, (s8)z);
+    FashionMon_Init(dst, mon, x, y, z);
 }
 
 static void FashionMon_SetSecondText(SaveFashionMon *dst, String *str, u32 gender) {
@@ -202,7 +202,7 @@ static u8 CountOwnedWallpapers(u32 *data) {
     int i = 0;
     int count = i;
     for (i = 0; i < FASHION_WALLPAPER_COUNT; i++) {
-        if (GetWallpaperOrder(data, (u8)i) != FASHION_WALLPAPER_NOT_OWNED) {
+        if (GetWallpaperOrder(data, i) != FASHION_WALLPAPER_NOT_OWNED) {
             count++;
         }
     }
@@ -220,7 +220,7 @@ static void FashionCase_Init(FashionCase *fashionCase) {
     int i;
     memset(fashionCase, 0, sizeof(FashionCase));
     for (i = 0; i < FASHION_WALLPAPER_COUNT; i++) {
-        SetWallpaperOrder(&fashionCase->wallpaperOrder[0], FASHION_WALLPAPER_NOT_OWNED, (u8)i);
+        SetWallpaperOrder(&fashionCase->wallpaperOrder[0], FASHION_WALLPAPER_NOT_OWNED, i);
     }
 }
 
@@ -303,16 +303,16 @@ BOOL FashionCase_HasWallpaper(FashionCase *fashionCase, int index) {
 u32 FashionCase_GetAccessoryCount(FashionCase *fashionCase, int id) {
     GF_ASSERT((u32)id < FASHION_ACCESSORY_COUNT);
     if (IsStackableAccessory(id)) {
-        return GetStackableAccessoryCount(fashionCase->accessories, (u8)id);
+        return GetStackableAccessoryCount(fashionCase->accessories, id);
     }
     GF_ASSERT((u32)id >= FASHION_STACKABLE_ACCESSORY_COUNT);
     id = (u8)(id - FASHION_STACKABLE_ACCESSORY_COUNT);
-    return GetUniqueAccessoryFlag(&fashionCase->accessories[8], (u8)id);
+    return GetUniqueAccessoryFlag(&fashionCase->accessories[8], id);
 }
 
 int FashionCase_GetWallpaperOrder(FashionCase *fashionCase, int index) {
     GF_ASSERT((u32)index < FASHION_WALLPAPER_COUNT);
-    return GetWallpaperOrder(&fashionCase->wallpaperOrder[0], (u8)index);
+    return GetWallpaperOrder(&fashionCase->wallpaperOrder[0], index);
 }
 
 u32 FashionCase_CountAccessories(FashionCase *fashionCase) {
@@ -338,46 +338,46 @@ u32 FashionCase_CountWallpapers(FashionCase *fashionCase) {
 void FashionCase_GiveFashionItem(FashionCase *fashionCase, int id, int quantity) {
     GF_ASSERT((u32)id < FASHION_ACCESSORY_COUNT);
     if (IsStackableAccessory(id)) {
-        u8 count = GetStackableAccessoryCount(fashionCase->accessories, (u8)id);
+        u8 count = GetStackableAccessoryCount(fashionCase->accessories, id);
         count += quantity;
         if (count > FASHION_STACKABLE_ACCESSORY_MAX) {
             count = FASHION_STACKABLE_ACCESSORY_MAX;
         }
-        SetStackableAccessoryCount(fashionCase->accessories, count, (u8)id);
+        SetStackableAccessoryCount(fashionCase->accessories, count, id);
     } else {
-        u8 count = GetUniqueAccessoryFlag(&fashionCase->accessories[8], (u8)id);
+        u8 count = GetUniqueAccessoryFlag(&fashionCase->accessories[8], id);
         count += quantity;
         if (count > 1) {
             count = 1;
         }
         GF_ASSERT((u32)id >= FASHION_STACKABLE_ACCESSORY_COUNT);
         id = (u8)(id - FASHION_STACKABLE_ACCESSORY_COUNT);
-        SetUniqueAccessoryFlag(&fashionCase->accessories[8], count, (u8)id);
+        SetUniqueAccessoryFlag(&fashionCase->accessories[8], count, id);
     }
 }
 
 void FashionCase_TakeAccessory(FashionCase *fashionCase, int id, int quantity) {
     GF_ASSERT((u32)id < FASHION_ACCESSORY_COUNT);
     if (IsStackableAccessory(id)) {
-        u8 count = GetStackableAccessoryCount(fashionCase->accessories, (u8)id);
+        u8 count = GetStackableAccessoryCount(fashionCase->accessories, id);
         if ((u32)count > (u32)quantity) {
             count -= quantity;
         } else {
             count = 0;
         }
-        SetStackableAccessoryCount(fashionCase->accessories, count, (u8)id);
+        SetStackableAccessoryCount(fashionCase->accessories, count, id);
     } else {
         GF_ASSERT((u32)id >= FASHION_STACKABLE_ACCESSORY_COUNT);
         id = (u8)(id - FASHION_STACKABLE_ACCESSORY_COUNT);
-        SetUniqueAccessoryFlag(&fashionCase->accessories[8], 0, (u8)id);
+        SetUniqueAccessoryFlag(&fashionCase->accessories[8], 0, id);
     }
 }
 
 void FashionCase_GiveContestBackground(FashionCase *fashionCase, int id) {
     GF_ASSERT((u32)id < FASHION_WALLPAPER_COUNT);
-    if (GetWallpaperOrder(&fashionCase->wallpaperOrder[0], (u8)id) == FASHION_WALLPAPER_NOT_OWNED) {
+    if (GetWallpaperOrder(&fashionCase->wallpaperOrder[0], id) == FASHION_WALLPAPER_NOT_OWNED) {
         u8 count = CountOwnedWallpapers(&fashionCase->wallpaperOrder[0]);
-        SetWallpaperOrder(&fashionCase->wallpaperOrder[0], count, (u8)id);
+        SetWallpaperOrder(&fashionCase->wallpaperOrder[0], count, id);
     }
 }
 
@@ -430,7 +430,7 @@ void FashionEntry_PlaceItem(SaveFashionDataSub *entry_, DressUpSlot *source, int
     mask = 1 << index;
     GF_ASSERT(!(entry->mask & mask));
     GF_ASSERT(IsValidFashionMagic(entry->magic));
-    SetFashionItemPlacement(entry->items[index], (u8)source->id, (u8)(s16)coords.xCopy, (u8)y, (u8)z);
+    SetFashionItemPlacement(entry->items[index], source->id, (u8)(s16)coords.xCopy, y, z);
     entry->mask |= mask;
 }
 

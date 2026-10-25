@@ -240,6 +240,6 @@ void Sound_SetFieldBGMStopOnce(BOOL enabled) {
     gSoundSystemFlags.fieldBGMStopOnce = enabled;
 }
 void Sound_ResetFieldBGMStopOnce(void) {
-    gSoundSystemFlags.fieldBGMStopOnce = 0;
-    gSoundSystemFlags.fieldBGMStopped = 0;
+    gSoundSystemFlags.fieldBGMStopOnce = FALSE;
+    gSoundSystemFlags.fieldBGMStopped = FALSE;
 }

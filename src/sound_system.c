@@ -407,9 +407,9 @@ static void Sound_PlayBGMForFieldScene(u16 seqNo, int mode) {
     }
     if (*reload != 0 || currentSeqNo != seqNo || GF_GetQueuedBGM() == SEQ_GS_BICYCLE) {
         Sound_SetReloadFieldSeqFlag(1);
-        if (gSoundSystemFlags.fieldBGMStopOnce == 0 || gSoundSystemFlags.fieldBGMStopped == 0) {
+        if (!gSoundSystemFlags.fieldBGMStopOnce || !gSoundSystemFlags.fieldBGMStopped) {
             StopBGMSEAndCry();
-            gSoundSystemFlags.fieldBGMStopped = 1;
+            gSoundSystemFlags.fieldBGMStopped = TRUE;
         }
         if (currentSeqNo != seqNo) {
             Sound_SetPlayerPause(PLAYER_FIELD, 0);

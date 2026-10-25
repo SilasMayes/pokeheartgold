@@ -700,7 +700,7 @@ BOOL NintendoWfc_Init(OverlayManager *man, int *state) {
         SetKeyRepeatTimers(4, 8);
         NintendoWfc_InitArgs(wfc, man);
         NintendoWfc_InitGraphics(wfc);
-        Sound_SetSceneAndPlayBGM(52, 0, 0);
+        Sound_SetSceneAndPlayBGM(52, SEQ_NONE, 0);
         wfc->heapMem = Heap_Alloc(HEAP_ID_67, 0x20020);
         wfc->expHeap = NNS_FndCreateExpHeapEx((void *)(((u32)wfc->heapMem + 31) & ~31), 0x20000, 0);
         Sound_SetSceneAndPlayBGM(11, SEQ_GS_WIFI_ACCESS, 1);
@@ -2105,7 +2105,7 @@ int NintendoWfc_Disconnect(NintendoWfcConnect *wfc) {
         wfc->subState++;
         break;
     case NINTENDO_WFC_DISCONNECT_CLEANUP:
-        if (TextPrinterCheckActive((u8)wfc->textPrinterId) == 0) {
+        if (TextPrinterCheckActive(wfc->textPrinterId) == 0) {
             CommState_FreeWfcSession();
             DWC_CleanupInet();
             wfc->subState++;
@@ -2116,7 +2116,7 @@ int NintendoWfc_Disconnect(NintendoWfcConnect *wfc) {
         wfc->subState++;
         break;
     case NINTENDO_WFC_DISCONNECT_WAIT_PRINT:
-        if (TextPrinterCheckActive((u8)wfc->textPrinterId) == 0) {
+        if (TextPrinterCheckActive(wfc->textPrinterId) == 0) {
             wfc->subState++;
         }
         break;
@@ -2132,14 +2132,14 @@ int NintendoWfc_Disconnect(NintendoWfcConnect *wfc) {
 }
 
 int NintendoWfc_WaitMessage(NintendoWfcConnect *wfc) {
-    if (!TextPrinterCheckActive((u8)wfc->textPrinterId)) {
+    if (!TextPrinterCheckActive(wfc->textPrinterId)) {
         wfc->state = wfc->nextState;
     }
     return NINTENDO_WFC_MAIN_SESSION_MAIN;
 }
 
 int NintendoWfc_WaitMessageAndDelay(NintendoWfcConnect *wfc) {
-    if (!TextPrinterCheckActive((u8)wfc->textPrinterId)) {
+    if (!TextPrinterCheckActive(wfc->textPrinterId)) {
         if (wfc->messageTimer > 30) {
             wfc->state = wfc->nextState;
         }
@@ -2149,7 +2149,7 @@ int NintendoWfc_WaitMessageAndDelay(NintendoWfcConnect *wfc) {
 }
 
 int NintendoWfc_OpenYesNoMenu(NintendoWfcConnect *wfc) {
-    if (!TextPrinterCheckActive((u8)wfc->textPrinterId)) {
+    if (!TextPrinterCheckActive(wfc->textPrinterId)) {
         wfc->yesNoMenu.cursorSprite = wfc->sprites[NINTENDO_WFC_SPRITE_YES_NO_CURSOR];
         wfc->yesNoMenu.bgConfig = wfc->bgConfig;
         wfc->yesNoMenu.heapID = HEAP_ID_67;
@@ -2600,7 +2600,7 @@ static void NintendoWfc_AddNumberInputWindows(NintendoWfcConnect *wfc) {
     baseTile = 31;
     window = wfc->buttonWindows;
     for (; i < 3; baseTile += 64, x++, window++, i++) {
-        AddWindowParameterized(wfc->bgConfig, window, GF_BG_LYR_SUB_0, (u8)*x, 21, 8, 2, 13, (u16)baseTile);
+        AddWindowParameterized(wfc->bgConfig, window, GF_BG_LYR_SUB_0, (u8)*x, 21, 8, 2, 13, baseTile);
     }
     AddWindowParameterized(wfc->bgConfig, &wfc->numberInputWindow, GF_BG_LYR_SUB_0, 2, 19, 27, 4, 13, 79);
 }
@@ -2654,13 +2654,13 @@ static BOOL NintendoWfc_UpdateButtonFlash(NintendoWfcConnect *wfc) {
     NintendoWfcButtonFlash *flash = &wfc->buttonFlash;
     switch (flash->state) {
     case 0:
-        NintendoWfc_SetButtonFlashPltt(wfc, (u8)flash->pressedPltt);
+        NintendoWfc_SetButtonFlashPltt(wfc, flash->pressedPltt);
         flash->state++;
         break;
     case 1:
         flash->timer++;
         if (flash->timer == 4) {
-            NintendoWfc_SetButtonFlashPltt(wfc, (u8)flash->normalPltt);
+            NintendoWfc_SetButtonFlashPltt(wfc, flash->normalPltt);
             flash->timer = 0;
             flash->state++;
         }
@@ -2807,7 +2807,7 @@ static void NintendoWfcYesNo_AddWindows(NintendoWfcYesNoMenu *menu) {
 
     AddWindowParameterized(menu->bgConfig, &menu->yesWindow, menu->textBgLayer, 12, 8, 8, 2, menu->fontPltt, menu->baseTile);
     FillWindowPixelBuffer(&menu->yesWindow, 0);
-    AddWindowParameterized(menu->bgConfig, &menu->noWindow, menu->textBgLayer, 12, 14, 8, 2, menu->fontPltt, (u16)(menu->baseTile + 16));
+    AddWindowParameterized(menu->bgConfig, &menu->noWindow, menu->textBgLayer, 12, 14, 8, 2, menu->fontPltt, menu->baseTile + 16);
     FillWindowPixelBuffer(&menu->noWindow, 0);
     yes = NewString_ReadMsgData(msgData, msg_0191_00046);
     no = NewString_ReadMsgData(msgData, msg_0191_00047);

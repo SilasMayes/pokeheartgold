@@ -293,7 +293,7 @@ static void PlayerAvatar_PlayFootstepSound(LocalMapObject *object, PlayerAvatar 
     } else {
         PlayerAvatar_ToggleFootstep(avatar);
     }
-    if (PlayerAvatar_GetFootstepToggle(avatar) != 0) {
+    if (PlayerAvatar_GetFootstepToggle(avatar)) {
         return;
     }
     state = PlayerAvatar_GetState(avatar);
