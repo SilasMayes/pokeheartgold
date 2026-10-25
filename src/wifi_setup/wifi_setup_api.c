@@ -37,7 +37,7 @@ void WifiSetup_FillBytes(void *dst, int value, u32 count) {
     s8 *out = dst;
     for (; i < count;) {
         i++;
-        *out++ = (s8)value;
+        *out++ = value;
     }
 }
 
@@ -50,7 +50,7 @@ void WifiSetup_CalcMd5(u8 *digest, const u8 *src, u32 len) {
 
 // Milliseconds since start-up.
 u32 WifiSetup_GetMilliseconds(void) {
-    return (u32)((OS_GetTick() << 6) / 0x82ea);
+    return (OS_GetTick() << 6) / 0x82ea;
 }
 
 void *WifiSetup_WorkCalloc(u32 count, u32 size) {

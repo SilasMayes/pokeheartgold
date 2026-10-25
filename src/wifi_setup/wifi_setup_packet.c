@@ -8,13 +8,11 @@
 // Swaps the two bytes of a 16-bit value (network byte order).
 #define Swap16(value) ((u16)((u8)((value) >> 8) | (((value) << 8) & 0xff00)))
 
-typedef struct WifiSetupSocketAddress {
+// The own address, then the broadcast destination.
+typedef struct WifiSetupBroadcastAddress {
     u8 host[4];
-    u8 size;
-    u8 family;
-    u16 port;
-    s32 tail;
-} WifiSetupSocketAddress;
+    SocAddress to;
+} WifiSetupBroadcastAddress;
 
 typedef struct WifiSetupVersion {
     u8 bytes[7];
@@ -27,7 +25,7 @@ typedef struct WifiSetupVersionRecord {
 
 extern u8 gWifiSetupReply[];
 
-static int WifiSetup_SendDatagram(int socket, const void *address, const void *unused, const void *data, int length);
+static int WifiSetup_SendDatagram(int socket, SocAddress *address, const u8 *unused, const void *data, int length);
 static int WifiSetup_BroadcastDatagram(int socket, const void *data, int length);
 static u8 *WifiSetup_GetPacketPayload(u8 *data, u32 *type, u32 *length);
 static u8 *WifiSetup_NextRecord(u8 **cursor, u8 *end, u32 *type, u32 *length);
@@ -132,11 +130,11 @@ int WifiSetup_FindSetupAccessPoint(void) {
         i = 0;
         if (result > 0) {
             for (; i < result; i++) {
-                memcpy(out->entries[total].ssid, ap->ssid, 32);
+                memcpy(out->entries[total].ssid, ap->ssid, sizeof(out->entries[total].ssid));
                 out->entries[total].ssidLength = ap->ssidLength;
                 out->entries[total].ssid[ap->ssidLength] = 0;
                 out->entries[total].privacy = (ap->capability & 0x10) ? 1 : 0;
-                memcpy(out->entries[total].bssid, ap->bssid, 6);
+                memcpy(out->entries[total].bssid, ap->bssid, sizeof(out->entries[total].bssid));
                 ap++;
                 total++;
             }
@@ -146,7 +144,7 @@ int WifiSetup_FindSetupAccessPoint(void) {
             WifiSetupApEntry *entry = &out->entries[selected];
             gWifiSetupWork.selection = selected;
             strcpy(gWifiSetupApSsid, entry->ssid);
-            memcpy(gWifiSetupApBssid, entry->bssid, 6);
+            memcpy(gWifiSetupApBssid, entry->bssid, sizeof(gWifiSetupApBssid));
             WifiSetup_FormatMacAddress(text, (const s8 *)gWifiSetupApBssid);
             break;
         }
@@ -173,7 +171,7 @@ done:
 
 #pragma optimization_level reset
 
-static int WifiSetup_SendDatagram(int socket, const void *address, const void *unused, const void *data, int length) {
+static int WifiSetup_SendDatagram(int socket, SocAddress *address, const u8 *unused, const void *data, int length) {
     int result = SOC_SendTo(socket, data, length, 0, address);
     if (result < 0) {
         result = -4;
@@ -181,15 +179,15 @@ static int WifiSetup_SendDatagram(int socket, const void *address, const void *u
     return result;
 }
 
-// Broadcast to port 0xE601 (byte-swapped 0x01E6).
+// Broadcasts to the simple start port.
 static int WifiSetup_BroadcastDatagram(int socket, const void *data, int length) {
-    WifiSetupSocketAddress address;
-    address.size = 8;
-    address.family = 2;
-    address.tail = -1;
-    address.port = 0x1e6;
+    WifiSetupBroadcastAddress address;
+    address.to.length = sizeof(SocAddress);
+    address.to.family = 2;
+    address.to.ip = 0xFFFFFFFF;
+    address.to.port = WIFI_SETUP_SIMPLE_START_PORT;
     SOC_U32to4U8(SOCL_GetHostID(), address.host);
-    return WifiSetup_SendDatagram(socket, &address.size, address.host, data, length);
+    return WifiSetup_SendDatagram(socket, &address.to, address.host, data, length);
 }
 
 int WifiSetup_SendSetupPacket(int socket, const WifiSetupSockAddr *to, const void *data, int length) {
@@ -268,7 +266,7 @@ u32 WifiSetup_BuildPacket(u8 *dest, u32 type, u8 *data, u32 length, const void *
         sum += *byte;
     }
     *(u16 *)end = Swap16((u16)sum);
-    return (u32)(end + 2 - dest);
+    return end + 2 - dest;
 }
 
 #pragma push
@@ -301,7 +299,7 @@ u32 WifiSetup_BuildSingleRecordList(u8 *dst, u16 type, const void *src, u32 leng
     result -= (int)dst;
     size = result;
     size -= 8;
-    *(u16 *)dst = (u16)size;
+    *(u16 *)dst = size;
     return result;
 }
 
@@ -328,7 +326,7 @@ BOOL WifiSetup_CheckVersionReply(void *data, int *extended) {
     }
     end = blob + length;
     cursor = blob + 8;
-    while ((value = (const u16 *)WifiSetup_NextRecord(&cursor, end, &tag, &size)) != 0) {
+    while ((value = (const u16 *)WifiSetup_NextRecord(&cursor, end, &tag, &size)) != NULL) {
         switch (tag) {
         case 1:
             record1 = Swap16(*value);
@@ -402,19 +400,19 @@ BOOL WifiSetup_BuildMacPair(WifiSetupMacPair *pair, void *unused) {
     char text2[32];
     u8 *src;
 
-    memcpy(pair->prefix, sStr_WARP, 4);
-    memcpy(other, gWifiSetupApBssid, 6);
+    memcpy(pair->prefix, sStr_WARP, sizeof(pair->prefix));
+    memcpy(other, gWifiSetupApBssid, sizeof(other));
     other[0] &= 0xFD;
     WifiSetup_GetOwnMacAddress(own);
-    memcpy(gWifiSetupOwnMacAddress, own, 6);
-    if (memcmp(other, own, 6) <= 0) {
-        memcpy(pair->first, own, 6);
+    memcpy(gWifiSetupOwnMacAddress, own, sizeof(gWifiSetupOwnMacAddress));
+    if (memcmp(other, own, sizeof(other)) <= 0) {
+        memcpy(pair->first, own, sizeof(pair->first));
         src = other;
     } else {
-        memcpy(pair->first, other, 6);
+        memcpy(pair->first, other, sizeof(pair->first));
         src = own;
     }
-    memcpy(pair->second, src, 6);
+    memcpy(pair->second, src, sizeof(pair->second));
     if (gWifiSetupConfig.debug) {
         WifiSetup_FormatMacAddress(text1, (const s8 *)own);
         WifiSetup_FormatMacAddress(text2, (const s8 *)other);

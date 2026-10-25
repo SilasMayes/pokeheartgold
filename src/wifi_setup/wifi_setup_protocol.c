@@ -33,7 +33,7 @@ static int WifiSetup_SendDoneRequest(void *unused, const WifiSetupAossPacketPara
 static int WifiSetup_BuildJoinPayload(u8 *dst);
 static void WifiSetup_WriteBody(int mode, WifiSetupAossBody *body, const void *src, s16 *length, s16 *flag, const void *extra);
 static void WifiSetup_WritePacketHeader(WifiSetupAossPacket *packet, int kind, int length, int flags, s8 checksum, s8 protocol, const void *tag);
-static void WifiSetup_SendPacket(void *buffer, int size, int index, int socket);
+static void WifiSetup_SendPacket(const WifiSetupAossPacket *packet, int size, int index, int socket);
 static int WifiSetup_Encrypt(void *src, void *dst, int size, u8 *checksum, void *seedDst, const void *seedSrc, int seedSize);
 static int WifiSetup_Decrypt(void *dst, const void *src, int size, int expected, void *seedDst, const void *seedSrc, int seedSize);
 static void WifiSetup_CipherInit(WifiSetupCipher *state, const u8 *key, u32 keySize, u32 tableSize);
@@ -294,8 +294,8 @@ static int WifiSetup_DecryptPacket(WifiSetupAossPacket *packet) {
     u8 address[8];
     WifiSetupAossEncryptedBody *body = &packet->body.encrypted;
     int result;
-    WifiSetup_MemCopy(address, &packet->tag, 8);
-    result = WifiSetup_Scramble(address, 8, sStr_MELCO, WifiSetup_StrLen(sStr_MELCO));
+    WifiSetup_MemCopy(address, &packet->tag, sizeof(address));
+    result = WifiSetup_Scramble(address, sizeof(address), sStr_MELCO, WifiSetup_StrLen(sStr_MELCO));
     if (result == -1) {
         WifiSetup_SetError(WIFI_SETUP_AOSS_ERROR_OUT_OF_MEMORY);
         return -100;
@@ -305,7 +305,7 @@ static int WifiSetup_DecryptPacket(WifiSetupAossPacket *packet) {
         int size;
         void *buffer;
         if (WifiSetup_NetToHost16(packet->kind) == WIFI_SETUP_AOSS_KIND_JOIN) {
-            WifiSetup_MemCopy(gWifiSetupPeerAddress, address, 8);
+            WifiSetup_MemCopy(gWifiSetupPeerAddress, address, sizeof(gWifiSetupPeerAddress));
         }
         if ((WifiSetup_NetToHost16(packet->flags) & 15) == 0) {
             return 0;
@@ -676,8 +676,8 @@ static int WifiSetup_SendJoinRequest(void *unused, const WifiSetupAossPacketPara
     }
     WifiSetup_MemFill(payload, 0, 0x210);
     body = &packet->body;
-    WifiSetup_MemCopy(gWifiSetupPeerAddress, &params->tags[0], 8);
-    WifiSetup_MemCopy(data, gWifiSetupPeerAddress, 8);
+    WifiSetup_MemCopy(gWifiSetupPeerAddress, &params->tags[0], sizeof(gWifiSetupPeerAddress));
+    WifiSetup_MemCopy(data, gWifiSetupPeerAddress, sizeof(data));
     header.length = WifiSetup_BuildJoinPayload(payload + 4);
     if (header.length < 0) {
         WifiSetup_SetError(WIFI_SETUP_AOSS_ERROR_JOIN_PAYLOAD);
@@ -691,7 +691,7 @@ static int WifiSetup_SendJoinRequest(void *unused, const WifiSetupAossPacketPara
     header.length += 4;
     WifiSetup_WriteBody(0, body, payload, &header.length, &header.flag, &header);
     header.flag |= 0x10;
-    if (WifiSetup_Scramble(data, 8, sStr_MELCO, 6) != 0) {
+    if (WifiSetup_Scramble(data, sizeof(data), sStr_MELCO, 6) != 0) {
         WifiSetup_SetError(WIFI_SETUP_AOSS_ERROR_OUT_OF_MEMORY);
         if (payload != NULL) {
             WifiSetup_Free(payload);
@@ -735,8 +735,8 @@ static int WifiSetup_SendSettingsRequest(void *unused, const WifiSetupAossPacket
     record.data.status = WifiSetup_HostToNet32(record.data.status);
     header.length = 8;
     WifiSetup_WriteBody(gWifiSetupState.encryptBody, &packet->body, &record, &header.length, &header.flag, &header);
-    WifiSetup_MemCopy(data, &params->tags[1], 8);
-    size = WifiSetup_Scramble(data, 8, sStr_MELCO, 6);
+    WifiSetup_MemCopy(data, &params->tags[1], sizeof(data));
+    size = WifiSetup_Scramble(data, sizeof(data), sStr_MELCO, 6);
     if (size != 0) {
         WifiSetup_SetError(WIFI_SETUP_AOSS_ERROR_OUT_OF_MEMORY);
         return -1;
@@ -753,11 +753,11 @@ static int WifiSetup_SendDoneRequest(void *unused, const WifiSetupAossPacketPara
     int size;
 
     WifiSetup_MemFill(packet, 0, sizeof(WifiSetupAossPacket));
-    WifiSetup_MemCopy(data, &params->tags[2], 8);
+    WifiSetup_MemCopy(data, &params->tags[2], sizeof(data));
     size = WifiSetup_StrLen(sStr_MELCO);
-    WifiSetup_Scramble(data, 8, sStr_MELCO, size);
+    WifiSetup_Scramble(data, sizeof(data), sStr_MELCO, size);
     WifiSetup_WritePacketHeader(packet, WIFI_SETUP_AOSS_KIND_DONE, 0, 0, 0, WIFI_SETUP_AOSS_PROTOCOL, data);
-    WifiSetup_SendPacket(packet, 0x18, 0, socket);
+    WifiSetup_SendPacket(packet, offsetof(WifiSetupAossPacket, body), 0, socket);
     return 0;
 }
 
@@ -771,11 +771,11 @@ static int WifiSetup_BuildJoinPayload(u8 *dst) {
 
     key->type = ov13_0224CFB8[0x1D];
     key->reserved = 1;
-    sourceLen = (s16)gWifiSetupState.keyLength;
+    sourceLen = gWifiSetupState.keyLength;
     WifiSetup_MemCopy(key->data, gWifiSetupState.key, sourceLen);
     key->length = WifiSetup_HostToNet16((u16)sourceLen);
-    secondLen = (s16)(sourceLen + 6);
-    secondLen = (s16)(((secondLen + 1) / 2) * 2);
+    secondLen = sourceLen + 6;
+    secondLen = ((secondLen + 1) / 2) * 2;
     key->next = WifiSetup_HostToNet16((u16)secondLen);
     total += secondLen;
     second = (WifiSetupAossItem *)(dst + secondLen);
@@ -813,7 +813,7 @@ static void WifiSetup_WritePacketHeader(WifiSetupAossPacket *packet, int kind, i
     WifiSetup_MemCopy(&packet->tag, tag, 8);
 }
 
-static void WifiSetup_SendPacket(void *buffer, int size, int index, int socket) {
+static void WifiSetup_SendPacket(const WifiSetupAossPacket *packet, int size, int index, int socket) {
     SocAddress address;
     int value;
 
@@ -825,7 +825,7 @@ static void WifiSetup_SendPacket(void *buffer, int size, int index, int socket) 
     if (index == 0xFF || ov13_0224CFB8[0x1C] == 0) {
         address.ip = -1;
     }
-    WifiSetup_SendTo(socket, buffer, size, 0, &address, sizeof(address));
+    WifiSetup_SendTo(socket, packet, size, 0, &address, sizeof(address));
 }
 
 static int WifiSetup_Encrypt(void *src, void *dst, int size, u8 *checksum, void *seedDst, const void *seedSrc, int seedSize) {

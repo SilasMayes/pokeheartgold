@@ -8,8 +8,6 @@
 // start the socket library, disconnect, close. WCM events are queued and polled by the worker.
 
 extern SocConfig sWifiSetupLinkSocConfig;
-extern u8 WCM_Bssid_Any[]; // BSSID ff:ff:ff:ff:ff:ff (any)
-extern u8 WCM_Essid_Any[]; // SSID of 0xFF bytes (any)
 
 static void WifiSetupLink_HandleEvent(WifiSetupWcmEvent *event);
 static BOOL WifiSetupLink_ReturnToIdle(void);
@@ -245,7 +243,7 @@ int WifiSetupLink_CopyApList(WifiSetupApInfo *dst, int max) {
                 if (i >= max) {
                     break;
                 }
-                MIi_CpuCopy32(WCM_PointApList((u16)i), (u32 *)dst, sizeof(WifiSetupApInfo));
+                MIi_CpuCopy32(WCM_PointApList(i), (u32 *)dst, sizeof(WifiSetupApInfo));
                 i++;
                 dst++;
             } while (i < count);
@@ -266,7 +264,7 @@ BOOL WifiSetupLink_StartSearch(const u8 *bssid, const u8 *ssid, int len, int opt
             gWifiSetupLinkSearchBssid[i] = *bssid++;
         }
     } else {
-        MI_CpuFill8(gWifiSetupLinkSearchBssid, 0xFF, 6);
+        MI_CpuFill8(gWifiSetupLinkSearchBssid, 0xFF, sizeof(gWifiSetupLinkSearchBssid));
         gWifiSetupWork.searchBssid = WCM_Bssid_Any;
     }
     gWifiSetupWork.searchSsid = gWifiSetupLinkSearchSsid;
@@ -278,7 +276,7 @@ BOOL WifiSetupLink_StartSearch(const u8 *bssid, const u8 *ssid, int len, int opt
             gWifiSetupLinkSearchSsid[i] = 0;
         }
     } else {
-        MI_CpuFill8(gWifiSetupLinkSearchSsid, 0xFF, 32);
+        MI_CpuFill8(gWifiSetupLinkSearchSsid, 0xFF, sizeof(gWifiSetupLinkSearchSsid));
         gWifiSetupWork.searchSsid = WCM_Essid_Any;
     }
     if (gWifiSetupWork.wcmState == WIFI_SETUP_WCM_STATE_IDLE) {

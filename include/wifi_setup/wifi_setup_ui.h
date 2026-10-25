@@ -75,6 +75,14 @@ typedef struct WifiSetupRect {
     u16 bottom;
 } WifiSetupRect;
 
+// Area of a text drawn by WifiSetupText_DrawInRect.
+typedef struct WifiSetupTextBox {
+    u16 x;
+    u16 y;
+    u16 width;
+    u16 height;
+} WifiSetupTextBox;
+
 // Copies of path strings (the path is localised in place).
 typedef struct WifiSetupPath21 {
     char text[21];

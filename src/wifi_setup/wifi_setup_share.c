@@ -288,7 +288,7 @@ static BOOL WifiSetupWh_StartMp(void) {
         return TRUE;
     }
     WifiSetupWh_SetState(WIFI_SETUP_WH_STATE_CONNECTED);
-    result = WM_StartMP(WifiSetupWh_StartMpCallback, gWifiSetupWh.work->recvBuffer, (u16)gWifiSetupWh.work->recvBufferSize, gWifiSetupWh.work->sendBuffer, (u16)gWifiSetupWh.work->sendBufferSize, 1);
+    result = WM_StartMP(WifiSetupWh_StartMpCallback, gWifiSetupWh.work->recvBuffer, gWifiSetupWh.work->recvBufferSize, gWifiSetupWh.work->sendBuffer, gWifiSetupWh.work->sendBufferSize, 1);
     if (result == WM_ERRCODE_OPERATING) {
         return TRUE;
     }
@@ -523,12 +523,12 @@ static BOOL WifiSetupWh_StartMeasureChannel(void) {
     gWifiSetupWh.work->minBusyRatio = 101;
     WifiSetupWh_SetState(WIFI_SETUP_WH_STATE_BUSY);
     status = WifiSetupWh_MeasureNextChannel(1);
-    if (status == 24) {
-        WifiSetupWh_SetError(24);
+    if (status == WIFI_SETUP_WH_ERROR_CHANNELS_DONE) {
+        WifiSetupWh_SetError(WIFI_SETUP_WH_ERROR_CHANNELS_DONE);
         WifiSetupWh_SetState(WIFI_SETUP_WH_STATE_ERROR);
         return FALSE;
     }
-    if (status == 2) {
+    if (status == WM_ERRCODE_OPERATING) {
         return TRUE;
     }
     WifiSetupWh_SetError(status);
@@ -536,23 +536,23 @@ static BOOL WifiSetupWh_StartMeasureChannel(void) {
     return FALSE;
 }
 
-// returns 2 when a measurement started, 24 when there is no channel left
+// returns WM_ERRCODE_OPERATING when a measurement started, WIFI_SETUP_WH_ERROR_CHANNELS_DONE when there is no channel left
 static u16 WifiSetupWh_MeasureNextChannel(u16 channel) {
     int allowed = WM_GetAllowedChannel();
     if (allowed == 0x8000) {
-        WifiSetupWh_SetError(3);
+        WifiSetupWh_SetError(WM_ERRCODE_ILLEGAL_STATE);
         WifiSetupWh_SetState(WIFI_SETUP_WH_STATE_ERROR);
-        return 3;
+        return WM_ERRCODE_ILLEGAL_STATE;
     }
     if (allowed == 0) {
-        WifiSetupWh_SetError(22);
+        WifiSetupWh_SetError(WIFI_SETUP_WH_ERROR_NO_CHANNEL);
         WifiSetupWh_SetState(WIFI_SETUP_WH_STATE_ERROR);
-        return 24;
+        return WIFI_SETUP_WH_ERROR_CHANNELS_DONE;
     }
     while (!(allowed & (1 << (channel - 1)))) {
         channel++;
         if (channel > 16) {
-            return 24;
+            return WIFI_SETUP_WH_ERROR_CHANNELS_DONE;
         }
     }
     return WifiSetupWh_MeasureChannel(WifiSetupWh_MeasureChannelCallback, channel);
@@ -579,7 +579,7 @@ static void WifiSetupWh_MeasureChannelCallback(void *arg) {
         gWifiSetupWh.work->quietChannels |= 1 << (channel - 1);
     }
     result = WifiSetupWh_MeasureNextChannel(channel + 1);
-    if (result == 24) {
+    if (result == WIFI_SETUP_WH_ERROR_CHANNELS_DONE) {
         WifiSetupWh_SetState(WIFI_SETUP_WH_STATE_MEASURECHANNEL);
         return;
     }
@@ -645,7 +645,7 @@ static int WifiSetupWh_Start(void) {
     gWifiSetupWh.work->parentParam.gameInfo = NULL;
     gWifiSetupWh.work->parentParam.gameInfoLength = 0;
     gWifiSetupWh.work->judgeChild = NULL;
-    return WifiSetupWh_InitializeWm() == 0 ? 0 : 1;
+    return !WifiSetupWh_InitializeWm() ? FALSE : TRUE;
 }
 
 #pragma pop
@@ -873,7 +873,7 @@ static void WifiSetupShare_Reset(void) {
     WifiSetupWh_SetGgid(gWifiSetupShare->params.ggid);
     gWifiSetupShare->state = WIFI_SETUP_SHARE_STATE_IDLE;
     gWifiSetupShare->tgid = WM_GetNextTgid();
-    MI_CpuCopy8(gWifiSetupShare->data, gWifiSetupShare->firstBlock, 64);
+    MI_CpuCopy8(gWifiSetupShare->data, gWifiSetupShare->firstBlock, sizeof(gWifiSetupShare->firstBlock));
     gWifiSetupShare->sendingData = FALSE;
     gWifiSetupShare->errorCount = 0;
     gWifiSetupShare->tgid++;
@@ -1089,10 +1089,10 @@ static void WifiSetupShare_SetupMbParent(void) {
 static void WifiSetupShare_UpdateDownload(void) {
     int state;
     switch (WifiSetupMbParent_GetState()) {
-    case 1:
+    case WIFI_SETUP_MB_PARENT_STATE_READY:
         WifiSetupMbParent_Start((WifiSetupMbParentFile *)&gWifiSetupShare->params, gWifiSetupShare->channel);
         break;
-    case 2:
+    case WIFI_SETUP_MB_PARENT_STATE_ACCEPTING:
         if (WifiSetupMbParent_GetMask(2)) {
             gWifiSetupShare->state = WIFI_SETUP_SHARE_STATE_ENTRY_REQUESTED;
             return;
@@ -1105,7 +1105,7 @@ static void WifiSetupShare_UpdateDownload(void) {
             gWifiSetupShare->state = WIFI_SETUP_SHARE_STATE_ENTRY_CANCELLED;
         }
         break;
-    case 3:
+    case WIFI_SETUP_MB_PARENT_STATE_DOWNLOADING:
         if (WifiSetupMbParent_AreAllBootable()) {
             WifiSetupMbParent_BootChildren();
             return;
@@ -1114,14 +1114,14 @@ static void WifiSetupShare_UpdateDownload(void) {
             gWifiSetupShare->state = WIFI_SETUP_SHARE_STATE_DOWNLOAD_ABORTED;
         }
         break;
-    case 5:
+    case WIFI_SETUP_MB_PARENT_STATE_BOOTED:
         gWifiSetupShare->state = WIFI_SETUP_SHARE_STATE_START_SHARING;
         break;
-    case 7:
+    case WIFI_SETUP_MB_PARENT_STATE_FAILED:
         WifiSetupMbParent_End();
         gWifiSetupShare->state = WIFI_SETUP_SHARE_STATE_IDLE;
         break;
-    case 0:
+    case WIFI_SETUP_MB_PARENT_STATE_NONE:
         state = WifiSetupWh_GetState();
         switch (state) {
         case WIFI_SETUP_WH_STATE_IDLE:
@@ -1237,7 +1237,7 @@ static void WifiSetupShare_SendPacket(u16 kind, u16 index, void *data) {
     if (gWifiSetupShare->sendingData == 1) {
         gWifiSetupShare->sendPacket->kind = kind;
         gWifiSetupShare->sendPacket->index = index;
-        MI_CpuCopy8(data, gWifiSetupShare->sendPacket->data, 64);
+        MI_CpuCopy8(data, gWifiSetupShare->sendPacket->data, sizeof(gWifiSetupShare->sendPacket->data));
     } else {
         gWifiSetupShare->errorCount++;
         gWifiSetupShare->sendPacket->kind = WIFI_SETUP_SHARE_PACKET_HELLO;

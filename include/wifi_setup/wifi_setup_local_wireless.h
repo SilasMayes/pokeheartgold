@@ -13,6 +13,16 @@
 #define WIFI_SETUP_BANNER_NUM_LETTERS   5
 #define WIFI_SETUP_USB_SCAN_NUM_ENTRIES 16
 
+// result passed to the USB connector scan callback
+#define WIFI_SETUP_USB_SCAN_NOT_FOUND 0
+#define WIFI_SETUP_USB_SCAN_FOUND     1 // a connector with the flag set
+#define WIFI_SETUP_USB_SCAN_MIXED     2 // connectors with and without the flag
+
+// WifiSetupUsbScan.endState
+#define WIFI_SETUP_USB_SCAN_RUNNING 0
+#define WIFI_SETUP_USB_SCAN_ENDING  1
+#define WIFI_SETUP_USB_SCAN_ENDED   2
+
 // Title banner, allocated by WifiSetupBanner_Open.
 typedef struct WifiSetupBanner {
     WifiSetupOamBlock *letters[WIFI_SETUP_BANNER_NUM_LETTERS];
@@ -41,8 +51,8 @@ typedef struct WifiSetupUsbScan {
     WmStatus status;
     OSTick startTick;
     WifiSetupTask *task;
-    vu8 endState; // 1 ending, 2 ended
-    u8 found;
+    vu8 endState; // WIFI_SETUP_USB_SCAN_RUNNING / ENDING / ENDED
+    u8 found;     // WIFI_SETUP_USB_SCAN_FOUND, seen while no callback was set
     u8 rescanning; // set once the first scan period is over
     u8 unk_1B97[9];
 } WifiSetupUsbScan;
@@ -62,9 +72,19 @@ typedef struct WifiSetupDialog {
     u8 fade; // fade the screen in and out
 } WifiSetupDialog;
 
+// DS Download Play parent states (WifiSetupMbParent_GetState)
+#define WIFI_SETUP_MB_PARENT_STATE_NONE        0 // not set up, or ended without booting the children
+#define WIFI_SETUP_MB_PARENT_STATE_READY       1 // MB_Init done
+#define WIFI_SETUP_MB_PARENT_STATE_ACCEPTING   2 // children connect and ask for the download
+#define WIFI_SETUP_MB_PARENT_STATE_DOWNLOADING 3
+#define WIFI_SETUP_MB_PARENT_STATE_BOOTING     4
+#define WIFI_SETUP_MB_PARENT_STATE_BOOTED      5 // ended after booting the children
+#define WIFI_SETUP_MB_PARENT_STATE_ENDING      6
+#define WIFI_SETUP_MB_PARENT_STATE_FAILED      7
+
 // State of the DS Download Play parent: bit masks of child AIDs per stage.
 typedef struct WifiSetupMbParentState {
-    u16 state;
+    u16 state; // WIFI_SETUP_MB_PARENT_STATE_*
     u16 connectedMask;
     u16 requestedMask;
     u16 waitingMask;

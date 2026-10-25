@@ -42,11 +42,11 @@ static WifiSetupTask *WifiSetupTask_CreateEx(int queue, WifiSetupTaskFunc func, 
 static void WifiSetupTask_DestroyNow(int queue, WifiSetupTask *task);
 
 static inline int GX_GetVisiblePlane13(void) {
-    return (int)((reg_GX_DISPCNT & 0x1F00) >> 8);
+    return (reg_GX_DISPCNT & 0x1F00) >> 8;
 }
 
 static inline int GXS_GetVisiblePlane13(void) {
-    return (int)((reg_GXS_DB_DISPCNT & 0x1F00) >> 8);
+    return (reg_GXS_DB_DISPCNT & 0x1F00) >> 8;
 }
 
 static inline void OamSetPosition(GXOamAttr *oam, int x, int y) {

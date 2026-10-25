@@ -143,7 +143,7 @@ void WifiSetupUsbConnector_ScanCallback(int result) {
         return;
     }
     switch (result) {
-    case 0:
+    case WIFI_SETUP_USB_SCAN_NOT_FOUND:
         gWifiSetupUsbConnectorExit = USB_CONNECTOR_RETRY;
         WifiSetupSound_Stop();
         WifiSetupSound_Play(0x12);
@@ -151,12 +151,12 @@ void WifiSetupUsbConnector_ScanCallback(int result) {
         WifiSetupButtonBar_Lock();
         WifiSetupApp_SetStateFunc(WifiSetupUsbConnector_WaitNotFound);
         break;
-    case 1:
+    case WIFI_SETUP_USB_SCAN_FOUND:
         gWifiSetupUsbConnectorExit = USB_CONNECTOR_DONE;
         WifiSetupSound_Stop();
         WifiSetupApp_SetStateFunc(WifiSetupUsbConnector_Exit);
         break;
-    case 2:
+    case WIFI_SETUP_USB_SCAN_MIXED:
         WifiSetupSound_Stop();
         WifiSetupUsbScan_SetCallback(NULL);
         WifiSetupDialog_Open(0x11, 0, 1, -1, 0);

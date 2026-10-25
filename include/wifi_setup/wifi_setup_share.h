@@ -5,9 +5,6 @@
 
 #include "global.h"
 
-#include "wifi_setup/wifi_setup_local_wireless.h"
-#include "wifi_setup/wifi_setup_ui.h"
-
 // Local wireless session of the access-point setup: DS Download Play of a program to one child, then data sharing
 // with that child, sending the connection settings in 64-byte blocks.
 
@@ -23,6 +20,10 @@
 #define WIFI_SETUP_WH_STATE_CONNECT_FAIL   8
 #define WIFI_SETUP_WH_STATE_ERROR          9
 #define WIFI_SETUP_WH_STATE_FATAL          10 // WM could not be reset or ended
+
+// errors of the wireless helper after the WM_ERRCODE_* (WifiSetupWh_SetError)
+#define WIFI_SETUP_WH_ERROR_NO_CHANNEL    22 // WM allows no channel
+#define WIFI_SETUP_WH_ERROR_CHANNELS_DONE 24 // every allowed channel was measured
 
 // connect modes (WifiSetupWh_StartConnection, gWifiSetupWh.work->connectMode)
 #define WIFI_SETUP_WH_MODE_MP_PARENT 0

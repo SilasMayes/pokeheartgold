@@ -94,7 +94,7 @@ int WifiSetupApp_Run(void *heap, s32 language, s32 flags) {
         WifiSetupInput_UpdateLcdPower();
         WifiSetupLed_SetWirelessPattern();
         OS_WaitVBlankIntr();
-    } while (gWifiSetupApp.exit == FALSE);
+    } while (!gWifiSetupApp.exit);
     WifiSetupApp_Shutdown();
     return 0;
 }
@@ -133,7 +133,7 @@ static void WifiSetupApp_InitSystem(void) {
     }
     GX_VBlankIntr(FALSE);
     FX_Init();
-    FS_Init((u32)-1);
+    FS_Init(FS_DMA_NOT_USE);
     TP_Init();
     RTC_Init();
     GX_DispOff();
@@ -317,7 +317,7 @@ u16 *WifiSetupText_GetStringWithDigit(WifiSetupTextBank *bank, u32 index, int po
     u16 *str = (u16 *)(bank->strings + bank->offsets[(u16)index]);
     if (pos >= 0) {
         digit += '0';
-        str[pos] = (u16)digit;
+        str[pos] = digit;
     }
     return str;
 }
@@ -333,7 +333,7 @@ void WifiSetupTransfer_Start(WifiSetupSessionCallback callback) {
     params.description = WifiSetupText_GetString(gWifiSetupTextBank, 1);
     params.languageCode = WifiSetupApp_GetLanguageCode();
     WifiSetupShare_Init(&gWifiSetupSession->share, &params);
-    if (WifiSetupShare_Start() == 0) {
+    if (!WifiSetupShare_Start()) {
         OS_Terminate();
     }
     gWifiSetupSession->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupTransfer_Task, NULL, 120);
@@ -344,7 +344,7 @@ void WifiSetupTransfer_Cancel(void) {
 }
 
 static void WifiSetupTransfer_CancelTask(WifiSetupTask *task, void *arg) {
-    if (WifiSetupShare_Cancel() == 0) {
+    if (!WifiSetupShare_Cancel()) {
         return;
     }
     gWifiSetupSession->cancelled = 1;

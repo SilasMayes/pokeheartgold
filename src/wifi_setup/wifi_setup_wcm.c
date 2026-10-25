@@ -4,13 +4,8 @@
 
 #include "wifi_setup/wifi_setup.h"
 
-extern u8 WCM_Bssid_Any[]; // BSSID ff:ff:ff:ff:ff:ff (any)
-extern u8 WCM_Essid_Any[]; // SSID of 0xFF bytes (any)
-
 static void WifiSetupWcm_HandleEvent(WifiSetupWcmEvent *event);
 static BOOL WifiSetupWcm_ReturnToIdle(void);
-
-BOOL WifiSetupWcm_Init(void (*callback)(int event, int arg), void *allocation, u32 size);
 
 void WifiSetup_Sleep(s32 ticks) {
     OS_Sleep(ticks);
@@ -236,7 +231,7 @@ int WifiSetupWcm_CopyApList(u8 *dst, int max) {
                 if (i >= max) {
                     break;
                 }
-                MIi_CpuCopy32(WCM_PointApList((u16)i), (u32 *)dst, 0xC0);
+                MIi_CpuCopy32(WCM_PointApList(i), (u32 *)dst, 0xC0);
                 i++;
                 dst += 0xC0;
             } while (i < count);
@@ -257,7 +252,7 @@ BOOL WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int opti
         }
         gWifiSetupWcm.searchBssid = gWifiSetupWcmSearchBssid;
     } else {
-        MI_CpuFill8(gWifiSetupWcmSearchBssid, 0xFF, 6);
+        MI_CpuFill8(gWifiSetupWcmSearchBssid, 0xFF, sizeof(gWifiSetupWcmSearchBssid));
         gWifiSetupWcm.searchBssid = WCM_Bssid_Any;
     }
     if (ssid != NULL && len > 0 && len <= 32) {
@@ -269,7 +264,7 @@ BOOL WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int opti
         }
         gWifiSetupWcm.searchSsid = gWifiSetupWcmSearchSsid;
     } else {
-        MI_CpuFill8(gWifiSetupWcmSearchSsid, 0xFF, 32);
+        MI_CpuFill8(gWifiSetupWcmSearchSsid, 0xFF, sizeof(gWifiSetupWcmSearchSsid));
         gWifiSetupWcm.searchSsid = WCM_Essid_Any;
     }
     if (gWifiSetupWcm.state == WIFI_SETUP_WCM_STATE_IDLE) {

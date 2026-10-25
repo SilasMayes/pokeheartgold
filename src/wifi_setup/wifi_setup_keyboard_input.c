@@ -229,7 +229,7 @@ static void WifiSetupKeyboard_HandleTouchHold(void) {
             if (gWifiSetupKeyboard->repeatTimer < 40) {
                 return;
             }
-            if (gWifiSetupKeyboard->canDelete == 0) {
+            if (!gWifiSetupKeyboard->canDelete) {
                 WifiSetupSound_Play(9);
                 gWifiSetupKeyboard->pressedKey = -1;
                 return;

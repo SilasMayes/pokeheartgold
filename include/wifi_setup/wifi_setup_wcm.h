@@ -63,6 +63,8 @@ typedef struct WifiSetupWcm {
 extern WifiSetupWcm gWifiSetupWcm;
 extern u8 gWifiSetupWcmSearchBssid[6];
 extern u8 gWifiSetupWcmSearchSsid[32];
+extern u8 WCM_Bssid_Any[]; // BSSID ff:ff:ff:ff:ff:ff (any)
+extern u8 WCM_Essid_Any[]; // SSID of 0xFF bytes (any)
 
 void WifiSetup_Sleep(s32 ticks);
 
@@ -81,6 +83,7 @@ BOOL WifiSetupWcm_StartCleanup(void);
 BOOL WifiSetupWcm_StartDisconnect(void);
 BOOL WifiSetupWcm_StopSearch(void);
 int WifiSetupWcm_CopyApList(u8 *dst, int max);
+BOOL WifiSetupWcm_Init(void (*callback)(int event, int arg), void *allocation, u32 size);
 BOOL WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int option);
 BOOL WifiSetupWcm_StartConnect(void *ap, void *key, int option);
 

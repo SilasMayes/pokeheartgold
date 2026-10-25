@@ -27,10 +27,8 @@ typedef struct ScanRecord {
 } ScanRecord;
 
 static void WifiSetup_ConvertBssDesc(const void *src, WifiSetupAossApEntry *info);
-static BOOL WifiSetup_OnWcmNotify(void *message);
+static void WifiSetup_OnWcmNotify(int event, int arg);
 static int WifiSetup_DisconnectAccessPoint(void);
-
-BOOL WifiSetupWcm_Init(BOOL (*callback)(void *), void *allocation, u32 size);
 
 void *WifiSetup_SocketAlloc(s32 unused, s32 size) {
     void *(*alloc)(s32);
@@ -159,7 +157,7 @@ u16 WifiSetup_Random(void) {
         gWifiSetupState.randomSeeded = TRUE;
     }
     gWifiSetupState.randomState = gWifiSetupState.randomMultiplier * gWifiSetupState.randomState + gWifiSetupState.randomIncrement;
-    return (u16)(((gWifiSetupState.randomState >> 16) * 0x7FFF) >> 16);
+    return ((gWifiSetupState.randomState >> 16) * 0x7FFF) >> 16;
 }
 
 void WifiSetup_ClearPollSet(SocPollFd *set) {
@@ -218,8 +216,8 @@ void WifiSetup_StoreConnectResult(WifiSetupAossConnectResult *dst, const void *s
     WifiSetup_ConvertBssDesc(src, &dst->accessPoint);
 }
 
-static BOOL WifiSetup_OnWcmNotify(void *message) {
-    return OS_SendMessage(&gWifiSetupMessageQueue, message, OS_MESSAGE_NOBLOCK);
+static void WifiSetup_OnWcmNotify(int event, int arg) {
+    OS_SendMessage(&gWifiSetupMessageQueue, (OSMessage)event, OS_MESSAGE_NOBLOCK);
 }
 
 BOOL WifiSetup_OnTimeoutAlarm(void *message) {
@@ -378,7 +376,7 @@ int WifiSetup_SearchAccessPoints(WifiSetupAossApList **output) {
         return -1;
     }
     base = buffer;
-    if (WifiSetupWcm_StartSearch(NULL, NULL, 0, 0x0030BFFE) != 0) {
+    if (WifiSetupWcm_StartSearch(NULL, NULL, 0, 0x0030BFFE)) {
         goto started;
     }
     goto cleanup;

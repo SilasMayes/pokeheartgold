@@ -12,13 +12,6 @@
 
 #include <nitro/code32.h>
 
-typedef struct WifiSetupTextBox {
-    u16 x;
-    u16 y;
-    u16 width;
-    u16 height;
-} WifiSetupTextBox;
-
 extern s32 FX_DivS32(s32, s32);
 
 static void WifiSetupButtonBar_Create(int type);
@@ -461,8 +454,8 @@ void WifiSetupKeyboard_Create(void) {
     gWifiSetupKeyboard = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupKeyboard), 4);
     gWifiSetupKeyboard->input = WIFI_SETUP_KEYBOARD_INPUT_BUSY;
     gWifiSetupKeyboard->cursorKey = 0;
-    gWifiSetupKeyboard->canDelete = 1;
-    gWifiSetupKeyboard->canType = 1;
+    gWifiSetupKeyboard->canDelete = TRUE;
+    gWifiSetupKeyboard->canType = TRUE;
     for (i = 0; i < 47; i++) {
         gWifiSetupKeyboard->keys[i] = WifiSetupOamTemplate_AllocOam(0, 52);
         gWifiSetupKeyboard->keys[i]->attr01 = (gWifiSetupKeyboard->keys[i]->attr01 & 0xc1fffcff) | 512;

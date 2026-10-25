@@ -21,6 +21,7 @@
 #define WIFI_SETUP_KEYPAD_INPUT_NEXT   17
 #define WIFI_SETUP_KEYPAD_INPUT_BACK   18
 #define WIFI_SETUP_KEYPAD_INPUT_OK     19
+#define WIFI_SETUP_KEYPAD_INPUT_BUSY   31 // until the keypad has slid in
 
 typedef struct WifiSetupKeypad {
     WifiSetupCanvas *rows[4]; // text of the four key rows

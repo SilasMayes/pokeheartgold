@@ -38,7 +38,7 @@ static inline int BindSocket(int socket, WifiSetupSockAddr *address) {
     memset(address, 0, sizeof(*address));
     address->len = 8;
     address->family = 2;
-    address->port = 486;
+    address->port = WIFI_SETUP_SIMPLE_START_PORT;
     address->addr = 0;
     return SOC_Bind(socket, address);
 }

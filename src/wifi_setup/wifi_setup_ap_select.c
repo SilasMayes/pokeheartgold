@@ -45,7 +45,7 @@ int WifiSetup_PickSetupAccessPoint(const WifiSetupApEntryList *current, const Wi
                 if (length == 1 && (((const u8 *)left->ssid)[0] == 0 || ((const u8 *)left->ssid)[0] == ' ')) {
                     break;
                 }
-                if (!memcmp(newName, right->ssid, strlen(newName)) && !memcmp(left->bssid, right->bssid, 6) && left->privacy != right->privacy && left->privacy == 0) {
+                if (!memcmp(newName, right->ssid, strlen(newName)) && !memcmp(left->bssid, right->bssid, sizeof(left->bssid)) && left->privacy != right->privacy && left->privacy == 0) {
                     changed = 1;
                     break;
                 }

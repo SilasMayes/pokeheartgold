@@ -13,10 +13,6 @@
 // Access-point data: the scan for access points over WM, the saved connection settings (written back with a CRC per
 // page), address parsing for the address entry, and the start and end of the sound archive.
 
-typedef struct WifiSetupConnectionBody {
-    u8 bytes[0xF0];
-} WifiSetupConnectionBody;
-
 extern long atol(const char *);
 
 static int WifiSetupApScan_Continue(void);
@@ -68,7 +64,7 @@ int WifiSetupApScan_GetEntries(WifiSetupScanEntry **out) {
     int i;
     *out = entries = gWifiSetupApScan->entries;
     for (i = 0; i < WIFI_SETUP_NUM_SCAN_ENTRIES; i++) {
-        if (memcmp(entries[i].bssid, gWifiSetupApScanEmptyBssid, 6) != 0) {
+        if (memcmp(entries[i].bssid, gWifiSetupApScanEmptyBssid, sizeof(entries[i].bssid)) != 0) {
             count++;
         }
     }
@@ -114,13 +110,13 @@ static void WifiSetupApScan_StoreResults(WMStartScanExCallback *cb) {
             continue;
         }
         for (j = 0; j < WIFI_SETUP_NUM_SCAN_ENTRIES; j++) {
-            if (memcmp(desc->bssid, entries[j].bssid, 6) == 0) {
+            if (memcmp(desc->bssid, entries[j].bssid, sizeof(desc->bssid)) == 0) {
                 break;
             }
         }
         if (j == WIFI_SETUP_NUM_SCAN_ENTRIES) {
             for (j = 0; j < WIFI_SETUP_NUM_SCAN_ENTRIES; j++) {
-                if (memcmp(entries[j].bssid, gWifiSetupApScanEmptyBssid, 6) == 0) {
+                if (memcmp(entries[j].bssid, gWifiSetupApScanEmptyBssid, sizeof(entries[j].bssid)) == 0) {
                     break;
                 }
             }
@@ -128,8 +124,8 @@ static void WifiSetupApScan_StoreResults(WMStartScanExCallback *cb) {
                 return;
             }
         }
-        MI_CpuCopy8(desc->bssid, entries[j].bssid, 6);
-        MI_CpuCopy8(desc->ssid, entries[j].ssid, 0x20);
+        MI_CpuCopy8(desc->bssid, entries[j].bssid, sizeof(entries[j].bssid));
+        MI_CpuCopy8(desc->ssid, entries[j].ssid, sizeof(entries[j].ssid));
         entries[j].linkLevel = cb->linkLevel[i];
         if (!(desc->capaInfo & 0x10)) {
             entries[j].security = 0;
@@ -177,8 +173,8 @@ void WifiSetupConnections_SetAutoDns(int on) {
 }
 
 void WifiSetupConnections_SetSsid(const void *ssid) {
-    MI_CpuCopy8(ssid, gWifiSetupConnections->edit.ssid, 0x20);
-    gWifiSetupConnections->edit.setupMethod = WIFI_SETUP_METHOD_MANUAL;
+    MI_CpuCopy8(ssid, gWifiSetupConnections->edit.settings.ssid, sizeof(gWifiSetupConnections->edit.settings.ssid));
+    gWifiSetupConnections->edit.settings.setupMethod = WIFI_SETUP_METHOD_MANUAL;
 }
 
 #pragma force_active on
@@ -189,45 +185,45 @@ void WifiSetupConnections_SetWepKey(const char *key) {
     u8 *dst;
     int hi;
 
-    MI_CpuFill8(gWifiSetupConnections->edit.wepKeys[0], 0, 0x10);
+    MI_CpuFill8(gWifiSetupConnections->edit.settings.wepKeys[0], 0, sizeof(gWifiSetupConnections->edit.settings.wepKeys[0]));
     len = WifiSetup_StrNLen(key, 0x20);
     switch (len) {
     case 0:
     case 10:
     case 26:
     case 32:
-        gWifiSetupConnections->edit.keyFormat = 0;
-        dst = gWifiSetupConnections->edit.wepKeys[0];
+        gWifiSetupConnections->edit.settings.keyFormat = WIFI_SETUP_KEY_FORMAT_HEX;
+        dst = gWifiSetupConnections->edit.settings.wepKeys[0];
         for (i = 0; i < len; i += 2) {
             hi = WifiSetup_HexDigitValue(key[i]);
             *dst++ = WifiSetup_HexDigitValue(key[i + 1]) + (hi << 4);
         }
         break;
     default:
-        gWifiSetupConnections->edit.keyFormat = 1;
-        MI_CpuCopy8(key, gWifiSetupConnections->edit.wepKeys[0], 0x10);
+        gWifiSetupConnections->edit.settings.keyFormat = WIFI_SETUP_KEY_FORMAT_TEXT;
+        MI_CpuCopy8(key, gWifiSetupConnections->edit.settings.wepKeys[0], sizeof(gWifiSetupConnections->edit.settings.wepKeys[0]));
         break;
     }
     switch (len) {
     case 0:
-        gWifiSetupConnections->edit.keyType = WM_WEPMODE_NO;
+        gWifiSetupConnections->edit.settings.keyType = WM_WEPMODE_NO;
         break;
     case 5:
     case 10:
-        gWifiSetupConnections->edit.keyType = WM_WEPMODE_40BIT;
+        gWifiSetupConnections->edit.settings.keyType = WM_WEPMODE_40BIT;
         break;
     case 13:
     case 26:
-        gWifiSetupConnections->edit.keyType = WM_WEPMODE_104BIT;
+        gWifiSetupConnections->edit.settings.keyType = WM_WEPMODE_104BIT;
         break;
     default:
-        gWifiSetupConnections->edit.keyType = WM_WEPMODE_128BIT;
+        gWifiSetupConnections->edit.settings.keyType = WM_WEPMODE_128BIT;
         break;
     }
 }
 
 void WifiSetupConnections_SetIpAddress(const char *str) {
-    WifiSetup_ParseAddress(str, gWifiSetupConnections->edit.ip);
+    WifiSetup_ParseAddress(str, gWifiSetupConnections->edit.settings.ip);
 }
 
 void WifiSetupConnections_SetSubnetMask(const char *str) {
@@ -235,26 +231,26 @@ void WifiSetupConnections_SetSubnetMask(const char *str) {
 }
 
 void WifiSetupConnections_SetGateway(const char *str) {
-    WifiSetup_ParseAddress(str, gWifiSetupConnections->edit.gateway);
+    WifiSetup_ParseAddress(str, gWifiSetupConnections->edit.settings.gateway);
 }
 
 void WifiSetupConnections_SetPrimaryDns(const char *str) {
-    WifiSetup_ParseAddress(str, gWifiSetupConnections->edit.dns1);
+    WifiSetup_ParseAddress(str, gWifiSetupConnections->edit.settings.dns1);
 }
 
 void WifiSetupConnections_SetSecondaryDns(const char *str) {
-    WifiSetup_ParseAddress(str, gWifiSetupConnections->edit.dns2);
+    WifiSetup_ParseAddress(str, gWifiSetupConnections->edit.settings.dns2);
 }
 
 #pragma force_active reset
 
 void WifiSetupConnections_GetSsid(void *dst) {
-    MI_CpuCopy8(gWifiSetupConnections->edit.ssid, dst, 0x20);
+    MI_CpuCopy8(gWifiSetupConnections->edit.settings.ssid, dst, 0x20);
 }
 
 void WifiSetupConnections_FormatIpAddress(char *buf) {
     WifiSetupConnections *connections = gWifiSetupConnections;
-    OS_SPrintf(buf, gWifiSetupConnectionsAddressFormat, connections->edit.ip[0], connections->edit.ip[1], connections->edit.ip[2], connections->edit.ip[3]);
+    OS_SPrintf(buf, gWifiSetupConnectionsAddressFormat, connections->edit.settings.ip[0], connections->edit.settings.ip[1], connections->edit.settings.ip[2], connections->edit.settings.ip[3]);
 }
 
 void WifiSetupConnections_FormatSubnetMask(char *buf) {
@@ -264,42 +260,42 @@ void WifiSetupConnections_FormatSubnetMask(char *buf) {
 
 void WifiSetupConnections_FormatGateway(char *buf) {
     WifiSetupConnections *connections = gWifiSetupConnections;
-    u8 *address = connections->edit.gateway;
+    u8 *address = connections->edit.settings.gateway;
     OS_SPrintf(buf, gWifiSetupConnectionsAddressFormat, address[0], address[1], address[2], address[3]);
 }
 
 void WifiSetupConnections_FormatPrimaryDns(char *buf) {
     WifiSetupConnections *connections = gWifiSetupConnections;
-    u8 *address = connections->edit.dns1;
+    u8 *address = connections->edit.settings.dns1;
     OS_SPrintf(buf, gWifiSetupConnectionsAddressFormat, address[0], address[1], address[2], address[3]);
 }
 
 void WifiSetupConnections_FormatSecondaryDns(char *buf) {
     WifiSetupConnections *connections = gWifiSetupConnections;
-    u8 *address = connections->edit.dns2;
+    u8 *address = connections->edit.settings.dns2;
     OS_SPrintf(buf, gWifiSetupConnectionsAddressFormat, address[0], address[1], address[2], address[3]);
 }
 
 u8 WifiSetupConnections_GetSetupMethod(int idx) {
-    return gWifiSetupConnections->pages[idx].setupMethod;
+    return gWifiSetupConnections->pages[idx].settings.setupMethod;
 }
 
 void WifiSetupConnections_Edit(int idx) {
     WifiSetupConnections *connections = gWifiSetupConnections;
     WifiSetupConnectionPage *page = &connections->pages[idx];
-    *(WifiSetupConnectionBody *)&connections->edit = *(WifiSetupConnectionBody *)page;
+    connections->edit.settings = page->settings;
     connections->edit.index = idx;
-    if (memcmp(page->ip, gWifiSetupZeroAddress, 4) != 0) {
-        gWifiSetupConnections->edit.autoAddress = 0;
+    if (memcmp(page->settings.ip, gWifiSetupZeroAddress, sizeof(page->settings.ip)) != 0) {
+        gWifiSetupConnections->edit.autoAddress = FALSE;
     } else {
-        gWifiSetupConnections->edit.autoAddress = 1;
+        gWifiSetupConnections->edit.autoAddress = TRUE;
     }
-    if (memcmp(page->dns1, gWifiSetupZeroAddress, 4) != 0 || memcmp(page->dns2, gWifiSetupZeroAddress, 4) != 0) {
-        gWifiSetupConnections->edit.autoDns = 0;
+    if (memcmp(page->settings.dns1, gWifiSetupZeroAddress, sizeof(page->settings.dns1)) != 0 || memcmp(page->settings.dns2, gWifiSetupZeroAddress, sizeof(page->settings.dns2)) != 0) {
+        gWifiSetupConnections->edit.autoDns = FALSE;
     } else {
-        gWifiSetupConnections->edit.autoDns = 1;
+        gWifiSetupConnections->edit.autoDns = TRUE;
     }
-    DWCi_BACKUPlConvMaskAddr(page->cidr, gWifiSetupConnections->edit.mask);
+    DWCi_BACKUPlConvMaskAddr(page->settings.cidr, gWifiSetupConnections->edit.mask);
 }
 
 void WifiSetupConnections_SaveEdit(void) {
@@ -307,21 +303,21 @@ void WifiSetupConnections_SaveEdit(void) {
     WifiSetupConnection *work = &connections->edit;
     WifiSetupConnectionPage *page = &connections->pages[work->index];
     int cidr;
-    *(WifiSetupConnectionBody *)page = *(WifiSetupConnectionBody *)work;
+    page->settings = work->settings;
     if (work->autoAddress) {
-        MI_CpuFill8(page->ip, 0, 4);
-        MI_CpuFill8(page->gateway, 0, 4);
+        MI_CpuFill8(page->settings.ip, 0, sizeof(page->settings.ip));
+        MI_CpuFill8(page->settings.gateway, 0, sizeof(page->settings.gateway));
         cidr = 0;
     } else {
-        MI_CpuCopy8(work->ip, page->ip, 4);
-        MI_CpuCopy8(work->gateway, page->gateway, 4);
+        MI_CpuCopy8(work->settings.ip, page->settings.ip, sizeof(page->settings.ip));
+        MI_CpuCopy8(work->settings.gateway, page->settings.gateway, sizeof(page->settings.gateway));
         cidr = DWCi_BACKUPlConvMaskCidr(work->mask);
     }
-    page->cidr = cidr;
+    page->settings.cidr = cidr;
     if (work->autoDns) {
-        MI_CpuFill8(page->dns1, 0, 8);
+        MI_CpuFill8(page->settings.dns1, 0, 8);
     } else {
-        MI_CpuCopy8(work->dns1, page->dns1, 8);
+        MI_CpuCopy8(work->settings.dns1, page->settings.dns1, 8);
     }
     WifiSetupConnections_WritePage(work->index);
 }
@@ -331,56 +327,56 @@ void WifiSetupConnections_SetFromClientResult(WifiSetupResult *src) {
     WifiSetupConnection *work = &connections->edit;
     u32 len;
     int i;
-    MI_CpuFill8(work, 0, offsetof(WifiSetupConnection, usedMask));
-    MI_CpuCopy8(src, work->ssid, 0x20);
+    MI_CpuFill8(work, 0, offsetof(WifiSetupConnection, settings.usedMask));
+    MI_CpuCopy8(src, work->settings.ssid, sizeof(work->settings.ssid));
     switch (src->keyType) {
     case WM_WEPMODE_40BIT:
-        work->keyType = WM_WEPMODE_40BIT;
+        work->settings.keyType = WM_WEPMODE_40BIT;
         len = 5;
         break;
     case WM_WEPMODE_104BIT:
-        work->keyType = WM_WEPMODE_104BIT;
+        work->settings.keyType = WM_WEPMODE_104BIT;
         len = 13;
         break;
     case WM_WEPMODE_128BIT:
-        work->keyType = WM_WEPMODE_128BIT;
+        work->settings.keyType = WM_WEPMODE_128BIT;
         len = 16;
         break;
     default:
-        work->keyType = WM_WEPMODE_NO;
+        work->settings.keyType = WM_WEPMODE_NO;
         len = 0;
         break;
     }
-    work->keyFormat = 0;
+    work->settings.keyFormat = WIFI_SETUP_KEY_FORMAT_HEX;
     for (i = 0; i < 4; i++) {
-        MI_CpuCopy8(src->wepKeys[i], work->wepKeys[i], len);
+        MI_CpuCopy8(src->wepKeys[i], work->settings.wepKeys[i], len);
     }
-    work->setupMethod = WIFI_SETUP_METHOD_AUTO;
-    MI_CpuFill8(work->mask, 0, 4);
-    work->autoAddress = 1;
-    work->autoDns = 1;
+    work->settings.setupMethod = WIFI_SETUP_METHOD_AUTO;
+    MI_CpuFill8(work->mask, 0, sizeof(work->mask));
+    work->autoAddress = TRUE;
+    work->autoDns = TRUE;
     WifiSetupConnections_SaveEdit();
 }
 
 void WifiSetupConnections_SetFromInfo(const WifiSetupAossResult *src) {
     WifiSetupConnection *work = &gWifiSetupConnections->edit;
-    MI_CpuFill8(work, 0, offsetof(WifiSetupConnection, usedMask));
-    MI_CpuCopy8(src->wep64Keys[0], &work->wep40Keys[0], 5);
-    MI_CpuCopy8(src->wep64Keys[1], &work->wep40Keys[5], 5);
-    MI_CpuCopy8(src->wep64Keys[2], &work->wep40Keys[10], 5);
-    MI_CpuCopy8(src->wep64Keys[3], &work->wep40Keys[15], 5);
-    MI_CpuCopy8(src->wep64Ssid, work->unk_60, sizeof(work->unk_60));
-    MI_CpuCopy8(src->wep128Keys[0], work->wepKeys[0], 13);
-    MI_CpuCopy8(src->wep128Keys[1], work->wepKeys[1], 13);
-    MI_CpuCopy8(src->wep128Keys[2], work->wepKeys[2], 13);
-    MI_CpuCopy8(src->wep128Keys[3], work->wepKeys[3], 13);
-    MI_CpuCopy8(src->wep128Ssid, work->ssid, sizeof(work->ssid));
-    work->keyType = WM_WEPMODE_104BIT;
-    work->keyFormat = 0;
-    work->setupMethod = WIFI_SETUP_METHOD_COPIED;
-    MI_CpuFill8(work->mask, 0, 4);
-    work->autoAddress = 1;
-    work->autoDns = 1;
+    MI_CpuFill8(work, 0, offsetof(WifiSetupConnection, settings.usedMask));
+    MI_CpuCopy8(src->wep64Keys[0], &work->settings.wep40Keys[0], 5);
+    MI_CpuCopy8(src->wep64Keys[1], &work->settings.wep40Keys[5], 5);
+    MI_CpuCopy8(src->wep64Keys[2], &work->settings.wep40Keys[10], 5);
+    MI_CpuCopy8(src->wep64Keys[3], &work->settings.wep40Keys[15], 5);
+    MI_CpuCopy8(src->wep64Ssid, work->settings.unk_60, sizeof(work->settings.unk_60));
+    MI_CpuCopy8(src->wep128Keys[0], work->settings.wepKeys[0], 13);
+    MI_CpuCopy8(src->wep128Keys[1], work->settings.wepKeys[1], 13);
+    MI_CpuCopy8(src->wep128Keys[2], work->settings.wepKeys[2], 13);
+    MI_CpuCopy8(src->wep128Keys[3], work->settings.wepKeys[3], 13);
+    MI_CpuCopy8(src->wep128Ssid, work->settings.ssid, sizeof(work->settings.ssid));
+    work->settings.keyType = WM_WEPMODE_104BIT;
+    work->settings.keyFormat = WIFI_SETUP_KEY_FORMAT_HEX;
+    work->settings.setupMethod = WIFI_SETUP_METHOD_COPIED;
+    MI_CpuFill8(work->mask, 0, sizeof(work->mask));
+    work->autoAddress = TRUE;
+    work->autoDns = TRUE;
     WifiSetupConnections_SaveEdit();
 }
 
@@ -390,8 +386,8 @@ WifiSetupConnections *WifiSetupConnections_Get(void) {
 
 void WifiSetupConnections_Erase(int idx) {
     WifiSetupConnectionPage *page = &gWifiSetupConnections->pages[idx];
-    MI_CpuFill8(page, 0, offsetof(WifiSetupConnectionPage, usedMask));
-    page->setupMethod = WIFI_SETUP_METHOD_ERASED;
+    MI_CpuFill8(page, 0, offsetof(WifiSetupConnectionPage, settings.usedMask));
+    page->settings.setupMethod = WIFI_SETUP_METHOD_ERASED;
     WifiSetupConnections_WritePage(idx);
 }
 
@@ -401,12 +397,12 @@ void WifiSetupConnections_Reset(void) {
     int i;
     MIi_CpuClear16(0, (u16 *)gWifiSetupConnections, 0x400);
     for (i = 0; i < 3; i++) {
-        gWifiSetupConnections->pages[i].setupMethod = WIFI_SETUP_METHOD_ERASED;
+        gWifiSetupConnections->pages[i].settings.setupMethod = WIFI_SETUP_METHOD_ERASED;
     }
     DWCi_AUTH_GetNewWiFiInfo(&info);
     conv = DWCi_BACKUPlConvWifiInfo(&info);
     for (i = 0; i < 2; i++) {
-        MI_CpuCopy8(conv, gWifiSetupConnections->pages[i].tail.page.info, 0xe);
+        MI_CpuCopy8(conv, gWifiSetupConnections->pages[i].tail.page.info, sizeof(gWifiSetupConnections->pages[i].tail.page.info));
     }
     for (i = 0; i < 4; i++) {
         WifiSetupConnections_WritePage(i);
@@ -416,22 +412,22 @@ void WifiSetupConnections_Reset(void) {
 static void WifiSetupConnections_WritePage(int index) {
     BOOL changed[4];
     void *temp;
-    int status = gWifiSetupConnections->pages[index].setupMethod;
+    int status = gWifiSetupConnections->pages[index].settings.setupMethod;
     int active = 0, i, offset;
     int value = 1 << index;
     MI_CpuFill8(changed, 0, sizeof(changed));
     changed[index] = 1;
     if (index <= 2) {
-        if (gWifiSetupConnections->pages[0].usedMask & value) {
+        if (gWifiSetupConnections->pages[0].settings.usedMask & value) {
             active = 1;
         }
         if (status == WIFI_SETUP_METHOD_ERASED && active) {
-            gWifiSetupConnections->pages[0].usedMask &= ~value;
-            gWifiSetupConnections->pages[1].usedMask &= ~value;
+            gWifiSetupConnections->pages[0].settings.usedMask &= ~value;
+            gWifiSetupConnections->pages[1].settings.usedMask &= ~value;
             changed[0] = changed[1] = 1;
         } else if (status != WIFI_SETUP_METHOD_ERASED && !active) {
-            gWifiSetupConnections->pages[0].usedMask |= value;
-            gWifiSetupConnections->pages[1].usedMask |= value;
+            gWifiSetupConnections->pages[0].settings.usedMask |= value;
+            gWifiSetupConnections->pages[1].settings.usedMask |= value;
             changed[0] = changed[1] = 1;
         }
     }
@@ -452,7 +448,7 @@ void WifiSetup_ParseAddress(const char *str, u8 *out) {
     int i;
     int j;
     int off;
-    MI_CpuFill8(buf, 0, 4);
+    MI_CpuFill8(buf, 0, sizeof(buf));
     for (i = 0, off = 0; i < 4; i++, off += 3) {
         MI_CpuCopy8(str + off, buf, 3);
         for (j = 0; j < 3; j++) {

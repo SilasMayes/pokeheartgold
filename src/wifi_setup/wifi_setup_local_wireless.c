@@ -10,6 +10,7 @@
 #include "wifi_setup/wifi_setup_ui_parts.h"
 
 #include <nitro/code32.h>
+#include <nitro/mb/mb_comm.h>
 
 // Local wireless: sound player controls, title banner, dialog window, Wi-Fi USB connector scan and
 // DS Download Play parent.
@@ -2487,7 +2488,7 @@ BOOL WifiSetupUsbScan_Start(void (*cb)(int)) {
     if (WM_Initialize(gWifiSetupUsbScan, WifiSetupUsbScan_WmCallback, 3) == WM_ERRCODE_OPERATING) {
         do {
             WM_ReadStatus(&gWifiSetupUsbScan->status);
-        } while (gWifiSetupUsbScan->status.state != 2);
+        } while (gWifiSetupUsbScan->status.state != WM_STATE_POWER_ON);
         gWifiSetupUsbScan->param = gWifiSetupUsbScanParam;
         gWifiSetupUsbScan->param.buffer = gWifiSetupUsbScan->scanBuf;
         gWifiSetupUsbScan->param.dwell = WM_GetDispersionScanPeriod();
@@ -2509,15 +2510,15 @@ static BOOL WifiSetupUsbScan_StartScan(void) {
 }
 
 BOOL WifiSetupUsbScan_End(void) {
-    gWifiSetupUsbScan->endState = 1;
+    gWifiSetupUsbScan->endState = WIFI_SETUP_USB_SCAN_ENDING;
     WM_ReadStatus(&gWifiSetupUsbScan->status);
-    if (gWifiSetupUsbScan->status.state != 2) {
+    if (gWifiSetupUsbScan->status.state != WM_STATE_POWER_ON) {
         if (WM_Reset(WifiSetupUsbScan_WmCallback) != WM_ERRCODE_OPERATING) {
             return FALSE;
         }
         do {
             WM_ReadStatus(&gWifiSetupUsbScan->status);
-        } while (gWifiSetupUsbScan->status.state != 2);
+        } while (gWifiSetupUsbScan->status.state != WM_STATE_POWER_ON);
     }
     if (WM_End(WifiSetupUsbScan_WmCallback) != WM_ERRCODE_OPERATING) {
         return FALSE;
@@ -2525,7 +2526,7 @@ BOOL WifiSetupUsbScan_End(void) {
     if (gWifiSetupUsbScan->task != NULL) {
         WifiSetupTask_Destroy(WIFI_SETUP_TASK_QUEUE_MAIN, gWifiSetupUsbScan->task);
     }
-    while (gWifiSetupUsbScan->endState != 2) {
+    while (gWifiSetupUsbScan->endState != WIFI_SETUP_USB_SCAN_ENDED) {
     }
     WifiSetupHeap_FreeAndClear(&ov13_0224F5B0[1]);
     return TRUE;
@@ -2540,9 +2541,9 @@ static void WifiSetupUsbScan_WmCallback(void *arg) {
     if (cb->errcode != WM_ERRCODE_SUCCESS) {
         return;
     }
-    if (gWifiSetupUsbScan->endState != 0) {
+    if (gWifiSetupUsbScan->endState != WIFI_SETUP_USB_SCAN_RUNNING) {
         if (cb->apiid == 2) {
-            gWifiSetupUsbScan->endState = 2;
+            gWifiSetupUsbScan->endState = WIFI_SETUP_USB_SCAN_ENDED;
         }
         return;
     }
@@ -2580,7 +2581,7 @@ static void WifiSetupUsbScan_StoreResults(WMStartScanExCallback *arg) {
         }
         scan = gWifiSetupUsbScan;
         for (j = 0; j < 16; j++) {
-            if (memcmp(bss->bssid, scan->entries[j].bssid, 6) == 0) {
+            if (memcmp(bss->bssid, scan->entries[j].bssid, sizeof(bss->bssid)) == 0) {
                 if (scan->entries[j].flag != 0) {
                     goto next;
                 }
@@ -2588,14 +2589,14 @@ static void WifiSetupUsbScan_StoreResults(WMStartScanExCallback *arg) {
                     goto next;
                 }
                 if (scan->callback != NULL) {
-                    scan->callback(1);
+                    scan->callback(WIFI_SETUP_USB_SCAN_FOUND);
                 }
                 return;
             }
         }
         for (j = 0; j < 16; j++) {
-            if (memcmp(scan->entries[j].bssid, gWifiSetupUsbScanEmptyBssid, 6) == 0) {
-                MI_CpuCopy8(bss->bssid, scan->entries[j].bssid, 6);
+            if (memcmp(scan->entries[j].bssid, gWifiSetupUsbScanEmptyBssid, sizeof(scan->entries[j].bssid)) == 0) {
+                MI_CpuCopy8(bss->bssid, scan->entries[j].bssid, sizeof(scan->entries[j].bssid));
                 gWifiSetupUsbScan->entries[j].flag = (bss->ssid[9] & 1) ? 1 : 0;
                 break;
             }
@@ -2627,15 +2628,15 @@ static void WifiSetupUsbScan_CheckResults(WMStartScanExCallback *arg) {
         bss = arg->bssDesc[i];
         if (memcmp(bss->ssid, gWifiSetupUsbApSsid, 8) == 0 && (bss->ssid[9] & 1)) {
             for (j = 0, entry = scan->entries; j < WIFI_SETUP_USB_SCAN_NUM_ENTRIES; j++, entry++) {
-                if (memcmp(bss->bssid, entry->bssid, 6) == 0) {
+                if (memcmp(bss->bssid, entry->bssid, sizeof(bss->bssid)) == 0) {
                     if (scan->entries[j].flag) {
                         break;
                     }
                     if (!scan->callback) {
-                        scan->found = 1;
+                        scan->found = WIFI_SETUP_USB_SCAN_FOUND;
                         return;
                     }
-                    scan->callback(1);
+                    scan->callback(WIFI_SETUP_USB_SCAN_FOUND);
                     return;
                 }
             }
@@ -2656,7 +2657,7 @@ static void WifiSetupUsbScan_TimeoutTask(WifiSetupTask *task, void *arg) {
     }
     flagged = FALSE;
     for (j = 0; j < 16; j++) {
-        if (memcmp(scan->entries[j].bssid, gWifiSetupUsbScanEmptyBssid, 6) != 0) {
+        if (memcmp(scan->entries[j].bssid, gWifiSetupUsbScanEmptyBssid, sizeof(scan->entries[j].bssid)) != 0) {
             if (scan->entries[j].flag) {
                 flagged = TRUE;
             } else {
@@ -2666,15 +2667,15 @@ static void WifiSetupUsbScan_TimeoutTask(WifiSetupTask *task, void *arg) {
     }
     if (flagged && unflagged) {
         if (scan->callback != NULL) {
-            scan->callback(2);
+            scan->callback(WIFI_SETUP_USB_SCAN_MIXED);
         }
     } else if (flagged) {
         if (scan->callback != NULL) {
-            scan->callback(1);
+            scan->callback(WIFI_SETUP_USB_SCAN_FOUND);
         }
     } else if (!unflagged) {
         if (scan->callback != NULL) {
-            scan->callback(0);
+            scan->callback(WIFI_SETUP_USB_SCAN_NOT_FOUND);
         }
     }
     gWifiSetupUsbScan->task = NULL;
@@ -2922,13 +2923,13 @@ void WifiSetupMbParent_Setup(u32 ggid, u32 tgid) {
     }
     MB_SetParentCommParam(0x100, 1);
     MB_CommSetParentStateCallback(WifiSetupMbParent_StateCallback);
-    WifiSetupMbParent_SetState(1);
+    WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_READY);
 }
 
 void WifiSetupMbParent_Start(WifiSetupMbParentFile *reg, u32 channel) {
-    WifiSetupMbParent_SetState(2);
+    WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_ACCEPTING);
     if (MB_StartParentFromIdle(channel) != 0) {
-        WifiSetupMbParent_SetState(7);
+        WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_FAILED);
         return;
     }
     if (!WifiSetupMbParent_RegisterFile(reg)) {
@@ -2964,7 +2965,7 @@ static BOOL WifiSetupMbParent_RegisterFile(WifiSetupMbParentFile *reg) {
 }
 
 static void WifiSetupMbParent_AcceptChild(u16 aid) {
-    if (MB_CommResponseRequest(aid, 1)) {
+    if (MB_CommResponseRequest(aid, MB_COMM_RESPONSE_REQUEST_ACCEPT)) {
         return;
     }
     WifiSetupMbParent_DisconnectChild(aid);
@@ -2972,7 +2973,7 @@ static void WifiSetupMbParent_AcceptChild(u16 aid) {
 
 static void WifiSetupMbParent_KickChild(u16 aid) {
     OSIntrMode intrMode;
-    if (!MB_CommResponseRequest(aid, 0)) {
+    if (!MB_CommResponseRequest(aid, MB_COMM_RESPONSE_REQUEST_KICK)) {
         WifiSetupMbParent_DisconnectChild(aid);
         return;
     }
@@ -2984,7 +2985,7 @@ static void WifiSetupMbParent_KickChild(u16 aid) {
 
 static void WifiSetupMbParent_StartSending(u16 aid) {
     OSIntrMode intrMode;
-    if (!MB_CommResponseRequest(aid, 2)) {
+    if (!MB_CommResponseRequest(aid, MB_COMM_RESPONSE_REQUEST_DOWNLOAD)) {
         WifiSetupMbParent_DisconnectChild(aid);
         return;
     }
@@ -2996,7 +2997,7 @@ static void WifiSetupMbParent_StartSending(u16 aid) {
 
 void WifiSetupMbParent_StartDownload(void) {
     u16 i;
-    WifiSetupMbParent_SetState(3);
+    WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_DOWNLOADING);
     for (i = 1; i < 16; i++) {
         if ((gWifiSetupMbParent->head.connectedMask & (1 << i)) && !(gWifiSetupMbParent->head.requestedMask & (1 << i))) {
             if (!(gWifiSetupMbParent->head.waitingMask & (1 << i))) {
@@ -3028,7 +3029,7 @@ void WifiSetupMbParent_BootChildren(void) {
     u16 ok = 0;
     for (i = 1; i < 16; i++) {
         if (gWifiSetupMbParent->head.sentMask & (1 << i)) {
-            if (!MB_CommResponseRequest(i, 3)) {
+            if (!MB_CommResponseRequest(i, MB_COMM_RESPONSE_REQUEST_BOOT)) {
                 WifiSetupMbParent_DisconnectChild(i);
             } else {
                 ok |= 1 << i;
@@ -3036,19 +3037,19 @@ void WifiSetupMbParent_BootChildren(void) {
         }
     }
     if (ok == 0) {
-        WifiSetupMbParent_SetState(7);
+        WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_FAILED);
     } else {
-        WifiSetupMbParent_SetState(4);
+        WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_BOOTING);
     }
 }
 
 void WifiSetupMbParent_End(void) {
-    WifiSetupMbParent_SetState(6);
+    WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_ENDING);
     MB_End();
 }
 
 static void WifiSetupMbParent_EndIfAllBooted(void) {
-    if (gWifiSetupMbParent->head.state == 4 && gWifiSetupMbParent->head.connectedMask == gWifiSetupMbParent->head.bootableMask) {
+    if (gWifiSetupMbParent->head.state == WIFI_SETUP_MB_PARENT_STATE_BOOTING && gWifiSetupMbParent->head.connectedMask == gWifiSetupMbParent->head.bootableMask) {
         MB_End();
     }
 }
@@ -3060,15 +3061,15 @@ static void WifiSetupMbParent_StateCallback(u16 aid, u32 status, void *arg) {
     void *user;
     u8 *mac;
     switch (status) {
-    case 1:
-    case 4:
-    case 5:
-    case 6:
-    case 8:
-    case 11:
+    case MB_COMM_PSTATE_INIT_COMPLETE:
+    case MB_COMM_PSTATE_KICKED:
+    case MB_COMM_PSTATE_REQ_ACCEPTED:
+    case MB_COMM_PSTATE_SEND_PROCEED:
+    case MB_COMM_PSTATE_BOOT_REQUEST:
+    case MB_COMM_PSTATE_MEMBER_FULL:
         break;
-    case 2:
-        if (WifiSetupMbParent_GetState() != 2) {
+    case MB_COMM_PSTATE_CONNECTED:
+        if (WifiSetupMbParent_GetState() != WIFI_SETUP_MB_PARENT_STATE_ACCEPTING) {
             break;
         }
         head = &gWifiSetupMbParent->head;
@@ -3084,15 +3085,15 @@ static void WifiSetupMbParent_StateCallback(u16 aid, u32 status, void *arg) {
         mac[5] = connectArg->macAddr[5];
         gWifiSetupMbParent->children[aid - 1].aid = aid;
         break;
-    case 3:
+    case MB_COMM_PSTATE_DISCONNECTED:
         if (WifiSetupMbParent_GetChildState(aid) == WIFI_SETUP_MB_CHILD_BOOTABLE) {
             break;
         }
         WifiSetupMbParent_ClearChild(aid);
         WifiSetupMbParent_EndIfAllBooted();
         break;
-    case 10:
-        if (WifiSetupMbParent_GetState() != 2) {
+    case MB_COMM_PSTATE_REQUESTED:
+        if (WifiSetupMbParent_GetState() != WIFI_SETUP_MB_PARENT_STATE_ACCEPTING) {
             WifiSetupMbParent_KickChild(aid);
             break;
         }
@@ -3100,30 +3101,30 @@ static void WifiSetupMbParent_StateCallback(u16 aid, u32 status, void *arg) {
         WifiSetupMbParent_AcceptChild(aid);
         user = MB_CommGetChildUser(aid);
         if (user != NULL) {
-            MI_CpuCopy8(user, gWifiSetupMbParent->children[aid - 1].user, 0x16);
+            MI_CpuCopy8(user, gWifiSetupMbParent->children[aid - 1].user, sizeof(gWifiSetupMbParent->children[aid - 1].user));
         }
         break;
-    case 14:
+    case MB_COMM_PSTATE_WAIT_TO_SEND:
         gWifiSetupMbParent->head.requestedMask &= ~(1 << aid);
         gWifiSetupMbParent->head.waitingMask |= 1 << aid;
-        if (WifiSetupMbParent_GetState() == 3) {
+        if (WifiSetupMbParent_GetState() == WIFI_SETUP_MB_PARENT_STATE_DOWNLOADING) {
             WifiSetupMbParent_StartSending(aid);
         }
         break;
-    case 7:
+    case MB_COMM_PSTATE_SEND_COMPLETE:
         gWifiSetupMbParent->head.sendingMask &= ~(1 << aid);
         gWifiSetupMbParent->head.sentMask |= 1 << aid;
         break;
-    case 9:
+    case MB_COMM_PSTATE_BOOT_STARTABLE:
         gWifiSetupMbParent->head.sentMask &= ~(1 << aid);
         gWifiSetupMbParent->head.bootableMask |= 1 << aid;
         WifiSetupMbParent_EndIfAllBooted();
         break;
-    case 12:
-        if (WifiSetupMbParent_GetState() == 4) {
-            WifiSetupMbParent_SetState(5);
+    case MB_COMM_PSTATE_END:
+        if (WifiSetupMbParent_GetState() == WIFI_SETUP_MB_PARENT_STATE_BOOTING) {
+            WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_BOOTED);
         } else {
-            WifiSetupMbParent_SetState(0);
+            WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_NONE);
         }
         if (gWifiSetupMbParent->segmentPtr != NULL) {
             gWifiSetupMbParent->segmentPtr = NULL;
@@ -3132,12 +3133,12 @@ static void WifiSetupMbParent_StateCallback(u16 aid, u32 status, void *arg) {
             gWifiSetupMbParent->mbWorkPtr = NULL;
         }
         break;
-    case 13:
+    case MB_COMM_PSTATE_ERROR:
         switch (*(u16 *)arg) {
         case 1:
         case 2:
         case 9:
-            WifiSetupMbParent_SetState(7);
+            WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_FAILED);
             break;
         case 8:
             break;

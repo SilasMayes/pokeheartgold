@@ -69,7 +69,7 @@ void WifiSetupSettings_Init(void) {
     for (i = 0; i < 7; i++) { // rows and the two switches
         gWifiSetupSettings.work->rows[i] = WifiSetupOamTemplate_AllocOam(0, 41);
     }
-    switch (record->setupMethod) {
+    switch (record->settings.setupMethod) {
     case 1:
         gWifiSetupSettings.work->ssidIcon = WifiSetupOamTemplate_AllocOam(0, 80);
         gWifiSetupSettings.work->ssidIcon->attr2 = (gWifiSetupSettings.work->ssidIcon->attr2 & ~0xc00) | 0xc00;
@@ -280,7 +280,7 @@ static void WifiSetupSettings_SelectItem(int item) {
         if (!WifiSetupSettings_IsComplete()) {
             WifiSetupSound_Play(9);
             WifiSetupDialog_Open(6, 1, 1, -1, 0);
-            WifiSetupApp_SetStateFunc((WifiSetupAppStateFunc)WifiSetupSettings_WaitIncompleteDialog);
+            WifiSetupApp_SetStateFunc(WifiSetupSettings_WaitIncompleteDialog);
             return;
         }
         if (item == 11) {
@@ -472,15 +472,15 @@ static void WifiSetupSettings_Exit(void) {
     }
     case 11: {
         WifiSetupConnection *record = WifiSetupConnections_GetEdit();
-        record->cidr = DWCi_BACKUPlConvMaskCidr(record->mask);
+        record->settings.cidr = DWCi_BACKUPlConvMaskCidr(record->mask);
         if (record->autoAddress) {
-            MI_CpuFill8(record->ip, 0, 4);
-            MI_CpuFill8(record->gateway, 0, 4);
-            MI_CpuFill8(record->mask, 0, 4);
-            record->cidr = 0;
+            MI_CpuFill8(record->settings.ip, 0, sizeof(record->settings.ip));
+            MI_CpuFill8(record->settings.gateway, 0, sizeof(record->settings.gateway));
+            MI_CpuFill8(record->mask, 0, sizeof(record->mask));
+            record->settings.cidr = 0;
         }
         if (record->autoDns) {
-            MI_CpuFill8(record->dns1, 0, 8);
+            MI_CpuFill8(record->settings.dns1, 0, 8);
         }
         WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_KEEP);
         WifiSetupApp_SetScreenArgs(0, 0);
@@ -527,12 +527,12 @@ static void WifiSetupSettings_DrawValue(u32 item, int row) {
     WifiSetupConnection *record = WifiSetupConnections_GetEdit();
     switch (item) {
     case 0:
-        WifiSetupSettings_DrawText(record->ssid, row);
+        WifiSetupSettings_DrawText(record->settings.ssid, row);
         return;
     case 1: {
         int len;
         u8 buf[33];
-        switch (record->keyType) {
+        switch (record->settings.keyType) {
         case WM_WEPMODE_NO:
             return;
         case WM_WEPMODE_40BIT:
@@ -545,10 +545,10 @@ static void WifiSetupSettings_DrawValue(u32 item, int row) {
             len = 32;
             break;
         }
-        if (record->keyFormat == 1) {
+        if (record->settings.keyFormat == WIFI_SETUP_KEY_FORMAT_TEXT) {
             len /= 2;
         }
-        MI_CpuFill8(buf, 0, 33);
+        MI_CpuFill8(buf, 0, sizeof(buf));
         memset(buf, '*', len);
         WifiSetupSettings_DrawText(buf, row);
         return;
@@ -557,7 +557,7 @@ static void WifiSetupSettings_DrawValue(u32 item, int row) {
         if (record->autoAddress) {
             return;
         }
-        WifiSetupSettings_DrawAddress(record->ip, row);
+        WifiSetupSettings_DrawAddress(record->settings.ip, row);
         return;
     case 4:
         if (record->autoAddress) {
@@ -569,19 +569,19 @@ static void WifiSetupSettings_DrawValue(u32 item, int row) {
         if (record->autoAddress) {
             return;
         }
-        WifiSetupSettings_DrawAddress(record->gateway, row);
+        WifiSetupSettings_DrawAddress(record->settings.gateway, row);
         return;
     case 7:
         if (record->autoDns) {
             return;
         }
-        WifiSetupSettings_DrawAddress(record->dns1, row);
+        WifiSetupSettings_DrawAddress(record->settings.dns1, row);
         return;
     case 8:
         if (record->autoDns) {
             return;
         }
-        WifiSetupSettings_DrawAddress(record->dns2, row);
+        WifiSetupSettings_DrawAddress(record->settings.dns2, row);
     }
 }
 
@@ -671,7 +671,7 @@ static int WifiSetupSettings_IsItemEnabled(int item) {
         break;
     case 0:
     case 1:
-        if ((u8)(record->setupMethod + 255) <= 1) {
+        if ((u8)(record->settings.setupMethod + 255) <= 1) {
             enabled = 0;
         }
         break;

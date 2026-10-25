@@ -37,7 +37,7 @@ void WifiSetupAddressEntry_Init(void) {
     if (memcmp(work->digits, gWifiSetupAddressEntryUnsetAddress, 3) != 0) {
         work->field = 3;
     } else {
-        MI_CpuFill8(work->digits, 0, 12);
+        MI_CpuFill8(work->digits, 0, sizeof(work->digits));
         gWifiSetupAddressEntry->field = 0;
     }
     WifiSetupAddressEntry_LoadGraphics();

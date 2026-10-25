@@ -10,6 +10,9 @@
 typedef void *(*WifiSetupWorkAllocFunc)(u32 size);
 typedef void (*WifiSetupWorkFreeFunc)(void *ptr);
 
+// UDP port of the simple start exchange, as stored in a socket address (port 0xE601 on the network)
+#define WIFI_SETUP_SIMPLE_START_PORT 0x1E6
+
 // WifiSetupWork.state, reported to the status callback
 enum WifiSetupSimpleStartState {
     WIFI_SETUP_SIMPLE_START_STARTED = 1,

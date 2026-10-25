@@ -20,9 +20,7 @@ static void WifiSetupScrollBar_JumpToTouch(void);
 static int WifiSetupScrollBar_GetTouchedPart(void);
 static int WifiSetupScrollBar_GetHeldArrow(int part);
 static void WifiSetupScrollBar_SetThumbPos(int value);
-
-void WifiSetupScrollBar_Task(WifiSetupTask *task, void *arg);
-void WifiSetupScrollBar_GetPartRect(int part, WifiSetupRect *rect);
+static void WifiSetupScrollBar_GetPartRect(int part, WifiSetupRect *rect);
 
 WifiSetupScrollBar *gWifiSetupScrollBar;
 
@@ -222,7 +220,7 @@ static int WifiSetupScrollBar_GetHeldArrow(int part) {
     return 0;
 }
 
-void WifiSetupScrollBar_GetPartRect(int part, WifiSetupRect *rect) {
+static void WifiSetupScrollBar_GetPartRect(int part, WifiSetupRect *rect) {
     u16 x = gWifiSetupScrollBar->pos.x;
     u16 y;
     rect->left = x;

@@ -37,7 +37,7 @@ static void WifiSetupAddressEntry_StartClose(void);
 static void WifiSetupAddressEntry_CloseKeypad(void);
 static void WifiSetupAddressEntry_WaitKeypadClosed(void);
 static void WifiSetupAddressEntry_Exit(void);
-static inline void DrawDigit(WifiSetupCanvas *canvas, u16 x, volatile u16 *rect, u16 *text);
+static inline void DrawDigit(WifiSetupCanvas *canvas, u16 x, volatile WifiSetupTextBox *rect, u16 *text);
 static inline void SetOamPos(u32 *attr01, int x, int y);
 static void WifiSetupAddressEntry_WaitConfirm(void);
 static void WifiSetupAddressEntry_FinishConfirm(void);
@@ -86,7 +86,7 @@ void WifiSetupAddressEntry_OpenKeypad(void) {
 }
 
 static void WifiSetupAddressEntry_WaitKeypad(void) {
-    if (WifiSetupKeypad_GetInput() == 31) {
+    if (WifiSetupKeypad_GetInput() == WIFI_SETUP_KEYPAD_INPUT_BUSY) {
         return;
     }
     WifiSetupApp_SetStateFunc(WifiSetupAddressEntry_Main);
@@ -256,26 +256,26 @@ static void WifiSetupAddressEntry_Exit(void) {
     WifiSetupHeap_FreeAndClear(&gWifiSetupTextEntry[1]); // &gWifiSetupAddressEntry
 }
 
-static inline void DrawDigit(WifiSetupCanvas *canvas, u16 x, volatile u16 *rect, u16 *text) {
-    WifiSetupText_DrawInRect(canvas, x, rect[1], rect[2], rect[3], 2, 0x480, text);
+static inline void DrawDigit(WifiSetupCanvas *canvas, u16 x, volatile WifiSetupTextBox *rect, u16 *text) {
+    WifiSetupText_DrawInRect(canvas, x, rect->y, rect->width, rect->height, 2, 0x480, text);
 }
 
 void WifiSetupAddressEntry_DrawDigits(void) {
     WifiSetupAddressEntry *entry = gWifiSetupAddressEntry;
-    u16 rect[4];
+    WifiSetupTextBox rect;
     u16 text[2];
     int i;
-    rect[0] = ((const u16 *)&gWifiSetupAddressLayout)[7];
-    rect[1] = ((const u16 *)&gWifiSetupAddressLayout)[8];
-    rect[2] = 11;
-    rect[3] = 16;
+    rect.x = ((const u16 *)&gWifiSetupAddressLayout)[7];
+    rect.y = ((const u16 *)&gWifiSetupAddressLayout)[8];
+    rect.width = 11;
+    rect.height = 16;
     WifiSetupText_Clear(entry->canvas, 0);
     text[1] = 0;
     for (i = 0; i < 12; i++) {
         u16 x = gWifiSetupAddressEntryDigitX[i];
         text[0] = gWifiSetupAddressEntry->digits[i];
-        rect[0] = x;
-        DrawDigit(gWifiSetupAddressEntry->canvas, x, rect, text);
+        rect.x = x;
+        DrawDigit(gWifiSetupAddressEntry->canvas, x, &rect, text);
     }
     WifiSetupText_MarkDirty(gWifiSetupAddressEntry->canvas);
 }
