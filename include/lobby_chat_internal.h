@@ -115,7 +115,6 @@ int LobbyChat_AreChannelUsersEnumerated(LobbyChatManager *manager, Str *channel)
 void LobbyChat_RemoveChannel(LobbyChatManager *manager, Str *channel);
 BOOL LobbyChat_RemoveChannelUser(LobbyChatManager *manager, Str *nick, Str *channel);
 BOOL LobbyChat_RemoveUserIfUnused(LobbyChatManager *manager, int id);
-int LobbyChat_SetChannelMode(const char *channel, int mode);
 LobbyRequest *LobbyEnterChannelRequest_Delete(LobbyRequest *request);
 void LobbyEnterChannelRequest_Destroy(void);
 LobbyRequest *LobbyEnumChannelsRequest_Delete(LobbyRequest *request);
@@ -153,7 +152,7 @@ void chatLeaveChannelA(void *h, const char *name, int x);
 void chatSendChannelMessageA(void *h, const char *name, const char *msg, int x);
 void chatSendUserMessageA(void *h, const char *name, const char *msg, int x);
 void chatSetChannelKeysA(void *h, const char *name, const char *who, int x, const char **key, const char **val);
-void chatSetChannelModeA(void *h, const char *name, int arg);
+void chatSetChannelModeA(void *h, const char *name, const struct ChatChannelMode *mode);
 
 void LobbyChatManager_GetGameName(Str *out, LobbyChatManager *manager);
 void LobbyChatManager_GetRealName(Str *out, LobbyChatManager *manager);

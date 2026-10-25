@@ -36,5 +36,5 @@ void LobbyChat_OnDisconnected(void) {
     }
     manager->lastError = 3;
     manager->state = LOBBY_CHAT_STATE_ERROR;
-    gLobbyChatManager->disconnected = 1;
+    gLobbyChatManager->disconnected = TRUE;
 }

@@ -36,7 +36,6 @@ struct Alloc {
     }
 };
 
-extern "C" u32 LobbyCharVector_RecommendSize(LobbyCharVector *v, u32 n);
 
 inline void Allocate(LobbyCharVectorBuffer *b, u32 n, LobbyTag t) {
     LobbyCharVectorBuffer_Allocate(b, n, t);

@@ -46,7 +46,6 @@ static inline BOOL release(Work *w) {
 
 extern void PPWLobby_SendMessage(int, int, int, int, int, void *, int);
 void LobbyTimerMap_Erase(Iterator *, LobbyTimerMap *, Iterator);
-char *LobbyCharVector_Data(LobbyCharVector *);
 int PPW_LobbyUpdateRecruitInfo(Packet *);
 int PPW_LobbyStopRecruit(void);
 

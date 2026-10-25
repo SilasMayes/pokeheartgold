@@ -5,6 +5,7 @@
 #include <nitro/code32.h>
 
 #include "lobby_mem.h"
+#include "overlay45_format_buffer_private.h"
 
 class FalseType {};
 
@@ -21,9 +22,7 @@ void *memcpy(void *, const void *, unsigned);
 void DWC_Free(int, void *, u32);
 void _ZNSt15__vector_commonILb1EE18throw_length_errorEv(void);
 u32 LobbyStringVector_RecommendSize(LobbyStringVector *, u32);
-u32 LobbyCharVector_RecommendSize(LobbyCharVector *, u32);
 void LobbyStringVector_AppendCopiesSlow(LobbyStringVector *, u32, const Str &);
-void LobbyCharVector_AppendZerosSlow(LobbyCharVector *, u32);
 void LobbyStringVectorBuffer_EraseAtEnd(LobbyStringVectorBuffer *, u32, ByteTag, u32);
 static LobbyCharVectorBuffer *LobbyCharVectorBuffer_Deallocate(LobbyCharVectorBuffer *buffer);
 }

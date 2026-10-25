@@ -66,21 +66,21 @@ static inline bool Tick(LobbyTimerMapNode *n, const s64 &now) {
 
 static inline void SetError(LobbyChatManager *m, u32 code) {
     m->lastError = code;
-    m->state = 5;
+    m->state = LOBBY_CHAT_STATE_ERROR;
 }
 
 static inline void UpdateState(LobbyChatManager *m) {
     switch (m->state) {
-    case 0:
-    case 1:
-    case 3:
-    case 4:
+    case LOBBY_CHAT_STATE_INIT:
+    case LOBBY_CHAT_STATE_CONNECTING:
+    case LOBBY_CHAT_STATE_READY:
+    case LOBBY_CHAT_STATE_DISCONNECTING:
         break;
-    case 2:
+    case LOBBY_CHAT_STATE_CONNECTED:
         if (m->connectedFrames++ == 60) {
             m->connectedFrames = 0;
             if (m->state != LOBBY_CHAT_STATE_ERROR) {
-                m->state = 3;
+                m->state = LOBBY_CHAT_STATE_READY;
             }
         }
         break;
@@ -103,7 +103,6 @@ static inline It Iterator_Make(LobbyTimerMapNode *p) {
     return t;
 }
 
-extern "C" int LobbyChat_Process(void);
 #pragma push
 #pragma opt_common_subs off
 

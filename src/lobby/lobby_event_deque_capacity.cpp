@@ -13,7 +13,6 @@ void DWC_Free(int, void *, u32);
 int printf(const char *, ...);
 void abort(void);
 
-void LobbyEventDequeMapBuffer_Allocate(LobbyEventDequeMapBuffer *buffer, u32 n, LobbyTag);
 void LobbyEventDequeMapBuffer_AppendRange(LobbyEventDequeMapBuffer *buffer, const LobbyEventDequeMapIterator &first, const LobbyEventDequeMapIterator &last, LobbyTag);
 void LobbyEventDequeMapBuffer_PrependRange(LobbyEventDequeMapBuffer *buffer, const LobbyEventDequeMapIterator &first, const LobbyEventDequeMapIterator &last, LobbyTag);
 void LobbyEventDequeMap_PushBack(LobbyEventDequeMap *map, LobbyEvent *const &block);

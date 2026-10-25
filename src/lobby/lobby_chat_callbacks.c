@@ -247,7 +247,7 @@ void LobbyChat_OnConnected(void *chat, int success) {
         manager = gLobbyChatManager;
         manager->lastError = 3;
         manager->state = LOBBY_CHAT_STATE_ERROR;
-        gLobbyChatManager->disconnected = 1;
+        gLobbyChatManager->disconnected = TRUE;
         return;
     }
     if (gLobbyChatManager->state != LOBBY_CHAT_STATE_ERROR) {

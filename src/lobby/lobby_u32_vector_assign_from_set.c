@@ -4,13 +4,13 @@
 #include "lobby_vector.h"
 
 #include <nitro/code32.h>
+#include "ppw_lobby_internal.h"
 
 typedef struct {
     Iterator advance;
     void *other;
 } Iter;
 
-void LobbyTreeIterator_Advance(Iterator *);
 void LobbyU32Vector_AssignFromSet(LobbyU32Vector *, Iter, Iter);
 
 typedef struct {

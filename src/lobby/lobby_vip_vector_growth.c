@@ -5,8 +5,8 @@
 #include "ppw_lobby_work.h"
 
 #include <nitro/code32.h>
+#include "ppw_lobby_internal.h"
 
-void _ZNSt15__vector_commonILb1EE18throw_length_errorEv(void);
 
 void LobbyVipVector_Reallocate(PPWLobbyVipVector *b, u32 unused, u32 n) {
     u32 size = b->size;

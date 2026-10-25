@@ -11,7 +11,6 @@ public:
 
 extern "C" {
 void *memmove(void *, const void *, u32);
-u32 LobbyCharVector_RecommendSize(LobbyCharVector *, u32);
 void LobbyCharVector_Reallocate(LobbyCharVector *, u32, u32);
 void LobbyCharVector_AssignRange(LobbyCharVector *v, const char *first, const char *last, int unused);
 }

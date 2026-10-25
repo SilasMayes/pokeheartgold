@@ -87,13 +87,15 @@ typedef struct LobbyChatManager {
     u32 unk54;
     int lastError;
     int connectedFrames;
-    int disconnected;
+    BOOL disconnected;
     LobbyChatCallbacks callbacks;
     LobbyUserMap userMap;
     LobbyChannelMap channelMap;
     LobbyRequestMap requestMap;
     LobbyTimerMap timerMap;
 } LobbyChatManager;
+
+struct ChatChannelMode;
 
 #ifdef __cplusplus
 extern "C" {
@@ -123,6 +125,7 @@ int LobbyChat_Shutdown(void);
 int LobbyChat_GetLastError(void);
 int LobbyChat_ToErrorCode(int error);
 int LobbyChat_IsInChannel(char *channel);
+int LobbyChat_SetChannelMode(const char *channel, const struct ChatChannelMode *mode);
 int LobbyChat_SendChannelMessage(const char *channel, const char *message);
 int LobbyChat_SendUserMessage(int userId, const char *message);
 int LobbyChat_SetChannelKey(const char *channel, int userId, const char *key, const char *value);

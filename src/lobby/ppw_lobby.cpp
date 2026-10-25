@@ -49,7 +49,6 @@ int printf(const char *, ...);
 void abort(void);
 void DWC_Free(int, void *, u32);
 
-int LobbyString_CompareChars(const Str *, u32, u32, const void *, u32);
 void LobbyTreeIterator_Advance(Iterator *);
 }
 
@@ -1420,7 +1419,6 @@ struct Info {
     u8 mac[6];
     u8 rest[6];
 };
-extern "C" int PPW_LobbyUpdateMyProfile(const void *, u32, int);
 extern "C" void PPWLobby_OnCheckProfile(BOOL, u8 *, u32, void *);
 
 extern "C" void PPWLobby_OnCheckProfile(BOOL success, u8 *response, u32 responseSize, void *param) {
@@ -2059,38 +2057,36 @@ struct Work {
 };
 
 extern "C" Work *gPPWLobbyWork;
-extern "C" char gPPWLobbyFootChannelMode[], gPPWLobbyClockChannelMode[], gPPWLobbyNewsChannelMode[];
-extern "C" void LobbyChat_SetChannelMode(int, const char *);
-extern "C" void PPWLobby_OnEnterSubChannel(int, int, int, int);
+extern "C" void PPWLobby_OnEnterSubChannel(BOOL success, int error, const char *channel, int kind);
 #pragma opt_common_subs off
 
-extern "C" void PPWLobby_OnEnterSubChannel(int result, int unused, int arg, int kind) {
+extern "C" void PPWLobby_OnEnterSubChannel(BOOL success, int error, const char *channel, int kind) {
     if (kind == PPW_LOBBY_CHANNEL_KIND_INVALID) {
         return;
     }
-    if (result != 0) {
-        const char *name;
+    if (success) {
+        const struct ChatChannelMode *mode;
         switch (kind) {
         case PPW_LOBBY_CHANNEL_KIND_FOOT1:
         case PPW_LOBBY_CHANNEL_KIND_FOOT2:
-            name = gPPWLobbyFootChannelMode;
+            mode = &gPPWLobbyFootChannelMode;
             break;
         case PPW_LOBBY_CHANNEL_KIND_CLOCK:
-            name = gPPWLobbyClockChannelMode;
+            mode = &gPPWLobbyClockChannelMode;
             break;
         case PPW_LOBBY_CHANNEL_KIND_NEWS:
-            name = gPPWLobbyNewsChannelMode;
+            mode = &gPPWLobbyNewsChannelMode;
             break;
         default:
-            name = 0;
+            mode = NULL;
             break;
         }
-        if (name == 0) {
+        if (mode == NULL) {
             Work *w = gPPWLobbyWork;
             w->sub = 1;
             w->state = PPW_LOBBY_STATE_ERROR;
         }
-        LobbyChat_SetChannelMode(arg, name);
+        LobbyChat_SetChannelMode(channel, mode);
         {
             Work *w = gPPWLobbyWork;
             w->systemProfile.changed = FALSE;
@@ -2107,7 +2103,7 @@ extern "C" void PPWLobby_OnEnterSubChannel(int result, int unused, int arg, int 
     } else {
         gPPWLobbyWork->peer.Reset();
     }
-    gPPWLobbyWork->callback(result, kind);
+    gPPWLobbyWork->callback(success, kind);
 }
 
 #pragma opt_common_subs reset
@@ -2628,11 +2624,9 @@ extern "C" void PPWLobby_OnEnumUsers(int success, char *channel, int count, int 
 #pragma opt_common_subs reset
 
 extern "C" {
-extern u8 gPPWLobbyMainChannelMode[];
-extern void LobbyChat_SetChannelMode(int, char *);
-void PPWLobby_OnGetChannelMode(int success, int channel, u32 *mode);
+void PPWLobby_OnGetChannelMode(BOOL success, const char *channel, const u32 *mode);
 
-void PPWLobby_OnGetChannelMode(int success, int channel, u32 *mode) {
+void PPWLobby_OnGetChannelMode(BOOL success, const char *channel, const u32 *mode) {
     u32 timerId;
     if (!success) {
         return;
@@ -2643,7 +2637,7 @@ void PPWLobby_OnGetChannelMode(int success, int channel, u32 *mode) {
         LobbyTimerMap_EraseKey(&gPPWLobbyWork->timers, &timerId);
         return;
     }
-    LobbyChat_SetChannelMode(channel, (char *)gPPWLobbyMainChannelMode);
+    LobbyChat_SetChannelMode(channel, &gPPWLobbyMainChannelMode);
 }
 }
 
@@ -3340,7 +3334,6 @@ LobbyStringVector *LobbyStringVector_Destroy(LobbyStringVector *vector) {
 }
 
 extern "C" {
-LobbyU32Vector *LobbyU32Vector_Destroy(LobbyU32Vector *vector);
 
 LobbyU32Vector *LobbyU32Vector_Destroy(LobbyU32Vector *vector) {
     if (vector->data) {

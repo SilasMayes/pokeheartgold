@@ -169,6 +169,7 @@ struct PPWLobbyWebRequest {
     BOOL useLastHash;
 };
 
+struct ChatChannelMode;
 struct DwcUserData;
 
 #ifdef __cplusplus
@@ -176,6 +177,13 @@ extern "C" {
 #endif
 
 extern PPWLobbyWork *gPPWLobbyWork;
+
+// The modes the lobby sets on its channels (the user limit is the channel's player count).
+extern const struct ChatChannelMode gPPWLobbyMainChannelMode;
+extern const struct ChatChannelMode gPPWLobbyMainChannelSecretMode;
+extern const struct ChatChannelMode gPPWLobbyFootChannelMode;
+extern const struct ChatChannelMode gPPWLobbyClockChannelMode;
+extern const struct ChatChannelMode gPPWLobbyNewsChannelMode;
 
 PPWLobbyWork *PPWLobby_GetWork(void);
 int PPWLobby_Initialize(const char *, const char *, int, const PPWLobbyCallbacks *, u32, const void *, u32, u32);
@@ -195,7 +203,7 @@ int PPWLobby_GetWebResultError(u32 type);
 int PPWLobby_HandleLibraryData(BOOL success, BOOL broadcast, int kind, int userId, const char *key, const u8 *data, u32 len, u32 param);
 void PPWLobby_HandleReceivedData(BOOL success, BOOL broadcast, const char *channel, int userId, const char *key, const char *value, u32 param);
 void PPWLobby_OnCheckProfile(BOOL success, u8 *response, u32 responseSize, void *param);
-void PPWLobby_OnEnterSubChannel(int, int, int, int);
+void PPWLobby_OnEnterSubChannel(BOOL success, int error, const char *channel, int kind);
 void PPWLobby_OnEnumChannels(int, int, char **, int, int *);
 void PPWLobby_OnExcessFlood(int);
 void PPWLobby_OnGetChannelKeys(BOOL success, const char *channel, int userId, const char *key, const char *value, u32 param);

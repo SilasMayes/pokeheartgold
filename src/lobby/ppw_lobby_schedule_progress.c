@@ -4,12 +4,10 @@
 
 #include <nitro/code32.h>
 
+#include "lobby_chat_manager.h"
 #include "ppw_lobby_state.h"
 #include "ppw_lobby_work.h"
 
-extern u8 gPPWLobbyMainChannelSecretMode[];
-
-void LobbyChat_SetChannelMode(const char *channel, const u8 *mode);
 BOOL PPWLobbyPlayers_IsFull(PPWLobbyPlayers *players);
 
 BOOL PPWLobbySchedule_GetQuestionnaire(PPWLobbySchedule *schedule, void *out) {
@@ -44,7 +42,7 @@ void PPWLobbySchedule_Process(PPWLobbySchedule *schedule) {
             return;
         }
         PPWLobbyChannel_GetName(&name, &PPWLobby_GetWork()->mainChannel);
-        LobbyChat_SetChannelMode(name.l.isLong == 0 ? name.s.buf : name.l.ptr, gPPWLobbyMainChannelSecretMode);
+        LobbyChat_SetChannelMode(name.l.isLong == 0 ? name.s.buf : name.l.ptr, &gPPWLobbyMainChannelSecretMode);
         LobbyString_Destroy(&name);
         zero = 0;
         PPWLobby_SendMessage(-1, PPW_LOBBY_CHANNEL_KIND_MAIN, 1, 0, 0, &zero, 4);

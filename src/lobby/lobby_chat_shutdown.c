@@ -19,7 +19,7 @@ int LobbyChat_Shutdown(void) {
         return PPW_LOBBY_RESULT_SUCCESS;
     }
     LobbyMem_ReleaseReserve();
-    if (gLobbyChatManager->disconnected != 0) {
+    if (gLobbyChatManager->disconnected) {
         chatDisconnect(gLobbyChatManager->connection);
         if (gLobbyChatManager != NULL) {
             LobbyChatManager *manager = gLobbyChatManager;

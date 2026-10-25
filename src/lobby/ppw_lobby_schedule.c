@@ -6,7 +6,6 @@
 #include "ppw_lobby_state.h"
 #include "ppw_lobby_work.h"
 
-void LobbyCharVector_Grow(LobbyCharVector *vector, u32 size);
 void LobbyStringVectorBuffer_EraseAtEnd(LobbyStringVectorBuffer *buffer, u32 count, LobbyTag tag);
 
 void LobbyStringVectorBuffer_EraseAtEnd(LobbyStringVectorBuffer *buffer, u32 count, LobbyTag tag) {
