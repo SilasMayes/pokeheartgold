@@ -172,7 +172,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
         }
         own = PokeathlonCourse_GetNetId(course);
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)work->bgConfig);
-        PokeathlonCourse_SetEventDrawEnabled(course, 1);
+        PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
         ReadWholeNarcMemberByIdPair(collisions, NARC_a_1_7_0, 14);
         s32 i;
         int j;

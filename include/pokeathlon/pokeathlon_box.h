@@ -43,7 +43,7 @@ typedef struct PokeathlonBoxArgs_SelectedMon {
     PokeathlonBox_MonStats stats;
     u8 isShiny;
     u8 gender;
-    u16 nickname[11];
+    u16 nickname[POKEMON_NAME_LENGTH + 1];
 } PokeathlonBoxArgs_SelectedMon;
 
 typedef struct PokeathlonBoxArgs {
@@ -64,7 +64,7 @@ typedef struct PokeathlonBox_BoxMon {
     u16 isShiny;
     u16 gender;
     u8 padding_14[4];
-    u16 nickname[11];
+    u16 nickname[POKEMON_NAME_LENGTH + 1];
 } PokeathlonBox_BoxMon;
 
 // How a performance stat changes for the selected course, and its star display.
@@ -81,7 +81,7 @@ typedef struct PokeathlonBox_MonInfo {
     u8 form;
     u8 gender;
     u8 displayMode;
-    u16 nickname[11];
+    u16 nickname[POKEMON_NAME_LENGTH + 1];
     u8 medals[5];
     u8 unk25;
     u16 unk26;

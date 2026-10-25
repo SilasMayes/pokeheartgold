@@ -828,7 +828,7 @@ u32 PokeathlonDiscCatch_Init(PokeathlonCourseData *course) {
         PokeathlonCourse_InitMarkers(course);
         PokeathlonDiscCatchShake_Init(&work->shake, work->bgConfig, work->spriteSystem);
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)work->bgConfig);
-        PokeathlonCourse_SetEventDrawEnabled(course, 1);
+        PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
         PokeathlonDiscCatch_InitMons(work);
         if (PokeathlonCourse_GetNetId(course) == 0) {
             PokeathlonDiscCatchFrame *frame = (PokeathlonDiscCatchFrame *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_OUT);

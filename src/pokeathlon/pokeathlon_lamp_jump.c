@@ -396,7 +396,7 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
             Sprite_SetDrawPriority(*playerSprite, 1);
         }
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)lampJump->bgConfig);
-        PokeathlonCourse_SetEventDrawEnabled(course, 1);
+        PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
         ReadWholeNarcMemberByIdPair(offsets, NARC_a_1_7_0, 16);
         for (monIndex = 0; monIndex < POKEATHLON_TEAM_SIZE; monIndex++) {
             PokeathlonLampJumpMon *mon = &lampJump->mons[monIndex];

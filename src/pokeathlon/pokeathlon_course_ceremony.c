@@ -662,10 +662,10 @@ BOOL PokeathlonCourseClosing_Awards(PokeathlonCourseData *course, u8 *state) {
             if (PokeathlonCourseCeremony_AreScoresCounted(ceremony->scores)) {
                 if ((s32)ceremony->timer++ > 30) {
                     rounds = PokeathlonCourse_GetMode(course);
-                    if (rounds == 0) {
-                        rounds = 3;
+                    if (rounds == POKEATHLON_COURSE_MODE_SOLO) {
+                        rounds = POKEATHLON_SOLO_ROUNDS;
                     } else {
-                        rounds = 4;
+                        rounds = POKEATHLON_LINK_ROUNDS;
                     }
                     ceremony->timer = 0;
                     if (ceremony->counter >= (u8)rounds) {
@@ -1547,7 +1547,7 @@ static BOOL PokeathlonCourseCeremony_Init(PokeathlonCourseData *course) {
         break;
     case CEREMONY_INIT_START:
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)ceremony->bgConfig);
-        PokeathlonCourse_SetEventDrawEnabled(course, 1);
+        PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
         for (i = 0; i < POKEATHLON_MONS; i++) {
             int team;
             int member;

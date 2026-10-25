@@ -457,7 +457,7 @@ BOOL PokeathlonBlockSmash_Finish(PokeathlonCourseData *course) {
 // PokeathlonCourse_GetParticipantMons: the participant's team.
 typedef struct PokeathlonBlockSmashTeamMon {
     u8 unk0[0x12];
-    u16 nickname[11];
+    u16 nickname[POKEMON_NAME_LENGTH + 1];
 } PokeathlonBlockSmashTeamMon;
 
 // Sets up the event over several frames; TRUE when done.
@@ -537,7 +537,7 @@ BOOL PokeathlonBlockSmash_Init(PokeathlonCourseData *course) {
         PokeathlonBlockSmash_CreateTeamRows(course);
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)work->bgConfig);
         WirelessStatusIcon_CreateOnScreenIfConnected(1);
-        PokeathlonCourse_SetEventDrawEnabled(course, 1);
+        PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         if (PokeathlonCourse_GetNetId(course) == 0) {

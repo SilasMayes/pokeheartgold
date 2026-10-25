@@ -435,7 +435,7 @@ BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
             PokeathlonSnowThrowViewAnims anims = sSnowThrowViewAnims;
 
             PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)work->bgConfig);
-            PokeathlonCourse_SetEventDrawEnabled(course, 1);
+            PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
             own = PokeathlonCourse_GetNetId(course);
             for (k = 0; k < SNOW_THROW_MONS - SNOW_THROW_MEMBERS; k++) {
                 work->monObjects[k] = PokeathlonCourseMonObjects_Get(work->monObjectList, k);

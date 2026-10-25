@@ -59,7 +59,7 @@ typedef struct PokeathlonCourseCeremonyMon {
     u16 species;
     u16 form;
     u8 unk04[0xE];
-    u16 nickname[11];
+    u16 nickname[POKEMON_NAME_LENGTH + 1];
 } PokeathlonCourseCeremonyMon;
 
 // Statistics of a Pokemon in the events of the course (PokeathlonCourseData field data).

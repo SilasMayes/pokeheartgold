@@ -300,7 +300,7 @@ static void PokeathlonBox_CopySelectedMons(PokeathlonBox *data, PokeathlonBoxArg
                 args->selectedMons[i].species = boxMon.species;
                 args->selectedMons[i].personality = boxMon.personality;
                 args->selectedMons[i].form = boxMon.form;
-                CopyU16StringArrayN(args->selectedMons[i].nickname, boxMon.nickname, 11);
+                CopyU16StringArrayN(args->selectedMons[i].nickname, boxMon.nickname, POKEMON_NAME_LENGTH + 1);
                 args->selectedMons[i].isShiny = boxMon.isShiny;
                 args->selectedMons[i].gender = boxMon.gender;
                 PokeathlonBox_GetBoxMonStats(PCStorage_GetMonByIndexPair(SaveArray_PCStorage_Get(args->courseArgs->saveData), data->selectedMons[i].page, data->selectedMons[i].slot), &args->selectedMons[i].stats);
@@ -400,7 +400,7 @@ static void PokeathlonBox_ShowMonInfo(int boxno, int slot, void *arg) {
         monInfo.personality = pokeathlonBoxMon.personality;
         monInfo.species = pokeathlonBoxMon.species;
         monInfo.form = pokeathlonBoxMon.form;
-        CopyU16StringArrayN(monInfo.nickname, pokeathlonBoxMon.nickname, 11);
+        CopyU16StringArrayN(monInfo.nickname, pokeathlonBoxMon.nickname, POKEMON_NAME_LENGTH + 1);
         monInfo.isShiny = pokeathlonBoxMon.isShiny;
         monInfo.gender = pokeathlonBoxMon.gender;
         BoxPokemon *boxMon = PCStorage_GetMonByIndexPair(SaveArray_PCStorage_Get(data->saveData), boxno, slot);

@@ -344,7 +344,7 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
         }
         own = PokeathlonCourse_GetNetId(course);
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)relayRun->bgConfig);
-        PokeathlonCourse_SetEventDrawEnabled(course, 1);
+        PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
         ReadWholeNarcMemberByIdPair(collisions, NARC_a_1_7_0, 12);
         for (i = 0; i < RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS; i++) {
             PokeathlonCourseMonObject *object = PokeathlonCourseMonObjects_Get(relayRun->monObjects, i);

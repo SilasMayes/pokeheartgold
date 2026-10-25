@@ -341,7 +341,7 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
     case HURDLE_DASH_INIT_SHOW:
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
-        PokeathlonCourse_SetEventDrawEnabled(course, 1);
+        PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
         for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
             PokeathlonCourseMonObject_SetDrawFlag(PokeathlonCourseMonObjects_Get(hurdleDash->monSpriteManager, (u8)i), 1);
         }

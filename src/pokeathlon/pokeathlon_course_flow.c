@@ -221,7 +221,7 @@ void PokeathlonCourse_CreateStartSprites(PokeathlonCourseData *course, int baseY
     for (; i < NELEMS(layout->startSprites); i++) {
         layout->startSprites[i] = NULL;
     }
-    layout->startState = 0;
+    layout->startState = START_STATE_SHOW_START;
 }
 
 void PokeathlonCourse_CreateStartSpritesInPool(PokeathlonCourseData *course, int baseY, PokeathlonCourseSpriteResources *resources, PokeathlonCourseSpritePool *pool, NNS_G2D_VRAM_TYPE whichScreen, u8 count, PokeathlonCoursePoint *positions) {
@@ -241,7 +241,7 @@ BOOL PokeathlonCourse_RunStartCountdown(PokeathlonCourseData *course) {
     case START_STATE_WAIT_START:
         if (PokeathlonCourse_IsStartAnimDone(course)) {
             layout->startState++;
-            Sound_SetPlayerPause(PLAYER_BGM, 0);
+            Sound_SetPlayerPause(PLAYER_BGM, FALSE);
         }
         break;
     case START_STATE_COUNTDOWN:
@@ -433,7 +433,7 @@ int PokeathlonCourse_GetPerformanceFileId(int species, int form) {
 
 void PokeathlonCourse_DrawEvent(PokeathlonCourseData *data) {
     PokeathlonCourseLayout *layout = (PokeathlonCourseLayout *)data;
-    if (layout->eventDrawEnabled != 0) {
+    if (layout->eventDrawEnabled) {
         layout->event->draw(data, 0);
     }
 }
@@ -461,7 +461,7 @@ u32 PokeathlonCourse_State_RunEventOverlay(PokeathlonCourseData *course) {
         OverlayManager_Delete(manager);
         args = layout->args;
         if (args->mode == POKEATHLON_COURSE_MODE_SOLO) {
-            if (layout->boxCancelled != 0) {
+            if (layout->boxCancelled) {
                 args->shouldFreeHeap = TRUE;
                 PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_EXIT);
             } else {
@@ -500,7 +500,7 @@ u32 PokeathlonCourse_State_RunWait(PokeathlonCourseData *course, u8 *state) {
             layout->courseState.exitFlag = 0;
         }
         if (((PokeathlonCourseStepFunc *)layout->eventStateInfo.ptr)[layout->eventStateInfo.stateIndex](course, &layout->eventStateInfo.stateArgsBase)) {
-            PokeathlonCourse_SetEventDrawEnabled(course, 0);
+            PokeathlonCourse_SetEventDrawEnabled(course, FALSE);
             layout->courseState.argsPtr = &layout->stateInfo;
             layout->courseState.exitFlag = 0;
             (*state)++;
@@ -569,8 +569,8 @@ u32 PokeathlonCourse_State_StartOpening(PokeathlonCourseData *course) {
 u32 PokeathlonCourse_State_WaitOpeningStart(PokeathlonCourseData *course) {
     if (PokeathlonCourse_RunSubStateLoop(course)) {
         PokeathlonCoursePacket *packets = (PokeathlonCoursePacket *)PokeathlonCourse_GetDataCopyArea(course);
-        packets[0].isHostPacket = 0;
-        packets[1].isHostPacket = 1;
+        packets[0].isHostPacket = FALSE;
+        packets[1].isHostPacket = TRUE;
         PokeathlonCourseLink_SetCheckSize(PokeathlonCourse_GetSystem(course), TRUE);
         PokeathlonCourse_SetStateTransitionType(course, POKEATHLON_COURSE_SYNC_OPENING);
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_RUN_OPENING);
@@ -591,7 +591,7 @@ u32 PokeathlonCourse_State_RunOpening(PokeathlonCourseData *course) {
         layout->courseState.exitFlag = 0;
     }
     if (((PokeathlonCourseStepFunc *)layout->eventStateInfo.ptr)[layout->eventStateInfo.stateIndex](course, &layout->eventStateInfo.stateArgsBase)) {
-        PokeathlonCourse_SetEventDrawEnabled(course, 0);
+        PokeathlonCourse_SetEventDrawEnabled(course, FALSE);
         layout->courseState.argsPtr = &layout->stateInfo;
         layout->courseState.exitFlag = 0;
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_END_OPENING);
@@ -648,7 +648,7 @@ u32 PokeathlonCourse_State_RunEventIntro(PokeathlonCourseData *course) {
         layout->courseState.exitFlag = 0;
     }
     if (((PokeathlonCourseStepFunc *)layout->eventStateInfo.ptr)[layout->eventStateInfo.stateIndex](course, &layout->eventStateInfo.stateArgsBase)) {
-        PokeathlonCourse_SetEventDrawEnabled(course, 0);
+        PokeathlonCourse_SetEventDrawEnabled(course, FALSE);
         layout->courseState.argsPtr = &layout->stateInfo;
         layout->courseState.exitFlag = 0;
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_END_EVENT_INTRO);
@@ -684,8 +684,8 @@ u32 PokeathlonCourse_State_WaitRoundStart(PokeathlonCourseData *course) {
     PokeathlonCourseLayout *layout = (PokeathlonCourseLayout *)course;
     if (PokeathlonCourse_RunSubStateLoop(course)) {
         PokeathlonCoursePacket *packets = (PokeathlonCoursePacket *)PokeathlonCourse_GetDataCopyArea(course);
-        packets[0].isHostPacket = 0;
-        packets[1].isHostPacket = 1;
+        packets[0].isHostPacket = FALSE;
+        packets[1].isHostPacket = TRUE;
         PokeathlonCourseLink_SetCheckSize(PokeathlonCourse_GetSystem(course), TRUE);
         PokeathlonCourse_SetStateTransitionType(course, POKEATHLON_COURSE_SYNC_ROUND_START);
         if (layout->round == layout->rounds - 1) {
@@ -695,7 +695,7 @@ u32 PokeathlonCourse_State_WaitRoundStart(PokeathlonCourseData *course) {
             Sound_SetScene(0);
             Sound_SetSceneAndPlayBGM(24, SEQ_GS_PT_GAME, 0);
         }
-        Sound_SetPlayerPause(PLAYER_BGM, 1);
+        Sound_SetPlayerPause(PLAYER_BGM, TRUE);
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_SEND_EVENT_DATA);
         GF_ASSERT(GF_heap_c_dummy_return_true(HEAP_ID_POKEATHLON));
     }
@@ -729,7 +729,7 @@ u32 PokeathlonCourse_State_RunEvent(PokeathlonCourseData *course) {
         layout->courseState.exitFlag = 0;
     }
     if (((PokeathlonCourseStepFunc *)layout->eventStateInfo.ptr)[layout->eventStateInfo.stateIndex](course, &layout->eventStateInfo.stateArgsBase)) {
-        PokeathlonCourse_SetEventDrawEnabled(course, 0);
+        PokeathlonCourse_SetEventDrawEnabled(course, FALSE);
         layout->courseState.argsPtr = &layout->stateInfo;
         layout->courseState.exitFlag = 0;
         PokeathlonCourse_SetStateTransitionType(course, POKEATHLON_COURSE_SYNC_EVENT_END);
@@ -760,7 +760,7 @@ u32 PokeathlonCourse_State_ResetDataCopyArea(PokeathlonCourseData *course) {
 u32 PokeathlonCourse_State_SendEventResult(PokeathlonCourseData *course) {
     PokeathlonCourseLayout *layout = (PokeathlonCourseLayout *)course;
     BOOL done;
-    if (layout->event->sendsOwnResult != 0) {
+    if (layout->event->sendsOwnResult) {
         PokeathlonCoursePoint *point = (PokeathlonCoursePoint *)PokeathlonCourse_ToBytes(&layout->packets[0]);
         int netId = PokeathlonCourse_GetNetId(course);
         point->x = layout->eventResults[netId].score;
@@ -852,8 +852,8 @@ u32 PokeathlonCourse_State_StartResults(PokeathlonCourseData *course) {
 u32 PokeathlonCourse_State_WaitResultsStart(PokeathlonCourseData *course) {
     if (PokeathlonCourse_RunSubStateLoop(course)) {
         PokeathlonCoursePacket *packets = (PokeathlonCoursePacket *)PokeathlonCourse_GetDataCopyArea(course);
-        packets[0].isHostPacket = 0;
-        packets[1].isHostPacket = 1;
+        packets[0].isHostPacket = FALSE;
+        packets[1].isHostPacket = TRUE;
         PokeathlonCourseLink_SetCheckSize(PokeathlonCourse_GetSystem(course), TRUE);
         PokeathlonCourse_SetStateTransitionType(course, POKEATHLON_COURSE_SYNC_RESULTS);
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_RUN_RESULTS);
@@ -874,7 +874,7 @@ u32 PokeathlonCourse_State_RunResults(PokeathlonCourseData *course) {
     }
     steps = layout->eventStateInfo.ptr;
     if (steps[layout->eventStateInfo.stateIndex](course, &layout->eventStateInfo.stateArgsBase)) {
-        PokeathlonCourse_SetEventDrawEnabled(course, 0);
+        PokeathlonCourse_SetEventDrawEnabled(course, FALSE);
         layout->courseState.argsPtr = &layout->stateInfo;
         layout->courseState.exitFlag = 0;
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_END_RESULTS);
@@ -913,8 +913,8 @@ u32 PokeathlonCourse_State_StartClosing(PokeathlonCourseData *course) {
 u32 PokeathlonCourse_State_WaitClosingStart(PokeathlonCourseData *course) {
     if (PokeathlonCourse_RunSubStateLoop(course)) {
         PokeathlonCoursePacket *packets = (PokeathlonCoursePacket *)PokeathlonCourse_GetDataCopyArea(course);
-        packets[0].isHostPacket = 0;
-        packets[1].isHostPacket = 1;
+        packets[0].isHostPacket = FALSE;
+        packets[1].isHostPacket = TRUE;
         PokeathlonCourseLink_SetCheckSize(PokeathlonCourse_GetSystem(course), TRUE);
         PokeathlonCourse_SetStateTransitionType(course, POKEATHLON_COURSE_SYNC_CLOSING);
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_RUN_CLOSING);
@@ -937,7 +937,7 @@ u32 PokeathlonCourse_State_RunClosing(PokeathlonCourseData *course) {
     }
     steps = layout->eventStateInfo.ptr;
     if (steps[layout->eventStateInfo.stateIndex](course, &layout->eventStateInfo.stateArgsBase)) {
-        PokeathlonCourse_SetEventDrawEnabled(course, 0);
+        PokeathlonCourse_SetEventDrawEnabled(course, FALSE);
         layout->courseState.argsPtr = &layout->stateInfo;
         layout->courseState.exitFlag = 0;
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_CREATE_JUICE_RECORDS);
@@ -1076,7 +1076,7 @@ static void PokeathlonCourse_StoreRoundResults(PokeathlonCourseData *course, int
             break;
         }
     }
-    if (i == 4) {
+    if (i == POKEATHLON_PARTICIPANTS) {
         GF_ASSERT(FALSE);
         return;
     }
@@ -1087,7 +1087,7 @@ static void PokeathlonCourse_StoreRoundResults(PokeathlonCourseData *course, int
     }
     layout->results.wonRound[round] = FALSE;
     {
-        PokeathlonCourseScore *last = PokeathlonCourseScoreList_GetRanked(layout->scores, 3);
+        PokeathlonCourseScore *last = PokeathlonCourseScoreList_GetRanked(layout->scores, POKEATHLON_PARTICIPANTS - 1);
         u8 rank = last->rank;
         if (rank == entry->rank) {
             layout->results.lastInRound[round] = TRUE;
@@ -1156,7 +1156,7 @@ static void PokeathlonCourse_SaveCourseRecord(PokeathlonCourseData *course, Poke
     if (record->totalPoints > POKEATHLON_POINTS_MAX) {
         record->totalPoints = POKEATHLON_POINTS_MAX;
     }
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_SOLO_ROUNDS; i++) {
         record->roundPoints[i] = layout->results.eventPoints[0][i];
         if (record->roundPoints[i] > POKEATHLON_POINTS_MAX) {
             record->roundPoints[i] = POKEATHLON_POINTS_MAX;
@@ -1177,7 +1177,7 @@ static void PokeathlonCourse_SaveSoloEventRecords(PokeathlonCourseData *course, 
     PokeathlonCourseLayout *layout = (PokeathlonCourseLayout *)course;
     PokeathlonCourseRankEntry entry;
     PokeathlonCourseRankEntry top[POKEATHLON_RECORD_RANKS];
-    for (u8 i = 0; i < 3; i++) {
+    for (u8 i = 0; i < POKEATHLON_SOLO_ROUNDS; i++) {
         u8 event = layout->roundEvents[i];
         PokeathlonCourseEventRecord *record = &records[event];
         if (record->timesPlayed < POKEATHLON_STATISTIC_MAX) {
@@ -1219,7 +1219,7 @@ static void PokeathlonCourse_SaveLinkEventRecords(PokeathlonCourseData *course, 
     PokeathlonCourseLinkEventRecord *record;
     PokeathlonCourseRankEntry top[POKEATHLON_RECORD_RANKS], entry;
     s32 firstNetId = (u8)PokeathlonCourse_GetNetId(course);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_LINK_ROUNDS; i++) {
         event = layout->roundEvents[i];
         record = &records[event];
         if (record->timesPlayed < POKEATHLON_STATISTIC_MAX) {
@@ -1263,7 +1263,7 @@ static void PokeathlonCourse_SaveSoloEventBests(PokeathlonCourseData *course, Po
     u8 i;
     u8 event;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_SOLO_ROUNDS; i++) {
         event = (u8)layout->roundEvents[i];
         if (PokeathlonCourse_BeatsRecord(records[event].entries[0].score, layout->results.eventScores[0][i], gPokeathlonEventScoreOrders[event])) {
             bests[event] = layout->results.eventPoints[0][i];
@@ -1556,7 +1556,7 @@ static void PokeathlonCourse_ChooseEvents(PokeathlonCourseArgsLayout *args, u32 
     if (valid) {
         u8 i;
         if (courseId == POKEATHLON_COURSE_LINK_RANDOM) {
-            u8 set = (u8)((s32)LCRandom() % 10);
+            u8 set = (u8)((s32)LCRandom() % POKEATHLON_RANDOM_EVENT_SETS);
             for (i = 0; i < rounds; i++) {
                 eventIds[i] = gPokeathlonCourse10EventSets[set][i];
             }
@@ -1594,12 +1594,12 @@ void PokeathlonCourse_AddMonCounter(PokeathlonCourseData *course, u8 participant
     if (counter == POKEATHLON_COUNTER_INSTRUCTIONS) {
         GF_ASSERT(participant == PokeathlonCourse_GetNetId(course));
         GF_ASSERT(amount == 1);
-        if (layout->results.instructions < 9999) {
+        if (layout->results.instructions < POKEATHLON_MON_COUNTER_MAX) {
             layout->results.instructions++;
         }
     } else {
         GF_ASSERT(mon < POKEATHLON_TEAM_SIZE);
-        if (layout->event->sendsOwnResult == 0) {
+        if (!layout->event->sendsOwnResult) {
             GF_ASSERT(PokeathlonCourse_GetNetId(course) == 0);
             PokeathlonCourse_AddToCounter(counter, (u8)amount, layout->results.counters[participant][mon]);
         } else if (PokeathlonCourse_GetNetId(course) == 0) {
@@ -1658,8 +1658,8 @@ static void PokeathlonCourse_AddToCounter(u32 counter, u32 amount, u32 *counters
         return;
     }
     *value += amount;
-    if (*value > 9999) {
-        *value = 9999;
+    if (*value > POKEATHLON_MON_COUNTER_MAX) {
+        *value = POKEATHLON_MON_COUNTER_MAX;
     }
 }
 
@@ -1695,7 +1695,7 @@ static BOOL PokeathlonCourse_IsNewRecord(PokeathlonCourseData *course) {
 }
 
 u16 PokeathlonCourse_GetNpcTeamSpriteId(u32 npcTeam) {
-    if (npcTeam != 0 && npcTeam <= 100) {
+    if (npcTeam != 0 && npcTeam <= POKEATHLON_NPC_TEAMS) {
         return gPokeathlonNpcTeamSpriteIds[(u8)(npcTeam - 1)];
     }
     GF_ASSERT(FALSE);
@@ -1705,7 +1705,7 @@ u16 PokeathlonCourse_GetNpcTeamSpriteId(u32 npcTeam) {
 u8 PokeathlonCourse_GetNpcTeamMsgId(PokeathlonCourseData *course, u32 npcTeam) {
     PokeathlonCourseNpcTeam team;
     NARC *narc;
-    if (npcTeam != 0 && npcTeam <= 100) {
+    if (npcTeam != 0 && npcTeam <= POKEATHLON_NPC_TEAMS) {
         narc = NARC_New(NARC_a_2_5_8, PokeathlonCourse_GetHeapID(course));
         NARC_ReadWholeMember(narc, npcTeam - 1, &team);
         NARC_Delete(narc);
@@ -1745,7 +1745,7 @@ void PokeathlonCourse_SetupNpcParticipants(PokeathlonCourseData *course, int cou
             u8 gender;
             participant->mons[k].species = team.species[k];
             participant->mons[k].form = 0;
-            participant->mons[k].isShiny = 0;
+            participant->mons[k].isShiny = FALSE;
             participant->mons[k].personality = 0;
             switch ((u8)GetMonBaseStat(participant->mons[k].species, BASE_GENDER_RATIO)) {
             case MON_RATIO_MALE:
@@ -1769,7 +1769,7 @@ void PokeathlonCourse_SetupNpcParticipants(PokeathlonCourseData *course, int cou
             participant->mons[k].stats[3] = performance.stats[3];
             participant->mons[k].stats[4] = performance.stats[4];
             speciesName = GetSpeciesName(team.species[k], PokeathlonCourse_GetHeapID(course));
-            CopyU16StringArrayN(participant->mons[k].nickname, String_cstr(speciesName), 11);
+            CopyU16StringArrayN(participant->mons[k].nickname, String_cstr(speciesName), POKEMON_NAME_LENGTH + 1);
             String_Delete(speciesName);
         }
     }
@@ -1780,40 +1780,40 @@ void PokeathlonCourse_SetupNpcParticipants(PokeathlonCourseData *course, int cou
 
 // Picks count different NPC teams: 5 per course (courses 0..9) or any of 25 (course 10); hard ones are 50 later.
 static void PokeathlonCourse_ChooseNpcTeams(u32 count, u8 courseId, u32 hard, u8 *npcTeams) {
-    u8 pool5[5];
-    u8 pool25[25];
+    u8 coursePool[POKEATHLON_NPC_TEAMS_PER_COURSE];
+    u8 linkPool[POKEATHLON_NPC_TEAMS_LINK];
     u8 i;
     for (i = 0; i < POKEATHLON_PARTICIPANTS - 1; i++) {
         npcTeams[i] = 0;
     }
     if (courseId == POKEATHLON_COURSE_LINK_RANDOM) {
-        u8 remaining = 25;
-        for (i = 0; i < 25; i++) {
-            pool25[i] = i;
+        u8 remaining = POKEATHLON_NPC_TEAMS_LINK;
+        for (i = 0; i < POKEATHLON_NPC_TEAMS_LINK; i++) {
+            linkPool[i] = i;
         }
         for (i = 0; i < count; i++) {
             u8 at = (u8)((s32)LCRandom() % remaining);
-            npcTeams[i] = pool25[at];
-            npcTeams[i] += 25;
+            npcTeams[i] = linkPool[at];
+            npcTeams[i] += POKEATHLON_NPC_TEAMS_LINK_START;
             remaining--;
-            pool25[at] = pool25[remaining];
+            linkPool[at] = linkPool[remaining];
         }
     } else {
-        u8 remaining = 5;
-        for (i = 0; i < 5; i++) {
-            pool5[i] = i;
+        u8 remaining = POKEATHLON_NPC_TEAMS_PER_COURSE;
+        for (i = 0; i < POKEATHLON_NPC_TEAMS_PER_COURSE; i++) {
+            coursePool[i] = i;
         }
         for (i = 0; i < count; i++) {
             u8 at = (u8)((s32)LCRandom() % remaining);
-            npcTeams[i] = pool5[at];
-            npcTeams[i] += courseId * 5;
+            npcTeams[i] = coursePool[at];
+            npcTeams[i] += courseId * POKEATHLON_NPC_TEAMS_PER_COURSE;
             remaining--;
-            pool5[at] = pool5[remaining];
+            coursePool[at] = coursePool[remaining];
         }
     }
     if (hard) {
         for (i = 0; i < count; i++) {
-            npcTeams[i] += 50;
+            npcTeams[i] += POKEATHLON_NPC_TEAMS_HARD_START;
         }
     }
     for (i = 0; i < count; i++) {
@@ -1871,7 +1871,7 @@ void PokeathlonCourseLink_SetCheckSize(PokeathlonCourseLink *link, u16 checkSize
 
 BOOL PokeathlonCourseLink_SendCommand(int command, void *data, void *size, int linkArg) {
     PokeathlonCourseLink *link = (PokeathlonCourseLink *)linkArg;
-    GF_ASSERT(link->checkSize == 0 || (s32)size <= POKEATHLON_COURSE_CMD_INLINE_SIZE);
+    GF_ASSERT(!link->checkSize || (s32)size <= POKEATHLON_COURSE_CMD_INLINE_SIZE);
     if (link->isLink == 1) {
         return Comm_SendCommand(command, data, (int)size);
     } else {
@@ -1891,7 +1891,7 @@ static BOOL PokeathlonCourseLink_SendLargeCommand(int cmd, void *data, int size,
 
 void PokeathlonCourseLink_Free(void *ptr) {
     PokeathlonCourseLink *link = ptr;
-    if (link->isLink == 0) {
+    if (!link->isLink) {
         PokeathlonCourseCmdQueue_Free(link->queue);
     }
     Heap_Free(link);
@@ -1942,7 +1942,7 @@ static void PokeathlonCourseCmdQueue_Add(PokeathlonCourseCmdQueue *queue, u32 cm
     int i;
     PokeathlonCourseCmdSlot *slot = NULL;
     for (i = 0; i < POKEATHLON_COURSE_CMD_SLOTS; i++) {
-        if (queue->slots[i].active == 0) {
+        if (!queue->slots[i].active) {
             slot = &queue->slots[i];
             break;
         }
@@ -1959,7 +1959,7 @@ static void PokeathlonCourseCmdQueue_Add(PokeathlonCourseCmdQueue *queue, u32 cm
         memcpy(slot->data, data, size);
     }
     slot->size = size;
-    slot->active = 1;
+    slot->active = TRUE;
 }
 
 // Queues a command whose data goes to the command's buffer (or is used in place if it has none).
@@ -1968,7 +1968,7 @@ static void PokeathlonCourseCmdQueue_AddLarge(PokeathlonCourseCmdQueue *queue, u
     PokeathlonCourseCmdSlot *slot = NULL;
     u32 expected;
     for (i = 0; i < POKEATHLON_COURSE_CMD_SLOTS; i++) {
-        if (queue->slots[i].active == 0) {
+        if (!queue->slots[i].active) {
             slot = &queue->slots[i];
             break;
         }
@@ -1988,7 +1988,7 @@ static void PokeathlonCourseCmdQueue_AddLarge(PokeathlonCourseCmdQueue *queue, u
     }
     slot->cmd = cmd;
     slot->size = size;
-    slot->active = 1;
+    slot->active = TRUE;
 }
 
 u8 *PokeathlonCourse_ToBytes(void *ptr) {
@@ -2000,7 +2000,7 @@ const void *PokeathlonCourseCmd_GetTable(void) {
 }
 
 int PokeathlonCourseCmd_GetCount(void) {
-    return 12;
+    return NELEMS(gPokeathlonCourseCmds);
 }
 
 // Allocates the Pokemon sprite manager (PokeathlonCourseMonGfx_InitManager sets it up).

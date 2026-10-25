@@ -29,7 +29,7 @@ typedef struct PokeathlonCourseMon {
     u16 starColors; // 3 bits per stat, in the order of stats
     u8 isShiny;
     u8 gender;
-    u16 nickname[11];
+    u16 nickname[POKEMON_NAME_LENGTH + 1];
 } PokeathlonCourseMon;
 
 // A course participant. PokeathlonCourseData stores four of them as PokeathlonParticipantData.
@@ -240,7 +240,7 @@ typedef struct PokeathlonCourseCmd {
 } PokeathlonCourseCmd;
 
 typedef struct PokeathlonCourseCmdSlot {
-    u32 active;
+    BOOL active;
     u32 cmd;
     u8 data[0x28];
     s32 size;
@@ -336,15 +336,17 @@ typedef struct PokeathlonCourseEvent {
     BOOL sendsOwnResult;
 } PokeathlonCourseEvent;
 
+#define POKEATHLON_MON_COUNTER_MAX 9999 // the cap of the counters of a Pokemon and of the instructions
+
 // The course results (its first 4 PokeathlonFieldData are the counters).
 typedef struct PokeathlonCourseResults {
-    u32 counters[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE][8]; // per participant and Pokemon, capped at 9999
+    u32 counters[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE][8]; // per participant and Pokemon
     u32 bonuses;
     u32 instructions;
-    u16 eventPoints[POKEATHLON_PARTICIPANTS][4]; // [participant][round]
-    u16 eventScores[POKEATHLON_PARTICIPANTS][4]; // [participant][round]
-    u8 wonRound[4];
-    u8 lastInRound[4];
+    u16 eventPoints[POKEATHLON_PARTICIPANTS][POKEATHLON_LINK_ROUNDS];
+    u16 eventScores[POKEATHLON_PARTICIPANTS][POKEATHLON_LINK_ROUNDS];
+    u8 wonRound[POKEATHLON_LINK_ROUNDS];
+    u8 lastInRound[POKEATHLON_LINK_ROUNDS];
     u16 wonCourse : 1;
     u16 lastInCourse : 1;
     u16 rank : 2;
@@ -360,15 +362,15 @@ typedef struct PokeathlonCourseLayout {
     u8 padding_15D[0x83];
     const PokeathlonCourseEvent *event;
     void *work;
-    u8 eventIds[4]; // event of each round, as sent to the other players
+    u8 eventIds[POKEATHLON_LINK_ROUNDS]; // event of each round, as sent to the other players
     u8 unk1EC;
     u8 eventInitState;
     u8 participantCount;
     u8 receivedCount;
     u32 round;
-    u32 eventDrawEnabled;
+    BOOL eventDrawEnabled;
     PokeathlonCourseArgsLayout *args;
-    u32 boxCancelled;
+    BOOL boxCancelled;
     PokeathlonCourseParticipant localParticipant;
     u32 boxCourseId;
     OverlayManager *subOverlay;
@@ -380,7 +382,7 @@ typedef struct PokeathlonCourseLayout {
     PokeathlonStateInfo stateInfo;
     PokeathlonStateInfo eventStateInfo;
     u32 unk3D4;
-    u32 roundEvents[4];
+    u32 roundEvents[POKEATHLON_LINK_ROUNDS];
     u32 courseId;
     PokeathlonCourseParticipant participants[POKEATHLON_PARTICIPANTS];
     PlayerProfile *playerProfiles;
@@ -407,7 +409,7 @@ typedef struct PokeathlonCourseLayout {
     s32 frameCounter;
     u16 frameTimer;
     u16 recordScore; // the event result compared with the saved record
-    u32 counterEnabled;
+    BOOL counterEnabled;
     PokeathlonCourseMarkers markers;
     void *juiceRecord;
     void *playerJuiceRecords;
@@ -432,7 +434,7 @@ typedef struct PokeathlonCourseSavedMon {
 
 // Best total of a course with its round points and Pokemon (one per course at the start of PokeathlonSave).
 typedef struct PokeathlonCourseBestRecord {
-    u16 roundPoints[3];
+    u16 roundPoints[POKEATHLON_SOLO_ROUNDS];
     u16 totalPoints;
     PokeathlonCourseSavedMon mons[POKEATHLON_TEAM_SIZE];
 } PokeathlonCourseBestRecord;
@@ -472,6 +474,16 @@ typedef struct PokeathlonCourseLinkEventRecord {
     PokeathlonCourseTrainerRecord trainers[POKEATHLON_RECORD_RANKS];
 } PokeathlonCourseLinkEventRecord;
 
+// NPC teams (NARC a/2/5/8): five for each course, the link courses' teams also make the pool of the random
+// course, and the harder teams of supreme courses follow the normal ones.
+#define POKEATHLON_NPC_TEAMS_PER_COURSE 5
+#define POKEATHLON_NPC_TEAMS_LINK_START 25
+#define POKEATHLON_NPC_TEAMS_LINK       25
+#define POKEATHLON_NPC_TEAMS_HARD_START 50
+#define POKEATHLON_NPC_TEAMS            100
+
+#define POKEATHLON_RANDOM_EVENT_SETS 10 // the event sets the random course picks from
+
 // An NPC team (NARC a/2/5/8).
 typedef struct PokeathlonCourseNpcTeam {
     u16 species[POKEATHLON_TEAM_SIZE];
@@ -493,11 +505,11 @@ extern PokeathlonCourseStepFunc gPokeathlonEventIntroSteps[];
 extern const PokeathlonCourseStepFunc gPokeathlonResultsAnnouncementSteps[];
 extern const u8 gPokeathlonEventScoreOrders[];     // score order of each event (0: higher is better, 1: lower)
 extern const u16 gPokeathlonEventTargetScores[];   // target score of each event
-extern const u8 gPokeathlonCourseEventIds[][4];    // events of the courses 0..9
-extern const u8 gPokeathlonCourse10EventSets[][4]; // the 10 event sets of course 10
-extern const u16 gPokeathlonNpcTeamSpriteIds[];    // per NPC team
+extern const u8 gPokeathlonCourseEventIds[][POKEATHLON_LINK_ROUNDS];    // events of the courses 0..9
+extern const u8 gPokeathlonCourse10EventSets[POKEATHLON_RANDOM_EVENT_SETS][POKEATHLON_LINK_ROUNDS];
+extern const u16 gPokeathlonNpcTeamSpriteIds[POKEATHLON_NPC_TEAMS];
 extern const u16 gPokeathlonPerformanceFileIds[];  // performance file of each species' first form
-extern const PokeathlonCourseCmd gPokeathlonCourseCmds[];
+extern const PokeathlonCourseCmd gPokeathlonCourseCmds[POKEATHLON_COURSE_CMD_JUICE_RECORD - POKEATHLON_COURSE_CMD_FIRST + 1];
 
 BOOL PokeathlonCourseObject_IsDrawn(PokeathlonCourseMonObject *object);
 

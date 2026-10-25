@@ -14,6 +14,9 @@
 #define POKEATHLON_POINTS_MAX  999 // the cap of the points of a round and of a course
 #define POKEATHLON_SCORE_MAX   999 // the cap of an event score
 
+#define POKEATHLON_SOLO_ROUNDS 3 // events of a solo course
+#define POKEATHLON_LINK_ROUNDS 4 // events of a link course
+
 // The courses: the five solo courses give the medal of their name, the link courses two medals each; the last
 // link course plays one of ten random event sets.
 enum PokeathlonCourseId {

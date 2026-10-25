@@ -459,7 +459,7 @@ BOOL PokeathlonEventIntro_Init(PokeathlonCourseData *course) {
         WirelessStatusIcon_CreateOnScreenIfConnected(2);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
-        PokeathlonCourse_SetEventDrawEnabled(course, 1);
+        PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
         PokeathlonCourse_SetEventInitState(course, 0);
         return TRUE;
     default:

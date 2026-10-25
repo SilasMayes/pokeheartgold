@@ -282,7 +282,7 @@ BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
         }
         own = PokeathlonCourse_GetNetId(course);
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)goalRoll->bgConfig);
-        PokeathlonCourse_SetEventDrawEnabled(course, 1);
+        PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
         ReadWholeNarcMemberByIdPair(modelSizes, NARC_a_1_7_0, 11);
         for (i = 0; i < GOAL_ROLL_MONS; i++) {
             PokeathlonGoalRoll_SetModelSize(course, goalRoll->monObjects, i, modelSizes);
