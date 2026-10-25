@@ -338,7 +338,7 @@ static BOOL TradeSequenceReceive_ShowMon(TradeSequenceReceive *receive, u32 *sta
         break;
     case TRADE_RECEIVE_MON_WAIT_BRIGHTNESS:
         if (TradeSequenceReceive_IsBrightnessDone(receive)) {
-            if (GetBoxMonData(TradeSequence_GetReceivedBoxMon(receive->ts), MON_DATA_IS_EGG, NULL) == FALSE) {
+            if (!GetBoxMonData(TradeSequence_GetReceivedBoxMon(receive->ts), MON_DATA_IS_EGG, NULL)) {
                 NARC_ReadPokepicCryDelay(receive->pokeAnimNarc, cryDelay, TradeSequence_GetReceivedSpecies(receive->ts), 1);
                 u16 species = TradeSequence_GetReceivedSpecies(receive->ts);
                 int form = TradeSequence_GetReceivedForm(receive->ts);

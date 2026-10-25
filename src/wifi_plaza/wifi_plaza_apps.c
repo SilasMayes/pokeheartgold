@@ -549,7 +549,7 @@ static void WiFiPlazaApps_StartConnect(WiFiPlazaApps *apps, void **args) {
 // TRUE (the plaza ends) unless the connection was made.
 static BOOL WiFiPlazaApps_EndConnect(WiFiPlazaApps *apps, void **args) {
     WiFiPlazaConnectArgs *connectArgs = *args;
-    if (connectArgs->connected == 0) {
+    if (!connectArgs->connected) {
         return TRUE;
     }
     WiFiPlazaApps_Start(apps, WIFI_PLAZA_APP_MAIN);

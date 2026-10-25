@@ -424,7 +424,7 @@ static void CommState_ParentStart(void) {
 }
 
 static void CommState_WaitLinked(void) {
-    if (Comm_IsNetIdConnected(Comm_GetLocalNetId()) != FALSE) {
+    if (Comm_IsNetIdConnected(Comm_GetLocalNetId())) {
         CommState_SetState(CommState_ParentLinked, 0);
     }
 }
@@ -651,7 +651,7 @@ static void CommState_JoinWaitLinked(void) {
         CommState_SetState(CommState_JoinRetry, 0);
         return;
     }
-    if (Comm_IsNetIdConnected(Comm_GetLocalNetId()) != FALSE) {
+    if (Comm_IsNetIdConnected(Comm_GetLocalNetId())) {
         sCommState->joinReply = 0;
         CommState_SetState(CommState_JoinWaitReply, 120);
         return;
@@ -819,7 +819,7 @@ static void CommState_ReconnectWaitLinked(void) {
         CommState_SetState(CommState_ReconnectStop, 0);
         return;
     }
-    if (Comm_IsNetIdConnected(Comm_GetLocalNetId()) != FALSE) {
+    if (Comm_IsNetIdConnected(Comm_GetLocalNetId())) {
         CommState_SetState(CommState_Joined, 0);
         return;
     }

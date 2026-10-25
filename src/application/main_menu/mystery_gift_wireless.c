@@ -127,7 +127,7 @@ void MysteryGiftComm_Task(SysTask *task, void *data) {
         return;
     }
     func = sMysteryGiftCommWork->stateFunc;
-    if (func != NULL && sMysteryGiftCommWork->paused == FALSE) {
+    if (func != NULL && !sMysteryGiftCommWork->paused) {
         func();
     }
 }

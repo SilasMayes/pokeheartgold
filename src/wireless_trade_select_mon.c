@@ -446,7 +446,7 @@ BOOL WirelessTradeSelectMon_Main(OverlayManager *man, int *state) {
         }
         break;
     }
-    if (work->summaryActive == FALSE) {
+    if (!work->summaryActive) {
         WirelessTradeSelectMon_ScrollBg(work);
         SpriteList_RenderAndAnimateSprites(work->spriteList);
     }
@@ -1133,7 +1133,7 @@ static void WirelessTradeSelectMon_ShowMonDetails(Window *windows, int side, Par
         break;
     }
 
-    if (f.isEgg[f.row] == FALSE) {
+    if (!f.isEgg[f.row]) {
         string = String_New(10, HEAP_ID_26);
         f.windowOffset = (side + 28) * sizeof(Window);
         FillWindowPixelBuffer((Window *)((u8 *)windows + f.windowOffset), 0);
@@ -1280,7 +1280,7 @@ static void WirelessTradeSelectMon_PlayCryOnTouch(WirelessTradeSelectMon *work) 
         return;
     }
     hit = TouchscreenHitbox_FindRectAtTouchNew(sWirelessTradeSelectMonSlotHitboxes);
-    if (hit == -1) {
+    if (hit == TOUCH_MENU_NO_INPUT) {
         return;
     }
     if (hit >= 6) {
@@ -1289,7 +1289,7 @@ static void WirelessTradeSelectMon_PlayCryOnTouch(WirelessTradeSelectMon *work) 
     if (work->mons[hit].species == SPECIES_NONE) {
         return;
     }
-    if (work->mons[work->cursor].isEgg != FALSE) {
+    if (work->mons[work->cursor].isEgg) {
         return;
     }
     species = work->mons[work->cursor].species;
@@ -1445,7 +1445,7 @@ static s32 WirelessTradeSelectMon_HandleKeys(WirelessTradeSelectMon *work) {
 static s32 WirelessTradeSelectMon_HandleTouch(WirelessTradeSelectMon *work) {
     s32 hit = TouchscreenHitbox_FindRectAtTouchNew(sWirelessTradeSelectMonSlotHitboxes);
 
-    if (hit != -1) {
+    if (hit != TOUCH_MENU_NO_INPUT) {
         if (hit == WIRELESS_TRADE_SLOT_CANCEL) {
             PlaySE(SEQ_SE_DP_SELECT);
             work->callback = WirelessTradeSelectMon_AskQuit;
@@ -1474,7 +1474,7 @@ static int WirelessTradeSelectMon_SelectMon(WirelessTradeSelectMon *work) {
 }
 
 static void WirelessTradeSelectMon_OpenSummary(WirelessTradeSelectMon *work, u32 ofPartner) {
-    if (ofPartner == FALSE) {
+    if (!ofPartner) {
         work->summaryArgs.party = work->party;
         work->summaryArgs.partyCount = Party_GetCount(work->args->party);
         work->summaryArgs.chatot = 0;
@@ -1622,7 +1622,7 @@ static int WirelessTradeSelectMon_ShowRosterList(WirelessTradeSelectMon *work) {
     work->rosterItems = ListMenuItems_New(count + 1, HEAP_ID_26);
     String *name = String_New(100, HEAP_ID_26);
     for (int i = 0; i < 32; i++) {
-        if (FriendRoster_IsFriendValid(work->roster, i) != FALSE) {
+        if (FriendRoster_IsFriendValid(work->roster, i)) {
             CopyU16ArrayToString(name, FriendRoster_GetPlayerName(work->roster, i));
             ListMenuItems_AddItem(work->rosterItems, name, i);
         }
@@ -2130,7 +2130,7 @@ static void WirelessTradeSelectMon_TradeMons(Party *party, Party *partnerParty, 
         }
     }
     SetMonData(received, MON_DATA_GENDER, NULL);
-    if (GetMonData(received, MON_DATA_IS_EGG, NULL) == FALSE) {
+    if (!GetMonData(received, MON_DATA_IS_EGG, NULL)) {
         data[1] = 70;
         data[0] = 0;
         SetMonData(received, MON_DATA_FRIENDSHIP, &data[1]);
@@ -2142,7 +2142,7 @@ static void WirelessTradeSelectMon_TradeMons(Party *party, Party *partnerParty, 
     CopyPokemonToPokemon(received, args->receivedMon);
     PlayerProfile_Copy(CommPlayerInfo_GetProfile(Comm_GetLocalNetId() ^ 1), args->partnerProfile);
     args->tradedSlot = slot;
-    if (Party_HasMon(party, SPECIES_CHATOT) == FALSE) {
+    if (!Party_HasMon(party, SPECIES_CHATOT)) {
         Chatot_Invalidate(Save_Chatot_Get(args->saveData));
     }
     UpdatePokedexWithReceivedSpecies(args->saveData, received);
@@ -2228,7 +2228,7 @@ static void WirelessTradeSelectMon_StartTimeout(WirelessTradeSelectMon *work) {
 }
 
 static void WirelessTradeSelectMon_UpdateTimeout(WirelessTradeSelectMon *work) {
-    if (work->timeoutActive != FALSE) {
+    if (work->timeoutActive) {
         work->timeoutCounter++;
         if (work->timeoutCounter > 1800) {
             CommState_SetError(4);

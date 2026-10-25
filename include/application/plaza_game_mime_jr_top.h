@@ -281,7 +281,7 @@ struct MimeJrTopGame {
     u8 unk21F8[0x30];
     MimeJrTopStage stageEffects;
     MimeJrTopBurst bursts[8];
-    MimeJrTopPlayerTask playerTasks[4];
+    MimeJrTopPlayerTask playerTasks[PLAZA_GAME_MAX_PLAYERS];
     int wobbleTick;
     int frame;
     u32 phase;
@@ -309,7 +309,7 @@ struct MimeJrTopGame {
     BOOL everTouched;
     s16 nextWobbleX;
     s16 nextWobbleY;
-    u32 playerStates[4];
+    u32 playerStates[PLAZA_GAME_MAX_PLAYERS];
     u32 unk2BAC;
     u32 seed;
     BOOL selection;
@@ -337,7 +337,7 @@ typedef struct MimeJrTopApp {
     MimeJrTopStartMessage start;
     u32 finalScore; // command 25
     u8 unk20[4];
-    MimeJrTopPlayerScore scores[4];
+    MimeJrTopPlayerScore scores[PLAZA_GAME_MAX_PLAYERS];
     int netId;
     MimeJrTopResources resources;
     u32 savedSeed;
@@ -347,7 +347,7 @@ typedef struct MimeJrTopApp {
     PlazaGameEntry *entry;
     PlazaGameResultData resultData;
     PlazaGameResults *results;
-    u32 netIds[4];
+    u32 netIds[PLAZA_GAME_MAX_PLAYERS];
     BOOL keepPlaying;
 } MimeJrTopApp;
 

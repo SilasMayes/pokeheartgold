@@ -349,7 +349,7 @@ static void WiFiPlazaInstrument_StartEffect(WiFiPlazaInstrumentManager *manager,
 }
 
 static void WiFiPlazaInstrument_UpdateEffect(WiFiPlazaInstrumentManager *manager, WiFiPlazaInstrumentEffect *effect) {
-    if (WiFiPlazaInstrument_IsEffectActive(effect) != FALSE) {
+    if (WiFiPlazaInstrument_IsEffectActive(effect)) {
         GF_ASSERT(effect->type < WIFI_PLAZA_INSTRUMENT_EFFECT_TYPES);
         if (gWiFiPlazaInstrumentUpdateFuncs[effect->type](manager, effect) == TRUE) {
             WiFiPlazaInstrument_ClearEffect(manager, effect);
@@ -358,7 +358,7 @@ static void WiFiPlazaInstrument_UpdateEffect(WiFiPlazaInstrumentManager *manager
 }
 
 static BOOL WiFiPlazaInstrument_DrawEffect(WiFiPlazaInstrumentManager *manager, WiFiPlazaInstrumentEffect *effect) {
-    if (WiFiPlazaInstrument_IsEffectActive(effect) == FALSE) {
+    if (!WiFiPlazaInstrument_IsEffectActive(effect)) {
         return FALSE;
     }
     GF_ASSERT(effect->type < WIFI_PLAZA_INSTRUMENT_EFFECT_TYPES);
@@ -813,7 +813,7 @@ BOOL WiFiPlazaInstrument_UpdateRipple(WiFiPlazaInstrumentManager *manager, WiFiP
         do {
             if (ModelInstance_IsVisible(model) == TRUE) {
                 result = WiFiPlazaInstrument_PlayAnim(manager, effect, i, 0);
-                if (result != FALSE) {
+                if (result) {
                     ModelInstance_SetVisible(model2, FALSE);
                     WiFiPlazaInstrument_SetAnimFrame(manager, effect, i, 0, 0);
                 }
@@ -902,7 +902,7 @@ BOOL WiFiPlazaInstrument_UpdatePop(WiFiPlazaInstrumentManager *manager, WiFiPlaz
         if (WiFiPlazaInstrument_HasModel(effect, i) == TRUE) {
             if (effect->frame > i - 1) {
                 ModelInstance_SetVisible(model, TRUE);
-                if (WiFiPlazaInstrument_PlayAnimBy(manager, effect, i, 0, FX32_CONST(2.5)) == FALSE) {
+                if (!WiFiPlazaInstrument_PlayAnimBy(manager, effect, i, 0, FX32_CONST(2.5))) {
                     done = FALSE;
                 } else {
                     WiFiPlazaInstrumentEffect *fadeView = (WiFiPlazaInstrumentEffect *)((u8 *)effect + (i - 1) * 4);
@@ -928,13 +928,13 @@ BOOL WiFiPlazaInstrument_UpdateBalloon(WiFiPlazaInstrumentManager *manager, WiFi
 
     switch (phase) {
     case WIFI_PLAZA_BALLOON_PHASE_UP:
-        if (WiFiPlazaInstrument_UpdateBalloonUp(manager, effect) != FALSE) {
+        if (WiFiPlazaInstrument_UpdateBalloonUp(manager, effect)) {
             effect->phase = WIFI_PLAZA_BALLOON_PHASE_DOWN;
             WiFiPlazaInstrument_StartBalloonDown(manager, effect);
         }
         break;
     case WIFI_PLAZA_BALLOON_PHASE_DOWN:
-        if (WiFiPlazaInstrument_UpdateBalloonDown(manager, effect) != FALSE) {
+        if (WiFiPlazaInstrument_UpdateBalloonDown(manager, effect)) {
             return TRUE;
         }
         break;
@@ -1121,7 +1121,7 @@ static BOOL WiFiPlazaInstrument_UpdateBalloonRise(WiFiPlazaInstrumentManager *ma
     WiFiPlazaObj_GetPosition(effect->obj, &pos);
     WiFiPlazaInstrumentTween_GetPosition(&effect->work.hop.tweens[3], &pos.x, &pos.y, &pos.z);
     WiFiPlazaInstrumentWave_GetValue(&effect->work.hop.objWave, &sway);
-    if (result == FALSE) {
+    if (!result) {
         pos.x += sway;
     }
     WiFiPlazaObj_SetPosition(effect->obj, &pos);
@@ -1177,7 +1177,7 @@ static BOOL WiFiPlazaInstrument_UpdateBalloonLift(WiFiPlazaInstrumentManager *ma
 }
 
 static void WiFiPlazaInstrument_StartBalloonDown(WiFiPlazaInstrumentManager *manager, WiFiPlazaInstrumentEffect *effect) {
-    if (effect->work.hop.onTile42 == FALSE) {
+    if (!effect->work.hop.onTile42) {
         WiFiPlazaInstrument_StartBalloonFall(manager, effect);
         return;
     }
@@ -1312,7 +1312,7 @@ static BOOL WiFiPlazaInstrument_UpdateBalloonFall(WiFiPlazaInstrumentManager *ma
         wave = effect->work.hop.waves;
         model = effect->models;
         do {
-            if (WiFiPlazaInstrumentTween_Update(tween, effect->work.hop.tick) == FALSE) {
+            if (!WiFiPlazaInstrumentTween_Update(tween, effect->work.hop.tick)) {
                 WiFiPlazaInstrumentWave_Update(wave);
                 ModelInstance_GetPosition(model, &modelPos.x, &modelPos.y, &modelPos.z);
                 WiFiPlazaInstrumentTween_GetPosition(&effect->work.hop.tweens[i], &modelPos.x, &modelPos.y, &modelPos.z);
@@ -1624,7 +1624,7 @@ static void WiFiPlazaInstrument_StartCymbalFlash(WiFiPlazaInstrumentManager *man
 static void WiFiPlazaInstrument_UpdateCymbalFlash(WiFiPlazaInstrumentManager *manager, WiFiPlazaInstrumentEffect *effect) {
     int i;
 
-    if (effect->work.burst.flashActive != FALSE) {
+    if (effect->work.burst.flashActive) {
         if (effect->work.burst.flashFrame < 13) {
             effect->work.burst.flashFrame++;
         } else {
@@ -1672,7 +1672,7 @@ static int WiFiPlazaInstrument_UpdateBursts(WiFiPlazaInstrumentBurstWork *work, 
     }
     burst = TRUE; // all finished
     for (i = 0; i < 4; i++) {
-        if (WiFiPlazaInstrumentBurst_Update(&work->bursts[i]) == FALSE) {
+        if (!WiFiPlazaInstrumentBurst_Update(&work->bursts[i])) {
             burst = FALSE;
         }
     }
@@ -1708,7 +1708,7 @@ static BOOL WiFiPlazaInstrumentBurst_Update(WiFiPlazaInstrumentBurst *burst) {
     BOOL done;
     int i;
 
-    if (burst->active == FALSE) {
+    if (!burst->active) {
         return TRUE;
     }
     done = gWiFiPlazaInstrumentBurstUpdateFuncs[burst->kind](burst);

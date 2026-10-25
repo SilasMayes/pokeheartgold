@@ -266,7 +266,7 @@ static BOOL Packet_Write(PacketNode *node, ByteWriter *writer, ByteRing *ring, i
         return FALSE;
     }
     if (node->flags.b.headerWritten != 1) {
-        if (Packet_WriteHeader(node, writer) != 0) {
+        if (Packet_WriteHeader(node, writer)) {
             return FALSE;
         }
     }
@@ -607,7 +607,7 @@ static void CommCmd_RecvReady(int netId, int size, void *data, void *context) {
     if (Comm_GetLocalNetId() == 0) {
         sCommCommandTable->ready[netId] = 1;
         for (i = 0; i < 8; i++) {
-            if (Comm_IsNetIdConnected((u16)i) != 0 && sCommCommandTable->ready[i] == 0) {
+            if (Comm_IsNetIdConnected((u16)i) && sCommCommandTable->ready[i] == 0) {
                 return;
             }
         }

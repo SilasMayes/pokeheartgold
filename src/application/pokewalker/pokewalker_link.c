@@ -153,7 +153,7 @@ int PokewalkerApp_Link_PrintSelectCourse(PokewalkerApp *app) {
 }
 
 int PokewalkerApp_Link_WaitSelectCourse(PokewalkerApp *app) {
-    if (TextPrinterCheckActive(app->textPrinterId) == FALSE) {
+    if (!TextPrinterCheckActive(app->textPrinterId)) {
         PokewalkerApp_RemoveWindowBank(app, 1);
         PokewalkerApp_RemoveWindowBank(app, 0);
         PokewalkerApp_AddWindowBank(app, 3);
@@ -1132,7 +1132,7 @@ BOOL PokewalkerApp_IsWalkerMonInSave(PokewalkerApp *app) {
     u32 species;
     u32 form;
     mon = AllocMonZeroed(HEAP_ID_154);
-    if (Pokewalker_TryGetBoxMon(app->pokewalker, (BoxPokemon *)mon) == FALSE) {
+    if (!Pokewalker_TryGetBoxMon(app->pokewalker, (BoxPokemon *)mon)) {
         result = FALSE;
     }
     species = GetMonData(mon, MON_DATA_SPECIES, NULL);

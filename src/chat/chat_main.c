@@ -795,7 +795,7 @@ void chatGetChannelKeysA(ChatConnection *chat, const char *channel, const char *
         do {
             ciThink(chat, id);
             msleep(10);
-        } while (ciCheckForID(chat, id) != 0);
+        } while (ciCheckForID(chat, id));
     }
 }
 

@@ -43,7 +43,7 @@ void LinkSync_RecvRequest(int sender, int size, void *data, void *context) {
             return;
         }
     }
-    if (Comm_SendFixedParentCommand(17, &state) == 0) {
+    if (!Comm_SendFixedParentCommand(17, &state)) {
         sLinkSync->resend = 1;
     }
 }

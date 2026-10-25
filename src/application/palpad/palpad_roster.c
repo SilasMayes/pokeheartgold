@@ -728,7 +728,7 @@ static void PalPadRoster_PrintMessage(PalPadRoster *roster, PalPadGfx *gfx, int 
 }
 
 static BOOL PalPadRoster_IsMessageDone(PalPadRoster *roster, u32 *inputState) {
-    if (TextPrinterCheckActive(roster->printerId) == FALSE) {
+    if (!TextPrinterCheckActive(roster->printerId)) {
         TextFlags_SetCanTouchSpeedUpPrint(FALSE);
         *inputState = TextFlags_GetIsTouchSpeedingUpPrint();
         return TRUE;

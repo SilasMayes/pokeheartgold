@@ -379,7 +379,7 @@ BOOL CommWireless_StartScan(int unused, BOOL clearParents) {
     }
     if (Wireless_GetState() == 1) {
         bssid = sCommWirelessAnyBssid;
-        if (Wireless_StartScan(CommWireless_OnParentFound, &bssid, 0) != 0) {
+        if (Wireless_StartScan(CommWireless_OnParentFound, &bssid, 0)) {
             return TRUE;
         }
     }
@@ -393,25 +393,25 @@ BOOL CommWireless_Stop(void) {
     }
     switch (sCommWireless.work->stopState) {
     case COMM_WIRELESS_STOP_START:
-        if (Wireless_IsScanning() != 0) {
+        if (Wireless_IsScanning()) {
             Wireless_StopScan();
             sCommWireless.work->stopState = COMM_WIRELESS_STOP_WAIT_SCAN;
-        } else if (Wireless_IsBusy() == 0) {
+        } else if (!Wireless_IsBusy()) {
             Wireless_Stop();
             sCommWireless.work->stopState = COMM_WIRELESS_STOP_WAIT_IDLE;
         }
         break;
     case COMM_WIRELESS_STOP_WAIT_SCAN:
-        if (Wireless_IsBusy() == 0) {
+        if (!Wireless_IsBusy()) {
             Wireless_Stop();
             sCommWireless.work->stopState = COMM_WIRELESS_STOP_WAIT_IDLE;
         }
         break;
     case COMM_WIRELESS_STOP_WAIT_IDLE:
-        if (Wireless_IsIdle() != 0) {
+        if (Wireless_IsIdle()) {
             return TRUE;
         }
-        if (Wireless_HasError() != 0) {
+        if (Wireless_HasError()) {
             sCommWireless.work->stopState = COMM_WIRELESS_STOP_WAIT_SCAN;
         }
         break;

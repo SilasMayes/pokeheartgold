@@ -50,7 +50,7 @@ void CommClubLink_Free(void) {
 }
 
 void CommClubLink_StartParent(FieldSystem *fieldSystem, s32 linkMode, s32 beaconId) {
-    if (Comm_IsActive() == 0) {
+    if (!Comm_IsActive()) {
         CommState_StartParentSession(FieldSystem_GetSaveData(fieldSystem), linkMode, beaconId, fieldSystem->linkBattleRuleset, 0);
         CommClubLink_Init(fieldSystem);
         CommClubLink_SetState(CommClubLink_WaitParentConnected, 0);
@@ -58,7 +58,7 @@ void CommClubLink_StartParent(FieldSystem *fieldSystem, s32 linkMode, s32 beacon
 }
 
 void CommClubLink_StartChild(FieldSystem *fieldSystem, u8 linkMode, u32 beaconId) {
-    if (Comm_IsActive() == 0) {
+    if (!Comm_IsActive()) {
         CommState_StartChildSession(FieldSystem_GetSaveData(fieldSystem), linkMode, beaconId, fieldSystem->linkBattleRuleset, 0);
         CommClubLink_Init(fieldSystem);
         CommClubLink_SetState(CommClubLink_WaitChildStarted, 0);
@@ -229,7 +229,7 @@ void CommClubLink_HostPlacePlayers(void) {
         return;
     }
     if (Comm_GetLocalNetId() == 0) {
-        if (CommPlayerManager_StepAllPlayersBack() == 0) {
+        if (!CommPlayerManager_StepAllPlayersBack()) {
             return;
         }
         LinkSync_StartSync(30);
@@ -292,7 +292,7 @@ static void CommClubLink_CheckPartnerState5E(void) {
 }
 
 void CommClubLink_WaitLeaveSpot(void) {
-    if (CommPlayerManager_AssignBattleSlots() == 0) {
+    if (!CommPlayerManager_AssignBattleSlots()) {
         u8 flag;
         gCommClubLink->ready = 0;
         flag = 1;
@@ -323,7 +323,7 @@ void CommClubLink_GoToWaitLeaveSpot(void) {
 }
 
 void CommClubLink_StartEntry(void) {
-    if (Comm_IsSendingMoveKeys() == 0 && CommPlayerManager_GetMoveTimer(Comm_GetLocalNetId()) == 0) {
+    if (!Comm_IsSendingMoveKeys() && !CommPlayerManager_GetMoveTimer(Comm_GetLocalNetId())) {
         if (gCommClubLink->timer) {
             gCommClubLink->timer--;
             return;
@@ -465,7 +465,7 @@ void CommClubLink_WaitCards(void) {
 }
 
 void CommClubLink_WaitRoomTransferMode(void) {
-    if (Comm_IsTransferMode1() == 0) {
+    if (!Comm_IsTransferMode1()) {
         if (gCommClubLink->timer) {
             gCommClubLink->timer--;
         }

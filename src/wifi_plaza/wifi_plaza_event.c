@@ -260,7 +260,7 @@ void WiFiPlazaEvent_Update(WiFiPlazaEvent *event) {
         set = WiFiPlazaEvent_GetThirdSet(WiFiPlazaWork_GetThirdEvent(event->lobby));
         WiFiPlazaLight_FadeToThirdSet(event->light, set);
     }
-    if (WiFiPlazaWork_IsLightingStarted(event->lobby) == TRUE && WiFiPlazaWork_GetFireworksState(event->lobby) == 0 && WiFiPlazaModels_GetPairAnimState(event->models) == 0) {
+    if (WiFiPlazaWork_IsLightingStarted(event->lobby) == TRUE && WiFiPlazaWork_GetFireworksState(event->lobby) == 0 && !WiFiPlazaModels_GetPairAnimState(event->models)) {
         WiFiPlazaModels_SetPairAnim(event->models, WIFI_PLAZA_PAIR_ANIM_OPEN);
     }
     if (WiFiPlazaWork_IsEventFlagSet(event->lobby, 5) && WiFiPlazaWork_GetFireworksState(event->lobby) == 1) {
@@ -540,14 +540,14 @@ static void WiFiPlazaEvent_GetModelList(u32 kind, WiFiPlazaEventModelList *list)
 }
 
 static void WiFiPlazaEvent_StartLoopSE(WiFiPlazaEventEffect *effect) {
-    if (effect->seLooping == FALSE) {
+    if (!effect->seLooping) {
         PlaySE(SEQ_SE_PL_140_3);
         effect->seLooping = TRUE;
     }
 }
 
 static void WiFiPlazaEvent_StopLoopSE(WiFiPlazaEventEffect *effect) {
-    if (effect->seLooping != FALSE) {
+    if (effect->seLooping) {
         StopSE(SEQ_SE_PL_140_3, 0);
         effect->seLooping = FALSE;
     }
@@ -574,22 +574,22 @@ BOOL WiFiPlazaTalk_Survey(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, 
         WiFiPlazaObj_SetAvatarMode(special, 0);
         WiFiPlazaObj_SetDirection(special, direction);
         if (WiFiPlazaWork_IsClosing(lobby) != 0) {
-            message = WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00003);
+            message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00003);
             *nextStep = WIFI_PLAZA_SURVEY_GUIDE_END;
             WiFiPlazaRoom_PrintMessage(room, message);
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_SURVEY_GUIDE_WAIT_MESSAGE);
         } else if (WiFiPlazaWork_IsLightingStarted(lobby) == TRUE) {
-            message = WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00088);
+            message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00088);
             *nextStep = WIFI_PLAZA_SURVEY_GUIDE_END;
             WiFiPlazaRoom_PrintMessage(room, message);
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_SURVEY_GUIDE_WAIT_MESSAGE);
         } else if (WiFiPlazaWork_HasAnsweredSurvey(lobby) == 1) {
-            message = WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00087);
+            message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00087);
             *nextStep = WIFI_PLAZA_SURVEY_GUIDE_END;
             WiFiPlazaRoom_PrintMessage(room, message);
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_SURVEY_GUIDE_WAIT_MESSAGE);
         } else {
-            message = WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00081);
+            message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00081);
             *nextStep = WIFI_PLAZA_SURVEY_GUIDE_OPEN_YES_NO;
             WiFiPlazaRoom_PrintMessage(room, message);
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_SURVEY_GUIDE_WAIT_MESSAGE);
@@ -615,7 +615,7 @@ BOOL WiFiPlazaTalk_Survey(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, 
         }
         break;
     case WIFI_PLAZA_SURVEY_GUIDE_EXPLAIN: {
-        String *message = WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00085);
+        String *message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00085);
 
         *nextStep = WIFI_PLAZA_SURVEY_GUIDE_END;
         WiFiPlazaRoom_PrintMessage(room, message);
@@ -807,8 +807,8 @@ static void WiFiPlazaEventMovers_StartActions(WiFiPlazaEventMovers *work, u32 in
 
 // While the own player has a selection, only the own index is heard (on the player channel for the own column).
 static void WiFiPlazaEventMovers_PlaySE(BOOL hasOwnSelection, BOOL isOwnIndex, BOOL isOwnColumn, u32 seqNo) {
-    if (hasOwnSelection != FALSE) {
-        if (isOwnIndex == FALSE) {
+    if (hasOwnSelection) {
+        if (!isOwnIndex) {
             return;
         }
         if (isOwnColumn) {
@@ -823,8 +823,8 @@ static void WiFiPlazaEventMovers_PlaySE(BOOL hasOwnSelection, BOOL isOwnIndex, B
 }
 
 static void WiFiPlazaEventMovers_PlayCry(BOOL hasOwnSelection, BOOL isOwnIndex, BOOL isOwnColumn, u32 species) {
-    if (hasOwnSelection != FALSE) {
-        if (isOwnIndex == FALSE) {
+    if (hasOwnSelection) {
+        if (!isOwnIndex) {
             return;
         }
         PlayCry(species, 0);
@@ -845,7 +845,7 @@ static BOOL WiFiPlazaEventWobble_Start(WiFiPlazaEventWobble *wobble, int kind, W
 }
 
 static BOOL WiFiPlazaEventWobble_Update(WiFiPlazaEventWobble *wobble, WiFiPlazaModels *models, int index) {
-    if (wobble->active != FALSE) {
+    if (wobble->active) {
         if (gWiFiPlazaEventWobbleSteps[wobble->kind](wobble, models, index) == TRUE) {
             u8 *p = (u8 *)wobble;
 

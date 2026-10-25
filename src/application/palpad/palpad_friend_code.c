@@ -53,7 +53,7 @@ int PalPadNaming_Main(PalPadNaming *naming, PalPadWork *work, PalPadShared *shar
     case PALPAD_NAMING_STATE_ENTER_NAME:
         if (OverlayManager_Run(naming->manager)) {
             OverlayManager_Delete(naming->manager);
-            if (naming->namingArgs->noInput == FALSE) {
+            if (!naming->namingArgs->noInput) {
                 naming->manager = OverlayManager_New(&gOverlayTemplate_CodeEntry, naming->codeEntryArgs, heapId);
                 shared->subState = PALPAD_NAMING_STATE_ENTER_CODE;
             } else {
@@ -84,7 +84,7 @@ int PalPadNaming_Main(PalPadNaming *naming, PalPadWork *work, PalPadShared *shar
     case PALPAD_NAMING_STATE_ENTER_NEW_NAME:
         if (OverlayManager_Run(naming->manager)) {
             OverlayManager_Delete(naming->manager);
-            if (naming->namingArgs->noInput == FALSE) {
+            if (!naming->namingArgs->noInput) {
                 PalPadShared_SetNextScreen(shared, PALPAD_SCREEN_ROSTER, PALPAD_ROSTER_STATE_SET_NEW_NAME);
                 PalPadShared_SetNameAndCode(shared, naming->namingArgs->nameInputString, NULL);
                 shared->subState = PALPAD_NAMING_STATE_EXIT_RENAME;

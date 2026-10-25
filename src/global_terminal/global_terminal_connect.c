@@ -723,7 +723,7 @@ static BOOL GlobalTerminalConnect_StateStartConnect(GlobalTerminalConnectWork *w
         work->substate++;
         break;
     case GTC_START_WAIT_MESSAGE:
-        if (GlobalTerminalConnect_IsPrinting(work->printerId) == FALSE) {
+        if (!GlobalTerminalConnect_IsPrinting(work->printerId)) {
             work->substate++;
         }
         break;
@@ -741,7 +741,7 @@ static BOOL GlobalTerminalConnect_StateWaitConnect(GlobalTerminalConnectWork *wo
     GlobalTerminalConnectInetResult result;
 
     DWC_ProcessInet();
-    if (DWC_CheckInet() != 0) {
+    if (DWC_CheckInet()) {
         switch (DWC_GetInetStatus()) {
         case DWC_CONNECTINET_STATE_ERROR:
             work->dwcResult = DWC_GetLastErrorEx(&result.errorCode, &result.errorType);
@@ -906,7 +906,7 @@ static BOOL GlobalTerminalConnect_StateServerErrorDisconnect(GlobalTerminalConne
         work->substate++;
         break;
     case GTC_DISCONNECT_DISCONNECT:
-        if (GlobalTerminalConnect_IsPrinting(work->printerId) == FALSE) {
+        if (!GlobalTerminalConnect_IsPrinting(work->printerId)) {
             CommState_FreeWfcSession();
             DWC_CleanupInet();
             work->substate++;
@@ -917,7 +917,7 @@ static BOOL GlobalTerminalConnect_StateServerErrorDisconnect(GlobalTerminalConne
         work->substate++;
         break;
     case GTC_DISCONNECT_WAIT:
-        if (GlobalTerminalConnect_IsPrinting(work->printerId) == FALSE) {
+        if (!GlobalTerminalConnect_IsPrinting(work->printerId)) {
             work->substate++;
         }
         break;

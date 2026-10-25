@@ -366,7 +366,7 @@ void WirelessStatusIcon_Refresh(void) {
 void WirelessStatusIcon_Create(void) {
     int isWifi = 0;
 
-    if (CommState_IsWifi() != 0) {
+    if (CommState_IsWifi()) {
         isWifi = 1;
     }
     WirelessStatusIcon_CreateAt(0xF0, 0, isWifi, 1, 0x1C0);
@@ -375,14 +375,14 @@ void WirelessStatusIcon_Create(void) {
 static void WirelessStatusIcon_CreateOnScreen(int screen) {
     int isWifi = 0;
 
-    if (CommState_IsWifi() != 0) {
+    if (CommState_IsWifi()) {
         isWifi = 1;
     }
     WirelessStatusIcon_CreateAt(0xF0, 0, isWifi, screen, 0x1E0);
 }
 
 static void WirelessStatusIcon_CreateAt(int x, int y, int isWifi, int screen, u32 plttBase) {
-    if (CommWireless_IsOn() != 0) {
+    if (CommWireless_IsOn()) {
         if (sWirelessStatusIcon != NULL) {
             WirelessStatusIcon_Destroy();
         }
@@ -411,20 +411,20 @@ void WirelessStatusIcon_ShowOnBothScreens(int topFirst, enum HeapID heapId) {
 
 void WirelessStatusIcon_CreateIfConnected(void) {
     if (Comm_IsActive()) {
-        if (Comm_CountConnected() > 1 || CommState_IsWifi() != 0) {
+        if (Comm_CountConnected() > 1 || CommState_IsWifi()) {
             WirelessStatusIcon_Create();
         }
-    } else if (CommState_IsWifi() != 0) {
+    } else if (CommState_IsWifi()) {
         WirelessStatusIcon_Create();
     }
 }
 
 void WirelessStatusIcon_CreateOnScreenIfConnected(int screen) {
     if (Comm_IsActive()) {
-        if (Comm_CountConnected() > 1 || CommState_IsWifi() != 0) {
+        if (Comm_CountConnected() > 1 || CommState_IsWifi()) {
             WirelessStatusIcon_CreateOnScreen(screen);
         }
-    } else if (CommState_IsWifi() != 0) {
+    } else if (CommState_IsWifi()) {
         WirelessStatusIcon_CreateOnScreen(screen);
     }
 }

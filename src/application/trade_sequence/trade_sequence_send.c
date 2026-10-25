@@ -328,7 +328,7 @@ static BOOL TradeSequenceSend_ShowMessages(TradeSequenceSend *send, u32 *state) 
             MessageFormat *msgFormat = TradeSequence_GetMsgFormat(send->ts);
             ReadMsgDataIntoString(msgData, msg_0179_00001, send->msgTemplate);
             StringExpandPlaceholders(msgFormat, send->msgString, send->msgTemplate);
-            if (GetBoxMonData(TradeSequence_GetSentBoxMon(send->ts), MON_DATA_IS_EGG, NULL) == FALSE) {
+            if (!GetBoxMonData(TradeSequence_GetSentBoxMon(send->ts), MON_DATA_IS_EGG, NULL)) {
                 u8 cryDelay;
                 Pokepic_StartAnim(send->pokepic, 1);
                 NARC_ReadPokepicCryDelay(send->pokeAnimNarc, &cryDelay, TradeSequence_GetSentSpecies(send->ts), 1);

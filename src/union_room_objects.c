@@ -405,7 +405,7 @@ void UnionRoomObjects_RestoreAfterScript(MapObjectManager *mapObjectManager, Uni
     object = MapObjectManager_GetFirstActiveObjectByID(mapObjectManager, 0);
     GF_ASSERT(object != NULL);
     if (MapObject_AreBitsSetForMovementScriptInit(object) == TRUE) {
-        if (CommState_IsAlternateLinked() != FALSE || CommState_GetJoinResult() != FALSE) {
+        if (CommState_IsAlternateLinked() || CommState_GetJoinResult()) {
             for (i = 0; i < 10; i++) {
                 UnionRoomSlot *slot = &objects->slots[i];
                 if (slot->state == UNION_ROOM_SLOT_APPEARING) {

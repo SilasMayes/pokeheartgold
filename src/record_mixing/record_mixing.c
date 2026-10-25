@@ -764,7 +764,7 @@ static void RecordMixing_HandleInput(RecordMixingApp *app) {
     RecordMixing_UpdateMenuInputState(app);
     index = TouchscreenHitbox_FindRectAtTouchNew(sRecordMixingButtonHitboxes);
     packet.pixel = 0xFFD5;
-    if (index != -1 && DoesPixelAtScreenXYMatchPtrVal(app->bgConfig, GF_BG_LYR_MAIN_1, gSystem.touchX, gSystem.touchY, &packet.pixel)) {
+    if (index != TOUCH_MENU_NO_INPUT && DoesPixelAtScreenXYMatchPtrVal(app->bgConfig, GF_BG_LYR_MAIN_1, gSystem.touchX, gSystem.touchY, &packet.pixel)) {
         button = (u8)(index + 1);
     }
     if ((gSystem.newKeys & PAD_BUTTON_A) || button == 1) {
@@ -1178,7 +1178,7 @@ static int RecordMixing_State_StartExitSync(RecordMixingApp *app, int state) {
 }
 
 static int RecordMixing_State_WaitExitSync(RecordMixingApp *app, int state) {
-    if (LinkSync_IsSynced(201) != FALSE) {
+    if (LinkSync_IsSynced(201)) {
         CommState_SetErrorWatch(0, 0);
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, (enum FadeType)16, (enum FadeType)16, RGB_BLACK, 16, 1, HEAP_ID_50);
         state = RECORD_MIXING_MAIN_WAIT_FADE_OUT;
@@ -1188,7 +1188,7 @@ static int RecordMixing_State_WaitExitSync(RecordMixingApp *app, int state) {
 }
 
 static int RecordMixing_State_PrintMemberUnavailable(RecordMixingApp *app, int state) {
-    if (RecordMixing_IsPrinterDone(app->printerId) != FALSE) {
+    if (RecordMixing_IsPrinterDone(app->printerId)) {
         RecordMixing_PrintMessage(app, msg_0422_00009, FALSE);
     }
     app->state = RECORD_MIXING_STATE_WAIT_MEMBER_UNAVAILABLE;
@@ -1197,7 +1197,7 @@ static int RecordMixing_State_PrintMemberUnavailable(RecordMixingApp *app, int s
 }
 
 static int RecordMixing_State_WaitMemberUnavailable(RecordMixingApp *app, int state) {
-    if (RecordMixing_IsPrinterDone(app->printerId) != FALSE) {
+    if (RecordMixing_IsPrinterDone(app->printerId)) {
         app->state = RECORD_MIXING_STATE_FADE_OUT_AFTER_DELAY;
     }
     RecordMixing_UpdateDummy(app);
@@ -1211,7 +1211,7 @@ static int RecordMixing_State_PrintMemberLeft(RecordMixingApp *app, int state) {
     app->buttonHighlightTimer = -1;
     RecordMixing_SetButtonState(app, 1, 2);
     ScheduleBgTilemapBufferTransfer(app->bgConfig, GF_BG_LYR_MAIN_1);
-    if (app->printerId != 0xFF && RecordMixing_IsPrinterDone(app->printerId) == FALSE) {
+    if (app->printerId != 0xFF && !RecordMixing_IsPrinterDone(app->printerId)) {
         RemoveTextPrinter((u8)app->printerId);
     }
     RecordMixing_PrintMessage(app, msg_0422_00015, TRUE);
@@ -1470,7 +1470,7 @@ static BOOL RecordMixing_UpdateMembers(RecordMixingApp *app) {
             }
         } else if (app->memberKeys[i].cur.raw != app->memberKeys[i].prev.raw) {
             changed = TRUE;
-            if (app->memberKeys[i].cur.s.valid == FALSE) {
+            if (!app->memberKeys[i].cur.s.valid) {
                 app->memberStates[i] = RECORD_MIXING_MEMBER_LEAVE;
             } else {
                 app->memberStates[i] = RECORD_MIXING_MEMBER_APPEAR;
@@ -1487,7 +1487,7 @@ static void RecordMixing_PrintMessage(RecordMixingApp *app, int msgId, BOOL imme
     String_Delete(string);
     FillWindowPixelBuffer(&app->messageWindow, 15);
     DrawFrameAndWindow2(&app->messageWindow, FALSE, 1, 11);
-    if (immediate == FALSE) {
+    if (!immediate) {
         int textSpeed = RecordMixing_GetTextSpeed(app);
         app->printerId = AddTextPrinterParameterized(&app->messageWindow, 1, app->messageText, 0, 0, textSpeed, NULL);
     } else {

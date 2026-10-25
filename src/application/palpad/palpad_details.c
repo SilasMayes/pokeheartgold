@@ -204,7 +204,7 @@ static int PalPadDetails_HandleTouch(PalPadDetails *details, PalPadShared *share
     } else {
         hit = TouchscreenHitbox_FindHitboxAtTouchNew(gPalPadDetailsHitboxes);
     }
-    if (hit == -1) {
+    if (hit == TOUCH_MENU_NO_INPUT) {
         return PALPAD_DETAILS_STATE_INPUT;
     }
     if (hit == 0) {
@@ -240,7 +240,7 @@ static int PalPadDetails_HandleInput(PalPadDetails *details, PalPadShared *share
         details->friendChangeHeld = FALSE;
     }
     result = PalPadDetails_HandleTouch(details, shared, gfx, &touched);
-    if (touched != FALSE) {
+    if (touched) {
         shared->inputState = TRUE;
         return result;
     }

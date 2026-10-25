@@ -157,7 +157,7 @@ void WiFiPlazaObj_UpdateManager(WiFiPlazaObjManager *manager) {
     if (i < manager->count) {
         offset = 0;
         do {
-            if (WiFiPlazaObj_IsFree((WiFiPlazaObj *)((u8 *)manager->objs + offset)) == FALSE) {
+            if (!WiFiPlazaObj_IsFree((WiFiPlazaObj *)((u8 *)manager->objs + offset))) {
                 WiFiPlazaObj *obj = (WiFiPlazaObj *)((u8 *)manager->objs + offset);
 
                 obj->update(obj, manager);

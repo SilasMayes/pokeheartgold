@@ -97,7 +97,7 @@ struct UnionRoom *UnionRoom_New(FieldSystem *fieldSystem) {
 
 void UnionRoom_WaitWireless(struct UnionRoom *unionRoom) {
     MailMessage message;
-    if (CommWireless_Exists() != 0) {
+    if (CommWireless_Exists()) {
         MailMsg_Init_Default(&message);
         UnionRoom_BroadcastChatMessage(&message);
         UnionRoom_SetOwnChatMessage(unionRoom, &message);
@@ -157,14 +157,14 @@ void UnionRoom_ParentLinked(struct UnionRoom *unionRoom) {
 
     gUnionRoomScratch.waitFrames++;
     status = CommWireless_GetRuleset();
-    if (Comm_GetConnectedChildren() != 0 && UnionRoom_AnyOtherPlayerPresent() == TRUE && status->activity != 4) {
+    if (Comm_GetConnectedChildren() && UnionRoom_AnyOtherPlayerPresent() == TRUE && status->activity != 4) {
         CommPlayerInfo_SendLocal();
         CommState_SetErrorWatch(1, 1);
         UnionRoom_SetBeaconActivity(11);
         UnionRoom_SetState(unionRoom, UnionRoom_ParentInSession, 0);
     }
 
-    if (CommState_IsAlternateLinked() == 0) {
+    if (!CommState_IsAlternateLinked()) {
         CommState_ResumeAlternateSearch();
         UnionRoom_ResetTalk(unionRoom);
         UnionRoom_SetBeaconActivity(0);
@@ -173,12 +173,12 @@ void UnionRoom_ParentLinked(struct UnionRoom *unionRoom) {
 }
 
 void UnionRoom_ParentInSession(struct UnionRoom *unionRoom) {
-    if (CommState_ReportsErrors() != 0) {
-        if (Comm_GetConnectedChildren() == 0) {
+    if (CommState_ReportsErrors()) {
+        if (!Comm_GetConnectedChildren()) {
             return;
         }
     }
-    if (Comm_GetConnectedChildren() == 0) {
+    if (!Comm_GetConnectedChildren()) {
         CommState_ResumeAlternateSearch();
         UnionRoom_ResetTalk(unionRoom);
         UnionRoom_SetBeaconActivity(0);
@@ -223,7 +223,7 @@ void UnionRoom_StopSearch(struct UnionRoom *unionRoom) {
 }
 
 void UnionRoom_WaitCommEnd(struct UnionRoom *unionRoom) {
-    if (Comm_IsActive() == 0) {
+    if (!Comm_IsActive()) {
         UnionRoom_Delete(unionRoom);
     }
 }
@@ -234,12 +234,12 @@ void UnionRoom_WaitJoin(struct UnionRoom *unionRoom) {
         UnionRoom_SetState(unionRoom, UnionRoom_WaitJoinedProfile, 3);
         return;
     }
-    if (Comm_GetConnectedChildren() != 0) {
+    if (Comm_GetConnectedChildren()) {
         unionRoom->connectRequest = UNION_ROOM_CONNECT_NONE;
         unionRoom->joinStatus = UNION_ROOM_JOIN_HOSTING;
         UnionRoom_SetState(unionRoom, UnionRoom_ParentLinked, 0);
     }
-    if (CommState_GetJoinResult() != 0) {
+    if (CommState_GetJoinResult()) {
         UnionRoom_SetState(unionRoom, UnionRoom_WaitFieldTask, 2);
         unionRoom->unk24 = 0;
         unionRoom->joinStatus = UNION_ROOM_JOIN_FAILED;
@@ -249,7 +249,7 @@ void UnionRoom_WaitJoin(struct UnionRoom *unionRoom) {
 }
 
 void UnionRoom_WaitFieldTask(struct UnionRoom *unionRoom) {
-    if (FieldSystem_TaskIsRunning(unionRoom->fieldSystem) == 0) {
+    if (!FieldSystem_TaskIsRunning(unionRoom->fieldSystem)) {
         CommState_ResumeAlternateSearch();
         UnionRoom_ResetTalk(unionRoom);
         UnionRoom_SetBeaconActivity(0);
@@ -266,7 +266,7 @@ void UnionRoom_WaitJoinedProfile(struct UnionRoom *unionRoom) {
             CommState_SetErrorWatch(1, 1);
             UnionRoom_SetState(unionRoom, UnionRoom_ChildInSession, 3);
         }
-    } else if (CommState_GetJoinResult() == 0) {
+    } else if (!CommState_GetJoinResult()) {
         CommState_ResumeAlternateSearch();
         UnionRoom_ResetTalk(unionRoom);
         UnionRoom_SetState(unionRoom, UnionRoom_WaitSearchReady, 2);
@@ -278,7 +278,7 @@ void UnionRoom_WaitJoinedProfile(struct UnionRoom *unionRoom) {
 }
 
 void UnionRoom_ChildInSession(struct UnionRoom *unionRoom) {
-    if (CommState_GetJoinResult() == 0) {
+    if (!CommState_GetJoinResult()) {
         CommState_ResumeAlternateSearch();
         UnionRoom_ResetTalk(unionRoom);
         UnionRoom_SetState(unionRoom, UnionRoom_WaitSearchReady, 2);

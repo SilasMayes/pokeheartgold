@@ -153,7 +153,7 @@ int GtsConnection_Init(GtsApp *app, int state) {
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG3, GF_PLANE_TOGGLE_OFF);
-    if (DWC_CheckInet() == 0) {
+    if (!DWC_CheckInet()) {
         args = app->args;
         if (args->connectDirectly != 0) {
             // Connect without asking.
@@ -398,7 +398,7 @@ int GtsConnection_HandleDisconnectMenu(GtsApp *app) {
     int result = Handle2dMenuInput_DeleteOnFinish(app->disconnectMenu, HEAP_ID_61);
     if (result != -1) {
         if (result == -2) {
-            if (DWC_CheckInet() == 0) {
+            if (!DWC_CheckInet()) {
                 app->state = GTS_CONNECTION_STATE_ASK_CONNECT;
             } else {
                 Gts_SetNextScreen(app, GTS_SCREEN_TRANSACTION, 11);
@@ -406,7 +406,7 @@ int GtsConnection_HandleDisconnectMenu(GtsApp *app) {
                 app->state = GTS_CONNECTION_STATE_FADE_OUT;
             }
         } else {
-            if (DWC_CheckInet() != 0) {
+            if (DWC_CheckInet()) {
                 DWC_CleanupInet();
             }
             CommState_FreeWfcSession();
@@ -458,7 +458,7 @@ int GtsConnection_WaitConnect(GtsApp *app) {
     } locals;
 
     DWC_ProcessInet();
-    if (DWC_CheckInet() != 0) {
+    if (DWC_CheckInet()) {
         switch (DWC_GetInetStatus()) {
         case DWC_CONNECTINET_STATE_ERROR:
             app->connectionResult = DWC_GetLastErrorEx(&locals.errorCode, &locals.errorType);

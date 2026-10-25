@@ -30,7 +30,7 @@ BOOL WiFiPlaza_IsBillboardInView(BillboardObject *billboard) {
     MI_Copy36B(&rotation, &NNS_G3dGlb.prmBaseRot);
     NNS_G3dGlb.flag &= ~0xA4;
     NNS_G3dGlbSetBaseScale(BillboardObject_GetScale(billboard));
-    if (GF3d_BoundsBoxTest(&position, &bounds) == FALSE) {
+    if (!GF3d_BoundsBoxTest(&position, &bounds)) {
         return FALSE;
     }
     return TRUE;

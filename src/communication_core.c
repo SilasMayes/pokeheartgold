@@ -380,8 +380,8 @@ BOOL Comm_Update(void) {
             if (Comm_GetTransferMode() == 0) {
                 Comm_ReceiveFromParent();
             }
-            if (Comm_GetLocalNetId() == 0 && Comm_IsNetIdConnected(0) != 0) {
-                if (Comm_IsWifiPeerLinkMode(CommState_GetLinkMode()) == 0) {
+            if (Comm_GetLocalNetId() == 0 && Comm_IsNetIdConnected(0)) {
+                if (!Comm_IsWifiPeerLinkMode(CommState_GetLinkMode())) {
                     Comm_UpdateParentSend();
                 }
             }
@@ -591,7 +591,7 @@ static void Comm_UpdateParentSend(void) {
         if (!Comm_IsNetIdConnected(0)) {
             return;
         }
-        if (sCommCore.work->continuousSend != 0) {
+        if (sCommCore.work->continuousSend) {
             if (!Comm_HasNoChildBacklog()) {
                 return;
             }
@@ -939,7 +939,7 @@ static int Comm_BuildChildFrame(u8 *data) {
     } else {
         receive.remaining = count - 1;
         receive.dest = data + 1;
-        if (PacketPool_WriteFrame(&sCommCore.work->childQueue, &receive, 1) == 0) {
+        if (!PacketPool_WriteFrame(&sCommCore.work->childQueue, &receive, 1)) {
             sCommCore.work->childQueuePending = 1;
         }
         if (Comm_GetTransferMode() == 1) {

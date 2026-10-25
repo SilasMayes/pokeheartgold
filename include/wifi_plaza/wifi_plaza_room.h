@@ -122,10 +122,19 @@ typedef struct WiFiPlazaYesNoMenu {
     ListMenuTemplate template;
 } WiFiPlazaYesNoMenu;
 
-// Message banks (NARC msgdata, 4 files) and the expansion buffers.
+// Message banks of the room, in the order of sWiFiPlazaRoomMsgBanks.
+enum WiFiPlazaRoomMsgBank {
+    WIFI_PLAZA_MSG_BANK_GAME_ENTRY,
+    WIFI_PLAZA_MSG_BANK_PLAZA,
+    WIFI_PLAZA_MSG_BANK_CONNECTION,
+    WIFI_PLAZA_MSG_BANK_TALK,
+    WIFI_PLAZA_MSG_BANK_COUNT,
+};
+
+// Message banks and the expansion buffers.
 typedef struct WiFiPlazaRoomMsg {
     MessageFormat *format;
-    MsgData *msgData[4];
+    MsgData *msgData[WIFI_PLAZA_MSG_BANK_COUNT];
     String *formatted;
     String *raw;
 } WiFiPlazaRoomMsg;

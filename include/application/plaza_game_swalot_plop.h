@@ -42,12 +42,12 @@ typedef struct SwalotPlopLevelTable {
 // Part of SwalotPlopApp shared with the game screen and the tally.
 typedef struct SwalotPlopShared {
     SwalotPlopLevelTable levelTable;
-    PlayerProfile *profiles[4];
-    u32 nameFlags[4];
+    PlayerProfile *profiles[PLAZA_GAME_MAX_PLAYERS];
+    u32 nameFlags[PLAZA_GAME_MAX_PLAYERS];
 } SwalotPlopShared;
 
 typedef struct SwalotPlopScores {
-    u32 scores[4];
+    u32 scores[PLAZA_GAME_MAX_PLAYERS];
 } SwalotPlopScores;
 
 // Run on the parent only: game clock, the scores reported at the end, and the hit count
@@ -56,7 +56,7 @@ typedef struct SwalotPlopTally {
     int timer;
     BOOL running;
     u32 playerCount;
-    u32 scores[4];
+    u32 scores[PLAZA_GAME_MAX_PLAYERS];
     u32 receivedMask;
     u8 unk20[0x10];
     SwalotPlopShared *shared;
@@ -334,7 +334,7 @@ typedef struct SwalotPlopDemo {
 
 // The scores the players report every 30 frames; once all reported, the leader is shown.
 typedef struct SwalotPlopScoreReports {
-    u32 scores[4];
+    u32 scores[PLAZA_GAME_MAX_PLAYERS];
     u32 mask;
     u32 leader;
 } SwalotPlopScoreReports;
@@ -366,7 +366,7 @@ typedef struct SwalotPlopGame {
     SwalotPlopBody body;
     SwalotPlopGfx gfx;
     NNSFndAllocator allocator;
-    u32 finalScores[4];
+    u32 finalScores[PLAZA_GAME_MAX_PLAYERS];
     SwalotPlopTouch touch;
     SwalotPlopLevelBlend levelBlend;
     SwalotPlopShared *shared;
@@ -397,7 +397,7 @@ typedef struct SwalotPlopApp {
     u32 connectionLostState;
     u32 syncRound;
     BOOL canSend;
-    u8 syncCounts[4];
+    u8 syncCounts[PLAZA_GAME_MAX_PLAYERS];
 } SwalotPlopApp;
 
 // Link command table entry (Comm_RegisterCommandTable).

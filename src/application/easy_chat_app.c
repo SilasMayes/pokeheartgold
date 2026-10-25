@@ -760,7 +760,7 @@ static int EasyChatApp_GetMessageMenuTouch(EasyChatApp *app) {
             return 6;
         }
         result = TouchscreenHitbox_FindRectAtTouchNew(sEasyChatMessageMenuHitboxes);
-        if (result == -1) {
+        if (result == TOUCH_MENU_NO_INPUT) {
             count = EasyChatAppView_GetNumWordSlots(app->view);
             for (i = 0; i < count; i++) {
                 EasyChatAppView_GetWordSlotHitbox(app->view, &local.hitbox, i);
@@ -924,7 +924,7 @@ static void EasyChatApp_CategoryMenuHandleKeys(EasyChatApp *app, u32 *state) {
 static int EasyChatApp_GetListButtonTouch(EasyChatApp *app) {
     int result = TouchscreenHitbox_FindRectAtTouchNew(sEasyChatListButtonHitboxes);
 
-    if (result == -1) {
+    if (result == TOUCH_MENU_NO_INPUT) {
         return 0;
     }
     switch (result) {

@@ -565,7 +565,7 @@ BOOL SpinTradeGroupApp_Exit(OverlayManager *man, int *state) {
 static void SpinTradeGroup_VBlankTask(SysTask *task, void *data) {
     SpinTradeGroupApp *app = data;
     SpinTradeGroupBlink *blink = &app->blink;
-    if (app->blink.active != FALSE) {
+    if (app->blink.active) {
         if (blink->timer > sSpinTradeGroupBlinkFrames[blink->frame].duration) {
             blink->timer = 0;
             blink->frame++;
@@ -1027,7 +1027,7 @@ static int SpinTradeGroup_State_Save(SpinTradeGroupApp *app, int state) {
     if (Comm_GetLocalNetId() == 0) {
         Comm_CountConnected();
     }
-    if (Comm_SyncedSave(app->args->input.saveData, 2, &app->saveState) != 0) {
+    if (Comm_SyncedSave(app->args->input.saveData, 2, &app->saveState)) {
         StopSE(SEQ_SE_DP_F209, 8);
         SpinTradeGroup_PrintMessage(app, msg_0207_00013, 0);
         SpinTradeGroup_WaitPrinterThen(app, SPIN_TRADE_GROUP_STATE_WAIT_AFTER_SAVE);
@@ -1156,7 +1156,7 @@ static int SpinTradeGroup_State_WaitMemberDropped(SpinTradeGroupApp *app, int st
 }
 
 static int SpinTradeGroup_State_ShowMemberLeft(SpinTradeGroupApp *app, int state) {
-    if (app->printerId != 0xFF && SpinTradeGroup_IsPrinterDone(app->printerId) == 0) {
+    if (app->printerId != 0xFF && !SpinTradeGroup_IsPrinterDone(app->printerId)) {
         RemoveTextPrinter((u8)app->printerId);
     }
     SpinTradeGroup_PrintMessage(app, msg_0207_00015, 1);

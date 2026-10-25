@@ -221,7 +221,7 @@ static void GtsTransaction_LoadGraphics(GtsApp *app) {
     LoadFontPal1(GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_13_OFFSET, HEAP_ID_61);
     LoadUserFrameGfx2(bgConfig, GF_BG_LYR_MAIN_0, 1, 14, Options_GetFrame(app->args->options), HEAP_ID_61);
     LoadUserFrameGfx1(bgConfig, GF_BG_LYR_MAIN_0, 0x1F, 11, 0, HEAP_ID_61);
-    if (app->playerAnimDone == FALSE) {
+    if (!app->playerAnimDone) {
         ToggleBgLayer(GF_BG_LYR_SUB_0, GF_PLANE_TOGGLE_OFF);
         ToggleBgLayer(GF_BG_LYR_SUB_1, GF_PLANE_TOGGLE_OFF);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_OFF);
@@ -1136,7 +1136,7 @@ static void GtsTransaction_SetSaveStates(GtsApp *app, u16 midState, u16 doneStat
 
 // The save holds no deposited Pokemon although hasDepositedMon is set.
 static BOOL GtsTransaction_IsDepositMissingFromSave(GtsApp *app) {
-    if (!GtsSave_HasStoredMon((void *)app->args->gtsSave) && app->hasDepositedMon != FALSE) {
+    if (!GtsSave_HasStoredMon((void *)app->args->gtsSave) && app->hasDepositedMon) {
         return TRUE;
     }
     return FALSE;

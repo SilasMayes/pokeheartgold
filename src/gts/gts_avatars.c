@@ -208,7 +208,7 @@ static void Gts_SetAvatarPosition(Sprite *sprite, int x, int y) {
 
 int Gts_GetTouchedAvatar(int count) {
     int avatar = TouchscreenHitbox_FindRectAtTouchNew(gGtsAvatarHitboxes);
-    if (avatar == -1 || avatar >= count) {
+    if (avatar == TOUCH_MENU_NO_INPUT || avatar >= count) {
         avatar = -1;
     }
     return avatar;

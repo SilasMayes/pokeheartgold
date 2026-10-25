@@ -887,7 +887,7 @@ static BOOL PlazaNewsHeadlines_Update(PlazaNewsHeadlines *headlines, WiFiPlazaNe
         ticker--;
         duration--;
     }
-    if (headlines->tickers[0].active == FALSE) {
+    if (!headlines->tickers[0].active) {
         if (WiFiPlazaNews_HasEvent(news) == TRUE) {
             do {
                 type = WiFiPlazaNews_GetEventType(news);

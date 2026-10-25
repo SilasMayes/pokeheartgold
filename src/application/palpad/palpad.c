@@ -222,7 +222,7 @@ int PalPadShared_RegisterFriendCode(PalPadShared *shared, String *code, String *
     wifiList = Save_FriendRoster_Get(shared->saveData);
     ownKey = DWC_CreateFriendKey(FriendRoster_GetUserData(wifiList));
     for (i = 0; i < FRIEND_ROSTER_MAX; i++) {
-        if (FriendRoster_IsFriendValid(wifiList, i) == 0) {
+        if (!FriendRoster_IsFriendValid(wifiList, i)) {
             u64 key = String_atoi(code, &valid);
             if (valid == TRUE && key != ownKey) {
                 if (!DWC_CheckFriendKey(FriendRoster_GetUserData(wifiList), key)) {

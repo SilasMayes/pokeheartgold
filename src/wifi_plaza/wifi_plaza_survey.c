@@ -550,7 +550,7 @@ static BOOL WiFiPlazaSurveyAnswer_Run(WiFiPlazaSurveyAnswer *answer, WiFiPlazaSu
         }
         break;
     case WIFI_PLAZA_SURVEY_ANSWER_PRINT_QUESTION_INTRO:
-        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, answer->question.isSpecial == FALSE ? msg_0777_00092 : msg_0777_00093));
+        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, !answer->question.isSpecial ? msg_0777_00092 : msg_0777_00093));
         answer->nextState = WIFI_PLAZA_SURVEY_ANSWER_SHOW_ANSWERS;
         answer->state = WIFI_PLAZA_SURVEY_ANSWER_WAIT_MESSAGE;
         break;
@@ -598,7 +598,7 @@ static BOOL WiFiPlazaSurveyAnswer_Run(WiFiPlazaSurveyAnswer *answer, WiFiPlazaSu
         answer->state = WIFI_PLAZA_SURVEY_ANSWER_WAIT_MESSAGE;
         break;
     case WIFI_PLAZA_SURVEY_ANSWER_PRINT_THANKS:
-        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, answer->question.isSpecial == FALSE ? msg_0777_00098 : msg_0777_00099));
+        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, !answer->question.isSpecial ? msg_0777_00098 : msg_0777_00099));
         answer->nextState = WIFI_PLAZA_SURVEY_ANSWER_FINISH;
         answer->state = WIFI_PLAZA_SURVEY_ANSWER_WAIT_MESSAGE;
         break;
@@ -844,7 +844,7 @@ static BOOL WiFiPlazaSurveyResults_Run(WiFiPlazaSurveyResults *results, WiFiPlaz
     void *saveBlock;
     switch (results->state) {
     case WIFI_PLAZA_SURVEY_RESULTS_PRINT_INTRO:
-        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, results->current.isSpecial == FALSE ? msg_0777_00103 : msg_0777_00105));
+        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, !results->current.isSpecial ? msg_0777_00103 : msg_0777_00105));
         results->nextState = WIFI_PLAZA_SURVEY_RESULTS_PRINT_QUESTION;
         results->state = WIFI_PLAZA_SURVEY_RESULTS_WAIT_MESSAGE;
         break;
@@ -861,7 +861,7 @@ static BOOL WiFiPlazaSurveyResults_Run(WiFiPlazaSurveyResults *results, WiFiPlaz
         }
         break;
     case WIFI_PLAZA_SURVEY_RESULTS_PRINT_RESULTS_INTRO:
-        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, results->current.isSpecial == FALSE ? msg_0777_00107 : msg_0777_00108));
+        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, !results->current.isSpecial ? msg_0777_00107 : msg_0777_00108));
         results->nextState = WIFI_PLAZA_SURVEY_RESULTS_SHOW_RESULTS;
         results->state = WIFI_PLAZA_SURVEY_RESULTS_WAIT_MESSAGE;
         break;
@@ -923,7 +923,7 @@ static BOOL WiFiPlazaSurveyResults_Run(WiFiPlazaSurveyResults *results, WiFiPlaz
         }
         break;
     case WIFI_PLAZA_SURVEY_RESULTS_PRINT_LAST_WEEK_INTRO:
-        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, results->lastWeek.isSpecial == FALSE ? msg_0777_00113 : msg_0777_00115));
+        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, !results->lastWeek.isSpecial ? msg_0777_00113 : msg_0777_00115));
         results->nextState = WIFI_PLAZA_SURVEY_RESULTS_PRINT_LAST_WEEK_QUESTION;
         results->state = WIFI_PLAZA_SURVEY_RESULTS_WAIT_MESSAGE;
         break;
@@ -940,7 +940,7 @@ static BOOL WiFiPlazaSurveyResults_Run(WiFiPlazaSurveyResults *results, WiFiPlaz
         }
         break;
     case WIFI_PLAZA_SURVEY_RESULTS_PRINT_LAST_WEEK_RESULTS_INTRO:
-        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, results->lastWeek.isSpecial == FALSE ? msg_0777_00117 : msg_0777_00118));
+        WiFiPlazaSurvey_PrintMessage(msgBox, WiFiPlazaSurvey_GetMessage(messages, 0, !results->lastWeek.isSpecial ? msg_0777_00117 : msg_0777_00118));
         results->nextState = WIFI_PLAZA_SURVEY_RESULTS_SHOW_LAST_WEEK_RESULTS;
         results->state = WIFI_PLAZA_SURVEY_RESULTS_WAIT_MESSAGE;
         break;

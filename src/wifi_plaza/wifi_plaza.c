@@ -575,7 +575,7 @@ void WiFiPlazaWork_SetActivity(WiFiPlazaWork *work, int value) {
         return;
     }
     if (value != 9 && WiFiPlazaWork_IsTalking(work) == 1) {
-        if (WiFiPlazaWork_WasAskedToTalk(work) == 0) {
+        if (!WiFiPlazaWork_WasAskedToTalk(work)) {
             WiFiPlazaLobbyClient_SlotToId(work->talk.partnerSlot);
             WiFiPlazaWork_SendTalkEnd(work, work->talk.partnerSlot);
         }
@@ -1179,7 +1179,7 @@ BOOL WiFiPlazaWork_IsTalkOver(WiFiPlazaWork *work) {
     if (work->talk.state == WIFI_PLAZA_TALK_STATE_ENDED) {
         return TRUE;
     }
-    if (WiFiPlazaTalkSession_IsWithinTimeout(&work->talk) == FALSE) {
+    if (!WiFiPlazaTalkSession_IsWithinTimeout(&work->talk)) {
         return TRUE;
     }
     return FALSE;
@@ -1389,13 +1389,13 @@ static void WiFiPlaza_OnPlayerLeave(int id, WiFiPlazaWork *work) {
     if (WiFiPlazaWork_IsTalking(work) == TRUE && slot == WiFiPlazaWork_GetTalkPartner(work)) {
         WiFiPlazaTalkSession_Abort(&work->talk);
     }
-    if (WiFiPlazaNews_RemovePlayer(work->news, slot) != 0) {
+    if (WiFiPlazaNews_RemovePlayer(work->news, slot)) {
         WiFiPlazaNews_SetOldestPlayer(work->news, WiFiPlazaLobbyClient_IdToSlot(WiFiPlazaLobbyClient_GetOldestOtherPlayer(id)));
     }
     WiFiPlaza_SetSlotFlag(work->specialVisitors, slot, 0);
     WiFiPlazaTalkSession_ResetTalkCount(&work->talk, slot);
     WiFiPlazaTalkSession_ClearTalkedWith(&work->talk, slot);
-    if (WiFiPlazaHistory_ReplaceValue(&work->history, id, -1) != 0) {
+    if (WiFiPlazaHistory_ReplaceValue(&work->history, id, -1)) {
         WiFiPlazaWork_SendOwnRecord(work);
     }
     WiFiPlazaWordSet_Set(&work->wordSet, slot, 0, 0);
@@ -1515,7 +1515,7 @@ static void WiFiPlaza_OnLobbyEvent(u32 event, WiFiPlazaWork *work) {
 
 // Lobby callback: the own record as the lobby stores it.
 static void WiFiPlaza_OnOwnRecord(const WiFiPlazaPlayer *data, u32 size, WiFiPlazaWork *work) {
-    if (WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save) == FALSE) {
+    if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
         work->hasError = 1;
         return;
     }
@@ -1619,7 +1619,7 @@ static void WiFiPlazaProfile_InitFromSave(WiFiPlazaProfile *profile, SaveData *s
 
 static void WiFiPlazaWork_SendOwnRecord(WiFiPlazaWork *work) {
     int i;
-    if (WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save) == FALSE) {
+    if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
         work->hasError = 1;
         return;
     }
@@ -2138,7 +2138,7 @@ static int WiFiPlazaGroups_Join(WiFiPlazaGroups *groups, u32 id, u32 value) {
         for (; group < WIFI_PLAZA_GROUP_COUNT; group++, base += WIFI_PLAZA_GROUP_SEATS) {
             if (WiFiPlazaGroups_GetState(groups, group) != 2) {
                 for (seat = 0; seat < WIFI_PLAZA_GROUP_SEATS; seat++) {
-                    if (WiFiPlazaGroups_HasPassedMarker(groups, seat + base, value) == 0 && WiFiPlazaGroups_GetPlaceId(groups, seat + base) == -1) {
+                    if (!WiFiPlazaGroups_HasPassedMarker(groups, seat + base, value) && WiFiPlazaGroups_GetPlaceId(groups, seat + base) == -1) {
                         groups->ids[group][seat] = id;
                         return seat + base;
                     }
@@ -2268,16 +2268,16 @@ static void WiFiPlaza_OnTalkRequest(int id, const void *data, u32 size, void *ar
     BOOL ready;
     BOOL busy;
 
-    if (WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save) == FALSE) {
+    if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
         work->hasError = 1;
     }
     ready = WiFiPlazaPlayer_GetActivity(&work->profile.player);
     busy = WiFiPlazaWork_IsTalking(work);
-    if (ready != TRUE || slot == (u32)-1 || words[1] != 1 || busy == TRUE || WiFiPlazaWork_CanTalkWith(work, slot) == FALSE) {
+    if (ready != TRUE || slot == (u32)-1 || words[1] != 1 || busy == TRUE || !WiFiPlazaWork_CanTalkWith(work, slot)) {
         WiFiPlazaWork_SendTalkAnswer(work, id, FALSE);
     } else {
         WiFiPlazaWork_SendTalkAnswer(work, id, TRUE);
-        if (WiFiPlazaTalkSession_HasTalkedWith(&work->talk, slot) == FALSE) {
+        if (!WiFiPlazaTalkSession_HasTalkedWith(&work->talk, slot)) {
             work->talk.isFirstTalk = TRUE;
         } else {
             work->talk.isFirstTalk = FALSE;
@@ -2297,7 +2297,7 @@ static void WiFiPlaza_OnTalkAnswer(int id, const void *data, u32 size, void *arg
     int slot = WiFiPlazaLobbyClient_IdToSlot(id);
     if (work->talk.role != WIFI_PLAZA_TALK_ROLE_NONE && work->talk.partnerSlot == slot) {
         if (*words == 1) {
-            if (WiFiPlazaTalkSession_HasTalkedWith(&work->talk, slot) == FALSE) {
+            if (!WiFiPlazaTalkSession_HasTalkedWith(&work->talk, slot)) {
                 work->talk.isFirstTalk = TRUE;
             } else {
                 work->talk.isFirstTalk = FALSE;

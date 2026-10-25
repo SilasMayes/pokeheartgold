@@ -481,7 +481,7 @@ static void UnionChatLog_UpdateScrollbar(UnionChatLogData *data) {
         data->scroll = data->count - UNION_CHAT_LOG_NUM_ROWS;
     }
     Sprite_SetDrawFlag(data->sprites[UNION_CHAT_LOG_SPRITE_SCROLLBAR], data->scrollbarVisible);
-    if (data->scrollbarVisible != FALSE && UnionChatLog_GetThumbFollowsScroll(data) == TRUE) {
+    if (data->scrollbarVisible && UnionChatLog_GetThumbFollowsScroll(data) == TRUE) {
         UnionChatLog_SetThumbY(data->sprites[UNION_CHAT_LOG_SPRITE_SCROLLBAR], 48 + (data->scroll * 96) / (data->count - UNION_CHAT_LOG_NUM_ROWS));
     }
     data->prevCount = data->count;
@@ -756,7 +756,7 @@ static void UnionChatLog_AppendMessage(UnionChatLogData *data, PlayerProfile *pr
         atEnd = TRUE;
     }
     UnionChatLog_AddEntry(data, trainerId, mail, profile);
-    if (data->scrollbarVisible != FALSE && atEnd) {
+    if (data->scrollbarVisible && atEnd) {
         data->scroll = data->log->count - UNION_CHAT_LOG_NUM_ROWS;
     }
     UnionChatLog_RequestRedraw(data);

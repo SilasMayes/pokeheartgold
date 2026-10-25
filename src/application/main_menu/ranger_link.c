@@ -528,7 +528,7 @@ static BOOL RangerLink_HandleEndRequest(void) {
     RangerLinkWork *work;
     if (RangerLink_GetRequestedState() == RANGER_LINK_STATE_ENDING) {
         work = RangerLink_GetWork();
-        if (work->resetDone == FALSE) {
+        if (!work->resetDone) {
             RangerLink_WmReset();
             work->resetDone = TRUE;
         }
@@ -681,13 +681,13 @@ static void RangerLink_MeasureChannelCallback(u16 *arg) {
         }
         u32 channel = RangerLink_NextChannelToMeasure();
         if (channel) {
-            if (RangerLink_WmMeasureChannel(channel) == FALSE) {
+            if (!RangerLink_WmMeasureChannel(channel)) {
                 RangerLink_Abort();
             }
         } else {
             if (peers->lowestBusyRatio < 102) {
                 RangerLink_SetBeaconTiming();
-                if (RangerLink_WmSetParentParameter() == FALSE) {
+                if (!RangerLink_WmSetParentParameter()) {
                     RangerLink_Abort();
                 }
             } else {
@@ -1519,7 +1519,7 @@ static int RangerLink_CountActiveChildren(void) {
 }
 
 int RangerLink_GetLinkLevel(void) {
-    if (RangerLink_GetWork()->finished != FALSE) {
+    if (RangerLink_GetWork()->finished) {
         return 0;
     }
     return WM_GetLinkLevel();
@@ -1668,7 +1668,7 @@ void RangerLink_RequestEnd(void) {
         RangerLink_SetFinished(TRUE);
         break;
     case RANGER_LINK_STATE_CONNECTED:
-        if (RangerLink_IsConnectedToParent() == FALSE) {
+        if (!RangerLink_IsConnectedToParent()) {
             RangerLinkWork *work = RangerLink_GetWork();
             RangerLink_WmReset();
             work->resetDone = TRUE;

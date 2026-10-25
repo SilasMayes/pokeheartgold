@@ -139,7 +139,7 @@ static void CommClubButtons_Task(SysTask *task, void *taskData) {
     switch (data->state) {
     case COMM_CLUB_BUTTONS_STATE_WAIT_TOUCH:
         data->pressedButton = TouchscreenHitbox_FindRectAtTouchNew(layout->hitboxes);
-        if (data->pressedButton != -1) {
+        if (data->pressedButton != TOUCH_MENU_NO_INPUT) {
             CommClubButtons_SetButtonPalette(data, 1);
             data->args->selection = data->pressedButton;
             data->state = COMM_CLUB_BUTTONS_STATE_HELD;

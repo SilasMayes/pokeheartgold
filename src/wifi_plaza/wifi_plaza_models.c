@@ -269,7 +269,7 @@ static void WiFiPlazaModelSet_Unload(WiFiPlazaModelSet *set) {
 }
 
 static void WiFiPlazaModelSet_StartBaseAnim4(WiFiPlazaModelSet *set) {
-    if (set->baseRes.animLoaded[4] == TRUE && set->baseAnimActive[4] == FALSE) {
+    if (set->baseRes.animLoaded[4] == TRUE && !set->baseAnimActive[4]) {
         set->baseAnimActive[4] = TRUE;
         ModelInstance_AddAnimation(&set->baseInstances[0], &set->baseRes.anims[4]);
     }
@@ -333,7 +333,7 @@ static void WiFiPlazaMover_SetVisible(WiFiPlazaMover *mover, BOOL visible) {
 }
 
 static BOOL WiFiPlazaMover_StartAnim1(WiFiPlazaMover *mover) {
-    if (mover->animPlaying[1] == FALSE) {
+    if (!mover->animPlaying[1]) {
         mover->animPlaying[1] = TRUE;
         return TRUE;
     }
@@ -341,7 +341,7 @@ static BOOL WiFiPlazaMover_StartAnim1(WiFiPlazaMover *mover) {
 }
 
 static BOOL WiFiPlazaMover_StartAnim3(WiFiPlazaMover *mover) {
-    if (mover->animPlaying[3] == FALSE) {
+    if (!mover->animPlaying[3]) {
         mover->animPlaying[3] = TRUE;
         return TRUE;
     }
@@ -434,7 +434,7 @@ static void WiFiPlazaModelSet_StartPropAnimWithCallback(WiFiPlazaModelSet *set, 
     GF_ASSERT(mode < 7);
     GF_ASSERT(prop->kind < WIFI_PLAZA_PROP_KIND_COUNT);
     if (set->propRes.animFiles[prop->kind][slot] != NULL) {
-        if (prop->animActive[slot] == FALSE) {
+        if (!prop->animActive[slot]) {
             ModelInstance_AddAnimation(&prop->instance, &prop->anims[slot]);
         }
         prop->animActive[slot] = TRUE;
@@ -728,7 +728,7 @@ static void WiFiPlazaModelSet_DrawBase(WiFiPlazaModelSet *set, WiFiPlazaBaseReso
 static WiFiPlazaMover *WiFiPlazaModelSet_AllocMover(WiFiPlazaModelSet *set) {
     int i;
     for (i = 0; i < set->moverCount; i++) {
-        if (set->movers[i].active == FALSE) {
+        if (!set->movers[i].active) {
             return &set->movers[i];
         }
     }
@@ -829,7 +829,7 @@ static void WiFiPlazaModelSet_UpdateMover(WiFiPlazaMover *mover, WiFiPlazaMoverR
     offset = (i = 0);
     frame += offsetof(WiFiPlazaMover, animFrames);
     for (; i < WIFI_PLAZA_MOVER_ANIM_COUNT; i++) {
-        if (*(BOOL *)(slot + offsetof(WiFiPlazaMover, animPlaying)) != FALSE) {
+        if (*(BOOL *)(slot + offsetof(WiFiPlazaMover, animPlaying))) {
             switch (i) {
             case 0:
             case 2:
@@ -883,7 +883,7 @@ static void WiFiPlazaModelSet_DrawMover(WiFiPlazaMover *mover, WiFiPlazaMoverRes
 static WiFiPlazaProp *WiFiPlazaModelSet_AllocProp(WiFiPlazaModelSet *set) {
     int i;
     for (i = 0; i < set->propCount; i++) {
-        if (set->props[i].active == FALSE) {
+        if (!set->props[i].active) {
             return &set->props[i];
         }
     }
@@ -1592,7 +1592,7 @@ static void WiFiPlazaPropShow_UpdateStage(WiFiPlazaPropShow *show, WiFiPlazaMode
         show->state = WIFI_PLAZA_PROP_SHOWN;
         break;
     case WIFI_PLAZA_PROP_SHOWN:
-        if (WiFiPlazaModelSet_IsPropAnimActive(set, show->prop, 0) == FALSE) {
+        if (!WiFiPlazaModelSet_IsPropAnimActive(set, show->prop, 0)) {
             show->state = WIFI_PLAZA_PROP_HIDE_REQUESTED;
         }
         break;
@@ -1630,7 +1630,7 @@ static void WiFiPlazaPropShow_UpdateBurst(WiFiPlazaPropShow *show, WiFiPlazaMode
         show->state = WIFI_PLAZA_PROP_SHOWN;
         break;
     case WIFI_PLAZA_PROP_SHOWN:
-        if (WiFiPlazaModelSet_IsPropAnimActive(set, show->prop, 0) == FALSE) {
+        if (!WiFiPlazaModelSet_IsPropAnimActive(set, show->prop, 0)) {
             show->state = WIFI_PLAZA_PROP_HIDE_REQUESTED;
         }
         break;

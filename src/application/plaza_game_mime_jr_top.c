@@ -52,6 +52,9 @@ fx64c FX_SinFx64c(fx32 x);
 fx64c FX_CosFx64c(fx32 x);
 f32 _f_lltof(s64 value);
 
+#define MIME_JR_TOP_GAME_FRAMES 1200
+#define MIME_JR_TOP_MAX_LEVEL   8
+
 enum MimeJrTopState {
     MIME_JR_TOP_STATE_CREATE_ENTRY,
     MIME_JR_TOP_STATE_WAIT_ENTRY,
@@ -359,7 +362,7 @@ static u32 MimeJrTop_GetStartSize(void) {
 }
 
 static u32 MimeJrTop_GetPlayerStateSize(void) {
-    return 4;
+    return sizeof(u32);
 }
 
 static u32 MimeJrTop_GetFinalScoreSize(void) {
@@ -533,7 +536,7 @@ BOOL MimeJrTop_Init(OverlayManager *man, int *state) {
 
     // netIds lists the connected net ids first.
     count = 0;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < PLAZA_GAME_MAX_PLAYERS; i++) {
         app->netIds[i] = 0xFF;
         if (CommPlayerInfo_GetProfile(i) != NULL) {
             app->netIds[count] = i;
@@ -701,11 +704,11 @@ BOOL MimeJrTop_Main(OverlayManager *man, int *state) {
             break;
         case MIME_JR_TOP_STATE_PLAY:
             done = app->finishReceived;
-            if (done && app->game->frame < 0x4B0) {
+            if (done && app->game->frame < MIME_JR_TOP_GAME_FRAMES) {
                 done = FALSE;
             }
             if (!done) {
-                if (MimeJrTop_IsParent(app) == TRUE && MimeJrTopClock_Tick(app->clock) == FALSE) {
+                if (MimeJrTop_IsParent(app) == TRUE && !MimeJrTopClock_Tick(app->clock)) {
                     StopSE(SEQ_SE_PL_HAND, 0);
                     Comm_SendCommand(MIME_JR_TOP_CMD_FINISH, NULL, 0);
                 }
@@ -728,7 +731,7 @@ BOOL MimeJrTop_Main(OverlayManager *man, int *state) {
             if (score >= 100000) {
                 app->finalScore = 100000;
             }
-            if (app->game->everTouched == FALSE) {
+            if (!app->game->everTouched) {
                 app->finalScore = 1;
             }
             Comm_SendCommand(MIME_JR_TOP_CMD_FINAL_SCORE, &app->finalScore, 8);
@@ -1031,7 +1034,7 @@ static BOOL MimeJrTop_StartFade(int type) {
 }
 
 static void MimeJrTop_SetStateIf(MimeJrTopApp *app, BOOL condition, u32 next, int *state) {
-    if (condition != FALSE) {
+    if (condition) {
         *state = next;
     }
 }
@@ -1064,7 +1067,7 @@ static void MimeJrTop_SetFinishReceived(MimeJrTopApp *app) {
 // 0: connected, 1: showing the lost connection, 2: done (leave the overlay).
 static int MimeJrTop_HandleConnectionLost(MimeJrTopApp *app) {
     if (PlazaGameRoster_CheckConnectionLost(&app->roster) == TRUE) {
-        if (app->resources.connectionLost == FALSE) {
+        if (!app->resources.connectionLost) {
             if (IsPaletteFadeFinished() == TRUE) {
                 StopPaletteFade();
             }
@@ -1072,7 +1075,7 @@ static int MimeJrTop_HandleConnectionLost(MimeJrTopApp *app) {
             app->resources.connectionLost = TRUE;
             return MIME_JR_TOP_CONNECTION_LOST_WAIT;
         } else {
-            if (PlazaGameRoster_ProcessConnectionLost(&app->roster) == FALSE) {
+            if (!PlazaGameRoster_ProcessConnectionLost(&app->roster)) {
                 return MIME_JR_TOP_CONNECTION_LOST_WAIT;
             }
             if (app->game) {
@@ -1095,7 +1098,7 @@ static int MimeJrTop_HandleConnectionLost(MimeJrTopApp *app) {
 }
 
 static void MimeJrTopModel_Draw(MimeJrTopModel *model, MtxFx43 *rotation, VecFx32 *position) {
-    if (model->instance.visible != FALSE) {
+    if (model->instance.visible) {
         NNS_G3dGlbFlushP();
         NNS_G3dGeBufferOP_N(G3OP_MTX_TRANS, (u32 *)position, 3);
         NNS_G3dGeBufferOP_N(G3OP_MTX_MULT_4x3, (u32 *)rotation, 12);
@@ -1647,7 +1650,7 @@ static MimeJrTopClock *MimeJrTopClock_New(u32 playerCount, MimeJrTopResources *r
     MimeJrTopClock *clock = Heap_Alloc(HEAP_ID_113, sizeof(MimeJrTopClock));
     memset(clock, 0, sizeof(MimeJrTopClock));
     clock->playerCount = playerCount;
-    clock->timer = 1200;
+    clock->timer = MIME_JR_TOP_GAME_FRAMES;
     clock->resources = resources;
     return clock;
 }
@@ -2250,7 +2253,7 @@ static void MimeJrTopGame_UpdateLocalPlayer(MimeJrTopGame *game) {
             MimeJrTopGame_StartFall(game);
             MimeJrTopGame_ResetMotion(game);
             game->playerStates[game->localIndex] = MIME_JR_TOP_PLAYER_FALLEN;
-            Comm_SendCommand(MIME_JR_TOP_CMD_PLAYER_STATE, &game->playerStates[game->localIndex], 4);
+            Comm_SendCommand(MIME_JR_TOP_CMD_PLAYER_STATE, &game->playerStates[game->localIndex], sizeof(game->playerStates[0]));
             game->spinFrames = 0;
             game->levelTimer = 0;
             game->dance.enabled = FALSE;
@@ -2281,7 +2284,7 @@ static void MimeJrTopGame_UpdateLocalPlayer(MimeJrTopGame *game) {
                 game->level = game->previousLevel;
             }
             MimeJrTopGame_ResetBalance(game);
-            Comm_SendCommand(MIME_JR_TOP_CMD_PLAYER_STATE, &game->playerStates[game->localIndex], 4);
+            Comm_SendCommand(MIME_JR_TOP_CMD_PLAYER_STATE, &game->playerStates[game->localIndex], sizeof(game->playerStates[0]));
         } else {
             game->playerStates[game->localIndex] = MIME_JR_TOP_PLAYER_SPINNING;
         }
@@ -2298,7 +2301,7 @@ static void MimeJrTopGame_UpdateLocalPlayer(MimeJrTopGame *game) {
 }
 
 static void MimeJrTopGame_Update(MimeJrTopGame *game) {
-    if (game->frame < 0x4B0) {
+    if (game->frame < MIME_JR_TOP_GAME_FRAMES) {
         MimeJrTopGame_UpdateLocalPlayer(game);
         MimeJrTopGame_UpdateRivals(game);
         if (MimeJrTopGame_UpdateTier(game) == TRUE) {
@@ -2365,7 +2368,7 @@ static void MimeJrTopGame_HandleTouch(MimeJrTopGame *game) {
     turnAxis = gMimeJrTopTurnTiltAxis;
     MTX_MultVec43(&turnAxis, &game->mimeJr[0].rotationFx, &game->tilt);
     game->touched = TRUE;
-    if (game->everTouched == FALSE) {
+    if (!game->everTouched) {
         game->everTouched = TRUE;
     }
     if (x != 0) {
@@ -2390,7 +2393,7 @@ static void MimeJrTopGame_ResetMotion(MimeJrTopGame *game) {
 
 // The level rises every 149 frames the players keep their tops spinning (up to 8).
 static void MimeJrTopGame_UpdateLevel(MimeJrTopGame *game) {
-    if (game->levelTimer >= 0x95 && game->level != 8) {
+    if (game->levelTimer >= 0x95 && game->level != MIME_JR_TOP_MAX_LEVEL) {
         game->previousLevel = game->level;
         game->level++;
         game->levelTimer = 0;
@@ -2446,7 +2449,7 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
             s2 = MimeJrTopTween_UpdateAccel(&game->settleY);
             x = (s16)((game->settleX.value - oldX) >> 12);
             y = (s16)((game->settleY.value - oldY) >> 12);
-            if ((s1 == 1 || s2 == 1) && game->settled == FALSE) {
+            if ((s1 == 1 || s2 == 1) && !game->settled) {
                 game->settled = TRUE;
                 game->settleX.value -= oldX;
                 game->settleY.value -= oldY;
@@ -2465,7 +2468,7 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
         game->wobbleTick = 0;
         game->wobbleDue = TRUE;
     }
-    if (game->touched == FALSE && game->settled == TRUE) {
+    if (!game->touched && game->settled == TRUE) {
         y = (s16)(game->settleY.value >> 12);
         x = (s16)(game->settleX.value >> 12);
         MimeJrTopModel_Turn(&game->top, 0, 0, x, y, 1.88f, FALSE);
@@ -2482,7 +2485,7 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
             MTX_MultVec43(&settleTouchAxis, &game->mimeJr[0].rotationFx, &game->tilt);
         }
     }
-    if (game->wobbling != FALSE && (game->wobbleDue != TRUE || game->settled != TRUE)) {
+    if (game->wobbling && (game->wobbleDue != TRUE || game->settled != TRUE)) {
         return;
     }
     // The random numbers must not disturb the shared sequence.
@@ -2560,7 +2563,7 @@ static BOOL MimeJrTopModel_Turn(MimeJrTopModel *model, s32 x, s32 y, s32 targetX
     f32 length;
     MimeJrTopQuat old;
 
-    if (saveVelocity != FALSE) {
+    if (saveVelocity) {
         model->spinX = dx;
         model->spinY = dy;
         model->spinFrames = 8;
@@ -2641,7 +2644,7 @@ static BOOL MimeJrTopModel_ContinueSpin(MimeJrTopModel *model, f32 unused) {
 // Index of netId in the player list, 0xFF if it is not playing.
 static int MimeJrTop_GetPlayerIndex(MimeJrTopApp *app, u32 netId) {
     int i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < PLAZA_GAME_MAX_PLAYERS; i++) {
         if (netId != app->netIds[i]) {
             continue;
         } else {
@@ -3079,7 +3082,7 @@ static void MimeJrTopStage_UpdateFlash(MimeJrTopStageEffect *effect) {
     s32 *base = effect->targets[3];
     PaletteData *palette = effect->targets[2];
 
-    if (effect->active != FALSE) {
+    if (effect->active) {
         switch (effect->state) {
         case MIME_JR_TOP_FLASH_BRIGHTEN:
             if (*level < 4) {
@@ -3132,7 +3135,7 @@ static void MimeJrTopStage_UpdatePopups(MimeJrTopStageEffect *effect) {
 
     done = gMimeJrTopPopupDoneFlags;
 
-    if (effect->active != FALSE) {
+    if (effect->active) {
         switch (effect->state) {
         case MIME_JR_TOP_POPUPS_RISE:
             for (i = 0; i < 4; i++) {
@@ -3147,7 +3150,7 @@ static void MimeJrTopStage_UpdatePopups(MimeJrTopStageEffect *effect) {
                 }
                 limitp++;
             }
-            if (done.done[0] != FALSE && done.done[1] != FALSE && done.done[2] != FALSE && done.done[2] != FALSE) {
+            if (done.done[0] && done.done[1] && done.done[2] && done.done[2]) {
                 effect->timer = 0;
                 effect->stop = FALSE;
                 effect->state++;
@@ -3170,7 +3173,7 @@ static void MimeJrTopStage_UpdatePopups(MimeJrTopStageEffect *effect) {
                     }
                 }
             }
-            if (done.done[0] != FALSE && done.done[1] != FALSE && done.done[2] != FALSE && done.done[2] != FALSE) {
+            if (done.done[0] && done.done[1] && done.done[2] && done.done[2]) {
                 effect->state++;
             }
             break;
@@ -3194,7 +3197,7 @@ static void MimeJrTopStage_UpdateAudience(MimeJrTopStageEffect *effect) {
     int frame;
     MimeJrTopModel *model;
 
-    if (effect->active != FALSE) {
+    if (effect->active) {
         switch (effect->state) {
         case MIME_JR_TOP_AUDIENCE_SHOW:
             for (i = 0; i < 8; i++) {
@@ -3225,7 +3228,7 @@ static void MimeJrTopStage_UpdateAudience(MimeJrTopStageEffect *effect) {
 
 // Effect 4: the star shower.
 static void MimeJrTopStage_UpdateStars(MimeJrTopStageEffect *effect) {
-    if (effect->active != FALSE) {
+    if (effect->active) {
         switch (effect->state) {
         case MIME_JR_TOP_STARS_START:
             MimeJrTopGame_StartStars(effect->targets[0], (s32 *)&effect->starsRunning);
@@ -3239,7 +3242,7 @@ static void MimeJrTopStage_UpdateStars(MimeJrTopStageEffect *effect) {
             }
             break;
         default:
-            if (effect->starsRunning == FALSE) {
+            if (!effect->starsRunning) {
                 effect->stop = FALSE;
                 effect->active = FALSE;
                 effect->state = MIME_JR_TOP_STARS_START;
@@ -3253,35 +3256,35 @@ static void MimeJrTopStage_UpdateStars(MimeJrTopStageEffect *effect) {
 static void MimeJrTopStage_Task(SysTask *sysTask, void *data) {
     MimeJrTopStage *stage = data;
     MimeJrTopResources *resources = stage->resources;
-    if (IsPaletteFadeFinished() == FALSE || resources->connectionLost == TRUE) {
+    if (!IsPaletteFadeFinished() || resources->connectionLost == TRUE) {
         SysTask_Destroy(sysTask);
         return;
     }
     switch (*stage->phase) {
     case MIME_JR_TOP_STAGE_STARS:
-        if (stage->effects[4].active == FALSE) {
+        if (!stage->effects[4].active) {
             stage->effects[4].active = TRUE;
             stage->effects[4].stop = FALSE;
         }
     case MIME_JR_TOP_STAGE_MORE_POPUPS:
-        if (stage->effects[3].active == FALSE) {
+        if (!stage->effects[3].active) {
             PlaySE(SEQ_SE_DP_DENDOU);
             stage->effects[3].active = TRUE;
             stage->effects[3].stop = FALSE;
         }
     case MIME_JR_TOP_STAGE_AUDIENCE:
-        if (stage->effects[2].active == FALSE) {
+        if (!stage->effects[2].active) {
             stage->effects[2].active = TRUE;
             stage->effects[2].stop = FALSE;
         }
     case MIME_JR_TOP_STAGE_POPUPS:
-        if (stage->effects[1].active == FALSE) {
+        if (!stage->effects[1].active) {
             PlaySE(SEQ_SE_PL_HAND);
             stage->effects[1].active = TRUE;
             stage->effects[1].stop = FALSE;
         }
     case MIME_JR_TOP_STAGE_LIGHTS:
-        if (stage->effects[0].active == FALSE) {
+        if (!stage->effects[0].active) {
             stage->effects[0].active = TRUE;
             stage->effects[0].stop = FALSE;
         }
@@ -3476,10 +3479,10 @@ static void MimeJrTopDance_Task(SysTask *sysTask, void *data) {
         return;
     }
     if (dance->enabled) {
-        if (dance->shown == FALSE) {
+        if (!dance->shown) {
             MimeJrTopDance_SlideIn(dance);
         }
-        if (dance->timer == 0 && level != 0 && level < 8) {
+        if (dance->timer == 0 && level != 0 && level < MIME_JR_TOP_MAX_LEVEL) {
             dance->timer = gMimeJrTopRoutines[level].timer;
             dance->routineState = 0;
             dance->count = gMimeJrTopRoutineCounts[level].value - 1;
@@ -3491,7 +3494,7 @@ static void MimeJrTopDance_Task(SysTask *sysTask, void *data) {
             }
             SysTask_CreateOnMainQueue(gMimeJrTopRoutineTasks[level].func, dance, 0x1001);
         }
-    } else if (dance->enabled == FALSE && dance->timer == 0 && dance->shown == TRUE) {
+    } else if (!dance->enabled && dance->timer == 0 && dance->shown == TRUE) {
         MimeJrTopDance_SlideOut(dance);
     }
     if (dance->timer) {

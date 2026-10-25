@@ -376,7 +376,7 @@ int WifiConnection_SendToHost(void *data, int size) {
         }
         return 1;
     }
-    if (sWifiConnection->sendBusy != 0 || WifiConnection_CanSendToAll() == 0) {
+    if (sWifiConnection->sendBusy != 0 || !WifiConnection_CanSendToAll()) {
         return 0;
     }
     *(u32 *)sWifiConnection->sendBuffer = 1 | ((u32)sWifiConnection->ownVoiceFlag << 8);
@@ -395,7 +395,7 @@ int WifiConnection_SendFromHost(void *data, int size) {
     if (DWC_GetMyAID() != 0) {
         return 0;
     }
-    if (sWifiConnection->sendBusy != 0 || WifiConnection_CanSendToAll() == 0) {
+    if (sWifiConnection->sendBusy != 0 || !WifiConnection_CanSendToAll()) {
         return 0;
     }
     *(u32 *)sWifiConnection->sendBuffer = 1 | ((u32)sWifiConnection->ownVoiceFlag << 8);
@@ -418,7 +418,7 @@ int WifiConnection_SendToAll(void *data, int size) {
     if (size >= 0x100) {
         return 0;
     }
-    if (sWifiConnection->sendBusy != 0 || WifiConnection_CanSendToAll() == 0) {
+    if (sWifiConnection->sendBusy != 0 || !WifiConnection_CanSendToAll()) {
         return 0;
     }
     *(u32 *)sWifiConnection->sendBuffer = 1 | ((u32)sWifiConnection->ownVoiceFlag << 8);
@@ -545,7 +545,7 @@ static void WifiConnection_SendDoneCallback(u32 result, s32 aid) {
 }
 
 static void WifiConnection_ReadPeerVoiceFlag(u32 header) {
-    if (Comm_IsWifiPeerLinkMode(CommState_GetLinkMode()) == 0) {
+    if (!Comm_IsWifiPeerLinkMode(CommState_GetLinkMode())) {
         if (header & 0x100) {
             sWifiConnection->peerVoiceFlag = 1;
         } else {
@@ -564,7 +564,7 @@ static void WifiConnection_ReceiveCallback(u16 aid, const u8 *data, int size) {
         WifiConnection_ReadPeerVoiceFlag(header);
         sWifiConnection->recvSequence = data[2];
     } else {
-        if (VoiceChat_ReceiveData(aid, (void *)data, size) == 0) {
+        if (!VoiceChat_ReceiveData(aid, (void *)data, size)) {
             WifiConnection_ReadPeerVoiceFlag(header);
         }
         return;
@@ -710,9 +710,9 @@ static int WifiConnection_CanSendToAll(void) {
     i = found;
     if (sWifiConnection->maxPlayers > 0) {
         do {
-            if (i != DWC_GetMyAID() && DWC_IsValidAID((u8)i) != 0) {
+            if (i != DWC_GetMyAID() && DWC_IsValidAID((u8)i)) {
                 found = 1;
-                if (DWC_IsSendableReliable((u8)i) == 0) {
+                if (!DWC_IsSendableReliable((u8)i)) {
                     return 0;
                 }
             }
@@ -723,7 +723,7 @@ static int WifiConnection_CanSendToAll(void) {
 }
 
 static int WifiConnection_SendKeepAlive(int aid) {
-    if (sWifiConnection->sendBusy == 0 && WifiConnection_CanSendToAll() != 0) {
+    if (sWifiConnection->sendBusy == 0 && WifiConnection_CanSendToAll()) {
         u32 mask = (u32)DWC_GetAIDBitmap();
         if ((mask & 0xFFFE) != 0) {
             sWifiConnection->sendBusy = 1;
@@ -1073,13 +1073,13 @@ static void WifiConnection_GameServerMatchedCallback(int result, BOOL cancelled,
     int reject = 0;
     sWifiConnection->matchInProgress = 0;
     if (result == 0) {
-        if (cancelled == 0) {
+        if (!cancelled) {
             u32 mask;
             u32 current;
             if (Comm_IsLinkMode19To23Or34(CommState_GetLinkMode()) && aid == -1) {
                 reject = 1;
             }
-            if (sWifiConnection->connectFilterCallback && sWifiConnection->connectFilterCallback(aid) == 0) {
+            if (sWifiConnection->connectFilterCallback && !sWifiConnection->connectFilterCallback(aid)) {
                 reject = 1;
             }
             if (sWifiConnection->stopMatchingState || reject) {
@@ -1100,7 +1100,7 @@ static void WifiConnection_GameServerMatchedCallback(int result, BOOL cancelled,
                 return;
             }
             WifiConnection_OnConnected(aid);
-        } else if (self == 0) {
+        } else if (!self) {
             sWifiConnection->newClientIndex = -1;
         }
     }
@@ -1108,7 +1108,7 @@ static void WifiConnection_GameServerMatchedCallback(int result, BOOL cancelled,
 
 static void WifiConnection_ConnectedToServerCallback(int result, BOOL cancelled, BOOL self, BOOL isServer, int aid, void *param) {
     sWifiConnection->matchInProgress = 0;
-    if (result == 0 && cancelled == 0) {
+    if (result == 0 && !cancelled) {
         WifiConnection_OnConnected(aid);
     }
 }

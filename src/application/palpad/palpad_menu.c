@@ -254,7 +254,7 @@ static BOOL PalPadMenu_HandleKeys(u32 *selection, u32 *inputState, PalPadGfx *gf
 static BOOL PalPadMenu_HandleTouch(u32 *selection, u32 *inputState, PalPadGfx *gfx, BOOL *touched) {
     int hit = TouchscreenHitbox_FindHitboxAtTouchNew(gPalPadMenuHitboxes);
 
-    if (hit == -1) {
+    if (hit == TOUCH_MENU_NO_INPUT) {
         return FALSE;
     }
     *touched = TRUE;
@@ -271,7 +271,7 @@ static BOOL PalPadMenu_HandleInput(u32 *selection, u32 *inputState, PalPadGfx *g
     BOOL touched = FALSE;
     BOOL result = PalPadMenu_HandleTouch(selection, inputState, gfx, &touched);
 
-    if (touched != FALSE) {
+    if (touched) {
         *inputState = TRUE;
         return result;
     }
@@ -354,7 +354,7 @@ static BOOL PalPadMenu_CanSelect(u32 *selection, PalPadShared *shared) {
     if (*selection == PALPAD_MENU_REGISTER) {
         wifiList = Save_FriendRoster_Get(shared->saveData);
         for (i = 0; i < FRIEND_ROSTER_MAX; i++) {
-            if (FriendRoster_IsFriendValid(wifiList, i) == 0) {
+            if (!FriendRoster_IsFriendValid(wifiList, i)) {
                 return TRUE;
             }
         }

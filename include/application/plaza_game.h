@@ -19,14 +19,16 @@
 // Shared code of the Wi-Fi Plaza games (SWALOT Plop, MIME JR. Top and WOBBUFFET Pop): the player list
 // shown before a game, the results screen shown after it, and the countdown / finish sign.
 
+#define PLAZA_GAME_MAX_PLAYERS 4
+
 // Launch arguments of a Plaza Game, shared with the Wi-Fi Plaza lobby.
 typedef struct PlazaGameArgs {
     u32 tapToy;
-    u8 slots[4];
+    u8 slots[PLAZA_GAME_MAX_PLAYERS];
     u8 specialVisitors[20]; // per lobby slot
     BOOL connectionLost;
-    PlayerProfile *profiles[4];
-    void *plazaWork;
+    PlayerProfile *profiles[PLAZA_GAME_MAX_PLAYERS];
+    struct WiFiPlazaWork *plazaWork;
     SaveData *saveData;
     u8 voiceChat;
     u8 fromLobby;
@@ -36,7 +38,7 @@ typedef struct PlazaGameArgs {
 
 typedef struct PlazaGameRoster {
     SaveData *saveData;
-    u8 netIds[4];
+    u8 netIds[PLAZA_GAME_MAX_PLAYERS];
     u8 count;
     u8 localIndex;
     u8 voiceChat;
@@ -45,15 +47,15 @@ typedef struct PlazaGameRoster {
 } PlazaGameRoster;
 
 typedef struct PlazaGameResultData {
-    u32 scores[4];
-    u8 ranks[4];
+    u32 scores[PLAZA_GAME_MAX_PLAYERS];
+    u8 ranks[PLAZA_GAME_MAX_PLAYERS];
     u32 total;
 } PlazaGameResultData;
 
 typedef struct PlazaGamePlayerInfo {
-    u8 countries[4];
-    u8 regions[4];
-    PlayerProfile *profiles[4];
+    u8 countries[PLAZA_GAME_MAX_PLAYERS];
+    u8 regions[PLAZA_GAME_MAX_PLAYERS];
+    PlayerProfile *profiles[PLAZA_GAME_MAX_PLAYERS];
 } PlazaGamePlayerInfo;
 
 typedef struct PlazaGameBgTemplate {
@@ -216,7 +218,7 @@ typedef struct PlazaGameEntry {
     PlazaGameTitle title;
     void *screenRaw;
     NNSG2dScreenData *screen;
-    PlazaGamePlayer players[4];
+    PlazaGamePlayer players[PLAZA_GAME_MAX_PLAYERS];
     PlazaGameLineScroll lineScroll;
     SysTask *task;
     SysTask *vblankTask;
@@ -246,7 +248,7 @@ typedef struct PlazaGameResults {
     PlazaGameBalloons balloons;
     void *screenRaw;
     NNSG2dScreenData *screen;
-    PlazaGamePlayer players[4];
+    PlazaGamePlayer players[PLAZA_GAME_MAX_PLAYERS];
     PlazaGameLineScroll lineScroll;
     SysTask *task;
     SysTask *vblankTask;

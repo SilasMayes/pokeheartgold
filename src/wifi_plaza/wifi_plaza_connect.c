@@ -320,7 +320,7 @@ BOOL WiFiPlazaConnect_Main(OverlayManager *man, int *state) {
         if ((gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || System_GetTouchNew() == TRUE) {
             if (CommState_HasWifiFailed()) {
                 u32 *error = CommState_GetWifiError();
-                if (WiFiPlaza_IsErrorRecoverable(error[0], error[1]) == FALSE) {
+                if (!WiFiPlaza_IsErrorRecoverable(error[0], error[1])) {
                     *state = WIFI_PLAZA_CONNECT_ASK_RECONNECT;
                 } else {
                     *state = WIFI_PLAZA_CONNECT_DISCONNECT;

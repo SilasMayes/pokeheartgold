@@ -504,7 +504,7 @@ static int GtsSelector_HandleGroupInput(GtsSelector *selector, const u8 *enabled
             return GTS_SELECTOR_BACK;
         }
         GF_ASSERT(button < 9);
-        if (enabled == NULL || enabled[button] != FALSE) {
+        if (enabled == NULL || enabled[button]) {
             PlaySE(SEQ_SE_DP_SELECT);
             return button;
         }
@@ -515,7 +515,7 @@ static int GtsSelector_HandleGroupInput(GtsSelector *selector, const u8 *enabled
                 return GTS_SELECTOR_BACK;
             }
             GF_ASSERT(selector->cursor < 9);
-            if (enabled == NULL || enabled[selector->cursor] != FALSE) {
+            if (enabled == NULL || enabled[selector->cursor]) {
                 PlaySE(SEQ_SE_DP_SELECT);
                 return selector->cursor;
             }
@@ -926,13 +926,13 @@ static int GtsSelector_HandleCountryGroupInput(GtsSelector *selector, const u8 *
     if (button != GTS_SELECTOR_NONE) {
         button = GtsSelector_GetCountryGroup(selector, button);
         // BUG: ANY is 10, not 11; it only gets through because enabled[10] is always set.
-        if (button == GTS_SELECTOR_BACK || button == 11 || enabled == NULL || enabled[button] != FALSE) {
+        if (button == GTS_SELECTOR_BACK || button == 11 || enabled == NULL || enabled[button]) {
             PlaySE(SEQ_SE_DP_SELECT);
             return button;
         }
     } else if (gSystem.newKeys & PAD_BUTTON_A) {
         button = GtsSelector_GetCountryGroup(selector, selector->cursor);
-        if (button == GTS_SELECTOR_BACK || button == 11 || enabled == NULL || enabled[button] != FALSE) {
+        if (button == GTS_SELECTOR_BACK || button == 11 || enabled == NULL || enabled[button]) {
             PlaySE(SEQ_SE_DP_SELECT);
             return button;
         }
@@ -1148,7 +1148,7 @@ int GtsSelector_Idle(GtsSelector *selector) {
 
 // The panel slid in: show the cursor (and the page arrows of the level list).
 int GtsSelector_WaitShow(GtsSelector *selector) {
-    if (BgCellManager_IsCellMoving(selector->cellManager, 0) == FALSE) {
+    if (!BgCellManager_IsCellMoving(selector->cellManager, 0)) {
         Sprite_SetDrawFlag(selector->cursorSprite, TRUE);
         if (selector->mode == GTS_SELECTOR_MODE_LEVEL) {
             Gts_SetSpritePosition(selector->rightArrowSprite, 228, 120);

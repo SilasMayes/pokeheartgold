@@ -1031,21 +1031,21 @@ BOOL SpinTrade_State_SpinClient(SpinTradeApp *app) {
         app->machine.speed = app->spinData.speed << FX32_SHIFT;
         app->frame = app->spinData.frame;
     }
-    if (SpinTrade_TickSpinTimer(app) == TRUE && SpinTrade_IsJumping(app) == FALSE) {
+    if (SpinTrade_TickSpinTimer(app) == TRUE && !SpinTrade_IsJumping(app)) {
         app->state = SPIN_TRADE_STATE_STOP_SPIN;
         return TRUE;
     }
-    if (app->remoteJump != FALSE && SpinTrade_IsJumping(app) == FALSE) {
+    if (app->remoteJump && !SpinTrade_IsJumping(app)) {
         SpinTrade_StartJump(app);
     }
-    if (SpinTrade_IsButtonFlashing(app) == 0 && SpinTrade_IsButtonTouched(app) == TRUE) {
-        if (SpinTrade_IsJumping(app) == FALSE) {
+    if (!SpinTrade_IsButtonFlashing(app) && SpinTrade_IsButtonTouched(app) == TRUE) {
+        if (!SpinTrade_IsJumping(app)) {
             SpinTrade_StartJump(app);
             app->sendJump = TRUE;
         }
         SpinTrade_StartButtonFlash(app);
     }
-    if (app->sendJump != FALSE) {
+    if (app->sendJump) {
         SpinTradeArgs *args = app->args;
         if (SpinTradeLink_SendCommand(args->menu, SPIN_TRADE_CMD_JUMP, &app->sendJump, 1) == TRUE) {
             app->sendJump = FALSE;
@@ -1331,7 +1331,7 @@ BOOL SpinTrade_State_WaitCancelMessage(SpinTradeApp *app) {
 }
 
 BOOL SpinTrade_State_StartExitSync(SpinTradeApp *app) {
-    if (app->unk_018 == FALSE) {
+    if (!app->unk_018) {
         LinkSync_StartSync(SPIN_TRADE_LINK_SYNC_NO);
     }
     SpinTrade_PrintMessage(app, msg_0206_00010);
@@ -1340,7 +1340,7 @@ BOOL SpinTrade_State_StartExitSync(SpinTradeApp *app) {
 }
 
 BOOL SpinTrade_State_WaitExitSync(SpinTradeApp *app) {
-    if (app->unk_018 == FALSE) {
+    if (!app->unk_018) {
         if (LinkSync_IsSynced(SPIN_TRADE_LINK_SYNC_NO)) {
             CommState_SetErrorWatch(0, 0);
             CommState_SetMaxEntries(1);
@@ -2204,7 +2204,7 @@ int SpinTradeEggDrop_Fall(SpinTradeEggDropTask *task) {
     SpinTradeEgg *egg = task->egg;
 
     egg->offset.y -= task->speed;
-    if (task->landingSePlayed == FALSE && egg->offset.y <= FX32_CONST(104)) {
+    if (!task->landingSePlayed && egg->offset.y <= FX32_CONST(104)) {
         task->landingSePlayed = TRUE;
         PlaySE(SEQ_SE_DP_FW104);
     }
@@ -2249,7 +2249,7 @@ static void SpinTradeBounce_Update(SpinTradeApp *app, SpinTradeBounce *bounce) {
         if (bounce->frame >= 15) {
             bounce->frame = 0;
             bounce->velocity = 0;
-            if (bounce->bounced == FALSE) {
+            if (!bounce->bounced) {
                 bounce->bounced = TRUE;
                 return;
             }
@@ -2288,7 +2288,7 @@ static void SpinTrade_AddBounce(SpinTradeApp *app, SpinTradeEgg *egg) {
     SpinTradeBounce *bounce = app->bounces;
 
     for (i = 0; i < 5; i++, bounce++) {
-        if (bounce->active == FALSE) {
+        if (!bounce->active) {
             bounce->active = TRUE;
             bounce->egg = egg;
             return;
@@ -2380,7 +2380,7 @@ static void SpinTrade_AddSpin(SpinTradeApp *app, SpinTradeEgg *egg) {
         }
     }
     for (i = 0; i < 5; i++, spin++) {
-        if (spin->active == FALSE) {
+        if (!spin->active) {
             spin->active = TRUE;
             spin->egg = egg;
             return;
@@ -2461,7 +2461,7 @@ static void SpinTrade_AddWobble(SpinTradeApp *app, SpinTradeEgg *egg) {
     } while (i < 5);
     i = 0;
     do {
-        if (wobble->active == FALSE) {
+        if (!wobble->active) {
             wobble->active = TRUE;
             wobble->egg = egg;
             return;

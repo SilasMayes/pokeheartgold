@@ -1010,7 +1010,7 @@ static int GtsSelectMon_HandleDepositMenu(GtsApp *app) {
         }
         break;
     case 3: // CANCEL
-    case -2:
+    case LIST_CANCEL:
         Gts_DestroyListMenu(app);
         ListMenuItems_Delete(app->listItems);
         ClearFrameAndWindow2(&app->waitingIconWindow, FALSE);
@@ -1083,7 +1083,7 @@ static int GtsSelectMon_HandleTradeMenu(GtsApp *app) {
         }
         break;
     case 3: // CANCEL
-    case -2:
+    case LIST_CANCEL:
         Gts_DestroyListMenu(app);
         ListMenuItems_Delete(app->listItems);
         ClearFrameAndWindow2(&app->waitingIconWindow, FALSE);
@@ -1210,7 +1210,7 @@ static void GtsSelectMon_PrintMessage(GtsApp *app, int msgId, int textSpeed, int
     String *string = NewString_ReadMsgData(app->gtsMsgData, msgId);
     Window *window;
     StringExpandPlaceholders(app->msgFormat, app->msgBuffer, string);
-    window = inPromptWindow == FALSE ? &app->waitingIconWindow : &app->promptWindow;
+    window = !inPromptWindow ? &app->waitingIconWindow : &app->promptWindow;
     FillWindowPixelBuffer(window, 15);
     DrawFrameAndWindow2(window, FALSE, 1, 14);
     app->textPrinterId = AddTextPrinterParameterized(window, 1, app->msgBuffer, 0, 0, textSpeed, NULL);
@@ -1273,11 +1273,11 @@ static void GtsSelectMon_ShowSlotMon(BoxPokemon *boxMon, Sprite *iconSprite, Spr
     item = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM, NULL);
     summary->species = *species;
     summary->gender = GetBoxMonData(boxMon, MON_DATA_GENDER, NULL) + 1;
-    if (isEgg != FALSE) {
+    if (isEgg) {
         summary->level = 0;
     }
     ReleaseBoxMonLock(boxMon, TRUE);
-    if (exists != FALSE) {
+    if (exists) {
         GtsSelectMon_LoadMonIcon(*species, form, isEgg, slot, iconSprite, narc, icon);
         Sprite_SetDrawFlag(iconSprite, TRUE);
         if (item != ITEM_NONE) {
@@ -1417,10 +1417,10 @@ static int GtsSelectMon_GetSlotContent(Party *party, PCStorage *pcStorage, int b
     if (boxMon == NULL) {
         return GTS_SLOT_EMPTY;
     }
-    if (GetBoxMonData(boxMon, MON_DATA_SPECIES_EXISTS, NULL) == FALSE) {
+    if (!GetBoxMonData(boxMon, MON_DATA_SPECIES_EXISTS, NULL)) {
         return GTS_SLOT_EMPTY;
     }
-    if (GetBoxMonData(boxMon, MON_DATA_SANITY_IS_EGG, NULL) != FALSE) {
+    if (GetBoxMonData(boxMon, MON_DATA_SANITY_IS_EGG, NULL)) {
         return GTS_SLOT_EGG;
     }
     return GTS_SLOT_MON;
@@ -1480,7 +1480,7 @@ static void GtsSelectMon_InitTradeRecord(GtsRecord *record, GtsApp *app) {
 static void GtsSelectMon_DimUnwantedIcons(GtsMonSummary *summaries, Sprite **sprites, GtsWantedMon *wanted, GtsMonIcon *icons) {
     int i;
     for (i = 0; i < GTS_SELECT_MON_SLOT_COUNT; i++, summaries++, icons++) {
-        if (summaries->species != SPECIES_NONE && GtsSelectMon_MatchesWanted(summaries, wanted) == FALSE) {
+        if (summaries->species != SPECIES_NONE && !GtsSelectMon_MatchesWanted(summaries, wanted)) {
             icons->palette += 3;
         }
     }

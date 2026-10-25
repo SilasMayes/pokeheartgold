@@ -281,7 +281,7 @@ static int GlobalTerminalNet_SeqWaitButton(GlobalTerminalNet *net, void *stepWor
 }
 
 BOOL GlobalTerminalNet_RequestDressUpUpload(GlobalTerminalNet *net, const void *header, const GlobalTerminalNetDressUpRecord *record) {
-    if (GlobalTerminalNet_IsIdle(net) == FALSE) {
+    if (!GlobalTerminalNet_IsIdle(net)) {
         return FALSE;
     }
     GlobalTerminalNet_SetRequestHeader(net->saveData, header, net->request.dressUpUpload.header);
@@ -301,7 +301,7 @@ BOOL GlobalTerminalNet_RequestDressUpDownload(GlobalTerminalNet *net, int arg) {
 }
 
 BOOL GlobalTerminalNet_RequestBoxUpload(GlobalTerminalNet *net, int value, const void *header, PCStorage *storage, int box) {
-    if (GlobalTerminalNet_IsIdle(net) == FALSE) {
+    if (!GlobalTerminalNet_IsIdle(net)) {
         return FALSE;
     }
     net->requestArg.bytes[0] = value;

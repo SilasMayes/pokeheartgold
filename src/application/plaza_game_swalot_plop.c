@@ -404,7 +404,7 @@ BOOL SwalotPlop_Main(OverlayManager *man, int *state) {
         u32 level;
         u32 score;
         u8 options[4];
-        u32 scores[4];
+        u32 scores[PLAZA_GAME_MAX_PLAYERS];
     } msg;
 
     if (PlazaGameRoster_CheckConnectionLost(&app->roster) == TRUE) {
@@ -499,16 +499,16 @@ BOOL SwalotPlop_Main(OverlayManager *man, int *state) {
         (*state)++;
         break;
     case SWALOT_PLOP_STATE_FADE_IN:
-        if (LinkSync_IsSynced(1) != FALSE) {
+        if (LinkSync_IsSynced(1)) {
             BeginNormalPaletteFade(0, 0x1B, 0x1B, 0xFFFF, 6, 1, HEAP_ID_106);
             (*state)++;
         }
         break;
     case SWALOT_PLOP_STATE_SEND_START:
         SwalotPlopGame_RunIntro(app->game, FALSE);
-        if (IsPaletteFadeFinished() != FALSE) {
+        if (IsPaletteFadeFinished()) {
             if (app->netId == 0) {
-                if (Comm_SendCommand(SWALOT_PLOP_CMD_START, NULL, 0) != FALSE) {
+                if (Comm_SendCommand(SWALOT_PLOP_CMD_START, NULL, 0)) {
                     (*state)++;
                 }
             } else {
@@ -518,19 +518,19 @@ BOOL SwalotPlop_Main(OverlayManager *man, int *state) {
         break;
     case SWALOT_PLOP_STATE_WAIT_START:
         SwalotPlopGame_RunIntro(app->game, FALSE);
-        if (app->startReceived != FALSE) {
+        if (app->startReceived) {
             (*state)++;
         }
         break;
     case SWALOT_PLOP_STATE_RUN_INTRO:
-        if (SwalotPlopGame_RunIntro(app->game, TRUE) == FALSE) {
+        if (!SwalotPlopGame_RunIntro(app->game, TRUE)) {
             (*state)++;
         }
         break;
     case SWALOT_PLOP_STATE_PLAY:
-        if (app->finishReceived != FALSE) {
+        if (app->finishReceived) {
             msg.score = SwalotPlopGame_GetScore(app->game);
-            if (Comm_SendCommand(SWALOT_PLOP_CMD_FINAL_SCORE, &msg.score, 4) != FALSE) {
+            if (Comm_SendCommand(SWALOT_PLOP_CMD_FINAL_SCORE, &msg.score, sizeof(msg.score))) {
                 (*state)++;
             }
         } else {
@@ -538,7 +538,7 @@ BOOL SwalotPlop_Main(OverlayManager *man, int *state) {
                 u32 running = SwalotPlopTally_Update(app->tally);
                 if (SwalotPlopTally_LevelChanged(app->tally) != 0) {
                     msg.level = SwalotPlopTally_GetLevel(app->tally);
-                    if (SwalotPlop_SendCommand(app, SWALOT_PLOP_CMD_LEVEL, &msg.level, 4) == TRUE) {
+                    if (SwalotPlop_SendCommand(app, SWALOT_PLOP_CMD_LEVEL, &msg.level, sizeof(msg.level)) == TRUE) {
                         SwalotPlopTally_ClearLevelChanged(app->tally);
                     }
                 }
@@ -556,7 +556,7 @@ BOOL SwalotPlop_Main(OverlayManager *man, int *state) {
         if (app->netId == 0) {
             if (SwalotPlopTally_HasAllScores(app->tally) == TRUE) {
                 SwalotPlopTally_GetScores(app->tally, msg.scores);
-                if (Comm_SendCommand(SWALOT_PLOP_CMD_SCORES, msg.scores, 0x10) != FALSE) {
+                if (Comm_SendCommand(SWALOT_PLOP_CMD_SCORES, msg.scores, sizeof(msg.scores))) {
                     (*state)++;
                 }
             }
@@ -571,7 +571,7 @@ BOOL SwalotPlop_Main(OverlayManager *man, int *state) {
         }
         break;
     case SWALOT_PLOP_STATE_RUN_FINISH:
-        if (SwalotPlopGame_RunFinish(app->game, TRUE) == FALSE) {
+        if (!SwalotPlopGame_RunFinish(app->game, TRUE)) {
             (*state)++;
         }
         break;
@@ -582,13 +582,13 @@ BOOL SwalotPlop_Main(OverlayManager *man, int *state) {
         break;
     case SWALOT_PLOP_STATE_WAIT_FADE_OUT:
         SwalotPlopGame_RunFinish(app->game, TRUE);
-        if (IsPaletteFadeFinished() != FALSE) {
+        if (IsPaletteFadeFinished()) {
             LinkSync_StartSync(3);
             (*state)++;
         }
         break;
     case SWALOT_PLOP_STATE_FREE_GAME:
-        if (LinkSync_IsSynced(3) == FALSE) {
+        if (!LinkSync_IsSynced(3)) {
             return FALSE;
         }
         if (args->voiceChat != 0) {
@@ -643,7 +643,7 @@ BOOL SwalotPlop_Exit(OverlayManager *man, int *state) {
         (*state)++;
         break;
     case SWALOT_PLOP_EXIT_STATE_WAIT_SYNC:
-        if (LinkSync_IsSynced(4) != FALSE || Comm_CountConnected() < CommPlayerInfo_CountAccepted()) {
+        if (LinkSync_IsSynced(4) || Comm_CountConnected() < CommPlayerInfo_CountAccepted()) {
             return TRUE;
         }
         break;
@@ -679,7 +679,7 @@ static void SwalotPlop_ReceiveFinalScore(SwalotPlopApp *app, u32 score, int netI
 static void SwalotPlop_ReceiveScores(SwalotPlopApp *app, const u32 *scores, int netId) {
     SwalotPlopGame_SetFinalScores(app->game, scores);
     app->scoresReceived = TRUE;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < PLAZA_GAME_MAX_PLAYERS; i++) {
         app->resultData.scores[i] = *scores;
         scores++;
     }
@@ -731,7 +731,7 @@ static void SwalotPlop_SendScoreReport(SwalotPlopApp *app) {
     int frame = SwalotPlopGame_GetFrame(app->game);
     if (frame != 0 && frame % 30 == 0 && app->canSend == TRUE) {
         u32 score = SwalotPlopGame_GetScore(app->game);
-        if (!SwalotPlop_SendCommand(app, SWALOT_PLOP_CMD_SCORE_REPORT, &score, 4)) {
+        if (!SwalotPlop_SendCommand(app, SWALOT_PLOP_CMD_SCORE_REPORT, &score, sizeof(score))) {
             GF_ASSERT(FALSE);
         }
         app->canSend = FALSE;
@@ -886,7 +886,7 @@ static u32 SwalotPlopTally_CountScores(SwalotPlopTally *tally) {
     s32 i;
     s32 count = 0;
     u32 mask = tally->receivedMask;
-    for (i = count; i < 4; i++) {
+    for (i = count; i < PLAZA_GAME_MAX_PLAYERS; i++) {
         if ((1 << i) & mask) {
             count++;
         }
@@ -1302,13 +1302,13 @@ static void SwalotPlopPopups_ShowSeat(SwalotPlopPopups *popups, int seat, u32 co
     maxPriority = 0;
     index = -1;
     for (i = 0; i < 3; i++) {
-        if (Sprite_GetDrawFlag(popups->sprites[i]) == FALSE) {
+        if (!Sprite_GetDrawFlag(popups->sprites[i])) {
             index = i;
             found = TRUE;
         } else {
             priority = Sprite_GetDrawPriority(popups->sprites[i]);
             Sprite_SetDrawPriority(popups->sprites[i], priority + 1);
-            if (found == FALSE && maxPriority <= priority + 1) {
+            if (!found && maxPriority <= priority + 1) {
                 maxPriority = priority + 1;
                 index = i;
             }
@@ -1561,7 +1561,7 @@ static int SwalotPlopBody_CheckMouth(SwalotPlopBody *body, const VecFx32 *positi
     fx32 distance;
     fx32 strength;
     int result = 0;
-    if (body->active == FALSE) {
+    if (!body->active) {
         return result;
     }
     SwalotPlop_IntersectPlane(position, move, &body->normal, body->mouthPlane, &hit, &hitFraction);
@@ -1604,7 +1604,7 @@ static BOOL SwalotPlopBody_IsInside(SwalotPlopBody *body, const VecFx32 *pos) {
     fx32 distance;
     s32 narrowing;
     s32 y;
-    if (body->active == FALSE) {
+    if (!body->active) {
         return FALSE;
     }
     if (body->position.y < pos->y && body->position.y + body->height > pos->y) {
@@ -1878,7 +1878,7 @@ static void SwalotPlopGame_DropEndedShots(SwalotPlopGame *game) {
 }
 
 static void SwalotPlopShot_CheckRemove(SwalotPlopShot *shot, SwalotPlopGame *game) {
-    if (shot->remove != FALSE) {
+    if (shot->remove) {
         if (shot->state == SHOT_STATE_CAUGHT && shot->params.caught == TRUE) {
             shot->state = SHOT_STATE_REPORT;
         } else {
@@ -1982,7 +1982,7 @@ static void SwalotPlopGame_UpdateBouncedShot(SwalotPlopShot *shot, SwalotPlopGam
         if (SwalotPlopBody_IsInside(&game->body, &shot->position) == TRUE) {
             SwalotPlopShot_Bounce(shot, game, TRUE);
         } else if (shot->position.y <= -0x32000) {
-            if (SwalotPlopShot_IsOnRim(shot) == FALSE) {
+            if (!SwalotPlopShot_IsOnRim(shot)) {
                 if (oldY <= -0x32000) {
                     done = TRUE;
                 } else {
@@ -2022,7 +2022,7 @@ static BOOL SwalotPlopShot_CheckOutside(SwalotPlopShot *shot) {
         if (shot->crossedRim == TRUE) {
             return TRUE;
         }
-    } else if (shot->crossedRim == FALSE) {
+    } else if (!shot->crossedRim) {
         shot->crossedRim = TRUE;
     }
     return FALSE;
@@ -2137,7 +2137,7 @@ static void SwalotPlopGame_Throw(SwalotPlopGame *game) {
 
 static void SwalotPlopGame_TrackFlick(SwalotPlopGame *game) {
     SwalotPlopFlick point;
-    if (game->flick.active == FALSE && SwalotPlopGame_CanStartFlick(game) == TRUE) {
+    if (!game->flick.active && SwalotPlopGame_CanStartFlick(game) == TRUE) {
         game->flick.active = TRUE;
         SwalotPlopCursor_Show(&game->gfx.cursor);
         SwalotPlopBgFade_Step(&game->gfx.bgFade);
@@ -2385,7 +2385,7 @@ static BOOL SwalotPlopDemo_Update(SwalotPlopDemo *demo, SwalotPlopGame *game) {
         frame = Sprite_GetAnimationFrame(demo->sprite);
         switch (frame) {
         case 10:
-            if (demo->thrown == FALSE) {
+            if (!demo->thrown) {
                 SwalotPlopGame_ThrowDemoShot(game, 128, 96, 128, 64, SHOT_STATE_FALLING);
                 PlaySE(SEQ_SE_DP_FW104);
                 demo->thrown = TRUE;
@@ -2412,7 +2412,7 @@ static BOOL SwalotPlopDemo_Update(SwalotPlopDemo *demo, SwalotPlopGame *game) {
         }
         break;
     case SWALOT_PLOP_DEMO_WAIT_SHOTS:
-        if (SwalotPlopGame_HasActiveShots(game) == FALSE) {
+        if (!SwalotPlopGame_HasActiveShots(game)) {
             Sprite_SetDrawFlag(demo->sprite, FALSE);
             return TRUE;
         }
@@ -2459,7 +2459,7 @@ static u32 SwalotPlopScoreReports_GetLeader(SwalotPlopScoreReports *reports) {
 static BOOL SwalotPlopScoreReports_HasAll(SwalotPlopScoreReports *reports, u32 playerCount) {
     int i;
     int count = 0;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < PLAZA_GAME_MAX_PLAYERS; i++) {
         if (reports->mask & (1 << i)) {
             count++;
         }
@@ -3123,7 +3123,7 @@ static void SwalotPlopShotView_StartModel(SwalotPlopGfx *gfx, SwalotPlopShotView
 }
 
 static void SwalotPlopShotView_Draw(SwalotPlopShotView *view, SwalotPlopGfx *gfx, u32 playerCount) {
-    if (view->state == 1 && SwalotPlopShotView_UpdateSprite(view, view->shot, playerCount) == FALSE) {
+    if (view->state == 1 && !SwalotPlopShotView_UpdateSprite(view, view->shot, playerCount)) {
         SwalotPlopShotView_SwitchToModel(view, gfx);
     }
     if (view->state == 0) {
@@ -3149,7 +3149,7 @@ static void SwalotPlopShotView_PlaceShadow(SwalotPlopShotView *view) {
     fx32 factor = FX32_ONE;
     if (SwalotPlopShot_IsInPool(view->shot) == TRUE) {
         groundY = -0x12C000;
-    } else if (SwalotPlopShot_IsOnRim(view->shot) == FALSE) {
+    } else if (!SwalotPlopShot_IsOnRim(view->shot)) {
         groundY = -0x33000;
     } else {
         groundY = -0x12C000;
@@ -3865,13 +3865,13 @@ u32 SwalotPlop_GetShotSize(void) {
 }
 
 u32 SwalotPlop_GetScoresSize(void) {
-    return 0x10;
+    return sizeof(SwalotPlopScores);
 }
 
 u32 SwalotPlop_GetScoreSize(void) {
-    return 4;
+    return sizeof(u32);
 }
 
 u32 SwalotPlop_GetLevelSize(void) {
-    return 4;
+    return sizeof(u32);
 }

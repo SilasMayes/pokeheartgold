@@ -1126,7 +1126,7 @@ static u32 VisitorProfiles_HandleInput(VisitorProfilesWork *work) {
     }
 
     if ((gSystem.newKeys & PAD_BUTTON_X) != 0) {
-        if (VisitorProfiles_PickPlace(work, &info) == TRUE && VisitorProfilesPanel_HasPlace(&work->panel, &info) == FALSE && VisitorProfilesPanel_AddPlace(&work->panel, &info) != FALSE) {
+        if (VisitorProfiles_PickPlace(work, &info) == TRUE && !VisitorProfilesPanel_HasPlace(&work->panel, &info) && VisitorProfilesPanel_AddPlace(&work->panel, &info)) {
             VisitorProfiles_FocusPlace(work, info.country, info.region);
             PlaySE(SEQ_SE_PL_TIMER04);
         }
@@ -1144,7 +1144,7 @@ static void VisitorProfiles_FocusStartPlace(VisitorProfilesWork *work, VisitorPr
     u32 country;
     u32 region;
 
-    if (VisitorProfiles_FocusPlace(work, work->ownCountry, work->ownRegion) != FALSE) {
+    if (VisitorProfiles_FocusPlace(work, work->ownCountry, work->ownRegion)) {
         return;
     }
 
@@ -1915,7 +1915,7 @@ static BOOL VisitorProfilesPanel_HasPlace(VisitorProfilesPanel *panel, VisitorPr
     VisitorProfilesPlaceInfo entry;
     s32 i;
     for (i = 0; i < VISITOR_PROFILES_NUM_SHOWN_PLACES; i++) {
-        if (VisitorProfilesPanel_GetHistory(panel, &entry, i) == FALSE) {
+        if (!VisitorProfilesPanel_GetHistory(panel, &entry, i)) {
             return FALSE;
         }
         if (entry.country == info->country && entry.region == info->region) {
@@ -2035,7 +2035,7 @@ static BOOL VisitorProfilesPanel_Reveal(VisitorProfilesPanel *panel, VisitorProf
         panel->ticks = ticks;
     }
     for (i = 0; i < panel->numRows; i++) {
-        if (VisitorProfilesPanel_UpdateRow(panel, i, gfx) == FALSE) {
+        if (!VisitorProfilesPanel_UpdateRow(panel, i, gfx)) {
             done = FALSE;
         }
     }

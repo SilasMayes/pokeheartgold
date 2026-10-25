@@ -708,7 +708,7 @@ static void WiFiPlazaPlayerState_Clear(WiFiPlazaPlayerState *state) {
 static void WiFiPlazaPlayerState_Run(WiFiPlazaPlayerState *state, WiFiPlazaPlayerStateManager *manager, u32 which, u32 index) {
     WiFiPlazaPlayerStateFunc func;
 
-    if (state->active == FALSE) {
+    if (!state->active) {
         return;
     }
     switch (which) {
@@ -1021,12 +1021,12 @@ static BOOL WiFiPlazaPlayerState_OwnArrival(WiFiPlazaPlayerState *state, WiFiPla
         }
         break;
     case WIFI_PLAZA_ARRIVAL_WELCOME:
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00000));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00000));
         work->nextStep = WIFI_PLAZA_ARRIVAL_RECEIVE_TAP_TOY;
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ARRIVAL_WAIT_MESSAGE);
         break;
     case WIFI_PLAZA_ARRIVAL_ASK_FIRST_TYPE:
-        WiFiPlazaRoom_PrintMessageInstant(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00005));
+        WiFiPlazaRoom_PrintMessageInstant(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00005));
         WiFiPlazaRoom_OpenList(room, &work->menuTemplate, 0, 0);
         WiFiPlazaRoom_SetListArrows(room, TRUE);
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ARRIVAL_HANDLE_FIRST_TYPE);
@@ -1052,7 +1052,7 @@ static BOOL WiFiPlazaPlayerState_OwnArrival(WiFiPlazaPlayerState *state, WiFiPla
         if (done == TRUE) {
             WiFiPlazaRoom_CloseList(room, NULL, NULL);
             if (work->firstChoice != 0) {
-                WiFiPlazaRoom_PrintMessageInstant(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00008));
+                WiFiPlazaRoom_PrintMessageInstant(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00008));
                 WiFiPlazaRoom_OpenYesNoMenu(room);
                 WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ARRIVAL_CONFIRM_FIRST_TYPE);
             } else {
@@ -1076,7 +1076,7 @@ static BOOL WiFiPlazaPlayerState_OwnArrival(WiFiPlazaPlayerState *state, WiFiPla
         }
         break;
     case WIFI_PLAZA_ARRIVAL_ASK_SECOND_TYPE:
-        WiFiPlazaRoom_PrintMessageInstant(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00010));
+        WiFiPlazaRoom_PrintMessageInstant(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00010));
         WiFiPlazaRoom_OpenList(room, &work->menuTemplate, 0, 0);
         WiFiPlazaRoom_SetListArrows(room, TRUE);
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ARRIVAL_HANDLE_SECOND_TYPE);
@@ -1102,7 +1102,7 @@ static BOOL WiFiPlazaPlayerState_OwnArrival(WiFiPlazaPlayerState *state, WiFiPla
         if (done == TRUE) {
             WiFiPlazaRoom_CloseList(room, NULL, NULL);
             if (work->secondChoice != 0) {
-                WiFiPlazaRoom_PrintMessageInstant(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00008));
+                WiFiPlazaRoom_PrintMessageInstant(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00008));
                 WiFiPlazaRoom_OpenYesNoMenu(room);
                 WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ARRIVAL_CONFIRM_SECOND_TYPE);
             } else {
@@ -1131,23 +1131,23 @@ static BOOL WiFiPlazaPlayerState_OwnArrival(WiFiPlazaPlayerState *state, WiFiPla
         WiFiPlazaRoom_BufferPlayerName(room, index, 0);
         WiFiPlazaRoom_BufferInstrumentName(room, work->listValue, 1);
         if (WiFiPlazaWork_IsSpecialVisitor(lobby, index) == 0) {
-            message = WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00001);
+            message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00001);
         } else {
-            message = WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00124);
+            message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00124);
         }
         WiFiPlazaRoom_PrintMessage(room, message);
         work->nextStep = WIFI_PLAZA_ARRIVAL_ASK_TYPES;
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ARRIVAL_WAIT_MESSAGE);
         break;
     case WIFI_PLAZA_ARRIVAL_ENJOY_STAY:
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00002));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00002));
         work->nextStep = WIFI_PLAZA_ARRIVAL_START_WALK;
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ARRIVAL_WAIT_MESSAGE);
         break;
     case WIFI_PLAZA_ARRIVAL_ASK_TYPES:
         if (!IsSEPlaying(SEQ_SE_PL_EFF03_4) && (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) != 0) {
             PlaySE(SEQ_SE_DP_SELECT);
-            WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00004));
+            WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00004));
             work->nextStep = WIFI_PLAZA_ARRIVAL_ASK_FIRST_TYPE;
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ARRIVAL_WAIT_MESSAGE);
             WiFiPlazaWork_SetFavoriteTypes(lobby, work->firstChoice, work->secondChoice);
@@ -1156,14 +1156,14 @@ static BOOL WiFiPlazaPlayerState_OwnArrival(WiFiPlazaPlayerState *state, WiFiPla
         break;
     case WIFI_PLAZA_ARRIVAL_CHOSE_ONE_TYPE:
         WiFiPlazaRoom_BufferTypeName(room, 0, work->firstChoice);
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00012));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00012));
         work->nextStep = WIFI_PLAZA_ARRIVAL_ENJOY_STAY;
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ARRIVAL_WAIT_MESSAGE);
         break;
     case WIFI_PLAZA_ARRIVAL_CHOSE_TWO_TYPES:
         WiFiPlazaRoom_BufferTypeName(room, 0, work->firstChoice);
         WiFiPlazaRoom_BufferTypeName(room, 1, work->secondChoice);
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00011));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00011));
         work->nextStep = WIFI_PLAZA_ARRIVAL_ENJOY_STAY;
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ARRIVAL_WAIT_MESSAGE);
         break;
@@ -1197,14 +1197,14 @@ static BOOL WiFiPlazaPlayerState_OwnReturnFromAttraction(WiFiPlazaPlayerState *s
     switch (WiFiPlazaPlayerState_GetStep(state)) {
     case WIFI_PLAZA_RETURN_CREATE_PLAYER:
         WiFiPlazaPlayerState_CreateOwnPlayerAt(room, index, entry->x, entry->y, DIR_SOUTH);
-        if (WiFiPlaza_HasConnectionFailed() == FALSE) {
+        if (!WiFiPlaza_HasConnectionFailed()) {
             WiFiPlazaLobbyClient_LeaveChannel();
         }
         WiFiPlazaWork_SetLowVolume(lobby, 0);
         WiFiPlazaPlayerState_NextStep(state);
         break;
     case WIFI_PLAZA_RETURN_WAIT_FADE_IN:
-        if (WiFiPlaza_HasConnectionFailed() != FALSE || WiFiPlazaLobbyClient_IsNotInChannel() != FALSE) {
+        if (WiFiPlaza_HasConnectionFailed() || WiFiPlazaLobbyClient_IsNotInChannel()) {
             entry = WiFiPlazaRoom_GetStartParams(room);
             if (WiFiPlazaRoom_IsFading(room) == 0) {
                 WiFiPlazaPlayerState_NextStep(state);
@@ -1224,7 +1224,7 @@ static BOOL WiFiPlazaPlayerState_OwnReturnFromAttraction(WiFiPlazaPlayerState *s
         break;
     case WIFI_PLAZA_RETURN_PRINT_NOTICE:
         WiFiPlazaRoom_BufferActivityName(room, entry->param, 0);
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 0, msg_0776_00021));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_GAME_ENTRY, msg_0776_00021));
         WiFiPlazaPlayerState_NextStep(state);
         break;
     case WIFI_PLAZA_RETURN_WAIT_NOTICE:
@@ -1283,7 +1283,7 @@ static BOOL WiFiPlazaPlayerState_OwnReturnFromMinigame(WiFiPlazaPlayerState *sta
         break;
     case WIFI_PLAZA_RETURN_PRINT_NOTICE:
         WiFiPlazaRoom_BufferActivityName(room, entry->param, 0);
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 0, msg_0776_00008));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_GAME_ENTRY, msg_0776_00008));
         WiFiPlazaPlayerState_NextStep(state);
         break;
     case WIFI_PLAZA_RETURN_WAIT_NOTICE:
@@ -1332,7 +1332,7 @@ static BOOL WiFiPlazaPlayerState_OwnReturnFromSurvey(WiFiPlazaPlayerState *state
         }
         break;
     case WIFI_PLAZA_RETURN_PRINT_NOTICE:
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00091));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00091));
         WiFiPlazaPlayerState_NextStep(state);
         break;
     case WIFI_PLAZA_RETURN_WAIT_NOTICE:
@@ -1522,7 +1522,7 @@ static BOOL WiFiPlazaPlayerState_OwnExit(WiFiPlazaPlayerState *state, WiFiPlazaR
         WiFiPlazaObj_SetHandler(objManager, ownPlayer, WIFI_PLAZA_OBJ_HANDLER_IDLE);
         WiFiPlazaWork_SetActivity(WiFiPlazaRoom_GetLobby(room), WIFI_PLAZA_ACTIVITY_EXIT);
         PlaySE(SEQ_SE_DP_DECIDE);
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00065));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00065));
         WiFiPlazaPlayerState_NextStep(state);
         break;
     case WIFI_PLAZA_EXIT_WAIT_ASK_EXIT:
@@ -1531,7 +1531,7 @@ static BOOL WiFiPlazaPlayerState_OwnExit(WiFiPlazaPlayerState *state, WiFiPlazaR
         }
         break;
     case WIFI_PLAZA_EXIT_ASK_DISCONNECT:
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 2, msg_0800_00025));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_CONNECTION, msg_0800_00025));
         WiFiPlazaPlayerState_NextStep(state);
         break;
     case WIFI_PLAZA_EXIT_WAIT_ASK_DISCONNECT:
@@ -1629,17 +1629,17 @@ static BOOL WiFiPlazaPlayerState_OwnEnterAttraction(WiFiPlazaPlayerState *state,
         }
         if (WiFiPlazaWork_IsClosing(lobby) == 1) {
             work->msgId = msg_0776_00022;
-            work->msgBank = 0;
+            work->msgBank = WIFI_PLAZA_MSG_BANK_GAME_ENTRY;
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ATTRACTION_STEP_BACK);
         } else if (WiFiPlazaWork_TakeExcessFlood(lobby) == 1) {
             work->msgId = msg_0777_00072;
-            work->msgBank = 1;
+            work->msgBank = WIFI_PLAZA_MSG_BANK_PLAZA;
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ATTRACTION_STEP_BACK);
         } else {
             kind = WiFiPlazaPlayerState_GetAttractionSlot(tile);
             if (!WiFiPlazaLobbyClient_CanJoinChannel(kind)) {
                 work->msgId = msg_0776_00020;
-                work->msgBank = 0;
+                work->msgBank = WIFI_PLAZA_MSG_BANK_GAME_ENTRY;
                 WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ATTRACTION_SLIDE_BACK);
             } else {
                 if (!WiFiPlazaLobbyClient_JoinChannel(kind)) {
@@ -1679,7 +1679,7 @@ static BOOL WiFiPlazaPlayerState_OwnEnterAttraction(WiFiPlazaPlayerState *state,
             }
         } else if (result == 2) {
             work->msgId = msg_0776_00020;
-            work->msgBank = 0;
+            work->msgBank = WIFI_PLAZA_MSG_BANK_GAME_ENTRY;
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_ATTRACTION_SLIDE_BACK);
         }
         break;
@@ -1904,7 +1904,7 @@ static BOOL WiFiPlazaPlayerState_OwnEnterMinigame(WiFiPlazaPlayerState *state, W
             break;
         }
         if (valid) {
-            WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 0, value));
+            WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_GAME_ENTRY, value));
             WiFiPlazaPlayerState_NextStep(state);
         } else {
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_GAME_BOOTH_END);
@@ -1997,7 +1997,7 @@ static BOOL WiFiPlazaPlayerState_OwnUseSurveyMonitor(WiFiPlazaPlayerState *state
         }
         break;
     case WIFI_PLAZA_SURVEY_MONITOR_PRINT_MESSAGE:
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 1, work[0]));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, work[0]));
         WiFiPlazaPlayerState_NextStep(state);
         break;
     case WIFI_PLAZA_SURVEY_MONITOR_WAIT_MESSAGE:
@@ -2131,11 +2131,11 @@ static BOOL WiFiPlazaTalk_Greeter(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork
     case WIFI_PLAZA_GREETER_PRINT:
         object = WiFiPlazaRoom_GetLobby(room);
         if (WiFiPlazaWork_IsClosing(object) == 1) {
-            message = WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00003);
+            message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00003);
         } else if (WiFiPlazaWork_IsParadeStarted(object) == TRUE) {
-            message = WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00078);
+            message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00078);
         } else {
-            message = WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00002);
+            message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00002);
         }
         WiFiPlazaRoom_PrintMessage(room, message);
         PlaySE(SEQ_SE_DP_SELECT);
@@ -2192,7 +2192,7 @@ static BOOL WiFiPlazaPlayerState_OwnRideMover(WiFiPlazaPlayerState *state, WiFiP
             ride->mover = WiFiPlazaWork_JoinGroup(lobby, index, ride->choice);
             if (ride->mover != -1) {
                 WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_RIDE_WAIT_FOR_FLOAT);
-                WiFiPlazaRoom_PrintMessageInstant(room, WiFiPlazaRoom_GetMsgString(room, 0, msg_0776_00031));
+                WiFiPlazaRoom_PrintMessageInstant(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_GAME_ENTRY, msg_0776_00031));
                 WiFiPlazaRoom_ShowWaitingIcon(room);
             } else {
                 ride->nextStep = WIFI_PLAZA_RIDE_FLOATS_FULL;
@@ -2259,17 +2259,17 @@ static BOOL WiFiPlazaPlayerState_OwnRideMover(WiFiPlazaPlayerState *state, WiFiP
         }
         break;
     case WIFI_PLAZA_RIDE_PARADE_LATER:
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 0, msg_0776_00030));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_GAME_ENTRY, msg_0776_00030));
         ride->nextStep = WIFI_PLAZA_RIDE_END;
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_RIDE_WAIT_MESSAGE);
         break;
     case WIFI_PLAZA_RIDE_FLOATS_FULL:
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 0, msg_0776_00032));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_GAME_ENTRY, msg_0776_00032));
         ride->nextStep = WIFI_PLAZA_RIDE_END;
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_RIDE_WAIT_MESSAGE);
         break;
     case WIFI_PLAZA_RIDE_PARADE_OVER:
-        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, 0, msg_0776_00033));
+        WiFiPlazaRoom_PrintMessage(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_GAME_ENTRY, msg_0776_00033));
         ride->nextStep = WIFI_PLAZA_RIDE_END;
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_RIDE_WAIT_MESSAGE);
         break;
@@ -2425,9 +2425,9 @@ static void WiFiPlazaPlayerState_InitArrivalMenu(WiFiPlazaOwnArrivalWork *work, 
     WiFiPlazaRoom_CreateListItems(room, 18);
     for (i = 1; i < 18; i++) {
         WiFiPlazaRoom_BufferTypeName(room, 0, i);
-        WiFiPlazaRoom_AddListItem(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00006), i);
+        WiFiPlazaRoom_AddListItem(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00006), i);
     }
-    WiFiPlazaRoom_AddListItem(room, WiFiPlazaRoom_GetMsgString(room, 1, msg_0777_00007), 0);
+    WiFiPlazaRoom_AddListItem(room, WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00007), 0);
     work->menuTemplate = sWiFiPlazaArrivalMenuTemplate;
     work->menuTemplate.items = WiFiPlazaRoom_GetListItems(room);
 }
@@ -2576,7 +2576,7 @@ static BOOL WiFiPlazaPlayerState_OtherLeave(WiFiPlazaPlayerState *state, WiFiPla
         WiFiPlazaPlayerState_NextStep(state);
         break;
     case WIFI_PLAZA_OTHER_LEAVE_WAIT_RISE_OUT:
-        if (WiFiPlazaObj_IsFinished(obj) != FALSE) {
+        if (WiFiPlazaObj_IsFinished(obj)) {
             WiFiPlazaPlayerState_NextStep(state);
         }
         break;
@@ -2618,7 +2618,7 @@ static BOOL WiFiPlazaPlayerState_OtherRideMover(WiFiPlazaPlayerState *state, WiF
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_OTHER_RIDE_WAIT_RISE_OUT);
         break;
     case WIFI_PLAZA_OTHER_RIDE_WAIT_RISE_OUT:
-        if (WiFiPlazaObj_IsFinished(work->obj) != FALSE) {
+        if (WiFiPlazaObj_IsFinished(work->obj)) {
             WiFiPlazaModels_GetMoverFrontPos(models, work->mover, work->side, &vecD);
             work->x = vecD.x - FX32_ONE * 16;
             WiFiPlazaObj_GetPosition(work->obj, &vecD);
@@ -2656,7 +2656,7 @@ static BOOL WiFiPlazaPlayerState_OtherRideMover(WiFiPlazaPlayerState *state, WiF
         break;
     case WIFI_PLAZA_OTHER_RIDE_RIDE:
         if (WiFiPlazaRoom_IsMoverWobbling(room, work->mover) == TRUE) {
-            if (WiFiPlazaPlayerBounce_IsActive(&work->bounce) == FALSE) {
+            if (!WiFiPlazaPlayerBounce_IsActive(&work->bounce)) {
                 WiFiPlazaPlayerBounce_Start(&work->bounce);
             }
         } else if (WiFiPlazaPlayerBounce_IsActive(&work->bounce) == TRUE) {
@@ -2699,7 +2699,7 @@ static BOOL WiFiPlazaPlayerState_OtherDoActivity(WiFiPlazaPlayerState *state, Wi
 
     switch (WiFiPlazaPlayerState_GetStep(state)) {
     case WIFI_PLAZA_OTHER_ACTIVITY_START:
-        if (placement->justAppeared == FALSE) {
+        if (!placement->justAppeared) {
             WiFiPlazaPlayerState_NextStep(state);
         } else {
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_OTHER_ACTIVITY_DROP_IN);
@@ -2746,9 +2746,9 @@ static BOOL WiFiPlazaPlayerState_OtherDoActivity(WiFiPlazaPlayerState *state, Wi
         obj = WiFiPlazaWork_GetPlayer(lobby, index);
         if (obj == NULL) {
             leave = TRUE;
-        } else if (placement->besideOwnPlayer == TRUE && WiFiPlazaWork_IsTalking(lobby) == FALSE) {
+        } else if (placement->besideOwnPlayer == TRUE && !WiFiPlazaWork_IsTalking(lobby)) {
             leave = TRUE;
-        } else if (WiFiPlazaWork_TakePlayerUpdated(lobby, index) != FALSE) {
+        } else if (WiFiPlazaWork_TakePlayerUpdated(lobby, index)) {
             int kind = WiFiPlazaPlayer_GetActivity(obj);
             if (kind != placement->kind) {
                 leave = TRUE;
@@ -2765,7 +2765,7 @@ static BOOL WiFiPlazaPlayerState_OtherDoActivity(WiFiPlazaPlayerState *state, Wi
         WiFiPlazaPlayerState_NextStep(state);
         break;
     case WIFI_PLAZA_OTHER_ACTIVITY_RETURN:
-        if (WiFiPlazaObj_IsOnCell(WiFiPlazaObj_GetOwnPlayer(objManager), placement->x, placement->y) == FALSE) {
+        if (!WiFiPlazaObj_IsOnCell(WiFiPlazaObj_GetOwnPlayer(objManager), placement->x, placement->y)) {
             cell.x = placement->x << 4;
             cell.y = placement->y << 4;
             WiFiPlazaObj_SetGridPos(obj, cell);
@@ -2889,7 +2889,7 @@ static BOOL WiFiPlazaPlayerState_FindFreeTaggedCell(WiFiPlazaMap *map, WiFiPlaza
     u16 y;
 
     for (i = 0; i < count; i++) {
-        if (WiFiPlazaMap_FindTileTag(map, tags[i], &x, &y, 0) == TRUE && WiFiPlazaObj_FindAt(objManager, x, y) == FALSE) {
+        if (WiFiPlazaMap_FindTileTag(map, tags[i], &x, &y, 0) == TRUE && !WiFiPlazaObj_FindAt(objManager, x, y)) {
             outPos[0] = x << 4;
             outPos[1] = y << 4;
             return TRUE;

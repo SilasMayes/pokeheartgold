@@ -48,6 +48,14 @@ enum PlazaGameKind {
     PLAZA_GAME_WOBBUFFET_POP,
 };
 
+enum PlazaGameCommandId {
+    PLAZA_GAME_CMD_VOTE_YES = 22,
+    PLAZA_GAME_CMD_VOTE_NO,
+    PLAZA_GAME_CMD_CONTINUE,
+    PLAZA_GAME_CMD_QUIT,
+    PLAZA_GAME_CMD_SELECTION,
+};
+
 enum PlazaGameTitleSlideInState {
     PLAZA_GAME_TITLE_SLIDE_IN,
     PLAZA_GAME_TITLE_BOUNCE_OUT,
@@ -288,7 +296,7 @@ void PlazaGameRoster_Init(PlazaGameRoster *roster, u32 fromLobby, SaveData *save
     roster->count = CommPlayerInfo_CountAccepted();
     localNetId = Comm_GetLocalNetId();
     count = 0;
-    for (netId = 0; netId < 4; netId++) {
+    for (netId = 0; netId < PLAZA_GAME_MAX_PLAYERS; netId++) {
         if (CommPlayerInfo_GetProfile(netId) != NULL) {
             if (localNetId == netId) {
                 roster->localIndex = count;
@@ -1072,7 +1080,7 @@ static void PlazaGameEntry_MainTask(SysTask *task, void *data) {
                 selection = PlazaGame_PickWeighted(gPlazaGameWobbuffetPopSelectionWeights, 3);
                 break;
             }
-            Comm_SendCommand(26, &selection, sizeof(selection));
+            Comm_SendCommand(PLAZA_GAME_CMD_SELECTION, &selection, sizeof(selection));
         }
         entry->state++;
         break;
@@ -1744,7 +1752,7 @@ static void PlazaGameResults_RankingTask(SysTask *task, void *data) {
                     found = TRUE;
                 }
             }
-        } while (found == FALSE);
+        } while (!found);
         switch (results->rankStep) {
         case 2:
         case 3:
@@ -2227,9 +2235,9 @@ static BOOL PlazaGameContinue_Run(PlazaGameContinue *prompt, PlazaGameMessageBox
         int response = YesNoPrompt_HandleInput(prompt->prompt);
         if ((u32)response - 1u <= 1u) {
             if (response == YESNORESPONSE_YES) {
-                Comm_SendCommand(22, NULL, 0);
+                Comm_SendCommand(PLAZA_GAME_CMD_VOTE_YES, NULL, 0);
             } else if (response == YESNORESPONSE_NO) {
-                Comm_SendCommand(23, NULL, 0);
+                Comm_SendCommand(PLAZA_GAME_CMD_VOTE_NO, NULL, 0);
             }
             PlazaGameMessageBox_Show(messageBox, text, msg_0236_00015, 1);
             PlazaGameMessageBox_ShowWaitingIcon(messageBox, 1);
@@ -2296,16 +2304,16 @@ static void PlazaGameContinue_ReceiveVote(PlazaGameContinue *prompt, int netId, 
         prompt->votes |= bit;
     }
     votes = 0;
-    for (i = votes; i < 4; i++) {
+    for (i = votes; i < PLAZA_GAME_MAX_PLAYERS; i++) {
         if (prompt->votes & (1 << i)) {
             votes++;
         }
     }
     if (votes == count) {
         if (prompt->allYes) {
-            Comm_SendCommand(24, NULL, 0);
+            Comm_SendCommand(PLAZA_GAME_CMD_CONTINUE, NULL, 0);
         } else {
-            Comm_SendCommand(25, NULL, 0);
+            Comm_SendCommand(PLAZA_GAME_CMD_QUIT, NULL, 0);
         }
     }
 }
@@ -2836,7 +2844,7 @@ int PlazaGame_GetCommandSizeNone(void) {
 }
 
 int PlazaGame_GetCommandSizeU32(void) {
-    return 4;
+    return sizeof(u32);
 }
 
 void PlazaGame_HandleSelectionCommand(int netId, int size, int *data, PlazaGameEntry *entry) {

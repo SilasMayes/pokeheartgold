@@ -623,7 +623,7 @@ case13_no:
         *state = GEONET_GLOBE_STATE_OPEN_MENU;
         break;
     case GEONET_GLOBE_STATE_START_GLOBE:
-        if (globe->isJapanese == TRUE && globe->nonJapanese == FALSE) {
+        if (globe->isJapanese == TRUE && !globe->nonJapanese) {
             globe->freeRotation = FALSE;
         } else {
             globe->freeRotation = TRUE;
@@ -667,7 +667,7 @@ case13_no:
             break;
         }
         if ((keys & PAD_BUTTON_X) || (touchInput & PAD_BUTTON_X)) {
-            if (globe->showLocationName == FALSE) {
+            if (!globe->showLocationName) {
                 globe->showLocationName = TRUE;
                 GeonetGlobe_UpdateLocationName(globe);
                 if (globe->showLocationName == TRUE) {
@@ -1006,7 +1006,7 @@ static BOOL GeonetGlobe_PrintMessage(GeonetGlobe *globe, int msgId, BOOL noWait)
 }
 
 static void GeonetGlobe_ListMenuMoveCursor(struct ListMenu *menu, s32 index, u8 onInit) {
-    if (onInit == FALSE) {
+    if (!onInit) {
         PlaySE(SEQ_SE_DP_SELECT);
     }
 }
@@ -1172,7 +1172,7 @@ static void GeonetGlobe_UpdateLocationName(GeonetGlobe *globe) {
     String *regionName;
     int index;
 
-    if (globe->showLocationName == FALSE) {
+    if (!globe->showLocationName) {
         String *string = String_New(1024, globe->heapID);
         FillWindowPixelRect(&globe->windows[GEONET_GLOBE_WINDOW_MESSAGE], 15, 0, 0, 216, 48);
         ReadMsgDataIntoString(globe->msgData, msg_0186_00015, string);
@@ -1242,7 +1242,7 @@ static void GeonetGlobe_InitCamera(GeonetGlobe *globe) {
     Camera_SetPerspectiveClippingPlane(0, FX32_CONST(100), globe->camera);
     Camera_ApplyPerspectiveType(0, globe->camera);
     Camera_SetStaticPtr(globe->camera);
-    if (globe->freeRotation == FALSE) {
+    if (!globe->freeRotation) {
         globe->zoomedIn = TRUE;
     } else {
         globe->zoomedIn = FALSE;
@@ -1287,7 +1287,7 @@ static BOOL GeonetGlobe_HandleRotationInput(GeonetGlobe *globe, u32 newKeys, u32
 
     if ((newKeys & PAD_BUTTON_A) || (globe->touch.input & PAD_BUTTON_A)) {
         if (globe->freeRotation == TRUE) {
-            if (globe->zoomedIn == FALSE) {
+            if (!globe->zoomedIn) {
                 globe->zoomedIn = TRUE;
             } else {
                 globe->zoomedIn = FALSE;
@@ -1296,7 +1296,7 @@ static BOOL GeonetGlobe_HandleRotationInput(GeonetGlobe *globe, u32 newKeys, u32
         return TRUE;
     }
 
-    if (globe->zoomedIn == FALSE) {
+    if (!globe->zoomedIn) {
         if (globe->touch.dx != 0 || globe->touch.dy != 0) {
             stepY = (u16)(globe->touch.dx * 85);
             stepX = (u16)(globe->touch.dy * 85);

@@ -236,7 +236,7 @@ int GtsMainMenu_Init(GtsApp *app, int state) {
     Gts_CreateWirelessStatusIcon(app);
     GtsMainMenu_DrawButtons(app);
     Sound_SetSceneAndPlayBGM(0x17, SEQ_GS_BLD_GTC, 1);
-    if (app->mainMenuShown == FALSE) {
+    if (!app->mainMenuShown) {
         GtsMainMenu_HideMainScreen(app);
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, HEAP_ID_61);
         app->state = GTS_MAIN_MENU_STATE_WAIT_ENTER_ANIM;
@@ -482,7 +482,7 @@ static int GtsMainMenu_GetTouchedButton(void) {
 static void GtsMainMenu_SelectButton(GtsApp *app, int button) {
     switch (button) {
     case 0:
-        if (app->hasDepositedMon == FALSE) {
+        if (!app->hasDepositedMon) {
             Gts_SetNextScreen(app, GTS_SCREEN_SELECT_MON, 5);
             app->state = GTS_MAIN_MENU_STATE_FADE_OUT;
             PlaySE(SEQ_SE_DP_SELECT);

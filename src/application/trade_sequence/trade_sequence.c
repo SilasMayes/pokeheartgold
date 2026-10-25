@@ -703,7 +703,7 @@ void TradeSequence_DrawModels(TradeSequenceModels *models) {
     NNS_G3dGeBufferOP_N(G3OP_MTX_PUSH, NULL, 0);
     Camera_PushLookAtToNNSGlb();
     for (i = 0; i < models->count; i++) {
-        if (models->models[i].visible != FALSE) {
+        if (models->models[i].visible) {
             TradeSequence_DrawModel(&models->models[i]);
         }
     }

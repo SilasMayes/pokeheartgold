@@ -398,7 +398,7 @@ static int GtsSummary_HandleMenu(GtsApp *app) {
         GtsSummary_PrintMonMessage(app, msg_0775_00006, 1, 0, 0xF0F, mon); // Will you take this Pokemon?
         Gts_SetState(app, GTS_SUMMARY_STATE_WAIT_TEXT, GTS_SUMMARY_STATE_SHOW_TAKE_BACK_PROMPT);
         GtsSummary_DrawWanted(app);
-    } else if (result == 2 || result == -2) {
+    } else if (result == 2 || result == LIST_CANCEL) {
         Gts_DestroyListMenu(app);
         ListMenuItems_Delete(app->listItems);
         app->state = GTS_SUMMARY_STATE_FADE_OUT;

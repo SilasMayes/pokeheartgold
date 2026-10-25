@@ -1300,7 +1300,7 @@ void ciModeHandler(ChatConnection *chat, ChatMessage *message) {
     }
     channel = message->params[0];
     modes = message->params[1];
-    if (ciInChannel(chat, channel) == 0) {
+    if (!ciInChannel(chat, channel)) {
         return;
     }
     changes = ciParseMode(modes, (const char **)message->params + 2, message->paramCount - 2);
@@ -1345,7 +1345,7 @@ void ciModeHandler(ChatConnection *chat, ChatMessage *message) {
         }
         change++;
     }
-    if (ciGetChannelMode(chat, channel, &mode) == 0) {
+    if (!ciGetChannelMode(chat, channel, &mode)) {
         DWCi_GsFree(changes);
         return;
     }

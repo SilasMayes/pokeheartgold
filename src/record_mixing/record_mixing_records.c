@@ -72,12 +72,12 @@ void RecordMixing_MergeGroups(int count, int localId, FRIEND_GROUP *groups, FRIE
     int i;
     for (i = 0; i < count; i++) {
         FRIEND_GROUP *group = received[i];
-        if (i == localId || group == NULL || FriendGroup_IsEmpty(group) == TRUE || FriendGroup_Equals(group, groups) != FALSE) {
+        if (i == localId || group == NULL || FriendGroup_IsEmpty(group) == TRUE || FriendGroup_Equals(group, groups)) {
             continue;
         }
         int j;
         for (j = 0; j < RECORD_MIXING_MAX_GROUPS_KEPT; ++j) {
-            if (FriendGroup_Equals(group, &groups[j + 2]) != FALSE) {
+            if (FriendGroup_Equals(group, &groups[j + 2])) {
                 RecordMixing_RemoveGroup(groups, j + 2);
             }
         }

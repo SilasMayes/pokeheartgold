@@ -302,7 +302,7 @@ static const u32 sWiFiPlazaRoomBgIds[4] = { GF_BG_LYR_MAIN_1, GF_BG_LYR_SUB_0, G
 
 static const GXRgb sWiFiPlazaRoomEdgeColors[8] = { GX_RGB(0, 0, 0), GX_RGB(4, 4, 4), GX_RGB(4, 4, 4), GX_RGB(4, 4, 4), GX_RGB(4, 4, 4), GX_RGB(4, 4, 4), GX_RGB(4, 4, 4), GX_RGB(4, 4, 4) };
 
-static const u32 sWiFiPlazaRoomMsgBanks[4] = { NARC_msg_msg_0776_bin, NARC_msg_msg_0777_bin, NARC_msg_msg_0800_bin, NARC_msg_msg_0766_bin };
+static const u32 sWiFiPlazaRoomMsgBanks[WIFI_PLAZA_MSG_BANK_COUNT] = { NARC_msg_msg_0776_bin, NARC_msg_msg_0777_bin, NARC_msg_msg_0800_bin, NARC_msg_msg_0766_bin };
 
 BOOL WiFiPlazaObj_UpdateLight(WiFiPlazaObjLight *light, struct WiFiPlazaPlayerObjects *avatars) {
     if (light->active == 0) {
@@ -384,7 +384,7 @@ BOOL WiFiPlazaRoom_Main(OverlayManager *manager, int *state) {
                 room->error = 1;
             }
         }
-        if (room->ignorePlazaClosing == FALSE && WiFiPlazaWork_IsClosed(room->lobby) == TRUE) {
+        if (!room->ignorePlazaClosing && WiFiPlazaWork_IsClosed(room->lobby) == TRUE) {
             room->plazaClosing = TRUE;
             WiFiPlazaRoom_SetResult(room, WIFI_PLAZA_ROOM_RESULT_PLAZA_CLOSED);
         }
@@ -403,9 +403,9 @@ BOOL WiFiPlazaRoom_Main(OverlayManager *manager, int *state) {
         WiFiPlazaListMenu_Close(&room->listMenu, NULL, NULL);
         WiFiPlazaTextWindow_Close(&room->textWindow);
         WiFiPlazaYesNoMenu_Free(&room->yesNoMenu);
-        if (CommState_HasWifiFailed() != FALSE) {
+        if (CommState_HasWifiFailed()) {
             WiFiPlazaErrorWindow_PrintCommError(&room->errorWindow, &room->msg);
-        } else if (CommState_HasPlazaLobbyFailed() != 0) {
+        } else if (CommState_HasPlazaLobbyFailed()) {
             WiFiPlazaErrorWindow_PrintLobbyError(&room->errorWindow, &room->msg, WiFiPlazaLobbyClient_GetLastError());
         } else {
             WiFiPlazaErrorWindow_PrintDisconnected(&room->errorWindow, &room->msg, WiFiPlazaWork_HasError(room->lobby));
@@ -422,12 +422,12 @@ BOOL WiFiPlazaRoom_Main(OverlayManager *manager, int *state) {
         WiFiPlazaListMenu_Close(&room->listMenu, NULL, NULL);
         WiFiPlazaTextWindow_Close(&room->textWindow);
         WiFiPlazaYesNoMenu_Free(&room->yesNoMenu);
-        WiFiPlazaMsgWindow_Print(&room->msgWindow, WiFiPlazaRoomMsg_GetString(&room->msg, 1, msg_0777_00070));
+        WiFiPlazaMsgWindow_Print(&room->msgWindow, WiFiPlazaRoomMsg_GetString(&room->msg, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00070));
         *state = WIFI_PLAZA_ROOM_WAIT_CLOSING;
         room->closingTimer = 60;
         break;
     case WIFI_PLAZA_ROOM_WAIT_CLOSING:
-        if (WiFiPlazaMsgWindow_IsPrintFinished(&room->msgWindow) != FALSE) {
+        if (WiFiPlazaMsgWindow_IsPrintFinished(&room->msgWindow)) {
             room->closingTimer--;
             if (room->closingTimer <= 0) {
                 *state = WIFI_PLAZA_ROOM_FADE_OUT;
@@ -748,7 +748,7 @@ void WiFiPlazaRoom_BufferTypeName(WiFiPlazaRoomWork *room, u32 field, u32 index)
 }
 
 void WiFiPlazaRoom_ShowPlayerCard(WiFiPlazaRoomWork *room, u32 playerIndex, u32 arg) {
-    if (playerIndex != WiFiPlazaInfoPanel_GetCardPlayer(&room->infoPanel) || WiFiPlazaInfoPanel_IsPlayerCardShown(&room->infoPanel) != TRUE || WiFiPlazaInfoPanel_HasRequest(&room->infoPanel) != FALSE || arg != WiFiPlazaInfoPanel_CardShowsMessage(&room->infoPanel)) {
+    if (playerIndex != WiFiPlazaInfoPanel_GetCardPlayer(&room->infoPanel) || WiFiPlazaInfoPanel_IsPlayerCardShown(&room->infoPanel) != TRUE || WiFiPlazaInfoPanel_HasRequest(&room->infoPanel) || arg != WiFiPlazaInfoPanel_CardShowsMessage(&room->infoPanel)) {
         WiFiPlazaInfoPanel_RequestPlayerCard(&room->infoPanel, playerIndex, arg);
     }
 }
@@ -758,7 +758,7 @@ void WiFiPlazaRoom_SetPlayerCardIcon(WiFiPlazaRoomWork *room, u32 icon) {
 }
 
 void WiFiPlazaRoom_RefreshPlayerCardTypes(WiFiPlazaRoomWork *room) {
-    if (WiFiPlazaInfoPanel_IsPlayerCardShown(&room->infoPanel) != FALSE) {
+    if (WiFiPlazaInfoPanel_IsPlayerCardShown(&room->infoPanel)) {
         WiFiPlazaPlayerCard_LoadTypeIcons(&room->infoPanel, &room->infoPanel.card, &room->graphics, HEAP_ID_119, WiFiPlazaWork_GetPlayer(room->lobby, WiFiPlazaInfoPanel_GetCardPlayer(&room->infoPanel)));
     }
 }
@@ -947,18 +947,18 @@ static void WiFiPlazaRoom_Update(WiFiPlazaRoomWork *room) {
     u32 error;
     WiFiPlazaObj_UpdateObjsAndLight(room->objManager);
     error = room->error;
-    if (error == 0 && room->plazaClosing == FALSE) {
+    if (error == 0 && !room->plazaClosing) {
         WiFiPlazaPlayerState_Update(room->playerStates);
     }
     WiFiPlazaModels_Update(room->models);
     error = room->error;
-    if (error == 0 && room->plazaClosing == FALSE) {
+    if (error == 0 && !room->plazaClosing) {
         WiFiPlazaObj_UpdateManager(room->objManager);
         WiFiPlazaPlayerState_LateUpdate(room->playerStates);
         WiFiPlazaEvent_Update(room->event);
     }
     WiFiPlazaRoom_UpdateMatchSigns(room);
-    if (room->fading == FALSE) {
+    if (!room->fading) {
         u32 paused;
         error = room->error;
         if (error == 1 || room->plazaClosing == TRUE || room->finished == TRUE) {
@@ -990,7 +990,7 @@ static void WiFiPlazaRoom_UpdateMatchSigns(WiFiPlazaRoomWork *room) {
     for (i = 0; i < 3; i++) {
         state = WiFiPlazaLobbyClient_IsMatchActive(i);
         if (state == TRUE) {
-            if (WiFiPlazaLobbyClient_IsMatchOpen(i) == FALSE) {
+            if (!WiFiPlazaLobbyClient_IsMatchOpen(i)) {
                 recruiting = TRUE;
             } else {
                 recruiting = FALSE;
@@ -1065,7 +1065,7 @@ static BOOL WiFiPlazaMsgWindow_IsWaitingIconShown(WiFiPlazaMsgWindow *window) {
 }
 
 static BOOL WiFiPlazaMsgWindow_IsPrintFinished(WiFiPlazaMsgWindow *window) {
-    if (TextPrinterCheckActive((u8)window->printerId) == FALSE) {
+    if (!TextPrinterCheckActive((u8)window->printerId)) {
         return TRUE;
     }
     return FALSE;
@@ -1240,7 +1240,7 @@ static void WiFiPlazaListMenu_Close(WiFiPlazaListMenu *menu, u16 *cursorPos, u16
 }
 
 static void WiFiPlazaListMenu_OnCursorMove(ListMenu *listMenu, s32 index, u8 onInit) {
-    if (onInit == FALSE) {
+    if (!onInit) {
         PlaySE(SEQ_SE_DP_SELECT);
     }
 }
@@ -1251,7 +1251,7 @@ static void WiFiPlazaListMenu_SetShowArrows(WiFiPlazaListMenu *menu, BOOL show) 
 
 static void WiFiPlazaListMenu_UpdateArrows(WiFiPlazaListMenu *menu) {
     u16 scroll;
-    if (menu->showArrows == FALSE) {
+    if (!menu->showArrows) {
         Sprite_SetDrawFlag(menu->arrows[0], FALSE);
         Sprite_SetDrawFlag(menu->arrows[1], FALSE);
         return;
@@ -1304,9 +1304,9 @@ static void WiFiPlazaYesNoMenu_Init(WiFiPlazaYesNoMenu *menu, WiFiPlazaRoomMsg *
     String *text;
     GF_ASSERT(menu->items == NULL);
     menu->items = ListMenuItems_New(2, heapID);
-    text = WiFiPlazaRoomMsg_GetString(msg, 1, msg_0777_00067);
+    text = WiFiPlazaRoomMsg_GetString(msg, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00067);
     ListMenuItems_AddItem(menu->items, text, 0);
-    text = WiFiPlazaRoomMsg_GetString(msg, 1, msg_0777_00066);
+    text = WiFiPlazaRoomMsg_GetString(msg, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00066);
     ListMenuItems_AddItem(menu->items, text, 1);
     menu->template = sWiFiPlazaYesNoTemplate;
     menu->template.totalItems = 2;
@@ -1340,17 +1340,17 @@ static void WiFiPlazaErrorWindow_PrintCommError(Window *window, WiFiPlazaRoomMsg
     u32 *error = CommState_GetWifiError();
     u32 msgId = WiFiPlaza_GetErrorMessageClass(error[0], error[1]);
     WiFiPlazaRoomMsg_BufferInt(msg, error[0], 5, 0, 2);
-    WiFiPlazaErrorWindow_Print(window, WiFiPlazaRoomMsg_GetString(msg, 2, msgId));
+    WiFiPlazaErrorWindow_Print(window, WiFiPlazaRoomMsg_GetString(msg, WIFI_PLAZA_MSG_BANK_CONNECTION, msgId));
 }
 
 static void WiFiPlazaErrorWindow_PrintLobbyError(Window *window, WiFiPlazaRoomMsg *msg, u32 error) {
     u32 code = WiFiPlazaLobbyClient_ToErrorCode(error);
     WiFiPlazaRoomMsg_BufferInt(msg, code, 5, 0, 2);
-    WiFiPlazaErrorWindow_Print(window, WiFiPlazaRoomMsg_GetString(msg, 2, msg_0800_00032));
+    WiFiPlazaErrorWindow_Print(window, WiFiPlazaRoomMsg_GetString(msg, WIFI_PLAZA_MSG_BANK_CONNECTION, msg_0800_00032));
 }
 
 static void WiFiPlazaErrorWindow_PrintDisconnected(Window *window, WiFiPlazaRoomMsg *msg, u32 unused) {
-    WiFiPlazaErrorWindow_Print(window, WiFiPlazaRoomMsg_GetString(msg, 2, msg_0800_00014));
+    WiFiPlazaErrorWindow_Print(window, WiFiPlazaRoomMsg_GetString(msg, WIFI_PLAZA_MSG_BANK_CONNECTION, msg_0800_00014));
 }
 
 static void WiFiPlazaRoomMsg_Init(WiFiPlazaRoomMsg *msg, enum HeapID heapID) {
@@ -2197,12 +2197,12 @@ static void WiFiPlazaPlayerCard_ClearWindows(WiFiPlazaPlayerCard *card) {
 }
 
 static void WiFiPlazaPlayerCard_Print(WiFiPlazaPlayerCard *card, WiFiPlazaRoomMsg *msg, int window, int msgId, u8 x, u8 y, u32 color) {
-    String *string = WiFiPlazaRoomMsg_GetString(msg, 1, msgId);
+    String *string = WiFiPlazaRoomMsg_GetString(msg, WIFI_PLAZA_MSG_BANK_PLAZA, msgId);
     AddTextPrinterParameterizedWithColor(&card->windows[window], 0, string, x, y, TEXT_SPEED_NOTRANSFER, color, NULL);
 }
 
 static void WiFiPlazaPlayerCard_PrintRightAligned(WiFiPlazaPlayerCard *card, WiFiPlazaRoomMsg *msg, int window, int msgId, u8 width, u8 y, u32 color) {
-    String *string = WiFiPlazaRoomMsg_GetString(msg, 1, msgId);
+    String *string = WiFiPlazaRoomMsg_GetString(msg, WIFI_PLAZA_MSG_BANK_PLAZA, msgId);
     int x = width - FontID_String_GetWidth(0, string, 0);
     if (x < 0) {
         x = 0;
@@ -2361,7 +2361,7 @@ static void WiFiPlazaPanelButton_Free(WiFiPlazaPanelButton *button) {
 
 static BOOL WiFiPlazaPanelButton_Update(WiFiPlazaPanelButton *button, WiFiPlazaRoomGraphics *graphics, NARC *narc, enum HeapID heapID) {
     BOOL pressed = FALSE;
-    if (button->disabled == FALSE) {
+    if (!button->disabled) {
         TouchHitboxController_IsTriggered(button->touch);
     } else {
         button->selected = 1;
@@ -2374,12 +2374,12 @@ static BOOL WiFiPlazaPanelButton_Update(WiFiPlazaPanelButton *button, WiFiPlazaR
         button->previous = button->selected;
         if (button->selected == 2) {
             WiFiPlazaPanelButton_Draw(button, graphics, 1, narc, heapID);
-        } else if (button->active == FALSE) {
+        } else if (!button->active) {
             WiFiPlazaPanelButton_Draw(button, graphics, 0, narc, heapID);
         } else {
             WiFiPlazaPanelButton_Draw(button, graphics, 2, narc, heapID);
         }
-        if (button->active == FALSE && button->selected == 2) {
+        if (!button->active && button->selected == 2) {
             button->active = TRUE;
             pressed = TRUE;
             button->timer = 1;
@@ -2395,10 +2395,10 @@ static void WiFiPlazaPanelButton_ShowOwnCard(WiFiPlazaPanelButton *button, WiFiP
     button->graphic = WiFiPlazaPlayer_GetTapToy(player);
     GfGfxLoader_LoadCharDataFromOpenNarc(narc, button->graphic, graphics->bgConfig, GF_BG_LYR_SUB_2, 0x140, 0, FALSE, heapID);
     WiFiPlazaInfoPanel_LoadScreen(graphics, narc, button->graphic + 0x1B, GF_BG_LYR_SUB_2, 0x140, heapID);
-    text = WiFiPlazaRoomMsg_GetString(msg, 1, msg_0777_00063);
+    text = WiFiPlazaRoomMsg_GetString(msg, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00063);
     FillWindowPixelBuffer(&button->window, 0);
     AddTextPrinterParameterizedWithColor(&button->window, 0, text, 0, 4, TEXT_SPEED_INSTANT, MAKE_TEXT_COLOR(15, 14, 0), NULL);
-    if (button->active == FALSE) {
+    if (!button->active) {
         WiFiPlazaPanelButton_Draw(button, graphics, 0, narc, heapID);
     } else {
         WiFiPlazaPanelButton_Draw(button, graphics, 2, narc, heapID);
@@ -2411,7 +2411,7 @@ static void WiFiPlazaPanelButton_ShowInstrument(WiFiPlazaPanelButton *button, Wi
     button->instrumentMode = TRUE;
     button->graphic = type;
     GfGfxLoader_LoadCharDataFromOpenNarc(narc, button->graphic + 0x5D, graphics->bgConfig, GF_BG_LYR_SUB_2, 0x140, 0, FALSE, heapID);
-    if (button->active == FALSE) {
+    if (!button->active) {
         WiFiPlazaPanelButton_Draw(button, graphics, 0, narc, heapID);
     } else {
         WiFiPlazaPanelButton_Draw(button, graphics, 2, narc, heapID);
