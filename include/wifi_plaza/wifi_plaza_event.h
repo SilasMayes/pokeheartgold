@@ -7,7 +7,6 @@
 #include "wifi_plaza/wifi_plaza_map.h"
 #include "wifi_plaza/wifi_plaza_room.h"
 
-#include "heap.h"
 
 typedef struct WiFiPlazaEventModelList {
     const u8 *ids;

@@ -1,7 +1,6 @@
 #ifndef POKEHEARTGOLD_EASY_CHAT_MENU_H
 #define POKEHEARTGOLD_EASY_CHAT_MENU_H
 
-#include "heap.h"
 #include "mail_misc.h"
 #include "pm_string.h"
 

@@ -31,6 +31,7 @@
 #include "system.h"
 #include "text.h"
 #include "type_icon_resources.h"
+#include "vram_transfer_manager.h"
 #include "wireless_status_icon.h"
 
 BOOL CommState_HasPlazaLobbyFailed(void);
@@ -380,7 +381,7 @@ BOOL WiFiPlazaRoom_Main(OverlayManager *manager, int *state) {
         break;
     case WIFI_PLAZA_ROOM_UPDATE:
         if (room->mode == 1) {
-            if (WiFiPlaza_HasConnectionFailed() == TRUE || WiFiPlazaWork_HasError(room->lobby) != 0) {
+            if (WiFiPlaza_HasConnectionFailed() == TRUE || WiFiPlazaWork_HasError(room->lobby)) {
                 room->error = 1;
             }
         }

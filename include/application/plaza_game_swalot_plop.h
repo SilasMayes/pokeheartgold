@@ -7,10 +7,8 @@
 
 #include "bg_window.h"
 #include "camera.h"
-#include "filesystem.h"
 #include "font_sprite.h"
 #include "gf_3d_vramman.h"
-#include "heap.h"
 #include "message_format.h"
 #include "model_animation.h"
 #include "msgdata.h"

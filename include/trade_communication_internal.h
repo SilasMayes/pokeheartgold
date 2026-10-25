@@ -4,10 +4,7 @@
 
 #include "save.h"
 #include "save_palpad.h"
-#include "save_special_ribbons.h"
 #include "communication_command.h"
-#include "communication_core.h"
-#include "comm_state.h"
 #include "wireless_trade_select_mon_internal.h"
 
 // The field system as seen by the link command handlers: the selection screen's work is kept in the field

@@ -2,8 +2,13 @@
 
 #include "constants/comm_type.h"
 
+#include "comm_state.h"
 #include "communication_club_link_internal.h"
+#include "communication_core.h"
 #include "communication_player_state.h"
+#include "encounter.h"
+#include "link_synchronization.h"
+#include "screen_fade.h"
 #include "script_manager.h"
 #include "trainer_card_data.h"
 

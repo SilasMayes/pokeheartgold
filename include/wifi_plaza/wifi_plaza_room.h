@@ -8,7 +8,6 @@
 #include "bg_window.h"
 #include "filesystem.h"
 #include "gf_3d_vramman.h"
-#include "heap.h"
 #include "list_menu.h"
 #include "list_menu_items.h"
 #include "message_format.h"
@@ -19,11 +18,9 @@
 #include "render_window.h"
 #include "save.h"
 #include "sprite.h"
-#include "sys_task_api.h"
 #include "touch_hitbox_controller.h"
 #include "sprite_resource_header.h"
 #include "sprite_resource.h"
-#include "vram_transfer_manager.h"
 #include "wifi_plaza/wifi_plaza_camera.h"
 #include "wifi_plaza/wifi_plaza_instrument.h"
 #include "wifi_plaza/wifi_plaza_map.h"
@@ -336,16 +333,16 @@ int WiFiPlazaPlayer_GetFavoriteType(struct WiFiPlazaPlayer *player, int index);
 int WiFiPlazaPlayer_GetHistoryId(struct WiFiPlazaPlayer *player, int index);
 int WiFiPlazaPlayer_GetHistoryValue(struct WiFiPlazaPlayer *player, int index);
 u32 WiFiPlazaPlayer_GetLobbyId(struct WiFiPlazaPlayer *player);
-int WiFiPlazaWork_IsSpecialVisitor(WiFiPlazaWork *lobby, int index);
-int WiFiPlazaWork_HasWordSet(WiFiPlazaWork *lobby, int index);
+BOOL WiFiPlazaWork_IsSpecialVisitor(WiFiPlazaWork *lobby, int index);
+BOOL WiFiPlazaWork_HasWordSet(WiFiPlazaWork *lobby, int index);
 u16 *WiFiPlazaWork_GetWordSet(WiFiPlazaWork *lobby, int index);
 void WiFiPlazaWork_RequestGroupAction(WiFiPlazaWork *lobby, int index);
 void WiFiPlazaWork_SendGroupAction(WiFiPlazaWork *work);
 
 BOOL WiFiPlazaWork_IsEventFlagSet(WiFiPlazaWork *lobby, int bit);
-u32 WiFiPlazaWork_HasAnsweredSurvey(WiFiPlazaWork *lobby);
-u32 WiFiPlazaWork_IsLobbyOpen(WiFiPlazaWork *lobby);
-u32 WiFiPlazaWork_IsClosing(WiFiPlazaWork *lobby);
+BOOL WiFiPlazaWork_HasAnsweredSurvey(WiFiPlazaWork *lobby);
+BOOL WiFiPlazaWork_IsLobbyOpen(WiFiPlazaWork *lobby);
+BOOL WiFiPlazaWork_IsClosing(WiFiPlazaWork *lobby);
 u32 WiFiPlazaWork_GetFireworksState(WiFiPlazaWork *lobby);
 BOOL WiFiPlazaWork_IsParadeStarted(WiFiPlazaWork *lobby);
 u32 WiFiPlazaWork_GetEventScheduleMode5(WiFiPlazaWork *lobby);
@@ -372,7 +369,7 @@ struct WiFiPlazaPlayer *WiFiPlazaWork_GetMyPlayer(WiFiPlazaWork *work);
 void WiFiPlazaPlayer_CopyToProfile(struct WiFiPlazaPlayer *player, PlayerProfile *profile, enum HeapID heapID);
 u8 WiFiPlazaPlayer_GetTapToy(struct WiFiPlazaPlayer *player);
 BOOL WiFiPlazaPlayer_HasTapToy(WiFiPlazaPlayer *player);
-u32 WiFiPlazaWork_HasError(WiFiPlazaWork *work);
+BOOL WiFiPlazaWork_HasError(WiFiPlazaWork *work);
 BOOL WiFiPlazaWork_IsClosed(WiFiPlazaWork *work);
 void WiFiPlazaWork_SendTapToyPlayed(void *unused, u32 value);
 u32 WiFiPlaza_GetTypeByChoice(u32 index);
@@ -427,7 +424,7 @@ BOOL WiFiPlazaPlayer_IsLanguageValid(WiFiPlazaPlayer *player);
 void IncrementGameStat47(WiFiPlazaWork *lobby);
 SaveData *WiFiPlazaWork_GetSaveData(WiFiPlazaWork *work);
 void WiFiPlazaWork_StartGameEntryCooldown(WiFiPlazaWork *lobby);
-int WiFiPlazaWork_IsGameEntryCoolingDown(WiFiPlazaWork *lobby);
+BOOL WiFiPlazaWork_IsGameEntryCoolingDown(WiFiPlazaWork *lobby);
 void WiFiPlazaWork_ClearGameMembers(WiFiPlazaWork *lobby);
 void WiFiPlazaWork_SetGameMember(WiFiPlazaWork *lobby, int id, u32 index);
 void WiFiPlazaWork_SetOwnGameMember(WiFiPlazaWork *lobby, u32 index);

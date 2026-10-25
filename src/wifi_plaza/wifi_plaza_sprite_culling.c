@@ -1,5 +1,6 @@
 #include "global.h"
 
+#include "model_box_test.h"
 #include "wifi_plaza/wifi_plaza_internal.h"
 
 // Whether a player's billboard is inside the view: box test of its model's bounding box, moved to the billboard

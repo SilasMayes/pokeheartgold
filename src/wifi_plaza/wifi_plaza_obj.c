@@ -365,7 +365,7 @@ WiFiPlazaObj *WiFiPlazaObj_FindFacing(WiFiPlazaObjManager *manager, WiFiPlazaObj
     }
 }
 
-u32 WiFiPlazaObj_IsCulled(WiFiPlazaObj *obj) {
+BOOL WiFiPlazaObj_IsCulled(WiFiPlazaObj *obj) {
     return WiFiPlazaPlayerObject_IsCulled(obj->avatar);
 }
 
@@ -485,7 +485,7 @@ void WiFiPlazaObj_SetVisible(WiFiPlazaObj *obj, u32 value) {
     WiFiPlazaPlayerObject_SetVisible(obj->avatar, value);
 }
 
-u32 WiFiPlazaObj_IsVisible(WiFiPlazaObj *obj) {
+BOOL WiFiPlazaObj_IsVisible(WiFiPlazaObj *obj) {
     return WiFiPlazaPlayerObject_IsVisible(obj->avatar);
 }
 

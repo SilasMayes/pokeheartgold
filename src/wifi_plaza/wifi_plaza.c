@@ -65,7 +65,7 @@ static void WiFiPlazaEventSchedule_Update(WiFiPlazaEventSchedule *state, u32 *fl
 static void WiFiPlazaEventSchedule_Init(WiFiPlazaEventSchedule *state);
 static void WiFiPlazaEventSchedule_ApplyVolume(WiFiPlazaEventSchedule *state);
 static void WiFiPlazaSessionState_StartCooldown(WiFiPlazaSessionState *state);
-static int WiFiPlazaSessionState_IsCoolingDown(WiFiPlazaSessionState *state);
+static BOOL WiFiPlazaSessionState_IsCoolingDown(WiFiPlazaSessionState *state);
 static void WiFiPlazaSessionState_UpdateCooldown(WiFiPlazaSessionState *state);
 static void WiFiPlaza_NewPlayerProfile(PlayerProfile **profile, enum HeapID heapID);
 static void WiFiPlaza_FreePlayerProfile(PlayerProfile **profile);
@@ -129,7 +129,7 @@ static u32 WiFiPlaza_GetSlotFlag(u8 *flags, u32 slot);
 static void WiFiPlazaWordSet_Init(WiFiPlazaWordSet *wordSet, enum HeapID heapID);
 static void WiFiPlazaWordSet_Free(WiFiPlazaWordSet *wordSet);
 static void WiFiPlazaWordSet_Set(WiFiPlazaWordSet *wordSet, u32 slot, u8 flag, u32 code);
-static u32 WiFiPlazaWordSet_HasWords(WiFiPlazaWordSet *wordSet, u32 slot);
+static BOOL WiFiPlazaWordSet_HasWords(WiFiPlazaWordSet *wordSet, u32 slot);
 static u16 *WiFiPlazaWordSet_GetWords(WiFiPlazaWordSet *wordSet, u32 slot);
 static void WiFiPlaza_MakeWordsFromCode(WallpaperPasswordBank *bank, u32 code, u16 *words);
 static void WiFiPlazaTimer_Init(WiFiPlazaTimer *timer, int start, int end);
@@ -326,7 +326,7 @@ static void WiFiPlazaWork_Update(WiFiPlazaWork *work) {
 static void WiFiPlazaWork_VBlankDummy(WiFiPlazaWork *work) {
 }
 
-u32 WiFiPlazaWork_HasError(WiFiPlazaWork *work) {
+BOOL WiFiPlazaWork_HasError(WiFiPlazaWork *work) {
     return work->hasError;
 }
 
@@ -387,7 +387,7 @@ int WiFiPlazaWork_IsArceusFootprintShown(WiFiPlazaWork *work) {
     return WiFiPlazaLobbyClient_GetScheduleValue(4);
 }
 
-u32 WiFiPlazaWork_HasAnsweredSurvey(WiFiPlazaWork *work) {
+BOOL WiFiPlazaWork_HasAnsweredSurvey(WiFiPlazaWork *work) {
     GF_ASSERT(work != NULL);
     return work->eventSchedule.low;
 }
@@ -401,11 +401,11 @@ void WiFiPlazaWork_SetEventScheduleHigh(WiFiPlazaWork *work) {
     work->eventSchedule.high = 1;
 }
 
-u32 WiFiPlazaWork_IsLobbyOpen(WiFiPlazaWork *work) {
+BOOL WiFiPlazaWork_IsLobbyOpen(WiFiPlazaWork *work) {
     return work->eventSchedule.flag0;
 }
 
-u32 WiFiPlazaWork_IsClosing(WiFiPlazaWork *work) {
+BOOL WiFiPlazaWork_IsClosing(WiFiPlazaWork *work) {
     return work->eventSchedule.flag7;
 }
 
@@ -466,7 +466,7 @@ void WiFiPlazaWork_StartGameEntryCooldown(WiFiPlazaWork *work) {
     WiFiPlazaSessionState_StartCooldown(&work->sessionState);
 }
 
-int WiFiPlazaWork_IsGameEntryCoolingDown(WiFiPlazaWork *work) {
+BOOL WiFiPlazaWork_IsGameEntryCoolingDown(WiFiPlazaWork *work) {
     return WiFiPlazaSessionState_IsCoolingDown(&work->sessionState);
 }
 
@@ -866,7 +866,7 @@ void *WiFiPlazaWork_GetOwnPlayerProfile(WiFiPlazaWork *work) {
     return work->ownProfileData.profile;
 }
 
-int WiFiPlazaWork_IsSpecialVisitor(WiFiPlazaWork *work, int slot) {
+BOOL WiFiPlazaWork_IsSpecialVisitor(WiFiPlazaWork *work, int slot) {
     return WiFiPlaza_GetSlotFlag(work->specialVisitors, slot);
 }
 
@@ -874,7 +874,7 @@ void WiFiPlazaWork_GetSpecialVisitors(WiFiPlazaWork *work, u8 *dest) {
     MI_CpuCopy8(work->specialVisitors, dest, sizeof(work->specialVisitors));
 }
 
-int WiFiPlazaWork_HasWordSet(WiFiPlazaWork *work, int slot) {
+BOOL WiFiPlazaWork_HasWordSet(WiFiPlazaWork *work, int slot) {
     return WiFiPlazaWordSet_HasWords(&work->wordSet, slot);
 }
 
@@ -1734,7 +1734,7 @@ static void WiFiPlazaSessionState_StartCooldown(WiFiPlazaSessionState *state) {
     state->timer = 900;
 }
 
-static int WiFiPlazaSessionState_IsCoolingDown(WiFiPlazaSessionState *state) {
+static BOOL WiFiPlazaSessionState_IsCoolingDown(WiFiPlazaSessionState *state) {
     return state->timer > 0;
 }
 
@@ -2457,7 +2457,7 @@ static void WiFiPlazaWordSet_Set(WiFiPlazaWordSet *wordSet, u32 slot, u8 flag, u
     }
 }
 
-static u32 WiFiPlazaWordSet_HasWords(WiFiPlazaWordSet *wordSet, u32 slot) {
+static BOOL WiFiPlazaWordSet_HasWords(WiFiPlazaWordSet *wordSet, u32 slot) {
     GF_ASSERT(slot < WIFI_PLAZA_MAX_PLAYERS);
     if (slot < WIFI_PLAZA_MAX_PLAYERS) {
         return wordSet->flags[slot];

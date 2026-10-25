@@ -8,6 +8,7 @@
 
 #include "dwc/net_common_internal.h"
 #include "gts/gts_internal.h"
+#include "gts/gts_server.h"
 #include "msgdata/msg.naix"
 
 #include "bg_window.h"

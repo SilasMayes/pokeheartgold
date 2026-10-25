@@ -5,7 +5,6 @@
 
 #include "wifi_plaza/wifi_plaza_map.h"
 
-#include "heap.h"
 #include "overlay_42.h"
 
 // Objects of the Wi-Fi Plaza room: a grid object (cell position, direction, queued moves) paired with a billboard
@@ -119,7 +118,7 @@ void WiFiPlazaObj_SetHandler(WiFiPlazaObjManager *manager, WiFiPlazaObj *obj, in
 u8 WiFiPlazaObj_IsFinished(WiFiPlazaObj *obj);
 u8 WiFiPlazaObj_GetHandler(WiFiPlazaObj *obj);
 WiFiPlazaObj *WiFiPlazaObj_FindFacing(WiFiPlazaObjManager *manager, WiFiPlazaObj *obj);
-u32 WiFiPlazaObj_IsCulled(WiFiPlazaObj *obj);
+BOOL WiFiPlazaObj_IsCulled(WiFiPlazaObj *obj);
 WiFiPlazaObj *WiFiPlazaObj_FindAt(WiFiPlazaObjManager *manager, s32 x, s32 y);
 BOOL WiFiPlazaObj_IsOnCell(WiFiPlazaObj *obj, s32 x, s32 y);
 BOOL WiFiPlazaObj_FindFreeNeighbor(WiFiPlazaObjManager *manager, WiFiPlazaObj *obj, s32 *direction, Field2DPoint *position);
@@ -133,7 +132,7 @@ void WiFiPlazaObj_SetSpinEffect(WiFiPlazaObj *obj, u32 enable);
 void WiFiPlazaObj_SetPoseLoopEffect(WiFiPlazaObj *obj, u32 enable);
 void WiFiPlazaObj_SetLightFlags(WiFiPlazaObj *obj, u32 value);
 void WiFiPlazaObj_SetVisible(WiFiPlazaObj *obj, u32 value);
-u32 WiFiPlazaObj_IsVisible(WiFiPlazaObj *obj);
+BOOL WiFiPlazaObj_IsVisible(WiFiPlazaObj *obj);
 BOOL WiFiPlazaObj_UpdateLight(WiFiPlazaObjLight *light, struct WiFiPlazaPlayerObjects *avatars);
 
 // Avatar manager

@@ -1,12 +1,9 @@
 #ifndef POKEHEARTGOLD_UNION_ROOM_OBJECTS_H
 #define POKEHEARTGOLD_UNION_ROOM_OBJECTS_H
 
-#include "mail_message.h"
 #include "player_avatar.h"
 #include "pm_string.h"
 #include "save_palpad.h"
-#include "script.h"
-#include "sys_task_api.h"
 #include "field_warp_reset.h"
 
 // One union room map object: slots 0-9 are the other players (object ids 1-10), slots 10-49 the members of their

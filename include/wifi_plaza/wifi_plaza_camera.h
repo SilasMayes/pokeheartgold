@@ -6,7 +6,6 @@
 #include "wifi_plaza/wifi_plaza_obj.h"
 
 #include "camera.h"
-#include "heap.h"
 
 // Camera of the Wi-Fi Plaza room; follows an avatar object when one is set.
 typedef struct WiFiPlazaCamera {

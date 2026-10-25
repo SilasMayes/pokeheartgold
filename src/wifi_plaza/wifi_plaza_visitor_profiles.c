@@ -1779,7 +1779,7 @@ static void VisitorProfilesExitPrompt_Init(VisitorProfilesExitPrompt *prompt, Vi
 }
 
 static void VisitorProfilesExitPrompt_Free(VisitorProfilesExitPrompt *prompt) {
-    if (TextPrinterCheckActive((u8)prompt->printerId) != 0) {
+    if (TextPrinterCheckActive((u8)prompt->printerId)) {
         RemoveTextPrinter((u8)prompt->printerId);
     }
     String_Delete(prompt->string);

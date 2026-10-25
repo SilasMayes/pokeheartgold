@@ -2,17 +2,13 @@
 #define POKEHEARTGOLD_GTS_INTERNAL_H
 
 #include "dwc/net_common_internal.h"
-#include "nnsys/fnd/expheap.h"
 
 #include "bg_window.h"
-#include "gts/gts.h"
-#include "gts/gts_server.h"
 #include "launch_application_internal.h"
 #include "message_format.h"
 #include "msgdata.h"
 #include "overlay_manager.h"
 #include "player_data.h"
-#include "pokemon.h"
 #include "render_window.h"
 #include "sprite.h"
 #include "touchscreen_list_menu.h"

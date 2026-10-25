@@ -3,12 +3,7 @@
 #include "global.h"
 
 #include "field_system.h"
-#include "heap.h"
-#include "party.h"
 #include "sys_task.h"
-#include "communication_core.h"
-#include "link_synchronization.h"
-#include "comm_state.h"
 typedef void (*CommClubLinkState)(void);
 typedef struct CommClubLink {
     void *cards[4];
@@ -50,8 +45,6 @@ void CommClubLink_Free(void);
 void CommClubLink_HostShowRoom(void);
 void CommClubLink_ChildShowRoom(void);
 void CommClubLink_StartBattle(void);
-#include "encounter.h"
-#include "screen_fade.h"
 #include "field_comm_cmds.h"
 void CommRandom_Init(void *);
 void CommState_StartParentSession(SaveData *, s32, s32, LinkBattleRuleset *, int);

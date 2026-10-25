@@ -1650,7 +1650,7 @@ BOOL WiFiPlazaTalk_Reception(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *roo
     switch (WiFiPlazaPlayerState_GetStep(state)) {
     case WIFI_PLAZA_RECEPTION_START:
         PlaySE(SEQ_SE_DP_SELECT);
-        if (WiFiPlazaWork_IsClosing(lobby) == 0) {
+        if (!WiFiPlazaWork_IsClosing(lobby)) {
             if (WiFiPlazaWork_IsParadeStarted(lobby) == TRUE) {
                 message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00078);
                 WiFiPlazaRoom_PrintMessage(room, message);

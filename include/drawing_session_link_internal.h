@@ -4,7 +4,6 @@
 #include "global.h"
 
 #include "communication_command.h"
-#include "drawing_session.h"
 #include "field_comm_cmds.h"
 
 typedef struct FourBytes {

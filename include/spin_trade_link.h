@@ -5,7 +5,6 @@
 
 #include "field_types_def.h"
 #include "game_stats.h"
-#include "heap.h"
 #include "options.h"
 #include "save.h"
 

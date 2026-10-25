@@ -213,7 +213,7 @@ BOOL WiFiPlazaGameEntry_Register(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork 
     default:
         break;
     case WIFI_PLAZA_REGISTER_CHECK_OPEN:
-        if (WiFiPlazaWork_IsGameEntryCoolingDown(lobby) != 0) {
+        if (WiFiPlazaWork_IsGameEntryCoolingDown(lobby)) {
             param->result = WIFI_PLAZA_GAME_ENTRY_NOT_READY;
             WiFiPlazaPlayerState_SetStep(savedState, WIFI_PLAZA_REGISTER_END);
         } else if (WiFiPlazaWork_GetEventScheduleMode5(lobby) != 0) {
@@ -329,7 +329,7 @@ BOOL WiFiPlazaGameEntry_Register(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork 
             WiFiPlazaGameStatus_Update(&entry->status, room, FALSE);
         } else if (!entry->startingSoon && (gSystem.newKeys & PAD_BUTTON_B)) {
             PlaySE(SEQ_SE_DP_SELECT);
-            if (WiFiPlazaLobbyClient_IsMatchHost() == 0) {
+            if (!WiFiPlazaLobbyClient_IsMatchHost()) {
                 param->result = WIFI_PLAZA_GAME_ENTRY_DROPPED_OUT;
                 WiFiPlazaRoom_HideWaitingIcon(room);
                 WiFiPlazaPlayerState_SetStep(savedState, WIFI_PLAZA_REGISTER_END_LINK);

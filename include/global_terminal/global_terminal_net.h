@@ -3,7 +3,6 @@
 
 #include "global.h"
 
-#include "heap.h"
 #include "message_format.h"
 #include "msgdata.h"
 #include "save.h"
@@ -37,7 +36,7 @@ enum GlobalTerminalSocketState {
 typedef struct GlobalTerminalNet GlobalTerminalNet;
 
 typedef struct GlobalTerminalNetError {
-    u32 isError;
+    BOOL isError;
     u32 type; // 0 = server status, 1 = cancelled, 2 = request result
     u32 command;
     u32 code;
@@ -238,7 +237,7 @@ struct GlobalTerminalNet {
     int initialized;
     u32 sequence;
     u32 sequenceStep;
-    int isRunning;
+    BOOL isRunning;
     u32 unk_3C8;
     GlobalTerminalNetStepWork stepWork;
     u8 unk_3D8[8];

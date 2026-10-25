@@ -7,8 +7,6 @@
 #include "wifi_plaza/wifi_plaza_map.h"
 #include "wifi_plaza/wifi_plaza_obj.h"
 
-#include "filesystem.h"
-#include "heap.h"
 #include "model_animation.h"
 
 // Tap Toy (instrument) effects of the Wi-Fi Plaza room: one effect slot per player, each drawing up to 18 models

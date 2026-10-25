@@ -256,7 +256,7 @@ static void WiFiPlazaInstrument_PlaySE(WiFiPlazaInstrumentManager *manager, WiFi
 
     if (obj == ownPlayer) {
         PlaySEOnPlayer((u16)seq, 5);
-    } else if (WiFiPlazaObj_IsCulled(obj) == 0) {
+    } else if (!WiFiPlazaObj_IsCulled(obj)) {
         PlaySE((u16)seq);
     }
 }

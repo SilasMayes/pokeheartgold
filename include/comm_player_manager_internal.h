@@ -5,7 +5,6 @@
 
 #include "field_types_def.h"
 #include "player_avatar.h"
-#include "sys_task_api.h"
 
 // Communication player manager: the avatars of the linked players in a shared field map. The host (net id 0) moves
 // every player and sends the positions; the other players walk their avatars to the positions they receive.

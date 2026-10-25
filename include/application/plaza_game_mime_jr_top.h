@@ -13,7 +13,6 @@
 #include "overlay_manager.h"
 #include "palette.h"
 #include "sprite_system.h"
-#include "sys_task_api.h"
 
 // Mime Jr. Top, a Wi-Fi Plaza game: Mime Jr. balances on a spinning top and every player rubs the
 // touch screen to keep the top upright.

@@ -573,7 +573,7 @@ BOOL WiFiPlazaTalk_Survey(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, 
         WiFiPlazaObj_SetHandler(objManager, special, WIFI_PLAZA_OBJ_HANDLER_IDLE);
         WiFiPlazaObj_SetAvatarMode(special, 0);
         WiFiPlazaObj_SetDirection(special, direction);
-        if (WiFiPlazaWork_IsClosing(lobby) != 0) {
+        if (WiFiPlazaWork_IsClosing(lobby)) {
             message = WiFiPlazaRoom_GetMsgString(room, WIFI_PLAZA_MSG_BANK_PLAZA, msg_0777_00003);
             *nextStep = WIFI_PLAZA_SURVEY_GUIDE_END;
             WiFiPlazaRoom_PrintMessage(room, message);

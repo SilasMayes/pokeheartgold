@@ -5,8 +5,6 @@
 
 #include "wifi_plaza/wifi_plaza_map.h"
 
-#include "filesystem.h"
-#include "heap.h"
 #include "model_animation.h"
 
 // 3D scenery of the Wi-Fi Plaza room: the base scene, props placed on the map cells that carry a spawn tag, and

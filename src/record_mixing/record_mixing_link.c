@@ -1,5 +1,11 @@
 #include "record_mixing/record_mixing_link_internal.h"
 
+#include "comm_state.h"
+#include "communication_core.h"
+#include "math_util.h"
+#include "record_mixing/record_mixing_internal.h"
+#include "sound_playback.h"
+
 static void RecordMixingLink_RecvRecords(int sender, int size, void *data, void *context);
 static void RecordMixingLink_RecvLeaderMenuState(int sender, int size, void *data, void *context);
 static void RecordMixingLink_RecvStartMixing(int sender, int size, void *data, void *context);

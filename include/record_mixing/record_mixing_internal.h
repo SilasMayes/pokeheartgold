@@ -16,7 +16,6 @@
 #include "sprite.h"
 #include "sprite_resource.h"
 #include "sprite_resource_header.h"
-#include "sys_task_api.h"
 #include "yes_no_prompt.h"
 
 // Work of the record mixing screen, shared with its link command handlers (record_mixing_link.c).

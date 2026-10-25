@@ -3,20 +3,9 @@
 
 #include "global.h"
 
-#include "constants/sndseq.h"
 
 #include "camera.h"
-#include "filesystem.h"
-#include "gf_3d_render.h"
-#include "gf_gfx_planes.h"
-#include "heap.h"
-#include "overlay_manager.h"
-#include "screen_fade.h"
-#include "sound_playback.h"
-#include "sound_system.h"
-#include "swap_3d_buffers.h"
 #include "system.h"
-#include "ui_util.h"
 
 typedef struct MagnetTrainCutsceneModel {
     NNSG3dRenderObj obj;

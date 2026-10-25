@@ -4,7 +4,6 @@
 #include "global.h"
 
 #include "filesystem.h"
-#include "heap.h"
 #include "model_animation.h"
 #include "overlay_42.h"
 

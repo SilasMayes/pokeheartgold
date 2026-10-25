@@ -11,7 +11,6 @@
 #include "message_format.h"
 #include "msgdata.h"
 #include "overlay_manager.h"
-#include "party.h"
 #include "pm_string.h"
 #include "pokemon_summary.h"
 #include "render_window.h"
@@ -72,7 +71,7 @@ struct WirelessTradeSelectMon {
     PokemonSummaryArgs summaryArgs;
     u32 summaryOfPartner;
     OverlayManager *summaryApp;
-    u32 summaryActive;
+    BOOL summaryActive;
     u32 state;
     int exchangeState;
     int sentChunks;
@@ -156,7 +155,7 @@ struct WirelessTradeSelectMon {
     int lastSentValue;
     int lastSentCommand;
     WaitingIcon *waitingIcon;
-    u32 timeoutActive;
+    BOOL timeoutActive;
     int timeoutCounter;
     YesNoPrompt *yesNoPrompt;
     TouchscreenListMenuSpawner *touchMenuSpawner;

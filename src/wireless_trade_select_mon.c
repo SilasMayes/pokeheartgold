@@ -188,7 +188,7 @@ static void WirelessTradeSelectMon_ScrollBg(WirelessTradeSelectMon *work);
 static void WirelessTradeSelectMon_SetSpritePos(Sprite *sprite, s32 x, s32 y);
 static void WirelessTradeSelectMon_ShowWaitingIcon(WirelessTradeSelectMon *work);
 static void WirelessTradeSelectMon_HideWaitingIcon(WirelessTradeSelectMon *work);
-static s32 WirelessTradeSelectMon_HasOtherNonEggMon(WirelessTradeSelectMon *work);
+static BOOL WirelessTradeSelectMon_HasOtherNonEggMon(WirelessTradeSelectMon *work);
 static s32 WirelessTradeSelectMon_FindBadEggParty(WirelessTradeSelectMon *work);
 static void WirelessTradeSelectMon_StartTimeout(WirelessTradeSelectMon *work);
 static void WirelessTradeSelectMon_UpdateTimeout(WirelessTradeSelectMon *work);
@@ -2180,7 +2180,7 @@ static void WirelessTradeSelectMon_HideWaitingIcon(WirelessTradeSelectMon *work)
 }
 
 // FALSE if every other mon of the party is an Egg.
-static s32 WirelessTradeSelectMon_HasOtherNonEggMon(WirelessTradeSelectMon *work) {
+static BOOL WirelessTradeSelectMon_HasOtherNonEggMon(WirelessTradeSelectMon *work) {
     s32 eggs = 0;
     s32 count = Party_GetCount(work->party);
     s32 i = 0;

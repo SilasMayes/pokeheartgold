@@ -145,7 +145,7 @@ int Comm_ParentQueueHasCommand(int value);
 int Comm_IsParentQueueEmpty(void);
 int Comm_IsChildQueueEmpty(void);
 void Comm_SetWifiConnected(int value);
-int Comm_IsWifiConnected(void);
+BOOL Comm_IsWifiConnected(void);
 void Comm_SetBattleSlot(int value, int slot);
 int Comm_GetBattleSlot(int slot);
 int Comm_IsWifiVoiceChatEnabled(void);

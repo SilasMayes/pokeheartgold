@@ -1,6 +1,9 @@
 #include "constants/sndseq.h"
 
+#include "comm_state.h"
+#include "comm_wireless.h"
 #include "global_terminal/global_terminal_app_internal.h"
+#include "sound_system.h"
 #include "wireless_status_icon.h"
 
 enum GlobalTerminalAppState {

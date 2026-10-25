@@ -58,7 +58,7 @@ static void Comm_FinishCommand(int netId, int command, int size, void *data, Pac
 static void Comm_ReceiveCommands(ByteRing *ring, int netId, u8 *buffer, PacketCursor *cursor);
 static void Comm_ReceiveFromParent(void);
 static void Comm_ReceiveFromChildren(void);
-static int Comm_IsKeySyncEnabled(void);
+static BOOL Comm_IsKeySyncEnabled(void);
 static void Comm_UpdateTransferModeHandshake(void);
 static int Comm_GetChildFrameSize(u16 linkMode);
 
@@ -1230,7 +1230,7 @@ void Comm_DisableKeySync(void) {
     }
 }
 
-static int Comm_IsKeySyncEnabled(void) {
+static BOOL Comm_IsKeySyncEnabled(void) {
     if (sCommCore.work != NULL) {
         return sCommCore.work->heldKeys & 0x8000;
     }
@@ -1384,7 +1384,7 @@ void Comm_SetWifiConnected(int value) {
     sCommCore.work->wifiConnected = value;
 }
 
-int Comm_IsWifiConnected(void) {
+BOOL Comm_IsWifiConnected(void) {
     return sCommCore.work->wifiConnected;
 }
 

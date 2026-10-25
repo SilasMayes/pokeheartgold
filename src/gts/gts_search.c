@@ -5,6 +5,7 @@
 
 #include "dwc/net_common_internal.h"
 #include "gts/gts_internal.h"
+#include "gts/gts_server.h"
 #include "msgdata/msg/msg_0775.h"
 
 #include "bg_window.h"

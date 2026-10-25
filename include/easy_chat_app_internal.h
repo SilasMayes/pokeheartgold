@@ -3,11 +3,9 @@
 
 #include "bg_window.h"
 #include "easy_chat_menu.h"
-#include "heap.h"
 #include "menu_input_state.h"
 #include "pm_string.h"
 #include "sprite.h"
-#include "sprite_system.h"
 #include "sys_task.h"
 #include "touchscreen.h"
 

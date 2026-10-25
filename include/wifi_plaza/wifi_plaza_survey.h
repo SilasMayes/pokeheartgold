@@ -4,10 +4,8 @@
 #include "bg_window.h"
 #include "filesystem.h"
 #include "list_menu_2d.h"
-#include "list_menu_items.h"
 #include "message_format.h"
 #include "msgdata.h"
-#include "options.h"
 #include "overlay_manager.h"
 #include "player_data.h"
 #include "pm_string.h"
@@ -42,10 +40,10 @@ typedef struct WiFiPlazaSurveyAnswerRecord {
 } WiFiPlazaSurveyAnswerRecord;
 
 typedef struct WiFiPlazaSurveyQuestion {
-    u32 questionNo;    // msg_0761 (< 50) or msg_0765
-    u32 surveyId;      // compared with the player's answer record
-    u32 isSpecial;     // "Special Plaza Survey"
-    u32 hasCustomText; // texts sent by the server instead of the message banks
+    u32 questionNo;     // msg_0761 (< 50) or msg_0765
+    u32 surveyId;       // compared with the player's answer record
+    BOOL isSpecial;     // "Special Plaza Survey"
+    BOOL hasCustomText; // texts sent by the server instead of the message banks
     String *question;
     String *answers[WIFI_PLAZA_SURVEY_NUM_ANSWERS];
 } WiFiPlazaSurveyQuestion;
@@ -125,7 +123,7 @@ extern void WiFiPlazaWork_SetSurveyAnswer(struct WiFiPlazaWork *lobby, u32 surve
 extern void WiFiPlazaPlayer_CopyToProfile(struct WiFiPlazaPlayer *player, PlayerProfile *profile, enum HeapID heapID);
 extern void *WiFiPlazaPlayer_GetRawLanguage(struct WiFiPlazaPlayer *player);
 extern void WiFiPlazaPlayer_GetSurvey(struct WiFiPlazaPlayer *player, WiFiPlazaSurveyAnswerRecord *record);
-extern int WiFiPlazaWork_IsSpecialVisitor(struct WiFiPlazaWork *lobby, int value);
+extern BOOL WiFiPlazaWork_IsSpecialVisitor(struct WiFiPlazaWork *lobby, int value);
 extern void WiFiPlazaWork_SetSurveyTally(struct WiFiPlazaWork *lobby, const WiFiPlazaSurveyTally *tally);
 extern BOOL WiFiPlazaWork_GetSurveyTally(struct WiFiPlazaWork *lobby, WiFiPlazaSurveyTally *tally);
 extern BOOL WiFiPlaza_HasConnectionFailed(void);

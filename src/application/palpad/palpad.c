@@ -10,6 +10,7 @@
 #include "gf_gfx_planes.h"
 #include "heap.h"
 #include "menu_input_state.h"
+#include "oam_manager.h"
 #include "obj_char_transfer.h"
 #include "obj_pltt_transfer.h"
 #include "options.h"

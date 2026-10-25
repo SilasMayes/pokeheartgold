@@ -6,7 +6,6 @@
 #include "field_system.h"
 #include "player_data.h"
 #include "save.h"
-#include "sys_task_api.h"
 
 // Union Room connection manager: FieldSystem.unionRoom while the player is in the Union Room. A SysTask polls the
 // other players' records every frame and runs the current state function, which drives the wireless connection.

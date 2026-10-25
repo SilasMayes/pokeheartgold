@@ -3,6 +3,9 @@
 
 #include "global.h"
 
+// The communication layer's own commands; the commands of a registered table are numbered from here.
+#define COMM_BASE_COMMAND_COUNT 22
+
 typedef void (*CommCmdRecvFunc)(int netId, int size, void *data, void *context);
 typedef u32 (*CommCmdSizeFunc)(void);
 typedef void *(*CommCmdBufferFunc)(int netId, void *context, int size);

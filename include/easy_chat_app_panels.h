@@ -7,7 +7,6 @@
 #include "gf_gfx_planes.h"
 #include "obj_char_transfer.h"
 #include "sprite.h"
-#include "sys_task_api.h"
 #include "touchscreen.h"
 
 // The panels the easy chat screen (EasyChatAppView) is made of.

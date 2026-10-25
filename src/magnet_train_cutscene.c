@@ -1,5 +1,12 @@
 #include "magnet_train_cutscene_internal.h"
+
+#include "gf_3d_render.h"
 #include "overlay_104.h"
+#include "screen_fade.h"
+#include "sound_playback.h"
+#include "sound_system.h"
+#include "swap_3d_buffers.h"
+#include "ui_util.h"
 
 static void MagnetTrainCutscene_InitGraphics(void);
 static void MagnetTrainCutscene_SetupCamera(MagnetTrainCutsceneWork *work);

@@ -162,7 +162,7 @@ static int GlobalTerminalSocket_InitTick(void);
 static void GlobalTerminalSocket_ResetStub(void);
 static void GlobalTerminalSocket_ThreadMain(void);
 static int GlobalTerminalSocket_StartThread(void);
-static int GlobalTerminalSocket_IsIPv4Address(signed char *str);
+static BOOL GlobalTerminalSocket_IsIPv4Address(signed char *str);
 static int GlobalTerminalSocket_ResolveHost(char *host, char *out);
 static int GlobalTerminalSocket_Open(void);
 static void GlobalTerminalSocket_Close(void);
@@ -480,7 +480,7 @@ static int GlobalTerminalSocket_StartThread(void) {
     return 1;
 }
 
-static int GlobalTerminalSocket_IsIPv4Address(signed char *str) {
+static BOOL GlobalTerminalSocket_IsIPv4Address(signed char *str) {
     int digits = 0, dots = 0;
     int c;
     while ((c = *str) != 0) {

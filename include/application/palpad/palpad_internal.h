@@ -10,7 +10,6 @@
 #include "message_format.h"
 #include "msgdata.h"
 #include "naming_screen.h"
-#include "oam_manager.h"
 #include "overlay_42.h"
 #include "overlay_43.h"
 #include "overlay_manager.h"

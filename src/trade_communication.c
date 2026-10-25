@@ -1,5 +1,8 @@
 #include "trade_communication_internal.h"
 
+#include "comm_state.h"
+#include "communication_core.h"
+
 static const WirelessTradeCommand sWirelessTradeCommands[] = {
     { WirelessTrade_RecvPartyChunk,       WirelessTrade_GetPartyChunkSize,     WirelessTrade_GetRecvBuffer },
     { WirelessTrade_RecvPartnerSelection, CommCmd_GetSize1,                    NULL                        },

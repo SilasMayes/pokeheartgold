@@ -49,7 +49,7 @@ enum PlazaGameKind {
 };
 
 enum PlazaGameCommandId {
-    PLAZA_GAME_CMD_VOTE_YES = 22,
+    PLAZA_GAME_CMD_VOTE_YES = COMM_BASE_COMMAND_COUNT,
     PLAZA_GAME_CMD_VOTE_NO,
     PLAZA_GAME_CMD_CONTINUE,
     PLAZA_GAME_CMD_QUIT,
@@ -329,7 +329,7 @@ static u8 PlazaGameRoster_GetNetId(const PlazaGameRoster *roster, u32 index) {
     return roster->netIds[index];
 }
 
-u32 PlazaGameRoster_IsSpecialVisitor(const PlazaGameRoster *roster, u32 netId) {
+BOOL PlazaGameRoster_IsSpecialVisitor(const PlazaGameRoster *roster, u32 netId) {
     int index;
     if (netId >= 4) {
         GF_ASSERT(netId < 4);

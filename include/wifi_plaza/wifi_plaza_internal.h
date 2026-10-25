@@ -13,12 +13,9 @@
 #include "filesystem.h"
 #include "friend_roster.h"
 #include "gf_3d_loader.h"
-#include "gf_3d_render.h"
 #include "gf_gfx_loader.h"
-#include "heap.h"
 #include "message_format.h"
 #include "model_animation.h"
-#include "model_box_test.h"
 #include "msgdata.h"
 #include "overlay_42.h"
 #include "overlay_manager.h"
@@ -27,7 +24,6 @@
 #include "pm_string.h"
 #include "save.h"
 #include "save_wifi_history.h"
-#include "sys_task_api.h"
 
 typedef struct WiFiPlazaArgs {
     void *loginTime;
@@ -341,7 +337,7 @@ typedef struct WiFiPlazaNewsEventList {
 // The plaza news, handed to the plaza news app.
 typedef struct WiFiPlazaNews {
     u32 openTime; // WiFiPlazaTime of the lobby opening
-    u32 isOpen;
+    BOOL isOpen;
     WiFiPlazaNewsSlots slots;
     WiFiPlazaNewsEventList events;
 } WiFiPlazaNews;
@@ -370,7 +366,7 @@ typedef struct WiFiPlazaWork {
     WiFiPlazaHistory history;
     WiFiPlazaOwnProfileData ownProfileData;
     enum HeapID heapID;
-    u32 hasError;
+    BOOL hasError;
 } WiFiPlazaWork;
 
 // Location tables of the earth place NARC (as in the Geonet globe app); y is the longitude angle.
@@ -481,7 +477,7 @@ typedef struct WiFiPlazaLobbySurvey {
     u8 questionText[0xDC];
     u8 answerTexts[3][0x24];
     u8 languageFlags[12];
-    u32 isSpecial;
+    BOOL isSpecial;
 } WiFiPlazaLobbySurvey;
 
 // This week's and last week's survey and last week's results.
@@ -599,7 +595,7 @@ typedef struct WiFiPlazaLobbyClient {
     int initResult; // PPW_LobbyInitializeAsync
 } WiFiPlazaLobbyClient;
 
-u32 WiFiPlazaWork_HasError(WiFiPlazaWork *work);
+BOOL WiFiPlazaWork_HasError(WiFiPlazaWork *work);
 BOOL WiFiPlazaWork_TakeExcessFlood(WiFiPlazaWork *work);
 WiFiPlazaNews *WiFiPlazaWork_GetNews(WiFiPlazaWork *work);
 void *WiFiPlazaWork_GetPlaces(WiFiPlazaWork *work);
@@ -610,11 +606,11 @@ BOOL WiFiPlazaWork_IsEventFlagSet(WiFiPlazaWork *work, int bit);
 BOOL WiFiPlazaWork_TakePlayerUpdated(WiFiPlazaWork *work, int bit);
 SaveData *WiFiPlazaWork_GetSaveData(WiFiPlazaWork *work);
 int WiFiPlazaWork_IsArceusFootprintShown(WiFiPlazaWork *work);
-u32 WiFiPlazaWork_HasAnsweredSurvey(WiFiPlazaWork *work);
+BOOL WiFiPlazaWork_HasAnsweredSurvey(WiFiPlazaWork *work);
 u32 WiFiPlazaWork_GetEventScheduleHigh(WiFiPlazaWork *work);
 void WiFiPlazaWork_SetEventScheduleHigh(WiFiPlazaWork *work);
-u32 WiFiPlazaWork_IsLobbyOpen(WiFiPlazaWork *work);
-u32 WiFiPlazaWork_IsClosing(WiFiPlazaWork *work);
+BOOL WiFiPlazaWork_IsLobbyOpen(WiFiPlazaWork *work);
+BOOL WiFiPlazaWork_IsClosing(WiFiPlazaWork *work);
 BOOL WiFiPlazaWork_IsClosed(WiFiPlazaWork *work);
 u32 WiFiPlazaWork_GetFireworksState(WiFiPlazaWork *work);
 BOOL WiFiPlazaWork_IsParadeStarted(WiFiPlazaWork *work);
@@ -624,7 +620,7 @@ u32 WiFiPlazaWork_GetColorEvent(WiFiPlazaWork *work);
 u32 WiFiPlazaWork_GetLight1Event(WiFiPlazaWork *work);
 u32 WiFiPlazaWork_GetThirdEvent(WiFiPlazaWork *work);
 void WiFiPlazaWork_StartGameEntryCooldown(WiFiPlazaWork *work);
-int WiFiPlazaWork_IsGameEntryCoolingDown(WiFiPlazaWork *work);
+BOOL WiFiPlazaWork_IsGameEntryCoolingDown(WiFiPlazaWork *work);
 BOOL WiFiPlazaWork_GetGameConnectionLost(WiFiPlazaWork *work);
 void WiFiPlazaWork_SetGameConnectionLost(WiFiPlazaWork *work, BOOL value);
 void WiFiPlazaWork_ClearGameMembers(WiFiPlazaWork *work);
@@ -667,9 +663,9 @@ u16 WiFiPlazaPlayer_GetFavoriteType(WiFiPlazaPlayer *player, u32 index);
 void WiFiPlazaPlayer_GetSurvey(WiFiPlazaPlayer *player, WiFiPlazaPlayerSurvey *out);
 
 void *WiFiPlazaWork_GetOwnPlayerProfile(WiFiPlazaWork *work);
-int WiFiPlazaWork_IsSpecialVisitor(WiFiPlazaWork *work, int slot);
+BOOL WiFiPlazaWork_IsSpecialVisitor(WiFiPlazaWork *work, int slot);
 void WiFiPlazaWork_GetSpecialVisitors(WiFiPlazaWork *work, u8 *dest);
-int WiFiPlazaWork_HasWordSet(WiFiPlazaWork *work, int slot);
+BOOL WiFiPlazaWork_HasWordSet(WiFiPlazaWork *work, int slot);
 u16 *WiFiPlazaWork_GetWordSet(WiFiPlazaWork *work, int slot);
 u32 WiFiPlaza_GetChannelPlayerCount(WiFiPlazaWork *work);
 int WiFiPlaza_ChannelSlotToSlot(WiFiPlazaWork *work, int channelSlot);

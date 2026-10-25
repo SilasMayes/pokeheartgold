@@ -20,8 +20,6 @@ typedef struct CommCommandTable {
     u8 shutdown;
 } CommCommandTable;
 
-#define COMM_BASE_COMMAND_COUNT 22
-
 static CommCommandTable *sCommCommandTable;
 
 void Comm_SetLinkError(void);
@@ -30,32 +28,16 @@ int Comm_IsNetIdConnected(u16 netId);
 void Comm_SendParentCommand(int command, int a1, int a2);
 BOOL Comm_SendFixedCommand(int command, void *data);
 
-void ByteRing_Init(ByteRing *ring, u8 *data, int capacity);
-void ByteRing_Write(ByteRing *ring, const u8 *src, int count, int unused);
-int ByteRing_Read(ByteRing *ring, u8 *dst, int count);
-u8 ByteRing_ReadByte(ByteRing *ring);
 static int ByteRing_Peek(ByteRing *ring, u8 *dst, int count);
-s32 ByteRing_GetReadableSize(const ByteRing *ring);
-s32 ByteRing_GetFreeSize(const ByteRing *ring);
 static s32 ByteRing_GetWritableSize(const ByteRing *ring);
 static s32 ByteRing_Wrap(const ByteRing *ring, s32 pos);
-void ByteRing_Commit(ByteRing *ring);
 static PacketNode *PacketPool_GetFreeNode(const PacketPool *pool);
-BOOL PacketPool_AllNodesFree(const PacketPool *pool);
 static BOOL PacketQueue_PopFront(PacketQueue *queue);
 static BOOL ByteWriter_PutByte(ByteWriter *writer, u8 value);
 static BOOL Packet_WriteHeader(PacketNode *node, ByteWriter *writer);
 static BOOL Packet_Write(PacketNode *node, ByteWriter *writer, ByteRing *ring, int force);
-BOOL PacketPool_Enqueue(PacketPool *pool, int command, u8 *data, int size, int a4, int copyToRing);
 static PacketNode *PacketPool_PeekNext(PacketPool *pool);
 static void PacketPool_PopNext(PacketPool *pool);
-BOOL PacketPool_WriteFrame(PacketPool *pool, ByteWriter *writer, int next);
-void PacketPool_Init(PacketPool *pool, int count, ByteRing *ring);
-void PacketPool_Reset(PacketPool *pool);
-void PacketPool_Free(PacketPool *pool);
-BOOL PacketPool_HasCommand(PacketPool *pool, int command);
-int Comm_GetMaxChildren(u16 linkMode);
-BOOL Comm_IsWifiLinkMode(int v);
 static u32 CommCmd_GetSize2(void);
 static void CommCmd_RecvReady(int netId, int size, void *data, void *context);
 static void CommCmd_RecvShutdown(int netId, int size, void *data, void *context);

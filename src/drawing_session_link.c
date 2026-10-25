@@ -1,5 +1,7 @@
 #include "drawing_session_link_internal.h"
 
+#include "drawing_session.h"
+
 static void DrawingSessionLink_ReceivePictureChunk(int netId, int size, void *data, void *context);
 static void DrawingSessionLink_ReceiveMemberStroke(int index, int size, void *data, void *context);
 static void DrawingSessionLink_ReceiveStrokes(int index, int size, void *data, void *context);

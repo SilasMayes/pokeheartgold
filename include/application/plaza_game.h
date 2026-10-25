@@ -11,7 +11,6 @@
 #include "render_window.h"
 #include "save.h"
 #include "sprite.h"
-#include "sys_task_api.h"
 #include "sprite_resource_header.h"
 #include "sprite_resource.h"
 #include "yes_no_prompt.h"
@@ -297,7 +296,7 @@ extern const u8 gPlazaGameCommands[];
 
 void PlazaGameRoster_Init(PlazaGameRoster *roster, u32 fromLobby, SaveData *saveData, u8 voiceChat, PlazaGameArgs *args);
 int PlazaGameRoster_GetIndexOfNetId(const PlazaGameRoster *roster, u32 netId);
-u32 PlazaGameRoster_IsSpecialVisitor(const PlazaGameRoster *roster, u32 netId);
+BOOL PlazaGameRoster_IsSpecialVisitor(const PlazaGameRoster *roster, u32 netId);
 PlayerProfile *PlazaGameRoster_GetProfile(const PlazaGameRoster *roster, u32 netId);
 PlazaGameEntry *PlazaGameEntry_NewSwalotPlop(const PlazaGameRoster *roster, enum HeapID heapId);
 PlazaGameEntry *PlazaGameEntry_NewMimeJrTop(const PlazaGameRoster *roster, enum HeapID heapId);
