@@ -29,8 +29,8 @@ void ParticleScene_HidePlanes(void) {
 }
 
 void ParticleScene_SetBlend(void) {
-    G2_SetBlendAlpha(0, 14, 11, 7);
-    G2S_SetBlendAlpha(0, 14, 7, 8);
+    G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, 11, 7);
+    G2S_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, 7, 8);
 }
 
 GF3DVramMan *ParticleScene_CreateVramMan(enum HeapID heapID) {
@@ -40,13 +40,13 @@ GF3DVramMan *ParticleScene_CreateVramMan(enum HeapID heapID) {
 static void ParticleScene_Setup3D(void) {
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);
     G2_SetBG0Priority(1);
-    G3X_SetShading((GXShading)0);
+    G3X_SetShading(GX_SHADING_TOON);
     G3X_AntiAlias(TRUE);
     G3X_AlphaTest(FALSE, 0);
     G3X_AlphaBlend(TRUE);
     G3X_EdgeMarking(FALSE);
-    G3X_SetFog(FALSE, (GXFogBlend)0, (GXFogSlope)0, 0);
-    G3X_SetClearColor(0, 0, 0x7FFF, 63, FALSE);
+    G3X_SetFog(FALSE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x8000, 0);
+    G3X_SetClearColor(RGB_BLACK, 0, 0x7FFF, 63, FALSE);
     G3_ViewPort(0, 0, 255, 191);
 }
 
@@ -65,7 +65,7 @@ void ParticleScene_DrawAndSwap(void) {
         NNS_G2dSetupSoftwareSpriteCamera();
     }
     ParticleSystem_CalcAll();
-    RequestSwap3DBuffers((GXSortMode)1, (GXBufferMode)0);
+    RequestSwap3DBuffers(GX_SORTMODE_MANUAL, GX_BUFFERMODE_Z);
 }
 
 static u32 ParticleScene_AllocTexVram(u32 size, BOOL compressed) {

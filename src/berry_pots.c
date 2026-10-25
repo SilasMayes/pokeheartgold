@@ -144,7 +144,7 @@ static u32 BerryPots_MainSeq_RunApp(BerryPotsOverlayData *data) {
         return BERRY_POTS_MAIN_RUN_APP;
     }
 
-    if ((u8)(data->itemAction + 0xFF) <= 1) {
+    if (data->itemAction == 1 || data->itemAction == 2) {
         return BERRY_POTS_MAIN_START_BAG;
     }
 

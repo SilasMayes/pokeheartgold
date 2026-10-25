@@ -2,6 +2,8 @@
 
 #include "global.h"
 
+#include "filesystem_files_def.h"
+
 typedef struct WindowView {
     void *bgConfig;
 } WindowView; // leading member of Window
@@ -46,7 +48,7 @@ void LoadWindowFrameIconTiles(WindowView *window, int member, int baseTile, int 
     locals.size = locals.count << 7;
     buffer = Heap_Alloc(heapId, locals.size);
     bgChars = BgGetCharPtr(locals.bgId);
-    locals.charFile = GfGfxLoader_GetCharData(38, member, 0, &locals.charData, heapId);
+    locals.charFile = GfGfxLoader_GetCharData(NARC_a_0_3_8, member, FALSE, &locals.charData, heapId);
     locals.iconPixels = locals.charData->pRawData;
     i = 0;
     if (locals.count > 0) {

@@ -32,11 +32,6 @@
 // An older version of the Nintendo WFC connection app, with a scrolling number instead of the touch number pad and a
 // Yes/No prompt instead of the touch YES/NO menu. Nothing in the game launches it.
 
-enum NintendoWfcUnusedInitState {
-    NINTENDO_WFC_UNUSED_INIT_SETUP,
-    NINTENDO_WFC_UNUSED_INIT_START_WIRELESS,
-};
-
 static void NintendoWfcUnused_VBlankCB(void *arg);
 static void NintendoWfcUnused_SetGfxBanks(void);
 static void NintendoWfcUnused_InitArgs(NintendoWfcUnused *wfc, OverlayManager *man);
@@ -93,7 +88,7 @@ BOOL NintendoWfcUnused_Init(OverlayManager *man, int *state) {
     void *heapMem;
 
     switch (*state) {
-    case NINTENDO_WFC_UNUSED_INIT_SETUP:
+    case NINTENDO_WFC_INIT_SETUP:
         Main_SetVBlankIntrCB(NULL, NULL);
         HBlankInterruptDisable();
         GfGfx_DisableEngineAPlanes();
@@ -120,13 +115,13 @@ BOOL NintendoWfcUnused_Init(OverlayManager *man, int *state) {
         wfc->expHeap = NNS_FndCreateExpHeapEx((void *)(((u32)heapMem + 31) & ~31), 0x20000, 0);
         Sound_SetSceneAndPlayBGM(11, SEQ_GS_WIFI_ACCESS, 1);
         reg_GX_POWCNT &= ~REG_GX_POWCNT_DSEL_MASK;
-        *state = NINTENDO_WFC_UNUSED_INIT_START_WIRELESS;
+        *state = NINTENDO_WFC_INIT_START_WIRELESS;
         break;
-    case NINTENDO_WFC_UNUSED_INIT_START_WIRELESS:
+    case NINTENDO_WFC_INIT_START_WIRELESS:
         LoadDwcOverlay();
         LoadOVY38();
         CommWireless_StartUp();
-        *state = NINTENDO_WFC_UNUSED_INIT_SETUP;
+        *state = NINTENDO_WFC_INIT_SETUP;
         return TRUE;
     default:
         break;
@@ -140,30 +135,30 @@ BOOL NintendoWfcUnused_Main(OverlayManager *man, int *state) {
     NintendoWfcHttp_Update();
     DWC_UpdateConnection();
     switch (*state) {
-    case NINTENDO_WFC_UNUSED_MAIN_WAIT_STARTUP:
+    case NINTENDO_WFC_MAIN_WAIT_STARTUP:
         if (CommWireless_IsStartedUp()) {
             sNintendoWfcUnusedGlobal.heap = wfc->expHeap;
             DWC_SetMemFunc(NintendoWfcUnused_Alloc, NintendoWfcUnused_Free);
-            *state = NINTENDO_WFC_UNUSED_MAIN_SESSION_INIT;
+            *state = NINTENDO_WFC_MAIN_SESSION_INIT;
         }
         break;
-    case NINTENDO_WFC_UNUSED_MAIN_SESSION_INIT:
+    case NINTENDO_WFC_MAIN_SESSION_INIT:
         *state = sNintendoWfcUnusedModes[wfc->mode].init(wfc, *state);
         break;
-    case NINTENDO_WFC_UNUSED_MAIN_WAIT_FADE_IN:
+    case NINTENDO_WFC_MAIN_WAIT_FADE_IN:
         if (IsPaletteFadeFinished()) {
-            *state = NINTENDO_WFC_UNUSED_MAIN_SESSION_MAIN;
+            *state = NINTENDO_WFC_MAIN_SESSION_MAIN;
         }
         break;
-    case NINTENDO_WFC_UNUSED_MAIN_SESSION_MAIN:
+    case NINTENDO_WFC_MAIN_SESSION_MAIN:
         *state = sNintendoWfcUnusedModes[wfc->mode].main(wfc, *state);
         break;
-    case NINTENDO_WFC_UNUSED_MAIN_SESSION_EXIT:
+    case NINTENDO_WFC_MAIN_SESSION_EXIT:
         if (IsPaletteFadeFinished()) {
             *state = sNintendoWfcUnusedModes[wfc->mode].exit(wfc, *state);
         }
         break;
-    case NINTENDO_WFC_UNUSED_MAIN_DONE:
+    case NINTENDO_WFC_MAIN_DONE:
         return TRUE;
     }
     if (wfc->spriteList) {
@@ -258,7 +253,7 @@ static void NintendoWfcUnused_InitSpriteTemplate(SpriteTemplate *template, Ninte
 static void NintendoWfcUnused_CreateSprites(NintendoWfcUnused *wfc) {
     SpriteTemplate template;
     int i;
-    CreateSpriteResourcesHeader(&wfc->spriteHeader, 0, 0, 0, 0, -1, -1, 0, 0, wfc->resMan[0], wfc->resMan[1], wfc->resMan[2], wfc->resMan[3], NULL, NULL);
+    CreateSpriteResourcesHeader(&wfc->spriteHeader, 0, 0, 0, 0, -1, -1, 0, 0, wfc->resMan[GF_GFX_RES_TYPE_CHAR], wfc->resMan[GF_GFX_RES_TYPE_PLTT], wfc->resMan[GF_GFX_RES_TYPE_CELL], wfc->resMan[GF_GFX_RES_TYPE_ANIM], NULL, NULL);
     NintendoWfcUnused_InitSpriteTemplate(&template, wfc, &wfc->spriteHeader, NNS_G2D_VRAM_TYPE_2DMAIN);
     for (i = 0; i < 2; i++) {
         template.position.x = gNintendoWfcUnusedArrowPositions[i][0] << FX32_SHIFT;

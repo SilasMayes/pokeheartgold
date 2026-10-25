@@ -516,17 +516,17 @@ static void BoxMonSelector_InitSpriteResources(BoxMonSelector *selector) {
     for (i = 0; i < GF_GFX_RES_TYPE_MAX; i++) {
         selector->resManagers[i] = Create2DGfxResObjMan(3, (GfGfxResType)i, selector->heapId);
     }
-    selector->spriteResources[0] = AddCharResObjFromNarc(selector->resManagers[0], NARC_a_1_5_1, 8, TRUE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, selector->heapId);
-    selector->spriteResources[1] = AddPlttResObjFromNarc(selector->resManagers[1], NARC_a_1_5_1, 5, FALSE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, 4, selector->heapId);
-    selector->spriteResources[2] = AddCellOrAnimResObjFromNarc(selector->resManagers[2], NARC_a_1_5_1, 7, TRUE, 0, GF_GFX_RES_TYPE_CELL, selector->heapId);
-    selector->spriteResources[3] = AddCellOrAnimResObjFromNarc(selector->resManagers[3], NARC_a_1_5_1, 6, TRUE, 0, GF_GFX_RES_TYPE_ANIM, selector->heapId);
+    selector->spriteResources[0] = AddCharResObjFromNarc(selector->resManagers[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_1, 8, TRUE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, selector->heapId);
+    selector->spriteResources[1] = AddPlttResObjFromNarc(selector->resManagers[GF_GFX_RES_TYPE_PLTT], NARC_a_1_5_1, 5, FALSE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, 4, selector->heapId);
+    selector->spriteResources[2] = AddCellOrAnimResObjFromNarc(selector->resManagers[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_1, 7, TRUE, 0, GF_GFX_RES_TYPE_CELL, selector->heapId);
+    selector->spriteResources[3] = AddCellOrAnimResObjFromNarc(selector->resManagers[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_1, 6, TRUE, 0, GF_GFX_RES_TYPE_ANIM, selector->heapId);
     SpriteTransfer_CreateCharTransferTask_AllocAtEnd(selector->spriteResources[0]);
     SpriteTransfer_CreateExtPlttTransferTask(selector->spriteResources[1]);
     GfGfxLoader_GXLoadPal(NARC_poketool_icongra_poke_icon, GetMonIconPlttNaix(), GF_PAL_LOCATION_MAIN_OBJ, GF_PAL_SLOT_8_OFFSET, 0, selector->heapId);
 }
 
 static void BoxMonSelector_InitSpriteHeader(BoxMonSelector *selector) {
-    CreateSpriteResourcesHeader(&selector->spriteHeader, 0, 0, 0, 0, -1, -1, 0, 0, selector->resManagers[0], selector->resManagers[1], selector->resManagers[2], selector->resManagers[3], NULL, NULL);
+    CreateSpriteResourcesHeader(&selector->spriteHeader, 0, 0, 0, 0, -1, -1, 0, 0, selector->resManagers[GF_GFX_RES_TYPE_CHAR], selector->resManagers[GF_GFX_RES_TYPE_PLTT], selector->resManagers[GF_GFX_RES_TYPE_CELL], selector->resManagers[GF_GFX_RES_TYPE_ANIM], NULL, NULL);
 }
 
 static void BoxMonSelector_CreatePickSlots(BoxMonSelector *selector) {
@@ -577,14 +577,14 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
             if (!selector->pickDropAreas[i].occupied) {
                 u32 y = selector->touchY;
                 u32 left = selector->pickDropAreas[i].left, top = selector->pickDropAreas[i].top, bottom = selector->pickDropAreas[i].bottom, right = selector->pickDropAreas[i].right;
-                if ((u32)(selector->touchX - left) < (u32)(right - left) && (u32)(y - top) < (u32)(bottom - top)) {
+                if ((selector->touchX - left) < (right - left) && (y - top) < (bottom - top)) {
                     BoxMonSelector_AddPick(selector, i);
                     return 1;
                 }
             } else {
                 u32 y = selector->touchY;
                 u32 left = selector->pickDropAreas[i].left, top = selector->pickDropAreas[i].top, bottom = selector->pickDropAreas[i].bottom, right = selector->pickDropAreas[i].right;
-                if ((u32)(selector->touchX - left) < (u32)(right - left) && (u32)(y - top) < (u32)(bottom - top)) {
+                if ((selector->touchX - left) < (right - left) && (y - top) < (bottom - top)) {
                     BoxMonSelector_RemovePick(selector, i);
                     BoxMonSelector_AddPick(selector, i);
                     return 1;
@@ -596,7 +596,7 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
         u32 left = selector->boxDropArea.left, top = selector->boxDropArea.top, bottom = selector->boxDropArea.bottom;
         u32 x = selector->touchX;
         u32 right = selector->boxDropArea.right;
-        if ((u32)(x - left) < (u32)(right - left) && (u32)(y - top) < (u32)(bottom - top)) {
+        if ((x - left) < (right - left) && (y - top) < (bottom - top)) {
             BoxMonSelector_RemovePick(selector, selector->dragIndex);
             BoxMonSelector_NotifyCursorMove(selector);
             return 2;
@@ -605,7 +605,7 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
             for (i = 0; i < count; i++) {
                 if (!selector->pickDropAreas[i].occupied) {
                     u32 left = selector->pickDropAreas[i].left, top = selector->pickDropAreas[i].top, bottom = selector->pickDropAreas[i].bottom, right = selector->pickDropAreas[i].right;
-                    if ((u32)(x - left) < (u32)(right - left) && (u32)(y - top) < (u32)(bottom - top)) {
+                    if ((x - left) < (right - left) && (y - top) < (bottom - top)) {
                         BoxMonSelector_MovePick(selector, selector->dragIndex, i);
                         return 3;
                     }
@@ -1009,20 +1009,20 @@ static void BoxMonSelector_EndDrag(BoxMonSelector *selector, int result) {
         if (selector->dragSource == DRAG_FROM_PICKS) {
             if (result == 2) {
                 position = selector->dragOrigin;
-                index = (u8)selector->dragIndex;
+                index = selector->dragIndex;
             } else {
-                u8 pick = (u8)selector->lastPick;
+                u8 pick = selector->lastPick;
                 position.x = 212 * FX32_ONE;
                 position.y = 40 * (pick + 1) << FX32_SHIFT;
                 position.z = 0;
-                index = (u8)selector->lastPick;
+                index = selector->lastPick;
             }
         } else {
-            u8 pick = (u8)selector->lastPick;
+            u8 pick = selector->lastPick;
             position.x = 212 * FX32_ONE;
             position.y = 40 * (pick + 1) << FX32_SHIFT;
             position.z = 0;
-            index = (u8)selector->lastPick;
+            index = selector->lastPick;
         }
         GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_PICKS, index);
     } else {
@@ -1325,10 +1325,10 @@ static int BoxMonSelector_HandleAButton(BoxMonSelector *selector) {
                 if (!selector->pickDropAreas[i].occupied) {
                     selector->touchX = 212;
                     selector->touchY = 40 * ((u8)i + 1);
-                    pos.x = (s32)(selector->touchX * FX32_ONE);
-                    pos.y = (s32)(selector->touchY * FX32_ONE);
+                    pos.x = selector->touchX * FX32_ONE;
+                    pos.y = selector->touchY * FX32_ONE;
                     iconPos = pos;
-                    iconPos.y = (s32)((u32)iconPos.y - 4 * FX32_ONE);
+                    iconPos.y -= 4 * FX32_ONE;
                     Sprite_SetMatrix(selector->dragIcons[selector->dragIndex].sprite, &iconPos);
                     Sprite_SetMatrix(selector->handCursor, &pos);
                     GridCursor_SetPosition(selector->cursor, BOX_MON_SELECTOR_PANEL_PLACE, i);
@@ -1344,7 +1344,7 @@ static int BoxMonSelector_HandleAButton(BoxMonSelector *selector) {
             VecFx32 iconPos;
             BoxMonSelector_StartDrag(selector, DRAG_FROM_PICKS, index);
             iconPos = *Sprite_GetMatrixPtr(selector->dragIcons[selector->dragIndex].sprite);
-            iconPos.y = (s32)((u32)iconPos.y - 4 * FX32_ONE);
+            iconPos.y -= 4 * FX32_ONE;
             Sprite_SetMatrix(selector->dragIcons[selector->dragIndex].sprite, &iconPos);
             selector->keyDragging = TRUE;
             result = BOX_MON_SELECTOR_TAKEN;

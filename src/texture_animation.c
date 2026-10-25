@@ -43,11 +43,13 @@ TextureAnimationPool *TextureAnimationPool_New(int count, enum HeapID heapID) {
     }
     return pool;
 }
+
 void TextureAnimationPool_Free(TextureAnimationPool *pool) {
     TextureAnimationPool_Clear(pool);
     Heap_Free(pool->animations);
     Heap_Free(pool);
 }
+
 TextureAnimation *TextureAnimationPool_Add(TextureAnimationPool *pool, const BillboardGfxSequence *gfxSequence, NNSG3dResTex *texture, u32 textureKey, u32 paletteKey, fx32 frame) {
     TextureAnimation *animation = NULL;
     int i;
@@ -69,18 +71,22 @@ TextureAnimation *TextureAnimationPool_Add(TextureAnimationPool *pool, const Bil
     TextureAnimation_SetFrameIndex(animation, frame >> FX32_SHIFT);
     return animation;
 }
+
 void TextureAnimation_Remove(TextureAnimation *animation) {
     TextureAnimation_Reset(animation);
 }
+
 static void TextureAnimationPool_Clear(TextureAnimationPool *pool) {
     int i;
     for (i = 0; i < pool->count; i++) {
         TextureAnimation_Reset(&pool->animations[i]);
     }
 }
+
 void TextureAnimation_SetFrame(TextureAnimation *animation, fx32 frame) {
     TextureAnimation_SetFrameIndex(animation, frame >> FX32_SHIFT);
 }
+
 static void TextureAnimation_Reset(TextureAnimation *animation) {
     animation->gfxSequence = NULL;
     animation->texture = NULL;
@@ -89,6 +95,7 @@ static void TextureAnimation_Reset(TextureAnimation *animation) {
     animation->textureIndex = 0;
     animation->paletteIndex = 0;
 }
+
 static void TextureAnimation_SetFrameIndex(TextureAnimation *animation, u16 frame) {
     BillboardTexPlttIndex indices = BillboardGfxSequence_GetTexPlttIndex(animation->gfxSequence, frame);
     if (animation->textureIndex != indices.textureIdx) {
@@ -98,24 +105,29 @@ static void TextureAnimation_SetFrameIndex(TextureAnimation *animation, u16 fram
         TextureAnimation_LoadPalette(animation, &indices);
     }
 }
+
 static void TextureAnimation_LoadTexture(TextureAnimation *animation, const BillboardTexPlttIndex *indices) {
     void *data = TextureAnimation_GetTextureData(animation, indices);
     NNSGfdTexKey key = animation->textureKey;
     GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_VRAM, NNS_GfdGetTexKeyAddr(key), data, ((key & 0x7FFF0000) >> 16) << 4);
     animation->textureIndex = indices->textureIdx;
 }
+
 static void TextureAnimation_LoadPalette(TextureAnimation *animation, const BillboardTexPlttIndex *indices) {
     void *data = TextureAnimation_GetPaletteData(animation, indices);
     NNSGfdPlttKey key = animation->paletteKey;
     GF_CreateNewVramTransferTask(NNS_GFD_DST_3D_TEX_PLTT, NNS_GfdGetPlttKeyAddr(key), data, ((key & 0xFFFF0000) >> 16) << 3);
     animation->paletteIndex = indices->plttIdx;
 }
+
 static void *TextureAnimation_GetTextureData(TextureAnimation *animation, const BillboardTexPlttIndex *indices) {
     return Texture_GetImageData(animation->texture, indices->textureIdx);
 }
+
 static void *TextureAnimation_GetPaletteData(TextureAnimation *animation, const BillboardTexPlttIndex *indices) {
     return Texture_GetPaletteData(animation->texture, indices->plttIdx);
 }
+
 void *Texture_GetImageData(NNSG3dResTex *texture, u32 index) {
     u32 *entry = texture ? NNS_G3dGetResDataByIdx(&texture->dict, index) : NULL;
     if (entry == NULL) {
@@ -123,6 +135,7 @@ void *Texture_GetImageData(NNSG3dResTex *texture, u32 index) {
     }
     return (u8 *)texture + texture->texInfo.ofsTex + (((*entry & 0xFFFF) + texture->texInfo.vramKey) << 3);
 }
+
 void *Texture_GetPaletteData(NNSG3dResTex *texture, u32 index) {
     u16 *entry;
     if (texture && texture->plttInfo.ofsDict) {
@@ -135,9 +148,11 @@ void *Texture_GetPaletteData(NNSG3dResTex *texture, u32 index) {
     }
     return (u8 *)texture + texture->plttInfo.ofsPlttData + (*entry << 3);
 }
+
 static u32 Texture_GetImageVramOffset(NNSG3dResTex *texture, u32 *entry) {
     return ((*entry << 16) >> 13) + ((texture->texInfo.vramKey << 16) >> 13);
 }
+
 u32 Texture_GetImageVramOffsetByName(NNSG3dResTex *texture, const char *name) {
     NNSG3dResName key;
     u32 *entry;
@@ -148,6 +163,7 @@ u32 Texture_GetImageVramOffsetByName(NNSG3dResTex *texture, const char *name) {
     }
     return Texture_GetImageVramOffset(texture, entry);
 }
+
 u32 Texture_GetImageVramOffsetByIndex(NNSG3dResTex *texture, u32 index) {
     u32 *entry = texture ? NNS_G3dGetResDataByIdx(&texture->dict, index) : NULL;
     if (entry == NULL) {
@@ -155,6 +171,7 @@ u32 Texture_GetImageVramOffsetByIndex(NNSG3dResTex *texture, u32 index) {
     }
     return Texture_GetImageVramOffset(texture, entry);
 }
+
 static u32 Texture_GetImageSize(NNSG3dResTex *texture, u32 *entry) {
     u32 packed = *entry;
     u32 divisor;
@@ -179,10 +196,12 @@ static u32 Texture_GetImageSize(NNSG3dResTex *texture, u32 *entry) {
     }
     return ((((packed & (7 << 20)) >> 20) << 4) * (((packed & (7 << 23)) >> 23) << 4)) / divisor;
 }
+
 u32 Texture_GetImageSizeByIndex(NNSG3dResTex *texture, u32 index) {
     u32 *entry = texture ? NNS_G3dGetResDataByIdx(&texture->dict, index) : NULL;
     return Texture_GetImageSize(texture, entry);
 }
+
 u32 Texture_GetImageSizeByName(NNSG3dResTex *texture, const char *name) {
     NNSG3dResName key;
     u32 *entry;

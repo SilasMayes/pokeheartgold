@@ -1362,7 +1362,7 @@ void PokemonSummary_ReadMon(PokemonSummary *summary, Pokemon *mon, PokemonSummar
         }
     }
 
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < NELEMS(summary->mon.shinyLeaves); i++) {
         summary->mon.shinyLeaves[i] = GetMonData(mon, MON_DATA_SHINY_LEAF_A + i, NULL);
     }
     ReleaseMonLock(mon, decrypted);
@@ -1581,7 +1581,7 @@ static void PokemonSummary_DrawHpBar(PokemonSummary *summary) {
     }
     pixels = CalculateHpBarPixelsLength(summary->mon.hp, summary->mon.maxHp, 48);
     i = 0;
-    fullTile = (u16)(tileBase + 8);
+    fullTile = tileBase + 8;
     do {
         u16 tile = pixels >= 8 ? fullTile : (u16)(tileBase + pixels);
         FillBgTilemapRect(summary->bgConfig, GF_BG_LYR_MAIN_3, tile, i + 10, 5, 1, 1, TILEMAP_FILL_OVWT_PAL);
@@ -1590,7 +1590,7 @@ static void PokemonSummary_DrawHpBar(PokemonSummary *summary) {
         } else {
             pixels = (u8)(pixels - 8);
         }
-        i = (u8)(i + 1);
+        i++;
     } while (i < 6);
     ScheduleBgTilemapBufferTransfer(summary->bgConfig, GF_BG_LYR_MAIN_3);
 }
@@ -1730,7 +1730,7 @@ static int PokemonSummary_FindNextMonInArray(PokemonSummary *summary, int direct
     int size;
     u8 *mons;
     do {
-        slot = (s8)(slot + direction);
+        slot += direction;
         if (slot < 0 || slot >= summary->args->partyCount) {
             return -1;
         }
@@ -1748,7 +1748,7 @@ static int PokemonSummary_FindNextPartyMon(PokemonSummary *summary, int directio
     s8 slot = summary->args->partySlot;
     Pokemon *mon;
     do {
-        slot = (s8)(slot + direction);
+        slot += direction;
         if (slot < 0 || slot >= summary->args->partyCount) {
             return -1;
         }
@@ -1766,7 +1766,7 @@ static int PokemonSummary_FindNextBoxMon(PokemonSummary *summary, int direction)
     int size;
     u8 *mons;
     do {
-        slot = (s8)(slot + direction);
+        slot += direction;
         if (slot < 0 || slot >= summary->args->partyCount) {
             return -1;
         }
@@ -2117,7 +2117,7 @@ static u8 PokemonSummary_GetRibbonAt(PokemonSummary *summary, u8 cell) {
     for (; i < RIBBON_MAX; i++) {
         if ((summary->mon.ribbons[(u32)i >> 5] & (1 << (i & 31))) != 0) {
             if (target == found) {
-                return (u8)i;
+                return i;
             }
             found++;
         }
@@ -2642,7 +2642,7 @@ static void PokemonSummary_SetTypeSprite(PokemonSummary *summary, u8 sprite, u8 
 
 // Finds the move type sprite shown in the given move slot row; *slot becomes its index.
 static void PokemonSummary_FindMoveTypeSprite(PokemonSummary *summary, u8 *slot, s16 *x, s16 *y) {
-    s16 targetY = (s16)((*slot << 5) + 16);
+    s16 targetY = (*slot << 5) + 16;
     s16 i;
     for (i = 0; i < MAX_MON_MOVES; i++) {
         Sprite_GetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_TYPES + i], x, y);

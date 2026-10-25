@@ -164,15 +164,18 @@ void Sound_SetKeepPlayingCries(u8 value) {
     u8 *keepPlayingCries = GF_SdatGetAttrPtr(SOUND_ATTR_KEEP_PLAYING_CRIES);
     *keepPlayingCries = value;
 }
+
 void Sound_SetChatotRecordingDisabled(u8 value) {
     u8 *recordingDisabled = GF_SdatGetAttrPtr(SOUND_ATTR_CHATOT_RECORDING_DISABLED);
     *recordingDisabled = value;
 }
+
 BOOL GF_SndReadSeqVariable(u16 seqNo, u32 variable, s16 *value) {
     GF_ASSERT(value != NULL);
     GF_ASSERT(variable <= 15);
     return NNS_SndPlayerReadVariable(GF_GetSoundHandle(GF_GetSndHandleByPlayerNo(GF_GetPlayerNoBySeq(seqNo))), variable, value);
 }
+
 void Sound_ApplyFootstepVariation(u16 seqNo) {
     u8 *state = GF_SdatGetAttrPtr(SOUND_ATTR_FOOTSTEP_VARIATION);
     GF_SetVolumeBySeqNo(seqNo, sSoundFootstepVariations[state[0]][1]);
@@ -181,22 +184,27 @@ void Sound_ApplyFootstepVariation(u16 seqNo) {
         state[1] = 0;
     }
 }
+
 void Sound_SetSelectSEMuted(BOOL enabled) {
     u8 *muted = GF_SdatGetAttrPtr(SOUND_ATTR_SELECT_SE_MUTED);
     *muted = enabled;
 }
-int Sound_IsSelectSEMuted(void) {
+
+BOOL Sound_IsSelectSEMuted(void) {
     u8 *muted = GF_SdatGetAttrPtr(SOUND_ATTR_SELECT_SE_MUTED);
     return *muted;
 }
+
 static void SoundSys_SetGBSoundsState(u8 enabled) {
     u8 *gbSoundsEnabled = GF_SdatGetAttrPtr(SOUND_ATTR_GB_SOUNDS_ENABLED);
     *gbSoundsEnabled = enabled;
 }
+
 BOOL SoundSys_GetGBSoundsState(void) {
     u8 *gbSoundsEnabled = GF_SdatGetAttrPtr(SOUND_ATTR_GB_SOUNDS_ENABLED);
     return *gbSoundsEnabled;
 }
+
 void SoundSys_ToggleGBSounds(void) {
     if (!SoundSys_GetGBSoundsState()) {
         SoundSys_SetGBSoundsState(TRUE);
@@ -212,6 +220,7 @@ void SoundSys_ToggleGBSounds(void) {
         GF_SndHandleMoveVolume(0, volume, 0);
     }
 }
+
 u16 GBSounds_GetGBSeqNoByDSSeqNo(u16 seqNo) {
     u16 i;
     for (i = 0; i < NELEMS(sGBSoundsSeqPairs); i++) {
@@ -221,6 +230,7 @@ u16 GBSounds_GetGBSeqNoByDSSeqNo(u16 seqNo) {
     }
     return seqNo;
 }
+
 u16 GBSounds_GetDSSeqNoByGBSeqNo(u16 seqNo) {
     u16 i;
     for (i = 0; i < NELEMS(sGBSoundsSeqPairs); i++) {
@@ -236,9 +246,11 @@ void GBSounds_SetAllocatableChannels(void) {
     NNS_SndPlayerSetTrackAllocatableChannel(GF_GetSoundHandle(SND_HANDLE_BGM), 15, 0xA7FE);
     NNS_SndPlayerSetTrackAllocatableChannel(GF_GetSoundHandle(SND_HANDLE_ME), 15, 0xA7FE);
 }
+
 void Sound_SetFieldBGMStopOnce(BOOL enabled) {
     gSoundSystemFlags.fieldBGMStopOnce = enabled;
 }
+
 void Sound_ResetFieldBGMStopOnce(void) {
     gSoundSystemFlags.fieldBGMStopOnce = FALSE;
     gSoundSystemFlags.fieldBGMStopped = FALSE;

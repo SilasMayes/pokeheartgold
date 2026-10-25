@@ -229,7 +229,7 @@ BOOL PlaySEWithFieldBank(u16 seqNo) {
 }
 
 static BOOL PlaySEEx(enum SoundHandleNo handleNo, int playerNo, int bankNo, int playerPrio, int seqNo) {
-    if (Sound_IsSelectSEMuted() == 1 && (u32)seqNo - SEQ_SE_DP_SELECT <= 1) {
+    if (Sound_IsSelectSEMuted() == TRUE && (seqNo == SEQ_SE_DP_SELECT || seqNo == SEQ_SE_DP_DECIDE)) {
         return FALSE;
     }
     BOOL success = Sound_StartSeq(handleNo, playerNo, bankNo, playerPrio, seqNo, 0);

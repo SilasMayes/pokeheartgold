@@ -151,7 +151,7 @@ static void TrainerCardData_SetProfile(u32 trainerId, u8 gender, const u16 *name
     CopyU16StringArrayN(card->name, name, PLAYER_NAME_LENGTH + 1);
     card->money = money;
     card->pokedexCount = pokedexCount;
-    card->pokedexObtained = (u8)pokedexObtained;
+    card->pokedexObtained = pokedexObtained;
     card->score = score;
 }
 

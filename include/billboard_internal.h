@@ -6,6 +6,7 @@
 #include "billboard_gfx_sequence.h"
 #include "gf_3d_render.h"
 #include "heap.h"
+#include "texture_animation.h"
 
 typedef struct Billboard Billboard;
 typedef struct BillboardObject BillboardObject;
@@ -51,7 +52,7 @@ struct BillboardObject {
     NNSG3dTexKey tex4x4Key;
     NNSG3dPlttKey paletteKey;
     BillboardGfxSequence gfxSequence;
-    void *textureAnimation;
+    TextureAnimation *textureAnimation;
     u8 type;
     u8 padding_B5;
     u16 sequence;
@@ -71,7 +72,7 @@ struct Billboard {
     BillboardObject **freeObjects;
     u32 usedCount;
     NNSFndAllocator *allocator;
-    void *textureAnimationPool;
+    TextureAnimationPool *textureAnimationPool;
 };
 
 typedef struct BillboardListManager {

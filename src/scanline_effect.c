@@ -1,5 +1,7 @@
 #include "scanline_effect.h"
 
+#include "sys_task_api.h"
+
 void MI_HBlankDmaCopy32(u32 dmaNo, const void *src, void *dest, u32 size);
 void MI_HBlankDmaCopy16(u32 dmaNo, const void *src, void *dest, u32 size);
 
@@ -125,8 +127,8 @@ void ScanlineEffect_WaveTask(SysTask *task, void *data) {
     u8 pos = effect->phase / 100;
     int i;
     for (i = effect->first; i <= effect->last; i++) {
-        s16 x = (s16)buffer[i];
-        u16 y = (u16)(buffer[i] >> 16);
+        s16 x = buffer[i];
+        u16 y = buffer[i] >> 16;
         x += effect->wave[pos];
         buffer[i] = (y << 16) | (u16)x;
         pos = (pos + 1) % GX_LCD_SIZE_Y;

@@ -5,7 +5,6 @@
 
 #include "heap.h"
 #include "sys_task.h"
-#include "sys_task_api.h"
 
 typedef struct DoubleBuffer {
     void *buffers[2];

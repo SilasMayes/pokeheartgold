@@ -568,7 +568,7 @@ void Sound_SetPlayerPause(u8 playerNo, u8 pause) {
         return;
     }
     if (pause == 0) {
-        Sound_SetCurrentBGM((u16)GF_NNS_SndPlayerGetSeqNo(GF_GetSoundHandle(handleNo)));
+        Sound_SetCurrentBGM(GF_NNS_SndPlayerGetSeqNo(GF_GetSoundHandle(handleNo)));
     }
     NNS_SndPlayerPause(GF_GetSoundHandle(handleNo), pause);
     *flag = pause;

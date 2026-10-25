@@ -360,7 +360,7 @@ void FashionCase_TakeAccessory(FashionCase *fashionCase, int id, int quantity) {
     GF_ASSERT((u32)id < FASHION_ACCESSORY_COUNT);
     if (IsStackableAccessory(id)) {
         u8 count = GetStackableAccessoryCount(fashionCase->accessories, id);
-        if ((u32)count > (u32)quantity) {
+        if (count > (u32)quantity) {
             count -= quantity;
         } else {
             count = 0;
@@ -430,7 +430,7 @@ void FashionEntry_PlaceItem(SaveFashionDataSub *entry_, DressUpSlot *source, int
     mask = 1 << index;
     GF_ASSERT(!(entry->mask & mask));
     GF_ASSERT(IsValidFashionMagic(entry->magic));
-    SetFashionItemPlacement(entry->items[index], source->id, (u8)(s16)coords.xCopy, y, z);
+    SetFashionItemPlacement(entry->items[index], source->id, (s16)coords.xCopy, y, z);
     entry->mask |= mask;
 }
 

@@ -57,18 +57,6 @@
 #include "wireless_status_icon.h"
 #include "yes_no_prompt.h"
 
-enum NintendoWfcInitState {
-    NINTENDO_WFC_INIT_SETUP,
-    NINTENDO_WFC_INIT_START_WIRELESS,
-};
-
-enum NintendoWfcDisconnectStep {
-    NINTENDO_WFC_DISCONNECT_PRINT,
-    NINTENDO_WFC_DISCONNECT_CLEANUP,
-    NINTENDO_WFC_DISCONNECT_PRINT_DONE,
-    NINTENDO_WFC_DISCONNECT_WAIT_PRINT,
-};
-
 // Number pad cursor positions: the digit keys 0..9, then the buttons below them. gNintendoWfcPadNeighbors also
 // holds markers for moving up or down from a button, resolved by the column the cursor came from.
 enum NintendoWfcPadKey {
@@ -79,15 +67,6 @@ enum NintendoWfcPadKey {
     NINTENDO_WFC_PAD_DOWN_FROM_LEFT_BUTTON,
     NINTENDO_WFC_PAD_UP_FROM_RIGHT_BUTTON,
     NINTENDO_WFC_PAD_DOWN_FROM_RIGHT_BUTTON,
-};
-
-enum NintendoWfcMainState {
-    NINTENDO_WFC_MAIN_WAIT_STARTUP,
-    NINTENDO_WFC_MAIN_SESSION_INIT,
-    NINTENDO_WFC_MAIN_WAIT_FADE_IN,
-    NINTENDO_WFC_MAIN_SESSION_MAIN,
-    NINTENDO_WFC_MAIN_SESSION_EXIT,
-    NINTENDO_WFC_MAIN_DONE,
 };
 
 enum NintendoWfcState {
@@ -231,8 +210,8 @@ struct NintendoWfcConnect {
     MsgData *msgDataError; // Nintendo WFC errors
     String *msgString;
     String *titleString;
-    String *unk_0BE8;
-    String *unk_0BEC;
+    String *roomString;
+    String *rankString;
     String *errorString;
     u32 textPrinterId;
     SpriteList *spriteList;
@@ -243,8 +222,8 @@ struct NintendoWfcConnect {
     u8 padding_0DD0[0x24];
     Sprite *sprites[NINTENDO_WFC_SPRITE_COUNT];
     Window msgWindow;
-    Window unk_0E28;
-    Window unk_0E38;
+    Window rankWindow;
+    Window roomWindow;
     Window titleWindow;
     Window errorWindow;
     u8 padding_0E68[0xE4];
@@ -859,9 +838,9 @@ static void NintendoWfc_InitSpriteTemplate(SpriteTemplate *template, NintendoWfc
 static void NintendoWfc_CreateSprites(NintendoWfcConnect *wfc) {
     SpriteTemplate template;
     int i;
-    CreateSpriteResourcesHeader(&wfc->spriteHeaders[0], 0, 0, 0, 0, -1, -1, 0, 0, wfc->resMan[0], wfc->resMan[1], wfc->resMan[2], wfc->resMan[3], NULL, NULL);
-    CreateSpriteResourcesHeader(&wfc->spriteHeaders[1], 1, 1, 1, 1, -1, -1, 0, 0, wfc->resMan[0], wfc->resMan[1], wfc->resMan[2], wfc->resMan[3], NULL, NULL);
-    CreateSpriteResourcesHeader(&wfc->spriteHeaders[2], 2, 2, 2, 2, -1, -1, 0, 0, wfc->resMan[0], wfc->resMan[1], wfc->resMan[2], wfc->resMan[3], NULL, NULL);
+    CreateSpriteResourcesHeader(&wfc->spriteHeaders[0], 0, 0, 0, 0, -1, -1, 0, 0, wfc->resMan[GF_GFX_RES_TYPE_CHAR], wfc->resMan[GF_GFX_RES_TYPE_PLTT], wfc->resMan[GF_GFX_RES_TYPE_CELL], wfc->resMan[GF_GFX_RES_TYPE_ANIM], NULL, NULL);
+    CreateSpriteResourcesHeader(&wfc->spriteHeaders[1], 1, 1, 1, 1, -1, -1, 0, 0, wfc->resMan[GF_GFX_RES_TYPE_CHAR], wfc->resMan[GF_GFX_RES_TYPE_PLTT], wfc->resMan[GF_GFX_RES_TYPE_CELL], wfc->resMan[GF_GFX_RES_TYPE_ANIM], NULL, NULL);
+    CreateSpriteResourcesHeader(&wfc->spriteHeaders[2], 2, 2, 2, 2, -1, -1, 0, 0, wfc->resMan[GF_GFX_RES_TYPE_CHAR], wfc->resMan[GF_GFX_RES_TYPE_PLTT], wfc->resMan[GF_GFX_RES_TYPE_CELL], wfc->resMan[GF_GFX_RES_TYPE_ANIM], NULL, NULL);
     NintendoWfc_InitSpriteTemplate(&template, wfc, &wfc->spriteHeaders[0], NNS_G2D_VRAM_TYPE_2DSUB);
     for (i = 0; i < 3; i++) {
         template.position.x = gNintendoWfcDigitSpritePositions[0][i][0] << FX32_SHIFT;
@@ -1136,8 +1115,8 @@ static void NintendoWfc_LoadBgGraphics(NintendoWfcConnect *wfc) {
     narc = NARC_New(NARC_a_0_8_8, HEAP_ID_67);
     GfGfxLoader_GXLoadPalFromOpenNarc(narc, 3, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_0_OFFSET, 0, HEAP_ID_67);
     GfGfxLoader_GXLoadPalFromOpenNarc(narc, 3, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_0_OFFSET, 0, HEAP_ID_67);
-    LoadFontPal1(GF_PAL_LOCATION_MAIN_BG, (enum GFPalSlotOffset)0x1A0, HEAP_ID_67);
-    LoadFontPal1(GF_PAL_LOCATION_SUB_BG, (enum GFPalSlotOffset)0x1A0, HEAP_ID_67);
+    LoadFontPal1(GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_13_OFFSET, HEAP_ID_67);
+    LoadFontPal1(GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_13_OFFSET, HEAP_ID_67);
     LoadUserFrameGfx2(bgConfig, GF_BG_LYR_MAIN_0, 1, 14, Options_GetFrame(wfc->args->options), HEAP_ID_67);
     LoadUserFrameGfx2(bgConfig, GF_BG_LYR_SUB_0, 1, 14, Options_GetFrame(wfc->args->options), HEAP_ID_67);
     LoadUserFrameGfx1(bgConfig, GF_BG_LYR_MAIN_0, 31, 11, 0, HEAP_ID_67);
@@ -1217,10 +1196,10 @@ static void NintendoWfc_PaletteCycleTask(SysTask *task, void *data) {
 static void NintendoWfc_AddWindows(NintendoWfcConnect *wfc) {
     AddWindowParameterized(wfc->bgConfig, &wfc->errorWindow, GF_BG_LYR_MAIN_0, 4, 4, 23, 16, 13, 0xA4);
     FillWindowPixelBuffer(&wfc->errorWindow, 0);
-    AddWindowParameterized(wfc->bgConfig, &wfc->unk_0E38, GF_BG_LYR_MAIN_0, 26, 14, 4, 2, 13, 0x94);
-    FillWindowPixelBuffer(&wfc->unk_0E38, 15);
-    AddWindowParameterized(wfc->bgConfig, &wfc->unk_0E28, GF_BG_LYR_MAIN_0, 26, 14, 4, 2, 13, 0x9C);
-    FillWindowPixelBuffer(&wfc->unk_0E28, 15);
+    AddWindowParameterized(wfc->bgConfig, &wfc->roomWindow, GF_BG_LYR_MAIN_0, 26, 14, 4, 2, 13, 0x94);
+    FillWindowPixelBuffer(&wfc->roomWindow, 15);
+    AddWindowParameterized(wfc->bgConfig, &wfc->rankWindow, GF_BG_LYR_MAIN_0, 26, 14, 4, 2, 13, 0x9C);
+    FillWindowPixelBuffer(&wfc->rankWindow, 15);
     AddWindowParameterized(wfc->bgConfig, &wfc->titleWindow, GF_BG_LYR_MAIN_0, 4, 1, 24, 2, 13, 0x214);
     FillWindowPixelBuffer(&wfc->titleWindow, 0);
     NintendoWfc_PrintAlignedText(&wfc->titleWindow, wfc->titleString, 0, 1, 1, MAKE_TEXT_COLOR(15, 14, 0));
@@ -1231,15 +1210,15 @@ static void NintendoWfc_AddWindows(NintendoWfcConnect *wfc) {
 static void NintendoWfc_RemoveWindows(NintendoWfcConnect *wfc) {
     RemoveWindow(&wfc->msgWindow);
     RemoveWindow(&wfc->titleWindow);
-    RemoveWindow(&wfc->unk_0E28);
-    RemoveWindow(&wfc->unk_0E38);
+    RemoveWindow(&wfc->rankWindow);
+    RemoveWindow(&wfc->roomWindow);
     RemoveWindow(&wfc->errorWindow);
 }
 
 static void NintendoWfc_InitStrings(NintendoWfcConnect *wfc) {
     wfc->msgString = String_New(180, HEAP_ID_67);
-    wfc->unk_0BE8 = String_New(4, HEAP_ID_67);
-    wfc->unk_0BEC = String_New(3, HEAP_ID_67);
+    wfc->roomString = String_New(4, HEAP_ID_67);
+    wfc->rankString = String_New(3, HEAP_ID_67);
     wfc->titleString = NewString_ReadMsgData(wfc->msgDataTower, msg_0774_00012);
     wfc->errorString = String_New(256, HEAP_ID_67);
 }
@@ -1247,8 +1226,8 @@ static void NintendoWfc_InitStrings(NintendoWfcConnect *wfc) {
 static void NintendoWfc_FreeStrings(NintendoWfcConnect *wfc) {
     String_Delete(wfc->errorString);
     String_Delete(wfc->titleString);
-    String_Delete(wfc->unk_0BEC);
-    String_Delete(wfc->unk_0BE8);
+    String_Delete(wfc->rankString);
+    String_Delete(wfc->roomString);
     String_Delete(wfc->msgString);
 }
 
@@ -2600,7 +2579,7 @@ static void NintendoWfc_AddNumberInputWindows(NintendoWfcConnect *wfc) {
     baseTile = 31;
     window = wfc->buttonWindows;
     for (; i < 3; baseTile += 64, x++, window++, i++) {
-        AddWindowParameterized(wfc->bgConfig, window, GF_BG_LYR_SUB_0, (u8)*x, 21, 8, 2, 13, baseTile);
+        AddWindowParameterized(wfc->bgConfig, window, GF_BG_LYR_SUB_0, *x, 21, 8, 2, 13, baseTile);
     }
     AddWindowParameterized(wfc->bgConfig, &wfc->numberInputWindow, GF_BG_LYR_SUB_0, 2, 19, 27, 4, 13, 79);
 }

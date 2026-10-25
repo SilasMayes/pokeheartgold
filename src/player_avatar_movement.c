@@ -208,7 +208,7 @@ static BOOL PlayerAvatar_IsReadyToMove(PlayerAvatar *avatar, int direction) {
         if (collision == 0) {
             return TRUE;
         }
-        if (collision == 0x20 && PlayerAvatar_GetState(avatar) == PLAYER_STATE_SURFING) {
+        if (collision == PLAYER_COLLISION_WATER && PlayerAvatar_GetState(avatar) == PLAYER_STATE_SURFING) {
             return TRUE;
         }
         return FALSE;

@@ -94,7 +94,7 @@ typedef struct HallOfFameShowcase {
     int nextState;
 } HallOfFameShowcase;
 
-static void HallOfFameShowcase_VBlankCB(HallOfFameShowcase *showcase);
+static void HallOfFameShowcase_VBlankCB(void *data);
 static void HallOfFameShowcase_LoadMainObjChar(const void *src, u32 offset, u32 size);
 static void HallOfFameShowcase_LoadSubObjChar(const void *src, u32 offset, u32 size);
 static void HallOfFameShowcase_LoadMainObjPltt(const void *src, u32 offset, u32 size);
@@ -152,7 +152,7 @@ BOOL HallOfFameShowcase_Init(OverlayManager *man, int *state) {
     HallOfFameShowcase_InitWindows(showcase);
     HallOfFameShowcase_CreateGridInput(showcase);
     HallOfFameShowcase_ChangeRecord(showcase, 0);
-    Main_SetVBlankIntrCB((GFIntrCB)HallOfFameShowcase_VBlankCB, showcase);
+    Main_SetVBlankIntrCB(HallOfFameShowcase_VBlankCB, showcase);
     return TRUE;
 }
 
@@ -201,7 +201,8 @@ BOOL HallOfFameShowcase_Main(OverlayManager *man, int *state) {
     return FALSE;
 }
 
-static void HallOfFameShowcase_VBlankCB(HallOfFameShowcase *showcase) {
+static void HallOfFameShowcase_VBlankCB(void *data) {
+    HallOfFameShowcase *showcase = data;
     vu32 *dtcm = (vu32 *)0x027E0000;
 
     DoScheduledBgGpuUpdates(showcase->bgConfig);
@@ -259,14 +260,14 @@ static void HallOfFameShowcase_InitBgs(HallOfFameShowcase *showcase) {
     narc = NARC_New(NARC_a_0_9_7, HEAP_ID_59);
     GfGfxLoader_LoadScrnDataFromOpenNarc(narc, 0, showcase->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, TRUE, HEAP_ID_59);
     GfGfxLoader_LoadCharDataFromOpenNarc(narc, 1, showcase->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, TRUE, HEAP_ID_59);
-    GfGfxLoader_GXLoadPalFromOpenNarc(narc, 2, GF_PAL_LOCATION_MAIN_BG, (enum GFPalSlotOffset)0, 0x20, HEAP_ID_59);
+    GfGfxLoader_GXLoadPalFromOpenNarc(narc, 2, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_0_OFFSET, 0x20, HEAP_ID_59);
     GfGfxLoader_LoadScrnDataFromOpenNarc(narc, 3, showcase->bgConfig, GF_BG_LYR_SUB_1, 0, 0, TRUE, HEAP_ID_59);
     GfGfxLoader_LoadCharDataFromOpenNarc(narc, 4, showcase->bgConfig, GF_BG_LYR_SUB_1, 0, 0, TRUE, HEAP_ID_59);
-    GfGfxLoader_GXLoadPalFromOpenNarc(narc, 5, GF_PAL_LOCATION_SUB_BG, (enum GFPalSlotOffset)0, 0x20, HEAP_ID_59);
+    GfGfxLoader_GXLoadPalFromOpenNarc(narc, 5, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_0_OFFSET, 0x20, HEAP_ID_59);
     NARC_Delete(narc);
 
-    LoadFontPal0(GF_PAL_LOCATION_MAIN_BG, (enum GFPalSlotOffset)0x1E0, HEAP_ID_59);
-    LoadFontPal0(GF_PAL_LOCATION_SUB_BG, (enum GFPalSlotOffset)0x1E0, HEAP_ID_59);
+    LoadFontPal0(GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_15_OFFSET, HEAP_ID_59);
+    LoadFontPal0(GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_15_OFFSET, HEAP_ID_59);
 }
 
 static void HallOfFameShowcase_FreeBgs(HallOfFameShowcase *showcase) {

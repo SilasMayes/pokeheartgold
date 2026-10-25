@@ -7,7 +7,7 @@
 #include "heap.h"
 #include "palette.h"
 #include "sprite_system.h"
-#include "sys_task_api.h"
+#include "sys_task.h"
 
 typedef struct OrbitCursorArgs {
     int count;
@@ -65,7 +65,7 @@ BOOL OrbitCursor_SetVisible(OrbitCursor *cursor, int flag);
 void OrbitCursor_SetRadius(OrbitCursor *cursor, int radiusX, int radiusY);
 void OrbitCursor_SetAltAnim(OrbitCursor *cursor);
 void OrbitCursor_SetDefaultAnim(OrbitCursor *cursor);
-extern void OrbitCursor_Task(SysTask *task, void *data);
+void OrbitCursor_Task(SysTask *task, void *data);
 
 extern const int gOrbitCursorPaletteMembers[];
 

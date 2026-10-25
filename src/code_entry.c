@@ -295,10 +295,10 @@ static void CodeEntry_SetupBgs(BgConfig *bgConfig) {
     GfGfx_DisableEngineAPlanes();
     banks = sCodeEntryGraphicsBanks;
     GfGfx_SetBanks(&banks);
-    MIi_CpuClear32(0, (u32 *)HW_BG_VRAM, 0x80000);
-    MIi_CpuClear32(0, (u32 *)HW_DB_BG_VRAM, 0x20000);
-    MIi_CpuClear32(0, (u32 *)HW_OBJ_VRAM, 0x40000);
-    MIi_CpuClear32(0, (u32 *)HW_DB_OBJ_VRAM, 0x20000);
+    MI_CpuClear32((void *)HW_BG_VRAM, HW_BG_VRAM_SIZE);
+    MI_CpuClear32((void *)HW_DB_BG_VRAM, HW_DB_BG_VRAM_SIZE);
+    MI_CpuClear32((void *)HW_OBJ_VRAM, HW_OBJ_VRAM_SIZE);
+    MI_CpuClear32((void *)HW_DB_OBJ_VRAM, HW_DB_OBJ_VRAM_SIZE);
     mainBgs = sCodeEntryMainBgTemplates;
     InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_1, &mainBgs.templates[0], GF_BG_TYPE_TEXT);
     InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_2, &mainBgs.templates[1], GF_BG_TYPE_TEXT);

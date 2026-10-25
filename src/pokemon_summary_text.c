@@ -129,7 +129,7 @@ static const WindowTemplate sPokemonSummaryWindowTemplates[34] = {
 
 void PokemonSummary_AddWindows(PokemonSummary *summary) {
     u16 i;
-    for (i = 0; i < 34; i++) {
+    for (i = 0; i < NELEMS(sPokemonSummaryWindowTemplates); i++) {
         AddWindow(summary->bgConfig, &summary->windows[i], &sPokemonSummaryWindowTemplates[i]);
         FillWindowPixelBuffer(&summary->windows[i], 0);
     }
@@ -146,15 +146,15 @@ void PokemonSummary_AddPageWindows(PokemonSummary *summary) {
     switch (summary->page) {
     case POKEMON_SUMMARY_PAGE_INFO:
         templates = sPokemonSummaryInfoWindowTemplates;
-        summary->numPageWindows = 8;
+        summary->numPageWindows = NELEMS(sPokemonSummaryInfoWindowTemplates);
         break;
     case POKEMON_SUMMARY_PAGE_STATS:
         templates = sPokemonSummaryStatsWindowTemplates;
-        summary->numPageWindows = 18;
+        summary->numPageWindows = NELEMS(sPokemonSummaryStatsWindowTemplates);
         break;
     case POKEMON_SUMMARY_PAGE_RIBBONS:
         templates = sPokemonSummaryRibbonWindowTemplates;
-        summary->numPageWindows = 8;
+        summary->numPageWindows = NELEMS(sPokemonSummaryRibbonWindowTemplates);
         break;
     case POKEMON_SUMMARY_PAGE_CONDITION:
         if (summary->args->mode != POKEMON_SUMMARY_MODE_CONDITION && summary->args->mode != POKEMON_SUMMARY_MODE_UPDATE_CONDITION) {
@@ -199,7 +199,7 @@ void PokemonSummary_RemoveWindows(PokemonSummary *summary) {
     u32 i;
     Window *window;
     PokemonSummary_RemovePageWindows(summary);
-    for (i = 0, window = summary->windows; i < 34; i++, window++) {
+    for (i = 0, window = summary->windows; i < NELEMS(summary->windows); i++, window++) {
         RemoveWindow(window);
     }
 }

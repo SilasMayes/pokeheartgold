@@ -224,7 +224,7 @@ static int StatsUpload_EncodeData(char *out, const u8 *first, int firstLength, c
             u8 *dest = buf + firstLength;
             do {
                 (dest + (u32)first)[4] = second[(u32)first];
-                first = (const u8 *)((u32)first + 1);
+                first++;
             } while ((s32)first < count);
         }
     }

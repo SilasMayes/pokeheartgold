@@ -86,7 +86,7 @@ static void BillboardObject_Clear(BillboardObject *object) {
     object->texKey = 0;
     object->tex4x4Key = 0;
     object->paletteKey = 0;
-    object->textureAnimation = 0;
+    object->textureAnimation = NULL;
     object->position.x = 0;
     object->position.y = 0;
     object->position.z = 0;

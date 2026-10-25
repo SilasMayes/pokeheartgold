@@ -26,6 +26,27 @@ enum NintendoWfcPaletteScreens {
     NINTENDO_WFC_PALETTE_SUB_SCREEN,
 };
 
+enum NintendoWfcInitState {
+    NINTENDO_WFC_INIT_SETUP,
+    NINTENDO_WFC_INIT_START_WIRELESS,
+};
+
+enum NintendoWfcDisconnectStep {
+    NINTENDO_WFC_DISCONNECT_PRINT,
+    NINTENDO_WFC_DISCONNECT_CLEANUP,
+    NINTENDO_WFC_DISCONNECT_PRINT_DONE,
+    NINTENDO_WFC_DISCONNECT_WAIT_PRINT,
+};
+
+enum NintendoWfcMainState {
+    NINTENDO_WFC_MAIN_WAIT_STARTUP,
+    NINTENDO_WFC_MAIN_SESSION_INIT,
+    NINTENDO_WFC_MAIN_WAIT_FADE_IN,
+    NINTENDO_WFC_MAIN_SESSION_MAIN,
+    NINTENDO_WFC_MAIN_SESSION_EXIT,
+    NINTENDO_WFC_MAIN_DONE,
+};
+
 // Background palette cycling (VBlank task): three blends of 7 steps each between consecutive base palettes,
 // played forwards and backwards.
 #define NINTENDO_WFC_PALETTE_CYCLE_STEPS 21

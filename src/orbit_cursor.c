@@ -4,6 +4,7 @@
 
 #include "geometry_math.h"
 #include "math_util.h"
+#include "sys_task_api.h"
 
 // Sprite chain that follows a target point and then circles it (sin/cos around sprites[0]).
 

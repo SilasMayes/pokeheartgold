@@ -16,7 +16,7 @@
 #include "sys_task_api.h"
 #include "systask_environment.h"
 
-static void LoadMapSignpostGraphic(BgConfig *bgConfig, u32 bgId, u16 baseTile, BOOL type, u16 map, u32 heapId);
+static void LoadMapSignpostGraphic(BgConfig *bgConfig, u32 bgId, u16 baseTile, BOOL type, u16 map, enum HeapID heapId);
 static void DrawSignpostFrameTilemap(BgConfig *bgConfig, u8 bgId, u8 x, u8 y, u8 width, u8 height, u8 paletteNum, u16 baseTile);
 static void DrawSignpostGraphicTilemap(Window *window, u16 baseTile, u8 paletteNum);
 static void WaitingIcon_Draw(WaitingIcon *icon, int mode);
@@ -156,13 +156,13 @@ void LoadMapSignpostFrameAndGraphic(BgConfig *bgConfig, u8 bgId, u16 baseTile, u
     }
 }
 
-static void LoadMapSignpostGraphic(BgConfig *bgConfig, u32 bgId, u16 baseTile, BOOL type, u16 map, u32 heapId) {
+static void LoadMapSignpostGraphic(BgConfig *bgConfig, u32 bgId, u16 baseTile, BOOL type, u16 map, enum HeapID heapId) {
     if (type == 0) {
         map += 33;
     } else {
         map += 2;
     }
-    GfGfxLoader_LoadCharData(NARC_a_0_3_6, map, bgConfig, (GFBgLayer)bgId, baseTile, 768, FALSE, (enum HeapID)heapId);
+    GfGfxLoader_LoadCharData(NARC_a_0_3_6, map, bgConfig, (GFBgLayer)bgId, baseTile, 768, FALSE, heapId);
 }
 
 static void DrawSignpostFrameTilemap(BgConfig *bgConfig, u8 bgId, u8 x, u8 y, u8 width, u8 height, u8 paletteNum, u16 baseTile) {
@@ -226,9 +226,9 @@ void DrawFrameAndWindow3(Window *window, BOOL dontCopyToVram, u16 baseTile, u8 p
 }
 
 WaitingIcon *WaitingIcon_New(Window *window, int baseTile) {
-    int heapId = BgConfig_GetHeapId(window->bgConfig);
+    enum HeapID heapId = BgConfig_GetHeapId(window->bgConfig);
     u8 *bgChars = BgGetCharPtr(GetWindowBgId(window));
-    WaitingIcon *icon = Heap_Alloc((enum HeapID)heapId, sizeof(WaitingIcon));
+    WaitingIcon *icon = Heap_Alloc(heapId, sizeof(WaitingIcon));
     u8 *buffer;
     u32 tile10Offset;
     u32 tile11Offset;
@@ -237,18 +237,18 @@ WaitingIcon *WaitingIcon_New(Window *window, int baseTile) {
     void *charFile;
 
     memcpy(icon->savedTiles, bgChars + (baseTile + 18) * 32, 128);
-    buffer = Heap_Alloc((enum HeapID)heapId, 128);
+    buffer = Heap_Alloc(heapId, 128);
     tile10Offset = (baseTile + 10) * 32;
     memcpy(buffer, bgChars + tile10Offset, 32);
     tile11Offset = (baseTile + 11) * 32;
     memcpy(buffer + 32, bgChars + tile11Offset, 32);
     memcpy(buffer + 64, bgChars + tile10Offset, 32);
     memcpy(buffer + 96, bgChars + tile11Offset, 32);
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < NELEMS(icon->frameTiles); i++) {
         memcpy(icon->frameTiles[i], buffer, 128);
     }
     Heap_Free(buffer);
-    charFile = GfGfxLoader_GetCharData(NARC_a_0_3_8, 23, FALSE, &charData, (enum HeapID)heapId);
+    charFile = GfGfxLoader_GetCharData(NARC_a_0_3_8, 23, FALSE, &charData, heapId);
     BlitPixelRect4Bit(charData->pRawData, 0, 0, 16, 128, icon->frameTiles, 16, 128, 0, 0, 16, 128);
     Heap_Free(charFile);
     icon->window = window;

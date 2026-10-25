@@ -368,7 +368,7 @@ static void PokepicScriptAnim_RunFrame(PokepicScriptAnim *anim) {
     anim->yield = 0;
     anim->commandCount = 0;
     ended = 0;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(anim->motions); i++) {
         PokepicMotion *motion = &anim->motions[i];
         if (motion->active) {
             if (motion->delay == 0) {
@@ -433,7 +433,7 @@ static u32 PokepicScriptAnim_GetScriptWord(u32 *array) {
 static PokepicMotion *PokepicScriptAnim_AllocMotion(PokepicScriptAnim *anim, int type) {
     u8 i;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(anim->motions); i++) {
         PokepicMotion *motion = &anim->motions[i];
         if (!motion->active) {
             MI_CpuFill8(motion, 0, sizeof(PokepicMotion));
@@ -960,13 +960,8 @@ static void PokepicScriptAnim_StartMotion(PokepicScriptAnim *anim, int type) {
     u8 i;
     PokepicScriptAnim_ReadArgByte(anim, &motion->op);
     PokepicScriptAnim_ReadArgByte(anim, &motion->delay);
-    i = 0;
-    if (sPokepicMotionTypes[type].argCount > 0) {
-        const PokepicMotionType *motionType = &sPokepicMotionTypes[type];
-        do {
-            PokepicScriptAnim_ReadArg(anim, &motion->args[i]);
-            i = (u8)(i + 1);
-        } while (i < motionType->argCount);
+    for (i = 0; i < sPokepicMotionTypes[type].argCount; i++) {
+        PokepicScriptAnim_ReadArg(anim, &motion->args[i]);
     }
     PokepicMotion_SetTarget(motion->args[sPokepicMotionTypes[type].targetArg], motion, anim);
     if (motion->delay == 0) {

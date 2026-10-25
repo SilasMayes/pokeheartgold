@@ -2,6 +2,8 @@
 
 #include "global.h"
 
+#include "dwc/dwc_account_internal.h"
+
 #include "gf_rtc.h"
 #include "pm_string.h"
 #include "to90_login_callback_private.h"
@@ -22,14 +24,13 @@ typedef struct FriendEntryArray {
 
 struct FriendRoster {
     W41287Account header;
-    u32 friendData[FRIEND_ROSTER_MAX][3];
+    DwcAccData friendData[FRIEND_ROSTER_MAX];
     FriendEntryArray roster;
 };
 
 static void FriendRoster_MoveFriend(FriendRoster *data, int dest, int src);
 
 void Comm_EnsureDwcUserData(FriendRoster *data);
-BOOL DWC_IsValidFriendData(void *data);
 
 static FriendRoster sFriendRoster;
 
@@ -138,7 +139,7 @@ void FriendRoster_SetEntryField(FriendRoster *data, int index, int field, u8 val
 
 void *FriendRoster_GetDwcFriendData(FriendRoster *data, int index) {
     GF_ASSERT(index < FRIEND_ROSTER_MAX);
-    return data->friendData[index];
+    return &data->friendData[index];
 }
 
 u16 *FriendRoster_GetPlayerName(FriendRoster *data, s32 index) {
@@ -163,7 +164,7 @@ void FriendRoster_SetGroupName(FriendRoster *data, int index, String *name) {
 
 BOOL FriendRoster_IsFriendValid(FriendRoster *data, int index) {
     GF_ASSERT(index < FRIEND_ROSTER_MAX);
-    return DWC_IsValidFriendData(data->friendData[index]);
+    return DWC_IsValidFriendData(&data->friendData[index]);
 }
 
 int FriendRoster_CountFriends(FriendRoster *data) {
@@ -191,10 +192,10 @@ void FriendRoster_RemoveFriend(FriendRoster *data, int index) {
     if (index >= 0 && index < FRIEND_ROSTER_MAX) {
         for (i = index; i < FRIEND_ROSTER_MAX - 1; i++) {
             MI_CpuCopy8(&data->roster.entries[i + 1], &data->roster.entries[i], sizeof(FriendEntry));
-            MI_CpuCopy8(data->friendData[i + 1], data->friendData[i], sizeof(data->friendData[i]));
+            MI_CpuCopy8(&data->friendData[i + 1], &data->friendData[i], sizeof(DwcAccData));
         }
         MI_CpuClearFast((u8 *)&data->roster + 0x6C8, sizeof(FriendEntry));
-        MI_CpuClearFast((u8 *)&data->friendData + 0x174, sizeof(data->friendData[FRIEND_ROSTER_MAX - 1]));
+        MI_CpuClearFast((u8 *)&data->friendData + 0x174, sizeof(DwcAccData));
         ((FriendEntry *)((u8 *)&data->roster + 0x6C8))->playerName[0] = 0xFFFF;
         ((FriendEntry *)((u8 *)&data->roster + 0x6C8))->groupName[0] = 0xFFFF;
         ((FriendEntry *)((u8 *)&data->roster + 0x6C8))->gender = FRIEND_ROSTER_GENDER_UNKNOWN;
@@ -204,9 +205,9 @@ void FriendRoster_RemoveFriend(FriendRoster *data, int index) {
 static void FriendRoster_MoveFriend(FriendRoster *data, int dest, int src) {
     if (dest >= 0 && dest < FRIEND_ROSTER_MAX && src >= 0 && src < FRIEND_ROSTER_MAX) {
         MI_CpuCopy8(&data->roster.entries[src], &data->roster.entries[dest], sizeof(FriendEntry));
-        MI_CpuCopy8(data->friendData[src], data->friendData[dest], sizeof(data->friendData[src]));
+        MI_CpuCopy8(&data->friendData[src], &data->friendData[dest], sizeof(DwcAccData));
         MI_CpuClearFast(&data->roster.entries[src], sizeof(FriendEntry));
-        MI_CpuClearFast(data->friendData[src], sizeof(data->friendData[src]));
+        MI_CpuClearFast(&data->friendData[src], sizeof(DwcAccData));
         data->roster.entries[src].playerName[0] = 0xFFFF;
         data->roster.entries[src].groupName[0] = 0xFFFF;
         data->roster.entries[src].gender = FRIEND_ROSTER_GENDER_UNKNOWN;

@@ -437,9 +437,9 @@ static u32 FontOAM_LoadCellChars(Window *window, FontOAMCell *node, FontSpriteDa
     }
     proxy->attr.sizeS = (GXTexSizeS)65535;
     proxy->attr.sizeT = (GXTexSizeT)65535;
-    proxy->attr.fmt = (GXTexFmt)3;
+    proxy->attr.fmt = GX_TEXFMT_PLTT16;
     proxy->attr.bExtendedPlt = FALSE;
-    proxy->attr.plttUse = (GXTexPlttColor0)1;
+    proxy->attr.plttUse = GX_TEXPLTTCOLOR0_TRNS;
     proxy->attr.mappingType = mode;
     Heap_Free(buffer);
     return offset + size;

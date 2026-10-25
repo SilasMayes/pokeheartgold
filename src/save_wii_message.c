@@ -24,7 +24,7 @@ void Save_WiiMessage_Reset(SaveData *saveData) {
 
 BOOL Save_WiiMessage_IsRegistered(SaveData *saveData) {
     WiiMessageSave *wiiMessage = SaveArray_Get(saveData, SAVE_UNK_31);
-    if ((s8)(wiiMessage->wiiAddress[0]) != 0) {
+    if (wiiMessage->wiiAddress[0] != 0) {
         return TRUE;
     }
     return FALSE;

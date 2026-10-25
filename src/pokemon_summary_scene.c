@@ -35,7 +35,7 @@ void PokemonSummary_Init3D(PokemonSummary *summary) {
     G3X_AntiAlias(TRUE);
     G3X_EdgeMarking(FALSE);
     G3X_SetFog(FALSE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x8000, 0);
-    G3X_SetClearColor(0, 0, 0x7FFF, 0x3F, FALSE);
+    G3X_SetClearColor(RGB_BLACK, 0, 0x7FFF, 0x3F, FALSE);
     G3_SwapBuffers(GX_SORTMODE_AUTO, GX_BUFFERMODE_Z);
     G3_ViewPort(0, 0, 255, 191);
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);
@@ -230,7 +230,7 @@ void PokemonSummary_InitConditionChart(PokemonSummary *summary) {
     ConditionChart_GetVertex(&sConditionChartQuad3Vertex3, &summary->conditionChartTo[3].vertices[3], summary->mon.contestStats[2]);
     ConditionChart_GetVertex(&sConditionChartQuad3Vertex2, &summary->conditionChartTo[3].vertices[2], summary->mon.contestStats[3]);
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(summary->conditionChartFrom); i++) {
         ConditionChart_GetStep(&summary->conditionChartFrom[i].vertices[0], &summary->conditionChartTo[i].vertices[0], &summary->conditionChartStep[i].vertices[0]);
         ConditionChart_GetStep(&summary->conditionChartFrom[i].vertices[1], &summary->conditionChartTo[i].vertices[1], &summary->conditionChartStep[i].vertices[1]);
         ConditionChart_GetStep(&summary->conditionChartFrom[i].vertices[2], &summary->conditionChartTo[i].vertices[2], &summary->conditionChartStep[i].vertices[2]);
@@ -328,7 +328,7 @@ static int PokemonSummary_GetTouchedButton(PokemonSummary *summary) {
 u8 PokemonSummary_CheckTouchedButton(PokemonSummary *summary) {
     int button = PokemonSummary_GetTouchedButton(summary);
     if (button != -1) {
-        return (u8)button;
+        return button;
     }
     return 0xFF;
 }
