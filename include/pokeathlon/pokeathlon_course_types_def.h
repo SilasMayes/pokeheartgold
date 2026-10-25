@@ -17,6 +17,8 @@
 #define POKEATHLON_SOLO_ROUNDS 3 // events of a solo course
 #define POKEATHLON_LINK_ROUNDS 4 // events of a link course
 
+#define POKEATHLON_SIZE_CLASSES 3 // PokeathlonCourse_GetCollisionSizeClass returns 1..3
+
 // The courses: the five solo courses give the medal of their name, the link courses two medals each; the last
 // link course plays one of ten random event sets.
 enum PokeathlonCourseId {
@@ -115,6 +117,13 @@ struct PokeathlonCourseMonObject {
     s32 drawPriorityStep;
     BOOL shadowHidden;
 };
+
+// Collision circle of a Pokemon size class (PokeathlonCourseObject_SetCollision); each event reads its table of
+// POKEATHLON_SIZE_CLASSES of them from NARC a/1/7/0.
+typedef struct PokeathlonCourseCollision {
+    s32 offsetY;
+    s32 radius;
+} PokeathlonCourseCollision;
 
 struct PokeathlonCourseMonObjects {
     enum HeapID heapId;

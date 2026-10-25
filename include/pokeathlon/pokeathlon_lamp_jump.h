@@ -104,12 +104,6 @@ typedef struct PokeathlonLampJumpMonParams {
     u32 scale[5];
 } PokeathlonLampJumpMonParams;
 
-// NARC a/1/7/0 member 16: sprite offset per Pokemon size class.
-typedef struct PokeathlonLampJumpSpriteOffset {
-    int x;
-    int y;
-} PokeathlonLampJumpSpriteOffset;
-
 // A block of the link data exchanged every frame (PokeathlonCourse_GetDataCopyArea).
 typedef union PokeathlonLampJumpSyncBlock {
     s32 words[9];

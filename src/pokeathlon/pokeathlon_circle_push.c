@@ -96,12 +96,6 @@ typedef struct CirclePushFallOffsets {
     int offsets[6];
 } CirclePushFallOffsets;
 
-// Collision circle of a Pokemon size (NARC a/1/7/0 #11).
-typedef struct CirclePushCollision {
-    s32 offsetY;
-    s32 radius;
-} CirclePushCollision;
-
 typedef struct CirclePushHostFrame {
     int count;
     u8 *copyArea;
@@ -504,7 +498,7 @@ BOOL PokeathlonCirclePush_Init(PokeathlonCourseData *course) {
 
         PokeathlonCoursePoint ownPositions[3];
 
-        CirclePushCollision collision[3];
+        PokeathlonCourseCollision collision[POKEATHLON_SIZE_CLASSES];
         VecFx32 scale;
         VecFx32 *scalePtr = &scale;
         u8 ringData[60];
@@ -529,7 +523,7 @@ BOOL PokeathlonCirclePush_Init(PokeathlonCourseData *course) {
             PokeathlonCourseMonObject_SetDrawFlag(object, 1);
             {
                 // collision circle by size type 1..3
-                CirclePushCollision *entry = &collision[GetMonSizeType(course, i)];
+                PokeathlonCourseCollision *entry = &collision[GetMonSizeType(course, i)];
                 PokeathlonCourseObject_SetCollision(object, entry[-1].offsetY, entry[-1].radius);
             }
             object = PokeathlonCourseMonObjects_Get(circlePush->objects, i);

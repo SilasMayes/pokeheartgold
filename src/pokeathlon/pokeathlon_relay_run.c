@@ -327,7 +327,7 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
     }
     case RELAY_RUN_INIT_PLACE_TEAMS: {
         int own;
-        PokeathlonRelayRunCollision collisions[3];
+        PokeathlonCourseCollision collisions[POKEATHLON_SIZE_CLASSES];
         PokeathlonCoursePoint ownPosition;
         int centerX, centerY;
         PokeathlonRelayRunSetup setup;
@@ -350,7 +350,7 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
                 PokeathlonCourseMonObject_SetDrawFlag(object, TRUE);
             }
             {
-                PokeathlonRelayRunCollision *collision = &collisions[PokeathlonCourse_GetCollisionSizeClass(PokeathlonCourse_GetPerformance(course, i / RELAY_RUN_MEMBERS, i % RELAY_RUN_MEMBERS))];
+                PokeathlonCourseCollision *collision = &collisions[PokeathlonCourse_GetCollisionSizeClass(PokeathlonCourse_GetPerformance(course, i / RELAY_RUN_MEMBERS, i % RELAY_RUN_MEMBERS))];
                 PokeathlonCourseObject_SetCollision(object, collision[-1].offsetY, collision[-1].radius);
             }
             object = PokeathlonCourseMonObjects_Get(relayRun->monObjects, i);

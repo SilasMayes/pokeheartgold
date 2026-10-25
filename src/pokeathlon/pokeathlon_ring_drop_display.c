@@ -305,20 +305,26 @@ static void PokeathlonRingDropDisplay_UpdateSwitch(PokeathlonRingDropMonPacket *
 }
 
 static int PokeathlonRingDropDisplay_CompareDepth(const void *a, const void *b) {
-    if (*(const u8 *)a == *(const u8 *)b) {
+    const PokeathlonRingDropDepth *depthA = a;
+    const PokeathlonRingDropDepth *depthB = b;
+
+    if (depthA->y == depthB->y) {
         return 0;
     }
-    if (*(const u8 *)a < *(const u8 *)b) {
+    if (depthA->y < depthB->y) {
         return 1;
     }
     return -1;
 }
 
 static int PokeathlonRingDropDisplay_CompareScores(const void *a, const void *b) {
-    if (*(const u8 *)a == *(const u8 *)b) {
+    const u8 *scoreA = a;
+    const u8 *scoreB = b;
+
+    if (*scoreA == *scoreB) {
         return 0;
     }
-    if (*(const u8 *)a < *(const u8 *)b) {
+    if (*scoreA < *scoreB) {
         return 1;
     }
     return -1;

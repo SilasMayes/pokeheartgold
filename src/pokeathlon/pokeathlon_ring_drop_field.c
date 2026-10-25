@@ -11,10 +11,6 @@
 #include "sprite_system.h"
 
 // An entry of NARC 170 #19: a mon object's collision circle by its size.
-typedef struct PokeathlonRingDropCollision {
-    s32 offsetY;
-    s32 radius;
-} PokeathlonRingDropCollision;
 
 static BOOL PokeathlonRingDropMon_Collide(PokeathlonRingDropMon *a, PokeathlonRingDropMon *b);
 static BOOL PokeathlonRingDropMon_CanCollide(PokeathlonRingDropMon *mon);
@@ -127,7 +123,7 @@ void PokeathlonRingDrop_CreateMonObjects(PokeathlonRingDrop *ringDrop, Pokeathlo
 // Places the team members (the first of each team in the ring), sets their numbers and the start countdown sprites.
 
 void PokeathlonRingDrop_InitMons(PokeathlonRingDrop *ringDrop, PokeathlonCourseData *course) {
-    PokeathlonRingDropCollision collisions[3] = { 0 };
+    PokeathlonCourseCollision collisions[POKEATHLON_SIZE_CLASSES] = { 0 };
 
     PokeathlonCoursePoint own;
     s32 centerX;
@@ -142,7 +138,7 @@ void PokeathlonRingDrop_InitMons(PokeathlonRingDrop *ringDrop, PokeathlonCourseD
     s16 x, y;
     PokeathlonRingDropMon *mon;
 
-    ReadWholeNarcMemberByIdPair(collisions, (NarcId)170, 19);
+    ReadWholeNarcMemberByIdPair(collisions, NARC_a_1_7_0, 19);
     GF_ASSERT(ringDrop != NULL);
     PokeathlonRingDrop_InitMemberParams(course);
     for (i = 0; i < RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE; i++) {

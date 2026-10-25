@@ -131,7 +131,7 @@ typedef struct PokeathlonHurdleDashTeamMon {
 
 // NARC a/1/7/0 member 10.
 typedef struct PokeathlonHurdleDashParams {
-    u32 values[3][2];
+    PokeathlonCourseCollision collisions[POKEATHLON_SIZE_CLASSES];
 } PokeathlonHurdleDashParams;
 
 // NARC a/1/7/0 member 0.

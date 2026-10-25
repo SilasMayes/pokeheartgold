@@ -1256,7 +1256,7 @@ static void PokeathlonCourseCeremony_RankTeams(PokeathlonCourseCeremonyScore *sc
         ranks[i].drawingLot = drawingLots[i];
     }
 
-    MATH_QSort(ranks, 4, sizeof(PokeathlonCourseCeremonyRank), PokeathlonCourseCeremony_CompareRanks, NULL);
+    MATH_QSort(ranks, POKEATHLON_PARTICIPANTS, sizeof(PokeathlonCourseCeremonyRank), PokeathlonCourseCeremony_CompareRanks, NULL);
 
     for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         ranks[i].place = place;
@@ -2232,7 +2232,7 @@ static void PokeathlonCourseCeremony_BreakTie(PokeathlonCourseCeremonyRank *rank
     }
     ranks[winner].place--;
     ranks[winner].points++;
-    MATH_QSort(ranks, 4, 4, PokeathlonCourseCeremony_CompareRanks, NULL);
+    MATH_QSort(ranks, POKEATHLON_PARTICIPANTS, sizeof(PokeathlonCourseCeremonyRank), PokeathlonCourseCeremony_CompareRanks, NULL);
     ranks[0].points--;
 }
 

@@ -315,7 +315,7 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
     ObjCharTransferTemplate spriteConfig;
     PokeathlonCourseSpritePoolTemplate sceneConfig;
     PokeathlonCourseMonInfo views[3];
-    PokeathlonLampJumpSpriteOffset offsets[3];
+    PokeathlonCourseCollision collisions[POKEATHLON_SIZE_CLASSES];
     PokeathlonCoursePoint screenPos[3];
     PokeathlonLampJumpMonParams params;
     int screenX, screenY;
@@ -397,7 +397,7 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
         }
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)lampJump->bgConfig);
         PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
-        ReadWholeNarcMemberByIdPair(offsets, NARC_a_1_7_0, 16);
+        ReadWholeNarcMemberByIdPair(collisions, NARC_a_1_7_0, 16);
         for (monIndex = 0; monIndex < POKEATHLON_TEAM_SIZE; monIndex++) {
             PokeathlonLampJumpMon *mon = &lampJump->mons[monIndex];
 
@@ -406,7 +406,7 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
             PokeathlonCourseMonObject_SetDrawFlag(sprite, 1);
             mon->sprite = sprite;
             count = PokeathlonCourse_GetCollisionSizeClass(PokeathlonCourse_GetPerformance(course, 0, monIndex));
-            PokeathlonCourseObject_SetCollision(sprite, offsets[count - 1].x, offsets[count - 1].y);
+            PokeathlonCourseObject_SetCollision(sprite, collisions[count - 1].offsetY, collisions[count - 1].radius);
             PokeathlonCourseMonObject_SetAnimState(sprite, 2);
             PokeathlonCourseObject_SetGroundPosition(sprite, x, 288);
             PokeathlonCourseObject_SetTouchRadius(sprite, PokeathlonCourse_GetTouchRadius());
@@ -1611,7 +1611,7 @@ BOOL PokeathlonLampJump_CollideMons(PokeathlonCourseData *course, PokeathlonLamp
     VecFx32 posB;
     int radiusA, radiusB, x, y;
     int i, j;
-    void *spriteA, *spriteB;
+    PokeathlonCourseMonObject *spriteA, *spriteB;
     u8 participant;
     PokeathlonLampJumpJump *jumpA;
     PokeathlonLampJumpMon *monA = &lampJump->mons[0];

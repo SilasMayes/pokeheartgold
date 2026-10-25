@@ -143,14 +143,14 @@ static inline int GetSizeClass(PokeathlonCourseData *course, int index) {
 // Puts the Pokemon on their start places (the host also writes them into the first frame packet).
 
 void PokeathlonDiscCatch_InitMons(PokeathlonDiscCatch *work) {
-    int collisions[3][2] = { 0 };
+    PokeathlonCourseCollision collisions[POKEATHLON_SIZE_CLASSES] = { 0 };
     PokeathlonCoursePoint ownPositions[DISC_CATCH_TEAM_SIZE];
     int x, y;
     PokeathlonCourseData *course;
     s32 i;
     int participant, member;
-    void *monPic;
-    void *pic;
+    PokeathlonCourseMonObject *monPic;
+    PokeathlonCourseMonObject *pic;
     PokeathlonCourseMonInfo *info;
     PokeathlonDiscCatchMon *mon;
     s16 groundX, groundY;
@@ -172,7 +172,7 @@ void PokeathlonDiscCatch_InitMons(PokeathlonDiscCatch *work) {
         PokeathlonCourseMonObject_SetDrawFlag(monPic, TRUE);
         {
             int sizeClass = GetSizeClass(course, i);
-            PokeathlonCourseObject_SetCollision(monPic, collisions[sizeClass - 1][0], collisions[sizeClass - 1][1]);
+            PokeathlonCourseObject_SetCollision(monPic, collisions[sizeClass - 1].offsetY, collisions[sizeClass - 1].radius);
         }
         pic = PokeathlonCourseMonObjects_Get(work->monPics, i);
         info = PokeathlonCourseMonGfx_GetInfo(PokeathlonCourseMonObject_GetGfx(pic));

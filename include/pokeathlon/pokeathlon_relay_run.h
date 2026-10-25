@@ -62,11 +62,6 @@
 #define RELAY_RUN_HIT_INSIDE_BOTTOM 12
 #define RELAY_RUN_HIT_INSIDE_LEFT   13
 
-// Collision circle of a Pokemon by size (NARC a/1/7/0 member 12).
-typedef struct PokeathlonRelayRunCollision {
-    s32 offsetY;
-    s32 radius;
-} PokeathlonRelayRunCollision;
 
 // One member of a team.
 typedef struct PokeathlonRelayRunMember {

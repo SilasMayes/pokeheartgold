@@ -945,7 +945,7 @@ static void PokeathlonBlockSmashMon_EndFullGauge(PokeathlonBlockSmashMon *mon) {
 
 // Places the other teams' Pokemon pictures (three per row, the first one shown).
 static void PokeathlonBlockSmashRivals_InitMonPics(PokeathlonCourseMonObjects *monPics, u32 self) {
-    void *pic;
+    PokeathlonCourseMonObject *pic;
     u32 base;
     s32 i;
     int x;

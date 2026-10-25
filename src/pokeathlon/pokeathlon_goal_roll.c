@@ -42,11 +42,6 @@ enum PokeathlonGoalRollInitState {
 
 extern const PokeathlonGoalRollPaletteData gPokeathlonGoalRollPaletteData;
 
-typedef struct PokeathlonGoalRollModelSize {
-    u32 width;
-    u32 height;
-} PokeathlonGoalRollModelSize;
-
 typedef struct PokeathlonGoalRollVec4 {
     VecFx32 positions[GOAL_ROLL_PARTICIPANTS];
 } PokeathlonGoalRollVec4;
@@ -73,7 +68,7 @@ static void PokeathlonGoalRoll_PackFrame(PokeathlonGoalRoll *goalRoll, Pokeathlo
 static void PokeathlonGoalRoll_ApplyFrame(PokeathlonCourseData *course);
 static void PokeathlonGoalRoll_ApplyFrameScore(PokeathlonCourseData *course);
 
-static inline void PokeathlonGoalRoll_SetModelSize(PokeathlonCourseData *course, PokeathlonCourseMonObjects *monObjects, s32 index, const PokeathlonGoalRollModelSize *sizes) {
+static inline void PokeathlonGoalRoll_SetMonCollision(PokeathlonCourseData *course, PokeathlonCourseMonObjects *monObjects, s32 index, const PokeathlonCourseCollision *collisions) {
     PokeathlonCourseMonObject *object;
     int participant;
     int member;
@@ -83,13 +78,13 @@ static inline void PokeathlonGoalRoll_SetModelSize(PokeathlonCourseData *course,
     participant = index / GOAL_ROLL_TEAM_SIZE;
     member = index % GOAL_ROLL_TEAM_SIZE;
     size = PokeathlonCourse_GetCollisionSizeClass(PokeathlonCourse_GetPerformance(course, participant, member));
-    PokeathlonCourseObject_SetCollision(object, sizes[size - 1].width, sizes[size - 1].height);
+    PokeathlonCourseObject_SetCollision(object, collisions[size - 1].offsetY, collisions[size - 1].radius);
 }
 
 typedef PokeathlonGoalRollCpu *(*PokeathlonGoalRollCpuNewFunc)(u32 heapId, int cpuCount, int mode);
 
 BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
-    PokeathlonGoalRollModelSize modelSizes[3];
+    PokeathlonCourseCollision collisions[POKEATHLON_SIZE_CLASSES];
     PokeathlonCourseSpritePoolSprite *sprite;
     int j;
     PokeathlonCourseMonGfx *image;
@@ -283,9 +278,9 @@ BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
         own = PokeathlonCourse_GetNetId(course);
         PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)goalRoll->bgConfig);
         PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
-        ReadWholeNarcMemberByIdPair(modelSizes, NARC_a_1_7_0, 11);
+        ReadWholeNarcMemberByIdPair(collisions, NARC_a_1_7_0, 11);
         for (i = 0; i < GOAL_ROLL_MONS; i++) {
-            PokeathlonGoalRoll_SetModelSize(course, goalRoll->monObjects, i, modelSizes);
+            PokeathlonGoalRoll_SetMonCollision(course, goalRoll->monObjects, i, collisions);
             object = PokeathlonCourseMonObjects_Get(goalRoll->monObjects, i);
             image = PokeathlonCourseMonObject_GetGfx(object);
             member = i % GOAL_ROLL_TEAM_SIZE;

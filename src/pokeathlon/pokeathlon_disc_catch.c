@@ -54,7 +54,7 @@ void MATH_QSort(void *head, u32 num, u32 size, s32 (*compare)(const void *, cons
 // A Pokemon sprite and the y its draw order goes by.
 typedef struct PokeathlonDiscCatchDrawOrder {
     u8 y;
-    void *monPic;
+    PokeathlonCourseMonObject *monPic;
 } PokeathlonDiscCatchDrawOrder;
 
 static void PokeathlonDiscCatch_SetVramBanks(void);
@@ -553,10 +553,13 @@ void PokeathlonDiscCatch_UpdateDiscSprites(PokeathlonDiscCatchSprites *sprites, 
 
 // The lower Pokemon is drawn in front.
 static s32 PokeathlonDiscCatch_CompareDrawOrder(const void *a, const void *b) {
-    if (*(const u8 *)a == *(const u8 *)b) {
+    const PokeathlonDiscCatchDrawOrder *orderA = a;
+    const PokeathlonDiscCatchDrawOrder *orderB = b;
+
+    if (orderA->y == orderB->y) {
         return 0;
     }
-    if (*(const u8 *)a < *(const u8 *)b) {
+    if (orderA->y < orderB->y) {
         return 1;
     }
     return -1;
@@ -574,7 +577,7 @@ void PokeathlonDiscCatch_UpdateMonSprites(PokeathlonDiscCatchSprites *sprites, P
     PokeathlonDiscCatchMonSprites *mon;
     u8 fallen;
     PokeathlonDiscCatchDrawOrder *entry;
-    void *monPic;
+    PokeathlonCourseMonObject *monPic;
     u8 monY;
     int i;
     int shift;

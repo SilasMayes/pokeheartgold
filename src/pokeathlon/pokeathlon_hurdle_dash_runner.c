@@ -40,7 +40,7 @@ void PokeathlonHurdleDashRunner_Init(PokeathlonCourseData *course, const Pokeath
     PokeathlonCourseMonGfx *gfx;
     PokeathlonCourseMonInfo *info;
     u8 *stats;
-    int performance;
+    int sizeClass;
     Sprite *sprite;
 
     runner->distance = 0;
@@ -91,8 +91,8 @@ void PokeathlonHurdleDashRunner_Init(PokeathlonCourseData *course, const Pokeath
     runner->mon.riseFrames = table->rows[0][stats[2]];
     runner->mon.hangFrames = table->rows[1][stats[2]];
     runner->mon.jumpStat = stats[2];
-    performance = PokeathlonCourse_GetCollisionSizeClass(PokeathlonCourse_GetPerformance(course, PokeathlonCourse_GetNetId(course), lane)) - 1;
-    PokeathlonCourseObject_SetCollision(monObject, params->values[performance][0], params->values[performance][1]);
+    sizeClass = PokeathlonCourse_GetCollisionSizeClass(PokeathlonCourse_GetPerformance(course, PokeathlonCourse_GetNetId(course), lane)) - 1;
+    PokeathlonCourseObject_SetCollision(monObject, params->collisions[sizeClass].offsetY, params->collisions[sizeClass].radius);
     PokeathlonCourseObject_SetTouchRadius(monObject, PokeathlonCourse_GetTouchRadius());
     runner->mon.topSpeed = table->rows[3][stats[1]] / 10.0f;
     runner->mon.acceleration = table->rows[2][stats[4]] / 100.0f;

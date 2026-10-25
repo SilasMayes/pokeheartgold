@@ -31,11 +31,6 @@ enum PokeathlonPennantCaptureInitState {
     PENNANT_CAPTURE_INIT_DONE,
 };
 
-// Collision circle of a Pokemon by size (NARC a/1/7/0 member 14).
-typedef struct PokeathlonPennantCaptureCollision {
-    s32 offsetY;
-    s32 radius;
-} PokeathlonPennantCaptureCollision;
 
 static void PokeathlonPennantCapture_SetGfxBanks(void);
 
@@ -72,7 +67,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
     ObjCharTransferTemplate charTransfer;
     PokeathlonCourseSpritePoolTemplate poolTemplate;
     PokeathlonPennantCaptureIconMon icons[12];
-    PokeathlonPennantCaptureCollision collisions[3];
+    PokeathlonCourseCollision collisions[POKEATHLON_SIZE_CLASSES];
     PokeathlonCoursePoint ownPosition;
     int centerX, centerY;
     int participant;
@@ -183,7 +178,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
                 PokeathlonCourseMonObject_SetDrawFlag(object, TRUE);
             }
             {
-                PokeathlonPennantCaptureCollision *collision = &collisions[PokeathlonCourse_GetCollisionSizeClass(PokeathlonPennantCapture_GetPerformance(course, i))]; // size 1-3
+                PokeathlonCourseCollision *collision = &collisions[PokeathlonCourse_GetCollisionSizeClass(PokeathlonPennantCapture_GetPerformance(course, i))]; // size 1-3
                 PokeathlonCourseObject_SetCollision(object, collision[-1].offsetY, collision[-1].radius);
             }
             object = PokeathlonCourseMonObjects_Get(work->monObjects, i & 0xFF);

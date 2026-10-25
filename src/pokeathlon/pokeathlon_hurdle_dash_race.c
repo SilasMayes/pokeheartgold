@@ -59,7 +59,7 @@ static void PokeathlonHurdleDash_UpdateTimerDigits(PokeathlonHurdleDash *hurdleD
 static void PokeathlonHurdleDash_UpdateCpuRunner(PokeathlonCourseData *course, PokeathlonHurdleDash *hurdleDash, PokeathlonHurdleDashPacket *packet, u8 participant, u8 member, u8 cpuIndex);
 static void PokeathlonHurdleDashRunner_Boost(PokeathlonCourseData *course, PokeathlonHurdleDashRunner *runner);
 
-static void *PokeathlonHurdleDashRunner_GetHurdle(PokeathlonHurdleDashRunner *runner, int index) {
+static PokeathlonHurdle *PokeathlonHurdleDashRunner_GetHurdle(PokeathlonHurdleDashRunner *runner, int index) {
     return PokeathlonHurdleDash_GetHurdle(runner->hurdles, index);
 }
 
