@@ -221,7 +221,7 @@ static void FrontierWipeBox_Free(FrontierWipeBox *box) {
 }
 
 static void FrontierWipeBox_Start(FrontierWipeBox *box, s32 x0, s32 x1, s32 y0, s32 y1, s32 duration, Window *window, u32 width, u32 height, u8 color) {
-    GF_ASSERT(box->active == FALSE);
+    GF_ASSERT(!box->active);
     FrontierTransitionLerp_Init(&box->x, x0, x1, duration);
     FrontierTransitionLerp_Init(&box->y, y0, y1, duration);
     box->window = window;
@@ -240,7 +240,7 @@ static BOOL FrontierWipeBox_Update(FrontierWipeBox *box) {
     u32 width;
     u32 height;
 
-    if (box->active == FALSE) {
+    if (!box->active) {
         return TRUE;
     }
     finished = FrontierTransitionLerp_Step(&box->x);
@@ -269,7 +269,7 @@ static void FrontierWipeBox_FillRect(Window *window, s32 top, s32 bottom, s32 le
         if (bottom > 256) {
             bottom = 256;
         }
-        FillWindowPixelRect(window, color, (u16)left, (u16)top, (u16)(right - left), (u16)(bottom - top));
+        FillWindowPixelRect(window, color, left, top, right - left, bottom - top);
     }
 }
 
@@ -313,7 +313,7 @@ BOOL FrontierWipe_UpdateHorizontal(FrontierWipe *wipe) {
     int x1;
     int y;
 
-    if (wipe->active == FALSE) {
+    if (!wipe->active) {
         return TRUE;
     }
     if (wipe->started < 96) {

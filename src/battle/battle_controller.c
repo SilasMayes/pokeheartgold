@@ -192,7 +192,7 @@ void BattleController_EmitPokemonSendOut(BattleSystem *battleSystem, int battler
 
     packet.command = OPPONENT_COMMAND_POKEMON_SEND_OUT;
     if (battleSystem->ctx->battleMons[battlerId].status2 & STATUS2_TRANSFORM) {
-        packet.gender = (u8)battleSystem->ctx->battleMons[battlerId].moveEffectData.transformGender;
+        packet.gender = battleSystem->ctx->battleMons[battlerId].moveEffectData.transformGender;
         packet.personality = battleSystem->ctx->battleMons[battlerId].moveEffectData.transformPersonality;
     } else {
         packet.gender = battleSystem->ctx->battleMons[battlerId].gender;
@@ -332,7 +332,7 @@ void BattleController_EmitHealthbarSlideIn(BattleSystem *battleSystem, BattleCon
     packet.hp = ctx->battleMons[battlerId].hp;
     packet.maxHp = ctx->battleMons[battlerId].maxHp;
     packet.selectedMonIndex = ctx->selectedMonIndex[battlerId];
-    packet.status = (u8)GetBattlerStatusCondition(ctx, battlerId);
+    packet.status = GetBattlerStatusCondition(ctx, battlerId);
     if ((ctx->battleMons[battlerId].species == SPECIES_NIDORAN_F || ctx->battleMons[battlerId].species == SPECIES_NIDORAN_M) && !ctx->battleMons[battlerId].hasNickname) {
         packet.gender = MON_GENDERLESS;
     } else {
@@ -341,7 +341,7 @@ void BattleController_EmitHealthbarSlideIn(BattleSystem *battleSystem, BattleCon
     packet.exp = ctx->battleMons[battlerId].exp - GetMonExpBySpeciesAndLevel(species, level);
     int nextLevelExp = GetMonExpBySpeciesAndLevel(species, level + 1);
     packet.maxExp = nextLevelExp - GetMonExpBySpeciesAndLevel(species, level);
-    packet.caught = (u8)BattleSystem_CheckMonCaught(battleSystem, ctx->battleMons[battlerId].species);
+    packet.caught = BattleSystem_CheckMonCaught(battleSystem, ctx->battleMons[battlerId].species);
     packet.safariBallCount = BattleSystem_GetSafariBallCount(battleSystem);
     packet.delay = delay;
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
@@ -368,7 +368,7 @@ void BattleController_EmitSelectCommand(BattleSystem *battleSystem, BattleContex
 
     unavailableMask = 0;
     for (i = 0; i < BattleSystem_GetMaxBattlers(battleSystem); i++) {
-        if (Battler_CanSelectAction(ctx, i) == FALSE) {
+        if (!Battler_CanSelectAction(ctx, i)) {
             unavailableMask |= MaskOfFlagNo(i);
         }
     }
@@ -878,7 +878,7 @@ void BattleController_EmitRefreshHealthbar(BattleSystem *battleSystem, BattleCon
     packet.hp = ctx->battleMons[battlerId].hp;
     packet.maxHp = ctx->battleMons[battlerId].maxHp;
     packet.selectedMonIndex = ctx->selectedMonIndex[battlerId];
-    packet.status = (u8)GetBattlerStatusCondition(ctx, battlerId);
+    packet.status = GetBattlerStatusCondition(ctx, battlerId);
     if ((ctx->battleMons[battlerId].species == SPECIES_NIDORAN_F || ctx->battleMons[battlerId].species == SPECIES_NIDORAN_M) && !ctx->battleMons[battlerId].hasNickname) {
         packet.gender = MON_GENDERLESS;
     } else {
@@ -886,7 +886,7 @@ void BattleController_EmitRefreshHealthbar(BattleSystem *battleSystem, BattleCon
     }
     packet.exp = ctx->battleMons[battlerId].exp - GetMonExpBySpeciesAndLevel(species, level);
     packet.maxExp = GetMonExpBySpeciesAndLevel(species, level + 1) - GetMonExpBySpeciesAndLevel(species, level);
-    packet.caught = (u8)BattleSystem_CheckMonCaught(battleSystem, ctx->battleMons[battlerId].species);
+    packet.caught = BattleSystem_CheckMonCaught(battleSystem, ctx->battleMons[battlerId].species);
     packet.safariBallCount = BattleSystem_GetSafariBallCount(battleSystem);
     BattleController_EmitPacket(battleSystem, BATTLE_PACKET_COMMAND, battlerId, &packet, sizeof(packet));
 }
@@ -896,7 +896,7 @@ void BattleController_EmitBattleMonToPartyMonCopy(BattleSystem *battleSystem, Ba
 
     packet.command = OPPONENT_COMMAND_BATTLE_MON_TO_PARTY_MON_COPY;
     packet.selectedMonIndex = ctx->selectedMonIndex[battlerId];
-    packet.mimicedMoveIndex = (u8)ctx->battleMons[battlerId].moveEffectData.mimicedMoveIndex;
+    packet.mimicedMoveIndex = ctx->battleMons[battlerId].moveEffectData.mimicedMoveIndex;
     packet.hp = ctx->battleMons[battlerId].hp;
     packet.item = ctx->battleMons[battlerId].item;
     packet.battlerBitKnockedOffItem = ctx->fieldSideConditionData[BattleSystem_GetFieldSide(battleSystem, battlerId)].battlerBitKnockedOffItem;

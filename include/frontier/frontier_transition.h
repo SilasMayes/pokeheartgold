@@ -2,9 +2,7 @@
 #define POKEHEARTGOLD_FRONTIER_FRONTIER_TRANSITION_H
 
 #include "bg_window.h"
-#include "heap.h"
 #include "scanline_effect.h"
-#include "sys_task.h"
 
 typedef struct FrontierWipeBox FrontierWipeBox;
 typedef struct FrontierWipe FrontierWipe;

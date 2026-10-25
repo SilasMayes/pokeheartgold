@@ -12,6 +12,7 @@
 #include "constants/trainer_class.h"
 
 #include "battle/battle.h"
+#include "battle/battle_022378C0.h"
 #include "battle/battle_controller_opponent.h"
 #include "battle/battle_controller_packets.h"
 #include "battle/battle_controller_player.h"
@@ -330,9 +331,9 @@ void Battle_BattleInit(OverlayManager *manager) {
     MIi_CpuCopy16(PaletteData_GetUnfadedBuf(battleSystem->palette, PLTTBUF_MAIN_BG), battleSystem->bgPaletteBackup, 224);
     MIi_CpuCopy16(PaletteData_GetUnfadedBuf(battleSystem->palette, PLTTBUF_MAIN_OBJ), battleSystem->objPaletteBackup, 224);
     colorIndex = BattleSystem_GetBgTimeOfDay(battleSystem);
-    PaletteData_FillPaletteInBuffer(battleSystem->palette, PLTTBUF_MAIN_BG, PLTTSEL_BOTH, (u16)gBattleBgFillColors[battleSystem->backgroundId][colorIndex], 0, 112);
-    PaletteData_FillPaletteInBuffer(battleSystem->palette, PLTTBUF_MAIN_BG, PLTTSEL_BOTH, (u16)gBattleBgFillColors[battleSystem->backgroundId][colorIndex], 192, 256);
-    PaletteData_FillPaletteInBuffer(battleSystem->palette, PLTTBUF_MAIN_OBJ, PLTTSEL_BOTH, (u16)gBattleBgFillColors[battleSystem->backgroundId][colorIndex], 0, 223);
+    PaletteData_FillPaletteInBuffer(battleSystem->palette, PLTTBUF_MAIN_BG, PLTTSEL_BOTH, gBattleBgFillColors[battleSystem->backgroundId][colorIndex], 0, 112);
+    PaletteData_FillPaletteInBuffer(battleSystem->palette, PLTTBUF_MAIN_BG, PLTTSEL_BOTH, gBattleBgFillColors[battleSystem->backgroundId][colorIndex], 192, 256);
+    PaletteData_FillPaletteInBuffer(battleSystem->palette, PLTTBUF_MAIN_OBJ, PLTTSEL_BOTH, gBattleBgFillColors[battleSystem->backgroundId][colorIndex], 0, 223);
     PaletteData_FillPaletteInBuffer(battleSystem->palette, PLTTBUF_MAIN_BG, PLTTSEL_TRANSPARENT, 0, 160, 192);
     PaletteData_FillPaletteInBuffer(battleSystem->palette, PLTTBUF_SUB_BG, PLTTSEL_TRANSPARENT, 0, 0, 255);
     PaletteData_FillPaletteInBuffer(battleSystem->palette, PLTTBUF_SUB_OBJ, PLTTSEL_TRANSPARENT, 65535, 0, 255);
@@ -681,7 +682,7 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
                 for (slot = 0; slot < Party_GetCount(battleSystem->trainerParty[i]); slot++) {
                     mon = Party_GetMonByIndex(battleSystem->trainerParty[i], slot);
                     if (GetMonData(mon, MON_DATA_SPECIES, NULL)
-                        && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                        && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                         && GetMonData(mon, MON_DATA_HP, NULL)) {
                         break;
                     }
@@ -704,7 +705,7 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
                 for (slot = 0; slot < Party_GetCount(battleSystem->trainerParty[i]); slot++) {
                     mon = Party_GetMonByIndex(battleSystem->trainerParty[i], slot);
                     if (GetMonData(mon, MON_DATA_SPECIES, NULL)
-                        && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                        && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                         && GetMonData(mon, MON_DATA_HP, NULL)) {
                         break;
                     }
@@ -729,12 +730,12 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
                     if (i > 1) {
                         if (BattleContext_Get(battleSystem, battleSystem->ctx, 2, i & 1) != slot
                             && GetMonData(mon, MON_DATA_SPECIES, NULL)
-                            && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                            && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                             && GetMonData(mon, MON_DATA_HP, NULL)) {
                             break;
                         }
                     } else if (GetMonData(mon, MON_DATA_SPECIES, NULL)
-                        && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                        && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                         && GetMonData(mon, MON_DATA_HP, NULL)) {
                         break;
                     }
@@ -754,7 +755,7 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
                 for (slot = 0; slot < Party_GetCount(battleSystem->trainerParty[i]); slot++) {
                     mon = Party_GetMonByIndex(battleSystem->trainerParty[i], slot);
                     if (GetMonData(mon, MON_DATA_SPECIES, NULL)
-                        && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                        && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                         && GetMonData(mon, MON_DATA_HP, NULL)) {
                         break;
                     }
@@ -780,13 +781,13 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
                 mon = BattleSystem_GetPartyMon(battleSystem, i, slot);
                 if (i == BATTLER_PLAYER2) {
                     if (GetMonData(mon, MON_DATA_SPECIES, NULL)
-                        && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                        && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                         && GetMonData(mon, MON_DATA_HP, NULL)
                         && playerSlot != slot) {
                         break;
                     }
                 } else if (GetMonData(mon, MON_DATA_SPECIES, NULL)
-                    && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                    && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                     && GetMonData(mon, MON_DATA_HP, NULL)) {
                     break;
                 }
@@ -813,7 +814,7 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
             for (slot = 0; slot < Party_GetCount(battleSystem->trainerParty[i]); slot++) {
                 mon = Party_GetMonByIndex(battleSystem->trainerParty[i], slot);
                 if (GetMonData(mon, MON_DATA_SPECIES, NULL)
-                    && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                    && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                     && GetMonData(mon, MON_DATA_HP, NULL)) {
                     break;
                 }
@@ -839,12 +840,12 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
                 if (i > 1) {
                     if (BattleContext_Get(battleSystem, battleSystem->ctx, 2, i & 1) != slot
                         && GetMonData(mon, MON_DATA_SPECIES, NULL)
-                        && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                        && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                         && GetMonData(mon, MON_DATA_HP, NULL)) {
                         break;
                     }
                 } else if (GetMonData(mon, MON_DATA_SPECIES, NULL)
-                    && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                    && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                     && GetMonData(mon, MON_DATA_HP, NULL)) {
                     break;
                 }
@@ -866,7 +867,7 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
             for (slot = 0; slot < Party_GetCount(battleSystem->trainerParty[i]); slot++) {
                 mon = Party_GetMonByIndex(battleSystem->trainerParty[i], slot);
                 if (GetMonData(mon, MON_DATA_SPECIES, NULL)
-                    && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE
+                    && !GetMonData(mon, MON_DATA_IS_EGG, NULL)
                     && GetMonData(mon, MON_DATA_HP, NULL)) {
                     break;
                 }
@@ -1131,7 +1132,7 @@ void Battle_LinkInit(OverlayManager *man, BattleSetup *setup) {
     InitBgFromTemplate(work->bgConfig, GF_BG_LYR_MAIN_1, &bgTemplate, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_1);
     frame = Options_GetFrame(setup->options);
-    LoadUserFrameGfx2WithFill(work->bgConfig, GF_BG_LYR_MAIN_1, 1, 10, (u8)frame, HEAP_ID_BATTLE);
+    LoadUserFrameGfx2WithFill(work->bgConfig, GF_BG_LYR_MAIN_1, 1, 10, frame, HEAP_ID_BATTLE);
     PaletteData_LoadNarc(work->palette, NARC_graphic_font, 8, HEAP_ID_BATTLE, PLTTBUF_MAIN_BG, 0x20, 0xB0);
     PaletteData_LoadNarc(work->palette, NARC_a_0_3_8, GetUserFrameGfx2PaletteMember(frame), HEAP_ID_BATTLE, PLTTBUF_MAIN_BG, 0x20, 0xA0);
     PaletteData_FillPaletteInBuffer(work->palette, PLTTBUF_MAIN_BG, PLTTSEL_TRANSPARENT, 0, 0, 0x100);

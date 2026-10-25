@@ -116,7 +116,7 @@ u32 FrontierSave_SubStat(FrontierSave *frontier, int stat, int index, int amount
     if (value < 0) {
         value = 0;
     }
-    return FrontierSave_SetStat(frontier, stat, index, (u16)value);
+    return FrontierSave_SetStat(frontier, stat, index, value);
 }
 
 void FrontierSave_RaiseStat(FrontierSave *frontier, u32 stat, u32 index, u16 value) {

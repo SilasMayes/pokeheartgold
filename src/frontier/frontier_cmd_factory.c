@@ -48,7 +48,7 @@ BOOL FrtCmd_FactoryAlloc(FrontierScriptContext *ctx) {
     u32 resume = FrontierScript_ReadVar(ctx);
     u32 type = FrontierScript_ReadVar(ctx);
     u32 levelMode = FrontierScript_ReadVar(ctx);
-    BattleFactoryData *data = BattleFactoryData_Alloc(Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork)->saveData, resume, (u8)type, (u8)levelMode);
+    BattleFactoryData *data = BattleFactoryData_Alloc(Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork)->saveData, resume, type, levelMode);
     Frontier_SetData(ctx->frontierSystem->frontierWork, data);
     return FALSE;
 }

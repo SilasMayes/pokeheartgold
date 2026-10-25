@@ -257,7 +257,7 @@ ArcadeContext *BattleArcadeData_Alloc(SaveData *saveData, u32 resume, u8 type, u
 }
 
 void BattleArcadeData_Init(ArcadeContext *ctx, u32 resume) {
-    if (resume == FALSE) {
+    if (!resume) {
         BattleArcadeData_InitNew(ctx);
     } else {
         BattleArcadeData_InitResume(ctx);
@@ -298,10 +298,10 @@ static void BattleArcadeData_InitResume(ArcadeContext *ctx) {
 
     BattleArcadeData_RestoreHeldItems(ctx);
     for (i = 0; i < 14; i++) {
-        ctx->trainerIds[i] = ArcadeChallenge_GetField(ctx->challenge, ARCADE_CHALLENGE_TRAINER_IDS, (u8)i, 0, 0);
+        ctx->trainerIds[i] = ArcadeChallenge_GetField(ctx->challenge, ARCADE_CHALLENGE_TRAINER_IDS, i, 0, 0);
     }
     for (i = 0; i < 4; i++) {
-        monIds[i] = ArcadeChallenge_GetField(ctx->challenge, ARCADE_CHALLENGE_SET_IDS, (u8)i, 0, 0);
+        monIds[i] = ArcadeChallenge_GetField(ctx->challenge, ARCADE_CHALLENGE_SET_IDS, i, 0, 0);
         ctx->setIds[i] = monIds[i];
     }
     FrontierMon_GenerateList(frontierMons, monIds, (u8 *)ivs, NULL, personalities, 4, HEAP_ID_FIELD2, NARC_a_2_0_3);
@@ -319,7 +319,7 @@ static void BattleArcadeData_RestoreHeldItems(ArcadeContext *ctx) {
 
     for (i = 0; i < count; i++) {
         Pokemon *mon = Party_GetMonByIndex(ctx->playerParty, i);
-        u16 item = ArcadeChallenge_GetField(ctx->challenge, ARCADE_CHALLENGE_HELD_ITEMS, (u8)i, 0, 0);
+        u16 item = ArcadeChallenge_GetField(ctx->challenge, ARCADE_CHALLENGE_HELD_ITEMS, i, 0, 0);
         SetMonData(mon, MON_DATA_HELD_ITEM, &item);
     }
 }
@@ -402,22 +402,22 @@ void BattleArcadeData_SaveRecord(ArcadeContext *ctx, u32 mode) {
 
     for (i = 0; i < 14; i = (u16)(i + 1)) {
         value.buffer.halfword = ctx->trainerIds[i];
-        ArcadeChallenge_SetField(ctx->challenge, ARCADE_CHALLENGE_TRAINER_IDS, (u8)i, 0, &value.buffer.halfword);
+        ArcadeChallenge_SetField(ctx->challenge, ARCADE_CHALLENGE_TRAINER_IDS, i, 0, &value.buffer.halfword);
     }
     for (i = 0; i < 3; i = (u16)(i + 1)) {
         value.byte = ctx->partySlots[i];
-        ArcadeChallenge_SetField(ctx->challenge, ARCADE_CHALLENGE_PARTY_SLOTS, (u8)i, 0, &value.byte);
+        ArcadeChallenge_SetField(ctx->challenge, ARCADE_CHALLENGE_PARTY_SLOTS, i, 0, &value.byte);
     }
     count = Party_GetCount(ctx->playerParty);
     for (i = 0; i < count; i = (u16)(i + 1)) {
-        value.buffer.halfword = (u16)GetMonData(Party_GetMonByIndex(ctx->playerParty, i), MON_DATA_HELD_ITEM, NULL);
-        ArcadeChallenge_SetField(ctx->challenge, ARCADE_CHALLENGE_HELD_ITEMS, (u8)i, 0, &value.buffer.halfword);
+        value.buffer.halfword = GetMonData(Party_GetMonByIndex(ctx->playerParty, i), MON_DATA_HELD_ITEM, NULL);
+        ArcadeChallenge_SetField(ctx->challenge, ARCADE_CHALLENGE_HELD_ITEMS, i, 0, &value.buffer.halfword);
     }
     count = Party_GetCount(ctx->opponentParty);
     for (i = 0; i < count; i = (u16)(i + 1)) {
         Party_GetMonByIndex(ctx->opponentParty, i);
         value.buffer.halfword = ctx->setIds[i];
-        ArcadeChallenge_SetField(ctx->challenge, ARCADE_CHALLENGE_SET_IDS, (u8)i, 0, &value.buffer.halfword);
+        ArcadeChallenge_SetField(ctx->challenge, ARCADE_CHALLENGE_SET_IDS, i, 0, &value.buffer.halfword);
     }
 }
 
@@ -561,7 +561,7 @@ void BattleArcade_CreateMonSprites(ArcadeContext *ctx, FrontierMap *map, u32 opp
     u8 count = BattleArcade_GetMonCount(ctx->type, 1);
     u8 opponentCount = BattleArcade_GetOpponentMonCount(ctx->type, 1);
 
-    if (opponent == FALSE) {
+    if (!opponent) {
         for (i = 0; i < count; i++) {
             ctx->playerMonSprites[i] = FrontierMap_CreateMonIcon(map, Party_GetMonByIndex(ctx->playerParty, i), i, gBattleArcadePlayerMonIconPositions[i].x, gBattleArcadePlayerMonIconPositions[i].y);
             Sprite_SetAnimActiveFlag(ctx->playerMonSprites[i]->sprite, FALSE);
@@ -579,7 +579,7 @@ void BattleArcade_DeleteMonSprites(ArcadeContext *ctx, FrontierMap *map, u32 opp
     s32 opponentCount = BattleArcade_GetOpponentMonCount(ctx->type, 1);
     s32 i;
 
-    if (opponent == FALSE) {
+    if (!opponent) {
         for (i = 0; i < count; i++) {
             FrontierMap_DeleteMonIcon(map, ctx->playerMonSprites[i], i);
         }
@@ -616,7 +616,7 @@ void BattleArcade_CreateItemIcons(ArcadeContext *ctx, FrontierMap *map, u32 oppo
     int opponentCount = BattleArcade_GetOpponentMonCount(ctx->type, 1);
     int i;
 
-    if (opponent == FALSE) {
+    if (!opponent) {
         for (i = 0; i < count; i++) {
             ctx->playerItemIcons[i] = FrontierMap_CreateItemIcon(map, gBattleArcadePlayerMonIconPositions[i].x + 8, gBattleArcadePlayerMonIconPositions[i].y + 4);
             if (GetMonData(Party_GetMonByIndex(ctx->playerParty, i), MON_DATA_HELD_ITEM, NULL) == 0) {
@@ -638,7 +638,7 @@ void BattleArcade_DeleteItemIcons(ArcadeContext *ctx, FrontierMap *map, u32 oppo
     s32 opponentCount = BattleArcade_GetOpponentMonCount(ctx->type, 1);
     s32 i;
 
-    if (opponent == FALSE) {
+    if (!opponent) {
         for (i = 0; i < count; i++) {
             FrontierMap_DeleteItemIcon(map, ctx->playerItemIcons[i]);
         }
@@ -653,7 +653,7 @@ void BattleArcade_SetItemIconVisible(ArcadeContext *ctx, FrontierMap *map, u32 o
     s32 count = BattleArcade_GetMonCount(ctx->type, 1);
     s32 opponentCount = BattleArcade_GetOpponentMonCount(ctx->type, 1);
 
-    if (opponent == FALSE) {
+    if (!opponent) {
         if ((s32)slot < count) {
             u32 item = GetMonData(Party_GetMonByIndex(ctx->playerParty, slot), MON_DATA_HELD_ITEM, NULL);
             if (*(u16 *)&visible == TRUE) {

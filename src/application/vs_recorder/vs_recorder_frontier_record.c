@@ -80,7 +80,7 @@ void VsRecorder_FreeExitButton(VsRecorderWork *work) {
 
 static void VsRecorder_PlaceFrontierExitButton(VsRecorderWork *work, BOOL left) {
     VsRecorderFrontierRecord *record = work->screenWork;
-    if (left == FALSE) {
+    if (!left) {
         ManagedSprite_SetPositionXY(record->exitButton.sprite, 128, 232);
     } else {
         ManagedSprite_SetPositionXY(record->exitButton.sprite, 80, 232);
@@ -188,7 +188,7 @@ static void VsRecorder_GrayscalePalette(u16 *buf, int start, int count) {
     for (; i < start + count; i++) {
         int color = *buf;
         int gray = ((color & 0x1F) * 76 + ((color >> 5) & 0x1F) * 151 + ((color >> 10) & 0x1F) * 29) >> 8;
-        *buf = (u16)((gray << 10) | (gray << 5) | gray);
+        *buf = (gray << 10) | (gray << 5) | gray;
         buf++;
     }
 }
@@ -316,7 +316,7 @@ static void VsRecorder_CreateFrontierSprites(VsRecorderWork *work) {
         digits[i] = value / div;
         value = value % div;
         div = div / 10;
-        if (digits[i] == 0 && started == FALSE) {
+        if (digits[i] == 0 && !started) {
             zeros++;
         } else {
             started = TRUE;
@@ -401,8 +401,8 @@ static BOOL VsRecorder_SpinInFrontierSprites(VsRecorderWork *work) {
             record->scales[i] = 1.0f;
         }
         {
-            fx32 dx = GF_SinDeg((u16)record->angles[i]) * record->radii[i];
-            fx32 dy = GF_CosDeg((u16)record->angles[i]) * record->radii[i];
+            fx32 dx = GF_SinDeg(record->angles[i]) * record->radii[i];
+            fx32 dy = GF_CosDeg(record->angles[i]) * record->radii[i];
             dy = 0x6A000 - dy;
             dx += 0x80000;
             ManagedSprite_SetPositonFxXY(record->prints[i], dx, dy);
@@ -444,10 +444,10 @@ BOOL VsRecorder_SpinOutFrontierSprites(VsRecorderWork *work) {
             ManagedSprite_SetDrawFlag(record->facilityIcons[i], FALSE);
         }
         {
-            fx32 dx = GF_SinDeg((u16)record->angles[i]) * record->radii[i];
+            fx32 dx = GF_SinDeg(record->angles[i]) * record->radii[i];
             fx32 dy;
             dx = 0x80000 - dx;
-            dy = GF_CosDeg((u16)record->angles[i]) * record->radii[i];
+            dy = GF_CosDeg(record->angles[i]) * record->radii[i];
             dy = 0x6A000 - dy;
             ManagedSprite_SetPositonFxXY(record->prints[i], dx, dy);
         }
@@ -511,9 +511,9 @@ static BOOL VsRecorder_FrontierEnter(VsRecorderWork *work) {
             record->battlePoints = FrontierData_BattlePointAction(Save_FrontierData_Get(work->saveData), 0, 0);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, (u8)record->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)record->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)record->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, record->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, record->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, record->fade, work->blendColor);
         break;
     case FRONTIER_ENTER_STEP_FLIP_SCREENS:
         VsRecorder_SetVBlankPaused(work, TRUE);
@@ -524,7 +524,7 @@ static BOOL VsRecorder_FrontierEnter(VsRecorderWork *work) {
         VsRecorder_ResetBgPriorities();
         SetBgPriority(GF_BG_LYR_SUB_2, 2);
         VsRecorder_LoadFrontierGfx(work);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 28, (u8)record->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 28, record->fade, work->blendColor);
         work->step++;
         break;
     case FRONTIER_ENTER_STEP_CREATE:
@@ -543,11 +543,11 @@ static BOOL VsRecorder_FrontierEnter(VsRecorderWork *work) {
         BOOL spinning = VsRecorder_SpinInFrontierSprites(work);
         VsRecorder_StepBlend(&record->eva, &record->evb, FALSE, 0);
         VsRecorder_StepFade(&record->fade, 0);
-        if (spinning == FALSE) {
+        if (!spinning) {
             work->step++;
             VsRecorder_PlaceFrontierSprites(work);
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 28, (u8)record->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 28, record->fade, work->blendColor);
         break;
     }
     default:

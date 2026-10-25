@@ -1,11 +1,7 @@
 #ifndef POKEHEARTGOLD_BATTLE_RECORD_H
 #define POKEHEARTGOLD_BATTLE_RECORD_H
 
-#include "battle/battle_setup.h"
-
 #include "battle_recording.h"
-#include "heap.h"
-#include "save.h"
 
 // Battle Video functions; the record type and the recording interface are in battle_recording.h.
 

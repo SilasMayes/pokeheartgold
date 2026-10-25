@@ -38,7 +38,7 @@ u32 HallChallenge_GetSaved(HallChallenge *challenge) {
 }
 
 void HallChallenge_SetSaved(HallChallenge *challenge, int saved) {
-    challenge->saved = (u8)saved;
+    challenge->saved = saved;
 }
 
 void HallChallenge_SetField(HallChallenge *challenge, int field, u8 index, int unused, void *value) {
@@ -102,7 +102,7 @@ void HallTypeRanks_Set(u8 cell, u8 *ranks, u8 rank) {
 
 void HallTypeRanks_Clear(u8 *ranks) {
     for (int i = 0; i < 18; i++) {
-        HallTypeRanks_Set((u8)i, ranks, 0);
+        HallTypeRanks_Set(i, ranks, 0);
     }
 }
 
@@ -151,7 +151,7 @@ u32 CastleChallenge_GetSaved(CastleChallenge *challenge) {
 }
 
 void CastleChallenge_SetSaved(CastleChallenge *challenge, int saved) {
-    challenge->saved = (u8)saved;
+    challenge->saved = saved;
 }
 
 void CastleChallenge_SetField(CastleChallenge *challenge, int field, u8 index, int column, void *value) {
@@ -269,7 +269,7 @@ u32 ArcadeChallenge_GetSaved(ArcadeChallenge *challenge) {
 }
 
 void ArcadeChallenge_SetSaved(ArcadeChallenge *challenge, int saved) {
-    challenge->saved = (u8)saved;
+    challenge->saved = saved;
 }
 
 void ArcadeChallenge_SetField(ArcadeChallenge *challenge, int field, u8 index, int unused, void *value) {

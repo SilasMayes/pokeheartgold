@@ -1299,8 +1299,8 @@ int TrainerAI_GetMoveType(BattleSystem *battleSystem, BattleContext *ctx, Pokemo
         break;
 
     case MOVE_WEATHER_BALL:
-        if (CheckAbilityActive(battleSystem, ctx, CHECK_ABILITY_ALL_HP, 0, ABILITY_CLOUD_NINE) == FALSE
-            && CheckAbilityActive(battleSystem, ctx, CHECK_ABILITY_ALL_HP, 0, ABILITY_AIR_LOCK) == FALSE
+        if (!CheckAbilityActive(battleSystem, ctx, CHECK_ABILITY_ALL_HP, 0, ABILITY_CLOUD_NINE)
+            && !CheckAbilityActive(battleSystem, ctx, CHECK_ABILITY_ALL_HP, 0, ABILITY_AIR_LOCK)
             && (ctx->fieldCondition & FIELD_CONDITION_WEATHER)) {
             if (ctx->fieldCondition & FIELD_CONDITION_RAIN_ALL) {
                 type = TYPE_WATER;
@@ -1849,13 +1849,13 @@ static void BattleControllerOpponent_SetBattleResults(BattleSystem *battleSystem
 
     BattleSystem_UnpackRecordUpdate(battleSystem, packet->recordSize, packet->record);
     if (BattleSystem_GetBattleType(battleSystem) & BATTLE_TYPE_FRONTIER) {
-        BattleSystem_SetBattleOutcomeFlags(battleSystem, (u8)packet->outcomeFlags);
+        BattleSystem_SetBattleOutcomeFlags(battleSystem, packet->outcomeFlags);
     } else {
         for (i = 0; i < BattleSystem_GetMaxBattlers(battleSystem); i++) {
             party = BattleSystem_GetParty(battleSystem, i);
             for (j = 0; j < Party_GetCount(party); j++) {
                 mon = Party_GetMonByIndex(party, j);
-                if (GetMonData(mon, MON_DATA_SPECIES, NULL) != SPECIES_NONE && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE) {
+                if (GetMonData(mon, MON_DATA_SPECIES, NULL) != SPECIES_NONE && !GetMonData(mon, MON_DATA_IS_EGG, NULL)) {
                     if (BattleSystem_GetFieldSide(battleSystem, i) != 0) {
                         enemySideHp += GetMonData(mon, MON_DATA_HP, NULL);
                     } else {
@@ -3457,7 +3457,7 @@ static void Task_PokemonSendOut(SysTask *task, void *data) {
         }
         break;
     case SEND_OUT_STATE_WAIT_MON_ANIM:
-        if (PokepicAnimManager_GetAnimState(BattleSystem_GetPokepicAnimManager(work->battleSystem), work->battlerId) == 1 && Pokepic_IsAnimFinished(work->opponentData->pokepic) == FALSE) {
+        if (PokepicAnimManager_GetAnimState(BattleSystem_GetPokepicAnimManager(work->battleSystem), work->battlerId) == 1 && !Pokepic_IsAnimFinished(work->opponentData->pokepic)) {
             BallThrow_Delete(work->ballData);
             BallSealEffect_Free(work->ballOpenEffect);
             if (work->shiny) {
@@ -3473,7 +3473,7 @@ static void Task_PokemonSendOut(SysTask *task, void *data) {
     case SEND_OUT_STATE_SUBSTITUTE_HIDE_ANIM:
     case SEND_OUT_STATE_SUBSTITUTE_SHOW_ANIM:
         BattleAnimSystem_Execute(animSystem);
-        if (BattleAnimSystem_IsActive(animSystem) == FALSE) {
+        if (!BattleAnimSystem_IsActive(animSystem)) {
             BattleAnimSystem_EndMove(animSystem);
             work->state++;
         }
@@ -3540,7 +3540,7 @@ static void Task_FollowMonSendOut(SysTask *task, void *data) {
         work->state = FOLLOW_SEND_OUT_STATE_WAIT_MON_ANIM;
         break;
     case FOLLOW_SEND_OUT_STATE_WAIT_MON_ANIM:
-        if (PokepicAnimManager_GetAnimState(BattleSystem_GetPokepicAnimManager(work->battleSystem), work->battlerId) == 1 && Pokepic_IsAnimFinished(work->opponentData->pokepic) == FALSE) {
+        if (PokepicAnimManager_GetAnimState(BattleSystem_GetPokepicAnimManager(work->battleSystem), work->battlerId) == 1 && !Pokepic_IsAnimFinished(work->opponentData->pokepic)) {
             if (work->shiny) {
                 BattleController_InitMoveAnimData(work->battleSystem, NULL, &shinyAnimData, 1, 11, work->battlerId, work->battlerId, MOVE_NONE);
                 OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &shinyAnimData);
@@ -3555,7 +3555,7 @@ static void Task_FollowMonSendOut(SysTask *task, void *data) {
     case FOLLOW_SEND_OUT_STATE_SUBSTITUTE_HIDE_ANIM:
     case FOLLOW_SEND_OUT_STATE_SUBSTITUTE_SHOW_ANIM:
         BattleAnimSystem_Execute(animSystem);
-        if (BattleAnimSystem_IsActive(animSystem) == FALSE) {
+        if (!BattleAnimSystem_IsActive(animSystem)) {
             BattleAnimSystem_EndMove(animSystem);
             work->state++;
         }
@@ -3619,7 +3619,7 @@ static void Task_RecallPokemon(SysTask *task, void *data) {
     case RECALL_STATE_SUBSTITUTE_HIDE_ANIM:
     case RECALL_STATE_SUBSTITUTE_SHOW_ANIM:
         BattleAnimSystem_Execute(animSystem);
-        if (BattleAnimSystem_IsActive(animSystem) == FALSE) {
+        if (!BattleAnimSystem_IsActive(animSystem)) {
             BattleAnimSystem_EndMove(animSystem);
             work->state++;
         }
@@ -3666,7 +3666,7 @@ static void Task_RecallPokemon(SysTask *task, void *data) {
         }
     } break;
     case RECALL_STATE_WAIT_FADE:
-        if (Pokepic_ResumePaletteFade(work->pokepic) == FALSE) {
+        if (!Pokepic_ResumePaletteFade(work->pokepic)) {
             work->state++;
         }
         break;
@@ -3680,7 +3680,7 @@ static void Task_RecallPokemon(SysTask *task, void *data) {
         }
         break;
     case RECALL_STATE_WAIT_BALL:
-        if (BallThrow_IsActive(work->ballData) == FALSE) {
+        if (!BallThrow_IsActive(work->ballData)) {
             BallThrow_Delete(work->ballData);
             work->state = RECALL_STATE_END;
         }
@@ -3866,7 +3866,7 @@ static void Task_TrainerEncounter(SysTask *task, void *data) {
         break;
     case TRAINER_ENCOUNTER_STATE_ANIMATE:
         if (ManagedSprite_IsAnimated(work->managedSprite) == 1) {
-            if (OpponentTrainerEncounter_HandleAnimFrame(work, work->managedSprite) == FALSE) {
+            if (!OpponentTrainerEncounter_HandleAnimFrame(work, work->managedSprite)) {
                 break;
             }
         }
@@ -4268,7 +4268,7 @@ static void Task_PlayerSelectCommand(SysTask *task, void *data) {
         break;
     }
     case SELECT_COMMAND_STATE_WAIT_PROMPT:
-        if (TextPrinterCheckActive(work->printerId) == FALSE) {
+        if (!TextPrinterCheckActive(work->printerId)) {
             work->state = SELECT_COMMAND_STATE_START_EFFECTS;
         }
         break;
@@ -5500,7 +5500,7 @@ static void Task_PlayerDrawYesNoBox(SysTask *task, void *data) {
         }
         break;
     case YES_NO_STATE_OPEN_MENU:
-        if (TextPrinterCheckActive((u8)work->printerId) && work->msgId) {
+        if (TextPrinterCheckActive(work->printerId) && work->msgId) {
             break;
         }
         narc0 = NARC_New(NARC_a_0_0_7, HEAP_ID_BATTLE);
@@ -5674,7 +5674,7 @@ static void Task_PlayMoveAnimation(SysTask *task, void *data) {
     case MOVE_ANIM_STATE_RESUBSTITUTE_HIDE_ANIM:
     case MOVE_ANIM_STATE_RESUBSTITUTE_SHOW_ANIM:
         BattleAnimSystem_Execute(work->animSystem);
-        if (BattleAnimSystem_IsActive(work->animSystem) == FALSE) {
+        if (!BattleAnimSystem_IsActive(work->animSystem)) {
             BattleAnimSystem_EndMove(work->animSystem);
             work->state++;
         }
@@ -5914,7 +5914,7 @@ static void Task_ToggleVanish(SysTask *task, void *data) {
     case TOGGLE_VANISH_STATE_SUBSTITUTE_HIDE_ANIM:
     case TOGGLE_VANISH_STATE_SUBSTITUTE_SHOW_ANIM:
         BattleAnimSystem_Execute(animSystem);
-        if (BattleAnimSystem_IsActive(animSystem) == FALSE) {
+        if (!BattleAnimSystem_IsActive(animSystem)) {
             BattleAnimSystem_EndMove(animSystem);
             work->state++;
         }
@@ -6027,8 +6027,8 @@ static void Task_PlayEncounterAnimation(SysTask *task, void *data) {
         work->state = ENCOUNTER_ANIM_STATE_FADE;
     case ENCOUNTER_ANIM_STATE_FADE:
         if (work->timer == 10) {
-            PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_BG_F, 0xF3FF, 0, 0, 16, (u16)color);
-            PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_OBJ_F, 0x3FFF, 0, 0, 16, (u16)color);
+            PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_BG_F, 0xF3FF, 0, 0, 16, color);
+            PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_OBJ_F, 0x3FFF, 0, 0, 16, color);
         }
         if (work->timer >= 10 && work->fadeStep < 16) {
             work->fadeStep++;
@@ -6051,9 +6051,9 @@ static void Task_PlayEncounterAnimation(SysTask *task, void *data) {
         }
         if (work->timer == 28) {
             RESTORE_BG_PALETTES();
-            PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_BG_F, 0xF3FF, 0, 16, 0, (u16)color);
-            PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_OBJ_F, 0x3FFF, 0, 16, 0, (u16)color);
-            PaletteData_BeginPaletteFade(palette, PLTTBUF_SUB_BG_F | PLTTBUF_SUB_OBJ_F, 0xFFFF, 0, 16, 0, (u16)color);
+            PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_BG_F, 0xF3FF, 0, 16, 0, color);
+            PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_OBJ_F, 0x3FFF, 0, 16, 0, color);
+            PaletteData_BeginPaletteFade(palette, PLTTBUF_SUB_BG_F | PLTTBUF_SUB_OBJ_F, 0xFFFF, 0, 16, 0, color);
         }
         if (work->timer >= 50) {
             PaletteData_BeginPaletteFade(palette, PLTTBUF_MAIN_BG_F, 0xC00, 0, 16, 0, 0);
@@ -6184,7 +6184,7 @@ static void Task_ShowPartyGauge(SysTask *task, void *data) {
     }
     switch (work->state) {
     case SHOW_PARTY_GAUGE_STATE_SHOW:
-        if (work->midBattle == FALSE) {
+        if (!work->midBattle) {
             show = 0;
             variant = 1;
         } else {
@@ -7002,7 +7002,7 @@ static BOOL OpponentTrainerEncounter_HandleAnimFrame(OpponentTrainerEncounterWor
     attr = ManagedSprite_GetUserAttrForCurrentAnimFrame(work->managedSprite);
     switch (attr) {
     case 1:
-        if (work->ballFlashStarted == FALSE) {
+        if (!work->ballFlashStarted) {
             s32 *state;
             work->ballFlashStarted = TRUE;
             state = Heap_Alloc(HEAP_ID_BATTLE, 8);
@@ -7034,7 +7034,7 @@ static void Task_FlashBrightness(SysTask *task, s32 *state) {
     current = *state;
     switch (current) {
     case 0:
-        if (IsBrightnessTransitionActive(SCREEN_MASK_MAIN) == FALSE) {
+        if (!IsBrightnessTransitionActive(SCREEN_MASK_MAIN)) {
             *state = 2;
             return;
         }

@@ -1,12 +1,9 @@
 #ifndef POKEHEARTGOLD_FRONTIER_MAP_H
 #define POKEHEARTGOLD_FRONTIER_MAP_H
 
-#include "bg_window.h"
 #include "gf_3d_vramman.h"
 #include "overlay_42.h"
-#include "palette.h"
 #include "sprite_system.h"
-#include "sys_task.h"
 
 #define FRONTIER_MAP_SPRITE_MAX     8
 #define FRONTIER_MAP_OBJECT_MAX     32

@@ -1089,7 +1089,7 @@ static void BattleAnimScriptCmd_EndLoop(BattleAnimSystem *system) {
     int i;
     system->scriptPtr++;
     for (i = 2; i >= 0; i--) {
-        if (system->loops[i].active != FALSE) {
+        if (system->loops[i].active) {
             system->loops[i].counter++;
             if (system->loops[i].counter == system->loops[i].count) {
                 system->loops[i].active = FALSE;
@@ -1158,8 +1158,8 @@ static void BattleAnimScriptCmd_End(BattleAnimSystem *system) {
     }
     BattleAnimSystem_StopBgEffects(system->bgEffects, 5);
     BattleSystem_SetDefaultBlend();
-    BG_ClearCharDataRange(BattleAnimSystem_GetBgLayer(system, 1), 0x4000, 0, BattleAnimSystem_GetHeapID(system));
-    BgClearTilemapBufferAndCommit(BattleAnimSystem_GetBgConfig(system), BattleAnimSystem_GetBgLayer(system, 1));
+    BG_ClearCharDataRange(BattleAnimSystem_GetBgLayer(system, BATTLE_ANIM_BG_EFFECT), 0x4000, 0, BattleAnimSystem_GetHeapID(system));
+    BgClearTilemapBufferAndCommit(BattleAnimSystem_GetBgConfig(system), BattleAnimSystem_GetBgLayer(system, BATTLE_ANIM_BG_EFFECT));
     ToggleBgLayer(GF_BG_LYR_MAIN_2, GF_PLANE_TOGGLE_ON);
     SetBgPriority(GF_BG_LYR_MAIN_0, system->bgPriorities[0]);
     SetBgPriority(GF_BG_LYR_MAIN_1, system->bgPriorities[1]);
@@ -1849,7 +1849,7 @@ static void BattleAnimScriptCmd_DeleteBattlerSprite(BattleAnimSystem *system) {
 
 static void BattleAnimTask_DrawBattlerSprites(SysTask *task, void *data) {
     BattleAnimBattlerSpriteDraw *draw = data;
-    if (draw->active == FALSE) {
+    if (!draw->active) {
         SysTask_Destroy(task);
         return;
     }
@@ -2133,8 +2133,8 @@ static BOOL BattleAnimBackground_BlendIn(SysTask *task, BattleAnimBgSwitchWork *
     switch (work->step) {
     case BG_BLEND_IN_STEP_LOAD_BATTLE_BG:
         BattleAnimBackground_LoadBattleBgToLayerDefault(work->system, GF_BG_LYR_MAIN_2);
-        priority = BattleAnimSystem_GetBgPriority(work->system, 2);
-        BattleAnimSystem_GetBgPriority(work->system, 1);
+        priority = BattleAnimSystem_GetBgPriority(work->system, BATTLE_ANIM_BG_BATTLE);
+        BattleAnimSystem_GetBgPriority(work->system, BATTLE_ANIM_BG_EFFECT);
         SetBgPriority(GF_BG_LYR_MAIN_3, (u8)priority);
         SetBgPriority(GF_BG_LYR_MAIN_2, (u8)priority);
         ToggleBgLayer(GF_BG_LYR_MAIN_2, GF_PLANE_TOGGLE_ON);
@@ -2199,8 +2199,8 @@ static BOOL BattleAnimBackground_BlendOut(SysTask *task, BattleAnimBgSwitchWork 
         work->step++;
         // fallthrough
     case BG_BLEND_OUT_STEP_START_BLEND:
-        priority3 = BattleAnimSystem_GetBgPriority(work->system, 2);
-        priority2 = BattleAnimSystem_GetBgPriority(work->system, 1);
+        priority3 = BattleAnimSystem_GetBgPriority(work->system, BATTLE_ANIM_BG_BATTLE);
+        priority2 = BattleAnimSystem_GetBgPriority(work->system, BATTLE_ANIM_BG_EFFECT);
         SetBgPriority(GF_BG_LYR_MAIN_3, (u8)priority3);
         SetBgPriority(GF_BG_LYR_MAIN_2, (u8)priority2);
         G2_SetBlendAlpha(GX_BLEND_PLANEMASK_BG2, GX_BLEND_PLANEMASK_BG3, work->eva, work->evb);
@@ -2231,7 +2231,7 @@ static BOOL BattleAnimBackground_BlendOut(SysTask *task, BattleAnimBgSwitchWork 
         BgSetPosTextAndCommit(work->system->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_SET_X, 0);
         BgSetPosTextAndCommit(work->system->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_SET_Y, 0);
         SetBgControlParam(work->system->bgConfig, GF_BG_LYR_MAIN_3, GF_BG_CNT_SET_CHAR_BASE, GX_BG_CHARBASE_0x10000);
-        if (BattleAnimSystem_IsContest(work->system) == FALSE) {
+        if (!BattleAnimSystem_IsContest(work->system)) {
             SetBgControlParam(work->system->bgConfig, GF_BG_LYR_MAIN_3, GF_BG_CNT_SET_COLOR_MODE, GX_BG_COLORMODE_256);
             BattleAnimSystem_LoadBattleBgTiles(work->system, GF_BG_LYR_MAIN_3);
             BattleAnimSystem_LoadBattleBgPalette(work->system);
@@ -2262,7 +2262,7 @@ enum {
 static BOOL BattleAnimBackground_FadeIn(SysTask *task, BattleAnimBgSwitchWork *work) {
     switch (work->step) {
     case BG_FADE_IN_STEP_FADE_OUT:
-        if (work->fadeToWhite == FALSE) {
+        if (!work->fadeToWhite) {
             PaletteData_ForceBeginPaletteFade(work->system->paletteData, PLTTBUF_MAIN_BG_F, work->system->battleBgPaletteMask, work->switchFadeWait, 0, 16, RGB_BLACK);
             PaletteData_BlendPalettes(work->system->paletteData, PLTTBUF_MAIN_BG, 0x200, 16, RGB_BLACK);
         } else {
@@ -2277,7 +2277,7 @@ static BOOL BattleAnimBackground_FadeIn(SysTask *task, BattleAnimBgSwitchWork *w
         }
         SetBgControlParam(work->system->bgConfig, GF_BG_LYR_MAIN_3, GF_BG_CNT_SET_COLOR_MODE, GX_BG_COLORMODE_16);
         BattleAnimBackground_LoadGraphics(work, work->system, GF_BG_LYR_MAIN_3, work->bgId);
-        if (work->fadeToWhite == FALSE) {
+        if (!work->fadeToWhite) {
             PaletteData_ForceBeginPaletteFade(work->system->paletteData, PLTTBUF_MAIN_BG_F, 0x200, work->switchFadeWait, 16, 0, RGB_BLACK);
         } else {
             PaletteData_ForceBeginPaletteFade(work->system->paletteData, PLTTBUF_MAIN_BG_F, 0x200, work->switchFadeWait, 16, 0, 0xFFFF);
@@ -2309,7 +2309,7 @@ static BOOL BattleAnimBackground_FadeOut(SysTask *task, BattleAnimBgSwitchWork *
         work->step++;
         // fallthrough
     case BG_FADE_OUT_STEP_FADE:
-        if (work->fadeToWhite == FALSE) {
+        if (!work->fadeToWhite) {
             PaletteData_ForceBeginPaletteFade(work->system->paletteData, PLTTBUF_MAIN_BG_F, 0x200, work->restoreFadeWait, 0, 16, RGB_BLACK);
             PaletteData_BlendPalettes(work->system->paletteData, PLTTBUF_MAIN_BG, work->system->battleBgPaletteMask, 16, RGB_BLACK);
         } else {
@@ -2324,7 +2324,7 @@ static BOOL BattleAnimBackground_FadeOut(SysTask *task, BattleAnimBgSwitchWork *
         }
         BattleAnimBackground_StopMarkedEffects(work);
         ToggleBgLayer(GF_BG_LYR_MAIN_3, GF_PLANE_TOGGLE_OFF);
-        if (BattleAnimSystem_IsContest(work->system) == FALSE) {
+        if (!BattleAnimSystem_IsContest(work->system)) {
             SetBgControlParam(work->system->bgConfig, GF_BG_LYR_MAIN_3, GF_BG_CNT_SET_COLOR_MODE, GX_BG_COLORMODE_256);
             BattleAnimSystem_LoadBattleBgTiles(work->system, GF_BG_LYR_MAIN_3);
             BattleAnimSystem_LoadBattleBgPalette(work->system);
@@ -2339,7 +2339,7 @@ static BOOL BattleAnimBackground_FadeOut(SysTask *task, BattleAnimBgSwitchWork *
     case BG_FADE_OUT_STEP_FADE_IN:
         BgSetPosTextAndCommit(work->system->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_SET_X, 0);
         BgSetPosTextAndCommit(work->system->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_SET_Y, 0);
-        if (work->fadeToWhite == FALSE) {
+        if (!work->fadeToWhite) {
             PaletteData_ForceBeginPaletteFade(work->system->paletteData, PLTTBUF_MAIN_BG_F, work->system->battleBgPaletteMask, work->restoreFadeWait, 16, 0, RGB_BLACK);
         } else {
             PaletteData_ForceBeginPaletteFade(work->system->paletteData, PLTTBUF_MAIN_BG_F, work->system->battleBgPaletteMask, work->restoreFadeWait, 16, 0, 0xFFFF);
@@ -2444,7 +2444,7 @@ static BOOL BattleAnimBackground_StartWave(BattleAnimBgSwitchWork *work) {
     BattleAnimSystem_RegisterBgEffect(system->bgEffects, wave, 2);
     work->stopWave = TRUE;
     wave->stop = FALSE;
-    wave->bands->scanline = BattleAnimScanline_New(BattleAnimUtil_GetBgOffsetRegister(BattleAnimSystem_GetBgMaskLayer(system, 2)), BattleAnimUtil_PackXY(0, 0), system->heapId);
+    wave->bands->scanline = BattleAnimScanline_New(BattleAnimUtil_GetBgOffsetRegister(BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_BATTLE)), BattleAnimUtil_PackXY(0, 0), system->heapId);
     for (i = 0; i < 16; i++) {
         wave->bands->bands[i].start = i * 8;
         wave->bands->bands[i].end = wave->bands->bands[i].start + 8;
@@ -2506,7 +2506,7 @@ static void BattleAnimTask_BgPaletteCycle(SysTask *task, void *data) {
         if (cycleData->timer < cycleData->durations[cycleData->index] - 2) {
             cycleData->timer++;
         } else {
-            PaletteData_LoadFromNarc(cycleData->paletteData, NARC_a_0_0_9, cycleData->member, cycleData->heapId, PLTTBUF_MAIN_BG, 32, 0x90, (u16)(cycleData->offsets[cycleData->index] << 4));
+            PaletteData_LoadFromNarc(cycleData->paletteData, NARC_a_0_0_9, cycleData->member, cycleData->heapId, PLTTBUF_MAIN_BG, 32, 0x90, cycleData->offsets[cycleData->index] << 4);
             cycleData->timer = 0;
             if (cycleData->index >= cycleData->count - 1) {
                 cycleData->index = 0;
@@ -2634,7 +2634,7 @@ void BattleAnimBackground_LoadBattleBgToLayerDefault(BattleAnimSystem *system, G
 }
 
 static void BattleAnimBackground_LoadBattleBgToLayer(BattleAnimSystem *system, GFBgLayer layer, int colorMode) {
-    SetBgPriority(layer, (u8)BattleAnimSystem_GetBgPriority(system, 2));
+    SetBgPriority(layer, (u8)BattleAnimSystem_GetBgPriority(system, BATTLE_ANIM_BG_BATTLE));
     ToggleBgLayer(layer, GF_PLANE_TOGGLE_OFF);
     if (BattleAnimSystem_IsContest(system) == TRUE) {
         SetBgControlParam(system->bgConfig, layer, GF_BG_CNT_SET_CHAR_BASE, GX_BG_CHARBASE_0x10000);
@@ -2652,7 +2652,7 @@ static void BattleAnimBackground_LoadBattleBgToLayer(BattleAnimSystem *system, G
 }
 
 void BattleAnimBackground_ResetLayer(BattleAnimSystem *system, GFBgLayer layer) {
-    SetBgPriority(layer, (u8)BattleAnimSystem_GetBgPriority(system, 1));
+    SetBgPriority(layer, (u8)BattleAnimSystem_GetBgPriority(system, BATTLE_ANIM_BG_EFFECT));
     if (BattleAnimSystem_IsContest(system) == TRUE) {
         SetBgControlParam(system->bgConfig, layer, GF_BG_CNT_SET_CHAR_BASE, GX_BG_CHARBASE_0x0c000);
     } else {
@@ -2712,8 +2712,8 @@ static void BattleAnimScriptCmd_SwitchBackgroundWithFadeWait(BattleAnimSystem *s
     work->effectFlags = (word & 0xFFFF0000) >> 16;
     word = *system->scriptPtr;
     system->scriptPtr++;
-    kind = (s16)word;
-    amount = (s16)((word & 0xFFFF0000) >> 16);
+    kind = word;
+    amount = (word & 0xFFFF0000) >> 16;
     switch (kind) {
     case 1:
         work->switchFadeWait += amount;
@@ -3073,8 +3073,8 @@ static void BattleAnimScriptCmd_CreateSpriteWithFunc(BattleAnimSystem *system) {
 
     system->scriptPtr++;
     defender = BattleAnimSystem_GetDefender(system);
-    template.x = BattleAnimSystem_GetBattlerScreenCoord(system, defender, 0);
-    template.y = BattleAnimSystem_GetBattlerScreenCoord(system, defender, 1);
+    template.x = BattleAnimSystem_GetBattlerScreenCoord(system, defender, BATTLE_ANIM_COORD_X);
+    template.y = BattleAnimSystem_GetBattlerScreenCoord(system, defender, BATTLE_ANIM_COORD_Y);
     template.z = 0;
     template.animation = 0;
     template.drawPriority = 100;
@@ -3111,8 +3111,8 @@ static void BattleAnimScriptCmd_CreateSprite(BattleAnimSystem *system) {
 
     system->scriptPtr++;
     defender = BattleAnimSystem_GetDefender(system);
-    template.x = BattleAnimSystem_GetBattlerScreenCoord(system, defender, 0);
-    template.y = BattleAnimSystem_GetBattlerScreenCoord(system, defender, 1);
+    template.x = BattleAnimSystem_GetBattlerScreenCoord(system, defender, BATTLE_ANIM_COORD_X);
+    template.y = BattleAnimSystem_GetBattlerScreenCoord(system, defender, BATTLE_ANIM_COORD_Y);
     template.z = 0;
     template.animation = 0;
     template.drawPriority = 100;
@@ -3167,7 +3167,7 @@ static void BattleAnimScriptCmd_PlayCry(BattleAnimSystem *system) {
 }
 
 static void BattleAnimScriptCmd_WaitForCry(BattleAnimSystem *system) {
-    if (IsCryFinished() == FALSE) {
+    if (!IsCryFinished()) {
         u32 arg;
         system->scriptPtr++;
         arg = *system->scriptPtr;
@@ -3308,21 +3308,21 @@ int BattleAnimSystem_GetBasePriority(BattleAnimSystem *system) {
     return 1;
 }
 
-u32 BattleAnimSystem_GetBgLayer(BattleAnimSystem *system, int index) {
-    return sBattleAnimBgLayers[index];
+u32 BattleAnimSystem_GetBgLayer(BattleAnimSystem *system, enum BattleAnimBg bg) {
+    return sBattleAnimBgLayers[bg];
 }
 
-u32 BattleAnimSystem_GetBgMaskLayer(BattleAnimSystem *system, int index) {
-    return sBattleAnimBgMaskLayers[index];
+u32 BattleAnimSystem_GetBgMaskLayer(BattleAnimSystem *system, enum BattleAnimBg bg) {
+    return sBattleAnimBgMaskLayers[bg];
 }
 
 int BattleAnimSystem_GetBgPriority(BattleAnimSystem *system, int kind) {
     switch (kind) {
-    case 0:
+    case BATTLE_ANIM_BG_WINDOW:
         return 0;
-    case 1:
+    case BATTLE_ANIM_BG_EFFECT:
         return 1;
-    case 2:
+    case BATTLE_ANIM_BG_BATTLE:
         return 3;
     case 3:
         return BattleAnimSystem_GetBasePriority(system);
@@ -3429,7 +3429,7 @@ BattleAnimBattlerSprites *BattleAnimBattlerSprites_New(BattleSystem *battleSyste
         sprites->sprites[slot] = sprite;
         if (pokepic == NULL) {
             ManagedSprite_SetDrawFlag(sprite, FALSE);
-        } else if (Pokepic_IsActive(pokepic) == FALSE) {
+        } else if (!Pokepic_IsActive(pokepic)) {
             ManagedSprite_SetDrawFlag(sprite, FALSE);
         } else if (Pokepic_GetAttr(pokepic, POKEPIC_VANISHED) == TRUE) {
             ManagedSprite_SetDrawFlag(sprite, FALSE);

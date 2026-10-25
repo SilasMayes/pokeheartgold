@@ -1,14 +1,7 @@
 #ifndef POKEHEARTGOLD_BATTLE_BATTLE_ANIM_MOVE_EFFECTS_H
 #define POKEHEARTGOLD_BATTLE_BATTLE_ANIM_MOVE_EFFECTS_H
 
-#include "battle/battle_anim_funcs.h"
 #include "battle/battle_anim_internal.h"
-
-#include "bg_window.h"
-#include "palette.h"
-#include "pokepic.h"
-#include "sprite_system.h"
-#include "sys_task.h"
 
 // A sprite circling a point: the angle step of its orbit oscillates (speed), then it runs a second circle
 typedef struct BattleAnimMotionSprite {

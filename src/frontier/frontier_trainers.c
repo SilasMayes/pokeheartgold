@@ -399,7 +399,7 @@ void FrontierTrainer_SetBattleTrainer(BattleSetup *battleSetup, FrontierTrainerR
 u32 FrontierMon_GenerateWithRandomOtId(FrontierMon *mon, u16 setId, int itemIndex, u8 iv, int pid, enum HeapID heapID, NarcId narcId) {
     u32 otId = LCRandom();
     otId |= (u32)LCRandom() << 16;
-    return FrontierMon_Generate(mon, setId, otId, pid, iv, (u8)itemIndex, FALSE, heapID, narcId);
+    return FrontierMon_Generate(mon, setId, otId, pid, iv, itemIndex, FALSE, heapID, narcId);
 }
 
 void FrontierMon_GenerateList(FrontierMon *mons, u16 *setIds, u8 *ivs, u32 *pids, u32 *outPids, int count, enum HeapID heapID, NarcId narcId) {
@@ -409,7 +409,7 @@ void FrontierMon_GenerateList(FrontierMon *mons, u16 *setIds, u8 *ivs, u32 *pids
     u32 pid;
 
     for (i = 0; i < count; i++) {
-        iv = (u8)(ivs == NULL ? 0 : ivs[i]);
+        iv = ivs == NULL ? 0 : ivs[i];
         if (pids == NULL) {
             pid = 0;
         } else {
@@ -501,7 +501,7 @@ void FrontierTrainer_GenerateMons(u8 count, int trainerIndex, int partnerIndex, 
     for (i = 0; i < count; i++) {
         ivs[i] = FrontierTrainer_GetMonIv(trainerIndex);
     }
-    if (hasPartner == FALSE) {
+    if (!hasPartner) {
         FrontierTrainer_PickMonSets(trainer, species, items, 0, count, setIds, HEAP_ID_FIELD2);
     } else {
         FrontierTrainer_PickMonSets(trainer, species, items, 0, count / 2, setIds, HEAP_ID_FIELD2);

@@ -869,7 +869,7 @@ static int LinkBattleScreen_InitResultScreen(LinkBattleScreen *screen) {
 }
 
 static int LinkBattleScreen_WaitFadeAndDelay(LinkBattleScreen *screen) {
-    if (IsPaletteFadeFinished() == FALSE) {
+    if (!IsPaletteFadeFinished()) {
         return LINK_SCREEN_STEP_WAIT;
     }
     if (screen->delayFrames == screen->frame) {
@@ -901,10 +901,10 @@ static int LinkBattleScreen_SlidePanelsIn(LinkBattleScreen *screen) {
     ScheduleSetBgPosText(screen->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_SUB_X, screen->slideSpeed);
     ScheduleSetBgPosText(screen->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_ADD_X, screen->slideSpeed);
     screen->frame++;
-    LinkBattleScreen_SetBallRowPosition(screen, 0, (s16)(screen->slideSpeed * screen->frame - 256), 0);
-    LinkBattleScreen_SetBallRowPosition(screen, 1, (s16)(screen->slideSpeed * screen->frame - 256), 0);
-    LinkBattleScreen_SetBallRowPosition(screen, 2, (s16)(256 - screen->slideSpeed * screen->frame), 0);
-    LinkBattleScreen_SetBallRowPosition(screen, 3, (s16)(256 - screen->slideSpeed * screen->frame), 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 0, screen->slideSpeed * screen->frame - 256, 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 1, screen->slideSpeed * screen->frame - 256, 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 2, 256 - screen->slideSpeed * screen->frame, 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 3, 256 - screen->slideSpeed * screen->frame, 0);
     LinkBattleScreen_SetNamePosition(screen, 0, (s16)(screen->slideSpeed * screen->frame - 256), 0);
     LinkBattleScreen_SetNamePosition(screen, 1, (s16)(screen->slideSpeed * screen->frame - 256), 0);
     LinkBattleScreen_SetNamePosition(screen, 2, (s16)(256 - screen->slideSpeed * screen->frame), 0);
@@ -916,7 +916,7 @@ static int LinkBattleScreen_ShakePanels(LinkBattleScreen *screen) {
     s16 dx;
     s16 dy;
 
-    if (LinkBattleScreen_UpdateParticles(screen) == FALSE && screen->frame > 24) {
+    if (!LinkBattleScreen_UpdateParticles(screen) && screen->frame > 24) {
         screen->frame = 0;
         return LINK_SCREEN_STEP_NEXT;
     }
@@ -941,8 +941,8 @@ static int LinkBattleScreen_ShakePanels(LinkBattleScreen *screen) {
         LinkBattleScreen_SetNamePosition(screen, 2, 0, 0);
         LinkBattleScreen_SetNamePosition(screen, 3, 0, 0);
     } else if (screen->frame < 24) {
-        dx = (s16)((s32)LCRandom() % screen->shakeRangeX - screen->shakeRangeX / 2);
-        dy = (s16)((s32)LCRandom() % screen->shakeRangeY - screen->shakeRangeY / 2);
+        dx = (s32)LCRandom() % screen->shakeRangeX - screen->shakeRangeX / 2;
+        dy = (s32)LCRandom() % screen->shakeRangeY - screen->shakeRangeY / 2;
         if ((dx < 0 && screen->shakeX < 0) || (dx > 0 && screen->shakeX > 0)) {
             dx *= -1;
         }
@@ -982,10 +982,10 @@ static int LinkBattleScreen_SlidePanelsOut(LinkBattleScreen *screen) {
     ScheduleSetBgPosText(screen->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_ADD_X, 16);
     ScheduleSetBgPosText(screen->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SUB_X, 16);
     screen->frame++;
-    LinkBattleScreen_SetBallRowPosition(screen, 0, (s16) - (screen->frame << 4), 0);
-    LinkBattleScreen_SetBallRowPosition(screen, 1, (s16) - (screen->frame << 4), 0);
-    LinkBattleScreen_SetBallRowPosition(screen, 2, (s16)(screen->frame << 4), 0);
-    LinkBattleScreen_SetBallRowPosition(screen, 3, (s16)(screen->frame << 4), 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 0, - (screen->frame << 4), 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 1, - (screen->frame << 4), 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 2, screen->frame << 4, 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 3, screen->frame << 4, 0);
     LinkBattleScreen_SetNamePosition(screen, 0, (s16) - (screen->frame << 4), 0);
     LinkBattleScreen_SetNamePosition(screen, 1, (s16) - (screen->frame << 4), 0);
     LinkBattleScreen_SetNamePosition(screen, 2, (s16)(screen->frame << 4), 0);
@@ -1047,10 +1047,10 @@ static int LinkBattleScreen_NudgePanelsRight(LinkBattleScreen *screen) {
 static int LinkBattleScreen_NudgePanelsLeft(LinkBattleScreen *screen) {
     ScheduleSetBgPosText(screen->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_ADD_X, sPanelNudgeSteps[screen->frame][0]);
     ScheduleSetBgPosText(screen->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_ADD_X, sPanelNudgeSteps[screen->frame][0]);
-    LinkBattleScreen_SetBallRowPosition(screen, 0, (s16)-sPanelNudgeSteps[screen->frame][1], 0);
-    LinkBattleScreen_SetBallRowPosition(screen, 1, (s16)-sPanelNudgeSteps[screen->frame][1], 0);
-    LinkBattleScreen_SetBallRowPosition(screen, 2, (s16)-sPanelNudgeSteps[screen->frame][1], 0);
-    LinkBattleScreen_SetBallRowPosition(screen, 3, (s16)-sPanelNudgeSteps[screen->frame][1], 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 0, -sPanelNudgeSteps[screen->frame][1], 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 1, -sPanelNudgeSteps[screen->frame][1], 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 2, -sPanelNudgeSteps[screen->frame][1], 0);
+    LinkBattleScreen_SetBallRowPosition(screen, 3, -sPanelNudgeSteps[screen->frame][1], 0);
     LinkBattleScreen_SetNamePosition(screen, 0, (s16)-sPanelNudgeSteps[screen->frame][1], 0);
     LinkBattleScreen_SetNamePosition(screen, 1, (s16)-sPanelNudgeSteps[screen->frame][1], 0);
     LinkBattleScreen_SetNamePosition(screen, 2, (s16)-sPanelNudgeSteps[screen->frame][1], 0);
@@ -1112,7 +1112,7 @@ static int LinkBattleScreen_ShowDrawSprite(LinkBattleScreen *screen) {
 
 static int LinkBattleScreen_SaveBattleVideo(LinkBattleScreen *screen) {
     u32 result;
-    if (LinkBattleScreen_IsBattleRecordActive(screen) == FALSE) {
+    if (!LinkBattleScreen_IsBattleRecordActive(screen)) {
         screen->delayFrames = 1;
         return LINK_SCREEN_STEP_NEXT;
     }
@@ -1171,14 +1171,14 @@ static int LinkBattleScreen_SaveBattleVideo(LinkBattleScreen *screen) {
 static int LinkBattleScreen_WaitForPartner(LinkBattleScreen *screen) {
     switch (screen->frame) {
     case 0:
-        if (LinkBattleScreen_IsBattleRecordActive(screen) == FALSE) {
+        if (!LinkBattleScreen_IsBattleRecordActive(screen)) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, FALSE);
         }
         LinkBattleScreen_DrawMessageBox(screen);
         ReadMsgDataIntoString(screen->msgData, msg_0638_00009, screen->string);
         screen->printerId = AddTextPrinterParameterized(&screen->msgWindow, 1, screen->string, 0, 0, TEXT_SPEED_INSTANT, NULL);
         LinkSync_StartSync(0x3E);
-        if (screen->canSaveVideo == FALSE && LinkBattleScreen_IsBattleRecordActive(screen) == TRUE) {
+        if (!screen->canSaveVideo && LinkBattleScreen_IsBattleRecordActive(screen) == TRUE) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, TRUE);
         }
         screen->frame++;
@@ -1369,7 +1369,7 @@ static void LinkBattleScreen_InitVsBgLayers(LinkBattleScreen *screen, BOOL use3D
     if (shiftBg1 == TRUE) {
         BgSetPosTextAndCommit(screen->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_Y, 24);
     }
-    if (use3D == FALSE) {
+    if (!use3D) {
         BgTemplate bg0Template = sVsBg0Template;
 
         InitBgFromTemplate(screen->bgConfig, GF_BG_LYR_MAIN_0, &bg0Template, GF_BG_TYPE_TEXT);
@@ -1408,7 +1408,7 @@ static void LinkBattleScreen_FreeVsBgLayers(LinkBattleScreen *screen) {
     FreeBgTilemapBuffer(screen->bgConfig, GF_BG_LYR_MAIN_3);
     FreeBgTilemapBuffer(screen->bgConfig, GF_BG_LYR_MAIN_2);
     FreeBgTilemapBuffer(screen->bgConfig, GF_BG_LYR_MAIN_1);
-    if (screen->use3D == FALSE) {
+    if (!screen->use3D) {
         FreeBgTilemapBuffer(screen->bgConfig, GF_BG_LYR_MAIN_0);
     }
     Heap_Free(screen->bgConfig);
@@ -1496,7 +1496,7 @@ static void LinkBattleScreen_SetPartyBallAnims(LinkBattleScreen *screen, Party *
         ManagedSprite_SetAnim(screen->sprites[firstSprite + i], 0);
         if (partyCount > i) {
             mon = Party_GetMonByIndex(party, i);
-            if (GetMonData(mon, MON_DATA_SPECIES, NULL) != SPECIES_NONE && GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE) {
+            if (GetMonData(mon, MON_DATA_SPECIES, NULL) != SPECIES_NONE && !GetMonData(mon, MON_DATA_IS_EGG, NULL)) {
                 statusIcon = Pokemon_GetStatusIconId(mon);
                 if (statusIcon == PARTY_MON_STATUS_ICON_FNT) {
                     ManagedSprite_SetAnim(screen->sprites[firstSprite + shown], 3);
@@ -1513,7 +1513,7 @@ static void LinkBattleScreen_SetPartyBallAnims(LinkBattleScreen *screen, Party *
 
 static void LinkBattleScreen_SetAllPartyBallAnims(LinkBattleScreen *screen) {
     LinkBattleScreenArgs *args = screen->args;
-    if (args->multiOrSide == FALSE) {
+    if (!args->multiOrSide) {
         LinkBattleScreen_SetPartyBallAnims(screen, args->parties[0], PARTY_SIZE, 0);
         LinkBattleScreen_SetPartyBallAnims(screen, screen->args->parties[1], PARTY_SIZE, 6);
     } else {
@@ -1756,7 +1756,7 @@ static void LinkBattleScreen_LoadPartyBgGraphics(LinkBattleScreen *screen) {
     GfGfxLoader_LoadScrnDataFromOpenNarc(narc, NARC_plist_gra_plist_gra_00000017_NSCR, screen->bgConfig, GF_BG_LYR_MAIN_3, 0, 0, FALSE, screen->args->heapId);
     nclrFile = NARC_AllocAndReadWholeMember(narc, NARC_plist_gra_plist_gra_00000016_NCLR, screen->args->heapId);
     NNS_G2dGetUnpackedPaletteData(nclrFile, &paletteData);
-    BG_LoadPlttData(GF_BG_LYR_MAIN_3, paletteData->pRawData, (u16)paletteData->szByte, 0);
+    BG_LoadPlttData(GF_BG_LYR_MAIN_3, paletteData->pRawData, paletteData->szByte, 0);
     memcpy(screen->panelPalettes, (u8 *)paletteData->pRawData + 0x60, sizeof(screen->panelPalettes));
     Heap_Free(nclrFile);
     PartyMenu_LoadPanelTilemaps(screen->args->heapId, screen->panelTilemaps[0], screen->panelTilemaps[1], screen->panelTilemaps[2]);
@@ -1776,11 +1776,11 @@ static void LinkBattleScreen_DrawPartyPanels(LinkBattleScreen *screen) {
         }
         CopyToBgTilemapRect(screen->bgConfig, GF_BG_LYR_MAIN_2, sPartyPanelPositions[i][0], sPartyPanelPositions[i][1], 16, 6, tilemap, 0, 0, 16, 6);
         if (screen->monInfo[i].species != SPECIES_NONE) {
-            BgTilemapRectChangePalette(screen->bgConfig, GF_BG_LYR_MAIN_2, sPartyPanelPositions[i][0], sPartyPanelPositions[i][1], 16, 6, (u8)(i + 3));
+            BgTilemapRectChangePalette(screen->bgConfig, GF_BG_LYR_MAIN_2, sPartyPanelPositions[i][0], sPartyPanelPositions[i][1], 16, 6, i + 3);
             if ((i < 3 && screen->args->multiOrSide == 1) || (i >= 3 && screen->args->multiOrSide == 0)) {
-                BG_LoadPlttData(GF_BG_LYR_MAIN_2, screen->panelPalettes[1], 32, (u16)((i + 3) * 32));
+                BG_LoadPlttData(GF_BG_LYR_MAIN_2, screen->panelPalettes[1], 32, (i + 3) * 32);
             } else {
-                BG_LoadPlttData(GF_BG_LYR_MAIN_2, screen->panelPalettes[0], 32, (u16)((i + 3) * 32));
+                BG_LoadPlttData(GF_BG_LYR_MAIN_2, screen->panelPalettes[0], 32, (i + 3) * 32);
             }
         }
     }
@@ -1811,8 +1811,8 @@ static void LinkBattleScreen_StashPanelTilemaps(LinkBattleScreen *screen) {
 }
 
 static inline void LinkBattleScreen_CopyStashedColumns(LinkBattleScreen *screen, u8 width, s32 destX, u8 srcX) {
-    CopyToBgTilemapRect(screen->bgConfig, GF_BG_LYR_MAIN_1, (u8)destX, 0, width, 24, screen->stashedBg1Tiles, srcX, 0, 16, 24);
-    CopyToBgTilemapRect(screen->bgConfig, GF_BG_LYR_MAIN_2, (u8)destX, 0, width, 24, screen->stashedBg2Tiles, srcX, 0, 16, 24);
+    CopyToBgTilemapRect(screen->bgConfig, GF_BG_LYR_MAIN_1, destX, 0, width, 24, screen->stashedBg1Tiles, srcX, 0, 16, 24);
+    CopyToBgTilemapRect(screen->bgConfig, GF_BG_LYR_MAIN_2, destX, 0, width, 24, screen->stashedBg2Tiles, srcX, 0, 16, 24);
 }
 
 static void LinkBattleScreen_RevealPanelColumns(LinkBattleScreen *screen, u8 width) {
@@ -1822,7 +1822,7 @@ static void LinkBattleScreen_RevealPanelColumns(LinkBattleScreen *screen, u8 wid
         LinkBattleScreen_CopyStashedColumns(screen, width, x, 0);
     } else {
         x = 16 - width;
-        LinkBattleScreen_CopyStashedColumns(screen, width, 0, (u8)x);
+        LinkBattleScreen_CopyStashedColumns(screen, width, 0, x);
     }
     ScheduleBgTilemapBufferTransfer(screen->bgConfig, GF_BG_LYR_MAIN_1);
     ScheduleBgTilemapBufferTransfer(screen->bgConfig, GF_BG_LYR_MAIN_2);
@@ -2054,19 +2054,19 @@ static void LinkBattleScreen_DrawMonHpBar(LinkBattleScreen *screen, int index) {
     switch (color) {
     case 3:
     case 4:
-        BG_LoadPlttData(GF_BG_LYR_MAIN_1, &screen->panelPalettes[0][9], 4, (u16)((window->paletteNum * 16 + 9) * 2));
+        BG_LoadPlttData(GF_BG_LYR_MAIN_1, &screen->panelPalettes[0][9], 4, (window->paletteNum * 16 + 9) * 2);
         break;
     case 2:
-        BG_LoadPlttData(GF_BG_LYR_MAIN_1, &screen->panelPalettes[1][9], 4, (u16)((window->paletteNum * 16 + 9) * 2));
+        BG_LoadPlttData(GF_BG_LYR_MAIN_1, &screen->panelPalettes[1][9], 4, (window->paletteNum * 16 + 9) * 2);
         break;
     case 1:
-        BG_LoadPlttData(GF_BG_LYR_MAIN_1, &screen->panelPalettes[2][9], 4, (u16)((window->paletteNum * 16 + 9) * 2));
+        BG_LoadPlttData(GF_BG_LYR_MAIN_1, &screen->panelPalettes[2][9], 4, (window->paletteNum * 16 + 9) * 2);
         break;
     }
     int pixels = CalculateHpBarPixelsLength(screen->monInfo[index].hp, screen->monInfo[index].maxHp, 48);
-    FillWindowPixelRect(window, 10, 0, 2, (u16)pixels, 1);
-    FillWindowPixelRect(window, 9, 0, 3, (u16)pixels, 2);
-    FillWindowPixelRect(window, 10, 0, 5, (u16)pixels, 1);
+    FillWindowPixelRect(window, 10, 0, 2, pixels, 1);
+    FillWindowPixelRect(window, 9, 0, 3, pixels, 2);
+    FillWindowPixelRect(window, 10, 0, 5, pixels, 1);
 }
 
 static void LinkBattleScreen_DrawMonPanelText(LinkBattleScreen *screen, MsgData *msgData, MessagePrinter *printer, MessageFormat *msgFormat, String *string, u32 index) {
@@ -2108,7 +2108,7 @@ static void LinkBattleScreen_DrawMessageBox(LinkBattleScreen *screen) {
 }
 
 static BOOL LinkBattleScreen_IsBattleRecordActive(LinkBattleScreen *screen) {
-    if (screen->args->setup->saveData == NULL || BattleRecord_Exists() == FALSE) {
+    if (screen->args->setup->saveData == NULL || !BattleRecord_Exists()) {
         return FALSE;
     }
     return TRUE;

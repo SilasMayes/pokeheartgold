@@ -109,7 +109,7 @@ void BattleHall_PickTrainerIds(int type, int count, int round, u32 rank, u8 batt
                     break;
                 }
             }
-            trainerId = (u16)(trainerId + 1);
+            trainerId = trainerId + 1;
             if (trainerId >= HALL_TRAINER_COUNT_TOTAL) {
                 trainerId = 0;
             }
@@ -176,7 +176,7 @@ void BattleHall_PickSetIds(u16 count, u16 cellType, int rank, u8 battleNo, u16 p
     index--;
     start = index;
     while (picked < count) {
-        if (wrapped == FALSE) {
+        if (!wrapped) {
             for (j = 0; j < base; j++) {
                 if (index + 1 == setIds[j]) {
                     break;

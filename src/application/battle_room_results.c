@@ -419,7 +419,7 @@ BOOL BattleRoomResults_Main(OverlayManager *man, int *state) {
         break;
     case BATTLE_ROOM_RESULTS_STATE_WAIT_FADE_IN:
         if (IsPaletteFadeFinished()) {
-            if (results->showLeaders == FALSE) {
+            if (!results->showLeaders) {
                 *state = BATTLE_ROOM_RESULTS_STATE_RESULTS_INPUT;
             } else {
                 *state = BATTLE_ROOM_RESULTS_STATE_LEADERS_INPUT;
@@ -483,7 +483,7 @@ static BOOL BattleRoomResults_SetupScreens(BattleRoomResults *results) {
         break;
     case BATTLE_ROOM_RESULTS_SETUP_CREATE_SCREENS:
         BattleRoomResults_AddWindows(results);
-        if (results->showLeaders == FALSE) {
+        if (!results->showLeaders) {
             BattleRoomResults_PrintResults(results);
         } else {
             BattleRoomResults_LoadLeaders(results);
@@ -504,7 +504,7 @@ static BOOL BattleRoomResults_SetupScreens(BattleRoomResults *results) {
 static BOOL BattleRoomResults_TeardownScreens(BattleRoomResults *results) {
     switch (results->subState) {
     case BATTLE_ROOM_RESULTS_TEARDOWN_FREE:
-        if (results->showLeaders != FALSE) {
+        if (results->showLeaders) {
             BattleRoomResults_FreeGridInput(results);
             BattleRoomResults_FreeLeaderNames(results);
         }
@@ -643,7 +643,7 @@ static void BattleRoomResults_FreeBgs(BattleRoomResults *results) {
 static void BattleRoomResults_LoadBgGraphics(BattleRoomResults *results) {
     NARC *narc;
 
-    if (results->showLeaders == FALSE) {
+    if (!results->showLeaders) {
         narc = NARC_New(NARC_a_1_1_8, results->heapID);
         GfGfxLoader_LoadCharDataFromOpenNarc(narc, 4, results->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, TRUE, results->heapID);
         GfGfxLoader_GXLoadPalFromOpenNarc(narc, 7, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_0_OFFSET, 0x20, results->heapID);
@@ -667,7 +667,7 @@ static void BattleRoomResults_LoadBgGraphics(BattleRoomResults *results) {
 }
 
 static void BattleRoomResults_AddWindows(BattleRoomResults *results) {
-    if (results->showLeaders == FALSE) {
+    if (!results->showLeaders) {
         const WindowTemplate *template = sBattleRoomResultsWindowTemplates;
         Window *window;
         int i = 0;
@@ -972,7 +972,7 @@ static void BattleRoomResults_InitSprites(BattleRoomResults *results) {
     for (i = 0; i < 4; i++) {
         results->sprites[i] = SpriteSystem_NewSprite(results->spriteSystem, results->spriteManager, &sBattleRoomResultsSpriteTemplates[i]);
     }
-    if (results->showLeaders == FALSE) {
+    if (!results->showLeaders) {
         ManagedSprite_SetDrawFlag(results->sprites[2], FALSE);
         ManagedSprite_SetDrawFlag(results->sprites[3], FALSE);
     }
@@ -1017,7 +1017,7 @@ static void BattleRoomResults_SetSpritePosition(BattleRoomResults *results, int 
 static BOOL BattleRoomResults_UpdateButtonFlash(BattleRoomResults *results) {
     switch (results->flash.state) {
     case BATTLE_ROOM_RESULTS_FLASH_PRESS:
-        if (results->flash.isBgRect == FALSE) {
+        if (!results->flash.isBgRect) {
             ManagedSprite_SetPaletteOverride(results->sprites[results->flash.target], results->flash.pressedPltt);
         } else {
             BgTilemapRectChangePalette(results->bgConfig, results->flash.target, results->flash.x, results->flash.y, results->flash.width, results->flash.height, results->flash.pressedPltt);
@@ -1028,7 +1028,7 @@ static BOOL BattleRoomResults_UpdateButtonFlash(BattleRoomResults *results) {
     case BATTLE_ROOM_RESULTS_FLASH_RELEASE:
         results->flash.timer++;
         if (results->flash.timer == 4) {
-            if (results->flash.isBgRect == FALSE) {
+            if (!results->flash.isBgRect) {
                 ManagedSprite_SetPaletteOverride(results->sprites[results->flash.target], results->flash.normalPltt);
             } else {
                 BgTilemapRectChangePalette(results->bgConfig, results->flash.target, results->flash.x, results->flash.y, results->flash.width, results->flash.height, results->flash.normalPltt);
@@ -1050,7 +1050,7 @@ static BOOL BattleRoomResults_UpdateButtonFlash(BattleRoomResults *results) {
 
 static void BattleRoomResults_StartSpriteFlash(BattleRoomResults *results, int sprite) {
     results->flash.isBgRect = FALSE;
-    results->flash.target = (u8)sprite;
+    results->flash.target = sprite;
     results->flash.pressedPltt = 1;
     results->flash.normalPltt = 0;
     results->flash.state = BATTLE_ROOM_RESULTS_FLASH_PRESS;

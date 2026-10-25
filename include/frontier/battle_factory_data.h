@@ -1,13 +1,7 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_FACTORY_DATA_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_FACTORY_DATA_H
 
-#include "battle/battle_setup.h"
 #include "frontier/frontier_trainers.h"
-
-#include "party.h"
-#include "save.h"
-#include "scrcmd_9.h"
-#include "sys_task_api.h"
 
 #define FACTORY_RENTAL_COUNT   6
 #define FACTORY_OPPONENT_COUNT 4

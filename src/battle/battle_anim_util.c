@@ -21,7 +21,7 @@ void BattleAnimUtil_InitSinMotionFromStep(BattleAnimSinMotion *motion, u32 start
     if (startX > endX) {
         step = -step;
     }
-    signedStep = (s16)step;
+    signedStep = step;
     motion->duration = BattleAnimUtil_CalcStepCount(startX << FX32_SHIFT, endX << FX32_SHIFT, signedStep << FX32_SHIFT);
     motion->angleX = startX;
     motion->ampX = ampX;
@@ -121,7 +121,7 @@ BOOL BattleAnimUtil_UpdateLinearSinMotion(BattleAnimLinearMotion *linear, Battle
     linear->x += sin->x;
     linear->y += sin->y;
     if (linearActive == sinActive) {
-        if (linearActive == FALSE) {
+        if (!linearActive) {
             return FALSE;
         }
     }
@@ -281,7 +281,7 @@ void BattleAnimUtil_AlignSpriteToScale(ManagedSprite *sprite, int y, int inset, 
         y = (s16)(y - inset);
     }
     ManagedSprite_GetPositionXY(sprite, &spriteX, &spriteY);
-    ManagedSprite_SetPositionXY(sprite, spriteX, (s16)(y + offset));
+    ManagedSprite_SetPositionXY(sprite, spriteX, y + offset);
 }
 
 BOOL BattleAnimUtil_UpdateScaleMotionSprite(BattleAnimLinearMotion *motion, ManagedSprite *sprite) {
@@ -403,7 +403,7 @@ BOOL BattleAnimUtil_UpdateSpriteSequence(BattleAnimSpriteSequence *sequence) {
     for (i = 0; i < sequence->started; i++) {
         active[i] = sequence->update(&sequence->motions[i]);
         if (active[i]) {
-            if (sequence->scale == FALSE) {
+            if (!sequence->scale) {
                 ManagedSprite_SetPositionXY(sequence->sprites[i], sequence->x + sequence->motions[i].x, sequence->y + sequence->motions[i].y);
             } else {
                 f32 x;
@@ -447,7 +447,7 @@ void BattleAnimTask_BlendAlphaMotion(SysTask *task, void *data) {
 }
 
 void BattleAnimUtil_StartBlendAlphaMotion(BattleAnimBlendAlphaMotion *blend, s16 startEva, s16 endEva, s16 startEvb, s16 endEvb, int duration) {
-    BattleAnimUtil_InitLinearMotion(&blend->motion, startEva, endEva, startEvb, endEvb, (u16)duration);
+    BattleAnimUtil_InitLinearMotion(&blend->motion, startEva, endEva, startEvb, endEvb, duration);
     blend->done = FALSE;
     SysTask_CreateOnMainQueue(BattleAnimTask_BlendAlphaMotion, blend, 0);
 }

@@ -556,7 +556,7 @@ u32 FactoryChallenge_GetSaved(FactoryChallenge *challenge) {
 }
 
 void FactoryChallenge_SetSaved(FactoryChallenge *challenge, int saved) {
-    challenge->saved = (u8)saved;
+    challenge->saved = saved;
 }
 
 void FactoryChallenge_SetField(FactoryChallenge *challenge, int field, u8 index, void *value) {

@@ -1,5 +1,10 @@
 #include "battle_link_comm.h"
 
+#include "battle_record.h"
+#include "communication_command.h"
+#include "communication_core.h"
+#include "link_synchronization.h"
+
 static void BattleLink_RecvData(int sender, int size, u8 *data, BattleSystem *battle);
 static void BattleLink_RecvAiFlags(int sender, int unused, u32 *data, BattleLinkWork *work);
 static void BattleLink_RecvProfile(int sender, int unused, void *data, BattleLinkWork *work);
@@ -343,7 +348,7 @@ BOOL BattleLink_SendPartnerTrainer(BattleLinkWork *work, int index, int command)
     if (Comm_GetSendBufferFreeSpace() != 264) {
         return FALSE;
     }
-    if (!LinkSync_IsSynced((u8)command)) {
+    if (!LinkSync_IsSynced(command)) {
         return FALSE;
     }
     if (index == 1) {
@@ -368,7 +373,7 @@ BOOL BattleLink_SendPartnerParty(BattleLinkWork *work, int index, int command) {
     if (Comm_GetSendBufferFreeSpace() != 264) {
         return FALSE;
     }
-    if (!LinkSync_IsSynced((u8)command)) {
+    if (!LinkSync_IsSynced(command)) {
         return FALSE;
     }
     if (index == 1) {

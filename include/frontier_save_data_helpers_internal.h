@@ -1,7 +1,6 @@
 #ifndef POKEHEARTGOLD_FRONTIER_SAVE_DATA_HELPERS_INTERNAL_H
 #define POKEHEARTGOLD_FRONTIER_SAVE_DATA_HELPERS_INTERNAL_H
 
-#include "save.h"
 #include "scrcmd_9.h"
 
 void BattleTower_GenerateOpponents(FrontierFieldSystem *tower, SaveData *saveData);

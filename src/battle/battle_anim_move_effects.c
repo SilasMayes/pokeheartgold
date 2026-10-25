@@ -437,7 +437,7 @@ static void BattleAnimTask_BattleBgWave(SysTask *task, void *data) {
         enum HeapID heapId;
 
         work->timer = 0;
-        bgLayer = BattleAnimSystem_GetBgMaskLayer(work->common.system, 2);
+        bgLayer = BattleAnimSystem_GetBgMaskLayer(work->common.system, BATTLE_ANIM_BG_BATTLE);
         fill = BattleAnimUtil_PackXY(0, 0);
         heapId = BattleAnimSystem_GetHeapID(work->common.system);
         work->wave = BattleAnimScanline_NewWaveU32Step(0, 160, 341, FX32_CONST(32), 200, bgLayer, 0, fill, heapId);
@@ -618,14 +618,14 @@ static void BattleAnimTask_AttackerGrowFlashRed(SysTask *task, void *data) {
         work->state++;
         return;
     case GROW_FLASH_STATE_FLASH_RED:
-        if (Pokepic_ResumePaletteFade(work->pokepic) != FALSE) {
+        if (Pokepic_ResumePaletteFade(work->pokepic)) {
             break;
         }
         Pokepic_StartPaletteFade(work->pokepic, 10, 0, 0, RGB(31, 0, 0));
         work->state++;
         return;
     case GROW_FLASH_STATE_FLASH_BACK:
-        if (Pokepic_ResumePaletteFade(work->pokepic) != FALSE) {
+        if (Pokepic_ResumePaletteFade(work->pokepic)) {
             break;
         }
         work->flashCount++;
@@ -787,7 +787,7 @@ static void BattleAnimTask_AttackerAfterimages(SysTask *task, void *data) {
     case AFTERIMAGES_STATE_MOVE:
         done = 0;
         for (i = 0; i < 4; i++) {
-            if (BattleAnimUtil_UpdateLinearMotion(&work->motions[i]) == FALSE) {
+            if (!BattleAnimUtil_UpdateLinearMotion(&work->motions[i])) {
                 done++;
             } else {
                 ManagedSprite_SetPositionXY(work->sprites[i], work->motions[i].x, work->motions[i].y);
@@ -898,7 +898,7 @@ static void BattleAnimTask_AttackerPulseWhite(SysTask *task, void *data) {
     case PULSE_WHITE_STATE_START_PULSE: {
         int i = work->whitened;
         BattleAnimUtil_InitScaleMotion(&work->scale, gBattleAnimPulseWhiteScales[i][0], 100, gBattleAnimPulseWhiteScaleEnds[i][0], gBattleAnimPulseWhiteDurations[i][0]);
-        if (work->whitened == FALSE) {
+        if (!work->whitened) {
             Pokepic_StartPaletteFade(work->pokepic, 0, 6, 0, RGB_WHITE);
         } else {
             Pokepic_StartPaletteFade(work->pokepic, 6, 0, 0, RGB_WHITE);
@@ -909,7 +909,7 @@ static void BattleAnimTask_AttackerPulseWhite(SysTask *task, void *data) {
         break;
     }
     case PULSE_WHITE_STATE_PULSE:
-        if (BattleAnimUtil_UpdateScaleMotion(&work->scale) == FALSE && Pokepic_ResumePaletteFade(work->pokepic) == FALSE) {
+        if (!BattleAnimUtil_UpdateScaleMotion(&work->scale) && !Pokepic_ResumePaletteFade(work->pokepic)) {
             if (work->count < 4) {
                 work->state--;
             } else {
@@ -951,7 +951,7 @@ static void BattleAnimTask_AttackerStretchSteps(SysTask *task, void *data) {
         work->state++;
         break;
     case STRETCH_STEPS_STATE_STEP:
-        if (BattleAnimUtil_UpdateScaleMotionXY(&work->scale) == FALSE) {
+        if (!BattleAnimUtil_UpdateScaleMotionXY(&work->scale)) {
             if (work->step < 3) {
                 work->state--;
             } else {
@@ -1214,12 +1214,12 @@ static void BattleAnimTask_AttackerSilhouette(SysTask *task, void *data) {
 
     switch (work->state) {
     case SILHOUETTE_STATE_FADE_OUT:
-        PaletteData_BeginPaletteFade(work->paletteData, PLTTBUF_MAIN_BG_F, (u16)BattleAnimSystem_GetBattleBgPaletteMask(work->system), -2, 0, 16, RGB_WHITE);
+        PaletteData_BeginPaletteFade(work->paletteData, PLTTBUF_MAIN_BG_F, BattleAnimSystem_GetBattleBgPaletteMask(work->system), -2, 0, 16, RGB_WHITE);
         Pokepic_StartPaletteFade(work->pokepic, 0, 16, 0, 0);
         work->state++;
         break;
     case SILHOUETTE_STATE_WAIT_FADE_OUT:
-        if (PaletteData_GetSelectedBuffersBitmask(work->paletteData) == 0 && Pokepic_ResumePaletteFade(work->pokepic) == FALSE) {
+        if (PaletteData_GetSelectedBuffersBitmask(work->paletteData) == 0 && !Pokepic_ResumePaletteFade(work->pokepic)) {
             work->state++;
         }
         break;
@@ -1230,12 +1230,12 @@ static void BattleAnimTask_AttackerSilhouette(SysTask *task, void *data) {
         }
         break;
     case SILHOUETTE_STATE_FADE_IN:
-        PaletteData_BeginPaletteFade(work->paletteData, PLTTBUF_MAIN_BG_F, (u16)BattleAnimSystem_GetBattleBgPaletteMask(work->system), -2, 16, 0, RGB_WHITE);
+        PaletteData_BeginPaletteFade(work->paletteData, PLTTBUF_MAIN_BG_F, BattleAnimSystem_GetBattleBgPaletteMask(work->system), -2, 16, 0, RGB_WHITE);
         Pokepic_StartPaletteFade(work->pokepic, 16, 0, 0, 0);
         work->state++;
         break;
     case SILHOUETTE_STATE_WAIT_FADE_IN:
-        if (PaletteData_GetSelectedBuffersBitmask(work->paletteData) == 0 && Pokepic_ResumePaletteFade(work->pokepic) == FALSE) {
+        if (PaletteData_GetSelectedBuffersBitmask(work->paletteData) == 0 && !Pokepic_ResumePaletteFade(work->pokepic)) {
             work->state++;
         }
         break;
@@ -1379,7 +1379,7 @@ void BattleAnimFunc_ShowAttackerObjWindowSprites(BattleAnimSystem *system) {
     narcId = (NarcId)BattleAnimSystem_GetBattlerNarcId(work->system, BattleAnimSystem_GetAttacker(work->system));
     paletteOffset = ObjPlttTransfer_GetPaletteVramOffset(Sprite_GetPaletteProxy(work->sprites[0]->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
     paletteData = BattleAnimSystem_GetPaletteData(work->system);
-    PaletteData_LoadNarc_CustomTint(paletteData, narcId, member, BattleAnimSystem_GetHeapID(system), PLTTBUF_MAIN_OBJ, 0x20, (u16)(paletteOffset * 16), 0x100, 0x100, 0x100);
+    PaletteData_LoadNarc_CustomTint(paletteData, narcId, member, BattleAnimSystem_GetHeapID(system), PLTTBUF_MAIN_OBJ, 0x20, paletteOffset * 16, 0x100, 0x100, 0x100);
     ManagedSprite_SetDrawFlag(work->sprites[0], FALSE);
     ManagedSprite_SetDrawFlag(work->sprites[1], FALSE);
     BattleAnimSystem_CreateTaskDefaultPriority(work->system, BattleAnimTask_ShowAttackerObjWindowSprites, work);
@@ -1420,7 +1420,7 @@ static void BattleAnimTask_AttackerSquashAfterimages(SysTask *task, void *data) 
                 }
                 break;
             case SQUASH_AFTERIMAGE_STATE_SCALE:
-                if (BattleAnimUtil_UpdateScaleMotionXY(&work->afterimages[i].scale) == FALSE) {
+                if (!BattleAnimUtil_UpdateScaleMotionXY(&work->afterimages[i].scale)) {
                     work->afterimages[i].state++;
                 } else {
                     BattleAnimUtil_GetScaleFloat(&work->afterimages[i].scale, &scaleX, &scaleY);
@@ -1469,7 +1469,7 @@ static void BattleAnimTask_AttackerSquashAfterimages(SysTask *task, void *data) 
         f32 scaleX;
         f32 scaleY;
         for (i = 0; i < 3; i++) {
-            if (BattleAnimUtil_UpdateScaleMotionXY(&work->afterimages[i].scale) == FALSE) {
+            if (!BattleAnimUtil_UpdateScaleMotionXY(&work->afterimages[i].scale)) {
                 done++;
             } else {
                 BattleAnimUtil_GetScaleFloat(&work->afterimages[i].scale, &scaleX, &scaleY);
@@ -1539,7 +1539,7 @@ static void BattleAnimTask_ShakeBattlefieldFlashing(SysTask *task, void *data) {
     case SHAKE_FIELD_FLASH_STATE_DARKEN: {
         PaletteData *paletteData = BattleAnimSystem_GetPaletteData(work->system);
         u32 mask = BattleAnimSystem_GetBattleBgPaletteMask(work->system);
-        PaletteData_BeginPaletteFade(paletteData, PLTTBUF_MAIN_BG_F, (u16)mask, 1, 0, 10, 0);
+        PaletteData_BeginPaletteFade(paletteData, PLTTBUF_MAIN_BG_F, mask, 1, 0, 10, 0);
         work->state++;
         break;
     }
@@ -1614,7 +1614,7 @@ static void BattleAnimTask_SpriteDriftFade(SysTask *task, void *data) {
     BattleAnimSpriteDriftFadeWork *work = data;
 
     if (work->state == 0) {
-        if (BattleAnimUtil_UpdateLinearMotion(&work->motion) == FALSE) {
+        if (!BattleAnimUtil_UpdateLinearMotion(&work->motion)) {
             work->state++;
         }
         BattleAnimUtil_UpdateShake(&work->shake);
@@ -1652,9 +1652,9 @@ void BattleAnimFunc_SpriteDriftFade(BattleAnimSystem *system) {
     work->y -= Pokepic_GetAttr(work->pokepic, POKEPIC_SHADOW_H);
     signX = BattleAnimUtil_GetBattlerSideSignByMode(work->system, battler);
     signY = BattleAnimUtil_GetBattlerSideSign(work->system, battler);
-    BattleAnimUtil_InitLinearMotion(&work->motion, work->x, (s16)(work->x + -20 * signX), work->y, (s16)(work->y + 20 * signY), 20);
-    layer2 = BattleAnimSystem_GetBgMaskLayer(system, 2);
-    layer1 = BattleAnimSystem_GetBgMaskLayer(system, 1);
+    BattleAnimUtil_InitLinearMotion(&work->motion, work->x, work->x + -20 * signX, work->y, work->y + 20 * signY, 20);
+    layer2 = BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_BATTLE);
+    layer1 = BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_EFFECT);
     BattleAnimUtil_SetBlendWithMask(work->system, (1 << layer2) | GX_BLEND_PLANEMASK_BD | (1 << layer1) | GX_BLEND_PLANEMASK_BG0, -1, -1);
     BattleAnimUtil_StartBlendAlphaMotion(&work->blend, 31, 0, 0, 31, 15);
     ManagedSprite_SetOamMode(work->sprite, GX_OAM_MODE_XLU);
@@ -1722,7 +1722,7 @@ static void BattleAnimTask_ShakePic(SysTask *task, void *data) {
         return;
     case SHAKE_PIC_STATE_SHAKE:
         BattleAnimUtil_GetPicPosition(work->defenderPic, pos);
-        if (BattleAnimUtil_UpdateShakePokepic(&work->shake, pos[0], pos[1], work->defenderPic) == FALSE) {
+        if (!BattleAnimUtil_UpdateShakePokepic(&work->shake, pos[0], pos[1], work->defenderPic)) {
             work->common.state[0]++;
             return;
         }
@@ -1841,7 +1841,7 @@ static void BattleAnimTask_ShakeSpritePair(SysTask *task, void *data) {
         work->common.state[0]++;
         return;
     case SHAKE_PAIR_STATE_SHAKE:
-        if (BattleAnimUtil_UpdateShake(&work->shake) == FALSE) {
+        if (!BattleAnimUtil_UpdateShake(&work->shake)) {
             work->common.state[0]++;
         } else {
             ManagedSprite_SetPositionXY(work->sprites[0], work->defenderPos[0] + work->shake.x, work->defenderPos[1] + work->shake.y);
@@ -1874,14 +1874,14 @@ void BattleAnimFunc_ShakeSpritePair(BattleAnimSystem *system) {
 static void BattleAnimTask_ThrowSpriteArc(SysTask *task, void *data) {
     BattleAnimThrowSpriteArcWork *work = data;
 
-    if (BattleAnimUtil_UpdateLinearSinMotionSprite(&work->path, &work->arc, work->sprite) == FALSE) {
+    if (!BattleAnimUtil_UpdateLinearSinMotionSprite(&work->path, &work->arc, work->sprite)) {
         Sprite_DeleteAndFreeResources(work->sprite);
         BattleAnimSystem_DestroyTask(work->common.system, task);
         BattleAnimUtil_FreeWork(work);
         return;
     }
     if (BattleAnimUtil_UpdateValueMotion(&work->rotation) == TRUE) {
-        ManagedSprite_SetAffineZRotation(work->sprite, (u16)work->rotation.value);
+        ManagedSprite_SetAffineZRotation(work->sprite, work->rotation.value);
     }
     ManagedSprite_TickFrame(work->sprite);
     SpriteSystem_DrawSprites(work->common.spriteManager);
@@ -1904,7 +1904,7 @@ void BattleAnimSpriteFunc_ThrowSpriteArc(BattleAnimSystem *system, SpriteSystem 
     work->defender.pokepic = BattleAnimSystem_GetBattlerPokepic(system, BattleAnimSystem_GetDefender(system));
     BattleAnimUtil_GetPicPosition(work->attacker.pokepic, work->attacker.pos);
     BattleAnimUtil_GetPicPosition(work->defender.pokepic, work->defender.pos);
-    BattleAnimUtil_InitLinearSinMotion(&work->path, &work->arc, work->attacker.pos[0], (s16)(work->defender.pos[0] + work->offsetX * sign), work->attacker.pos[1], (s16)(work->defender.pos[1] + work->offsetY * sign), (u16)work->duration, work->height << FX32_SHIFT);
+    BattleAnimUtil_InitLinearSinMotion(&work->path, &work->arc, work->attacker.pos[0], work->defender.pos[0] + work->offsetX * sign, work->attacker.pos[1], work->defender.pos[1] + work->offsetY * sign, work->duration, work->height << FX32_SHIFT);
     if (BattleAnimSystem_GetBattlerType(system, BattleAnimSystem_GetAttacker(system)) == BATTLER_TYPE_PLAYER_SIDE_SLOT_2 && BattleAnimSystem_GetBattlerType(system, BattleAnimSystem_GetDefender(system)) == BATTLER_TYPE_PLAYER_SIDE_SLOT_1) {
         sign *= -1;
     }
@@ -1916,7 +1916,7 @@ void BattleAnimSpriteFunc_ThrowSpriteArc(BattleAnimSystem *system, SpriteSystem 
     } else {
         BattleAnimUtil_InitValueMotion(&work->rotation, 0x3FFF * sign, 0x5C71 * sign, 10);
     }
-    ManagedSprite_SetAffineZRotation(work->sprite, (u16)work->rotation.value);
+    ManagedSprite_SetAffineZRotation(work->sprite, work->rotation.value);
     BattleAnimUtil_UpdateLinearSinMotionSprite(&work->path, &work->arc, work->sprite);
     ManagedSprite_TickFrame(work->sprite);
     BattleAnimSystem_CreateTaskDefaultPriority(work->common.system, BattleAnimTask_ThrowSpriteArc, work);
@@ -2149,13 +2149,13 @@ static void BattleAnimTask_StretchFadeSprite(SysTask *task, void *data) {
         work->common.state[0]++;
         break;
     case STRETCH_FADE_STATE_STRETCH:
-        if (BattleAnimUtil_UpdateScaleMotionXY(&work->scale) == FALSE) {
+        if (!BattleAnimUtil_UpdateScaleMotionXY(&work->scale)) {
             BattleAnimUtil_InitScaleMotionXY(&work->scale, (s16)(work->direction * 60), (s16)(work->direction * 150), 150, 10, 100, 12);
             work->common.state[0]++;
         } else {
             BattleAnimUtil_GetScaleFloat(&work->scale, &scaleX, &scaleY);
             ManagedSprite_SetAffineScale(work->sprite, scaleX, scaleY);
-            ManagedSprite_SetPositionXY(work->sprite, work->x, (s16)(work->y + BattleAnimUtil_CalcScaleYOffset(work->y, 16, work->scale.curY)));
+            ManagedSprite_SetPositionXY(work->sprite, work->x, work->y + BattleAnimUtil_CalcScaleYOffset(work->y, 16, work->scale.curY));
             if (work->eva < work->peakEva) {
                 work->eva++;
             }
@@ -2171,12 +2171,12 @@ static void BattleAnimTask_StretchFadeSprite(SysTask *task, void *data) {
         }
         break;
     case STRETCH_FADE_STATE_SHRINK:
-        if (BattleAnimUtil_UpdateScaleMotionXY(&work->scale) == FALSE) {
+        if (!BattleAnimUtil_UpdateScaleMotionXY(&work->scale)) {
             work->common.state[0]++;
         } else {
             BattleAnimUtil_GetScaleFloat(&work->scale, &scaleX2, &scaleY2);
             ManagedSprite_SetAffineScale(work->sprite, scaleX2, scaleY2);
-            ManagedSprite_SetPositionXY(work->sprite, work->x, (s16)(work->y + BattleAnimUtil_CalcScaleYOffset(work->y, 16, work->scale.curY)));
+            ManagedSprite_SetPositionXY(work->sprite, work->x, work->y + BattleAnimUtil_CalcScaleYOffset(work->y, 16, work->scale.curY));
             if (work->eva > work->endEva) {
                 work->eva--;
             }
@@ -2245,7 +2245,7 @@ void BattleAnimFunc_StretchFadeSprite(BattleAnimSystem *system) {
     BattleAnimUtil_UpdateScaleMotionXY(&work->scale);
     BattleAnimUtil_GetScaleFloat(&work->scale, &scaleX, &scaleY);
     ManagedSprite_SetAffineScale(work->sprite, scaleX, scaleY);
-    ManagedSprite_SetPositionXY(work->sprite, work->x, (s16)(work->y + BattleAnimUtil_CalcScaleYOffset(work->y, 16, work->scale.curY)));
+    ManagedSprite_SetPositionXY(work->sprite, work->x, work->y + BattleAnimUtil_CalcScaleYOffset(work->y, 16, work->scale.curY));
     BattleAnimSystem_CreateTaskDefaultPriority(work->common.system, BattleAnimTask_StretchFadeSprite, work);
 }
 
@@ -2431,8 +2431,8 @@ void BattleAnimSpriteFunc_CrossingSprites(BattleAnimSystem *system, SpriteSystem
     work->pokepic = BattleAnimSystem_GetBattlerPokepic(work->system, BattleAnimSystem_GetAttacker(work->system));
     work->y = Pokepic_GetAttr(work->pokepic, POKEPIC_Y);
     work->height = BattleAnimSystem_GetBattlerHeight(work->system, BattleAnimSystem_GetAttacker(work->system));
-    layer2 = BattleAnimSystem_GetBgMaskLayer(system, 2);
-    layer1 = BattleAnimSystem_GetBgMaskLayer(system, 1);
+    layer2 = BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_BATTLE);
+    layer1 = BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_EFFECT);
     BattleAnimUtil_SetBlendWithMask(work->system, (1 << layer2) | (1 << layer1) | GX_BLEND_PLANEMASK_BG0, -1, -1);
     reg_G2_BLDALPHA = work->eva | (work->evb << 8);
     BattleAnimSystem_GetSpriteTemplate(&template, system);
@@ -2934,7 +2934,7 @@ static void BattleAnimTask_WaveAttackerOnBg(SysTask *task, void *data) {
     case WAVE_ATTACKER_STATE_START_WAVE:
         if (BattleAnimUtil_IsBlendAlphaMotionDone(&work->blend)) {
             work->timer = 0;
-            layer = BattleAnimSystem_GetBgMaskLayer(work->common.system, 1);
+            layer = BattleAnimSystem_GetBgMaskLayer(work->common.system, BATTLE_ANIM_BG_EFFECT);
             fill = BattleAnimUtil_PackXY(0, 0);
             work->wave = BattleAnimScanline_NewWaveU32Step(0, 160, 364, 0xC000, 200, layer, 0, fill, BattleAnimSystem_GetHeapID(work->common.system));
             work->common.state[0]++;
@@ -3059,22 +3059,22 @@ static void BattleAnimTask_FlashingSpritesAroundAttacker(SysTask *task, void *da
         }
     }
     if (work->timers[0] == 50) {
-        work->paletteBlends[0] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, (u16)(work->paletteSlot << 4), 16, -2, 2, 0, 14, 0xFFFF, 1002);
+        work->paletteBlends[0] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, work->paletteSlot << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
     }
     if (work->timers[0] == 60) {
-        work->paletteBlends[1] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, (u16)(work->paletteSlot << 4), 16, -2, 2, 14, 0, 0xFFFF, 1002);
+        work->paletteBlends[1] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, work->paletteSlot << 4, 16, -2, 2, 14, 0, 0xFFFF, 1002);
     }
     if (work->timers[0] == 70) {
-        work->paletteBlends[2] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, (u16)(work->paletteSlot << 4), 16, -2, 2, 0, 14, 0xFFFF, 1002);
+        work->paletteBlends[2] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, work->paletteSlot << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
     }
     if (work->timers[0] == 80) {
-        work->paletteBlends[3] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, (u16)(work->paletteSlot << 4), 16, -2, 2, 14, 0, 0xFFFF, 1002);
+        work->paletteBlends[3] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, work->paletteSlot << 4, 16, -2, 2, 14, 0, 0xFFFF, 1002);
     }
     if (work->timers[0] == 90) {
-        work->paletteBlends[4] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, (u16)(work->paletteSlot << 4), 16, -2, 2, 0, 14, 0xFFFF, 1002);
+        work->paletteBlends[4] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, work->paletteSlot << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
     }
     if (work->timers[0] == 100) {
-        work->paletteBlends[5] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, (u16)(work->paletteSlot << 4), 16, -2, 2, 14, 0, 0xFFFF, 1002);
+        work->paletteBlends[5] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, work->paletteSlot << 4, 16, -2, 2, 14, 0, 0xFFFF, 1002);
     }
     if (work->timers[0] == 110) {
         BattleAnimTask_FlashingSpritesAroundAttackerStartFade(work);
@@ -3288,13 +3288,13 @@ void BattleAnimFunc_AttackerDashAfterimages(BattleAnimSystem *system) {
     ManagedSprite_SetPriority(sprite, BattleAnimSystem_GetBasePriority(work->common.system) + 1);
     paletteOffset = ObjPlttTransfer_GetPaletteVramOffset(Sprite_GetPaletteProxy(sprite->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
     paletteData = BattleAnimSystem_GetPaletteData(work->common.system);
-    PaletteData_LoadNarc_CustomTint(paletteData, narcId, member, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, 32, (u16)(paletteOffset << 4), 196, 196, 196);
+    PaletteData_LoadNarc_CustomTint(paletteData, narcId, member, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, 32, paletteOffset << 4, 196, 196, 196);
     ManagedSprite_SetOamMode(sprite, GX_OAM_MODE_XLU);
     sprite = work->sprite2;
     ManagedSprite_SetPriority(sprite, BattleAnimSystem_GetBasePriority(work->common.system) + 1);
     paletteOffset = ObjPlttTransfer_GetPaletteVramOffset(Sprite_GetPaletteProxy(sprite->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
     paletteData = BattleAnimSystem_GetPaletteData(work->common.system);
-    PaletteData_LoadNarc_CustomTint(paletteData, narcId, member, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, 32, (u16)(paletteOffset << 4), 196, 196, 196);
+    PaletteData_LoadNarc_CustomTint(paletteData, narcId, member, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, 32, paletteOffset << 4, 196, 196, 196);
     ManagedSprite_SetOamMode(sprite, GX_OAM_MODE_XLU);
     BattleAnimSystem_CreateTaskDefaultPriority(work->common.system, BattleAnimTask_AttackerDashAfterimages, work);
 }
@@ -3370,7 +3370,7 @@ void BattleAnimSpriteFunc_SpriteTrailToDefender(BattleAnimSystem *system, Sprite
     do {
         active = BattleAnimUtil_UpdateLinearMotion(&work->motion);
         if (frame % 2) {
-            if (skip == FALSE) {
+            if (!skip) {
                 if (count < 8) {
                     ManagedSprite_SetPositionXY(work->sprites[count], work->motion.x, work->motion.y);
                     count++;
@@ -3381,11 +3381,11 @@ void BattleAnimSpriteFunc_SpriteTrailToDefender(BattleAnimSystem *system, Sprite
         }
         frame++;
     } while (active == TRUE);
-    priority1 = BattleAnimSystem_GetBgPriority(work->common.system, 1);
-    priority2 = BattleAnimSystem_GetBgPriority(work->common.system, 2);
+    priority1 = BattleAnimSystem_GetBgPriority(work->common.system, BATTLE_ANIM_BG_EFFECT);
+    priority2 = BattleAnimSystem_GetBgPriority(work->common.system, BATTLE_ANIM_BG_BATTLE);
     for (i = 0; i < 8; i++) {
         work->timers[i] = (8 - i) * 4;
-        if (BattleAnimSystem_IsContest(work->common.system) == FALSE) {
+        if (!BattleAnimSystem_IsContest(work->common.system)) {
             if (BattleAnimUtil_GetBattlerSide(work->common.system, BattleAnimSystem_GetAttacker(work->common.system)) == BATTLE_ANIM_SIDE_PLAYER) {
                 if (i < 4) {
                     ManagedSprite_SetPriority(work->sprites[i], priority2);
@@ -3540,7 +3540,7 @@ static void BattleAnimTask_SquashSprite(SysTask *task, void *data) {
         BattleAnimUtil_FreePaletteBlend(work->paletteBlends[0]);
         BattleAnimUtil_FreePaletteBlend(work->paletteBlends[1]);
         paletteOffset = ObjPlttTransfer_GetPaletteVramOffset(Sprite_GetPaletteProxy(work->sprites[2]->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
-        work->paletteBlends[1] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, (u16)(paletteOffset << 4), 16, 0, 1, 15, 0, 0xFFFF, 1100);
+        work->paletteBlends[1] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(work->common.system), PLTTBUF_MAIN_OBJ, paletteOffset << 4, 16, 0, 1, 15, 0, 0xFFFF, 1100);
         work->common.state[0]++;
         break;
     case SQUASH_SPRITE_STATE_WAIT_BLEND:
@@ -3598,9 +3598,9 @@ void BattleAnimFunc_SquashSprite(BattleAnimSystem *system) {
     ManagedSprite_SetAffineOverwriteMode(work->sprites[0], NNS_G2D_RND_AFFINE_OVERWRITE_DOUBLE);
     ManagedSprite_SetAffineScale(work->sprites[0], work->scaleX * (f32)work->direction, work->scaleY);
     paletteOffset = ObjPlttTransfer_GetPaletteVramOffset(Sprite_GetPaletteProxy(work->sprites[0]->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
-    work->paletteBlends[0] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(system), PLTTBUF_MAIN_OBJ, (u16)(paletteOffset << 4), 16, 0, 1, 0, 15, 0xFFFF, 1100);
+    work->paletteBlends[0] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(system), PLTTBUF_MAIN_OBJ, paletteOffset << 4, 16, 0, 1, 0, 15, 0xFFFF, 1100);
     paletteOffset = ObjPlttTransfer_GetPaletteVramOffset(Sprite_GetPaletteProxy(work->sprites[2]->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
-    work->paletteBlends[1] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(system), PLTTBUF_MAIN_OBJ, (u16)(paletteOffset << 4), 16, 0, 1, 0, 15, 0xFFFF, 1100);
+    work->paletteBlends[1] = BattleAnimUtil_StartPaletteBlend(work->common.paletteData, BattleAnimSystem_GetHeapID(system), PLTTBUF_MAIN_OBJ, paletteOffset << 4, 16, 0, 1, 0, 15, 0xFFFF, 1100);
     battler = BattleAnimSystem_GetAttacker(work->common.system);
     battlerType = BattleAnimUtil_GetBattlerType(work->common.system, battler);
     BattleAnimUtil_GetBattlerTypePosition(battlerType, BattleAnimSystem_IsContest(work->common.system), &pos);
@@ -3639,7 +3639,7 @@ static void BattleAnimTask_SlideOutAndTransform(SysTask *task, void *data) {
 
     switch (work->common.state[0]) {
     case SLIDE_TRANSFORM_STATE_START_LEG:
-        BattleAnimUtil_InitLinearMotion(&work->motion, work->target.pos[0], (s16)work->targetX[work->leg], (s16)work->targetY[work->leg], (s16)work->targetY[work->leg], 15);
+        BattleAnimUtil_InitLinearMotion(&work->motion, work->target.pos[0], work->targetX[work->leg], work->targetY[work->leg], work->targetY[work->leg], 15);
         Pokepic_SetAttr(work->target.pokepic, POKEPIC_Z, work->targetZ[work->leg]);
         Pokepic_SetAttr(work->target.pokepic, POKEPIC_SHADOW_YADJ_REQ, 1);
         work->common.state[0]++;
@@ -3741,7 +3741,7 @@ static void BattleAnimTask_WipeOutDefender(SysTask *task, void *data) {
             work->common.state[0]++;
             work->fromRight ^= 1;
             work->stripWidth = 0;
-        } else if (work->fromRight == FALSE) {
+        } else if (!work->fromRight) {
             BattleAnimUtil_SetPicVisibleRect(work->pokepic, 0, work->stripWidth, (work->count + 2) * 2, 2);
         } else {
             BattleAnimUtil_SetPicVisibleRect(work->pokepic, 80 - work->stripWidth, work->stripWidth, (work->count + 2) * 2, 2);
@@ -3858,7 +3858,7 @@ void BattleAnimFunc_PicOrbit(BattleAnimSystem *system) {
         ManagedSprite_SetPriority(work->sprites[i], 1);
         ManagedSprite_SetOamMode(work->sprites[i], GX_OAM_MODE_XLU);
     }
-    BattleAnimUtil_InitSpriteSequence(&work->sequence, &motion, BattleAnimUtil_UpdateSinMotion, work->x, (s16)(work->y - work->shadowHeight), 2, 2, FALSE, work->sprites[0], work->sprites[1], NULL, NULL);
+    BattleAnimUtil_InitSpriteSequence(&work->sequence, &motion, BattleAnimUtil_UpdateSinMotion, work->x, work->y - work->shadowHeight, 2, 2, FALSE, work->sprites[0], work->sprites[1], NULL, NULL);
     BattleAnimUtil_SetBlendWithBattleBg(work->system, -1, -1);
     BattleAnimSystem_CreateTaskDefaultPriority(work->system, BattleAnimTask_PicOrbit, work);
 }
@@ -4113,8 +4113,8 @@ void BattleAnimSpriteFunc_OrbitingSpriteTrail(BattleAnimSystem *system, SpriteSy
     BattleAnimUtil_InitCosMotion(&work->main.speed, 0, 0xFFFF, 0xFFFFF000, work->main.orbit.duration);
     work->main.baseAngleStep = work->main.orbit.stepX;
     work->main.active = TRUE;
-    work->main.x = BattleAnimSystem_GetBattlerScreenCoord(system, attacker, 0);
-    work->main.y = BattleAnimSystem_GetBattlerScreenCoord(system, attacker, 1);
+    work->main.x = BattleAnimSystem_GetBattlerScreenCoord(system, attacker, BATTLE_ANIM_COORD_X);
+    work->main.y = BattleAnimSystem_GetBattlerScreenCoord(system, attacker, BATTLE_ANIM_COORD_Y);
     ManagedSprite_SetPositionXY(work->main.sprite, work->main.x, work->main.y);
     ManagedSprite_SetDrawPriority(work->main.sprite, 100);
     ManagedSprite_SetPriority(work->main.sprite, 1);

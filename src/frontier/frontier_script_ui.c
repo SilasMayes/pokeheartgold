@@ -151,7 +151,7 @@ void FrontierSystem_PrintMessage(FrontierSystem *system, MsgData *msgData, u16 m
 static void FrontierSystem_ShowMessageWindow(FrontierSystem *system) {
     FrontierMap *map = FrontierSystem_GetFrontierMap(system);
 
-    if (system->messageWindowAdded == FALSE) {
+    if (!system->messageWindowAdded) {
         AddWindowParameterized(map->bgConfig, &system->messageWindow, GF_BG_LYR_MAIN_1, 2, 19, 27, 4, 13, 0x36D);
         FillWindowPixelBuffer(&system->messageWindow, 15);
         DrawFrameAndWindow2(&system->messageWindow, FALSE, 0x3E2, 11);
@@ -275,7 +275,7 @@ void FrontierMenu_Show(FrontierMenu *menu) {
     if (menu->alignBottom) {
         menu->y -= menu->count * 2;
     }
-    AddWindowParameterized(map->bgConfig, &menu->window, GF_BG_LYR_MAIN_1, menu->x, menu->y, (u8)width, menu->count * 2, 14, 1);
+    AddWindowParameterized(map->bgConfig, &menu->window, GF_BG_LYR_MAIN_1, menu->x, menu->y, width, menu->count * 2, 14, 1);
     DrawFrameAndWindow1(&menu->window, TRUE, 0x3D9, 12);
     FrontierMenu_InitTemplate(menu);
     menu->menu = Create2dMenu(&menu->menuTemplate, menu->initialSelection, (u8)menu->system->heapId);
@@ -418,12 +418,12 @@ void FrontierListMenu_Show(FrontierMenu *menu) {
         if (menu->alignBottom) {
             menu->y -= 16;
         }
-        AddWindowParameterized(map->bgConfig, &menu->window, GF_BG_LYR_MAIN_1, menu->x, menu->y, (u8)width, 16, 14, 1);
+        AddWindowParameterized(map->bgConfig, &menu->window, GF_BG_LYR_MAIN_1, menu->x, menu->y, width, 16, 14, 1);
     } else {
         if (menu->alignBottom) {
             menu->y -= menu->count * 2;
         }
-        AddWindowParameterized(map->bgConfig, &menu->window, GF_BG_LYR_MAIN_1, menu->x, menu->y, (u8)width, menu->count * 2, 14, 1);
+        AddWindowParameterized(map->bgConfig, &menu->window, GF_BG_LYR_MAIN_1, menu->x, menu->y, width, menu->count * 2, 14, 1);
     }
     DrawFrameAndWindow1(&menu->window, TRUE, 0x3D9, 12);
     FrontierListMenu_InitTemplate(menu);
@@ -734,9 +734,9 @@ void FrontierMap_CreateMonSprite(FrontierMap *map, Pokemon *mon, enum HeapID hea
     DC_FlushRange(buffer, 4);
     GX_LoadOBJ(buffer, image->vramLocation.baseAddrOfVram[NNS_G2D_VRAM_TYPE_2DMAIN], 3200);
     offset = ObjPlttTransfer_GetPaletteVramOffset(Sprite_GetPaletteProxy(sprite->sprite), NNS_G2D_VRAM_TYPE_2DMAIN) * 16;
-    PaletteData_LoadNarc(paletteData, (NarcId)pokepic.narcID, pokepic.palDataID, heapId, PLTTBUF_MAIN_OBJ, 32, (u16)offset);
+    PaletteData_LoadNarc(paletteData, (NarcId)pokepic.narcID, pokepic.palDataID, heapId, PLTTBUF_MAIN_OBJ, 32, offset);
     if (blend > 0) {
-        PaletteData_BlendPalette(paletteData, PLTTBUF_MAIN_OBJ, (u16)offset, 16, (u8)blend, blendColor);
+        PaletteData_BlendPalette(paletteData, PLTTBUF_MAIN_OBJ, offset, 16, blend, blendColor);
     }
     Heap_Free(buffer);
     GF_ASSERT(map->monSprites[id - FRONTIER_MON_SPRITE_ID_BASE] == NULL);
@@ -884,9 +884,9 @@ void FrontierMap_WindowTask(SysTask *task, FrontierMapWindowTask *data) {
 }
 
 void FrontierMenu_SetAlignRight(FrontierMenu *menu, int value) {
-    menu->alignRight = (u8)value;
+    menu->alignRight = value;
 }
 
 void FrontierMenu_SetAlignBottom(FrontierMenu *menu, int value) {
-    menu->alignBottom = (u8)value;
+    menu->alignBottom = value;
 }

@@ -3,8 +3,6 @@
 
 #include "battle/battle.h"
 
-#include "sys_task_api.h"
-
 typedef struct BattleRecordingStopWork {
     BattleSystem *battleSystem;
     s16 state;

@@ -166,7 +166,7 @@ void BattleTower_GetRoomTrainer(SaveData *saveData, FrontierTrainer *trainer, in
 
     MI_CpuFill8(trainer, 0, sizeof(FrontierTrainer));
     download = Save_BattleRoomDownload_Get(saveData);
-    if (BattleRoomDownload_HasTrainers(download) == FALSE) {
+    if (!BattleRoomDownload_HasTrainers(download)) {
         BattleTower_GetSampleRoomTrainer(trainer, index);
     } else {
         BattleRoomDownload_GetTrainer(download, trainer, index);
@@ -205,7 +205,7 @@ static u32 BattleTower_GenerateFrontierMon(FrontierFieldSystem *tower, FrontierM
     FrontierData_ReadMember(&set, setId, BattleTower_GetMonSetNarc(tower->towerMode));
     mon->species = set.species;
     mon->form = set.form;
-    if (replaceItem != FALSE) {
+    if (replaceItem) {
         mon->item = gBattleTowerReplacementItems[itemIndex];
     } else {
         mon->item = set.item;

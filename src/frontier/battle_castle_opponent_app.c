@@ -550,7 +550,7 @@ static BOOL BattleCastleOpponentApp_HandleMenu(BattleCastleOpponentApp *app) {
         switch (input) {
         case CASTLE_OPP_ACTION_CHECK:
             app->action = input;
-            if (app->checked[BattleCastle_GetMonIndex(app->numMons, app->cursorPos)] == FALSE) {
+            if (!app->checked[BattleCastle_GetMonIndex(app->numMons, app->cursorPos)]) {
                 BattleCastleOpponentApp_CloseMainMenu(app);
                 BattleCastleOpponentApp_OpenMessageBox(app);
                 BattleCastleOpponentApp_BufferNumber(app, 0, CASTLE_CP_CHECK, 4, 0);
@@ -603,7 +603,7 @@ static BOOL BattleCastleOpponentApp_HandleMenu(BattleCastleOpponentApp *app) {
                 BattleCastleOpponentApp_OpenMessageBox(app);
                 app->printerId = BattleCastleOpponentApp_ShowMessage(app, msg_0033_00028, 1);
                 app->subState = CASTLE_OPP_STATE_MESSAGE;
-            } else if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+            } else if (!BattleCastle_IsMultiType(app->frontierType)) {
                 BattleCastle_SpendPoints(app->frontierSave, app->frontierType, CASTLE_CP_CHECK);
                 BattleCastleOpponentApp_PrintCastlePoints(app, &app->windows[CASTLE_OPP_WIN_POINTS]);
                 BattleCastleOpponentApp_CheckMon(app, app->cursorPos);
@@ -674,7 +674,7 @@ static BOOL BattleCastleOpponentApp_HandleMenu(BattleCastleOpponentApp *app) {
                 return FALSE;
             }
             app->linkLevelChange = app->levelChange;
-            if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+            if (!BattleCastle_IsMultiType(app->frontierType)) {
                 BattleCastleOpponentApp_CloseWindow(&app->windows[CASTLE_OPP_WIN_MESSAGE]);
                 BattleCastle_SpendPoints(app->frontierSave, app->frontierType, BattleCastleOpponentApp_GetLevelChangeCost(app->levelChange));
                 BattleCastleOpponentApp_PrintCastlePoints(app, &app->windows[CASTLE_OPP_WIN_POINTS]);
@@ -707,7 +707,7 @@ static BOOL BattleCastleOpponentApp_HandleMenu(BattleCastleOpponentApp *app) {
         case CASTLE_OPP_ACTION_STATS:
             app->action = input;
             BattleCastleOpponentApp_CloseSummaryMenu(app);
-            if (app->statsBought[BattleCastle_GetMonIndex(app->numMons, app->cursorPos)] == FALSE) {
+            if (!app->statsBought[BattleCastle_GetMonIndex(app->numMons, app->cursorPos)]) {
                 BattleCastleOpponentApp_OpenMessageBox(app);
                 BattleCastleOpponentApp_BufferNumber(app, 0, CASTLE_CP_STATS, 4, 0);
                 app->printerId = BattleCastleOpponentApp_ShowMessage(app, msg_0033_00043, 1);
@@ -725,7 +725,7 @@ static BOOL BattleCastleOpponentApp_HandleMenu(BattleCastleOpponentApp *app) {
                 app->subState = CASTLE_OPP_STATE_SUMMARY_MENU_MESSAGE;
                 return FALSE;
             }
-            if (app->movesBought[BattleCastle_GetMonIndex(app->numMons, app->cursorPos)] == FALSE) {
+            if (!app->movesBought[BattleCastle_GetMonIndex(app->numMons, app->cursorPos)]) {
                 BattleCastleOpponentApp_OpenMessageBox(app);
                 BattleCastleOpponentApp_BufferNumber(app, 0, CASTLE_CP_MOVES, 4, 0);
                 app->printerId = BattleCastleOpponentApp_ShowMessage(app, msg_0033_00079, 1);
@@ -795,7 +795,7 @@ static BOOL BattleCastleOpponentApp_HandleMenu(BattleCastleOpponentApp *app) {
                 BattleCastle_DrawWindowFrame(&app->windows[CASTLE_OPP_WIN_MESSAGE], Options_GetFrame(app->options));
                 app->printerId = BattleCastleOpponentApp_ShowMessage(app, msg_0033_00082, 1);
                 app->subState = CASTLE_OPP_STATE_SUMMARY_MENU_MESSAGE;
-            } else if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+            } else if (!BattleCastle_IsMultiType(app->frontierType)) {
                 BattleCastleOpponentApp_RankUp(app, app->cursorPos, CASTLE_OPP_ACTION_RANK_UP);
                 app->subState = CASTLE_OPP_STATE_RANK_UP;
             } else {
@@ -1074,7 +1074,7 @@ static void BattleCastleOpponentApp_InitGraphics(BattleCastleOpponentApp *app) {
     app->msgPrinter = MessagePrinter_New(1, 2, 0, HEAP_ID_107);
     BattleCastle_AddWindows(app->bgConfig, app->windows, 1);
     BattleCastleOpponentApp_GetTrainerNamePositions(app, &v.namePos[3], &v.namePos[2], &v.namePos[1], &v.namePos[0]);
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         int initial = 60;
         columnX = 64;
         v.iconX = initial;
@@ -1236,7 +1236,7 @@ static void BattleCastleOpponentApp_InitBgLayers(BgConfig *bgConfig) {
 
 static void BattleCastleOpponentApp_LoadPartyBg(BattleCastleOpponentApp *app, GFBgLayer bgId) {
     GfGfxLoader_LoadCharDataFromOpenNarc(app->narc, 0x30, app->bgConfig, bgId, 0, 0, TRUE, HEAP_ID_107);
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         GfGfxLoader_LoadScrnDataFromOpenNarc(app->narc, 0x2C, app->bgConfig, bgId, 0, 0, TRUE, HEAP_ID_107);
     } else {
         GfGfxLoader_LoadScrnDataFromOpenNarc(app->narc, 0x2D, app->bgConfig, bgId, 0, 0, TRUE, HEAP_ID_107);
@@ -1472,7 +1472,7 @@ static void BattleCastleOpponentApp_DrawCursor(BattleCastleOpponentApp *app, u32
     int x;
     int y;
 
-    if (isPartner == FALSE) {
+    if (!isPartner) {
         cursor = app->cursor;
         seq = 1;
         exitSeq = 0;
@@ -1484,14 +1484,14 @@ static void BattleCastleOpponentApp_DrawCursor(BattleCastleOpponentApp *app, u32
     if (index >= app->numOwnSlots) {
         BattleCastleSprite_SetAnim(cursor, exitSeq);
         BattleCastleSprite_SetPosition(cursor, 224, 160);
-        if (isPartner == FALSE) {
+        if (!isPartner) {
             BattleCastleOpponentApp_ShowSummaryPanel(app, FALSE);
         }
     } else {
         BattleCastleSprite_SetAnim(cursor, seq);
         BattleCastleOpponentApp_GetCursorPos(app, (u32 *)&x, (u32 *)&y, index);
         BattleCastleSprite_SetPosition(cursor, (u16)x, (u16)y);
-        if (isPartner == FALSE) {
+        if (!isPartner) {
             if (app->prevCursorPos >= app->numOwnSlots) {
                 BattleCastleOpponentApp_ShowSummaryPanel(app, TRUE);
             }
@@ -1524,7 +1524,7 @@ static void BattleCastleOpponentApp_GetCursorPos(BattleCastleOpponentApp *app, u
 }
 
 static void BattleCastleOpponentApp_GetTrainerNamePositions(BattleCastleOpponentApp *app, u16 *x1, u16 *y1, u16 *x2, u16 *y2) {
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         *x1 = 40;
         *y1 = 0;
         *x2 = 0;
@@ -1547,14 +1547,14 @@ static int BattleCastleOpponentApp_PlayActionEffect(BattleCastleOpponentApp *app
         app->flags.effectActive = FALSE;
         return TRUE;
     case CASTLE_OPP_ACTION_LEVEL:
-        if (app->flags.effectActive == FALSE) {
+        if (!app->flags.effectActive) {
             app->flags.effectActive = TRUE;
             int seq = app->linkLevelChange == CASTLE_LEVEL_UP ? 9 : 10;
             int baseX = BattleCastle_IsMultiType(app->frontierType) == FALSE ? 80 : 48;
             s16 x = baseX + index * 64;
             app->effectSprite = BattleCastleSprite_New(&app->spriteGfx, 0, 0, 0, seq, x, 50, 0, 0);
         }
-        if (BattleCastleSprite_IsAnimated(app->effectSprite) == FALSE) {
+        if (!BattleCastleSprite_IsAnimated(app->effectSprite)) {
             BattleCastleSprite_Delete(app->effectSprite);
             app->effectSprite = NULL;
             app->flags.effectActive = FALSE;
@@ -1562,7 +1562,7 @@ static int BattleCastleOpponentApp_PlayActionEffect(BattleCastleOpponentApp *app
         }
         break;
     case CASTLE_OPP_ACTION_STATS:
-        if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+        if (!BattleCastle_IsMultiType(app->frontierType)) {
             BattleCastleOpponentApp_PrintMonSummary(app, 0);
             app->flags.effectActive = FALSE;
             return TRUE;
@@ -1570,7 +1570,7 @@ static int BattleCastleOpponentApp_PlayActionEffect(BattleCastleOpponentApp *app
         app->flags.effectActive = FALSE;
         return TRUE;
     case CASTLE_OPP_ACTION_MOVES:
-        if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+        if (!BattleCastle_IsMultiType(app->frontierType)) {
             BattleCastleOpponentApp_PrintMonSummary(app, 0);
             app->flags.effectActive = FALSE;
             return TRUE;
@@ -1596,7 +1596,7 @@ static int BattleCastleOpponentApp_FinishLinkAction(BattleCastleOpponentApp *app
         app->flags.effectActive = FALSE;
         return TRUE;
     case CASTLE_OPP_ACTION_RANK_UP:
-        if (app->flags.effectActive == FALSE) {
+        if (!app->flags.effectActive) {
             BattleCastleOpponentApp_PrintMonSummary(app, 0);
         }
         app->flags.effectActive = FALSE;
@@ -1613,7 +1613,7 @@ static int BattleCastleOpponentApp_FinishLinkAction(BattleCastleOpponentApp *app
                 return TRUE;
             }
         }
-        if (app->flags.effectActive == FALSE) {
+        if (!app->flags.effectActive) {
             app->flags.linkResume = CASTLE_OPP_RESUME_BOUGHT_PAGE;
             app->flags.effectActive = FALSE;
             return TRUE;
@@ -1631,7 +1631,7 @@ static int BattleCastleOpponentApp_FinishLinkAction(BattleCastleOpponentApp *app
                 return TRUE;
             }
         }
-        if (app->flags.effectActive == FALSE) {
+        if (!app->flags.effectActive) {
             app->flags.linkResume = CASTLE_OPP_RESUME_BOUGHT_PAGE;
             app->flags.effectActive = FALSE;
             return TRUE;
@@ -1832,7 +1832,7 @@ static void BattleCastleOpponentApp_PrintCastlePoints(BattleCastleOpponentApp *a
     int cpStat;
 
     BattleCastleOpponentApp_GetTrainerNamePositions(app, &x1, &y1, &x2, &y2);
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         u16 x = x1 + 72;
         u16 y = y1 + 1;
 
@@ -1994,14 +1994,14 @@ static void BattleCastleOpponentApp_ChangeLevel(BattleCastleOpponentApp *app, in
     mon = Party_GetMonByIndex(app->party, BattleCastle_GetMonIndex(app->numMons, slot));
     BattleCastleOpponentApp_BufferSpeciesName(app, 0, Mon_GetBoxMon(mon));
     if (levelChange == CASTLE_LEVEL_UP) {
-        app->printerId = (u8)BattleCastleOpponentApp_ShowMessage(app, msg_0033_00031, 1);
+        app->printerId = BattleCastleOpponentApp_ShowMessage(app, msg_0033_00031, 1);
         PlaySE(SEQ_SE_DP_OPEN7);
     } else {
-        app->printerId = (u8)BattleCastleOpponentApp_ShowMessage(app, msg_0033_00032, 1);
+        app->printerId = BattleCastleOpponentApp_ShowMessage(app, msg_0033_00032, 1);
         PlaySE(SEQ_SE_DP_CLOSE7);
     }
     if (app->levelChanges[BattleCastle_GetMonIndex(app->numMons, slot)] == CASTLE_LEVEL_NORMAL) {
-        app->levelChanges[BattleCastle_GetMonIndex(app->numMons, slot)] = (u8)levelChange;
+        app->levelChanges[BattleCastle_GetMonIndex(app->numMons, slot)] = levelChange;
     } else {
         app->levelChanges[BattleCastle_GetMonIndex(app->numMons, slot)] = CASTLE_LEVEL_NORMAL;
     }
@@ -2062,7 +2062,7 @@ static int BattleCastleOpponentApp_TryBuy(BattleCastleOpponentApp *app, int cost
         app->subState = CASTLE_OPP_STATE_MESSAGE;
         return FALSE;
     }
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         BattleCastleOpponentApp_CloseWindow(&app->windows[CASTLE_OPP_WIN_MESSAGE]);
         BattleCastle_SpendPoints(app->frontierSave, app->frontierType, cost);
         BattleCastleOpponentApp_PrintCastlePoints(app, &app->windows[CASTLE_OPP_WIN_POINTS]);
@@ -2103,7 +2103,7 @@ static void BattleCastleOpponentApp_RankUp(BattleCastleOpponentApp *app, u8 slot
             slot = BattleCastle_GetRank(app->saveData, app->frontierType, kind);
             frontierSave = Save_Frontier_GetStatic(app->saveData);
             stat = BattleCastle_GetRankStat(app->frontierType, kind);
-            FrontierSave_SetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleCastle_GetRankStat(app->frontierType, kind)), (u16)(slot + 1));
+            FrontierSave_SetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleCastle_GetRankStat(app->frontierType, kind)), slot + 1);
             if (BattleCastle_IsMultiType(app->frontierType) == TRUE) {
                 app->flags.linkResume = CASTLE_OPP_RESUME_SUMMARY_MENU;
             }
@@ -2129,7 +2129,7 @@ static void BattleCastleOpponentApp_RankUp(BattleCastleOpponentApp *app, u8 slot
             slot = BattleCastle_GetRank(app->saveData, app->frontierType, kind);
             frontierSave = Save_Frontier_GetStatic(app->saveData);
             stat = BattleCastle_GetRankStat(app->frontierType, kind);
-            FrontierSave_SetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleCastle_GetRankStat(app->frontierType, kind)), (u16)(slot + 1));
+            FrontierSave_SetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleCastle_GetRankStat(app->frontierType, kind)), slot + 1);
             if (BattleCastle_IsMultiType(app->frontierType) == TRUE) {
                 app->flags.linkResume = CASTLE_OPP_RESUME_SUMMARY_MENU;
             }
@@ -2146,7 +2146,7 @@ static void BattleCastleOpponentApp_ShowBoughtMarks(BattleCastleOpponentApp *app
     int numMons = BattleCastle_GetOpponentMonCount(app->frontierType, 1);
 
     for (i = 0; i < numMons; i++) {
-        BattleCastleOpponentApp_ShowMonBoughtMarks(app, (u8)i);
+        BattleCastleOpponentApp_ShowMonBoughtMarks(app, i);
     }
 }
 
@@ -2323,7 +2323,7 @@ static void BattleCastleOpponentApp_PrintMonSummary(BattleCastleOpponentApp *app
     // move list: one line per move, "pp / maxPp" centered on the slash at x = 120
     if (infoRank == 1) {
         BattleCastle_PrintMsg(&app->windows[CASTLE_OPP_WIN_MOVES], app->msgData, msg_0033_00076, 0, 0, 0, CASTLE_OPP_TEXT_COLOR, CASTLE_ALIGN_LEFT);
-    } else if (app->movesBought[index] == FALSE) {
+    } else if (!app->movesBought[index]) {
         for (i = 0; i < MAX_MON_MOVES; i++) {
             BattleCastle_PrintMsg(&app->windows[CASTLE_OPP_WIN_MOVES], app->msgData, msg_0033_00075, 0, i * 16, 0, CASTLE_OPP_TEXT_COLOR, CASTLE_ALIGN_LEFT);
             string = NewString_ReadMsgData(app->msgData, msg_0033_00068);
@@ -2406,7 +2406,7 @@ static void BattleCastleOpponentApp_ShowSummaryPanel(BattleCastleOpponentApp *ap
 static void BattleCastleOpponentApp_LoadMonPic(BattleCastleOpponentApp *app) {
     int index = BattleCastle_GetMonIndex(app->numMons, app->cursorPos);
 
-    if (app->checked[index] == FALSE) {
+    if (!app->checked[index]) {
         BattleCastleSprite_LoadMonPic(app->monPic, app->summary.boxMon, SPECIES_NONE, app->summary.personality);
     } else {
         BattleCastleSprite_LoadMonPic(app->monPic, app->summary.boxMon, app->summary.species, app->summary.personality);
@@ -2452,13 +2452,13 @@ static void BattleCastleOpponentApp_CreateMainMenuList(BattleCastleOpponentApp *
     app->listMenuItems = ListMenuItems_New(4, HEAP_ID_107);
     infoRank = BattleCastle_GetRank(app->saveData, app->frontierType, CASTLE_RANK_INFO);
     index = BattleCastle_GetMonIndex(app->numMons, app->cursorPos);
-    if (app->checked[index] == FALSE) {
+    if (!app->checked[index]) {
         ListMenuItems_AppendFromMsgData(app->listMenuItems, app->msgData, msg_0033_00008, CASTLE_OPP_ACTION_CHECK);
         count++;
     }
     ListMenuItems_AppendFromMsgData(app->listMenuItems, app->msgData, msg_0033_00009, CASTLE_OPP_ACTION_LEVEL);
     count++;
-    if (app->statsBought[index] == FALSE || app->movesBought[index] == FALSE || infoRank != 2) {
+    if (!app->statsBought[index] || !app->movesBought[index] || infoRank != 2) {
         ListMenuItems_AppendFromMsgData(app->listMenuItems, app->msgData, msg_0033_00010, CASTLE_OPP_ACTION_SUMMARY);
         count++;
     }
@@ -2477,11 +2477,11 @@ static void BattleCastleOpponentApp_CreateSummaryMenuList(BattleCastleOpponentAp
     app->listMenuItems = ListMenuItems_New(4, HEAP_ID_107);
     infoRank = BattleCastle_GetRank(app->saveData, app->frontierType, CASTLE_RANK_INFO);
     index = BattleCastle_GetMonIndex(app->numMons, app->cursorPos);
-    if (app->statsBought[index] == FALSE) {
+    if (!app->statsBought[index]) {
         ListMenuItems_AppendFromMsgData(app->listMenuItems, app->msgData, msg_0033_00033, CASTLE_OPP_ACTION_STATS);
         count++;
     }
-    if (infoRank != 1 && app->movesBought[index] == FALSE) {
+    if (infoRank != 1 && !app->movesBought[index]) {
         ListMenuItems_AppendFromMsgData(app->listMenuItems, app->msgData, msg_0033_00034, CASTLE_OPP_ACTION_MOVES);
         count++;
     }

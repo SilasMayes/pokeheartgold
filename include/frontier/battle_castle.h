@@ -1,23 +1,11 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_CASTLE_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_CASTLE_H
 
-#include "bg_window.h"
-#include "gf_gfx_planes.h"
 #include "grid_input_handler.h"
-#include "list_menu_items.h"
-#include "message_format.h"
 #include "message_printer.h"
-#include "msgdata.h"
-#include "options.h"
 #include "overlay_manager.h"
-#include "palette.h"
-#include "party.h"
-#include "pokemon.h"
-#include "save.h"
 #include "save_frontier.h"
 #include "sprite.h"
-#include "sprite_resource.h"
-#include "sprite_resource_header.h"
 #include "touchscreen_list_menu.h"
 #include "yes_no_prompt.h"
 

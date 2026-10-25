@@ -1,12 +1,8 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_ARCADE_SETUP_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_ARCADE_SETUP_H
 
-#include "battle/battle_setup.h"
 #include "frontier/frontier.h"
 #include "frontier/battle_arcade_data.h"
-
-#include "party.h"
-#include "pokemon.h"
 
 u8 BattleArcade_GetMonCount(u8 type, int both);
 u8 BattleArcade_GetOpponentMonCount(u8 type, int both);

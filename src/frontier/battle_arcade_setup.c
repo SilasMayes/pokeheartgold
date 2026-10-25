@@ -155,7 +155,7 @@ BattleSetup *BattleArcade_NewBattleSetup(ArcadeContext *ctx, FrontierLaunchArgs 
     }
     Party_InitWithMaxSize(setup->party[BATTLER_PLAYER], playerCount);
     // in link battles the second player's Pokemon follow the first player's in the party
-    if (Comm_GetLocalNetId() == FALSE) {
+    if (!Comm_GetLocalNetId()) {
         slot = 0;
     } else {
         slot = 2;

@@ -1,13 +1,9 @@
 #ifndef POKEHEARTGOLD_FRONTIER_SCRIPT_UI_H
 #define POKEHEARTGOLD_FRONTIER_SCRIPT_UI_H
 
-#include "frontier/frontier_map.h"
 #include "frontier/frontier_script_context.h"
-#include "frontier/frontier_system.h"
 
 #include "list_menu.h"
-#include "list_menu_2d.h"
-#include "pokemon.h"
 
 #define FRONTIER_MENU_ITEMS_MAX      28
 #define FRONTIER_MENU_NO_DESCRIPTION 0xFF

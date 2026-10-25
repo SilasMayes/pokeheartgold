@@ -17,7 +17,7 @@ int BattleDpadCursor_HandleInput(BattleDpadCursor *cursor) {
     u8 next;
     u8 x, y, w, h;
 
-    if (BattleDpadCursor_TryActivate(cursor) == FALSE) {
+    if (!BattleDpadCursor_TryActivate(cursor)) {
         return BATTLE_DPAD_INPUT_NONE;
     }
     if (gSystem.newKeys & PAD_KEY_UP) {

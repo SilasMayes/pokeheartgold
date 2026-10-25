@@ -886,7 +886,7 @@ static u32 FrontierRecordsApp_GetFactoryStreakLabel(FrontierRecordsApp *app, u32
         result = FrontierSave_GetStat(frontierSave, stat, FrontierStat_GetFriendIndex(stat));
     } else {
         int factory = Save_Frontier_GetFactoryFlags(app->saveData);
-        result = FactoryFlags_GetField(factory, FACTORY_FLAGS_HAS_STREAK, (u8)(mode + level * 4), 0);
+        result = FactoryFlags_GetField(factory, FACTORY_FLAGS_HAS_STREAK, mode + level * 4, 0);
     }
     return (u8)result == 1 ? msg_0019_00030 : msg_0019_00029;
 }
@@ -1410,7 +1410,7 @@ static void FrontierRecordsApp_MoveLetterCursor(FrontierRecordsApp *app, int sel
 }
 
 static void FrontierRecordsApp_CreateLetterGrid(FrontierRecordsApp *app) {
-    app->gridInput = GridInputHandler_Create(sFrontierRecordsLetterGridHitboxes, sFrontierRecordsLetterGridBoxes, &sFrontierRecordsLetterGridCallbacks, app, TRUE, (u8)app->letter, HEAP_ID_121);
+    app->gridInput = GridInputHandler_Create(sFrontierRecordsLetterGridHitboxes, sFrontierRecordsLetterGridBoxes, &sFrontierRecordsLetterGridCallbacks, app, TRUE, app->letter, HEAP_ID_121);
     FrontierRecordsApp_MoveLetterCursor(app, app->letter);
 }
 
@@ -1505,7 +1505,7 @@ static void FrontierRecordsApp_MoveSpeciesCursor(FrontierRecordsApp *app, int se
 
 static void FrontierRecordsApp_CreateSpeciesGrid(FrontierRecordsApp *app) {
     int selection = app->speciesIndex;
-    app->gridInput = GridInputHandler_Create(sFrontierRecordsSpeciesGridHitboxes, sFrontierRecordsSpeciesGridBoxes, &sFrontierRecordsSpeciesGridCallbacks, app, TRUE, (u8)selection, HEAP_ID_121);
+    app->gridInput = GridInputHandler_Create(sFrontierRecordsSpeciesGridHitboxes, sFrontierRecordsSpeciesGridBoxes, &sFrontierRecordsSpeciesGridCallbacks, app, TRUE, selection, HEAP_ID_121);
     FrontierRecordsApp_MoveSpeciesCursor(app, selection);
 }
 

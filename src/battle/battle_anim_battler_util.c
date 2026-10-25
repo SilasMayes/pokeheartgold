@@ -172,7 +172,7 @@ void BattleAnimUtil_GetEmitterPositionKind0Alt(int battlerType, VecFx32 *pos, in
 }
 
 void BattleAnimUtil_GetCameraUp(BOOL flipped, VecFx32 *up) {
-    if (flipped == FALSE) {
+    if (!flipped) {
         ParticleSystem_GetDefaultCameraUp(up);
     } else {
         *up = gBattleAnimFlippedCameraUp;
@@ -186,7 +186,7 @@ void BattleAnimUtil_SetBlendWithBattleBg(BattleAnimSystem *system, int eva, int 
     if (evb == -1) {
         evb = 5;
     }
-    int plane2 = (1 << BattleAnimSystem_GetBgMaskLayer(system, 2)) | GX_BLEND_PLANEMASK_BG0;
+    int plane2 = (1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_BATTLE)) | GX_BLEND_PLANEMASK_BG0;
     G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, plane2, eva, evb);
 }
 
@@ -207,18 +207,18 @@ void BattleAnimUtil_SetBlendBgOverBattleBg(BattleAnimSystem *system, int eva, in
     if (evb == -1) {
         evb = 5;
     }
-    int plane2 = (1 << BattleAnimSystem_GetBgMaskLayer(system, 2)) | GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_OBJ;
-    int plane1 = 1 << BattleAnimSystem_GetBgMaskLayer(system, 1);
+    int plane2 = (1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_BATTLE)) | GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_OBJ;
+    int plane1 = 1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_EFFECT);
     G2_SetBlendAlpha(plane1, plane2, eva, evb);
 }
 
 void BattleAnimUtil_SetWindowInsidePlanes(BattleAnimSystem *system, int window, BOOL effect) {
     if (window == 0) {
-        G2_SetWnd0InsidePlane((1 << BattleAnimSystem_GetBgMaskLayer(system, 2)) | (1 << BattleAnimSystem_GetBgMaskLayer(system, 0)) | (1 << BattleAnimSystem_GetBgMaskLayer(system, 1)) | GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_OBJ, effect);
+        G2_SetWnd0InsidePlane((1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_BATTLE)) | (1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_WINDOW)) | (1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_EFFECT)) | GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_OBJ, effect);
     } else {
-        G2_SetWnd1InsidePlane((1 << BattleAnimSystem_GetBgMaskLayer(system, 2)) | (1 << BattleAnimSystem_GetBgMaskLayer(system, 0)) | (1 << BattleAnimSystem_GetBgMaskLayer(system, 1)) | GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_OBJ, effect);
+        G2_SetWnd1InsidePlane((1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_BATTLE)) | (1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_WINDOW)) | (1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_EFFECT)) | GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_OBJ, effect);
     }
-    G2_SetWndOutsidePlane((1 << BattleAnimSystem_GetBgMaskLayer(system, 0)) | (1 << BattleAnimSystem_GetBgMaskLayer(system, 1)) | GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_OBJ, TRUE);
+    G2_SetWndOutsidePlane((1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_WINDOW)) | (1 << BattleAnimSystem_GetBgMaskLayer(system, BATTLE_ANIM_BG_EFFECT)) | GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_OBJ, TRUE);
 }
 
 void BattleAnimUtil_GetPicPosition(Pokepic *pokepic, s16 *pos) {

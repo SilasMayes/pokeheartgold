@@ -1,16 +1,7 @@
 #ifndef POKEHEARTGOLD_BATTLE_BATTLE_MAIN_H
 #define POKEHEARTGOLD_BATTLE_BATTLE_MAIN_H
 
-#include "battle/battle.h"
-#include "battle/battle_022378C0.h"
 #include "battle/battle_controller_opponent.h"
-
-#include "bg_window.h"
-#include "gf_3d_vramman.h"
-#include "gf_gfx_planes.h"
-#include "overlay_manager.h"
-#include "poke_overlay.h"
-#include "sys_task_api.h"
 
 // The battle overlay's main module.
 

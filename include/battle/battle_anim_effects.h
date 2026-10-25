@@ -1,14 +1,7 @@
 #ifndef POKEHEARTGOLD_BATTLE_BATTLE_ANIM_EFFECTS_H
 #define POKEHEARTGOLD_BATTLE_BATTLE_ANIM_EFFECTS_H
 
-#include "battle/battle_anim_funcs.h"
 #include "battle/battle_anim_util.h"
-
-#include "bg_window.h"
-#include "palette.h"
-#include "pokepic.h"
-#include "sprite_system.h"
-#include "sys_task.h"
 
 // One sprite of BattleAnimSpriteFunc_StackedSpritesOnDefender, pulsing its x scale
 typedef struct BattleAnimScaleSprite {

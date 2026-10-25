@@ -1,7 +1,6 @@
 #ifndef POKEHEARTGOLD_FRONTIER_PARTICLES_H
 #define POKEHEARTGOLD_FRONTIER_PARTICLES_H
 
-#include "heap.h"
 #include "particle_system.h"
 
 #define FRONTIER_PARTICLE_SYSTEM_MAX 8

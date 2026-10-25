@@ -157,7 +157,7 @@ static void BattleFactory_GridNop(void *data, int input, int prevInput) {
 }
 
 GridInputHandler *BattleFactoryApp_CreateRentalGrid(BattleFactoryApp *app, int cursor) {
-    return GridInputHandler_Create(sBattleFactoryRentalGridHitboxes, sBattleFactoryRentalGridBoxes, &sBattleFactoryRentalGridCallbacks, app, TRUE, (u8)cursor, HEAP_ID_100);
+    return GridInputHandler_Create(sBattleFactoryRentalGridHitboxes, sBattleFactoryRentalGridBoxes, &sBattleFactoryRentalGridCallbacks, app, TRUE, cursor, HEAP_ID_100);
 }
 
 void BattleFactory_SetRentalGridMenu(GridInputHandler *grid, int menuOpen) {
@@ -181,11 +181,11 @@ static void BattleFactoryApp_OnRentalCursorMove(void *data, int input, int prevI
 }
 
 GridInputHandler *BattleFactoryApp_CreateSwapOutGrid(BattleFactoryApp *app, int cursor) {
-    return GridInputHandler_Create(sBattleFactorySwapOutGridHitboxes, sBattleFactorySwapOutGridBoxes, &sBattleFactorySwapOutGridCallbacks, app, TRUE, (u8)cursor, HEAP_ID_100);
+    return GridInputHandler_Create(sBattleFactorySwapOutGridHitboxes, sBattleFactorySwapOutGridBoxes, &sBattleFactorySwapOutGridCallbacks, app, TRUE, cursor, HEAP_ID_100);
 }
 
 GridInputHandler *BattleFactoryApp_CreateLinkSwapOutGrid(BattleFactoryApp *app, int cursor) {
-    GridInputHandler *grid = GridInputHandler_Create(sBattleFactoryLinkSwapOutGridHitboxes, sBattleFactoryLinkSwapOutGridBoxes, &sBattleFactorySwapOutGridCallbacks, app, TRUE, (u8)cursor, HEAP_ID_100);
+    GridInputHandler *grid = GridInputHandler_Create(sBattleFactoryLinkSwapOutGridHitboxes, sBattleFactoryLinkSwapOutGridBoxes, &sBattleFactorySwapOutGridCallbacks, app, TRUE, cursor, HEAP_ID_100);
     GridInputHandler_ClearEnabledFlag(grid, 2);
     return grid;
 }
@@ -242,7 +242,7 @@ void BattleFactory_SetSwapInGridMenu(GridInputHandler *grid, int menuOpen, int f
         GridInputHandler_ClearEnabledFlag(grid, 6);
         GridInputHandler_ClearEnabledFlag(grid, 7);
     }
-    if (BattleFactory_IsLinkMode(frontierType) == FALSE) {
+    if (!BattleFactory_IsLinkMode(frontierType)) {
         GridInputHandler_ClearEnabledFlag(grid, 3);
     }
 }

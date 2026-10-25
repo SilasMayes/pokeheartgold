@@ -1,12 +1,7 @@
 #ifndef POKEHEARTGOLD_FRONTIER_DATA_ACCESS_H
 #define POKEHEARTGOLD_FRONTIER_DATA_ACCESS_H
 
-#include "frontier_data.h"
-#include "pokemon_types_def.h"
-#include "save.h"
 #include "frontier_wifi_upload_record.h"
-#include "heap.h"
-#include "mail_message.h"
 #include "scrcmd_9.h"
 
 struct BattleRoomDownload;

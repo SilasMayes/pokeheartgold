@@ -3,11 +3,7 @@
 
 #include "battle/battle.h"
 
-#include "bag.h"
-#include "bg_window.h"
 #include "dpad_menu_box.h"
-#include "player_data.h"
-#include "sprite_system.h"
 #include "touchscreen.h"
 
 // Arguments of the in-battle bag screen, filled by the battle controller before

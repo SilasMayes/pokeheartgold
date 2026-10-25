@@ -222,7 +222,7 @@ static void FrontierMapTileBlink_Task(SysTask *task, void *data) {
     }
     blinkTask->timer = 0;
     blinkTask->state ^= 1;
-    FrontierMapTileBlink_GetTiles(tiles, (u8)blinkTask->state);
+    FrontierMapTileBlink_GetTiles(tiles, blinkTask->state);
     LoadRectToBgTilemapRect(blinkTask->bgConfig, GF_BG_LYR_MAIN_3, tiles, 14, 2, 2, 2);
     ScheduleBgTilemapBufferTransfer(blinkTask->bgConfig, GF_BG_LYR_MAIN_3);
 }
@@ -958,8 +958,8 @@ static void FrontierMap_SaveSprites(FrontierMap *map) {
         if (spriteSet->sprites[i] != NULL) {
             state->sprites[i].anim = ManagedSprite_GetActiveAnim(spriteSet->sprites[i]);
             state->sprites[i].frame = ManagedSprite_GetAnimationFrame(spriteSet->sprites[i]);
-            state->sprites[i].animActive = (u16)FrontierMap_IsSpriteAnimActive(map, i);
-            state->sprites[i].draw = (u16)ManagedSprite_GetDrawFlag(spriteSet->sprites[i]);
+            state->sprites[i].animActive = FrontierMap_IsSpriteAnimActive(map, i);
+            state->sprites[i].draw = ManagedSprite_GetDrawFlag(spriteSet->sprites[i]);
             state->sprites[i].resourceId = spriteSet->resourceIds[i];
             ManagedSprite_GetPositionXY(spriteSet->sprites[i], &state->sprites[i].x, &state->sprites[i].y);
             state->sprites[i].active = TRUE;

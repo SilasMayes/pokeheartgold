@@ -1,15 +1,8 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_CASTLE_DATA_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_CASTLE_DATA_H
 
-#include "battle/battle_setup.h"
 #include "frontier/frontier_system.h"
 #include "frontier/frontier_trainers.h"
-
-#include "bg_window.h"
-#include "party.h"
-#include "player_data.h"
-#include "save.h"
-#include "scrcmd_9.h"
 
 #define CASTLE_PARTY_SIZE       3
 #define CASTLE_OPPONENT_COUNT   4

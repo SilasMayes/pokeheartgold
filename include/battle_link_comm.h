@@ -2,19 +2,9 @@
 #define POKEHEARTGOLD_BATTLE_LINK_COMM_H
 #include "global.h"
 
-#include "battle/battle_setup.h"
 #include "battle/battle_system.h"
 
-#include "battle_record.h"
-#include "bg_window.h"
-#include "communication_command.h"
-#include "communication_core.h"
-#include "heap.h"
-#include "link_synchronization.h"
-#include "palette.h"
 #include "render_window.h"
-#include "string_util.h"
-#include "sys_task.h"
 
 // Work of the link data exchange stage (BSTATE_LINK_INIT/MAIN): the battle setup data the linked players exchange
 // before the battle, one command at a time through the buffer.

@@ -29,7 +29,7 @@ void BattleHallApp_RemoveWindows(Window *windows) {
 }
 
 void BattleHallApp_DrawMessageFrame(Window *window, u32 frame) {
-    LoadUserFrameGfx2(window->bgConfig, (GFBgLayer)GetWindowBgId(window), 0x3D9, 10, (u8)frame, HEAP_ID_105);
+    LoadUserFrameGfx2(window->bgConfig, (GFBgLayer)GetWindowBgId(window), 0x3D9, 10, frame, HEAP_ID_105);
     FillWindowPixelBuffer(window, 15);
     DrawFrameAndWindow2(window, FALSE, 0x3D9, 10);
 }

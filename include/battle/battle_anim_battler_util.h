@@ -4,12 +4,7 @@
 // Battle animation helpers shared by the effect functions (battler types and positions, emitter
 // positions, blend/window setup, target collection, work allocation).
 
-#include "bg_window.h"
 #include "overlay_07.h"
-#include "palette.h"
-#include "pokepic.h"
-#include "spl.h"
-#include "sprite_system.h"
 
 // BattleAnimUtil_GetBattlerSide
 #define BATTLE_ANIM_SIDE_PLAYER 3

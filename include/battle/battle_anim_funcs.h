@@ -6,13 +6,6 @@
 
 #include "battle/battle_anim_util.h"
 
-#include "bg_window.h"
-#include "palette.h"
-#include "pokepic.h"
-#include "spl.h"
-#include "sprite_system.h"
-#include "sys_task.h"
-
 typedef struct BattleAnimSpritePopWork BattleAnimSpritePopWork;
 typedef struct BattleAnimEmitterMotionWork BattleAnimEmitterMotionWork;
 

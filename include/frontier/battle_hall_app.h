@@ -1,12 +1,8 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_HALL_APP_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_HALL_APP_H
 
-#include "bg_window.h"
-#include "heap.h"
 #include "overlay_manager.h"
 #include "pokemon.h"
-#include "sprite.h"
-#include "sprite_resource.h"
 #include "yes_no_prompt.h"
 
 typedef struct BattleHallSprite {

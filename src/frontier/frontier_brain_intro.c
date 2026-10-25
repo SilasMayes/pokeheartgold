@@ -272,7 +272,7 @@ static BOOL FrontierBrainIntro_Run(FrontierBrainIntro *intro, enum HeapID heapID
         SpriteSystem_LoadCharResObjFromOpenNarc(intro->spriteSystem, intro->spriteManager, intro->narc, args->spriteChar, FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, 2010);
         SpriteSystem_LoadCellResObjFromOpenNarc(intro->spriteSystem, intro->spriteManager, intro->narc, args->spriteCell, FALSE, 2002);
         SpriteSystem_LoadAnimResObjFromOpenNarc(intro->spriteSystem, intro->spriteManager, intro->narc, args->spriteAnim, FALSE, 2002);
-        PaletteData_BlendPalette(intro->paletteData, PLTTBUF_MAIN_OBJ, (u16)(intro->brainPaletteSlot << 4), 16, 14, RGB_BLACK);
+        PaletteData_BlendPalette(intro->paletteData, PLTTBUF_MAIN_OBJ, intro->brainPaletteSlot << 4, 16, 14, RGB_BLACK);
 
         slot = SpriteSystem_LoadPaletteBufferFromOpenNarc(intro->paletteData, PLTTBUF_MAIN_OBJ, intro->spriteSystem, intro->spriteManager, intro->narc, 59, FALSE, 1, NNS_G2D_VRAM_TYPE_2DMAIN, 2003);
         intro->paletteMask |= 1 << slot;
@@ -351,8 +351,8 @@ static BOOL FrontierBrainIntro_Run(FrontierBrainIntro *intro, enum HeapID heapID
         break;
     case BRAIN_INTRO_SHOW_NAME:
         if (IsPaletteFadeFinished()) {
-            PaletteData_BlendPalettes(intro->paletteData, PLTTBUF_MAIN_OBJ, (u16)(0x3FFF ^ intro->paletteMask), 14, RGB_BLACK);
-            PaletteData_BlendPalette(intro->paletteData, PLTTBUF_MAIN_OBJ, (u16)(intro->brainPaletteSlot << 4), 16, 0, RGB_BLACK);
+            PaletteData_BlendPalettes(intro->paletteData, PLTTBUF_MAIN_OBJ, 0x3FFF ^ intro->paletteMask, 14, RGB_BLACK);
+            PaletteData_BlendPalette(intro->paletteData, PLTTBUF_MAIN_OBJ, intro->brainPaletteSlot << 4, 16, 0, RGB_BLACK);
             SetBlendBrightness(-14, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_BD), SCREEN_MASK_MAIN);
             TextOBJ_SetSpritesDrawFlag(sprites->name.textObj, TRUE);
             intro->state++;
@@ -517,7 +517,7 @@ static BOOL FrontierBrainIntro_UpdateBurst(FrontierBrainIntroBurst *burst) {
         FrontierBrainIntro_SetVec(&scale, burst->scales[i].value, burst->scales[i].value, burst->scales[i].value);
         Sprite_SetAffineScale(burst->sprites[i]->sprite, &scale);
         Sprite_SetDrawFlag(burst->sprites[i]->sprite, TRUE);
-        if (finished == FALSE) {
+        if (!finished) {
             done = FALSE;
         }
     }
@@ -539,7 +539,7 @@ static BOOL FrontierBrainIntroLerp_Step(FrontierBrainIntroLerp *lerp) {
     s32 duration;
 
     value = (value + 0x800) >> FX32_SHIFT;
-    result = FX_Div((fx32)value, lerp->duration << FX32_SHIFT);
+    result = FX_Div(value, lerp->duration << FX32_SHIFT);
     result += lerp->start;
     lerp->value = result;
     step = lerp->step;
@@ -593,7 +593,7 @@ static void FrontierBrainIntro_CyclePaletteTask(SysTask *task, void *data) {
 static void FrontierBrainIntro_StartWindowAnim(FrontierBrainIntro *intro, int close) {
     FrontierBrainIntroWindowAnim *anim = &intro->windowAnim;
     MI_CpuFill8(anim, 0, sizeof(FrontierBrainIntroWindowAnim));
-    if (close == FALSE) {
+    if (!close) {
         anim->top = 0x5000;
         anim->bottom = 0x5000;
         SysTask_CreateOnMainQueue(FrontierBrainIntro_OpenWindowTask, anim, 1000);
@@ -660,7 +660,7 @@ enum {
 static BOOL FrontierBrainIntro_SlideInBrain(FrontierBrainIntro *intro, FrontierBrainIntroSprites *sprites, FrontierBrainIntroSlide *slide) {
     switch (slide->state) {
     case BRAIN_SLIDE_START:
-        ManagedSprite_SetPositionXYWithSubscreenOffset(sprites->brainSprite, (s16)(intro->x + 256), (s16)(intro->y + 80), FX32_CONST(512));
+        ManagedSprite_SetPositionXYWithSubscreenOffset(sprites->brainSprite, intro->x + 256, intro->y + 80, FX32_CONST(512));
         ManagedSprite_SetDrawFlag(sprites->brainSprite, TRUE);
         slide->x = 0x10000;
         slide->state++;
@@ -671,7 +671,7 @@ static BOOL FrontierBrainIntro_SlideInBrain(FrontierBrainIntro *intro, FrontierB
             slide->x = 0xD000;
             slide->state++;
         }
-        ManagedSprite_SetPositionXYWithSubscreenOffset(sprites->brainSprite, (s16)(slide->x >> 8), (s16)(intro->y + 80), FX32_CONST(512));
+        ManagedSprite_SetPositionXYWithSubscreenOffset(sprites->brainSprite, slide->x >> 8, intro->y + 80, FX32_CONST(512));
         break;
     default:
         return TRUE;

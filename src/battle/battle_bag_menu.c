@@ -1428,10 +1428,10 @@ static u16 BattleBagMenu_GetButtonPalette(BattleBagMenu *menu, u32 button, u32 f
     case 9:
     case 10:
     case 11:
-        return (u16)(menu->pocket + 8);
+        return menu->pocket + 8;
     case 15:
         if (page == BATTLE_BAG_PAGE_USE_ITEM) {
-            return (u16)(menu->pocket + 8);
+            return menu->pocket + 8;
         }
         return 1;
     default:

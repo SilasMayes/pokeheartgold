@@ -1,11 +1,8 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_FACTORY_SETUP_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_FACTORY_SETUP_H
 
-#include "battle/battle_setup.h"
 #include "frontier/battle_factory_data.h"
 #include "frontier/frontier.h"
-
-#include "scrcmd_9.h"
 
 // Range of Battle Factory set ids (narc 205). Trainer set ranges are looked up by trainer id; when hasNextTier is set,
 // the following entry is the range the last Pokemon come from once enough trades were made.

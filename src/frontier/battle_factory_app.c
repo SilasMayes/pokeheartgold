@@ -3,6 +3,7 @@
 #include "constants/pokemon.h"
 #include "constants/sndseq.h"
 
+#include "frontier/battle_factory_app.h"
 #include "frontier/battle_factory_app_internal.h"
 #include "frontier/battle_factory_setup.h"
 #include "frontier/frontier_trainers.h"
@@ -420,7 +421,7 @@ BOOL BattleFactoryApp_Main(OverlayManager *man, int *state) {
         case FACTORY_STATE_CANCEL_SWAP:
         case FACTORY_STATE_SELECT_SWAP_IN:
         case FACTORY_STATE_CANCEL_SWAP_IN:
-            if (app->summaryFading == FALSE) {
+            if (!app->summaryFading) {
                 BattleFactoryApp_SetMainState(app, state, FACTORY_STATE_LINK_SEND_SWAP);
             }
             break;
@@ -588,7 +589,7 @@ BOOL BattleFactoryApp_Exit(OverlayManager *man, int *state) {
         for (i = 0; i < 2; i++) {
             app->resultOut[i] = app->picked[i];
         }
-        if (app->swapAccepted == FALSE) {
+        if (!app->swapAccepted) {
             app->resultOut[0] = 0xFF;
             app->resultOut[1] = 0xFF;
         }
@@ -1155,7 +1156,7 @@ static BOOL BattleFactoryApp_ConfirmRentals(BattleFactoryApp *app) {
         }
         break;
     case FACTORY_CONFIRM_LINK_SEND:
-        if (BattleFactory_IsMultiType(app->frontierType) == FALSE) {
+        if (!BattleFactory_IsMultiType(app->frontierType)) {
             return TRUE;
         }
         if (BattleFactoryApp_SendLinkCommand(app, FACTORY_LINK_RENTALS, 0) == TRUE) {
@@ -1729,7 +1730,7 @@ static BOOL BattleFactoryApp_SwitchPage(BattleFactoryApp *app) {
     case FACTORY_SWITCH_PAGE_SHOW_POKEPICS:
         if (app->timer == 0) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_OFF);
-            if (app->swapOutPicked == FALSE) {
+            if (!app->swapOutPicked) {
                 for (count = 0; count < app->numPokepics; count++) {
                     BattleFactoryApp_ReplacePokepic(app, count, count, 1);
                 }
@@ -2022,7 +2023,7 @@ static void BattleFactoryApp_AnimateBackground(BattleFactoryApp *app) {
         if ((timer >> 2) >= 4) {
             app->bgAnimTimer = 0;
         }
-        BattleFactoryApp_SetBgPalette(app, GF_BG_LYR_SUB_3, (u8)((app->bgAnimTimer >> 2) + 2), 32, 32);
+        BattleFactoryApp_SetBgPalette(app, GF_BG_LYR_SUB_3, (app->bgAnimTimer >> 2) + 2, 32, 32);
     }
     app->bgAnimTimer++;
 }
@@ -2396,11 +2397,11 @@ static void BattleFactoryApp_PrepareLinkRentals(BattleFactoryApp *app, int comma
     app->sendBuf[0] = app->numPicked;
     pos++;
     for (i = 0; i < app->numPicked; i++) {
-        app->sendBuf[pos + i] = (u16)GetMonData(Party_GetMonByIndex(app->party, app->picked[i]), MON_DATA_SPECIES, NULL);
+        app->sendBuf[pos + i] = GetMonData(Party_GetMonByIndex(app->party, app->picked[i]), MON_DATA_SPECIES, NULL);
     }
     pos += app->numPicked;
     for (i = 0; i < app->numPicked; i++) {
-        app->sendBuf[pos + i] = (u16)GetMonData(Party_GetMonByIndex(app->party, app->picked[i]), MON_DATA_GENDER, NULL);
+        app->sendBuf[pos + i] = GetMonData(Party_GetMonByIndex(app->party, app->picked[i]), MON_DATA_GENDER, NULL);
     }
 }
 
@@ -2490,7 +2491,7 @@ static BattleFactoryBall *BattleFactoryApp_CreateBall(BattleFactoryApp *app, int
     if (BattleFactoryApp_IsScreen(app, FACTORY_SCREEN_RENTAL) == TRUE) {
         x = sBattleFactoryBallPositions_Rental[index][0];
         y = sBattleFactoryBallPositions_Rental[index][1];
-    } else if (BattleFactory_IsMultiType(app->frontierType) == FALSE) {
+    } else if (!BattleFactory_IsMultiType(app->frontierType)) {
         x = sBattleFactoryBallPositions_Single[index][0];
         y = sBattleFactoryBallPositions_Single[index][1];
     } else if (app->numBalls == 2) {
@@ -3007,7 +3008,7 @@ static void BattleFactoryApp_UpdateOrderSprites(BattleFactoryApp *app) {
     u16 i = 3;
 
     do {
-        u8 slot = (u8)(i - 3);
+        u8 slot = i - 3;
         if (slot < app->numPicked) {
             VecFx32 pos = *BattleFactoryBall_GetPosition(app->balls[app->picked[slot]]);
             pos.x -= 4 * FX32_ONE;

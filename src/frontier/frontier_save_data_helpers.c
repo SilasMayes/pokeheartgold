@@ -34,11 +34,11 @@ void BattleTower_GenerateOpponents(FrontierFieldSystem *tower, SaveData *saveDat
 }
 
 u32 BattleTower_GetTrainerSprite(FrontierFieldSystem *tower, u32 index) {
-    return FrontierTrainer_GetClassSprite((u8)tower->opponents[index].trainerClass);
+    return FrontierTrainer_GetClassSprite(tower->opponents[index].trainerClass);
 }
 
 void BattleTower_SetPalmerDefeated(FrontierFieldSystem *tower, u32 value) {
-    tower->palmerDefeated = (u8)value;
+    tower->palmerDefeated = value;
 }
 
 u32 BattleTower_IncBattleNumber(FrontierFieldSystem *tower) {

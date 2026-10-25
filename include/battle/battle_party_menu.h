@@ -3,10 +3,7 @@
 
 #include "battle/battle.h"
 
-#include "bg_window.h"
 #include "dpad_menu_box.h"
-#include "party.h"
-#include "sprite_system.h"
 
 enum BattlePartyMode {
     BATTLE_PARTY_MODE_SWITCH,

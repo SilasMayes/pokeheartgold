@@ -197,7 +197,7 @@ u32 BattleTowerChallenge_GetSaved(u32 challenge) {
 }
 
 void BattleTowerChallenge_SetSaved(u32 challenge, u32 value) {
-    ((BattleTowerChallenge *)challenge)->saved = (u8)value;
+    ((BattleTowerChallenge *)challenge)->saved = value;
 }
 
 enum {
@@ -317,7 +317,7 @@ u16 FrontierData_CalcWifiScore(FrontierData *data, u32 challenge) {
     } else {
         time = (1000 - tower->totalDamage) / 30;
     }
-    u16 result = (u16)(base + score + time);
+    u16 result = base + score + time;
     data->wifiScore = result;
     return result;
 }

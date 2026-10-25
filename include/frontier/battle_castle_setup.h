@@ -1,14 +1,8 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_CASTLE_SETUP_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_CASTLE_SETUP_H
 
-#include "battle/battle_setup.h"
 #include "frontier/battle_castle_data.h"
 #include "frontier/frontier.h"
-
-#include "bg_window.h"
-#include "frontier_save_access.h"
-#include "party.h"
-#include "pokemon.h"
 
 void BattleCastle_GetRoundTrainerIds(u32 type, u32 round, u16 *trainerIds, int count);
 int BattleCastle_GetPartySize(int type, int both);

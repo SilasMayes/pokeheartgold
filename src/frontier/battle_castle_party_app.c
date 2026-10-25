@@ -352,7 +352,7 @@ BOOL BattleCastlePartyApp_Init(OverlayManager *manager, int *state) {
     for (i = 0; i < 3; i++) {
         app->partnerRanks[i] = 1;
     }
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         app->numMons = 3;
     } else {
         app->numMons = 4;
@@ -1259,7 +1259,7 @@ static void BattleCastlePartyApp_InitGraphics(BattleCastlePartyApp *app) {
     app->unk_738 = BattleCastleSprite_New(&app->spriteGfx, 0, 0, 0, 5, 160, 124, 0, 0);
     BattleCastleSprite_SetDrawFlag(app->unk_734, FALSE);
     BattleCastleSprite_SetDrawFlag(app->unk_738, FALSE);
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         iconX = 64;
         itemX = 72;
     } else {
@@ -1290,7 +1290,7 @@ static void BattleCastlePartyApp_InitGraphics(BattleCastlePartyApp *app) {
     BattleCastlePartyApp_GetCursorPos(app, &cursorX, &cursorY, 0);
     app->cursor = BattleCastleSprite_New(&app->spriteGfx, 0, 0, 0, 1, cursorX, cursorY, 2, 0);
     app->partnerCursor = BattleCastleSprite_New(&app->spriteGfx, 0, 0, 0, 2, cursorX, cursorY, 2, 0);
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         BattleCastleSprite_SetDrawFlag(app->partnerCursor, FALSE);
     }
     app->menuOpenSprite = BattleCastleSprite_New(&app->spriteGfx, 0, 0, 0, 11, 20, 20, 0, 0);
@@ -1418,7 +1418,7 @@ static void BattleCastlePartyApp_InitBgLayers(BgConfig *bgConfig) {
 
 static void BattleCastlePartyApp_LoadPartyBg(BattleCastlePartyApp *app, GFBgLayer bgId) {
     GfGfxLoader_LoadCharDataFromOpenNarc(app->narc, 0x22, app->bgConfig, bgId, 0, 0, TRUE, HEAP_ID_107);
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         GfGfxLoader_LoadScrnDataFromOpenNarc(app->narc, 0x23, app->bgConfig, bgId, 0, 0, TRUE, HEAP_ID_107);
     } else {
         GfGfxLoader_LoadScrnDataFromOpenNarc(app->narc, 0x24, app->bgConfig, bgId, 0, 0, TRUE, HEAP_ID_107);
@@ -1625,7 +1625,7 @@ static void BattleCastlePartyApp_PrintMonLevelAndGender(BattleCastlePartyApp *ap
     unsigned int y;
     Pokemon *mon;
 
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         levelBaseX = 40;
         genderX = 80;
     } else {
@@ -1651,7 +1651,7 @@ static void BattleCastlePartyApp_RedrawMonHp(BattleCastlePartyApp *app, Window *
     int x = BattleCastle_IsMultiType(app->frontierType) == FALSE ? 36 : 4;
 
     x += slot * CASTLE_PARTY_COLUMN_WIDTH;
-    FillWindowPixelRect(window, 0, (u16)x, 0, 24, 9);
+    FillWindowPixelRect(window, 0, x, 0, 24, 9);
     PrintUIntOnWindow(app->msgPrinter, hp, 3, PRINTING_MODE_RIGHT_ALIGN, window, x, 1);
     ScheduleWindowCopyToVram(window);
 }
@@ -1791,7 +1791,7 @@ static void BattleCastlePartyApp_PrintItemNames(BattleCastlePartyApp *app) {
     u16 i;
     int width;
 
-    first = (u16)(app->itemPage * CASTLE_ITEMS_PER_PAGE);
+    first = app->itemPage * CASTLE_ITEMS_PER_PAGE;
     for (i = 0; i < CASTLE_ITEMS_PER_PAGE; i++) {
         FillWindowPixelBuffer(&app->windows[CASTLE_PARTY_WIN_ITEM_GRID + i], 0);
         if ((int)(first + i) < app->numItems) {
@@ -1973,7 +1973,7 @@ static void BattleCastlePartyApp_PrintPartnerName(BattleCastlePartyApp *app, Win
         color = CASTLE_PARTY_TEXT_COLOR_FEMALE;
     }
     BufferPlayersName(app->msgFormat, 0, profile);
-    BattleCastlePartyApp_AddMessage(app, window, msg_0031_00001, x, y, TEXT_SPEED_NOTRANSFER, (u8)(color >> 16), (color >> 8) & 0xFF, color & 0xFF, 0);
+    BattleCastlePartyApp_AddMessage(app, window, msg_0031_00001, x, y, TEXT_SPEED_NOTRANSFER, color >> 16, (color >> 8) & 0xFF, color & 0xFF, 0);
 }
 
 static void BattleCastlePartyApp_PrintGenderSymbol(BattleCastlePartyApp *app, Window *window, u32 x, u32 y, u8 fontId, u8 gender) {
@@ -2019,7 +2019,7 @@ static void BattleCastlePartyApp_DrawCursor(BattleCastlePartyApp *app, u32 index
     int seq;
     int exitSeq;
 
-    if (isPartner == FALSE) {
+    if (!isPartner) {
         cursor = app->cursor;
         seq = 1;
         exitSeq = 0;
@@ -2032,7 +2032,7 @@ static void BattleCastlePartyApp_DrawCursor(BattleCastlePartyApp *app, u32 index
     if (index >= app->numOwnSlots) {
         BattleCastleSprite_SetAnim(cursor, exitSeq);
         BattleCastleSprite_SetPosition(cursor, 224, 160);
-        if (isPartner == FALSE) {
+        if (!isPartner) {
             BattleCastlePartyApp_ShowMonSummary(app, FALSE);
         }
         return;
@@ -2041,7 +2041,7 @@ static void BattleCastlePartyApp_DrawCursor(BattleCastlePartyApp *app, u32 index
     BattleCastleSprite_SetAnim(cursor, seq);
     BattleCastlePartyApp_GetCursorPos(app, &x, &y, index);
     BattleCastleSprite_SetPosition(cursor, (u16)x, (u16)y);
-    if (isPartner == FALSE) {
+    if (!isPartner) {
         if (app->prevCursorPos >= app->numOwnSlots) {
             BattleCastlePartyApp_ShowMonSummary(app, TRUE);
         }
@@ -2109,7 +2109,7 @@ static u16 BattleCastlePartyApp_GetRentalItemId(BattleCastlePartyApp *app, int i
 
 // Positions of the player's and the partner's name
 static void BattleCastlePartyApp_GetTrainerNamePositions(BattleCastlePartyApp *app, u16 *x1, u16 *y1, u16 *x2, u16 *y2) {
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         *x1 = 40;
         *y1 = 0;
         *x2 = 0;
@@ -2507,7 +2507,7 @@ static void BattleCastlePartyApp_PrintCastlePoints(BattleCastlePartyApp *app, Wi
     u16 x;
 
     BattleCastlePartyApp_GetTrainerNamePositions(app, &x1, &y1, &x2, &y2);
-    if (BattleCastle_IsMultiType(app->frontierType) == FALSE) {
+    if (!BattleCastle_IsMultiType(app->frontierType)) {
         x = x1 + 72;
         FillWindowPixelRect(window, 0, x, y = y1 + 1, 48, 16);
         points = BattleCastle_GetPointsStat(app->frontierType);
@@ -2679,7 +2679,7 @@ static void BattleCastlePartyApp_RankUp(BattleCastlePartyApp *app, u8 slot, u16 
             rank = BattleCastle_GetRank(app->saveData, app->frontierType, kind);
             frontierSave = Save_Frontier_GetStatic(app->saveData);
             stat = BattleCastle_GetRankStat(app->frontierType, kind);
-            FrontierSave_SetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleCastle_GetRankStat(app->frontierType, kind)), (u16)(rank + 1));
+            FrontierSave_SetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleCastle_GetRankStat(app->frontierType, kind)), rank + 1);
             if (BattleCastle_IsMultiType(app->frontierType) == TRUE) {
                 if (action == CASTLE_PARTY_ACTION_HEAL_RANK_UP) {
                     app->flags.linkResume = CASTLE_PARTY_RESUME_HEAL_MENU;
@@ -2709,7 +2709,7 @@ static void BattleCastlePartyApp_RankUp(BattleCastlePartyApp *app, u8 slot, u16 
             rank = BattleCastle_GetRank(app->saveData, app->frontierType, kind);
             frontierSave = Save_Frontier_GetStatic(app->saveData);
             stat = BattleCastle_GetRankStat(app->frontierType, kind);
-            FrontierSave_SetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleCastle_GetRankStat(app->frontierType, kind)), (u16)(rank + 1));
+            FrontierSave_SetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleCastle_GetRankStat(app->frontierType, kind)), rank + 1);
             if (BattleCastle_IsMultiType(app->frontierType) == TRUE) {
                 if (action == CASTLE_PARTY_ACTION_HEAL_RANK_UP) {
                     app->flags.linkResume = CASTLE_PARTY_RESUME_HEAL_MENU;
@@ -2880,9 +2880,9 @@ static void BattleCastlePartyApp_PrintMonSummary(BattleCastlePartyApp *app, int 
             Window *window;
 
             slash = NewString_ReadMsgData(app->msgData, msg_0031_00090);
-            halfSlashWidth = (u16)(FontID_String_GetWidth(0, slash, 0) / 2);
+            halfSlashWidth = FontID_String_GetWidth(0, slash, 0) / 2;
             window = &app->windows[CASTLE_PARTY_WIN_MOVE_PP + move];
-            center = (u16)((GetWindowWidth(window) * 8) / 2);
+            center = (GetWindowWidth(window) * 8) / 2;
             BattleCastle_PrintString(window, slash, center, 0, 0, CASTLE_PARTY_TEXT_COLOR, CASTLE_ALIGN_CENTER);
             String_Delete(slash);
 

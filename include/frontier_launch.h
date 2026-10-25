@@ -3,8 +3,6 @@
 
 #include "frontier/frontier.h"
 
-#include "field_system.h"
-
 FrontierLaunchArgs *Frontier_LaunchApp(FieldSystem *fieldSystem, void *frontierFsys);
 
 #endif // POKEHEARTGOLD_FRONTIER_LAUNCH_H

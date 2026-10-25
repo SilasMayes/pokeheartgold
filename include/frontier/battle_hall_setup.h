@@ -1,11 +1,8 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_HALL_SETUP_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_HALL_SETUP_H
 
-#include "battle/battle_setup.h"
 #include "frontier/battle_hall_data.h"
 #include "frontier/frontier.h"
-
-#include "scrcmd_9.h"
 
 #define HALL_MATRON_SILVER        307 // trainer ids of the Hall Matron, battles 50 and 170 of the single battle streak
 #define HALL_MATRON_GOLD          308

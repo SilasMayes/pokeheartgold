@@ -77,7 +77,7 @@ BattleHallData *BattleHallData_Alloc(SaveData *saveData, BOOL resume, u8 type, u
     data1->partnerMon = AllocMonZeroed(HEAP_ID_FIELD2);
     challenge = data1->challenge;
     flags = Save_Frontier_GetHallFlags(saveData);
-    if (resume == FALSE) {
+    if (!resume) {
         data2 = sBattleHallData;
         data2->type = type;
         partySize = BattleHall_GetPartySize(data2->type);
@@ -176,7 +176,7 @@ static void BattleHallData_GenerateOpponents(BattleHallData *data) {
     if (battles[battleNo].trainerId == HALL_MATRON_GOLD) {
         matron = 2;
     }
-    BattleHall_PickSetIds(1, data->cellType, rank, data->battleNo, (u16)GetMonData(Party_GetMonByIndex(data->party, 0), MON_DATA_SPECIES, NULL), data->setIds, matron);
+    BattleHall_PickSetIds(1, data->cellType, rank, data->battleNo, GetMonData(Party_GetMonByIndex(data->party, 0), MON_DATA_SPECIES, NULL), data->setIds, matron);
 }
 
 void BattleHallData_Free(BattleHallData *data) {
@@ -195,7 +195,7 @@ void BattleHallData_Free(BattleHallData *data) {
 void BattleHallData_ReadAppResult(BattleHallData *data, BattleHallAppArgs *args) {
     data->cursor = BattleHallAppArgs_GetResult(args, 0);
     data->cell = data->cursor;
-    data->cellType = BattleHall_GetCellType((u8)data->cursor);
+    data->cellType = BattleHall_GetCellType(data->cursor);
     if (data->cell >= HALL_CELL_COUNT - 1) {
         data->cell = HALL_CELL_COUNT - 1;
     }
@@ -243,7 +243,7 @@ void BattleHallData_Save(BattleHallData *data, int mode) {
     HallChallenge_SetField(data->challenge, HALL_CHALLENGE_TYPE, 0, 0, &temp.byte);
     HallChallenge_SetSaved(data->challenge, 1);
     mon = Party_GetMonByIndex(SaveArray_Party_Get(data->saveData), data->partySlots[0]);
-    species = (u16)GetMonData(mon, MON_DATA_SPECIES, NULL);
+    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     stat = BattleHall_GetSpeciesStat(data->type);
     savedSpecies = FrontierSave_GetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleHall_GetSpeciesStat(data->type)));
     temp.byte = data->battleNo;
@@ -271,24 +271,24 @@ void BattleHallData_Save(BattleHallData *data, int mode) {
     }
     for (i = 0; i < HALL_TRAINER_COUNT; i++) {
         temp.value = data->trainerIds[i];
-        HallChallenge_SetField(data->challenge, HALL_CHALLENGE_TRAINER_IDS, (u8)i, 0, &temp.value);
+        HallChallenge_SetField(data->challenge, HALL_CHALLENGE_TRAINER_IDS, i, 0, &temp.value);
     }
     for (i = 0; i < 2; i++) {
         temp.byte = data->partySlots[i];
-        HallChallenge_SetField(data->challenge, HALL_CHALLENGE_PARTY_SLOTS, (u8)i, 0, &temp.byte);
+        HallChallenge_SetField(data->challenge, HALL_CHALLENGE_PARTY_SLOTS, i, 0, &temp.byte);
     }
     for (i = 0; i < HALL_CELL_COUNT; i++) {
-        temp.byte = HallTypeRanks_Get((u8)i, data->typeRanks[data->type]);
+        temp.byte = HallTypeRanks_Get(i, data->typeRanks[data->type]);
         BattleHall_SetSavedTypeRank(data->saveData, data->type, (u8)i, temp.byte);
     }
     for (i = 0; i < HALL_TRAINER_COUNT; i++) {
         temp.value = data->setIds[i];
-        HallChallenge_SetField(data->challenge, HALL_CHALLENGE_SET_IDS, (u8)i, 0, &temp.value);
+        HallChallenge_SetField(data->challenge, HALL_CHALLENGE_SET_IDS, i, 0, &temp.value);
     }
     stat = BattleHall_GetSpeciesStat(data->type);
     {
         int substat = FrontierStat_GetFriendIndex(BattleHall_GetSpeciesStat(data->type));
-        FrontierSave_SetStat(frontierSave, stat, substat, (u16)GetMonData(mon, MON_DATA_SPECIES, NULL));
+        FrontierSave_SetStat(frontierSave, stat, substat, GetMonData(mon, MON_DATA_SPECIES, NULL));
     }
 }
 
@@ -304,7 +304,7 @@ u8 BattleHallData_GetBattleNo(BattleHallData *data) {
 u16 BattleHallData_GetTrainerSprite(BattleHallData *data, u32 index) {
     FrontierTrainerRecord trainer;
     Heap_Free(FrontierTrainer_Load(&trainer, data->trainerIds[(u8)(index + data->battleNo * 2)], HEAP_ID_FIELD2, NARC_a_2_0_2));
-    return FrontierTrainer_GetClassSprite((u8)trainer.trainerClass);
+    return FrontierTrainer_GetClassSprite(trainer.trainerClass);
 }
 
 void BattleHallData_ClearRanks(BattleHallData *data) {
@@ -397,8 +397,8 @@ static void BattleHall_SetSavedTypeRank(SaveData *saveData, u8 type, s32 cell, u
     u8 shift;
 
     BattleHall_GetSavedTypeRank(saveData, type, cell, &low, &high);
-    packed = (u8)((high << 4) | low);
-    shift = (u8)(cell % 2);
+    packed = (high << 4) | low;
+    shift = cell % 2;
     if (shift == 0) {
         packed &= 0xF0;
     } else {
@@ -454,7 +454,7 @@ static u16 BattleHallData_CalcOpponentLevel(BattleHallData *data) {
     int result;
 
     if (data->type == FRONTIER_CHALLENGE_MULTI) {
-        return (u16)partyLevel;
+        return partyLevel;
     }
     {
         float fixed;
@@ -477,7 +477,7 @@ static u16 BattleHallData_CalcOpponentLevel(BattleHallData *data) {
     for (i = 0; i < HALL_CELL_COUNT; i++) {
         if (i == data->cell) {
             total += 1.0;
-        } else if (HallTypeRanks_Get((u8)i, data->typeRanks[data->type]) != 0) {
+        } else if (HallTypeRanks_Get(i, data->typeRanks[data->type]) != 0) {
             total += 1.0;
         }
     }
@@ -496,5 +496,5 @@ static u16 BattleHallData_CalcOpponentLevel(BattleHallData *data) {
     if (result > 100) {
         result = 100;
     }
-    return (u16)result;
+    return result;
 }

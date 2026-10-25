@@ -1502,10 +1502,10 @@ s16 BattleAnimSystem_GetBattlerScreenCoord(BattleAnimSystem *system, int battler
         index += 2;
     }
     switch (coord) {
-    case 0:
+    case BATTLE_ANIM_COORD_X:
     case 2:
         return gBattleAnimBattlerScreenPositions[set][index * 2];
-    case 1:
+    case BATTLE_ANIM_COORD_Y:
     case 3:
         return gBattleAnimBattlerScreenPositionsY[set][index * 2];
     default:

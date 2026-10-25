@@ -42,7 +42,7 @@ BOOL FrtCmd_HallAlloc(FrontierScriptContext *ctx) {
     u16 type = FrontierScript_ReadVar(ctx);
     u16 slot0 = FrontierScript_ReadVar(ctx);
     u16 slot1 = FrontierScript_ReadVar(ctx);
-    BattleHallData *data = BattleHallData_Alloc(Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork)->saveData, resume, (u8)type, (u8)slot0, (u8)slot1);
+    BattleHallData *data = BattleHallData_Alloc(Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork)->saveData, resume, type, slot0, slot1);
     Frontier_SetData(ctx->frontierSystem->frontierWork, data);
     return FALSE;
 }
@@ -225,7 +225,7 @@ BOOL FrtCmd_HallAction(FrontierScriptContext *ctx) {
     case HALL_ACTION_RAISE_TYPE_RANK: {
         u32 rank = HallTypeRanks_Get(data->cell, data->typeRanks[data->type]);
         if (rank < 10) {
-            HallTypeRanks_Set(data->cell, data->typeRanks[data->type], (u8)(rank + 1));
+            HallTypeRanks_Set(data->cell, data->typeRanks[data->type], rank + 1);
         }
         break;
     }

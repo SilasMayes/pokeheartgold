@@ -590,7 +590,7 @@ static BOOL BattleHallApp_SelectType(BattleHallApp *app) {
             BattleHallApp_CancelConfirm(app);
             if (app->matronMode == TRUE) {
                 app->subState = HALL_SELECT_INIT;
-            } else if (app->matronMode == FALSE) {
+            } else if (!app->matronMode) {
                 app->subState = HALL_SELECT_INPUT;
             } else {
                 GF_ASSERT(FALSE);
@@ -1003,7 +1003,7 @@ static void BattleHallApp_InitBgLayers(BgConfig *bgConfig) {
 
 // In link mode the top 16 lines of the main screen are masked
 static void BattleHallApp_InitLinkWindow(BattleHallApp *app) {
-    if (BattleHall_IsMultiType(app->mode) != FALSE) {
+    if (BattleHall_IsMultiType(app->mode)) {
         reg_GX_DISPCNT &= ~(REG_GX_DISPCNT_W0_MASK | REG_GX_DISPCNT_W1_MASK | REG_GX_DISPCNT_OW_MASK);
         G2_SetWnd0InsidePlane(GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_BG3 | GX_WND_PLANEMASK_OBJ, FALSE);
         G2_SetWndOutsidePlane(GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_BG3 | GX_WND_PLANEMASK_OBJ, TRUE);
@@ -1032,7 +1032,7 @@ static void BattleHallApp_LoadSubBgGraphics(BattleHallApp *app, u32 bgId) {
 }
 
 static void BattleHallApp_LoadTitleFrameGraphics(BattleHallApp *app, u32 bgId) {
-    BG_ClearCharDataRange((u8)bgId, 0x20, 0, HEAP_ID_105);
+    BG_ClearCharDataRange(bgId, 0x20, 0, HEAP_ID_105);
     GfGfxLoader_LoadCharDataFromOpenNarc(app->narc, 0x85, app->bgConfig, (GFBgLayer)bgId, 1, 0, TRUE, HEAP_ID_105);
     GfGfxLoader_GXLoadPalFromOpenNarc(app->narc, 0xC0, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_1_OFFSET, 0x20, HEAP_ID_105);
 }
@@ -1113,9 +1113,9 @@ static void BattleHallApp_PrintTypeRanks(BattleHallApp *app, Window *window) {
         int x = 18;
         do {
             int index = column + base;
-            u32 type = BattleHall_GetCellType((u8)index);
+            u32 type = BattleHall_GetCellType(index);
             if (type != TYPE_CELL_EMPTY && type != TYPE_MYSTERY) {
-                u8 rank = (u8)(HallTypeRanks_Get(BattleHallApp_GetRecordIndex((u8)index), app->hallRecords) + 1);
+                u8 rank = HallTypeRanks_Get(BattleHallApp_GetRecordIndex((u8)index), app->hallRecords) + 1;
                 if (rank > MAX_TYPE_RANK) {
                     rank = MAX_TYPE_RANK;
                 }
@@ -1286,11 +1286,11 @@ static BOOL BattleHallApp_HandleConfirm(BattleHallApp *app) {
 }
 
 static u16 BattleHallApp_GetCursorX(BattleHallApp *app) {
-    return (u16)((app->cursor % 4) * 64 + 32);
+    return (app->cursor % 4) * 64 + 32;
 }
 
 static u16 BattleHallApp_GetCursorY(BattleHallApp *app) {
-    return (u16)((app->cursor / 4) * 36 + 16);
+    return (app->cursor / 4) * 36 + 16;
 }
 
 static void BattleHallApp_GrayOutTypes(BattleHallApp *app, BgConfig *bgConfig) {
@@ -1302,7 +1302,7 @@ static void BattleHallApp_GrayOutTypes(BattleHallApp *app, BgConfig *bgConfig) {
         }
     } else {
         for (i = 0; i < 17; i++) {
-            if (HallTypeRanks_Get((u8)i, app->hallRecords) >= MAX_TYPE_RANK) {
+            if (HallTypeRanks_Get(i, app->hallRecords) >= MAX_TYPE_RANK) {
                 BattleHallApp_SetCellPalette(bgConfig, (u8)i, HALL_CELL_UNAVAILABLE);
             }
         }
@@ -1398,7 +1398,7 @@ static u8 BattleHallApp_IsMatronMode(BattleHallApp *app) {
 static BOOL BattleHallApp_SendLinkCommand(BattleHallApp *app, u16 command, u16 arg) {
     u32 id;
 
-    if (BattleHall_IsMultiType(app->mode) == FALSE) {
+    if (!BattleHall_IsMultiType(app->mode)) {
         return FALSE;
     }
     switch (command) {
@@ -1438,11 +1438,11 @@ static void BattleHallApp_PrepareLinkChoice(BattleHallApp *app, u16 command, u16
     app->linkCommand = command;
     app->linkArg = choice;
     if (Comm_GetLocalNetId() == 0 && app->linkChoice == NO_LINK_CHOICE) {
-        app->linkChoice = (u8)choice;
+        app->linkChoice = choice;
     }
     app->linkChoiceSent = app->linkChoice;
     mon = Party_GetMonByIndex(app->party, 0);
-    app->linkLevel = (u16)GetMonData(mon, MON_DATA_LEVEL, NULL);
+    app->linkLevel = GetMonData(mon, MON_DATA_LEVEL, NULL);
 }
 
 void BattleHall_ReceiveChoice(u32 netId, u32 unused, const u16 *msg, BattleHallApp *app) {
@@ -1450,15 +1450,15 @@ void BattleHall_ReceiveChoice(u32 netId, u32 unused, const u16 *msg, BattleHallA
     if (netId == Comm_GetLocalNetId()) {
         return;
     }
-    app->partnerCursor = (u8)msg[1];
+    app->partnerCursor = msg[1];
     if (Comm_GetLocalNetId() == 0) {
         if (app->linkChoice != NO_LINK_CHOICE) {
             app->partnerCursor = 0;
         } else {
-            app->linkChoice = (u8)(app->partnerCursor + 20);
+            app->linkChoice = app->partnerCursor + 20;
         }
     } else {
-        app->linkChoice = (u8)msg[2];
+        app->linkChoice = msg[2];
     }
     *app->partnerLevel = msg[3];
 }
@@ -1476,7 +1476,7 @@ void BattleHall_ReceiveAnswer(u32 netId, u32 unused, const u16 *msg, BattleHallA
     }
     answer = msg[1];
     if (answer != 0) {
-        app->partnerAnswer = (u8)answer;
+        app->partnerAnswer = answer;
     }
 }
 

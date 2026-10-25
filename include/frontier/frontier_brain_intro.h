@@ -2,7 +2,6 @@
 #define POKEHEARTGOLD_FRONTIER_FRONTIER_BRAIN_INTRO_H
 
 #include "bg_window.h"
-#include "palette.h"
 #include "sprite_system.h"
 
 // Starts the cutscene shown before a Frontier Brain battle. brain: 1-based index into the Brain table; *done is set

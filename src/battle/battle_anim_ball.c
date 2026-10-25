@@ -388,7 +388,7 @@ static void BallSealEffect_LoadSealParticlesTask(SysTask *task, void *data) {
 }
 
 void BallSealEffect_LoadResources(BallSealEffect *effect) {
-    if (effect->hasCapsule == FALSE) {
+    if (!effect->hasCapsule) {
         int resource = BallAnim_GetSealParticleResource(effect->ball);
         effect->count = 1;
         effect->particleSystems[0] = BattleAnimSystem_NewParticleSystemFromNarc(effect->heapId, NARC_a_0_9_5, resource, FALSE);
@@ -438,7 +438,7 @@ static void BallSealEffect_WaitTask(SysTask *task, void *data) {
             }
         }
     }
-    if (busy == FALSE) {
+    if (!busy) {
         effect->active = FALSE;
         SysTask_Destroy(task);
     }
@@ -717,7 +717,7 @@ BOOL BallThrow_CaptureStateIdle(BallThrow *data) {
 }
 
 BOOL BallThrow_CaptureStateThrow(BallThrow *data) {
-    if (BallThrow_RunThrowArc(data) == FALSE) {
+    if (!BallThrow_RunThrowArc(data)) {
         BallThrow_GoToCaptureState(data, BALL_CAPTURE_STATE_GO_TO_OPEN);
     }
     return TRUE;
@@ -755,7 +755,7 @@ BOOL BallThrow_CaptureStateOpen(BallThrow *data) {
         data->step++;
         break;
     case 3:
-        if (BallBurstEffect_IsRunning((BallBurstEffect *)data->burstEffect) == FALSE) {
+        if (!BallBurstEffect_IsRunning((BallBurstEffect *)data->burstEffect)) {
             ManagedSprite_SetAnimationFrame(data->managedSprite, 0);
             BallBurstEffect_Free((BallBurstEffect *)data->burstEffect);
             data->step++;
@@ -780,7 +780,7 @@ BOOL BallThrow_CaptureStateDeflect(BallThrow *data) {
         BALL_ARC_DURATION(data) = 10;
         data->arcHeight = 12;
         data->stateFrames++;
-    } else if (BallThrow_RunThrowArc(data) == FALSE) {
+    } else if (!BallThrow_RunThrowArc(data)) {
         BallThrow_GoToCaptureState(data, BALL_CAPTURE_STATE_DEFLECT_DONE);
     }
     return TRUE;
@@ -804,14 +804,14 @@ BOOL BallThrow_CaptureStateFlash(BallThrow *data) {
     switch (data->step) {
     case 0: {
         int offset = ManagedSprite_GetPaletteOverrideOffset(data->managedSprite);
-        PaletteData_BeginPaletteFade(data->params.paletteData, 1 << PLTTBUF_MAIN_OBJ, (u16)(1 << offset), -1, 0, 12, RGB(31, 27, 0));
+        PaletteData_BeginPaletteFade(data->params.paletteData, 1 << PLTTBUF_MAIN_OBJ, 1 << offset, -1, 0, 12, RGB(31, 27, 0));
         data->step++;
         break;
     }
     case 1:
         if (PaletteData_GetSelectedBuffersBitmask(data->params.paletteData) == 0) {
             int offset = ManagedSprite_GetPaletteOverrideOffset(data->managedSprite);
-            PaletteData_BeginPaletteFade(data->params.paletteData, 1 << PLTTBUF_MAIN_OBJ, (u16)(1 << offset), -1, 12, 0, RGB(31, 27, 0));
+            PaletteData_BeginPaletteFade(data->params.paletteData, 1 << PLTTBUF_MAIN_OBJ, 1 << offset, -1, 12, 0, RGB(31, 27, 0));
             data->step++;
         }
         break;
@@ -836,12 +836,12 @@ BOOL BallThrow_CaptureStateDrop(BallThrow *data) {
         if (data->stateFrames >= 1) {
             s16 x, y;
             ManagedSprite_GetPositionXY(data->managedSprite, &x, &y);
-            BattleAnimUtil_InitLinearMotion(BALL_ARC_MOTION(data), x, x, y, (s16)(y + 32), 10);
+            BattleAnimUtil_InitLinearMotion(BALL_ARC_MOTION(data), x, x, y, y + 32, 10);
             data->step++;
         }
         break;
     case 1:
-        if (BattleAnimUtil_UpdateLinearMotionSprite(BALL_ARC_MOTION(data), data->managedSprite) == FALSE) {
+        if (!BattleAnimUtil_UpdateLinearMotionSprite(BALL_ARC_MOTION(data), data->managedSprite)) {
             data->step++;
             BallThrow_GoToCaptureState(data, BALL_CAPTURE_STATE_BOUNCE);
         }
@@ -956,7 +956,7 @@ BOOL BallThrow_CaptureStateClick(BallThrow *data) {
     switch (data->step) {
     case 0: {
         int offset = ManagedSprite_GetPaletteOverrideOffset(data->managedSprite);
-        PaletteData_BeginPaletteFade(data->params.paletteData, 1 << PLTTBUF_MAIN_OBJ, (u16)(1 << offset), -5, 0, 10, RGB_BLACK);
+        PaletteData_BeginPaletteFade(data->params.paletteData, 1 << PLTTBUF_MAIN_OBJ, 1 << offset, -5, 0, 10, RGB_BLACK);
         data->step++;
         break;
     }
@@ -977,7 +977,7 @@ BOOL BallThrow_CaptureStateClick(BallThrow *data) {
         data->step++;
         break;
     case 3:
-        if (BallBurstEffect_IsRunning((BallBurstEffect *)data->burstEffect) == FALSE) {
+        if (!BallBurstEffect_IsRunning((BallBurstEffect *)data->burstEffect)) {
             ManagedSprite_SetAnimationFrame(data->managedSprite, 0);
             BallBurstEffect_Free((BallBurstEffect *)data->burstEffect);
             data->step++;
@@ -1000,7 +1000,7 @@ BOOL BallThrow_CaptureStateRestorePalette(BallThrow *data) {
     switch (data->step) {
     case 0: {
         int offset = ManagedSprite_GetPaletteOverrideOffset(data->managedSprite);
-        PaletteData_BeginPaletteFade(data->params.paletteData, 1 << PLTTBUF_MAIN_OBJ, (u16)(1 << offset), -5, 10, 0, RGB_BLACK);
+        PaletteData_BeginPaletteFade(data->params.paletteData, 1 << PLTTBUF_MAIN_OBJ, 1 << offset, -5, 10, 0, RGB_BLACK);
         data->step++;
         break;
     }
@@ -1077,12 +1077,12 @@ BOOL BallThrow_RunThrowArc(BallThrow *data) {
                 ManagedSprite_OffsetAffineZRotation(data->managedSprite, 2 << 12);
             }
             if (BallThrow_IsFlashingKind(data->params.kind) == TRUE && data->modeFrames == BALL_ARC_DURATION(data) / 2 + 10) {
-                data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, (u16)(ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4), 16, -2, 2, 0, 14, 0xFFFF, 1002);
+                data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
             }
         }
         data->modeFrames++;
         if (data->params.kind < 6 || data->params.kind > 8 || data->modeFrames <= BALL_ARC_DURATION(data) / 2 || data->modeFrames >= BALL_ARC_DURATION(data) / 2 + 5) {
-            if (BattleAnimUtil_UpdateLinearSinMotionSprite(BALL_ARC_MOTION(data), BALL_ARC_MOTION2(data), data->managedSprite) == FALSE) {
+            if (!BattleAnimUtil_UpdateLinearSinMotionSprite(BALL_ARC_MOTION(data), BALL_ARC_MOTION2(data), data->managedSprite)) {
                 BallThrow_SetRotation(data, 0);
                 data->step++;
             }
@@ -1115,7 +1115,7 @@ BOOL BallThrow_RunThrowArc(BallThrow *data) {
     default:
         if (data->modeFrames == 5) {
             if (data->params.kind != 12 && data->params.kind != 13) {
-                data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, (u16)(ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4), 16, -2, 2, 0, 14, 0xFFFF, 1002);
+                data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
             }
             data->opened = TRUE;
         }
@@ -1152,12 +1152,12 @@ BOOL BallThrow_ThrowArcAndOpen(BallThrow *data) {
                 ManagedSprite_OffsetAffineZRotation(data->managedSprite, 2 << 12);
             }
             if (BallThrow_IsFlashingKind(data->params.kind) == TRUE && data->modeFrames == BALL_ARC_DURATION(data) / 2 + 10) {
-                data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, (u16)(ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4), 16, -2, 2, 0, 14, 0xFFFF, 1002);
+                data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
             }
         }
         data->modeFrames++;
         if (data->params.kind < 6 || data->params.kind > 8 || data->modeFrames <= BALL_ARC_DURATION(data) / 2 || data->modeFrames >= BALL_ARC_DURATION(data) / 2 + 5) {
-            if (BattleAnimUtil_UpdateLinearSinMotionSprite(BALL_ARC_MOTION(data), BALL_ARC_MOTION2(data), data->managedSprite) == FALSE) {
+            if (!BattleAnimUtil_UpdateLinearSinMotionSprite(BALL_ARC_MOTION(data), BALL_ARC_MOTION2(data), data->managedSprite)) {
                 BallThrow_SetRotation(data, 0);
                 data->step++;
             }
@@ -1187,7 +1187,7 @@ BOOL BallThrow_ThrowArcAndOpen(BallThrow *data) {
     default:
         if (data->modeFrames == 5) {
             ManagedSprite_SetAnimationFrame(data->managedSprite, 2);
-            data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, (u16)(ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4), 16, -2, 2, 0, 14, 0xFFFF, 1002);
+            data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
             data->opened = TRUE;
         }
         data->modeFrames++;
@@ -1884,7 +1884,7 @@ void BattleAnimUtil_RestorePic(BattleAnimBattlerPicParams *params, enum HeapID h
     CharTiles_LoadMonPicAsObjFromNarc((NarcId)picTemplate->narcID, picTemplate->charDataID, heapId, params->picData[params->battler]->charBuffer, personality, FALSE, facing, picTemplate->species);
     params->picData[params->battler]->narcId = picTemplate->narcID;
     params->picData[params->battler]->paletteId = picTemplate->palDataID;
-    params->picData[params->battler]->height = GetMonPicHeightBySpeciesGenderForm((u16)species, (u8)gender, (u8)facing, (u8)form, personality);
+    params->picData[params->battler]->height = GetMonPicHeightBySpeciesGenderForm(species, gender, facing, form, personality);
     int battler = params->battler;
     u32 slot = battler * sizeof(Pokepic *); // byte offset of the battler's pointers
     int offset = BattleAnimUtil_GetBattlerTypeCoord(params->battlerTypes[battler], 1);

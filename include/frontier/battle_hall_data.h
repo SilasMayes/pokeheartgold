@@ -1,13 +1,7 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_HALL_DATA_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_HALL_DATA_H
 
-#include "battle/battle_setup.h"
 #include "frontier/frontier_trainers.h"
-
-#include "party.h"
-#include "pokemon.h"
-#include "save.h"
-#include "scrcmd_9.h"
 
 #define HALL_TRAINER_COUNT         20 // 2 per battle of a round (the second for the partner), 10 battles
 #define HALL_CELL_COUNT            18 // type cells of the board with a rank (the others are the Hall Matron's)

@@ -3,10 +3,6 @@
 
 #include "battle/battle_setup.h"
 
-#include "heap.h"
-#include "party.h"
-#include "pm_string.h"
-
 // Screens shown around a link battle.
 enum LinkBattleScreenMode {
     LINK_BATTLE_SCREEN_MODE_PARTY,  // multi battle, before: party preview of the local player and the partner

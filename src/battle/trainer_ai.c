@@ -415,7 +415,7 @@ static u8 TrainerAI_MainDoubles(BattleSystem *battleSystem, BattleContext *ctx) 
         ctx->trainerAIData.selectedTarget[ctx->trainerAIData.battlerIdAttacker] = ctx->trainerAIData.battlerIdAttacker;
     }
 
-    if (move == MOVE_CURSE && CurseUserIsGhost(ctx, move, ctx->trainerAIData.battlerIdAttacker) == FALSE) {
+    if (move == MOVE_CURSE && !CurseUserIsGhost(ctx, move, ctx->trainerAIData.battlerIdAttacker)) {
         ctx->trainerAIData.selectedTarget[ctx->trainerAIData.battlerIdAttacker] = ctx->trainerAIData.battlerIdAttacker;
     }
 
@@ -3057,8 +3057,8 @@ static int TrainerAI_MoveType(BattleSystem *battleSystem, BattleContext *ctx, in
         break;
 
     case MOVE_WEATHER_BALL:
-        if (CheckAbilityActive(battleSystem, ctx, CHECK_ABILITY_ALL_HP, 0, ABILITY_CLOUD_NINE) == FALSE
-            && CheckAbilityActive(battleSystem, ctx, CHECK_ABILITY_ALL_HP, 0, ABILITY_AIR_LOCK) == FALSE
+        if (!CheckAbilityActive(battleSystem, ctx, CHECK_ABILITY_ALL_HP, 0, ABILITY_CLOUD_NINE)
+            && !CheckAbilityActive(battleSystem, ctx, CHECK_ABILITY_ALL_HP, 0, ABILITY_AIR_LOCK)
             && (ctx->fieldCondition & FIELD_CONDITION_WEATHER)) {
             if (ctx->fieldCondition & FIELD_CONDITION_RAIN_ALL) {
                 result = TYPE_WATER;

@@ -72,7 +72,7 @@ BOOL FrtCmd_CastleAlloc(FrontierScriptContext *ctx) {
     u16 slot2 = FrontierScript_ReadVar(ctx);
     u16 *resultVar = FrontierScript_ReadVarPtr(ctx);
     FrontierLaunchArgs *args = Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork);
-    BattleCastleData *data = BattleCastleData_Alloc(args->saveData, resume, (u8)type, slot0, slot1, slot2, resultVar);
+    BattleCastleData *data = BattleCastleData_Alloc(args->saveData, resume, type, slot0, slot1, slot2, resultVar);
     Frontier_SetData(ctx->frontierSystem->frontierWork, data);
     return FALSE;
 }
@@ -462,8 +462,8 @@ BOOL FrtCmd_CastleGetPoints(FrontierScriptContext *ctx) {
     u16 *result = FrontierScript_ReadVarPtr(ctx);
     FrontierLaunchArgs *args = Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork);
     FrontierSave *frontierSave = Save_Frontier_GetStatic(args->saveData);
-    u32 stat = BattleCastle_GetPointsStat((u8)type);
-    *result = FrontierSave_GetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleCastle_GetPointsStat((u8)type)));
+    u32 stat = BattleCastle_GetPointsStat(type);
+    *result = FrontierSave_GetStat(frontierSave, stat, FrontierStat_GetFriendIndex(BattleCastle_GetPointsStat(type)));
     return FALSE;
 }
 

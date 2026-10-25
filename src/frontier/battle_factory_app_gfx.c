@@ -333,7 +333,7 @@ void BattleFactoryBall_SetPosition(BattleFactoryBall *ball, int x, int y) {
 }
 
 VecFx32 *BattleFactoryBall_GetPosition(BattleFactoryBall *ball) {
-    return (VecFx32 *)Sprite_GetMatrixPtr(ball->sprite);
+    return Sprite_GetMatrixPtr(ball->sprite);
 }
 
 static void BattleFactoryBall_SetSelected(BattleFactoryBall *ball, u16 selected) {
@@ -406,7 +406,7 @@ void BattleFactoryApp_RemoveWindows(Window *windows) {
 }
 
 void BattleFactoryApp_DrawMessageFrame(Window *window, int frame) {
-    LoadUserFrameGfx2(window->bgConfig, (GFBgLayer)GetWindowBgId(window), 994, 11, (u8)frame, HEAP_ID_100);
+    LoadUserFrameGfx2(window->bgConfig, (GFBgLayer)GetWindowBgId(window), 994, 11, frame, HEAP_ID_100);
     FillWindowPixelBuffer(window, 15);
     DrawFrameAndWindow2(window, TRUE, 994, 11);
 }
@@ -473,6 +473,6 @@ void BattleFactoryApp_ClearButtons(BgConfig *bgConfig, int which) {
         top = 14;
         height = 4;
     }
-    FillBgTilemapRect(bgConfig, GF_BG_LYR_SUB_1, 0, 0, (u8)top, 32, (u8)height, 9);
+    FillBgTilemapRect(bgConfig, GF_BG_LYR_SUB_1, 0, 0, top, 32, height, 9);
     ScheduleBgTilemapBufferTransfer(bgConfig, GF_BG_LYR_SUB_1);
 }

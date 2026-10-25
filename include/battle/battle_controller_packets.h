@@ -1,9 +1,6 @@
 #ifndef POKEHEARTGOLD_BATTLE_BATTLE_CONTROLLER_PACKETS_H
 #define POKEHEARTGOLD_BATTLE_BATTLE_CONTROLLER_PACKETS_H
 
-#include "constants/battle.h"
-#include "constants/pokemon.h"
-
 #include "battle/battle.h"
 
 // Kinds of queued battle controller data (BattleController_EmitPacket / BattleController_ProcessQueue)

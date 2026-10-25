@@ -5,11 +5,7 @@
 
 #include "battle/battle_anim_battler_util.h"
 
-#include "palette.h"
-#include "pokepic.h"
 #include "scanline_effect.h"
-#include "sprite_system.h"
-#include "sys_task.h"
 
 // Effect function types and the motion structs shared by the effect modules
 typedef void (*BattleAnimFunc)(BattleAnimSystem *system);
@@ -23,6 +19,20 @@ enum BattleAnimBgFile {
     BATTLE_ANIM_BG_FILE_SCREEN_FLIPPED,
     BATTLE_ANIM_BG_FILE_SCREEN_CONTEST,
     BATTLE_ANIM_BG_FILE_COUNT,
+};
+
+// Main-screen backgrounds an animation uses: the battle message window (BG1), the effect background (BG2) and
+// the battle background (BG3)
+enum BattleAnimBg {
+    BATTLE_ANIM_BG_WINDOW,
+    BATTLE_ANIM_BG_EFFECT,
+    BATTLE_ANIM_BG_BATTLE,
+};
+
+// Coordinates of BattleAnimSystem_GetBattlerScreenCoord
+enum BattleAnimCoord {
+    BATTLE_ANIM_COORD_X,
+    BATTLE_ANIM_COORD_Y,
 };
 
 typedef struct BattleAnimLinearMotion {

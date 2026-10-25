@@ -4,7 +4,6 @@
 #include "global.h"
 
 #include "filesystem.h"
-#include "heap.h"
 
 // A facility trainer as FrontierTrainer_Load fills it in from the trainer data and its name.
 typedef struct FrontierTrainerRecord {

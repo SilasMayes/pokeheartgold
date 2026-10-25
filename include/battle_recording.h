@@ -3,13 +3,6 @@
 
 #include "battle/battle_setup.h"
 
-#include "heap.h"
-#include "options.h"
-#include "player_data.h"
-#include "pokemon_types_def.h"
-#include "save.h"
-#include "save_link_ruleset.h"
-
 #define BATTLE_RECORD_MAGIC 0xE281
 
 // What the battle video lists show.

@@ -3,26 +3,14 @@
 
 #include "global.h"
 
-#include "frontier/battle_factory_app.h"
-
-#include "battle_frontier_communication.h"
 #include "bg_cell_manager.h"
-#include "bg_window.h"
-#include "filesystem.h"
 #include "gf_3d_vramman.h"
 #include "grid_input_handler.h"
-#include "list_menu_2d.h"
-#include "message_format.h"
 #include "msgdata.h"
-#include "options.h"
 #include "overlay_manager.h"
-#include "palette.h"
-#include "pm_string.h"
 #include "pokemon_summary.h"
 #include "pokepic.h"
 #include "sprite.h"
-#include "sprite_resource.h"
-#include "sprite_resource_header.h"
 #include "yes_no_prompt.h"
 
 // A sprite placed by its top-left corner in pixels

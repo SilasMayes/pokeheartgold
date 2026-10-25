@@ -4,13 +4,10 @@
 // SPL emitter callbacks of the battle animations, the emitter configured from script arguments with its flag and camera
 // callbacks, battler screen positions and motion helpers.
 
-#include "battle/battle_anim_battler_util.h"
 #include "battle/battle_anim_util.h"
 
 #include "camera.h"
-#include "pokepic.h"
 #include "spl.h"
-#include "sprite_system.h"
 
 // Emitter configured from six script arguments (BattleAnimEmitterCb_ConfigureFromScript)
 typedef struct BattleAnimEmitterConfig {

@@ -227,7 +227,7 @@ void BattleCastle_InitSpriteGfx(BattleCastleSpriteGfx *gfx, Party *party, u8 isL
 
         if (i == 3) {
             // without the link partner, the fourth icon repeats the first mon
-            if (isLink == FALSE) {
+            if (!isLink) {
                 mon = Party_GetMonByIndex(party, 0);
             } else {
                 mon = Party_GetMonByIndex(party, i);
@@ -531,7 +531,7 @@ void BattleCastle_ApplyBgToggleRequests(u32 *requests) {
     for (i = 0; i <= 7; i++) {
         u16 request = (*requests >> (i * 4)) & 0xF;
         if (request) {
-            ToggleBgLayer((u8)i, (u8)(request - 1));
+            ToggleBgLayer(i, request - 1);
         }
     }
     BattleCastle_ClearBgToggleRequests(requests);
@@ -567,7 +567,7 @@ void BattleCastlePrompt_Show(BattleCastlePrompt *prompt, BgConfig *bgConfig) {
 }
 
 void BattleCastlePrompt_Hide(BattleCastlePrompt *prompt) {
-    if (prompt->active != FALSE) {
+    if (prompt->active) {
         YesNoPrompt_Reset(prompt->prompt);
         BgCommitTilemapBufferToVram(prompt->bgConfig, GF_BG_LYR_MAIN_0);
         prompt->active = FALSE;
@@ -597,7 +597,7 @@ void BattleCastle_RemoveWindows(Window *windows, u32 set) {
 }
 
 void BattleCastle_DrawWindowFrame(Window *window, int frame) {
-    LoadUserFrameGfx2(window->bgConfig, (GFBgLayer)GetWindowBgId(window), 0x3D9, 10, (u8)frame, HEAP_ID_107);
+    LoadUserFrameGfx2(window->bgConfig, (GFBgLayer)GetWindowBgId(window), 0x3D9, 10, frame, HEAP_ID_107);
     FillWindowPixelBuffer(window, 15);
     DrawFrameAndWindow2(window, TRUE, 0x3D9, 10);
     ScheduleWindowCopyToVram(window);

@@ -1,11 +1,7 @@
 #ifndef POKEHEARTGOLD_FRONTIER_BATTLE_TOWER_SETUP_H
 #define POKEHEARTGOLD_FRONTIER_BATTLE_TOWER_SETUP_H
 
-#include "battle/battle_setup.h"
 #include "frontier/frontier.h"
-
-#include "filesystem.h"
-#include "scrcmd_9.h"
 
 typedef struct BattleTowerTrainerSets BattleTowerTrainerSets;
 

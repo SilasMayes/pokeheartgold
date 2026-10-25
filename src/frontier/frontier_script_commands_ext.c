@@ -898,7 +898,7 @@ static BOOL FrtCmd_TakeBattlePoints(FrontierScriptContext *ctx) {
 static BOOL FrtCmd_LinkSync(FrontierScriptContext *ctx) {
     u16 syncId = FrontierScript_ReadVar(ctx);
     ctx->data[0] = syncId;
-    LinkSync_StartSync((u8)syncId);
+    LinkSync_StartSync(syncId);
     FrontierScriptContext_Pause(ctx, FrontierScriptNative_WaitLinkSync);
     return TRUE;
 }
@@ -907,7 +907,7 @@ static BOOL FrontierScriptNative_WaitLinkSync(FrontierScriptContext *ctx) {
     if (Comm_CountConnected() < 2) {
         return TRUE;
     }
-    return LinkSync_IsSynced((u8)ctx->data[0]);
+    return LinkSync_IsSynced(ctx->data[0]);
 }
 
 static BOOL FrtCmd_ClearLinkSyncPackets(FrontierScriptContext *ctx) {
@@ -1050,7 +1050,7 @@ static BOOL FrontierTransition_FlashWipeHorizontal(FrontierTransitionWork *work)
     case TRANSITION_WIPE_UPDATE:
         done = FrontierWipe_UpdateHorizontal(work->wipe);
         ScheduleWindowCopyToVram(work->window);
-        if (done != FALSE) {
+        if (done) {
             work->state++;
         }
         break;
@@ -1096,7 +1096,7 @@ static BOOL FrontierTransition_FlashWipeVertical(FrontierTransitionWork *work) {
     case TRANSITION_WIPE_UPDATE:
         done = FrontierWipe_UpdateVertical(work->wipe);
         ScheduleWindowCopyToVram(work->window);
-        if (done != FALSE) {
+        if (done) {
             work->state++;
         }
         break;
@@ -1402,13 +1402,13 @@ static BOOL FrontierScriptNative_WaitTransition(FrontierScriptContext *ctx) {
     BOOL running;
     work = Frontier_GetData(ctx->frontierSystem->frontierWork);
     running = sFrontierTransitionFuncs[work->transition](work);
-    if (running == FALSE) {
+    if (!running) {
         SetMasterBrightnessByColor(PM_LCD_TOP, RGB_BLACK);
         SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_BLACK);
         Frontier_SetData(ctx->frontierSystem->frontierWork, work->prevData);
         Heap_Free(work);
     }
-    return running == FALSE;
+    return !running;
 }
 
 static BOOL FrtCmd_GetPlayerSpriteId(FrontierScriptContext *ctx) {
@@ -1608,7 +1608,7 @@ static BOOL FrtCmd_SetWifiContinuousSend(FrontierScriptContext *ctx) {
 BOOL FrtCmd_LinkSyncOrAbort(FrontierScriptContext *ctx) {
     u16 syncId = FrontierScript_ReadVar(ctx);
     ctx->data[0] = syncId;
-    LinkSync_StartSync((u8)syncId);
+    LinkSync_StartSync(syncId);
     FrontierScriptContext_Pause(ctx, FrontierScriptNative_WaitLinkSyncOrAbort);
     return TRUE;
 }
@@ -1620,7 +1620,7 @@ static BOOL FrontierScriptNative_WaitLinkSyncOrAbort(FrontierScriptContext *ctx)
     if (Comm_CountConnected() < 2) {
         result = TRUE;
     } else {
-        result = LinkSync_IsSynced((u8)ctx->data[0]);
+        result = LinkSync_IsSynced(ctx->data[0]);
     }
     if (!result) {
         lobby = Frontier_GetData(ctx->frontierSystem->frontierWork);

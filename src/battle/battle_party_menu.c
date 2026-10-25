@@ -1544,7 +1544,7 @@ static void BattlePartyMenu_DrawExpBar(BattlePartyMenu *menu, int page) {
 }
 
 static void BattlePartyMenu_SetExpBarTile(BattlePartyMenu *menu, u16 tile, u16 x, int y) {
-    FillBgTilemapRect(menu->bgConfig, GF_BG_LYR_SUB_3, tile, (u8)x, (u8)y, 1, 1, TILEMAP_FILL_KEEP_PAL);
+    FillBgTilemapRect(menu->bgConfig, GF_BG_LYR_SUB_3, tile, x, y, 1, 1, TILEMAP_FILL_KEEP_PAL);
 }
 
 // writes the 2x2 tile block at row 14 of background 7 for one of six slots
@@ -1865,7 +1865,7 @@ static void BattlePartyMenu_PrintMonName(BattlePartyMenu *menu, int window, int 
     }
     String_Delete(template);
     String_Delete(name);
-    if (mon->hideGender == FALSE && mon->isEgg == FALSE) {
+    if (!mon->hideGender && !mon->isEgg) {
         if (mon->gender == MON_MALE) {
             String *symbol = NewString_ReadMsgData(menu->msgData, msg_0006_00016);
             u32 width = GetWindowWidth(win);
@@ -2338,7 +2338,7 @@ static void BattlePartyMenu_UpdateMoveListPP(BattlePartyMenu *menu, BattlePartyM
 
     String_Delete(string);
     width += 40;
-    FillWindowPixelRect(win, 0, (u16)width, 24, (u16)(80 - width), 16);
+    FillWindowPixelRect(win, 0, width, 24, 80 - width, 16);
     string = NewString_ReadMsgData(menu->msgData, msg_0006_00044);
     BufferIntegerAsString(menu->msgFormat, 0, move->pp, 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
     StringExpandPlaceholders(menu->msgFormat, expanded, string);
@@ -2358,7 +2358,7 @@ static void BattlePartyMenu_PrintPartyListPage(BattlePartyMenu *menu) {
         FillWindowPixelBuffer(&menu->pageWindows[i], 0);
         if (menu->mons[i].species != SPECIES_NONE) {
             ((PrintMonNameFunc)BattlePartyMenu_PrintMonName)(menu, i, 4, (u16)i, 32, 7);
-            if (menu->mons[i].isEgg == FALSE) {
+            if (!menu->mons[i].isEgg) {
                 BattlePartyMenu_PrintMonHPAndBar(menu, (u8)i);
             }
             if (Pokemon_GetStatusIconId(menu->mons[i].mon) == 7) {
@@ -2381,7 +2381,7 @@ static void BattlePartyMenu_PrintMonHPAndBar(BattlePartyMenu *menu, int slot) {
 }
 
 static void BattlePartyMenu_PrintPartyMonLevel(BattlePartyMenu *menu, int slot) {
-    if (menu->mons[slot].isEgg == FALSE) {
+    if (!menu->mons[slot].isEgg) {
         BattlePartyMenu_PrintMonLevel(menu, slot, slot, 0, 32);
     }
 }
@@ -2978,7 +2978,7 @@ static void BattlePartyMenu_ShowHeldItemIcon(u16 item, ManagedSprite *sprite, in
 }
 
 static void BattlePartyMenu_ShowCapsuleIcon(BOOL hasCapsule, ManagedSprite *sprite, int x, int y) {
-    if (hasCapsule != FALSE) {
+    if (hasCapsule) {
         ManagedSprite_SetAnim(sprite, 2);
         BattlePartyMenu_ShowSpriteAt(sprite, x, y);
     }
@@ -3632,11 +3632,11 @@ static void BattlePartyMenu_DrawPageButtons(BattlePartyMenu *menu, u32 page) {
         for (i = 0; i < PARTY_SIZE; i++) {
             int slotType = BattlePartyMenu_GetSlotType(menu, i);
             if (slotType == BATTLE_PARTY_SLOT_EMPTY) {
-                BattlePartyMenu_DrawButton(menu, (u8)i, 3, 1);
+                BattlePartyMenu_DrawButton(menu, i, 3, 1);
             } else if (slotType == BATTLE_PARTY_SLOT_ACTIVE) {
-                BattlePartyMenu_DrawButton(menu, (u8)i, 0, 0);
+                BattlePartyMenu_DrawButton(menu, i, 0, 0);
             } else if (slotType == BATTLE_PARTY_SLOT_OTHER) {
-                BattlePartyMenu_DrawButton(menu, (u8)i, 0, 1);
+                BattlePartyMenu_DrawButton(menu, i, 0, 1);
             }
         }
         if (menu->context->mode == BATTLE_PARTY_MODE_SWITCH_NO_CANCEL) {
@@ -3677,9 +3677,9 @@ static void BattlePartyMenu_DrawPageButtons(BattlePartyMenu *menu, u32 page) {
         }
         for (i = 0; i < MAX_MON_MOVES; i++) {
             if (menu->mons[menu->context->selectedMon].moves[i].move != MOVE_NONE) {
-                BattlePartyMenu_DrawButton(menu, (u8)(i + 14), 0, 0);
+                BattlePartyMenu_DrawButton(menu, i + 14, 0, 0);
             } else {
-                BattlePartyMenu_DrawButton(menu, (u8)(i + 14), 3, 0);
+                BattlePartyMenu_DrawButton(menu, i + 14, 3, 0);
             }
         }
         BattlePartyMenu_DrawButton(menu, 9, 0, 0);
@@ -3689,18 +3689,18 @@ static void BattlePartyMenu_DrawPageButtons(BattlePartyMenu *menu, u32 page) {
         BattlePartyMenu_DrawButton(menu, 6, 0, 0);
         for (i = 0; i < MAX_MON_MOVES; i++) {
             if (menu->context->selectedMove == i) {
-                BattlePartyMenu_DrawButton(menu, (u8)(i + 30), 2, 0);
+                BattlePartyMenu_DrawButton(menu, i + 30, 2, 0);
             } else {
-                BattlePartyMenu_DrawButton(menu, (u8)(i + 30), 0, 0);
+                BattlePartyMenu_DrawButton(menu, i + 30, 0, 0);
             }
         }
         break;
     case BATTLE_PARTY_PAGE_RESTORE_PP:
         for (i = 0; i < MAX_MON_MOVES; i++) {
             if (menu->mons[menu->context->selectedMon].moves[i].move != MOVE_NONE) {
-                BattlePartyMenu_DrawButton(menu, (u8)(i + 19), 0, 0);
+                BattlePartyMenu_DrawButton(menu, i + 19, 0, 0);
             } else {
-                BattlePartyMenu_DrawButton(menu, (u8)(i + 19), 3, 0);
+                BattlePartyMenu_DrawButton(menu, i + 19, 3, 0);
             }
         }
         BattlePartyMenu_DrawButton(menu, 6, 0, 0);
