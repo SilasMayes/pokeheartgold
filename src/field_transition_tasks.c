@@ -124,7 +124,7 @@ BOOL FieldTransition_EnterFromWarpStairs(TaskManager *taskMan) {
         if (MapObject_IsMovementPaused(object) == TRUE) {
             MapObject_ClearHeldMovementIfActive(object);
             if (FollowMon_IsActive(fieldSystem)) {
-                FollowMon_MoveToPlayer(fieldSystem, (u8)PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar));
+                FollowMon_MoveToPlayer(fieldSystem, PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar));
             }
             env->transitionState++;
         }

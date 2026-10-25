@@ -75,7 +75,7 @@ void FollowMonBillboard_Update(LocalMapObject *object, BillboardObject *billboar
     }
     if (!paused && !flag4) {
         BillboardObject_AdvanceFrame(billboard, FX32_ONE);
-        if (FollowMonBillboard_IsBobFrame((u8)direction, object, billboard)) {
+        if (FollowMonBillboard_IsBobFrame(direction, object, billboard)) {
             offset.y -= 2 * FX32_ONE;
             billboardWork->bobbing = 1;
         } else {

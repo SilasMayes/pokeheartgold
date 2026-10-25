@@ -326,7 +326,7 @@ BOOL Task_FieldDig(TaskManager *taskManager) {
         if (env->withFollowMon) {
             u32 species = GetMonData(env->mon, MON_DATA_SPECIES, NULL);
             u32 form = GetMonData(env->mon, MON_DATA_FORM, NULL);
-            PlayCry((u16)species, (u8)form);
+            PlayCry(species, form);
         }
         (*state)++;
         // fallthrough
@@ -414,7 +414,7 @@ BOOL Task_FieldTeleport(TaskManager *taskManager) {
         if (env->withFollowMon) {
             u32 species = GetMonData(env->mon, MON_DATA_SPECIES, NULL);
             u32 form = GetMonData(env->mon, MON_DATA_FORM, NULL);
-            PlayCry((u16)species, (u8)form);
+            PlayCry(species, form);
         }
         ++*state;
         // fallthrough

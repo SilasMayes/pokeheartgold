@@ -529,7 +529,7 @@ static void GetEngagingTrainerParams(EngageParams *out, LocalMapObject *object, 
     out->x = x;
     out->z = z;
     out->scriptId = MapObject_GetScriptID(object);
-    out->trainerNum = ScriptNumToTrainerNum((u16)out->scriptId);
+    out->trainerNum = ScriptNumToTrainerNum(out->scriptId);
     out->isDouble = TrainerNumIsDouble((u16)out->trainerNum);
     out->object = object;
 }
@@ -661,7 +661,7 @@ static BOOL TrainerSight_IsPathBlocked(LocalMapObject *object, int direction, in
 }
 
 static u32 MapObject_GetTrainerNum(LocalMapObject *object) {
-    return ScriptNumToTrainerNum((u16)MapObject_GetScriptID(object));
+    return ScriptNumToTrainerNum(MapObject_GetScriptID(object));
 }
 
 u32 MapObjectBehavior_GetTrainerNum(LocalMapObject *object) {

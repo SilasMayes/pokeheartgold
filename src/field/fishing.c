@@ -530,7 +530,7 @@ static BOOL FishingRod_FollowMonNoticesBite(FishingRod *rod) {
     }
     if (FollowMon_IsActive(rod->fieldSystem)) {
         u32 friendship = GetMonData(GetFirstAliveMonInParty_CrashIfNone(SaveArray_Party_Get(rod->fieldSystem->saveData)), MON_DATA_FRIENDSHIP, NULL);
-        if (FishingRod_RollFriendshipNotice((u8)friendship)) {
+        if (FishingRod_RollFriendshipNotice(friendship)) {
             return TRUE;
         }
     }
