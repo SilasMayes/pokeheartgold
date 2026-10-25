@@ -26,8 +26,10 @@ int LobbyChat_FindUserIdByNick(LobbyChatManager *manager, const Str *nick) {
 }
 
 void LobbyChat_GetUserNick(Str *out, LobbyChatManager *manager, int userId) {
+    Iter it;
     LobbyUserMapNode *node;
-    LobbyUserMap_Find((Iter *)&node, &manager->userMap, &userId);
+    LobbyUserMap_Find(&it, &manager->userMap, &userId);
+    node = it.current;
     if (node == (LobbyUserMapNode *)&manager->userMap.root) {
         LobbyString_InitFromCStr(out, gLobbyStr_Empty_18);
     } else {

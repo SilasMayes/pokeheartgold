@@ -65,11 +65,13 @@ void *LobbyUserIdSet_Destroy2(LobbyUserIdSet *set);
 void LobbyUserIdSet_DestroyNodes(LobbyUserIdSet *set, LobbyUserIdSetNode *node);
 void LobbyUserIdSet_Erase(Iterator *out, LobbyUserIdSet *set, Iterator node);
 int LobbyUserIdSet_EraseKey(LobbyUserIdSet *set, void *key);
+void LobbyUserIdSet_Find(Iterator *out, LobbyUserIdSet *set, const int *key);
 LobbyUserIdSetNode *LobbyUserIdSet_FindInsertPos(LobbyUserIdSet *set, int *key, LobbyUserIdSetNode **prev, u8 *left, u8 *first);
 void LobbyUserIdSet_Insert(LobbyUserIdSetInsertResult *out, LobbyUserIdSet *set, int *key);
 LobbyUserIdSetNode *LobbyUserIdSet_InsertNode(LobbyUserIdSet *set, LobbyUserIdSetNode *parent, int left, int last, const int *key);
 void LobbyUserIdSet_Swap(LobbyUserIdSet *, LobbyUserIdSet *);
 void *LobbyUserMap_Destroy(LobbyUserMap *map);
+BOOL LobbyUserMap_EraseKey(LobbyUserMap *map, int *key);
 void LobbyUserMap_DestroyNodes(LobbyUserMap *map, LobbyUserMapNode *node);
 void LobbyUserMap_Erase(Iterator *out, LobbyUserMap *map, Iterator node);
 LobbyUserMapNode *LobbyUserMap_FindInsertPos(LobbyUserMap *map, int *key, LobbyUserMapNode **prev, u8 *left, u8 *first);
@@ -78,6 +80,13 @@ LobbyUserMapNode *LobbyUserMap_InsertNode(LobbyUserMap *map, LobbyUserMapNode *p
 
 #ifdef __cplusplus
 }
+#endif
+
+// The rebalancing shared by every lobby tree, after a node is linked in or before one is unlinked; root is the
+// tree's root field.
+#ifndef __cplusplus
+void LobbyTree_InsertRebalance(void *node, void *root);
+void *LobbyTree_EraseRebalance(void *node, void *root);
 #endif
 
 #endif // POKEHEARTGOLD_LOBBY_TREE_H

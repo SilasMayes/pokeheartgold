@@ -119,6 +119,7 @@ LobbyChannelCallbacks *LobbyChat_GetChannelCallbacks(LobbyChatManager *manager, 
 int LobbyChat_SetChannelUsersEnumerated(LobbyChatManager *manager, Str *channel);
 int LobbyChat_GetChannelUserLimit(LobbyChatManager *manager, Str *channel);
 int LobbyChat_AddChannelUser(LobbyChatManager *manager, Str *nick, Str *channel);
+BOOL LobbyChat_RemoveUserIfUnused(LobbyChatManager *manager, int userId);
 int LobbyChat_LeaveChannel(const char *channel);
 int LobbyChat_Process(void);
 int LobbyChat_Shutdown(void);

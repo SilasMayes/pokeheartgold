@@ -15,83 +15,27 @@
 
 #include "ppw_lobby_work.h"
 
-typedef struct VObj VObj;
-
-typedef struct VTable {
-    void (*f0)(VObj *);
-    void (*dtor)(VObj *);
-} VTable;
-
-struct VObj {
-    VTable *vt;
-};
-
 extern unsigned char __lower_mapC[];
 void _ZNSt15__vector_commonILb1EE18throw_length_errorEv(void);
 
 void LobbyString_ReplaceRange(Str *, u32, u32, const char *, const char *, LobbyTag);
 
-typedef struct Session {
-    VTable *vt;
-    u32 channel;
-    s64 time;
-    u32 unk10;
-    BOOL systemProfileChanged;
-    u32 userProfileData;
-    u32 userProfileSize;
-    u32 userProfileCapacity;
-    BOOL userProfileChanged;
-    int state;
-    int id;
-    BOOL systemProfileReceived;
-    BOOL userProfileReceived;
-    BOOL entered;
-} Session;
-
-typedef struct Node {
-    void *left;
-    void *right;
-    u32 parent;
-    Session *val;
-} Node;
-
-typedef struct List {
-    u32 count;
-    void *root;
-    void *leftmost;
-} List;
-
-typedef Iterator NodeIter;
-
 void LobbyCharVector_AppendFillSlow(LobbyCharVector *, u32, const char *);
-void LobbyTreeIterator_Advance(NodeIter *);
-Node *LobbyTree_EraseRebalance(Node *, void *);
+void LobbyTreeIterator_Advance(Iterator *);
+void *LobbyTree_EraseRebalance(void *node, void *root);
 extern char gLobbyStr_TreeInsertLengthError_2[];
 int printf(const char *, ...);
 void abort(void);
-void LobbyTree_InsertRebalance(Node *, void *);
-
-typedef struct InsertResult {
-    Node *current;
-    u8 inserted;
-} InsertResult;
+void LobbyTree_InsertRebalance(void *node, void *root);
 
 extern u8 ov45_02255200[];
-Node *PPWLobbyPlayerSet_FindInsertPos(List *l, Session **key, Node **parent, u8 *left, u8 *flag);
-Node *PPWLobbyPlayerSet_InsertNode(List *l, Node *parent, u8 left, u8 flag, Session **key);
-
-typedef struct SessionMgr {
-    u32 unk0;
-    List list;
-    Session self;
-} SessionMgr;
-
-void PPWLobbyPlayerSet_Erase(NodeIter *out, List *l, NodeIter it);
+PPWLobbyPlayerSetNode *PPWLobbyPlayerSet_FindInsertPos(PPWLobbyPlayerSet *set, PPWLobbyPlayer **key, PPWLobbyPlayerSetNode **parent, u8 *left, u8 *leftmost);
+PPWLobbyPlayerSetNode *PPWLobbyPlayerSet_InsertNode(PPWLobbyPlayerSet *set, PPWLobbyPlayerSetNode *parent, u8 left, u8 leftmost, PPWLobbyPlayer **key);
 
 typedef struct FindState {
     int id;
-    Node *end;
-    NodeIter it;
+    PPWLobbyPlayerSetNode *end;
+    Iterator it;
 } FindState;
 
 static inline void VecReserve(LobbyU32Vector *v, u32 n) {
@@ -100,7 +44,7 @@ static inline void VecReserve(LobbyU32Vector *v, u32 n) {
     }
 }
 
-void PPWLobbyPlayers_GetEnteredIds(LobbyU32Vector *out, SessionMgr *m);
+void PPWLobbyPlayers_GetEnteredIds(LobbyU32Vector *out, PPWLobbyPlayers *players);
 
 static inline void SwapU32(u32 *a, u32 *b) {
     u32 t = *a;
@@ -114,9 +58,8 @@ static inline void SwapPtr(void **a, void **b) {
     *b = t;
 }
 
-void PPWLobbyPlayer_UpdateState(Session *s);
-extern VTable gPPWLobbyPlayerVtable;
-void PPWLobbyPlayerSet_Insert(InsertResult *out, List *l, Session **key);
+extern PPWLobbyPlayerVtable gPPWLobbyPlayerVtable;
+void PPWLobbyPlayerSet_Insert(PPWLobbyPlayerSetInsertResult *out, PPWLobbyPlayerSet *set, PPWLobbyPlayer **key);
 extern char gLobbyStr_SpaceSpace[];
 extern char gLobbyStr_Space_2[];
 extern char gLobbyStr_B[];
@@ -133,14 +76,13 @@ static inline void TouchTag(void) {
     volatile LobbyTag t = { 0 };
 }
 
-BOOL PPWLobbyPlayers_Add(SessionMgr *m, int id);
-BOOL PPWLobbyPlayers_Remove(SessionMgr *m, int id);
-Session *PPWLobbyPlayers_Find(SessionMgr *m, int id);
+BOOL PPWLobbyPlayers_Add(PPWLobbyPlayers *players, int id);
+BOOL PPWLobbyPlayers_Remove(PPWLobbyPlayers *players, int id);
+PPWLobbyPlayer *PPWLobbyPlayers_Find(PPWLobbyPlayers *players, int id);
 
 void LobbyCharVector_PushBackSlow(LobbyCharVector *s, const char *c);
 int LobbyString_ToLowerChar(int c);
-BOOL PPWLobbyPlayer_HasProfiles(Session *s);
-BOOL PPWLobbyPlayers_IsFull(SessionMgr *m);
+BOOL PPWLobbyPlayer_HasProfiles(PPWLobbyPlayer *player);
 BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32 len, Str *out);
 
 // The state of the lobby library (PPWLobbyState), read from the current work.

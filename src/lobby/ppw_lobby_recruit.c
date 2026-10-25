@@ -4,49 +4,24 @@
 
 #include <nitro/code32.h>
 
-#include "lobby_timer.h"
-#include "overlay45_format_buffer_private.h"
+#include "ppw_lobby_work.h"
 
-#include "../../lib/NitroDWC/src/tree-iterator4.h"
+// The work pointer, read from memory again at every use.
+static inline PPWLobbyWork *CurrentWork(void) {
+    PPWLobbyWork *volatile *work = &gPPWLobbyWork;
+    return *work;
+}
 
-typedef struct {
-    u32 words[4];
-
-    struct {
-        u8 bytes[32];
-    } a;
-
-    struct {
-        u8 bytes[20];
-    } b;
-} Packet;
-
-// The PPWLobbyWork fields the recruiting functions use, through a volatile pointer: every step reloads it.
-typedef struct {
-    int state;
-    u8 padding_04[0x4C - 0x04];
-    u32 userId;
-    u8 padding_50[0x68 - 0x50];
-    BOOL recruiting;
-    u8 padding_6C[0x74 - 0x6C];
-    Packet recruitInfo;
-    u8 padding_B8[0x134 - 0xB8];
-    LobbyTimerMap timers;
-} Work;
-
-extern Work *volatile gPPWLobbyWork;
-
-static inline BOOL release(Work *w) {
-    if (w->recruiting) {
-        w->recruiting = FALSE;
+static inline BOOL release(PPWLobbyWork *work) {
+    if (work->recruiting) {
+        work->recruiting = FALSE;
         return TRUE;
     }
     return FALSE;
 }
 
-extern void PPWLobby_SendMessage(int, int, int, int, int, void *, int);
 void LobbyTimerMap_Erase(Iterator *, LobbyTimerMap *, Iterator);
-int PPW_LobbyUpdateRecruitInfo(Packet *);
+int PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info);
 int PPW_LobbyStopRecruit(void);
 
 char *LobbyCharVector_Data(LobbyCharVector *p) {
@@ -56,8 +31,8 @@ char *LobbyCharVector_Data(LobbyCharVector *p) {
     return p->data;
 }
 
-int PPW_LobbyUpdateRecruitInfo(Packet *p) {
-    Work *w = gPPWLobbyWork;
+int PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info) {
+    PPWLobbyWork *w = CurrentWork();
     int result;
     if (!w) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
@@ -65,19 +40,19 @@ int PPW_LobbyUpdateRecruitInfo(Packet *p) {
     if (w && w->state == PPW_LOBBY_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (w && gPPWLobbyWork->state != PPW_LOBBY_STATE_READY) {
+    if (w && CurrentWork()->state != PPW_LOBBY_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    w = gPPWLobbyWork;
+    w = CurrentWork();
     if (!w->recruiting) {
         result = 0;
     } else {
-        w->recruitInfo.words[0] = p->words[0];
-        w->recruitInfo.words[1] = p->words[1];
-        w->recruitInfo.words[2] = p->words[2];
-        w->recruitInfo.words[3] = p->words[3];
-        w->recruitInfo.a = p->a;
-        w->recruitInfo.b = p->b;
+        w->recruitInfo.index = info->index;
+        w->recruitInfo.maxPlayers = info->maxPlayers;
+        w->recruitInfo.playerCount = info->playerCount;
+        w->recruitInfo.state = info->state;
+        w->recruitInfo.params = info->params;
+        w->recruitInfo.name = info->name;
         result = 1;
     }
     if (!result) {
@@ -88,7 +63,7 @@ int PPW_LobbyUpdateRecruitInfo(Packet *p) {
 
 int PPW_LobbyStopRecruit(void) {
     u32 timerId;
-    Work *w = gPPWLobbyWork;
+    PPWLobbyWork *w = CurrentWork();
     int result;
     if (!w) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
@@ -96,18 +71,18 @@ int PPW_LobbyStopRecruit(void) {
     if (w && w->state == PPW_LOBBY_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (w && gPPWLobbyWork->state != PPW_LOBBY_STATE_READY) {
+    if (w && CurrentWork()->state != PPW_LOBBY_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    w = gPPWLobbyWork;
+    w = CurrentWork();
     result = release(w);
     if (!result) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    w = gPPWLobbyWork;
-    PPWLobby_SendMessage(w->userId, 0, 1, 0, 2, &w->recruitInfo, sizeof(Packet));
+    w = CurrentWork();
+    PPWLobby_SendMessage(w->userId, PPW_LOBBY_CHANNEL_KIND_MAIN, PPW_LOBBY_MESSAGE_FORMAT_BINARY, PPW_LOBBY_MESSAGE_KIND_SYSTEM, PPW_LOBBY_SYSTEM_MESSAGE_STOP_RECRUIT, &w->recruitInfo, sizeof(PPWLobbyRecruitInfo));
     timerId = PPW_LOBBY_TIMER_SEND_RECRUIT_INFO;
-    LobbyTimerMap_EraseKey(&gPPWLobbyWork->timers, &timerId);
+    LobbyTimerMap_EraseKey(&CurrentWork()->timers, &timerId);
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 

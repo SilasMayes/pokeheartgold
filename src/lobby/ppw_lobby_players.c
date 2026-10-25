@@ -5,21 +5,21 @@
 #include "ppw_lobby_internal.h"
 #include "ppw_lobby_state.h"
 
-void PPWLobbyPlayer_UpdateState(Session *s) {
-    switch (s->state) {
+void PPWLobbyPlayer_UpdateState(PPWLobbyPlayer *player) {
+    switch (player->state) {
     case PPW_LOBBY_PLAYER_STATE_NEW:
-        s->state = (s->systemProfileReceived && s->userProfileReceived) ? PPW_LOBBY_PLAYER_STATE_HAS_PROFILES : PPW_LOBBY_PLAYER_STATE_NEW;
-        if (s->state == PPW_LOBBY_PLAYER_STATE_NEW) {
+        player->state = (player->systemProfileReceived && player->userProfileReceived) ? PPW_LOBBY_PLAYER_STATE_HAS_PROFILES : PPW_LOBBY_PLAYER_STATE_NEW;
+        if (player->state == PPW_LOBBY_PLAYER_STATE_NEW) {
             return;
         }
     case PPW_LOBBY_PLAYER_STATE_HAS_PROFILES:
-        if (s->unk10 != 0) {
-            s->state = PPW_LOBBY_PLAYER_STATE_READY;
+        if (player->systemProfile.unk_0C != 0) {
+            player->state = PPW_LOBBY_PLAYER_STATE_READY;
         }
         return;
     case PPW_LOBBY_PLAYER_STATE_READY:
-        if (s->entered) {
-            s->state = PPW_LOBBY_PLAYER_STATE_ENTERED;
+        if (player->entered) {
+            player->state = PPW_LOBBY_PLAYER_STATE_ENTERED;
         }
         return;
     case PPW_LOBBY_PLAYER_STATE_ENTERED:
@@ -27,60 +27,60 @@ void PPWLobbyPlayer_UpdateState(Session *s) {
     }
 }
 
-BOOL PPWLobbyPlayers_Add(SessionMgr *m, int id) {
+BOOL PPWLobbyPlayers_Add(PPWLobbyPlayers *players, int id) {
     RTCDate date;
     RTCTime time;
-    Session *s;
-    volatile InsertResult res2;
-    InsertResult res;
-    volatile LobbyTag t1;
-    volatile LobbyTag t0;
-    Session *n = LobbyMem_Alloc(sizeof(Session));
-    if (n != NULL) {
-        n->vt = &gPPWLobbyPlayerVtable;
-        n->channel = PPW_LOBBY_CHANNEL_KIND_INVALID;
-        n->time = 0;
-        n->unk10 = 0;
+    PPWLobbyPlayer *player;
+    volatile PPWLobbyPlayerSetInsertResult resultCopy;
+    PPWLobbyPlayerSetInsertResult result;
+    volatile LobbyTag tag1;
+    volatile LobbyTag tag0;
+    PPWLobbyPlayer *newPlayer = LobbyMem_Alloc(sizeof(PPWLobbyPlayer));
+    if (newPlayer != NULL) {
+        newPlayer->vtable = &gPPWLobbyPlayerVtable;
+        newPlayer->systemProfile.channel = PPW_LOBBY_CHANNEL_KIND_INVALID;
+        newPlayer->systemProfile.time.seconds = 0;
+        newPlayer->systemProfile.unk_0C = 0;
         DWC_GetDateTime(&date, &time);
-        n->time = RTC_ConvertDateTimeToSecond(&date, &time);
-        n->systemProfileChanged = TRUE;
-        n->userProfileData = 0;
-        n->userProfileSize = 0;
-        n->userProfileCapacity = 0;
-        n->userProfileChanged = TRUE;
-        n->state = PPW_LOBBY_PLAYER_STATE_NEW;
-        n->id = id;
-        n->systemProfileReceived = FALSE;
-        n->userProfileReceived = FALSE;
-        n->entered = FALSE;
+        newPlayer->systemProfile.time.seconds = RTC_ConvertDateTimeToSecond(&date, &time);
+        newPlayer->systemProfileChanged = TRUE;
+        newPlayer->userProfile.data = NULL;
+        newPlayer->userProfile.size = 0;
+        newPlayer->userProfile.capacity = 0;
+        newPlayer->userProfileChanged = TRUE;
+        newPlayer->state = PPW_LOBBY_PLAYER_STATE_NEW;
+        newPlayer->id = id;
+        newPlayer->systemProfileReceived = FALSE;
+        newPlayer->userProfileReceived = FALSE;
+        newPlayer->entered = FALSE;
     }
-    s = n;
-    PPWLobbyPlayerSet_Insert(&res, &m->list, &s);
-    t1.unused = 0;
-    res2.current = res.current;
-    t0.unused = 0;
-    res2.inserted = res.inserted;
-    if ((res.inserted & 0xFF) == 0) {
-        if (s != NULL) {
-            s->vt->dtor((VObj *)s);
+    player = newPlayer;
+    PPWLobbyPlayerSet_Insert(&result, &players->playerSet, &player);
+    tag1.unused = 0;
+    resultCopy.node = result.node;
+    tag0.unused = 0;
+    resultCopy.inserted = result.inserted;
+    if ((result.inserted & 0xFF) == 0) {
+        if (player != NULL) {
+            player->vtable->destroyAndFree(player);
         }
         return TRUE;
     }
     return TRUE;
 }
 
-BOOL PPWLobbyPlayers_Remove(SessionMgr *m, int id) {
-    NodeIter it;
-    Node *hdr = (Node *)&m->list.root;
-    it.current = m->list.leftmost;
-    while (it.current != hdr) {
-        Session *s = ((Node *)it.current)->val;
-        if (id == s->id) {
-            NodeIter tmp;
-            if (s != NULL) {
-                s->vt->dtor((VObj *)s);
+BOOL PPWLobbyPlayers_Remove(PPWLobbyPlayers *players, int id) {
+    Iterator it;
+    PPWLobbyPlayerSetNode *end = (PPWLobbyPlayerSetNode *)&players->playerSet.root;
+    it.current = players->playerSet.leftmost;
+    while (it.current != end) {
+        PPWLobbyPlayer *player = ((PPWLobbyPlayerSetNode *)it.current)->player;
+        if (id == player->id) {
+            Iterator next;
+            if (player != NULL) {
+                player->vtable->destroyAndFree(player);
             }
-            PPWLobbyPlayerSet_Erase(&tmp, &m->list, it);
+            PPWLobbyPlayerSet_Erase(&next, &players->playerSet, it);
             return TRUE;
         }
         LobbyTreeIterator_Advance(&it);
@@ -88,31 +88,31 @@ BOOL PPWLobbyPlayers_Remove(SessionMgr *m, int id) {
     return FALSE;
 }
 
-Session *PPWLobbyPlayers_Find(SessionMgr *m, int id) {
-    volatile FindState a;
-    volatile FindState b;
-    Node *r;
-    BOOL e;
-    Node *hdr;
-    Node *first;
-    if (id == m->self.id) {
-        return &m->self;
+PPWLobbyPlayer *PPWLobbyPlayers_Find(PPWLobbyPlayers *players, int id) {
+    volatile FindState first;
+    volatile FindState search;
+    PPWLobbyPlayerSetNode *found;
+    BOOL atEnd;
+    PPWLobbyPlayerSetNode *end;
+    PPWLobbyPlayerSetNode *leftmost;
+    if (id == players->self.id) {
+        return &players->self;
     }
-    first = m->list.leftmost;
-    hdr = (Node *)&m->list.root;
-    a.id = id;
-    b.id = id;
-    a.end = hdr;
-    b.end = hdr;
-    a.it.current = first;
-    b.it.current = first;
-    while (((NodeIter *)&b.it)->current != hdr && id != ((Node *)((NodeIter *)&b.it)->current)->val->id) {
-        LobbyTreeIterator_Advance((NodeIter *)&b.it);
+    leftmost = players->playerSet.leftmost;
+    end = (PPWLobbyPlayerSetNode *)&players->playerSet.root;
+    first.id = id;
+    search.id = id;
+    first.end = end;
+    search.end = end;
+    first.it.current = leftmost;
+    search.it.current = leftmost;
+    while (((Iterator *)&search.it)->current != end && id != ((PPWLobbyPlayerSetNode *)((Iterator *)&search.it)->current)->player->id) {
+        LobbyTreeIterator_Advance((Iterator *)&search.it);
     }
-    e = ((NodeIter *)&b.it)->current == (Node *)&m->list.root;
-    r = b.it.current;
-    if (e) {
+    atEnd = ((Iterator *)&search.it)->current == (PPWLobbyPlayerSetNode *)&players->playerSet.root;
+    found = search.it.current;
+    if (atEnd) {
         return NULL;
     }
-    return r->val;
+    return found->player;
 }

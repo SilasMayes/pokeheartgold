@@ -5,12 +5,14 @@
 #include "lobby_timer.h"
 #include "overlay45_format_buffer_private.h"
 
+#include "../lib/NitroDWC/src/tree-iterator4.h"
+
 // The callbacks the game passes to PPW_LobbyInitializeAsync, in table order.
 typedef struct PPWLobbyCallbacks {
     void (*onEnterChannel)(int result, u32 channel);
     void (*onPlayerEnter)(int userId, const void *systemProfile, const void *userProfile, u32 userProfileSize);
     void (*onPlayerLeave)(int userId);
-    void (*onEvent3)(int userId, int channel, int type, const void *data);
+    void (*onStringMessage)(int userId, int channel, int type, const void *text);
     void (*onMessage)(int userId, u32 channel, u32 type, const void *data, u32 size);
     void (*onLocationsChanged)(BOOL success, BOOL broadcast, int channel, int userId, const char *key, const void *data, u32 size, u32 param);
     void (*onPlayerRecordChanged)(int userId, const void *systemProfile);
@@ -48,8 +50,15 @@ typedef struct PPWLobbySystemProfile {
 // The players a lobby channel holds, the own player included.
 #define PPW_LOBBY_MAX_PLAYERS 20
 
-typedef struct PPWLobbyPlayer {
-    const void *vtable;
+typedef struct PPWLobbyPlayer PPWLobbyPlayer;
+
+typedef struct PPWLobbyPlayerVtable {
+    PPWLobbyPlayer *(*destroy)(PPWLobbyPlayer *player);
+    void *(*destroyAndFree)(PPWLobbyPlayer *player);
+} PPWLobbyPlayerVtable;
+
+struct PPWLobbyPlayer {
+    const PPWLobbyPlayerVtable *vtable;
     PPWLobbySystemProfile systemProfile;
     BOOL systemProfileChanged;
     LobbyCharVector userProfile;
@@ -59,14 +68,26 @@ typedef struct PPWLobbyPlayer {
     BOOL systemProfileReceived;
     BOOL userProfileReceived;
     BOOL entered;
-} PPWLobbyPlayer;
+};
 
-// The other players, a tree of PPWLobbyPlayer keyed by user id.
+typedef struct PPWLobbyPlayerSetNode {
+    struct PPWLobbyPlayerSetNode *left;
+    struct PPWLobbyPlayerSetNode *right;
+    u32 parent;
+    PPWLobbyPlayer *player;
+} PPWLobbyPlayerSetNode;
+
+// The other players, a tree of PPWLobbyPlayer keyed by user id. The root field is also the tree's end node.
 typedef struct PPWLobbyPlayerSet {
     u32 count;
-    void *root;
-    void *leftmost;
+    PPWLobbyPlayerSetNode *root;
+    PPWLobbyPlayerSetNode *leftmost;
 } PPWLobbyPlayerSet;
+
+typedef struct PPWLobbyPlayerSetInsertResult {
+    PPWLobbyPlayerSetNode *node;
+    u8 inserted;
+} PPWLobbyPlayerSetInsertResult;
 
 typedef struct PPWLobbyPlayers {
     const void *vtable;
@@ -116,6 +137,21 @@ typedef struct PPWLobbySchedule {
     BOOL hasQuestionnaire;
 } PPWLobbySchedule;
 
+// What the own player shows the other players while recruiting for a match (the game's match info): the match
+// numbers, the match parameters and the match name.
+typedef struct PPWLobbyRecruitInfo {
+    int index;
+    int maxPlayers;
+    int playerCount;
+    int state;
+    struct {
+        u8 bytes[32];
+    } params;
+    struct {
+        char text[20];
+    } name;
+} PPWLobbyRecruitInfo;
+
 typedef struct PPWLobbyWork {
     int state;
     int error;
@@ -128,7 +164,7 @@ typedef struct PPWLobbyWork {
     BOOL recruiting;
     BOOL submittingQuestionnaire;
     u32 unk_70;
-    u8 recruitInfo[0x44];
+    PPWLobbyRecruitInfo recruitInfo;
     PPWLobbyChannel mainChannel;
     PPWLobbyChannel subChannel;
     PPWLobbyPlayers players;
@@ -197,7 +233,8 @@ void *PPWLobbyWebRequest_Destroy(PPWLobbyWebRequest *request);
 void *PPWLobbyPlayers_Delete(PPWLobbyPlayers *players);
 void *PPWLobbyPlayer_Delete(PPWLobbyPlayer *player);
 void *PPWLobbyPlayerSet_Destroy(PPWLobbyPlayerSet *set);
-void PPWLobbyPlayerSet_DestroyNodes(PPWLobbyPlayerSet *, void *);
+void PPWLobbyPlayerSet_DestroyNodes(PPWLobbyPlayerSet *set, PPWLobbyPlayerSetNode *node);
+void PPWLobbyPlayerSet_Erase(Iterator *out, PPWLobbyPlayerSet *set, Iterator position);
 void PPWLobby_GenerateChannelBaseName(Str *out);
 int PPWLobby_GetWebResultError(u32 type);
 int PPWLobby_HandleLibraryData(BOOL success, BOOL broadcast, int kind, int userId, const char *key, const u8 *data, u32 len, u32 param);
@@ -264,7 +301,9 @@ BOOL PPWLobbySchedule_ValidateVipRecords(PPWLobbySchedule *schedule, const void 
 BOOL PPWLobbySchedule_SetVipRecords(PPWLobbySchedule *schedule, const void *data, u32 size);
 void PPWLobbyPlayers_Clear(PPWLobbyPlayers *);
 void PPWLobbyPlayers_UpdateStates(PPWLobbyPlayers *);
+void PPWLobbyPlayer_UpdateState(PPWLobbyPlayer *player);
 BOOL PPWLobbyPlayers_AllHaveProfiles(PPWLobbyPlayers *players);
+BOOL PPWLobbyPlayers_IsFull(PPWLobbyPlayers *players);
 void PPWLobby_MakeChannelName(Str *out, u32 kind, Str *baseName);
 int PPWLobby_EnterMainChannel(void);
 BOOL PPWLobby_IsMainChannelReady(void);

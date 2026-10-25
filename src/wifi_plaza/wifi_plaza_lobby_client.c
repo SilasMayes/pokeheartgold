@@ -151,7 +151,7 @@ static void WiFiPlazaLobbyClient_InitializeEx(int value, int mode) {
     callbacks.onEnterChannel = WiFiPlazaLobbyClient_OnEnterChannel;
     callbacks.onPlayerEnter = WiFiPlazaLobbyClient_OnPlayerEnter;
     callbacks.onPlayerLeave = WiFiPlazaLobbyClient_OnPlayerLeave;
-    callbacks.onEvent3 = WiFiPlazaLobbyClient_OnEvent3Dummy;
+    callbacks.onStringMessage = WiFiPlazaLobbyClient_OnEvent3Dummy;
     callbacks.onMessage = WiFiPlazaLobbyClient_OnMessage;
     callbacks.onLocationsChanged = WiFiPlazaLobbyClient_OnLocationsChanged;
     callbacks.onPlayerRecordChanged = WiFiPlazaLobbyClient_OnPlayerRecordChanged;

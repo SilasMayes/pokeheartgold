@@ -2,113 +2,39 @@
 
 #include <nitro/code32.h>
 
-struct Key {
-    u32 v;
-};
-struct Node;
-struct It;
-extern "C" void LobbyTreeIterator_Advance(It *it);
+#include "lobby_chat_manager.h"
 
-struct It {
-    Node *n;
+extern "C" void LobbyTreeIterator_Advance(Iterator *it);
 
-    It() {
+struct HasUser {
+    int userId;
+
+    HasUser(int id)
+        : userId(id) {
     }
 
-    It(Node *p)
-        : n(p) {
-    }
-
-    It &operator++() {
-        LobbyTreeIterator_Advance(this);
-        return *this;
-    }
-
-    bool operator==(const It &o) const {
-        return n == o.n;
-    }
-
-    bool operator!=(const It &o) const {
-        return n != o.n;
+    bool operator()(LobbyChannelMapEntry &entry) const {
+        Iterator found;
+        LobbyUserIdSet_Find(&found, &entry.channel.users, &userId);
+        return found.current != &entry.channel.users.root;
     }
 };
 
-struct Set {
-    u32 size;
-
-    struct {
-        Node *a, *b, *c;
-    } header;
-
-    It end() {
-        return It((Node *)&header);
+static inline void FindChannel(Iterator *it, LobbyChannelMap *map, HasUser pred) {
+    void *end = &map->root;
+    it->current = map->first;
+    while (it->current != end && !pred(((LobbyChannelMapNode *)it->current)->entry)) {
+        LobbyTreeIterator_Advance(it);
     }
-};
-
-struct Pair {
-    u8 first[0x10];
-    Set second;
-};
-
-struct Node {
-    Node *a, *b, *c;
-    Pair value;
-};
-
-struct Map {
-    struct {
-        Node *a, *b, *c;
-    } header;
-
-    It begin() {
-        return It(header.c);
-    }
-
-    It end() {
-        return It((Node *)&header);
-    }
-
-    inline It FindIf(struct HasKey pred);
-};
-
-struct Obj {
-    u8 pad[0x70];
-    u8 list[0x14];
-    Map map;
-};
-
-extern "C" It LobbyUserIdSet_Find(Set *s, const Key &k);
-extern "C" void LobbyUserMap_EraseKey(void *list, const Key &k);
-
-struct HasKey {
-    Key k;
-
-    HasKey(Key q)
-        : k(q) {
-    }
-
-    bool operator()(Pair &p) const {
-        It r = LobbyUserIdSet_Find(&p.second, k);
-        return r != p.second.end();
-    }
-};
-
-inline It Map::FindIf(HasKey pred) {
-    It it = begin();
-    It e = end();
-    while (it != e && !pred(it.n->value)) {
-        ++it;
-    }
-    return it;
 }
 
-extern "C" BOOL LobbyChat_RemoveUserIfUnused(Obj *o, Key k);
-
-extern "C" BOOL LobbyChat_RemoveUserIfUnused(Obj *o, Key k) {
-    It it = o->map.FindIf(HasKey(k));
-    if (it != o->map.end()) {
-        return 0;
+// The user stays while any channel the session is in still holds them.
+BOOL LobbyChat_RemoveUserIfUnused(LobbyChatManager *manager, int userId) {
+    Iterator it;
+    FindChannel(&it, &manager->channelMap, HasUser(userId));
+    if (it.current != &manager->channelMap.root) {
+        return FALSE;
     }
-    LobbyUserMap_EraseKey(o->list, k);
-    return 1;
+    LobbyUserMap_EraseKey(&manager->userMap, &userId);
+    return TRUE;
 }

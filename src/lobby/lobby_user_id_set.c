@@ -9,7 +9,6 @@
 #include "lobby_mem.h"
 
 extern u8 ov45_02255358[];
-extern LobbyUserIdSetNode *LobbyTree_EraseRebalance(LobbyUserIdSetNode *, void *);
 
 void *LobbyChannelMap_Destroy(LobbyChannelMap *map) {
     if (map->root) {

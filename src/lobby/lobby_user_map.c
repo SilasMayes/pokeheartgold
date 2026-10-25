@@ -12,8 +12,6 @@ extern void abort(void);
 
 extern u8 ov45_02255358[];
 extern char gLobbyStr_TreeInsertLengthError_4[];
-extern void LobbyTree_InsertRebalance(void *, void *);
-extern void *LobbyTree_EraseRebalance(void *, void *);
 
 LobbyUserIdSetNode *LobbyUserIdSet_InsertNode(LobbyUserIdSet *set, LobbyUserIdSetNode *parent, int left, int last, const int *key) {
     struct {

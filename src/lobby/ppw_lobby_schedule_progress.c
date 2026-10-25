@@ -8,8 +8,6 @@
 #include "ppw_lobby_state.h"
 #include "ppw_lobby_work.h"
 
-BOOL PPWLobbyPlayers_IsFull(PPWLobbyPlayers *players);
-
 BOOL PPWLobbySchedule_GetQuestionnaire(PPWLobbySchedule *schedule, void *out) {
     if (!schedule->hasQuestionnaire) {
         return FALSE;
@@ -45,7 +43,7 @@ void PPWLobbySchedule_Process(PPWLobbySchedule *schedule) {
         LobbyChat_SetChannelMode(name.l.isLong == 0 ? name.s.buf : name.l.ptr, &gPPWLobbyMainChannelSecretMode);
         LobbyString_Destroy(&name);
         zero = 0;
-        PPWLobby_SendMessage(-1, PPW_LOBBY_CHANNEL_KIND_MAIN, 1, 0, 0, &zero, 4);
+        PPWLobby_SendMessage(-1, PPW_LOBBY_CHANNEL_KIND_MAIN, PPW_LOBBY_MESSAGE_FORMAT_BINARY, PPW_LOBBY_MESSAGE_KIND_SYSTEM, PPW_LOBBY_SYSTEM_MESSAGE_START_SCHEDULE, &zero, sizeof(zero));
         PPWLobbySchedule_Start(schedule);
         return;
     case PPW_LOBBY_SCHEDULE_STATE_STARTED:

@@ -2,76 +2,22 @@
 
 #include <nitro/code32.h>
 
-struct Value {
-    virtual void f0();
-    virtual void Release();
-};
+#include "ppw_lobby_work.h"
 
-struct Node {
-    Node *a, *b, *c;
-    Value *value;
-};
-struct It;
-extern "C" void LobbyTreeIterator_Advance(It *it);
+extern "C" void LobbyTreeIterator_Advance(Iterator *it);
 
-struct It {
-    Node *n;
-
-    It() {
-    }
-
-    It(Node *p)
-        : n(p) {
-    }
-
-    It &operator++() {
-        LobbyTreeIterator_Advance(this);
-        return *this;
-    }
-
-    It operator++(int) {
-        It t = *this;
-        ++*this;
-        return t;
-    }
-
-    bool operator!=(const It &o) const {
-        return n != o.n;
-    }
-};
-
-struct Tree {
-    u32 size;
-    Node header;
-};
-
-extern "C" It PPWLobbyPlayerSet_Erase(Tree *t, It pos);
-
-struct Map {
-    u32 unk0;
-    Tree tree;
-
-    It begin() {
-        return It(tree.header.b);
-    }
-
-    It end() {
-        return It(&tree.header);
-    }
-
-    void erase(It pos) {
-        PPWLobbyPlayerSet_Erase(&tree, pos);
-    }
-};
-
-extern "C" void PPWLobbyPlayers_Clear(Map *m);
-
-extern "C" void PPWLobbyPlayers_Clear(Map *m) {
-    for (It it = m->begin(); it != m->end();) {
-        Value *v = it.n->value;
-        if (v != 0) {
-            v->Release();
+void PPWLobbyPlayers_Clear(PPWLobbyPlayers *players) {
+    Iterator it;
+    Iterator position;
+    Iterator next;
+    it.current = players->playerSet.leftmost;
+    while (it.current != &players->playerSet.root) {
+        PPWLobbyPlayer *player = ((PPWLobbyPlayerSetNode *)it.current)->player;
+        if (player != NULL) {
+            player->vtable->destroyAndFree(player);
         }
-        m->erase(it++);
+        position = it;
+        LobbyTreeIterator_Advance(&it);
+        PPWLobbyPlayerSet_Erase(&next, &players->playerSet, position);
     }
 }

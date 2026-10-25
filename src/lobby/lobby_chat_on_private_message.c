@@ -1,63 +1,22 @@
 #include "global.h"
 
 #include <nitro/code32.h>
-extern long atol(const char *);
 
-typedef union {
-    u32 words[3];
+#include "lobby_chat_internal.h"
 
-    struct {
-        u8 flags;
-        char small[11];
-    } local;
-
-    struct {
-        u32 long_ : 1;
-        u32 rest : 31;
-        u32 length;
-        char *text;
-    } heap;
-} Text;
-
-typedef struct {
-    Text *items;
-    volatile u32 count;
-    u32 capacity;
-} Vector;
-
-typedef struct {
-    void (*onMessage)(int, void *, void *);
-    void (*onExcessFlood)(int, void *);
-    u32 param;
-} Callbacks;
-
-typedef struct {
-    void *connection;
-    int state;
-    u8 unk_08[0x5C];
-    Callbacks callbacks;
-} Work;
-
-extern Work *gLobbyChatManager;
 extern char gLobbyStr_SERVER[];
 extern char gLobbyStr_ExcessFlood[];
 extern char gLobbyStr_SpaceColon[];
-extern void LobbyString_InitFromCStr(Text *, char *);
-extern int LobbyString_CompareNoCase(Text *, Text *, int);
-extern void LobbyString_Destroy(Text *);
-extern void LobbyStringVector_Destroy(Vector *);
-extern void LobbyChat_SplitString(Vector *, Text *, Text *, int);
-extern int LobbyChat_FindUserIdByNick(Work *, Text *);
 
-static inline char *TextChars(Text *t) {
-    if (t->heap.long_ == 0) {
-        return t->local.small;
+static inline char *TextChars(Str *text) {
+    if (text->l.isLong == 0) {
+        return text->s.buf;
     } else {
-        return t->heap.text;
+        return text->l.ptr;
     }
 }
 
-static inline int Compare(char *key, char *str, Text *strText, Text *keyText, int len) {
+static inline int Compare(char *key, char *str, Str *strText, Str *keyText, int len) {
     int result;
     LobbyString_InitFromCStr(strText, str);
     LobbyString_InitFromCStr(keyText, key);
@@ -67,23 +26,26 @@ static inline int Compare(char *key, char *str, Text *strText, Text *keyText, in
     return result;
 }
 
+static inline u32 StringVectorSize(const volatile LobbyStringVector *vector) {
+    return vector->size;
+}
+
 #pragma opt_propagation off
-void LobbyChat_OnPrivateMessage(void *, char *, char *, int, void *);
 
 // Messages from the server only matter as excess flood notices; user messages are passed on by user ID.
 void LobbyChat_OnPrivateMessage(void *chat, char *nick, char *message, int type, void *param) {
     struct {
-        Text messageStr, floodStr, nickStr, serverStr;
-        Callbacks messageCallbacks;
-        Text senderNick;
-        Callbacks floodCallbacks;
-        Text separator, text;
-        Vector vector;
+        Str messageStr, floodStr, nickStr, serverStr;
+        LobbyChatCallbacks messageCallbacks;
+        Str senderNick;
+        LobbyChatCallbacks floodCallbacks;
+        Str separator, text;
+        LobbyStringVector vector;
     } frame;
 
     char *serverKey, *floodKey;
     int serverCmp, floodCmp, userId;
-    if (gLobbyChatManager && gLobbyChatManager->state == 5) {
+    if (gLobbyChatManager && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
     }
     serverKey = gLobbyStr_SERVER;
@@ -99,12 +61,12 @@ void LobbyChat_OnPrivateMessage(void *chat, char *nick, char *message, int type,
         LobbyChat_SplitString(&frame.vector, &frame.text, &frame.separator, 0);
         LobbyString_Destroy(&frame.separator);
         LobbyString_Destroy(&frame.text);
-        if (frame.vector.count == 0) {
+        if (frame.vector.size == 0) {
             LobbyStringVector_Destroy(&frame.vector);
             return;
         }
         {
-            Text *last = &frame.vector.items[frame.vector.count - 1];
+            Str *last = &frame.vector.data[StringVectorSize(&frame.vector) - 1];
             userId = atol(TextChars(last));
         }
         if (userId == 0) {

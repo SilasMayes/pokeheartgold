@@ -1172,9 +1172,9 @@ namespace HandleSystemMessage {
 extern "C" {
 typedef struct {
     u32 pad[2];
-    int mode;
-    u32 gap;
-    int selector;
+    int format;
+    int kind;
+    int id;
 } Obj;
 
 PPWLobbyPlayer *PPWLobbyPlayers_Find(void *, int);
@@ -1191,46 +1191,39 @@ int PPWLobby_HandleSystemMessage(Obj *obj, int id, int flag, void *payload, int 
     if (flag) {
         return 1;
     }
-    switch (obj->selector) {
-    case 1:
+    switch (obj->id) {
+    case PPW_LOBBY_SYSTEM_MESSAGE_RECRUIT:
         if (id == gPPWLobbyWork->userId) {
             break;
         }
         r = PPWLobbyPlayers_Find(&gPPWLobbyWork->players, id);
         valid = RecordValid(r);
-        switch (valid) {
-        case 0:
-            goto done;
-        default:
+        if (!valid) {
             break;
         }
-        if (obj->mode == 1 && message == 0x44) {
+        if (obj->format == PPW_LOBBY_MESSAGE_FORMAT_BINARY && message == sizeof(PPWLobbyRecruitInfo)) {
             gPPWLobbyWork->callbacks.onMatchInfo(id, payload);
         }
         break;
-    case 2:
+    case PPW_LOBBY_SYSTEM_MESSAGE_STOP_RECRUIT:
         if (id == gPPWLobbyWork->userId) {
             break;
         }
         r = PPWLobbyPlayers_Find(&gPPWLobbyWork->players, id);
         valid = RecordValid(r);
-        switch (valid) {
-        case 0:
-            goto done;
-        default:
+        if (!valid) {
             break;
         }
-        if (obj->mode == 1 && message == 0x44) {
+        if (obj->format == PPW_LOBBY_MESSAGE_FORMAT_BINARY && message == sizeof(PPWLobbyRecruitInfo)) {
             gPPWLobbyWork->callbacks.onMatchClosed(id, payload);
         }
         break;
-    case 0:
-        if (obj->mode == 1 && message == 4) {
+    case PPW_LOBBY_SYSTEM_MESSAGE_START_SCHEDULE:
+        if (obj->format == PPW_LOBBY_MESSAGE_FORMAT_BINARY && message == sizeof(u32)) {
             PPWLobbySchedule_Start(&gPPWLobbyWork->schedule);
         }
         break;
     }
-done:
     return 1;
 }
 }
@@ -1323,7 +1316,7 @@ int PPWLobby_TimerSendRecruitInfo(void) {
     if (!work->recruiting) {
         return 0;
     }
-    PPWLobby_SendMessage(work->userId, 0, 1, 0, 1, work->recruitInfo, 0x44);
+    PPWLobby_SendMessage(work->userId, PPW_LOBBY_CHANNEL_KIND_MAIN, PPW_LOBBY_MESSAGE_FORMAT_BINARY, PPW_LOBBY_MESSAGE_KIND_SYSTEM, PPW_LOBBY_SYSTEM_MESSAGE_RECRUIT, &work->recruitInfo, sizeof(PPWLobbyRecruitInfo));
     return 1;
 }
 
@@ -2354,29 +2347,29 @@ void PPWLobby_OnMessage(const char *key, int index, const char *name) {
             return;
         }
         switch (m.kind) {
-        case 1: {
+        case PPW_LOBBY_MESSAGE_KIND_USER: {
             PPWLobbyPlayer *p = PPWLobbyPlayers_Find(&gPPWLobbyWork->players, index);
             if (!validEntry(p)) {
                 LobbyCharVector_Destroy(&m.text);
                 return;
             }
             switch (m.type) {
-            case 1: {
+            case PPW_LOBBY_MESSAGE_FORMAT_BINARY: {
                 PPWLobbyWork *c = gPPWLobbyWork;
                 void *t = LobbyByteVector_Data(&m.text);
                 c->callbacks.onMessage(index, channel, m.arg, t, m.text.size);
                 break;
             }
-            case 0: {
+            case PPW_LOBBY_MESSAGE_FORMAT_STRING: {
                 PPWLobbyWork *c = gPPWLobbyWork;
                 void *t = LobbyByteVector_Data(&m.text);
-                c->callbacks.onEvent3(index, channel, m.arg, t);
+                c->callbacks.onStringMessage(index, channel, m.arg, t);
                 break;
             }
             }
             break;
         }
-        case 0: {
+        case PPW_LOBBY_MESSAGE_KIND_SYSTEM: {
             void *t = LobbyByteVector_Data(&m.text);
             PPWLobby_HandleSystemMessage(&m, index, channel, t, m.text.size);
             break;

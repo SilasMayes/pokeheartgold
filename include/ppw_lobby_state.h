@@ -34,6 +34,25 @@ enum PPWLobbyChannelKind {
     PPW_LOBBY_CHANNEL_KIND_INVALID, // no channel; as a message target, one player
 };
 
+// How a lobby message carries its data (PPWLobby_SendMessage): as text ("S") or as base64 binary ("B")
+enum PPWLobbyMessageFormat {
+    PPW_LOBBY_MESSAGE_FORMAT_STRING,
+    PPW_LOBBY_MESSAGE_FORMAT_BINARY,
+};
+
+// Who a lobby message is for: the lobby library itself ("S") or the game ("A")
+enum PPWLobbyMessageKind {
+    PPW_LOBBY_MESSAGE_KIND_SYSTEM,
+    PPW_LOBBY_MESSAGE_KIND_USER,
+};
+
+// The lobby library's own messages (PPWLobby_HandleSystemMessage)
+enum PPWLobbySystemMessage {
+    PPW_LOBBY_SYSTEM_MESSAGE_START_SCHEDULE, // the lobby events start
+    PPW_LOBBY_SYSTEM_MESSAGE_RECRUIT,        // a player recruits for a match (its PPWLobbyRecruitInfo)
+    PPW_LOBBY_SYSTEM_MESSAGE_STOP_RECRUIT,   // a player has stopped recruiting
+};
+
 // PPWLobbySchedule.state: how far the questionnaire, the schedule and the lobby events have come
 enum PPWLobbyScheduleState {
     PPW_LOBBY_SCHEDULE_STATE_NONE = 0,

@@ -2,6 +2,8 @@
 
 #include "dwc/net_common_internal.h"
 
+#include "ppw_lobby_work.h"
+
 #include <nitro/code32.h>
 #include <stdarg.h>
 
@@ -25,26 +27,19 @@ typedef struct Vec {
     u32 len, cap, z, extra;
 } Vec;
 
-typedef struct Node {
-    void *left, *right;
-    u32 parent;
-    u32 key;
-} Node;
-
 extern void _ZNSt15__vector_commonILb1EE18throw_length_errorEv(void);
 #include "overlay45_string_search.h"
-void PPWLobbyPlayerSet_DestroyNodes(void *set, Node *p);
 u32 LobbyStringVector_RecommendSize(Vec *p, u32 n, ...);
 
-void PPWLobbyPlayerSet_DestroyNodes(void *ctx, Node *p) {
-    if (p->left) {
-        PPWLobbyPlayerSet_DestroyNodes(ctx, p->left);
+void PPWLobbyPlayerSet_DestroyNodes(PPWLobbyPlayerSet *set, PPWLobbyPlayerSetNode *node) {
+    if (node->left) {
+        PPWLobbyPlayerSet_DestroyNodes(set, node->left);
     }
-    if (p->right) {
-        PPWLobbyPlayerSet_DestroyNodes(ctx, p->right);
+    if (node->right) {
+        PPWLobbyPlayerSet_DestroyNodes(set, node->right);
     }
-    if (p) {
-        DWC_Free(0, p, 0);
+    if (node) {
+        DWC_Free(0, node, 0);
     }
 }
 

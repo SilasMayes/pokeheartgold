@@ -4,84 +4,84 @@
 
 #include "ppw_lobby_internal.h"
 
-void PPWLobbyPlayerSet_Insert(InsertResult *out, List *l, Session **key) {
-    Node *parent;
+void PPWLobbyPlayerSet_Insert(PPWLobbyPlayerSetInsertResult *out, PPWLobbyPlayerSet *set, PPWLobbyPlayer **key) {
+    PPWLobbyPlayerSetNode *parent;
     u8 left;
-    u8 flag;
-    Node *y = PPWLobbyPlayerSet_FindInsertPos(l, key, &parent, &left, &flag);
-    if (parent == NULL || parent->val->id < (*key)->id) {
-        out->current = PPWLobbyPlayerSet_InsertNode(l, y, left, flag, key);
+    u8 leftmost;
+    PPWLobbyPlayerSetNode *position = PPWLobbyPlayerSet_FindInsertPos(set, key, &parent, &left, &leftmost);
+    if (parent == NULL || parent->player->id < (*key)->id) {
+        out->node = PPWLobbyPlayerSet_InsertNode(set, position, left, leftmost, key);
         out->inserted = ov45_02255200[0];
         return;
     }
-    out->current = parent;
+    out->node = parent;
     out->inserted = ov45_02255200[1];
 }
 
-void PPWLobbyPlayerSet_Erase(NodeIter *out, List *l, NodeIter it) {
-    Node *n = it.current;
-    if (n == l->leftmost) {
-        LobbyTreeIterator_Advance(&it);
-        l->leftmost = it.current;
+void PPWLobbyPlayerSet_Erase(Iterator *out, PPWLobbyPlayerSet *set, Iterator position) {
+    PPWLobbyPlayerSetNode *node = position.current;
+    if (node == set->leftmost) {
+        LobbyTreeIterator_Advance(&position);
+        set->leftmost = position.current;
     }
-    out->current = LobbyTree_EraseRebalance(n, l->root);
-    if (n != NULL) {
-        DWC_Free(0, n, 0);
+    out->current = LobbyTree_EraseRebalance(node, set->root);
+    if (node != NULL) {
+        DWC_Free(0, node, 0);
     }
-    l->count--;
+    set->count--;
 }
 
-Node *PPWLobbyPlayerSet_InsertNode(List *l, Node *parent, u8 left, u8 flag, Session **key) {
-    Node *n;
-    Node *tmp;
-    Session **pv;
-    u32 *pp;
+PPWLobbyPlayerSetNode *PPWLobbyPlayerSet_InsertNode(PPWLobbyPlayerSet *set, PPWLobbyPlayerSetNode *parent, u8 left, u8 leftmost, PPWLobbyPlayer **key) {
+    PPWLobbyPlayerSetNode *node;
+    PPWLobbyPlayerSetNode *pending;
+    PPWLobbyPlayer **player;
+    u32 *parentField;
 
     volatile struct {
-        Node *a;
-        Node *b;
-        void **c;
-        Node *d;
-    } h;
+        PPWLobbyPlayerSetNode *node;
+        PPWLobbyPlayerSetNode *inserted;
+        PPWLobbyPlayerSetNode **root;
+        PPWLobbyPlayerSetNode *pending;
+    } holder;
 
-    if (l->count == (u32)-1) {
+    if (set->count == (u32)-1) {
         printf(gLobbyStr_TreeInsertLengthError_2);
         abort();
     }
     {
-        LobbyTag t = { 0 };
+        LobbyTag tag = { 0 };
     }
-    n = LobbyMem_Alloc(sizeof(Node));
-    h.c = &l->root;
-    pv = &n->val;
-    h.d = n;
-    h.a = n;
-    if (pv != NULL) {
-        *pv = *key;
+    node = LobbyMem_Alloc(sizeof(PPWLobbyPlayerSetNode));
+    holder.root = &set->root;
+    player = &node->player;
+    holder.pending = node;
+    holder.node = node;
+    if (player != NULL) {
+        *player = *key;
     }
-    n->right = NULL;
-    h.d = NULL;
-    n->left = NULL;
-    pp = &n->parent;
-    if (pp != NULL) {
-        *pp = (u32)parent;
+    node->right = NULL;
+    holder.pending = NULL;
+    node->left = NULL;
+    parentField = &node->parent;
+    if (parentField != NULL) {
+        *parentField = (u32)parent;
     }
     if (left) {
-        parent->left = n;
+        parent->left = node;
     } else {
-        parent->right = n;
+        parent->right = node;
     }
-    l->count++;
-    h.b = n;
-    LobbyTree_InsertRebalance(n, l->root);
-    if (flag) {
-        l->leftmost = n;
+    set->count++;
+    holder.inserted = node;
+    LobbyTree_InsertRebalance(node, set->root);
+    if (leftmost) {
+        set->leftmost = node;
     }
-    tmp = h.d;
-    if (tmp != NULL) {
-        DWC_Free(0, tmp, 0);
+    pending = holder.pending;
+    if (pending != NULL) {
+        DWC_Free(0, pending, 0);
     }
-    return n;
+    return node;
 }
 
 static inline int Distance(const u32 *first, const u32 *last) {
@@ -124,27 +124,27 @@ void LobbyU32Vector_PushBackSlow(LobbyU32Vector *v, u32 *x, LobbyTag unused) {
     LobbyU32Vector_AppendFillSlow(v, 1, x);
 }
 
-Node *PPWLobbyPlayerSet_FindInsertPos(List *l, Session **key, Node **parent, u8 *left, u8 *flag) {
-    Node *y;
-    Node *x;
+PPWLobbyPlayerSetNode *PPWLobbyPlayerSet_FindInsertPos(PPWLobbyPlayerSet *set, PPWLobbyPlayer **key, PPWLobbyPlayerSetNode **parent, u8 *left, u8 *leftmost) {
+    PPWLobbyPlayerSetNode *position;
+    PPWLobbyPlayerSetNode *node;
     *parent = NULL;
-    x = l->root;
+    node = set->root;
     *left = 1;
-    *flag = 1;
-    y = (Node *)&l->root;
-    while (x != NULL) {
-        y = x;
-        if ((*key)->id < x->val->id) {
-            x = x->left;
+    *leftmost = 1;
+    position = (PPWLobbyPlayerSetNode *)&set->root;
+    while (node != NULL) {
+        position = node;
+        if ((*key)->id < node->player->id) {
+            node = node->left;
             *left = 1;
         } else {
-            *parent = x;
-            x = x->right;
+            *parent = node;
+            node = node->right;
             *left = 0;
-            *flag = 0;
+            *leftmost = 0;
         }
     }
-    return y;
+    return position;
 }
 
 LobbyU32Vector *LobbyU32Vector_Destroy2(LobbyU32Vector *v) {

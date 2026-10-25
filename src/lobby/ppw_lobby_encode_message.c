@@ -3,6 +3,7 @@
 #include <nitro/code32.h>
 
 #include "ppw_lobby_internal.h"
+#include "ppw_lobby_state.h"
 
 int LobbyString_ToLowerChar(int c) {
     if (c < 0 || c >= 0x80) {
@@ -17,10 +18,10 @@ BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32
     Str s1;
     Str s2;
     Str s3;
-    if (type == 0 && len > 400) {
+    if (type == PPW_LOBBY_MESSAGE_FORMAT_STRING && len > 400) {
         return FALSE;
     }
-    if (type == 1 && len > 300) {
+    if (type == PPW_LOBBY_MESSAGE_FORMAT_BINARY && len > 300) {
         return FALSE;
     }
     LobbyString_AssignCStr(out, gLobbyStr_Empty_16);
@@ -33,10 +34,10 @@ BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32
     LobbyString_Destroy(&s1);
     LobbyString_AppendCStr(out, gLobbyStr_Space_2);
     switch (type) {
-    case 0:
+    case PPW_LOBBY_MESSAGE_FORMAT_STRING:
         LobbyString_AppendCStr(out, gLobbyStr_S);
         break;
-    case 1:
+    case PPW_LOBBY_MESSAGE_FORMAT_BINARY:
         LobbyString_AppendCStr(out, gLobbyStr_B);
         break;
     default:
@@ -44,10 +45,10 @@ BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32
     }
     LobbyString_AppendCStr(out, gLobbyStr_Space_2);
     switch (mode) {
-    case 1:
+    case PPW_LOBBY_MESSAGE_KIND_USER:
         LobbyString_AppendCStr(out, gLobbyStr_A);
         break;
-    case 0:
+    case PPW_LOBBY_MESSAGE_KIND_SYSTEM:
         LobbyString_AppendCStr(out, gLobbyStr_S);
         break;
     default:

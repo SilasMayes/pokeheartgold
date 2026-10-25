@@ -33,7 +33,7 @@ int PPW_LobbySendChannelBinaryMessage(int channel, int type, const void *data, i
             return PPW_LOBBY_RESULT_ERROR_STATE;
         }
     }
-    return PPWLobby_SendMessage(-1, channel, 1, 1, type, data, size);
+    return PPWLobby_SendMessage(-1, channel, PPW_LOBBY_MESSAGE_FORMAT_BINARY, PPW_LOBBY_MESSAGE_KIND_USER, type, data, size);
 }
 
 int PPW_LobbySendPlayerBinaryMessage(int userId, int type, const void *data, int size) {
@@ -51,7 +51,7 @@ int PPW_LobbySendPlayerBinaryMessage(int userId, int type, const void *data, int
             return PPW_LOBBY_RESULT_ERROR_STATE;
         }
     }
-    return PPWLobby_SendMessage(userId, 5, 1, 1, type, data, size);
+    return PPWLobby_SendMessage(userId, PPW_LOBBY_CHANNEL_KIND_INVALID, PPW_LOBBY_MESSAGE_FORMAT_BINARY, PPW_LOBBY_MESSAGE_KIND_USER, type, data, size);
 }
 
 int PPW_LobbyGetMyUserId(void) {

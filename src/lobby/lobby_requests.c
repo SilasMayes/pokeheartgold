@@ -16,7 +16,6 @@ typedef struct {
 extern int printf(const char *, ...);
 extern void abort(void);
 extern const char gLobbyStr_TreeInsertLengthError_3[];
-extern void LobbyTree_InsertRebalance(LobbyRequestMapNode *, void *);
 
 LobbyRequest *LobbyRequest_Delete(LobbyRequest *request) {
     if (request != NULL) {

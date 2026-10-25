@@ -33,8 +33,6 @@ void LobbyRequestMap_DeleteAll(LobbyRequestMap *map);
 
 typedef Iterator Iter;
 
-void LobbyUserIdSet_Find(Iter *out, LobbyUserIdSet *set, int *key);
-
 static inline BOOL StrLess(Str *a, Str *b) {
     return LobbyString_Compare(a, b) < 0;
 }
@@ -114,7 +112,6 @@ void LobbyChatManager_GetGameKey(Str *out, LobbyChatManager *manager);
 int LobbyChat_AreChannelUsersEnumerated(LobbyChatManager *manager, Str *channel);
 void LobbyChat_RemoveChannel(LobbyChatManager *manager, Str *channel);
 BOOL LobbyChat_RemoveChannelUser(LobbyChatManager *manager, Str *nick, Str *channel);
-BOOL LobbyChat_RemoveUserIfUnused(LobbyChatManager *manager, int id);
 LobbyRequest *LobbyEnterChannelRequest_Delete(LobbyRequest *request);
 void LobbyEnterChannelRequest_Destroy(void);
 LobbyRequest *LobbyEnumChannelsRequest_Delete(LobbyRequest *request);
@@ -138,8 +135,7 @@ void LobbyRequest_Destroy(void);
 u32 LobbyRequest_GetParam(LobbyRequest *request);
 u32 LobbyRequest_GetId(LobbyRequest *request);
 void *LobbyTree_EraseRebalance(void *node, void *root);
-LobbyUserIdSetNode *LobbyUserIdSet_LowerBound(LobbyUserIdSet *set, int *key, LobbyUserIdSetNode *node, LobbyUserIdSetNode *res);
-BOOL LobbyUserMap_EraseKey(LobbyUserMap *map, int *key);
+LobbyUserIdSetNode *LobbyUserIdSet_LowerBound(LobbyUserIdSet *set, const int *key, LobbyUserIdSetNode *node, LobbyUserIdSetNode *res);
 void LobbyUserMap_Find(Iter *out, LobbyUserMap *map, int *key);
 LobbyUserMapNode *LobbyUserMap_FindInsertPos2(LobbyUserMap *map, int *key, LobbyUserMapNode **pos, u8 *insertLeft, u8 *isLeftmost);
 LobbyUserMapNode *LobbyUserMap_LowerBound(LobbyUserMap *map, int *key, LobbyUserMapNode *node, LobbyUserMapNode *res);
@@ -166,6 +162,7 @@ void LobbyChat_OnDisconnected(void);
 void LobbyChat_OnFillInUser(void *chat, void *param, char *user);
 void LobbyChat_OnInvited(void);
 void LobbyChat_OnNickError(void *chat, int type);
+void LobbyChat_OnPrivateMessage(void *chat, char *nick, char *message, int type, void *param);
 void LobbyChat_OnKicked(void *chat, char *channel);
 void LobbyChat_OnRaw(void);
 void LobbyChat_OnTopicChanged(void *chat, char *channel, void *topic);

@@ -6,7 +6,7 @@
 
 #include "lobby_chat_internal.h"
 
-void LobbyUserIdSet_Find(Iter *out, LobbyUserIdSet *set, int *key) {
+void LobbyUserIdSet_Find(Iter *out, LobbyUserIdSet *set, const int *key) {
     LobbyUserIdSetNode *n = LobbyUserIdSet_LowerBound(set, key, set->root, (LobbyUserIdSetNode *)&set->root);
     if (n == (LobbyUserIdSetNode *)&set->root || *key < n->userId) {
         out->current = &set->root;
@@ -15,7 +15,7 @@ void LobbyUserIdSet_Find(Iter *out, LobbyUserIdSet *set, int *key) {
     out->current = n;
 }
 
-LobbyUserIdSetNode *LobbyUserIdSet_LowerBound(LobbyUserIdSet *set, int *key, LobbyUserIdSetNode *node, LobbyUserIdSetNode *res) {
+LobbyUserIdSetNode *LobbyUserIdSet_LowerBound(LobbyUserIdSet *set, const int *key, LobbyUserIdSetNode *node, LobbyUserIdSetNode *res) {
     while (node != NULL) {
         if (node->userId >= *key) {
             res = node;
