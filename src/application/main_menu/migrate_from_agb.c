@@ -1027,9 +1027,9 @@ static void MigrateFromAgb_PrintMonInfo(MigrateFromAgbApp *app, AgbBoxMon *mon) 
     {
         int item = AGB_GetBoxMonData(mon, AGB_MON_DATA_HELD_ITEM, NULL);
         if (item) {
-            int dpItem = UpConvertItemId_Gen3to4((u16)item);
+            int dpItem = UpConvertItemId_Gen3to4(item);
             string = String_New(64, HEAP_ID_76);
-            GetItemNameIntoString(string, (u16)dpItem, HEAP_ID_76);
+            GetItemNameIntoString(string, dpItem, HEAP_ID_76);
             text.msgId = -1;
             text.printX = 152;
             text.printY = 16;
@@ -1049,7 +1049,7 @@ static void MigrateFromAgb_PrintMonInfo(MigrateFromAgbApp *app, AgbBoxMon *mon) 
         MigrateFromAgb_PrintText(app, &text, 2);
         String_Delete(string);
     }
-    PlayCry((u16)species, 0);
+    PlayCry(species, 0);
 }
 
 static void MigrateFromAgb_StartFadeBlack(MigrateFromAgbApp *app, enum FadeType fadeType, int nextState, int *state) {
@@ -1317,7 +1317,7 @@ static BOOL MigrateFromAgb_PrintResultMsg(MigrateFromAgbApp *app, int index) {
         app->msgBox.textSpeed = 1;
         MigrateFromAgb_PrintText(app, &app->msgBox, 24);
         app->pendingMsg = 0;
-    } else if (!TextPrinterCheckActive((u8)app->msgBox.printerId)) {
+    } else if (!TextPrinterCheckActive(app->msgBox.printerId)) {
         TextFlags_SetCanTouchSpeedUpPrint(FALSE);
         return TRUE;
     }
@@ -1333,7 +1333,7 @@ static BOOL MigrateFromAgb_PrintResultMsgWithYesNo(MigrateFromAgbApp *app, int i
         app->msgBox.textSpeed = 1;
         MigrateFromAgb_PrintText(app, &app->msgBox, 24);
         app->pendingMsg = 0;
-    } else if (!TextPrinterCheckActive((u8)app->msgBox.printerId)) {
+    } else if (!TextPrinterCheckActive(app->msgBox.printerId)) {
         MigrateFromAgb_ShowYesNo(app);
         TextFlags_SetCanTouchSpeedUpPrint(FALSE);
         return TRUE;
@@ -1352,7 +1352,7 @@ static BOOL MigrateFromAgb_PrintPendingMsg(MigrateFromAgbApp *app, int textSpeed
         app->pendingMsgId = -1;
         PlaySE(SEQ_SE_DP_SELECT);
     } else if (textSpeed != 0) {
-        if (!TextPrinterCheckActive((u8)app->msgBox.printerId)) {
+        if (!TextPrinterCheckActive(app->msgBox.printerId)) {
             TextFlags_SetCanTouchSpeedUpPrint(FALSE);
             return TRUE;
         }

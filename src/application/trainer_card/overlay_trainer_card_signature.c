@@ -246,7 +246,7 @@ static const TouchscreenHitbox sTrainerCardSignatureButtonHitboxes[] = {
     { .rect = { 166, 192, 96, 191 } },
 };
 
-int TrainerCardSignature_Init(OverlayManager *manager, int *state) {
+BOOL TrainerCardSignature_Init(OverlayManager *manager, int *state) {
     TrainerCardSignature *signature;
     NARC *narc;
 
@@ -299,7 +299,7 @@ int TrainerCardSignature_Init(OverlayManager *manager, int *state) {
     return FALSE;
 }
 
-int TrainerCardSignature_Main(OverlayManager *manager, int *state) {
+BOOL TrainerCardSignature_Main(OverlayManager *manager, int *state) {
     TrainerCardSignatureStateFunc func;
     TrainerCardSignature *signature = OverlayManager_GetData(manager);
 
@@ -327,7 +327,7 @@ int TrainerCardSignature_Main(OverlayManager *manager, int *state) {
     return FALSE;
 }
 
-int TrainerCardSignature_Exit(OverlayManager *manager, int *state) {
+BOOL TrainerCardSignature_Exit(OverlayManager *manager, int *state) {
     TrainerCardSignature *signature = OverlayManager_GetData(manager);
     int i;
 
@@ -919,7 +919,7 @@ static void TrainerCardSignature_PrintMessage(TrainerCardSignature *signature, i
 }
 
 static BOOL TrainerCardSignature_IsPrinterDone(u32 textPrinterId) {
-    return TextPrinterCheckActive((u8)textPrinterId) ? FALSE : TRUE;
+    return TextPrinterCheckActive(textPrinterId) ? FALSE : TRUE;
 }
 
 // Packs the 4bpp canvas (colour 1 = ink) into the save's 1bpp signature.

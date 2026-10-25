@@ -197,7 +197,7 @@ void MailboxApp_ShowMailMonIcons(MailboxApp *app) {
     u32 iconId;
 
     for (i = 0; i < 3; i++) {
-        icon.raw = Mail_GetMonIconData(mail, (u8)i, 2, Mail_GetFormFlags(mail));
+        icon.raw = Mail_GetMonIconData(mail, i, 2, Mail_GetFormFlags(mail));
         if (icon.raw == 0xFFFF || (iconId = icon.species) == 7) {
             MailboxAppData_SetSpriteDrawFlag(app->data, i + 4, FALSE);
         } else {

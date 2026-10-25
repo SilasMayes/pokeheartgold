@@ -879,7 +879,7 @@ static void SwapMonPanel_Draw(SwapMonPanel *panel, SwapMonText *text) {
     SwapMonText_PrintNumber(text, &panel->windows[SWAP_MON_PANEL_WIN_LEVEL], GetMonData(mon, MON_DATA_LEVEL, NULL), 3, TRUE, 1);
     SwapMonText_PrintNumber(text, &panel->windows[SWAP_MON_PANEL_WIN_HP], hp, 3, FALSE, 0);
     SwapMonText_PrintNumber(text, &panel->windows[SWAP_MON_PANEL_WIN_MAX_HP], maxHp, 3, TRUE, 0);
-    BugContestSwapMon_DrawHpBar(&panel->windows[SWAP_MON_PANEL_WIN_HP_BAR], (u16)hp, (u16)maxHp);
+    BugContestSwapMon_DrawHpBar(&panel->windows[SWAP_MON_PANEL_WIN_HP_BAR], hp, maxHp);
 }
 
 static void SwapMonPanel_StartScroll(SwapMonPanel *panel, BOOL scrolling, s16 targetY) {
@@ -1042,7 +1042,7 @@ static void SwapMonText_Delete(SwapMonText *text) {
 
 static BOOL SwapMonText_IsPrinting(SwapMonText *text) {
     if (text->printerId != -1) {
-        if (!TextPrinterCheckActive((u8)text->printerId)) {
+        if (!TextPrinterCheckActive(text->printerId)) {
             text->waitFrames = 0;
             String_Delete(text->string);
             text->string = NULL;
@@ -1063,7 +1063,7 @@ static BOOL SwapMonText_IsPrinting(SwapMonText *text) {
 }
 
 static void SwapMonText_PrintMessage(SwapMonText *text, int msgId) {
-    text->printerId = SwapMonText_ShowMessageBox(text->bgConfig, &text->messageBox, &text->string, text->messageFormat, text->msgData, msgId, (u8)text->bgLayer, text->heapID, text->options);
+    text->printerId = SwapMonText_ShowMessageBox(text->bgConfig, &text->messageBox, &text->string, text->messageFormat, text->msgData, msgId, text->bgLayer, text->heapID, text->options);
 }
 
 static void SwapMonText_PrintString(SwapMonText *text, Window *window, int msgId, int x, u8 y) {
@@ -1087,7 +1087,7 @@ static void SwapMonText_PrintNumber(SwapMonText *text, Window *window, int value
 static void SwapMonText_CloseMessageBox(SwapMonText *text) {
     int printerId = text->printerId;
     if (printerId != -1) {
-        RemoveTextPrinter((u8)printerId);
+        RemoveTextPrinter(printerId);
     }
     if (text->messageBox.bgConfig != NULL) {
         ClearFrameAndWindow2(&text->messageBox, FALSE);

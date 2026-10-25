@@ -418,9 +418,9 @@ BOOL VsRecorder_BoxDataEnter(VsRecorderWork *work) {
         if (VsRecorder_StepFade(&boxData->fade, 1)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, boxData->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, boxData->fade, work->blendColor);
         break;
     case BOX_DATA_ENTER_STEP_FLIP_SCREENS:
         VsRecorder_SetVBlankPaused(work, TRUE);
@@ -571,7 +571,7 @@ BOOL VsRecorder_BoxDataSendUpload(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, 0)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         break;
     case BOX_DATA_SEND_UPLOAD_STEP_BEGIN_SEND:
         work->step++;
@@ -631,7 +631,7 @@ BOOL VsRecorder_BoxDataSendCancelCategory(VsRecorderWork *work) {
             GfGfxLoader_LoadScrnDataFromOpenNarc(work->narc, 77, work->bgConfig, GF_BG_LYR_SUB_3, 0, 0, FALSE, HEAP_ID_109);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         break;
     case BOX_DATA_SEND_CANCEL_CATEGORY_STEP_FADE_IN:
         VsRecorder_StepFade(&boxData->fade, 0);
@@ -639,7 +639,7 @@ BOOL VsRecorder_BoxDataSendCancelCategory(VsRecorderWork *work) {
             VsRecorder_PrintBoxDataMessage(work, msg_0013_00270); // Please choose a Box.
             VsRecorder_SetSubState(work, BOX_DATA_SEND_MAIN);
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         break;
     default:
         break;
@@ -666,7 +666,7 @@ BOOL VsRecorder_BoxDataSendQuit(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, 0)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         break;
     case BOX_DATA_SEND_QUIT_STEP_EXIT:
         VsRecorder_SetSubState(work, BOX_DATA_SEND_EXIT);
@@ -690,7 +690,7 @@ BOOL VsRecorder_BoxDataViewQuit(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, 0)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         break;
     case BOX_DATA_VIEW_QUIT_STEP_EXIT:
         VsRecorder_SetSubState(work, BOX_DATA_VIEW_EXIT);
@@ -953,8 +953,8 @@ static void VsRecorder_CreateBoxMonPic(VsRecorderWork *work) {
     personal = AllocAndLoadMonPersonal(species, HEAP_ID_109);
     gender = GetGenderBySpeciesAndPersonality(species, personality);
     shiny = CalcShininessByOtIdAndPersonality(otId, personality);
-    GetMonPicHeightBySpeciesGenderForm(species, gender, 2, (u8)form, personality);
-    GetMonSpriteCharAndPlttNarcIdsEx(&template, species, gender, 2, shiny, (u8)form, personality);
+    GetMonPicHeightBySpeciesGenderForm(species, gender, 2, form, personality);
+    GetMonSpriteCharAndPlttNarcIdsEx(&template, species, gender, 2, shiny, form, personality);
     boxData->pokepic = PokepicManager_CreatePokepic(work->pokepicManager, &template, 42, 91, 0, 0, NULL, NULL);
     FreeMonPersonal(personal);
 }
@@ -1049,7 +1049,7 @@ BOOL VsRecorder_BoxDataSendShow(VsRecorderWork *work) {
             boxData->activeHitbox = boxData->hitboxes[0];
             VsRecorder_SetSubState(work, BOX_DATA_SEND_MAIN);
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         break;
     }
     return FALSE;
@@ -1095,14 +1095,14 @@ BOOL VsRecorder_BoxDataSendExit(VsRecorderWork *work) {
         if (VsRecorder_StepFade(&boxData->fade, 0)) {
             VsRecorder_ClearPaletteBlend(work);
             VsRecorder_ResetFade(&boxData->fade);
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, work->blendColor);
             VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
             VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
             FrontierCard_Delete(boxData->card);
             Heap_Free(boxData);
         } else {
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)boxData->fade, (u16)work->blendColor);
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, boxData->fade, work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         }
         break;
     }
@@ -1144,7 +1144,7 @@ BOOL VsRecorder_BoxDataViewShow(VsRecorderWork *work) {
             boxData->activeHitbox = boxData->hitboxes[2];
             VsRecorder_SetSubState(work, BOX_DATA_VIEW_SELECT_CATEGORY);
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         break;
     }
     return FALSE;
@@ -1174,7 +1174,7 @@ void VsRecorder_CreateBoxListButtons(VsRecorderWork *work) {
     for (; i < 2; i++) {
         String *str;
         InitWindow(window);
-        AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_SUB_2, rect->x, rect->y, rect->width, rect->height, 14, (u16)baseTile);
+        AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_SUB_2, rect->x, rect->y, rect->width, rect->height, 14, baseTile);
         FillWindowPixelBuffer(window, 0);
         str = NewString_ReadMsgData(work->msgData, msgIds.msgIds[i]);
         AddTextPrinterParameterizedWithColor(window, 0, str, VsRecorder_GetCenteredTextX(window, str), 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 13, 0), NULL);

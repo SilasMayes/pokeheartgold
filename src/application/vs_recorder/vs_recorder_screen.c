@@ -1060,7 +1060,7 @@ void VsRecorder_InitMessageList(VsRecorderListWindow *list, VsRecorderWork *work
         list->bottomMargin = list->rows - 1;
     }
     InitWindow(window);
-    AddWindowParameterized(work->bgConfig, window, (u8)config->bgId, (u8)config->x, (u8)config->y, (u8)config->width, (u8)config->height, 14, (u16)config->baseTile);
+    AddWindowParameterized(work->bgConfig, window, config->bgId, config->x, config->y, config->width, config->height, 14, config->baseTile);
     FillWindowPixelBuffer(window, 0);
     for (i = 0; i < list->rows; i++) {
         String *str = NewString_ReadMsgData(list->msgData, config->entries[i].msgId);
@@ -1100,7 +1100,7 @@ void VsRecorder_InitList(VsRecorderListWindow *list, VsRecorderWork *work, MsgDa
     }
 
     InitWindow(window);
-    AddWindowParameterized(work->bgConfig, window, (u8)config->bgId, (u8)config->x, (u8)config->y, (u8)config->width, (u8)config->height, 14, (u16)config->baseTile);
+    AddWindowParameterized(work->bgConfig, window, config->bgId, config->x, config->y, config->width, config->height, 14, config->baseTile);
     FillWindowPixelBuffer(window, 0);
 
     if (config->entries != NULL) {
@@ -1181,7 +1181,7 @@ void VsRecorder_InitRankingList(VsRecorderListWindow *list, VsRecorderWork *work
     list->topMargin = list->rows / 2;
     list->bottomMargin = list->rows / 2;
     InitWindow(win);
-    AddWindowParameterized(work->bgConfig, win, (u8)config->bgId, (u8)config->x, (u8)config->y, (u8)config->width, (u8)config->height, 14, (u16)config->baseTile);
+    AddWindowParameterized(work->bgConfig, win, config->bgId, config->x, config->y, config->width, config->height, 14, config->baseTile);
     FillWindowPixelBuffer(win, 0);
     fmt = VsRecorder_NewMessageFormat(HEAP_ID_109);
     limits = sVsRecorderRankLimits;
@@ -1272,7 +1272,7 @@ void VsRecorder_InitPairList(VsRecorderListWindow *list, VsRecorderWork *work, c
     }
     list->isPairList = 1;
     InitWindow(window);
-    AddWindowParameterized(work->bgConfig, window, (u8)config->bgId, (u8)config->x, (u8)config->y, (u8)config->width, (u8)config->height, 14, (u16)config->baseTile);
+    AddWindowParameterized(work->bgConfig, window, config->bgId, config->x, config->y, config->width, config->height, 14, config->baseTile);
     FillWindowPixelBuffer(window, 0);
     for (i = 0; i < list->rows; i++, items += 2) {
         AddTextPrinterParameterizedWithColor(window, 0, items[0], 0, config->lineHeight * 8 * i + 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 13, 0), NULL);
@@ -2426,7 +2426,7 @@ static void VsRecorder_ShowTouchIndicator(VsRecorderWork *work) {
     OrbitCursor_SetActive(work->touchIndicator.cursor, TRUE);
     OrbitCursor_SetVisible(work->touchIndicator.cursor, TRUE);
     OrbitCursor_SetTarget(work->touchIndicator.cursor, (s16)x, (s16)y);
-    OrbitCursor_SetPosition(work->touchIndicator.cursor, (s16)x, (s16)y);
+    OrbitCursor_SetPosition(work->touchIndicator.cursor, x, y);
     work->touchIndicator.task = SysTask_CreateOnMainQueue(VsRecorder_TouchIndicatorTask, work, 0x1000);
     if (work->touchIndicator.task != NULL) {
         VsRecorder_TouchIndicatorTask(work->touchIndicator.task, work);

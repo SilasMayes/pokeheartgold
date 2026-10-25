@@ -183,7 +183,7 @@ static void AprijuiceScreen_PrintMessage(AprijuiceScreen *screen, int message);
 static void AprijuiceScreen_ShowMon(AprijuiceScreen *screen, int index);
 static void AprijuiceScreen_DrawStatStars(AprijuiceScreen *screen, AprijuiceMon *entry, u8 stat);
 static void AprijuiceScreen_DrawAllStars(AprijuiceScreen *screen, AprijuiceMon *entry);
-static void AprijuiceScreen_SetStarSprite(AprijuiceScreen *screen, int index, u8 sequence, int draw);
+static void AprijuiceScreen_SetStarSprite(AprijuiceScreen *screen, int index, u8 sequence, BOOL draw);
 static void AprijuiceScreen_StartStarTask(AprijuiceScreen *screen, int stat, int shrink);
 static void AprijuiceScreen_StarTask(SysTask *task, void *data);
 static void AprijuiceScreen_StartShakeTask(AprijuiceScreen *screen);
@@ -620,7 +620,7 @@ static void AprijuiceScreen_LoadParty(AprijuiceScreen *screen) {
         do {
             Pokemon *mon = Party_GetMonByIndex(screen->party, i);
             if (GetMonData(mon, MON_DATA_IS_EGG, NULL) == 0) {
-                AprijuiceMon_Init(&screen->mons[valid++], screen->party, mon, (u8)i, screen->heapId);
+                AprijuiceMon_Init(&screen->mons[valid++], screen->party, mon, i, screen->heapId);
             }
             i++;
         } while (i < count);
@@ -792,7 +792,7 @@ static BOOL AprijuiceScreen_ShowStatChange(AprijuiceScreen *screen) {
         if (screen->activeTasks != 0) {
             break;
         }
-        AprijuiceScreen_DrawStatStars(screen, &screen->mons[screen->selectedMon], (u8)stat);
+        AprijuiceScreen_DrawStatStars(screen, &screen->mons[screen->selectedMon], stat);
         AprijuiceScreen_DrawMessageBox(screen);
         if (screen->starDelta[screen->stat] < 0) {
             AprijuiceScreen_PrintMessage(screen, stat + msg_0022_00007);
@@ -981,7 +981,7 @@ static void AprijuiceScreen_AddWindows(AprijuiceScreen *screen) {
     i = 0;
     y = 4;
     for (; i < 5; i++) {
-        AddWindowParameterized(screen->bgConfig, &screen->windows[i + 5], GF_BG_LYR_MAIN_2, 1, (u8)y, 16, 2, 12, (u16)tile);
+        AddWindowParameterized(screen->bgConfig, &screen->windows[i + 5], GF_BG_LYR_MAIN_2, 1, y, 16, 2, 12, tile);
         FillWindowPixelBuffer(&screen->windows[i + 5], 0);
         tile += 0x20;
         y += 4;
@@ -1062,7 +1062,7 @@ static void AprijuiceScreen_CreateSprites(AprijuiceScreen *screen) {
     do {
         slot = (u8 *)screen + (u8)(*stat + 3) * sizeof(Sprite *);
         ((AprijuiceScreen *)slot)->sprites[0] = SpriteSystem_CreateSpriteFromResourceHeader(screen->spriteSystem, screen->spriteManager, &sAprijuiceSpriteTemplates[3]);
-        Sprite_SetPositionXY(((AprijuiceScreen *)slot)->sprites[0], 80, (s16)yIcon);
+        Sprite_SetPositionXY(((AprijuiceScreen *)slot)->sprites[0], 80, yIcon);
         Sprite_SetAnimActiveFlag(((AprijuiceScreen *)slot)->sprites[0], TRUE);
         Sprite_SetDrawFlag(((AprijuiceScreen *)slot)->sprites[0], TRUE);
         j = 0;
@@ -1070,7 +1070,7 @@ static void AprijuiceScreen_CreateSprites(AprijuiceScreen *screen) {
         do {
             slot = (u8 *)screen + (u8)(*stat * 5 + 8 + j) * sizeof(Sprite *);
             ((AprijuiceScreen *)slot)->sprites[0] = SpriteSystem_CreateSpriteFromResourceHeader(screen->spriteSystem, screen->spriteManager, &sAprijuiceSpriteTemplates[4]);
-            Sprite_SetPositionXY(((AprijuiceScreen *)slot)->sprites[0], (s16)x, (s16)yStars);
+            Sprite_SetPositionXY(((AprijuiceScreen *)slot)->sprites[0], x, yStars);
             Sprite_SetAnimActiveFlag(((AprijuiceScreen *)slot)->sprites[0], TRUE);
             Sprite_SetDrawFlag(((AprijuiceScreen *)slot)->sprites[0], TRUE);
             Sprite_SetAffineOverwriteMode(((AprijuiceScreen *)slot)->sprites[0], 2);
@@ -1220,11 +1220,11 @@ static void AprijuiceScreen_DrawStatStars(AprijuiceScreen *screen, AprijuiceMon 
     level = (u8)((entry->stars.stars >> (stat * 3)) & 7);
     for (i = 0; i < 5; i++, index++) {
         if (i > (s32)entry->performance.stats[stat].hi) {
-            AprijuiceScreen_SetStarSprite(screen, index, 0xFF, 0);
+            AprijuiceScreen_SetStarSprite(screen, index, 0xFF, FALSE);
         } else if (i > level) {
-            AprijuiceScreen_SetStarSprite(screen, index, 7, 1);
+            AprijuiceScreen_SetStarSprite(screen, index, 7, TRUE);
         } else {
-            AprijuiceScreen_SetStarSprite(screen, index, (u8)(entry->stars.color[stat] + 4), 1);
+            AprijuiceScreen_SetStarSprite(screen, index, (u8)(entry->stars.color[stat] + 4), TRUE);
         }
     }
 }
@@ -1233,11 +1233,11 @@ static void AprijuiceScreen_DrawAllStars(AprijuiceScreen *screen, AprijuiceMon *
     s32 i;
     CalcMonPokeathlonStars(&entry->stars, entry->mon, (const s8 *)entry->aprijuice.stats, screen->heapId);
     for (i = 0; i < 5; i++) {
-        AprijuiceScreen_DrawStatStars(screen, entry, (u8)i);
+        AprijuiceScreen_DrawStatStars(screen, entry, i);
     }
 }
 
-static void AprijuiceScreen_SetStarSprite(AprijuiceScreen *screen, int index, u8 sequence, int draw) {
+static void AprijuiceScreen_SetStarSprite(AprijuiceScreen *screen, int index, u8 sequence, BOOL draw) {
     index += 8;
     Sprite_SetDrawFlag(screen->sprites[index], draw);
     if (sequence != 0xFF) {
@@ -1286,7 +1286,7 @@ static void AprijuiceScreen_StartStarTask(AprijuiceScreen *screen, int stat, int
     index += stat * 5;
     star->sprite = screen->sprites[index + 8];
     Sprite_SetAffineScale(star->sprite, &star->scale);
-    AprijuiceScreen_SetStarSprite(screen, index, screen->oldStars.color[stat] + 4, 1);
+    AprijuiceScreen_SetStarSprite(screen, index, screen->oldStars.color[stat] + 4, TRUE);
     SysTask_CreateOnMainQueue(AprijuiceScreen_StarTask, star, 0);
     screen->activeTasks++;
     screen->starsShown++;

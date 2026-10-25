@@ -69,7 +69,7 @@ static void PCBox_StartHeldItemMove(PCBoxWork *work, int fromSlot, int toSlot, i
     PCBoxHeldItemMove *move = work->view->temp;
     int x, y, delta, destX, destY;
 
-    ManagedSprite_GetPositionXY(work->view->sprites[11], &old.x, &old.y);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_HELD_ITEM], &old.x, &old.y);
     PCBox_GetSlotPosition(toSlot, &dest.x, &dest.y, partyLayout);
     if (toItemIcon == 1) {
         dest.x += 8;
@@ -1124,7 +1124,7 @@ void PCBox_UpdateMarkingMenuSlide(PCBoxWork *work) {
     BgCellManager_UpdateCellMove(work->view->panels, PC_BOX_PANEL_MARKING_MENU);
 }
 
-int PCBox_WaitBottomButtonsSlide(PCBoxWork *work) {
+BOOL PCBox_WaitBottomButtonsSlide(PCBoxWork *work) {
     int partyButtonMoving = BgCellManager_UpdateCellMove(work->view->panels, PC_BOX_PANEL_PARTY_BUTTON);
     int trayTabMoving = BgCellManager_UpdateCellMove(work->view->panels, PC_BOX_PANEL_TRAY_TAB);
     int returnButtonMoving = BgCellManager_UpdateCellMove(work->view->panels, PC_BOX_PANEL_RETURN_BUTTON);
@@ -1227,7 +1227,7 @@ void PCBox_WaitWallpaperListSlideOut(PCBoxWork *work) {
     BgCellManager_UpdateCellMove(work->view->panels, PC_BOX_PANEL_WALLPAPER_LIST);
 }
 
-int PCBox_AnimateDepositBoxSelectOpen(PCBoxWork *work) {
+BOOL PCBox_AnimateDepositBoxSelectOpen(PCBoxWork *work) {
     PCBoxView *view = work->view;
     void *tiles = BgCellManager_GetCellTilemap(view->panels, PC_BOX_PANEL_BOX_TRAY);
     switch (view->subState) {
@@ -1369,8 +1369,8 @@ u32 PCBox_UpdateDepositDrag(PCBoxWork *work) {
                 coords.pos[0]);
             u32 value = 0xff;
             if (work->view->partyPanelLowered == 2) {
-                value = PCBox_GetTouchedBoxSlot((s16)work->view->touchX,
-                    (s16)work->view->touchY);
+                value = PCBox_GetTouchedBoxSlot(work->view->touchX,
+                    work->view->touchY);
             }
             PCBox_SetupDepositMoveEntries(work, work->selectedSlot, value);
             PCBox_SetSelectedIconOutlineVisible(work, 0);
@@ -1391,7 +1391,7 @@ u32 PCBox_UpdateDepositDrag(PCBoxWork *work) {
         }
         ManagedSprite_SetPositionXY(
             work->view->sprites[work->view->slotIcons[work->selectedSlot]],
-            (s16)coords.touchY,
+            coords.touchY,
             (s16)((s16)coords.touchX - 8));
         PCBox_UpdateSelectedIconOutline(work);
         work->view->touchX = coords.touchY;
@@ -1451,8 +1451,8 @@ u32 PCBox_UpdateWithdrawDrag(PCBoxWork *work) {
         if (!System_GetTouchHeldCoords(&touchY, &touchX)) {
             u32 value = 0xff;
             if (work->view->partyPanelLowered == 2) {
-                value = PCBox_GetTouchedPartySlot((s16)work->view->touchX,
-                    (s16)work->view->touchY,
+                value = PCBox_GetTouchedPartySlot(work->view->touchX,
+                    work->view->touchY,
                     gPCBoxTrayPartyDropRects);
             }
             PCBox_SetupMonMoveToPartyEnd(work, work->selectedSlot, value);
@@ -1478,7 +1478,7 @@ u32 PCBox_UpdateWithdrawDrag(PCBoxWork *work) {
         }
         ManagedSprite_SetPositionXY(
             work->view->sprites[work->view->slotIcons[work->selectedSlot]],
-            (s16)touchY,
+            touchY,
             (s16)((s16)touchX - 8));
         PCBox_UpdateSelectedIconOutline(work);
         work->view->touchX = touchY;
@@ -1539,10 +1539,10 @@ u32 PCBox_UpdateCursorSlide(PCBoxWork *work) {
 
     BgCellManager_UpdateCellMove(work->view->panels, PC_BOX_PANEL_SUMMARY_BUTTON);
     if (slide->frames == 0) {
-        ManagedSprite_SetPositionXY(work->view->sprites[9], slide->x, slide->y);
+        ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], slide->x, slide->y);
         if (work->view->cursorHolding == 1) {
             if (work->args->mode == PC_BOX_MODE_MOVE_ITEMS) {
-                ManagedSprite_SetPositionXY(work->view->sprites[11], slide->x, (s16)(slide->y + 8));
+                ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_HELD_ITEM], slide->x, (s16)(slide->y + 8));
             } else {
                 ManagedSprite_SetPositionXY(work->view->sprites[work->view->slotIcons[work->selectedSlot]], slide->x, (s16)(slide->y + 4));
             }
@@ -1551,7 +1551,7 @@ u32 PCBox_UpdateCursorSlide(PCBoxWork *work) {
     }
 
     slide->frames--;
-    ManagedSprite_GetPositionXY(work->view->sprites[9], &pos[1], &pos[0]);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], &pos[1], &pos[0]);
     if (slide->xNegative == 0) {
         pos[1] += slide->dx;
     } else {
@@ -1562,10 +1562,10 @@ u32 PCBox_UpdateCursorSlide(PCBoxWork *work) {
     } else {
         pos[0] -= slide->dy;
     }
-    ManagedSprite_SetPositionXY(work->view->sprites[9], pos[1], pos[0]);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], pos[1], pos[0]);
     if (work->view->cursorHolding == 1) {
         if (work->args->mode == PC_BOX_MODE_MOVE_ITEMS) {
-            ManagedSprite_SetPositionXY(work->view->sprites[11], pos[1], (s16)(pos[0] + 8));
+            ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_HELD_ITEM], pos[1], (s16)(pos[0] + 8));
         } else {
             ManagedSprite_SetPositionXY(work->view->sprites[work->view->slotIcons[work->selectedSlot]], pos[1], (s16)(pos[0] + 4));
         }
@@ -1667,10 +1667,10 @@ u32 PCBox_WaitDeselectThenButtons(PCBoxWork *work) {
 
 void PCBox_AttachIconToCursor(PCBoxWork *work) {
     s16 pos[2];
-    PCBox_SetSpriteAnim(work->view, 9, 0xa);
-    ManagedSprite_GetPositionXY(work->view->sprites[9], &pos[1], &pos[0]);
+    PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_CURSOR, 0xa);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], &pos[1], &pos[0]);
     ManagedSprite_SetPositionXY(work->view->sprites[work->view->slotIcons[work->selectedSlot]], pos[1], (s16)(pos[0] + 4));
-    PCBox_SetIconLayer(work->view, work->selectedSlot, 0);
+    PCBox_SetIconLayer(work->view, work->selectedSlot, FALSE);
 }
 
 // Cursor dip animation over the selected mon (and its icon).
@@ -1681,20 +1681,20 @@ BOOL PCBox_AnimateTrayPickUp(PCBoxWork *work) {
     BgCellManager_UpdateCellMove(view->panels, PC_BOX_PANEL_SUMMARY_BUTTON);
     switch (view->subState) {
     case 0:
-        PCBox_SetSpriteAnim(work->view, 9, 9);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_CURSOR, 9);
         view->subState++;
     case 1:
         if (view->counter == 4) {
             view->counter = 0;
             view->subState++;
         } else {
-            ManagedSprite_GetPositionXY(work->view->sprites[9], &x, &y);
-            ManagedSprite_SetPositionXY(work->view->sprites[9], x, (s16)(y + 2));
+            ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], &x, &y);
+            ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], x, (s16)(y + 2));
             view->counter++;
         }
         break;
     case 2:
-        PCBox_SetSpriteAnim(work->view, 9, 10);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_CURSOR, 10);
         view->subState++;
     case 3:
         if (view->counter == 4) {
@@ -1703,8 +1703,8 @@ BOOL PCBox_AnimateTrayPickUp(PCBoxWork *work) {
             return FALSE;
         } else {
             int index;
-            ManagedSprite_GetPositionXY(work->view->sprites[9], &x, &y);
-            ManagedSprite_SetPositionXY(work->view->sprites[9], x, (s16)(y - 2));
+            ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], &x, &y);
+            ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], x, (s16)(y - 2));
             index = work->view->slotIcons[work->selectedSlot];
             ManagedSprite_GetPositionXY(work->view->sprites[index], &x, &y);
             ManagedSprite_SetPositionXY(work->view->sprites[index], x, (s16)(y - 2));
@@ -1721,7 +1721,7 @@ u32 PCBox_AnimateTrayDrop(PCBoxWork *work) {
     switch (view->subState) {
     case 0: {
         u32 target;
-        PCBox_SetSpriteAnim(work->view, 9, 9);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_CURSOR, 9);
         target = work->view->dropTarget;
         if (target >= 0x25 && target <= 0x2a) {
             target += 0x5b;
@@ -1735,7 +1735,7 @@ u32 PCBox_AnimateTrayDrop(PCBoxWork *work) {
     case 1:
         if (PCBox_AnimateMonMove(work) == 0) {
             PCBox_ApplyMoveEntryIcons(work, view->temp);
-            PCBox_SetSpriteAnim(work->view, 9, 8);
+            PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_CURSOR, 8);
             view->subState = 0;
             return 0;
         }
@@ -1750,8 +1750,8 @@ u32 PCBox_WaitItemModeSelect(PCBoxWork *work) {
     case 0:
         if (view->heldItem != ITEM_NONE) {
             PCBox_SetHeldItemIconAffine(view, 1);
-            PCBox_SetSpriteAnim(work->view, 0xb, 1);
-            PCBox_SetSpriteVisible(work->view, 0xb, 1);
+            PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 1);
+            PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, TRUE);
         }
         view->subState++;
     case 1: {
@@ -1792,8 +1792,8 @@ int PCBox_UpdateItemModeBoxDrag(PCBoxWork *work) {
     case 0:
         if (work->view->heldItem) {
             PCBox_SetHeldItemIconAffine(work->view, 1);
-            PCBox_SetSpriteAnim(work->view, 11, 1);
-            PCBox_SetSpriteVisible(work->view, 11, 1);
+            PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 1);
+            PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, TRUE);
             view->subState = 1;
         } else {
             PCBox_SlideInActionMenu(work->view->panels);
@@ -1801,7 +1801,7 @@ int PCBox_UpdateItemModeBoxDrag(PCBoxWork *work) {
         }
         break;
     case 1:
-        if (PCBox_IsSpriteAnimated(work->view, 11) == 1) {
+        if (PCBox_IsSpriteAnimated(work->view, PC_BOX_SPRITE_HELD_ITEM) == 1) {
             break;
         }
         PCBox_SetHeldItemIconAffine(work->view, 0);
@@ -1809,7 +1809,7 @@ int PCBox_UpdateItemModeBoxDrag(PCBoxWork *work) {
         view->subState = 2;
     case 2:
         if (!System_GetTouchHeldCoords(&x, &y)) {
-            selected = PCBox_GetTouchedBoxSlot((s16)work->view->touchX, (s16)work->view->touchY);
+            selected = PCBox_GetTouchedBoxSlot(work->view->touchX, work->view->touchY);
             raw = selected;
             if (selected == 255) {
                 selected = work->selectedSlot;
@@ -1855,7 +1855,7 @@ u32 PCBox_WaitItemModeDeselect(PCBoxWork *work) {
     case 0:
         if (view->heldItem != ITEM_NONE) {
             PCBox_SetHeldItemIconAffine(view, 1);
-            PCBox_SetSpriteAnim(work->view, 0xb, 2);
+            PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 2);
         }
         view->subState++;
     case 1: {
@@ -1873,7 +1873,7 @@ u32 PCBox_WaitItemModeDeselect(PCBoxWork *work) {
         if (partyButtonMoving == 0 && trayTabMoving == 0 && returnButtonMoving == 0) {
             if (work->view->heldItem != ITEM_NONE) {
                 PCBox_SetHeldItemIconAffine(work->view, 0);
-                PCBox_SetSpriteVisible(work->view, 0xb, 0);
+                PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, FALSE);
             }
             view->subState = 0;
             return 0;
@@ -1888,7 +1888,7 @@ u32 PCBox_AnimateSwappedItemMove(PCBoxWork *work) {
     PCBoxView *view = work->view;
     switch (view->subState) {
     case 0:
-        if (PCBox_IsSpriteAnimated(view, 0xb) != 1) {
+        if (PCBox_IsSpriteAnimated(view, PC_BOX_SPRITE_HELD_ITEM) != 1) {
             u32 old = work->selectedSlot;
             work->selectedSlot = (u8)((PCBoxHeldItemMove *)view->temp)->toSlot;
             PCBox_StartHeldItemMoveWithIcon(work, old, old, 2);
@@ -1914,12 +1914,12 @@ int PCBox_UpdateItemTrayDrag(PCBoxWork *work) {
     switch (view->subState) {
     case 0:
         PCBox_SetHeldItemIconAffine(work->view, 1);
-        PCBox_SetSpriteAnim(work->view, 11, 1);
-        PCBox_SetSpriteVisible(work->view, 11, 1);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 1);
+        PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, TRUE);
         view->subState = 1;
         break;
     case 1:
-        if (PCBox_IsSpriteAnimated(work->view, 11) == 0) {
+        if (PCBox_IsSpriteAnimated(work->view, PC_BOX_SPRITE_HELD_ITEM) == 0) {
             PCBox_SetHeldItemIconAffine(work->view, 0);
             PCBox_ShowHeldItemIconOutline(work->view);
             view->subState = 2;
@@ -1927,9 +1927,9 @@ int PCBox_UpdateItemTrayDrag(PCBoxWork *work) {
         break;
     case 2:
         if (!System_GetTouchHeldCoords(&x, &y)) {
-            selected = PCBox_GetTouchedBoxSlot((s16)work->view->touchX, (s16)work->view->touchY);
+            selected = PCBox_GetTouchedBoxSlot(work->view->touchX, work->view->touchY);
             if (selected == 255) {
-                selected = PCBox_GetTouchedPartySlot((s16)work->view->touchX, (s16)work->view->touchY, gPCBoxTrayPartyDropRects);
+                selected = PCBox_GetTouchedPartySlot(work->view->touchX, work->view->touchY, gPCBoxTrayPartyDropRects);
             }
             raw = selected;
             if (selected == 255) {
@@ -1955,13 +1955,13 @@ int PCBox_UpdateItemTrayDrag(PCBoxWork *work) {
         break;
     case 4:
         PCBox_SetHeldItemIconAffine(work->view, 1);
-        PCBox_SetSpriteAnim(work->view, 11, 2);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 2);
         PCBox_SetSelectedIconOutlineVisible(work, 0);
         view->subState = 5;
         break;
     case 5:
-        if (!PCBox_IsSpriteAnimated(work->view, 11)) {
-            PCBox_SetSpriteVisible(work->view, 11, 0);
+        if (!PCBox_IsSpriteAnimated(work->view, PC_BOX_SPRITE_HELD_ITEM)) {
+            PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, FALSE);
             PCBox_SetHeldItemIconAffine(work->view, 0);
             view->subState = 6;
         }
@@ -1978,12 +1978,12 @@ u32 PCBox_AnimateTraySwappedItemMove(PCBoxWork *work) {
     switch (view->subState) {
     case 0:
         PCBox_SetHeldItemIconAffine(view, 1);
-        PCBox_SetSpriteAnim(work->view, 0xb, 1);
-        PCBox_SetSpriteVisible(work->view, 0xb, 1);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 1);
+        PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, TRUE);
         view->subState = 1;
         break;
     case 1:
-        if (PCBox_IsSpriteAnimated(view, 0xb) == 0) {
+        if (PCBox_IsSpriteAnimated(view, PC_BOX_SPRITE_HELD_ITEM) == 0) {
             PCBox_SetHeldItemIconAffine(work->view, 0);
             view->subState = 2;
         }
@@ -2003,12 +2003,12 @@ u32 PCBox_AnimateTraySwappedItemMove(PCBoxWork *work) {
         break;
     case 4:
         PCBox_SetHeldItemIconAffine(view, 1);
-        PCBox_SetSpriteAnim(work->view, 0xb, 2);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 2);
         view->subState = 5;
         break;
     case 5:
-        if (PCBox_IsSpriteAnimated(view, 0xb) == 0) {
-            PCBox_SetSpriteVisible(work->view, 0xb, 0);
+        if (PCBox_IsSpriteAnimated(view, PC_BOX_SPRITE_HELD_ITEM) == 0) {
+            PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, FALSE);
             PCBox_SetHeldItemIconAffine(work->view, 0);
             view->subState = 6;
         }
@@ -2020,7 +2020,7 @@ u32 PCBox_AnimateTraySwappedItemMove(PCBoxWork *work) {
     return 1;
 }
 
-int PCBox_AnimateTrayItemPickUp(PCBoxWork *work) {
+BOOL PCBox_AnimateTrayItemPickUp(PCBoxWork *work) {
     PCBoxView *view = work->view;
 
     struct {
@@ -2031,31 +2031,31 @@ int PCBox_AnimateTrayItemPickUp(PCBoxWork *work) {
     switch (view->subState) {
     case 0:
         PCBox_SetHeldItemIconAffine(work->view, 1);
-        PCBox_SetSpriteAnim(work->view, 11, 1);
-        PCBox_SetSpriteVisible(work->view, 11, 1);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 1);
+        PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, TRUE);
         view->subState++;
         break;
     case 1:
-        if (!PCBox_IsSpriteAnimated(work->view, 11)) {
+        if (!PCBox_IsSpriteAnimated(work->view, PC_BOX_SPRITE_HELD_ITEM)) {
             PCBox_SetHeldItemIconAffine(work->view, 0);
             view->subState++;
         }
         break;
     case 2:
-        PCBox_SetSpriteAnim(work->view, 9, 9);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_CURSOR, 9);
         view->subState++;
     case 3:
         if (view->counter == 4) {
             view->counter = 0;
             view->subState++;
         } else {
-            ManagedSprite_GetPositionXY(work->view->sprites[9], &pos.x, &pos.y);
-            ManagedSprite_SetPositionXY(work->view->sprites[9], pos.x, (s16)(pos.y + 2));
+            ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], &pos.x, &pos.y);
+            ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], pos.x, (s16)(pos.y + 2));
             view->counter++;
         }
         break;
     case 4:
-        PCBox_SetSpriteAnim(work->view, 9, 10);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_CURSOR, 10);
         view->subState++;
     case 5:
         if (view->counter == 4) {
@@ -2063,10 +2063,10 @@ int PCBox_AnimateTrayItemPickUp(PCBoxWork *work) {
             view->subState = 0;
             return FALSE;
         }
-        ManagedSprite_GetPositionXY(work->view->sprites[9], &pos.x, &pos.y);
-        ManagedSprite_SetPositionXY(work->view->sprites[9], pos.x, (s16)(pos.y - 2));
-        ManagedSprite_GetPositionXY(work->view->sprites[11], &pos.x, &pos.y);
-        ManagedSprite_SetPositionXY(work->view->sprites[11], pos.x, (s16)(pos.y - 2));
+        ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], &pos.x, &pos.y);
+        ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], pos.x, (s16)(pos.y - 2));
+        ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_HELD_ITEM], &pos.x, &pos.y);
+        ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_HELD_ITEM], pos.x, (s16)(pos.y - 2));
         view->counter++;
         break;
     default:
@@ -2080,7 +2080,7 @@ u32 PCBox_AnimateTrayItemDrop(PCBoxWork *work) {
     PCBoxView *view = work->view;
     switch (view->subState) {
     case 0:
-        PCBox_SetSpriteAnim(view, 9, 9);
+        PCBox_SetSpriteAnim(view, PC_BOX_SPRITE_CURSOR, 9);
         view->subState = 1;
     case 1:
         if (view->counter == 4) {
@@ -2088,25 +2088,25 @@ u32 PCBox_AnimateTrayItemDrop(PCBoxWork *work) {
             view->subState = 2;
             break;
         }
-        ManagedSprite_GetPositionXY(work->view->sprites[11], &pos[1], &pos[0]);
-        ManagedSprite_SetPositionXY(work->view->sprites[11], pos[1], (s16)(pos[0] + 2));
+        ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_HELD_ITEM], &pos[1], &pos[0]);
+        ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_HELD_ITEM], pos[1], (s16)(pos[0] + 2));
         view->counter++;
         break;
     case 2:
-        PCBox_SetSpriteAnim(view, 9, 8);
+        PCBox_SetSpriteAnim(view, PC_BOX_SPRITE_CURSOR, 8);
         PCBox_SetHeldItemIconAffine(work->view, 1);
-        PCBox_SetSpriteAnim(work->view, 0xb, 2);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 2);
         view->subState = 3;
         break;
     case 3:
-        if (PCBox_IsSpriteAnimated(view, 0xb) == 0) {
+        if (PCBox_IsSpriteAnimated(view, PC_BOX_SPRITE_HELD_ITEM) == 0) {
             PCBox_SetHeldItemIconAffine(work->view, 0);
-            PCBox_SetSpriteVisible(work->view, 0xb, 0);
+            PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, FALSE);
             view->subState = 4;
         }
         break;
     case 4:
-        PCBox_SetSpriteAnim(view, 9, 8);
+        PCBox_SetSpriteAnim(view, PC_BOX_SPRITE_CURSOR, 8);
         view->subState = 0;
         return 0;
     }
@@ -2118,7 +2118,7 @@ u32 PCBox_AnimateTrayItemReturn(PCBoxWork *work) {
     BgCellManager_UpdateCellMove(view->panels, PC_BOX_PANEL_SUMMARY_BUTTON);
     switch (view->subState) {
     case 0:
-        PCBox_SetSpriteAnim(work->view, 9, 9);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_CURSOR, 9);
         PCBox_StartHeldItemMoveFromDropTarget(work, work->view->itemFromSlot, 2);
         view->subState = 1;
         break;
@@ -2129,18 +2129,18 @@ u32 PCBox_AnimateTrayItemReturn(PCBoxWork *work) {
         break;
     case 2:
         PCBox_SetHeldItemIconAffine(work->view, 1);
-        PCBox_SetSpriteAnim(work->view, 0xb, 2);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 2);
         view->subState = 3;
         break;
     case 3:
-        if (PCBox_IsSpriteAnimated(work->view, 0xb) == 0) {
+        if (PCBox_IsSpriteAnimated(work->view, PC_BOX_SPRITE_HELD_ITEM) == 0) {
             PCBox_SetHeldItemIconAffine(work->view, 0);
-            PCBox_SetSpriteVisible(work->view, 0xb, 0);
+            PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, FALSE);
             view->subState = 4;
         }
         break;
     case 4:
-        PCBox_SetSpriteAnim(work->view, 9, 8);
+        PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_CURSOR, 8);
         view->subState = 0;
         return 0;
     }
@@ -2156,8 +2156,8 @@ int PCBox_UpdateItemModePartyDrag(PCBoxWork *work) {
     case 0:
         if (work->view->heldItem) {
             PCBox_SetHeldItemIconAffine(work->view, 1);
-            PCBox_SetSpriteAnim(work->view, 11, 1);
-            PCBox_SetSpriteVisible(work->view, 11, 1);
+            PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_HELD_ITEM, 1);
+            PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_HELD_ITEM, TRUE);
             view->subState = 1;
         } else {
             PCBox_SlideInActionMenu(work->view->panels);
@@ -2165,7 +2165,7 @@ int PCBox_UpdateItemModePartyDrag(PCBoxWork *work) {
         }
         break;
     case 1:
-        if (PCBox_IsSpriteAnimated(work->view, 11) == 1) {
+        if (PCBox_IsSpriteAnimated(work->view, PC_BOX_SPRITE_HELD_ITEM) == 1) {
             break;
         }
         PCBox_SetHeldItemIconAffine(work->view, 0);
@@ -2235,7 +2235,7 @@ u32 PCBox_AnimatePartySwappedItemMove(PCBoxWork *work) {
     u32 partyPanelMoving = PCBox_UpdatePartyPanelSlide(work);
     switch (view->subState) {
     case 0:
-        if (PCBox_IsSpriteAnimated(work->view, 0xb) == 0) {
+        if (PCBox_IsSpriteAnimated(work->view, PC_BOX_SPRITE_HELD_ITEM) == 0) {
             u32 old = work->selectedSlot;
             work->selectedSlot = (u8)((PCBoxHeldItemMove *)view->temp)->toSlot;
             PCBox_StartHeldItemMoveWithIcon(work, old, old, 1);

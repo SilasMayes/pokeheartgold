@@ -70,7 +70,7 @@ void PokewalkerApp_Setup(PokewalkerApp *app) {
     PokewalkerApp_LoadStrings(app);
     Main_SetVBlankIntrCB(PokewalkerApp_VBlankCB, app);
     GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
-    ToggleBgLayer(GF_BG_LYR_SUB_0, 1);
+    ToggleBgLayer(GF_BG_LYR_SUB_0, GF_PLANE_TOGGLE_ON);
 }
 
 void PokewalkerApp_Teardown(PokewalkerApp *app) {

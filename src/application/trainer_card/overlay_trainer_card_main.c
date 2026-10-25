@@ -90,8 +90,8 @@ static void TrainerCardMain_DrawFrontPicture(TrainerCardMain *cardMain);
 static void TrainerCardMain_ClearBackSideRect(TrainerCardMain *cardMain);
 static void TrainerCardMain_UnpackSignature(u8 *signature, u8 *pixels);
 static void TrainerCardMain_DrawSignature(BgConfig *bgConfig, int bgId, u8 *pixels);
-static void TrainerCardMain_UpdatePlayTime(TrainerCardMain *cardMain, int update);
-static void TrainerCardMain_SetButtonsHidden(TrainerCardMain *cardMain, int hide);
+static void TrainerCardMain_UpdatePlayTime(TrainerCardMain *cardMain, BOOL update);
+static void TrainerCardMain_SetButtonsHidden(TrainerCardMain *cardMain, BOOL hide);
 static void TrainerCardMain_CreateWindows(TrainerCardMain *cardMain);
 static void TrainerCardMain_DestroyWindows(TrainerCardMain *cardMain);
 static void TrainerCardMain_PrintFront(TrainerCardMain *cardMain, Window *windows, TrainerCardMainCard *card);
@@ -107,7 +107,7 @@ static void TrainerCardMain_PrintActionButton(TrainerCardMain *cardMain, int mod
 static void TrainerCardMain_PrintSignPrompt(TrainerCardMain *cardMain, int message);
 static void TrainerCardMain_ShowYesNoPrompt(TrainerCardMain *cardMain, int unused);
 static int TrainerCardMain_HandleYesNoPrompt(TrainerCardMain *cardMain, BOOL keepFrame);
-static void TrainerCardMain_SetButtonWindowsHidden(TrainerCardMain *cardMain, int hide);
+static void TrainerCardMain_SetButtonWindowsHidden(TrainerCardMain *cardMain, BOOL hide);
 
 static const TouchscreenHitbox sTrainerCardCancelHitbox = {
     .rect = { 168, 191, 191, 255 }
@@ -287,7 +287,7 @@ static const WindowTemplate sTrainerCardWindowTemplates[] = {
     { GF_BG_LYR_SUB_0, 25, 21, 6,  3, 15, 759 },
 };
 
-int TrainerCardMainApp_Init(OverlayManager *manager, int *state) {
+BOOL TrainerCardMainApp_Init(OverlayManager *manager, int *state) {
     TrainerCardMain *cardMain;
     Options *options;
     int i;
@@ -379,7 +379,7 @@ int TrainerCardMainApp_Init(OverlayManager *manager, int *state) {
     return TRUE;
 }
 
-int TrainerCardMainApp_Main(OverlayManager *manager, int *state) {
+BOOL TrainerCardMainApp_Main(OverlayManager *manager, int *state) {
     TrainerCardMain *cardMain = OverlayManager_GetData(manager);
 
     switch (*state) {
@@ -440,7 +440,7 @@ int TrainerCardMainApp_Main(OverlayManager *manager, int *state) {
     return FALSE;
 }
 
-int TrainerCardMainApp_Exit(OverlayManager *manager, int *state) {
+BOOL TrainerCardMainApp_Exit(OverlayManager *manager, int *state) {
     TrainerCardMain *cardMain = OverlayManager_GetData(manager);
 
     TrainerCardMain_ResetBgAffine();
@@ -713,7 +713,7 @@ static int TrainerCardMain_RunSignPrompt(TrainerCardMain *cardMain) {
             return TRAINER_CARD_SIGN_PROMPT_RUNNING;
         }
         TrainerCardMain_ShowYesNoPrompt(cardMain, 0);
-        TrainerCardMain_SetButtonsHidden(cardMain, 1);
+        TrainerCardMain_SetButtonsHidden(cardMain, TRUE);
         cardMain->subState++;
         break;
     case TRAINER_CARD_SIGN_PROMPT_HANDLE_YES_NO: {
@@ -722,7 +722,7 @@ static int TrainerCardMain_RunSignPrompt(TrainerCardMain *cardMain) {
             break;
         }
         if (result == 0) {
-            TrainerCardMain_SetButtonsHidden(cardMain, 0);
+            TrainerCardMain_SetButtonsHidden(cardMain, FALSE);
             return TRAINER_CARD_SIGN_PROMPT_CANCEL;
         }
         if (cardMain->card->signatureExists) {
@@ -744,7 +744,7 @@ static int TrainerCardMain_RunSignPrompt(TrainerCardMain *cardMain) {
         int result = TrainerCardMain_HandleYesNoPrompt(cardMain, TRUE);
         switch (result) {
         case 0:
-            TrainerCardMain_SetButtonsHidden(cardMain, 0);
+            TrainerCardMain_SetButtonsHidden(cardMain, FALSE);
             return TRAINER_CARD_SIGN_PROMPT_CANCEL;
         case 1:
             return TRAINER_CARD_SIGN_PROMPT_SIGN;
@@ -950,8 +950,8 @@ static void TrainerCardMain_DrawSignature(BgConfig *bgConfig, int bgId, u8 *pixe
     u8 y;
     u16 tile;
 
-    BG_LoadCharTilesData(bgConfig, (u8)bgId, pixels, 12288, 1);
-    tilemap = GetBgTilemapBuffer(bgConfig, (u8)bgId);
+    BG_LoadCharTilesData(bgConfig, bgId, pixels, 12288, 1);
+    tilemap = GetBgTilemapBuffer(bgConfig, bgId);
     tile = 0;
     for (y = 0; y < 8; y++) {
         x = 0;
@@ -961,10 +961,10 @@ static void TrainerCardMain_DrawSignature(BgConfig *bgConfig, int bgId, u8 *pixe
             x++;
         } while (x < 24);
     }
-    ScheduleBgTilemapBufferTransfer(bgConfig, (u8)bgId);
+    ScheduleBgTilemapBufferTransfer(bgConfig, bgId);
 }
 
-static void TrainerCardMain_UpdatePlayTime(TrainerCardMain *cardMain, int update) {
+static void TrainerCardMain_UpdatePlayTime(TrainerCardMain *cardMain, BOOL update) {
     if (update != 0) {
         if (!cardMain->showingBack) {
             if (cardMain->colonBlinkTimer == 0) {
@@ -978,7 +978,7 @@ static void TrainerCardMain_UpdatePlayTime(TrainerCardMain *cardMain, int update
     }
 }
 
-static void TrainerCardMain_SetButtonsHidden(TrainerCardMain *cardMain, int hide) {
+static void TrainerCardMain_SetButtonsHidden(TrainerCardMain *cardMain, BOOL hide) {
     if (hide == 1) {
         TrainerCardMain_SetButtonSpriteAnim(&cardMain->sprites, 1, 2, 0);
         TrainerCardMain_SetButtonSpriteAnim(&cardMain->sprites, 0, 0, 0);
@@ -1249,7 +1249,7 @@ static void TrainerCardMain_ShowYesNoPrompt(TrainerCardMain *cardMain, int unuse
 }
 
 static int TrainerCardMain_HandleYesNoPrompt(TrainerCardMain *cardMain, BOOL keepFrame) {
-    int answer;
+    BOOL answer;
     int result = YesNoPrompt_HandleInput(cardMain->yesNoPrompt);
     switch (result) {
     case YESNORESPONSE_YES:
@@ -1270,7 +1270,7 @@ static int TrainerCardMain_HandleYesNoPrompt(TrainerCardMain *cardMain, BOOL kee
     return answer;
 }
 
-static void TrainerCardMain_SetButtonWindowsHidden(TrainerCardMain *cardMain, int hide) {
+static void TrainerCardMain_SetButtonWindowsHidden(TrainerCardMain *cardMain, BOOL hide) {
     if (hide == 1) {
         ClearWindowTilemapAndScheduleTransfer(&cardMain->windows[13]);
         ClearWindowTilemapAndScheduleTransfer(&cardMain->windows[12]);

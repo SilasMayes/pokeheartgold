@@ -1134,13 +1134,13 @@ static int ArceusScriptCmd_LoadBg(LegendaryCinematic *cinematic, const int *cmd)
 
 static int ArceusScriptCmd_ToggleBg(LegendaryCinematic *cinematic, const int *cmd) {
     GF_ASSERT(cmd[0] == ARCEUS_CMD_TOGGLE_BG);
-    ToggleBgLayer((u8)cmd[1], (u8)cmd[2]);
+    ToggleBgLayer(cmd[1], cmd[2]);
     return ARCEUS_SCRIPT_CONTINUE;
 }
 
 static int ArceusScriptCmd_SetBgPriority(LegendaryCinematic *cinematic, const int *cmd) {
     GF_ASSERT(cmd[0] == ARCEUS_CMD_SET_BG_PRIORITY);
-    SetBgPriority((u8)cmd[1], (u8)cmd[2]);
+    SetBgPriority(cmd[1], (u8)cmd[2]);
     return ARCEUS_SCRIPT_CONTINUE;
 }
 
@@ -1199,7 +1199,7 @@ static int ArceusScriptCmd_PlayBgm(LegendaryCinematic *cinematic, const int *cmd
     if (cmd[1] == -1) {
         PlayBGM(arceus->savedBgm);
     } else {
-        PlayBGM((u16)cmd[1]);
+        PlayBGM(cmd[1]);
     }
     return ARCEUS_SCRIPT_CONTINUE;
 }
@@ -1214,7 +1214,7 @@ static int ArceusScriptCmd_SetSpriteVisible(LegendaryCinematic *cinematic, const
 static int ArceusScriptCmd_SetSpritePosition(LegendaryCinematic *cinematic, const int *cmd) {
     ArceusCinematic *arceus = cinematic->arceus;
     GF_ASSERT(cmd[0] == ARCEUS_CMD_SET_SPRITE_POSITION);
-    ManagedSprite_SetPositionXY(arceus->sprites[0], (s16)cmd[1], (s16)cmd[2]);
+    ManagedSprite_SetPositionXY(arceus->sprites[0], cmd[1], cmd[2]);
     return ARCEUS_SCRIPT_CONTINUE;
 }
 

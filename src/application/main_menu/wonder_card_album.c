@@ -1009,7 +1009,7 @@ static void WonderCardAlbum_FlipEffectTask(SysTask *task, void *data) {
 
     HBlankDma_Stop();
     buffer = DoubleBuffer_GetOther(effect->doubleBuffer);
-    HBlankDma_Start(buffer, (void *)REG_BG0HOFS_ADDR, 8, 1);
+    HBlankDma_Start(buffer, (void *)REG_BG0HOFS_ADDR, 8, TRUE);
 }
 
 static void WonderCardAlbum_StartFlipEffect(WonderCardAlbum *album, int mode, fx32 speed, fx32 accel) {

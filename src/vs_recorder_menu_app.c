@@ -23,11 +23,11 @@ enum VsRecorderMenuExitState {
     VS_RECORDER_MENU_EXIT_DELETE_CURSOR_2,
 };
 
-static int VsRecorderMenu_InitCommon(OverlayManager *manager, int *state, BOOL fromTerminal);
+static BOOL VsRecorderMenu_InitCommon(OverlayManager *manager, int *state, BOOL fromTerminal);
 static int VsRecorderMenu_Init(OverlayManager *manager, int *state);
 static int VsRecorderMenu_InitFromTerminal(OverlayManager *manager, int *state);
-static int VsRecorderMenu_Main(OverlayManager *manager, int *state);
-static int VsRecorderMenu_Exit(OverlayManager *manager, int *state);
+static BOOL VsRecorderMenu_Main(OverlayManager *manager, int *state);
+static BOOL VsRecorderMenu_Exit(OverlayManager *manager, int *state);
 static const VsRecorderMenuEntry *VsRecorderApp_GetRootMenu(int mode);
 
 FS_EXTERN_OVERLAY(OVY_40);
@@ -77,7 +77,7 @@ BOOL VsRecorderApp_IsFrontierBrainClass(u32 trainerClass) {
     return FALSE;
 }
 
-static int VsRecorderMenu_InitCommon(OverlayManager *manager, int *state, BOOL fromTerminal) {
+static BOOL VsRecorderMenu_InitCommon(OverlayManager *manager, int *state, BOOL fromTerminal) {
     VsRecorderWork *recorder;
 
     StopAllSE(0);
@@ -110,7 +110,7 @@ static int VsRecorderMenu_InitFromTerminal(OverlayManager *manager, int *state) 
     return VsRecorderMenu_InitCommon(manager, state, TRUE);
 }
 
-static int VsRecorderMenu_Main(OverlayManager *manager, int *state) {
+static BOOL VsRecorderMenu_Main(OverlayManager *manager, int *state) {
     VsRecorderWork *recorder = VsRecorderApp_GetRecorderWork(manager);
     recorder->screenPtr = state;
     if (VsRecorder_Main(recorder, state)) {
@@ -119,7 +119,7 @@ static int VsRecorderMenu_Main(OverlayManager *manager, int *state) {
     return FALSE;
 }
 
-static int VsRecorderMenu_Exit(OverlayManager *manager, int *state) {
+static BOOL VsRecorderMenu_Exit(OverlayManager *manager, int *state) {
     VsRecorderWork *recorder = VsRecorderApp_GetRecorderWork(manager);
 
     switch (*state) {

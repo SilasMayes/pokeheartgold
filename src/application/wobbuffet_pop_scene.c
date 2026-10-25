@@ -941,7 +941,7 @@ BOOL WobbuffetPop_UpdateBalloonIcons(WobbuffetPop *game) {
 
 static BOOL WobbuffetPopBalloonIcon_Init(WobbuffetPop *game, WobbuffetPopBalloonIcon *icon, u32 position, u32 number) {
     MI_CpuFill8(icon, 0, sizeof(WobbuffetPopBalloonIcon));
-    icon->size = WobbuffetPopBalloonIcon_GetSize((s32)number);
+    icon->size = WobbuffetPopBalloonIcon_GetSize(number);
     icon->state = 1;
     icon->sprite = WobbuffetPop_CreateBalloonIconSprite(game, icon->size, position);
     icon->position = position;
@@ -1262,7 +1262,7 @@ void WobbuffetPopBonusRing_CreateSprites(WobbuffetPop *game, WobbuffetPopBonusRi
         int y = 98 - FX_Mul(GF_CosDegFX32(ring->angle + target->angle), 68);
 
         target->sprite = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &template);
-        ManagedSprite_SetPositionXYWithSubscreenOffset(target->sprite, (s16)x, (s16)(y - 24), 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(target->sprite, x, (s16)(y - 24), 0x160000);
         ManagedSprite_SetAnim(target->sprite, sWobbuffetPopBonusTargetAnims[i + 1]);
         Sprite_TickFrame(target->sprite->sprite);
         ManagedSprite_SetDrawFlag(target->sprite, FALSE);
@@ -1272,7 +1272,7 @@ void WobbuffetPopBonusRing_CreateSprites(WobbuffetPop *game, WobbuffetPopBonusRi
         Sprite_TickFrame(target->effect->sprite);
         ManagedSprite_SetDrawFlag(target->effect, FALSE);
         target->shadow = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &sWobbuffetPopBonusShadowSpriteTemplate);
-        ManagedSprite_SetPositionXYWithSubscreenOffset(target->shadow, (s16)x, (s16)y, 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(target->shadow, x, y, 0x160000);
         ManagedSprite_SetOamMode(target->shadow, GX_OAM_MODE_XLU);
         ManagedSprite_SetAffineOverwriteMode(target->shadow, 1);
         ManagedSprite_SetAffineScale(target->shadow, 1.0f, 1.0f);
@@ -1492,8 +1492,8 @@ static u32 WobbuffetPopBonusTarget_Walk(WobbuffetPop *game, WobbuffetPopBonusRin
     bob = -FX_Mul(GF_SinDegFX32(((180 * ring->stepTimer) << FX32_SHIFT) / sWobbuffetPopRingSpeeds[ring->speed].steps), 0xc000) / FX32_ONE;
     x = 128 + FX_Mul(GF_SinDegFX32(ring->angle + target->angle), 76);
     y = 98 - FX_Mul(GF_CosDegFX32(ring->angle + target->angle), 68);
-    ManagedSprite_SetPositionXYWithSubscreenOffset(target->sprite, (s16)x, (s16)(y - 24 + bob), 0x160000);
-    ManagedSprite_SetPositionXYWithSubscreenOffset(target->shadow, (s16)x, (s16)y, 0x160000);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(target->sprite, x, (s16)(y - 24 + bob), 0x160000);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(target->shadow, x, y, 0x160000);
     scale = (float)(FX32_ONE - ((-bob / 3) << FX32_SHIFT) / 12) / (float)FX32_ONE;
     ManagedSprite_SetAffineScale(target->shadow, scale, scale);
     if (ring->stepTimer == sWobbuffetPopRingSpeeds[ring->speed].steps - 1) {

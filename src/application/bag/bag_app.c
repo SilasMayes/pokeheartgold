@@ -101,12 +101,6 @@ enum {
     BAG_STATE_WAIT_FADE_OUT,
 };
 
-enum {
-    BAG_BUTTON_PREV_PAGE = 14,
-    BAG_BUTTON_NEXT_PAGE,
-    BAG_BUTTON_CANCEL,
-};
-
 static void BagApp_GetSaveStructPtrs(BagApp *app);
 static RoamerSaveData *BagApp_GetSaveRoamers(BagApp *app);
 static void BagApp_SetRepelStepCount(BagApp *app, u8 steps);
@@ -592,7 +586,7 @@ static void BagApp_CountPockets(BagApp *app) {
     u8 i;
 
     app->numPockets = 0;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < POCKETS_COUNT; i++) {
         if (app->bagView->pockets[i].slots != NULL) {
             app->numPockets++;
         }
@@ -624,14 +618,14 @@ static void BagApp_LoadCursorPositions(BagApp *app) {
     app->bagView->pocketIndex = 0;
     pockets = app->bagView->pockets;
     if (app->bagView->cursor == NULL) {
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < POCKETS_COUNT; i++) {
             BagViewPocket *pocket = &pockets[i];
             if (pocket->slots != NULL) {
                 pocket->position = 0;
                 pocket->scroll = 0;
             }
         }
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < POCKETS_COUNT; i++) {
             if (pockets[i].slots != NULL) {
                 app->bagView->pocketIndex = i;
                 return;
@@ -639,7 +633,7 @@ static void BagApp_LoadCursorPositions(BagApp *app) {
         }
         return;
     }
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < POCKETS_COUNT; i++) {
         BagViewPocket *pocket = &pockets[i];
         if (pocket->slots != NULL) {
             u8 pos[2];
@@ -652,14 +646,14 @@ static void BagApp_LoadCursorPositions(BagApp *app) {
         u32 pocketId = BagCursor_Field_GetPocket(app->bagView->cursor);
         if (pockets[pocketId].slots == NULL) {
             u16 j;
-            for (j = 0; j < 8; j++) {
+            for (j = 0; j < POCKETS_COUNT; j++) {
                 if (pockets[j].slots != NULL) {
                     pocketId = j;
                     break;
                 }
             }
         }
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < POCKETS_COUNT; i++) {
             BagViewPocket *pocket = &pockets[i];
             if (pocket->slots != NULL && pocketId == pocket->pocketId) {
                 app->bagView->pocketIndex = i;
@@ -678,10 +672,10 @@ static void BagApp_SaveCursorPositions(BagApp *app) {
         return;
     }
     pockets = bagView->pockets;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < POCKETS_COUNT; i++) {
         BagViewPocket *pocket = &pockets[i];
         if (pocket->slots != NULL) {
-            BagCursor_Field_PocketSetPosition(app->bagView->cursor, pocket->pocketId, (u8)pocket->position, (u8)pocket->scroll);
+            BagCursor_Field_PocketSetPosition(app->bagView->cursor, pocket->pocketId, pocket->position, pocket->scroll);
         }
     }
     bagView = app->bagView;
@@ -715,7 +709,7 @@ static void BagApp_LoadPocketItemNames(BagApp *app) {
     if (pocket->itemCount == 0) {
         lastPage = 0;
     } else {
-        lastPage = ((pocket->itemCount - 1) / 6) * 6;
+        lastPage = ((pocket->itemCount - 1) / BAG_ITEMS_PER_PAGE) * BAG_ITEMS_PER_PAGE;
     }
     if (pocket->scroll > lastPage) {
         pocket->scroll = lastPage;
@@ -740,7 +734,7 @@ static void BagApp_FreeItemNameStrings(BagApp *app) {
 
 static void BagApp_ClampPocketScroll(s16 *scroll, u16 *position, s32 itemCount) {
     if (*scroll + *position > itemCount) {
-        *scroll = ((itemCount - 1) / 6) * 6;
+        *scroll = ((itemCount - 1) / BAG_ITEMS_PER_PAGE) * BAG_ITEMS_PER_PAGE;
     }
     if (*scroll < 0) {
         *scroll = 0;
@@ -754,8 +748,8 @@ static s32 BagApp_GetPageItemCount(BagApp *app) {
     BagView *bagView = app->bagView;
     u8 pocketIndex = bagView->pocketIndex;
     s32 count = bagView->pockets[pocketIndex].itemCount - bagView->pockets[pocketIndex].scroll;
-    if (count > 6) {
-        count = 6;
+    if (count > BAG_ITEMS_PER_PAGE) {
+        count = BAG_ITEMS_PER_PAGE;
     }
     return count;
 }
@@ -763,9 +757,9 @@ static s32 BagApp_GetPageItemCount(BagApp *app) {
 static int BagApp_GetMovingItemPageSlot(BagApp *app) {
     int source = app->moveSource;
     BagView *bagView = app->bagView;
-    int page = source / 6;
-    if (bagView->pockets[bagView->pocketIndex].scroll == page * 6) {
-        return source % 6;
+    int page = source / BAG_ITEMS_PER_PAGE;
+    if (bagView->pockets[bagView->pocketIndex].scroll == page * BAG_ITEMS_PER_PAGE) {
+        return source % BAG_ITEMS_PER_PAGE;
     }
     return -1;
 }
@@ -778,18 +772,18 @@ static void BagApp_SetPocketPositionFromButton(BagApp *app, s32 button) {
     BagView *bagView;
     u8 pocketIndex;
 
-    if (button >= 8 && button < 14) {
+    if (button >= BAG_BUTTON_FIRST_SLOT && button < BAG_BUTTON_PREV_PAGE) {
         bagView = app->bagView;
         pocketIndex = bagView->pocketIndex;
-        bagView->pockets[pocketIndex].position = button - 8;
+        bagView->pockets[pocketIndex].position = button - BAG_BUTTON_FIRST_SLOT;
     }
 }
 
 static BOOL BagApp_ShouldMoveCursorToButton(BagApp *app, s32 button) {
-    if (button == 14 || button == 15) {
+    if (button == BAG_BUTTON_PREV_PAGE || button == BAG_BUTTON_NEXT_PAGE) {
         return FALSE;
     }
-    if (button <= 7 && app->cursorButton >= 8 && app->cursorButton <= 13) {
+    if (button <= BAG_BUTTON_LAST_POCKET && app->cursorButton >= BAG_BUTTON_FIRST_SLOT && app->cursorButton <= BAG_BUTTON_LAST_SLOT) {
         return FALSE;
     }
     return TRUE;
@@ -798,7 +792,7 @@ static BOOL BagApp_ShouldMoveCursorToButton(BagApp *app, s32 button) {
 static s32 BagApp_GetCursorItemId(BagApp *app) {
     BagView *bagView = app->bagView;
     BagViewPocket *pocket = &bagView->pockets[bagView->pocketIndex];
-    u32 index = pocket->scroll + app->cursorButton - 8;
+    u32 index = pocket->scroll + app->cursorButton - BAG_BUTTON_FIRST_SLOT;
     if (gPocketCapacities[bagView->pocketIndex] <= index) {
         return ITEM_NONE;
     }
@@ -807,14 +801,14 @@ static s32 BagApp_GetCursorItemId(BagApp *app) {
 
 static void BagApp_PrintCursorDescription(BagApp *app) {
     s32 button = app->cursorButton;
-    if (button >= 8 && button <= 13) {
+    if (button >= BAG_BUTTON_FIRST_SLOT && button <= BAG_BUTTON_LAST_SLOT) {
         u32 itemId = BagApp_GetCursorItemId(app);
         if (itemId != ITEM_NONE) {
             BagApp_ShowItemDescription(app, &app->windows[0], itemId);
         } else {
             BagApp_ClearDescriptionWindow(app, &app->windows[0]);
         }
-    } else if (button >= 0 && button <= 7) {
+    } else if (button >= 0 && button <= BAG_BUTTON_LAST_POCKET) {
         BagApp_ShowPocketDescription(app, &app->windows[0], button);
     } else {
         BagApp_ClearDescriptionWindow(app, &app->windows[0]);
@@ -833,11 +827,11 @@ static int BagApp_State_HandleInput(BagApp *app) {
         changed++;
     } else if (gSystem.newAndRepeatedKeys & PAD_KEY_LEFT) {
         target = gBagAppButtonNavTable[app->cursorButton][BAG_NAV_LEFT];
-        if (target == 14) {
+        if (target == BAG_BUTTON_PREV_PAGE) {
             return BagApp_PressButton(app, BAG_BUTTON_PREV_PAGE, &pressed[4], 1, 2, FALSE);
         }
-        if (app->cursorButton != 16) {
-            if (app->cursorButton >= 0 && app->cursorButton < 8) {
+        if (app->cursorButton != BAG_BUTTON_CANCEL) {
+            if (app->cursorButton >= 0 && app->cursorButton < BAG_BUTTON_FIRST_SLOT) {
                 result = BagApp_GetAdjacentPocket(app, app->cursorButton, -1);
                 if (app->cursorButton != result) {
                     app->cursorButton = result;
@@ -850,11 +844,11 @@ static int BagApp_State_HandleInput(BagApp *app) {
         }
     } else if (gSystem.newAndRepeatedKeys & PAD_KEY_RIGHT) {
         target = gBagAppButtonNavTable[app->cursorButton][BAG_NAV_RIGHT];
-        if (target == 15) {
+        if (target == BAG_BUTTON_NEXT_PAGE) {
             return BagApp_PressButton(app, BAG_BUTTON_NEXT_PAGE, &pressed[3], 1, 2, FALSE);
         }
-        if (app->cursorButton != 16) {
-            if (app->cursorButton >= 0 && app->cursorButton < 8) {
+        if (app->cursorButton != BAG_BUTTON_CANCEL) {
+            if (app->cursorButton >= 0 && app->cursorButton < BAG_BUTTON_FIRST_SLOT) {
                 result = BagApp_GetAdjacentPocket(app, app->cursorButton, 1);
                 if (app->cursorButton != result) {
                     app->cursorButton = result;
@@ -866,7 +860,7 @@ static int BagApp_State_HandleInput(BagApp *app) {
             }
         }
     } else if (gSystem.newKeys & PAD_BUTTON_L) {
-        if (app->cursorButton >= 0 && app->cursorButton < 8) {
+        if (app->cursorButton >= 0 && app->cursorButton < BAG_BUTTON_FIRST_SLOT) {
             app->cursorButton = BagApp_GetAdjacentPocket(app, app->bagView->pocketIndex, -1);
             BagApp_SetCursorPosition(app, app->cursorButton);
             return BagApp_PressButton(app, app->cursorButton, &pressed[2], 1, 2, changed);
@@ -874,7 +868,7 @@ static int BagApp_State_HandleInput(BagApp *app) {
             return BagApp_PressButton(app, BagApp_GetAdjacentPocket(app, app->bagView->pocketIndex, -1), &pressed[2], 1, 2, FALSE);
         }
     } else if (gSystem.newKeys & PAD_BUTTON_R) {
-        if (app->cursorButton >= 0 && app->cursorButton < 8) {
+        if (app->cursorButton >= 0 && app->cursorButton < BAG_BUTTON_FIRST_SLOT) {
             app->cursorButton = BagApp_GetAdjacentPocket(app, app->bagView->pocketIndex, 1);
             BagApp_SetCursorPosition(app, app->cursorButton);
             return BagApp_PressButton(app, app->cursorButton, &pressed[1], 1, 2, changed);
@@ -882,7 +876,7 @@ static int BagApp_State_HandleInput(BagApp *app) {
             return BagApp_PressButton(app, BagApp_GetAdjacentPocket(app, app->bagView->pocketIndex, 1), &pressed[1], 1, 2, FALSE);
         }
     }
-    if (app->cursorButton == 17) {
+    if (app->cursorButton == BAG_BUTTON_CURRENT_POCKET) {
         app->cursorButton = app->bagView->pocketIndex;
     }
     if (changed) {
@@ -895,7 +889,7 @@ static int BagApp_State_HandleInput(BagApp *app) {
     result = BagApp_GetTouchedButton(app, 0);
     if (result != -1) {
         if (BagApp_ShouldMoveCursorToButton(app, result)) {
-            if ((u32)result < 8) {
+            if ((u32)result < BAG_BUTTON_FIRST_SLOT) {
                 if (BagApp_FindPocketIndex(app, result) != -1) {
                     app->cursorButton = result;
                     BagApp_SetCursorPosition(app, app->cursorButton);
@@ -903,7 +897,7 @@ static int BagApp_State_HandleInput(BagApp *app) {
             } else {
                 app->cursorButton = result;
                 BagApp_SetCursorPosition(app, app->cursorButton);
-                if (app->cursorButton >= 8 && app->cursorButton <= 13) {
+                if (app->cursorButton >= BAG_BUTTON_FIRST_SLOT && app->cursorButton <= BAG_BUTTON_LAST_SLOT) {
                     BagApp_SetPocketPositionFromButton(app, app->cursorButton);
                 }
             }
@@ -914,7 +908,7 @@ static int BagApp_State_HandleInput(BagApp *app) {
         }
     } else if (gSystem.newKeys & PAD_BUTTON_A) {
         result = BagApp_PressButton(app, app->cursorButton, &pressed[0], 1, 2, FALSE);
-        if (app->cursorButton >= 8 && app->cursorButton <= 13) {
+        if (app->cursorButton >= BAG_BUTTON_FIRST_SLOT && app->cursorButton <= BAG_BUTTON_LAST_SLOT) {
             BagApp_SetPocketPositionFromButton(app, app->cursorButton);
         }
         if (result != 1) {
@@ -923,7 +917,7 @@ static int BagApp_State_HandleInput(BagApp *app) {
     } else if (gSystem.newKeys & PAD_BUTTON_B) {
         result = BagApp_PressButton(app, BAG_BUTTON_CANCEL, &pressed[0], 1, 2, FALSE);
         BagApp_SetMenuInputState(app, MENU_INPUT_STATE_BUTTONS);
-        if (app->cursorButton >= 8 && app->cursorButton <= 13) {
+        if (app->cursorButton >= BAG_BUTTON_FIRST_SLOT && app->cursorButton <= BAG_BUTTON_LAST_SLOT) {
             BagApp_SetPocketPositionFromButton(app, app->cursorButton);
         }
         if (result != 1) {
@@ -931,7 +925,7 @@ static int BagApp_State_HandleInput(BagApp *app) {
         }
     }
     if (pressed[0] == TRUE) {
-        return BagApp_StartButtonAnim(app, 20, 41, BAG_STATE_OPEN_ITEM_MENU);
+        return BagApp_StartButtonAnim(app, BAG_SPRITE_CURSOR, 41, BAG_STATE_OPEN_ITEM_MENU);
     }
     return BAG_STATE_INPUT;
 }
@@ -942,11 +936,11 @@ static int BagApp_State_OpenItemMenu(BagApp *app) {
     BagViewPocket *pocket = (BagViewPocket *)((u8 *)pockets + offset);
 
     BagApp_LoadSubScreenLayout(app, 2, 0, 0);
-    BagApp_DrawSelectedItemEntry(app, pocket->scroll, app->cursorButton - 8);
-    BagApp_ShowSelectedItemIcon(app, app->cursorButton - 8);
+    BagApp_DrawSelectedItemEntry(app, pocket->scroll, app->cursorButton - BAG_BUTTON_FIRST_SLOT);
+    BagApp_ShowSelectedItemIcon(app, app->cursorButton - BAG_BUTTON_FIRST_SLOT);
     BagApp_SetupItemMenu(app);
-    app->bagView->itemId = ((BagViewPocket *)((u8 *)pockets + offset))->slots[pocket->scroll + app->cursorButton - 8].id;
-    app->maxQuantity = ((BagViewPocket *)((u8 *)pockets + offset))->slots[pocket->scroll + app->cursorButton - 8].quantity;
+    app->bagView->itemId = ((BagViewPocket *)((u8 *)pockets + offset))->slots[pocket->scroll + app->cursorButton - BAG_BUTTON_FIRST_SLOT].id;
+    app->maxQuantity = ((BagViewPocket *)((u8 *)pockets + offset))->slots[pocket->scroll + app->cursorButton - BAG_BUTTON_FIRST_SLOT].quantity;
     return BAG_STATE_ITEM_MENU_INPUT;
 }
 
@@ -955,18 +949,18 @@ static int BagApp_State_ChangePage(BagApp *app, int direction) {
     BagViewPocket *pocket = &bagView->pockets[bagView->pocketIndex];
 
     if (direction > 0) {
-        s32 scroll = pocket->scroll + 6;
+        s32 scroll = pocket->scroll + BAG_ITEMS_PER_PAGE;
         if (scroll < pocket->itemCount) {
             pocket->scroll = scroll;
         } else {
             pocket->scroll = 0;
         }
     } else {
-        s32 scroll = pocket->scroll - 6;
+        s32 scroll = pocket->scroll - BAG_ITEMS_PER_PAGE;
         if (scroll >= 0) {
             pocket->scroll = scroll;
         } else {
-            pocket->scroll = ((pocket->itemCount - 1) / 6) * 6;
+            pocket->scroll = ((pocket->itemCount - 1) / BAG_ITEMS_PER_PAGE) * BAG_ITEMS_PER_PAGE;
         }
     }
     if (app->isMovingItem == TRUE) {
@@ -1007,7 +1001,7 @@ static int BagApp_DebugCycleSubScreenLayout(BagApp *app) {
 
 static int BagApp_FindPocketIndex(BagApp *app, int pocketId) {
     int i;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < POCKETS_COUNT; i++) {
         if (pocketId == app->bagView->pockets[i].pocketId && app->bagView->pockets[i].slots != NULL) {
             return i;
         }
@@ -1017,11 +1011,11 @@ static int BagApp_FindPocketIndex(BagApp *app, int pocketId) {
 
 static int BagApp_GetAdjacentPocket(BagApp *app, int pocket, int direction) {
     s32 i;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < POCKETS_COUNT; i++) {
         pocket += direction;
         if (pocket < 0) {
-            pocket = 7;
-        } else if (pocket == 8) {
+            pocket = POCKET_KEY_ITEMS;
+        } else if (pocket == POCKETS_COUNT) {
             pocket = 0;
         }
         if (BagApp_FindPocketIndex(app, pocket) != -1) {
@@ -1046,14 +1040,14 @@ static int BagApp_PressButton(BagApp *app, int button, u8 *itemChosen, int unuse
     int pocketIndex, index;
 
     switch (button) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
+    case POCKET_ITEMS:
+    case POCKET_MEDICINE:
+    case POCKET_BALLS:
+    case POCKET_TMHMS:
+    case POCKET_BERRIES:
+    case POCKET_MAIL:
+    case POCKET_BATTLE_ITEMS:
+    case POCKET_KEY_ITEMS:
         pocketIndex = BagApp_FindPocketIndex(app, button);
         if (pocketIndex == -1) {
             return result;
@@ -1072,20 +1066,20 @@ static int BagApp_PressButton(BagApp *app, int button, u8 *itemChosen, int unuse
         BagApp_LoadPocketSubBgPalette(app, 1, app->bagView->pocketIndex);
         PlaySE(SEQ_SE_DP_SELECT);
         BagApp_PrintCursorDescription(app);
-        if (app->cursorButton >= 8) {
+        if (app->cursorButton >= BAG_BUTTON_FIRST_SLOT) {
             BagApp_SetPocketPositionFromButton(app, app->cursorButton);
         }
         BagApp_SetBagModelPocketAnim(app);
         BagApp_StartCameraTween(&app->scene, app->bagView->pocketIndex + 1, 7);
         break;
-    case 8:
-    case 9:
-    case 10:
-    case 11:
-    case 12:
-    case 13:
+    case BAG_BUTTON_FIRST_SLOT:
+    case BAG_BUTTON_FIRST_SLOT + 1:
+    case BAG_BUTTON_FIRST_SLOT + 2:
+    case BAG_BUTTON_FIRST_SLOT + 3:
+    case BAG_BUTTON_FIRST_SLOT + 4:
+    case BAG_BUTTON_LAST_SLOT:
         pocket = &app->bagView->pockets[app->bagView->pocketIndex];
-        index = pocket->scroll + (button - 8);
+        index = pocket->scroll + (button - BAG_BUTTON_FIRST_SLOT);
         if (index < pocket->itemCount) {
             app->bagView->itemId = pocket->slots[index].id;
             *itemChosen = TRUE;
@@ -1094,15 +1088,15 @@ static int BagApp_PressButton(BagApp *app, int button, u8 *itemChosen, int unuse
         BagApp_PrintCursorDescription(app);
         break;
     case BAG_BUTTON_NEXT_PAGE:
-        if (app->bagView->pockets[app->bagView->pocketIndex].itemCount > 6) {
+        if (app->bagView->pockets[app->bagView->pocketIndex].itemCount > BAG_ITEMS_PER_PAGE) {
             PlaySE(SEQ_SE_DP_SELECT);
-            result = BagApp_StartButtonFlash(app, 18, 9, 8, BAG_STATE_NEXT_PAGE);
+            result = BagApp_StartButtonFlash(app, BAG_SPRITE_NEXT_PAGE, 9, 8, BAG_STATE_NEXT_PAGE);
         }
         break;
     case BAG_BUTTON_PREV_PAGE:
-        if (app->bagView->pockets[app->bagView->pocketIndex].itemCount > 6) {
+        if (app->bagView->pockets[app->bagView->pocketIndex].itemCount > BAG_ITEMS_PER_PAGE) {
             PlaySE(SEQ_SE_DP_SELECT);
-            result = BagApp_StartButtonFlash(app, 17, 9, 8, BAG_STATE_PREV_PAGE);
+            result = BagApp_StartButtonFlash(app, BAG_SPRITE_PREV_PAGE, 9, 8, BAG_STATE_PREV_PAGE);
         }
         break;
     case BAG_BUTTON_CANCEL:
@@ -1110,7 +1104,7 @@ static int BagApp_PressButton(BagApp *app, int button, u8 *itemChosen, int unuse
         app->bagView->selectedAction = 5;
         BagApp_SetMenuInputState(app, (MenuInputState)force);
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        result = BagApp_StartButtonFlash(app, 19, 9, 8, BAG_STATE_FADE_OUT);
+        result = BagApp_StartButtonFlash(app, BAG_SPRITE_CANCEL, 9, 8, BAG_STATE_FADE_OUT);
         break;
     }
     return result;
@@ -1249,7 +1243,7 @@ static void BagApp_StartMoveItem(BagApp *app) {
     BagViewPocket *pocket = &app->bagView->pockets[app->bagView->pocketIndex];
 
     app->isMovingItem = TRUE;
-    app->moveSource = pocket->scroll + app->cursorButton - 8;
+    app->moveSource = pocket->scroll + app->cursorButton - BAG_BUTTON_FIRST_SLOT;
     BagApp_PrintMoveItemPrompt(app);
     BagApp_UpdateMoveMarker(app);
     BagApp_HideItemMenuSprites(app);
@@ -1257,13 +1251,13 @@ static void BagApp_StartMoveItem(BagApp *app) {
     BagApp_ClearItemMenuLabels(&app->dynWindows[13]);
     BagApp_CloseItemActionWindows(app);
     pocket = &app->bagView->pockets[app->bagView->pocketIndex];
-    BagApp_LoadSubScreenLayout(app, 1, BagApp_GetPageItemCount(app), app->cursorButton - 8);
-    BagApp_DrawItemList(app, pocket->scroll, app->cursorButton - 8, TRUE);
+    BagApp_LoadSubScreenLayout(app, 1, BagApp_GetPageItemCount(app), app->cursorButton - BAG_BUTTON_FIRST_SLOT);
+    BagApp_DrawItemList(app, pocket->scroll, app->cursorButton - BAG_BUTTON_FIRST_SLOT, TRUE);
     BagApp_PrintPageNumber(app, pocket->itemCount, pocket->scroll, 0);
     BagApp_DrawItemIcons(app, pocket, BagApp_GetPageItemCount(app), FALSE);
-    BagApp_ShowMovingItemIcon(app, pocket, pocket->scroll + app->cursorButton - 8);
+    BagApp_ShowMovingItemIcon(app, pocket, pocket->scroll + app->cursorButton - BAG_BUTTON_FIRST_SLOT);
     BagApp_SetCursorPosition(app, app->cursorButton);
-    app->menuCursor = app->cursorButton - 8;
+    app->menuCursor = app->cursorButton - BAG_BUTTON_FIRST_SLOT;
 }
 
 static int BagApp_GetMoveCursorFromDpad(int slot) {
@@ -1306,10 +1300,10 @@ static int BagApp_GetMoveTargetResult(BagApp *app, int slot) {
         }
         break;
     case 6:
-        result = 14;
+        result = BAG_BUTTON_PREV_PAGE;
         break;
     case 7:
-        result = 15;
+        result = BAG_BUTTON_NEXT_PAGE;
         break;
     case 8:
         result = -2;
@@ -1359,26 +1353,26 @@ static int BagApp_State_MoveItemInput(BagApp *app) {
         break;
     case -2:
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        pocket->scroll = (app->moveSource / 6) * 6;
-        return BagApp_StartButtonFlash(app, 19, 9, 8, BAG_STATE_END_MOVE_ITEM);
-    case 14:
-        if (pocket->itemCount > 6) {
+        pocket->scroll = (app->moveSource / BAG_ITEMS_PER_PAGE) * BAG_ITEMS_PER_PAGE;
+        return BagApp_StartButtonFlash(app, BAG_SPRITE_CANCEL, 9, 8, BAG_STATE_END_MOVE_ITEM);
+    case BAG_BUTTON_PREV_PAGE:
+        if (pocket->itemCount > BAG_ITEMS_PER_PAGE) {
             PlaySE(SEQ_SE_DP_SELECT);
-            return BagApp_StartButtonFlash(app, 17, 9, 8, BAG_STATE_PREV_PAGE);
+            return BagApp_StartButtonFlash(app, BAG_SPRITE_PREV_PAGE, 9, 8, BAG_STATE_PREV_PAGE);
         }
         break;
-    case 15:
-        if (pocket->itemCount > 6) {
+    case BAG_BUTTON_NEXT_PAGE:
+        if (pocket->itemCount > BAG_ITEMS_PER_PAGE) {
             PlaySE(SEQ_SE_DP_SELECT);
-            return BagApp_StartButtonFlash(app, 18, 9, 8, BAG_STATE_NEXT_PAGE);
+            return BagApp_StartButtonFlash(app, BAG_SPRITE_NEXT_PAGE, 9, 8, BAG_STATE_NEXT_PAGE);
         }
         break;
     default:
         PlaySE(SEQ_SE_DP_SELECT);
         if (app->moveSource == pocket->scroll + app->menuCursor) {
-            return BagApp_StartButtonAnim(app, 20, 41, BAG_STATE_DROP_MOVED_ITEM);
+            return BagApp_StartButtonAnim(app, BAG_SPRITE_CURSOR, 41, BAG_STATE_DROP_MOVED_ITEM);
         }
-        return BagApp_StartButtonAnim(app, 20, 42, BAG_STATE_DROP_MOVED_ITEM);
+        return BagApp_StartButtonAnim(app, BAG_SPRITE_CURSOR, 42, BAG_STATE_DROP_MOVED_ITEM);
     }
     return BAG_STATE_MOVE_ITEM_INPUT;
 }
@@ -1424,7 +1418,7 @@ static void BagApp_UpdateMoveMarker(BagApp *app) {
     BagView *bagView = app->bagView;
     BagViewPocket *pocket = &bagView->pockets[bagView->pocketIndex];
     if (app->isMovingItem) {
-        ManagedSprite_SetPositionXY(app->sprites[0], 177, (pocket->position - 1) * 16 + 16);
+        ManagedSprite_SetPositionXY(app->sprites[BAG_SPRITE_MOVE_MARKER], 177, (pocket->position - 1) * 16 + 16);
     }
 }
 
@@ -1441,47 +1435,47 @@ static void BagApp_SetupItemMenu(BagApp *app) {
         u16 mode = app->bagView->mapLoadType;
         if ((u16)(mode + 0xFFFE) <= 1) { // mode 2 or 3
             if (app->bagView->pockets[app->bagView->pocketIndex].pocketId == POCKET_MAIL) {
-                choices.actions[0] = 2;
+                choices.actions[0] = BAG_ITEM_ACTION_CHECK;
             }
         } else if (GetItemAttr_PreloadedItemData(itemData, ITEMATTR_FIELDUSEFUNC)) {
             if (app->bagView->itemId == ITEM_BICYCLE && app->bagView->isCycling == TRUE) {
-                choices.actions[0] = 1;
+                choices.actions[0] = BAG_ITEM_ACTION_WALK;
             } else if (app->bagView->pockets[app->bagView->pocketIndex].pocketId == POCKET_MAIL) {
-                choices.actions[0] = 2;
+                choices.actions[0] = BAG_ITEM_ACTION_CHECK;
             } else if (app->bagView->itemId == ITEM_POFFIN_CASE) {
-                choices.actions[0] = 4;
+                choices.actions[0] = BAG_ITEM_ACTION_POFFIN_CASE;
             } else if (app->bagView->pockets[app->bagView->pocketIndex].pocketId == POCKET_BERRIES && Leftover_CanPlantBerry(app->bagView->checkUseData) == TRUE) {
-                choices.actions[0] = 3;
+                choices.actions[0] = BAG_ITEM_ACTION_PLANT_BERRY;
             } else if (app->bagView->itemId == ITEM_GB_SOUNDS && SoundSys_GetGBSoundsState() == TRUE) {
-                choices.actions[0] = 15;
+                choices.actions[0] = BAG_ITEM_ACTION_STOP;
             } else {
-                choices.actions[0] = 0;
+                choices.actions[0] = BAG_ITEM_ACTION_USE;
             }
         }
         if (!GetItemAttr_PreloadedItemData(itemData, ITEMATTR_PREVENT_TOSS)) {
             if (ItemIdIsNotJohtoBall(app->bagView->itemId) == TRUE) {
-                choices.actions[2] = 8;
+                choices.actions[2] = BAG_ITEM_ACTION_GIVE;
             }
             if (pocketId != POCKET_TMHMS) {
-                choices.actions[1] = 5;
+                choices.actions[1] = BAG_ITEM_ACTION_TRASH;
             }
         }
         if (GetItemAttr_PreloadedItemData(itemData, ITEMATTR_SELECTABLE)) {
             if (app->bagView->itemId == Bag_GetRegisteredItem1(app->bag) || app->bagView->itemId == Bag_GetRegisteredItem2(app->bag)) {
-                choices.actions[1] = 7;
+                choices.actions[1] = BAG_ITEM_ACTION_DESELECT;
             } else {
-                choices.actions[1] = 6;
+                choices.actions[1] = BAG_ITEM_ACTION_REGISTER;
             }
         }
     } else if (app->bagView->mode == 6 && BagApp_IsBerryOrMulch(pocketId, app->bagView->itemId) == TRUE) {
-        choices.actions[0] = 14;
+        choices.actions[0] = BAG_ITEM_ACTION_CHOOSE_FOR_BERRY_POT;
     }
     if (app->bagView->mode != 6 && pocketId != POCKET_TMHMS && pocketId != POCKET_BERRIES) {
-        choices.actions[3] = 12;
+        choices.actions[3] = BAG_ITEM_ACTION_MOVE;
     }
-    choices.actions[4] = 11;
+    choices.actions[4] = BAG_ITEM_ACTION_CANCEL;
     for (i = 0; i < 5; i++) {
-        if (choices.actions[i] != 0xFF) {
+        if (choices.actions[i] != BAG_ITEM_ACTION_NONE) {
             app->itemActions[i] = gItemActionFuncs[choices.actions[i]];
         }
     }
@@ -1570,7 +1564,7 @@ static int BagApp_State_ItemMenuInput(BagApp *app) {
     int result = BagApp_HandleItemMenuInput(app);
     switch (result) {
     case -2:
-        return BagApp_StartButtonFlash(app, 19, 9, 8, BAG_STATE_CLOSE_ITEM_MENU);
+        return BagApp_StartButtonFlash(app, BAG_SPRITE_CANCEL, 9, 8, BAG_STATE_CLOSE_ITEM_MENU);
     default:
         app->chosenAction = result;
         return BagApp_StartButtonFlash(app, (u8)(result + 28), 9, 8, BAG_STATE_RUN_ITEM_ACTION);
@@ -1883,38 +1877,38 @@ static int BagApp_State_TrashQuantityInput(BagApp *app) {
         switch (button) {
         case 0:
             app->quantity = BagApp_StepQuantity(app->quantity, app->maxQuantity, 100);
-            ManagedSprite_SetAnimationFrame(app->sprites[32], 0);
-            ManagedSprite_SetAnim(app->sprites[32], 26);
+            ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_QUANTITY_UP], 0);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_UP], 26);
             result = 1;
             break;
         case 1:
             app->quantity = BagApp_StepQuantity(app->quantity, app->maxQuantity, 10);
-            ManagedSprite_SetAnimationFrame(app->sprites[33], 0);
-            ManagedSprite_SetAnim(app->sprites[33], 26);
+            ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_QUANTITY_UP + 1], 0);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_UP + 1], 26);
             result = 1;
             break;
         case 2:
             app->quantity = BagApp_StepQuantity(app->quantity, app->maxQuantity, 1);
-            ManagedSprite_SetAnimationFrame(app->sprites[34], 0);
-            ManagedSprite_SetAnim(app->sprites[34], 26);
+            ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_QUANTITY_UP + 2], 0);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_UP + 2], 26);
             result = 1;
             break;
         case 3:
             app->quantity = BagApp_StepQuantity(app->quantity, app->maxQuantity, -100);
-            ManagedSprite_SetAnimationFrame(app->sprites[35], 0);
-            ManagedSprite_SetAnim(app->sprites[35], 28);
+            ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_QUANTITY_DOWN], 0);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_DOWN], 28);
             result = 2;
             break;
         case 4:
             app->quantity = BagApp_StepQuantity(app->quantity, app->maxQuantity, -10);
-            ManagedSprite_SetAnimationFrame(app->sprites[36], 0);
-            ManagedSprite_SetAnim(app->sprites[36], 28);
+            ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_QUANTITY_DOWN + 1], 0);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_DOWN + 1], 28);
             result = 2;
             break;
         case 5:
             app->quantity = BagApp_StepQuantity(app->quantity, app->maxQuantity, -1);
-            ManagedSprite_SetAnimationFrame(app->sprites[37], 0);
-            ManagedSprite_SetAnim(app->sprites[37], 28);
+            ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_QUANTITY_DOWN + 2], 0);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_DOWN + 2], 28);
             result = 2;
             break;
         case 6:
@@ -1944,10 +1938,10 @@ static int BagApp_State_TrashQuantityInput(BagApp *app) {
         return BAG_STATE_TRASH_QUANTITY_INPUT;
     case 3:
         PlaySE(SEQ_SE_DP_SELECT);
-        return BagApp_StartButtonFlash(app, 38, 9, 8, BAG_STATE_SHOW_TRASH_CONFIRM);
+        return BagApp_StartButtonFlash(app, BAG_SPRITE_CONFIRM, 9, 8, BAG_STATE_SHOW_TRASH_CONFIRM);
     case 4:
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        return BagApp_StartButtonFlash(app, 19, 9, 8, BAG_STATE_CANCEL_TRASH);
+        return BagApp_StartButtonFlash(app, BAG_SPRITE_CANCEL, 9, 8, BAG_STATE_CANCEL_TRASH);
     }
     return BAG_STATE_TRASH_QUANTITY_INPUT;
 }
@@ -1966,8 +1960,8 @@ static int BagApp_State_CancelTrash(BagApp *app) {
     BagApp_RedrawPocket(app);
     BagApp_HideQuantityButtons(app);
     BagApp_PrintCancelButton(app, FALSE);
-    ManagedSprite_SetAnimationFrame(app->sprites[19], 0);
-    ManagedSprite_SetAnim(app->sprites[19], 16);
+    ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_CANCEL], 0);
+    ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_CANCEL], 16);
     return BAG_STATE_INPUT;
 }
 
@@ -2135,15 +2129,15 @@ static int BagApp_State_HoldItemSelectInput(BagApp *app) {
         app->cursorButton = gBagAppButtonNavTable[app->cursorButton][BAG_NAV_DOWN];
     } else if (gSystem.newAndRepeatedKeys & PAD_KEY_LEFT) {
         int current = app->cursorButton, next = gBagAppButtonNavTable[current][BAG_NAV_LEFT];
-        if (next == 14) {
+        if (next == BAG_BUTTON_PREV_PAGE) {
             result = BagApp_PressButton(app, BAG_BUTTON_PREV_PAGE, &pressedLeft, 0, 2, FALSE);
             if (result == 1) {
                 return BAG_STATE_HOLD_ITEM_SELECT_INPUT;
             } else {
                 return result;
             }
-        } else if (current != 16) {
-            if (current >= 0 && current < 8) {
+        } else if (current != BAG_BUTTON_CANCEL) {
+            if (current >= 0 && current < BAG_BUTTON_FIRST_SLOT) {
                 int pocket = BagApp_GetAdjacentPocket(app, current, -1);
                 if (app->cursorButton != pocket) {
                     app->cursorButton = pocket;
@@ -2156,15 +2150,15 @@ static int BagApp_State_HoldItemSelectInput(BagApp *app) {
         }
     } else if (gSystem.newAndRepeatedKeys & PAD_KEY_RIGHT) {
         int current = app->cursorButton, next = gBagAppButtonNavTable[current][BAG_NAV_RIGHT];
-        if (next == 15) {
+        if (next == BAG_BUTTON_NEXT_PAGE) {
             result = BagApp_PressButton(app, BAG_BUTTON_NEXT_PAGE, &pressedRight, 0, 2, FALSE);
             if (result == 1) {
                 return BAG_STATE_HOLD_ITEM_SELECT_INPUT;
             } else {
                 return result;
             }
-        } else if (current != 16) {
-            if (current >= 0 && current < 8) {
+        } else if (current != BAG_BUTTON_CANCEL) {
+            if (current >= 0 && current < BAG_BUTTON_FIRST_SLOT) {
                 int pocket = BagApp_GetAdjacentPocket(app, current, 1);
                 if (app->cursorButton != pocket) {
                     app->cursorButton = pocket;
@@ -2184,7 +2178,7 @@ static int BagApp_State_HoldItemSelectInput(BagApp *app) {
         BagApp_PressButton(app, pocket, &pressedR, 1, 2, FALSE);
         return BAG_STATE_HOLD_ITEM_SELECT_INPUT;
     }
-    if (app->cursorButton == 17) {
+    if (app->cursorButton == BAG_BUTTON_CURRENT_POCKET) {
         app->cursorButton = app->bagView->pocketIndex;
     }
     if (changed) {
@@ -2197,7 +2191,7 @@ static int BagApp_State_HoldItemSelectInput(BagApp *app) {
     result = BagApp_GetTouchedButton(app, 0);
     if (result != -1) {
         if (BagApp_ShouldMoveCursorToButton(app, result)) {
-            if ((u32)result < 8) {
+            if ((u32)result < BAG_BUTTON_FIRST_SLOT) {
                 if (BagApp_FindPocketIndex(app, result) != -1) {
                     app->cursorButton = result;
                     BagApp_SetCursorPosition(app, app->cursorButton);
@@ -2205,7 +2199,7 @@ static int BagApp_State_HoldItemSelectInput(BagApp *app) {
             } else {
                 app->cursorButton = result;
                 BagApp_SetCursorPosition(app, app->cursorButton);
-                if (app->cursorButton >= 8 && app->cursorButton <= 13) {
+                if (app->cursorButton >= BAG_BUTTON_FIRST_SLOT && app->cursorButton <= BAG_BUTTON_LAST_SLOT) {
                     BagApp_SetPocketPositionFromButton(app, app->cursorButton);
                 }
             }
@@ -2217,7 +2211,7 @@ static int BagApp_State_HoldItemSelectInput(BagApp *app) {
         }
     } else if (gSystem.newKeys & PAD_BUTTON_A) {
         result = BagApp_PressButton(app, app->cursorButton, &itemChosen, 0, 2, FALSE);
-        if (app->cursorButton >= 8 && app->cursorButton <= 13) {
+        if (app->cursorButton >= BAG_BUTTON_FIRST_SLOT && app->cursorButton <= BAG_BUTTON_LAST_SLOT) {
             BagApp_SetPocketPositionFromButton(app, app->cursorButton);
         }
         if (result != 1) {
@@ -2227,7 +2221,7 @@ static int BagApp_State_HoldItemSelectInput(BagApp *app) {
     } else if (gSystem.newKeys & PAD_BUTTON_B) {
         result = BagApp_PressButton(app, BAG_BUTTON_CANCEL, &itemChosen, 0, 2, FALSE);
         app->bagView->selectedAction = 4;
-        if (app->cursorButton >= 8 && app->cursorButton <= 13) {
+        if (app->cursorButton >= BAG_BUTTON_FIRST_SLOT && app->cursorButton <= BAG_BUTTON_LAST_SLOT) {
             BagApp_SetPocketPositionFromButton(app, app->cursorButton);
         }
         return result;
@@ -2244,7 +2238,7 @@ static int BagApp_State_HoldItemSelectInput(BagApp *app) {
             return BAG_STATE_WAIT_CANT_HOLD_MESSAGE;
         }
         app->bagView->selectedAction = 4;
-        return BagApp_StartButtonAnim(app, 20, 41, BAG_STATE_FADE_OUT);
+        return BagApp_StartButtonAnim(app, BAG_SPRITE_CURSOR, 41, BAG_STATE_FADE_OUT);
     }
     return BAG_STATE_HOLD_ITEM_SELECT_INPUT;
 }
@@ -2276,15 +2270,15 @@ static int BagApp_State_SellSelectInput(BagApp *app) {
         app->cursorButton = gBagAppButtonNavTable[app->cursorButton][BAG_NAV_DOWN];
     } else if (gSystem.newAndRepeatedKeys & PAD_KEY_LEFT) {
         int current = app->cursorButton, next = gBagAppButtonNavTable[current][BAG_NAV_LEFT];
-        if (next == 14) {
+        if (next == BAG_BUTTON_PREV_PAGE) {
             result = BagApp_PressButton(app, BAG_BUTTON_PREV_PAGE, &pressedLeft, 1, 4, FALSE);
             if (result == 1) {
                 return BAG_STATE_SELL_SELECT_INPUT;
             } else {
                 return result;
             }
-        } else if (current != 16) {
-            if (current >= 0 && current < 8) {
+        } else if (current != BAG_BUTTON_CANCEL) {
+            if (current >= 0 && current < BAG_BUTTON_FIRST_SLOT) {
                 int pocket = BagApp_GetAdjacentPocket(app, current, -1);
                 if (app->cursorButton != pocket) {
                     app->cursorButton = pocket;
@@ -2297,15 +2291,15 @@ static int BagApp_State_SellSelectInput(BagApp *app) {
         }
     } else if (gSystem.newAndRepeatedKeys & PAD_KEY_RIGHT) {
         int current = app->cursorButton, next = gBagAppButtonNavTable[current][BAG_NAV_RIGHT];
-        if (next == 15) {
+        if (next == BAG_BUTTON_NEXT_PAGE) {
             result = BagApp_PressButton(app, BAG_BUTTON_NEXT_PAGE, &pressedRight, 1, 4, FALSE);
             if (result == 1) {
                 return BAG_STATE_SELL_SELECT_INPUT;
             } else {
                 return result;
             }
-        } else if (current != 16) {
-            if (current >= 0 && current < 8) {
+        } else if (current != BAG_BUTTON_CANCEL) {
+            if (current >= 0 && current < BAG_BUTTON_FIRST_SLOT) {
                 int pocket = BagApp_GetAdjacentPocket(app, current, 1);
                 if (app->cursorButton != pocket) {
                     app->cursorButton = pocket;
@@ -2317,7 +2311,7 @@ static int BagApp_State_SellSelectInput(BagApp *app) {
             }
         }
     } else if (gSystem.newKeys & PAD_BUTTON_L) {
-        if (app->cursorButton >= 0 && app->cursorButton < 8) {
+        if (app->cursorButton >= 0 && app->cursorButton < BAG_BUTTON_FIRST_SLOT) {
             app->cursorButton = BagApp_GetAdjacentPocket(app, app->bagView->pocketIndex, -1);
             BagApp_SetCursorPosition(app, app->cursorButton);
             BagApp_PressButton(app, app->cursorButton, &pressedL, 1, 4, FALSE);
@@ -2327,7 +2321,7 @@ static int BagApp_State_SellSelectInput(BagApp *app) {
         }
         return BAG_STATE_SELL_SELECT_INPUT;
     } else if (gSystem.newKeys & PAD_BUTTON_R) {
-        if (app->cursorButton >= 0 && app->cursorButton < 8) {
+        if (app->cursorButton >= 0 && app->cursorButton < BAG_BUTTON_FIRST_SLOT) {
             app->cursorButton = BagApp_GetAdjacentPocket(app, app->bagView->pocketIndex, 1);
             BagApp_SetCursorPosition(app, app->cursorButton);
             BagApp_PressButton(app, app->cursorButton, &pressedR, 1, 4, FALSE);
@@ -2337,7 +2331,7 @@ static int BagApp_State_SellSelectInput(BagApp *app) {
         }
         return BAG_STATE_SELL_SELECT_INPUT;
     }
-    if (app->cursorButton == 17) {
+    if (app->cursorButton == BAG_BUTTON_CURRENT_POCKET) {
         app->cursorButton = app->bagView->pocketIndex;
     }
     if (changed) {
@@ -2350,7 +2344,7 @@ static int BagApp_State_SellSelectInput(BagApp *app) {
     result = BagApp_GetTouchedButton(app, 0);
     if (result != -1) {
         if (BagApp_ShouldMoveCursorToButton(app, result)) {
-            if ((u32)result < 8) {
+            if ((u32)result < BAG_BUTTON_FIRST_SLOT) {
                 if (BagApp_FindPocketIndex(app, result) != -1) {
                     app->cursorButton = result;
                     BagApp_SetCursorPosition(app, app->cursorButton);
@@ -2358,7 +2352,7 @@ static int BagApp_State_SellSelectInput(BagApp *app) {
             } else {
                 app->cursorButton = result;
                 BagApp_SetCursorPosition(app, app->cursorButton);
-                if (app->cursorButton >= 8 && app->cursorButton <= 13) {
+                if (app->cursorButton >= BAG_BUTTON_FIRST_SLOT && app->cursorButton <= BAG_BUTTON_LAST_SLOT) {
                     BagApp_SetPocketPositionFromButton(app, app->cursorButton);
                 }
             }
@@ -2370,7 +2364,7 @@ static int BagApp_State_SellSelectInput(BagApp *app) {
         }
     } else if (gSystem.newKeys & PAD_BUTTON_A) {
         result = BagApp_PressButton(app, app->cursorButton, &itemChosen, 1, 4, FALSE);
-        if (app->cursorButton >= 8 && app->cursorButton <= 13) {
+        if (app->cursorButton >= BAG_BUTTON_FIRST_SLOT && app->cursorButton <= BAG_BUTTON_LAST_SLOT) {
             BagApp_SetPocketPositionFromButton(app, app->cursorButton);
         }
         if (result != 1) {
@@ -2382,13 +2376,13 @@ static int BagApp_State_SellSelectInput(BagApp *app) {
         app->bagView->selectedAction = 5;
         BagApp_SetMenuInputState(app, MENU_INPUT_STATE_BUTTONS);
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        if (app->cursorButton >= 8 && app->cursorButton <= 13) {
+        if (app->cursorButton >= BAG_BUTTON_FIRST_SLOT && app->cursorButton <= BAG_BUTTON_LAST_SLOT) {
             BagApp_SetPocketPositionFromButton(app, app->cursorButton);
         }
-        return BagApp_StartButtonFlash(app, 19, 9, 8, BAG_STATE_FADE_OUT);
+        return BagApp_StartButtonFlash(app, BAG_SPRITE_CANCEL, 9, 8, BAG_STATE_FADE_OUT);
     }
     if (itemChosen == TRUE) {
-        return BagApp_StartButtonAnim(app, 20, 41, BAG_STATE_START_SELL);
+        return BagApp_StartButtonAnim(app, BAG_SPRITE_CURSOR, 41, BAG_STATE_START_SELL);
     }
     return BAG_STATE_SELL_SELECT_INPUT;
 }
@@ -2406,12 +2400,12 @@ static int BagApp_State_StartSell(BagApp *app) {
     app->sellPrice = price >> 1;
     BagApp_ApplyTilemapCommands(app->bgConfig, GF_BG_LYR_SUB_1, 0);
     ScheduleBgTilemapBufferTransfer(app->bgConfig, GF_BG_LYR_SUB_1);
-    ManagedSprite_SetDrawFlag(app->sprites[17], FALSE);
-    ManagedSprite_SetDrawFlag(app->sprites[18], FALSE);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_PREV_PAGE], FALSE);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_NEXT_PAGE], FALSE);
     BagApp_ShowPocketTabSprites(app, FALSE);
     BagApp_ShowCancelButton(app, FALSE);
-    BagApp_DrawSelectedItemEntry(app, pocket->scroll, app->cursorButton - 8);
-    BagApp_ShowSelectedItemIcon(app, app->cursorButton - 8);
+    BagApp_DrawSelectedItemEntry(app, pocket->scroll, app->cursorButton - BAG_BUTTON_FIRST_SLOT);
+    BagApp_ShowSelectedItemIcon(app, app->cursorButton - BAG_BUTTON_FIRST_SLOT);
     BagApp_ShowItemDescription(app, &app->windows[0], app->bagView->itemId);
     BagApp_HideCursor(app);
 
@@ -2435,7 +2429,7 @@ static int BagApp_State_StartSell(BagApp *app) {
         app->printerId = BagApp_PrintMessage(app, TRUE);
         return BAG_STATE_WAIT_SELL_PRICE_MESSAGE;
     }
-    app->maxQuantity = pocket->slots[pocket->scroll + app->cursorButton - 8].quantity;
+    app->maxQuantity = pocket->slots[pocket->scroll + app->cursorButton - BAG_BUTTON_FIRST_SLOT].quantity;
     template = NewString_ReadMsgData(app->msgData, msg_0010_00077);
     BufferItemName(app->msgFormat, fieldIdx, app->bagView->itemId);
     StringExpandPlaceholders(app->msgFormat, app->msgBuf, template);
@@ -2473,26 +2467,26 @@ static int BagApp_State_SellQuantityInput(BagApp *app) {
         switch (button) {
         case 0:
             app->quantity = BagApp_StepQuantity(app->quantity, app->maxQuantity, 10);
-            ManagedSprite_SetAnimationFrame(app->sprites[32], 0);
-            ManagedSprite_SetAnim(app->sprites[32], 26);
+            ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_QUANTITY_UP], 0);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_UP], 26);
             result = 1;
             break;
         case 1:
             app->quantity = BagApp_StepQuantity(app->quantity, app->maxQuantity, 1);
-            ManagedSprite_SetAnimationFrame(app->sprites[33], 0);
-            ManagedSprite_SetAnim(app->sprites[33], 26);
+            ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_QUANTITY_UP + 1], 0);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_UP + 1], 26);
             result = 1;
             break;
         case 2:
             app->quantity = BagApp_StepQuantity(app->quantity, app->maxQuantity, -10);
-            ManagedSprite_SetAnimationFrame(app->sprites[35], 0);
-            ManagedSprite_SetAnim(app->sprites[35], 28);
+            ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_QUANTITY_DOWN], 0);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_DOWN], 28);
             result = 2;
             break;
         case 3:
             app->quantity = BagApp_StepQuantity(app->quantity, app->maxQuantity, -1);
-            ManagedSprite_SetAnimationFrame(app->sprites[36], 0);
-            ManagedSprite_SetAnim(app->sprites[36], 28);
+            ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_QUANTITY_DOWN + 1], 0);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_DOWN + 1], 28);
             result = 2;
             break;
         case 4:
@@ -2525,10 +2519,10 @@ static int BagApp_State_SellQuantityInput(BagApp *app) {
         return BAG_STATE_SELL_QUANTITY_INPUT;
     case 3:
         PlaySE(SEQ_SE_DP_SELECT);
-        return BagApp_StartButtonFlash(app, 38, 9, 8, BAG_STATE_SHOW_SELL_PRICE);
+        return BagApp_StartButtonFlash(app, BAG_SPRITE_CONFIRM, 9, 8, BAG_STATE_SHOW_SELL_PRICE);
     case 4:
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        return BagApp_StartButtonFlash(app, 19, 9, 8, BAG_STATE_CANCEL_SELL_QUANTITY);
+        return BagApp_StartButtonFlash(app, BAG_SPRITE_CANCEL, 9, 8, BAG_STATE_CANCEL_SELL_QUANTITY);
     }
     return BAG_STATE_SELL_QUANTITY_INPUT;
 }
@@ -2634,7 +2628,7 @@ static int BagApp_State_CompleteSale(BagApp *app) {
     } else {
         app->bagView->sellCount = 2;
     }
-    Pocket_TakeItem(app->bagView->pockets[app->bagView->pocketIndex].slots, app->bagView->pockets[app->bagView->pocketIndex].itemCount, app->bagView->itemId, (u16)app->quantity, HEAP_ID_6);
+    Pocket_TakeItem(app->bagView->pockets[app->bagView->pocketIndex].slots, app->bagView->pockets[app->bagView->pocketIndex].itemCount, app->bagView->itemId, app->quantity, HEAP_ID_6);
     BagApp_LoadPocketItemNames(app);
     ScheduleWindowCopyToVram(&app->windows[3]);
     return BAG_STATE_WAIT_SALE_MESSAGE;
@@ -2688,7 +2682,7 @@ BOOL BagApp_IsBerryOrMulch(u32 pocketId, u32 itemId) {
 static void BagApp_LoadPocketSubBgPalette(BagApp *app, int slot, int pocket) {
     const u8 *data = app->bgPalettes[slot]->pRawData;
 
-    if (pocket <= 7) {
+    if (pocket <= POCKET_KEY_ITEMS) {
         data += pocket * 0x20;
         GXS_LoadBGPltt(data, 0, 0x20);
         GXS_LoadBGPltt(data, 0x20, 0x40);
@@ -2697,7 +2691,7 @@ static void BagApp_LoadPocketSubBgPalette(BagApp *app, int slot, int pocket) {
 }
 
 static void BagApp_ApplyTilemapCommands(BgConfig *bgConfig, int bgId, int layout) {
-    void *buffer = GetBgTilemapBuffer(bgConfig, (u8)bgId);
+    void *buffer = GetBgTilemapBuffer(bgConfig, bgId);
     const BagAppTilemapCommand *command;
     s32 i;
 
@@ -2707,29 +2701,29 @@ static void BagApp_ApplyTilemapCommands(BgConfig *bgConfig, int bgId, int layout
     command = gSubScreenTilemapCommands[layout];
     for (i = 0; i < 4; i++, command++) {
         if (command->type == 1) {
-            LoadRectToBgTilemapRect(bgConfig, (u8)bgId, (u8 *)buffer + (command->srcX + (command->srcY << 5)) * 2, command->destX, command->destY, command->width, command->height);
+            LoadRectToBgTilemapRect(bgConfig, bgId, (u8 *)buffer + (command->srcX + (command->srcY << 5)) * 2, command->destX, command->destY, command->width, command->height);
         } else if (command->type == 2) {
-            FillBgTilemapRect(bgConfig, (u8)bgId, 0, command->destX, command->destY, command->width, command->height, 0);
+            FillBgTilemapRect(bgConfig, bgId, 0, command->destX, command->destY, command->width, command->height, 0);
         }
     }
 }
 
 static void BagApp_DrawItemSlotFrames(BgConfig *bgConfig, int bgId, u32 count, u32 selection) {
     s32 i;
-    void *buffer = GetBgTilemapBuffer(bgConfig, (u8)bgId);
+    void *buffer = GetBgTilemapBuffer(bgConfig, bgId);
     const BagAppTileRect *rect;
 
     i = 0;
     rect = gUnusedSlotRects[count - 1];
     for (; i < 2; i++, rect++) {
-        FillBgTilemapRect(bgConfig, (u8)bgId, 0, rect->x, rect->y, rect->width, rect->height, 0);
+        FillBgTilemapRect(bgConfig, bgId, 0, rect->x, rect->y, rect->width, rect->height, 0);
     }
     if (selection != (u32)-1) {
         rect = &gItemSlotRects[selection];
         if (selection <= 1) {
-            LoadRectToBgTilemapRect(bgConfig, (u8)bgId, (u8 *)buffer + 0x600, rect->x, rect->y, rect->width, rect->height);
+            LoadRectToBgTilemapRect(bgConfig, bgId, (u8 *)buffer + 0x600, rect->x, rect->y, rect->width, rect->height);
         } else {
-            LoadRectToBgTilemapRect(bgConfig, (u8)bgId, (u8 *)buffer + 0x6C0, rect->x, rect->y, rect->width, rect->height);
+            LoadRectToBgTilemapRect(bgConfig, bgId, (u8 *)buffer + 0x6C0, rect->x, rect->y, rect->width, rect->height);
         }
     }
 }
@@ -2805,8 +2799,8 @@ static void BagApp_ShowCancelButton(BagApp *app, BOOL show) {
         BagApp_SetCancelSpriteVisible(app, TRUE);
         BagApp_PrintCancelButton(app, FALSE);
         ScheduleWindowCopyToVram(&app->windows[7]);
-        ManagedSprite_SetAnimationFrame(app->sprites[19], 0);
-        ManagedSprite_SetAnim(app->sprites[19], 16);
+        ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_CANCEL], 0);
+        ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_CANCEL], 16);
     } else {
         BagApp_SetCancelSpriteVisible(app, FALSE);
         BagApp_ClearCancelButtonText(app);
@@ -3042,7 +3036,7 @@ static void BagApp_LoadBagModel(BagApp *app) {
     NNSi_G3dModifyMatFlag(model->model, TRUE, NNS_G3D_MATFLAG_SPECULAR);
     NNSi_G3dModifyMatFlag(model->model, TRUE, NNS_G3D_MATFLAG_EMISSION);
     NNSi_G3dModifyPolygonAttrMask(model->model, TRUE, 0x3F000000);
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < POCKETS_COUNT; i++) {
         model->pocketAnimData[i] = NARC_AllocAndReadWholeMember(narc, animMember + i, HEAP_ID_6);
         anim = NNS_G3dGetAnmByIdx(model->pocketAnimData[i], 0);
         model->pocketAnims[i] = NNS_G3dAllocAnmObj(&app->scene.allocator, anim, model->model);
@@ -3067,7 +3061,7 @@ static void BagApp_FreeBagModel(BagApp *app) {
     BagAppModel *model = &app->scene.model;
     u32 i;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < POCKETS_COUNT; i++) {
         NNS_G3dFreeAnmObj(&app->scene.allocator, model->pocketAnims[i]);
         NNS_G3dFreeAnmObj(&app->scene.allocator, model->pocketAnims2[i]);
         Heap_Free(model->pocketAnimData[i]);

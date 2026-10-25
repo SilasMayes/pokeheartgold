@@ -1380,7 +1380,7 @@ static BOOL WobbuffetPop_UpdateSync(WobbuffetPop *game) {
         return FALSE;
     }
     if (ready == TRUE) {
-        LinkSync_StartSync((u8)game->syncId);
+        LinkSync_StartSync(game->syncId);
         if (WobbuffetPop_IsHost(game) == TRUE) {
             game->syncKind = WOBBUFFET_POP_SYNC_WAITING;
         } else {
@@ -1398,7 +1398,7 @@ static BOOL WobbuffetPop_IsSyncDone(WobbuffetPop *game, u8 syncId) {
     if (game->syncId != syncId) {
         return FALSE;
     }
-    if (LinkSync_IsSynced((u8)game->syncId) == TRUE) {
+    if (LinkSync_IsSynced(game->syncId) == TRUE) {
         game->syncKind = WOBBUFFET_POP_SYNC_NONE;
         return TRUE;
     }
@@ -1789,7 +1789,7 @@ static void WobbuffetPopBalloon_BlendPalette(WobbuffetPopBalloon *balloon, s32 a
     if (fraction > 16) {
         fraction = 16;
     }
-    BlendPalette(balloon->paletteSrc, balloon->paletteDest, (u16)(balloon->paletteSize >> 1), (u8)fraction, RGB(31, 0, 0));
+    BlendPalette(balloon->paletteSrc, balloon->paletteDest, (u16)(balloon->paletteSize >> 1), fraction, RGB(31, 0, 0));
     DC_FlushRange(balloon->paletteDest, balloon->paletteSize);
     balloon->paletteDirty = TRUE;
 }

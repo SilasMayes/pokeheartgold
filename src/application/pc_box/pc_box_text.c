@@ -146,17 +146,17 @@ void PCBox_SetupDepositBoxSprites(PCBoxWork *work) {
     s16 x;
     s16 y;
 
-    PCBox_PlaceSpriteOnTop(work->view, 4, 12, 84, 1);
-    PCBox_PlaceSpriteOnTop(work->view, 5, 244, 84, 1);
-    PCBox_PlaceSpriteOnTop(work->view, 6, 43, 84, 1);
-    PCBox_PlaceSpriteOnTop(work->view, 7, 128, 65, 1);
-    PCBox_PlaceSpriteOnTop(work->view, 8, 128, 77, 1);
+    PCBox_PlaceSpriteOnTop(work->view, PC_BOX_SPRITE_TRAY_PREV_ARROW, 12, 84, 1);
+    PCBox_PlaceSpriteOnTop(work->view, PC_BOX_SPRITE_TRAY_NEXT_ARROW, 244, 84, 1);
+    PCBox_PlaceSpriteOnTop(work->view, PC_BOX_SPRITE_TRAY_MARKER, 43, 84, 1);
+    PCBox_PlaceSpriteOnTop(work->view, PC_BOX_SPRITE_TRAY_CURSOR, 128, 65, 1);
+    PCBox_PlaceSpriteOnTop(work->view, PC_BOX_SPRITE_TRAY_LABEL, 128, 77, 1);
     for (i = 0; i < 6; i++) {
-        ManagedSprite_GetPositionXY(work->view->sprites[15 + i], &x, &y);
-        PCBox_PlaceSpriteOnTop(work->view, 15 + i, x, 84, 1);
+        ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_BOXES + i], &x, &y);
+        PCBox_PlaceSpriteOnTop(work->view, PC_BOX_SPRITE_TRAY_BOXES + i, x, 84, 1);
     }
     PCBox_LoadTrayPageThumbnails(work);
-    PCBox_SetSpriteAnim(work->view, 7, 5);
+    PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_TRAY_CURSOR, 5);
     PCBox_PlaceTrayTextObjs(work->view);
     TextOBJ_SetSpritesDrawFlag(work->view->textObjs[0].textObj, TRUE);
     TextOBJ_SetSpritesDrawFlag(work->view->textObjs[1].textObj, TRUE);
@@ -167,13 +167,13 @@ void PCBox_SetupDepositBoxSprites(PCBoxWork *work) {
 void PCBox_HideBoxTraySprites(PCBoxWork *work) {
     u32 i;
 
-    PCBox_SetSpriteVisible(work->view, 4, 0);
-    PCBox_SetSpriteVisible(work->view, 5, 0);
-    PCBox_SetSpriteVisible(work->view, 6, 0);
-    PCBox_SetSpriteVisible(work->view, 7, 0);
-    PCBox_SetSpriteVisible(work->view, 8, 0);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_PREV_ARROW, FALSE);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_NEXT_ARROW, FALSE);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_MARKER, FALSE);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_CURSOR, FALSE);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_LABEL, FALSE);
     for (i = 0; i < 6; i++) {
-        PCBox_SetSpriteVisible(work->view, 15 + i, 0);
+        PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_BOXES + i, FALSE);
     }
     TextOBJ_SetSpritesDrawFlag(work->view->textObjs[0].textObj, FALSE);
     TextOBJ_SetSpritesDrawFlag(work->view->textObjs[1].textObj, FALSE);
@@ -193,7 +193,7 @@ void PCBox_CreateTrayTextObjs(PCBoxView *view) {
     template.window = &window;
     template.spriteList = SpriteManager_GetSpriteList(view->spriteManager);
     template.plttResourceProxy = SpriteManager_FindPlttResourceProxy(view->spriteManager, 0xc101);
-    template.sprite = view->sprites[7]->sprite;
+    template.sprite = view->sprites[PC_BOX_SPRITE_TRAY_CURSOR]->sprite;
     template.offset = textObj->charTransfer.offset;
     template.x = 128;
     template.y = -28;
@@ -214,7 +214,7 @@ void PCBox_CreateTrayTextObjs(PCBoxView *view) {
     template.window = &window;
     template.spriteList = SpriteManager_GetSpriteList(view->spriteManager);
     template.plttResourceProxy = SpriteManager_FindPlttResourceProxy(view->spriteManager, 0xc101);
-    template.sprite = view->sprites[7]->sprite;
+    template.sprite = view->sprites[PC_BOX_SPRITE_TRAY_CURSOR]->sprite;
     template.offset = textObj->charTransfer.offset;
     template.x = 128;
     template.y = -28;
@@ -700,10 +700,10 @@ void PCBox_DrawActionMenu(PCBoxWork *work, const PCBoxMenuEntry *list, u32 count
         const PCBoxMenuEntry *entry = &list[count - 1 - i];
         if (entry->kind == 0) {
             PCBox_DrawButtonWindow(work, 0x21 - i, entry->msgId, 0);
-            BgCellManager_SetCellPalette(work->view->panels, PC_BOX_PANEL_MENU_ROW_4 - i, 0, 0, (u8)size[1], (u8)size[0], 0xc);
+            BgCellManager_SetCellPalette(work->view->panels, PC_BOX_PANEL_MENU_ROW_4 - i, 0, 0, size[1], size[0], 0xc);
         } else {
             PCBox_DrawTabWindow(work, 0x21 - i, entry->msgId);
-            BgCellManager_SetCellPalette(work->view->panels, PC_BOX_PANEL_MENU_ROW_4 - i, 0, 0, (u8)size[1], (u8)size[0], 2);
+            BgCellManager_SetCellPalette(work->view->panels, PC_BOX_PANEL_MENU_ROW_4 - i, 0, 0, size[1], size[0], 2);
         }
     }
     for (; count < 5; count++) {
@@ -1193,9 +1193,9 @@ void PCBox_PlaceCursorOnGridInput(PCBoxWork *work, int target) {
         u8 y, x;
     } pos;
 
-    PCBox_SetSpriteVisible(work->view, 9, 1);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_CURSOR, TRUE);
     DpadMenuBox_GetPosition(box, &pos.x, &pos.y);
-    ManagedSprite_SetPositionXY(work->view->sprites[9], pos.x, pos.y);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], pos.x, pos.y);
 }
 
 void PCBox_GridOnButton(PCBoxWork *work, int target) {
@@ -1204,5 +1204,5 @@ void PCBox_GridOnButton(PCBoxWork *work, int target) {
 }
 
 void PCBox_GridOnSwitchToTouchMode(PCBoxWork *work) {
-    PCBox_SetSpriteVisible(work->view, 9, 0);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_CURSOR, FALSE);
 }

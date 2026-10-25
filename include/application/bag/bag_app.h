@@ -20,6 +20,58 @@
 // Work of the Bag application: the touch-screen bag with the 3D bag model on the top screen.
 // Launched with a BagView (BagView.pocketIndex: shown pocket, mode: launch mode, selectedAction: exit action).
 
+#define BAG_ITEMS_PER_PAGE 6
+
+// BagApp.cursorButton: the pocket tabs, the item slots of the shown page, the page arrows and CANCEL
+enum BagAppButton {
+    BAG_BUTTON_LAST_POCKET = 7,
+    BAG_BUTTON_FIRST_SLOT,
+    BAG_BUTTON_LAST_SLOT = BAG_BUTTON_FIRST_SLOT + BAG_ITEMS_PER_PAGE - 1,
+    BAG_BUTTON_PREV_PAGE,
+    BAG_BUTTON_NEXT_PAGE,
+    BAG_BUTTON_CANCEL,
+    BAG_BUTTON_CURRENT_POCKET, // navigation target: the shown pocket's tab
+};
+
+enum BagAppSprite {
+    BAG_SPRITE_MOVE_MARKER,
+    BAG_SPRITE_ITEM_ICONS,
+    BAG_SPRITE_TM_TYPE = BAG_SPRITE_ITEM_ICONS + BAG_ITEMS_PER_PAGE,
+    BAG_SPRITE_TM_CATEGORY,
+    BAG_SPRITE_POCKET_TABS,
+    BAG_SPRITE_PREV_PAGE = BAG_SPRITE_POCKET_TABS + 8,
+    BAG_SPRITE_NEXT_PAGE,
+    BAG_SPRITE_CANCEL,
+    BAG_SPRITE_CURSOR,
+    BAG_SPRITE_SLOT_FRAMES,
+    BAG_SPRITE_ITEM_MENU_ROWS = BAG_SPRITE_SLOT_FRAMES + BAG_ITEMS_PER_PAGE + 1,
+    BAG_SPRITE_QUANTITY_UP = BAG_SPRITE_ITEM_MENU_ROWS + 4, // hundreds, tens, ones
+    BAG_SPRITE_QUANTITY_DOWN = BAG_SPRITE_QUANTITY_UP + 3,
+    BAG_SPRITE_CONFIRM = BAG_SPRITE_QUANTITY_DOWN + 3,
+    BAG_SPRITE_COUNT,
+};
+
+// Item menu entries: index into gItemActionFuncs and BagApp.menuStrings
+enum BagAppItemAction {
+    BAG_ITEM_ACTION_USE,
+    BAG_ITEM_ACTION_WALK,
+    BAG_ITEM_ACTION_CHECK,
+    BAG_ITEM_ACTION_PLANT_BERRY,
+    BAG_ITEM_ACTION_POFFIN_CASE,
+    BAG_ITEM_ACTION_TRASH,
+    BAG_ITEM_ACTION_REGISTER,
+    BAG_ITEM_ACTION_DESELECT,
+    BAG_ITEM_ACTION_GIVE,
+    BAG_ITEM_ACTION_CONFIRM = 10,
+    BAG_ITEM_ACTION_CANCEL,
+    BAG_ITEM_ACTION_MOVE,
+    BAG_ITEM_ACTION_SELL,
+    BAG_ITEM_ACTION_CHOOSE_FOR_BERRY_POT,
+    BAG_ITEM_ACTION_STOP,
+    BAG_ITEM_ACTION_COUNT,
+    BAG_ITEM_ACTION_NONE = 0xFF,
+};
+
 // The pocket-switch screen (touch and hold a pocket tab, then slide)
 typedef struct BagAppPocketSwitch {
     u8 pocket;
@@ -88,15 +140,13 @@ typedef struct BagApp {
     NARC *narc;
     SpriteSystem *spriteSystem;
     SpriteManager *spriteManager;
-    ManagedSprite *sprites[39]; // 0 move marker, 1-6 item icons, 7-8 TM type / category, 9-16 pocket tabs, 17-18 page
-                                // arrows, 19 CANCEL, 20 cursor, 21-27 slot frames, 28-31 item menu rows, 32-37
-                                // quantity buttons, 38 confirm
+    ManagedSprite *sprites[BAG_SPRITE_COUNT];
     MessagePrinter *msgPrinter;
     MsgData *msgData;
     MessageFormat *msgFormat;
     MsgData *itemNamesMsgData;
     MsgData *moveNamesMsgData;
-    String *menuStrings[16];
+    String *menuStrings[BAG_ITEM_ACTION_COUNT];
     u8 unk_340[8];
     u32 unk_348;
     u8 unk_34C[4];
@@ -113,7 +163,7 @@ typedef struct BagApp {
     u8 unk_618;
     BagAppPocketSwitch pocketSwitch;
     u8 unk_621[0x23];
-    int cursorButton; // 0-7 pocket tabs, 8-13 item slots, 14/15 page arrows, 16 CANCEL
+    int cursorButton; // enum BagAppButton
     u8 unk_648;
     u8 unk_649[2];
     u8 unk_64B;
@@ -248,7 +298,7 @@ typedef struct BagAppWindowPos {
 } BagAppWindowPos;
 
 typedef struct BagAppItemMenuChoices {
-    u8 actions[5]; // index into gItemActionFuncs, 0xFF for none
+    u8 actions[5]; // enum BagAppItemAction
 } BagAppItemMenuChoices;
 
 // Cursor sprite position, animation and palette of each button, move-item slot and quantity button.

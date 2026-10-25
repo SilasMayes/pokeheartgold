@@ -276,8 +276,8 @@ BOOL VsRecorder_FrontierExit(VsRecorderWork *work) {
         if (record->fade != 16) {
             record->fade += 2;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 28, (u8)record->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 0x4018, (u8)record->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 28, record->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 0x4018, record->fade, work->blendColor);
         if (!VsRecorder_SpinOutFrontierSprites(work)) {
             record->fade = 0;
             work->step++;
@@ -315,9 +315,9 @@ BOOL VsRecorder_FrontierExit(VsRecorderWork *work) {
         }
         work->step++;
         VsRecorder_ResetFade(&record->fade);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, (u8)record->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 28, (u8)record->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)record->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, record->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 28, record->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, record->fade, work->blendColor);
         break;
     default:
         if (VsRecorder_StepFade(&record->fade, 0)) {
@@ -326,12 +326,12 @@ BOOL VsRecorder_FrontierExit(VsRecorderWork *work) {
             Heap_Free(record);
             VsRecorder_ClearPaletteBlend(work);
             VsRecorder_ResetFade(&record->fade);
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, work->blendColor);
             VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
             VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
         } else {
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)record->fade, (u16)work->blendColor);
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)record->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, record->fade, work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, record->fade, work->blendColor);
         }
         break;
     }
@@ -368,9 +368,9 @@ static BOOL VsRecorder_DressUpEnter(VsRecorderWork *work) {
         if (VsRecorder_StepFade(&dressUp->fade, 1)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)dressUp->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, dressUp->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, dressUp->fade, work->blendColor);
         break;
     case DRESS_UP_ENTER_STEP_HIDE_CURSOR:
         SetBgPriority(GF_BG_LYR_MAIN_0, 0);
@@ -440,7 +440,7 @@ static BOOL VsRecorder_DressUpSendShow(VsRecorderWork *work) {
             VsRecorder_PrintOwnPhotoCaption(work);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, DRESS_UP_SEND_MAIN);
@@ -510,7 +510,7 @@ static BOOL VsRecorder_DressUpSendUpload(VsRecorderWork *work) {
             SetBgPriority(GF_BG_LYR_MAIN_2, 0);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
         break;
     case DRESS_UP_SEND_UPLOAD_STEP_SHOW_SENDING:
         VsRecorder_PlaceOrbitCursor(work, work->orbitCursors[0], 128, 96);
@@ -569,15 +569,15 @@ static BOOL VsRecorder_DressUpSendUpload(VsRecorderWork *work) {
                 }
                 VsRecorder_ClearPaletteBlend(work);
                 VsRecorder_ResetFade(&dressUp->fade);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, work->blendColor);
                 VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
                 VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
                 Heap_Free(dressUp);
                 UnloadOverlayByID(FS_OVERLAY_ID(OVY_41));
                 Main_SetVBlankIntrCB(VsRecorder_VBlankCB, work);
             } else {
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)dressUp->fade, (u16)work->blendColor);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, dressUp->fade, work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
             }
         }
         break;
@@ -616,7 +616,7 @@ static BOOL VsRecorder_DressUpSendExit(VsRecorderWork *work) {
             BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
         break;
     case DRESS_UP_SEND_EXIT_STEP_REBUILD_MENU:
         VsRecorder_ResetFade(&dressUp->fade);
@@ -643,15 +643,15 @@ static BOOL VsRecorder_DressUpSendExit(VsRecorderWork *work) {
                 VsRecorder_SetVBlankPaused(work, FALSE);
                 VsRecorder_ClearPaletteBlend(work);
                 VsRecorder_ResetFade(&dressUp->fade);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, work->blendColor);
                 VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
                 VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
                 Heap_Free(dressUp);
                 UnloadOverlayByID(FS_OVERLAY_ID(OVY_41));
                 Main_SetVBlankIntrCB(VsRecorder_VBlankCB, work);
             } else {
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)dressUp->fade, (u16)work->blendColor);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, dressUp->fade, work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
             }
         }
         break;
@@ -690,7 +690,7 @@ static BOOL VsRecorder_DressUpViewSelectCategory(VsRecorderWork *work) {
             VsRecorder_CreateDressUpCategoryWindows(work);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
         break;
     case DRESS_UP_VIEW_SELECT_CATEGORY_STEP_INPUT:
         TouchHitboxController_IsTriggered(dressUp->hitboxes);
@@ -715,7 +715,7 @@ static BOOL VsRecorder_DressUpViewSelectCategory(VsRecorderWork *work) {
             if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 2)) {
                 work->step++;
             }
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
         }
         break;
     default:
@@ -785,7 +785,7 @@ static BOOL VsRecorder_DressUpViewSelectSpecies(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 0)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
         break;
     default:
         VsRecorder_FreeDressUpSpeciesList(work);
@@ -828,7 +828,7 @@ static BOOL VsRecorder_DressUpViewExit(VsRecorderWork *work) {
             BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
         break;
     case DRESS_UP_VIEW_EXIT_STEP_REBUILD_MENU:
         VsRecorder_ResetFade(&dressUp->fade);
@@ -855,15 +855,15 @@ static BOOL VsRecorder_DressUpViewExit(VsRecorderWork *work) {
                 VsRecorder_SetVBlankPaused(work, FALSE);
                 VsRecorder_ClearPaletteBlend(work);
                 VsRecorder_ResetFade(&dressUp->fade);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, work->blendColor);
                 VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
                 VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
                 Heap_Free(dressUp);
                 UnloadOverlayByID(FS_OVERLAY_ID(OVY_41));
                 Main_SetVBlankIntrCB(VsRecorder_VBlankCB, work);
             } else {
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)dressUp->fade, (u16)work->blendColor);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, dressUp->fade, work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
             }
         }
         break;
@@ -976,7 +976,7 @@ static BOOL VsRecorder_DressUpViewShowPhoto(VsRecorderWork *work) {
             VsRecorder_CreateDressUpToggleWindow(work);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, DRESS_UP_VIEW_MAIN);
@@ -1059,7 +1059,7 @@ static BOOL VsRecorder_DressUpViewClosePhoto(VsRecorderWork *work) {
             BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)dressUp->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, DRESS_UP_VIEW_SELECT_CATEGORY);

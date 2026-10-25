@@ -563,7 +563,7 @@ static void LockCapsuleCard_FlipEffectTask(SysTask *task, WonderCardFlipEffect *
 
     HBlankDma_Stop();
     buffer = DoubleBuffer_GetOther(effect->doubleBuffer);
-    HBlankDma_Start(buffer, (void *)REG_BG0HOFS_ADDR, 8, 1);
+    HBlankDma_Start(buffer, (void *)REG_BG0HOFS_ADDR, 8, TRUE);
 }
 
 static void LockCapsuleCard_StartFlipEffect(LockCapsuleCardView *view, int mode, fx32 speed, fx32 accel) {

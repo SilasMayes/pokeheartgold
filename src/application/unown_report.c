@@ -818,7 +818,7 @@ static void UnownReport_DrawFormSpread(UnownReportApp *app, u8 spread) {
             UnownReport_LoadIcon(app, i, app->seenForms[index]);
             ReadMsgDataIntoString(app->msgData, app->seenForms[index] + 20, app->buffer);
             if (i < 7) {
-                UnownReport_PrintTextFont0(leftWindow, app->buffer, 48, (u16)y);
+                UnownReport_PrintTextFont0(leftWindow, app->buffer, 48, y);
             } else {
                 UnownReport_PrintTextFont0(rightWindow, app->buffer, 48, (u16)(y - 168));
             }
@@ -857,8 +857,8 @@ static void UnownReport_DrawInfoPage(UnownReportApp *app, u8 infoPage) {
 }
 
 static void UnownReport_ShowScreen(UnownReportApp *app, UnownReportScreen *screen, u32 bgId) {
-    CopyToBgTilemapRect(app->bgConfig, (u8)bgId, 0, 0, 32, 24, screen->rawData, 0, 0, screen->width, screen->height);
-    ScheduleBgTilemapBufferTransfer(app->bgConfig, (u8)bgId);
+    CopyToBgTilemapRect(app->bgConfig, bgId, 0, 0, 32, 24, screen->rawData, 0, 0, screen->width, screen->height);
+    ScheduleBgTilemapBufferTransfer(app->bgConfig, bgId);
 }
 
 static void UnownReport_PrintText(Window *window, String *string, FontID fontId, int x, u16 y) {

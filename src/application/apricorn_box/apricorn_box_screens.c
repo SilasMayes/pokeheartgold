@@ -952,7 +952,7 @@ static void ApricornBoxScreen_CreateJuiceMenu(ApricornBoxScreen *screen) {
     header.numWindows = gApricornBoxListMenus[screen->mode - 1].count;
     y = gApricornBoxListMenus[screen->mode - 1].y;
     x = gApricornBoxListMenus[screen->mode - 1].x;
-    screen->listMenu = TouchscreenListMenu_Create(screen->spawner, &header, (u8)screen->menuInputState, x, y, 8, 0);
+    screen->listMenu = TouchscreenListMenu_Create(screen->spawner, &header, screen->menuInputState, x, y, 8, 0);
 }
 
 static int ApricornBoxScreen_HandleJuiceMenu(ApricornBoxScreen *screen) {
@@ -1270,7 +1270,7 @@ static void ApricornBoxScreen_AddWindows(ApricornBoxScreen *screen) {
     i = 0;
     y = 6;
     for (; i < 7; i++) {
-        AddWindowParameterized(screen->bgConfig, &screen->windows[i + 11], GF_BG_LYR_MAIN_2, (u8)((i % 2) * 6 + 5), (u8)y, 2, 2, 12, (u16)tile);
+        AddWindowParameterized(screen->bgConfig, &screen->windows[i + 11], GF_BG_LYR_MAIN_2, (u8)((i % 2) * 6 + 5), y, 2, 2, 12, tile);
         FillWindowPixelBuffer(&screen->windows[i + 11], 0);
         tile += 4;
         y += 2;

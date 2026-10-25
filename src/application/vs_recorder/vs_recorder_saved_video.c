@@ -211,7 +211,7 @@ static BOOL VsRecorder_SavedVideoInit(VsRecorderWork *work) {
 
 static BOOL VsRecorder_SavedVideoEnter(VsRecorderWork *work) {
     VsRecorderSavedVideo *savedVideo = work->screenWork;
-    int ok;
+    BOOL ok;
 
     switch (work->step) {
     case SAVED_VIDEO_ENTER_STEP_FADE_OUT_MENU:
@@ -427,7 +427,7 @@ static BOOL VsRecorder_SavedVideoSavePrompt(VsRecorderWork *work) {
             VsRecorder_SetVBlankPaused(work, FALSE);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)savedVideo->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, savedVideo->fade, work->blendColor);
         break;
     case SAVED_VIDEO_SAVE_PROMPT_STEP_SHOW_PROMPT:
         VsRecorder_ShowYesNoWindows(work);
@@ -444,7 +444,7 @@ static BOOL VsRecorder_SavedVideoSavePrompt(VsRecorderWork *work) {
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)savedVideo->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, savedVideo->fade, work->blendColor);
         break;
     case SAVED_VIDEO_SAVE_PROMPT_STEP_INPUT:
         if (TouchscreenHitbox_TouchNewIsIn(&sVsRecorderSaveYesHitbox)) {
@@ -476,7 +476,7 @@ static BOOL VsRecorder_SavedVideoSavePrompt(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, TRUE, 2)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)savedVideo->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, savedVideo->fade, work->blendColor);
         break;
     default:
         if (savedVideo->exitMode == 1) {

@@ -1282,7 +1282,7 @@ static void FootprintStamp_CreateTextSprite(FootprintStamp *work, FootprintStamp
     spriteManager = work->spriteManager;
     FootprintStamp_GetTextSize(string, font, &width, &tiles);
     InitWindow(&window);
-    AddTextWindowTopLeftCorner(bgConfig, &window, (u8)tiles, 2, 0, 0);
+    AddTextWindowTopLeftCorner(bgConfig, &window, tiles, 2, 0, 0);
     AddTextPrinterParameterizedWithColorAndSpacing(&window, font, string, 0, 0, TEXT_SPEED_NOTRANSFER, color, 0, 0, NULL);
     ObjCharTransfer_ReserveCharSpace(FontOAM_GetCharSize(&window, NNS_G2D_VRAM_TYPE_2DMAIN, HEAP_ID_125), TRUE, NNS_G2D_VRAM_TYPE_2DMAIN, &charTransfer);
     if (centered == TRUE) {

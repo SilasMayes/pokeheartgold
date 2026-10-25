@@ -266,8 +266,8 @@ void PokedexApp_DrawCountLabel(PokedexAppData *pokedexApp, int windowId, u32 msg
     x = 0;
     pixels += 32;
     for (; i < 12; i++, x += 8) {
-        BlitBitmapRect(&pokedexApp->windows[windowId], pixels, 0, 0, 8, 8, (u16)x, 0, 8, 8, 0xFF);
-        BlitBitmapRect(&pokedexApp->windows[windowId], pixels, 0, 0, 8, 8, (u16)x, 8, 8, 8, 0xFF);
+        BlitBitmapRect(&pokedexApp->windows[windowId], pixels, 0, 0, 8, 8, x, 0, 8, 8, 0xFF);
+        BlitBitmapRect(&pokedexApp->windows[windowId], pixels, 0, 0, 8, 8, x, 8, 8, 8, 0xFF);
     }
     PokedexApp_PrintMessage(&pokedexApp->windows[windowId], pokedexApp->msgData, msgNo, 96, 0, 0, MAKE_TEXT_COLOR(15, 8, 0), 1);
     Heap_Free(allocation);
@@ -685,8 +685,8 @@ void PokedexApp_DrawSearchButton(PokedexAppData *pokedexApp, int windowId, int m
     int x = 0;
 
     for (i = 0; i < 8; i++, x += 8) {
-        BlitBitmapRect((Window *)(windows + offset), pixels + 0xC40, 0, 0, 8, 8, (u16)x, 0, 8, 8, 0xFF);
-        BlitBitmapRect((Window *)(windows + offset), pixels + 0xCA0, 0, 0, 8, 8, (u16)x, 8, 8, 8, 0xFF);
+        BlitBitmapRect((Window *)(windows + offset), pixels + 0xC40, 0, 0, 8, 8, x, 0, 8, 8, 0xFF);
+        BlitBitmapRect((Window *)(windows + offset), pixels + 0xCA0, 0, 0, 8, 8, x, 8, 8, 8, 0xFF);
     }
     Heap_Free(allocation);
     {
@@ -1051,7 +1051,7 @@ void PokedexApp_PutWindowTilemap(PokedexAppData *pokedexApp, u32 windowId) {
     CopyWindowPixelsToVram_TextMode(&windows[windowId]);
 }
 
-void PokedexApp_SetSearchSummaryVisible(PokedexAppData *pokedexApp, int visible) {
+void PokedexApp_SetSearchSummaryVisible(PokedexAppData *pokedexApp, BOOL visible) {
     u32 i;
 
     if (visible == TRUE) {

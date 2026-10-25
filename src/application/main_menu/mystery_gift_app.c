@@ -822,7 +822,7 @@ static void MysteryGiftApp_ShowMainMenu(OverlayManager *manager, int baseTile, i
     }
     items[count] = sMysteryGiftMainMenuItems[3];
     if (window->bgConfig == NULL) {
-        AddWindowParameterized(data->bgConfig, window, GF_BG_LYR_MAIN_0, 6, 7, 20, (u8)(2 * (count + 1)), 0, (u16)baseTile);
+        AddWindowParameterized(data->bgConfig, window, GF_BG_LYR_MAIN_0, 6, 7, 20, (u8)(2 * (count + 1)), 0, baseTile);
     }
     DrawFrameAndWindow1(window, TRUE, 31, 3);
     MysteryGiftApp_CreateListMenu(manager, items, count + 1, window, msgId);
@@ -988,7 +988,7 @@ static int MysteryGiftApp_PrintMessageAndWait(OverlayManager *manager, Window *w
         data->stateAfterMessage = nextState;
         MessageFormat_Delete(msgFormat);
         DestroyMsgData(msgData);
-    } else if (!TextPrinterCheckActive((u8)data->textPrinterId)) {
+    } else if (!TextPrinterCheckActive(data->textPrinterId)) {
         String_Delete(data->string);
         data->string = NULL;
         data->textSpeed = 0;
@@ -1308,8 +1308,8 @@ static void MysteryGiftAnim_StartSparkleTasks(MysteryGiftAnimData *anim) {
         cursor->sparkles[0].radiusY = cursor->sparkles[0].amplitude;
         angle = LCRandom() % 360;
         radius = (s32)(LCRandom() % 32) + 64;
-        position.x = cursor->sparkles[0].destX + GF_SinDeg((u16)angle) * radius;
-        position.y = cursor->sparkles[0].destY + GF_CosDeg((u16)angle) * radius;
+        position.x = cursor->sparkles[0].destX + GF_SinDeg(angle) * radius;
+        position.y = cursor->sparkles[0].destY + GF_CosDeg(angle) * radius;
         Sprite_SetMatrix(cursor->sparkles[0].sprite, &position);
         Sprite_TryChangeAnimSeq(cursor->sparkles[0].sprite, 1);
         Sprite_SetDrawFlag(cursor->sparkles[0].sprite, FALSE);
@@ -1466,43 +1466,43 @@ static void MysteryGiftAnim_UpdateParticle(SysTask *task, void *data) {
         if (particle->kind == 0) {
             particle->phase += 8;
             particle->phase %= 360;
-            particle->radiusX = (GF_CosDeg((u16)particle->phase) * particle->amplitude) >> FX32_SHIFT;
-            pos.x = particle->destX + GF_SinDeg((u16)particle->angle) * particle->radiusX;
-            pos.y = particle->destY + GF_CosDeg((u16)particle->angle) * particle->radiusY;
+            particle->radiusX = (GF_CosDeg(particle->phase) * particle->amplitude) >> FX32_SHIFT;
+            pos.x = particle->destX + GF_SinDeg(particle->angle) * particle->radiusX;
+            pos.y = particle->destY + GF_CosDeg(particle->angle) * particle->radiusY;
         } else if (particle->kind == 1) {
             particle->phase += 8;
             particle->phase %= 360;
-            particle->radiusY = (GF_SinDeg((u16)particle->phase) * particle->amplitude) >> FX32_SHIFT;
-            pos.x = particle->destX + GF_SinDeg((u16)particle->angle) * particle->radiusX;
-            pos.y = particle->destY + GF_CosDeg((u16)particle->angle) * particle->radiusY;
+            particle->radiusY = (GF_SinDeg(particle->phase) * particle->amplitude) >> FX32_SHIFT;
+            pos.x = particle->destX + GF_SinDeg(particle->angle) * particle->radiusX;
+            pos.y = particle->destY + GF_CosDeg(particle->angle) * particle->radiusY;
         } else if (particle->kind == 2) {
             particle->phase += 8;
             particle->phase %= 360;
-            particle->radiusY = (GF_SinDeg((u16)particle->phase) * particle->amplitude) >> FX32_SHIFT;
-            pos.x = particle->destX + -1 * (particle->radiusX * GF_SinDeg((u16)particle->angle));
-            pos.y = particle->destY + -1 * (particle->radiusY * GF_CosDeg((u16)particle->angle));
+            particle->radiusY = (GF_SinDeg(particle->phase) * particle->amplitude) >> FX32_SHIFT;
+            pos.x = particle->destX + -1 * (particle->radiusX * GF_SinDeg(particle->angle));
+            pos.y = particle->destY + -1 * (particle->radiusY * GF_CosDeg(particle->angle));
         } else if (particle->kind == 3) {
             particle->phase += 8;
             particle->phase %= 360;
-            particle->radiusX = (GF_CosDeg((u16)particle->phase) * particle->amplitude) >> FX32_SHIFT;
-            pos.x = particle->destX + -1 * (particle->radiusX * GF_SinDeg((u16)particle->angle));
-            pos.y = particle->destY + -1 * (particle->radiusY * GF_CosDeg((u16)particle->angle));
+            particle->radiusX = (GF_CosDeg(particle->phase) * particle->amplitude) >> FX32_SHIFT;
+            pos.x = particle->destX + -1 * (particle->radiusX * GF_SinDeg(particle->angle));
+            pos.y = particle->destY + -1 * (particle->radiusY * GF_CosDeg(particle->angle));
         } else if (particle->kind == 4) {
             if (particle->amplitude < 96) {
                 particle->amplitude += particle->grow;
             }
             particle->radiusX = particle->amplitude;
             particle->radiusY = particle->amplitude;
-            pos.x = particle->destX + GF_SinDeg((u16)particle->angle) * particle->radiusX;
-            pos.y = particle->destY + GF_CosDeg((u16)particle->angle) * particle->radiusY;
+            pos.x = particle->destX + GF_SinDeg(particle->angle) * particle->radiusX;
+            pos.y = particle->destY + GF_CosDeg(particle->angle) * particle->radiusY;
         } else if (particle->kind == 5) {
             if (particle->amplitude < 96) {
                 particle->amplitude += particle->grow;
             }
             particle->radiusX = particle->amplitude;
             particle->radiusY = particle->amplitude;
-            pos.x = particle->destX + -1 * (particle->radiusX * GF_SinDeg((u16)particle->angle));
-            pos.y = particle->destY + -1 * (particle->radiusY * GF_CosDeg((u16)particle->angle));
+            pos.x = particle->destX + -1 * (particle->radiusX * GF_SinDeg(particle->angle));
+            pos.y = particle->destY + -1 * (particle->radiusY * GF_CosDeg(particle->angle));
         } else {
             particle->frames = 10;
             particle->speed += FX32_HALF;
@@ -1664,7 +1664,7 @@ static void MysteryGiftAnim_Init(MysteryGiftAnimData *anim) {
 static void MysteryGiftAnim_Task(SysTask *task, void *data) {
     MysteryGiftAnimData *anim = data;
     int count;
-    int allDone;
+    BOOL allDone;
     int i;
     MysteryGiftAnimData *cursor;
     VecFx32 *mainMatrix;

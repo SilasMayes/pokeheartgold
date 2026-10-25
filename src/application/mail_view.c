@@ -849,7 +849,7 @@ static void MailView_LoadBgGraphics(MailView *mailView) {
     buffer = Heap_AllocAtEnd(mailView->heapID, NARC_GetMemberSize(narc, mailType));
     NARC_ReadWholeMember(narc, mailType, buffer);
     NNS_G2dGetUnpackedPaletteData(buffer, &plttData);
-    BG_LoadPlttData(GF_PAL_LOCATION_SUB_BG, plttData->pRawData, (u16)plttData->szByte, 0);
+    BG_LoadPlttData(GF_PAL_LOCATION_SUB_BG, plttData->pRawData, plttData->szByte, 0);
     mailView->palette = PaletteData_Init(mailView->heapID);
     PaletteData_AllocBuffers(mailView->palette, PLTTBUF_MAIN_BG, 0xE0, mailView->heapID);
     PaletteData_AllocBuffers(mailView->palette, PLTTBUF_MAIN_OBJ, 0x60, mailView->heapID);

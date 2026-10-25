@@ -1097,7 +1097,7 @@ static void MoveRelearner_PrintListRow(MoveRelearner *relearner, int scrollOffse
     }
     AddTextPrinterParameterizedWithColor(&relearner->windows[10], 0, relearner->moveList[index].text, 0, y, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
     AddTextPrinterParameterizedWithColor(&relearner->windows[10], 0, relearner->ppLabel, 16, y + 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
-    int maxPP = GetMoveMaxPP((u16)relearner->moveList[index].value, 0);
+    int maxPP = GetMoveMaxPP(relearner->moveList[index].value, 0);
     BufferIntegerAsString(relearner->msgFormat, 0, maxPP, 2, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     BufferIntegerAsString(relearner->msgFormat, 1, maxPP, 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
     StringExpandPlaceholders(relearner->msgFormat, relearner->string, relearner->ppFormat);
@@ -1799,11 +1799,11 @@ static void MoveRelearner_DrawListRows(MoveRelearner *relearner, u32 selected) {
     y = 4;
     do {
         if (i == selected) {
-            MoveRelearner_CopyButtonTiles(relearner, 0, (u8)y, 16, 4, 0, 8);
+            MoveRelearner_CopyButtonTiles(relearner, 0, y, 16, 4, 0, 8);
         } else if (i >= relearner->numMoves) {
-            MoveRelearner_CopyButtonTiles(relearner, 0, (u8)y, 16, 4, 0, 4);
+            MoveRelearner_CopyButtonTiles(relearner, 0, y, 16, 4, 0, 4);
         } else {
-            MoveRelearner_CopyButtonTiles(relearner, 0, (u8)y, 16, 4, 0, 0);
+            MoveRelearner_CopyButtonTiles(relearner, 0, y, 16, 4, 0, 0);
         }
         y += 4;
         i++;

@@ -67,7 +67,7 @@ extern const MainMenuUtilGiftPalettes gMainMenuUtilGiftPalettes;
 extern u32 gGiftCartridgeGameCodes[];
 
 static void *MainMenuUtil_CryptoAlloc(u32 size);
-static int MainMenuUtil_CheckGiftCartridgeSignature(void);
+static BOOL MainMenuUtil_CheckGiftCartridgeSignature(void);
 static BOOL MainMenuUtil_IsGiftCartridgeInserted(void);
 static int MainMenuTextPrinter_Print(MainMenuTextPrinter *printer, int msgId);
 static void MainMenuUtil_SetSubScreenOffset(fx32 x, fx32 y);
@@ -83,7 +83,7 @@ static void *MainMenuUtil_CryptoAlloc(u32 size) {
 }
 
 // A Mystery Gift GBA cartridge: one of the game codes of gGiftCartridgeGameCodes, with a payload signed with the key gGiftCartridgePublicKey
-static int MainMenuUtil_CheckGiftCartridgeSignature(void) {
+static BOOL MainMenuUtil_CheckGiftCartridgeSignature(void) {
     u8 payload[0x4A8];
     u8 signature[0x80];
     u32 gameCode = CTRDG_GetAgbGameCode();
@@ -187,8 +187,8 @@ void MainMenuUtil_InitBg(BgConfig *bgConfig, int bgId, u32 screenSize, u32 scree
     }
     template.screenBase = screenBase >> 11;
     template.charBase = charBase >> 14;
-    InitBgFromTemplate(bgConfig, (u8)bgId, &template, GF_BG_TYPE_TEXT);
-    BgClearTilemapBufferAndCommit(bgConfig, (u8)bgId);
+    InitBgFromTemplate(bgConfig, bgId, &template, GF_BG_TYPE_TEXT);
+    BgClearTilemapBufferAndCommit(bgConfig, bgId);
 }
 
 void MainMenuUtil_SetFadeWhite(u32 fadeWhite) {
@@ -293,21 +293,21 @@ static int MainMenuTextPrinter_Print(MainMenuTextPrinter *printer, int msgId) {
 int MainMenuTextPrinter_AddWindowAndPrint(BgConfig *bgConfig, MainMenuTextPrinter *printer, int x, int y, int msgId) {
     u32 result;
     if (printer->window->bgConfig == NULL) {
-        AddWindowParameterized(bgConfig, printer->window, (u8)printer->bgId, (u8)x, (u8)y, (u8)printer->width, (u8)printer->height, (u8)printer->palette, (u16)printer->baseTile);
+        AddWindowParameterized(bgConfig, printer->window, printer->bgId, x, y, printer->width, printer->height, printer->palette, printer->baseTile);
         result = MainMenuTextPrinter_Print(printer, msgId);
     } else {
         if (x != -1) {
-            SetWindowX(printer->window, (u8)x);
+            SetWindowX(printer->window, x);
         }
         if (y != -1) {
-            SetWindowY(printer->window, (u8)y);
+            SetWindowY(printer->window, y);
         }
         result = MainMenuTextPrinter_Print(printer, msgId);
     }
     if (printer->drawFrame == 1) {
         switch (printer->frameType) {
         case 0:
-            DrawFrameAndWindow1(printer->window, FALSE, (u16)printer->frameBaseTile, (u8)printer->framePalette);
+            DrawFrameAndWindow1(printer->window, FALSE, printer->frameBaseTile, printer->framePalette);
             break;
         case 1:
             DrawFrameAndWindow2(printer->window, FALSE, (u16)printer->frameBaseTile, (u8)printer->framePalette);
@@ -361,7 +361,7 @@ MainMenuUtilSprites *MainMenuUtil_GetSpriteList(void) {
 void MainMenuUtil_LoadSpriteResources(NarcId narcId, u32 charFileId, u32 plttFileId, u32 cellFileId, u32 animFileId, u32 screen) {
     MainMenuUtilWork *work = &gMainMenuUtilWork;
     int vram = screen == 0 ? NNS_G2D_VRAM_TYPE_2DMAIN : NNS_G2D_VRAM_TYPE_2DSUB;
-    int compressed = TRUE;
+    BOOL compressed = TRUE;
     if (narcId == NARC_itemtool_itemdata_item_icon) {
         compressed = FALSE;
     }
@@ -526,7 +526,7 @@ static void MainMenuUtil_LoadGiftMonSprite(Sprite *sprite, Pokemon *mon, int spe
     GetMonSpriteCharAndPlttNarcIdsEx(template, species, gender, 2, shiny, form, 0);
     {
         u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
-        CharTiles_LoadMonObjBlocksFromNarc((NarcId)template->narcID, template->charDataID, gMainMenuUtilWork.heapId, 0, 0, 10, 10, charData, personality, 0, 2, species);
+        CharTiles_LoadMonObjBlocksFromNarc((NarcId)template->narcID, template->charDataID, gMainMenuUtilWork.heapId, 0, 0, 10, 10, charData, personality, FALSE, 2, species);
     }
     DC_FlushRange(charData, 0xC80);
     GXS_LoadOBJ(charData, NNS_G2dGetImageLocation(Sprite_GetImageProxy(sprite), NNS_G2D_VRAM_TYPE_2DSUB) + 0xC80, 0xC80);

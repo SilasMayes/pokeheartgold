@@ -124,7 +124,7 @@ void PokedexApp_DrawFormListIcons(PokedexAppData *pokedexApp) {
             PokedexApp_SetSpriteVisible(pokedexApp, i + 14, TRUE);
             PokedexApp_SetFormListIcon(pokedexApp, i + 14, entry);
         }
-        PokedexApp_SetSpritePos(pokedexApp, i + 14, 0x30, (s16)y, 0);
+        PokedexApp_SetSpritePos(pokedexApp, i + 14, 0x30, y, 0);
         i++;
         y += 24;
     } while ((u32)i < 6);
@@ -266,7 +266,7 @@ BOOL PokedexApp_DragFormScrollbar(PokedexAppData *pokedexApp, u32 x, u32 y) {
     if (y > max) {
         y = max;
     }
-    ManagedSprite_SetPositionXY(pokedexApp->sprites[5], spriteX, (s16)y);
+    ManagedSprite_SetPositionXY(pokedexApp->sprites[5], spriteX, y);
     min = PokedexApp_GetScrollbarMinY(pokedexApp, 5, gPokedexScrollbarLengths, 64, 86);
     max = PokedexApp_GetScrollbarMaxY(pokedexApp, 5, gPokedexScrollbarLengths, 64, 86);
     max -= min;
@@ -303,7 +303,7 @@ BOOL PokedexApp_DragAreaScrollbar(PokedexAppData *pokedexApp, u32 x, u32 y) {
     if (y > max) {
         y = max;
     }
-    ManagedSprite_SetPositionXY(pokedexApp->sprites[5], spriteX, (s16)y);
+    ManagedSprite_SetPositionXY(pokedexApp->sprites[5], spriteX, y);
     min = PokedexApp_GetScrollbarMinY(pokedexApp, 5, gPokedexAreaScrollbarLengths, 96, 86);
     max = PokedexApp_GetScrollbarMaxY(pokedexApp, 5, gPokedexAreaScrollbarLengths, 96, 86);
     max -= min;

@@ -407,7 +407,7 @@ void WobbuffetPopBalloon_UpdateHandleSprite(WobbuffetPopBalloon *balloon, Manage
     } else {
         anim = 0;
     }
-    ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, (s16)balloon->handleX, (s16)(gWobbuffetPopBalloonTouchAreas[balloon->selection].top + (balloon->pushDepth >> 12)), 0x160000);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, balloon->handleX, (s16)(gWobbuffetPopBalloonTouchAreas[balloon->selection].top + (balloon->pushDepth >> 12)), 0x160000);
     ManagedSprite_SetAnim(sprite, anim);
     Sprite_TickFrame(sprite->sprite);
 }

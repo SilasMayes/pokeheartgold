@@ -44,6 +44,28 @@ void DrawFrame2AroundWindow(Window *window, u32 baseTile, u32 paletteNum);
 #define PC_BOX_SLOT_COUNT       36
 #define PC_BOX_SLOT_NONE        0xFF
 
+// PCBoxView.sprites
+enum PCBoxSprite {
+    PC_BOX_SPRITE_PREV_BOX_ARROW,
+    PC_BOX_SPRITE_NEXT_BOX_ARROW,
+    PC_BOX_SPRITE_MON_PIC, // two buffers
+    PC_BOX_SPRITE_TRAY_PREV_ARROW = PC_BOX_SPRITE_MON_PIC + 2,
+    PC_BOX_SPRITE_TRAY_NEXT_ARROW,
+    PC_BOX_SPRITE_TRAY_MARKER,
+    PC_BOX_SPRITE_TRAY_CURSOR,
+    PC_BOX_SPRITE_TRAY_LABEL,
+    PC_BOX_SPRITE_CURSOR,
+    PC_BOX_SPRITE_UNUSED,
+    PC_BOX_SPRITE_HELD_ITEM,
+    PC_BOX_SPRITE_INFO_ITEM,
+    PC_BOX_SPRITE_TYPE_ICONS,
+    PC_BOX_SPRITE_TRAY_BOXES = PC_BOX_SPRITE_TYPE_ICONS + 2,
+    PC_BOX_SPRITE_WALLPAPERS = PC_BOX_SPRITE_TRAY_BOXES + 6,
+    PC_BOX_SPRITE_MON_ICONS = PC_BOX_SPRITE_WALLPAPERS + 4,              // slotIcons maps a slot to its icon
+    PC_BOX_SPRITE_OUTLINE = PC_BOX_SPRITE_MON_ICONS + PC_BOX_SLOT_COUNT, // 8 icon outline pieces
+    PC_BOX_SPRITE_COUNT = PC_BOX_SPRITE_OUTLINE + 8,
+};
+
 // gPCBoxStateTable: state N runs PCBox_State_<Name>
 enum PCBoxState {
     PC_BOX_STATE_INIT,
@@ -405,7 +427,7 @@ typedef struct PCBoxView {
     BgCellManager *panels;
     SpriteSystem *spriteSystem;
     SpriteManager *spriteManager;
-    ManagedSprite *sprites[69];
+    ManagedSprite *sprites[PC_BOX_SPRITE_COUNT];
     FontSystem *fontSystem;
     PCBoxTextObj textObjs[2];
     YesNoPrompt *yesNoPrompt;
@@ -832,7 +854,7 @@ void PCBox_FreeSprites(PCBoxView *view);
 void PCBox_TickSprites(PCBoxView *view);
 void PCBox_SetSpriteAnim(PCBoxView *view, u32 index, u32 anim);
 u32 PCBox_IsSpriteAnimated(PCBoxView *view, u32 i);
-void PCBox_SetSpriteVisible(PCBoxView *view, int index, int state);
+void PCBox_SetSpriteVisible(PCBoxView *view, int index, BOOL visible);
 int PCBox_IsSpriteVisible(PCBoxView *view, int index);
 void PCBox_SetSpritePriority(PCBoxView *view, u32 i, u32 pri);
 void PCBox_InitSpriteSystem(PCBoxView *view);
@@ -848,7 +870,7 @@ void PCBox_PlacePartyIconsLeftHidden(PCBoxWork *work);
 void PCBox_PlacePartyIconsRightHidden(PCBoxWork *work);
 void PCBox_PlacePartyIconsLeft(PCBoxWork *work);
 void PCBox_PlacePartyIconsRight(PCBoxWork *work);
-void PCBox_SetIconLayer(PCBoxView *view, u32 i, int active);
+void PCBox_SetIconLayer(PCBoxView *view, u32 i, BOOL active);
 void PCBox_SetMovingIconPriority(PCBoxView *view, int i, u32 which);
 void PCBox_ScrollBoxIcons(PCBoxWork *work, s32 amount);
 void PCBox_UpdatePartyIconPositions(PCBoxWork *work);

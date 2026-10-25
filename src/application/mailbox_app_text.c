@@ -110,8 +110,8 @@ void MailboxApp_DrawNameplate(MailboxApp *app, u32 cell, u32 windowId, u32 mailI
     CopyU16ArrayToString(app->data->string, Mail_GetAuthorNamePtr(mail));
     x = 0;
     for (i = 0; i < 8; i++) {
-        BlitBitmapRectToWindow(window, app->data->nameplateTileLeft, 0, 0, 8, 8, (u16)x, 0, 8, 8);
-        BlitBitmapRectToWindow(window, app->data->nameplateTileRight, 0, 0, 8, 8, (u16)x, 8, 8, 8);
+        BlitBitmapRectToWindow(window, app->data->nameplateTileLeft, 0, 0, 8, 8, x, 0, 8, 8);
+        BlitBitmapRectToWindow(window, app->data->nameplateTileRight, 0, 0, 8, 8, x, 8, 8, 8);
         x += 8;
     }
     if (Mail_GetAuthorGender(mail) == 0) {

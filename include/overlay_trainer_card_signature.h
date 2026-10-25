@@ -3,8 +3,8 @@
 
 #include "overlay_manager.h"
 
-int TrainerCardSignature_Init(OverlayManager *manager, int *state);
-int TrainerCardSignature_Main(OverlayManager *manager, int *state);
-int TrainerCardSignature_Exit(OverlayManager *manager, int *state);
+BOOL TrainerCardSignature_Init(OverlayManager *manager, int *state);
+BOOL TrainerCardSignature_Main(OverlayManager *manager, int *state);
+BOOL TrainerCardSignature_Exit(OverlayManager *manager, int *state);
 
 #endif // POKEHEARTGOLD_OVERLAY_TRAINER_CARD_SIGNATURE_H

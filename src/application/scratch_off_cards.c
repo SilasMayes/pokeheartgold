@@ -245,14 +245,14 @@ extern const VecFx32 gScratchOffCardsSpriteScale;
 extern const WindowTemplate gScratchOffCardsWindowTemplates[16];
 extern u8 gScratchOffCardsMatchPaletteFiles[8];
 
-static int ScratchOffCards_FadeIn(ScratchOffCardsWork *work);
-static int ScratchOffCards_SlideInCardChoices(ScratchOffCardsWork *work);
-static int ScratchOffCards_SelectCard(ScratchOffCardsWork *work);
-static int ScratchOffCards_ZoomSelectedCard(ScratchOffCardsWork *work);
-static int ScratchOffCards_ShowCard(ScratchOffCardsWork *work);
-static int ScratchOffCards_PlayCard(ScratchOffCardsWork *work);
-static int ScratchOffCards_SlideOutCard(ScratchOffCardsWork *work);
-static int ScratchOffCards_FadeOut(ScratchOffCardsWork *work);
+static BOOL ScratchOffCards_FadeIn(ScratchOffCardsWork *work);
+static BOOL ScratchOffCards_SlideInCardChoices(ScratchOffCardsWork *work);
+static BOOL ScratchOffCards_SelectCard(ScratchOffCardsWork *work);
+static BOOL ScratchOffCards_ZoomSelectedCard(ScratchOffCardsWork *work);
+static BOOL ScratchOffCards_ShowCard(ScratchOffCardsWork *work);
+static BOOL ScratchOffCards_PlayCard(ScratchOffCardsWork *work);
+static BOOL ScratchOffCards_SlideOutCard(ScratchOffCardsWork *work);
+static BOOL ScratchOffCards_FadeOut(ScratchOffCardsWork *work);
 static void ScratchOffCards_CreateHighlightSprites(ScratchOffCardsWork *work);
 static void ScratchOffCards_CreateResultSprites(ScratchOffCardsWork *work);
 static void ScratchOffCards_CreateButtonSprites(ScratchOffCardsWork *work);
@@ -292,7 +292,7 @@ static void ScratchOffCards_FillCells(ScratchOffCardsWork *work);
 static void ScratchOffCards_ShuffleCells(ScratchOffCardsWork *work, int unused);
 static void ScratchOffCards_ClearCells(ScratchOffCardsWork *work);
 static void ScratchOffCards_ChoosePrizes(ScratchOffCardsWork *work, int unused);
-static int ScratchOffCards_BounceCardChoice(ScratchOffCardsWork *work, int cardNo);
+static BOOL ScratchOffCards_BounceCardChoice(ScratchOffCardsWork *work, int cardNo);
 static void ScratchOffCards_SetBgPalette(ScratchOffCardsWork *work, int bgId, u8 palette, u8 width, u8 height);
 static u8 ScratchOffCards_CountTouchedCells(ScratchOffCardsWork *work);
 static void ScratchOffCards_ClearTouchedCells(ScratchOffCardsWork *work);
@@ -300,11 +300,11 @@ static void ScratchOffCards_ClearRevealedCells(ScratchOffCardsWork *work);
 static void ScratchOffCards_ScratchCell(ScratchOffCardsWork *work, int cellNo);
 static void ScratchOffCards_MarkTouchedArea(ScratchOffCardsWork *work);
 static void ScratchOffCards_MarkArea(ScratchOffCardsWork *work, int x, int y);
-static int ScratchOffCards_CheckCellRevealed(ScratchOffCardsWork *work, u8 cellNo);
+static BOOL ScratchOffCards_CheckCellRevealed(ScratchOffCardsWork *work, u8 cellNo);
 static void ScratchOffCards_AnimateMatch(ScratchOffCardsWork *work);
-static int ScratchOffCards_CheckMatch(ScratchOffCardsWork *work);
+static BOOL ScratchOffCards_CheckMatch(ScratchOffCardsWork *work);
 static u32 ScratchOffCards_StartWildcardMosaic(ScratchOffCardsWork *work);
-static int ScratchOffCards_UpdateWildcardMosaic(ScratchOffCardsWork *work, int fadeOut);
+static BOOL ScratchOffCards_UpdateWildcardMosaic(ScratchOffCardsWork *work, int fadeOut);
 static void ScratchOffCards_AdvanceCard2(ScratchOffCardsWork *work);
 static void ScratchOffCards_AdvanceCard(ScratchOffCardsWork *work);
 static void ScratchOffCards_HideStartCardMessage(ScratchOffCardsWork *work);
@@ -441,7 +441,7 @@ BOOL ScratchOffCards_Exit(OverlayManager *man, int *state) {
     return TRUE;
 }
 
-static int ScratchOffCards_FadeIn(ScratchOffCardsWork *work) {
+static BOOL ScratchOffCards_FadeIn(ScratchOffCardsWork *work) {
     switch (work->subState) {
     case SCRATCH_OFF_CARDS_FADE_IN_START:
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 3, HEAP_ID_122);
@@ -457,7 +457,7 @@ static int ScratchOffCards_FadeIn(ScratchOffCardsWork *work) {
     return FALSE;
 }
 
-static int ScratchOffCards_SlideInCardChoices(ScratchOffCardsWork *work) {
+static BOOL ScratchOffCards_SlideInCardChoices(ScratchOffCardsWork *work) {
     int i;
     switch (work->subState) {
     case SCRATCH_OFF_CARDS_SLIDE_IN_START:
@@ -493,7 +493,7 @@ static int ScratchOffCards_SlideInCardChoices(ScratchOffCardsWork *work) {
     return FALSE;
 }
 
-static int ScratchOffCards_SelectCard(ScratchOffCardsWork *work) {
+static BOOL ScratchOffCards_SelectCard(ScratchOffCardsWork *work) {
     int hit;
     u32 x, y;
     switch (work->subState) {
@@ -528,7 +528,7 @@ static int ScratchOffCards_SelectCard(ScratchOffCardsWork *work) {
     return FALSE;
 }
 
-static int ScratchOffCards_ZoomSelectedCard(ScratchOffCardsWork *work) {
+static BOOL ScratchOffCards_ZoomSelectedCard(ScratchOffCardsWork *work) {
     int index = work->cardNo;
     int selected;
     index--;
@@ -581,7 +581,7 @@ static int ScratchOffCards_ZoomSelectedCard(ScratchOffCardsWork *work) {
     return FALSE;
 }
 
-static int ScratchOffCards_ShowCard(ScratchOffCardsWork *work) {
+static BOOL ScratchOffCards_ShowCard(ScratchOffCardsWork *work) {
     int i;
     switch (work->subState) {
     case SCRATCH_OFF_CARDS_SHOW_INIT:
@@ -687,7 +687,7 @@ static int ScratchOffCards_ShowCard(ScratchOffCardsWork *work) {
     return FALSE;
 }
 
-static int ScratchOffCards_PlayCard(ScratchOffCardsWork *work) {
+static BOOL ScratchOffCards_PlayCard(ScratchOffCardsWork *work) {
     int i;
     int hit;
     switch (work->subState) {
@@ -886,7 +886,7 @@ static int ScratchOffCards_PlayCard(ScratchOffCardsWork *work) {
     return FALSE;
 }
 
-static int ScratchOffCards_SlideOutCard(ScratchOffCardsWork *work) {
+static BOOL ScratchOffCards_SlideOutCard(ScratchOffCardsWork *work) {
     switch (work->subState) {
     case SCRATCH_OFF_CARDS_SLIDE_OUT_START:
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
@@ -929,7 +929,7 @@ static int ScratchOffCards_SlideOutCard(ScratchOffCardsWork *work) {
     return FALSE;
 }
 
-static int ScratchOffCards_FadeOut(ScratchOffCardsWork *work) {
+static BOOL ScratchOffCards_FadeOut(ScratchOffCardsWork *work) {
     switch (work->subState) {
     case SCRATCH_OFF_CARDS_FADE_OUT_START:
         work->timer = 10;
@@ -1429,7 +1429,7 @@ static void ScratchOffCards_ChoosePrizes(ScratchOffCardsWork *work, int unused) 
     }
 }
 
-static int ScratchOffCards_BounceCardChoice(ScratchOffCardsWork *work, int cardNo) {
+static BOOL ScratchOffCards_BounceCardChoice(ScratchOffCardsWork *work, int cardNo) {
     int x, y, newX, newY;
     int step;
     s8 dy;
@@ -1523,7 +1523,7 @@ static void ScratchOffCards_MarkArea(ScratchOffCardsWork *work, int x, int y) {
     }
 }
 
-static int ScratchOffCards_CheckCellRevealed(ScratchOffCardsWork *work, u8 cellNo) {
+static BOOL ScratchOffCards_CheckCellRevealed(ScratchOffCardsWork *work, u8 cellNo) {
     int x;
     int y;
     int count;
@@ -1571,8 +1571,8 @@ static void ScratchOffCards_AnimateMatch(ScratchOffCardsWork *work) {
     }
 }
 
-static int ScratchOffCards_CheckMatch(ScratchOffCardsWork *work) {
-    int match = FALSE;
+static BOOL ScratchOffCards_CheckMatch(ScratchOffCardsWork *work) {
+    BOOL match = FALSE;
     u8 secondCell, firstCell;
     if (work->revealedCount <= 1) {
         return FALSE;
@@ -1644,7 +1644,7 @@ static u32 ScratchOffCards_StartWildcardMosaic(ScratchOffCardsWork *work) {
     return ret;
 }
 
-static int ScratchOffCards_UpdateWildcardMosaic(ScratchOffCardsWork *work, int fadeOut) {
+static BOOL ScratchOffCards_UpdateWildcardMosaic(ScratchOffCardsWork *work, int fadeOut) {
     int i;
     for (i = 0; i < 3; i++) {
         if (work->cells[work->revealed[i]] == SCRATCH_CELL_WILDCARD) {

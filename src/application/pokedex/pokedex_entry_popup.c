@@ -633,7 +633,7 @@ static void PokedexEntryPopup_DeleteFootprintSprite(PokedexEntryPopup *popup) {
 void PokedexEntryPopup_HideSprites(OverlayManager *man) {
     u32 i;
     PokedexEntryPopup *popup = (PokedexEntryPopup *)man;
-    int draw = FALSE;
+    BOOL draw = FALSE;
 
     for (i = 0; i < 4; i++) {
         Sprite_SetDrawFlag(popup->sprites[i].sprite, draw);

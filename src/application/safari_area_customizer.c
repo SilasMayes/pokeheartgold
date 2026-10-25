@@ -220,8 +220,8 @@ static int SafariAreaCustomizer_State_SelectArea(SafariAreaCustomizer *customize
 static int SafariAreaCustomizer_State_MoveArea(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_State_FadeIn(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_State_FadeOut(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_Setup(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_Teardown(SafariAreaCustomizer *customizer);
+static BOOL SafariAreaCustomizer_Setup(SafariAreaCustomizer *customizer);
+static BOOL SafariAreaCustomizer_Teardown(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_HandleSlotInput(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_HandleSlotMenu(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_ScrollPages(SafariAreaCustomizer *customizer);
@@ -232,7 +232,7 @@ static int SafariAreaCustomizer_HandleMoveInput(SafariAreaCustomizer *customizer
 static int SafariAreaCustomizer_SwapAreas(SafariAreaCustomizer *customizer);
 static void SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *customizer);
 static void thunk_SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *customizer);
+static BOOL SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_ChooseArea(SafariAreaCustomizer *customizer);
@@ -496,7 +496,7 @@ static int SafariAreaCustomizer_State_FadeOut(SafariAreaCustomizer *customizer) 
     return SAC_STATE_FADE_OUT;
 }
 
-static int SafariAreaCustomizer_Setup(SafariAreaCustomizer *customizer) {
+static BOOL SafariAreaCustomizer_Setup(SafariAreaCustomizer *customizer) {
     switch (customizer->subState) {
     case SAC_SETUP_RESET_DISPLAY:
         Main_SetVBlankIntrCB(NULL, NULL);
@@ -531,7 +531,7 @@ static int SafariAreaCustomizer_Setup(SafariAreaCustomizer *customizer) {
     return FALSE;
 }
 
-static int SafariAreaCustomizer_Teardown(SafariAreaCustomizer *customizer) {
+static BOOL SafariAreaCustomizer_Teardown(SafariAreaCustomizer *customizer) {
     switch (customizer->subState) {
     case SAC_TEARDOWN_FREE:
         Main_SetVBlankIntrCB(NULL, NULL);
@@ -645,7 +645,7 @@ static int SafariAreaCustomizer_HandleAreaInput(SafariAreaCustomizer *customizer
 }
 
 static int SafariAreaCustomizer_HandleConfirmArea(SafariAreaCustomizer *customizer) {
-    int yes;
+    BOOL yes;
     int touchMode;
 
     switch (YesNoPrompt_HandleInput(customizer->yesNoPrompt)) {
@@ -776,7 +776,7 @@ static void thunk_SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *customi
     SafariAreaCustomizer_ShowCursors(customizer);
 }
 
-static int SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *customizer) {
+static BOOL SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *customizer) {
     if (customizer->touchMode == MENU_INPUT_STATE_TOUCH) {
         if (System_GetTouchHeld()) {
             return FALSE;
@@ -1182,9 +1182,9 @@ static void SafariAreaCustomizer_InitBgLayers(SafariAreaCustomizer *customizer) 
     count = 0;
     template = templates.templates;
     while (count < 8) {
-        InitBgFromTemplate(customizer->bgConfig, (u8)i, template, GF_BG_TYPE_TEXT);
-        BgClearTilemapBufferAndCommit(customizer->bgConfig, (u8)i);
-        BG_ClearCharDataRange((u8)i, 0x40, 0, customizer->heapId);
+        InitBgFromTemplate(customizer->bgConfig, i, template, GF_BG_TYPE_TEXT);
+        BgClearTilemapBufferAndCommit(customizer->bgConfig, i);
+        BG_ClearCharDataRange(i, 0x40, 0, customizer->heapId);
         count++;
         i++;
         template ++;
@@ -1199,7 +1199,7 @@ static void SafariAreaCustomizer_FreeBgLayers(SafariAreaCustomizer *customizer) 
     G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_NONE, 31, 0);
     G2S_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_NONE, 31, 0);
     for (i = 0; i < 8; i++) {
-        FreeBgTilemapBuffer(customizer->bgConfig, (u8)i);
+        FreeBgTilemapBuffer(customizer->bgConfig, i);
     }
     Heap_Free(customizer->bgConfig);
     GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
@@ -1789,7 +1789,7 @@ static BOOL SafariAreaCustomizer_RunPageChange(SafariAreaCustomizer *customizer)
 
     i = 0;
     do {
-        ManagedSprite_OffsetPositionXY(customizer->areaSprites[i], (s16)dx, 0);
+        ManagedSprite_OffsetPositionXY(customizer->areaSprites[i], dx, 0);
         i++;
     } while (i < 12);
     customizer->animFrame++;

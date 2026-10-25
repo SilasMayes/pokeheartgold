@@ -433,7 +433,7 @@ void PokedexApp_SwapMonPic(PokedexAppData *pokedexApp, int species, int index, i
             form = 0;
         }
     }
-    PokedexApp_LoadMonPicToSprite(pokedexApp, species, (u8)form, (u8)gender, 2, index, 0);
+    PokedexApp_LoadMonPicToSprite(pokedexApp, species, form, gender, 2, index, 0);
 }
 
 void PokedexApp_ShowMonPic(PokedexAppData *pokedexApp, int species, int index, int old) {
@@ -649,7 +649,7 @@ void PokedexApp_UpdateLanguageIcons(PokedexAppData *pokedexApp, u16 species, int
         for (index = (s16)(first + 5); (u32)index >= (u32)first; index--) {
             u32 which = index - first;
             int language = DexFlagToLanguage(GetDexLanguageCycleFlag(which));
-            if (PokedexApp_HasCaughtInLanguage(pokedexApp, species, (u16)language) == TRUE || language == GAME_LANGUAGE) {
+            if (PokedexApp_HasCaughtInLanguage(pokedexApp, species, language) == TRUE || language == GAME_LANGUAGE) {
                 int current = LanguageToDexFlag(pokedexApp->language);
                 int flag = GetDexLanguageCycleFlag(which);
                 s16 x, y;
@@ -884,7 +884,7 @@ int PokedexApp_GetListScrollbarMaxY(PokedexAppData *pokedexApp, int sprite) {
     return 131 - (PokedexApp_GetListScrollbarLength(pokedexApp, sprite) >> 1);
 }
 
-int PokedexApp_IsTouchOnListScrollbar(PokedexAppData *pokedexApp, int sprite, u32 x, u32 y) {
+BOOL PokedexApp_IsTouchOnListScrollbar(PokedexAppData *pokedexApp, int sprite, u32 x, u32 y) {
     s16 spriteX;
     s16 spriteY;
     u32 length;
@@ -898,7 +898,7 @@ int PokedexApp_IsTouchOnListScrollbar(PokedexAppData *pokedexApp, int sprite, u3
 }
 
 // Moves the scrollbar to y (clamped) and turns to the page it now points at; TRUE when the page changed.
-int PokedexApp_DragListScrollbar(PokedexAppData *pokedexApp, int sprite, u32 x, u32 y, int mode) {
+BOOL PokedexApp_DragListScrollbar(PokedexAppData *pokedexApp, int sprite, u32 x, u32 y, int mode) {
     s16 spriteX;
     s16 spriteY;
     u32 min;
@@ -914,7 +914,7 @@ int PokedexApp_DragListScrollbar(PokedexAppData *pokedexApp, int sprite, u32 x, 
     if (y > step) {
         y = step;
     }
-    ManagedSprite_SetPositionXY(pokedexApp->sprites[sprite], spriteX, (s16)y);
+    ManagedSprite_SetPositionXY(pokedexApp->sprites[sprite], spriteX, y);
 
     min = PokedexApp_GetListScrollbarMinY(pokedexApp, sprite);
     step = PokedexApp_GetListScrollbarMaxY(pokedexApp, sprite) - min;

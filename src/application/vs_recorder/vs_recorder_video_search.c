@@ -551,7 +551,7 @@ static void VsRecorder_CreateSearchButtonWindows(VsRecorderWork *work, int mode)
     window = search->buttonWindows;
     for (; i < 3; i++) {
         InitWindow(window);
-        AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_SUB_2, (u8)templates.windows[i].x, (u8)templates.windows[i].y, (u8)templates.windows[i].width, (u8)templates.windows[i].height, 14, (u16)baseTile);
+        AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_SUB_2, templates.windows[i].x, templates.windows[i].y, templates.windows[i].width, templates.windows[i].height, 14, baseTile);
         FillWindowPixelBuffer(window, 0);
         baseTile += templates.windows[i].width * templates.windows[i].height;
         window++;
@@ -659,7 +659,7 @@ BOOL VsRecorder_VideoSearchShowConditions(VsRecorderWork *work) {
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, SEARCH_CONDITIONS_MAIN);
@@ -693,7 +693,7 @@ BOOL VsRecorder_VideoSearchExit(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&search->eva, &search->evb, TRUE, 0)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     case SEARCH_EXIT_STEP_REBUILD_MENU:
         VsRecorder_SetVBlankPaused(work, TRUE);
@@ -708,7 +708,7 @@ BOOL VsRecorder_VideoSearchExit(VsRecorderWork *work) {
             if (VsRecorder_StepFade(&search->fade, 0)) {
                 VsRecorder_ClearPaletteBlend(work);
                 VsRecorder_ResetFade(&search->fade);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, 16, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, 16, work->blendColor);
                 VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
                 VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
                 BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
@@ -717,8 +717,8 @@ BOOL VsRecorder_VideoSearchExit(VsRecorderWork *work) {
                 BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
                 Heap_Free(search);
             } else {
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)search->fade, (u16)work->blendColor);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, search->fade, work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
             }
         }
         break;
@@ -740,7 +740,7 @@ BOOL VsRecorder_VideoSearchOpenCondition(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&search->eva, &search->evb, TRUE, 2)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         switch (search->condition) {
@@ -787,7 +787,7 @@ BOOL VsRecorder_VideoSearchSelectFacility(VsRecorderWork *work) {
             VsRecorder_SetVBlankPaused(work, FALSE);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     case SEARCH_SELECT_FACILITY_STEP_INPUT: {
         int facility;
@@ -820,7 +820,7 @@ BOOL VsRecorder_VideoSearchSelectFacility(VsRecorderWork *work) {
             VsRecorder_SetSearchButtonsMode(work, FALSE);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, SEARCH_RETURN_TO_CONDITIONS);
@@ -912,7 +912,7 @@ BOOL VsRecorder_VideoSearchSelectCategory(VsRecorderWork *work) {
             VsRecorder_CreateSearchCategoryWindows(work);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     case SEARCH_SELECT_CATEGORY_STEP_INPUT:
         TouchHitboxController_IsTriggered(search->slotHitboxes);
@@ -936,7 +936,7 @@ BOOL VsRecorder_VideoSearchSelectCategory(VsRecorderWork *work) {
                 VsRecorder_SetSearchButtonsMode(work, FALSE);
                 work->step++;
             }
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         }
         break;
     default:
@@ -1009,7 +1009,7 @@ BOOL VsRecorder_VideoSearchSelectSpecies(VsRecorderWork *work) {
                 VsRecorder_SetSearchButtonsMode(work, FALSE);
                 work->step++;
             }
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         } else {
             if (VsRecorder_StepBlend(&search->eva, &search->evb, TRUE, 2)) {
                 work->step++;
@@ -1137,7 +1137,7 @@ BOOL VsRecorder_VideoSearchSelectLocation(VsRecorderWork *work) {
             VsRecorder_SetVBlankPaused(work, FALSE);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     case SEARCH_SELECT_LOCATION_STEP_INPUT:
         VsRecorder_UpdateTouchScroll(&work->touchScroll);
@@ -1165,7 +1165,7 @@ BOOL VsRecorder_VideoSearchSelectLocation(VsRecorderWork *work) {
             VsRecorder_SetSearchButtonsMode(work, FALSE);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, SEARCH_RETURN_TO_CONDITIONS);
@@ -1190,7 +1190,7 @@ BOOL VsRecorder_VideoSearchReturnToConditions(VsRecorderWork *work) {
             VsRecorder_CreateSearchButtonWindows(work, 0);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, SEARCH_CONDITIONS_MAIN);
@@ -1281,7 +1281,7 @@ BOOL VsRecorder_VideoSearchLeaveConditions(VsRecorderWork *work) {
             VsRecorder_SetSearchButtonsMode(work, TRUE);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, SEARCH_SHOW_RESULTS);
@@ -1336,8 +1336,8 @@ BOOL VsRecorder_VideoSearchShowResults(VsRecorderWork *work) {
             OrbitCursor_SetRadius(work->orbitCursors[0], 12, 12);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, SEARCH_RESULTS_MAIN);
@@ -1397,8 +1397,8 @@ BOOL VsRecorder_VideoSearchResultsMain(VsRecorderWork *work) {
             }
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, search->nextSubState);
@@ -1435,7 +1435,7 @@ BOOL VsRecorder_VideoSearchResultsBack(VsRecorderWork *work) {
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, SEARCH_CONDITIONS_MAIN);
@@ -1481,7 +1481,7 @@ BOOL VsRecorder_VideoSearchShowDetails(VsRecorderWork *work) {
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, SEARCH_DETAILS_MAIN);
@@ -1546,7 +1546,7 @@ BOOL VsRecorder_VideoSearchBackToResults(VsRecorderWork *work) {
             VsRecorder_SetSearchButtonsMode(work, TRUE);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, SEARCH_SHOW_RESULTS);
@@ -1585,7 +1585,7 @@ BOOL VsRecorder_VideoSearchShowSlots(VsRecorderWork *work) {
                 BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
                 work->step++;
             }
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
             break;
         case 2:
             VsRecorder_ShowTopMessage(work, msg_0013_00277);
@@ -1641,7 +1641,7 @@ BOOL VsRecorder_VideoSearchShowSlots(VsRecorderWork *work) {
                 GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
                 work->step++;
             }
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)search->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, search->fade, work->blendColor);
             break;
         default: {
             int i;

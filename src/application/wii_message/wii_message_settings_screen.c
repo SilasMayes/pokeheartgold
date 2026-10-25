@@ -1472,7 +1472,7 @@ static BOOL WiiMessageSettingsScreen_StartServerSession(WiiMessageSettingsScreen
     }
     profileId = Save_SysInfo_GetDwcProfileId(sysInfo);
     friendKey = DWC_CreateFriendKey(userData);
-    GtsServer_Init(profileId, (u32)friendKey, (u32)(friendKey >> 32));
+    GtsServer_Init(profileId, friendKey, (u32)(friendKey >> 32));
     screen->app->serverSessionStarted = TRUE;
     screen->state = WMS_STATE_SEND_REGISTRATION_REQUEST;
     return FALSE;

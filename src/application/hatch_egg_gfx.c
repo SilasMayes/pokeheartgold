@@ -269,7 +269,7 @@ void HatchEggApp_LoadWindowGfx(BgConfig *bgConfig, PaletteData *paletteData, u32
 
 void HatchEggApp_CreateMessageWindow(BgConfig *bgConfig, Window *window, int bgId, int x, int y, int width, int height, int baseTile, int paletteNum) {
     InitWindow(window);
-    AddWindowParameterized(bgConfig, window, (u8)bgId, (u8)x, (u8)y, (u8)width, (u8)height, (u8)paletteNum, (u16)baseTile);
+    AddWindowParameterized(bgConfig, window, bgId, x, y, width, height, paletteNum, baseTile);
     DrawFrameAndWindow2(window, TRUE, 0x14, 0xC);
     FillWindowPixelBuffer(window, 0xF);
     CopyWindowToVram(window);
@@ -525,7 +525,7 @@ void HatchEggApp_CreatePokepic(HatchEggApp *app) {
     PokepicAnimScript animScript[10];
     SetMonData(mon, MON_DATA_IS_EGG, &isEgg);
     GetPokemonSpriteCharAndPlttNarcIds(&template, mon, 2);
-    NARC_ReadPokepicAnimScript(app->gfx.narc, animScript, (u16)species, 1);
+    NARC_ReadPokepicAnimScript(app->gfx.narc, animScript, species, 1);
     app->pokepic = PokepicManager_CreatePokepic(app->gfx.pokepicManager, &template, 128, yOffset + 96, 0, 0, animScript, NULL);
 }
 
@@ -533,7 +533,7 @@ void HatchEggApp_StartPokepicAnim(HatchEggApp *app) {
     u32 species = GetMonData(app->args->args.mon, MON_DATA_SPECIES, NULL);
     GetMonNature(app->args->args.mon);
     Pokepic_StartAnim(app->pokepic, 1);
-    NARC_StartPokepicAnim(app->gfx.narc, app->picManager, app->pokepic, (u16)species, 2, 0, 0);
+    NARC_StartPokepicAnim(app->gfx.narc, app->picManager, app->pokepic, species, 2, 0, 0);
 }
 
 void HatchEggApp_DeletePokepic(HatchEggApp *app) {

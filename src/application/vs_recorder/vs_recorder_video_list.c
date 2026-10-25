@@ -335,7 +335,7 @@ BOOL VsRecorder_VideoListDownloadVideo(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&listWork->eva, &listWork->evb, TRUE, 0)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     case VIDEO_LIST_DOWNLOAD_VIDEO_STEP_SHOW_RECEIVING:
         VsRecorder_ShowTopMessage(work, msg_0013_00117);
@@ -351,7 +351,7 @@ BOOL VsRecorder_VideoListDownloadVideo(VsRecorderWork *work) {
         GlobalTerminalNet *net = VsRecorder_GetNet(work);
 
         header = work->net.videoList.headers[work->listWindow.cursor];
-        if (GlobalTerminalNet_RequestVideoDownload(net, (u32)header->number, (u32)(header->number >> 32)) == TRUE) {
+        if (GlobalTerminalNet_RequestVideoDownload(net, header->number, (u32)(header->number >> 32)) == TRUE) {
             work->step++;
         }
         break;
@@ -430,7 +430,7 @@ BOOL VsRecorder_VideoListOverwriteNo(VsRecorderWork *work) {
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, VIDEO_LIST_SLOTS_MAIN);
@@ -456,7 +456,7 @@ BOOL VsRecorder_VideoListSave(VsRecorderWork *work) {
             VsRecorder_ResetRecordSave(work);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     case VIDEO_LIST_SAVE_STEP_WRITE_RECORD: {
         u32 cursor = work->listWindow.cursor;
@@ -481,7 +481,7 @@ BOOL VsRecorder_VideoListSave(VsRecorderWork *work) {
         }
         VsRecorder_PrintVideoListMessage(work, msg_0013_00280, 0);
         number = BattleRecordHeader_GetField(BattleRecord_GetHeader(), BATTLE_RECORD_HEADER_VIDEO_NUMBER, 0);
-        if (GlobalTerminalNet_ReportVideoSaved(VsRecorder_GetNet(work), (u32)number, (u32)(number >> 32)) == TRUE) {
+        if (GlobalTerminalNet_ReportVideoSaved(VsRecorder_GetNet(work), number, (u32)(number >> 32)) == TRUE) {
             work->step++;
         }
         break;
@@ -534,7 +534,7 @@ BOOL VsRecorder_VideoListSave(VsRecorderWork *work) {
             if (VsRecorder_StepFade(&listWork->fade, 0)) {
                 VsRecorder_ClearPaletteBlend(work);
                 VsRecorder_ResetFade(&listWork->fade);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, 16, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, 16, work->blendColor);
                 VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
                 VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
                 BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
@@ -546,8 +546,8 @@ BOOL VsRecorder_VideoListSave(VsRecorderWork *work) {
                     BattleRecord_Delete();
                 }
             } else {
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)listWork->fade, (u16)work->blendColor);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, listWork->fade, work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
             }
         }
         break;
@@ -567,7 +567,7 @@ BOOL VsRecorder_VideoListConfirmOverwrite(VsRecorderWork *work) {
             VsRecorder_PrintVideoListMessage(work, msg_0013_00102, listWork->slot);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     case VIDEO_LIST_CONFIRM_OVERWRITE_STEP_BLEND_IN:
         if (VsRecorder_StepBlend(&listWork->eva, &listWork->evb, FALSE, 2)) {
@@ -601,7 +601,7 @@ BOOL VsRecorder_VideoListReturnToDetails(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&listWork->eva, &listWork->evb, TRUE, 0)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     case VIDEO_LIST_RETURN_TO_DETAILS_STEP_CREATE_BUTTONS:
         if (work->selection == VS_RECORDER_SELECTION_SEARCH) {
@@ -642,7 +642,7 @@ BOOL VsRecorder_VideoListReturnToDetails(VsRecorderWork *work) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     default:
         for (i = 0; i < work->net.videoList.count; i++) {
@@ -681,7 +681,7 @@ BOOL VsRecorder_VideoListSlotsCancel(VsRecorderWork *work) {
             VsRecorder_SetVBlankPaused(work, FALSE);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     case VIDEO_LIST_SLOTS_CANCEL_STEP_CREATE_BUTTONS:
         VsRecorder_CreateVideoListButtons(work);
@@ -720,7 +720,7 @@ BOOL VsRecorder_VideoListSlotsCancel(VsRecorderWork *work) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     default: {
         int i;
@@ -767,7 +767,7 @@ BOOL VsRecorder_VideoListBackToList(VsRecorderWork *work) {
             VsRecorder_SetVideoListButtonsMode(work, TRUE);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, VIDEO_LIST_SHOW_LIST);
@@ -946,9 +946,9 @@ BOOL VsRecorder_VideoListEnter(VsRecorderWork *work) {
         if (VsRecorder_StepFade(&listWork->fade, 1)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, listWork->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, listWork->fade, work->blendColor);
         break;
     case VIDEO_LIST_ENTER_STEP_FLIP_SCREENS:
         SetBgPriority(GF_BG_LYR_MAIN_0, 1);
@@ -1059,7 +1059,7 @@ BOOL VsRecorder_VideoListDownloadList(VsRecorderWork *work) {
         if (VsRecorder_StepBlend(&listWork->eva, &listWork->evb, TRUE, 0)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     case VIDEO_LIST_DOWNLOAD_LIST_STEP_REBUILD_MENU:
         VsRecorder_SetVBlankPaused(work, TRUE);
@@ -1075,7 +1075,7 @@ BOOL VsRecorder_VideoListDownloadList(VsRecorderWork *work) {
             if (VsRecorder_StepFade(&listWork->fade, 0)) {
                 VsRecorder_ClearPaletteBlend(work);
                 VsRecorder_ResetFade(&listWork->fade);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, 16, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, 16, work->blendColor);
                 VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
                 VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
                 BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
@@ -1084,8 +1084,8 @@ BOOL VsRecorder_VideoListDownloadList(VsRecorderWork *work) {
                 BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
                 Heap_Free(listWork);
             } else {
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)listWork->fade, (u16)work->blendColor);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, listWork->fade, work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
             }
         }
         break;
@@ -1177,8 +1177,8 @@ BOOL VsRecorder_VideoListShowList(VsRecorderWork *work) {
             OrbitCursor_SetRadius(work->orbitCursors[0], 12, 12);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, VIDEO_LIST_SELECT);
@@ -1241,8 +1241,8 @@ BOOL VsRecorder_VideoListSelect(VsRecorderWork *work) {
             }
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, listWork->nextSubState);
@@ -1270,7 +1270,7 @@ BOOL VsRecorder_VideoListExit(VsRecorderWork *work) {
             VsRecorder_SetVBlankPaused(work, FALSE);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     case VIDEO_LIST_EXIT_STEP_REBUILD_MENU:
         VsRecorder_ResetFade(&listWork->fade);
@@ -1284,7 +1284,7 @@ BOOL VsRecorder_VideoListExit(VsRecorderWork *work) {
             if (VsRecorder_StepFade(&listWork->fade, 0)) {
                 VsRecorder_ClearPaletteBlend(work);
                 VsRecorder_ResetFade(&listWork->fade);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, 16, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, 16, work->blendColor);
                 VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
                 VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
                 BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
@@ -1293,8 +1293,8 @@ BOOL VsRecorder_VideoListExit(VsRecorderWork *work) {
                 BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
                 Heap_Free(listWork);
             } else {
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)listWork->fade, (u16)work->blendColor);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, listWork->fade, work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
             }
         }
         break;
@@ -1338,7 +1338,7 @@ BOOL VsRecorder_VideoListShowDetails(VsRecorderWork *work) {
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     default:
         VsRecorder_SetSubState(work, VIDEO_LIST_DETAILS_MAIN);
@@ -1507,7 +1507,7 @@ BOOL VsRecorder_VideoListResume(VsRecorderWork *work) {
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
         break;
     case VIDEO_LIST_RESUME_STEP_FADE_IN:
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0, 6, 1, HEAP_ID_109);
@@ -1593,7 +1593,7 @@ BOOL VsRecorder_VideoListShowSlots(VsRecorderWork *work) {
                 BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
                 work->step++;
             }
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
             break;
         case 2:
             VsRecorder_ShowTopMessage(work, msg_0013_00277);
@@ -1617,7 +1617,7 @@ BOOL VsRecorder_VideoListShowSlots(VsRecorderWork *work) {
                 VsRecorder_SetVBlankPaused(work, FALSE);
                 work->step++;
             }
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
             break;
         case 5:
             VsRecorder_SetVBlankPaused(work, TRUE);
@@ -1658,7 +1658,7 @@ BOOL VsRecorder_VideoListShowSlots(VsRecorderWork *work) {
                 GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
                 work->step++;
             }
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
             break;
         default: {
             int i;
@@ -1698,7 +1698,7 @@ BOOL VsRecorder_VideoListShowSlots(VsRecorderWork *work) {
                 BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
                 work->step++;
             }
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
             break;
         case 2:
             VsRecorder_StepFade(&listWork->fade, 0);
@@ -1706,7 +1706,7 @@ BOOL VsRecorder_VideoListShowSlots(VsRecorderWork *work) {
                 VsRecorder_ShowVideoListMessage(work, msg_0013_00100, 0);
                 work->step++;
             }
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)listWork->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, listWork->fade, work->blendColor);
             break;
         default:
             VsRecorder_SetSubState(work, VIDEO_LIST_SLOTS_MAIN);

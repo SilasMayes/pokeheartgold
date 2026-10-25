@@ -142,9 +142,9 @@ BOOL VsRecorder_DeleteEnter(VsRecorderWork *work) {
         if (VsRecorder_StepFade(&deleteWork->fade, 1)) {
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, (u8)deleteWork->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)deleteWork->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)deleteWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, deleteWork->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, deleteWork->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, deleteWork->fade, work->blendColor);
         break;
     case DELETE_ENTER_STEP_FREE_MENU:
         SetBgPriority(GF_BG_LYR_MAIN_0, 0);
@@ -192,7 +192,7 @@ BOOL VsRecorder_DeleteMain(VsRecorderWork *work) {
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)deleteWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, deleteWork->fade, work->blendColor);
         break;
     case DELETE_MAIN_STEP_CONFIRM:
         if (TouchscreenHitbox_TouchNewIsIn(&gVsRecorderDeleteYesHitbox)) {
@@ -232,7 +232,7 @@ BOOL VsRecorder_DeleteMain(VsRecorderWork *work) {
                 work->step++;
             }
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)deleteWork->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, deleteWork->fade, work->blendColor);
         break;
     case DELETE_MAIN_STEP_DELETE:
         if (VsRecorder_ClearSavedVideoKeys(work)) {
@@ -275,13 +275,13 @@ BOOL VsRecorder_DeleteExit(VsRecorderWork *work) {
             if (VsRecorder_StepFade(&deleteWork->fade, 0)) {
                 VsRecorder_ClearPaletteBlend(work);
                 VsRecorder_ResetFade(&deleteWork->fade);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, 0x10, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 0xC, 0x10, work->blendColor);
                 VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
                 VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
                 Heap_Free(deleteWork);
             } else {
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)deleteWork->fade, (u16)work->blendColor);
-                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, (u8)deleteWork->fade, (u16)work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, deleteWork->fade, work->blendColor);
+                PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, deleteWork->fade, work->blendColor);
             }
         }
         break;

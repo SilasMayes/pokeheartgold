@@ -24,10 +24,6 @@
 #include "sprite_system.h"
 #include "type_icon_resources.h"
 
-// Sprites of the view (PCBoxView.sprites): 0-1 box arrows, 2-3 mon pics (two buffers), 4-8 tray / wallpaper menu
-// frame and cursors, 9 cursor, 10 unused, 11 held item, 12 info item, 13-14 type icons, 15-20 tray boxes,
-// 21-24 wallpaper list, 25-60 mon icons (slotIcons maps a slot to its icon), 61-68 icon outline pieces.
-
 static void PCBox_SetSpriteDrawPriority(PCBoxView *view, u32 index, u32 priority);
 static void PCBox_SetSpriteTranslucent(PCBoxView *view, u32 index, u32 enabled);
 static void PCBox_FreeSpriteSystem(PCBoxView *view);
@@ -83,11 +79,11 @@ u32 PCBox_IsSpriteAnimated(PCBoxView *view, u32 index) {
     return ManagedSprite_IsAnimated(view->sprites[index]);
 }
 
-void PCBox_SetSpriteVisible(PCBoxView *view, int index, int state) {
-    if (state == 1) {
-        ManagedSprite_SetDrawFlag(view->sprites[index], 1);
+void PCBox_SetSpriteVisible(PCBoxView *view, int index, BOOL visible) {
+    if (visible == TRUE) {
+        ManagedSprite_SetDrawFlag(view->sprites[index], TRUE);
     } else {
-        ManagedSprite_SetDrawFlag(view->sprites[index], 0);
+        ManagedSprite_SetDrawFlag(view->sprites[index], FALSE);
     }
 }
 
@@ -214,8 +210,8 @@ static void PCBox_CreateMonIconSprites(PCBoxView *view) {
         template.y += 24 * (i / 6);
         template.drawPriority = 0x74 - priority;
         template.resIdList[0] = 0xC0F9 + i;
-        *(ManagedSprite **)(slot + offsetof(PCBoxView, sprites[25])) = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &template);
-        view->slotIcons[i] = i + 25;
+        *(ManagedSprite **)(slot + offsetof(PCBoxView, sprites[PC_BOX_SPRITE_MON_ICONS])) = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &template);
+        view->slotIcons[i] = i + PC_BOX_SPRITE_MON_ICONS;
         priority += 2;
         slot += sizeof(ManagedSprite *);
     }
@@ -263,10 +259,10 @@ static void PCBox_LoadMonIcon(PCBoxWork *work, BoxPokemon *boxMon, int index) {
 void PCBox_RefreshSlotIcon(PCBoxWork *work, int box, int slot, int index) {
     ManagedSprite **sprites = work->view->sprites;
 
-    ManagedSprite_SetDrawFlag(sprites[index], 0);
+    ManagedSprite_SetDrawFlag(sprites[index], FALSE);
     if (PCBox_GetSlotMonData(work, slot, MON_DATA_SPECIES_EXISTS, NULL)) {
         PCBox_LoadMonIcon(work, PCBox_GetSlotBoxMon(work, box, slot), index);
-        ManagedSprite_SetDrawFlag(sprites[index], 1);
+        ManagedSprite_SetDrawFlag(sprites[index], TRUE);
     }
 }
 
@@ -285,7 +281,7 @@ void PCBox_LoadPartyIcons(PCBoxWork *work) {
     for (i = 0; i < count; i++) {
         BoxPokemon *boxMon = Mon_GetBoxMon(Party_GetMonByIndex(work->party, i));
         PCBox_LoadMonIcon(work, boxMon, work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i]);
-        PCBox_SetSpriteVisible(work->view, work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i], 0);
+        PCBox_SetSpriteVisible(work->view, work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i], FALSE);
     }
 }
 
@@ -313,11 +309,11 @@ void PCBox_PlacePartyIconsLeftHidden(PCBoxWork *work) {
     for (i = 0; i < 6; i++, pos++) {
         u8 index = work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i];
         ManagedSprite_SetPositionXY(work->view->sprites[index], pos->x + 0, pos->y + 0);
-        PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, 1);
+        PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, TRUE);
         if (i < count) {
-            PCBox_SetSpriteVisible(work->view, index, 1);
+            PCBox_SetSpriteVisible(work->view, index, TRUE);
         } else {
-            PCBox_SetSpriteVisible(work->view, index, 0);
+            PCBox_SetSpriteVisible(work->view, index, FALSE);
         }
     }
 }
@@ -332,11 +328,11 @@ void PCBox_PlacePartyIconsRightHidden(PCBoxWork *work) {
     for (i = 0; i < 6; i++, pos++) {
         u8 index = work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i];
         ManagedSprite_SetPositionXY(work->view->sprites[index], pos->x + 152, pos->y + 0);
-        PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, 1);
+        PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, TRUE);
         if (i < count) {
-            PCBox_SetSpriteVisible(work->view, index, 1);
+            PCBox_SetSpriteVisible(work->view, index, TRUE);
         } else {
-            PCBox_SetSpriteVisible(work->view, index, 0);
+            PCBox_SetSpriteVisible(work->view, index, FALSE);
         }
     }
 }
@@ -351,11 +347,11 @@ void PCBox_PlacePartyIconsLeft(PCBoxWork *work) {
     for (i = 0; i < 6; i++, pos++) {
         u8 index = work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i];
         ManagedSprite_SetPositionXY(work->view->sprites[index], pos->x + 0, pos->y + -144);
-        PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, 1);
+        PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, TRUE);
         if (i < count) {
-            PCBox_SetSpriteVisible(work->view, index, 1);
+            PCBox_SetSpriteVisible(work->view, index, TRUE);
         } else {
-            PCBox_SetSpriteVisible(work->view, index, 0);
+            PCBox_SetSpriteVisible(work->view, index, FALSE);
         }
     }
 }
@@ -370,16 +366,16 @@ void PCBox_PlacePartyIconsRight(PCBoxWork *work) {
     for (i = 0; i < 6; i++, pos++) {
         u8 index = work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i];
         ManagedSprite_SetPositionXY(work->view->sprites[index], pos->x + 152, pos->y + -144);
-        PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, 1);
+        PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, TRUE);
         if (i < count) {
-            PCBox_SetSpriteVisible(work->view, index, 1);
+            PCBox_SetSpriteVisible(work->view, index, TRUE);
         } else {
-            PCBox_SetSpriteVisible(work->view, index, 0);
+            PCBox_SetSpriteVisible(work->view, index, FALSE);
         }
     }
 }
 
-void PCBox_SetIconLayer(PCBoxView *view, u32 slot, int active) {
+void PCBox_SetIconLayer(PCBoxView *view, u32 slot, BOOL active) {
     int index = view->slotIcons[slot];
 
     if (!active) {
@@ -483,7 +479,7 @@ BOOL PCBox_UpdateReleaseGrow(PCBoxReleaseWork *releaseWork) {
 }
 
 void PCBox_EndReleaseShrink(PCBoxReleaseWork *releaseWork) {
-    ManagedSprite_SetDrawFlag(releaseWork->sprite, 0);
+    ManagedSprite_SetDrawFlag(releaseWork->sprite, FALSE);
     PCBox_ResetSpriteAffine(releaseWork);
 }
 
@@ -542,10 +538,10 @@ static void PCBox_LoadMonPicResources(PCBoxView *view) {
 static void PCBox_CreateMonPicSprites(PCBoxWork *work) {
     PCBoxView *view = work->view;
 
-    view->sprites[2] = SpriteSystem_NewSpriteWithYOffset(view->spriteSystem, view->spriteManager, &gPCBoxMonPicSprite2Template, 2 << 20);
-    view->sprites[3] = SpriteSystem_NewSpriteWithYOffset(view->spriteSystem, view->spriteManager, &gPCBoxMonPicSprite3Template, 2 << 20);
-    ManagedSprite_SetDrawFlag(view->sprites[2], 0);
-    ManagedSprite_SetDrawFlag(view->sprites[3], 0);
+    view->sprites[PC_BOX_SPRITE_MON_PIC] = SpriteSystem_NewSpriteWithYOffset(view->spriteSystem, view->spriteManager, &gPCBoxMonPicSprite2Template, 2 << 20);
+    view->sprites[PC_BOX_SPRITE_MON_PIC + 1] = SpriteSystem_NewSpriteWithYOffset(view->spriteSystem, view->spriteManager, &gPCBoxMonPicSprite3Template, 2 << 20);
+    ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_MON_PIC], FALSE);
+    ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_MON_PIC + 1], FALSE);
 }
 
 static void PCBox_LoadMonPic(PCBoxView *view, PCBoxMonInfo *monInfo, u32 index) {
@@ -574,7 +570,7 @@ static void PCBox_LoadMonPic(PCBoxView *view, PCBoxMonInfo *monInfo, u32 index) 
 void PCBox_ShowMonPic(PCBoxWork *work, PCBoxMonInfo *monInfo, u32 index) {
     index += work->view->monPicBuffer;
     PCBox_LoadMonPic(work->view, monInfo, index);
-    ManagedSprite_SetDrawFlag(work->view->sprites[index], 1);
+    ManagedSprite_SetDrawFlag(work->view->sprites[index], TRUE);
     work->view->monPicBuffer ^= 1;
 }
 
@@ -592,10 +588,10 @@ static void PCBox_LoadItemIconResources(PCBoxView *view) {
 }
 
 static void PCBox_CreateItemIconSprites(PCBoxView *view) {
-    view->sprites[11] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxItemIconSpriteTemplate);
-    ManagedSprite_SetDrawFlag(view->sprites[11], 0);
-    view->sprites[12] = SpriteSystem_NewSpriteWithYOffset(view->spriteSystem, view->spriteManager, &gPCBoxItemIconSprite12Template, 2 << 20);
-    ManagedSprite_SetDrawFlag(view->sprites[12], 0);
+    view->sprites[PC_BOX_SPRITE_HELD_ITEM] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxItemIconSpriteTemplate);
+    ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_HELD_ITEM], FALSE);
+    view->sprites[PC_BOX_SPRITE_INFO_ITEM] = SpriteSystem_NewSpriteWithYOffset(view->spriteSystem, view->spriteManager, &gPCBoxItemIconSprite12Template, 2 << 20);
+    ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_INFO_ITEM], FALSE);
 }
 
 void PCBox_LoadHeldItemIcon(PCBoxView *view, u16 item) {
@@ -604,9 +600,9 @@ void PCBox_LoadHeldItemIcon(PCBoxView *view, u16 item) {
     u32 location;
 
     buf = GfGfxLoader_GetCharData(NARC_itemtool_itemdata_item_icon, GetItemIndexMapping(item, ITEMNARC_NCGR), FALSE, &charData, HEAP_ID_10);
-    PCBox_LoadSpriteCharsMain(view, 11, charData->pRawData, 0x200);
+    PCBox_LoadSpriteCharsMain(view, PC_BOX_SPRITE_HELD_ITEM, charData->pRawData, 0x200);
     Heap_Free(buf);
-    location = NNS_G2dGetImagePaletteLocation(Sprite_GetPaletteProxy(view->sprites[11]->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
+    location = NNS_G2dGetImagePaletteLocation(Sprite_GetPaletteProxy(view->sprites[PC_BOX_SPRITE_HELD_ITEM]->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
     GfGfxLoader_GXLoadPal(NARC_itemtool_itemdata_item_icon, GetItemIndexMapping(item, ITEMNARC_NCLR), GF_PAL_LOCATION_MAIN_OBJ, (enum GFPalSlotOffset)location, 0x20, HEAP_ID_10);
 }
 
@@ -616,24 +612,24 @@ void PCBox_LoadInfoItemIcon(PCBoxView *view, u16 item) {
     u32 location;
 
     buf = GfGfxLoader_GetCharData(NARC_itemtool_itemdata_item_icon, GetItemIndexMapping(item, ITEMNARC_NCGR), FALSE, &charData, HEAP_ID_10);
-    PCBox_LoadSpriteCharsSub(view, 12, charData->pRawData, 0x200);
+    PCBox_LoadSpriteCharsSub(view, PC_BOX_SPRITE_INFO_ITEM, charData->pRawData, 0x200);
     Heap_Free(buf);
-    location = NNS_G2dGetImagePaletteLocation(Sprite_GetPaletteProxy(view->sprites[12]->sprite), NNS_G2D_VRAM_TYPE_2DSUB);
+    location = NNS_G2dGetImagePaletteLocation(Sprite_GetPaletteProxy(view->sprites[PC_BOX_SPRITE_INFO_ITEM]->sprite), NNS_G2D_VRAM_TYPE_2DSUB);
     GfGfxLoader_GXLoadPal(NARC_itemtool_itemdata_item_icon, GetItemIndexMapping(item, ITEMNARC_NCLR), GF_PAL_LOCATION_SUB_OBJ, (enum GFPalSlotOffset)location, 0x20, HEAP_ID_10);
 }
 
 void PCBox_SetHeldItemIconAffine(PCBoxView *view, u32 on) {
     if (on == 1) {
-        ManagedSprite_SetAffineOverwriteMode(view->sprites[11], 1);
-        ManagedSprite_SetAffineTranslation(view->sprites[11], 12, 12);
+        ManagedSprite_SetAffineOverwriteMode(view->sprites[PC_BOX_SPRITE_HELD_ITEM], 1);
+        ManagedSprite_SetAffineTranslation(view->sprites[PC_BOX_SPRITE_HELD_ITEM], 12, 12);
     } else {
-        ManagedSprite_SetAffineTranslation(view->sprites[11], 0, 0);
-        ManagedSprite_SetAffineOverwriteMode(view->sprites[11], 0);
+        ManagedSprite_SetAffineTranslation(view->sprites[PC_BOX_SPRITE_HELD_ITEM], 0, 0);
+        ManagedSprite_SetAffineOverwriteMode(view->sprites[PC_BOX_SPRITE_HELD_ITEM], 0);
     }
 }
 
 void PCBox_SetHeldItemIconPosition(PCBoxView *view, s16 x, s16 y) {
-    ManagedSprite_SetPositionXY(view->sprites[11], x, y);
+    ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_HELD_ITEM], x, y);
 }
 
 void PCBox_MoveHeldItemIconToSlot(PCBoxView *view, u32 slot, u32 partyLayout) {
@@ -658,29 +654,29 @@ void PCBox_CreateHeldItemIconOutline(PCBoxView *view) {
     if (view->heldItem == ITEM_NONE) {
         return;
     }
-    ManagedSprite_GetPositionXY(view->sprites[11], &x, &y);
-    if (view->sprites[61] == NULL) {
+    ManagedSprite_GetPositionXY(view->sprites[PC_BOX_SPRITE_HELD_ITEM], &x, &y);
+    if (view->sprites[PC_BOX_SPRITE_OUTLINE] == NULL) {
         template = gPCBoxItemIconSpriteTemplate;
-        template.drawPriority = ManagedSprite_GetDrawPriority(view->sprites[11]) + 1;
-        template.bgPriority = ManagedSprite_GetPriority(view->sprites[11]);
+        template.drawPriority = ManagedSprite_GetDrawPriority(view->sprites[PC_BOX_SPRITE_HELD_ITEM]) + 1;
+        template.bgPriority = ManagedSprite_GetPriority(view->sprites[PC_BOX_SPRITE_HELD_ITEM]);
         template.resIdList[0] = 0xc11f;
         view->spriteDrawLock = 1;
         for (i = 0; i < 8; i++) {
             template.x = x + gPCBoxOutlineOffsetsX[i];
             template.y = y + gPCBoxOutlineOffsetsY[i];
-            view->sprites[61 + i] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &template);
-            ManagedSprite_SetPaletteOverride(view->sprites[61 + i], 8);
-            ManagedSprite_SetDrawFlag(view->sprites[61 + i], 0);
+            view->sprites[PC_BOX_SPRITE_OUTLINE + i] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &template);
+            ManagedSprite_SetPaletteOverride(view->sprites[PC_BOX_SPRITE_OUTLINE + i], 8);
+            ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_OUTLINE + i], FALSE);
         }
         view->spriteDrawLock = 0;
     } else {
-        drawPriority = ManagedSprite_GetDrawPriority(view->sprites[11]);
-        priority = ManagedSprite_GetPriority(view->sprites[11]);
+        drawPriority = ManagedSprite_GetDrawPriority(view->sprites[PC_BOX_SPRITE_HELD_ITEM]);
+        priority = ManagedSprite_GetPriority(view->sprites[PC_BOX_SPRITE_HELD_ITEM]);
         for (i = 0; i < 8; i++) {
-            ManagedSprite_SetPositionXY(view->sprites[61 + i], x + gPCBoxOutlineOffsetsX[i], y + gPCBoxOutlineOffsetsY[i]);
-            PCBox_SetSpriteDrawPriority(view, 61 + i, drawPriority + 1);
-            ManagedSprite_SetPriority(view->sprites[61 + i], priority);
-            ManagedSprite_SetDrawFlag(view->sprites[61 + i], 0);
+            ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_OUTLINE + i], x + gPCBoxOutlineOffsetsX[i], y + gPCBoxOutlineOffsetsY[i]);
+            PCBox_SetSpriteDrawPriority(view, PC_BOX_SPRITE_OUTLINE + i, drawPriority + 1);
+            ManagedSprite_SetPriority(view->sprites[PC_BOX_SPRITE_OUTLINE + i], priority);
+            ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_OUTLINE + i], FALSE);
         }
     }
 }
@@ -689,7 +685,7 @@ void PCBox_ShowHeldItemIconOutline(PCBoxView *view) {
     u32 i;
 
     for (i = 0; i < 8; i++) {
-        ManagedSprite_SetDrawFlag(view->sprites[61 + i], TRUE);
+        ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_OUTLINE + i], TRUE);
     }
 }
 
@@ -697,10 +693,10 @@ void PCBox_UpdateHeldItemIconOutline(PCBoxView *view) {
     s16 pos[2];
     u32 i;
 
-    ManagedSprite_GetPositionXY(view->sprites[11], &pos[1], &pos[0]);
-    if (view->sprites[61] != NULL) {
+    ManagedSprite_GetPositionXY(view->sprites[PC_BOX_SPRITE_HELD_ITEM], &pos[1], &pos[0]);
+    if (view->sprites[PC_BOX_SPRITE_OUTLINE] != NULL) {
         for (i = 0; i < 8; i++) {
-            ManagedSprite_SetPositionXY(view->sprites[61 + i], pos[1] + gPCBoxOutlineOffsetsX[i], pos[0] + gPCBoxOutlineOffsetsY[i]);
+            ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_OUTLINE + i], pos[1] + gPCBoxOutlineOffsetsX[i], pos[0] + gPCBoxOutlineOffsetsY[i]);
         }
     }
 }
@@ -709,8 +705,8 @@ void PCBox_UpdateInfoItemIconPosition(PCBoxView *view) {
     s8 cell[2];
 
     BgCellManager_GetCellPosition(view->panels, PC_BOX_PANEL_INFO, &cell[1], &cell[0]);
-    ManagedSprite_SetPositionXY(view->sprites[12], 18, cell[0] * 8 + 360);
-    ManagedSprite_SetDrawFlag(view->sprites[12], TRUE);
+    ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_INFO_ITEM], 18, cell[0] * 8 + 360);
+    ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_INFO_ITEM], TRUE);
 }
 
 static void PCBox_LoadTypeIconResources(PCBoxView *view) {
@@ -722,10 +718,10 @@ static void PCBox_LoadTypeIconResources(PCBoxView *view) {
 }
 
 static void PCBox_CreateTypeIconSprites(PCBoxView *view) {
-    view->sprites[13] = SpriteSystem_NewSpriteWithYOffset(view->spriteSystem, view->spriteManager, &gPCBoxTypeIconSprite13Template, 2 << 20);
-    view->sprites[14] = SpriteSystem_NewSpriteWithYOffset(view->spriteSystem, view->spriteManager, &gPCBoxTypeIconSprite14Template, 2 << 20);
-    ManagedSprite_SetDrawFlag(view->sprites[13], FALSE);
-    ManagedSprite_SetDrawFlag(view->sprites[14], FALSE);
+    view->sprites[PC_BOX_SPRITE_TYPE_ICONS] = SpriteSystem_NewSpriteWithYOffset(view->spriteSystem, view->spriteManager, &gPCBoxTypeIconSprite13Template, 2 << 20);
+    view->sprites[PC_BOX_SPRITE_TYPE_ICONS + 1] = SpriteSystem_NewSpriteWithYOffset(view->spriteSystem, view->spriteManager, &gPCBoxTypeIconSprite14Template, 2 << 20);
+    ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_TYPE_ICONS], FALSE);
+    ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_TYPE_ICONS + 1], FALSE);
 }
 
 static void PCBox_LoadTypeIcon(PCBoxView *view, u32 type, u32 index, u32 resourceId) {
@@ -742,17 +738,17 @@ static void PCBox_LoadTypeIcon(PCBoxView *view, u32 type, u32 index, u32 resourc
 
 void PCBox_DrawTypeIcons(PCBoxView *view, PCBoxMonInfo *monInfo) {
     if (monInfo->isEgg != 0) {
-        ManagedSprite_SetDrawFlag(view->sprites[13], FALSE);
-        ManagedSprite_SetDrawFlag(view->sprites[14], FALSE);
+        ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_TYPE_ICONS], FALSE);
+        ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_TYPE_ICONS + 1], FALSE);
         return;
     }
     PCBox_LoadTypeIcon(view, monInfo->type1, 13, 0xc121);
-    ManagedSprite_SetDrawFlag(view->sprites[13], TRUE);
+    ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_TYPE_ICONS], TRUE);
     if (monInfo->type2 != 0 && monInfo->type1 != monInfo->type2) {
         PCBox_LoadTypeIcon(view, monInfo->type2, 14, 0xc122);
-        ManagedSprite_SetDrawFlag(view->sprites[14], TRUE);
+        ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_TYPE_ICONS + 1], TRUE);
     } else {
-        ManagedSprite_SetDrawFlag(view->sprites[14], FALSE);
+        ManagedSprite_SetDrawFlag(view->sprites[PC_BOX_SPRITE_TYPE_ICONS + 1], FALSE);
     }
 }
 
@@ -764,16 +760,16 @@ static void PCBox_LoadUiSpriteResources(PCBoxView *view) {
 }
 
 static void PCBox_CreateUiSprites(PCBoxView *view) {
-    view->sprites[0] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite0Template);
-    view->sprites[1] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite1Template);
-    view->sprites[4] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite4Template);
-    view->sprites[5] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite5Template);
-    view->sprites[6] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite6Template);
-    view->sprites[7] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite7Template);
-    view->sprites[8] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite8Template);
-    view->sprites[9] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite9Template);
-    view->sprites[10] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite10Template);
-    PCBox_SetSpriteVisible(view, 10, 0);
+    view->sprites[PC_BOX_SPRITE_PREV_BOX_ARROW] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite0Template);
+    view->sprites[PC_BOX_SPRITE_NEXT_BOX_ARROW] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite1Template);
+    view->sprites[PC_BOX_SPRITE_TRAY_PREV_ARROW] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite4Template);
+    view->sprites[PC_BOX_SPRITE_TRAY_NEXT_ARROW] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite5Template);
+    view->sprites[PC_BOX_SPRITE_TRAY_MARKER] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite6Template);
+    view->sprites[PC_BOX_SPRITE_TRAY_CURSOR] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite7Template);
+    view->sprites[PC_BOX_SPRITE_TRAY_LABEL] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite8Template);
+    view->sprites[PC_BOX_SPRITE_CURSOR] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite9Template);
+    view->sprites[PC_BOX_SPRITE_UNUSED] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &gPCBoxUiSprite10Template);
+    PCBox_SetSpriteVisible(view, PC_BOX_SPRITE_UNUSED, FALSE);
 }
 
 void PCBox_CreateSelectedIconOutline(PCBoxWork *work) {
@@ -791,7 +787,7 @@ void PCBox_CreateSelectedIconOutline(PCBoxWork *work) {
     view = work->view;
     index = view->slotIcons[work->selectedSlot];
     ManagedSprite_GetPositionXY(view->sprites[index], &x, &y);
-    if (view->sprites[61] == NULL) {
+    if (view->sprites[PC_BOX_SPRITE_OUTLINE] == NULL) {
         template = gPCBoxMonIconSpriteTemplate;
         template.drawPriority = ManagedSprite_GetDrawPriority(view->sprites[index]) + 1;
         template.bgPriority = ManagedSprite_GetPriority(view->sprites[index]);
@@ -800,8 +796,8 @@ void PCBox_CreateSelectedIconOutline(PCBoxWork *work) {
         for (i = 0; i < 8; i++) {
             template.x = x + gPCBoxOutlineOffsetsX[i];
             template.y = y + gPCBoxOutlineOffsetsY[i];
-            view->sprites[61 + i] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &template);
-            ManagedSprite_SetPaletteOverride(view->sprites[61 + i], 8);
+            view->sprites[PC_BOX_SPRITE_OUTLINE + i] = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &template);
+            ManagedSprite_SetPaletteOverride(view->sprites[PC_BOX_SPRITE_OUTLINE + i], 8);
         }
         view->spriteDrawLock = 0;
     } else {
@@ -809,11 +805,11 @@ void PCBox_CreateSelectedIconOutline(PCBoxWork *work) {
         drawPriority = ManagedSprite_GetDrawPriority(view->sprites[index]);
         priority = ManagedSprite_GetPriority(view->sprites[index]);
         for (i = 0; i < 8; i++) {
-            Sprite_SetImageProxy(view->sprites[61 + i]->sprite, proxy);
-            ManagedSprite_SetPositionXY(view->sprites[61 + i], x + gPCBoxOutlineOffsetsX[i], y + gPCBoxOutlineOffsetsY[i]);
-            PCBox_SetSpriteDrawPriority(work->view, 61 + i, drawPriority + 1);
-            ManagedSprite_SetPriority(work->view->sprites[61 + i], priority);
-            ManagedSprite_SetDrawFlag(work->view->sprites[61 + i], 1);
+            Sprite_SetImageProxy(view->sprites[PC_BOX_SPRITE_OUTLINE + i]->sprite, proxy);
+            ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_OUTLINE + i], x + gPCBoxOutlineOffsetsX[i], y + gPCBoxOutlineOffsetsY[i]);
+            PCBox_SetSpriteDrawPriority(work->view, PC_BOX_SPRITE_OUTLINE + i, drawPriority + 1);
+            ManagedSprite_SetPriority(work->view->sprites[PC_BOX_SPRITE_OUTLINE + i], priority);
+            ManagedSprite_SetDrawFlag(work->view->sprites[PC_BOX_SPRITE_OUTLINE + i], TRUE);
         }
     }
 }
@@ -831,7 +827,7 @@ void PCBox_SetSelectedIconOutlineVisible(PCBoxWork *work, u32 visible) {
         visible = 0;
     }
     for (i = 0; i < 8; i++) {
-        ManagedSprite *piece = work->view->sprites[61 + i];
+        ManagedSprite *piece = work->view->sprites[PC_BOX_SPRITE_OUTLINE + i];
         if (piece != NULL) {
             ManagedSprite_SetDrawFlag(piece, visible);
             if (visible == 1) {
@@ -839,8 +835,8 @@ void PCBox_SetSelectedIconOutlineVisible(PCBoxWork *work, u32 visible) {
                 if (slot != PC_BOX_SLOT_NONE) {
                     u32 index = work->view->slotIcons[slot];
                     u32 drawPriority = ManagedSprite_GetDrawPriority(work->view->sprites[index]);
-                    PCBox_SetSpriteDrawPriority(work->view, 61 + i, drawPriority + 1);
-                    ManagedSprite_SetPriority(work->view->sprites[61 + i], ManagedSprite_GetPriority(work->view->sprites[index]));
+                    PCBox_SetSpriteDrawPriority(work->view, PC_BOX_SPRITE_OUTLINE + i, drawPriority + 1);
+                    ManagedSprite_SetPriority(work->view->sprites[PC_BOX_SPRITE_OUTLINE + i], ManagedSprite_GetPriority(work->view->sprites[index]));
                 }
             }
         }
@@ -860,7 +856,7 @@ void PCBox_UpdateSelectedIconOutline(PCBoxWork *work) {
     view = work->view;
     ManagedSprite_GetPositionXY(view->sprites[view->slotIcons[slot]], &x, &y);
     for (i = 0; i < 8; i++) {
-        ManagedSprite_SetPositionXY(view->sprites[61 + i], x + gPCBoxOutlineOffsetsX[i], y + gPCBoxOutlineOffsetsY[i]);
+        ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_OUTLINE + i], x + gPCBoxOutlineOffsetsX[i], y + gPCBoxOutlineOffsetsY[i]);
     }
 }
 
@@ -886,7 +882,7 @@ static void PCBox_CreateTrayBoxSprites(PCBoxView *view) {
         template[1] = template[0];
         template[1].x += dx;
         template[1].resIdList[0] = 0xc123 + i;
-        *(ManagedSprite **)(slot + offsetof(PCBoxView, sprites[15])) = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &template[1]);
+        *(ManagedSprite **)(slot + offsetof(PCBoxView, sprites[PC_BOX_SPRITE_TRAY_BOXES])) = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &template[1]);
     }
 }
 
@@ -912,13 +908,13 @@ static void PCBox_CreateWallpaperListSprites(PCBoxView *view) {
         template[1] = template[0];
         template[1].x += dx;
         template[1].resIdList[0] = 0xc129 + i;
-        *(ManagedSprite **)(slot + offsetof(PCBoxView, sprites[21])) = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &template[1]);
+        *(ManagedSprite **)(slot + offsetof(PCBoxView, sprites[PC_BOX_SPRITE_WALLPAPERS])) = SpriteSystem_NewSprite(view->spriteSystem, view->spriteManager, &template[1]);
     }
 }
 
 void PCBox_SetBoxArrowsVisible(PCBoxView *view, u32 visible) {
-    PCBox_SetSpriteVisible(view, 0, visible);
-    PCBox_SetSpriteVisible(view, 1, visible);
+    PCBox_SetSpriteVisible(view, PC_BOX_SPRITE_PREV_BOX_ARROW, visible);
+    PCBox_SetSpriteVisible(view, PC_BOX_SPRITE_NEXT_BOX_ARROW, visible);
 }
 
 static void PCBox_PlaceWallpaperMenuTextObj(PCBoxView *view) {
@@ -928,13 +924,13 @@ static void PCBox_PlaceWallpaperMenuTextObj(PCBoxView *view) {
 void PCBox_SetupWallpaperMenuSprites(PCBoxWork *work) {
     PCBoxView *view = work->view;
 
-    ManagedSprite_SetPositionXY(view->sprites[4], 12, -21);
-    ManagedSprite_SetPositionXY(view->sprites[5], 244, -21);
-    ManagedSprite_SetPositionXY(view->sprites[6], 43, -21);
-    ManagedSprite_SetPositionXY(view->sprites[7], 128, -40);
-    ManagedSprite_SetPositionXY(view->sprites[8], 128, -28);
+    ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_TRAY_PREV_ARROW], 12, -21);
+    ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_TRAY_NEXT_ARROW], 244, -21);
+    ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_TRAY_MARKER], 43, -21);
+    ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_TRAY_CURSOR], 128, -40);
+    ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_TRAY_LABEL], 128, -28);
     PCBox_LoadWallpaperThumbnails(work);
-    PCBox_SetSpriteAnim(view, 7, 7);
+    PCBox_SetSpriteAnim(view, PC_BOX_SPRITE_TRAY_CURSOR, 7);
     PCBox_PlaceWallpaperMenuTextObj(view);
     TextOBJ_SetSpritesDrawFlag(view->textObjs[0].textObj, TRUE);
     TextOBJ_SetSpritesDrawFlag(view->textObjs[1].textObj, FALSE);
@@ -945,14 +941,14 @@ void PCBox_MoveWallpaperMenuSprites(PCBoxView *view, s32 dy) {
     s16 y;
     u32 i;
 
-    for (i = 4; i <= 8; i++) {
+    for (i = PC_BOX_SPRITE_TRAY_PREV_ARROW; i <= PC_BOX_SPRITE_TRAY_LABEL; i++) {
         ManagedSprite_GetPositionXY(view->sprites[i], &x, &y);
         ManagedSprite_SetPositionXY(view->sprites[i], x, y + dy);
     }
     PCBox_PlaceWallpaperMenuTextObj(view);
     for (i = 0; i < 4; i++) {
-        ManagedSprite_GetPositionXY(view->sprites[21 + i], &x, &y);
-        ManagedSprite_SetPositionXY(view->sprites[21 + i], x, y + dy);
+        ManagedSprite_GetPositionXY(view->sprites[PC_BOX_SPRITE_WALLPAPERS + i], &x, &y);
+        ManagedSprite_SetPositionXY(view->sprites[PC_BOX_SPRITE_WALLPAPERS + i], x, y + dy);
     }
 }
 
@@ -962,12 +958,12 @@ void PCBox_UpdateCurrentWallpaperMarker(PCBoxWork *work) {
     u32 wallpaper = PCBox_GetWallpaperGfxIndex(work, work->trayBox);
 
     if ((u32)work->view->wallpaperSelection >> 2 == wallpaper >> 2) {
-        PCBox_SetSpriteVisible(work->view, 6, 1);
+        PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_MARKER, TRUE);
     } else {
-        PCBox_SetSpriteVisible(work->view, 6, 0);
+        PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_MARKER, FALSE);
     }
-    ManagedSprite_GetPositionXY(work->view->sprites[6], &x, &y);
-    ManagedSprite_SetPositionXY(work->view->sprites[6], 46 * (wallpaper & 3) + 59, y);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_MARKER], &x, &y);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_MARKER], 46 * (wallpaper & 3) + 59, y);
 }
 
 void PCBox_UpdateWallpaperCursor(PCBoxWork *work) {
@@ -976,11 +972,11 @@ void PCBox_UpdateWallpaperCursor(PCBoxWork *work) {
     s16 x;
     u16 column = work->view->wallpaperSelection % 4;
 
-    ManagedSprite_GetPositionXY(work->view->sprites[21 + column], &x, &y);
-    ManagedSprite_GetPositionXY(work->view->sprites[7], &cursorX, &y);
-    ManagedSprite_SetPositionXY(work->view->sprites[7], x, y);
-    ManagedSprite_GetPositionXY(work->view->sprites[8], &cursorX, &y);
-    ManagedSprite_SetPositionXY(work->view->sprites[8], x, y);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_WALLPAPERS + column], &x, &y);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_CURSOR], &cursorX, &y);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_CURSOR], x, y);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_LABEL], &cursorX, &y);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_LABEL], x, y);
     PCBox_PlaceWallpaperMenuTextObj(work->view);
 }
 
@@ -1034,13 +1030,13 @@ void PCBox_PlaceTrayTextObjs(PCBoxView *view) {
 }
 
 void PCBox_SetupBoxTraySprites(PCBoxWork *work) {
-    ManagedSprite_SetPositionXY(work->view->sprites[4], 12, -21);
-    ManagedSprite_SetPositionXY(work->view->sprites[5], 244, -21);
-    ManagedSprite_SetPositionXY(work->view->sprites[6], 43, -21);
-    ManagedSprite_SetPositionXY(work->view->sprites[7], 128, -40);
-    ManagedSprite_SetPositionXY(work->view->sprites[8], 128, -28);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_PREV_ARROW], 12, -21);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_NEXT_ARROW], 244, -21);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_MARKER], 43, -21);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_CURSOR], 128, -40);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_LABEL], 128, -28);
     PCBox_LoadTrayPageThumbnails(work);
-    PCBox_SetSpriteAnim(work->view, 7, 5);
+    PCBox_SetSpriteAnim(work->view, PC_BOX_SPRITE_TRAY_CURSOR, 5);
     PCBox_PlaceTrayTextObjs(work->view);
     TextOBJ_SetSpritesDrawFlag(work->view->textObjs[0].textObj, TRUE);
     TextOBJ_SetSpritesDrawFlag(work->view->textObjs[1].textObj, TRUE);
@@ -1051,14 +1047,14 @@ void PCBox_MoveBoxTraySprites(PCBoxWork *work, s32 dy) {
     s16 y;
     u32 i;
 
-    for (i = 4; i <= 8; i++) {
+    for (i = PC_BOX_SPRITE_TRAY_PREV_ARROW; i <= PC_BOX_SPRITE_TRAY_LABEL; i++) {
         ManagedSprite_GetPositionXY(work->view->sprites[i], &x, &y);
         ManagedSprite_SetPositionXY(work->view->sprites[i], x, y + dy);
     }
     PCBox_PlaceTrayTextObjs(work->view);
     for (i = 0; i < 6; i++) {
-        ManagedSprite_GetPositionXY(work->view->sprites[15 + i], &x, &y);
-        ManagedSprite_SetPositionXY(work->view->sprites[15 + i], x, y + dy);
+        ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_BOXES + i], &x, &y);
+        ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_BOXES + i], x, y + dy);
     }
 }
 
@@ -1069,13 +1065,13 @@ void PCBox_UpdateCurrentBoxMarker(PCBoxWork *work) {
     s32 column;
 
     if (page == work->activeBox / 6) {
-        PCBox_SetSpriteVisible(work->view, 6, 1);
+        PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_MARKER, TRUE);
     } else {
-        PCBox_SetSpriteVisible(work->view, 6, 0);
+        PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_MARKER, FALSE);
     }
     column = work->activeBox % 6;
-    ManagedSprite_GetPositionXY(work->view->sprites[6], &x, &y);
-    ManagedSprite_SetPositionXY(work->view->sprites[6], 34 * column + 43, y);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_MARKER], &x, &y);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_MARKER], 34 * column + 43, y);
 }
 
 void PCBox_UpdateTrayCursor(PCBoxWork *work) {
@@ -1084,16 +1080,16 @@ void PCBox_UpdateTrayCursor(PCBoxWork *work) {
     s16 x;
     u16 column = work->trayBox % 6;
 
-    ManagedSprite_GetPositionXY(work->view->sprites[7], &cursorX, &y);
-    ManagedSprite_SetPositionXY(work->view->sprites[7], gPCBoxTrayCursorX[column], y);
-    ManagedSprite_GetPositionXY(work->view->sprites[15 + column], &x, &y);
-    ManagedSprite_GetPositionXY(work->view->sprites[8], &cursorX, &y);
-    ManagedSprite_SetPositionXY(work->view->sprites[8], x, y);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_CURSOR], &cursorX, &y);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_CURSOR], gPCBoxTrayCursorX[column], y);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_BOXES + column], &x, &y);
+    ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_LABEL], &cursorX, &y);
+    ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_LABEL], x, y);
     PCBox_PlaceTrayTextObjs(work->view);
 }
 
 void PCBox_GetTrayBoxPosition(PCBoxView *view, u32 box, s16 *x, s16 *y) {
-    ManagedSprite_GetPositionXY(view->sprites[15 + box], x, y);
+    ManagedSprite_GetPositionXY(view->sprites[PC_BOX_SPRITE_TRAY_BOXES + box], x, y);
 }
 
 void PCBox_DrawBoxThumbnail(PCBoxWork *work, int box) {

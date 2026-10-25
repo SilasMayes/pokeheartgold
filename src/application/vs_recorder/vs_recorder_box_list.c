@@ -108,7 +108,7 @@ BOOL VsRecorder_BoxDataViewDownload(VsRecorderWork *work) {
             GfGfxLoader_LoadScrnDataFromOpenNarc(work->narc, 78, work->bgConfig, GF_BG_LYR_SUB_3, 0, 0, FALSE, HEAP_ID_109);
             work->step++;
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         break;
     case BOX_DATA_VIEW_DOWNLOAD_STEP_SHOW_RECEIVING:
         VsRecorder_PlaceOrbitCursor(work, work->orbitCursors[0], 128, 96);
@@ -194,7 +194,7 @@ BOOL VsRecorder_BoxDataViewDownload(VsRecorderWork *work) {
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             VsRecorder_SetSubState(work, BOX_DATA_VIEW_SELECT_CATEGORY);
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         break;
     default:
         VsRecorder_StepFade(&boxData->fade, 0);
@@ -219,8 +219,8 @@ BOOL VsRecorder_BoxDataViewDownload(VsRecorderWork *work) {
             OrbitCursor_SetRadius(work->orbitCursors[0], 12, 12);
             VsRecorder_SetSubState(work, BOX_DATA_VIEW_BOX_LIST_MAIN);
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, boxData->fade, work->blendColor);
         break;
     }
     return FALSE;
@@ -407,7 +407,7 @@ BOOL VsRecorder_BoxDataViewOpenBox(VsRecorderWork *work) {
             }
             VsRecorder_SetSubState(work, BOX_DATA_VIEW_BOX_MAIN);
         }
-        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+        PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         break;
     }
     return FALSE;
@@ -616,14 +616,14 @@ BOOL VsRecorder_BoxDataViewExit(VsRecorderWork *work) {
         if (VsRecorder_StepFade(&boxData->fade, 0)) {
             VsRecorder_ClearPaletteBlend(work);
             VsRecorder_ResetFade(&boxData->fade);
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_MAIN_OBJ, 12, 16, work->blendColor);
             VsRecorder_SetScreenIfDone(work, VS_RECORDER_SCREEN_MENU, TRUE, work->screenPtr);
             VsRecorder_SetSubState(work, VS_RECORDER_MENU_SLIDE_IN);
             FrontierCard_Delete(boxData->card);
             Heap_Free(boxData);
         } else {
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, (u8)boxData->fade, (u16)work->blendColor);
-            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, (u8)boxData->fade, (u16)work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_BG, 2, boxData->fade, work->blendColor);
+            PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, boxData->fade, work->blendColor);
         }
         break;
     }

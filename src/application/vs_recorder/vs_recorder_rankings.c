@@ -566,7 +566,7 @@ BOOL VsRecorder_RankingsDownload(VsRecorderWork *work) {
             break;
         }
         {
-            int missing = FALSE;
+            BOOL missing = FALSE;
             if (!rankings->lastWeek) {
                 VsRecorderRankingStandings *standings = rankings->standings;
                 if (!standings[0].recordId || !standings[1].recordId || !standings[2].recordId) {

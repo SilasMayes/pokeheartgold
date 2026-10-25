@@ -383,7 +383,7 @@ void VsRecorder_LoadFrameBg(VsRecorderWork *work) {
     }
     GfGfxLoader_LoadScrnDataFromOpenNarc(narc, 70, bgConfig, GF_BG_LYR_SUB_1, 0, 0, FALSE, HEAP_ID_109);
     GfGfxLoader_LoadScrnDataFromOpenNarc(narc, 70, bgConfig, GF_BG_LYR_MAIN_1, 0, 0, FALSE, HEAP_ID_109);
-    PaletteData_BlendPalettes(plttData, PLTTBUF_SUB_BG, 2, 16, (u16)work->blendColor);
+    PaletteData_BlendPalettes(plttData, PLTTBUF_SUB_BG, 2, 16, work->blendColor);
 }
 
 void VsRecorder_LoadMessageBg(VsRecorderWork *work, GFBgLayer layer, BOOL alternate) {

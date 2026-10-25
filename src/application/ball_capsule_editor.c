@@ -377,7 +377,7 @@ static BOOL BallCapsuleEditor_LeaveEdit(BallCapsuleEditor *editor);
 static int BallCapsuleEditor_ConfirmQuitEdit(BallCapsuleEditor *editor);
 static int BallCapsuleEditor_PreviewCapsule(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_HitboxCallback(u32 index, u32 event, void *arg);
-static int BallCapsuleEditor_UpdateMenuInputState(BallCapsuleEditor *editor);
+static BOOL BallCapsuleEditor_UpdateMenuInputState(BallCapsuleEditor *editor);
 static int BallCapsuleEditor_HandleSelectInput(BallCapsuleEditor *editor);
 static int BallCapsuleEditor_HandleSelection(BallCapsuleEditor *editor, int selection);
 static int BallCapsuleEditor_HandleSelectKeys(BallCapsuleEditor *editor);
@@ -822,7 +822,7 @@ static void BallCapsuleEditor_LoadSeals(BallCapsuleEditor *editor) {
             shifted->seals[0].seal.kind = seal->kind;
             shifted->seals[0].seal.x = seal->x;
             shifted->seals[0].seal.y = seal->y;
-            BallCapsuleEditor_CreateSealSprite(editor, (u8)i);
+            BallCapsuleEditor_CreateSealSprite(editor, i);
             BallCapsuleEditor_UpdateSealHitbox(shifted->seals[0].hitbox, shifted->seals[0].sprite, FALSE);
             shifted->seals[0].active = TRUE;
         } else {
@@ -1427,7 +1427,7 @@ static void BallCapsuleEditor_CreateMenu(BgConfig *bgConfig, Window *unusedWindo
     header.listMenuItems = editor->display.menuItems;
     header.bgConfig = bgConfig;
     header.numWindows = (u8)count;
-    editor->menu = TouchscreenListMenu_Create(editor->display.menuSpawner, &header, (u8)editor->menuInputState, 22, (u8)(23 - count * 3), 8, 0);
+    editor->menu = TouchscreenListMenu_Create(editor->display.menuSpawner, &header, editor->menuInputState, 22, (u8)(23 - count * 3), 8, 0);
 }
 
 static void BallCapsuleEditor_DestroyMenu(BallCapsuleEditor *editor) {
@@ -2708,7 +2708,7 @@ static void BallCapsuleEditor_HitboxCallback(u32 index, u32 event, void *arg) {
                 return;
             }
             if (editor->pageSeals[index] != SEAL_NONE && SealCaseInventory_GetSealQuantity(editor->sealBag, editor->pageSeals[index] - 1) != 0) {
-                editor->display.heldSeal = BallCapsuleEditor_AddSeal(editor, (u8)index);
+                editor->display.heldSeal = BallCapsuleEditor_AddSeal(editor, index);
                 BallCapsuleEditor_PrintSealName(&editor->display.windows[0], Seal_GetNameMsgId(editor->pageSeals[index]));
                 GiveOrTakeSeal(editor->args->sealCase, editor->pageSeals[index], -1);
                 BallCapsuleEditor_PrintSealCount(editor, index);
@@ -2741,7 +2741,7 @@ static void BallCapsuleEditor_HitboxCallback(u32 index, u32 event, void *arg) {
 }
 
 // Switches between key and touch input: returns TRUE when a key press ended touch input.
-static int BallCapsuleEditor_UpdateMenuInputState(BallCapsuleEditor *editor) {
+static BOOL BallCapsuleEditor_UpdateMenuInputState(BallCapsuleEditor *editor) {
     if (editor->menuInputState == MENU_INPUT_STATE_TOUCH) {
         if (System_GetTouchHeld()) {
             return FALSE;
@@ -3202,7 +3202,7 @@ static void BallCapsuleEditor_CreatePreviewPokepic(BallCapsuleEditor *editor) {
     species = GetMonData(editor->previewMon, MON_DATA_SPECIES, NULL);
     y = GetBoxMonPicHeight((BoxPokemon *)editor->previewMon, 2);
     editor->display.pokepicY = y;
-    NARC_ReadPokepicAnimScript(editor->pokepicAnimNarc, animScript, (u16)species, 1);
+    NARC_ReadPokepicAnimScript(editor->pokepicAnimNarc, animScript, species, 1);
     editor->display.pokepic = PokepicManager_CreatePokepic(editor->display.pokepicManager, &template, 192, y + 48, -640, 0, animScript, NULL);
 }
 
@@ -3211,7 +3211,7 @@ static void BallCapsuleEditor_StartPreviewPokepicAnim(BallCapsuleEditor *editor)
 
     GetMonNature(editor->previewMon);
     Pokepic_StartAnim(editor->display.pokepic, 1);
-    NARC_StartPokepicAnim(editor->pokepicAnimNarc, editor->pokepicAnim, editor->display.pokepic, (u16)species, 2, 0, 0);
+    NARC_StartPokepicAnim(editor->pokepicAnimNarc, editor->pokepicAnim, editor->display.pokepic, species, 2, 0, 0);
 }
 
 static void BallCapsuleEditor_ClearPreviewPokepicScale(BallCapsuleEditor *editor) {

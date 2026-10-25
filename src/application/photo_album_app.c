@@ -220,7 +220,7 @@ static void PhotoAlbumApp_InitSpritesAndMenus(PhotoAlbumApp *app);
 static void PhotoAlbumApp_FreeSpritesAndMenus(PhotoAlbumApp *app);
 static void PhotoAlbumApp_CreateSprites(PhotoAlbumApp *app);
 static void PhotoAlbumApp_DeleteSprites(PhotoAlbumApp *app);
-static void PhotoAlbumApp_DrawPageArrows(PhotoAlbumApp *app, int position, int draw);
+static void PhotoAlbumApp_DrawPageArrows(PhotoAlbumApp *app, int position, BOOL draw);
 static void PhotoAlbumApp_DrawPageArrowBg(PhotoAlbumApp *app, int bgId, int mode, int index);
 static void PhotoAlbumApp_DrawGridColumns(PhotoAlbumApp *app, int bgId, int page, u8 start);
 static void PhotoAlbumApp_DrawPage(PhotoAlbumApp *app, int bgId, int mask, u8 page);
@@ -230,8 +230,8 @@ static void PhotoAlbumApp_RedrawSwappedIcons(PhotoAlbumApp *app, int oldIndex, i
 static void PhotoAlbumApp_PrintPhotoDetails(PhotoAlbumApp *app, Photo *photo);
 static void PhotoAlbumApp_PrintCloseButton(PhotoAlbumApp *app, int animate);
 static void PhotoAlbumApp_PrintMessage(PhotoAlbumApp *app, int msgIdx, BOOL drawFrame, u8 textDelay);
-static void PhotoAlbumApp_SetCursorPos(PhotoAlbumApp *app, u8 x, u8 y, int draw);
-static void PhotoAlbumApp_UpdateSelectionSprite(PhotoAlbumApp *app, int draw);
+static void PhotoAlbumApp_SetCursorPos(PhotoAlbumApp *app, u8 x, u8 y, BOOL draw);
+static void PhotoAlbumApp_UpdateSelectionSprite(PhotoAlbumApp *app, BOOL draw);
 static void PhotoAlbumApp_UpdatePageArrows(PhotoAlbumApp *app);
 static void PhotoAlbumApp_AnimatePageArrow(PhotoAlbumApp *app, int idx);
 static int PhotoAlbumApp_ToggleMenuInputState(PhotoAlbumApp *app);
@@ -758,7 +758,7 @@ static void PhotoAlbumApp_DrawInitialScreen(PhotoAlbumApp *app) {
     PhotoAlbumApp_UpdatePageArrows(app);
     PhotoAlbumApp_PrintCloseButton(app, 0);
     PhotoAlbumApp_PrintMessage(app, 0, TRUE, 0);
-    PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+    PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
     ScheduleBgTilemapBufferTransfer(app->bgConfig, GF_BG_LYR_MAIN_3);
     ScheduleBgTilemapBufferTransfer(app->bgConfig, GF_BG_LYR_MAIN_2);
 }
@@ -808,7 +808,7 @@ static int PhotoAlbumApp_HandleGridSelection(PhotoAlbumApp *app, int input) {
     PlaySE(SEQ_SE_DP_SELECT);
     PhotoAlbumApp_OpenContextMenu(app);
     PhotoAlbumApp_PrintPhotoDetails(app, app->entries[selected].photo);
-    PhotoAlbumApp_UpdateSelectionSprite(app, 1);
+    PhotoAlbumApp_UpdateSelectionSprite(app, TRUE);
     return PHOTO_ALBUM_STATE_CONTEXT_MENU;
 }
 
@@ -824,7 +824,7 @@ static int PhotoAlbumApp_HandleGridTouch(PhotoAlbumApp *app, int *done) {
     if ((u32)hit < PHOTOS_PER_PAGE) {
         app->cursorX = hit & 3;
         app->cursorY = (u32)hit >> 2;
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         PlaySE(SEQ_SE_DP_SELECT);
     }
     PhotoAlbumApp_HandleGridSelection(app, (u8)hit);
@@ -862,7 +862,7 @@ static int PhotoAlbumApp_HandleGridKeys(PhotoAlbumApp *app) {
         if (app->cursorX != 0) {
             PlaySE(SEQ_SE_DP_SELECT);
             app->cursorX--;
-            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         } else if (app->curPage != 0) {
             return PhotoAlbumApp_HandleGridSelection(app, PHOTO_ALBUM_INPUT_PREV_PAGE);
         }
@@ -879,7 +879,7 @@ static int PhotoAlbumApp_HandleGridKeys(PhotoAlbumApp *app) {
         if (app->cursorX < 3) {
             PlaySE(SEQ_SE_DP_SELECT);
             app->cursorX++;
-            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         } else if (app->curPage < app->numPages - 1) {
             return PhotoAlbumApp_HandleGridSelection(app, PHOTO_ALBUM_INPUT_NEXT_PAGE);
         }
@@ -889,11 +889,11 @@ static int PhotoAlbumApp_HandleGridKeys(PhotoAlbumApp *app) {
         }
         PlaySE(SEQ_SE_DP_SELECT);
         app->cursorY = (app->cursorY + 3) % 4;
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
     } else if (keys & PAD_KEY_DOWN) {
         PlaySE(SEQ_SE_DP_SELECT);
         app->cursorY = (app->cursorY + 1) % 4;
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
     }
     return PHOTO_ALBUM_STATE_GRID;
 }
@@ -930,7 +930,7 @@ static int PhotoAlbumApp_RunMoveDone(PhotoAlbumApp *app) {
     default:
         app->mode = PHOTO_ALBUM_MODE_NORMAL;
         PlaySE(SEQ_SE_DP_SELECT);
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         PhotoAlbumApp_PrintMessage(app, 0, FALSE, 0);
         ScheduleBgTilemapBufferTransfer(app->bgConfig, GF_BG_LYR_MAIN_3);
         app->timer = 0;
@@ -946,7 +946,7 @@ static int PhotoAlbumApp_HandleMoveSelection(PhotoAlbumApp *app, u32 input) {
     case PHOTO_ALBUM_INPUT_CLOSE:
         PlaySE(SEQ_SE_DP_SELECT);
         PhotoAlbumApp_PrintPhotoDetails(app, NULL);
-        PhotoAlbumApp_UpdateSelectionSprite(app, 0);
+        PhotoAlbumApp_UpdateSelectionSprite(app, FALSE);
         PhotoAlbumApp_StartCloseButtonAnim(app);
         PhotoAlbumApp_PrintMessage(app, 0, FALSE, 0);
         app->mode = PHOTO_ALBUM_MODE_NORMAL;
@@ -971,12 +971,12 @@ static int PhotoAlbumApp_HandleMoveSelection(PhotoAlbumApp *app, u32 input) {
             return PHOTO_ALBUM_STATE_MOVE_PHOTO;
         }
         PlaySE(SEQ_SE_DP_SELECT);
-        PhotoAlbumApp_UpdateSelectionSprite(app, 0);
+        PhotoAlbumApp_UpdateSelectionSprite(app, FALSE);
         PhotoAlbumApp_PrintPhotoDetails(app, NULL);
         if (slot != app->slotIdx) {
             PhotoAlbumApp_SwapEntries(app, app->slotIdx, slot);
             PhotoAlbumApp_RedrawSwappedIcons(app, app->slotIdx, slot);
-            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 0);
+            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, FALSE);
             app->timer = PHOTO_ALBUM_STATE_FADE_IN;
             return PHOTO_ALBUM_STATE_MOVE_PHOTO_DONE;
         }
@@ -998,7 +998,7 @@ static int PhotoAlbumApp_HandleMoveTouch(PhotoAlbumApp *app, int *done) {
     if ((u32)hit < PHOTOS_PER_PAGE) {
         app->cursorX = hit & 3;
         app->cursorY = (u32)hit >> 2;
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         PlaySE(SEQ_SE_DP_SELECT);
     }
     PhotoAlbumApp_HandleMoveSelection(app, (u8)hit);
@@ -1036,7 +1036,7 @@ static int PhotoAlbumApp_HandleMoveKeys(PhotoAlbumApp *app) {
         if (app->cursorX != 0) {
             PlaySE(SEQ_SE_DP_SELECT);
             app->cursorX--;
-            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         } else if (app->curPage != 0) {
             app->cursorX = (app->cursorX + 3) % 4;
             return PhotoAlbumApp_HandleMoveSelection(app, PHOTO_ALBUM_INPUT_PREV_PAGE);
@@ -1054,7 +1054,7 @@ static int PhotoAlbumApp_HandleMoveKeys(PhotoAlbumApp *app) {
         if (app->cursorX < 3) {
             PlaySE(SEQ_SE_DP_SELECT);
             app->cursorX++;
-            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         } else if (app->curPage < app->numPages - 1) {
             app->cursorX = (app->cursorX + 1) % 4;
             return PhotoAlbumApp_HandleMoveSelection(app, PHOTO_ALBUM_INPUT_NEXT_PAGE);
@@ -1065,11 +1065,11 @@ static int PhotoAlbumApp_HandleMoveKeys(PhotoAlbumApp *app) {
         }
         PlaySE(SEQ_SE_DP_SELECT);
         app->cursorY = (app->cursorY + 3) % 4;
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
     } else if (gSystem.newKeys & PAD_KEY_DOWN) {
         PlaySE(SEQ_SE_DP_SELECT);
         app->cursorY = (app->cursorY + 1) % 4;
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
     }
     return PHOTO_ALBUM_STATE_MOVE_PHOTO;
 }
@@ -1077,11 +1077,11 @@ static int PhotoAlbumApp_HandleMoveKeys(PhotoAlbumApp *app) {
 static int PhotoAlbumApp_FlipToPrevPage(PhotoAlbumApp *app) {
     switch (app->subState) {
     case PHOTO_ALBUM_FLIP_START:
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 0);
-        PhotoAlbumApp_UpdateSelectionSprite(app, 0);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, FALSE);
+        PhotoAlbumApp_UpdateSelectionSprite(app, FALSE);
         PhotoAlbumApp_RequestBgToggle(app, 1);
         PhotoAlbumApp_SetZoom(app, FX32_ONE);
-        PhotoAlbumApp_DrawPageArrows(app, 1, 1);
+        PhotoAlbumApp_DrawPageArrows(app, 1, TRUE);
         PhotoAlbumApp_DrawPage(app, 2, 1, app->curPage);
         PhotoAlbumApp_DrawPage(app, 3, 1, app->curPage - 1);
         app->pageFlipPhase = 0;
@@ -1091,7 +1091,7 @@ static int PhotoAlbumApp_FlipToPrevPage(PhotoAlbumApp *app) {
         app->pageFlipPhase++;
         PhotoAlbumApp_SetZoom(app, sPhotoAlbumPageFlipZoom[app->pageFlipPhase]);
         if (app->pageFlipPhase >= 4) {
-            PhotoAlbumApp_DrawPageArrows(app, 2, 1);
+            PhotoAlbumApp_DrawPageArrows(app, 2, TRUE);
             PhotoAlbumApp_DrawPage(app, 2, 2, app->curPage - 1);
             app->subState++;
         }
@@ -1104,10 +1104,10 @@ static int PhotoAlbumApp_FlipToPrevPage(PhotoAlbumApp *app) {
             PhotoAlbumApp_RequestBgToggle(app, 0);
             PhotoAlbumApp_SetZoom(app, FX32_ONE);
             app->curPage--;
-            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
             PhotoAlbumApp_UpdatePageArrows(app);
             if (app->mode == PHOTO_ALBUM_MODE_MOVE) {
-                PhotoAlbumApp_UpdateSelectionSprite(app, 1);
+                PhotoAlbumApp_UpdateSelectionSprite(app, TRUE);
             }
             app->subState = PHOTO_ALBUM_FLIP_START;
             return 1;
@@ -1120,11 +1120,11 @@ static int PhotoAlbumApp_FlipToPrevPage(PhotoAlbumApp *app) {
 static int PhotoAlbumApp_FlipToNextPage(PhotoAlbumApp *app) {
     switch (app->subState) {
     case PHOTO_ALBUM_FLIP_START:
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 0);
-        PhotoAlbumApp_UpdateSelectionSprite(app, 0);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, FALSE);
+        PhotoAlbumApp_UpdateSelectionSprite(app, FALSE);
         PhotoAlbumApp_RequestBgToggle(app, 1);
         PhotoAlbumApp_SetZoom(app, FX32_ONE);
-        PhotoAlbumApp_DrawPageArrows(app, 2, 1);
+        PhotoAlbumApp_DrawPageArrows(app, 2, TRUE);
         PhotoAlbumApp_DrawPage(app, 2, 2, app->curPage);
         PhotoAlbumApp_DrawPage(app, 3, 2, app->curPage + 1);
         app->pageFlipPhase = 0;
@@ -1134,7 +1134,7 @@ static int PhotoAlbumApp_FlipToNextPage(PhotoAlbumApp *app) {
         app->pageFlipPhase++;
         PhotoAlbumApp_SetZoom(app, sPhotoAlbumPageFlipZoom[app->pageFlipPhase]);
         if (app->pageFlipPhase >= 4) {
-            PhotoAlbumApp_DrawPageArrows(app, 1, 1);
+            PhotoAlbumApp_DrawPageArrows(app, 1, TRUE);
             PhotoAlbumApp_DrawPage(app, 2, 1, app->curPage + 1);
             app->subState++;
         }
@@ -1147,10 +1147,10 @@ static int PhotoAlbumApp_FlipToNextPage(PhotoAlbumApp *app) {
             PhotoAlbumApp_RequestBgToggle(app, 0);
             PhotoAlbumApp_SetZoom(app, FX32_ONE);
             app->curPage++;
-            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+            PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
             PhotoAlbumApp_UpdatePageArrows(app);
             if (app->mode == PHOTO_ALBUM_MODE_MOVE) {
-                PhotoAlbumApp_UpdateSelectionSprite(app, 1);
+                PhotoAlbumApp_UpdateSelectionSprite(app, TRUE);
             }
             app->subState = PHOTO_ALBUM_FLIP_START;
             return 1;
@@ -1419,7 +1419,7 @@ static void PhotoAlbumApp_DeleteSprites(PhotoAlbumApp *app) {
     }
 }
 
-static void PhotoAlbumApp_DrawPageArrows(PhotoAlbumApp *app, int position, int draw) {
+static void PhotoAlbumApp_DrawPageArrows(PhotoAlbumApp *app, int position, BOOL draw) {
     BgClearTilemapBufferAndCommit(app->bgConfig, GF_BG_LYR_MAIN_2);
     if (draw) {
         CopyToBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_2, (u8)(16 * (position / 2)), 0, 16, 24, app->pageArrows->rawData, (u8)(16 * (position / 2)), 0, (u8)(app->pageArrows->screenWidth >> 3), (u8)(app->pageArrows->screenHeight >> 3));
@@ -1438,7 +1438,7 @@ static void PhotoAlbumApp_DrawPageArrowBg(PhotoAlbumApp *app, int bgId, int mode
         row = (u8)(index * 2 + 2);
     }
     screen = app->pageArrows;
-    CopyToBgTilemapRect(app->bgConfig, (u8)bgId, x, 15, 1, 2, screen->rawData, (u8)row, 24, screen->screenWidth >> 3, screen->screenHeight >> 3);
+    CopyToBgTilemapRect(app->bgConfig, bgId, x, 15, 1, 2, screen->rawData, row, 24, screen->screenWidth >> 3, screen->screenHeight >> 3);
 }
 
 static void PhotoAlbumApp_DrawGridColumns(PhotoAlbumApp *app, int bgId, int page, u8 start) {
@@ -1466,7 +1466,7 @@ static void PhotoAlbumApp_DrawPage(PhotoAlbumApp *app, int bgId, int mask, u8 pa
         PhotoAlbumApp_DrawGridColumns(app, bgId, page, 2);
         PhotoAlbumApp_DrawPageArrowBg(app, bgId, 2, page);
     }
-    ScheduleBgTilemapBufferTransfer(app->bgConfig, (u8)bgId);
+    ScheduleBgTilemapBufferTransfer(app->bgConfig, bgId);
 }
 
 static void PhotoAlbumApp_DrawPhotoIcon(PhotoAlbumApp *app, int index, u8 bgId, u8 destX, u8 destY) {
@@ -1485,7 +1485,7 @@ static void PhotoAlbumApp_DrawGridIcon(PhotoAlbumApp *app, Photo *photo, int bgI
     if (photo) {
         icon = photo->iconId + 1;
     }
-    PhotoAlbumApp_DrawPhotoIcon(app, icon, (u8)bgId, (u8)((x * 6 + 4) + (u8)(x >> 1)), (u8)(y * 5 + 1));
+    PhotoAlbumApp_DrawPhotoIcon(app, icon, bgId, (u8)((x * 6 + 4) + (u8)(x >> 1)), (u8)(y * 5 + 1));
 }
 
 static void PhotoAlbumApp_RedrawSwappedIcons(PhotoAlbumApp *app, int oldIndex, int newIndex) {
@@ -1558,7 +1558,7 @@ static void PhotoAlbumApp_PrintMessage(PhotoAlbumApp *app, int msgIdx, BOOL draw
     ScheduleWindowCopyToVram(&app->windows[1]);
 }
 
-static void PhotoAlbumApp_SetCursorPos(PhotoAlbumApp *app, u8 x, u8 y, int draw) {
+static void PhotoAlbumApp_SetCursorPos(PhotoAlbumApp *app, u8 x, u8 y, BOOL draw) {
     s16 px;
     s16 py;
     Sprite_SetDrawFlag(app->sprites[0], draw);
@@ -1575,10 +1575,10 @@ static void PhotoAlbumApp_SetCursorPos(PhotoAlbumApp *app, u8 x, u8 y, int draw)
     Sprite_SetPositionXY(app->sprites[0], px, py);
 }
 
-static void PhotoAlbumApp_UpdateSelectionSprite(PhotoAlbumApp *app, int draw) {
+static void PhotoAlbumApp_UpdateSelectionSprite(PhotoAlbumApp *app, BOOL draw) {
     int xoff;
     if (app->curPage != (u8)(app->slotIdx / 12)) {
-        draw = 0;
+        draw = FALSE;
     }
     xoff = app->spriteCol * 0x30 + 0x1C;
     Sprite_SetPositionXY(app->sprites[1],
@@ -1628,8 +1628,8 @@ static void PhotoAlbumApp_OpenContextMenu(PhotoAlbumApp *app) {
     header.listMenuItems = app->listMenuItems;
     header.bgConfig = app->bgConfig;
     header.numWindows = 4;
-    app->listMenu = TouchscreenListMenu_Create(app->listMenuSpawner, &header, (u8)app->nextMenuState, 0x18, 0xB, 6, 0);
-    PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 0);
+    app->listMenu = TouchscreenListMenu_Create(app->listMenuSpawner, &header, app->nextMenuState, 0x18, 0xB, 6, 0);
+    PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, FALSE);
 }
 
 static int PhotoAlbumApp_HandleContextMenu(PhotoAlbumApp *app) {
@@ -1653,14 +1653,14 @@ static int PhotoAlbumApp_HandleContextMenu(PhotoAlbumApp *app) {
         app->mode = PHOTO_ALBUM_MODE_DELETE;
         return PHOTO_ALBUM_STATE_DELETE_PROMPT;
     case PHOTO_MENU_MOVE:
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         PhotoAlbumApp_PrintMessage(app, 2, FALSE, 0);
         app->mode = PHOTO_ALBUM_MODE_MOVE;
         return PHOTO_ALBUM_STATE_MOVE_PHOTO;
     default:
         PhotoAlbumApp_PrintPhotoDetails(app, NULL);
-        PhotoAlbumApp_UpdateSelectionSprite(app, 0);
-        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+        PhotoAlbumApp_UpdateSelectionSprite(app, FALSE);
+        PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         return PHOTO_ALBUM_STATE_GRID;
     }
 }
@@ -1697,12 +1697,12 @@ static int PhotoAlbumApp_HandleDeletePrompt(PhotoAlbumApp *app) {
         }
     }
     YesNoPrompt_Reset(app->yesNoPrompt);
-    PhotoAlbumApp_UpdateSelectionSprite(app, 0);
+    PhotoAlbumApp_UpdateSelectionSprite(app, FALSE);
     if (result == YESNORESPONSE_YES) {
         PhotoAlbumApp_DrawPage(app, 3, 3, app->curPage);
         PhotoAlbumApp_UpdatePageArrows(app);
     }
-    PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, 1);
+    PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
     PhotoAlbumApp_PrintPhotoDetails(app, NULL);
     PhotoAlbumApp_PrintMessage(app, 0, FALSE, 0);
     app->mode = PHOTO_ALBUM_MODE_NORMAL;

@@ -1113,7 +1113,7 @@ void PokewalkerIr_Stop(void) {
     OS_UnlockMutex(&gPokewalkerIrSync);
 }
 
-void PokewalkerIr_RequestEraseRecords(int active) {
+void PokewalkerIr_RequestEraseRecords(BOOL active) {
     gPokewalkerIrTransfer.command = 0x2A;
     if (active != 0) {
         gPokewalkerIrTransfer.step = 0x2A;

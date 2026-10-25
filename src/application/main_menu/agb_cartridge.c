@@ -235,7 +235,7 @@ static u16 PmAgbCartridge_CalcSectorChecksum(u32 *data, u16 size) {
 }
 
 static void PmAgbCartridge_ReadSector(int sector, void *dest) {
-    CTRDG_ReadAgbFlash((u16)sector, 0, dest, AGB_SAVE_SECTOR_SIZE);
+    CTRDG_ReadAgbFlash(sector, 0, dest, AGB_SAVE_SECTOR_SIZE);
 }
 
 #pragma push
@@ -406,7 +406,7 @@ static void PmAgbCartridge_WriteSectorAsync(int id) {
     sector->signature = AGB_SAVE_SECTOR_SIGNATURE;
     sector->checksum = PmAgbCartridge_CalcSectorChecksum((u32 *)sector, PmAgbCartridge_GetSectorDataSize(id));
     flashSector = (id + (int)gPmAgbSave.firstSector + 1) % AGB_SAVE_SECTORS_PER_SLOT + AGB_SAVE_SECTORS_PER_SLOT * gPmAgbCartridgeSpec.saveSlot;
-    CTRDG_WriteAndVerifyAgbFlashAsync((u8)flashSector, sector, 4, PmAgbCartridge_WriteSectorCallback);
+    CTRDG_WriteAndVerifyAgbFlashAsync(flashSector, sector, 4, PmAgbCartridge_WriteSectorCallback);
 }
 
 static u32 PmAgbCartridge_WriteSectorCallback(CTRDGTaskInfo *task) {
@@ -1320,7 +1320,7 @@ int TranslateAgbSpecies(int species) {
 u32 AGB_GetBoxMonLevel(AgbBoxMon *mon) {
     int species = TranslateAgbSpecies(AGB_GetBoxMonData(mon, AGB_MON_DATA_SPECIES, NULL));
     u32 exp = AGB_GetBoxMonData(mon, AGB_MON_DATA_EXPERIENCE, NULL);
-    return CalcLevelBySpeciesAndExp((u16)species, exp);
+    return CalcLevelBySpeciesAndExp(species, exp);
 }
 
 // Species that got a second ability in DP keep their first one (gAgbKeepFirstAbilitySpecies); the others keep their ability slot
@@ -1382,7 +1382,7 @@ void MigrateBoxMon(AgbBoxMon *agbMon, BoxPokemon *boxMon) {
     SetBoxMonData(boxMon, MON_DATA_SPECIES, &data);
     data = AGB_GetBoxMonData(agbMon, AGB_MON_DATA_HELD_ITEM, NULL);
     if (data != 0) {
-        data = UpConvertItemId_Gen3to4((u16)data);
+        data = UpConvertItemId_Gen3to4(data);
     }
     SetBoxMonData(boxMon, MON_DATA_HELD_ITEM, &data);
     COPY_FIELD(AGB_MON_DATA_OT_ID, MON_DATA_OT_ID);

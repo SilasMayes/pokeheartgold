@@ -793,7 +793,7 @@ static int SafariDecoration_HandleListInput(SafariDecoration *decor) {
 }
 
 static int SafariDecoration_WaitMessageDismiss(SafariDecoration *decor) {
-    int done = FALSE;
+    BOOL done = FALSE;
 
     if (System_GetTouchNew()) {
         done = TRUE;
@@ -854,7 +854,7 @@ static void SafariDecoration_OpenYesNoPrompt(SafariDecoration *decor) {
 }
 
 static int SafariDecoration_HandleYesNoPrompt(SafariDecoration *decor) {
-    int result;
+    BOOL result;
 
     switch (YesNoPrompt_HandleInput(decor->yesNoPrompt)) {
     case YESNORESPONSE_YES:

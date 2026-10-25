@@ -669,7 +669,7 @@ static BOOL ConnectToRanger_Main(OverlayManager *manager, int *state) {
         }
         break;
     case CONNECT_TO_RANGER_STATE_GIFTS_FULL:
-        if (!TextPrinterCheckActive((u8)app->textPrinterId)) {
+        if (!TextPrinterCheckActive(app->textPrinterId)) {
             if (gSystem.newKeys & PAD_BUTTON_A) {
                 MainMenuUtil_SetFadeWhite(TRUE);
                 MainMenuUtil_StartFade(FADE_TYPE_BRIGHTNESS_OUT, CONNECT_TO_RANGER_STATE_EXIT, state, CONNECT_TO_RANGER_STATE_WAIT_FADE);

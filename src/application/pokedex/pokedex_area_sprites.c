@@ -46,7 +46,7 @@ void PokedexApp_UpdateTimeOfDayCursor(PokedexAppData *pokedexApp) {
 void PokedexApp_SetupAreaListScrollbar(PokedexAppData *pokedexApp) {
     PokedexApp_SetScrollbarSizeAnim(pokedexApp, 5, (s8)pokedexApp->areaList.areas.nMaps, gPokedexAreaScrollbarSizeSteps, 9);
     PokedexApp_SyncAreaScrollbar(pokedexApp);
-    PokedexApp_UpdateScrollArrows(pokedexApp, pokedexApp->areaListPos, (s8)pokedexApp->areaList.areas.nMaps, 6);
+    PokedexApp_UpdateScrollArrows(pokedexApp, pokedexApp->areaListPos, pokedexApp->areaList.areas.nMaps, 6);
 }
 
 // The player's map position (args x, y in map blocks) marks the area map; the Kanto page starts at block 22.

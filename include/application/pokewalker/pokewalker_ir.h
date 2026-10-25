@@ -144,7 +144,7 @@ void PokewalkerIr_SetIdentities(PokewalkerIrIdentity *identity, PokewalkerIrIden
 void PokewalkerIr_BeginTransfer(void *data, u32 address, int size);
 void PokewalkerIr_Start(void *stack, u32 stackSize, u32 priority);
 void PokewalkerIr_Stop(void);
-void PokewalkerIr_RequestEraseRecords(int active);
+void PokewalkerIr_RequestEraseRecords(BOOL active);
 void PokewalkerIr_RequestUpload(u8 *uploadImage, u8 *strollData, u8 *records);
 void PokewalkerIr_RequestReceive(u8 *walkerMon, u8 *status, u8 *blocks, u8 *records);
 void PokewalkerIr_RequestSendStroll(u8 *strollData, u8 *records, u8 *status, u8 *blocks);

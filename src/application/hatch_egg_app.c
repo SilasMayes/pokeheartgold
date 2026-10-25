@@ -758,7 +758,7 @@ BOOL HatchEggApp_Main(OverlayManager *man, int *state) {
             (*state)++;
         }
         species = GetMonData(app->args->args.mon, MON_DATA_SPECIES, NULL);
-        NARC_ReadPokepicCryDelay(app->gfx.narc, app->animParams, (u16)species, 1);
+        NARC_ReadPokepicCryDelay(app->gfx.narc, app->animParams, species, 1);
         if (species == SPECIES_MANAPHY) {
             app->sceneType = HATCH_EGG_SCENE_TYPE_MANAPHY;
         } else {

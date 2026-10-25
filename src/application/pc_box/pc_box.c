@@ -566,7 +566,7 @@ u32 PCBox_AnimateMonMove(PCBoxWork *work) {
                     } else {
                         PCBox_GetSlotPosition(moveWork->entries[i].from, &pos[1], &pos[0], work->partyLayout);
                     }
-                    PCBox_SetSpriteVisible(work->view, icon, 0);
+                    PCBox_SetSpriteVisible(work->view, icon, FALSE);
                 }
                 ManagedSprite_SetPositionXY(work->view->sprites[icon], pos[1], pos[0]);
             }
@@ -580,7 +580,7 @@ u32 PCBox_AnimateMonMove(PCBoxWork *work) {
             pos[1] = moveWork->entries[j].px + (moveWork->entries[j].dx * moveWork->timer >> 16) * moveWork->entries[j].sx;
             pos[0] = moveWork->entries[j].py + (moveWork->entries[j].dy * moveWork->timer >> 16) * moveWork->entries[j].sy;
             ManagedSprite_SetPositionXY(work->view->sprites[icon], pos[1], pos[0]);
-            PCBox_SetIconLayer(work->view, moveWork->entries[j].from, 0);
+            PCBox_SetIconLayer(work->view, moveWork->entries[j].from, FALSE);
         }
     }
     return 1;
@@ -611,7 +611,7 @@ u32 PCBox_AnimateSelectedSlotMoveEntry(PCBoxWork *work) {
             pos[1] = moveWork->entries[i].px + (moveWork->entries[i].dx * moveWork->timer >> 16) * moveWork->entries[i].sx;
             pos[0] = moveWork->entries[i].py + (moveWork->entries[i].dy * moveWork->timer >> 16) * moveWork->entries[i].sy;
             ManagedSprite_SetPositionXY(work->view->sprites[icon], pos[1], pos[0]);
-            PCBox_SetIconLayer(work->view, moveWork->entries[i].from, 0);
+            PCBox_SetIconLayer(work->view, moveWork->entries[i].from, FALSE);
             break;
         }
     }
@@ -1012,12 +1012,12 @@ void PCBox_ApplyMoveEntryIcons(PCBoxWork *work, PCBoxMoveEntry *entry) {
         if (entry[i].active != 0) {
             if ((entry[i].to & 0x80) == 0) {
                 work->view->slotIcons[entry[i].to] = tmp[i];
-                PCBox_SetIconLayer(work->view, entry[i].to, 1);
+                PCBox_SetIconLayer(work->view, entry[i].to, TRUE);
             } else {
                 if (entry[i].from >= PC_BOX_SLOT_PARTY_START) {
                     work->view->slotIcons[35] = tmp[i];
                 }
-                PCBox_SetIconLayer(work->view, entry[i].from, 1);
+                PCBox_SetIconLayer(work->view, entry[i].from, TRUE);
             }
         }
     }
@@ -1153,8 +1153,8 @@ static void PCBox_DrawMonInfo(PCBoxWork *work, PCBoxMonInfo *monInfo) {
     }
     PCBox_HideMovesPanel(work->view->panels);
     PCBox_ShowMonPic(work, monInfo, 2);
-    PCBox_SetSpriteVisible(work->view, (work->view->monPicBuffer ^ 1) + 2, 1);
-    PCBox_SetSpriteVisible(work->view, work->view->monPicBuffer + 2, 0);
+    PCBox_SetSpriteVisible(work->view, (work->view->monPicBuffer ^ 1) + PC_BOX_SPRITE_MON_PIC, TRUE);
+    PCBox_SetSpriteVisible(work->view, work->view->monPicBuffer + PC_BOX_SPRITE_MON_PIC, FALSE);
     PCBox_DrawTypeIcons(work->view, monInfo);
     PCBox_PrintMonInfo(work, monInfo);
     PCBox_DrawMarkings(work, monInfo->markings);
@@ -1171,8 +1171,8 @@ static void PCBox_DrawMonItemInfo(PCBoxWork *work, PCBoxMonInfo *monInfo) {
     }
     PCBox_HideItemInfoPanel(work->view->panels);
     PCBox_ShowMonPic(work, monInfo, 2);
-    PCBox_SetSpriteVisible(work->view, (work->view->monPicBuffer ^ 1) + 2, 1);
-    PCBox_SetSpriteVisible(work->view, work->view->monPicBuffer + 2, 0);
+    PCBox_SetSpriteVisible(work->view, (work->view->monPicBuffer ^ 1) + PC_BOX_SPRITE_MON_PIC, TRUE);
+    PCBox_SetSpriteVisible(work->view, work->view->monPicBuffer + PC_BOX_SPRITE_MON_PIC, FALSE);
     PCBox_DrawTypeIcons(work->view, monInfo);
     PCBox_PrintMonInfo(work, monInfo);
     PCBox_DrawMarkings(work, monInfo->markings);
@@ -1212,8 +1212,8 @@ void PCBox_RedrawSlotMonInfo(PCBoxWork *work, u32 index) {
     PCBoxMonInfo *monInfo = PCBox_CreateMonInfo(boxMon);
 
     PCBox_ShowMonPic(work, monInfo, 2);
-    PCBox_SetSpriteVisible(work->view, (work->view->monPicBuffer ^ 1) + 2, 1);
-    PCBox_SetSpriteVisible(work->view, work->view->monPicBuffer + 2, 0);
+    PCBox_SetSpriteVisible(work->view, (work->view->monPicBuffer ^ 1) + PC_BOX_SPRITE_MON_PIC, TRUE);
+    PCBox_SetSpriteVisible(work->view, work->view->monPicBuffer + PC_BOX_SPRITE_MON_PIC, FALSE);
     PCBox_DrawTypeIcons(work->view, monInfo);
     PCBox_PrintMonInfo(work, monInfo);
     PCBox_FreeMonInfo(monInfo);
@@ -1221,10 +1221,10 @@ void PCBox_RedrawSlotMonInfo(PCBoxWork *work, u32 index) {
 }
 
 void PCBox_ClearMonInfo(PCBoxWork *work) {
-    PCBox_SetSpriteVisible(work->view, 2, 0);
-    PCBox_SetSpriteVisible(work->view, 3, 0);
-    PCBox_SetSpriteVisible(work->view, 0xd, 0);
-    PCBox_SetSpriteVisible(work->view, 0xe, 0);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_MON_PIC, FALSE);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_MON_PIC + 1, FALSE);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TYPE_ICONS, FALSE);
+    PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TYPE_ICONS + 1, FALSE);
     PCBox_ClearMonInfoWindows(work->view);
     PCBox_DrawMarkings(work, 0);
     if (work->args->mode == PC_BOX_MODE_MOVE_ITEMS) {

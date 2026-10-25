@@ -49,35 +49,35 @@ static void BagApp_DrawRegisteredItemIcon(BagApp *app, Window *window, int y, BO
     NNSG2dCharacterData *charData;
     void *buffer = BagApp_LoadListIconChars(app, &charData);
     if (!secondSlot) {
-        BlitBitmapRectToWindow(window, charData->pRawData, 24, 0, 104, 16, 0, (u16)y, 40, 16);
+        BlitBitmapRectToWindow(window, charData->pRawData, 24, 0, 104, 16, 0, y, 40, 16);
     } else {
-        BlitBitmapRectToWindow(window, charData->pRawData, 64, 0, 104, 16, 0, (u16)y, 40, 16);
+        BlitBitmapRectToWindow(window, charData->pRawData, 64, 0, 104, 16, 0, y, 40, 16);
     }
     Heap_FreeExplicit(HEAP_ID_6, buffer);
 }
 
 void BagApp_LoadItemMenuStrings(BagApp *app) {
-    app->menuStrings[0] = NewString_ReadMsgData(app->msgData, msg_0010_00000);
-    app->menuStrings[1] = NewString_ReadMsgData(app->msgData, msg_0010_00006);
-    app->menuStrings[2] = NewString_ReadMsgData(app->msgData, msg_0010_00016);
-    app->menuStrings[3] = NewString_ReadMsgData(app->msgData, msg_0010_00098);
-    app->menuStrings[4] = NewString_ReadMsgData(app->msgData, msg_0010_00099);
-    app->menuStrings[5] = NewString_ReadMsgData(app->msgData, msg_0010_00001);
-    app->menuStrings[6] = NewString_ReadMsgData(app->msgData, msg_0010_00002);
-    app->menuStrings[7] = NewString_ReadMsgData(app->msgData, msg_0010_00018);
-    app->menuStrings[8] = NewString_ReadMsgData(app->msgData, msg_0010_00003);
+    app->menuStrings[BAG_ITEM_ACTION_USE] = NewString_ReadMsgData(app->msgData, msg_0010_00000);
+    app->menuStrings[BAG_ITEM_ACTION_WALK] = NewString_ReadMsgData(app->msgData, msg_0010_00006);
+    app->menuStrings[BAG_ITEM_ACTION_CHECK] = NewString_ReadMsgData(app->msgData, msg_0010_00016);
+    app->menuStrings[BAG_ITEM_ACTION_PLANT_BERRY] = NewString_ReadMsgData(app->msgData, msg_0010_00098);
+    app->menuStrings[BAG_ITEM_ACTION_POFFIN_CASE] = NewString_ReadMsgData(app->msgData, msg_0010_00099);
+    app->menuStrings[BAG_ITEM_ACTION_TRASH] = NewString_ReadMsgData(app->msgData, msg_0010_00001);
+    app->menuStrings[BAG_ITEM_ACTION_REGISTER] = NewString_ReadMsgData(app->msgData, msg_0010_00002);
+    app->menuStrings[BAG_ITEM_ACTION_DESELECT] = NewString_ReadMsgData(app->msgData, msg_0010_00018);
+    app->menuStrings[BAG_ITEM_ACTION_GIVE] = NewString_ReadMsgData(app->msgData, msg_0010_00003);
     app->menuStrings[9] = NewString_ReadMsgData(app->msgData, msg_0010_00004);
-    app->menuStrings[10] = NewString_ReadMsgData(app->msgData, msg_0010_00005);
-    app->menuStrings[11] = NewString_ReadMsgData(app->msgData, msg_0010_00008);
-    app->menuStrings[12] = NewString_ReadMsgData(app->msgData, msg_0010_00075);
-    app->menuStrings[13] = NewString_ReadMsgData(app->msgData, msg_0010_00086);
-    app->menuStrings[14] = NewString_ReadMsgData(app->msgData, msg_0010_00000);
-    app->menuStrings[15] = NewString_ReadMsgData(app->msgData, msg_0010_00128);
+    app->menuStrings[BAG_ITEM_ACTION_CONFIRM] = NewString_ReadMsgData(app->msgData, msg_0010_00005);
+    app->menuStrings[BAG_ITEM_ACTION_CANCEL] = NewString_ReadMsgData(app->msgData, msg_0010_00008);
+    app->menuStrings[BAG_ITEM_ACTION_MOVE] = NewString_ReadMsgData(app->msgData, msg_0010_00075);
+    app->menuStrings[BAG_ITEM_ACTION_SELL] = NewString_ReadMsgData(app->msgData, msg_0010_00086);
+    app->menuStrings[BAG_ITEM_ACTION_CHOOSE_FOR_BERRY_POT] = NewString_ReadMsgData(app->msgData, msg_0010_00000);
+    app->menuStrings[BAG_ITEM_ACTION_STOP] = NewString_ReadMsgData(app->msgData, msg_0010_00128);
 }
 
 void BagApp_FreeItemMenuStrings(BagApp *app) {
     u16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < NELEMS(app->menuStrings); i++) {
         String_Delete(app->menuStrings[i]);
     }
 }
@@ -102,7 +102,7 @@ void BagApp_PrintItemSelectedMessage(BagApp *app, const u8 *actions, int count) 
         template = NewString_ReadMsgData(app->msgData, msg_0010_00043);
     }
     string = String_New(108, HEAP_ID_6);
-    BagApp_BufferSlotItemName(app, pocket->scroll + app->cursorButton - 8, 0);
+    BagApp_BufferSlotItemName(app, pocket->scroll + app->cursorButton - BAG_BUTTON_FIRST_SLOT, 0);
     StringExpandPlaceholders(app->msgFormat, string, template);
     AddTextPrinterParameterized(&app->windows[2], 1, string, 0, 0, TEXT_SPEED_NOTRANSFER, NULL);
     String_Delete(string);
@@ -172,7 +172,7 @@ void BagApp_PrintQuantityDigits(BagApp *app, u32 numDigits) {
     for (i = 0; i < numDigits; i++) {
         u32 digit = value / divisor;
         Window *window;
-        String16_FormatInteger(string, (int)digit, 1, PRINTING_MODE_LEFT_ALIGN, TRUE);
+        String16_FormatInteger(string, digit, 1, PRINTING_MODE_LEFT_ALIGN, TRUE);
         value -= digit * divisor;
         divisor /= 10;
         window = &app->dynWindows[i + 17];
@@ -188,9 +188,9 @@ void BagApp_PrintTrashConfirmMessage(BagApp *app) {
     BagView *bagView = app->bagView;
     BagViewPocket *pocket = &bagView->pockets[bagView->pocketIndex];
     if (app->quantity > 1) {
-        BagApp_BufferSlotItemNamePlural(app, pocket->scroll + app->cursorButton - 8, 0);
+        BagApp_BufferSlotItemNamePlural(app, pocket->scroll + app->cursorButton - BAG_BUTTON_FIRST_SLOT, 0);
     } else {
-        BagApp_BufferSlotItemName(app, pocket->scroll + app->cursorButton - 8, 0);
+        BagApp_BufferSlotItemName(app, pocket->scroll + app->cursorButton - BAG_BUTTON_FIRST_SLOT, 0);
     }
     BufferIntegerAsString(app->msgFormat, 1, app->quantity, 3, PRINTING_MODE_LEFT_ALIGN, TRUE);
     StringExpandPlaceholders(app->msgFormat, app->msgBuf, template);
@@ -339,19 +339,19 @@ void BagApp_DrawItemList(BagApp *app, int scroll, int unused, BOOL dim) {
 
     pocket = &app->bagView->pockets[app->bagView->pocketIndex];
     limit = pocket->itemCount - pocket->scroll;
-    if (limit > 6) {
-        limit = 6;
+    if (limit > BAG_ITEMS_PER_PAGE) {
+        limit = BAG_ITEMS_PER_PAGE;
     }
     if (app->listBank == 0) {
         first = 0;
-        last = 6;
+        last = BAG_ITEMS_PER_PAGE;
     } else {
-        first = 6;
+        first = BAG_ITEMS_PER_PAGE;
         last = 0;
     }
     app->listBank ^= 1;
     BagApp_AddItemListWindows(app);
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < BAG_ITEMS_PER_PAGE; i++) {
         FillWindowPixelBuffer(&app->dynWindows[first + i], 0);
         ClearWindowTilemapAndScheduleTransfer(&app->dynWindows[last + i]);
     }
@@ -371,7 +371,7 @@ void BagApp_DrawItemList(BagApp *app, int scroll, int unused, BOOL dim) {
             }
         }
     }
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < BAG_ITEMS_PER_PAGE; i++) {
         ScheduleWindowCopyToVram(&app->dynWindows[first + i]);
     }
 }
@@ -386,7 +386,7 @@ void BagApp_DrawSelectedItemEntry(BagApp *app, s32 scroll, s32 slot) {
     s32 i = 0;
     Window *window = &app->dynWindows[0];
 
-    for (; i < 6; i++) {
+    for (; i < BAG_ITEMS_PER_PAGE; i++) {
         ClearWindowTilemapAndScheduleTransfer(window);
         window++;
     }
@@ -434,12 +434,12 @@ static void BagApp_PrintItemQuantity(MessageFormat *msgFormat, MsgData *msgData,
 }
 
 void BagApp_PrintPageNumber(BagApp *app, s32 itemCount, s32 scroll, s32 slot) {
-    s32 page = (scroll + slot) / 6;
+    s32 page = (scroll + slot) / BAG_ITEMS_PER_PAGE;
     s32 numPages;
     if (itemCount == 0) {
         numPages = 1;
     } else {
-        numPages = (itemCount + 5) / 6;
+        numPages = (itemCount + BAG_ITEMS_PER_PAGE - 1) / BAG_ITEMS_PER_PAGE;
     }
     FillWindowPixelBuffer(&app->windows[6], 0);
     BufferIntegerAsString(app->msgFormat, 0, page + 1, 3, PRINTING_MODE_RIGHT_ALIGN, TRUE);
@@ -452,7 +452,7 @@ void BagApp_PrintPageNumber(BagApp *app, s32 itemCount, s32 scroll, s32 slot) {
 
 void BagApp_PrintItemMenuLabel(Window *window, String **strings, u8 action) {
     FillWindowPixelBuffer(window, 0);
-    if (action != 0xFF) {
+    if (action != BAG_ITEM_ACTION_NONE) {
         String **string = &strings[action];
         u32 width;
         width = GetWindowWidth(window);
@@ -470,12 +470,12 @@ void BagApp_ClearItemMenuLabels(Window *windows) {
 }
 
 void BagApp_PrintTrashLabel(BagApp *app) {
-    AddTextPrinterParameterizedWithColor(&app->dynWindows[20], 0, app->menuStrings[5], 5, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
+    AddTextPrinterParameterizedWithColor(&app->dynWindows[20], 0, app->menuStrings[BAG_ITEM_ACTION_TRASH], 5, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
     ScheduleWindowCopyToVram(&app->dynWindows[20]);
 }
 
 void BagApp_PrintSellLabel(BagApp *app) {
-    AddTextPrinterParameterizedWithColor(&app->dynWindows[20], 0, app->menuStrings[13], 5, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
+    AddTextPrinterParameterizedWithColor(&app->dynWindows[20], 0, app->menuStrings[BAG_ITEM_ACTION_SELL], 5, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
     ScheduleWindowCopyToVram(&app->dynWindows[20]);
 }
 
@@ -540,18 +540,18 @@ static void BagApp_ShowTMHMTypeIcons(BagApp *app, u16 itemId, BOOL show) {
     u16 category;
     NarcId narc;
 
-    ManagedSprite_SetDrawFlag(app->sprites[7], show);
-    ManagedSprite_SetDrawFlag(app->sprites[8], show);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_TM_TYPE], show);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_TM_CATEGORY], show);
     if (show) {
         move = TMHMGetMove(itemId);
         type = GetMoveAttr(move, MOVEATTR_TYPE);
         category = GetMoveAttr(move, MOVEATTR_CLASS);
         narc = TypeIcon_GetNarc();
         SpriteSystem_ReplaceCharResObj(app->spriteSystem, app->spriteManager, narc, TypeIcon_GetCharFile(type), TRUE, 0xC103);
-        ManagedSprite_SetPaletteOverride(app->sprites[7], TypeIcon_GetPalette(type) + 4);
+        ManagedSprite_SetPaletteOverride(app->sprites[BAG_SPRITE_TM_TYPE], TypeIcon_GetPalette(type) + 4);
         narc = MoveCategoryIcon_GetNarc();
         SpriteSystem_ReplaceCharResObj(app->spriteSystem, app->spriteManager, narc, MoveCategoryIcon_GetCharFile(category), TRUE, 0xC104);
-        ManagedSprite_SetPaletteOverride(app->sprites[8], MoveCategoryIcon_GetPalette(category) + 4);
+        ManagedSprite_SetPaletteOverride(app->sprites[BAG_SPRITE_TM_CATEGORY], MoveCategoryIcon_GetPalette(category) + 4);
     }
 }
 
@@ -573,7 +573,7 @@ static void BagApp_LoadSpriteResources(BagApp *app) {
     SpriteSystem_LoadCharResObj(app->spriteSystem, app->spriteManager, NARC_a_0_1_5, 6, FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, 0xC0FA);
     SpriteSystem_LoadCharResObj(app->spriteSystem, app->spriteManager, NARC_a_0_1_5, 51, FALSE, NNS_G2D_VRAM_TYPE_2DSUB, 0xC0FB);
     SpriteSystem_LoadCharResObj(app->spriteSystem, app->spriteManager, NARC_a_0_6_0, 4, FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, 0xC102);
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < BAG_ITEMS_PER_PAGE; i++) {
         SpriteSystem_LoadCharResObj(app->spriteSystem, app->spriteManager, NARC_itemtool_itemdata_item_icon, GetItemIndexMapping(ITEM_NONE, ITEMNARC_NCGR), FALSE, NNS_G2D_VRAM_TYPE_2DSUB, 0xC0FC + i);
     }
     TypeIcon_LoadChar(app->spriteSystem, app->spriteManager, NNS_G2D_VRAM_TYPE_2DMAIN, 0, 0xC103);
@@ -582,7 +582,7 @@ static void BagApp_LoadSpriteResources(BagApp *app) {
     SpriteSystem_LoadPlttResObj(app->spriteSystem, app->spriteManager, NARC_a_0_6_0, 10, FALSE, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0xC101);
     TypeIcon_LoadPltt(app->spriteSystem, app->spriteManager, NNS_G2D_VRAM_TYPE_2DMAIN, 0xC102);
     SpriteSystem_LoadPlttResObj(app->spriteSystem, app->spriteManager, NARC_a_0_1_5, 47, FALSE, 10, NNS_G2D_VRAM_TYPE_2DSUB, 0xC0FA);
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < BAG_ITEMS_PER_PAGE; i++) {
         SpriteSystem_LoadPlttResObj(app->spriteSystem, app->spriteManager, NARC_itemtool_itemdata_item_icon, GetItemIndexMapping(ITEM_NONE, ITEMNARC_NCLR), FALSE, 1, NNS_G2D_VRAM_TYPE_2DSUB, 0xC0FB + i);
     }
     SpriteSystem_LoadCellResObj(app->spriteSystem, app->spriteManager, NARC_a_0_1_5, 25, FALSE, 0xC0F9);
@@ -608,25 +608,25 @@ static void BagApp_CreateSprites(BagApp *app) {
         app->sprites[i] = SpriteSystem_NewSpriteWithYOffset(app->spriteSystem, app->spriteManager, template, FX32_CONST(256));
         template ++;
     }
-    ManagedSprite_SetPriority(app->sprites[19], 1);
+    ManagedSprite_SetPriority(app->sprites[BAG_SPRITE_CANCEL], 1);
     for (i = 0; i < 4; i++) {
-        ManagedSprite_SetPriority(app->sprites[28 + i], 1);
+        ManagedSprite_SetPriority(app->sprites[BAG_SPRITE_ITEM_MENU_ROWS + i], 1);
     }
-    for (i = 0; i < 8; i++) {
-        ManagedSprite_SetPriority(app->sprites[9 + i], 1);
+    for (i = 0; i < POCKETS_COUNT; i++) {
+        ManagedSprite_SetPriority(app->sprites[BAG_SPRITE_POCKET_TABS + i], 1);
     }
     BagApp_ShowPocketTabSprites(app, TRUE);
-    ManagedSprite_SetDrawFlag(app->sprites[0], FALSE);
-    ManagedSprite_SetDrawFlag(app->sprites[7], FALSE);
-    ManagedSprite_SetDrawFlag(app->sprites[8], FALSE);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_MOVE_MARKER], FALSE);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_TM_TYPE], FALSE);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_TM_CATEGORY], FALSE);
     for (i = 0; i < 4; i++) {
-        ManagedSprite_SetDrawFlag(app->sprites[28 + i], FALSE);
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_ITEM_MENU_ROWS + i], FALSE);
     }
     for (i = 0; i < 6; i++) {
-        ManagedSprite_SetDrawFlag(app->sprites[32 + i], FALSE);
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_UP + i], FALSE);
     }
-    ManagedSprite_SetDrawFlag(app->sprites[38], FALSE);
-    ManagedSprite_SetPriority(app->sprites[38], 1);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_CONFIRM], FALSE);
+    ManagedSprite_SetPriority(app->sprites[BAG_SPRITE_CONFIRM], 1);
 }
 
 static void BagApp_ClearField648(BagApp *app) {
@@ -634,45 +634,45 @@ static void BagApp_ClearField648(BagApp *app) {
 }
 
 void BagApp_SetCursorPosition(BagApp *app, s32 button) {
-    ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[20], gBagAppCursorPositions[button].x, gBagAppCursorPositions[button].y, FX32_CONST(256));
-    ManagedSprite_SetAnim(app->sprites[20], gBagAppCursorPositions[button].anim);
-    ManagedSprite_SetPaletteOverride(app->sprites[20], gBagAppCursorPositions[button].palette);
-    ManagedSprite_SetDrawFlag(app->sprites[20], TRUE);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[BAG_SPRITE_CURSOR], gBagAppCursorPositions[button].x, gBagAppCursorPositions[button].y, FX32_CONST(256));
+    ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_CURSOR], gBagAppCursorPositions[button].anim);
+    ManagedSprite_SetPaletteOverride(app->sprites[BAG_SPRITE_CURSOR], gBagAppCursorPositions[button].palette);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_CURSOR], TRUE);
 }
 
 void BagApp_HideCursor(BagApp *app) {
-    ManagedSprite_SetDrawFlag(app->sprites[20], FALSE);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_CURSOR], FALSE);
 }
 
 void BagApp_SetMoveCursorPosition(BagApp *app, int slot) {
     GF_ASSERT(slot < 9);
     if (slot == 8) {
-        ManagedSprite_SetAnim(app->sprites[20], gBagAppMoveCursorPositions[slot].anim);
+        ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_CURSOR], gBagAppMoveCursorPositions[slot].anim);
     } else {
         BagView *bagView = app->bagView;
         BagViewPocket *pocket = &bagView->pockets[bagView->pocketIndex];
         int index = pocket->scroll + slot;
         if (index == app->moveSource) {
-            ManagedSprite_SetAnim(app->sprites[20], 10);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_CURSOR], 10);
         } else if (index >= pocket->itemCount) {
-            ManagedSprite_SetAnim(app->sprites[20], 40);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_CURSOR], 40);
         } else {
-            ManagedSprite_SetAnim(app->sprites[20], 20);
+            ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_CURSOR], 20);
         }
     }
-    ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[20], gBagAppMoveCursorPositions[slot].x, gBagAppMoveCursorPositions[slot].y, FX32_CONST(256));
-    ManagedSprite_SetPaletteOverride(app->sprites[20], gBagAppMoveCursorPositions[slot].palette);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[BAG_SPRITE_CURSOR], gBagAppMoveCursorPositions[slot].x, gBagAppMoveCursorPositions[slot].y, FX32_CONST(256));
+    ManagedSprite_SetPaletteOverride(app->sprites[BAG_SPRITE_CURSOR], gBagAppMoveCursorPositions[slot].palette);
 }
 
 void BagApp_SetQuantityCursorPosition(BagApp *app, s32 index) {
     GF_ASSERT(index < 8);
-    ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[20], gBagAppQuantityCursorPositions[index].x, gBagAppQuantityCursorPositions[index].y, FX32_CONST(256));
-    ManagedSprite_SetAnim(app->sprites[20], gBagAppQuantityCursorPositions[index].anim);
-    ManagedSprite_SetPaletteOverride(app->sprites[20], gBagAppQuantityCursorPositions[index].palette);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[BAG_SPRITE_CURSOR], gBagAppQuantityCursorPositions[index].x, gBagAppQuantityCursorPositions[index].y, FX32_CONST(256));
+    ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_CURSOR], gBagAppQuantityCursorPositions[index].anim);
+    ManagedSprite_SetPaletteOverride(app->sprites[BAG_SPRITE_CURSOR], gBagAppQuantityCursorPositions[index].palette);
 }
 
 void BagApp_LoadPocketObjPalette(BagApp *app, int pocket) {
-    if (pocket <= 7) {
+    if (pocket <= POCKET_KEY_ITEMS) {
         u16 *palette = app->objPalette->pRawData;
         GXS_LoadOBJPltt(&palette[0x80], 0, 0x100);
         GXS_LoadOBJPltt(&palette[pocket * 16], pocket * 32, 32);
@@ -682,17 +682,17 @@ void BagApp_LoadPocketObjPalette(BagApp *app, int pocket) {
 void BagApp_ShowMoveSlotSprites(BagApp *app, int count, int movingSlot, BOOL hideLast) {
     int i;
     if (count == 0) {
-        for (i = 0; i < 6; i++) {
-            ManagedSprite_SetDrawFlag(app->sprites[21 + i], FALSE);
+        for (i = 0; i < BAG_ITEMS_PER_PAGE; i++) {
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_SLOT_FRAMES + i], FALSE);
         }
-        ManagedSprite_SetDrawFlag(app->sprites[27], FALSE);
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_SLOT_FRAMES + BAG_ITEMS_PER_PAGE], FALSE);
         return;
     }
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < BAG_ITEMS_PER_PAGE; i++) {
         if (i < count) {
-            ManagedSprite_SetDrawFlag(app->sprites[21 + i], TRUE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_SLOT_FRAMES + i], TRUE);
         } else {
-            ManagedSprite_SetDrawFlag(app->sprites[21 + i], FALSE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_SLOT_FRAMES + i], FALSE);
         }
     }
     if (movingSlot >= 0) {
@@ -700,32 +700,32 @@ void BagApp_ShowMoveSlotSprites(BagApp *app, int count, int movingSlot, BOOL hid
         ManagedSprite_SetDrawFlag(app->sprites[movingSlot], FALSE);
     }
     if (hideLast) {
-        ManagedSprite_SetDrawFlag(app->sprites[27], FALSE);
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_SLOT_FRAMES + BAG_ITEMS_PER_PAGE], FALSE);
     }
 }
 
 static void BagApp_UpdatePageArrows(BagApp *app) {
     BagView *bagView = app->bagView;
-    if (bagView->pockets[bagView->pocketIndex].itemCount <= 6) {
-        ManagedSprite_SetDrawFlag(app->sprites[17], FALSE);
-        ManagedSprite_SetDrawFlag(app->sprites[18], FALSE);
+    if (bagView->pockets[bagView->pocketIndex].itemCount <= BAG_ITEMS_PER_PAGE) {
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_PREV_PAGE], FALSE);
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_NEXT_PAGE], FALSE);
     } else {
-        ManagedSprite_SetDrawFlag(app->sprites[17], TRUE);
-        ManagedSprite_SetDrawFlag(app->sprites[18], TRUE);
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_PREV_PAGE], TRUE);
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_NEXT_PAGE], TRUE);
     }
 }
 
 void BagApp_DrawItemIcons(BagApp *app, BagViewPocket *pocket, int count, BOOL update) {
     int i;
-    for (i = 0; i < 6; i++) {
-        ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[1 + i], gBagSpriteTemplates[1 + i].x, gBagSpriteTemplates[1 + i].y, FX32_CONST(256));
+    for (i = 0; i < BAG_ITEMS_PER_PAGE; i++) {
+        ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[BAG_SPRITE_ITEM_ICONS + i], gBagSpriteTemplates[BAG_SPRITE_ITEM_ICONS + i].x, gBagSpriteTemplates[BAG_SPRITE_ITEM_ICONS + i].y, FX32_CONST(256));
         if (i < count) {
             if (update) {
                 BagApp_SetItemIconSprite(app, i, app->itemIds[pocket->scroll + i]);
             }
-            ManagedSprite_SetDrawFlag(app->sprites[1 + i], TRUE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_ITEM_ICONS + i], TRUE);
         } else {
-            ManagedSprite_SetDrawFlag(app->sprites[1 + i], FALSE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_ITEM_ICONS + i], FALSE);
         }
     }
     BagApp_UpdatePageArrows(app);
@@ -734,15 +734,15 @@ void BagApp_DrawItemIcons(BagApp *app, BagViewPocket *pocket, int count, BOOL up
 void BagApp_ShowMovingItemIcon(BagApp *app, BagViewPocket *pocket, int index) {
     int slot = -1;
     int i;
-    if (pocket->scroll == (index / 6) * 6) {
-        slot = index % 6;
+    if (pocket->scroll == (index / BAG_ITEMS_PER_PAGE) * BAG_ITEMS_PER_PAGE) {
+        slot = index % BAG_ITEMS_PER_PAGE;
     }
-    for (i = 0; i < 6; i++) {
-        ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[1 + i], gBagSpriteTemplates[1 + i].x, gBagSpriteTemplates[1 + i].y, FX32_CONST(256));
+    for (i = 0; i < BAG_ITEMS_PER_PAGE; i++) {
+        ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[BAG_SPRITE_ITEM_ICONS + i], gBagSpriteTemplates[BAG_SPRITE_ITEM_ICONS + i].x, gBagSpriteTemplates[BAG_SPRITE_ITEM_ICONS + i].y, FX32_CONST(256));
         if (i == slot) {
-            ManagedSprite_SetDrawFlag(app->sprites[1 + i], TRUE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_ITEM_ICONS + i], TRUE);
         } else {
-            ManagedSprite_SetDrawFlag(app->sprites[1 + i], FALSE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_ITEM_ICONS + i], FALSE);
         }
     }
     BagApp_UpdatePageArrows(app);
@@ -750,32 +750,32 @@ void BagApp_ShowMovingItemIcon(BagApp *app, BagViewPocket *pocket, int index) {
 
 void BagApp_ShowItemMenuSprites(BagApp *app, const u8 *actions) {
     s32 i;
-    ManagedSprite_SetDrawFlag(app->sprites[20], TRUE);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_CURSOR], TRUE);
     for (i = 0; i < 4; i++) {
-        if (actions[i] != 0xFF) {
-            ManagedSprite_SetDrawFlag(app->sprites[28 + i], TRUE);
+        if (actions[i] != BAG_ITEM_ACTION_NONE) {
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_ITEM_MENU_ROWS + i], TRUE);
         } else {
-            ManagedSprite_SetDrawFlag(app->sprites[28 + i], FALSE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_ITEM_MENU_ROWS + i], FALSE);
         }
     }
-    ManagedSprite_SetDrawFlag(app->sprites[17], FALSE);
-    ManagedSprite_SetDrawFlag(app->sprites[18], FALSE);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_PREV_PAGE], FALSE);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_NEXT_PAGE], FALSE);
 }
 
 void BagApp_HideItemMenuSprites(BagApp *app) {
     s32 i;
     for (i = 0; i < 4; i++) {
-        ManagedSprite_SetDrawFlag(app->sprites[28 + i], FALSE);
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_ITEM_MENU_ROWS + i], FALSE);
     }
 }
 
 void BagApp_ShowSelectedItemIcon(BagApp *app, int slot) {
     int i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < BAG_ITEMS_PER_PAGE; i++) {
         if (slot != i) {
-            ManagedSprite_SetDrawFlag(app->sprites[1 + i], FALSE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_ITEM_ICONS + i], FALSE);
         } else {
-            ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[1 + i], 86, 76, FX32_CONST(256));
+            ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[BAG_SPRITE_ITEM_ICONS + i], 86, 76, FX32_CONST(256));
         }
     }
 }
@@ -801,33 +801,33 @@ void BagApp_ShowQuantityButtons(BagApp *app, int type, int max) {
         max = 99;
     }
     for (i = 0; i < gQuantityButtonCounts[type - 2]; i++) {
-        ManagedSprite_SetDrawFlag(app->sprites[32 + gQuantityButtonSprites[type - 2][i]], TRUE);
-        ManagedSprite_SetAnim(app->sprites[32 + gQuantityButtonSprites[type - 2][i]], gQuantityButtonAnims[type - 2][i]);
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_UP + gQuantityButtonSprites[type - 2][i]], TRUE);
+        ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_UP + gQuantityButtonSprites[type - 2][i]], gQuantityButtonAnims[type - 2][i]);
     }
     unusedDigits = BagApp_GetUnusedDigitCount(max);
     if (unusedDigits != 0) {
         if (type - 2 == 0 && unusedDigits == 2) {
-            ManagedSprite_SetDrawFlag(app->sprites[32], FALSE);
-            ManagedSprite_SetDrawFlag(app->sprites[35], FALSE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_UP], FALSE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_DOWN], FALSE);
         } else if (type - 2 == 1) {
             for (i = 0; i < gHiddenQuantityButtonCounts[unusedDigits - 1]; i++) {
-                ManagedSprite_SetDrawFlag(app->sprites[32 + gHiddenQuantityButtons[unusedDigits - 1][i]], FALSE);
+                ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_UP + gHiddenQuantityButtons[unusedDigits - 1][i]], FALSE);
             }
         }
     }
-    ManagedSprite_SetDrawFlag(app->sprites[38], TRUE);
-    ManagedSprite_SetAnimationFrame(app->sprites[38], 0);
-    ManagedSprite_SetAnim(app->sprites[38], 37);
-    ManagedSprite_SetAnimationFrame(app->sprites[19], 0);
-    ManagedSprite_SetAnim(app->sprites[19], 39);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_CONFIRM], TRUE);
+    ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_CONFIRM], 0);
+    ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_CONFIRM], 37);
+    ManagedSprite_SetAnimationFrame(app->sprites[BAG_SPRITE_CANCEL], 0);
+    ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_CANCEL], 39);
 }
 
 void BagApp_HideQuantityButtons(BagApp *app) {
     s32 i;
     for (i = 0; i < 6; i++) {
-        ManagedSprite_SetDrawFlag(app->sprites[32 + i], FALSE);
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_UP + i], FALSE);
     }
-    ManagedSprite_SetDrawFlag(app->sprites[38], FALSE);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_CONFIRM], FALSE);
 }
 
 void BagApp_ShowPocketTabSprites(BagApp *app, BOOL show) {
@@ -836,21 +836,21 @@ void BagApp_ShowPocketTabSprites(BagApp *app, BOOL show) {
 
     GF_ASSERT(show == TRUE || show == FALSE);
     MI_CpuFill8(hasPocket, 0, sizeof(hasPocket));
-    for (i = 0; i < 8; i++) {
-        GF_ASSERT(app->bagView->pockets[i].pocketId < 8);
+    for (i = 0; i < POCKETS_COUNT; i++) {
+        GF_ASSERT(app->bagView->pockets[i].pocketId < POCKETS_COUNT);
         if (app->bagView->pockets[i].slots != NULL) {
             hasPocket[app->bagView->pockets[i].pocketId] = TRUE;
         }
     }
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < POCKETS_COUNT; i++) {
         if (hasPocket[i]) {
-            ManagedSprite_SetDrawFlag(app->sprites[9 + i], show);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_POCKET_TABS + i], show);
         } else {
-            ManagedSprite_SetDrawFlag(app->sprites[9 + i], FALSE);
+            ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_POCKET_TABS + i], FALSE);
         }
     }
 }
 
 void BagApp_SetCancelSpriteVisible(BagApp *app, BOOL show) {
-    ManagedSprite_SetDrawFlag(app->sprites[19], show);
+    ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_CANCEL], show);
 }

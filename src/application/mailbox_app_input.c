@@ -76,7 +76,7 @@ void MailboxApp_CreateGridInput(MailboxApp *app) {
     } else {
         cursorPos = app->cursorPos;
     }
-    app->data->gridInput = GridInputHandler_Create(sMailboxGridHitboxes, sMailboxGridBoxes, &sMailboxGridCallbacks, app, TRUE, (u8)cursorPos, HEAP_ID_157);
+    app->data->gridInput = GridInputHandler_Create(sMailboxGridHitboxes, sMailboxGridBoxes, &sMailboxGridCallbacks, app, TRUE, cursorPos, HEAP_ID_157);
     MailboxApp_MoveCursor(app, cursorPos);
 }
 

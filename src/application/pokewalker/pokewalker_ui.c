@@ -38,7 +38,7 @@ u32 PokewalkerApp_GetSpeciesIconFile(u16 species) {
 }
 
 int PokewalkerApp_GetPictureFile(int species, int gender, int form) {
-    int base = SanitizeMonForm((u16)species, (u8)form);
+    int base = SanitizeMonForm(species, form);
     switch (species) {
     case SPECIES_BURMY:
         return base + 0x26E;
@@ -617,18 +617,18 @@ void PokewalkerApp_SetSpriteAnim(PokewalkerApp *app, int index, int anim) {
 }
 
 void PokewalkerApp_SetSpritePosition(PokewalkerApp *app, int index, int x, int y) {
-    ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[index], (s16)x, (s16)y, FX32_CONST(256));
+    ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[index], x, y, FX32_CONST(256));
 }
 
 // Draws particle i on the sub screen (y < 0) or on the main screen.
 static void PokewalkerApp_DrawParticle(PokewalkerApp *app, int index, int frame, int x, int y) {
     if (y < 0) {
-        ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[index + 117], (s16)x, (s16)(y + 208), FX32_CONST(256));
+        ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[index + 117], x, (s16)(y + 208), FX32_CONST(256));
         ManagedSprite_SetAnim(app->sprites[index + 117], frame + 4);
         ManagedSprite_SetDrawFlag(app->sprites[index + 117], TRUE);
         ManagedSprite_SetDrawFlag(app->sprites[index + 17], FALSE);
     } else {
-        ManagedSprite_SetPositionXY(app->sprites[index + 17], (s16)x, (s16)y);
+        ManagedSprite_SetPositionXY(app->sprites[index + 17], x, y);
         ManagedSprite_SetAnim(app->sprites[index + 17], frame + 19);
         ManagedSprite_SetDrawFlag(app->sprites[index + 117], FALSE);
         ManagedSprite_SetDrawFlag(app->sprites[index + 17], TRUE);
@@ -757,11 +757,11 @@ void PokewalkerApp_HideMotionSprites(PokewalkerApp *app) {
 
 static void PokewalkerApp_SetMotionSpritePos(PokewalkerApp *app, int x, int y) {
     if (y < 0) {
-        ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[14], (s16)x, (s16)(y + 208), FX32_CONST(256));
+        ManagedSprite_SetPositionXYWithSubscreenOffset(app->sprites[14], x, (s16)(y + 208), FX32_CONST(256));
         ManagedSprite_SetDrawFlag(app->sprites[14], TRUE);
         ManagedSprite_SetDrawFlag(app->sprites[13], FALSE);
     } else {
-        ManagedSprite_SetPositionXY(app->sprites[13], (s16)x, (s16)y);
+        ManagedSprite_SetPositionXY(app->sprites[13], x, y);
         ManagedSprite_SetDrawFlag(app->sprites[13], TRUE);
         ManagedSprite_SetDrawFlag(app->sprites[14], FALSE);
     }
