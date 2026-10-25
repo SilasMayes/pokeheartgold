@@ -96,7 +96,7 @@ struct PokeathlonCourseMonGfxManager {
     SpriteList *ownSpriteList;
     SpriteList *spriteList;
     G2dRenderer renderer;
-    GF_2DGfxResMan *resMans[4]; // char, palette, cell, animation
+    GF_2DGfxResMan *resMans[POKEATHLON_RES_TYPES];
     PokeathlonCourseMonGfx *mons;
     u8 buffer[0x800]; // one frame of character data
 };
@@ -127,7 +127,7 @@ struct PokeathlonCourseSpriteResources {
     enum HeapID heapId;
     u32 flags; // which of the 12 sprite groups are loaded
     int charVram;
-    GF_2DGfxResMan *resMans[4]; // char, palette, cell, animation
+    GF_2DGfxResMan *resMans[POKEATHLON_RES_TYPES];
     SpriteResource *chars[POKEATHLON_MONS];
     SpriteResource *cells[POKEATHLON_MONS];
     SpriteResource *anims[POKEATHLON_MONS];

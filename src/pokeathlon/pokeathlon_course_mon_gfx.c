@@ -40,7 +40,7 @@ void PokeathlonCourseMonGfx_InitManager(PokeathlonCourseMonGfxManager *manager, 
         manager->spriteList = spriteList;
         manager->ownsSpriteList = FALSE;
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_RES_TYPES; i++) {
         manager->resMans[i] = Create2DGfxResObjMan(manager->count, (GfGfxResType)i, manager->heapId);
     }
 }

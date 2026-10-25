@@ -348,7 +348,7 @@ u8 BattleHallData_GetWonBattlePoints(BattleHallData *data) {
     u16 round = data->round;
     u8 ret;
 
-    if (type <= 1) {
+    if (type <= FRONTIER_CHALLENGE_DOUBLE) {
         if (round >= HALL_MAX_ROUND) {
             ret = 12;
         } else {

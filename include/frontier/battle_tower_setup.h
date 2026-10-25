@@ -3,8 +3,6 @@
 
 #include "frontier/frontier.h"
 
-typedef struct BattleTowerTrainerSets BattleTowerTrainerSets;
-
 // A sample room trainer: a FrontierTrainer field and the indexes of its four Pokemon.
 typedef struct BattleTowerSampleTrainer {
     u16 unk_00;

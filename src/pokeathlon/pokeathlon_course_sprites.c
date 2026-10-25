@@ -15,10 +15,10 @@ static Sprite *PokeathlonCourseMonObjects_CreateSprite(PokeathlonCourseMonObject
 
 // Allocates the course sprite resources; flags selects which of the 12 sprite groups get loaded.
 PokeathlonCourseSpriteResources *PokeathlonCourseSprites_CreateResources(enum HeapID heapId, u32 flags, int charVram) {
-    u8 counts[4];
+    u8 counts[POKEATHLON_RES_TYPES];
     PokeathlonCourseSpriteResources *resources;
     int i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_RES_TYPES; i++) {
         counts[i] = 0;
     }
     if (flags & 0x001) {
@@ -86,7 +86,7 @@ PokeathlonCourseSpriteResources *PokeathlonCourseSprites_CreateResources(enum He
     resources->heapId = heapId;
     resources->flags = flags;
     resources->charVram = charVram;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_RES_TYPES; i++) {
         resources->resMans[i] = Create2DGfxResObjMan(counts[i], (GfGfxResType)i, resources->heapId);
     }
     PokeathlonCourseSprites_LoadResources(resources);
@@ -136,7 +136,7 @@ void PokeathlonCourseSprites_FreeResources(PokeathlonCourseSpriteResources *reso
     if (resources->extraPalette) {
         SpriteTransfer_DeletePlttTransferTask(resources->extraPalette);
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_RES_TYPES; i++) {
         Destroy2DGfxResObjMan(resources->resMans[i]);
     }
     Heap_Free(resources);

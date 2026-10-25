@@ -683,14 +683,14 @@ u32 BattleCastleData_GetRoundTableValue(BattleCastleData *data) {
     u32 type = data->type;
     u32 round = data->round;
     u32 result;
-    if (type <= 1) {
+    if (type <= FRONTIER_CHALLENGE_DOUBLE) {
         result = round >= 8 ? 7 : sBattleCastleRoundValues_Single[round];
     } else {
         result = round >= 8 ? 0x12 : sBattleCastleRoundValues_Multi[round];
     }
     if (type == FRONTIER_CHALLENGE_SINGLE) {
         u16 winStreak = data->winStreak;
-        if (winStreak == 21 || winStreak == 49) {
+        if (winStreak == FRONTIER_BRAIN_BATTLE_SILVER || winStreak == FRONTIER_BRAIN_BATTLE_GOLD) {
             result = 0x14;
         }
     }

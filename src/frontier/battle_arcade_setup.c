@@ -30,15 +30,7 @@ static u32 BattleArcade_GetTrainerAIFlags(ArcadeContext *ctx);
 #define ARCADE_EVENT_SWAP_PARTIES 27
 #define ARCADE_EVENT_28           28
 
-// Trainer ids of a round: regular trainers, and the 7th battle of a round.
-typedef struct BattleArcadeTrainerRange {
-    u16 min;
-    u16 max;
-    u16 lastBattleMin;
-    u16 lastBattleMax;
-} BattleArcadeTrainerRange;
-
-static const BattleArcadeTrainerRange sBattleArcadeTrainerRanges[] = {
+static const FrontierTrainerRange sBattleArcadeTrainerRanges[] = {
     { 0,   99,  100, 119 },
     { 80,  119, 120, 139 },
     { 100, 139, 140, 159 },
@@ -53,14 +45,14 @@ static u32 BattleArcade_GetRandomTrainerId(u32 type, u32 round, u32 battleNo) {
     u16 min;
     s32 span;
 
-    if (type == 0) {
+    if (type == FRONTIER_CHALLENGE_SINGLE) {
         u32 battle = battleNo + 1;
         battle += round * 7;
-        if (battle == 21) {
-            return 311;
+        if (battle == FRONTIER_BRAIN_BATTLE_SILVER) {
+            return ARCADE_STAR_SILVER;
         }
-        if (battle == 49) {
-            return 312;
+        if (battle == FRONTIER_BRAIN_BATTLE_GOLD) {
+            return ARCADE_STAR_GOLD;
         }
     }
     if (round >= 8) {
@@ -272,10 +264,10 @@ static u32 BattleArcade_GetTrainerAIFlags(ArcadeContext *ctx) {
     s32 round;
     s32 aiFlags;
 
-    if (ctx->type == 0) {
+    if (ctx->type == FRONTIER_CHALLENGE_SINGLE) {
         u16 *trainerId = &ctx->trainerIds[ctx->battleNo];
         u16 id = *trainerId;
-        if (id == 311 || id == 312) {
+        if (id == ARCADE_STAR_SILVER || id == ARCADE_STAR_GOLD) {
             return 7;
         }
     }

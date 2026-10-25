@@ -162,7 +162,7 @@ PokeathlonCourseSpritePool *PokeathlonCourseSpritePool_New(enum HeapID heapId, P
     pool->sprites = Heap_Alloc(pool->heapId, pool->template.capacity * sizeof(PokeathlonCourseSpritePoolSprite));
     MI_CpuClear32(pool->sprites, pool->template.capacity * sizeof(PokeathlonCourseSpritePoolSprite));
     pool->spriteList = G2dRenderer_Init(pool->template.capacity, &pool->renderer, pool->heapId);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < POKEATHLON_RES_TYPES; i++) {
         pool->resMans[i] = Create2DGfxResObjMan(pool->template.resCounts[i], (GfGfxResType)i, pool->heapId);
     }
     return pool;

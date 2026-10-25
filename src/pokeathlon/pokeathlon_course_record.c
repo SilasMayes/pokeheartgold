@@ -873,7 +873,7 @@ static void PokeathlonCourseRecord_PrintMonNames(PokeathlonCourseRecord *work, B
     s32 i;
     PokeathlonTextContext *textContext = work->textContext;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         if (show) {
             PokeathlonUtil_PrintSpeciesName(textContext, i + 14, PokeathlonCourseRecord_GetMonSpecies(work->args, (u8)work->selection.page, (u8)i));
         } else {
@@ -954,7 +954,7 @@ static void PokeathlonCourseRecord_LoadMonPicResources(PokeathlonCourseRecord *w
     SpriteSystem *spriteSystem = PokeathlonUtil_GetSpriteSystem(work->spriteContext);
     SpriteManager *spriteManager = PokeathlonUtil_GetSpriteManager(work->spriteContext);
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonUtil_LoadMonPicSpriteResources(spriteSystem, spriteManager, sPokeathlonCourseRecordMonPicResIds[i], NNS_G2D_VRAM_TYPE_2DMAIN);
     }
 }
@@ -1021,7 +1021,7 @@ static void PokeathlonCourseRecord_UpdatePageSprites(PokeathlonCourseRecord *wor
             ManagedSprite_SetDrawFlag(work->sprites[20 + i], FALSE);
         }
     }
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonRecordMon *mon = PokeathlonCourseRecord_GetMon(work->args, course, i);
         if (PokeathlonCourseRecord_HasRecord(work->args, course) == TRUE) {
             PokeathlonUtil_LoadMonPicSprite(work->sprites[11 + i], &mon->info, TRUE, FALSE, work->heapId);

@@ -58,6 +58,26 @@ typedef struct BallSealEmitDelays {
     u8 delays[7];
 } BallSealEmitDelays;
 
+// One frame of the capture bounce: y offset and animation frame
+typedef struct BallThrowBounceStep {
+    s16 dy;
+    u16 frame;
+    u16 unused;
+} BallThrowBounceStep;
+
+// Seal particle resource of a ball and its emitter count
+typedef struct BallAnimSealParticles {
+    u32 resource;
+    u32 emitterCount;
+} BallAnimSealParticles;
+
+// Burst particle resource of a ball, the emitter it skips and its emitter count
+typedef struct BallAnimBurstParticles {
+    u32 resource;
+    u32 skippedEmitter;
+    u32 emitterCount;
+} BallAnimBurstParticles;
+
 typedef struct BattleAnimEmitterCounts {
     u32 counts[22];
 } BattleAnimEmitterCounts;
@@ -70,14 +90,10 @@ extern const BallThrowBounceSound gBallThrowBounceSounds[];
 extern const BallThrowSpinningKinds gBallThrowSpinningKinds;
 extern const s16 gBallThrowShakeOffsets[];
 extern const BallThrowFunc gBallThrowCaptureStateFuncs[];
-extern const s16 gBallThrowBounceSteps[]; // bounce steps: y offset, then the animation frame
-extern const u16 gBallThrowBounceFrames[];
+extern const BallThrowBounceStep gBallThrowBounceSteps[];
 // Per ball (BallAnim_GetBallTableIndex) tables
-extern const u32 gBallAnimSealParticles[][2]; // seal particle resource
-extern const u32 gBallAnimSealEmitterCounts[][2];
-extern const u32 gBallAnimBurstParticles[][3]; // burst particle resource
-extern const u32 gBallAnimBurstSkippedEmitters[][3];
-extern const u32 gBallAnimBurstEmitterCounts[][3];
+extern const BallAnimSealParticles gBallAnimSealParticles[];
+extern const BallAnimBurstParticles gBallAnimBurstParticles[];
 extern const u32 gBallSpriteResources[][4];
 extern const BallSealEmitDelays gBallSealEmitDelays;
 extern const BattleAnimEmitterCounts gBattleAnimEmitterCounts;

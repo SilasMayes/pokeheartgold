@@ -753,7 +753,7 @@ static void PokeathlonBlockSmash_InitBgs(BgConfig *bgConfig, enum HeapID heapId)
 
 static void PokeathlonBlockSmash_FreeBgsAndText(PokeathlonBlockSmash *work) {
     s32 i;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         String_Delete(work->names[i]);
     }
     MessageFormat_Delete(work->msgFormat);
@@ -792,8 +792,8 @@ static void PokeathlonBlockSmash_InitText(PokeathlonCourseData *course) {
         ClearWindowTilemap(&work->windows[i]);
     }
     mons = (PokeathlonBlockSmashTeamMon *)PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
-    for (i = 0; i < 3; i++) {
-        work->names[i] = String_New(11, work->heapId);
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
+        work->names[i] = String_New(POKEMON_NAME_LENGTH + 1, work->heapId);
         CopyU16ArrayToString(work->names[i], mons[i].nickname);
     }
 }

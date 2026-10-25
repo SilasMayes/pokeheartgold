@@ -3,6 +3,10 @@
 
 #include "frontier/battle_factory_data.h"
 #include "frontier/frontier.h"
+#include "frontier/frontier_trainer_record.h"
+
+#define FACTORY_HEAD_SILVER 309 // trainer ids of the Factory Head (FRONTIER_BRAIN_BATTLE_SILVER / _GOLD)
+#define FACTORY_HEAD_GOLD   310
 
 // Range of Battle Factory set ids (narc 205). Trainer set ranges are looked up by trainer id; when hasNextTier is set,
 // the following entry is the range the last Pokemon come from once enough trades were made.
@@ -14,16 +18,8 @@ typedef struct BattleFactorySetRange {
     u8 hasNextTier;
 } BattleFactorySetRange;
 
-// Trainer ids of a round: regular trainers, and the 7th battle of a round.
-typedef struct BattleFactoryTrainerRange {
-    u16 min;
-    u16 max;
-    u16 lastBattleMin;
-    u16 lastBattleMax;
-} BattleFactoryTrainerRange;
-
 extern const int gBattleFactoryTradeCountTiers[5];
-extern const BattleFactoryTrainerRange gBattleFactoryRoundTrainerRanges[];
+extern const FrontierTrainerRange gBattleFactoryRoundTrainerRanges[];
 extern const BattleFactorySetRange gBattleFactoryOpenLevelRentalRanges[];
 extern const BattleFactorySetRange gBattleFactoryLevel50SetRanges[];
 extern const BattleFactorySetRange gBattleFactoryOpenLevelTrainerSetRanges[];

@@ -203,23 +203,23 @@ static BOOL BallThrow_ShouldAnimateSprite(u32 kind) {
 }
 
 static u32 BallAnim_GetSealParticleResource(int ball) {
-    return gBallAnimSealParticles[BallAnim_GetBallTableIndex(ball)][0];
+    return gBallAnimSealParticles[BallAnim_GetBallTableIndex(ball)].resource;
 }
 
 static u32 BallAnim_GetSealParticleEmitterCount(int ball) {
-    return gBallAnimSealEmitterCounts[BallAnim_GetBallTableIndex(ball)][0];
+    return gBallAnimSealParticles[BallAnim_GetBallTableIndex(ball)].emitterCount;
 }
 
 static u32 BallAnim_GetBurstParticleResource(int ball) {
-    return gBallAnimBurstParticles[BallAnim_GetBallTableIndex(ball)][0];
+    return gBallAnimBurstParticles[BallAnim_GetBallTableIndex(ball)].resource;
 }
 
 static u32 BallAnim_GetBurstParticleEmitterCount(int ball) {
-    return gBallAnimBurstEmitterCounts[BallAnim_GetBallTableIndex(ball)][0];
+    return gBallAnimBurstParticles[BallAnim_GetBallTableIndex(ball)].emitterCount;
 }
 
 static u32 BallAnim_GetBurstSkippedEmitter(int ball) {
-    return gBallAnimBurstSkippedEmitters[BallAnim_GetBallTableIndex(ball)][0];
+    return gBallAnimBurstParticles[BallAnim_GetBallTableIndex(ball)].skippedEmitter;
 }
 
 static u32 BallAnim_GetSpriteResource(int ball, int index) {
@@ -862,10 +862,8 @@ BOOL BallThrow_CaptureStateBounce(BallThrow *data) {
         data->step++;
         // fallthrough
     case 1: {
-        int index = data->stateFrames;
-        int offset = index * 6;
-        s16 dy = *(const s16 *)((const u8 *)gBallThrowBounceSteps + offset);
-        int frame = *(const u16 *)((const u8 *)gBallThrowBounceFrames + offset);
+        s16 dy = gBallThrowBounceSteps[data->stateFrames].dy;
+        int frame = gBallThrowBounceSteps[data->stateFrames].frame;
         ManagedSprite_SetAnimationFrame(data->managedSprite, frame);
         data->stateFrames++;
         for (int i = 0; i < 5; i++) {

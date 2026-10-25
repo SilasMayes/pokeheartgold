@@ -355,9 +355,9 @@ BOOL FrtCmd_CastleAction(FrontierScriptContext *ctx) {
         *result = 0;
         if (data->type == FRONTIER_CHALLENGE_SINGLE) {
             u32 wins = data->winStreak + 1;
-            if (wins == 21) {
+            if (wins == FRONTIER_BRAIN_BATTLE_SILVER) {
                 *result = 1;
-            } else if (wins == 49) {
+            } else if (wins == FRONTIER_BRAIN_BATTLE_GOLD) {
                 *result = 2;
             }
         }

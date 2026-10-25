@@ -2325,7 +2325,7 @@ static BOOL BattleFactoryApp_IsScreen(BattleFactoryApp *app, u8 screen) {
 }
 
 static int BattleFactory_GetRentalCount(int frontierType) {
-    return frontierType == 0 || frontierType == 1 ? 3 : 2;
+    return frontierType == FRONTIER_CHALLENGE_SINGLE || frontierType == FRONTIER_CHALLENGE_DOUBLE ? 3 : 2;
 }
 
 static BOOL BattleFactoryApp_IsCancelRequested(BattleFactoryApp *app) {

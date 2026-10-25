@@ -17,7 +17,7 @@
 
 typedef struct PokeathlonCourseSpritePoolResources {
     u32 id;
-    SpriteResource *objects[4]; // char, palette, cell, animation
+    SpriteResource *objects[POKEATHLON_RES_TYPES];
 } PokeathlonCourseSpritePoolResources;
 
 struct PokeathlonCourseSpritePoolSprite {
@@ -34,7 +34,7 @@ struct PokeathlonCourseSpritePool {
     PokeathlonCourseSpritePoolTemplate template;
     SpriteList *spriteList;
     G2dRenderer renderer;
-    GF_2DGfxResMan *resMans[4];
+    GF_2DGfxResMan *resMans[POKEATHLON_RES_TYPES];
     PokeathlonCourseSpritePoolResources *resources;
     PokeathlonCourseSpritePoolSprite *sprites;
 };

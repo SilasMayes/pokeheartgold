@@ -350,9 +350,9 @@ BOOL FrtCmd_FactoryAction(FrontierScriptContext *ctx) {
         *var = 0;
         if (data->type == FRONTIER_CHALLENGE_SINGLE) {
             int battle = data->winStreak + 1;
-            if (battle == 21) {
+            if (battle == FRONTIER_BRAIN_BATTLE_SILVER) {
                 *var = 1;
-            } else if (battle == 49) {
+            } else if (battle == FRONTIER_BRAIN_BATTLE_GOLD) {
                 *var = 2;
             }
         }

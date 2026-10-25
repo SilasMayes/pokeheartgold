@@ -775,12 +775,12 @@ static void BattleAnimTask_AttackerAfterimages(SysTask *task, void *data) {
         // each pass is a little faster than the previous one
         row = (work->count % 2) * 2;
         delay = (work->count + 1) / 2;
-        duration = gBattleAnimAttackerAfterimageDurations[row][0] - delay;
-        BattleAnimUtil_InitLinearMotion(&work->motions[0], work->x + gBattleAnimAttackerAfterimageMotions[row][0], work->x + gBattleAnimAttackerAfterimageEndX[row][0], work->y, work->y, duration);
-        BattleAnimUtil_InitLinearMotion(&work->motions[1], work->x - gBattleAnimAttackerAfterimageMotions[row][0], work->x - gBattleAnimAttackerAfterimageEndX[row][0], work->y, work->y, duration);
-        duration2 = gBattleAnimAttackerAfterimageDurations[row + 1][0] - delay;
-        BattleAnimUtil_InitLinearMotion(&work->motions[2], work->x + gBattleAnimAttackerAfterimageMotions[row + 1][0], work->x + gBattleAnimAttackerAfterimageEndX[row + 1][0], work->y, work->y, duration2);
-        BattleAnimUtil_InitLinearMotion(&work->motions[3], work->x - gBattleAnimAttackerAfterimageMotions[row + 1][0], work->x - gBattleAnimAttackerAfterimageEndX[row + 1][0], work->y, work->y, duration2);
+        duration = gBattleAnimAttackerAfterimagePasses[row].duration - delay;
+        BattleAnimUtil_InitLinearMotion(&work->motions[0], work->x + gBattleAnimAttackerAfterimagePasses[row].startX, work->x + gBattleAnimAttackerAfterimagePasses[row].endX, work->y, work->y, duration);
+        BattleAnimUtil_InitLinearMotion(&work->motions[1], work->x - gBattleAnimAttackerAfterimagePasses[row].startX, work->x - gBattleAnimAttackerAfterimagePasses[row].endX, work->y, work->y, duration);
+        duration2 = gBattleAnimAttackerAfterimagePasses[row + 1].duration - delay;
+        BattleAnimUtil_InitLinearMotion(&work->motions[2], work->x + gBattleAnimAttackerAfterimagePasses[row + 1].startX, work->x + gBattleAnimAttackerAfterimagePasses[row + 1].endX, work->y, work->y, duration2);
+        BattleAnimUtil_InitLinearMotion(&work->motions[3], work->x - gBattleAnimAttackerAfterimagePasses[row + 1].startX, work->x - gBattleAnimAttackerAfterimagePasses[row + 1].endX, work->y, work->y, duration2);
         work->count++;
         work->state++;
         // fallthrough
@@ -897,7 +897,7 @@ static void BattleAnimTask_AttackerPulseWhite(SysTask *task, void *data) {
     switch (work->state) {
     case PULSE_WHITE_STATE_START_PULSE: {
         int i = work->whitened;
-        BattleAnimUtil_InitScaleMotion(&work->scale, gBattleAnimPulseWhiteScales[i][0], 100, gBattleAnimPulseWhiteScaleEnds[i][0], gBattleAnimPulseWhiteDurations[i][0]);
+        BattleAnimUtil_InitScaleMotion(&work->scale, gBattleAnimPulseWhiteSteps[i].start, 100, gBattleAnimPulseWhiteSteps[i].end, gBattleAnimPulseWhiteSteps[i].duration);
         if (!work->whitened) {
             Pokepic_StartPaletteFade(work->pokepic, 0, 6, 0, RGB_WHITE);
         } else {
@@ -946,7 +946,7 @@ static void BattleAnimTask_AttackerStretchSteps(SysTask *task, void *data) {
 
     switch (work->state) {
     case STRETCH_STEPS_STATE_START_STEP:
-        BattleAnimUtil_InitScaleMotionXY(&work->scale, gBattleAnimAttackerStretchSteps[work->step][0], gBattleAnimAttackerStretchEndX[work->step][0], gBattleAnimAttackerStretchStartY[work->step][0], gBattleAnimAttackerStretchEndY[work->step][0], 100, gBattleAnimAttackerStretchDurations[work->step][0]);
+        BattleAnimUtil_InitScaleMotionXY(&work->scale, gBattleAnimAttackerStretchSteps[work->step].startX, gBattleAnimAttackerStretchSteps[work->step].endX, gBattleAnimAttackerStretchSteps[work->step].startY, gBattleAnimAttackerStretchSteps[work->step].endY, 100, gBattleAnimAttackerStretchSteps[work->step].duration);
         work->step++;
         work->state++;
         break;
@@ -995,7 +995,7 @@ static void BattleAnimTask_AttackerLeapOffscreen(SysTask *task, void *data) {
     switch (work->state) {
     case LEAP_OFFSCREEN_STATE_START_SCALE: {
         int i = work->step;
-        BattleAnimUtil_InitScaleMotionXY(&work->motion, gBattleAnimLeapOffscreenScales[i][0], gBattleAnimLeapOffscreenEndX[i][0], gBattleAnimLeapOffscreenStartY[i][0], gBattleAnimLeapOffscreenEndY[i][0], 100, gBattleAnimLeapOffscreenDurations[i][0]);
+        BattleAnimUtil_InitScaleMotionXY(&work->motion, gBattleAnimLeapOffscreenSteps[i].startX, gBattleAnimLeapOffscreenSteps[i].endX, gBattleAnimLeapOffscreenSteps[i].startY, gBattleAnimLeapOffscreenSteps[i].endY, 100, gBattleAnimLeapOffscreenSteps[i].duration);
         work->step++;
         work->state++;
         break;
@@ -1020,7 +1020,7 @@ static void BattleAnimTask_AttackerLeapOffscreen(SysTask *task, void *data) {
         break;
     case LEAP_OFFSCREEN_STATE_START_SCALE_AGAIN: {
         int i = work->step;
-        BattleAnimUtil_InitScaleMotionXY(&work->motion, gBattleAnimLeapOffscreenScales[i][0], gBattleAnimLeapOffscreenEndX[i][0], gBattleAnimLeapOffscreenStartY[i][0], gBattleAnimLeapOffscreenEndY[i][0], 100, gBattleAnimLeapOffscreenDurations[i][0]);
+        BattleAnimUtil_InitScaleMotionXY(&work->motion, gBattleAnimLeapOffscreenSteps[i].startX, gBattleAnimLeapOffscreenSteps[i].endX, gBattleAnimLeapOffscreenSteps[i].startY, gBattleAnimLeapOffscreenSteps[i].endY, 100, gBattleAnimLeapOffscreenSteps[i].duration);
         work->y = Pokepic_GetAttr(work->pokepic, POKEPIC_Y);
         work->state++;
         break;
@@ -1265,10 +1265,8 @@ static void BattleAnimTask_AttackerHop(SysTask *task, void *data) {
 
     switch (work->state) {
     case HOP_STATE_START_HOP: {
-        int row = work->hop * 5;
-        BattleAnimUtil_InitScaleMotionXY(&work->scale, gBattleAnimAttackerHopScales[row], gBattleAnimAttackerHopScaleEndX[row], gBattleAnimAttackerHopScaleStartY[row], gBattleAnimAttackerHopScaleEndY[row], 100, gBattleAnimAttackerHopScaleDurations[row]);
-        row = work->hop * 3;
-        BattleAnimUtil_InitLinearMotion(&work->offset, 0, 0, work->y + gBattleAnimAttackerHopOffsets[row], work->y + gBattleAnimAttackerHopOffsetEnds[row], gBattleAnimAttackerHopOffsetDurations[row]);
+        BattleAnimUtil_InitScaleMotionXY(&work->scale, gBattleAnimAttackerHopScales[work->hop].startX, gBattleAnimAttackerHopScales[work->hop].endX, gBattleAnimAttackerHopScales[work->hop].startY, gBattleAnimAttackerHopScales[work->hop].endY, 100, gBattleAnimAttackerHopScales[work->hop].duration);
+        BattleAnimUtil_InitLinearMotion(&work->offset, 0, 0, work->y + gBattleAnimAttackerHopOffsets[work->hop].startY, work->y + gBattleAnimAttackerHopOffsets[work->hop].endY, gBattleAnimAttackerHopOffsets[work->hop].duration);
         work->hop++;
         work->state++;
         break;
@@ -1674,13 +1672,13 @@ static void BattleAnimTask_RockAttacker(SysTask *task, void *data) {
         int from;
         int to;
         if (work->common.state[1] == 0) {
-            to = gBattleAnimRockAttackerSteps[work->common.state[2]][0];
+            to = gBattleAnimRockAttackerSteps[work->common.state[2]].angle;
             from = -to;
         } else {
-            from = gBattleAnimRockAttackerSteps[work->common.state[2]][0];
+            from = gBattleAnimRockAttackerSteps[work->common.state[2]].angle;
             to = -from;
         }
-        BattleAnimUtil_InitValueMotion(&work->rotation, from, to, gBattleAnimRockAttackerDurations[work->common.state[2]][0]);
+        BattleAnimUtil_InitValueMotion(&work->rotation, from, to, gBattleAnimRockAttackerSteps[work->common.state[2]].duration);
         if (work->common.state[1] == 1) {
             work->common.state[2]++;
         }
@@ -2275,8 +2273,8 @@ static void BattleAnimTask_CrossingSprites(SysTask *task, void *data) {
 
     switch (work->state) {
     case CROSSING_STATE_START_SCALE: {
-        int row = work->round * 5;
-        BattleAnimUtil_InitScaleMotionXY(&work->scale, gBattleAnimCrossingSpritesScales[row], gBattleAnimCrossingSpritesEndX[row], gBattleAnimCrossingSpritesStartY[row], gBattleAnimCrossingSpritesEndY[row], 100, gBattleAnimCrossingSpritesDurations[row]);
+        int round = work->round;
+        BattleAnimUtil_InitScaleMotionXY(&work->scale, gBattleAnimCrossingSpritesScales[round].startX, gBattleAnimCrossingSpritesScales[round].endX, gBattleAnimCrossingSpritesScales[round].startY, gBattleAnimCrossingSpritesScales[round].endY, 100, gBattleAnimCrossingSpritesScales[round].duration);
         work->round++;
         work->state++;
         break;
@@ -2618,9 +2616,9 @@ static void BattleAnimTask_SlidingSpritePairs(SysTask *task, void *data) {
             break;
         }
         ManagedSprite_GetPositionXY(work->first, &x, &y);
-        BattleAnimUtil_InitLinearMotion(&work->firstMotion, x, gBattleAnimSlidingSpritePairTargets[work->pair][0], y, gBattleAnimSlidingSpritePairFirstY[work->pair][0], gBattleAnimSlidingSpritePairDurations[work->pair]);
+        BattleAnimUtil_InitLinearMotion(&work->firstMotion, x, gBattleAnimSlidingSpritePairTargets[work->pair][0].x, y, gBattleAnimSlidingSpritePairTargets[work->pair][0].y, gBattleAnimSlidingSpritePairDurations[work->pair]);
         ManagedSprite_GetPositionXY(work->second, &x, &y);
-        BattleAnimUtil_InitLinearMotion(&work->secondMotion, x, gBattleAnimSlidingSpritePairSecondX[work->pair][0], y, gBattleAnimSlidingSpritePairSecondY[work->pair][0], gBattleAnimSlidingSpritePairDurations[work->pair]);
+        BattleAnimUtil_InitLinearMotion(&work->secondMotion, x, gBattleAnimSlidingSpritePairTargets[work->pair][1].x, y, gBattleAnimSlidingSpritePairTargets[work->pair][1].y, gBattleAnimSlidingSpritePairDurations[work->pair]);
         work->pair++;
         work->state++;
     } break;
@@ -2791,7 +2789,7 @@ static void BattleAnimTask_PopAndScatterSprite(SysTask *task, void *data) {
         s16 y;
         s16 x;
         ManagedSprite_GetPositionXY(work->sprite, &x, &y);
-        BattleAnimUtil_InitLinearMotion(&work->motion, x, gBattleAnimScatterTargets[work->target][0], y, gBattleAnimScatterTargetsY[work->target][0], duration);
+        BattleAnimUtil_InitLinearMotion(&work->motion, x, gBattleAnimScatterTargets[work->target].x, y, gBattleAnimScatterTargets[work->target].y, duration);
         work->state++;
     } break;
     case SCATTER_SPRITE_STATE_SCATTER:

@@ -4,6 +4,9 @@
 #include "frontier/frontier.h"
 #include "frontier/battle_arcade_data.h"
 
+#define ARCADE_STAR_SILVER 311 // trainer ids of the Arcade Star (FRONTIER_BRAIN_BATTLE_SILVER / _GOLD)
+#define ARCADE_STAR_GOLD   312
+
 u8 BattleArcade_GetMonCount(u8 type, int both);
 u8 BattleArcade_GetOpponentMonCount(u8 type, int both);
 BattleSetup *BattleArcade_NewBattleSetup(ArcadeContext *ctx, FrontierLaunchArgs *args);

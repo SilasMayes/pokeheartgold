@@ -10,6 +10,17 @@
 #include "touchscreen_list_menu.h"
 #include "yes_no_prompt.h"
 
+// BattleCastle_GetRank kinds
+enum BattleCastleRankKind {
+    CASTLE_RANK_HEAL,
+    CASTLE_RANK_RENTAL,
+    CASTLE_RANK_INFO,
+    CASTLE_RANK_KIND_COUNT,
+};
+
+// Highest rank of each kind
+#define CASTLE_RANK_MAX 3
+
 typedef struct BattleCastleSprite {
     s16 x;
     s16 y;
@@ -127,7 +138,7 @@ typedef struct BattleCastlePartyApp {
     u8 partnerCursorPos;
     u8 partnerSlot;
     u8 partnerExited;
-    u8 partnerRanks[3];
+    u8 partnerRanks[CASTLE_RANK_KIND_COUNT];
     u16 partnerPoints;
     BattleCastleMonSummary summary;
     GridInputHandler *partyGrid;
@@ -166,7 +177,6 @@ extern const u16 gBattleCastlePartyAppHealCosts[];            // CP cost of REST
 extern const u16 gBattleCastlePartyAppMainMenuHelpMessages[]; // main menu help messages, by cursor position
 extern const u16 gBattleCastlePartyAppItemCounts[];           // number of rentable items, by rental rank - 1
 extern const u16 gBattleCastlePartyAppRankUpCosts[2][3];      // CP cost of the next rank, by rank kind (CASTLE_RANK_*) and rank
-extern const u16 gBattleCastlePartyAppRentalRankUpCosts[];    // = gBattleCastlePartyAppRankUpCosts[CASTLE_RANK_RENTAL]
 extern const u16 gBattleCastlePartyAppRankUpMessages[2][3];   // "gained the ability to..." messages, by rank kind and rank
 extern const BattleCastleMenuItem gBattleCastlePartyAppMainMenuItems[];
 extern const BattleCastleMenuOption gBattleCastlePartyAppRentalMenuOptions[]; // BERRIES / ITEMS / RANK UP / CANCEL
@@ -321,7 +331,7 @@ typedef struct BattleCastleOpponentApp {
     u8 partnerCursorPos;
     u8 partnerSlot;
     u8 partnerExited;
-    u8 partnerRanks[3];
+    u8 partnerRanks[CASTLE_RANK_KIND_COUNT];
     u16 partnerPoints;
     BattleCastleMonSummary summary;
     GridInputHandler *partyGrid;

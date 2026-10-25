@@ -478,7 +478,7 @@ static void PokeathlonEventRecord_ShowRecordMonIcons(PokeathlonEventRecord *work
 
     for (; rank < 5; rank++, base += 3) {
         if (PokeathlonEventRecord_GetRecordScore(work->data, work->cursor, rank, work->linkMode) != POKEATHLON_NO_RECORD) {
-            for (slot = 0; slot < 3; slot++) {
+            for (slot = 0; slot < POKEATHLON_TEAM_SIZE; slot++) {
                 PokeathlonRecordMon mon = { 0 };
                 int index = slot + base + 22;
                 PokeathlonEventRecord_GetRecordMon(work->data, &mon.info, work->cursor, rank, slot, work->linkMode);

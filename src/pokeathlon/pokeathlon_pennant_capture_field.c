@@ -19,8 +19,6 @@
 #include "sound_playback_internal.h"
 #include "text.h"
 
-fx32 FX_Sqrt(fx32 x);
-
 u8 *PokeathlonCourse_GetPerformance(PokeathlonCourseData *course, int participant, u16 member);
 u8 *PokeathlonCourse_GetMonStats(PokeathlonCourseData *course, int participant, u8 member);
 void PokeathlonCourse_AddMonCounter(PokeathlonCourseData *course, u8 participant, u8 member, int kind, int amount);

@@ -32,15 +32,7 @@ static int BattleCastle_ClampRound(int round);
 // Battle Castle trainers and battles: the trainers of a round, the battle setup of a castle battle, the party kept
 // between battles, the round tiles and spending castle points.
 
-// Trainer ids of a round: regular trainers, and the 7th battle of a round.
-typedef struct BattleCastleTrainerRange {
-    u16 min;
-    u16 max;
-    u16 lastBattleMin;
-    u16 lastBattleMax;
-} BattleCastleTrainerRange;
-
-static const BattleCastleTrainerRange sBattleCastleTrainerRanges[] = {
+static const FrontierTrainerRange sBattleCastleTrainerRanges[] = {
     { 0,   99,  100, 119 },
     { 80,  119, 120, 139 },
     { 100, 139, 140, 159 },
@@ -58,11 +50,11 @@ static int BattleCastle_GetRandomTrainerId(int type, u32 round, int battleNo) {
     if (type == FRONTIER_CHALLENGE_SINGLE) {
         int battle = battleNo + 1;
         int number = 7 * round + battle;
-        if (number == 21) {
-            return 313;
+        if (number == FRONTIER_BRAIN_BATTLE_SILVER) {
+            return CASTLE_VALET_SILVER;
         }
-        if (number == 49) {
-            return 314;
+        if (number == FRONTIER_BRAIN_BATTLE_GOLD) {
+            return CASTLE_VALET_GOLD;
         }
     }
     if (round >= 8) {
@@ -271,7 +263,7 @@ static int BattleCastle_GetTrainerAIFlags(BattleCastleData *data) {
     int round;
     int aiFlags;
 
-    if (data->type == FRONTIER_CHALLENGE_SINGLE && (data->trainerIds[data->battleNo] == 313 || data->trainerIds[data->battleNo] == 314)) {
+    if (data->type == FRONTIER_CHALLENGE_SINGLE && (data->trainerIds[data->battleNo] == CASTLE_VALET_SILVER || data->trainerIds[data->battleNo] == CASTLE_VALET_GOLD)) {
         return 7;
     }
     round = BattleCastle_GetRound(data);

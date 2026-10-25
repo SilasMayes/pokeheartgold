@@ -4,6 +4,9 @@
 #include "frontier/battle_castle_data.h"
 #include "frontier/frontier.h"
 
+#define CASTLE_VALET_SILVER 313 // trainer ids of the Castle Valet (FRONTIER_BRAIN_BATTLE_SILVER / _GOLD)
+#define CASTLE_VALET_GOLD   314
+
 void BattleCastle_GetRoundTrainerIds(u32 type, u32 round, u16 *trainerIds, int count);
 int BattleCastle_GetPartySize(int type, int both);
 u8 BattleCastle_GetOpponentMonCount(int type, int both);

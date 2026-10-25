@@ -28,16 +28,6 @@ static int BattleFactory_GetTrainerAIFlags(BattleFactoryData *data);
 
 #define FACTORY_SETS_NARC NARC_a_2_0_3
 
-// Battle Factory set (narc member).
-typedef struct BattleFactorySet {
-    u16 species;
-    u16 moves[MAX_MON_MOVES];
-    u8 evMask;
-    u8 nature;
-    u16 item;
-    u16 form;
-} BattleFactorySet;
-
 static int BattleFactory_GetRandomTrainerId(int type, u32 round, int battleNo) {
     u16 min;
     int span;
@@ -45,13 +35,13 @@ static int BattleFactory_GetRandomTrainerId(int type, u32 round, int battleNo) {
     if (round >= 8) {
         round = 7;
     }
-    if (type == 0) {
+    if (type == FRONTIER_CHALLENGE_SINGLE) {
         int battle = (battleNo + 1) + round * 7;
-        if (battle == 21) {
-            return 309;
+        if (battle == FRONTIER_BRAIN_BATTLE_SILVER) {
+            return FACTORY_HEAD_SILVER;
         }
-        if (battle == 49) {
-            return 310;
+        if (battle == FRONTIER_BRAIN_BATTLE_GOLD) {
+            return FACTORY_HEAD_GOLD;
         }
     }
     if (battleNo == 6 || battleNo == 13) {
@@ -117,13 +107,13 @@ static const BattleFactorySetRange *BattleFactory_GetRentalSetRange(int round, i
 }
 
 int BattleFactory_PickSetIds(const u16 *excludedSpecies, const u16 *excludedItems, int numExcluded, int count, u16 *setIds, enum HeapID heapID, const BattleFactorySetRange *range, u16 tradeCount, u8 *ivs) {
-    BattleFactorySet sets[6];
+    FrontierMonSet sets[6];
     int i, j;
     int numNextTier;
     int iv;
     int span;
     int setId;
-    BattleFactorySet *set;
+    FrontierMonSet *set;
     u16 *setIdPtr;
 
     GF_ASSERT(count <= 6);
@@ -153,7 +143,7 @@ int BattleFactory_PickSetIds(const u16 *excludedSpecies, const u16 *excludedItem
             }
             FrontierData_ReadMember(set, setId, FACTORY_SETS_NARC);
             for (j = 0; j < i; j++) {
-                BattleFactorySet *other = &sets[j];
+                FrontierMonSet *other = &sets[j];
                 if (other->species == set->species || other->item == set->item) {
                     break;
                 }
@@ -360,7 +350,7 @@ BOOL BattleFactory_IsMultiType(int type) {
 static int BattleFactory_GetTrainerAIFlags(BattleFactoryData *data) {
     int aiFlags, round;
 
-    if (data->type == 0 && (data->trainerIds[data->battleNo] == 309 || data->trainerIds[data->battleNo] == 310)) {
+    if (data->type == FRONTIER_CHALLENGE_SINGLE && (data->trainerIds[data->battleNo] == FACTORY_HEAD_SILVER || data->trainerIds[data->battleNo] == FACTORY_HEAD_GOLD)) {
         return 7;
     }
     round = BattleFactory_GetRound(data);

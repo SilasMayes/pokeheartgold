@@ -18,7 +18,7 @@ void PokeathlonEvent_CalcPointsFromScores(PokeathlonCourseScoreList *list, int e
     PokeathlonEventPointsFunc func = gPokeathlonEventScorePointsFuncs[event];
     u8 i;
     if (func != NULL) {
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
             PokeathlonCourseScore *entry = PokeathlonCourseScoreList_GetRanked(list, i);
             entry->points = func((u16)entry->score);
         }

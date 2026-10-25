@@ -9,7 +9,6 @@
 	.public gBattleCastlePartyAppItemCounts
 	.public gBattleCastlePartyAppGraphicsModes
 	.public gBattleCastlePartyAppRankUpCosts
-	.public gBattleCastlePartyAppRentalRankUpCosts
 	.public gBattleCastlePartyAppRankUpMessages
 	.public gBattleCastlePartyAppMainMenuItems
 	.public gBattleCastlePartyAppBgTemplate_Sub2
@@ -71,8 +70,6 @@ gBattleCastlePartyAppGraphicsModes:
 
 gBattleCastlePartyAppRankUpCosts:
 	.byte 0x00, 0x00, 0x64, 0x00, 0x64, 0x00
-
-gBattleCastlePartyAppRentalRankUpCosts:
 	.byte 0x00, 0x00
 	.byte 0x64, 0x00, 0x96, 0x00, 0x00, 0x00, 0x32, 0x00, 0x32, 0x00
 

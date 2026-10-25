@@ -124,11 +124,6 @@ FS_EXTERN_OVERLAY(OVY_80);
 #define CASTLE_ITEM_GRID_NEXT_PAGE 7
 #define CASTLE_ITEM_GRID_RETURN    8
 
-// BattleCastle_GetRank kinds
-#define CASTLE_RANK_HEAL   0
-#define CASTLE_RANK_RENTAL 1
-#define CASTLE_RANK_MAX    3
-
 // BattleCastlePartyApp_SendLinkCommand link commands
 #define CASTLE_LINK_CMD_START  10
 #define CASTLE_LINK_CMD_ACTION 11
@@ -349,7 +344,7 @@ BOOL BattleCastlePartyApp_Init(OverlayManager *manager, int *state) {
     app->linkSlot = 0xFF;
     app->partnerPoints = args->partnerPoints;
     app->frontierSave = Save_Frontier_GetStatic(app->saveData);
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < CASTLE_RANK_KIND_COUNT; i++) {
         app->partnerRanks[i] = 1;
     }
     if (!BattleCastle_IsMultiType(app->frontierType)) {
@@ -781,7 +776,7 @@ static BOOL BattleCastlePartyApp_HandleMenu(BattleCastlePartyApp *app) {
             }
             app->action = input;
             BattleCastlePartyApp_CloseRentalMenu(app);
-            BattleCastlePartyApp_BufferNumber(app, 0, gBattleCastlePartyAppRentalRankUpCosts[rank], 4, 0);
+            BattleCastlePartyApp_BufferNumber(app, 0, gBattleCastlePartyAppRankUpCosts[CASTLE_RANK_RENTAL][rank], 4, 0);
             app->printerId = BattleCastlePartyApp_ShowMessage(app, msg_0031_00038, 1);
             BattleCastlePartyApp_ShowYesNoPrompt(app);
             app->subState = CASTLE_PARTY_STATE_CONFIRM_RENT_RANK_UP;
@@ -925,7 +920,7 @@ static BOOL BattleCastlePartyApp_HandleMenu(BattleCastlePartyApp *app) {
             cpStat = BattleCastle_GetPointsStat(app->frontierType);
             points = FrontierSave_GetStat(app->frontierSave, cpStat, FrontierStat_GetFriendIndex(BattleCastle_GetPointsStat(app->frontierType)));
             rank = BattleCastle_GetRank(app->saveData, app->frontierType, CASTLE_RANK_RENTAL);
-            if (points < gBattleCastlePartyAppRentalRankUpCosts[rank]) {
+            if (points < gBattleCastlePartyAppRankUpCosts[CASTLE_RANK_RENTAL][rank]) {
                 BattleCastle_DrawWindowFrame(&app->windows[CASTLE_PARTY_WIN_MESSAGE], Options_GetFrame(app->options));
                 app->printerId = BattleCastlePartyApp_ShowMessage(app, msg_0031_00041, 1);
                 app->subState = CASTLE_PARTY_STATE_RENTAL_MENU_MESSAGE;
@@ -2340,7 +2335,7 @@ static void BattleCastlePartyApp_PrepareLinkRanks(BattleCastlePartyApp *app, int
     profile = Save_PlayerData_GetProfile(app->saveData);
     app->linkSendBuf[0] = command;
     app->linkSendBuf[1] = PlayerProfile_GetTrainerGender(profile);
-    for (i = 0, dest = (u8 *)app + 2 * sizeof(u16); i < 3; i++, dest += sizeof(u16)) {
+    for (i = 0, dest = (u8 *)app + 2 * sizeof(u16); i < CASTLE_RANK_KIND_COUNT; i++, dest += sizeof(u16)) {
         *(u16 *)(dest + offsetof(BattleCastlePartyApp, linkSendBuf)) = BattleCastle_GetRank(app->saveData, app->frontierType, i);
     }
 }
@@ -2352,7 +2347,7 @@ void BattleCastlePartyApp_ReceiveRanks(int netId, void *unused, void *data, Batt
 
     app->linkRecvCount++;
     if (netId != Comm_GetLocalNetId()) {
-        for (i = 0, rank = (u16 *)data + 2; i < 3; i++, rank++) {
+        for (i = 0, rank = (u16 *)data + 2; i < CASTLE_RANK_KIND_COUNT; i++, rank++) {
             app->partnerRanks[i] = *rank;
         }
     }
@@ -2447,7 +2442,7 @@ static void BattleCastlePartyApp_HealMon(BattleCastlePartyApp *app, int slot, in
     int index = BattleCastle_GetMonIndex(app->numMons, slot);
 
     mon = Party_GetMonByIndex(app->party, index);
-    BattleCastle_GetRank(app->saveData, app->frontierType, 0);
+    BattleCastle_GetRank(app->saveData, app->frontierType, CASTLE_RANK_HEAL);
     BattleCastlePartyApp_BufferMonNickname(app, 0, Mon_GetBoxMon(mon));
     BattleCastle_DrawWindowFrame(&app->windows[6], Options_GetFrame(app->options));
     app->printerId = BattleCastlePartyApp_ShowMessage(app, gBattleCastlePartyAppHealMessages[action - 1], 1);

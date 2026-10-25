@@ -29,6 +29,12 @@ typedef struct BattleBagContext {
     u8 pocketPages[5];         // item list page, per battle pocket
 } BattleBagContext;
 
+// Messages of an item list entry: the item name and its quantity
+typedef struct BattleBagItemEntryMsgIds {
+    u32 name;
+    u32 quantity;
+} BattleBagItemEntryMsgIds;
+
 typedef struct BattleBagButtonRect {
     u8 x;
     u8 y;
@@ -47,8 +53,7 @@ extern const WindowTemplate gBattleBagMessageWindowTemplate;
 extern const WindowTemplate gBattleBagPocketMenuWindows[];
 extern const WindowTemplate gBattleBagItemListWindows[];
 extern const WindowTemplate gBattleBagUseItemWindows[];
-extern const u32 gBattleBagItemEntryMsgIds[][2];
-extern const u32 gBattleBagItemEntryQuantityMsgIds[][2];
+extern const BattleBagItemEntryMsgIds gBattleBagItemEntryMsgIds[];
 extern const SpriteResourceCountsListUnion gBattleBagSpriteCapacities;
 extern const int gBattleBagSpriteTemplates[][5];
 extern const u8 gBattleBagPocketOrder[];

@@ -9,6 +9,7 @@
 
 #include "battle/battle_setup.h"
 #include "frontier/frontier.h"
+#include "frontier/frontier_trainer_record.h"
 #include "frontier/frontier_trainers.h"
 #include "msgdata/msg.naix"
 
@@ -25,7 +26,7 @@
 #include "pokemon.h"
 #include "scrcmd_9.h"
 
-static u32 BattleTower_PickTrainerMonSets(FrontierFieldSystem *tower, BattleTowerTrainerSets *sets, u16 trainerId, FrontierMon *mons, u8 count, u16 *partySpecies, u16 *partyItems, FrontierMultiBattleAllyData *allyData, enum HeapID heapID);
+static u32 BattleTower_PickTrainerMonSets(FrontierFieldSystem *tower, FrontierTrainerEntry *sets, u16 trainerId, FrontierMon *mons, u8 count, u16 *partySpecies, u16 *partyItems, FrontierMultiBattleAllyData *allyData, enum HeapID heapID);
 static void BattleTower_GetSampleRoomTrainer(FrontierTrainer *trainer, int index);
 static u32 BattleTower_GenerateFrontierMon(FrontierFieldSystem *tower, FrontierMon *mon, u16 setId, u32 otId, u32 pid, u8 iv, u8 itemIndex, BOOL replaceItem, enum HeapID heapID);
 static void BattleTower_AddTrainerToBattle(BattleSetup *setup, FrontierTrainer *trainer, int count, int battler, enum HeapID heapID);
@@ -38,25 +39,8 @@ static BOOL BattleTower_UsesNewSetNarcs(u32 towerMode);
 // Tower sets, the sample Wi-Fi room used when no room has been downloaded, and the battle setup of a tower battle.
 // Linked games only use the newer trainer and set narcs when both players have a known version.
 
-// Pokemon set (narc member).
-typedef struct BattleTowerMonSet {
-    u16 species;
-    u16 moves[MAX_MON_MOVES];
-    u8 evMask;
-    u8 nature;
-    u16 item;
-    u16 form;
-} BattleTowerMonSet;
-
-// First u16s of a trainer's narc member.
-struct BattleTowerTrainerSets {
-    u16 trainerClass;
-    u16 numSets;
-    u16 setIds[1];
-};
-
 u32 BattleTower_GenerateTrainerMons(FrontierFieldSystem *tower, FrontierTrainer *trainer, u16 trainerId, u32 count, u16 *partySpecies, u16 *partyItems, FrontierMultiBattleAllyData *allyData, enum HeapID heapID) {
-    BattleTowerTrainerSets *sets;
+    FrontierTrainerEntry *sets;
     u32 replaceItem;
 
     sets = FrontierTrainer_Load((FrontierTrainerRecord *)trainer, trainerId, heapID, BattleTower_GetTrainerNarc(tower->towerMode));
@@ -65,7 +49,7 @@ u32 BattleTower_GenerateTrainerMons(FrontierFieldSystem *tower, FrontierTrainer 
     return replaceItem;
 }
 
-static u32 BattleTower_PickTrainerMonSets(FrontierFieldSystem *tower, BattleTowerTrainerSets *sets, u16 trainerId, FrontierMon *mons, u8 count, u16 *partySpecies, u16 *partyItems, FrontierMultiBattleAllyData *allyData, enum HeapID heapID) {
+static u32 BattleTower_PickTrainerMonSets(FrontierFieldSystem *tower, FrontierTrainerEntry *sets, u16 trainerId, FrontierMon *mons, u8 count, u16 *partySpecies, u16 *partyItems, FrontierMultiBattleAllyData *allyData, enum HeapID heapID) {
     int i;
     int j;
     int numMons;
@@ -78,8 +62,8 @@ static u32 BattleTower_PickTrainerMonSets(FrontierFieldSystem *tower, BattleTowe
     u32 *cursor;
     u32 setIds[4];
     u32 pids[4];
-    BattleTowerMonSet other;
-    BattleTowerMonSet candidate;
+    FrontierMonSet other;
+    FrontierMonSet candidate;
 
     replaceItem = FALSE;
     GF_ASSERT(count <= 4);
@@ -192,7 +176,7 @@ static void BattleTower_GetSampleRoomTrainer(FrontierTrainer *trainer, int index
 }
 
 static u32 BattleTower_GenerateFrontierMon(FrontierFieldSystem *tower, FrontierMon *mon, u16 setId, u32 otId, u32 pid, u8 iv, u8 itemIndex, BOOL replaceItem, enum HeapID heapID) {
-    BattleTowerMonSet set;
+    FrontierMonSet set;
     u32 friendship;
     u32 newPid;
     int i;

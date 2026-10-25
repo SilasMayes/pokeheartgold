@@ -105,9 +105,6 @@ FS_EXTERN_OVERLAY(OVY_80);
 // app->listCursorPos before the list menu reported a position (never equals a real one)
 #define CASTLE_OPP_LIST_POS_NONE (-2)
 
-// BattleCastle_GetRank kinds
-#define CASTLE_RANK_INFO 2
-
 // CP costs
 #define CASTLE_CP_CHECK   1
 #define CASTLE_CP_STATS   2
@@ -345,7 +342,7 @@ BOOL BattleCastleOpponentApp_Init(OverlayManager *manager, int *state) {
     app->linkSlot = 0xFF;
     app->partnerPoints = args->partnerPoints;
     app->frontierSave = Save_Frontier_GetStatic(app->saveData);
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < CASTLE_RANK_KIND_COUNT; i++) {
         app->partnerRanks[i] = 1;
     }
     app->numMons = BattleCastle_IsMultiType(app->frontierType) == FALSE ? 3 : 4;
@@ -1698,7 +1695,7 @@ static void BattleCastleOpponentApp_PrepareLinkRanks(BattleCastleOpponentApp *ap
         *(u16 *)(dest + offsetof(BattleCastleOpponentApp, linkSendBuf)) = BattleCastle_GetRank(app->saveData, app->frontierType, i);
         i++;
         dest += sizeof(u16);
-    } while (i < 3);
+    } while (i < CASTLE_RANK_KIND_COUNT);
 }
 
 // Link receive callback: the partner's info ranks
@@ -1714,7 +1711,7 @@ void BattleCastleOpponentApp_ReceiveRanks(int netId, void *unused, u16 *data, Ba
             app->partnerRanks[i] = *rank;
             i++;
             rank++;
-        } while (i < 3);
+        } while (i < CASTLE_RANK_KIND_COUNT);
     }
 }
 

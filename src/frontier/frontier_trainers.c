@@ -35,23 +35,6 @@
 // Frontier trainer and Pokemon generation helpers shared by the facilities: trainers (narc 204) list the ids of their
 // Pokemon sets (narc 205); a set becomes a FrontierMon (the record the facilities store) and then a Pokemon.
 
-// First u16s of a trainer's narc member.
-typedef struct FrontierTrainerEntry {
-    u16 trainerClass;
-    u16 numMons;
-    u16 monIds[];
-} FrontierTrainerEntry;
-
-// Pokemon set (narc 205 member).
-typedef struct FrontierMonSet {
-    u16 species;
-    u16 moves[4];
-    u8 evMask;
-    u8 nature;
-    u16 item;
-    u16 form;
-} FrontierMonSet;
-
 typedef struct FrontierMonParam {
     u8 pp;
     u8 value;
@@ -460,7 +443,7 @@ static BOOL FrontierTrainer_PickMonSets(FrontierTrainerEntry *trainer, const u16
     i = 0;
     tries = 0;
     while (i != count) {
-        setId = trainer->monIds[LCRandom() % trainer->numMons];
+        setId = trainer->setIds[LCRandom() % trainer->numSets];
         FrontierData_ReadMember(&sets[i], setId, NARC_a_2_0_3);
         for (j = 0; j < i; j++) {
             if (sets[j].species == sets[i].species || sets[j].item == sets[i].item) {

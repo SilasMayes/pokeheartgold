@@ -499,7 +499,7 @@ int BattleFactory_GetWonBattlePoints(BattleFactoryData *data) {
     u8 type = data->type;
     u16 round = data->round;
     int points;
-    if (type <= 1) {
+    if (type <= FRONTIER_CHALLENGE_DOUBLE) {
         points = round >= 8 ? 9 : sBattleFactoryBattlePoints[round];
     } else {
         points = round >= 8 ? 21 : sBattleFactoryMultiBattlePoints[round];
@@ -507,7 +507,7 @@ int BattleFactory_GetWonBattlePoints(BattleFactoryData *data) {
     // the Factory Head's battles (21st and 49th)
     if (type == FRONTIER_CHALLENGE_SINGLE) {
         u16 winStreak = data->winStreak;
-        if (winStreak == 21 || winStreak == 49) {
+        if (winStreak == FRONTIER_BRAIN_BATTLE_SILVER || winStreak == FRONTIER_BRAIN_BATTLE_GOLD) {
             points = 20;
         }
     }

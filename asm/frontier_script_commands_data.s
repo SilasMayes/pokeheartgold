@@ -8,7 +8,6 @@
 	.public gBattleArcadeStatusedMonPoints
 	.public gBattleArcadeRoundCursorSpeeds
 	.public gBattleArcadeRankBattlePoints
-	.public ov80_0223BE9F
 	.public gBattleArcadeBerries_Rank0
 	.public gBattleArcadePlayerMonIconPositions
 	.public gBattleArcadeOpponentMonIconPositions
@@ -18,8 +17,6 @@
 	.public gBattleArcadeItems_Rank3
 	.public gBattleArcadeBerries_Rank3
 	.public gBattleArcadeEventBgFiles
-	.public gBattleArcadeEventBgScreenFiles
-	.public gBattleArcadeEventBgPaletteFiles
 	.public gBattleArcadeRoundValues_Single
 	.public gBattleArcadeRoundValues_Multi
 	.public gBattleTowerAllySprites
@@ -30,9 +27,6 @@
 	.public gBattleTowerSampleMons
 	.public gBattleFactoryTradeCountTiers
 	.public gBattleFactoryRoundTrainerRanges
-	.public ov80_0223C47A
-	.public ov80_0223C47C
-	.public ov80_0223C47E
 	.public gBattleFactoryOpenLevelRentalRanges
 	.public gBattleFactoryLevel50SetRanges
 	.public gBattleFactoryOpenLevelTrainerSetRanges
@@ -69,8 +63,6 @@ gBattleArcadeRoundCursorSpeeds:
 
 gBattleArcadeRankBattlePoints:
 	.byte 0x03
-
-ov80_0223BE9F:
 	.byte 0x0A
 	.byte 0x05, 0x06, 0x07, 0x04, 0x09, 0x02, 0x0A, 0x00
 
@@ -111,11 +103,7 @@ gBattleArcadeBerries_Rank3:
 
 gBattleArcadeEventBgFiles:
 	.byte 0x5D, 0x00
-
-gBattleArcadeEventBgScreenFiles:
 	.byte 0x3E, 0x00
-
-gBattleArcadeEventBgPaletteFiles:
 	.byte 0xA3, 0x00
 	.byte 0x5E, 0x00, 0x40, 0x00, 0xA4, 0x00, 0x5F, 0x00, 0x42, 0x00, 0xA5, 0x00, 0x60, 0x00, 0x44, 0x00
 	.byte 0xA6, 0x00, 0x61, 0x00, 0x46, 0x00, 0xA7, 0x00, 0x62, 0x00, 0x48, 0x00, 0xA8, 0x00, 0x63, 0x00
@@ -227,14 +215,8 @@ gBattleFactoryTradeCountTiers:
 
 gBattleFactoryRoundTrainerRanges:
 	.byte 0x00, 0x00
-
-ov80_0223C47A:
 	.byte 0x63, 0x00
-
-ov80_0223C47C:
 	.byte 0x64, 0x00
-
-ov80_0223C47E:
 	.byte 0x77, 0x00
 	.byte 0x50, 0x00, 0x77, 0x00, 0x78, 0x00, 0x8B, 0x00, 0x64, 0x00, 0x8B, 0x00, 0x8C, 0x00, 0x9F, 0x00
 	.byte 0x78, 0x00, 0x9F, 0x00, 0xA0, 0x00, 0xB3, 0x00, 0x8C, 0x00, 0xB3, 0x00, 0xB4, 0x00, 0xC7, 0x00

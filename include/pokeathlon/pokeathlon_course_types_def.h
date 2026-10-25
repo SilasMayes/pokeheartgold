@@ -136,11 +136,13 @@ struct PokeathlonCourseMonObjects {
     PokeathlonCourseMonObject objects[POKEATHLON_MONS];
 };
 
+#define POKEATHLON_RES_TYPES 4 // sprite resource managers of the course screens: char, palette, cell, animation
+
 // What PokeathlonCourseSpritePool_New sets up: sprite and resource capacities.
 struct PokeathlonCourseSpritePoolTemplate {
     int capacity;      // sprites
     int resourceCount; // resource ids
-    u8 resCounts[4];   // char, palette, cell, animation
+    u8 resCounts[POKEATHLON_RES_TYPES];
 };
 
 // PokeathlonCourse_GetMode, PokeathlonCourseArgsLayout.mode

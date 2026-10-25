@@ -38,21 +38,36 @@ typedef struct ArcadeSpritePos {
     s16 y;
 } ArcadeSpritePos;
 
+// Cursor speed from a round on
+typedef struct ArcadeRoundCursorSpeed {
+    u8 minRound;
+    u8 speed;
+} ArcadeRoundCursorSpeed;
+
+// Battle points won below a rank
+typedef struct ArcadeRankBattlePoints {
+    u8 maxRank;
+    u8 points;
+} ArcadeRankBattlePoints;
+
 typedef void (*ArcadeEventFunc)(ArcadeContext *ctx, Party *party, int count);
 
 typedef void (*BlendPaletteWideFunc)(const void *src, void *dst, int size, int cur, int target);
 
 extern const u8 gBattleArcadeFaintedMonPoints[];
 extern const u8 gBattleArcadeStatusedMonPoints[];
-extern const u8 gBattleArcadeRoundCursorSpeeds[];
-extern const u8 gBattleArcadeRankBattlePoints[];
+extern const ArcadeRoundCursorSpeed gBattleArcadeRoundCursorSpeeds[];
+extern const ArcadeRankBattlePoints gBattleArcadeRankBattlePoints[];
 extern const ArcadeSpritePos gBattleArcadePlayerMonIconPositions[];
 extern const ArcadeSpritePos gBattleArcadeOpponentMonIconPositions[];
-// Per event {character, screen, palette} file ids
-typedef u16 ArcadeEventBgFiles[3];
+// Background files of an event
+typedef struct ArcadeEventBgFiles {
+    u16 charFile;
+    u16 screenFile;
+    u16 paletteFile;
+} ArcadeEventBgFiles;
+
 extern const ArcadeEventBgFiles gBattleArcadeEventBgFiles[];
-extern const ArcadeEventBgFiles gBattleArcadeEventBgScreenFiles[];
-extern const ArcadeEventBgFiles gBattleArcadeEventBgPaletteFiles[];
 extern const u8 gBattleArcadeRoundValues_Single[];
 extern const u8 gBattleArcadeRoundValues_Multi[];
 extern const u16 gBattleArcadeBerries_Rank0[];
@@ -281,8 +296,8 @@ static void BattleArcadeData_InitNew(ArcadeContext *ctx) {
 
     rank = BattleArcade_GetRound(ctx);
     for (i = 0; i < 3; i++) {
-        if (rank >= gBattleArcadeRoundCursorSpeeds[i * 2]) {
-            ctx->cursorSpeed = gBattleArcadeRoundCursorSpeeds[i * 2 + 1];
+        if (rank >= gBattleArcadeRoundCursorSpeeds[i].minRound) {
+            ctx->cursorSpeed = gBattleArcadeRoundCursorSpeeds[i].speed;
             return;
         }
     }
@@ -479,8 +494,8 @@ u32 BattleArcade_GetWonBattlePoints(ArcadeContext *ctx, Party *playerParty, Part
 
     points += BattleArcade_GetPartyConditionPoints(ctx, playerParty, opponentParty, count);
     for (i = 0; i < 5; i++) {
-        if (rank < gBattleArcadeRankBattlePoints[i * 2]) {
-            points += gBattleArcadeRankBattlePoints[i * 2 + 1];
+        if (rank < gBattleArcadeRankBattlePoints[i].maxRank) {
+            points += gBattleArcadeRankBattlePoints[i].points;
             break;
         }
     }
@@ -531,9 +546,9 @@ void BattleArcade_LoadEventBg(ArcadeContext *ctx, FrontierMap *map) {
         NARC *narc = NARC_New(NARC_a_1_8_3, HEAP_ID_101);
         void *pltt;
 
-        GfGfxLoader_LoadCharDataFromOpenNarc(narc, gBattleArcadeEventBgFiles[ctx->eventId][0], map->bgConfig, GF_BG_LYR_MAIN_2, 0, 0, TRUE, HEAP_ID_101);
-        GfGfxLoader_LoadScrnDataFromOpenNarc(narc, gBattleArcadeEventBgScreenFiles[ctx->eventId][0], map->bgConfig, GF_BG_LYR_MAIN_2, 0, 0, TRUE, HEAP_ID_101);
-        pltt = GfGfxLoader_GetPlttDataFromOpenNarc(narc, gBattleArcadeEventBgPaletteFiles[ctx->eventId][0], &plttData, HEAP_ID_101);
+        GfGfxLoader_LoadCharDataFromOpenNarc(narc, gBattleArcadeEventBgFiles[ctx->eventId].charFile, map->bgConfig, GF_BG_LYR_MAIN_2, 0, 0, TRUE, HEAP_ID_101);
+        GfGfxLoader_LoadScrnDataFromOpenNarc(narc, gBattleArcadeEventBgFiles[ctx->eventId].screenFile, map->bgConfig, GF_BG_LYR_MAIN_2, 0, 0, TRUE, HEAP_ID_101);
+        pltt = GfGfxLoader_GetPlttDataFromOpenNarc(narc, gBattleArcadeEventBgFiles[ctx->eventId].paletteFile, &plttData, HEAP_ID_101);
         DC_FlushRange(plttData->pRawData, plttData->szByte);
         GX_BeginLoadBGExtPltt();
         GX_LoadBGExtPltt(plttData->pRawData, 0x4000, 0x2000);
@@ -1020,7 +1035,7 @@ u32 BattleArcadeData_GetRoundTableValue(ArcadeContext *ctx) {
     u32 round = ctx->round;
     u32 result;
 
-    if (type <= 1) {
+    if (type <= FRONTIER_CHALLENGE_DOUBLE) {
         result = round >= 8 ? 6 : gBattleArcadeRoundValues_Single[round];
     } else {
         result = round >= 8 ? 0x11 : gBattleArcadeRoundValues_Multi[round];

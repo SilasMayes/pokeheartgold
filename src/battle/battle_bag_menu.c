@@ -903,7 +903,7 @@ static void BattleBagMenu_PrintItemName(BattleBagMenu *menu, int slot, int entry
 
     FillWindowPixelBuffer(&windows[window], 0);
     if (menu->pocketItems[menu->pocket][slot].id != ITEM_NONE) {
-        string = NewString_ReadMsgData(menu->msgData, gBattleBagItemEntryMsgIds[entry][0]);
+        string = NewString_ReadMsgData(menu->msgData, gBattleBagItemEntryMsgIds[entry].name);
         BufferItemName(menu->msgFormat, 0, menu->pocketItems[menu->pocket][slot].id);
         StringExpandPlaceholders(menu->msgFormat, menu->string, string);
         width = FontID_String_GetWidth(fontId, menu->string, 0);
@@ -920,7 +920,7 @@ static void BattleBagMenu_PrintItemQuantity(BattleBagMenu *menu, int slot, int e
 
     FillWindowPixelBuffer(&windows[window], 0);
     if (menu->pocketItems[menu->pocket][slot].quantity) {
-        string = NewString_ReadMsgData(menu->msgData, gBattleBagItemEntryQuantityMsgIds[entry][0]);
+        string = NewString_ReadMsgData(menu->msgData, gBattleBagItemEntryMsgIds[entry].quantity);
         BufferIntegerAsString(menu->msgFormat, 0, menu->pocketItems[menu->pocket][slot].quantity, 3, PRINTING_MODE_LEFT_ALIGN, TRUE);
         StringExpandPlaceholders(menu->msgFormat, menu->string, string);
         ((AddTextPrinterWithColorFunc)AddTextPrinterParameterizedWithColor)(&windows[window], fontId, menu->string, 0, y, TEXT_SPEED_NOTRANSFER, color, NULL);

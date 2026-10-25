@@ -347,12 +347,9 @@
 .public gBattleArcadeStatusedMonPoints
 .public gBattleArcadeRoundCursorSpeeds
 .public gBattleArcadeRankBattlePoints
-.public ov80_0223BE9F
 .public gBattleArcadePlayerMonIconPositions
 .public gBattleArcadeOpponentMonIconPositions
 .public gBattleArcadeEventBgFiles
-.public gBattleArcadeEventBgScreenFiles
-.public gBattleArcadeEventBgPaletteFiles
 .public gBattleArcadeRoundValues_Single
 .public gBattleArcadeRoundValues_Multi
 .public gBattleTowerAllySprites
@@ -363,9 +360,6 @@
 .public gBattleTowerSampleMons
 .public gBattleFactoryTradeCountTiers
 .public gBattleFactoryRoundTrainerRanges
-.public ov80_0223C47A
-.public ov80_0223C47C
-.public ov80_0223C47E
 .public gBattleFactoryOpenLevelRentalRanges
 .public gBattleFactoryLevel50SetRanges
 .public gBattleFactoryOpenLevelTrainerSetRanges
@@ -385,7 +379,6 @@
 .public gBattleArcadeStatusedMonPoints
 .public gBattleArcadeRoundCursorSpeeds
 .public gBattleArcadeRankBattlePoints
-.public ov80_0223BE9F
 .public gBattleArcadeBerries_Rank0
 .public gBattleArcadePlayerMonIconPositions
 .public gBattleArcadeOpponentMonIconPositions
@@ -395,8 +388,6 @@
 .public gBattleArcadeItems_Rank3
 .public gBattleArcadeBerries_Rank3
 .public gBattleArcadeEventBgFiles
-.public gBattleArcadeEventBgScreenFiles
-.public gBattleArcadeEventBgPaletteFiles
 .public gBattleArcadeRoundValues_Single
 .public gBattleArcadeRoundValues_Multi
 .public gBattleTowerAllySprites
@@ -407,9 +398,6 @@
 .public gBattleTowerSampleMons
 .public gBattleFactoryTradeCountTiers
 .public gBattleFactoryRoundTrainerRanges
-.public ov80_0223C47A
-.public ov80_0223C47C
-.public ov80_0223C47E
 .public gBattleFactoryOpenLevelRentalRanges
 .public gBattleFactoryLevel50SetRanges
 .public gBattleFactoryOpenLevelTrainerSetRanges
