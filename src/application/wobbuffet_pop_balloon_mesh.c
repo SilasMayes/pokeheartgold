@@ -44,9 +44,9 @@ void WobbuffetPopBalloon_InitMeshVertices(WobbuffetPopBalloon *balloon) {
         balloon->vertices[i].topLeftY = y;
         balloon->vertices[i].bottomLeftX = 0;
         balloon->vertices[i].bottomLeftY = y - 0x10000;
-        balloon->vertices[i].topRightX = 0x80000;
+        balloon->vertices[i].topRightX = FX32_CONST(128);
         balloon->vertices[i].topRightY = y;
-        balloon->vertices[i].bottomRightX = 0x80000;
+        balloon->vertices[i].bottomRightX = FX32_CONST(128);
         balloon->vertices[i].bottomRightY = y - 0x10000;
     }
 }
@@ -60,9 +60,9 @@ void WobbuffetPopBalloon_InitMeshTexCoords(WobbuffetPopBalloon *balloon) {
         balloon->texCoords[i].topLeftY = texV;
         balloon->texCoords[i].bottomLeftX = 0;
         balloon->texCoords[i].bottomLeftY = texV + 0x10000;
-        balloon->texCoords[i].topRightX = 0x80000;
+        balloon->texCoords[i].topRightX = FX32_CONST(128);
         balloon->texCoords[i].topRightY = texV;
-        balloon->texCoords[i].bottomRightX = 0x80000;
+        balloon->texCoords[i].bottomRightX = FX32_CONST(128);
         balloon->texCoords[i].bottomRightY = texV + 0x10000;
     }
 }

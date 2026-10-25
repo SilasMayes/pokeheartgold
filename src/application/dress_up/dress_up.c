@@ -370,11 +370,11 @@ static void DressUp_InitButtons(DressUpWork *work);
 static void DressUp_FreeButtons(DressUpWork *work);
 static void DressUp_UpdateButtons(DressUpWork *work);
 static void DressUp_ResetButtons(DressUpWork *work);
-static void DressUp_OnDoneButton(void *button, void *arg);
-static void DressUp_OnNextPageButton(void *button, void *arg);
-static void DressUp_OnPrevPageButton(void *button, void *arg);
-static void DressUp_OnAccessoryTabButton(void *button, void *arg);
-static void DressUp_OnBackdropTabButton(void *button, void *arg);
+static void DressUp_OnDoneButton(DressUpButton *button, void *arg);
+static void DressUp_OnNextPageButton(DressUpButton *button, void *arg);
+static void DressUp_OnPrevPageButton(DressUpButton *button, void *arg);
+static void DressUp_OnAccessoryTabButton(DressUpButton *button, void *arg);
+static void DressUp_OnBackdropTabButton(DressUpButton *button, void *arg);
 static void DressUp_FreeHud(DressUpWork *work);
 static void DressUp_StartFinishTransition(DressUpWork *work, u32 *done);
 static void DressUp_FinishTransitionTask(SysTask *task, void *data);
@@ -528,7 +528,7 @@ static void DressUpButton_DeleteWithText(DressUpTextButton *button);
 static void DressUpButton_TryCallback(DressUpButton *button, u32 state);
 static void DressUp_UpdateCategoryTabs(DressUpButtonPanel *panel, int selection, int state);
 static void DressUpButton_SetCallback(DressUpButton *button, DressUpButtonCallback callback, void *arg, u32 trigger);
-static void DressUpButton_DefaultCallback(void *button, void *arg);
+static void DressUpButton_DefaultCallback(DressUpButton *button, void *arg);
 static void DressUpButton_SetAnimSelected(DressUpButton *button);
 static void DressUpButton_SetAnimNormal(DressUpButton *button);
 static void DressUpButton_SetAnimPressed(DressUpButton *button);
@@ -1632,11 +1632,11 @@ static void DressUp_FreeFrameBg(DressUpWork *work) {
 
 static void DressUp_InitButtons(DressUpWork *work) {
     DressUpButtonPanel_Create(&work->buttonPanel, &work->gfx, &work->menuInputState);
-    DressUpButtonPanel_SetCallback(&work->buttonPanel, 0, DressUp_OnNextPageButton, work, 0);
-    DressUpButtonPanel_SetCallback(&work->buttonPanel, 1, DressUp_OnPrevPageButton, work, 0);
-    DressUpButtonPanel_SetCallback(&work->buttonPanel, 2, DressUp_OnAccessoryTabButton, work, 0);
-    DressUpButtonPanel_SetCallback(&work->buttonPanel, 3, DressUp_OnBackdropTabButton, work, 0);
-    DressUpButtonPanel_SetCallback(&work->buttonPanel, 4, DressUp_OnDoneButton, work, 0);
+    DressUpButtonPanel_SetCallback(&work->buttonPanel, DRESS_UP_BUTTON_NEXT_PAGE, DressUp_OnNextPageButton, work, 0);
+    DressUpButtonPanel_SetCallback(&work->buttonPanel, DRESS_UP_BUTTON_PREV_PAGE, DressUp_OnPrevPageButton, work, 0);
+    DressUpButtonPanel_SetCallback(&work->buttonPanel, DRESS_UP_BUTTON_ACCESSORY_TAB, DressUp_OnAccessoryTabButton, work, 0);
+    DressUpButtonPanel_SetCallback(&work->buttonPanel, DRESS_UP_BUTTON_BACKDROP_TAB, DressUp_OnBackdropTabButton, work, 0);
+    DressUpButtonPanel_SetCallback(&work->buttonPanel, DRESS_UP_BUTTON_DONE, DressUp_OnDoneButton, work, 0);
 }
 
 static void DressUp_FreeButtons(DressUpWork *work) {
@@ -1651,26 +1651,26 @@ static void DressUp_ResetButtons(DressUpWork *work) {
     DressUpButtonPanel_ResetButtons(&work->buttonPanel);
 }
 
-static void DressUp_OnDoneButton(void *button, void *arg) {
+static void DressUp_OnDoneButton(DressUpButton *button, void *arg) {
     DressUpWork *work = arg;
     if (DressUpTray_IsIdle(&work->tray)) {
         work->uiState = DRESS_UP_UI_DONE;
     }
 }
 
-static void DressUp_OnNextPageButton(void *button, void *arg) {
+static void DressUp_OnNextPageButton(DressUpButton *button, void *arg) {
     DressUpWork *work = arg;
     int group = DressUpTray_GetGroup(&work->tray);
     DressUpTray_CyclePage(&work->tray, group, FALSE);
 }
 
-static void DressUp_OnPrevPageButton(void *button, void *arg) {
+static void DressUp_OnPrevPageButton(DressUpButton *button, void *arg) {
     DressUpWork *work = arg;
     int group = DressUpTray_GetGroup(&work->tray);
     DressUpTray_CyclePage(&work->tray, group, TRUE);
 }
 
-static void DressUp_OnAccessoryTabButton(void *button, void *arg) {
+static void DressUp_OnAccessoryTabButton(DressUpButton *button, void *arg) {
     DressUpWork *work = arg;
     int page;
 
@@ -1681,7 +1681,7 @@ static void DressUp_OnAccessoryTabButton(void *button, void *arg) {
     }
 }
 
-static void DressUp_OnBackdropTabButton(void *button, void *arg) {
+static void DressUp_OnBackdropTabButton(DressUpButton *button, void *arg) {
     DressUpWork *work = arg;
     int page;
 
@@ -2380,11 +2380,10 @@ static void DressUpCanvas_LinkByMonOverlap(DressUpCanvas *canvas, DressUpNode *n
     y1 = y0 + height - bottom;
     marginTop = top;
     area = canvas;
-    i = 0;
-    do {
+    for (i = 0; i < 16; i++) {
         DressUpCanvas_GetRectSamplePoint(y0 + marginTop, y1, x0 + marginLeft, x1, i, &sampleX, &sampleY);
         hit |= DressUpMon_HitTestPoint(&area->monPic, sampleX, sampleY, monHitMap);
-    } while (++i < 16);
+    }
     if (hit) {
         if (atFront) {
             DressUpList_InsertAfter(node, &canvas->monList);
@@ -3087,14 +3086,11 @@ static u32 DressUp_GetBackdropByOrder(u32 *caseTable, u32 order) {
 
 static int DressUp_GetBackdropOrder(u32 *caseTable, u32 backdrop) {
     int i;
-    i = 0;
-    do {
+    for (i = 0; i < DRESS_UP_BACKDROP_NUM; i++, caseTable++) {
         if (backdrop == caseTable[DRESS_UP_ACCESSORY_NUM]) {
             return i;
         }
-        i++;
-        caseTable++;
-    } while (i < DRESS_UP_BACKDROP_NUM);
+    }
     return i;
 }
 
@@ -3815,7 +3811,7 @@ static void DressUpBgScreen_LoadFromTemplate(DressUpBgScreen *screen, const Dres
 }
 
 static void DressUpBgScreen_Unload(DressUpBgScreen *screen) {
-    BgClearTilemapBufferAndCommit(screen->bgConfig, (u8)screen->layer);
+    BgClearTilemapBufferAndCommit(screen->bgConfig, screen->layer);
     memset(screen, 0, sizeof(DressUpBgScreen));
 }
 
@@ -3935,9 +3931,9 @@ static void DressUp_BgSlideTask(SysTask *task, void *data) {
 
 static void DressUpBgScreen_CopyToTilemap(BgConfig *bgConfig, int layer, NNSG2dScreenData *screenData, int width, int height, int x, int y, int charOffset, int palette) {
     DressUpBgScreen_AddCharOffset(screenData, charOffset);
-    CopyToBgTilemapRect(bgConfig, (u8)layer, (u8)x, (u8)y, (u8)width, (u8)height, screenData->rawData, 0, 0, (u8)width, (u8)height);
-    BgTilemapRectChangePalette(bgConfig, (u8)layer, (u8)x, (u8)y, (u8)width, (u8)height, (u8)palette);
-    ScheduleBgTilemapBufferTransfer(bgConfig, (u8)layer);
+    CopyToBgTilemapRect(bgConfig, layer, x, y, width, height, screenData->rawData, 0, 0, width, height);
+    BgTilemapRectChangePalette(bgConfig, layer, x, y, width, height, palette);
+    ScheduleBgTilemapBufferTransfer(bgConfig, layer);
 }
 
 static SysTask *DressUpBgScreen_QueueLoadChars(NarcId narcId, int fileId, BgConfig *bgConfig, u32 layer, u32 tileStart, enum HeapID heapID) {
@@ -4032,11 +4028,11 @@ static void DressUpButton_TryCallback(DressUpButton *button, u32 state) {
     }
 }
 
-// the two tab buttons (2, 3): the selected one shows pressed (or selected), the other normal
+// the two tab buttons: the selected one shows pressed (or selected), the other normal
 static void DressUp_UpdateCategoryTabs(DressUpButtonPanel *panel, int selection, int state) {
-    int i = 2;
-    DressUpButton *button = &panel->buttons[2];
-    for (; i <= 3; i++, button++) {
+    int i = DRESS_UP_BUTTON_ACCESSORY_TAB;
+    DressUpButton *button = &panel->buttons[DRESS_UP_BUTTON_ACCESSORY_TAB];
+    for (; i <= DRESS_UP_BUTTON_BACKDROP_TAB; i++, button++) {
         if (i != selection) {
             DressUpButton_SetAnimNormal(button);
         } else if (state == 0) {
@@ -4057,7 +4053,7 @@ static void DressUpButton_SetCallback(DressUpButton *button, DressUpButtonCallba
     button->callback = callback;
 }
 
-static void DressUpButton_DefaultCallback(void *button, void *arg) {
+static void DressUpButton_DefaultCallback(DressUpButton *button, void *arg) {
 }
 
 static void DressUpButton_SetAnimSelected(DressUpButton *button) {
@@ -4076,26 +4072,26 @@ static void DressUpButtonPanel_Create(DressUpButtonPanel *panel, DressUpGfx *gfx
     panel->inputState = inputState;
     panel->fontSystem = FontSystem_NewInit(1, HEAP_ID_13);
     DressUpButtonPanel_LoadResources(gfx);
-    DressUpButton_CreateSprite(&panel->buttons[0], 0, gfx, 48, 144, 40, 32);
-    DressUp_SetHitboxRect(panel->hitboxes, 0, 48, 152, 40, 24);
-    DressUpButton_CreateSprite(&panel->buttons[1], 1, gfx, 8, 144, 40, 32);
-    DressUp_SetHitboxRect(panel->hitboxes, 1, 8, 152, 40, 24);
-    DressUpButton_CreateSprite(&panel->buttons[2], 2, gfx, 96, 144, 40, 42);
-    DressUp_SetHitboxRect(panel->hitboxes, 2, 96, 156, 40, 34);
-    DressUpButton_CreateSprite(&panel->buttons[3], 3, gfx, 136, 144, 40, 42);
-    DressUp_SetHitboxRect(panel->hitboxes, 3, 136, 156, 40, 34);
+    DressUpButton_CreateSprite(&panel->buttons[DRESS_UP_BUTTON_NEXT_PAGE], 0, gfx, 48, 144, 40, 32);
+    DressUp_SetHitboxRect(panel->hitboxes, DRESS_UP_BUTTON_NEXT_PAGE, 48, 152, 40, 24);
+    DressUpButton_CreateSprite(&panel->buttons[DRESS_UP_BUTTON_PREV_PAGE], 1, gfx, 8, 144, 40, 32);
+    DressUp_SetHitboxRect(panel->hitboxes, DRESS_UP_BUTTON_PREV_PAGE, 8, 152, 40, 24);
+    DressUpButton_CreateSprite(&panel->buttons[DRESS_UP_BUTTON_ACCESSORY_TAB], 2, gfx, 96, 144, 40, 42);
+    DressUp_SetHitboxRect(panel->hitboxes, DRESS_UP_BUTTON_ACCESSORY_TAB, 96, 156, 40, 34);
+    DressUpButton_CreateSprite(&panel->buttons[DRESS_UP_BUTTON_BACKDROP_TAB], 3, gfx, 136, 144, 40, 42);
+    DressUp_SetHitboxRect(panel->hitboxes, DRESS_UP_BUTTON_BACKDROP_TAB, 136, 156, 40, 34);
     FontID_Alloc(2, HEAP_ID_14);
     {
         Window *label = DressUpButton_CreateTextBitmap(gfx, NARC_msgdata_msg, NARC_msg_msg_0215_bin, msg_0215_00000, 9, 5);
         DressUpButton_CreateTextSprite(&panel->done, 4, gfx, panel->fontSystem, label, 184, 144, 72, 42);
-        DressUp_SetHitboxRect(panel->hitboxes, 4, 184, 156, 72, 34);
+        DressUp_SetHitboxRect(panel->hitboxes, DRESS_UP_BUTTON_DONE, 184, 156, 72, 34);
         DressUpButton_DeleteTextBitmap(label);
     }
     FontID_Release(2);
     panel->visible = TRUE;
     DressUpButtonPanel_FreeResources(gfx);
-    DressUpButton_SetAnimSelected(&panel->buttons[2]);
-    panel->controller = TouchHitboxController_Create(panel->hitboxes, 5, DressUpButtonPanel_OnTouch, panel, HEAP_ID_13);
+    DressUpButton_SetAnimSelected(&panel->buttons[DRESS_UP_BUTTON_ACCESSORY_TAB]);
+    panel->controller = TouchHitboxController_Create(panel->hitboxes, NELEMS(panel->hitboxes), DressUpButtonPanel_OnTouch, panel, HEAP_ID_13);
 }
 
 static void DressUpButtonPanel_Destroy(DressUpButtonPanel *panel, DressUpGfx *gfx) {
@@ -4114,7 +4110,7 @@ static void DressUpButtonPanel_Destroy(DressUpButtonPanel *panel, DressUpGfx *gf
             DressUpButton_Delete(button);
             i++;
             button++;
-        } while (i < 4);
+        } while (i < DRESS_UP_BUTTON_DONE);
     }
     ObjCharTransfer_FreeCharSpace(&panel->done.charAlloc);
     DressUpButton_DeleteWithText(&panel->done);
@@ -4135,15 +4131,15 @@ static void DressUpButtonPanel_HandleKeys(DressUpButtonPanel *panel) {
     }
     keys = gSystem.newKeys;
     if (keys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
-        key = 4;
+        key = DRESS_UP_BUTTON_DONE;
     } else if (keys & PAD_KEY_UP) {
-        key = 1;
+        key = DRESS_UP_BUTTON_PREV_PAGE;
     } else if (keys & PAD_KEY_DOWN) {
-        key = 0;
+        key = DRESS_UP_BUTTON_NEXT_PAGE;
     } else if (keys & PAD_KEY_LEFT) {
-        key = 2;
+        key = DRESS_UP_BUTTON_ACCESSORY_TAB;
     } else if (keys & PAD_KEY_RIGHT) {
-        key = 3;
+        key = DRESS_UP_BUTTON_BACKDROP_TAB;
     }
     if (key != 0xFF) {
         panel->key = key;
@@ -4189,7 +4185,7 @@ static void DressUpButtonPanel_Update(DressUpButtonPanel *panel) {
 static void DressUpButtonPanel_ResetButtons(DressUpButtonPanel *panel) {
     DressUpButton_SetAnimByTouchState(&panel->done.button, 3);
     DressUpButton_SetTextByState(&panel->done, 3);
-    DressUp_UpdateCategoryTabs(panel, 2, 3);
+    DressUp_UpdateCategoryTabs(panel, DRESS_UP_BUTTON_ACCESSORY_TAB, 3);
 }
 
 static void DressUpButtonPanel_MoveBy(DressUpButtonPanel *panel, int dx, int dy) {
@@ -4200,13 +4196,13 @@ static void DressUpButtonPanel_MoveBy(DressUpButtonPanel *panel, int dx, int dy)
         DressUpButton_MoveBy(button, dx, dy);
         i++;
         button++;
-    } while (i < 4);
+    } while (i < DRESS_UP_BUTTON_DONE);
     DressUpButton_MoveTextBy(&base[0]->done, dx, dy);
 }
 
 static void DressUpButtonPanel_SetCallback(DressUpButtonPanel *panel, int button, DressUpButtonCallback callback, void *arg, u32 trigger) {
     GF_ASSERT(panel);
-    if (button < 4) {
+    if (button < DRESS_UP_BUTTON_DONE) {
         DressUpButton_SetCallback(&panel->buttons[button], callback, arg, trigger);
     } else {
         DressUpButton_SetCallback(&panel->done.button, callback, arg, trigger);
@@ -4218,23 +4214,23 @@ static void DressUpButtonPanel_OnTouch(u32 which, u32 state, void *arg) {
     DressUpButtonPanel *panel = arg;
     DressUpButton *button = (DressUpButton *)panel;
     switch (which) {
-    case 0:
+    case DRESS_UP_BUTTON_NEXT_PAGE:
         DressUpButton_SetAnimByTouchState(button, state);
         DressUpButton_PlaySE(button, SEQ_SE_DP_MAZYO3, 0, state);
         DressUpButton_TryCallback(button, state);
         break;
-    case 1:
+    case DRESS_UP_BUTTON_PREV_PAGE:
         button++;
         DressUpButton_SetAnimByTouchState(button, state);
         DressUpButton_PlaySE(button, SEQ_SE_DP_MAZYO3, 0, state);
         DressUpButton_TryCallback(button, state);
         break;
-    case 2:
-    case 3:
+    case DRESS_UP_BUTTON_ACCESSORY_TAB:
+    case DRESS_UP_BUTTON_BACKDROP_TAB:
         DressUp_UpdateCategoryTabs(panel, which, state);
         DressUpButton_TryCallback(button + which, state);
         break;
-    case 4:
+    case DRESS_UP_BUTTON_DONE:
         if (panel->visible == TRUE) {
             DressUpButton_SetAnimByTouchState(&panel->done.button, state);
             DressUpButton_SetTextByState(&panel->done, state);
@@ -4358,7 +4354,7 @@ static void DressUpButton_SetTextByState(DressUpTextButton *button, u32 state) {
 
 static void DressUpButton_PlaySE(DressUpButton *button, u32 se, u32 trigger, u32 state) {
     if (state == trigger) {
-        PlaySE((u16)se);
+        PlaySE(se);
     }
 }
 
@@ -4608,11 +4604,10 @@ static void DressUpHud_SetCountIcons(DressUpCountIcons *icons, int count) {
 }
 
 static void DressUpHud_DestroyCountIcons(DressUpCountIcons *icons, GF_2DGfxResMan **resMans) {
-    int i = 0;
-    do {
+    int i;
+    for (i = 0; i < DRESS_UP_COUNT_ICON_NUM; i++) {
         Sprite_Delete(icons->sprites[i]);
-        i++;
-    } while (i < DRESS_UP_COUNT_ICON_NUM);
+    }
     DressUp_FreeSpriteRes(icons->resources, resMans);
 }
 

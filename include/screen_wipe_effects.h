@@ -3,10 +3,8 @@
 
 #include "global.h"
 
-#include "heap.h"
 #include "screen_fade_effects.h"
 #include "screen_window_wipe.h"
-#include "sys_task_api.h"
 
 // Window wipes of the screen fade (screen_fade_effects.h). Each effect moves one or both hardware windows over a
 // number of steps, framesPerStep frames each. The shaped effects rebuild the window's span for every scanline in

@@ -1,8 +1,6 @@
 #ifndef POKEHEARTGOLD_APPLICATION_BAG_BAG_APP_H
 #define POKEHEARTGOLD_APPLICATION_BAG_BAG_APP_H
 
-#include <nnsys.h>
-
 #include "bag_types_def.h"
 #include "bg_window.h"
 #include "camera.h"

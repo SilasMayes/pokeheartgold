@@ -28,10 +28,6 @@ typedef struct WiiMessageSettingsAppEntry {
     u32 unloadNetwork;
 } WiiMessageSettingsAppEntry;
 
-void DWC_SetMemFunc(void *(*alloc)(int, u32, int), void (*free)(int, void *));
-int DWC_GetLinkLevel(void);
-void DWC_UpdateConnection(void);
-
 enum WiiMessageSettingsMainState {
     WII_MESSAGE_SETTINGS_MAIN_LOAD_NETWORK,
     WII_MESSAGE_SETTINGS_MAIN_WAIT_NETWORK,
@@ -45,7 +41,7 @@ static NNSFndHeapHandle sWiiMessageSettingsHeap;
 static void WiiMessageSettings_LoadNetworkOverlays(WiiMessageSettings *app);
 static void WiiMessageSettings_UnloadNetworkOverlays(WiiMessageSettings *app);
 static void *WiiMessageSettings_Alloc(int unused, u32 size, int alignment);
-static void WiiMessageSettings_Free(int unused, void *ptr);
+static void WiiMessageSettings_Free(int unused, void *ptr, u32 size);
 static void WiiMessageSettings_SetRegistrationCodePrefix(WiiMessageSettings *app, int prefix);
 static void WiiMessageSettings_SetWiiNumberEntryState(WiiMessageSettings *app, u8 entryState);
 static void *WiiMessageSettings_CreateScreenArgs(WiiMessageSettings *app);
@@ -213,7 +209,7 @@ static void *WiiMessageSettings_Alloc(int unused, u32 size, int alignment) {
     return ptr;
 }
 
-static void WiiMessageSettings_Free(int unused, void *ptr) {
+static void WiiMessageSettings_Free(int unused, void *ptr, u32 size) {
     if (ptr) {
         OSIntrMode intrMode = OS_DisableInterrupts();
         NNS_FndFreeToExpHeap(sWiiMessageSettingsHeap, ptr);

@@ -3,8 +3,6 @@
 
 #include "global.h"
 
-#include "application/main_menu/main_menu_internal.h"
-
 #include "bg_window.h"
 #include "mystery_gift.h"
 #include "pokemon_types_def.h"

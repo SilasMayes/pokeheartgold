@@ -6,7 +6,6 @@
 #include "heap.h"
 #include "message_format.h"
 #include "overlay_manager.h"
-#include "save.h"
 #include "sprite.h"
 
 // Text box printed by the shared message helpers (MainMenuTextPrinter_Init ... MainMenuTextPrinter_AddWindowAndPrint).

@@ -44,6 +44,7 @@
 #include "sys_task_api.h"
 #include "system.h"
 #include "wireless_status_icon.h"
+#include "application/main_menu/mystery_gift_app.h"
 
 // Main menu > Mystery Gift > "Check card": browses the three saved Wonder Cards, flips a card between its
 // front and back, deletes it, or shares it with other players over DS wireless.
@@ -1063,7 +1064,7 @@ static BOOL WonderCardAlbum_UpdateFlipEffect(WonderCardAlbum *album) {
     } else {
         effect->speed -= effect->accel;
         effect->accel /= 2;
-        if (effect->accel < 1024) {
+        if (effect->accel < FX32_CONST(0.25)) {
             effect->active = FALSE;
             effect->speed = FX32_ONE;
             effect->accel = 0;
@@ -1226,7 +1227,7 @@ BOOL WonderCardAlbum_Main(OverlayManager *manager, int *state) {
     case ALBUM_STATE_FLIP_TO_BACK:
         if (WonderCardAlbum_UpdateFlipEffect(album)) {
             WonderCardAlbum_DrawCard(album, 1, 1);
-            WonderCardAlbum_StartFlipEffect(album, 0, 0x708000, 0x708000U >> 1);
+            WonderCardAlbum_StartFlipEffect(album, 0, FX32_CONST(1800), FX32_CONST(900));
             *state = ALBUM_STATE_VIEW_BACK;
         }
         break;
@@ -1241,7 +1242,7 @@ BOOL WonderCardAlbum_Main(OverlayManager *manager, int *state) {
     case ALBUM_STATE_FLIP_TO_FRONT:
         if (WonderCardAlbum_UpdateFlipEffect(album)) {
             WonderCardAlbum_DrawCard(album, 1, 0);
-            WonderCardAlbum_StartFlipEffect(album, 0, 0x708000, 0x708000U >> 1);
+            WonderCardAlbum_StartFlipEffect(album, 0, FX32_CONST(1800), FX32_CONST(900));
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_OFF);
             *state = ALBUM_STATE_FINISH_FLIP;
         }

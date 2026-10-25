@@ -3,6 +3,9 @@
 #include "application/apricorn_box/apricorn_box_overlay_internal.h"
 #include "application/apricorn_box/apricorn_box_screens.h"
 
+#include "bag.h"
+#include "pokemon_mood.h"
+
 FS_EXTERN_OVERLAY(OVY_59);
 
 enum ApricornBoxState {

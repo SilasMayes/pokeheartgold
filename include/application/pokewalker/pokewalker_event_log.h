@@ -8,7 +8,6 @@
 #include "msgdata.h"
 #include "overlay_manager.h"
 #include "sprite_system.h"
-#include "string_util.h"
 
 // Event types of the Pokewalker event log (PokewalkerIrRecord eventType) as the event log app shows them.
 // PokewalkerEventLog_BuildEntryList turns 12 into 11, 14 into 13, 28 into 12 and 29 into 14 first.

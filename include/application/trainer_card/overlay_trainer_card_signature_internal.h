@@ -6,8 +6,6 @@
 #include "message_format.h"
 #include "msgdata.h"
 #include "options.h"
-#include "overlay_manager.h"
-#include "overlay_trainer_card_signature.h"
 #include "pm_string.h"
 #include "sprite.h"
 #include "sprite_resource_header.h"

@@ -358,13 +358,13 @@ BOOL FootprintStamp_UpdateSplit(FootprintStampBoard *board, FootprintStampObj *s
     case FOOTPRINT_STAMP_ANIM_RUN: {
         // the stamp and its three copies move apart diagonally
         ModelInstance_GetPosition(&stamp->instance, &x, &y, &z);
-        ModelInstance_SetPosition(&stamp->instance, (s32)((u32)x - 0x2000), (s32)((u32)y - 0x2000), z);
+        ModelInstance_SetPosition(&stamp->instance, (s32)((u32)x - FX32_CONST(2)), (s32)((u32)y - FX32_CONST(2)), z);
         ModelInstance_GetPosition(&pieces[0], &x, &y, &z);
-        ModelInstance_SetPosition(&pieces[0], (s32)((u32)x + 0x2000), (s32)((u32)y - 0x2000), z);
+        ModelInstance_SetPosition(&pieces[0], (s32)((u32)x + FX32_CONST(2)), (s32)((u32)y - FX32_CONST(2)), z);
         ModelInstance_GetPosition(&pieces[1], &x, &y, &z);
-        ModelInstance_SetPosition(&pieces[1], (s32)((u32)x - 0x2000), (s32)((u32)y + 0x2000), z);
+        ModelInstance_SetPosition(&pieces[1], (s32)((u32)x - FX32_CONST(2)), (s32)((u32)y + FX32_CONST(2)), z);
         ModelInstance_GetPosition(&pieces[2], &x, &y, &z);
-        ModelInstance_SetPosition(&pieces[2], (s32)((u32)x + 0x2000), (s32)((u32)y + 0x2000), z);
+        ModelInstance_SetPosition(&pieces[2], (s32)((u32)x + FX32_CONST(2)), (s32)((u32)y + FX32_CONST(2)), z);
         split->timer++;
         if (split->timer > 30) {
             return TRUE;
@@ -447,13 +447,13 @@ BOOL FootprintStamp_UpdateZigzag(FootprintStampBoard *board, FootprintStampObj *
         state[0]++;
     case FOOTPRINT_STAMP_TURN_AWAY_MOVE:
         ModelInstance_GetPosition(&stamp->instance, &x, &y, &z);
-        if (x < -0x50000 || x > 0x50000 || y > 0x30000 || y < -0x30000) {
+        if (x < -FX32_CONST(80) || x > FX32_CONST(80) || y > FX32_CONST(48) || y < -FX32_CONST(48)) {
             return TRUE;
         }
         if (state[2] < 5) {
-            ModelInstance_SetPosition(&stamp->instance, x + 0x3000, y - 0x3000, z);
+            ModelInstance_SetPosition(&stamp->instance, x + FX32_CONST(3), y - FX32_CONST(3), z);
         } else {
-            ModelInstance_SetPosition(&stamp->instance, x + 0x3000, y + 0x3000, z);
+            ModelInstance_SetPosition(&stamp->instance, x + FX32_CONST(3), y + FX32_CONST(3), z);
         }
         state[2]++;
         if (state[2] >= 10) {
@@ -510,7 +510,7 @@ BOOL FootprintStamp_UpdateWave(FootprintStampBoard *board, FootprintStampObj *st
     case FOOTPRINT_STAMP_TURN_AWAY_MOVE: {
         fx32 sine;
         ModelInstance_GetPosition(&stamp->instance, &x, &y, &z);
-        if (x < -0x50000 || x > 0x50000 || y > 0x30000 || y < -0x30000) {
+        if (x < -FX32_CONST(80) || x > FX32_CONST(80) || y > FX32_CONST(48) || y < -FX32_CONST(48)) {
             return TRUE;
         }
         wave->angle += 0x8000;
@@ -518,7 +518,7 @@ BOOL FootprintStamp_UpdateWave(FootprintStampBoard *board, FootprintStampObj *st
             wave->angle -= 0x168000;
         }
         sine = GF_SinDegFX32(wave->angle);
-        ModelInstance_SetPosition(&stamp->instance, x - 0x1000, wave->baseY + (fx32)(((s64)sine * 0x8000 + 0x800) >> 12), z);
+        ModelInstance_SetPosition(&stamp->instance, x - FX32_ONE, wave->baseY + (fx32)(((s64)sine * 0x8000 + 0x800) >> 12), z);
         break;
     }
     }
@@ -549,16 +549,16 @@ BOOL FootprintStamp_UpdateRise(FootprintStampBoard *board, FootprintStampObj *st
         rise->state++;
     case FOOTPRINT_STAMP_ANIM_RUN:
         ModelInstance_GetPosition(&stamp->instance, &x, &y, &z);
-        if (x < -327680 || x > 327680 || y > 196608 || y < -196608 || rise->stop == TRUE) {
+        if (x < -FX32_CONST(80) || x > FX32_CONST(80) || y > FX32_CONST(48) || y < -FX32_CONST(48) || rise->stop == TRUE) {
             for (i = 0, copy = rise->trail; i < 3; i++, copy++) {
                 ModelInstance_SetVisible(copy, FALSE);
             }
             ModelInstance_SetVisible(&stamp->instance, FALSE);
             rise->state++;
         } else {
-            ModelInstance_SetPosition(&stamp->instance, x, y + 10240, z);
+            ModelInstance_SetPosition(&stamp->instance, x, y + FX32_CONST(2.5), z);
             if (rise->timer % 3 == 0) {
-                ModelInstance_SetPosition(&rise->trail[rise->trailIndex], x, y + 10240, z);
+                ModelInstance_SetPosition(&rise->trail[rise->trailIndex], x, y + FX32_CONST(2.5), z);
                 ModelInstance_SetVisible(&rise->trail[rise->trailIndex], TRUE);
                 rise->trailIndex++;
                 if (rise->trailIndex >= 3) {
@@ -616,7 +616,7 @@ BOOL FootprintStamp_UpdateFall(FootprintStampBoard *board, FootprintStampObj *st
     case FOOTPRINT_STAMP_ANIM_RUN: {
         fx32 angle, sine, offset;
         ModelInstance_GetPosition(&stamp->instance, &x, &y, &z);
-        if (x < -0x50000 || x > 0x50000 || y > 0x30000 || y < -0x30000) {
+        if (x < -FX32_CONST(80) || x > FX32_CONST(80) || y > FX32_CONST(48) || y < -FX32_CONST(48)) {
             return TRUE;
         }
         angle = fall->angle + 0x8000;

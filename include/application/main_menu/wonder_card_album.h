@@ -1,14 +1,10 @@
 #ifndef POKEHEARTGOLD_APPLICATION_MAIN_MENU_WONDER_CARD_ALBUM_H
 #define POKEHEARTGOLD_APPLICATION_MAIN_MENU_WONDER_CARD_ALBUM_H
 
-#include "application/main_menu/mystery_gift_app.h"
-
 #include "bg_window.h"
-#include "list_menu.h"
 #include "mystery_gift.h"
 #include "overlay_manager.h"
 #include "scanline_effect.h"
-#include "screen_fade.h"
 #include "sys_task.h"
 
 typedef struct WonderCardAlbum WonderCardAlbum;

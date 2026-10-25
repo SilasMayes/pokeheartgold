@@ -17,6 +17,7 @@
 #include "pokemon.h"
 #include "save_vars_flags.h"
 #include "string_util.h"
+#include "party.h"
 
 static int PokewalkerApp_CountTrainerHouseSets(TrainerHouse *trainerHouse);
 static void PokewalkerApp_FillTrainerHouseParty(TrainerHouseMon *mons, Party *party);

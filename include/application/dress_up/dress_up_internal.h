@@ -11,14 +11,11 @@
 #include "font_sprite.h"
 #include "gf_3d_loader.h"
 #include "graphics_object_manager.h"
-#include "heap.h"
 #include "menu_input_state.h"
 #include "message_format.h"
 #include "obj_char_transfer.h"
 #include "options.h"
 #include "overlay_manager.h"
-#include "player_data.h"
-#include "pokemon.h"
 #include "pokepic.h"
 #include "sprite.h"
 #include "sprite_resource.h"
@@ -291,7 +288,9 @@ typedef struct DressUpTouch {
     u8 wasHeld;
 } DressUpTouch;
 
-typedef void (*DressUpButtonCallback)(void *button, void *arg);
+struct DressUpButton;
+
+typedef void (*DressUpButtonCallback)(struct DressUpButton *button, void *arg);
 
 typedef struct DressUpButtonTemplate {
     const SpriteTemplate *spriteTemplate;
@@ -324,13 +323,21 @@ typedef struct DressUpTextButton {
 } DressUpTextButton;
 
 // page arrows, the two tabs and DONE
+enum DressUpButtonId {
+    DRESS_UP_BUTTON_NEXT_PAGE,
+    DRESS_UP_BUTTON_PREV_PAGE,
+    DRESS_UP_BUTTON_ACCESSORY_TAB,
+    DRESS_UP_BUTTON_BACKDROP_TAB,
+    DRESS_UP_BUTTON_DONE,
+};
+
 typedef struct DressUpButtonPanel {
-    DressUpButton buttons[4]; // next page, previous page, accessory tab, backdrop tab
+    DressUpButton buttons[DRESS_UP_BUTTON_DONE];
     DressUpTextButton done;
     BOOL visible;
     FontSystem *fontSystem;
     TouchHitboxController *controller;
-    TouchscreenHitbox hitboxes[5];
+    TouchscreenHitbox hitboxes[DRESS_UP_BUTTON_DONE + 1];
     MenuInputState *inputState;
     u16 keyRepeat; // frames a key-pressed button stays pressed
     u16 key;
@@ -428,7 +435,7 @@ typedef struct DressUpWork {
     DressUpButtonPanel buttonPanel;
     DressUpHud hud;
     int uiState;
-    u32 transitionDone;
+    BOOL transitionDone;
     YesNoPrompt *yesNoPrompt;
     Window *msgWindow;
     BOOL saveRequested;

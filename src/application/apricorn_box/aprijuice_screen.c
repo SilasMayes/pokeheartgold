@@ -1523,7 +1523,7 @@ static SPLEmitter *AprijuiceScene_CreateParticleSystem(enum HeapID heapId) {
     SPLEmitter *emitter = ParticleSystem_New(AprijuiceScene_AllocTexVram, AprijuiceScene_AllocPlttVram, heap, 0x4800, TRUE, heapId);
     Camera *camera = ParticleSystem_GetCamera(emitter);
     if (camera != NULL) {
-        Camera_SetPerspectiveClippingPlane(FX32_ONE, 0x384000, camera);
+        Camera_SetPerspectiveClippingPlane(FX32_ONE, FX32_CONST(900), camera);
     }
     return emitter;
 }

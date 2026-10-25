@@ -7,8 +7,6 @@
 #include "mystery_gift.h"
 #include "overlay_manager.h"
 #include "save.h"
-#include "screen_fade.h"
-#include "sys_task.h"
 
 typedef struct LockCapsuleCardView LockCapsuleCardView;
 

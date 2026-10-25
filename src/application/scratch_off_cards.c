@@ -1391,11 +1391,10 @@ static void ScratchOffCards_ShuffleCells(ScratchOffCardsWork *work, int unused) 
 }
 
 static void ScratchOffCards_ClearCells(ScratchOffCardsWork *work) {
-    int i = 0;
-    do {
+    int i;
+    for (i = 0; i < 9; i++) {
         work->cells[i] = SCRATCH_CELL_EMPTY;
-        i++;
-    } while (i < 9);
+    }
 }
 
 static void ScratchOffCards_ChoosePrizes(ScratchOffCardsWork *work, int unused) {
@@ -1465,19 +1464,17 @@ static u8 ScratchOffCards_CountTouchedCells(ScratchOffCardsWork *work) {
 }
 
 static void ScratchOffCards_ClearTouchedCells(ScratchOffCardsWork *work) {
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 9; i++) {
         work->touchedCells[i] = FALSE;
-        i++;
-    } while (i < 9);
+    }
 }
 
 static void ScratchOffCards_ClearRevealedCells(ScratchOffCardsWork *work) {
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 9; i++) {
         work->cellRevealed[i] = FALSE;
-        i++;
-    } while (i < 9);
+    }
 }
 
 static void ScratchOffCards_ScratchCell(ScratchOffCardsWork *work, int cellNo) {
@@ -1942,20 +1939,18 @@ static int ScratchOffCardsSprite_IsAnimated(ScratchOffCardsSprite *sprite) {
 }
 
 static void ScratchOffCards_AddWindows(BgConfig *bgConfig, Window *windows) {
-    u8 i = 0;
-    do {
+    u8 i;
+    for (i = 0; i < 16; i++) {
         AddWindow(bgConfig, &windows[i], &gScratchOffCardsWindowTemplates[i]);
         FillWindowPixelBuffer(&windows[i], 0);
-        i++;
-    } while (i < 16);
+    }
 }
 
 static void ScratchOffCards_RemoveWindows(Window *windows) {
-    u16 i = 0;
-    do {
+    u16 i;
+    for (i = 0; i < 16; i++) {
         RemoveWindow(&windows[i]);
-        i++;
-    } while (i < 16);
+    }
 }
 
 static void ScratchOffCards_DrawMessageFrame(BgConfig *bgConfig, Window *window) {

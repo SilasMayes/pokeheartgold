@@ -1,12 +1,7 @@
 #ifndef POKEHEARTGOLD_APPLICATION_MAIN_MENU_MYSTERY_GIFT_APP_H
 #define POKEHEARTGOLD_APPLICATION_MAIN_MENU_MYSTERY_GIFT_APP_H
 
-#include "bg_window.h"
-#include "gf_gfx_planes.h"
-#include "mystery_gift.h"
 #include "overlay_manager.h"
-#include "sprite.h"
-#include "sys_task.h"
 
 typedef struct MysteryGiftAppData MysteryGiftAppData;
 typedef struct MysteryGiftAnimData MysteryGiftAnimData;

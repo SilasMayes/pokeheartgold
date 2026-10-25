@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+#include "dwc/net_common_internal.h"
+
 #include "options.h"
 #include "overlay_manager.h"
 #include "pm_string.h"
@@ -35,11 +37,11 @@ typedef struct WiiMessageSettings {
     Options *options;
     void *expHeapMemory;
     NNSFndHeapHandle expHeap;
-    u8 netConnection[0x64]; // passed to DWC_InitInetEx when connecting
+    NetConnection netConnection; // passed to DWC_InitInetEx when connecting
     u16 registrationCodePrefix;
     u8 screenStartState;
     u8 unk_7B;
-    u32 networkLoaded;
+    BOOL networkLoaded;
     u32 currentApp;
     u32 unk_84;
     u32 nextApp;
@@ -54,7 +56,7 @@ typedef struct WiiMessageSettings {
     u8 wiiNumberEntryState;
     String *wiiNumber; // the first of the two Wii number entries
     String *unk_114;
-    u32 serverSessionStarted;
+    BOOL serverSessionStarted;
 } WiiMessageSettings;
 
 void WiiMessageSettings_SetNextApp(WiiMessageSettings *app, int nextApp, int followingApp);

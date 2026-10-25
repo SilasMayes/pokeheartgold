@@ -168,10 +168,10 @@ static const VsRecorderMenuEntry *VsRecorderApp_GetRootMenu(int mode) {
 }
 
 const VsRecorderMenuEntry *VsRecorderApp_GetStartMenu(VsRecorderWork *recorder, int mode) {
-    if (mode == 0 && VsRecorderApp_HasVisitedBattleFrontier(recorder) == 0) {
+    if (mode == 0 && !VsRecorderApp_HasVisitedBattleFrontier(recorder)) {
         return sVsRecorderMode0MenuNoFrontier;
     }
-    if (mode == 3 && VsRecorderApp_HasVisitedBattleFrontier(recorder) == 0) {
+    if (mode == 3 && !VsRecorderApp_HasVisitedBattleFrontier(recorder)) {
         return sVsRecorderMode3MenuNoFrontier;
     }
     return VsRecorderApp_GetRootMenu(mode);

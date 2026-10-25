@@ -357,8 +357,8 @@ static void VsRecorder_CreateBoxDataButtons(VsRecorderWork *work) {
     VsRecorderBoxData *boxData = work->screenWork;
 
     VsRecorder_LoadButtonGfx(work, NNS_G2D_VRAM_TYPE_2DSUB);
-    VsRecorder_CreateLabeledSprite(work, &boxData->exitButton, NNS_G2D_VRAM_TYPE_2DSUB, 3, 32, 232, 36, -8, 0, TRUE);   // EXIT
-    VsRecorder_CreateLabeledSprite(work, &boxData->sendButton, NNS_G2D_VRAM_TYPE_2DSUB, 53, 128, 232, 36, -8, 1, TRUE); // SEND
+    VsRecorder_CreateLabeledSprite(work, &boxData->exitButton, NNS_G2D_VRAM_TYPE_2DSUB, msg_0013_00003, 32, 232, 36, -8, 0, TRUE);  // EXIT
+    VsRecorder_CreateLabeledSprite(work, &boxData->sendButton, NNS_G2D_VRAM_TYPE_2DSUB, msg_0013_00053, 128, 232, 36, -8, 1, TRUE); // SEND
 }
 
 void VsRecorder_FreeBoxDataButtons(VsRecorderWork *work) {

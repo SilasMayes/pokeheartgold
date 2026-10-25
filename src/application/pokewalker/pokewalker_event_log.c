@@ -1186,8 +1186,8 @@ static void PokewalkerEventLog_ShowStrollEnd(PokewalkerEventLog *eventLog) {
     int part;
     int msgId;
     int msgId2;
-    int hasGiftMon;
-    int hasGiftItem;
+    BOOL hasGiftMon;
+    BOOL hasGiftItem;
     u32 total;
     PokewalkerEventLog_ShowMon(eventLog, 0, TRUE);
     PokewalkerEventLog_ShowTrainer(eventLog->sprites[EVENT_LOG_SPRITE_RIGHT_ICON], (u8)eventLog->playerGender, 3);

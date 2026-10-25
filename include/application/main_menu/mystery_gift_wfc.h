@@ -3,8 +3,6 @@
 
 #include "global.h"
 
-#include "application/main_menu/mystery_gift_app.h"
-
 #include "overlay_manager.h"
 
 // Download of a Mystery Gift over Nintendo Wi-Fi Connection.

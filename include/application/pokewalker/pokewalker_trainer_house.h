@@ -1,7 +1,6 @@
 #ifndef POKEHEARTGOLD_APPLICATION_POKEWALKER_POKEWALKER_TRAINER_HOUSE_H
 #define POKEHEARTGOLD_APPLICATION_POKEWALKER_POKEWALKER_TRAINER_HOUSE_H
 
-#include "party.h"
 #include "save.h"
 #include "save_trainer_house.h"
 

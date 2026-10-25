@@ -68,6 +68,17 @@ FS_EXTERN_OVERLAY(OVY_7);
 #define BALL_CAPSULE_EDITOR_SELECT_BACK    12
 #define BALL_CAPSULE_EDITOR_SELECT_CONFIRM 13
 
+// BallCapsuleEditorDisplay.windows
+enum BallCapsuleEditorWindow {
+    BALL_CAPSULE_EDITOR_WINDOW_MESSAGE,
+    BALL_CAPSULE_EDITOR_WINDOW_MENU,
+    BALL_CAPSULE_EDITOR_WINDOW_EXIT_LABEL,
+    BALL_CAPSULE_EDITOR_WINDOW_PROMPT, // top screen text
+    BALL_CAPSULE_EDITOR_WINDOW_SUB_MESSAGE,
+    BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS,
+    BALL_CAPSULE_EDITOR_NUM_WINDOWS = BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS + 8,
+};
+
 // Main modes, gBallCapsuleEditorModes
 enum BallCapsuleEditorMode {
     BALL_CAPSULE_EDITOR_MODE_SELECT,
@@ -155,7 +166,7 @@ typedef struct BallCapsuleEditorDisplay {
     SpriteManager *spriteManager;
     BgConfig *bgConfig;
     PaletteData *paletteData;
-    Window windows[13]; // 0: message, 3: top screen text, 5-12: seal counts
+    Window windows[BALL_CAPSULE_EDITOR_NUM_WINDOWS];
     ListMenuItem *menuItems;
     u8 unk_0EC[4];
     PokepicManager *pokepicManager;
@@ -1136,31 +1147,31 @@ static void BallCapsuleEditor_SetSpriteHitbox(TouchscreenHitbox *hitbox, Managed
 }
 
 static void BallCapsuleEditor_AddMessageWindows(BallCapsuleEditor *editor) {
-    BallCapsuleEditor_AddWindow(editor->display.bgConfig, &editor->display.windows[0], GF_BG_LYR_MAIN_1, 1, 21, 30, 2, 58);
-    BallCapsuleEditor_AddWindow(editor->display.bgConfig, &editor->display.windows[3], GF_BG_LYR_MAIN_1, 1, 21, 20, 2, 58);
-    BallCapsuleEditor_AddWindow(editor->display.bgConfig, &editor->display.windows[2], GF_BG_LYR_MAIN_1, 23, 21, 8, 2, 118);
+    BallCapsuleEditor_AddWindow(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], GF_BG_LYR_MAIN_1, 1, 21, 30, 2, 58);
+    BallCapsuleEditor_AddWindow(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT], GF_BG_LYR_MAIN_1, 1, 21, 20, 2, 58);
+    BallCapsuleEditor_AddWindow(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_EXIT_LABEL], GF_BG_LYR_MAIN_1, 23, 21, 8, 2, 118);
 }
 
 static void BallCapsuleEditor_RemoveMessageWindows(BallCapsuleEditor *editor) {
-    RemoveWindow(&editor->display.windows[0]);
-    RemoveWindow(&editor->display.windows[3]);
-    RemoveWindow(&editor->display.windows[2]);
+    RemoveWindow(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE]);
+    RemoveWindow(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT]);
+    RemoveWindow(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_EXIT_LABEL]);
 }
 
 static void BallCapsuleEditor_PrintExitLabel(BallCapsuleEditor *editor, BOOL show) {
     if (show) {
         MsgData *msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0011_bin, HEAP_ID_52);
         String *string = NewString_ReadMsgData(msgData, msg_0011_00017);
-        FillWindowPixelBuffer(&editor->display.windows[2], 0);
+        FillWindowPixelBuffer(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_EXIT_LABEL], 0);
         {
             u32 x = 64 - FontID_String_GetWidth(4, string, 0);
-            AddTextPrinterParameterizedWithColor(&editor->display.windows[2], 4, string, x >> 1, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 15, 0), NULL);
+            AddTextPrinterParameterizedWithColor(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_EXIT_LABEL], 4, string, x >> 1, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 15, 0), NULL);
         }
         String_Delete(string);
         DestroyMsgData(msgData);
-        ScheduleWindowCopyToVram(&editor->display.windows[2]);
+        ScheduleWindowCopyToVram(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_EXIT_LABEL]);
     } else {
-        ClearWindowTilemapAndScheduleTransfer(&editor->display.windows[2]);
+        ClearWindowTilemapAndScheduleTransfer(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_EXIT_LABEL]);
     }
 }
 
@@ -1818,14 +1829,14 @@ static void BallCapsuleEditor_AddWindowWithPalette(BgConfig *bgConfig, Window *w
 }
 
 static void BallCapsuleEditor_AddSealCountWindows(BallCapsuleEditor *editor) {
-    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[5], GF_BG_LYR_SUB_2, 3, 2, 4, 2, 0xA6, 11);
-    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[6], GF_BG_LYR_SUB_2, 10, 2, 4, 2, 0xAE, 11);
-    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[7], GF_BG_LYR_SUB_2, 3, 5, 4, 2, 0xB6, 11);
-    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[8], GF_BG_LYR_SUB_2, 10, 5, 4, 2, 0xBE, 11);
-    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[9], GF_BG_LYR_SUB_2, 3, 8, 4, 2, 0xC6, 11);
-    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[10], GF_BG_LYR_SUB_2, 10, 8, 4, 2, 0xCE, 11);
-    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[11], GF_BG_LYR_SUB_2, 3, 11, 4, 2, 0xD6, 11);
-    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[12], GF_BG_LYR_SUB_2, 10, 11, 4, 2, 0xDE, 11);
+    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS], GF_BG_LYR_SUB_2, 3, 2, 4, 2, 0xA6, 11);
+    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS + 1], GF_BG_LYR_SUB_2, 10, 2, 4, 2, 0xAE, 11);
+    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS + 2], GF_BG_LYR_SUB_2, 3, 5, 4, 2, 0xB6, 11);
+    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS + 3], GF_BG_LYR_SUB_2, 10, 5, 4, 2, 0xBE, 11);
+    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS + 4], GF_BG_LYR_SUB_2, 3, 8, 4, 2, 0xC6, 11);
+    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS + 5], GF_BG_LYR_SUB_2, 10, 8, 4, 2, 0xCE, 11);
+    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS + 6], GF_BG_LYR_SUB_2, 3, 11, 4, 2, 0xD6, 11);
+    BallCapsuleEditor_AddWindowWithPalette(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS + 7], GF_BG_LYR_SUB_2, 10, 11, 4, 2, 0xDE, 11);
 }
 
 static void BallCapsuleEditor_PrintSealCounts(BallCapsuleEditor *editor) {
@@ -1858,7 +1869,7 @@ static void BallCapsuleEditor_PrintSealCount(BallCapsuleEditor *editor, int inde
     Window *window;
     u8 seal;
 
-    window = &editor->display.windows[index + 5];
+    window = &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SEAL_COUNTS + index];
     seal = editor->pageSeals[index];
     if (seal == SEAL_NONE) {
         FillWindowPixelBuffer(window, 0xEE);
@@ -2110,7 +2121,7 @@ BOOL BallCapsuleEditor_ModeSelect(BallCapsuleEditor *editor) {
         BallCapsuleEditor_SetArrowsDrawFlag(editor, FALSE);
         BallCapsuleEditor_CreateButtonLabels(editor);
         BallCapsuleEditor_SetButtonLabelsDrawFlag(editor, FALSE);
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[3], 3, msg_0011_00007, FALSE);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT], 3, msg_0011_00007, FALSE);
         BallCapsuleEditor_ShowScreens();
         BallCapsuleEditor_SetInputEnabled(editor, FALSE);
         BallCapsuleEditor_PrintExitLabel(editor, TRUE);
@@ -2136,7 +2147,7 @@ BOOL BallCapsuleEditor_ModeSelect(BallCapsuleEditor *editor) {
         switch (input) {
         case LIST_CANCEL:
             BallCapsuleEditor_MenuQuit(editor);
-            BallCapsuleEditor_PrintMessage(&editor->display.windows[3], 3, msg_0011_00007, FALSE);
+            BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT], 3, msg_0011_00007, FALSE);
             editor->state = BALL_CAPSULE_SELECT_INPUT;
             break;
         case LIST_NOTHING_CHOSEN:
@@ -2146,7 +2157,7 @@ BOOL BallCapsuleEditor_ModeSelect(BallCapsuleEditor *editor) {
                 if (((BOOL(*)(BallCapsuleEditor *))input)(editor) != TRUE) {
                     BallCapsuleEditor_MenuQuit(editor);
                 } else {
-                    BallCapsuleEditor_PrintMessage(&editor->display.windows[3], 3, msg_0011_00007, FALSE);
+                    BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT], 3, msg_0011_00007, FALSE);
                     editor->state = BALL_CAPSULE_SELECT_INPUT;
                 }
             }
@@ -2195,7 +2206,7 @@ BOOL BallCapsuleEditor_ModeEdit(BallCapsuleEditor *editor) {
         editor->state = BallCapsuleEditor_PreviewCapsule(editor);
         break;
     case BALL_CAPSULE_EDIT_SAVE:
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[0], 0, msg_0011_00012, FALSE);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], 0, msg_0011_00012, FALSE);
         editor->timer = 20;
         if (BallCapsuleEditor_IsCapsuleChanged(editor) == TRUE) {
             editor->sortSeals = TRUE;
@@ -2231,7 +2242,7 @@ BOOL BallCapsuleEditor_ModeEdit(BallCapsuleEditor *editor) {
                 touched = FALSE;
             }
             if (touched) {
-                BallCapsuleEditor_PrintSealName(&editor->display.windows[0], Seal_GetNameMsgId(editor->seals[i].seal.kind));
+                BallCapsuleEditor_PrintSealName(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], Seal_GetNameMsgId(editor->seals[i].seal.kind));
                 ManagedSprite_SetPositionXY(editor->seals[i].sprite, x, y);
                 BallCapsuleEditor_UpdateSealOamMode(editor, i);
                 BallCapsuleEditor_StoreSealPosition(editor, i);
@@ -2245,7 +2256,7 @@ BOOL BallCapsuleEditor_ModeEdit(BallCapsuleEditor *editor) {
                 }
                 PlaySE(SEQ_SE_DP_BOX01);
                 editor->display.heldSeal = BALL_CAPSULE_EDITOR_NONE;
-                BallCapsuleEditor_PrintSealName(&editor->display.windows[0], 0xFFFF);
+                BallCapsuleEditor_PrintSealName(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], 0xFFFF);
             }
         }
     }
@@ -2260,7 +2271,7 @@ BOOL BallCapsuleEditor_ModeRemove(BallCapsuleEditor *editor) {
     switch (editor->state) {
     case BALL_CAPSULE_REMOVE_START:
         BallCapsuleEditor_ClearCapsuleMon(editor, editor->cursorCapsule[0]);
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[0], 0, msg_0011_00009, TRUE);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], 0, msg_0011_00009, TRUE);
         editor->state++;
         break;
     case BALL_CAPSULE_REMOVE_WAIT_INPUT:
@@ -2271,10 +2282,10 @@ BOOL BallCapsuleEditor_ModeRemove(BallCapsuleEditor *editor) {
         break;
     case BALL_CAPSULE_REMOVE_FINISH:
         BallCapsuleEditor_SetMode(editor, BALL_CAPSULE_EDITOR_MODE_SELECT, 0xFF, 0);
-        EraseFrameAndWindow1(&editor->display.windows[0], TRUE);
-        ClearWindowTilemapAndScheduleTransfer(&editor->display.windows[0]);
+        EraseFrameAndWindow1(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], TRUE);
+        ClearWindowTilemapAndScheduleTransfer(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE]);
         BallCapsuleEditor_PrintExitLabel(editor, TRUE);
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[3], 3, msg_0011_00007, FALSE);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT], 3, msg_0011_00007, FALSE);
         break;
     }
     BallCapsuleEditor_TickMonIcons(editor);
@@ -2288,7 +2299,7 @@ BOOL BallCapsuleEditor_ModeSwitch(BallCapsuleEditor *editor) {
         ManagedSprite_SetDrawPriority(editor->cursors[0], 25);
         ManagedSprite_SetDrawPriority(editor->cursors[1], 20);
         ManagedSprite_SetAnim(editor->cursors[0], 1);
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[3], 3, msg_0011_00010, FALSE);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT], 3, msg_0011_00010, FALSE);
         ManagedSprite_SetDrawFlag(editor->cursors[1], TRUE);
         editor->state++;
         // fallthrough
@@ -2306,10 +2317,10 @@ BOOL BallCapsuleEditor_ModeSwitch(BallCapsuleEditor *editor) {
         ManagedSprite_SetDrawPriority(editor->cursors[1], 25);
         BallCapsuleEditor_SetMode(editor, BALL_CAPSULE_EDITOR_MODE_SELECT, 0xFF, 0);
         ManagedSprite_SetAnim(editor->cursors[0], 0);
-        EraseFrameAndWindow1(&editor->display.windows[0], TRUE);
-        ClearWindowTilemapAndScheduleTransfer(&editor->display.windows[0]);
+        EraseFrameAndWindow1(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], TRUE);
+        ClearWindowTilemapAndScheduleTransfer(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE]);
         BallCapsuleEditor_PrintExitLabel(editor, TRUE);
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[3], 3, msg_0011_00007, FALSE);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT], 3, msg_0011_00007, FALSE);
         break;
     }
     BallCapsuleEditor_TickMonIcons(editor);
@@ -2349,8 +2360,8 @@ static int BallCapsuleEditor_EnterEdit(BallCapsuleEditor *editor) {
         ManagedSprite_SetAnimationFrame(editor->caseSprites[BALL_CAPSULE_EDITOR_HITBOX_NEXT_PAGE], 0);
         ManagedSprite_SetAnimationFrame(editor->caseSprites[BALL_CAPSULE_EDITOR_HITBOX_PREVIEW], 0);
         SetBgPriority(GF_BG_LYR_MAIN_3, 1);
-        ClearWindowTilemapAndCopyToVram(&editor->display.windows[3]);
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[0], 0, 0xFFFF, TRUE);
+        ClearWindowTilemapAndCopyToVram(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT]);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], 0, 0xFFFF, TRUE);
         GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
         BallCapsuleEditor_FadeIn();
         editor->subState++;
@@ -2388,9 +2399,9 @@ static BOOL BallCapsuleEditor_LeaveEdit(BallCapsuleEditor *editor) {
         BallCapsuleEditor_SetCaseSpritesDrawFlag(editor, FALSE);
         BallCapsuleEditor_SetArrowsDrawFlag(editor, FALSE);
         BallCapsuleEditor_SetButtonLabelsDrawFlag(editor, FALSE);
-        EraseFrameAndWindow1(&editor->display.windows[0], TRUE);
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[3], 3, msg_0011_00007, FALSE);
-        CopyWindowToVram(&editor->display.windows[3]);
+        EraseFrameAndWindow1(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], TRUE);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT], 3, msg_0011_00007, FALSE);
+        CopyWindowToVram(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT]);
         BallCapsuleEditor_PrintExitLabel(editor, TRUE);
         GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
         BallCapsuleEditor_MoveSeals(editor, -1);
@@ -2435,7 +2446,7 @@ static int BallCapsuleEditor_ConfirmQuitEdit(BallCapsuleEditor *editor) {
             break;
         }
         PaletteData_SetAutoTransparent(editor->display.paletteData, FALSE);
-        BallCapsuleEditor_AddFramedWindow(editor->display.bgConfig, &editor->display.windows[4], GF_BG_LYR_SUB_0, 2, 1, 27, 4, 58);
+        BallCapsuleEditor_AddFramedWindow(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SUB_MESSAGE], GF_BG_LYR_SUB_0, 2, 1, 27, 4, 58);
         MI_CpuFill8(&template, 0, sizeof(template));
         template.bgConfig = editor->display.bgConfig;
         template.bgId = GF_BG_LYR_SUB_0;
@@ -2446,7 +2457,7 @@ static int BallCapsuleEditor_ConfirmQuitEdit(BallCapsuleEditor *editor) {
         template.ignoreTouchFlag = editor->menuInputState;
         editor->display.yesNoPrompt = YesNoPrompt_Create(HEAP_ID_52);
         YesNoPrompt_InitFromTemplate(editor->display.yesNoPrompt, &template);
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[4], 4, msg_0011_00014, FALSE);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SUB_MESSAGE], 4, msg_0011_00014, FALSE);
         editor->subState++;
         break;
     case 2:
@@ -2466,8 +2477,8 @@ static int BallCapsuleEditor_ConfirmQuitEdit(BallCapsuleEditor *editor) {
         PaletteData_SetAutoTransparent(editor->display.paletteData, TRUE);
         YesNoPrompt_Reset(editor->display.yesNoPrompt);
         YesNoPrompt_Destroy(editor->display.yesNoPrompt);
-        ClearFrameAndWindow2(&editor->display.windows[4], FALSE);
-        RemoveWindow(&editor->display.windows[4]);
+        ClearFrameAndWindow2(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SUB_MESSAGE], FALSE);
+        RemoveWindow(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_SUB_MESSAGE]);
         editor->subState++;
         break;
     case 4:
@@ -2524,7 +2535,7 @@ static int BallCapsuleEditor_PreviewCapsule(BallCapsuleEditor *editor) {
         BallCapsuleEditor_CopyPreviewMon(editor);
         BallCapsuleEditor_CreatePreviewPokepic(editor);
         BallCapsuleEditor_SetPreviewPokepicHidden(editor, TRUE);
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[0], 0, msg_0011_00013, FALSE);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], 0, msg_0011_00013, FALSE);
         editor->subState++;
         break;
     case 1:
@@ -2617,7 +2628,7 @@ static int BallCapsuleEditor_PreviewCapsule(BallCapsuleEditor *editor) {
             BallCapsuleEditor_SetInputEnabled(editor, TRUE);
             editor->subState = 0;
             editor->state = BALL_CAPSULE_EDIT_INPUT;
-            BallCapsuleEditor_PrintMessage(&editor->display.windows[0], 0, 0xFFFF, FALSE);
+            BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], 0, 0xFFFF, FALSE);
             return BALL_CAPSULE_EDIT_INPUT;
         }
         break;
@@ -2704,18 +2715,18 @@ static void BallCapsuleEditor_HitboxCallback(u32 index, u32 event, void *arg) {
         if (event == 0) {
             if (!BallCapsuleEditor_HasFreeSealSlot(editor)) {
                 PlaySE(SEQ_SE_DP_CUSTOM06);
-                BallCapsuleEditor_PrintMessage(&editor->display.windows[0], 0, msg_0011_00015, FALSE);
+                BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], 0, msg_0011_00015, FALSE);
                 return;
             }
             if (editor->pageSeals[index] != SEAL_NONE && SealCaseInventory_GetSealQuantity(editor->sealBag, editor->pageSeals[index] - 1) != 0) {
                 editor->display.heldSeal = BallCapsuleEditor_AddSeal(editor, index);
-                BallCapsuleEditor_PrintSealName(&editor->display.windows[0], Seal_GetNameMsgId(editor->pageSeals[index]));
+                BallCapsuleEditor_PrintSealName(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], Seal_GetNameMsgId(editor->pageSeals[index]));
                 GiveOrTakeSeal(editor->args->sealCase, editor->pageSeals[index], -1);
                 BallCapsuleEditor_PrintSealCount(editor, index);
                 PlaySE(SEQ_SE_DP_BOX02);
             } else if (editor->pageSeals[index] != SEAL_NONE) {
                 PlaySE(SEQ_SE_DP_CUSTOM06);
-                BallCapsuleEditor_PrintMessage(&editor->display.windows[0], 0, msg_0011_00016, FALSE);
+                BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], 0, msg_0011_00016, FALSE);
             }
         }
         break;
@@ -2730,7 +2741,7 @@ static void BallCapsuleEditor_HitboxCallback(u32 index, u32 event, void *arg) {
         if (event == 0) {
             int seal = index - BALL_CAPSULE_EDITOR_HITBOX_FIRST_SEAL;
             BallCapsuleEditor_HandleSealTouch(editor, event, (u8)seal);
-            BallCapsuleEditor_PrintSealName(&editor->display.windows[0], Seal_GetNameMsgId(editor->seals[seal].seal.kind));
+            BallCapsuleEditor_PrintSealName(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], Seal_GetNameMsgId(editor->seals[seal].seal.kind));
             PlaySE(SEQ_SE_DP_BOX02);
         }
         break;
@@ -2778,8 +2789,8 @@ static int BallCapsuleEditor_HandleSelection(BallCapsuleEditor *editor, int sele
         BallCapsuleEditor_SetArgsSetCapsuleOnMon(editor->args, FALSE);
         return BALL_CAPSULE_SELECT_FADE_OUT;
     case BALL_CAPSULE_EDITOR_SELECT_CONFIRM:
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[3], 3, msg_0011_00008, FALSE);
-        BallCapsuleEditor_CreateMenu(editor->display.bgConfig, &editor->display.windows[1], 1, editor, editor->cursorCapsule[0]);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT], 3, msg_0011_00008, FALSE);
+        BallCapsuleEditor_CreateMenu(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MENU], 1, editor, editor->cursorCapsule[0]);
         PlaySE(SEQ_SE_DP_SELECT);
         return BALL_CAPSULE_SELECT_MENU;
     default:
@@ -2797,8 +2808,8 @@ static int BallCapsuleEditor_HandleSelection(BallCapsuleEditor *editor, int sele
     if (editor->menuInputState == MENU_INPUT_STATE_BUTTONS) {
         PlaySE(SEQ_SE_DP_SELECT);
     } else {
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[3], 3, msg_0011_00008, FALSE);
-        BallCapsuleEditor_CreateMenu(editor->display.bgConfig, &editor->display.windows[1], 1, editor, editor->cursorCapsule[0]);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_PROMPT], 3, msg_0011_00008, FALSE);
+        BallCapsuleEditor_CreateMenu(editor->display.bgConfig, &editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MENU], 1, editor, editor->cursorCapsule[0]);
         PlaySE(SEQ_SE_DP_SELECT);
         return BALL_CAPSULE_SELECT_MENU;
     }
@@ -2853,7 +2864,7 @@ static int BallCapsuleEditor_FinishSwitch(BallCapsuleEditor *editor, BOOL confir
     if (confirm) {
         BallCapsuleEditor_SwitchCapsules(editor, current, target);
         BallCapsuleEditor_UpdateCursors(editor, 1, 1);
-        BallCapsuleEditor_PrintMessage(&editor->display.windows[0], 0, msg_0011_00011, TRUE);
+        BallCapsuleEditor_PrintMessage(&editor->display.windows[BALL_CAPSULE_EDITOR_WINDOW_MESSAGE], 0, msg_0011_00011, TRUE);
         PlaySE(SEQ_SE_DP_SELECT);
         return BALL_CAPSULE_SWITCH_WAIT_INPUT;
     }

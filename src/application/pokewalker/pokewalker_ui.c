@@ -206,7 +206,7 @@ void PokewalkerApp_LoadSubBg1Tilemap(PokewalkerApp *app) {
     NARC_Delete(narc);
 }
 
-void PokewalkerApp_ShowSubBg1(PokewalkerApp *app, int show) {
+void PokewalkerApp_ShowSubBg1(PokewalkerApp *app, BOOL show) {
     ToggleBgLayer(GF_BG_LYR_SUB_1, show);
 }
 

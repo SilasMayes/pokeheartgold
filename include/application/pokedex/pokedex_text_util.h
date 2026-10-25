@@ -2,7 +2,6 @@
 #define POKEHEARTGOLD_APPLICATION_POKEDEX_POKEDEX_TEXT_UTIL_H
 
 #include "bg_window.h"
-#include "filesystem.h"
 #include "msgdata.h"
 #include "pm_string.h"
 

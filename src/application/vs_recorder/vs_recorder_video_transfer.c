@@ -335,8 +335,8 @@ BOOL VsRecorder_VideoSearchResume(VsRecorderWork *work) {
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG3, GF_PLANE_TOGGLE_ON);
         VsRecorder_CreateSearchButtons(work);
         VsRecorder_SetSearchButtonsMode(work, FALSE);
-        VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, 3);
-        VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, 0x5E);
+        VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, msg_0013_00003);
+        VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, msg_0013_00094);
         ManagedSprite_SetAnim(search->buttons[0].sprite, 0);
         ManagedSprite_SetAnim(search->buttons[1].sprite, 3);
         search->species = 0xFFFF; // any
@@ -1642,8 +1642,8 @@ static void VsRecorder_CreateNumberPadButtons(VsRecorderWork *work) {
     search->buttons[1].sprite = VsRecorder_NewButtonSprite(work, NNS_G2D_VRAM_TYPE_2DMAIN);
     VsRecorder_CreateTextSprite(&search->buttons[0], (VsRecorderGfx *)&work->narc, NNS_G2D_VRAM_TYPE_2DMAIN);
     VsRecorder_CreateTextSprite(&search->buttons[1], (VsRecorderGfx *)&work->narc, NNS_G2D_VRAM_TYPE_2DMAIN);
-    VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, 3);
-    VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, 0x6F);
+    VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, msg_0013_00003);
+    VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, msg_0013_00111);
     ManagedSprite_SetPositionXY(search->buttons[0].sprite, 32, 168);
     ManagedSprite_SetPositionXY(search->buttons[1].sprite, 128, 168);
     TextOBJ_SetPosition(search->buttons[0].text, 36, -8);
@@ -1692,13 +1692,13 @@ void VsRecorder_CreateSearchButtons(VsRecorderWork *work) {
     VsRecorder_CreateTextSprite(&search->buttons[0], (VsRecorderGfx *)&work->narc, NNS_G2D_VRAM_TYPE_2DSUB);
     VsRecorder_CreateTextSprite(&search->buttons[1], (VsRecorderGfx *)&work->narc, NNS_G2D_VRAM_TYPE_2DSUB);
     if (work->selection == VS_RECORDER_SELECTION_SEARCH) {
-        VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, 3);
-        VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, 0x6F);
+        VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, msg_0013_00003);
+        VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, msg_0013_00111);
         ManagedSprite_SetAnim(search->buttons[0].sprite, 0);
         ManagedSprite_SetAnim(search->buttons[1].sprite, 1);
     } else {
-        VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, 3);
-        VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, 0x5E);
+        VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, msg_0013_00003);
+        VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, msg_0013_00094);
         ManagedSprite_SetAnim(search->buttons[0].sprite, 0);
         ManagedSprite_SetAnim(search->buttons[1].sprite, 3);
     }
@@ -2013,8 +2013,8 @@ BOOL VsRecorder_FoundVideoReturnToDetails(VsRecorderWork *work) {
         break;
     case FOUND_VIDEO_RETURN_TO_DETAILS_STEP_CREATE_BUTTONS:
         if (work->selection == VS_RECORDER_SELECTION_SEARCH) {
-            VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, 3);
-            VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, 0x5E);
+            VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, msg_0013_00003);
+            VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, msg_0013_00094);
             ManagedSprite_SetAnim(search->buttons[0].sprite, 0);
             ManagedSprite_SetAnim(search->buttons[1].sprite, 3);
         }
@@ -2082,8 +2082,8 @@ BOOL VsRecorder_FoundVideoSlotsCancel(VsRecorderWork *work) {
     case FOUND_VIDEO_SLOTS_CANCEL_STEP_CREATE_BUTTONS:
         VsRecorder_CreateSearchButtons(work);
         if (work->selection == VS_RECORDER_SELECTION_SEARCH) {
-            VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, 3);
-            VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, 0x5E);
+            VsRecorder_SetTextSpriteMsg(&search->buttons[0], (VsRecorderGfx *)&work->narc, msg_0013_00003);
+            VsRecorder_SetTextSpriteMsg(&search->buttons[1], (VsRecorderGfx *)&work->narc, msg_0013_00094);
             ManagedSprite_SetAnim(search->buttons[0].sprite, 0);
             ManagedSprite_SetAnim(search->buttons[1].sprite, 3);
         }

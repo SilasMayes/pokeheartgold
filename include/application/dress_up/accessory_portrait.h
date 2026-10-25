@@ -5,7 +5,6 @@
 
 #include "bg_window.h"
 #include "fashion_case.h"
-#include "heap.h"
 
 // Renderer of a saved dress-up design (overlay 41): used by the Accessory Portrait app and by the VS Recorder's
 // dress-up photo screens. The overlay must stay loaded while a portrait exists.

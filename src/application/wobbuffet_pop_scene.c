@@ -537,7 +537,7 @@ static u32 WobbuffetPopPuff_Init(WobbuffetPop *game, const WobbuffetPopPump *pum
     }
     puff->active = TRUE;
     distance = 0;
-    ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &x, &y, 0x160000);
+    ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &x, &y, FX32_CONST(352));
     switch (config[7]) {
     case 0:
         distance = 28 - y;
@@ -590,12 +590,12 @@ static BOOL WobbuffetPopPuff_Move(WobbuffetPop *game, WobbuffetPopPuff *puff) {
     s32 value;
     float scale;
 
-    ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &x, &y, 0x160000);
+    ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &x, &y, FX32_CONST(352));
     switch (puff->config[7]) {
     case 0:
         previous = 28 - y;
         ManagedSprite_AddSpritePrecisePositionXY(puff->sprite, 0, 5 << 12);
-        ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &nextX, &nextY, 0x160000);
+        ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &nextX, &nextY, FX32_CONST(352));
         remaining = 28 - nextY;
         if (nextY > 74) {
             done = TRUE;
@@ -604,7 +604,7 @@ static BOOL WobbuffetPopPuff_Move(WobbuffetPop *game, WobbuffetPopPuff *puff) {
     case 1:
         previous = x - 204;
         ManagedSprite_AddSpritePrecisePositionXY(puff->sprite, -5 << 12, 0);
-        ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &nextX, &nextY, 0x160000);
+        ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &nextX, &nextY, FX32_CONST(352));
         remaining = nextX - 204;
         if (nextX < 152) {
             done = TRUE;
@@ -613,7 +613,7 @@ static BOOL WobbuffetPopPuff_Move(WobbuffetPop *game, WobbuffetPopPuff *puff) {
     case 2:
         previous = y - 164;
         ManagedSprite_AddSpritePrecisePositionXY(puff->sprite, 0, -5 << 12);
-        ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &nextX, &nextY, 0x160000);
+        ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &nextX, &nextY, FX32_CONST(352));
         remaining = nextY - 164;
         if (nextY < 114) {
             done = TRUE;
@@ -622,7 +622,7 @@ static BOOL WobbuffetPopPuff_Move(WobbuffetPop *game, WobbuffetPopPuff *puff) {
     case 3:
         previous = 52 - x;
         ManagedSprite_AddSpritePrecisePositionXY(puff->sprite, 5 << 12, 0);
-        ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &nextX, &nextY, 0x160000);
+        ManagedSprite_GetPositionXYWithSubscreenOffset(puff->sprite, &nextX, &nextY, FX32_CONST(352));
         remaining = 52 - nextX;
         if (nextX > 104) {
             done = TRUE;
@@ -682,7 +682,7 @@ static ManagedSprite *WobbuffetPop_CreatePuffSprite(WobbuffetPop *game, const u8
     template.y = ((const s16 *)config)[1];
     template.pal = config[6];
     sprite = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &template);
-    ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, ((const s16 *)config)[0], ((const s16 *)config)[1], 0x160000);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, ((const s16 *)config)[0], ((const s16 *)config)[1], FX32_CONST(352));
     ManagedSprite_SetAnim(sprite, ((const u16 *)config)[2]);
     ManagedSprite_SetAffineOverwriteMode(sprite, 2);
     Sprite_TickFrame(sprite->sprite);
@@ -817,29 +817,29 @@ void WobbuffetPop_FreeConfetti(WobbuffetPop *game) {
 }
 
 // Moves one confetti piece outwards on its spiral, deletes it when its life is over.
-#define WOBBUFFET_POP_STEP_CONFETTI(piece, radiusCopy)                                                                                                                                   \
-    do {                                                                                                                                                                                 \
-        if ((piece)->sprite) {                                                                                                                                                           \
-            if ((piece)->life == 0) {                                                                                                                                                    \
-                Sprite_DeleteAndFreeResources((piece)->sprite);                                                                                                                          \
-                (piece)->sprite = 0;                                                                                                                                                     \
-            } else {                                                                                                                                                                     \
-                (piece)->angle += (piece)->angleSpeed;                                                                                                                                   \
-                (piece)->radius += (piece)->radiusSpeed;                                                                                                                                 \
-                if ((piece)->radius >= 0xa0000) {                                                                                                                                        \
-                    (piece)->radius = 0xa0000;                                                                                                                                           \
-                }                                                                                                                                                                        \
-                int radius = (piece)->radius;                                                                                                                                            \
-                int sine = GF_SinDegFX32((piece)->angle);                                                                                                                                \
-                radiusCopy = (piece)->radius;                                                                                                                                            \
-                int cosine = GF_CosDegFX32((piece)->angle);                                                                                                                              \
-                s64 xx = (s64)sine * radius;                                                                                                                                             \
-                s64 yy = (s64)cosine * radiusCopy;                                                                                                                                       \
-                ManagedSprite_SetPositionXYWithSubscreenOffset((piece)->sprite, (s16)((s32)((xx + 0x800) >> 12) / 4096 + 128), (s16)(-(s32)((yy + 0x800) >> 12) / 4096 + 96), 0x160000); \
-                count++;                                                                                                                                                                 \
-                (piece)->life--;                                                                                                                                                         \
-            }                                                                                                                                                                            \
-        }                                                                                                                                                                                \
+#define WOBBUFFET_POP_STEP_CONFETTI(piece, radiusCopy)                                                                                                                                          \
+    do {                                                                                                                                                                                        \
+        if ((piece)->sprite) {                                                                                                                                                                  \
+            if ((piece)->life == 0) {                                                                                                                                                           \
+                Sprite_DeleteAndFreeResources((piece)->sprite);                                                                                                                                 \
+                (piece)->sprite = 0;                                                                                                                                                            \
+            } else {                                                                                                                                                                            \
+                (piece)->angle += (piece)->angleSpeed;                                                                                                                                          \
+                (piece)->radius += (piece)->radiusSpeed;                                                                                                                                        \
+                if ((piece)->radius >= 0xa0000) {                                                                                                                                               \
+                    (piece)->radius = 0xa0000;                                                                                                                                                  \
+                }                                                                                                                                                                               \
+                int radius = (piece)->radius;                                                                                                                                                   \
+                int sine = GF_SinDegFX32((piece)->angle);                                                                                                                                       \
+                radiusCopy = (piece)->radius;                                                                                                                                                   \
+                int cosine = GF_CosDegFX32((piece)->angle);                                                                                                                                     \
+                s64 xx = (s64)sine * radius;                                                                                                                                                    \
+                s64 yy = (s64)cosine * radiusCopy;                                                                                                                                              \
+                ManagedSprite_SetPositionXYWithSubscreenOffset((piece)->sprite, (s16)((s32)((xx + 0x800) >> 12) / 4096 + 128), (s16)(-(s32)((yy + 0x800) >> 12) / 4096 + 96), FX32_CONST(352)); \
+                count++;                                                                                                                                                                        \
+                (piece)->life--;                                                                                                                                                                \
+            }                                                                                                                                                                                   \
+        }                                                                                                                                                                                       \
     } while (0)
 
 BOOL WobbuffetPop_UpdateConfetti(WobbuffetPop *game) {
@@ -901,7 +901,7 @@ static ManagedSprite *WobbuffetPop_CreateBalloonIconSprite(WobbuffetPop *game, u
     ManagedSpriteTemplate template = sWobbuffetPopBalloonIconSpriteTemplate;
     ManagedSprite *sprite = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &template);
 
-    ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, 72 - position * 16, 32, 0x160000);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, 72 - position * 16, 32, FX32_CONST(352));
     ManagedSprite_SetAnim(sprite, anim);
     Sprite_TickFrame(sprite->sprite);
     ManagedSprite_SetAnimateFlag(sprite, TRUE);
@@ -954,13 +954,13 @@ static void WobbuffetPopBalloonIcon_Slide(WobbuffetPopBalloonIcon *icon) {
     s16 y;
     s16 target = 72 - icon->position * 16;
 
-    ManagedSprite_GetPositionXYWithSubscreenOffset(icon->sprite, &x, &y, 0x160000);
+    ManagedSprite_GetPositionXYWithSubscreenOffset(icon->sprite, &x, &y, FX32_CONST(352));
     if (target > x) {
         x += 2;
         if (x > target) {
             x = target;
         }
-        ManagedSprite_SetPositionXYWithSubscreenOffset(icon->sprite, x, y, 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(icon->sprite, x, y, FX32_CONST(352));
     }
 }
 
@@ -984,7 +984,7 @@ static void WobbuffetPopBalloonIcon_Update(WobbuffetPop *game, WobbuffetPopBallo
         icon->size = WobbuffetPopBalloonIcon_GetSize(icon->number);
         icon->state = 1;
         ManagedSprite_SetAnim(icon->sprite, icon->size);
-        ManagedSprite_SetPositionXYWithSubscreenOffset(icon->sprite, -8, 32, 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(icon->sprite, -8, 32, FX32_CONST(352));
         other = game->balloonIcons;
         for (i = 0; i < 5; i++, other++) {
             if (other->position == 0) {
@@ -1228,7 +1228,7 @@ void WobbuffetPop_CreateSeatSprites(WobbuffetPop *game, ManagedSprite **sprites)
 
     for (i = 0; i < 4; i++) {
         sprites[i] = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &template);
-        ManagedSprite_SetPositionXYWithSubscreenOffset(sprites[i], sWobbuffetPopSeatPositions[i][0], sWobbuffetPopSeatPositions[i][1], 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(sprites[i], sWobbuffetPopSeatPositions[i][0], sWobbuffetPopSeatPositions[i][1], FX32_CONST(352));
         ManagedSprite_SetAnim(sprites[i], i / 2 + 31);
         Sprite_TickFrame(sprites[i]->sprite);
     }
@@ -1267,7 +1267,7 @@ void WobbuffetPopBonusRing_CreateSprites(WobbuffetPop *game, WobbuffetPopBonusRi
         Sprite_TickFrame(target->sprite->sprite);
         ManagedSprite_SetDrawFlag(target->sprite, FALSE);
         target->effect = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &sWobbuffetPopBonusEffectSpriteTemplate);
-        ManagedSprite_SetPositionXYWithSubscreenOffset(target->effect, 0, 0, 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(target->effect, 0, 0, FX32_CONST(352));
         ManagedSprite_SetAnim(target->effect, 33);
         Sprite_TickFrame(target->effect->sprite);
         ManagedSprite_SetDrawFlag(target->effect, FALSE);
@@ -1418,7 +1418,7 @@ static u32 WobbuffetPopBonusTarget_Enter(WobbuffetPop *game, WobbuffetPopBonusRi
     case WOBBUFFET_POP_BONUS_TARGET_ENTER_SHOW:
         ManagedSprite_SetDrawFlag(target->sprite, TRUE);
         ManagedSprite_SetDrawFlag(target->shadow, TRUE);
-        ManagedSprite_GetPositionXYWithSubscreenOffset(target->sprite, &position.x, &position.y, 0x160000);
+        ManagedSprite_GetPositionXYWithSubscreenOffset(target->sprite, &position.x, &position.y, FX32_CONST(352));
         target->motion.home.x = position.x;
         target->motion.home.y = position.y;
         target->step++;
@@ -1457,15 +1457,15 @@ static u32 WobbuffetPopBonusTarget_Enter(WobbuffetPop *game, WobbuffetPopBonusRi
             break;
         }
         if (target->timer >= 15) {
-            ManagedSprite_SetPositionXYWithSubscreenOffset(target->sprite, target->motion.home.x, target->motion.home.y, 0x160000);
-            ManagedSprite_SetPositionXYWithSubscreenOffset(target->shadow, target->motion.home.x, (s16)(target->motion.home.y + 24), 0x160000);
+            ManagedSprite_SetPositionXYWithSubscreenOffset(target->sprite, target->motion.home.x, target->motion.home.y, FX32_CONST(352));
+            ManagedSprite_SetPositionXYWithSubscreenOffset(target->shadow, target->motion.home.x, (s16)(target->motion.home.y + 24), FX32_CONST(352));
             WobbuffetPopBonusTarget_SetState(target, WOBBUFFET_POP_BONUS_TARGET_WALK);
             WobbuffetPopDust_Start(game, target, &target->dust);
             return TRUE;
         }
         offset = -((fx32)(((s64)GF_SinDegFX32(((180 * target->timer) << 12) / 15) * 0x18000 + 0x800) >> 12)) / 4096;
-        ManagedSprite_SetPositionXYWithSubscreenOffset(target->sprite, position.x, (s16)(position.y + offset), 0x160000);
-        ManagedSprite_SetPositionXYWithSubscreenOffset(target->shadow, position.x, (s16)(position.y + 24), 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(target->sprite, position.x, (s16)(position.y + offset), FX32_CONST(352));
+        ManagedSprite_SetPositionXYWithSubscreenOffset(target->shadow, position.x, (s16)(position.y + 24), FX32_CONST(352));
         {
             float scale = (float)(4096 - ((-offset / 3) * 4096) / 24) / 4096.0f;
             ManagedSprite_SetAffineScale(target->shadow, scale, scale);
@@ -1522,8 +1522,8 @@ static u32 WobbuffetPopBonusTarget_Hit(WobbuffetPop *game, WobbuffetPopBonusRing
     switch (target->step) {
     case WOBBUFFET_POP_BONUS_TARGET_HIT_FLASH:
         PlaySE(SEQ_SE_PL_BALLOON05);
-        ManagedSprite_GetPositionXYWithSubscreenOffset(target->sprite, &originX, &originY, 0x160000);
-        ManagedSprite_SetPositionXYWithSubscreenOffset(target->effect, originX, originY - 32, 0x160000);
+        ManagedSprite_GetPositionXYWithSubscreenOffset(target->sprite, &originX, &originY, FX32_CONST(352));
+        ManagedSprite_SetPositionXYWithSubscreenOffset(target->effect, originX, originY - 32, FX32_CONST(352));
         ManagedSprite_SetAnim(target->effect, 33);
         ManagedSprite_SetDrawFlag(target->effect, TRUE);
         ManagedSprite_SetAnim(target->sprite, sWobbuffetPopBonusTargetAnims[target->bonus] + 2);
@@ -1535,7 +1535,7 @@ static u32 WobbuffetPopBonusTarget_Hit(WobbuffetPop *game, WobbuffetPopBonusRing
         if (target->timer == target->halfTime) {
             ManagedSprite_SetAnim(target->sprite, sWobbuffetPopBonusTargetAnims[target->bonus] + 1);
             ManagedSprite_SetDrawFlag(target->effect, FALSE);
-            ManagedSprite_TickNFrames(target->effect, 0x4000);
+            ManagedSprite_TickNFrames(target->effect, FX32_CONST(4));
         }
         if (target->timer == 0) {
             ManagedSprite_SetDrawFlag(target->effect, FALSE);
@@ -1574,7 +1574,7 @@ static u32 WobbuffetPopBonusTarget_Hit(WobbuffetPop *game, WobbuffetPopBonusRing
         angle = start * 0x1e000;
         sine = GF_SinDegFX32(angle);
         cosine = GF_CosDegFX32(angle);
-        ManagedSprite_GetPositionXYWithSubscreenOffset(target->sprite, &x, &y, 0x160000);
+        ManagedSprite_GetPositionXYWithSubscreenOffset(target->sprite, &x, &y, FX32_CONST(352));
         y += 24;
         WobbuffetPopBonusTarget_StartHop(target, sine, cosine, x, y, duration);
     }
@@ -1584,9 +1584,9 @@ static u32 WobbuffetPopBonusTarget_Hit(WobbuffetPop *game, WobbuffetPopBonusRing
         target->motion.hop.x = (s32)((u32)target->motion.hop.x + (u32)target->motion.hop.dx);
         target->motion.hop.y = (s32)((u32)target->motion.hop.y + (u32)target->motion.hop.dy);
         height = (s64)GF_SinDegFX32(((target->timer * 180) << 12) / target->duration) * 0xc000;
-        ManagedSprite_SetPositionXYWithSubscreenOffset(target->sprite, (s16)(target->motion.hop.x / 4096), (s16)(target->motion.hop.y / 4096 - 24 + (-(s32)((height + 0x800) >> 12)) / 4096), 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(target->sprite, (s16)(target->motion.hop.x / 4096), (s16)(target->motion.hop.y / 4096 - 24 + (-(s32)((height + 0x800) >> 12)) / 4096), FX32_CONST(352));
         ManagedSprite_TickNFrames(target->sprite, 0x2c000 / target->duration);
-        ManagedSprite_SetPositionXYWithSubscreenOffset(target->shadow, (s16)(target->motion.hop.x / 4096), (s16)(target->motion.hop.y / 4096), 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(target->shadow, (s16)(target->motion.hop.x / 4096), (s16)(target->motion.hop.y / 4096), FX32_CONST(352));
         target->timer--;
         if (target->timer == 0) {
             ManagedSprite_SetAnim(target->sprite, sWobbuffetPopBonusTargetAnims[target->bonus]);
@@ -1610,11 +1610,11 @@ void WobbuffetPop_CreateBonusPopupSprites(WobbuffetPop *game, WobbuffetPopBonusP
 
         sprite = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &template);
         popup->sprite = sprite;
-        ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, 0, 0, 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, 0, 0, FX32_CONST(352));
         ManagedSprite_SetDrawFlag(popup->sprite, FALSE);
         sprite = SpriteSystem_NewSprite(game->spriteSystem, game->spriteManager, &sWobbuffetPopBonusEffectSpriteTemplate);
         popup->effect = sprite;
-        ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, 0, 0, 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, 0, 0, FX32_CONST(352));
         ManagedSprite_SetAnim(popup->effect, 33);
         Sprite_TickFrame(popup->effect->sprite);
         ManagedSprite_SetDrawFlag(popup->effect, FALSE);
@@ -1688,7 +1688,7 @@ static BOOL WobbuffetPopBonusPopup_Update(WobbuffetPopBonusPopup *popups, Wobbuf
 
     switch (popup->state) {
     case WOBBUFFET_POP_BONUS_POPUP_START:
-        ManagedSprite_GetPositionXYWithSubscreenOffset(popup->sprite, &x, &y, 0x160000);
+        ManagedSprite_GetPositionXYWithSubscreenOffset(popup->sprite, &x, &y, FX32_CONST(352));
         popup->x = x << FX32_SHIFT;
         popup->y = y << FX32_SHIFT;
         popup->state++;
@@ -1705,8 +1705,8 @@ static BOOL WobbuffetPopBonusPopup_Update(WobbuffetPopBonusPopup *popups, Wobbuf
         }
         break;
     case WOBBUFFET_POP_BONUS_POPUP_HIT:
-        ManagedSprite_GetPositionXYWithSubscreenOffset(popup->sprite, &x, &y, 0x160000);
-        ManagedSprite_SetPositionXYWithSubscreenOffset(popup->effect, x, y - 32, 0x160000);
+        ManagedSprite_GetPositionXYWithSubscreenOffset(popup->sprite, &x, &y, FX32_CONST(352));
+        ManagedSprite_SetPositionXYWithSubscreenOffset(popup->effect, x, y - 32, FX32_CONST(352));
         ManagedSprite_SetAnim(popup->effect, 33);
         ManagedSprite_SetDrawFlag(popup->effect, TRUE);
         PlaySE(SEQ_SE_PL_BALLOON05);
@@ -1717,7 +1717,7 @@ static BOOL WobbuffetPopBonusPopup_Update(WobbuffetPopBonusPopup *popups, Wobbuf
     case WOBBUFFET_POP_BONUS_POPUP_WAIT_HIT:
         popup->timer--;
         if (popup->timer == 3) {
-            ManagedSprite_TickNFrames(popup->effect, 0x4000);
+            ManagedSprite_TickNFrames(popup->effect, FX32_CONST(4));
         }
         if (popup->timer == 0) {
             ManagedSprite_SetDrawFlag(popup->effect, FALSE);
@@ -1735,7 +1735,7 @@ static BOOL WobbuffetPopBonusPopup_Update(WobbuffetPopBonusPopup *popups, Wobbuf
         }
         break;
     }
-    ManagedSprite_SetPositionXYWithSubscreenOffset(popup->sprite, popup->x / FX32_ONE, popup->y / FX32_ONE, 0x160000);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(popup->sprite, popup->x / FX32_ONE, popup->y / FX32_ONE, FX32_CONST(352));
     return TRUE;
 }
 
@@ -2045,9 +2045,9 @@ static void WobbuffetPopDust_Start(WobbuffetPop *game, WobbuffetPopBonusTarget *
     s16 xy[2];
     int i;
 
-    ManagedSprite_GetPositionXYWithSubscreenOffset(target->sprite, &xy[1], &xy[0], 0x160000);
+    ManagedSprite_GetPositionXYWithSubscreenOffset(target->sprite, &xy[1], &xy[0], FX32_CONST(352));
     for (i = 0; i < 2; i++) {
-        ManagedSprite_SetPositionXYWithSubscreenOffset(dust->sprites[i], xy[1], xy[0] + 28, 0x160000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(dust->sprites[i], xy[1], xy[0] + 28, FX32_CONST(352));
         ManagedSprite_SetAnim(dust->sprites[i], 27);
         ManagedSprite_SetOamMode(dust->sprites[i], GX_OAM_MODE_XLU);
         ManagedSprite_SetDrawFlag(dust->sprites[i], TRUE);

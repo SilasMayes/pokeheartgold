@@ -1787,11 +1787,9 @@ static BOOL SafariAreaCustomizer_RunPageChange(SafariAreaCustomizer *customizer)
     int i;
     int dx = customizer->pageDir == 0 ? -32 : 32;
 
-    i = 0;
-    do {
+    for (i = 0; i < 12; i++) {
         ManagedSprite_OffsetPositionXY(customizer->areaSprites[i], dx, 0);
-        i++;
-    } while (i < 12);
+    }
     customizer->animFrame++;
     if (customizer->animFrame >= 8) {
         customizer->animFrame = 0;

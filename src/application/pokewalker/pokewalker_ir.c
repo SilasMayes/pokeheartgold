@@ -1115,7 +1115,7 @@ void PokewalkerIr_Stop(void) {
 
 void PokewalkerIr_RequestEraseRecords(BOOL active) {
     gPokewalkerIrTransfer.command = 0x2A;
-    if (active != 0) {
+    if (active) {
         gPokewalkerIrTransfer.step = 0x2A;
     } else {
         gPokewalkerIrTransfer.step = 0x2C;

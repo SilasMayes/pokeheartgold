@@ -3,7 +3,6 @@
 
 #include "application/pokewalker/pokewalker_app.h"
 
-#include "pokemon.h"
 #include "pokemon_storage_system.h"
 #include "sprite.h"
 #include "sprite_resource_header.h"

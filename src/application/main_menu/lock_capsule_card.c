@@ -38,6 +38,7 @@
 #include "sprite.h"
 #include "sys_task_api.h"
 #include "system.h"
+#include "application/main_menu/mystery_gift_app.h"
 
 // Main menu > Mystery Gift > the Lock Capsule card (the special Wonder Card, RECEIVED_WONDER_CARD_IDX): shows the
 // card and flips it between its front and back.
@@ -617,7 +618,7 @@ static BOOL LockCapsuleCard_UpdateFlipEffect(LockCapsuleCardView *view) {
     } else {
         effect->speed -= effect->accel;
         effect->accel /= 2;
-        if (effect->accel < 1024) {
+        if (effect->accel < FX32_CONST(0.25)) {
             effect->active = FALSE;
             effect->speed = FX32_ONE;
             effect->accel = 0;
@@ -702,7 +703,7 @@ static BOOL LockCapsuleCard_Main(OverlayManager *manager, int *state) {
     case LOCK_CAPSULE_STATE_FLIP_TO_BACK:
         if (LockCapsuleCard_UpdateFlipEffect(view)) {
             LockCapsuleCard_DrawCard(view, 1, 1);
-            LockCapsuleCard_StartFlipEffect(view, 0, 0x708000, 0x384000);
+            LockCapsuleCard_StartFlipEffect(view, 0, FX32_CONST(1800), FX32_CONST(900));
             *state = LOCK_CAPSULE_STATE_VIEW_BACK;
         }
         break;
@@ -717,7 +718,7 @@ static BOOL LockCapsuleCard_Main(OverlayManager *manager, int *state) {
     case LOCK_CAPSULE_STATE_FLIP_TO_FRONT:
         if (LockCapsuleCard_UpdateFlipEffect(view)) {
             LockCapsuleCard_DrawCard(view, 1, 0);
-            LockCapsuleCard_StartFlipEffect(view, 0, 0x708000, 0x384000);
+            LockCapsuleCard_StartFlipEffect(view, 0, FX32_CONST(1800), FX32_CONST(900));
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_OFF);
             *state = LOCK_CAPSULE_STATE_FINISH_FLIP;
         }

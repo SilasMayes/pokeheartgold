@@ -392,8 +392,8 @@ static void VsRecorder_CreateRankingsButtons(VsRecorderWork *work) {
     rankings->exitButton.sprite = VsRecorder_NewButtonSprite(work, NNS_G2D_VRAM_TYPE_2DSUB);
     VsRecorder_CreateTextSprite(&rankings->sendButton, (VsRecorderGfx *)&work->narc, NNS_G2D_VRAM_TYPE_2DSUB);
     VsRecorder_CreateTextSprite(&rankings->exitButton, (VsRecorderGfx *)&work->narc, NNS_G2D_VRAM_TYPE_2DSUB);
-    VsRecorder_SetTextSpriteMsg(&rankings->sendButton, (VsRecorderGfx *)&work->narc, 53); // SEND
-    VsRecorder_SetTextSpriteMsg(&rankings->exitButton, (VsRecorderGfx *)&work->narc, 3);  // EXIT
+    VsRecorder_SetTextSpriteMsg(&rankings->sendButton, (VsRecorderGfx *)&work->narc, msg_0013_00053); // SEND
+    VsRecorder_SetTextSpriteMsg(&rankings->exitButton, (VsRecorderGfx *)&work->narc, msg_0013_00003); // EXIT
     ManagedSprite_SetPositionXY(rankings->sendButton.sprite, 32, 232);
     ManagedSprite_SetPositionXY(rankings->exitButton.sprite, 128, 232);
     TextOBJ_SetPosition(rankings->sendButton.text, 36, -8);

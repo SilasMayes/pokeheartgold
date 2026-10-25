@@ -810,10 +810,10 @@ static int TrainerCardMain_RunFlip(TrainerCardMain *cardMain) {
             cardMain->flipSpeed = 8;
         }
         cardMain->scaleX += 2 << (12 - cardMain->flipSpeed);
-        if (cardMain->scaleX >= 0x1000) {
-            cardMain->scaleX = 0x1000;
-            cardMain->scaleX = 0x1000;
-            cardMain->scaleY = 0x1000;
+        if (cardMain->scaleX >= FX32_ONE) {
+            cardMain->scaleX = FX32_ONE;
+            cardMain->scaleX = FX32_ONE;
+            cardMain->scaleY = FX32_ONE;
             done = 1;
         }
         break;
@@ -965,7 +965,7 @@ static void TrainerCardMain_DrawSignature(BgConfig *bgConfig, int bgId, u8 *pixe
 }
 
 static void TrainerCardMain_UpdatePlayTime(TrainerCardMain *cardMain, BOOL update) {
-    if (update != 0) {
+    if (update) {
         if (!cardMain->showingBack) {
             if (cardMain->colonBlinkTimer == 0) {
                 TrainerCardMain_PrintLivePlayTime(cardMain->windows, cardMain->card, cardMain->unk_33C8);

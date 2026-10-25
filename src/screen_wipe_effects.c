@@ -244,7 +244,7 @@ static void CircleWipe_GetScanlineSpan(int radius, int centerX, int centerY, int
 
     distanceFx = distance << FX32_SHIFT;
     radiusFx = pixelRadius << FX32_SHIFT;
-    halfWidth = FX_Sqrt((u32)((((s64)radiusFx * radiusFx + 0x800) >> FX32_SHIFT) - (((s64)distanceFx * distanceFx + 0x800) >> FX32_SHIFT)));
+    halfWidth = FX_Sqrt((u32)((((s64)radiusFx * radiusFx + FX32_HALF) >> FX32_SHIFT) - (((s64)distanceFx * distanceFx + FX32_HALF) >> FX32_SHIFT)));
     halfWidth >>= FX32_SHIFT;
     *left = centerX - halfWidth;
     if (*left < 0) {

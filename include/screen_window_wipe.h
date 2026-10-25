@@ -3,9 +3,7 @@
 
 #include "global.h"
 
-#include "heap.h"
 #include "screen_fade_effects.h"
-#include "sys_task_api.h"
 
 // Clock wipe: a screen fade that sweeps a hardware window around a centre point, one angle step per few frames.
 // The window's span is rebuilt for every scanline into a WipeScanlineBuffer (screen_fade_effects.h).
@@ -35,7 +33,7 @@ typedef struct ClockWipe {
     int queued;
     int window;
     int screen;
-    int maskSwapPending; // the window's inside/outside masks are swapped once the sweep passes half a turn
+    BOOL maskSwapPending; // the window's inside/outside masks are swapped once the sweep passes half a turn
     WindowRegisterQueue *regQueue;
     FadeBlankPair *blankPair;
 } ClockWipe;

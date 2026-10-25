@@ -1306,8 +1306,8 @@ static void VsRecorder_CreateDressUpButtons(VsRecorderWork *work) {
     dressUp->sendButton.sprite = VsRecorder_NewButtonSprite(work, NNS_G2D_VRAM_TYPE_2DSUB);
     VsRecorder_CreateTextSprite(&dressUp->exitButton, (VsRecorderGfx *)&work->narc, NNS_G2D_VRAM_TYPE_2DSUB);
     VsRecorder_CreateTextSprite(&dressUp->sendButton, (VsRecorderGfx *)&work->narc, NNS_G2D_VRAM_TYPE_2DSUB);
-    VsRecorder_SetTextSpriteMsg(&dressUp->exitButton, (VsRecorderGfx *)&work->narc, 3);  // EXIT
-    VsRecorder_SetTextSpriteMsg(&dressUp->sendButton, (VsRecorderGfx *)&work->narc, 53); // SEND
+    VsRecorder_SetTextSpriteMsg(&dressUp->exitButton, (VsRecorderGfx *)&work->narc, msg_0013_00003); // EXIT
+    VsRecorder_SetTextSpriteMsg(&dressUp->sendButton, (VsRecorderGfx *)&work->narc, msg_0013_00053); // SEND
     ManagedSprite_SetAnim(dressUp->exitButton.sprite, 0);
     ManagedSprite_SetAnim(dressUp->sendButton.sprite, 4);
     ManagedSprite_SetPositionXY(dressUp->exitButton.sprite, 32, 232);

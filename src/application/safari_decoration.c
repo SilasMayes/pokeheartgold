@@ -727,9 +727,9 @@ static void SafariDecorationModelView_InitCamera(SafariDecorationModelView *view
     view->target.x = 0;
     view->target.y = 0;
     view->target.z = 0;
-    Camera_Init_FromTargetDistanceAndAngle(&view->target, 0x15B000, &gSafariDecorationCameraAngle, 0x5C1, 0, TRUE, view->camera);
+    Camera_Init_FromTargetDistanceAndAngle(&view->target, FX32_CONST(347), &gSafariDecorationCameraAngle, 0x5C1, 0, TRUE, view->camera);
     Camera_SetStaticPtr(view->camera);
-    Camera_SetPerspectiveClippingPlane(0x64000, 0x4B0000, view->camera);
+    Camera_SetPerspectiveClippingPlane(FX32_CONST(100), FX32_CONST(1200), view->camera);
     Camera_OffsetLookAtPosAndTarget(&gSafariDecorationCameraOffset, view->camera);
 }
 

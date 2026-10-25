@@ -19,7 +19,6 @@
 #include "obj_char_transfer.h"
 #include "palette.h"
 #include "pm_string.h"
-#include "pokemon_types_def.h"
 #include "pokepic.h"
 #include "save.h"
 #include "sprite_system.h"
@@ -546,7 +545,7 @@ struct VsRecorderWork {
     SaveData *saveData;
     u16 recordSaveState;
     u16 recordWriteState;
-    u32 hasResumeScreen;
+    BOOL hasResumeScreen;
     u32 resumeScreen;
     u32 unk_0840[8];
     void *screenWork;
@@ -559,7 +558,7 @@ struct VsRecorderWork {
     BattleRecordHeader *savedVideos[4];
     FrontierCard *videoOwners[4];
     u32 menuNoticeShown; // notice raised by the menu touch
-    u32 messageShown;
+    BOOL messageShown;
     Window messageWindow;
     VsRecorderNetData net;
     VsRecorderTouchIndicator touchIndicator;

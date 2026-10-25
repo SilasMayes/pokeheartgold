@@ -433,7 +433,7 @@ BOOL FootprintStamp_Init(OverlayManager *man, int *state) {
     work->spriteManager = SpriteManager_New(work->spriteSystem);
     SpriteSystem_InitSprites(work->spriteSystem, work->spriteManager, 0x80);
     SpriteSystem_InitManagerWithCapacities(work->spriteSystem, work->spriteManager, (SpriteResourceCountsListUnion *)&sFootprintStampSpriteResourceCounts);
-    G2dRenderer_SetSubSurfaceCoords(SpriteSystem_GetRenderer(work->spriteSystem), 0, 0x110000);
+    G2dRenderer_SetSubSurfaceCoords(SpriteSystem_GetRenderer(work->spriteSystem), 0, FX32_CONST(272));
     WirelessStatusIcon_Create();
     FootprintStampBoard_Init(&work->board, work->showArceusFootprint);
     FootprintStamp_LoadPartySpriteGfx(work, work->narc);
@@ -863,7 +863,7 @@ static void FootprintStamp_CreatePlayerSprites(FootprintStamp *work) {
     for (i = 0; i < FOOTPRINT_STAMP_PLAYERS_MAX; i++) {
         template.resIdList[0] = 10010 + i;
         work->playerFootprintSprites[i] = SpriteSystem_NewSprite(work->spriteSystem, work->spriteManager, &template);
-        ManagedSprite_SetPositionXYWithSubscreenOffset(work->playerFootprintSprites[i], sFootprintStampPlayerFootprintPositions[i][0], sFootprintStampPlayerFootprintPositions[i][1], 0x110000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(work->playerFootprintSprites[i], sFootprintStampPlayerFootprintPositions[i][0], sFootprintStampPlayerFootprintPositions[i][1], FX32_CONST(272));
         Sprite_TickFrame(work->playerFootprintSprites[i]->sprite);
         ManagedSprite_SetDrawFlag(work->playerFootprintSprites[i], FALSE);
     }
@@ -967,8 +967,8 @@ static void FootprintStamp_CreateCamera(FootprintStamp *work) {
 
     camera = Camera_New(HEAP_ID_125);
     work->camera = camera;
-    Camera_Init_FromTargetDistanceAndAngle(&target, 0x7C000, &sFootprintStampCameraAngle, 0xFA4, 0, FALSE, work->camera);
-    Camera_SetPerspectiveClippingPlane(FX32_ONE, 0x384000, work->camera);
+    Camera_Init_FromTargetDistanceAndAngle(&target, FX32_CONST(124), &sFootprintStampCameraAngle, 0xFA4, 0, FALSE, work->camera);
+    Camera_SetPerspectiveClippingPlane(FX32_ONE, FX32_CONST(900), work->camera);
     Camera_SetStaticPtr(work->camera);
     Math_CalcPerspectiveViewSize(Camera_GetPerspectiveAngle(work->camera), Camera_GetDistance(work->camera), 0x1555, &width, &height);
     work->viewWidth = width;
@@ -1152,7 +1152,7 @@ BOOL FootprintStamp_PlaceStamp(FootprintStamp *work, FootprintStampMon *mon, u32
 // Syncs the player list with the lobby: prints joined players' names, clears the rows of players who left.
 
 static int FootprintStamp_UpdatePlayers(FootprintStamp *work) {
-    int joined;
+    BOOL joined;
     int left;
     WiFiPlazaPlayerList list;
     const FootprintStampRow *rows;
@@ -1189,7 +1189,7 @@ static int FootprintStamp_UpdatePlayers(FootprintStamp *work) {
                 left++;
             }
             if (work->linkFilter.myId == list.ids[i]) {
-                ManagedSprite_SetPositionXYWithSubscreenOffset(work->myCursorSprite, sFootprintStampMyCursorPositions[i][0], sFootprintStampMyCursorPositions[i][1], 0x110000);
+                ManagedSprite_SetPositionXYWithSubscreenOffset(work->myCursorSprite, sFootprintStampMyCursorPositions[i][0], sFootprintStampMyCursorPositions[i][1], FX32_CONST(272));
                 ManagedSprite_SetDrawFlag(work->myCursorSprite, TRUE);
             }
         }
@@ -1351,7 +1351,7 @@ static void FootprintStamp_UpdateInkGauge(FootprintStamp *work) {
     y = FootprintStamp_InkGaugeY(32 - (work->inkShown >> 8));
     x = 16;
     do {
-        ManagedSprite_SetPositionXYWithSubscreenOffset(work->inkSprites[i], x, y, 0x110000);
+        ManagedSprite_SetPositionXYWithSubscreenOffset(work->inkSprites[i], x, y, FX32_CONST(272));
         x += 32;
         i++;
     } while (i < FOOTPRINT_STAMP_PARTY_SLOTS);
@@ -1531,7 +1531,7 @@ static FootprintStampObj *FootprintStampBoard_CreateStamp(FootprintStamp *work, 
     }
     ModelInstance_Init(&stamp->instance, &stamp->model);
     FootprintStamp_TouchToBoardPos(work, mon->x, mon->y, &x, &y);
-    ModelInstance_SetPosition(&stamp->instance, x, y, 0x10000);
+    ModelInstance_SetPosition(&stamp->instance, x, y, FX32_CONST(16));
     ModelInstance_SetScale(&stamp->instance, FX32_ONE, FX32_ONE, FX32_ONE);
     ModelInstance_SetVisible(&stamp->instance, FALSE);
     return stamp;

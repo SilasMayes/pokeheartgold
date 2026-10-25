@@ -746,7 +746,7 @@ static void VsRecorder_CreateExitButton(VsRecorderWork *work) {
     VsRecorder_LoadButtonGfx31(work, NNS_G2D_VRAM_TYPE_2DSUB);
     savedVideo->exitButton.sprite = VsRecorder_NewButtonSprite(work, NNS_G2D_VRAM_TYPE_2DSUB);
     VsRecorder_CreateTextSprite(&savedVideo->exitButton, (VsRecorderGfx *)&work->narc, NNS_G2D_VRAM_TYPE_2DSUB);
-    VsRecorder_SetTextSpriteMsg(&savedVideo->exitButton, (VsRecorderGfx *)&work->narc, 3); // EXIT
+    VsRecorder_SetTextSpriteMsg(&savedVideo->exitButton, (VsRecorderGfx *)&work->narc, msg_0013_00003); // EXIT
     ManagedSprite_SetAnim(savedVideo->exitButton.sprite, 0);
     ManagedSprite_SetPositionXY(savedVideo->exitButton.sprite, 80, 232);
     TextOBJ_SetPosition(savedVideo->exitButton.text, 36, -8);

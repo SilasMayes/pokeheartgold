@@ -43,9 +43,37 @@
 #include "vram_transfer_manager.h"
 #include "yes_no_prompt.h"
 
-#define MOVE_RELEARNER_NUM_WINDOWS  15
-#define MOVE_RELEARNER_NUM_SPRITES  12
 #define MOVE_RELEARNER_VISIBLE_ROWS 4
+
+// MoveRelearner.windows
+enum MoveRelearnerWindow {
+    MOVE_RELEARNER_WINDOW_CATEGORY_LABEL,
+    MOVE_RELEARNER_WINDOW_POWER_LABEL,
+    MOVE_RELEARNER_WINDOW_ACCURACY_LABEL,
+    MOVE_RELEARNER_WINDOW_POWER,
+    MOVE_RELEARNER_WINDOW_ACCURACY,
+    MOVE_RELEARNER_WINDOW_DESCRIPTION,
+    MOVE_RELEARNER_WINDOW_MESSAGE,
+    MOVE_RELEARNER_WINDOW_TITLE,
+    MOVE_RELEARNER_WINDOW_TEACH_BUTTON,
+    MOVE_RELEARNER_WINDOW_RETURN_BUTTON,
+    MOVE_RELEARNER_WINDOW_MOVE_LIST,
+    MOVE_RELEARNER_WINDOW_KNOWN_MOVES_TITLE = MOVE_RELEARNER_WINDOW_MOVE_LIST + 2,
+    MOVE_RELEARNER_WINDOW_KNOWN_MOVES,
+    MOVE_RELEARNER_WINDOW_MON_NAME,
+    MOVE_RELEARNER_NUM_WINDOWS,
+};
+
+// MoveRelearner.sprites
+enum MoveRelearnerSprite {
+    MOVE_RELEARNER_SPRITE_DOWN_ARROW,
+    MOVE_RELEARNER_SPRITE_UP_ARROW,
+    MOVE_RELEARNER_SPRITE_CURSOR,
+    MOVE_RELEARNER_SPRITE_CATEGORY_ICON,
+    MOVE_RELEARNER_SPRITE_LIST_TYPE_ICONS,
+    MOVE_RELEARNER_SPRITE_KNOWN_TYPE_ICONS = MOVE_RELEARNER_SPRITE_LIST_TYPE_ICONS + MOVE_RELEARNER_VISIBLE_ROWS,
+    MOVE_RELEARNER_NUM_SPRITES = MOVE_RELEARNER_SPRITE_KNOWN_TYPE_ICONS + MAX_MON_MOVES,
+};
 
 // Main states (the return values of the state handlers).
 enum MoveRelearnerState {
@@ -110,7 +138,7 @@ typedef struct MoveRelearner {
     YesNoPrompt *yesNoPrompt;
     SpriteSystem *spriteSystem;
     SpriteManager *spriteManager;
-    ManagedSprite *sprites[MOVE_RELEARNER_NUM_SPRITES]; // see MoveRelearner_InitSprites
+    ManagedSprite *sprites[MOVE_RELEARNER_NUM_SPRITES];
     MoveRelearnerMonPic monPic;
     PokemonSummaryArgs summary;
     OverlayManager *summaryManager;
@@ -792,7 +820,7 @@ static void MoveRelearner_AddWindows(MoveRelearner *relearner) {
         AddWindow(relearner->bgConfig, &relearner->windows[i], &sMoveRelearnerWindowTemplates[i]);
         FillWindowPixelBuffer(&relearner->windows[i], 0);
     }
-    ClearWindowTilemapAndScheduleTransfer(&relearner->windows[8]);
+    ClearWindowTilemapAndScheduleTransfer(&relearner->windows[MOVE_RELEARNER_WINDOW_TEACH_BUTTON]);
     relearner->yesNoPrompt = YesNoPrompt_Create(HEAP_ID_66);
 }
 
@@ -1009,29 +1037,29 @@ static void MoveRelearner_PrintStaticTexts(MoveRelearner *relearner) {
     u32 i;
 
     ReadMsgDataIntoString(relearner->msgData, msg_0747_00036, relearner->string); // "TEACH WHICH MOVE?"
-    MoveRelearner_PrintString(relearner, 7, 0, MAKE_TEXT_COLOR(1, 2, 0), 0, 4);
-    ScheduleWindowCopyToVram(&relearner->windows[7]);
+    MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_TITLE, 0, MAKE_TEXT_COLOR(1, 2, 0), 0, 4);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_TITLE]);
     ReadMsgDataIntoString(relearner->msgData, msg_0747_00035, relearner->string); // "TEACH"
-    MoveRelearner_PrintString(relearner, 8, 4, MAKE_TEXT_COLOR(15, 14, 0), 2, 4);
+    MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_TEACH_BUTTON, 4, MAKE_TEXT_COLOR(15, 14, 0), 2, 4);
     ReadMsgDataIntoString(relearner->msgData, msg_0747_00034, relearner->string); // "RETURN"
-    MoveRelearner_PrintString(relearner, 9, 4, MAKE_TEXT_COLOR(15, 14, 0), 2, 4);
-    ScheduleWindowCopyToVram(&relearner->windows[9]);
+    MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_RETURN_BUTTON, 4, MAKE_TEXT_COLOR(15, 14, 0), 2, 4);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_RETURN_BUTTON]);
     ReadMsgDataIntoString(relearner->msgData, msg_0747_00022, relearner->string); // "CATEGORY"
-    MoveRelearner_PrintString(relearner, 0, 0, MAKE_TEXT_COLOR(15, 14, 0), 0, 0);
-    ScheduleWindowCopyToVram(&relearner->windows[0]);
+    MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_CATEGORY_LABEL, 0, MAKE_TEXT_COLOR(15, 14, 0), 0, 0);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_CATEGORY_LABEL]);
     ReadMsgDataIntoString(relearner->msgData, msg_0747_00023, relearner->string); // "POWER"
-    MoveRelearner_PrintString(relearner, 1, 0, MAKE_TEXT_COLOR(15, 14, 0), 0, 0);
-    ScheduleWindowCopyToVram(&relearner->windows[1]);
+    MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_POWER_LABEL, 0, MAKE_TEXT_COLOR(15, 14, 0), 0, 0);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_POWER_LABEL]);
     ReadMsgDataIntoString(relearner->msgData, msg_0747_00024, relearner->string); // "ACCURACY"
-    MoveRelearner_PrintString(relearner, 2, 0, MAKE_TEXT_COLOR(15, 14, 0), 0, 0);
-    ScheduleWindowCopyToVram(&relearner->windows[2]);
+    MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_ACCURACY_LABEL, 0, MAKE_TEXT_COLOR(15, 14, 0), 0, 0);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_ACCURACY_LABEL]);
 
     format = String_New(256, HEAP_ID_66);
     ReadMsgDataIntoString(relearner->msgData, msg_0747_00039, format); // "LEARNED MOVES"
     BufferBoxMonNickname(relearner->msgFormat, 0, Mon_GetBoxMon(relearner->args->mon));
     StringExpandPlaceholders(relearner->msgFormat, relearner->string, format);
-    MoveRelearner_PrintString(relearner, 12, 0, MAKE_TEXT_COLOR(1, 2, 0), 0, 4);
-    ScheduleWindowCopyToVram(&relearner->windows[12]);
+    MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_KNOWN_MOVES_TITLE, 0, MAKE_TEXT_COLOR(1, 2, 0), 0, 4);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_KNOWN_MOVES_TITLE]);
 
     // the Pokemon's current moves
     moveNames = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0750_bin, HEAP_ID_66);
@@ -1039,30 +1067,30 @@ static void MoveRelearner_PrintStaticTexts(MoveRelearner *relearner) {
     for (i = 0; i < MAX_MON_MOVES; i++) {
         u16 move = GetBoxMonData(boxMon, MON_DATA_MOVE1 + i, NULL);
         if (move == MOVE_NONE) {
-            ManagedSprite_SetDrawFlag(relearner->sprites[8 + i], FALSE);
+            ManagedSprite_SetDrawFlag(relearner->sprites[MOVE_RELEARNER_SPRITE_KNOWN_TYPE_ICONS + i], FALSE);
         } else {
-            ManagedSprite_SetDrawFlag(relearner->sprites[8 + i], TRUE);
+            ManagedSprite_SetDrawFlag(relearner->sprites[MOVE_RELEARNER_SPRITE_KNOWN_TYPE_ICONS + i], TRUE);
             MoveRelearner_SetTypeIcon(relearner, move, (u16)(i + 4));
             ReadMsgDataIntoString(moveNames, move, relearner->string);
-            MoveRelearner_PrintString(relearner, 13, 0, MAKE_TEXT_COLOR(15, 14, 0), 0, (u8)(i * 32));
-            AddTextPrinterParameterizedWithColor(&relearner->windows[13], 0, relearner->ppLabel, 16, 16 + i * 32, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
+            MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_KNOWN_MOVES, 0, MAKE_TEXT_COLOR(15, 14, 0), 0, (u8)(i * 32));
+            AddTextPrinterParameterizedWithColor(&relearner->windows[MOVE_RELEARNER_WINDOW_KNOWN_MOVES], 0, relearner->ppLabel, 16, 16 + i * 32, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
             BufferIntegerAsString(relearner->msgFormat, 0, GetBoxMonData(boxMon, MON_DATA_MOVE1_PP + i, NULL), 2, PRINTING_MODE_RIGHT_ALIGN, TRUE);
             BufferIntegerAsString(relearner->msgFormat, 1, GetBoxMonData(boxMon, MON_DATA_MOVE1_MAX_PP + i, NULL), 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
             StringExpandPlaceholders(relearner->msgFormat, relearner->string, relearner->ppFormat);
-            AddTextPrinterParameterizedWithColor(&relearner->windows[13], 0, relearner->string, 45, 16 + i * 32, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
+            AddTextPrinterParameterizedWithColor(&relearner->windows[MOVE_RELEARNER_WINDOW_KNOWN_MOVES], 0, relearner->string, 45, 16 + i * 32, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
         }
     }
-    ScheduleWindowCopyToVram(&relearner->windows[13]);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_KNOWN_MOVES]);
 
     ReadMsgDataIntoString(relearner->msgData, msg_0747_00037, format); // species name
     BufferBoxMonSpeciesName(relearner->msgFormat, 0, boxMon);
     StringExpandPlaceholders(relearner->msgFormat, relearner->string, format);
-    AddTextPrinterParameterizedWithColor(&relearner->windows[14], 0, relearner->string, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
+    AddTextPrinterParameterizedWithColor(&relearner->windows[MOVE_RELEARNER_WINDOW_MON_NAME], 0, relearner->string, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     ReadMsgDataIntoString(relearner->msgData, msg_0747_00038, format); // "Lv. {0}"
     BufferIntegerAsString(relearner->msgFormat, 0, GetBoxMonData(boxMon, MON_DATA_LEVEL, NULL), 3, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     StringExpandPlaceholders(relearner->msgFormat, relearner->string, format);
-    MoveRelearner_PrintString(relearner, 14, 0, MAKE_TEXT_COLOR(1, 2, 0), 1, 16);
-    ScheduleWindowCopyToVram(&relearner->windows[14]);
+    MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_MON_NAME, 0, MAKE_TEXT_COLOR(1, 2, 0), 1, 16);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_MON_NAME]);
     DestroyMsgData(moveNames);
     String_Delete(format);
 }
@@ -1095,23 +1123,23 @@ static void MoveRelearner_PrintListRow(MoveRelearner *relearner, int scrollOffse
         MoveRelearner_CopyButtonTiles(relearner, 0, (u8)(row * 4 + 4), 16, 4, 0, 4);
         return;
     }
-    AddTextPrinterParameterizedWithColor(&relearner->windows[10], 0, relearner->moveList[index].text, 0, y, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
-    AddTextPrinterParameterizedWithColor(&relearner->windows[10], 0, relearner->ppLabel, 16, y + 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
+    AddTextPrinterParameterizedWithColor(&relearner->windows[MOVE_RELEARNER_WINDOW_MOVE_LIST], 0, relearner->moveList[index].text, 0, y, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
+    AddTextPrinterParameterizedWithColor(&relearner->windows[MOVE_RELEARNER_WINDOW_MOVE_LIST], 0, relearner->ppLabel, 16, y + 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     int maxPP = GetMoveMaxPP(relearner->moveList[index].value, 0);
     BufferIntegerAsString(relearner->msgFormat, 0, maxPP, 2, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     BufferIntegerAsString(relearner->msgFormat, 1, maxPP, 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
     StringExpandPlaceholders(relearner->msgFormat, relearner->string, relearner->ppFormat);
-    ((u8(*)(Window *, u32, String *, int, int, u32, u32, PrinterCallback_t))AddTextPrinterParameterizedWithColor)(&relearner->windows[10], 0, relearner->string, 45, y + 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
+    ((u8(*)(Window *, u32, String *, int, int, u32, u32, PrinterCallback_t))AddTextPrinterParameterizedWithColor)(&relearner->windows[MOVE_RELEARNER_WINDOW_MOVE_LIST], 0, relearner->string, 45, y + 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
 }
 
 static void MoveRelearner_PrintMoveList(MoveRelearner *relearner) {
     u32 i;
 
-    FillWindowPixelBuffer(&relearner->windows[10], 0);
+    FillWindowPixelBuffer(&relearner->windows[MOVE_RELEARNER_WINDOW_MOVE_LIST], 0);
     for (i = 0; i < MOVE_RELEARNER_VISIBLE_ROWS; i++) {
         MoveRelearner_PrintListRow(relearner, (u8)relearner->args->scrollOffset, (u8)i);
     }
-    ScheduleWindowCopyToVram(&relearner->windows[10]);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_MOVE_LIST]);
     ScheduleBgTilemapBufferTransfer(relearner->bgConfig, GF_BG_LYR_SUB_3);
     MoveRelearner_UpdateListTypeIcons(relearner);
 }
@@ -1148,10 +1176,10 @@ static void MoveRelearner_PrintMoveInfo(MoveRelearner *relearner, s32 move) {
     u32 value;
     MsgData *moveDescriptions;
 
-    FillWindowPixelBuffer(&relearner->windows[5], 0);
-    FillWindowPixelBuffer(&relearner->windows[3], 0);
-    FillWindowPixelBuffer(&relearner->windows[4], 0);
-    ManagedSprite_SetDrawFlag(relearner->sprites[3], FALSE);
+    FillWindowPixelBuffer(&relearner->windows[MOVE_RELEARNER_WINDOW_DESCRIPTION], 0);
+    FillWindowPixelBuffer(&relearner->windows[MOVE_RELEARNER_WINDOW_POWER], 0);
+    FillWindowPixelBuffer(&relearner->windows[MOVE_RELEARNER_WINDOW_ACCURACY], 0);
+    ManagedSprite_SetDrawFlag(relearner->sprites[MOVE_RELEARNER_SPRITE_CATEGORY_ICON], FALSE);
 
     if (move != -2) {
         value = ((u32(*)(u32, MoveAttr))GetMoveAttr)(move, MOVEATTR_POWER);
@@ -1160,7 +1188,7 @@ static void MoveRelearner_PrintMoveInfo(MoveRelearner *relearner, s32 move) {
         } else {
             MoveRelearner_FormatNumber(relearner, msg_0747_00029, value, 3, PRINTING_MODE_LEFT_ALIGN);
         }
-        MoveRelearner_PrintString(relearner, 3, 0, MAKE_TEXT_COLOR(1, 2, 0), 1, 0);
+        MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_POWER, 0, MAKE_TEXT_COLOR(1, 2, 0), 1, 0);
 
         value = ((u32(*)(u32, MoveAttr))GetMoveAttr)(move, MOVEATTR_ACCURACY);
         if (value == 0) {
@@ -1168,25 +1196,25 @@ static void MoveRelearner_PrintMoveInfo(MoveRelearner *relearner, s32 move) {
         } else {
             MoveRelearner_FormatNumber(relearner, msg_0747_00030, value, 3, PRINTING_MODE_LEFT_ALIGN);
         }
-        MoveRelearner_PrintString(relearner, 4, 0, MAKE_TEXT_COLOR(1, 2, 0), 1, 0);
+        MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_ACCURACY, 0, MAKE_TEXT_COLOR(1, 2, 0), 1, 0);
 
         moveDescriptions = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0749_bin, HEAP_ID_66);
         ReadMsgDataIntoString(moveDescriptions, move, relearner->string);
-        MoveRelearner_PrintString(relearner, 5, 0, MAKE_TEXT_COLOR(1, 2, 0), 0, 0);
+        MoveRelearner_PrintString(relearner, MOVE_RELEARNER_WINDOW_DESCRIPTION, 0, MAKE_TEXT_COLOR(1, 2, 0), 0, 0);
         DestroyMsgData(moveDescriptions);
         MoveRelearner_SetCategoryIcon(relearner, move);
-        ManagedSprite_SetDrawFlag(relearner->sprites[3], TRUE);
-        ScheduleWindowCopyToVram(&relearner->windows[0]);
-        ScheduleWindowCopyToVram(&relearner->windows[1]);
-        ScheduleWindowCopyToVram(&relearner->windows[2]);
+        ManagedSprite_SetDrawFlag(relearner->sprites[MOVE_RELEARNER_SPRITE_CATEGORY_ICON], TRUE);
+        ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_CATEGORY_LABEL]);
+        ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_POWER_LABEL]);
+        ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_ACCURACY_LABEL]);
     } else {
-        ClearWindowTilemapAndScheduleTransfer(&relearner->windows[0]);
-        ClearWindowTilemapAndScheduleTransfer(&relearner->windows[1]);
-        ClearWindowTilemapAndScheduleTransfer(&relearner->windows[2]);
+        ClearWindowTilemapAndScheduleTransfer(&relearner->windows[MOVE_RELEARNER_WINDOW_CATEGORY_LABEL]);
+        ClearWindowTilemapAndScheduleTransfer(&relearner->windows[MOVE_RELEARNER_WINDOW_POWER_LABEL]);
+        ClearWindowTilemapAndScheduleTransfer(&relearner->windows[MOVE_RELEARNER_WINDOW_ACCURACY_LABEL]);
     }
-    ScheduleWindowCopyToVram(&relearner->windows[5]);
-    ScheduleWindowCopyToVram(&relearner->windows[3]);
-    ScheduleWindowCopyToVram(&relearner->windows[4]);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_DESCRIPTION]);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_POWER]);
+    ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_ACCURACY]);
 }
 
 // Fills the placeholders of message `message` (a column of sMoveRelearnerMessageIds) into relearner->string.
@@ -1258,16 +1286,16 @@ static u16 MoveRelearner_GetMoveToReplace(MoveRelearner *relearner) {
 }
 
 static void MoveRelearner_PrintMessage(MoveRelearner *relearner, u32 message) {
-    FillWindowPixelBuffer(&relearner->windows[6], 15);
-    DrawFrameAndWindow2(&relearner->windows[6], FALSE, 61, 13);
+    FillWindowPixelBuffer(&relearner->windows[MOVE_RELEARNER_WINDOW_MESSAGE], 15);
+    DrawFrameAndWindow2(&relearner->windows[MOVE_RELEARNER_WINDOW_MESSAGE], FALSE, 61, 13);
     MoveRelearner_FormatMessage(relearner, message);
     TextFlags_SetCanABSpeedUpPrint(TRUE);
-    relearner->textPrinterId = AddTextPrinterParameterized(&relearner->windows[6], 1, relearner->string, 0, 0, Options_GetTextFrameDelay(relearner->args->options), MoveRelearner_TextPrinterCallback);
+    relearner->textPrinterId = AddTextPrinterParameterized(&relearner->windows[MOVE_RELEARNER_WINDOW_MESSAGE], 1, relearner->string, 0, 0, Options_GetTextFrameDelay(relearner->args->options), MoveRelearner_TextPrinterCallback);
 }
 
 static void MoveRelearner_ClearMessage(MoveRelearner *relearner) {
-    ClearFrameAndWindow2(&relearner->windows[6], TRUE);
-    ClearWindowTilemapAndScheduleTransfer(&relearner->windows[6]);
+    ClearFrameAndWindow2(&relearner->windows[MOVE_RELEARNER_WINDOW_MESSAGE], TRUE);
+    ClearWindowTilemapAndScheduleTransfer(&relearner->windows[MOVE_RELEARNER_WINDOW_MESSAGE]);
 }
 
 static BOOL MoveRelearner_TextPrinterCallback(TextPrinterTemplate *template, u16 glyphId) {
@@ -1427,9 +1455,9 @@ static void MoveRelearner_SetTypeIcon(MoveRelearner *relearner, u16 move, u16 in
     file = TypeIcon_GetCharFile(type);
     SpriteSystem_ReplaceCharResObj(relearner->spriteSystem, relearner->spriteManager, narc, file, TRUE, 0xB8AB + index);
     if (index < 4) {
-        ManagedSprite_SetPaletteOverride(relearner->sprites[index + 4], TypeIcon_GetPalette(type) + 4);
+        ManagedSprite_SetPaletteOverride(relearner->sprites[MOVE_RELEARNER_SPRITE_LIST_TYPE_ICONS + index], TypeIcon_GetPalette(type) + 4);
     } else {
-        ManagedSprite_SetPaletteOverride(relearner->sprites[index + 4], TypeIcon_GetPalette(type));
+        ManagedSprite_SetPaletteOverride(relearner->sprites[MOVE_RELEARNER_SPRITE_LIST_TYPE_ICONS + index], TypeIcon_GetPalette(type));
     }
 }
 
@@ -1439,11 +1467,11 @@ static void MoveRelearner_UpdateListTypeIcons(MoveRelearner *relearner) {
     u8 *shifted = (u8 *)relearner;
 
     for (; i < MOVE_RELEARNER_VISIBLE_ROWS;) {
-        ManagedSprite_SetPositionXY(((MoveRelearner *)shifted)->sprites[4], 22, y);
+        ManagedSprite_SetPositionXY(((MoveRelearner *)shifted)->sprites[MOVE_RELEARNER_SPRITE_LIST_TYPE_ICONS], 22, y);
         if (relearner->args->scrollOffset + i >= relearner->numMoves) {
-            ManagedSprite_SetDrawFlag(((MoveRelearner *)shifted)->sprites[4], FALSE);
+            ManagedSprite_SetDrawFlag(((MoveRelearner *)shifted)->sprites[MOVE_RELEARNER_SPRITE_LIST_TYPE_ICONS], FALSE);
         } else {
-            ManagedSprite_SetDrawFlag(((MoveRelearner *)shifted)->sprites[4], TRUE);
+            ManagedSprite_SetDrawFlag(((MoveRelearner *)shifted)->sprites[MOVE_RELEARNER_SPRITE_LIST_TYPE_ICONS], TRUE);
             MoveRelearner_SetTypeIcon(relearner, relearner->args->eligibleMoves[relearner->args->scrollOffset + i], i);
         }
         i++;
@@ -1458,11 +1486,8 @@ static void MoveRelearner_SetCategoryIcon(MoveRelearner *relearner, u16 move) {
     int file = MoveCategoryIcon_GetCharFile(category);
 
     SpriteSystem_ReplaceCharResObj(relearner->spriteSystem, relearner->spriteManager, narc, file, TRUE, 0xB8AA);
-    ManagedSprite_SetPaletteOverride(relearner->sprites[3], MoveCategoryIcon_GetPalette(category) + 4);
+    ManagedSprite_SetPaletteOverride(relearner->sprites[MOVE_RELEARNER_SPRITE_CATEGORY_ICON], MoveCategoryIcon_GetPalette(category) + 4);
 }
-
-// Sprites: 0/1 scroll arrows (down/up), 2 cursor, 3 category icon of the selected move,
-// 4-7 type icons of the list rows, 8-11 type icons of the Pokemon's current moves.
 
 static void MoveRelearner_InitSprites(MoveRelearner *relearner, NARC *narc) {
     u32 i;
@@ -1480,8 +1505,8 @@ static void MoveRelearner_CreateCamera(Camera **camera, enum HeapID heapID) {
     CameraAngle angle = { 0, 0, 0, 0 };
 
     *camera = Camera_New(heapID);
-    Camera_Init_FromPosDistanceAndAngle(&pos, 0x10000, &angle, 0x5C1, 1, *camera);
-    Camera_SetPerspectiveClippingPlane(0, 0x64000, *camera);
+    Camera_Init_FromPosDistanceAndAngle(&pos, FX32_CONST(16), &angle, 0x5C1, 1, *camera);
+    Camera_SetPerspectiveClippingPlane(0, FX32_CONST(100), *camera);
     Camera_ClearFixedTarget(*camera);
     Camera_SetStaticPtr(*camera);
 }
@@ -1541,16 +1566,16 @@ static void MoveRelearner_Free3D(MoveRelearnerMonPic *monPic) {
 // pos 0-3: list rows, 4/5: the bottom buttons ("TEACH", "RETURN"), else the yes/no position.
 static void MoveRelearner_SetCursorPos(MoveRelearner *relearner, u32 pos, int palette) {
     if (pos < 4) {
-        ManagedSprite_SetPositionXY(relearner->sprites[2], 0, (s16)(pos * 32 + 32));
-        ManagedSprite_SetAnimationFrame(relearner->sprites[2], 0);
+        ManagedSprite_SetPositionXY(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], 0, (s16)(pos * 32 + 32));
+        ManagedSprite_SetAnimationFrame(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], 0);
     } else if (pos < 6) {
-        ManagedSprite_SetPositionXY(relearner->sprites[2], (s16)((pos - 4) * 40), 168);
-        ManagedSprite_SetAnimationFrame(relearner->sprites[2], 1);
+        ManagedSprite_SetPositionXY(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], (s16)((pos - 4) * 40), 168);
+        ManagedSprite_SetAnimationFrame(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], 1);
     } else {
-        ManagedSprite_SetPositionXY(relearner->sprites[2], 192, 160);
-        ManagedSprite_SetAnimationFrame(relearner->sprites[2], 2);
+        ManagedSprite_SetPositionXY(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], 192, 160);
+        ManagedSprite_SetAnimationFrame(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], 2);
     }
-    ManagedSprite_SetPaletteOverride(relearner->sprites[2], palette);
+    ManagedSprite_SetPaletteOverride(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], palette);
 }
 
 // which: 0 the down arrow, 1 the up arrow is pressed.
@@ -1559,29 +1584,29 @@ static void MoveRelearner_UpdateScrollArrows(MoveRelearner *relearner, int which
 
     if (which == 0 && animate) {
         anim = 1;
-        ManagedSprite_ResetSpriteAnimCtrlState(relearner->sprites[0]);
+        ManagedSprite_ResetSpriteAnimCtrlState(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW]);
     } else {
         anim = 0;
     }
     if (relearner->args->scrollOffset + 4 < relearner->numMoves) {
-        ManagedSprite_SetAnim(relearner->sprites[0], anim);
+        ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], anim);
     } else {
-        ManagedSprite_SetAnim(relearner->sprites[0], anim + 2);
+        ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], anim + 2);
     }
-    ManagedSprite_SetAnimateFlag(relearner->sprites[0], anim);
+    ManagedSprite_SetAnimateFlag(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], anim);
 
     if (which == 1 && animate) {
         anim = 1;
-        ManagedSprite_ResetSpriteAnimCtrlState(relearner->sprites[1]);
+        ManagedSprite_ResetSpriteAnimCtrlState(relearner->sprites[MOVE_RELEARNER_SPRITE_UP_ARROW]);
     } else {
         anim = 0;
     }
     if (relearner->args->scrollOffset) {
-        ManagedSprite_SetAnim(relearner->sprites[1], anim + 4);
+        ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_UP_ARROW], anim + 4);
     } else {
-        ManagedSprite_SetAnim(relearner->sprites[1], anim + 6);
+        ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_UP_ARROW], anim + 6);
     }
-    ManagedSprite_SetAnimateFlag(relearner->sprites[1], anim);
+    ManagedSprite_SetAnimateFlag(relearner->sprites[MOVE_RELEARNER_SPRITE_UP_ARROW], anim);
 }
 
 static int MoveRelearner_FadeOutToSummary(MoveRelearner *relearner) {
@@ -1736,12 +1761,12 @@ static void MoveRelearner_GridOnTouch(void *data, int input, int prevInput) {
 static void MoveRelearner_SetLearnButtonActive(MoveRelearner *relearner, u32 active) {
     if (active == TRUE) {
         GridInputHandler_SetEnabledFlag(relearner->gridInput, 7);
-        ScheduleWindowCopyToVram(&relearner->windows[8]);
+        ScheduleWindowCopyToVram(&relearner->windows[MOVE_RELEARNER_WINDOW_TEACH_BUTTON]);
         MoveRelearner_CopyButtonTiles(relearner, 15, 20, 8, 4, 8, 12);
         relearner->learnButtonActive = TRUE;
     } else {
         GridInputHandler_ClearEnabledFlag(relearner->gridInput, 7);
-        ClearWindowTilemapAndScheduleTransfer(&relearner->windows[8]);
+        ClearWindowTilemapAndScheduleTransfer(&relearner->windows[MOVE_RELEARNER_WINDOW_TEACH_BUTTON]);
         MoveRelearner_CopyButtonTiles(relearner, 15, 20, 8, 4, 0, 12);
         relearner->learnButtonActive = FALSE;
     }
@@ -1768,25 +1793,25 @@ static void MoveRelearner_UpdateScrollButtons(MoveRelearner *relearner) {
 }
 
 static void MoveRelearner_AnimateScrollArrows(MoveRelearner *relearner, s32 direction) {
-    ManagedSprite_SetAnimateFlag(relearner->sprites[1], TRUE);
-    ManagedSprite_SetAnimateFlag(relearner->sprites[0], TRUE);
-    ManagedSprite_SetAnimationFrame(relearner->sprites[1], 0);
-    ManagedSprite_SetAnimationFrame(relearner->sprites[0], 0);
+    ManagedSprite_SetAnimateFlag(relearner->sprites[MOVE_RELEARNER_SPRITE_UP_ARROW], TRUE);
+    ManagedSprite_SetAnimateFlag(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], TRUE);
+    ManagedSprite_SetAnimationFrame(relearner->sprites[MOVE_RELEARNER_SPRITE_UP_ARROW], 0);
+    ManagedSprite_SetAnimationFrame(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], 0);
 
     if (direction > 0) {
         if (relearner->args->scrollOffset + 4 < relearner->numMoves) {
-            ManagedSprite_SetAnim(relearner->sprites[0], 1);
+            ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], 1);
         } else {
-            ManagedSprite_SetAnim(relearner->sprites[0], 3);
+            ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], 3);
         }
-        ManagedSprite_SetAnim(relearner->sprites[1], 4);
+        ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_UP_ARROW], 4);
     } else {
         if (relearner->args->scrollOffset == 0) {
-            ManagedSprite_SetAnim(relearner->sprites[1], 7);
+            ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_UP_ARROW], 7);
         } else {
-            ManagedSprite_SetAnim(relearner->sprites[1], 5);
+            ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_UP_ARROW], 5);
         }
-        ManagedSprite_SetAnim(relearner->sprites[0], 0);
+        ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], 0);
     }
 }
 

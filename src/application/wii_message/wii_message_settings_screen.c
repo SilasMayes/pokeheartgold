@@ -5,6 +5,9 @@
 #include "application/wii_message/wii_message_settings_internal.h"
 #include "application/wii_message/wii_number.h"
 #include "dwc/dwc_account_internal.h"
+#include "dwc/dwc_main_internal.h"
+#include "dwc/net_common_internal.h"
+#include "dwc/stats_upload_internal.h"
 #include "gts/gts_server.h"
 #include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0188.h"
@@ -160,21 +163,6 @@ typedef struct WiiMessageSettingsSubBgTemplates {
 void CommState_InitWiiMessageWfcSession(SaveData *saveData);
 void CommState_FreeWiiMessageWfcSession(void);
 void CommState_ShowRestartErrorAndHalt(void);
-void DWC_CleanupInet(void);
-int DWC_CheckInet(void);
-void DWC_InitInetEx(void *a0, int a1, int a2, int a3);
-void DWC_SetAuthServer(int a0);
-void DWC_ConnectInetAsync(void);
-void DWC_ProcessInet(void);
-int DWC_GetInetStatus(void);
-int DWC_GetLastErrorEx(int *errorCode, u32 *errorType);
-void DWC_ClearError(void);
-void DWC_GetLastError(int *a0);
-void DWC_GetApInfo(void *a0);
-void DWC_NASLoginAsync(void);
-int DWC_NASLoginProcess(void);
-void DWC_ShutdownGHTTP(void);
-void DWC_ShutdownFriendsMatch(void);
 
 enum WiiMessageSettingsScreenMainState {
     WII_MESSAGE_SETTINGS_SCREEN_MAIN_WAIT_FADE_IN,
@@ -1343,7 +1331,7 @@ static BOOL WiiMessageSettingsScreen_StartConnect(WiiMessageSettingsScreen *scre
         break;
     case 2:
         Sys_SetSleepDisableFlag(4);
-        DWC_InitInetEx(screen->app->netConnection, 2, 1, 20);
+        DWC_InitInetEx(&screen->app->netConnection, 2, 1, 20);
         DWC_SetAuthServer(2);
         DWC_ConnectInetAsync();
         screen->state = WMS_STATE_WAIT_CONNECT;
@@ -1355,9 +1343,9 @@ static BOOL WiiMessageSettingsScreen_StartConnect(WiiMessageSettingsScreen *scre
 static BOOL WiiMessageSettingsScreen_WaitConnect(WiiMessageSettingsScreen *screen) {
     struct {
         int error;
-        u32 errorType;
+        int errorType;
         int errorCode;
-        u8 info[60];
+        NetApInfo info;
     } locals;
 
     DWC_ProcessInet();
@@ -1393,7 +1381,7 @@ static BOOL WiiMessageSettingsScreen_WaitConnect(WiiMessageSettingsScreen *scree
             screen->registrationError = -2;
             break;
         case 4:
-            DWC_GetApInfo(locals.info);
+            DWC_GetApInfo(&locals.info);
             screen->state = WMS_STATE_START_AUTH;
             break;
         }
@@ -1409,7 +1397,7 @@ static BOOL WiiMessageSettingsScreen_StartAuth(WiiMessageSettingsScreen *screen)
 
 static BOOL WiiMessageSettingsScreen_WaitAuth(WiiMessageSettingsScreen *screen) {
     int errorCode;
-    u32 errorType;
+    int errorType;
 
     switch (DWC_NASLoginProcess()) {
     case 3:

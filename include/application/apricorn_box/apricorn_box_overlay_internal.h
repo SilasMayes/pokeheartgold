@@ -3,24 +3,12 @@
 
 #include "global.h"
 
-#include "constants/pokemon.h"
-
 #include "apricorn_box.h"
 #include "apricorn_internal.h"
-#include "bag.h"
-#include "gf_gfx_planes.h"
-#include "heap.h"
-#include "mail.h"
-#include "menu_input_state.h"
 #include "overlay_58.h"
 #include "overlay_manager.h"
-#include "party.h"
 #include "party_menu.h"
-#include "player_data.h"
-#include "pokemon_mood.h"
-#include "save.h"
 #include "screen_fade.h"
-#include "system.h"
 
 // ApricornBoxApp.mode, the Apricorn Box screen's mode
 enum ApricornBoxMode {
