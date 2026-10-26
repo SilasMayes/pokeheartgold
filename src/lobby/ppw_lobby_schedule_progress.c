@@ -50,26 +50,26 @@ void PPWLobbySchedule_Process(PPWLobbySchedule *schedule) {
         if (!schedule->pendingEvents.size) {
             return;
         }
-        event = schedule->pendingEvents.map.blocks[(schedule->pendingEvents.map.start + (schedule->pendingEvents.start >> 7)) % schedule->pendingEvents.map.capacity] + (schedule->pendingEvents.start & 127);
+        event = schedule->pendingEvents.map.blocks[(schedule->pendingEvents.map.start + (schedule->pendingEvents.start / LOBBY_EVENT_BLOCK_SIZE)) % schedule->pendingEvents.map.capacity] + (schedule->pendingEvents.start % LOBBY_EVENT_BLOCK_SIZE);
         DWC_GetDateTime(&date, &time);
         now = RTC_ConvertDateTimeToSecond(&date, &time);
-        if (event->key > now - schedule->startTime) {
+        if (event->time > now - schedule->startTime) {
             return;
         }
         do {
             LobbyTag tag;
-            PPWLobby_GetWork()->callbacks.onLobbyEvent(event->payload);
+            PPWLobby_GetWork()->callbacks.onLobbyEvent(event->type);
             memset(&tag, 0, sizeof tag);
             LobbyEventDeque_EraseAtBegin(&schedule->pendingEvents, 1, tag);
             if (!schedule->pendingEvents.size) {
                 return;
             }
             {
-                LobbyEvent *next = schedule->pendingEvents.map.blocks[(schedule->pendingEvents.map.start + (schedule->pendingEvents.start >> 7)) % schedule->pendingEvents.map.capacity] + (schedule->pendingEvents.start & 127);
-                event->key = next->key;
-                event->payload = next->payload;
+                LobbyEvent *next = schedule->pendingEvents.map.blocks[(schedule->pendingEvents.map.start + (schedule->pendingEvents.start / LOBBY_EVENT_BLOCK_SIZE)) % schedule->pendingEvents.map.capacity] + (schedule->pendingEvents.start % LOBBY_EVENT_BLOCK_SIZE);
+                event->time = next->time;
+                event->type = next->type;
             }
-        } while (event->key <= now - schedule->startTime);
+        } while (event->time <= now - schedule->startTime);
         break;
     }
 }

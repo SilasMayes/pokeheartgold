@@ -40,6 +40,10 @@ enum PPWLobbyMessageFormat {
     PPW_LOBBY_MESSAGE_FORMAT_BINARY,
 };
 
+// The longest text a lobby message carries, and the most bytes of binary data (base64, it fits that text)
+#define PPW_LOBBY_MESSAGE_MAX_LENGTH      400
+#define PPW_LOBBY_MESSAGE_MAX_BINARY_SIZE 300
+
 // Who a lobby message is for: the lobby library itself ("S") or the game ("A")
 enum PPWLobbyMessageKind {
     PPW_LOBBY_MESSAGE_KIND_SYSTEM,

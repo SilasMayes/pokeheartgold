@@ -108,6 +108,22 @@ enum WebServer {
     WEB_SERVER_DEVELOPMENT
 };
 
+// The start of every web request body: the player, the game's version and language and the console's MAC address.
+struct WebRequestHeader {
+    u32 userId;
+    u16 one;
+    u8 version;
+    u8 language;
+    u8 mac[6];
+    u16 unk_0E;
+    u32 unk_10;
+};
+
+// The own player's user profile, which starts with a PPWLobbyUserProfile.
+inline const PPWLobbyUserProfile *GetUserProfile(PPWLobbyWork *work) {
+    return (const PPWLobbyUserProfile *)LobbyByteVector_Data(&work->players.self.userProfile);
+}
+
 
 extern "C" void LobbyCharVector_AssignIterRange(LobbyCharVector *, ByteIterator, ByteIterator, RangeTag);
 extern "C" void StatsUpload_Start(int server, const char *key);
@@ -286,18 +302,8 @@ inline void SendWebRequest(WebRequest *request) {
 namespace SubmitQuestionnaire {
 extern "C" void OS_GetMacAddress(u8 *);
 
-struct Info {
-    int id;
-    u16 one;
-    u8 version;
-    u8 language;
-    u8 mac[6];
-    u16 pad;
-    int pad2;
-};
-
 struct Packet {
-    Info info;
+    WebRequestHeader header;
     u32 out0, out1;
     int mode;
     u32 trainerId;
@@ -310,23 +316,6 @@ struct Out {
     u32 a, b;
     u8 rest[0x2d0];
 };
-
-struct Data {
-    u8 pad0[4];
-    u32 trainerId;
-    u8 pad8[0x38 - 8];
-    u8 gender;
-    u8 language;
-    u8 pad3a[2];
-    u16 country;
-    u8 region;
-    u8 pad3f[3];
-    u8 version;
-};
-
-inline const Data *GetData(PPWLobbyWork *w) {
-    return (const Data *)LobbyByteVector_Data(&w->players.self.userProfile);
-}
 
 extern "C" int PPW_LobbySubmitQuestionnaire(int mode);
 
@@ -350,25 +339,25 @@ extern "C" int PPW_LobbySubmitQuestionnaire(int mode) {
     if (!PPWLobbySchedule_GetQuestionnaire(&w->schedule, &out) || gPPWLobbyWork->submittingQuestionnaire) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    const Data *d = GetData(gPPWLobbyWork);
+    const PPWLobbyUserProfile *profile = GetUserProfile(gPPWLobbyWork);
     Packet p = { 0 };
     {
-        Info info;
-        const Data *d2 = GetData(gPPWLobbyWork);
-        info.id = gPPWLobbyWork->userId;
-        info.one = 1;
-        info.version = d2->version;
-        info.language = d2->language;
-        OS_GetMacAddress(info.mac);
-        p.info = info;
+        WebRequestHeader header;
+        const PPWLobbyUserProfile *headerProfile = GetUserProfile(gPPWLobbyWork);
+        header.userId = gPPWLobbyWork->userId;
+        header.one = 1;
+        header.version = headerProfile->version;
+        header.language = headerProfile->language;
+        OS_GetMacAddress(header.mac);
+        p.header = header;
     }
     p.out0 = out.a;
     p.out1 = out.b;
     p.mode = mode;
-    p.trainerId = d->trainerId;
-    p.gender = d->gender;
-    p.country = d->country;
-    p.region = d->region;
+    p.trainerId = profile->trainerId;
+    p.gender = profile->gender;
+    p.country = profile->country;
+    p.region = profile->region;
     pid = gPPWLobbyWork->userId;
     page = gPPWLobbySubmitQuestionnaireUrl;
     key = gPPWLobbyStatsUploadKey;
@@ -477,7 +466,7 @@ int PPWLobby_SetChannelData(int userId, int kind, const char *key, const void *d
         LobbyString_Destroy(&channelName);
         return PPW_LOBBY_RESULT_ERROR_CHANNEL;
     }
-    if (size > 300) {
+    if (size > PPW_LOBBY_MESSAGE_MAX_BINARY_SIZE) {
         LobbyString_Destroy(&channelName);
         return PPW_LOBBY_RESULT_ERROR_PARAM;
     }
@@ -508,16 +497,17 @@ struct B48 {
     u32 w[12];
 };
 
-struct Config {
-    u32 a, b;
+// The whole user profile record (it starts with a PPWLobbyUserProfile), as the profile check sends it.
+struct UserProfileRecord {
+    u32 lobbyId, trainerId;
     u16 h08[8];
     u32 h18, h1C;
     u16 h20[6];
     u8 b2C[6];
     u8 b32[6];
-    u8 b38, b39;
-    u16 h3A, h3C;
-    u8 b3E, b3F, b40, b41, b42, b43;
+    u8 gender, language;
+    u16 h3A, country;
+    u8 region, b3F, b40, b41, version, b43;
     W8 b44;
     u8 b4C[12];
     B48 b58;
@@ -531,33 +521,28 @@ struct Config {
     } t2;
 };
 
-struct Info {
-    u32 userId;
-    u16 one;
-    u8 version;
-    u8 language;
-    u8 mac[6];
-    u8 rest[6];
-    Config cfg;
+struct CheckProfileBody {
+    WebRequestHeader header;
+    UserProfileRecord profile;
 };
 
 extern "C" void PPWLobby_StartCheckProfile(void);
 
 extern "C" void PPWLobby_StartCheckProfile(void) {
-    Info info;
-    const Config *c = (const Config *)LobbyByteVector_Data(&gPPWLobbyWork->players.self.userProfile);
-    const PPWLobbyUserProfile *f = (const PPWLobbyUserProfile *)LobbyByteVector_Data(&gPPWLobbyWork->players.self.userProfile);
+    CheckProfileBody body;
+    const UserProfileRecord *profile = (const UserProfileRecord *)LobbyByteVector_Data(&gPPWLobbyWork->players.self.userProfile);
+    const PPWLobbyUserProfile *userProfile = GetUserProfile(gPPWLobbyWork);
     const char *key;
     const char *page;
     WebRequest *request;
     u32 pid;
     WebServer server;
-    info.userId = gPPWLobbyWork->userId;
-    info.one = 1;
-    info.version = f->version;
-    info.language = f->language;
-    OS_GetMacAddress(info.mac);
-    info.cfg = *c;
+    body.header.userId = gPPWLobbyWork->userId;
+    body.header.one = 1;
+    body.header.version = userProfile->version;
+    body.header.language = userProfile->language;
+    OS_GetMacAddress(body.header.mac);
+    body.profile = *profile;
     pid = gPPWLobbyWork->userId;
     page = gPPWLobbyCheckProfileUrl;
     key = gPPWLobbyStatsUploadKey;
@@ -566,7 +551,7 @@ extern "C" void PPWLobby_StartCheckProfile(void) {
         return;
     }
     request = (WebRequest *)LobbyMem_Alloc(sizeof(WebRequest));
-    new (request) WebRequest(server, key, page, pid, (const u8 *)&info, (const u8 *)&info + sizeof(Info), PPWLobby_OnCheckProfile, FALSE);
+    new (request) WebRequest(server, key, page, pid, (const u8 *)&body, (const u8 *)&body + sizeof(CheckProfileBody), PPWLobby_OnCheckProfile, FALSE);
     SendWebRequest(request);
 }
 }
@@ -814,7 +799,7 @@ struct Vec {
 extern "C" int PPWLobby_DecodeMessageData(const char *, Vec *);
 extern "C" const u8 *LobbyByteVector_Data(Vec *);
 extern "C" void PPWLobby_HandleReceivedData(BOOL, BOOL, const char *, int, const char *, const char *, u32);
-extern "C" PPWLobbyPlayer *PPWLobbyPlayers_Find(void *, int);
+extern "C" PPWLobbyPlayer *PPWLobbyPlayers_Find(PPWLobbyPlayers *players, int id);
 
 inline int Find(PPWLobbyWork *w, const PPWString &name) {
     const PPWString &n = name;
@@ -1077,7 +1062,7 @@ struct Val : PPWLobbyTime {
     }
 };
 
-extern "C" Rec *PPWLobbyPlayers_Find(void *, int);
+extern "C" Rec *PPWLobbyPlayers_Find(PPWLobbyPlayers *players, int id);
 
 inline void Rec::SetVec(const u8 *d, u32 n, AllocatorTag al) {
     Vec v;
@@ -1177,7 +1162,7 @@ typedef struct {
     int id;
 } Obj;
 
-PPWLobbyPlayer *PPWLobbyPlayers_Find(void *, int);
+PPWLobbyPlayer *PPWLobbyPlayers_Find(PPWLobbyPlayers *players, int id);
 
 static inline BOOL RecordValid(PPWLobbyPlayer *r) {
     return r && r->entered;
@@ -1404,18 +1389,10 @@ int PPWLobby_ParseWebResponse(BOOL valid, u8 *data, u32 size, void **output, u32
 namespace OnCheckProfile {
 extern "C" void OS_GetMacAddress(u8 *);
 
-struct Info {
-    u32 userId;
-    u16 one;
-    u8 version;
-    u8 language;
-    u8 mac[6];
-    u8 rest[6];
-};
 extern "C" void PPWLobby_OnCheckProfile(BOOL, u8 *, u32, void *);
 
 extern "C" void PPWLobby_OnCheckProfile(BOOL success, u8 *response, u32 responseSize, void *param) {
-    Info info;
+    WebRequestHeader info;
     const char *key;
     const char *page;
     WebRequest *request;
@@ -1430,7 +1407,7 @@ extern "C" void PPWLobby_OnCheckProfile(BOOL success, u8 *response, u32 response
     buf = 0;
     len = 0;
     int r = PPWLobby_ParseWebResponse(success, response, responseSize, &buf, &len);
-    if (r == PPW_LOBBY_WEB_RESULT_SUCCESS && len != 0x94) {
+    if (r == PPW_LOBBY_WEB_RESULT_SUCCESS && len != sizeof(StartCheckProfile::UserProfileRecord)) {
         r = PPW_LOBBY_WEB_RESULT_INVALID;
     }
     if (r == PPW_LOBBY_WEB_RESULT_SUCCESS) {
@@ -1443,11 +1420,11 @@ extern "C" void PPWLobby_OnCheckProfile(BOOL success, u8 *response, u32 response
         g->state = PPW_LOBBY_STATE_ERROR;
         return;
     }
-    const PPWLobbyUserProfile *f = (const PPWLobbyUserProfile *)LobbyByteVector_Data(&gPPWLobbyWork->players.self.userProfile);
+    const PPWLobbyUserProfile *userProfile = GetUserProfile(gPPWLobbyWork);
     info.userId = gPPWLobbyWork->userId;
     info.one = 1;
-    info.version = f->version;
-    info.language = f->language;
+    info.version = userProfile->version;
+    info.language = userProfile->language;
     OS_GetMacAddress(info.mac);
     pid = gPPWLobbyWork->userId;
     page = gPPWLobbyGetScheduleUrl;
@@ -1457,7 +1434,7 @@ extern "C" void PPWLobby_OnCheckProfile(BOOL success, u8 *response, u32 response
         return;
     }
     request = (WebRequest *)LobbyMem_Alloc(sizeof(WebRequest));
-    new (request) WebRequest(server, key, page, pid, (const u8 *)&info, (const u8 *)&info + sizeof(Info), PPWLobby_OnGetSchedule, TRUE);
+    new (request) WebRequest(server, key, page, pid, (const u8 *)&info, (const u8 *)&info + sizeof(WebRequestHeader), PPWLobby_OnGetSchedule, TRUE);
     SendWebRequest(request);
 }
 }
@@ -1494,19 +1471,10 @@ struct Vec {
     }
 };
 
-struct Info {
-    u32 userId;
-    u16 one;
-    u8 version;
-    u8 language;
-    u8 mac[6];
-    u16 r14;
-    u32 r16;
-};
-
-struct Info2 {
-    Info info;
-    u32 extra;
+// The body of the VIP list request: the request header and the player's trainer id.
+struct VipRequestBody {
+    WebRequestHeader header;
+    u32 trainerId;
 };
 struct Obj;
 
@@ -1517,7 +1485,7 @@ struct ObjVtable {
 
 extern "C" const ObjVtable gPPWLobbyWebRequestVtable;
 
-// The VIP list request the schedule answer starts: a WebRequest whose body is the Info2 record.
+// The VIP list request the schedule answer starts: a WebRequest whose body is a VipRequestBody.
 struct Obj {
     const ObjVtable *vtable;
     int retries;
@@ -1530,7 +1498,7 @@ struct Obj {
     void *param;
     BOOL useLastHash;
 
-    Obj(int server, const char *key, const char *page, u32 pid, const Info2 &info)
+    Obj(int server, const char *key, const char *page, u32 pid, const VipRequestBody &info)
         : vtable(&gPPWLobbyWebRequestVtable)
         , retries(3)
         , server(server)
@@ -1541,7 +1509,7 @@ struct Obj {
         , callback(PPWLobby_OnGetVip)
         , param(NULL)
         , useLastHash(TRUE) {
-        body.Assign(ByteIterator((const u8 *)&info), ByteIterator((const u8 *)&info + sizeof(Info2)));
+        body.Assign(ByteIterator((const u8 *)&info), ByteIterator((const u8 *)&info + sizeof(VipRequestBody)));
     }
 };
 
@@ -1550,8 +1518,8 @@ extern "C" void PPWLobby_OnGetSchedule(BOOL, u8 *, u32, void *);
 #pragma opt_dead_assignments off
 
 extern "C" void PPWLobby_OnGetSchedule(BOOL success, u8 *response, u32 responseSize, void *param) {
-    Info2 i2;
-    Info info;
+    VipRequestBody body;
+    WebRequestHeader header;
     const char *key;
     const char *page;
     Obj *o;
@@ -1579,17 +1547,17 @@ extern "C" void PPWLobby_OnGetSchedule(BOOL success, u8 *response, u32 responseS
     if (ok2) {
         PPWLobbySchedule_Load(&gPPWLobbyWork->schedule, buf, len);
     }
-    const PPWLobbyUserProfile *p = (const PPWLobbyUserProfile *)LobbyByteVector_Data(&gPPWLobbyWork->players.self.userProfile);
+    const PPWLobbyUserProfile *p = GetUserProfile(gPPWLobbyWork);
     int ret = 0;
-    std::memset(&i2, 0, sizeof(i2));
-    const PPWLobbyUserProfile *f = (const PPWLobbyUserProfile *)LobbyByteVector_Data(&gPPWLobbyWork->players.self.userProfile);
-    info.userId = gPPWLobbyWork->userId;
-    info.one = 1;
-    info.version = f->version;
-    info.language = f->language;
-    OS_GetMacAddress(info.mac);
-    i2.info = info;
-    i2.extra = p->trainerId;
+    std::memset(&body, 0, sizeof(body));
+    const PPWLobbyUserProfile *userProfile = GetUserProfile(gPPWLobbyWork);
+    header.userId = gPPWLobbyWork->userId;
+    header.one = 1;
+    header.version = userProfile->version;
+    header.language = userProfile->language;
+    OS_GetMacAddress(header.mac);
+    body.header = header;
+    body.trainerId = p->trainerId;
     pid = gPPWLobbyWork->userId;
     page = gPPWLobbyGetVipUrl;
     key = gPPWLobbyStatsUploadKey;
@@ -1598,7 +1566,7 @@ extern "C" void PPWLobby_OnGetSchedule(BOOL success, u8 *response, u32 responseS
         return;
     }
     o = (Obj *)LobbyMem_Alloc(sizeof(Obj));
-    new (o) Obj(server, key, page, pid, i2);
+    new (o) Obj(server, key, page, pid, body);
     gPPWLobbyCurrentRequest = o;
     StatsUpload_Start(o->server, o->key.CStr());
     if (o->useLastHash) {
@@ -1633,18 +1601,10 @@ extern "C" void PPWLobby_OnGetSchedule(BOOL success, u8 *response, u32 responseS
 namespace OnGetVip {
 extern "C" void OS_GetMacAddress(u8 *);
 
-struct Info {
-    u32 userId;
-    u16 one;
-    u8 version;
-    u8 language;
-    u8 mac[6];
-    u8 rest[6];
-};
 extern "C" void PPWLobby_OnGetVip(BOOL, u8 *, u32, void *);
 
 extern "C" void PPWLobby_OnGetVip(BOOL success, u8 *response, u32 responseSize, void *param) {
-    Info info;
+    WebRequestHeader info;
     const char *key;
     const char *page;
     WebRequest *request;
@@ -1669,12 +1629,12 @@ extern "C" void PPWLobby_OnGetVip(BOOL success, u8 *response, u32 responseSize, 
         return;
     }
     PPWLobbySchedule_SetVipRecords(&gPPWLobbyWork->schedule, buf, len);
-    gPPWLobbyWork->callbacks.onSpecialVisitorsReceived(r, buf, len >> 3);
-    const PPWLobbyUserProfile *f = (const PPWLobbyUserProfile *)LobbyByteVector_Data(&gPPWLobbyWork->players.self.userProfile);
+    gPPWLobbyWork->callbacks.onSpecialVisitorsReceived(r, buf, len / sizeof(PPWLobbyVipRecord));
+    const PPWLobbyUserProfile *userProfile = GetUserProfile(gPPWLobbyWork);
     info.userId = gPPWLobbyWork->userId;
     info.one = 1;
-    info.version = f->version;
-    info.language = f->language;
+    info.version = userProfile->version;
+    info.language = userProfile->language;
     OS_GetMacAddress(info.mac);
     pid = gPPWLobbyWork->userId;
     page = gPPWLobbyGetQuestionnaireUrl;
@@ -1684,7 +1644,7 @@ extern "C" void PPWLobby_OnGetVip(BOOL success, u8 *response, u32 responseSize, 
         return;
     }
     request = (WebRequest *)LobbyMem_Alloc(sizeof(WebRequest));
-    new (request) WebRequest(server, key, page, pid, (const u8 *)&info, (const u8 *)&info + sizeof(Info), PPWLobby_OnGetQuestionnaire, TRUE);
+    new (request) WebRequest(server, key, page, pid, (const u8 *)&info, (const u8 *)&info + sizeof(WebRequestHeader), PPWLobby_OnGetQuestionnaire, TRUE);
     SendWebRequest(request);
 }
 }
@@ -2103,9 +2063,9 @@ extern "C" void PPWLobby_OnEnterSubChannel(BOOL success, int error, const char *
 }
 
 namespace OnPlayerJoined {
-extern "C" PlayerView *PPWLobbyPlayers_Find(void *, int);
+extern "C" PlayerView *PPWLobbyPlayers_Find(PPWLobbyPlayers *players, int id);
 extern "C" void PPWLobby_OnPlayerJoined(char *, int);
-extern "C" void PPWLobbyPlayers_Add(void *, int);
+extern "C" void PPWLobbyPlayers_Add(PPWLobbyPlayers *players, int id);
 
 inline int Match(PPWLobbyChannel *c, const Str &name) {
     Str t;
@@ -2180,8 +2140,8 @@ extern "C" void PPWLobby_OnPlayerJoined(char *channel, int id) {
 }
 
 namespace OnPlayerLeft {
-extern "C" PlayerView *PPWLobbyPlayers_Find(void *, int);
-extern "C" void PPWLobbyPlayers_Remove(void *, int);
+extern "C" PlayerView *PPWLobbyPlayers_Find(PPWLobbyPlayers *players, int id);
+extern "C" void PPWLobbyPlayers_Remove(PPWLobbyPlayers *players, int id);
 extern "C" void PPWLobby_OnPlayerLeft(char *, int);
 
 inline int Match(PPWLobbyChannel *c, const Str &name) {
@@ -2279,7 +2239,7 @@ typedef struct {
 
 extern void PPWLobby_HandleSystemMessage(Message *, int, int, void *, u32);
 extern int PPWLobby_ParseMessage(Str *, Message *);
-extern PPWLobbyPlayer *PPWLobbyPlayers_Find(void *, int);
+extern PPWLobbyPlayer *PPWLobbyPlayers_Find(PPWLobbyPlayers *players, int id);
 void PPWLobby_OnMessage(const char *, int, const char *);
 
 static inline void zeroString(LobbyCharVector *s) {
@@ -2554,7 +2514,7 @@ void LobbyString_Substr(Str *out, Str *str, u32 pos, u32 n) {
 }
 }
 
-extern "C" void PPWLobbyPlayers_Add(void *, int);
+extern "C" void PPWLobbyPlayers_Add(PPWLobbyPlayers *players, int id);
 extern "C" void PPWLobby_OnEnumUsers(int, char *, int, int *);
 
 inline int Find(PPWLobbyWork *w, const PPWString &name) {

@@ -35,7 +35,7 @@ int LobbyChat_SendChannelMessage(const char *channel, const char *message) {
     Str fullName;
     LobbyChatManager *manager = gLobbyChatManager;
     CTX_CHECK(manager);
-    if (strlen(message) + 1 > 400) {
+    if (strlen(message) + 1 > PPW_LOBBY_MESSAGE_MAX_LENGTH) {
         return PPW_LOBBY_RESULT_ERROR_PARAM;
     }
     LobbyString_InitFromCStr(&channelName, channel);
@@ -50,7 +50,7 @@ int LobbyChat_SendUserMessage(int userId, const char *message) {
     Str nick;
     LobbyChatManager *manager = gLobbyChatManager;
     CTX_CHECK(manager);
-    if (strlen(message) + 1 > 400) {
+    if (strlen(message) + 1 > PPW_LOBBY_MESSAGE_MAX_LENGTH) {
         return PPW_LOBBY_RESULT_ERROR_PARAM;
     }
     LobbyChat_GetUserNick(&nick, manager, userId);

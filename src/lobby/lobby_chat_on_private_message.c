@@ -33,7 +33,7 @@ static inline u32 StringVectorSize(const volatile LobbyStringVector *vector) {
 #pragma opt_propagation off
 
 // Messages from the server only matter as excess flood notices; user messages are passed on by user ID.
-void LobbyChat_OnPrivateMessage(void *chat, char *nick, char *message, int type, void *param) {
+void LobbyChat_OnPrivateMessage(struct ChatConnection *chat, char *nick, char *message, int type, void *param) {
     struct {
         Str messageStr, floodStr, nickStr, serverStr;
         LobbyChatCallbacks messageCallbacks;

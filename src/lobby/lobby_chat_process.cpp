@@ -9,7 +9,7 @@ extern "C" {
 #include "lobby_chat_manager.h"
 
 extern "C" void DWC_GetDateTime(RTCDate *date, RTCTime *time);
-extern "C" void chatThink(void *chat);
+extern "C" void chatThink(struct ChatConnection *chat);
 
 struct It;
 extern "C" void LobbyTreeIterator_Advance(It *it);
@@ -114,9 +114,9 @@ extern "C" int LobbyChat_Process(void) {
     if (g != NULL && g->state == LOBBY_CHAT_STATE_ERROR) {
         return LOBBY_CHAT_STATE_ERROR;
     }
-    void *p = g->connection;
-    if (p != NULL) {
-        chatThink(p);
+    struct ChatConnection *connection = g->connection;
+    if (connection != NULL) {
+        chatThink(connection);
     }
     LobbyChatManager *w = gLobbyChatManager;
     RTCTime time;

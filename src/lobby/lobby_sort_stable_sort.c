@@ -2,23 +2,15 @@
 
 #include <nitro/code32.h>
 
-typedef struct {
-    int key;
-    unsigned value;
-} Pair;
-
-typedef struct {
-    Pair *data;
-    int count;
-} Allocation;
+#include "lobby_event_deque.h"
 
 typedef struct {
     int capacity, count;
-    Pair *data;
+    LobbyEvent *data;
 } Buffer;
 
 typedef struct {
-    Pair *position;
+    LobbyEvent *position;
     Buffer *state;
 } Out;
 
@@ -26,32 +18,27 @@ typedef struct {
     unsigned value;
 } Tag;
 
-typedef struct {
-    Pair *ptr;
-} Cursor;
-
-extern Allocation LobbySort_GetTemporaryBuffer(int);
-extern void LobbySort_StableSortAdaptive(Cursor, Cursor, Out, Out, Tag *);
+extern void LobbySort_StableSortAdaptive(LobbyEventVectorIterator, LobbyEventVectorIterator, Out, Out, Tag *);
 extern void _ZdaPv(void *);
-void LobbySort_StableSort(Cursor, Cursor, Tag);
+void LobbySort_StableSort(LobbyEventVectorIterator, LobbyEventVectorIterator, Tag);
 
-void LobbySort_StableSort(Cursor first, Cursor last, Tag tag) {
-    int n = last.ptr - first.ptr;
+void LobbySort_StableSort(LobbyEventVectorIterator first, LobbyEventVectorIterator last, Tag tag) {
+    int count = last.p - first.p;
     Out begin;
     Out end;
-    Allocation a;
-    Buffer b;
-    if (n <= 20) {
-        n = 0;
+    LobbySortTemporaryBuffer temp;
+    Buffer buffer;
+    if (count <= 20) {
+        count = 0;
     }
-    a = LobbySort_GetTemporaryBuffer(n);
-    b.capacity = a.count;
-    b.count = 0;
-    b.data = a.data;
-    end.position = a.data + a.count;
-    end.state = &b;
-    begin.position = a.data;
-    begin.state = &b;
+    LobbySort_GetTemporaryBuffer(&temp, count);
+    buffer.capacity = temp.count;
+    buffer.count = 0;
+    buffer.data = temp.data;
+    end.position = temp.data + temp.count;
+    end.state = &buffer;
+    begin.position = temp.data;
+    begin.state = &buffer;
     LobbySort_StableSortAdaptive(first, last, begin, end, &tag);
-    _ZdaPv(b.data);
+    _ZdaPv(buffer.data);
 }

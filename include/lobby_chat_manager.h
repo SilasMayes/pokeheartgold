@@ -73,9 +73,11 @@ typedef struct LobbyChannelMapInsertResult {
     u8 inserted;
 } LobbyChannelMapInsertResult;
 
-// The chat session: the CHAT connection, the strings it logged in with and the user, channel, request and timer maps.
+struct ChatConnection;
+
+// The chat session: the chat connection, the strings it logged in with and the user, channel, request and timer maps.
 typedef struct LobbyChatManager {
-    void *connection;
+    struct ChatConnection *connection;
     int state;
     int userId;
     Str nick;

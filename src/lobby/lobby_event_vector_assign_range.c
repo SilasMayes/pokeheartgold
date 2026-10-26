@@ -4,16 +4,9 @@
 
 #include "ppw_lobby_work.h"
 
-// The buffer the stable sort merges through: as many events as could be allocated.
-typedef struct LobbySortTemporaryBuffer {
-    LobbyEvent *data;
-    int count;
-} LobbySortTemporaryBuffer;
-
 extern LobbySortTemporaryBuffer gLobbySortEmptyBuffer;
 extern char _ZSt7nothrow[];
 void *_ZnamRKSt9nothrow_t(u32, void *);
-void LobbySort_GetTemporaryBuffer(LobbySortTemporaryBuffer *buffer, int n);
 
 void LobbySort_GetTemporaryBuffer(LobbySortTemporaryBuffer *buffer, int n) {
     buffer->data = NULL;
@@ -41,8 +34,8 @@ void LobbyEventVector_AssignRange(LobbyEventVector *p, const LobbyEvent *first, 
         end += *(p->size < n ? &p->size : &n);
         dest = p->data;
         while (first < end) {
-            dest->key = first->key;
-            dest->payload = first->payload;
+            dest->time = first->time;
+            dest->type = first->type;
             ++first;
             ++dest;
         }

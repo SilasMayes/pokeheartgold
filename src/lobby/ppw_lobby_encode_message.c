@@ -13,15 +13,15 @@ int LobbyString_ToLowerChar(int c) {
 }
 
 BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32 len, Str *out) {
-    char buf[0x191];
+    char buf[PPW_LOBBY_MESSAGE_MAX_LENGTH + 1];
     Str s0;
     Str s1;
     Str s2;
     Str s3;
-    if (type == PPW_LOBBY_MESSAGE_FORMAT_STRING && len > 400) {
+    if (type == PPW_LOBBY_MESSAGE_FORMAT_STRING && len > PPW_LOBBY_MESSAGE_MAX_LENGTH) {
         return FALSE;
     }
-    if (type == PPW_LOBBY_MESSAGE_FORMAT_BINARY && len > 300) {
+    if (type == PPW_LOBBY_MESSAGE_FORMAT_BINARY && len > PPW_LOBBY_MESSAGE_MAX_BINARY_SIZE) {
         return FALSE;
     }
     LobbyString_AssignCStr(out, gLobbyStr_Empty_16);
@@ -62,12 +62,12 @@ BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32
     LobbyString_AppendCStr(out, gLobbyStr__);
     LobbyString_AppendCStr(out, gLobbyStr_SpaceSpace);
     switch (type) {
-    case 0:
+    case PPW_LOBBY_MESSAGE_FORMAT_STRING:
         LobbyString_FormatN(&s3, len, gLobbyFmt_Str_3, data);
         LobbyString_Append(out, &s3);
         LobbyString_Destroy(&s3);
         break;
-    case 1:
+    case PPW_LOBBY_MESSAGE_FORMAT_BINARY:
         MI_CpuFill8(buf, 0, sizeof(buf));
         if (DWC_Base64Encode(data, len, buf, sizeof(buf)) == -1) {
             return FALSE;

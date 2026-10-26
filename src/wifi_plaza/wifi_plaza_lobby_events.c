@@ -437,15 +437,15 @@ void WiFiPlazaLobbyClient_OnMatchDisconnect(int result, void *arg) {
     }
 }
 
-u32 WiFiPlazaLobbySchedule_FindValue(const volatile WiFiPlazaLobbySchedule *schedule, int key) {
-    u32 result = 0;
+u32 WiFiPlazaLobbySchedule_FindValue(const volatile WiFiPlazaLobbySchedule *schedule, int event) {
+    u32 time = 0;
     int i;
     for (i = 0; i < schedule->record.eventCount; i++) {
-        if (key == schedule->record.events[i].payload) {
-            result = schedule->record.events[i].key;
+        if (event == schedule->record.events[i].type) {
+            time = schedule->record.events[i].time;
         }
     }
-    return result;
+    return time;
 }
 
 void WiFiPlazaLobbyIdValueList_Init(WiFiPlazaLobbyIdValueList *list, int count, enum HeapID heapID) {

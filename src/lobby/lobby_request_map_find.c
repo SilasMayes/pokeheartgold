@@ -44,8 +44,8 @@ static LobbyRequestMapNode *LobbyRequestMap_LowerBound(LobbyRequestMap *map, Lob
     return best;
 }
 
-void LobbyChat_OnEnumChannelsEach(void *a, int n) {
-    if (n) {
+void LobbyChat_OnEnumChannelsEach(struct ChatConnection *chat, int success) {
+    if (success) {
         return;
     }
 }

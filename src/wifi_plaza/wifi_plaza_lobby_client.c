@@ -368,29 +368,29 @@ u32 WiFiPlazaLobbyClient_GetScheduleValue(int field) {
     GF_ASSERT(field < 8);
     schedule = &gWiFiPlazaLobbyClient->schedule;
     switch (field) {
-    case 0:
+    case WIFI_PLAZA_SCHEDULE_LOCK_TIME:
         result = schedule->record.lockTime;
         break;
     case 1:
         result = schedule->record.unk_04;
         break;
-    case 2:
+    case WIFI_PLAZA_SCHEDULE_ROOM_TYPE:
         result = schedule->record.roomType;
         break;
-    case 3:
+    case WIFI_PLAZA_SCHEDULE_SEASON:
         result = schedule->record.season;
         break;
-    case 4:
+    case WIFI_PLAZA_SCHEDULE_ARCEUS:
         result = (schedule->record.roomFlag & 1) != 0;
         break;
-    case 5:
-        result = WiFiPlazaLobbySchedule_FindValue(schedule, 0x13);
+    case WIFI_PLAZA_SCHEDULE_CLOSE_TIME:
+        result = WiFiPlazaLobbySchedule_FindValue(schedule, WIFI_PLAZA_EVENT_CLOSE);
         break;
-    case 6:
-        result = WiFiPlazaLobbySchedule_FindValue(schedule, 0x10);
+    case WIFI_PLAZA_SCHEDULE_FIREWORKS_START_TIME:
+        result = WiFiPlazaLobbySchedule_FindValue(schedule, WIFI_PLAZA_EVENT_FIREWORKS_START);
         break;
-    case 7:
-        result = WiFiPlazaLobbySchedule_FindValue(schedule, 0x11);
+    case WIFI_PLAZA_SCHEDULE_FIREWORKS_END_TIME:
+        result = WiFiPlazaLobbySchedule_FindValue(schedule, WIFI_PLAZA_EVENT_FIREWORKS_END);
         break;
     }
     return result;

@@ -316,9 +316,13 @@ BOOL PPWLobby_IsMainChannelReady(void);
 typedef struct PPWLobbyUserProfile {
     u32 lobbyId;
     u32 trainerId;
-    u8 unk_08[0x31];
+    u8 unk_08[0x30];
+    u8 gender;
     u8 language;
-    u8 unk_3A[8];
+    u8 unk_3A[2];
+    u16 country;
+    u8 region;
+    u8 unk_3F[3];
     u8 version;
 } PPWLobbyUserProfile;
 

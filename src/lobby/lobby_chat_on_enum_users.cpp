@@ -53,11 +53,11 @@ struct Vec {
 };
 
 extern "C" Vec LobbyChat_AddChannelUsers(LobbyChatManager *map, int count, const char **names, const Str &key);
-extern "C" void LobbyChat_OnEnumUsers(void *chat, int result, const char *name, int count, const char **nicks, u32 modes, u32 id);
+extern "C" void LobbyChat_OnEnumUsers(struct ChatConnection *chat, int result, const char *name, int count, const char **nicks, u32 modes, u32 id);
 #pragma push
 #pragma opt_propagation off
 
-extern "C" void LobbyChat_OnEnumUsers(void *chat, int result, const char *name, int count, const char **nicks, u32 modes, u32 id) {
+extern "C" void LobbyChat_OnEnumUsers(struct ChatConnection *chat, int result, const char *name, int count, const char **nicks, u32 modes, u32 id) {
     if (gLobbyChatManager != NULL && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
     }

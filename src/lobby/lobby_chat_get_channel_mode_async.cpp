@@ -11,7 +11,7 @@
 extern "C" const u32 gLobbyChatNextRequestId;
 
 
-extern "C" void chatGetChannelModeA(void *chat, const char *channel, void (*callback)(), u32 param, u32 blocking);
+extern "C" void chatGetChannelModeA(struct ChatConnection *chat, const char *channel, void (*callback)(), u32 param, u32 blocking);
 extern "C" void LobbyChat_OnGetChannelMode();
 
 inline LobbyChatManager *GetMgr() {

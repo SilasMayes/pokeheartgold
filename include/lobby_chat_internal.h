@@ -140,39 +140,42 @@ void LobbyUserMap_Find(Iter *out, LobbyUserMap *map, int *key);
 LobbyUserMapNode *LobbyUserMap_FindInsertPos2(LobbyUserMap *map, int *key, LobbyUserMapNode **pos, u8 *insertLeft, u8 *isLeftmost);
 LobbyUserMapNode *LobbyUserMap_LowerBound(LobbyUserMap *map, int *key, LobbyUserMapNode *node, LobbyUserMapNode *res);
 void LobbyUserMap_MakeEntry(LobbyUserMapEntry *out, int id, const Str *nick);
-void chatDisconnect(void *p);
-int chatGetChannelNumUsersA(void *chat, const char *channel);
-void chatRegisterUniqueNickA(void *chat, int accountSpace, const char *nick, const char *cdKey);
-void chatRetryWithNickA(void *chat, const char *nick);
-void chatLeaveChannelA(void *h, const char *name, int x);
-void chatSendChannelMessageA(void *h, const char *name, const char *msg, int x);
-void chatSendUserMessageA(void *h, const char *name, const char *msg, int x);
-void chatSetChannelKeysA(void *h, const char *name, const char *who, int x, const char **key, const char **val);
-void chatSetChannelModeA(void *h, const char *name, const struct ChatChannelMode *mode);
+
+// The chat client functions of dwc/chat_connection.h (that header comes with dwc/chat_internal.h, whose allocator
+// declarations differ from dwc/net_common_internal.h's).
+void chatDisconnect(struct ChatConnection *chat);
+int chatGetChannelNumUsersA(struct ChatConnection *chat, const char *channel);
+void chatRegisterUniqueNickA(struct ChatConnection *chat, int accountSpace, const char *nick, const char *cdKey);
+void chatRetryWithNickA(struct ChatConnection *chat, const char *nick);
+void chatLeaveChannelA(struct ChatConnection *chat, const char *channel, const char *reason);
+void chatSendChannelMessageA(struct ChatConnection *chat, const char *channel, const char *message, u32 type);
+void chatSendUserMessageA(struct ChatConnection *chat, const char *nick, const char *message, u32 type);
+void chatSetChannelKeysA(struct ChatConnection *chat, const char *channel, const char *nick, int count, const char **keys, const char **values);
+void chatSetChannelModeA(struct ChatConnection *chat, const char *channel, const struct ChatChannelMode *mode);
+BOOL chatInChannelA(struct ChatConnection *chat, const char *channel);
 
 void LobbyChatManager_GetGameName(Str *out, LobbyChatManager *manager);
 void LobbyChatManager_GetRealName(Str *out, LobbyChatManager *manager);
 void LobbyChatManager_GetUser(Str *out, LobbyChatManager *manager);
-void LobbyChat_OnEnumChannelsEach(void *chat, int success);
-void LobbyChat_OnBroadcastKeyChanged(void *chat, char *channel, char *nick, void *key, void *value);
-void LobbyChat_OnChannelMessage(void *chat, char *channel, char *nick, void *message, int type);
-void LobbyChat_OnChannelModeChanged(void *chat, const char *channel, u32 mode, u32 id);
-void LobbyChat_OnConnected(void *chat, int success);
+void LobbyChat_OnEnumChannelsEach(struct ChatConnection *chat, int success);
+void LobbyChat_OnBroadcastKeyChanged(struct ChatConnection *chat, char *channel, char *nick, void *key, void *value);
+void LobbyChat_OnChannelMessage(struct ChatConnection *chat, char *channel, char *nick, void *message, int type);
+void LobbyChat_OnChannelModeChanged(struct ChatConnection *chat, const char *channel, u32 mode, u32 id);
+void LobbyChat_OnConnected(struct ChatConnection *chat, int success);
 void LobbyChat_OnDisconnected(void);
-void LobbyChat_OnFillInUser(void *chat, void *param, char *user);
+void LobbyChat_OnFillInUser(struct ChatConnection *chat, void *param, char *user);
 void LobbyChat_OnInvited(void);
-void LobbyChat_OnNickError(void *chat, int type);
-void LobbyChat_OnPrivateMessage(void *chat, char *nick, char *message, int type, void *param);
-void LobbyChat_OnKicked(void *chat, char *channel);
+void LobbyChat_OnNickError(struct ChatConnection *chat, int type);
+void LobbyChat_OnPrivateMessage(struct ChatConnection *chat, char *nick, char *message, int type, void *param);
+void LobbyChat_OnKicked(struct ChatConnection *chat, char *channel);
 void LobbyChat_OnRaw(void);
-void LobbyChat_OnTopicChanged(void *chat, char *channel, void *topic);
-void LobbyChat_OnUserChangedNick(void *chat, void *channel, char *oldNick, char *newNick);
+void LobbyChat_OnTopicChanged(struct ChatConnection *chat, char *channel, void *topic);
+void LobbyChat_OnUserChangedNick(struct ChatConnection *chat, const char *channel, char *oldNick, char *newNick);
 void LobbyChat_OnUserListUpdated(void);
-void LobbyChat_OnUserJoined(void *chat, const char *channel, const char *nick);
-void LobbyChat_OnUserModeChanged(int chat, int channel, int nick, int mode);
-void LobbyChat_OnUserParted(int chat, char *channel, char *nick);
+void LobbyChat_OnUserJoined(struct ChatConnection *chat, const char *channel, const char *nick);
+void LobbyChat_OnUserModeChanged(struct ChatConnection *chat, const char *channel, const char *nick, int mode);
+void LobbyChat_OnUserParted(struct ChatConnection *chat, char *channel, char *nick);
 int LobbyChat_RenameUser(LobbyChatManager *manager, const Str *oldNick, const Str *newNick);
 int LobbyChat_TimerConnectTimeout(void);
-BOOL chatInChannelA(void *chat, const char *channel);
 
 #endif // POKEHEARTGOLD_LOBBY_CHAT_INTERNAL_H

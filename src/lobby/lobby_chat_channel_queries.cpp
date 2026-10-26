@@ -11,10 +11,10 @@
 extern "C" const u32 gLobbyChatNextRequestId;
 
 
-extern "C" void chatGetChannelKeysA(void *chat, const char *channel, const char *nick, int count, const char **keys, void (*callback)(), u32 param, u32 blocking);
-extern "C" void chatEnumChannelsA(void *chat, const char *filter, void (*callbackEach)(), void (*callbackAll)(), u32 param, u32 blocking);
-extern "C" void chatEnumUsersA(void *chat, const char *channel, void (*callback)(), u32 param, u32 blocking);
-extern "C" int chatInChannelA(void *chat, const char *channel);
+extern "C" void chatGetChannelKeysA(struct ChatConnection *chat, const char *channel, const char *nick, int count, const char **keys, void (*callback)(), u32 param, u32 blocking);
+extern "C" void chatEnumChannelsA(struct ChatConnection *chat, const char *filter, void (*callbackEach)(), void (*callbackAll)(), u32 param, u32 blocking);
+extern "C" void chatEnumUsersA(struct ChatConnection *chat, const char *channel, void (*callback)(), u32 param, u32 blocking);
+extern "C" int chatInChannelA(struct ChatConnection *chat, const char *channel);
 extern "C" void LobbyChat_OnGetChannelKeys();
 extern "C" void LobbyChat_OnEnumChannelsEach();
 extern "C" void LobbyChat_OnEnumChannels();

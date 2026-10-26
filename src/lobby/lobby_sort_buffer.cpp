@@ -44,7 +44,7 @@ extern "C" void LobbySort_StableSortToBuffer(Cursor first, Cursor last, Construc
     }
     if (count == 2) {
         Cursor prev = last;
-        if ((*--prev).key < (*first).key) {
+        if ((*--prev).time < (*first).time) {
             CopyReverse(first, last, output);
         } else {
             CopyForward(first, last, output);

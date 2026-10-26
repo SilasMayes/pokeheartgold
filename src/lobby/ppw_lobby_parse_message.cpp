@@ -3,6 +3,7 @@
 #include <nitro/code32.h>
 
 #include "lobby_cpp_types.h"
+#include "ppw_lobby_state.h"
 
 extern "C" unsigned long strtoul(const char *, char **, int);
 extern "C" long strtol(const char *, char **, int);
@@ -129,7 +130,7 @@ extern "C" int PPWLobby_ParseMessage(const Str *src, Out *out) {
             LobbyStringVector_Destroy(&parts);
             return 0;
         }
-        if (p[1].size() > 400) {
+        if (p[1].size() > PPW_LOBBY_MESSAGE_MAX_LENGTH) {
             LobbyStringVector_Destroy(&parts);
             return 0;
         }

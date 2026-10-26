@@ -14,7 +14,7 @@ void LobbyChat_OnInvited(void) {
     }
 }
 
-void LobbyChat_OnChannelMessage(void *chat, char *channel, char *nick, void *message, int type) {
+void LobbyChat_OnChannelMessage(struct ChatConnection *chat, char *channel, char *nick, void *message, int type) {
     Str nickStr;
     Str channelKey;
     Str fullName;
@@ -40,7 +40,7 @@ void LobbyChat_OnChannelMessage(void *chat, char *channel, char *nick, void *mes
     LobbyString_Destroy(&fullName);
 }
 
-void LobbyChat_OnKicked(void *chat, char *channel) {
+void LobbyChat_OnKicked(struct ChatConnection *chat, char *channel) {
     Str channelStr;
     if (gLobbyChatManager && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
@@ -51,7 +51,7 @@ void LobbyChat_OnKicked(void *chat, char *channel) {
 }
 
 // A user ID that is already in the channel is reported as parted before the new join.
-void LobbyChat_OnUserJoined(void *chat, const char *channel, const char *nick) {
+void LobbyChat_OnUserJoined(struct ChatConnection *chat, const char *channel, const char *nick) {
     Str oldNick;
     Str limitChannel;
     Str nickStr;
@@ -125,7 +125,7 @@ void LobbyChat_OnUserJoined(void *chat, const char *channel, const char *nick) {
     LobbyString_Destroy(&oldNick);
 }
 
-void LobbyChat_OnUserParted(int chat, char *channel, char *nick) {
+void LobbyChat_OnUserParted(struct ChatConnection *chat, char *channel, char *nick) {
     Str nickStr;
     Str channelKey;
     Str fullName;
@@ -158,7 +158,7 @@ void LobbyChat_OnUserParted(int chat, char *channel, char *nick) {
     LobbyString_Destroy(&userNick);
 }
 
-void LobbyChat_OnUserChangedNick(void *chat, void *channel, char *oldNick, char *newNick) {
+void LobbyChat_OnUserChangedNick(struct ChatConnection *chat, const char *channel, char *oldNick, char *newNick) {
     Str oldNickStr;
     Str newNickStr;
     if (gLobbyChatManager && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
@@ -172,18 +172,12 @@ void LobbyChat_OnUserChangedNick(void *chat, void *channel, char *oldNick, char 
 }
 
 // The mode name is built and dropped again; nothing is reported to the channel.
-void LobbyChat_OnUserModeChanged(int chat, int channel, int nick, int mode) {
+void LobbyChat_OnUserModeChanged(struct ChatConnection *chat, const char *channel, const char *nick, int mode) {
     Str modeName;
-    u32 *words;
-    u32 i;
     if (gLobbyChatManager != NULL && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
     }
-    i = 0;
-    words = (u32 *)&modeName;
-    for (; i < 3; i++) {
-        words[i] = 0;
-    }
+    StrInit(&modeName);
     switch (mode) {
     case CHAT_USER_MODE_NORMAL:
         LobbyString_AssignCStr(&modeName, gLobbyStr_normal);
@@ -204,7 +198,7 @@ void LobbyChat_OnUserModeChanged(int chat, int channel, int nick, int mode) {
     LobbyString_Destroy(&modeName);
 }
 
-void LobbyChat_OnTopicChanged(void *chat, char *channel, void *topic) {
+void LobbyChat_OnTopicChanged(struct ChatConnection *chat, char *channel, void *topic) {
     Str channelKey;
     Str fullName;
     Str channelName;
@@ -222,7 +216,7 @@ void LobbyChat_OnTopicChanged(void *chat, char *channel, void *topic) {
     LobbyString_Destroy(&fullName);
 }
 
-void LobbyChat_OnChannelModeChanged(void *chat, const char *channel, u32 mode, u32 id) {
+void LobbyChat_OnChannelModeChanged(struct ChatConnection *chat, const char *channel, u32 mode, u32 id) {
     if (gLobbyChatManager && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
     }
@@ -234,7 +228,7 @@ void LobbyChat_OnUserListUpdated(void) {
     }
 }
 
-void LobbyChat_OnConnected(void *chat, int success) {
+void LobbyChat_OnConnected(struct ChatConnection *chat, int success) {
     u32 timerId;
     LobbyChatManager *manager;
     if (gLobbyChatManager && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
@@ -255,7 +249,7 @@ void LobbyChat_OnConnected(void *chat, int success) {
     }
 }
 
-void LobbyChat_OnFillInUser(void *chat, void *param, char *user) {
+void LobbyChat_OnFillInUser(struct ChatConnection *chat, void *param, char *user) {
     Str userName;
     if (gLobbyChatManager && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
@@ -270,42 +264,49 @@ void LobbyChatManager_GetUser(Str *out, LobbyChatManager *manager) {
 }
 
 // Retry with a new nick for the same user ID; errors 3 and 4 register it as a unique nick instead.
-void LobbyChat_OnNickError(void *chat, int type) {
-    Str a, b, c, d, e, f, g, h;
+void LobbyChat_OnNickError(struct ChatConnection *chat, int type) {
     LobbyChatManager *manager = CurrentManager();
     if (manager && manager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
     }
     if (type == 1) {
-        LobbyChat_FormatNick(&a, CurrentManager()->userId);
-        LobbyString_Assign(&CurrentManager()->nick, &a);
-        LobbyString_Destroy(&a);
-        LobbyChatManager_GetNick(&b, CurrentManager());
-        chatRetryWithNickA(chat, StrData(&b));
-        LobbyString_Destroy(&b);
+        Str newNick;
+        Str nick;
+        LobbyChat_FormatNick(&newNick, CurrentManager()->userId);
+        LobbyString_Assign(&CurrentManager()->nick, &newNick);
+        LobbyString_Destroy(&newNick);
+        LobbyChatManager_GetNick(&nick, CurrentManager());
+        chatRetryWithNickA(chat, StrData(&nick));
+        LobbyString_Destroy(&nick);
     } else if (type == 2) {
-        LobbyChat_FormatNick(&c, CurrentManager()->userId);
-        LobbyString_Assign(&CurrentManager()->nick, &c);
-        LobbyString_Destroy(&c);
-        LobbyChatManager_GetNick(&d, CurrentManager());
-        chatRetryWithNickA(chat, StrData(&d));
-        LobbyString_Destroy(&d);
+        Str newNick;
+        Str nick;
+        LobbyChat_FormatNick(&newNick, CurrentManager()->userId);
+        LobbyString_Assign(&CurrentManager()->nick, &newNick);
+        LobbyString_Destroy(&newNick);
+        LobbyChatManager_GetNick(&nick, CurrentManager());
+        chatRetryWithNickA(chat, StrData(&nick));
+        LobbyString_Destroy(&nick);
     } else if ((u32)(type - 3) <= 1) {
-        LobbyChat_FormatNick(&e, CurrentManager()->userId);
-        LobbyString_Assign(&CurrentManager()->nick, &e);
-        LobbyString_Destroy(&e);
-        LobbyChatManager_GetNick(&f, CurrentManager());
-        chatRegisterUniqueNickA(chat, 2, StrData(&f), gLobbyStr_Empty_17);
-        LobbyString_Destroy(&f);
+        Str newNick;
+        Str nick;
+        LobbyChat_FormatNick(&newNick, CurrentManager()->userId);
+        LobbyString_Assign(&CurrentManager()->nick, &newNick);
+        LobbyString_Destroy(&newNick);
+        LobbyChatManager_GetNick(&nick, CurrentManager());
+        chatRegisterUniqueNickA(chat, 2, StrData(&nick), gLobbyStr_Empty_17);
+        LobbyString_Destroy(&nick);
     } else if (type == 5) {
         return;
     } else if (type == 6) {
-        LobbyChat_FormatNick(&g, CurrentManager()->userId);
-        LobbyString_Assign(&CurrentManager()->nick, &g);
-        LobbyString_Destroy(&g);
-        LobbyChatManager_GetNick(&h, CurrentManager());
-        chatRetryWithNickA(chat, StrData(&h));
-        LobbyString_Destroy(&h);
+        Str newNick;
+        Str nick;
+        LobbyChat_FormatNick(&newNick, CurrentManager()->userId);
+        LobbyString_Assign(&CurrentManager()->nick, &newNick);
+        LobbyString_Destroy(&newNick);
+        LobbyChatManager_GetNick(&nick, CurrentManager());
+        chatRetryWithNickA(chat, StrData(&nick));
+        LobbyString_Destroy(&nick);
     }
 }
 

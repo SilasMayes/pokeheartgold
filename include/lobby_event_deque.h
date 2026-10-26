@@ -10,9 +10,10 @@
 
 #define LOBBY_EVENT_BLOCK_SIZE 128
 
+// A timed event of the lobby schedule: the seconds after the schedule's start and the event (WIFI_PLAZA_EVENT_*).
 typedef struct LobbyEvent {
-    s32 key;
-    u32 payload;
+    s32 time;
+    u32 type;
 } LobbyEvent;
 
 typedef struct LobbyEventDequeMap {
@@ -170,6 +171,12 @@ typedef struct LobbyEventVectorIterator {
 #endif
 } LobbyEventVectorIterator;
 
+// The buffer the stable sort of the events merges through: as many events as could be allocated.
+typedef struct LobbySortTemporaryBuffer {
+    LobbyEvent *data;
+    int count;
+} LobbySortTemporaryBuffer;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -202,6 +209,7 @@ void LobbyEventVector_Allocate(LobbyEventVector *vector, u32 capacity, LobbyTag 
 void LobbyEventVector_Reallocate(LobbyEventVector *vector, u32 unused, u32 capacity);
 u32 LobbyEventVector_RecommendSize(LobbyEventVector *vector, u32 extra);
 void LobbyEventVector_AssignRange(LobbyEventVector *vector, const LobbyEvent *first, const LobbyEvent *last, LobbyTag tag);
+void LobbySort_GetTemporaryBuffer(LobbySortTemporaryBuffer *buffer, int n);
 
 // The C code passes the iterators by pointer and returns them through a pointer to the result; the C++ code
 // passes them by reference and returns them by value.

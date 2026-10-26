@@ -31,7 +31,7 @@ struct Callbacks {
     void *param;
 };
 
-extern "C" void chatEnterChannelA(void *chat, const char *channel, u32 password, Callbacks *callbacks, void (*callback)(), u32 param, u32 blocking);
+extern "C" void chatEnterChannelA(struct ChatConnection *chat, const char *channel, u32 password, Callbacks *callbacks, void (*callback)(), u32 param, u32 blocking);
 extern "C" void LobbyChat_OnChannelMessage();
 extern "C" void LobbyChat_OnKicked();
 extern "C" void LobbyChat_OnUserJoined();

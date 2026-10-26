@@ -5,7 +5,7 @@
 #include "lobby_chat_manager.h"
 
 
-extern "C" void LobbyChat_OnChannelModeChanged(void *chat, const char *name, u32 mode, u32 id);
+extern "C" void LobbyChat_OnChannelModeChanged(struct ChatConnection *chat, const char *name, u32 mode, u32 id);
 
 inline void KeyInit(LobbyRequest *key, u32 id) {
     key->vtable = &gLobbyRequestVtable;
@@ -54,20 +54,20 @@ struct Vec {
 };
 
 extern "C" Vec LobbyChat_AddChannelUsers(LobbyChatManager *map, int count, const char **names, const Str &key);
-extern "C" int chatGetChannelNumUsersA(void *chat, const char *channel);
-extern "C" void chatSetChannelLimitA(void *chat, const char *channel, int limit);
-extern "C" void chatEnumUsersA(void *chat, const char *channel, void *callback, u32 param, u32 blocking);
+extern "C" int chatGetChannelNumUsersA(struct ChatConnection *chat, const char *channel);
+extern "C" void chatSetChannelLimitA(struct ChatConnection *chat, const char *channel, int limit);
+extern "C" void chatEnumUsersA(struct ChatConnection *chat, const char *channel, void *callback, u32 param, u32 blocking);
 
-extern "C" void LobbyChat_OnEnterChannelEnumUsers(void *chat, int result, const char *name, int count, const char **nicks, u32 modes, u32 id);
-extern "C" void LobbyChat_OnEnterChannel(void *chat, int ok, int error, const char *name, u32 id);
-extern "C" void LobbyChat_OnGetChannelKeys(void *chat, int result, const char *name, const char *user, int count, const char **keys, const char **values, u32 id);
-extern "C" void LobbyChat_OnBroadcastKeyChanged(void *chat, char *channel, char *nick, void *key, void *value);
-extern "C" void LobbyChat_OnGetChannelMode(void *chat, int result, const char *name, u32 mode, u32 id);
+extern "C" void LobbyChat_OnEnterChannelEnumUsers(struct ChatConnection *chat, int result, const char *name, int count, const char **nicks, u32 modes, u32 id);
+extern "C" void LobbyChat_OnEnterChannel(struct ChatConnection *chat, int ok, int error, const char *name, u32 id);
+extern "C" void LobbyChat_OnGetChannelKeys(struct ChatConnection *chat, int result, const char *name, const char *user, int count, const char **keys, const char **values, u32 id);
+extern "C" void LobbyChat_OnBroadcastKeyChanged(struct ChatConnection *chat, char *channel, char *nick, void *key, void *value);
+extern "C" void LobbyChat_OnGetChannelMode(struct ChatConnection *chat, int result, const char *name, u32 mode, u32 id);
 
 #pragma push
 #pragma opt_propagation off
 
-extern "C" void LobbyChat_OnEnterChannelEnumUsers(void *chat, int result, const char *name, int count, const char **nicks, u32 modes, u32 id) {
+extern "C" void LobbyChat_OnEnterChannelEnumUsers(struct ChatConnection *chat, int result, const char *name, int count, const char **nicks, u32 modes, u32 id) {
     if (gLobbyChatManager != NULL && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
     }
@@ -121,7 +121,7 @@ extern "C" void LobbyChat_OnEnterChannelEnumUsers(void *chat, int result, const 
 #pragma push
 #pragma opt_propagation off
 
-extern "C" void LobbyChat_OnEnterChannel(void *chat, int ok, int error, const char *name, u32 id) {
+extern "C" void LobbyChat_OnEnterChannel(struct ChatConnection *chat, int ok, int error, const char *name, u32 id) {
     if (gLobbyChatManager != NULL && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
     }
@@ -184,7 +184,7 @@ extern "C" void LobbyChat_OnEnterChannel(void *chat, int ok, int error, const ch
 #pragma push
 #pragma opt_propagation off
 
-extern "C" void LobbyChat_OnGetChannelKeys(void *chat, int result, const char *name, const char *user, int count, const char **keys, const char **values, u32 id) {
+extern "C" void LobbyChat_OnGetChannelKeys(struct ChatConnection *chat, int result, const char *name, const char *user, int count, const char **keys, const char **values, u32 id) {
     if (gLobbyChatManager != NULL && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
     }
@@ -232,7 +232,7 @@ extern "C" void LobbyChat_OnGetChannelKeys(void *chat, int result, const char *n
 #pragma pop
 
 // A key without a user is a channel key; it is reported with user ID -1.
-extern "C" void LobbyChat_OnBroadcastKeyChanged(void *chat, char *channel, char *nick, void *key, void *value) {
+extern "C" void LobbyChat_OnBroadcastKeyChanged(struct ChatConnection *chat, char *channel, char *nick, void *key, void *value) {
     Str nickStr;
     Str channelKey;
     Str fullName;
@@ -262,7 +262,7 @@ extern "C" void LobbyChat_OnBroadcastKeyChanged(void *chat, char *channel, char 
 #pragma push
 #pragma opt_propagation off
 
-extern "C" void LobbyChat_OnGetChannelMode(void *chat, int result, const char *name, u32 mode, u32 id) {
+extern "C" void LobbyChat_OnGetChannelMode(struct ChatConnection *chat, int result, const char *name, u32 mode, u32 id) {
     if (gLobbyChatManager != NULL && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR) {
         return;
     }
