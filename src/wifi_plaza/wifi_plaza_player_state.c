@@ -25,14 +25,6 @@
 #include "sound_playback.h"
 #include "system.h"
 
-// How the own player enters the room, an index into sWiFiPlazaPlayerStateOwnEntries
-enum WiFiPlazaRoomEntryMode {
-    WIFI_PLAZA_ENTRY_ARRIVAL,
-    WIFI_PLAZA_ENTRY_FROM_ATTRACTION,
-    WIFI_PLAZA_ENTRY_FROM_GAME,
-    WIFI_PLAZA_ENTRY_FROM_SURVEY,
-};
-
 enum WiFiPlazaPlayerBounceState {
     WIFI_PLAZA_BOUNCE_IDLE,
     WIFI_PLAZA_BOUNCE_PAUSE,
@@ -196,16 +188,6 @@ enum WiFiPlazaOtherActivityStep {
     WIFI_PLAZA_OTHER_ACTIVITY_END,
 };
 
-// Where and how the own player re-enters the room; entryMode picks the own player's first handler from
-// sWiFiPlazaPlayerStateOwnEntries
-typedef struct WiFiPlazaRoomEntry {
-    u16 x; // cell
-    u16 y;
-    u16 direction;
-    u16 entryMode;
-    u16 param;
-} WiFiPlazaRoomEntry;
-
 // Work of WiFiPlazaPlayerState_OwnArrival
 typedef struct WiFiPlazaOwnArrivalWork {
     u16 nextStep;
@@ -302,11 +284,11 @@ static int WiFiPlazaPlayerState_GetAttractionLobbyState(int tile);
 static BOOL WiFiPlazaTalk_Greeter(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, u32 index);
 static BOOL WiFiPlazaPlayerState_OwnRideMover(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, u32 index);
 static void WiFiPlazaPlayerRide_FollowCamera(WiFiPlazaPlayerRide *ride, WiFiPlazaCamera *camera);
-static BOOL WiFiPlazaPlayerRide_IsMoverHere(WiFiPlazaPlayerRide *ride, void *models);
-static BOOL WiFiPlazaPlayerRide_JumpOn(WiFiPlazaPlayerRide *ride, void *models, WiFiPlazaCamera *camera);
-static BOOL WiFiPlazaPlayerRide_Land(WiFiPlazaPlayerRide *ride, void *models);
-static void WiFiPlazaPlayerRide_FollowMover(WiFiPlazaPlayerRide *ride, void *models, WiFiPlazaRoomWork *room);
-static void WiFiPlazaPlayerRide_FollowMoverBounce(WiFiPlazaPlayerRide *ride, void *models, WiFiPlazaRoomWork *room);
+static BOOL WiFiPlazaPlayerRide_IsMoverHere(WiFiPlazaPlayerRide *ride, WiFiPlazaModels *models);
+static BOOL WiFiPlazaPlayerRide_JumpOn(WiFiPlazaPlayerRide *ride, WiFiPlazaModels *models, WiFiPlazaCamera *camera);
+static BOOL WiFiPlazaPlayerRide_Land(WiFiPlazaPlayerRide *ride, WiFiPlazaModels *models);
+static void WiFiPlazaPlayerRide_FollowMover(WiFiPlazaPlayerRide *ride, WiFiPlazaModels *models, WiFiPlazaRoomWork *room);
+static void WiFiPlazaPlayerRide_FollowMoverBounce(WiFiPlazaPlayerRide *ride, WiFiPlazaModels *models, WiFiPlazaRoomWork *room);
 static void WiFiPlazaPlayerState_InitArrivalMenu(WiFiPlazaOwnArrivalWork *work, WiFiPlazaRoomWork *room);
 static void WiFiPlazaPlayerState_FreeArrivalMenu(WiFiPlazaOwnArrivalWork *work, WiFiPlazaRoomWork *room);
 static BOOL WiFiPlazaPlayerState_OtherWaitForPlayer(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, u32 index);
@@ -2316,7 +2298,7 @@ static void WiFiPlazaPlayerRide_FollowCamera(WiFiPlazaPlayerRide *ride, WiFiPlaz
     WiFiPlazaCamera_SetTarget(camera, pos.x, pos.y, pos.z);
 }
 
-static BOOL WiFiPlazaPlayerRide_IsMoverHere(WiFiPlazaPlayerRide *ride, void *models) {
+static BOOL WiFiPlazaPlayerRide_IsMoverHere(WiFiPlazaPlayerRide *ride, WiFiPlazaModels *models) {
     VecFx32 pos;
     VecFx32 moverPos;
     u32 mover;
@@ -2331,7 +2313,7 @@ static BOOL WiFiPlazaPlayerRide_IsMoverHere(WiFiPlazaPlayerRide *ride, void *mod
 }
 
 // Jump arc from the player's cell onto the mover (24 frames); the camera follows
-static BOOL WiFiPlazaPlayerRide_JumpOn(WiFiPlazaPlayerRide *ride, void *models, WiFiPlazaCamera *camera) {
+static BOOL WiFiPlazaPlayerRide_JumpOn(WiFiPlazaPlayerRide *ride, WiFiPlazaModels *models, WiFiPlazaCamera *camera) {
     VecFx32 start, end, pos;
     u32 mover, side;
     Field2DPoint cell, packedCell;
@@ -2370,7 +2352,7 @@ static BOOL WiFiPlazaPlayerRide_JumpOn(WiFiPlazaPlayerRide *ride, void *models, 
 }
 
 // Landing hop on the mover (16 frames)
-static BOOL WiFiPlazaPlayerRide_Land(WiFiPlazaPlayerRide *ride, void *models) {
+static BOOL WiFiPlazaPlayerRide_Land(WiFiPlazaPlayerRide *ride, WiFiPlazaModels *models) {
     VecFx32 pos;
     BOOL finished;
     fx32 offset;
@@ -2390,7 +2372,7 @@ static BOOL WiFiPlazaPlayerRide_Land(WiFiPlazaPlayerRide *ride, void *models) {
     return finished;
 }
 
-static void WiFiPlazaPlayerRide_FollowMover(WiFiPlazaPlayerRide *ride, void *models, WiFiPlazaRoomWork *room) {
+static void WiFiPlazaPlayerRide_FollowMover(WiFiPlazaPlayerRide *ride, WiFiPlazaModels *models, WiFiPlazaRoomWork *room) {
     VecFx32 pos;
     u32 side;
     u32 mover;
@@ -2399,7 +2381,7 @@ static void WiFiPlazaPlayerRide_FollowMover(WiFiPlazaPlayerRide *ride, void *mod
     WiFiPlazaObj_SetPosition(ride->obj, &pos);
 }
 
-static void WiFiPlazaPlayerRide_FollowMoverBounce(WiFiPlazaPlayerRide *ride, void *models, WiFiPlazaRoomWork *room) {
+static void WiFiPlazaPlayerRide_FollowMoverBounce(WiFiPlazaPlayerRide *ride, WiFiPlazaModels *models, WiFiPlazaRoomWork *room) {
     VecFx32 pos;
     u32 mover;
     u32 side;

@@ -76,6 +76,5 @@ void UnionRoom_FreeTrainerCards(struct UnionRoom *);
 BOOL UnionRoom_SendTrainerCard(struct UnionRoom *);
 
 // The profile in a player's beacon record (communication layer), NULL if absent.
-PlayerProfile *CommWireless_GetParentProfile(int);
 
 #endif // POKEHEARTGOLD_UNION_ROOM_TALK_H

@@ -27,7 +27,7 @@ typedef struct CommBeacon {
     u8 memberCount; // connected players
     u8 unk_07;
     MailMessage mail;
-    u8 profile[0x20]; // PlayerProfile
+    PlayerProfile profile;
     u8 ruleset[0x20]; // LinkBattleRuleset
     u8 unk_50[4];
     u8 entryLocked; // Wireless_IsEntryLocked
@@ -164,8 +164,6 @@ static void CommWireless_Update(int count, CommWirelessWork *work);
 static BOOL CommWireless_IsAidConnected(u16 aid);
 static int CommWireless_CountConnected(void);
 static u32 CommWireless_GetBeaconPeriod(u32 kind);
-void *CommWireless_GetParentProfile(int slot);
-void *CommWireless_GetRuleset(void);
 
 static const CommBssid sCommWirelessAnyBssid = {
     .data = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF },
@@ -564,7 +562,7 @@ static void CommWireless_BuildBeacon(void) {
         CommBeacon *beacon = sCommWireless.work->beacon;
         GF_ASSERT((int)LinkBattleRuleset_sizeof() <= 0x20);
         GF_ASSERT(PlayerProfile_sizeof() == 0x20);
-        MI_CpuCopy8(profile, beacon->profile, PlayerProfile_sizeof());
+        MI_CpuCopy8(profile, &beacon->profile, PlayerProfile_sizeof());
         MI_CpuCopy8(sCommWireless.work->ruleset, beacon->ruleset, LinkBattleRuleset_sizeof());
         beacon->trainerId = PlayerProfile_GetTrainerID(profile);
         beacon->kind = CommState_GetLinkMode();
@@ -773,20 +771,20 @@ void *CommWireless_GetParentInfo(int slot) {
     return NULL;
 }
 
-void *CommWireless_GetProfile(void) {
+PlayerProfile *CommWireless_GetProfile(void) {
     return sCommWireless.work->profile;
 }
 
-void *CommWireless_GetParentProfile(int slot) {
+PlayerProfile *CommWireless_GetParentProfile(int slot) {
     CommBeacon *beacon;
     if (sCommWireless.work->parentTimers[slot] == 0) {
         return NULL;
     }
     beacon = &sCommWireless.work->parents[slot].beacon;
-    return beacon->profile;
+    return &beacon->profile;
 }
 
-void CommWireless_SetMacAddress(void *macAddress, int index) {
+void CommWireless_SetMacAddress(const u8 *macAddress, int index) {
     if (sCommWireless.work != NULL) {
         GF_ASSERT(index < 8);
         MI_CpuCopy8(macAddress, sCommWireless.work->macAddresses[index], 6);
@@ -806,11 +804,11 @@ void CommWireless_RequestShutdown(void) {
     }
 }
 
-void CommWireless_SetMail(void *mail) {
+void CommWireless_SetMail(const MailMessage *mail) {
     MI_CpuCopy8(mail, &sCommWireless.work->mail, 8);
 }
 
-void CommWireless_SetRuleset(void *ruleset) {
+void CommWireless_SetRuleset(const void *ruleset) {
     MI_CpuCopy8(ruleset, sCommWireless.work->ruleset, LinkBattleRuleset_sizeof());
 }
 

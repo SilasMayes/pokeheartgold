@@ -1031,7 +1031,7 @@ int Comm_SendParentCommandNoCopy(int command, void *data, int size) {
     return 0;
 }
 
-int Comm_SendParentCommand(void *command, void *data, int size) {
+int Comm_SendParentCommand(int command, void *data, int size) {
     if (Comm_GetLocalNetId() != 0) {
         Comm_SetLinkError();
         return 0;
@@ -1040,9 +1040,9 @@ int Comm_SendParentCommand(void *command, void *data, int size) {
         return 0;
     }
     if (Comm_GetTransferMode() == 1) {
-        return Comm_SendCommand((int)command, data, size);
+        return Comm_SendCommand(command, data, size);
     }
-    if (PacketPool_Enqueue(&sCommCore.work->parentQueue, (int)command, data, size, 1, 1)) {
+    if (PacketPool_Enqueue(&sCommCore.work->parentQueue, command, data, size, 1, 1)) {
         return 1;
     }
     if (CommState_GetLinkMode() == COMM_TYPE_10) {
@@ -1052,7 +1052,7 @@ int Comm_SendParentCommand(void *command, void *data, int size) {
 }
 
 int Comm_SendFixedParentCommand(int command, void *data) {
-    return Comm_SendParentCommand((void *)command, data, 0);
+    return Comm_SendParentCommand(command, data, 0);
 }
 
 int Comm_GetSendBufferFreeSpace(void) {
@@ -1255,7 +1255,7 @@ static void Comm_UpdateTransferModeHandshake(void) {
         if (Comm_GetTransferMode() == 1) {
             result = Comm_SendFixedCommand(11, &sCommCore.work->requestedTransferMode);
         } else {
-            result = Comm_SendParentCommand((void *)11, &sCommCore.work->requestedTransferMode, 1);
+            result = Comm_SendParentCommand(11, &sCommCore.work->requestedTransferMode, 1);
         }
         if (result != 0) {
             sCommCore.work->transferModeHandshake = 2;

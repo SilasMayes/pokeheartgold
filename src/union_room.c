@@ -26,8 +26,6 @@ enum UnionRoomConnectRequest {
 // Communication core and Union Room message functions, declared with the types their call sites were matched
 // against.
 BOOL Comm_SendParentCommand(int command, void *data, int size);
-BOOL CommWireless_GetParentProfile(int netId);
-void *CommWireless_GetRuleset(void);
 void CommState_StartAlternateSearch(void);
 BOOL CommState_IsAlternateLinked(void);
 BOOL CommState_GetJoinResult(void);
@@ -305,9 +303,9 @@ UnionRoomRecord *UnionRoom_GetRecord(struct UnionRoom *unionRoom, int netId) {
 int UnionRoom_GetPlayerActivityType(struct UnionRoom *unionRoom, int objId) {
     UnionRoomRecord *record;
     UnionRoomRecordInfo *info;
-    BOOL present = CommWireless_GetParentProfile(objId - 1);
+    PlayerProfile *profile = CommWireless_GetParentProfile(objId - 1);
     UnionRoom_ResetTalkReplies(unionRoom);
-    if (!present) {
+    if (profile == NULL) {
         return 5;
     }
     record = unionRoom->records[objId - 1];

@@ -132,7 +132,7 @@ static void WiFiPlazaRoomMsg_BufferCityName(WiFiPlazaRoomMsg *msg, u32 country, 
 static void WiFiPlazaRoomMsg_BufferECWord(WiFiPlazaRoomMsg *msg, u32 field, u16 word);
 static void WiFiPlazaRoomMsg_ResetBuffers(WiFiPlazaRoomMsg *msg);
 static void WiFiPlazaRoom_SetPanelButtonPressed(WiFiPlazaRoomWork *room);
-static void WiFiPlazaInfoPanel_Init(WiFiPlazaInfoPanel *panel, u16 *startParams, WiFiPlazaRoomGraphics *graphics, PlayerProfile *profile, enum HeapID heapID);
+static void WiFiPlazaInfoPanel_Init(WiFiPlazaInfoPanel *panel, WiFiPlazaRoomEntry *startParams, WiFiPlazaRoomGraphics *graphics, PlayerProfile *profile, enum HeapID heapID);
 static void WiFiPlazaInfoPanel_Free(WiFiPlazaInfoPanel *panel, WiFiPlazaMsgWindow *signWindow, WiFiPlazaRoomGraphics *graphics);
 static void WiFiPlazaInfoPanel_Update(WiFiPlazaInfoPanel *panel, WiFiPlazaRoomWork *room, BOOL paused, enum HeapID heapID);
 static u8 WiFiPlazaInfoPanel_GetState(WiFiPlazaInfoPanel *panel);
@@ -327,7 +327,7 @@ BOOL WiFiPlazaRoom_Init(OverlayManager *manager, int *state) {
     Heap_Create(HEAP_ID_3, HEAP_ID_120, 0x3D000);
     room = OverlayManager_CreateAndGetData(manager, sizeof(WiFiPlazaRoomWork), HEAP_ID_119);
     memset(room, 0, sizeof(WiFiPlazaRoomWork));
-    room->startParams = args->startParams;
+    room->startParams = &args->startParams;
     room->lobby = args->lobby;
     room->ownPlayerIndex = WiFiPlazaWork_GetOwnSlot(room->lobby);
     GF_ASSERT(WiFiPlazaWork_GetOwnSlot(room->lobby) != -1);
@@ -494,7 +494,7 @@ WiFiPlazaWork *WiFiPlazaRoom_GetLobby(WiFiPlazaRoomWork *room) {
     return room->lobby;
 }
 
-void *WiFiPlazaRoom_GetStartParams(WiFiPlazaRoomWork *room) {
+WiFiPlazaRoomEntry *WiFiPlazaRoom_GetStartParams(WiFiPlazaRoomWork *room) {
     return room->startParams;
 }
 
@@ -1576,7 +1576,7 @@ static const u8 sWiFiPlazaCardTypeIconTiles[2][16] = {
     { 236, 2, 237, 2, 238, 2, 239, 2, 240, 2, 241, 2, 242, 2, 243, 2 },
 };
 
-static void WiFiPlazaInfoPanel_Init(WiFiPlazaInfoPanel *panel, u16 *startParams, WiFiPlazaRoomGraphics *graphics, PlayerProfile *profile, enum HeapID heapID) {
+static void WiFiPlazaInfoPanel_Init(WiFiPlazaInfoPanel *panel, WiFiPlazaRoomEntry *startParams, WiFiPlazaRoomGraphics *graphics, PlayerProfile *profile, enum HeapID heapID) {
     u32 gender = PlayerProfile_GetTrainerGender(profile);
 
     panel->narc = NARC_New(NARC_a_2_0_7, heapID);
@@ -1585,7 +1585,7 @@ static void WiFiPlazaInfoPanel_Init(WiFiPlazaInfoPanel *panel, u16 *startParams,
     WiFiPlazaPanelButton_Init(&panel->button, graphics, panel->narc, heapID);
     panel->request = WIFI_PLAZA_PANEL_PAGE_NONE;
     panel->page = WIFI_PLAZA_PANEL_PAGE_NONE;
-    if (startParams[3] == 0) {
+    if (startParams->entryMode == WIFI_PLAZA_ENTRY_ARRIVAL) {
         panel->state = WIFI_PLAZA_PANEL_WAIT_START;
         BG_SetMaskColor(GF_BG_LYR_SUB_0, 0);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_OFF);

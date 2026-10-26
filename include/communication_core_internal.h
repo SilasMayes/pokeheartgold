@@ -116,7 +116,7 @@ void Comm_RecvPeerFrameCallback(int slot, const u8 *data);
 int Comm_SendCommandNoCopy(int command, void *data, int size);
 int Comm_SendCommand(int command, void *data, int size);
 int Comm_SendParentCommandNoCopy(int command, void *data, int size);
-int Comm_SendParentCommand(void *command, void *data, int size);
+int Comm_SendParentCommand(int command, void *data, int size);
 int Comm_SendFixedParentCommand(int command, void *data);
 int Comm_GetSendBufferFreeSpace(void);
 int Comm_IsNetIdConnected(int slot);

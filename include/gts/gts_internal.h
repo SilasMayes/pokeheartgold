@@ -107,7 +107,7 @@ typedef struct GtsFriendKey {
 
 typedef struct GtsServerPending {
     u8 padding_00[0x38];
-    void *exchangeArg; // sent after the record by exchange.asp
+    u32 exchangeId; // sent after the record by exchange.asp
     u8 padding_3C[4];
     u8 *response; // buffer of the request in flight
 } GtsServerPending;

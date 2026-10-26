@@ -479,7 +479,7 @@ int GtsTransaction_WaitReturn(GtsApp *app) {
 
 int GtsTransaction_SendExchange(GtsApp *app) {
     Pokemon_RemoveCapsule(&app->record.mon);
-    GtsServer_RequestExchange((void *)app->searchResults[app->selectedResult].exchangeId, &app->record, &app->searchResults[7]);
+    GtsServer_RequestExchange(app->searchResults[app->selectedResult].exchangeId, &app->record, &app->searchResults[7]);
     GtsTransaction_SetSaveStates(app, GTS_TRANSACTION_STATE_SEND_EXCHANGE_FINISH, GTS_TRANSACTION_STATE_EXCHANGE_DONE);
     app->state = GTS_TRANSACTION_STATE_WAIT_EXCHANGE;
     app->requestFrames = 0;

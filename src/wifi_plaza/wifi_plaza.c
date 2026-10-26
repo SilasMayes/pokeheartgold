@@ -26,6 +26,7 @@
 #include "pokedex.h"
 #include "pokemon.h"
 #include "sav_system_info.h"
+#include "save_plaza_survey.h"
 #include "save_wifi_history.h"
 #include "sound.h"
 #include "sound_system.h"
@@ -287,7 +288,7 @@ static WiFiPlazaWork *WiFiPlazaWork_New(SaveData *save, enum HeapID heapID) {
 static void WiFiPlazaWork_Delete(WiFiPlazaWork *work) {
     WiFiPlazaPlayerSurvey survey;
     int i;
-    void *surveySave;
+    PlazaSurveySave *surveySave;
     WiFiPlazaPlayer_GetSurvey(&work->profile.player, &survey);
     surveySave = Save_PlazaSurvey_Get(work->save);
     PlazaSurvey_SetSurveyId(surveySave, survey.surveyId);
@@ -495,7 +496,7 @@ void WiFiPlazaWork_SetOwnGameMember(WiFiPlazaWork *work, u32 index) {
     WiFiPlazaWork_SetGameMember(work, id, index);
 }
 
-void WiFiPlazaWork_GetGameMembers(WiFiPlazaWork *work, void *dest) {
+void WiFiPlazaWork_GetGameMembers(WiFiPlazaWork *work, u8 *dest) {
     MI_CpuCopy8(work->gameMembers, dest, 4);
 }
 

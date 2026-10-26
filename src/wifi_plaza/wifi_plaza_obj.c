@@ -79,7 +79,7 @@ static void WiFiPlazaObj_HandlerSlideDown(WiFiPlazaObj *obj, WiFiPlazaObjManager
 static void WiFiPlazaObj_SlideOneCell(WiFiPlazaObj *obj, WiFiPlazaObjManager *manager, u32 direction);
 static void WiFiPlazaObj_HandlerHop(WiFiPlazaObj *obj, WiFiPlazaObjManager *manager);
 static void WiFiPlazaObj_HandlerResetHeight(WiFiPlazaObj *obj, WiFiPlazaObjManager *manager);
-static void WiFiPlazaObj_InitLight(WiFiPlazaObjLight *light, void *avatars, u32 value);
+static void WiFiPlazaObj_InitLight(WiFiPlazaObjLight *light, struct WiFiPlazaPlayerObjects *avatars, u32 value);
 static void WiFiPlazaObj_StartLightFade(WiFiPlazaObjLight *light, u32 value);
 
 static const u8 sWiFiPlazaObjWanderDirections[] = { 0, 1, 2, 3 };
@@ -437,8 +437,8 @@ void WiFiPlazaObj_SetAvatarMode(WiFiPlazaObj *obj, int enable) {
     WiFiPlazaPlayerObject_SetMode(obj->avatar, enable);
 }
 
-void WiFiPlazaObj_SetPositionFromGrid(WiFiPlazaObj *obj, void *out) {
-    WiFiPlazaPlayerObject_SetGridPosition(obj->avatar, out);
+void WiFiPlazaObj_SetPositionFromGrid(WiFiPlazaObj *obj, const Field2DPoint *gridPos) {
+    WiFiPlazaPlayerObject_SetGridPosition(obj->avatar, gridPos);
 }
 
 void WiFiPlazaObj_SetPosition(WiFiPlazaObj *obj, VecFx32 *position) {
@@ -925,7 +925,7 @@ static void WiFiPlazaObj_HandlerResetHeight(WiFiPlazaObj *obj, WiFiPlazaObjManag
     WiFiPlazaPlayerObject_SetPosition(obj->avatar, &position);
 }
 
-static void WiFiPlazaObj_InitLight(WiFiPlazaObjLight *light, void *avatars, u32 value) {
+static void WiFiPlazaObj_InitLight(WiFiPlazaObjLight *light, struct WiFiPlazaPlayerObjects *avatars, u32 value) {
     light->value = value;
     light->start = value;
     light->delta = 0;

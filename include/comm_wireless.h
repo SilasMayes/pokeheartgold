@@ -2,6 +2,7 @@
 #define POKEHEARTGOLD_COMM_WIRELESS_H
 
 #include "player_data.h"
+#include "pokemon_types_def.h"
 
 void CommWireless_StartUp(void);
 void CommWireless_Terminate(void);
@@ -30,12 +31,14 @@ int CommWireless_GetConnectedChildren(void);
 BOOL CommWireless_IsLinkLost(void);
 void CommWireless_SetLostWhenAlone(BOOL value);
 void CommWireless_SetDetectDrops(BOOL);
-void *CommWireless_GetProfile(void);
-void CommWireless_SetMacAddress(void *, int);
+PlayerProfile *CommWireless_GetProfile(void);
+PlayerProfile *CommWireless_GetParentProfile(int slot);
+void CommWireless_SetMacAddress(const u8 *macAddress, int index);
 BOOL CommWireless_IsShutdownRequested(void);
 void CommWireless_RequestShutdown(void);
-void CommWireless_SetMail(void *);
-void CommWireless_SetRuleset(void *);
+void CommWireless_SetMail(const MailMessage *mail);
+void CommWireless_SetRuleset(const void *ruleset);
+void *CommWireless_GetRuleset(void);
 void CommWireless_RefreshBeacon(void);
 BOOL CommWireless_HasSentBeacons(void);
 void CommWireless_SetCustomBeacon(const void *);

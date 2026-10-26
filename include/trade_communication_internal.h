@@ -24,7 +24,7 @@ typedef struct WirelessTradeCommand {
 } WirelessTradeCommand;
 
 void WirelessTradeSelectMon_SendCommandIfChanged(WirelessTradeSelectMon *, int, int);
-void WirelessTradeSelectMon_SendPartyChunk(int, void *, int);
+void WirelessTradeSelectMon_SendPartyChunk(u32 netId, Party *party, u32 chunk);
 
 void WirelessTrade_RegisterCommands(TradeContext *context);
 u32 WirelessTrade_GetPartnerSlot(u32 slot);

@@ -73,12 +73,29 @@ enum WiFiPlazaActivity {
     WIFI_PLAZA_ACTIVITY_SURVEY,
 };
 
+// How the own player enters the room
+enum WiFiPlazaRoomEntryMode {
+    WIFI_PLAZA_ENTRY_ARRIVAL,
+    WIFI_PLAZA_ENTRY_FROM_ATTRACTION,
+    WIFI_PLAZA_ENTRY_FROM_GAME,
+    WIFI_PLAZA_ENTRY_FROM_SURVEY,
+};
+
+// Where and how the own player enters the room; entryMode picks the own player's first state
+typedef struct WiFiPlazaRoomEntry {
+    u16 x; // cell
+    u16 y;
+    u16 direction;
+    u16 entryMode; // enum WiFiPlazaRoomEntryMode
+    u16 param;
+} WiFiPlazaRoomEntry;
+
 typedef struct WiFiPlazaRoomArgs {
     SaveData *save;
     int group; // room layout group
     int variant;
-    u16 startParams[6]; // startParams[3] == 0: the info panel starts hidden
-    u32 result;         // copied from WiFiPlazaRoomWork.result on exit
+    WiFiPlazaRoomEntry startParams; // WIFI_PLAZA_ENTRY_ARRIVAL: the info panel starts hidden
+    u32 result;                     // copied from WiFiPlazaRoomWork.result on exit
     WiFiPlazaWork *lobby;
 } WiFiPlazaRoomArgs;
 
@@ -197,7 +214,7 @@ struct WiFiPlazaRoomWork {
     u8 playerBusy[WIFI_PLAZA_MAX_PLAYERS];
     u8 cardBlocked[WIFI_PLAZA_MAX_PLAYERS];
     WiFiPlazaWork *lobby;
-    u16 *startParams; // WiFiPlazaRoomArgs.startParams
+    WiFiPlazaRoomEntry *startParams; // WiFiPlazaRoomArgs.startParams
     WiFiPlazaRoomGraphics graphics;
     WiFiPlazaInfoPanel infoPanel;
     WiFiPlazaRoomMsg msg;
@@ -223,7 +240,7 @@ BOOL WiFiPlazaRoom_Main(OverlayManager *manager, int *state);
 BOOL WiFiPlazaRoom_Exit(OverlayManager *manager, int *state);
 
 WiFiPlazaWork *WiFiPlazaRoom_GetLobby(WiFiPlazaRoomWork *room);
-void *WiFiPlazaRoom_GetStartParams(WiFiPlazaRoomWork *room); // WiFiPlazaRoomArgs.startParams
+WiFiPlazaRoomEntry *WiFiPlazaRoom_GetStartParams(WiFiPlazaRoomWork *room); // WiFiPlazaRoomArgs.startParams
 WiFiPlazaObjManager *WiFiPlazaRoom_GetObjManager(WiFiPlazaRoomWork *room);
 WiFiPlazaModels *WiFiPlazaRoom_GetModels(WiFiPlazaRoomWork *room);
 WiFiPlazaMap *WiFiPlazaRoom_GetMap(WiFiPlazaRoomWork *room);
@@ -428,7 +445,7 @@ BOOL WiFiPlazaWork_IsGameEntryCoolingDown(WiFiPlazaWork *lobby);
 void WiFiPlazaWork_ClearGameMembers(WiFiPlazaWork *lobby);
 void WiFiPlazaWork_SetGameMember(WiFiPlazaWork *lobby, int id, u32 index);
 void WiFiPlazaWork_SetOwnGameMember(WiFiPlazaWork *lobby, u32 index);
-void WiFiPlazaWork_GetGameMembers(WiFiPlazaWork *lobby, void *dest);
+void WiFiPlazaWork_GetGameMembers(WiFiPlazaWork *lobby, u8 *dest);
 int WiFiPlazaWork_GetOwnId(WiFiPlazaWork *work);
 int WiFiPlazaPlayer_GetAvatarIndex(WiFiPlazaPlayer *player);
 u32 WiFiPlazaPlayer_GetLocalTime(WiFiPlazaPlayer *player); // packed local time, hour in the low byte

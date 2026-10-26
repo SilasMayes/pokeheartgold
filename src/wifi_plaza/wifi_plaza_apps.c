@@ -274,7 +274,7 @@ u16 WiFiPlaza_IndexToAvatar(u32 index) {
     return 0xffff;
 }
 
-WiFiPlazaApps *WiFiPlazaApps_New(u32 skipPrompt, SaveData *save, void *loginTime, WiFiPlazaWork *work, enum HeapID heapID) {
+WiFiPlazaApps *WiFiPlazaApps_New(u32 skipPrompt, SaveData *save, s64 *loginTime, WiFiPlazaWork *work, enum HeapID heapID) {
     WiFiPlazaApps *apps = Heap_Alloc(heapID, sizeof(WiFiPlazaApps));
     int i;
     memset(apps, 0, sizeof(WiFiPlazaApps));
@@ -909,7 +909,7 @@ u32 WiFiPlazaPlaces_IsOccupied(WiFiPlazaPlace *places, u8 index) {
 }
 
 // Turns off the diffuse, ambient, specular and emission flags of the materials of the first model of file.
-void WiFiPlaza_DisableModelLighting(void *file) {
+void WiFiPlaza_DisableModelLighting(NNSG3dResFileHeader *file) {
     NNSG3dResMdlSet *set = NNS_G3dGetMdlSet(file);
     NNSG3dResMdl *model = NNS_G3dGetMdlByIdx(set, 0);
     NNSi_G3dModifyMatFlag(model, FALSE, NNS_G3D_MATFLAG_DIFFUSE);

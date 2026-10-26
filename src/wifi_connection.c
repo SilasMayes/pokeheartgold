@@ -140,7 +140,7 @@ static const DwcMatchOptMinComplete sWifiConnectionAnybodyMatchParams = {
 
 static const char sWifiConnectionMatchFilterFormat[] = "%s = '%s'";
 
-int WifiConnection_Init(void *saveData, int heapId, u32 heapSize, int maxPlayers) {
+int WifiConnection_Init(SaveData *saveData, int heapId, u32 heapSize, int maxPlayers) {
     u8 *raw;
     int i;
 

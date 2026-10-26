@@ -17,7 +17,7 @@ typedef struct VisitorProfilesArgs {
     struct WiFiPlazaPlace *visitors; // lobby visitor table, read through WiFiPlazaPlaces_GetCountry and friends
     SaveData *saveData;
     VisitorProfilesClock clock;
-    void *lobby;
+    struct WiFiPlazaWork *lobby;
 } VisitorProfilesArgs;
 
 BOOL VisitorProfiles_Init(OverlayManager *man, int *state);

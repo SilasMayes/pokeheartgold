@@ -26,7 +26,7 @@
 #include "save_wifi_history.h"
 
 typedef struct WiFiPlazaArgs {
-    void *loginTime;
+    s64 *loginTime;
     SaveData *save;
     u32 skipPrompt;
 } WiFiPlazaArgs;
@@ -254,7 +254,7 @@ typedef struct WiFiPlazaApps {
     u16 heapID;
     struct WiFiPlazaWork *work;
     SaveData *save;
-    void *loginTime;
+    s64 *loginTime;
 } WiFiPlazaApps;
 
 // What the lobby request handlers pass to the plaza news (with the player profiles in
@@ -626,7 +626,7 @@ void WiFiPlazaWork_SetGameConnectionLost(WiFiPlazaWork *work, BOOL value);
 void WiFiPlazaWork_ClearGameMembers(WiFiPlazaWork *work);
 void WiFiPlazaWork_SetGameMember(WiFiPlazaWork *work, int id, u32 index);
 void WiFiPlazaWork_SetOwnGameMember(WiFiPlazaWork *work, u32 index);
-void WiFiPlazaWork_GetGameMembers(WiFiPlazaWork *work, void *dest);
+void WiFiPlazaWork_GetGameMembers(WiFiPlazaWork *work, u8 *dest);
 void WiFiPlazaWork_SetAppQuitForClosing(WiFiPlazaWork *work);
 int WiFiPlazaWork_DidAppQuitForClosing(WiFiPlazaWork *work);
 void WiFiPlazaWork_SetMinigameActiveFlag(WiFiPlazaWork *work, u8 value);
@@ -739,7 +739,7 @@ u16 WiFiPlazaHistory_IsCorrupt(WiFiPlazaHistory *history);
 
 int WiFiPlaza_AvatarToIndex(u16 avatar);
 u16 WiFiPlaza_IndexToAvatar(u32 index);
-WiFiPlazaApps *WiFiPlazaApps_New(u32 skipPrompt, SaveData *save, void *loginTime, WiFiPlazaWork *work, enum HeapID heapID);
+WiFiPlazaApps *WiFiPlazaApps_New(u32 skipPrompt, SaveData *save, s64 *loginTime, WiFiPlazaWork *work, enum HeapID heapID);
 void WiFiPlazaApps_Delete(WiFiPlazaApps *apps);
 void WiFiPlazaApps_StartFirst(WiFiPlazaApps *apps);
 BOOL WiFiPlazaApps_Run(WiFiPlazaApps *apps);
@@ -753,7 +753,7 @@ u32 WiFiPlazaPlaces_GetCountry(WiFiPlazaPlace *places, u8 index);
 u32 WiFiPlazaPlaces_GetRegion(WiFiPlazaPlace *places, u8 index);
 u32 WiFiPlazaPlaces_GetValue(WiFiPlazaPlace *places, u8 index);
 u32 WiFiPlazaPlaces_IsOccupied(WiFiPlazaPlace *places, u8 index);
-void WiFiPlaza_DisableModelLighting(void *file);
+void WiFiPlaza_DisableModelLighting(NNSG3dResFileHeader *file);
 BOOL WiFiPlaza_IsRegionValid(u32 country, u32 region);
 u32 WiFiPlaza_GetTypeByChoice(u32 index);
 int WiFiPlaza_GetErrorMessageClass(u32 errorCode, u32 context);
@@ -999,9 +999,6 @@ u32 NNS_G3dMdlGetMdlLightEnableFlag(const NNSG3dResMdl *pResMdl, u32 matID);
 void NNS_G3dMdlSetMdlLightEnableFlagAll(NNSG3dResMdl *pResMdl, u32 light);
 void NNS_G3dMdlSetMdlPolygonIDAll(NNSG3dResMdl *pResMdl, u32 polygonID);
 void NNS_G3dMdlSetMdlAlphaAll(NNSG3dResMdl *pResMdl, u32 alpha);
-void *Save_PlazaSurvey_Get(SaveData *save);
-void PlazaSurvey_SetSurveyId(void *data, u32 surveyId);
-void PlazaSurvey_SetAnswer(void *data, u32 answer);
 WiFiPlazaPlayerInfo *WiFiPlazaPlayerInfo_New(PlayerProfile *profile, enum HeapID heapID);
 void WiFiPlazaPlayerInfo_Free(WiFiPlazaPlayerInfo *info);
 

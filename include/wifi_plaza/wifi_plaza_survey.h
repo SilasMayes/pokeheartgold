@@ -121,7 +121,7 @@ extern struct WiFiPlazaPlayer *WiFiPlazaWork_GetPlayer(struct WiFiPlazaWork *lob
 extern struct WiFiPlazaPlayer *WiFiPlazaWork_GetMyPlayer(struct WiFiPlazaWork *lobby);
 extern void WiFiPlazaWork_SetSurveyAnswer(struct WiFiPlazaWork *lobby, u32 surveyId, u32 answer);
 extern void WiFiPlazaPlayer_CopyToProfile(struct WiFiPlazaPlayer *player, PlayerProfile *profile, enum HeapID heapID);
-extern void *WiFiPlazaPlayer_GetRawLanguage(struct WiFiPlazaPlayer *player);
+extern u8 WiFiPlazaPlayer_GetRawLanguage(struct WiFiPlazaPlayer *player);
 extern void WiFiPlazaPlayer_GetSurvey(struct WiFiPlazaPlayer *player, WiFiPlazaSurveyAnswerRecord *record);
 extern BOOL WiFiPlazaWork_IsSpecialVisitor(struct WiFiPlazaWork *lobby, int value);
 extern void WiFiPlazaWork_SetSurveyTally(struct WiFiPlazaWork *lobby, const WiFiPlazaSurveyTally *tally);
@@ -131,7 +131,7 @@ extern void WiFiPlazaLobbyClient_SubmitSurveyAnswer(int answer);
 extern int WiFiPlazaLobbyClient_GetSurveySubmitState(void);
 extern u32 WiFiPlazaLobbyClient_GetSurveyValue(int field);
 extern const u16 *WiFiPlazaLobbyClient_GetSurveyText(int field);
-extern int WiFiPlazaLobbyClient_GetSurveyFlag(int which, void *value);
+extern u8 WiFiPlazaLobbyClient_GetSurveyFlag(int which, int index);
 
 BOOL WiFiPlazaSurvey_Init(OverlayManager *man, int *state);
 BOOL WiFiPlazaSurvey_Main(OverlayManager *man, int *state);

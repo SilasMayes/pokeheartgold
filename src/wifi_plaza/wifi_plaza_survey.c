@@ -1166,10 +1166,10 @@ static void WiFiPlazaSurvey_CountPlazaAnswers(WiFiPlazaSurveyTally *tally, struc
     for (i = 0; i < WIFI_PLAZA_MAX_PLAYERS; i++) {
         struct WiFiPlazaPlayer *player = WiFiPlazaWork_GetPlayer(lobby, i);
         if (player != NULL) {
-            void *value = WiFiPlazaPlayer_GetRawLanguage(player);
+            u8 language = WiFiPlazaPlayer_GetRawLanguage(player);
             WiFiPlazaSurveyAnswerRecord record;
             WiFiPlazaPlayer_GetSurvey(player, &record);
-            if (WiFiPlazaLobbyClient_GetSurveyFlag(0, value) == 1 && record.answer < WIFI_PLAZA_SURVEY_NUM_ANSWERS) {
+            if (WiFiPlazaLobbyClient_GetSurveyFlag(0, language) == 1 && record.answer < WIFI_PLAZA_SURVEY_NUM_ANSWERS) {
                 tally->counts[record.answer]++;
                 tally->total++;
             }

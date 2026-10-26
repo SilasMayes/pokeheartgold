@@ -123,7 +123,7 @@ WiFiPlazaObj *WiFiPlazaObj_FindAt(WiFiPlazaObjManager *manager, s32 x, s32 y);
 BOOL WiFiPlazaObj_IsOnCell(WiFiPlazaObj *obj, s32 x, s32 y);
 BOOL WiFiPlazaObj_FindFreeNeighbor(WiFiPlazaObjManager *manager, WiFiPlazaObj *obj, s32 *direction, Field2DPoint *position);
 void WiFiPlazaObj_SetAvatarMode(WiFiPlazaObj *obj, int enable);
-void WiFiPlazaObj_SetPositionFromGrid(WiFiPlazaObj *obj, void *out);
+void WiFiPlazaObj_SetPositionFromGrid(WiFiPlazaObj *obj, const Field2DPoint *gridPos);
 void WiFiPlazaObj_SetPosition(WiFiPlazaObj *obj, VecFx32 *position);
 void WiFiPlazaObj_GetPosition(WiFiPlazaObj *obj, VecFx32 *position);
 void WiFiPlazaObj_SetDirection(WiFiPlazaObj *obj, u32 direction);

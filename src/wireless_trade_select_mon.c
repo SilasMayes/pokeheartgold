@@ -139,7 +139,7 @@ static int WirelessTradeSelectMon_MoveCursor(int *dpadDir, int *cursor, Sprite *
 static int WirelessTradeSelectMon_SendCommand(int unused, int command, int value);
 void WirelessTradeSelectMon_SendCommandIfChanged(WirelessTradeSelectMon *work, int command, int value);
 static void *WirelessTradeSelectMon_GetPartyChunk(void *party, u32 chunk);
-void WirelessTradeSelectMon_SendPartyChunk(u32 netId, void *party, u32 chunk);
+void WirelessTradeSelectMon_SendPartyChunk(u32 netId, Party *party, u32 chunk);
 static int WirelessTradeSelectMon_SendSpecialRibbons(SaveData *saveData);
 static s32 WirelessTradeSelectMon_SendPalPad(PlayerProfile *profile, SavePalPad *palPad, SavePalPad *packet);
 static int WirelessTradeSelectMon_SendChatot(SOUND_CHATOT *chatot);
@@ -1389,7 +1389,7 @@ static void *WirelessTradeSelectMon_GetPartyChunk(void *party, u32 chunk) {
     return (u8 *)party + chunk * WIRELESS_TRADE_PARTY_CHUNK_SIZE;
 }
 
-void WirelessTradeSelectMon_SendPartyChunk(u32 netId, void *party, u32 chunk) {
+void WirelessTradeSelectMon_SendPartyChunk(u32 netId, Party *party, u32 chunk) {
     if (Comm_IsNetIdConnected(netId)) {
         Comm_SendCommandNoCopy(WIRELESS_TRADE_CMD_PARTY_CHUNK, WirelessTradeSelectMon_GetPartyChunk(party, chunk), WIRELESS_TRADE_PARTY_CHUNK_SIZE);
     }
