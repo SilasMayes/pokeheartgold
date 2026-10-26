@@ -656,7 +656,7 @@ u16 *Gts_LoadSpeciesByLetter(enum HeapID heapID, int letter, u32 *count) {
 }
 
 // flags[species] is TRUE for the species of the Johto Pokedex.
-void *Gts_CreateJohtoDexFlags(enum HeapID heapID) {
+u8 *Gts_CreateJohtoDexFlags(enum HeapID heapID) {
     u32 size;
     u32 count;
     int i;

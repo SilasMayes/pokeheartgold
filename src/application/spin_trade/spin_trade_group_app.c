@@ -250,7 +250,7 @@ static void SpinTradeGroup_FreeAvatarGraphics(SpinTradeGroupApp *app);
 static int SpinTradeGroup_GetTextSpeed(SpinTradeGroupApp *app);
 static void SpinTradeGroup_SetMaxConnections(SpinTradeGroupApp *app, int extraEntries);
 static int SpinTradeGroup_CheckMembers(SpinTradeGroupApp *app, int extraEntries);
-static void SpinTradeGroup_SaveDummy(void *saveData, void *buffer);
+static void SpinTradeGroup_SaveDummy(SaveData *saveData, u8 *buffer);
 
 void CommState_SetSpinTradeLinkMode(void);
 void CommState_SetMaxEntries(int count);
@@ -1590,7 +1590,7 @@ static int SpinTradeGroup_CheckMembers(SpinTradeGroupApp *app, int extraEntries)
     return 1;
 }
 
-static void SpinTradeGroup_SaveDummy(void *saveData, void *buffer) {
+static void SpinTradeGroup_SaveDummy(SaveData *saveData, u8 *buffer) {
 #pragma unused(saveData)
 #pragma unused(buffer)
 }

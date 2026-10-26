@@ -89,7 +89,7 @@ struct GtsSelector {
     MsgData *gtsMsgData;
     MsgData *speciesNames;
     MsgData *countryNames;
-    void *johtoDexFlags;
+    u8 *johtoDexFlags;
     ListMenuItem *listItems;
     MessagePrinter *printer; // of the page numbers
     s16 group;               // letter group 0..8, GTS_SELECTOR_NONE, GTS_SELECTOR_GROUP_ANY (countries)
@@ -134,8 +134,8 @@ static void GtsSelector_ShowGroups(GtsSelector *selector, int page, int y);
 static void GtsSelector_ShowGenders(GtsSelector *selector);
 static void GtsSelector_ShowLevels(GtsSelector *selector);
 static void GtsSelector_PrintString(BgCellManager *cellManager, Window *window, String *string, int x, u32 color);
-static int GtsSelector_CountSeenSpecies(void *unused, Pokedex *pokedex, int count, const u16 *species);
-static int GtsSelector_CreateSpeciesListItems(ListMenuItem **items, MsgData *speciesNames, MsgData *unused2, void *unused3, int letter, Pokedex *pokedex);
+static int GtsSelector_CountSeenSpecies(u8 *johtoDexFlags, Pokedex *pokedex, int count, const u16 *species);
+static int GtsSelector_CreateSpeciesListItems(ListMenuItem **items, MsgData *speciesNames, MsgData *unused2, u8 *johtoDexFlags, int letter, Pokedex *pokedex);
 static void GtsSelector_PrintListPage(GtsSelector *selector, int page, int count);
 static void GtsSelector_PrintCountryPage(GtsSelector *selector, int page, int count);
 static void GtsSelector_PrintMessage(BgCellManager *cellManager, MsgData *msgData, Window *window, int msgId, int x, u32 color);
@@ -1330,7 +1330,7 @@ int GtsSelector_BackToSpeciesLetters(GtsSelector *selector) {
     return GTS_SELECTOR_NONE;
 }
 
-static int GtsSelector_CountSeenSpecies(void *unused, Pokedex *pokedex, int count, const u16 *species) {
+static int GtsSelector_CountSeenSpecies(u8 *johtoDexFlags, Pokedex *pokedex, int count, const u16 *species) {
     int i = 0;
     int seen = 0;
     if (count > 0) {
@@ -1346,12 +1346,12 @@ static int GtsSelector_CountSeenSpecies(void *unused, Pokedex *pokedex, int coun
 }
 
 // The seen species starting with the letter; returns their count.
-static int GtsSelector_CreateSpeciesListItems(ListMenuItem **items, MsgData *speciesNames, MsgData *unused2, void *unused3, int letter, Pokedex *pokedex) {
+static int GtsSelector_CreateSpeciesListItems(ListMenuItem **items, MsgData *speciesNames, MsgData *unused2, u8 *johtoDexFlags, int letter, Pokedex *pokedex) {
     int speciesCount;
     int i, count;
     u16 *species = Gts_LoadSpeciesByLetter(HEAP_ID_61, letter, (u32 *)&speciesCount);
     u16 *entry;
-    count = GtsSelector_CountSeenSpecies(unused3, pokedex, speciesCount, species);
+    count = GtsSelector_CountSeenSpecies(johtoDexFlags, pokedex, speciesCount, species);
     *items = ListMenuItems_New(count + 1, HEAP_ID_61);
     i = 0;
     if (speciesCount > 0) {
@@ -1826,7 +1826,7 @@ static BOOL GtsSelector_GroupHasSeenSpecies(GtsSelector *selector, int group) {
     return FALSE;
 }
 
-int GtsSelector_CountCountriesOfLetter(void *unused, u32 letter) {
+int GtsSelector_CountCountriesOfLetter(GtsSelector *selector, u32 letter) {
     int start;
     return Gts_GetCountryGroupRange(letter, &start);
 }

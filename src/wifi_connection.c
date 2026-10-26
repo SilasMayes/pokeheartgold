@@ -30,7 +30,7 @@ struct WifiConnection {
     DwcControl loginControl;
     DwcUserData *userData;
     NetConnection libConfig;
-    void *saveData;
+    SaveData *saveData;
     void *rawAlloc;
     void *recvBuffers[4];
     void *heapMemory;

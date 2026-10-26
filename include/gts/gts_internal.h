@@ -170,7 +170,7 @@ typedef struct GtsSearchCursor {
     u16 unk_08;
     u16 unk_0A;
     u8 unk_0C[8];
-    void *johtoDexFlags;
+    u8 *johtoDexFlags;
     u16 *alphabeticalSpecies;
     u32 alphabeticalSpeciesCount;
     u32 genderRatio; // of the wanted species
@@ -202,7 +202,7 @@ typedef struct GtsSelectorArgs {
     MsgData *speciesNames;
     MsgData *countryNames;
     Pokedex *pokedex;
-    void *johtoDexFlags;
+    u8 *johtoDexFlags;
 } GtsSelectorArgs;
 
 typedef struct GtsGlobals {
@@ -617,7 +617,7 @@ void Gts_PrintLevelRange(Window *window, MsgData *msgData, int levelRange, int a
 void Gts_PrintLevelRangeAt(Window *window, MsgData *msgData, int levelRange, int align, int x, int y, u32 color, int kind);
 void Gts_DrawWantedMonLevelLeft(MsgData *msgData, MsgData *speciesNames, MessageFormat *msgFormat, Window *windows, int species, int gender, int levelRange);
 u16 *Gts_LoadSpeciesByLetter(enum HeapID heapID, int letter, u32 *count);
-void *Gts_CreateJohtoDexFlags(enum HeapID heapID);
+u8 *Gts_CreateJohtoDexFlags(enum HeapID heapID);
 void Gts_InitRecord(GtsRecord *record, GtsApp *app);
 int Gts_CreateLevelRangeListItems(ListMenuItem **items, MsgData *msgData, int kind);
 void Gts_SetLevelRange(GtsWantedMon *wanted, int levelRange, int kind);
@@ -645,7 +645,7 @@ void GtsSelector_Start(GtsSelector *selector, int mode);
 void GtsSelector_Delete(GtsSelector *selector);
 int GtsSelector_Main(GtsSelector *selector);
 // The count of the countries starting with the letter (index A = 0); unused is not read.
-int GtsSelector_CountCountriesOfLetter(void *unused, u32 letter);
+int GtsSelector_CountCountriesOfLetter(GtsSelector *selector, u32 letter);
 
 // Connecting to and disconnecting from Nintendo Wi-Fi Connection (screen 0), and the text helpers
 // every screen uses. Gts_PrintMessage prints in waitingIconWindow (the message window); align: 0 left at x,
