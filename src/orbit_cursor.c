@@ -143,15 +143,15 @@ void OrbitCursor_ReloadPalette(OrbitCursor *cursor, int palette) {
 }
 
 void OrbitCursor_LoadResources(OrbitCursor *cursor, int palette) {
-    int resBase = cursor->resBase;
+    int vram = cursor->resBase;
     NARC *narc;
     SpriteSystem *spriteSys = cursor->spriteSys;
-    int resId = resBase + 0x56CE;
+    int resId = vram + 0x56CE;
     SpriteManager *spriteMan = cursor->spriteMan;
     PaletteData *plttData = cursor->plttData;
     narc = cursor->narc;
 
-    if (resBase == 1) {
+    if (vram == NNS_G2D_VRAM_TYPE_2DMAIN) {
         if (cursor->fixedPalette == 0) {
             SpriteSystem_LoadPaletteBufferFromOpenNarc(plttData, PLTTBUF_MAIN_OBJ, spriteSys, spriteMan, narc, gOrbitCursorPaletteMembers[palette], FALSE, 1, NNS_G2D_VRAM_TYPE_2DMAIN, resId);
         } else {
@@ -185,12 +185,12 @@ void OrbitCursor_CreateSprites(OrbitCursor *cursor) {
     tmpl.bgPriority = 0;
     tmpl.vramTransfer = 0;
     tmpl.pal = 0;
-    tmpl.resIdList[0] = cursor->resBase + 0x56CE;
-    tmpl.resIdList[1] = cursor->resBase + 0x56CE;
-    tmpl.resIdList[2] = cursor->resBase + 0x56CE;
-    tmpl.resIdList[3] = cursor->resBase + 0x56CE;
-    tmpl.resIdList[4] = -1;
-    tmpl.resIdList[5] = -1;
+    tmpl.resIdList[GF_GFX_RES_TYPE_CHAR] = cursor->resBase + 0x56CE;
+    tmpl.resIdList[GF_GFX_RES_TYPE_PLTT] = cursor->resBase + 0x56CE;
+    tmpl.resIdList[GF_GFX_RES_TYPE_CELL] = cursor->resBase + 0x56CE;
+    tmpl.resIdList[GF_GFX_RES_TYPE_ANIM] = cursor->resBase + 0x56CE;
+    tmpl.resIdList[GF_GFX_RES_TYPE_MCEL] = -1;
+    tmpl.resIdList[GF_GFX_RES_TYPE_MANM] = -1;
 
     for (i = 0; i < cursor->count; i++) {
         cursor->sprites[i].sprite = SpriteSystem_NewSprite(spriteSys, spriteMan, &tmpl);

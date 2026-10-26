@@ -228,12 +228,12 @@ static void NintendoWfcUnused_InitSpriteResources(NintendoWfcUnused *wfc) {
     for (i = 0; i < 4; i++) {
         wfc->resMan[i] = Create2DGfxResObjMan(2, (GfGfxResType)i, HEAP_ID_150);
     }
-    wfc->resObjs[0] = AddCharResObjFromOpenNarc(wfc->resMan[GF_GFX_RES_TYPE_CHAR], narc, 46, TRUE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, HEAP_ID_150);
-    wfc->resObjs[1] = AddPlttResObjFromOpenNarc(wfc->resMan[GF_GFX_RES_TYPE_PLTT], narc, 10, FALSE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, 3, HEAP_ID_150);
-    wfc->resObjs[2] = AddCellOrAnimResObjFromOpenNarc(wfc->resMan[GF_GFX_RES_TYPE_CELL], narc, 47, TRUE, 0, GF_GFX_RES_TYPE_CELL, HEAP_ID_150);
-    wfc->resObjs[3] = AddCellOrAnimResObjFromOpenNarc(wfc->resMan[GF_GFX_RES_TYPE_ANIM], narc, 48, TRUE, 0, GF_GFX_RES_TYPE_ANIM, HEAP_ID_150);
-    SpriteTransfer_CreateCharTransferTask(wfc->resObjs[0]);
-    SpriteTransfer_CreateExtPlttTransferTask(wfc->resObjs[1]);
+    wfc->resObjs[GF_GFX_RES_TYPE_CHAR] = AddCharResObjFromOpenNarc(wfc->resMan[GF_GFX_RES_TYPE_CHAR], narc, 46, TRUE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, HEAP_ID_150);
+    wfc->resObjs[GF_GFX_RES_TYPE_PLTT] = AddPlttResObjFromOpenNarc(wfc->resMan[GF_GFX_RES_TYPE_PLTT], narc, 10, FALSE, 0, NNS_G2D_VRAM_TYPE_2DMAIN, 3, HEAP_ID_150);
+    wfc->resObjs[GF_GFX_RES_TYPE_CELL] = AddCellOrAnimResObjFromOpenNarc(wfc->resMan[GF_GFX_RES_TYPE_CELL], narc, 47, TRUE, 0, GF_GFX_RES_TYPE_CELL, HEAP_ID_150);
+    wfc->resObjs[GF_GFX_RES_TYPE_ANIM] = AddCellOrAnimResObjFromOpenNarc(wfc->resMan[GF_GFX_RES_TYPE_ANIM], narc, 48, TRUE, 0, GF_GFX_RES_TYPE_ANIM, HEAP_ID_150);
+    SpriteTransfer_CreateCharTransferTask(wfc->resObjs[GF_GFX_RES_TYPE_CHAR]);
+    SpriteTransfer_CreateExtPlttTransferTask(wfc->resObjs[GF_GFX_RES_TYPE_PLTT]);
     NARC_Delete(narc);
 }
 
@@ -332,8 +332,8 @@ static void NintendoWfcUnused_InitGraphics(NintendoWfcUnused *wfc) {
 static void NintendoWfcUnused_FreeGraphics(NintendoWfcUnused *wfc) {
     int i;
 
-    SpriteTransfer_DeleteCharTransferTask(wfc->resObjs[0]);
-    SpriteTransfer_DeletePlttTransferTask(wfc->resObjs[1]);
+    SpriteTransfer_DeleteCharTransferTask(wfc->resObjs[GF_GFX_RES_TYPE_CHAR]);
+    SpriteTransfer_DeletePlttTransferTask(wfc->resObjs[GF_GFX_RES_TYPE_PLTT]);
     for (i = 0; i < 4; i++) {
         Destroy2DGfxResObjMan(wfc->resMan[i]);
     }

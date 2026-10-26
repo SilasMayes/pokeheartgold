@@ -637,12 +637,12 @@ u32 GF_SndPlayerCountPlayingSeqByPlayerNo(u32 playerNo) {
 
 u8 GF_GetPlayerNoBySeq(u16 seqNo) {
     const NNSSndSeqParam *param;
-    if (seqNo == 0) {
-        return 255;
+    if (seqNo == SEQ_NONE) {
+        return SOUND_PLAYER_NONE;
     }
     param = NNS_SndArcGetSeqParam(seqNo);
     if (param == NULL) {
-        return 255;
+        return SOUND_PLAYER_NONE;
     }
     return param->playerNo;
 }

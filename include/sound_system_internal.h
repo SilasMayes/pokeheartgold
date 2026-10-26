@@ -7,6 +7,9 @@
 
 struct NNSSndArcBankInfo;
 
+// GF_GetPlayerNoBySeq of a sequence without a player
+#define SOUND_PLAYER_NONE 255
+
 // Fields of the sound work reached through GF_SdatGetAttrPtr
 enum SoundWorkAttr {
     SOUND_ATTR_WAVE_OUT_14_HANDLE,

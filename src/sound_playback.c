@@ -129,7 +129,7 @@ void StopBGM(u16 seqNo, int fadeFrames) {
         NNS_SndPlayerStopSeqBySeqNo(gbSeqNo, fadeFrames);
     }
     int playerNo = GF_GetPlayerNoBySeq(seqNo);
-    if (playerNo != 255) {
+    if (playerNo != SOUND_PLAYER_NONE) {
         NNS_SndHandleReleaseSeq(GF_GetSoundHandle(GF_GetSndHandleByPlayerNo(playerNo)));
     }
     ClearPlayingBGM();
@@ -145,7 +145,7 @@ static void ClearPlayingBGM(void) {
 
 void GF_SndStartFadeInBGM(u32 volume, u32 frames, u32 keepVolume) {
     int playerNo = GF_GetPlayerNoBySeq(GF_GetCurrentPlayingBGM());
-    if (playerNo != 255) {
+    if (playerNo != SOUND_PLAYER_NONE) {
         enum SoundHandleNo handleNo = GF_GetSndHandleByPlayerNo(playerNo);
         if (keepVolume == 0) {
             GF_SndHandleMoveVolume(handleNo, 0, 0);
@@ -158,7 +158,7 @@ void GF_SndStartFadeInBGM(u32 volume, u32 frames, u32 keepVolume) {
 
 void GF_SndStartFadeOutBGM(u16 volume, u16 frames) {
     int playerNo = GF_GetPlayerNoBySeq(GF_GetCurrentPlayingBGM());
-    if (playerNo != 255) {
+    if (playerNo != SOUND_PLAYER_NONE) {
         if (GF_SndGetFadeTimer() == 0) {
             GF_SndHandleMoveVolume(GF_GetSndHandleByPlayerNo(playerNo), volume, frames);
             GF_SndSetFadeTimer(frames);
@@ -688,7 +688,7 @@ BOOL PlayFanfare(u16 seqNo) {
     GF_GetBankInfoBySeqNo(seqNo);
     StartFanfareWaitTimer(seqNo);
     u8 playerNo = GF_GetPlayerNoBySeq(GF_GetCurrentPlayingBGM());
-    if (playerNo != 255) {
+    if (playerNo != SOUND_PLAYER_NONE) {
         Sound_SetPlayerPause(playerNo, TRUE);
     } else {
         SndRadio_PausePlayer(TRUE);
@@ -724,7 +724,7 @@ BOOL IsFanfarePlaying(void) {
     }
     StopFanfare(0);
     u8 playerNo = GF_GetPlayerNoBySeq(GF_GetCurrentPlayingBGM());
-    if (playerNo != 255) {
+    if (playerNo != SOUND_PLAYER_NONE) {
         Sound_SetPlayerPause(playerNo, FALSE);
     }
     SndRadio_PausePlayer(FALSE);

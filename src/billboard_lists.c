@@ -1,6 +1,6 @@
 #include "billboard_lists.h"
 
-#include <nnsys/g3d_internal.h>
+#include <nnsys/g3d_render_internal.h>
 
 #include "global.h"
 
@@ -566,11 +566,7 @@ static void Billboard_SetModelTexture(NNSG3dResMdl *model, NNSG3dResTex *texture
     int i;
     G3dResBindEntry *bind;
 
-    if (model != NULL && model->ofsMat != 0) {
-        mat = (G3dResMat *)((u8 *)model + model->ofsMat);
-    } else {
-        mat = NULL;
-    }
+    mat = G3dGetResMat(model);
     // BUG: without materials (or without the texture entry below) this reads through a NULL pointer
     bindDict = (NNSG3dResDict *)((u8 *)mat + mat->ofsDictTexToMatList);
     if (texture != NULL) {
@@ -607,11 +603,7 @@ static void Billboard_SetModelPltt(NNSG3dResMdl *model, NNSG3dResTex *texture, u
     u32 i;
     G3dResBindEntry *bind;
 
-    if (model != NULL && model->ofsMat != 0) {
-        mat = (G3dResMat *)((u8 *)model + model->ofsMat);
-    } else {
-        mat = NULL;
-    }
+    mat = G3dGetResMat(model);
     // BUG: without materials (or without the texture entry below) this reads through a NULL pointer
     bindDict = (NNSG3dResDict *)((u8 *)mat + mat->ofsDictPlttToMatList);
     if (texture != NULL && texture->plttInfo.ofsDict != 0) {

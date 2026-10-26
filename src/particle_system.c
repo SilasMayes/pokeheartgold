@@ -14,22 +14,6 @@
 
 typedef void *(*ParticleAllocFunc)(u32 size);
 
-// Field objects returned by ParticleEmitter_FindField
-typedef struct ParticleMagnetField {
-    VecFx32 pos;
-    fx16 force;
-} ParticleMagnetField;
-
-typedef struct ParticleSpinField {
-    u16 angle;
-    u16 axis;
-} ParticleSpinField;
-
-typedef struct ParticleConvergenceField {
-    VecFx32 pos;
-    fx16 force;
-} ParticleConvergenceField;
-
 enum ParticleFieldType {
     PARTICLE_FIELD_GRAVITY,
     PARTICLE_FIELD_RANDOM,
@@ -488,21 +472,21 @@ static void *ParticleEmitter_FindField(SPLEmitter *emitter, int type) {
 }
 
 void ParticleEmitter_SetGravity(SPLEmitter *emitter, VecFx16 *value) {
-    VecFx16 *gravity = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_GRAVITY);
+    SplGravityField *gravity = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_GRAVITY);
     if (gravity != NULL) {
-        *gravity = *value;
+        gravity->mag = *value;
     }
 }
 
 void ParticleEmitter_SetMagnetPos(SPLEmitter *emitter, VecFx32 *value) {
-    ParticleMagnetField *magnet = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_MAGNET);
+    SplMagnetField *magnet = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_MAGNET);
     if (magnet != NULL) {
         magnet->pos = *value;
     }
 }
 
 void ParticleEmitter_GetMagnetPos(SPLEmitter *emitter, VecFx32 *value) {
-    ParticleMagnetField *magnet = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_MAGNET);
+    SplMagnetField *magnet = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_MAGNET);
     if (magnet == NULL) {
         VecFx32 zero = { 0, 0, 0 };
         *value = zero;
@@ -512,62 +496,62 @@ void ParticleEmitter_GetMagnetPos(SPLEmitter *emitter, VecFx32 *value) {
 }
 
 void ParticleEmitter_SetMagnetForce(SPLEmitter *emitter, s16 *value) {
-    ParticleMagnetField *magnet = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_MAGNET);
+    SplMagnetField *magnet = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_MAGNET);
     if (magnet != NULL) {
-        magnet->force = *value;
+        magnet->mag = *value;
     }
 }
 
 void ParticleEmitter_GetMagnetForce(SPLEmitter *emitter, s16 *value) {
-    ParticleMagnetField *magnet = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_MAGNET);
+    SplMagnetField *magnet = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_MAGNET);
     if (magnet == NULL) {
         *value = 0;
     } else {
-        *value = magnet->force;
+        *value = magnet->mag;
     }
 }
 
 void ParticleEmitter_SetSpinAngle(SPLEmitter *emitter, u16 *value) {
-    ParticleSpinField *spin = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_SPIN);
+    SplSpinField *spin = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_SPIN);
     if (spin != NULL) {
-        spin->angle = *value;
+        spin->rotation = *value;
     }
 }
 
 void ParticleEmitter_GetSpinAngle(SPLEmitter *emitter, u16 *value) {
-    ParticleSpinField *spin = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_SPIN);
+    SplSpinField *spin = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_SPIN);
     if (spin == NULL) {
         *value = 0;
     } else {
-        *value = spin->angle;
+        *value = spin->rotation;
     }
 }
 
 void ParticleEmitter_SetSpinAxis(SPLEmitter *emitter, u16 *value) {
-    ParticleSpinField *spin = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_SPIN);
+    SplSpinField *spin = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_SPIN);
     if (spin != NULL) {
-        spin->axis = *value;
+        spin->axis_type = *value;
     }
 }
 
 void ParticleEmitter_GetSpinAxis(SPLEmitter *emitter, u16 *value) {
-    ParticleSpinField *spin = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_SPIN);
+    SplSpinField *spin = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_SPIN);
     if (spin == NULL) {
         *value = 0;
     } else {
-        *value = spin->axis;
+        *value = spin->axis_type;
     }
 }
 
 void ParticleEmitter_SetConvergencePos(SPLEmitter *emitter, VecFx32 *value) {
-    ParticleConvergenceField *convergence = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_CONVERGENCE);
+    SplConvergenceField *convergence = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_CONVERGENCE);
     if (convergence != NULL) {
         convergence->pos = *value;
     }
 }
 
 void ParticleEmitter_GetConvergencePos(SPLEmitter *emitter, VecFx32 *value) {
-    ParticleConvergenceField *convergence = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_CONVERGENCE);
+    SplConvergenceField *convergence = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_CONVERGENCE);
     if (convergence == NULL) {
         VecFx32 zero = { 0, 0, 0 };
         *value = zero;
@@ -577,17 +561,17 @@ void ParticleEmitter_GetConvergencePos(SPLEmitter *emitter, VecFx32 *value) {
 }
 
 void ParticleEmitter_SetConvergenceForce(SPLEmitter *emitter, s16 *value) {
-    ParticleConvergenceField *convergence = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_CONVERGENCE);
+    SplConvergenceField *convergence = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_CONVERGENCE);
     if (convergence != NULL) {
-        convergence->force = *value;
+        convergence->ratio = *value;
     }
 }
 
 void ParticleEmitter_GetConvergenceForce(SPLEmitter *emitter, s16 *value) {
-    ParticleConvergenceField *convergence = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_CONVERGENCE);
+    SplConvergenceField *convergence = ParticleEmitter_FindField(emitter, PARTICLE_FIELD_CONVERGENCE);
     if (convergence == NULL) {
         *value = 0;
     } else {
-        *value = convergence->force;
+        *value = convergence->ratio;
     }
 }

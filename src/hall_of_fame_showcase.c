@@ -747,9 +747,9 @@ static void HallOfFameShowcase_CreatePartyIcon(HallOfFameShowcase *showcase, u32
     u32 tileSize;
     void *modelFile;
     NNSG3dResTex *tex;
-    u8 *texData;
+    const u8 *texData;
     u8 *buffer;
-    u8 *plttData;
+    const u8 *plttData;
     u32 plttLocation;
     ManagedSprite **sprites;
     u16 member;
@@ -783,7 +783,7 @@ static void HallOfFameShowcase_CreatePartyIcon(HallOfFameShowcase *showcase, u32
     member = HallOfFameShowcase_GetOverworldModelFileId(showcase->mon.species, showcase->mon.form, GetGenderBySpeciesAndPersonality(showcase->mon.species, showcase->mon.personality));
     modelFile = AllocAndReadWholeNarcMemberByIdPair(NARC_data_mmodel_mmodel, member, HEAP_ID_59);
     tex = NNS_G3dGetTex((NNSG3dResFileHeader *)modelFile);
-    texData = (u8 *)tex + tex->texInfo.ofsTex;
+    texData = NNS_G3dGetTexData(tex);
     buffer = Heap_Alloc(HEAP_ID_59, tileSize);
     // Krabby and Kingler walk sideways: their icon uses other frames of the texture.
     if (showcase->mon.species == SPECIES_KRABBY || showcase->mon.species == SPECIES_KINGLER) {
@@ -799,7 +799,7 @@ static void HallOfFameShowcase_CreatePartyIcon(HallOfFameShowcase *showcase, u32
     }
     Heap_Free(buffer);
     plttLocation = NNS_G2dGetImagePaletteLocation(Sprite_GetPaletteProxy(sprites[spriteIndex]->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
-    plttData = (u8 *)tex + tex->plttInfo.ofsPlttData;
+    plttData = NNS_G3dGetPlttData(tex);
     if (CalcShininessByOtIdAndPersonality(showcase->mon.otid, showcase->mon.personality)) {
         plttData += 0x20;
     }

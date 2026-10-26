@@ -1729,7 +1729,7 @@ static int PokemonSummary_FindNextMonInArray(PokemonSummary *summary, int direct
     s8 slot = summary->args->partySlot;
     int size;
     u8 *mons;
-    do {
+    while (TRUE) {
         slot += direction;
         if (slot < 0 || slot >= summary->args->partyCount) {
             return -1;
@@ -1741,13 +1741,13 @@ static int PokemonSummary_FindNextMonInArray(PokemonSummary *summary, int direct
                 return slot;
             }
         }
-    } while (1);
+    }
 }
 
 static int PokemonSummary_FindNextPartyMon(PokemonSummary *summary, int direction) {
     s8 slot = summary->args->partySlot;
     Pokemon *mon;
-    do {
+    while (TRUE) {
         slot += direction;
         if (slot < 0 || slot >= summary->args->partyCount) {
             return -1;
@@ -1758,14 +1758,14 @@ static int PokemonSummary_FindNextPartyMon(PokemonSummary *summary, int directio
                 return slot;
             }
         }
-    } while (1);
+    }
 }
 
 static int PokemonSummary_FindNextBoxMon(PokemonSummary *summary, int direction) {
     s8 slot = summary->args->partySlot;
     int size;
     u8 *mons;
-    do {
+    while (TRUE) {
         slot += direction;
         if (slot < 0 || slot >= summary->args->partyCount) {
             return -1;
@@ -1777,7 +1777,7 @@ static int PokemonSummary_FindNextBoxMon(PokemonSummary *summary, int direction)
                 return slot;
             }
         }
-    } while (1);
+    }
 }
 
 void *PokemonSummary_GetShownMon(PokemonSummary *summary) {
