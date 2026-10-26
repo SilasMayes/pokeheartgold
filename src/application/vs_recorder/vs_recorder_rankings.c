@@ -9,6 +9,7 @@
 #include "application/vs_recorder/vs_recorder_screens.h"
 #include "global_terminal/global_terminal_net.h"
 #include "msgdata/msg/msg_0013.h"
+#include "msgdata/msg/msg_0026.h"
 
 #include "assert.h"
 #include "bg_window.h"
@@ -133,7 +134,7 @@ static void VsRecorder_InitRankingsList(VsRecorderWork *work) {
         rankings->valueTemplate = NULL;
     } else {
         rankings->listConfig = gVsRecorderRankingsLastWeekListConfig;
-        rankings->valueTemplate = NewString_ReadMsgData(work->recordMsgData, rankings->results[rankings->ranking].recordId + 94);
+        rankings->valueTemplate = NewString_ReadMsgData(work->recordMsgData, rankings->results[rankings->ranking].recordId + msg_0026_00094);
     }
     rankings->listConfig.count = rankings->teamCount;
     rankings->listConfig.entries = rankings->entries[rankings->ranking];
@@ -462,7 +463,7 @@ BOOL VsRecorder_RankingsInit(VsRecorderWork *work) {
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_3);
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
-    VsRecorder_InitBgBlend(&rankings->eva, &rankings->evb, 0);
+    VsRecorder_InitBgBlend(&rankings->eva, &rankings->evb, VS_RECORDER_BLEND_BOTH);
     rankings->hitboxController = TouchHitboxController_Create(gVsRecorderRankingsHitboxes, 3, VsRecorder_OnRankingsTouch, work, HEAP_ID_109);
     VsRecorder_SetSubState(work, RANKINGS_ENTER);
     return FALSE;
@@ -656,7 +657,7 @@ BOOL VsRecorder_RankingsShow(VsRecorderWork *work) {
         break;
     case RANKINGS_SHOW_STEP_FADE_IN:
         VsRecorder_StepFade(&rankings->fade, 0);
-        if (VsRecorder_StepBlend(&rankings->eva, &rankings->evb, FALSE, 0)) {
+        if (VsRecorder_StepBlend(&rankings->eva, &rankings->evb, FALSE, VS_RECORDER_BLEND_BOTH)) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
@@ -703,7 +704,7 @@ BOOL VsRecorder_RankingsCloseList(VsRecorderWork *work) {
         break;
     case RANKINGS_CLOSE_LIST_STEP_FADE_OUT:
         VsRecorder_StepFade(&rankings->fade, 1);
-        if (VsRecorder_StepBlend(&rankings->eva, &rankings->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&rankings->eva, &rankings->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             work->step++;
         }
         PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, rankings->fade, work->blendColor);
@@ -784,12 +785,12 @@ BOOL VsRecorder_RankingsSwitch(VsRecorderWork *work) {
         work->step++;
         break;
     case RANKINGS_SWITCH_STEP_BLEND_OUT:
-        if (VsRecorder_StepBlend(&rankings->eva, &rankings->evb, TRUE, 1)) {
+        if (VsRecorder_StepBlend(&rankings->eva, &rankings->evb, TRUE, VS_RECORDER_BLEND_MAIN)) {
             work->step++;
         }
         break;
     case RANKINGS_SWITCH_STEP_CREATE_LIST:
-        if (VsRecorder_StepBlend(&rankings->eva, &rankings->evb, FALSE, 1)) {
+        if (VsRecorder_StepBlend(&rankings->eva, &rankings->evb, FALSE, VS_RECORDER_BLEND_MAIN)) {
             VsRecorder_CreateRankingsWindows(work);
             VsRecorder_PrintRankingsInfo(work);
             VsRecorder_InitRankingsList(work);

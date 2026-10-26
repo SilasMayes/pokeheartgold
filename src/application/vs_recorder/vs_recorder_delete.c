@@ -130,7 +130,7 @@ BOOL VsRecorder_DeleteInit(VsRecorderWork *work) {
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_3);
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
-    VsRecorder_InitBgBlend(&deleteWork->eva, &deleteWork->evb, 0);
+    VsRecorder_InitBgBlend(&deleteWork->eva, &deleteWork->evb, VS_RECORDER_BLEND_BOTH);
     VsRecorder_SetSubState(work, DELETE_ENTER);
     return FALSE;
 }
@@ -186,7 +186,7 @@ BOOL VsRecorder_DeleteMain(VsRecorderWork *work) {
         break;
     case DELETE_MAIN_STEP_FADE_IN:
         VsRecorder_StepFade(&deleteWork->fade, 0);
-        if (VsRecorder_StepBlend(&deleteWork->eva, &deleteWork->evb, FALSE, 2)) {
+        if (VsRecorder_StepBlend(&deleteWork->eva, &deleteWork->evb, FALSE, VS_RECORDER_BLEND_SUB)) {
             VsRecorder_PrintDeleteMessage(work, msg_0013_00282, work->selection);
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
@@ -225,7 +225,7 @@ BOOL VsRecorder_DeleteMain(VsRecorderWork *work) {
         break;
     case DELETE_MAIN_STEP_FADE_OUT:
         VsRecorder_StepFade(&deleteWork->fade, 1);
-        if (VsRecorder_StepBlend(&deleteWork->eva, &deleteWork->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&deleteWork->eva, &deleteWork->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             if (deleteWork->cancelled == TRUE) {
                 VsRecorder_SetSubState(work, DELETE_EXIT);
             } else {

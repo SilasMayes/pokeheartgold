@@ -39,7 +39,7 @@ struct MysteryGiftAppData {
     int stateAfterMessage;
     struct ListMenu *listMenu;
     ListMenuItem *listMenuItems;
-    int giftCheckResult; // MysteryGift_CheckCanReceive: 0 ok, 1..5 why the gift cannot be received
+    int giftCheckResult; // MysteryGift_CheckCanReceive
     int giftCheckSource;
     u32 unk_0088;
     WonderCardInfo receivedHeader;

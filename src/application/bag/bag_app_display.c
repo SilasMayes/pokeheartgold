@@ -792,24 +792,24 @@ s32 BagApp_GetUnusedDigitCount(s32 max) {
     return ret;
 }
 
-// type 2: sell (two digits), 3: trash (three digits)
-void BagApp_ShowQuantityButtons(BagApp *app, int type, int max) {
+// numDigits 2: sell, 3: trash
+void BagApp_ShowQuantityButtons(BagApp *app, int numDigits, int max) {
     int i;
     int unusedDigits;
 
-    if (type == 2 && max > 99) {
+    if (numDigits == 2 && max > 99) {
         max = 99;
     }
-    for (i = 0; i < gQuantityButtonCounts[type - 2]; i++) {
-        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_UP + gQuantityButtonSprites[type - 2][i]], TRUE);
-        ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_UP + gQuantityButtonSprites[type - 2][i]], gQuantityButtonAnims[type - 2][i]);
+    for (i = 0; i < gQuantityButtonCounts[numDigits - 2]; i++) {
+        ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_UP + gQuantityButtonSprites[numDigits - 2][i]], TRUE);
+        ManagedSprite_SetAnim(app->sprites[BAG_SPRITE_QUANTITY_UP + gQuantityButtonSprites[numDigits - 2][i]], gQuantityButtonAnims[numDigits - 2][i]);
     }
     unusedDigits = BagApp_GetUnusedDigitCount(max);
     if (unusedDigits != 0) {
-        if (type - 2 == 0 && unusedDigits == 2) {
+        if (numDigits - 2 == 0 && unusedDigits == 2) {
             ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_UP], FALSE);
             ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_DOWN], FALSE);
-        } else if (type - 2 == 1) {
+        } else if (numDigits - 2 == 1) {
             for (i = 0; i < gHiddenQuantityButtonCounts[unusedDigits - 1]; i++) {
                 ManagedSprite_SetDrawFlag(app->sprites[BAG_SPRITE_QUANTITY_UP + gHiddenQuantityButtons[unusedDigits - 1][i]], FALSE);
             }

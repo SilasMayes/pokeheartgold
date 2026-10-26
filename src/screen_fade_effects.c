@@ -629,7 +629,7 @@ BOOL FadeFunc_28(ScreenFade *fade) {
         config.starts = sFadeFunc28RectStarts;
         config.ends = sFadeFunc28RectEnds;
         config.count = 4;
-        config.window = 0;
+        config.window = SCREEN_WINDOW_0;
         config.insideMask = 0x3F;
         config.outsideMask = 0x20;
         config.queued = 1;
@@ -649,7 +649,7 @@ BOOL FadeFunc_29(ScreenFade *fade) {
         config.starts = sFadeFunc29RectStarts;
         config.ends = sFadeFunc29RectEnds;
         config.count = 4;
-        config.window = 0;
+        config.window = SCREEN_WINDOW_0;
         config.insideMask = 0x3F;
         config.outsideMask = 0x20;
         config.queued = 0;
@@ -1025,19 +1025,20 @@ void ScreenWipeScanlines_HBlankCallback(void *data) {
     }
 }
 
-// window: 0 or 1 for one buffer of that window, 2 for one buffer per window
+// window: SCREEN_WINDOW_0 / SCREEN_WINDOW_1 for one buffer of that window, SCREEN_WINDOW_BOTH for one buffer per
+// window
 void ScreenWipeScanlines_Init(ScreenWipeScanlines *scanlines, int window, int screen, enum HeapID heapId) {
     int i;
 
     switch (window) {
-    case 0:
-    case 1:
+    case SCREEN_WINDOW_0:
+    case SCREEN_WINDOW_1:
         scanlines->buffer = Heap_Alloc(heapId, sizeof(WipeScanlineBuffer));
         scanlines->count = 1;
         scanlines->screen = screen;
         scanlines->buffer->window = window;
         break;
-    case 2:
+    case SCREEN_WINDOW_BOTH:
         scanlines->buffer = Heap_Alloc(heapId, sizeof(WipeScanlineBuffer) * 2);
         scanlines->count = 2;
         scanlines->screen = screen;
@@ -1182,7 +1183,7 @@ static inline void SetOutsidePlane(int planes, BOOL effect, int screen) {
 }
 
 static inline void SetInsidePlane(int planes, BOOL effect, int window, int screen) {
-    if (window == 0) {
+    if (window == SCREEN_WINDOW_0) {
         if (screen == SCREEN_MAIN) {
             if (GX_IsHBlank()) {
                 G2_SetWnd0InsidePlane(planes, effect);

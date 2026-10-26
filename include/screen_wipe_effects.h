@@ -13,7 +13,7 @@
 typedef struct RectWipeConfig {
     u8 start[4]; // left, top, right, bottom
     u8 end[4];
-    u8 window; // 0 = WIN0, 1 = WIN1
+    u8 window; // SCREEN_WINDOW_0 / SCREEN_WINDOW_1
     u8 insideMask;
     u8 outsideMask;
     u8 queued; // 0: write the window registers at once, otherwise queue them for VBlank

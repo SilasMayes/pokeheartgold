@@ -35,6 +35,11 @@ typedef struct ScreenFade {
     BOOL isBrightnessFade;
 } ScreenFade;
 
+// Hardware window of a wipe (WIN0 / WIN1); ScreenWipeScanlines_Init also takes SCREEN_WINDOW_BOTH
+#define SCREEN_WINDOW_0    0
+#define SCREEN_WINDOW_1    1
+#define SCREEN_WINDOW_BOTH 2
+
 // One window's horizontal span per scanline. The wipes write the next frame's spans to nextLeft/nextRight,
 // which a VBlank task copies to left/right for the HBlank callback.
 typedef struct WipeScanlineBuffer {
@@ -42,7 +47,7 @@ typedef struct WipeScanlineBuffer {
     s16 right[GX_LCD_SIZE_Y];
     s16 nextLeft[GX_LCD_SIZE_Y];
     s16 nextRight[GX_LCD_SIZE_Y];
-    u32 window; // 0 = WIN0, 1 = WIN1
+    u32 window; // SCREEN_WINDOW_0 / SCREEN_WINDOW_1
 } WipeScanlineBuffer;
 
 typedef struct ScreenWipeScanlines {

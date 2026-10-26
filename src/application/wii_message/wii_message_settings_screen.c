@@ -170,6 +170,13 @@ enum WiiMessageSettingsScreenMainState {
     WII_MESSAGE_SETTINGS_SCREEN_MAIN_WAIT_FADE_OUT,
 };
 
+// WiiMessageSettingsScreen_RunExplanation
+enum WiiMessageExplanationResult {
+    WMS_EXPLANATION_RUNNING,
+    WMS_EXPLANATION_REGISTER,
+    WMS_EXPLANATION_DONT_REGISTER,
+};
+
 static void WiiMessageSettingsScreen_VBlankCB(void *data);
 static void WiiMessageSettingsScreen_InitBgs(BgConfig *bgConfig);
 static void WiiMessageSettingsScreen_FreeBgs(BgConfig *bgConfig);
@@ -1050,7 +1057,7 @@ static void WiiMessageSettingsScreen_PrintExplanation(WiiMessageSettingsScreen *
     CopyWindowToVram(&screen->explanationWindow);
 }
 
-// The scrollable explanation with "Don't register" / "Register"; returns 1: register, 2: don't register.
+// The scrollable explanation with "Don't register" / "Register" (enum WiiMessageExplanationResult).
 static int WiiMessageSettingsScreen_RunExplanation(WiiMessageSettingsScreen *screen) {
     switch (screen->explanationState) {
     case 0: {
@@ -1061,7 +1068,7 @@ static int WiiMessageSettingsScreen_RunExplanation(WiiMessageSettingsScreen *scr
 
         screen->explanationScroll = 0;
         screen->registerChoice = 0;
-        screen->explanationResult = 0;
+        screen->explanationResult = WMS_EXPLANATION_RUNNING;
         screen->explanationNumLines = numLines;
         AddWindowParameterized(screen->bgConfig, &screen->explanationWindow, GF_BG_LYR_MAIN_2, 1, 5, 30, 12, 13, 148);
         AddWindowParameterized(screen->bgConfig, &screen->choiceWindow, GF_BG_LYR_MAIN_2, 1, 19, 30, 4, 13, 508);
@@ -1107,7 +1114,7 @@ static int WiiMessageSettingsScreen_RunExplanation(WiiMessageSettingsScreen *scr
             }
         } else if (gSystem.newKeys & PAD_BUTTON_B) {
             PlaySE(SEQ_SE_DP_SELECT);
-            screen->explanationResult = 2;
+            screen->explanationResult = WMS_EXPLANATION_DONT_REGISTER;
             screen->explanationState = 255;
         }
         if (prevScroll != screen->explanationScroll) {
@@ -1121,11 +1128,11 @@ static int WiiMessageSettingsScreen_RunExplanation(WiiMessageSettingsScreen *scr
             PlaySE(SEQ_SE_DP_SELECT);
             WiiMessageSettingsScreen_PrintRegisterChoice(screen);
         } else if (gSystem.newKeys & PAD_BUTTON_A) {
-            screen->explanationResult = 2 - screen->registerChoice;
+            screen->explanationResult = WMS_EXPLANATION_DONT_REGISTER - screen->registerChoice;
             PlaySE(SEQ_SE_DP_SELECT);
             screen->explanationState++;
         } else if (gSystem.newKeys & PAD_BUTTON_B) {
-            screen->explanationResult = 2;
+            screen->explanationResult = WMS_EXPLANATION_DONT_REGISTER;
             PlaySE(SEQ_SE_DP_SELECT);
             screen->explanationState++;
         } else if (gSystem.newKeys & PAD_KEY_UP) {
@@ -1150,7 +1157,7 @@ static int WiiMessageSettingsScreen_RunExplanation(WiiMessageSettingsScreen *scr
         return screen->explanationResult;
     }
     WiiMessageSettingsScreen_AnimateScrollArrows(screen);
-    return 0;
+    return WMS_EXPLANATION_RUNNING;
 }
 
 static BOOL WiiMessageSettingsScreen_RegisterWiiNumber(WiiMessageSettingsScreen *screen) {
@@ -1179,10 +1186,10 @@ static BOOL WiiMessageSettingsScreen_RegisterWiiNumber(WiiMessageSettingsScreen 
         break;
     case 3:
         input = WiiMessageSettingsScreen_RunExplanation(screen);
-        if (input == 1) {
+        if (input == WMS_EXPLANATION_REGISTER) {
             WiiMessageSettingsScreen_PrintMessage(screen, screen->msgData, msg_0188_00009, 1, 0xF0F);
             screen->subState++;
-        } else if (input == 2) {
+        } else if (input == WMS_EXPLANATION_DONT_REGISTER) {
             WiiMessageSettingsScreen_SetState(screen, WMS_STATE_WAIT_MESSAGE, WMS_STATE_MAIN_MENU);
         }
         break;

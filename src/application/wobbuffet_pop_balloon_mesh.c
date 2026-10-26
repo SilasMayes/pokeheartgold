@@ -15,6 +15,13 @@
 #define WOBBUFFET_POP_PACK_VTX16_XY(x, y) ((u32)(u16)(x) | ((u32)(u16)(y) << 16))
 #define WOBBUFFET_POP_NORMAL_FRONT        0x1FF00000
 
+// WobbuffetPopBalloon_GetPushSide
+enum WobbuffetPopPushSide {
+    WOBBUFFET_POP_PUSH_MIDDLE, // or released
+    WOBBUFFET_POP_PUSH_LEFT,   // left of the handle
+    WOBBUFFET_POP_PUSH_RIGHT,
+};
+
 static void WobbuffetPopBalloon_ToVtx16(s32 x, s32 y, s16 *outX, s16 *outY);
 static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode, fx32 amount);
 static s32 WobbuffetPopBalloon_GetPushSide(WobbuffetPopBalloon *balloon, s32 mode);
@@ -234,14 +241,14 @@ static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode
     flag = FALSE;
 
     switch (WobbuffetPopBalloon_GetPushSide(balloon, mode)) {
-    case 0:
+    case WOBBUFFET_POP_PUSH_MIDDLE:
         hi = leftY + amount;
         lo = rightY + amount;
         break;
-    case 1:
+    case WOBBUFFET_POP_PUSH_LEFT:
         flag = WobbuffetPopBalloon_CalcSidePush(balloon, amount, leftY, rightY, &hi, &lo);
         break;
-    case 2:
+    case WOBBUFFET_POP_PUSH_RIGHT:
         flag = WobbuffetPopBalloon_CalcSidePush(balloon, amount, rightY, leftY, &lo, &hi);
         break;
     }
@@ -274,15 +281,15 @@ static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode
 
     switch (WobbuffetPopBalloon_GetPushSide(balloon, mode)) {
     default:
-    case 0:
+    case WOBBUFFET_POP_PUSH_MIDDLE:
         angleB = FX_Atan2Idx(lo - newMid, FX32_CONST(64));
         angleA = (u16)(angleB + 0x8000);
         break;
-    case 2:
+    case WOBBUFFET_POP_PUSH_RIGHT:
         angleB = FX_Atan2Idx(lo - newMid, FX32_CONST(64));
         angleA = (u16)(angleB + 0x8000);
         break;
-    case 1:
+    case WOBBUFFET_POP_PUSH_LEFT:
         angleA = FX_Atan2Idx(hi - newMid, -FX32_CONST(64));
         angleB = (u16)(angleA + 0x8000);
         break;
@@ -315,23 +322,22 @@ static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode
     return flag == TRUE ? 2 : 0;
 }
 
-// 0: pushed in the middle (or released), 1: left of the handle, 2: right of it.
 static s32 WobbuffetPopBalloon_GetPushSide(WobbuffetPopBalloon *balloon, s32 mode) {
     s32 base;
     s32 cur;
 
     if (mode == 1) {
-        return 0;
+        return WOBBUFFET_POP_PUSH_MIDDLE;
     }
     base = balloon->handleX;
     cur = balloon->grabX;
     if (cur < base - 0x10) {
-        return 1;
+        return WOBBUFFET_POP_PUSH_LEFT;
     }
     if (cur > base + 0x10) {
-        return 2;
+        return WOBBUFFET_POP_PUSH_RIGHT;
     }
-    return 0;
+    return WOBBUFFET_POP_PUSH_MIDDLE;
 }
 
 // The pushed side moves by the full amount (up to 100), the other side by a quarter of it.
@@ -407,7 +413,7 @@ void WobbuffetPopBalloon_UpdateHandleSprite(WobbuffetPopBalloon *balloon, Manage
     } else {
         anim = 0;
     }
-    ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, balloon->handleX, (s16)(gWobbuffetPopBalloonTouchAreas[balloon->selection].top + (balloon->pushDepth >> 12)), 0x160000);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, balloon->handleX, (s16)(gWobbuffetPopBalloonTouchAreas[balloon->selection].top + (balloon->pushDepth >> 12)), FX32_CONST(352));
     ManagedSprite_SetAnim(sprite, anim);
     Sprite_TickFrame(sprite->sprite);
 }

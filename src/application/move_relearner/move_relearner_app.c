@@ -1565,11 +1565,11 @@ static void MoveRelearner_Free3D(MoveRelearnerMonPic *monPic) {
 
 // pos 0-3: list rows, 4/5: the bottom buttons ("TEACH", "RETURN"), else the yes/no position.
 static void MoveRelearner_SetCursorPos(MoveRelearner *relearner, u32 pos, int palette) {
-    if (pos < 4) {
+    if (pos < MOVE_RELEARNER_VISIBLE_ROWS) {
         ManagedSprite_SetPositionXY(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], 0, (s16)(pos * 32 + 32));
         ManagedSprite_SetAnimationFrame(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], 0);
     } else if (pos < 6) {
-        ManagedSprite_SetPositionXY(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], (s16)((pos - 4) * 40), 168);
+        ManagedSprite_SetPositionXY(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], (s16)((pos - MOVE_RELEARNER_VISIBLE_ROWS) * 40), 168);
         ManagedSprite_SetAnimationFrame(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], 1);
     } else {
         ManagedSprite_SetPositionXY(relearner->sprites[MOVE_RELEARNER_SPRITE_CURSOR], 192, 160);
@@ -1588,7 +1588,7 @@ static void MoveRelearner_UpdateScrollArrows(MoveRelearner *relearner, int which
     } else {
         anim = 0;
     }
-    if (relearner->args->scrollOffset + 4 < relearner->numMoves) {
+    if (relearner->args->scrollOffset + MOVE_RELEARNER_VISIBLE_ROWS < relearner->numMoves) {
         ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], anim);
     } else {
         ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], anim + 2);
@@ -1676,7 +1676,7 @@ static void MoveRelearner_GridOnKeyMove(void *data, int input, int direction) {
             MoveRelearner_PrintMoveInfo(relearner, -2);
         }
     } else if (input == 6) {
-        if (direction == 3 && relearner->args->scrollOffset + 4 < relearner->numMoves) {
+        if (direction == 3 && relearner->args->scrollOffset + MOVE_RELEARNER_VISIBLE_ROWS < relearner->numMoves) {
             PlaySE(SEQ_SE_DP_DECIDE);
             input = 3;
             GridInputHandler_SetNextInput(relearner->gridInput, input);
@@ -1785,7 +1785,7 @@ static void MoveRelearner_UpdateScrollButtons(MoveRelearner *relearner) {
         GridInputHandler_SetEnabledFlag(relearner->gridInput, 5);
     }
 
-    if (relearner->args->scrollOffset + 4 >= relearner->numMoves) {
+    if (relearner->args->scrollOffset + MOVE_RELEARNER_VISIBLE_ROWS >= relearner->numMoves) {
         GridInputHandler_ClearEnabledFlag(relearner->gridInput, 4);
     } else {
         GridInputHandler_SetEnabledFlag(relearner->gridInput, 4);
@@ -1799,7 +1799,7 @@ static void MoveRelearner_AnimateScrollArrows(MoveRelearner *relearner, s32 dire
     ManagedSprite_SetAnimationFrame(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], 0);
 
     if (direction > 0) {
-        if (relearner->args->scrollOffset + 4 < relearner->numMoves) {
+        if (relearner->args->scrollOffset + MOVE_RELEARNER_VISIBLE_ROWS < relearner->numMoves) {
             ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], 1);
         } else {
             ManagedSprite_SetAnim(relearner->sprites[MOVE_RELEARNER_SPRITE_DOWN_ARROW], 3);

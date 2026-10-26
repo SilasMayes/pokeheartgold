@@ -204,7 +204,7 @@ static BOOL VsRecorder_SavedVideoInit(VsRecorderWork *work) {
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_3);
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
-    VsRecorder_InitBgBlend(&savedVideo->eva, &savedVideo->evb, 0);
+    VsRecorder_InitBgBlend(&savedVideo->eva, &savedVideo->evb, VS_RECORDER_BLEND_BOTH);
     VsRecorder_SetSubState(work, SAVED_VIDEO_ENTER);
     return FALSE;
 }
@@ -295,7 +295,7 @@ static BOOL VsRecorder_SavedVideoShow(VsRecorderWork *work) {
         break;
     case SAVED_VIDEO_SHOW_STEP_FADE_IN:
         VsRecorder_StepFade(&savedVideo->fade, 0);
-        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, FALSE, 0)) {
+        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, FALSE, VS_RECORDER_BLEND_BOTH)) {
             VsRecorder_SetVideoPartyIconsDrawFlag(&savedVideo->info, TRUE);
             VsRecorder_ShowProfileButton(work);
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
@@ -331,7 +331,7 @@ static BOOL VsRecorder_SavedVideoToggleProfile(VsRecorderWork *work) {
         work->step++;
         break;
     case SAVED_VIDEO_TOGGLE_PROFILE_STEP_BLEND_OUT:
-        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, TRUE, 1)) {
+        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, TRUE, VS_RECORDER_BLEND_MAIN)) {
             work->step++;
         }
         break;
@@ -350,7 +350,7 @@ static BOOL VsRecorder_SavedVideoToggleProfile(VsRecorderWork *work) {
         work->step++;
         break;
     case SAVED_VIDEO_TOGGLE_PROFILE_STEP_BLEND_IN:
-        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, FALSE, 1)) {
+        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, FALSE, VS_RECORDER_BLEND_MAIN)) {
             if (!savedVideo->showProfile) {
                 VsRecorder_SetProfileDrawFlag(&savedVideo->profile, TRUE);
             } else {
@@ -421,7 +421,7 @@ static BOOL VsRecorder_SavedVideoSavePrompt(VsRecorderWork *work) {
         break;
     case SAVED_VIDEO_SAVE_PROMPT_STEP_FADE_OUT:
         VsRecorder_StepFade(&savedVideo->fade, 1);
-        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             VsRecorder_SetVBlankPaused(work, TRUE);
             VsRecorder_FreeExitButton(work);
             VsRecorder_SetVBlankPaused(work, FALSE);
@@ -439,7 +439,7 @@ static BOOL VsRecorder_SavedVideoSavePrompt(VsRecorderWork *work) {
         break;
     case SAVED_VIDEO_SAVE_PROMPT_STEP_FADE_IN:
         VsRecorder_StepFade(&savedVideo->fade, 0);
-        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, FALSE, 2)) {
+        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, FALSE, VS_RECORDER_BLEND_SUB)) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             work->step++;
@@ -473,7 +473,7 @@ static BOOL VsRecorder_SavedVideoSavePrompt(VsRecorderWork *work) {
         break;
     case SAVED_VIDEO_SAVE_PROMPT_STEP_FADE_OUT_PROMPT:
         VsRecorder_StepFade(&savedVideo->fade, 1);
-        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, TRUE, 2)) {
+        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, TRUE, VS_RECORDER_BLEND_SUB)) {
             work->step++;
         }
         PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, savedVideo->fade, work->blendColor);
@@ -583,7 +583,7 @@ static BOOL VsRecorder_SavedVideoExit(VsRecorderWork *work) {
         break;
     case SAVED_VIDEO_EXIT_STEP_FADE_OUT:
         VsRecorder_StepFade(&savedVideo->fade, 1);
-        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             VsRecorder_FreeExitButton(work);
             work->step++;
         }
@@ -649,7 +649,7 @@ static BOOL VsRecorder_SavedVideoResume(VsRecorderWork *work) {
         break;
     case SAVED_VIDEO_RESUME_STEP_BLEND_IN:
         VsRecorder_StepFade(&savedVideo->fade, 0);
-        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, FALSE, 0)) {
+        if (VsRecorder_StepBlend(&savedVideo->eva, &savedVideo->evb, FALSE, VS_RECORDER_BLEND_BOTH)) {
             VsRecorder_SetVideoPartyIconsDrawFlag(&savedVideo->info, TRUE);
             VsRecorder_ShowProfileButton(work);
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);

@@ -51,6 +51,13 @@ enum VsRecorderSchemeStep {
     SCHEME_STEP_DONE,
 };
 
+// VsRecorder_CheckSchemeArrowTouch
+enum VsRecorderSchemeArrow {
+    VS_RECORDER_SCHEME_ARROW_NONE,
+    VS_RECORDER_SCHEME_ARROW_PREV,
+    VS_RECORDER_SCHEME_ARROW_NEXT,
+};
+
 // moves one menu row sprite (and its label) to a target in a fixed number of frames
 typedef struct VsRecorderRowMove {
     s16 x;
@@ -112,11 +119,11 @@ static BOOL VsRecorder_MenuMain(VsRecorderWork *work) {
     }
     if (work->mode == 0) {
         switch (VsRecorder_CheckSchemeArrowTouch()) {
-        case 1:
+        case VS_RECORDER_SCHEME_ARROW_PREV:
             PlaySE(SEQ_SE_PL_BREC57);
             VsRecorder_SetSubState(work, VS_RECORDER_MENU_PREV_SCHEME);
             return FALSE;
-        case 2:
+        case VS_RECORDER_SCHEME_ARROW_NEXT:
             PlaySE(SEQ_SE_PL_BREC57);
             VsRecorder_SetSubState(work, VS_RECORDER_MENU_NEXT_SCHEME);
             return FALSE;
@@ -126,15 +133,14 @@ static BOOL VsRecorder_MenuMain(VsRecorderWork *work) {
     return FALSE;
 }
 
-// 1: previous colour scheme, 2: next colour scheme, 0: none
 static int VsRecorder_CheckSchemeArrowTouch(void) {
     if (TouchscreenHitbox_TouchHeldIsIn(&sVsRecorderPrevSchemeHitbox)) {
-        return 1;
+        return VS_RECORDER_SCHEME_ARROW_PREV;
     }
     if (TouchscreenHitbox_TouchHeldIsIn(&sVsRecorderNextSchemeHitbox)) {
-        return 2;
+        return VS_RECORDER_SCHEME_ARROW_NEXT;
     }
-    return 0;
+    return VS_RECORDER_SCHEME_ARROW_NONE;
 }
 
 static BOOL VsRecorder_MenuInvalid(VsRecorderWork *work) {

@@ -816,7 +816,7 @@ static void UnownReport_DrawFormSpread(UnownReportApp *app, u8 spread) {
         } else {
             ManagedSprite_SetDrawFlag(slot->icons[0], TRUE);
             UnownReport_LoadIcon(app, i, app->seenForms[index]);
-            ReadMsgDataIntoString(app->msgData, app->seenForms[index] + 20, app->buffer);
+            ReadMsgDataIntoString(app->msgData, app->seenForms[index] + msg_0001_00020, app->buffer);
             if (i < 7) {
                 UnownReport_PrintTextFont0(leftWindow, app->buffer, 48, y);
             } else {

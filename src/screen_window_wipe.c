@@ -70,7 +70,7 @@ void ClockWipe_Init(ClockWipe *wipe, const ClockWipeConfig *config, int steps, i
     buffer = ScreenWipeScanlines_GetBuffer(&wipe->scanlines, 0);
     // first scanline's span
     ScreenFade_SetWindow(regQueue, config->insideMask, config->outsideMask, config->window, screen, buffer->nextLeft[0], 0, buffer->nextRight[0], GX_LCD_SIZE_Y, wipe->queued);
-    if (config->window == 0) {
+    if (config->window == SCREEN_WINDOW_0) {
         ScreenFade_SetWindowVisible(regQueue, GX_WNDMASK_W0, screen, wipe->queued);
     } else {
         ScreenFade_SetWindowVisible(regQueue, GX_WNDMASK_W1, screen, wipe->queued);
@@ -218,7 +218,7 @@ void ScreenWindow_SetVisible(u32 mask, int screen) {
 }
 
 void ScreenWindow_SetInside(u32 planeMask, BOOL effect, int window, int screen) {
-    if (window == 0) {
+    if (window == SCREEN_WINDOW_0) {
         if (screen == SCREEN_MAIN) {
             u32 value = (reg_G2_WININ & ~REG_G2_WININ_WIN0IN_MASK) | planeMask;
             if (effect) {
@@ -271,7 +271,7 @@ static inline GXWndPlane GetWindowPlane(volatile GXWndPlane *reg) {
 
 s8 ScreenWindow_GetInside(int window, int screen) {
     GXWndPlane plane;
-    if (window == 0) {
+    if (window == SCREEN_WINDOW_0) {
         if (screen == SCREEN_MAIN) {
             plane = GetWindowPlane((volatile GXWndPlane *)&reg_G2_WININ);
         } else {
@@ -298,7 +298,7 @@ s8 ScreenWindow_GetOutside(int screen) {
 }
 
 void ScreenWindow_SetRect(int left, int top, int right, int bottom, int window, int screen) {
-    if (window == 0) {
+    if (window == SCREEN_WINDOW_0) {
         if (screen == SCREEN_MAIN) {
             u32 horizontal = (left << 8 & 0xFF00) | ((u32)right << 24 >> 24);
             u32 vertical = (top << 8 & 0xFF00) | ((u32)bottom << 24 >> 24);

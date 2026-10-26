@@ -21,6 +21,7 @@
 #include "application/main_menu/wonder_card_album.h"
 #include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0247.h"
+#include "msgdata/msg/msg_0800.h"
 
 #include "bg_window.h"
 #include "comm_wireless.h"
@@ -423,13 +424,13 @@ static int MysteryGiftApp_AcceptGift(OverlayManager *manager) {
     MysteryGiftAppData *data = OverlayManager_GetData(manager);
     int state = data->giftCheckResult;
 
-    if (state == 1) {
+    if (state == MYSTERY_GIFT_CHECK_WRONG_GAME) {
         return MYSTERY_GIFT_STATE_CANNOT_RECEIVE;
     }
-    if (state == 2 || state == 3 || state == 4) {
+    if (state == MYSTERY_GIFT_CHECK_ALREADY_RECEIVED || state == MYSTERY_GIFT_CHECK_NO_GIFT_SLOT || state == MYSTERY_GIFT_CHECK_NO_CARD_SLOT) {
         return MYSTERY_GIFT_STATE_CANNOT_RECEIVE;
     }
-    if (state == 5) {
+    if (state == MYSTERY_GIFT_CHECK_OTHER_ROUTE) {
         return MYSTERY_GIFT_STATE_CANNOT_RECEIVE;
     }
     if (data->receiveMode == MYSTERY_GIFT_RECEIVE_FRIEND) {
@@ -646,7 +647,7 @@ static int MysteryGiftApp_ConfirmWirelessSearch(OverlayManager *manager) {
 static int MysteryGiftApp_ConfirmReceiveGift(OverlayManager *manager) {
     MysteryGiftAppData *data = OverlayManager_GetData(manager);
 
-    if (data->giftCheckResult == 2 || data->giftCheckResult == 3 || data->giftCheckResult == 4) {
+    if (data->giftCheckResult == MYSTERY_GIFT_CHECK_ALREADY_RECEIVED || data->giftCheckResult == MYSTERY_GIFT_CHECK_NO_GIFT_SLOT || data->giftCheckResult == MYSTERY_GIFT_CHECK_NO_CARD_SLOT) {
         return MYSTERY_GIFT_STATE_CANNOT_RECEIVE;
     }
     MysteryGiftApp_EraseWindowIfInUse(&data->windows[2], FALSE);
@@ -674,7 +675,7 @@ static int MysteryGiftApp_ConfirmWfcSearch(OverlayManager *manager) {
     MysteryGiftApp_SetWaitingIconVisible(data, TRUE);
     MysteryGiftApp_EraseWindowIfInUse(&data->windows[2], FALSE);
     MysteryGiftApp_SetWaitingIconVisible(data, TRUE);
-    data->wfcState = 0x1000;
+    data->wfcState = WFC_STATE_LOAD_OVERLAYS;
     data->wfcCallback = NULL;
     return MYSTERY_GIFT_STATE_WFC_DOWNLOAD;
 }
@@ -908,20 +909,20 @@ void MysteryGiftApp_RunWfcDownload(OverlayManager *manager, int *state) {
     MysteryGiftAppData *data = OverlayManager_GetData(manager);
 
     switch (MysteryGiftWfc_Run(manager, &data->wfcState)) {
-    case 1:
+    case MYSTERY_GIFT_WFC_RESULT_RECEIVED:
         memcpy(&data->receivedHeader, data->wfcRecvBuffer, sizeof(WonderCardInfo) + sizeof(WonderCard));
         MysteryGiftApp_SetWaitingIconVisible(data, FALSE);
         data->giftCheckSource = MYSTERY_GIFT_STATE_WFC_DOWNLOAD;
         *state = MYSTERY_GIFT_STATE_CHECK_GIFT;
         data->resultDelay = 0;
         break;
-    case 2:
-    case 3:
+    case MYSTERY_GIFT_WFC_RESULT_NO_GIFT:
+    case MYSTERY_GIFT_WFC_RESULT_CANCELLED:
         MysteryGiftApp_SetWaitingIconVisible(data, FALSE);
         data->resultDelay = 0;
         *state = MYSTERY_GIFT_STATE_PRINT_NO_GIFT;
         break;
-    case 4:
+    case MYSTERY_GIFT_WFC_RESULT_ERROR:
         ClearWindowTilemapAndCopyToVram(&data->wfcErrorWindow);
         RemoveWindow(&data->wfcErrorWindow);
         BgClearTilemapBufferAndCommit(data->bgConfig, GF_BG_LYR_MAIN_0);
@@ -939,7 +940,7 @@ void MysteryGiftApp_ShowWfcError(MysteryGiftAppData *data) {
     MessageFormat *msgFormat;
 
     if (msgId == -1) {
-        msgId = 11;
+        msgId = msg_0800_00011;
     }
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_OFF);
     BgClearTilemapBufferAndCommit(data->bgConfig, GF_BG_LYR_MAIN_0);
@@ -958,15 +959,15 @@ static int MysteryGiftApp_ShowCannotReceiveMessage(OverlayManager *manager) {
     u32 result = data->giftCheckResult;
     int msgId;
 
-    if (result == 3) {
+    if (result == MYSTERY_GIFT_CHECK_NO_GIFT_SLOT) {
         msgId = msg_0247_00022;
-    } else if (result == 4) {
+    } else if (result == MYSTERY_GIFT_CHECK_NO_CARD_SLOT) {
         msgId = msg_0247_00026;
-    } else if (result == 2) {
+    } else if (result == MYSTERY_GIFT_CHECK_ALREADY_RECEIVED) {
         msgId = msg_0247_00023;
-    } else if (result == 1) {
+    } else if (result == MYSTERY_GIFT_CHECK_WRONG_GAME) {
         msgId = msg_0247_00028;
-    } else if (result == 5) {
+    } else if (result == MYSTERY_GIFT_CHECK_OTHER_ROUTE) {
         return MysteryGiftApp_PrintMessageAndWait(manager, &data->messageWindow, msg_0247_00009, MYSTERY_GIFT_STATE_ASK_SHARED_GIFT);
     }
     return MysteryGiftApp_PrintMessageAndWait(manager, &data->messageWindow, msgId, MYSTERY_GIFT_STATE_WAIT_RETURN_TO_MAIN_MENU);
@@ -1846,7 +1847,7 @@ static BOOL MysteryGiftApp_Main(OverlayManager *manager, int *state) {
             MysteryGiftApp_SetWaitingIconVisible(data, FALSE);
             MysteryGiftApp_GetReceivedCard(manager);
             data->giftCheckResult = MysteryGift_CheckCanReceive(data->saveData, &data->receivedHeader);
-            if (data->giftCheckResult == 1) {
+            if (data->giftCheckResult == MYSTERY_GIFT_CHECK_WRONG_GAME) {
                 MysteryGiftApp_SetWaitingIconVisible(data, FALSE);
                 *state = MYSTERY_GIFT_STATE_CANNOT_RECEIVE;
             } else {
@@ -2082,7 +2083,7 @@ static BOOL MysteryGiftApp_Main(OverlayManager *manager, int *state) {
                 MainMenuUtil_ReadCartridgeGift(&data->receivedHeader, sizeof(WonderCardInfo) + sizeof(WonderCard));
             }
             data->giftCheckResult = MysteryGift_CheckCanReceive(data->saveData, &data->receivedHeader);
-            if (data->giftCheckResult == 1) {
+            if (data->giftCheckResult == MYSTERY_GIFT_CHECK_WRONG_GAME) {
                 MysteryGiftApp_SetWaitingIconVisible(data, FALSE);
                 *state = MYSTERY_GIFT_STATE_CANNOT_RECEIVE;
             } else {
@@ -2140,7 +2141,7 @@ static BOOL MysteryGiftApp_Main(OverlayManager *manager, int *state) {
         }
         break;
     case MYSTERY_GIFT_STATE_CANNOT_RECEIVE:
-        if (data->giftCheckResult != 5) {
+        if (data->giftCheckResult != MYSTERY_GIFT_CHECK_OTHER_ROUTE) {
             MysteryGiftApp_StopReceiving(data);
         }
         *state = MysteryGiftApp_ShowCannotReceiveMessage(manager);
@@ -2158,7 +2159,7 @@ static BOOL MysteryGiftApp_Main(OverlayManager *manager, int *state) {
     case MYSTERY_GIFT_STATE_ASK_SHARED_GIFT:
         MysteryGiftApp_ShowReceivePrompt(manager, 1);
         *state = MYSTERY_GIFT_STATE_ACCEPT_FRIEND_GIFT;
-        data->giftCheckResult = 0;
+        data->giftCheckResult = MYSTERY_GIFT_CHECK_OK;
         break;
     case MYSTERY_GIFT_STATE_EXIT_TO_TITLE:
         MysteryGiftApp_FreeGraphics(manager);

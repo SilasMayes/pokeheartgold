@@ -865,8 +865,7 @@ void WonderCard_InitBgLayers(BgConfig *bgConfig) {
     }
 }
 
-// 0: the gift can be received; 1: not for this game, 2: already received (unique gift), 3: no free gift slot,
-// 4: no free Wonder Card slot, 5: delivered by another route. A header with all bits set wipes the Mystery Gift
+// Whether the gift can be received (enum MysteryGiftCheckResult). A header with all bits set wipes the Mystery Gift
 // save data and resets the system.
 int MysteryGift_CheckCanReceive(SaveData *saveData, WonderCardInfo *header) {
     MysteryGiftSave *mg = Save_MysteryGift_Get(saveData);
@@ -884,19 +883,19 @@ int MysteryGift_CheckCanReceive(SaveData *saveData, WonderCardInfo *header) {
         versions = 0xFFFFFFFF;
     }
     if (!(versions & (1 << GAME_VERSION))) {
-        return 1;
+        return MYSTERY_GIFT_CHECK_WRONG_GAME;
     }
     if (header->unique == TRUE && SaveMysteryGift_ReceivedFlagTest(mg, header->id) == TRUE) {
-        return 2;
+        return MYSTERY_GIFT_CHECK_ALREADY_RECEIVED;
     }
     if (header->unk8E_2 == TRUE && !SaveMysteryGift_CardFindAvailable(mg)) {
-        return 4;
+        return MYSTERY_GIFT_CHECK_NO_CARD_SLOT;
     }
     if (!SaveMysteryGift_FindAvailable(mg)) {
-        return 3;
+        return MYSTERY_GIFT_CHECK_NO_GIFT_SLOT;
     }
     if (header->unk8E_5 == TRUE) {
-        return 5;
+        return MYSTERY_GIFT_CHECK_OTHER_ROUTE;
     }
-    return 0;
+    return MYSTERY_GIFT_CHECK_OK;
 }

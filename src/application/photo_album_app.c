@@ -128,7 +128,7 @@ typedef struct PhotoAlbumApp {
     u8 spriteCol;
     u8 spriteRow;
     u8 slotIdx;
-    u8 mode; // 1 = moving a photo, 2 = deleting
+    u8 mode; // PHOTO_ALBUM_MODE_*
     u8 printerId;
     u8 textDelay;
     u8 frame;

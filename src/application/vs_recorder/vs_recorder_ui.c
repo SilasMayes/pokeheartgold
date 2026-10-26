@@ -847,11 +847,11 @@ static void VsRecorder_DecorTask(SysTask *task, void *data) {
 
 // sprite position on the combined (main + sub) screen space
 void VsRecorder_SetSpritePos(ManagedSprite *sprite, s16 x, s16 y) {
-    ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, x, y, 1 << 20);
+    ManagedSprite_SetPositionXYWithSubscreenOffset(sprite, x, y, FX32_CONST(256));
 }
 
 void VsRecorder_GetSpritePos(ManagedSprite *sprite, s16 *x, s16 *y) {
-    ManagedSprite_GetPositionXYWithSubscreenOffset(sprite, x, y, 1 << 20);
+    ManagedSprite_GetPositionXYWithSubscreenOffset(sprite, x, y, FX32_CONST(256));
 }
 
 void VsRecorder_CreateMenuRowText(VsRecorderWork *work) {

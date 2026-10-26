@@ -158,13 +158,13 @@ static int FootprintStampBoard_AllocPolygonId(FootprintStampBoard *board) {
             } while (id < 63);
         }
     }
-    return 0xFF;
+    return FOOTPRINT_STAMP_POLYGON_NONE;
 }
 
 static void FootprintStampBoard_FreePolygonId(FootprintStampBoard *board, int id) {
     int one = 1;
 
-    if (id == 0xFF) {
+    if (id == FOOTPRINT_STAMP_POLYGON_NONE) {
         return;
     }
     if (id < 32) {
@@ -225,7 +225,7 @@ static void FootprintStampBoard_NewChain(FootprintStampBoard *board, FootprintSt
 #pragma opt_common_subs off
 
 BOOL FootprintStampBoard_AddToChain(FootprintStampBoard *board, int chain, int effect) {
-    if (chain == 0xFF) {
+    if (chain == FOOTPRINT_STAMP_CHAIN_NONE) {
         return FALSE;
     }
     board->chains[chain].size++;
@@ -243,7 +243,7 @@ BOOL FootprintStampBoard_AddToChain(FootprintStampBoard *board, int chain, int e
 static void FootprintStampBoard_ReleaseChain(FootprintStampBoard *board, int chain) {
     int refs;
 
-    if (chain != 0xFF) {
+    if (chain != FOOTPRINT_STAMP_CHAIN_NONE) {
         u8 *base = &board->chains[0].refs;
         int offset = chain * sizeof(FootprintStampChain);
         refs = base[offset] - 1;
@@ -329,7 +329,7 @@ BOOL FootprintStamp_UpdateVanish(FootprintStampBoard *board, FootprintStampObj *
 void FootprintStamp_DrawVanish(FootprintStampBoard *board, FootprintStampObj *stamp) {
     FootprintStampVanish *vanish = &stamp->effect.vanish;
 
-    if (vanish->polygonId != 0xFF) {
+    if (vanish->polygonId != FOOTPRINT_STAMP_POLYGON_NONE) {
         NNS_G3dGlbPolygonAttr(0, GX_POLYGONMODE_MODULATE, GX_CULL_ALL, vanish->polygonId, vanish->alpha >> 8, 0);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x3F000000);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x1F0000);
@@ -582,7 +582,7 @@ void FootprintStamp_DrawRise(FootprintStampBoard *board, FootprintStampObj *stam
     ModelInstance *copy;
     u8 polygonId = rise->polygonId;
 
-    if (polygonId != 0xFF) {
+    if (polygonId != FOOTPRINT_STAMP_POLYGON_NONE) {
         NNS_G3dGlbPolygonAttr(0, GX_POLYGONMODE_MODULATE, GX_CULL_ALL, polygonId, 8, 0);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x3F000000);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x001F0000);
@@ -591,7 +591,7 @@ void FootprintStamp_DrawRise(FootprintStampBoard *board, FootprintStampObj *stam
         ModelInstance_Draw(copy);
     }
     polygonId = rise->polygonId;
-    if (polygonId != 0xFF) {
+    if (polygonId != FOOTPRINT_STAMP_POLYGON_NONE) {
         NNS_G3dGlbPolygonAttr(0, GX_POLYGONMODE_MODULATE, GX_CULL_ALL, polygonId, 31, 0);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x3F000000);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x001F0000);
@@ -720,7 +720,7 @@ void FootprintStamp_DrawSpreadX(FootprintStampBoard *board, FootprintStampObj *s
     FootprintStampSpread *spread;
 
     spread = &stamp->effect.spread;
-    if (spread->polygonId != 0xFF) {
+    if (spread->polygonId != FOOTPRINT_STAMP_POLYGON_NONE) {
         NNS_G3dGlbPolygonAttr(0, GX_POLYGONMODE_MODULATE, GX_CULL_ALL, spread->polygonId, spread->alpha >> 8, 0);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x3F << 24);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x1F << 16);
@@ -807,7 +807,7 @@ void FootprintStamp_DrawSpreadY(FootprintStampBoard *board, FootprintStampObj *s
     FootprintStampSpread *spread;
 
     spread = &stamp->effect.spread;
-    if (spread->polygonId != 0xFF) {
+    if (spread->polygonId != FOOTPRINT_STAMP_POLYGON_NONE) {
         NNS_G3dGlbPolygonAttr(0, GX_POLYGONMODE_MODULATE, GX_CULL_ALL, spread->polygonId, spread->alpha >> 8, 0);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x3F << 24);
         NNSi_G3dModifyPolygonAttrMask(stamp->model.model, FALSE, 0x1F << 16);

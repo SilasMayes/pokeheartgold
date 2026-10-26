@@ -29,6 +29,10 @@
 #define FOOTPRINT_STAMP_TOUCH_EXIT 0xFE
 #define FOOTPRINT_STAMP_TOUCH_NONE 0xFF
 
+// FootprintStampObj.chain and the effects' polygon ids when there is none
+#define FOOTPRINT_STAMP_CHAIN_NONE   0xFF
+#define FOOTPRINT_STAMP_POLYGON_NONE 0xFF
+
 // FootprintStamp_GetFootprintType results
 enum FootprintStampFootprintType {
     FOOTPRINT_STAMP_FOOTPRINT_GENERIC, // the generic footprint
@@ -186,7 +190,7 @@ typedef struct FootprintStampObj {
     u32 textureChanged : 4; // the footprint texture was redrawn and is queued for upload
     u32 effectId : 8;       // running enum FootprintStampEffect
     u32 pendingEffect : 8;
-    u32 chain : 8; // FootprintStampBoard.chains index, 0xFF = none
+    u32 chain : 8; // FootprintStampBoard.chains index or FOOTPRINT_STAMP_CHAIN_NONE
 } FootprintStampObj;
 
 typedef struct FootprintStampBoard FootprintStampBoard;

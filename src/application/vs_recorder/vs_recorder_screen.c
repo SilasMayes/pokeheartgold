@@ -438,31 +438,30 @@ void VsRecorder_RebuildMenuRows(VsRecorderWork *work) {
     work->menuDepth++;
 }
 
-// mode 0: both screens, 1: main only, 2: sub only
 void VsRecorder_InitBlend(int *eva, int *evb, int mainPlane1, int mainPlane2, int subPlane1, int subPlane2, int mode) {
     *eva = 0;
     *evb = 31;
-    if (mode == 0) {
+    if (mode == VS_RECORDER_BLEND_BOTH) {
         G2_SetBlendAlpha(mainPlane1, mainPlane2, *eva, *evb);
         G2S_SetBlendAlpha(subPlane1, subPlane2, *eva, *evb);
     }
-    if (mode == 1) {
+    if (mode == VS_RECORDER_BLEND_MAIN) {
         G2_SetBlendAlpha(mainPlane1, mainPlane2, *eva, *evb);
     }
-    if (mode == 2) {
+    if (mode == VS_RECORDER_BLEND_SUB) {
         G2S_SetBlendAlpha(subPlane1, subPlane2, *eva, *evb);
     }
 }
 
 void VsRecorder_ApplyBlend(int *eva, int *evb, int mainPlane1, int mainPlane2, int subPlane1, int subPlane2, int mode) {
-    if (mode == 0) {
+    if (mode == VS_RECORDER_BLEND_BOTH) {
         G2_SetBlendAlpha(mainPlane1, mainPlane2, *eva, *evb);
         G2S_SetBlendAlpha(subPlane1, subPlane2, *eva, *evb);
     }
-    if (mode == 1) {
+    if (mode == VS_RECORDER_BLEND_MAIN) {
         G2_SetBlendAlpha(mainPlane1, mainPlane2, *eva, *evb);
     }
-    if (mode == 2) {
+    if (mode == VS_RECORDER_BLEND_SUB) {
         G2S_SetBlendAlpha(subPlane1, subPlane2, *eva, *evb);
     }
 }
@@ -493,14 +492,14 @@ BOOL VsRecorder_StepBlend(int *eva, int *evb, BOOL reverse, int mode) {
             done = FALSE;
         }
     }
-    if (mode == 0) {
+    if (mode == VS_RECORDER_BLEND_BOTH) {
         reg_G2_BLDALPHA = *eva | (*evb << 8);
         reg_G2S_DB_BLDALPHA = *eva | (*evb << 8);
     }
-    if (mode == 1) {
+    if (mode == VS_RECORDER_BLEND_MAIN) {
         reg_G2_BLDALPHA = *eva | (*evb << 8);
     }
-    if (mode == 2) {
+    if (mode == VS_RECORDER_BLEND_SUB) {
         reg_G2S_DB_BLDALPHA = *eva | (*evb << 8);
     }
     return done;
@@ -1202,23 +1201,23 @@ void VsRecorder_InitRankingList(VsRecorderListWindow *list, VsRecorderWork *work
     i = 0;
     if (i < list->rows) {
         grp = groups;
-        msgId = type + 88;
+        msgId = type + msg_0013_00088;
         do {
             label = NewString_ReadMsgData(work->msgData, msgId);
             number = String_New(255, HEAP_ID_109);
             expanded = String_New(255, HEAP_ID_109);
             valueString = String_New(255, HEAP_ID_109);
             switch (type) {
-            case 0:
+            case VS_RECORDER_RANKING_TEAM_TRAINER_TYPE:
                 fieldString = NewString_ReadMsgData(list->msgData, list->config->entries[i].value);
                 BufferString(fmt, 1, fieldString, 0, 1, 2);
                 break;
-            case 1:
+            case VS_RECORDER_RANKING_TEAM_BIRTH_MONTH:
                 month = list->config->entries[i].value;
                 fieldString = String_New(255, HEAP_ID_109);
                 BufferMonthNameAbbr(fmt, 1, month);
                 break;
-            case 2:
+            case VS_RECORDER_RANKING_TEAM_SPECIES:
                 species = list->config->entries[i].value;
                 fieldString = String_New(255, HEAP_ID_109);
                 GetSpeciesNameIntoArrayInt(species, HEAP_ID_109, speciesName);
@@ -1387,16 +1386,16 @@ int VsRecorder_RedrawRankingList(VsRecorderListWindow *list, VsRecorderWork *wor
             expanded = String_New(255, HEAP_ID_109);
             valueString = String_New(255, HEAP_ID_109);
             switch (type) {
-            case 0:
+            case VS_RECORDER_RANKING_TEAM_TRAINER_TYPE:
                 fieldString = NewString_ReadMsgData(list->msgData, list->config->entries[i].value);
                 BufferString(fmt, 1, fieldString, 0, 1, 2);
                 break;
-            case 1:
+            case VS_RECORDER_RANKING_TEAM_BIRTH_MONTH:
                 month = list->config->entries[i].value;
                 fieldString = String_New(255, HEAP_ID_109);
                 BufferMonthNameAbbr(fmt, 1, month);
                 break;
-            case 2:
+            case VS_RECORDER_RANKING_TEAM_SPECIES:
                 species = list->config->entries[i].value;
                 fieldString = String_New(255, HEAP_ID_109);
                 GetSpeciesNameIntoArrayInt(species, HEAP_ID_109, speciesName);

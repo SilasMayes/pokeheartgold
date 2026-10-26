@@ -138,6 +138,15 @@ enum SafariDecorationFadeState {
     SAFARI_DECORATION_FADE_WAIT,
 };
 
+// SafariDecoration_CheckObjectPlaceable; the errors are shown as messages msg_0430_00004 to msg_0430_00007
+enum SafariDecorationPlaceResult {
+    SAFARI_DECORATION_PLACE_OK,
+    SAFARI_DECORATION_PLACE_NO_SPACE,     // no room for an object of its size
+    SAFARI_DECORATION_PLACE_NOT_ON_LAND,  // needs water
+    SAFARI_DECORATION_PLACE_NOT_BY_WATER, // doesn't need water
+    SAFARI_DECORATION_PLACE_AREA_FULL,
+};
+
 typedef struct SafariDecoration {
     enum HeapID heapId;
     int state;
@@ -887,9 +896,9 @@ static int SafariDecoration_ChooseObject(SafariDecoration *decor, u32 cursorPos)
     }
 
     result = SafariDecoration_CheckObjectPlaceable(decor, decor->selection);
-    if (result != 0) {
+    if (result != SAFARI_DECORATION_PLACE_OK) {
         PlaySE(SEQ_SE_DP_BOX03);
-        SafariDecoration_ShowErrorMessage(decor, result - 1);
+        SafariDecoration_ShowErrorMessage(decor, result - SAFARI_DECORATION_PLACE_NO_SPACE);
         return SAFARI_DECORATION_SELECT_MESSAGE;
     }
 
@@ -1246,14 +1255,14 @@ static void SafariDecoration_DrawObjectList(SafariDecoration *decor) {
             NNSG2dScreenData *screen;
             int x;
 
-            if (SafariDecoration_CheckObjectPlaceable(decor, (u8)index) > 0) {
+            if (SafariDecoration_CheckObjectPlaceable(decor, (u8)index) > SAFARI_DECORATION_PLACE_OK) {
                 unavailable = TRUE;
             } else {
                 unavailable = FALSE;
             }
             screen = decor->listFrameScreen;
             CopyToBgTilemapRect(decor->bgConfig, GF_BG_LYR_SUB_2, (u8)((i % 2) * 16), (u8)((i / 2 + 1) * 5), 16, 4, screen->rawData, unavailable * 16, 0, (u8)(screen->screenWidth / 8), (u8)(screen->screenHeight / 8));
-            ReadMsgDataIntoString(decor->msgData, decor->objects[index].objectId + 14, decor->string);
+            ReadMsgDataIntoString(decor->msgData, decor->objects[index].objectId + msg_0430_00014, decor->string);
             x = 112 - FontID_String_GetWidth(4, decor->string, 0);
             AddTextPrinterParameterizedWithColor(&windows[i + 6], 4, decor->string, x / 2, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
             ScheduleWindowCopyToVram(&windows[i + 6]);
@@ -1285,7 +1294,7 @@ static void SafariDecoration_PrintSelectedObjectName(SafariDecoration *decor) {
 
     FillWindowPixelBuffer(&decor->windows[4], 0);
     selection = decor->selection;
-    ReadMsgDataIntoString(decor->msgData, decor->objects[selection].objectId + 14, decor->string);
+    ReadMsgDataIntoString(decor->msgData, decor->objects[selection].objectId + msg_0430_00014, decor->string);
     x = 112 - FontID_String_GetWidth(4, decor->string, 0);
     AddTextPrinterParameterizedWithColor(&decor->windows[4], 4, decor->string, x / 2, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     ScheduleWindowCopyToVram(&decor->windows[4]);
@@ -1316,7 +1325,7 @@ static void SafariDecoration_PrintMessage(SafariDecoration *decor, int msg) {
     FillWindowPixelBuffer(&decor->windows[0], 0);
     switch (msg) {
     case 0:
-        ReadMsgDataIntoString(decor->msgData, decor->selectedObjectId + 14, decor->tmpString);
+        ReadMsgDataIntoString(decor->msgData, decor->selectedObjectId + msg_0430_00014, decor->tmpString);
         BufferString(decor->msgFormat, 0, decor->tmpString, 1, 0, 2);
         expand = TRUE;
         break;
@@ -1341,7 +1350,7 @@ static void SafariDecoration_PrintMessage(SafariDecoration *decor, int msg) {
 
 static void SafariDecoration_ShowErrorMessage(SafariDecoration *decor, int msg) {
     FillWindowPixelBuffer(&decor->windows[1], 15);
-    ReadMsgDataIntoString(decor->msgData, msg + 4, decor->string);
+    ReadMsgDataIntoString(decor->msgData, msg + msg_0430_00004, decor->string);
     DrawFrameAndWindow2(&decor->windows[1], TRUE, 994, 12);
     AddTextPrinterParameterizedWithColor(&decor->windows[1], 1, decor->string, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 15), NULL);
     ScheduleWindowCopyToVram(&decor->windows[1]);
@@ -1357,7 +1366,7 @@ static void SafariDecoration_PrintObjectDescription(SafariDecoration *decor) {
         ScheduleWindowCopyToVram(&decor->windows[5]);
         return;
     }
-    ReadMsgDataIntoString(decor->msgData, decor->objects[index].objectId + 38, decor->string);
+    ReadMsgDataIntoString(decor->msgData, decor->objects[index].objectId + msg_0430_00038, decor->string);
     AddTextPrinterParameterizedWithColor(&decor->windows[5], 0, decor->string, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     ScheduleWindowCopyToVram(&decor->windows[5]);
 }
@@ -1368,22 +1377,20 @@ static void SafariDecoration_ShowObjectList(SafariDecoration *decor) {
     SafariDecoration_PrintObjectDescription(decor);
 }
 
-// 0: can be placed, 1: no room for an object of its size, 2/3: needs (2) or doesn't need (3) water,
-// 4: the area is full. 1-4 are shown as messages 4-7.
 static int SafariDecoration_CheckObjectPlaceable(SafariDecoration *decor, int index) {
     if (!decor->objectSlotsLeft) {
-        return 4;
+        return SAFARI_DECORATION_PLACE_AREA_FULL;
     }
     if (decor->args->isSurfing != decor->objects[index].config.isAnimated) {
         if (decor->args->isSurfing == FALSE) {
-            return 2;
+            return SAFARI_DECORATION_PLACE_NOT_ON_LAND;
         }
-        return 3;
+        return SAFARI_DECORATION_PLACE_NOT_BY_WATER;
     }
     if (decor->args->spots[decor->objects[index].sizeClass].valid == FALSE) {
-        return 1;
+        return SAFARI_DECORATION_PLACE_NO_SPACE;
     }
-    return 0;
+    return SAFARI_DECORATION_PLACE_OK;
 }
 
 static void SafariDecoration_StartPageScroll(SafariDecoration *decor, u8 dir, u32 *taskCount, u8 priority) {

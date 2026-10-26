@@ -355,7 +355,7 @@ static BOOL VsRecorder_DressUpInit(VsRecorderWork *work) {
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_3);
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
     BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
-    VsRecorder_InitBgBlend(&dressUp->eva, &dressUp->evb, 0);
+    VsRecorder_InitBgBlend(&dressUp->eva, &dressUp->evb, VS_RECORDER_BLEND_BOTH);
     VsRecorder_SetSubState(work, 1);
     return FALSE;
 }
@@ -435,7 +435,7 @@ static BOOL VsRecorder_DressUpSendShow(VsRecorderWork *work) {
         break;
     case DRESS_UP_SEND_SHOW_STEP_FADE_IN:
         VsRecorder_StepFade(&dressUp->fade, 0);
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, 0)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, VS_RECORDER_BLEND_BOTH)) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);
             VsRecorder_PrintOwnPhotoCaption(work);
@@ -501,7 +501,7 @@ static BOOL VsRecorder_DressUpSendUpload(VsRecorderWork *work) {
         break;
     case DRESS_UP_SEND_UPLOAD_STEP_FADE_OUT:
         VsRecorder_StepFade(&dressUp->fade, 1);
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             VsRecorder_SetVBlankPaused(work, TRUE);
             VsRecorder_FreeDressUpButtons(work);
             VsRecorder_SetVBlankPaused(work, FALSE);
@@ -609,7 +609,7 @@ static BOOL VsRecorder_DressUpSendExit(VsRecorderWork *work) {
         break;
     case DRESS_UP_SEND_EXIT_STEP_FADE_OUT:
         VsRecorder_StepFade(&dressUp->fade, 1);
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             VsRecorder_SetVBlankPaused(work, TRUE);
             VsRecorder_FreeDressUpButtons(work);
             VsRecorder_SetVBlankPaused(work, FALSE);
@@ -686,7 +686,7 @@ static BOOL VsRecorder_DressUpViewSelectCategory(VsRecorderWork *work) {
         break;
     case DRESS_UP_VIEW_SELECT_CATEGORY_STEP_FADE_IN:
         VsRecorder_StepFade(&dressUp->fade, 0);
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, 0)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, VS_RECORDER_BLEND_BOTH)) {
             VsRecorder_ShowTopMessage(work, msg_0013_00114);
             VsRecorder_CreateDressUpCategoryWindows(work);
             work->step++;
@@ -708,12 +708,12 @@ static BOOL VsRecorder_DressUpViewSelectCategory(VsRecorderWork *work) {
         // fallthrough
     case DRESS_UP_VIEW_SELECT_CATEGORY_STEP_FADE_OUT:
         if (dressUp->categoryChosen == TRUE) {
-            if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 2)) {
+            if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, VS_RECORDER_BLEND_SUB)) {
                 work->step++;
             }
         } else {
             VsRecorder_StepFade(&dressUp->fade, 1);
-            if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 2)) {
+            if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, VS_RECORDER_BLEND_SUB)) {
                 work->step++;
             }
             PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
@@ -740,7 +740,7 @@ static BOOL VsRecorder_DressUpViewSelectSpecies(VsRecorderWork *work) {
         work->step++;
         break;
     case DRESS_UP_VIEW_SELECT_SPECIES_STEP_CREATE_LIST:
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, 2)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, VS_RECORDER_BLEND_SUB)) {
             VsRecorder_ShowTopMessage(work, msg_0013_00114);
             VsRecorder_SetVBlankPaused(work, TRUE);
             VsRecorder_CreateTouchScrollSprites(&work->touchScroll, work);
@@ -783,7 +783,7 @@ static BOOL VsRecorder_DressUpViewSelectSpecies(VsRecorderWork *work) {
         // fallthrough
     case DRESS_UP_VIEW_SELECT_SPECIES_STEP_FADE_OUT:
         VsRecorder_StepFade(&dressUp->fade, 1);
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             work->step++;
         }
         PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 12, dressUp->fade, work->blendColor);
@@ -821,7 +821,7 @@ static BOOL VsRecorder_DressUpViewExit(VsRecorderWork *work) {
         break;
     case DRESS_UP_VIEW_EXIT_STEP_FADE_OUT:
         VsRecorder_StepFade(&dressUp->fade, 1);
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             VsRecorder_SetVBlankPaused(work, TRUE);
             VsRecorder_FreeDressUpButtons(work);
             VsRecorder_SetVBlankPaused(work, FALSE);
@@ -969,7 +969,7 @@ static BOOL VsRecorder_DressUpViewShowPhoto(VsRecorderWork *work) {
         break;
     case DRESS_UP_VIEW_SHOW_PHOTO_STEP_FADE_IN:
         VsRecorder_StepFade(&dressUp->fade, 0);
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, 0)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, VS_RECORDER_BLEND_BOTH)) {
             AccessoryPortrait_SetMonVisible(dressUp->portrait, TRUE);
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);
@@ -1046,7 +1046,7 @@ static BOOL VsRecorder_DressUpViewClosePhoto(VsRecorderWork *work) {
         break;
     case DRESS_UP_VIEW_CLOSE_PHOTO_STEP_FADE_OUT:
         VsRecorder_StepFade(&dressUp->fade, 1);
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             if (dressUp->portrait != NULL) {
                 AccessoryPortrait_Destroy(dressUp->portrait);
                 VsRecorder_ResetBg2(work);
@@ -1086,7 +1086,7 @@ static BOOL VsRecorder_DressUpViewToggleProfile(VsRecorderWork *work) {
         work->step++;
         break;
     case DRESS_UP_VIEW_TOGGLE_PROFILE_STEP_BLEND_OUT:
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 1)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, VS_RECORDER_BLEND_MAIN)) {
             if (!dressUp->showProfile) {
                 if (dressUp->portrait != NULL) {
                     AccessoryPortrait_Destroy(dressUp->portrait);
@@ -1130,7 +1130,7 @@ static BOOL VsRecorder_DressUpViewToggleProfile(VsRecorderWork *work) {
         work->step++;
         break;
     case DRESS_UP_VIEW_TOGGLE_PROFILE_STEP_BLEND_IN:
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, 1)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, VS_RECORDER_BLEND_MAIN)) {
             if (!dressUp->showProfile) {
                 VsRecorder_SetProfileDrawFlag(&dressUp->profile, TRUE);
                 GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
@@ -1169,7 +1169,7 @@ static BOOL VsRecorder_DressUpViewChangePhoto(VsRecorderWork *work) {
         work->step++;
         break;
     case DRESS_UP_VIEW_CHANGE_PHOTO_STEP_BLEND_OUT:
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, 1)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, TRUE, VS_RECORDER_BLEND_MAIN)) {
             if (!dressUp->showProfile) {
                 if (dressUp->portrait != NULL) {
                     AccessoryPortrait_Destroy(dressUp->portrait);
@@ -1214,7 +1214,7 @@ static BOOL VsRecorder_DressUpViewChangePhoto(VsRecorderWork *work) {
         work->step++;
         break;
     case DRESS_UP_VIEW_CHANGE_PHOTO_STEP_BLEND_IN:
-        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, 1)) {
+        if (VsRecorder_StepBlend(&dressUp->eva, &dressUp->evb, FALSE, VS_RECORDER_BLEND_MAIN)) {
             if (!dressUp->showProfile) {
                 VsRecorder_PrintPhotoCaption(work, dressUp->photoIndex);
                 AccessoryPortrait_SetMonVisible(dressUp->portrait, TRUE);

@@ -336,8 +336,8 @@ static void MigrateFromAgb_GetAgbVersion(int *version) {
     }
 }
 
-// Sends the picked Pokemon to the Pal Park, saves, then erases them from the cartridge: returns 10 while busy, 11
-// when done, 12 on failure
+// Sends the picked Pokemon to the Pal Park, saves, then erases them from the cartridge: returns TRANSFER_IN_PROGRESS
+// while busy, then TRANSFER_SUCCESS or TRANSFER_FAILED
 static int MigrateFromAgb_RunTransfer(MigrateFromAgbApp *app) {
     MigrateFromAgbSave *save = &app->save;
     u8 buffer[16];

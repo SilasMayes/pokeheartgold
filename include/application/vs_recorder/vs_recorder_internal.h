@@ -604,6 +604,13 @@ ManagedSprite *VsRecorder_NewButtonSprite(VsRecorderWork *work, NNS_G2D_VRAM_TYP
 void VsRecorder_FreeMenuRows(VsRecorderWork *work);
 void VsRecorder_RebuildMenuRowsParent(VsRecorderWork *work);
 void VsRecorder_RebuildMenuRows(VsRecorderWork *work);
+// screens of VsRecorder_InitBlend / ApplyBlend / InitBgBlend / StepBlend
+enum VsRecorderBlendScreens {
+    VS_RECORDER_BLEND_BOTH,
+    VS_RECORDER_BLEND_MAIN,
+    VS_RECORDER_BLEND_SUB,
+};
+
 void VsRecorder_InitBlend(int *eva, int *evb, int mainPlane1, int mainPlane2, int subPlane1, int subPlane2, int mode);
 void VsRecorder_ApplyBlend(int *eva, int *evb, int mainPlane1, int mainPlane2, int subPlane1, int subPlane2, int mode);
 void VsRecorder_InitBgBlend(int *eva, int *evb, int mode);

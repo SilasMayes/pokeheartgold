@@ -96,13 +96,13 @@ BOOL VsRecorder_BoxDataViewDownload(VsRecorderWork *work) {
         VsRecorder_RemoveBoxDataWindows(work);
         VsRecorder_RemoveBoxDataCategoryButtons(work);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
-        VsRecorder_ApplyBlend(&boxData->eva, &boxData->evb, 8, 18, 8, 18, 1);
+        VsRecorder_ApplyBlend(&boxData->eva, &boxData->evb, GX_BLEND_PLANEMASK_BG3, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, GX_BLEND_PLANEMASK_BG3, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, VS_RECORDER_BLEND_MAIN);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
         work->step++;
         // fallthrough
     case BOX_DATA_VIEW_DOWNLOAD_STEP_FADE_OUT:
         VsRecorder_StepFade(&boxData->fade, 1);
-        if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             GfGfxLoader_LoadCharDataFromOpenNarc(work->narc, 62, work->bgConfig, GF_BG_LYR_MAIN_3, 0, 0, FALSE, HEAP_ID_109);
             GfGfxLoader_LoadScrnDataFromOpenNarc(work->narc, 3, work->bgConfig, GF_BG_LYR_MAIN_3, 0, 0, FALSE, HEAP_ID_109);
             GfGfxLoader_LoadScrnDataFromOpenNarc(work->narc, 78, work->bgConfig, GF_BG_LYR_SUB_3, 0, 0, FALSE, HEAP_ID_109);
@@ -176,7 +176,7 @@ BOOL VsRecorder_BoxDataViewDownload(VsRecorderWork *work) {
         }
         break;
     case BOX_DATA_VIEW_DOWNLOAD_STEP_BLEND_OUT:
-        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, 0)) {
+        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             break;
         }
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
@@ -186,7 +186,7 @@ BOOL VsRecorder_BoxDataViewDownload(VsRecorderWork *work) {
         break;
     case BOX_DATA_VIEW_DOWNLOAD_STEP_SHOW_CATEGORIES:
         VsRecorder_StepFade(&boxData->fade, 0);
-        if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, 2)) {
+        if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, VS_RECORDER_BLEND_SUB)) {
             VsRecorder_LoadBoxDataMessageBg(work, GF_BG_LYR_MAIN_2);
             VsRecorder_PrintBoxDataMessage(work, msg_0013_00275); // Which category would you like to see?
             VsRecorder_CreateBoxDataCategoryButtons(work);
@@ -198,7 +198,7 @@ BOOL VsRecorder_BoxDataViewDownload(VsRecorderWork *work) {
         break;
     default:
         VsRecorder_StepFade(&boxData->fade, 0);
-        if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, 0)) {
+        if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, VS_RECORDER_BLEND_BOTH)) {
             VsRecorder_CreateBoxListTitle(work);
             VsRecorder_CreateBoxListItems(work);
             VsRecorder_SetVBlankPaused(work, TRUE);
@@ -309,14 +309,14 @@ BOOL VsRecorder_BoxListBack(VsRecorderWork *work) {
         work->step++;
         // fallthrough
     case BOX_LIST_BACK_STEP_BLEND_OUT:
-        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, 0)) {
+        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             break;
         }
         GfGfxLoader_LoadScrnDataFromOpenNarc(work->narc, 79, work->bgConfig, GF_BG_LYR_SUB_3, 0, 0, FALSE, HEAP_ID_109);
         work->step++;
         break;
     case BOX_LIST_BACK_STEP_SHOW_CATEGORIES:
-        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, 2)) {
+        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, VS_RECORDER_BLEND_SUB)) {
             break;
         }
         VsRecorder_LoadBoxDataMessageBg(work, GF_BG_LYR_MAIN_2);
@@ -358,7 +358,7 @@ BOOL VsRecorder_BoxDataViewOpenBox(VsRecorderWork *work) {
         work->step++;
         // fallthrough
     case BOX_DATA_VIEW_OPEN_BOX_STEP_BLEND_OUT:
-        if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, 0)) {
+        if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             work->step++;
         }
         break;
@@ -380,7 +380,7 @@ BOOL VsRecorder_BoxDataViewOpenBox(VsRecorderWork *work) {
         work->step++;
         break;
     case BOX_DATA_VIEW_OPEN_BOX_STEP_BLEND_IN:
-        if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, 0)) {
+        if (VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, VS_RECORDER_BLEND_BOTH)) {
             VsRecorder_SetBoxMonPicVanished(work, FALSE);
             VsRecorder_SetBoxMonIconsDrawFlag(work, TRUE);
             VsRecorder_CreateNextMonButton(work);
@@ -424,7 +424,7 @@ BOOL VsRecorder_BoxDataViewCloseBox(VsRecorderWork *work) {
 
     switch (work->step) {
     case BOX_DATA_VIEW_CLOSE_BOX_STEP_FREE_BOX:
-        VsRecorder_ApplyBlend(&boxData->eva, &boxData->evb, 8, 18, 8, 18, 1);
+        VsRecorder_ApplyBlend(&boxData->eva, &boxData->evb, GX_BLEND_PLANEMASK_BG3, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, GX_BLEND_PLANEMASK_BG3, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, VS_RECORDER_BLEND_MAIN);
         VsRecorder_FreeBoxMonPic(work);
         VsRecorder_FreeBoxMonIcons(work);
         VsRecorder_ClearBoxDataInfoWindows(work);
@@ -438,7 +438,7 @@ BOOL VsRecorder_BoxDataViewCloseBox(VsRecorderWork *work) {
         work->step++;
         // fallthrough
     case BOX_DATA_VIEW_CLOSE_BOX_STEP_BLEND_OUT:
-        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, 0)) {
+        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, VS_RECORDER_BLEND_BOTH)) {
             break;
         }
         GfGfxLoader_LoadCharDataFromOpenNarc(work->narc, 62, work->bgConfig, GF_BG_LYR_MAIN_3, 0, 0, FALSE, HEAP_ID_109);
@@ -449,7 +449,7 @@ BOOL VsRecorder_BoxDataViewCloseBox(VsRecorderWork *work) {
         work->step++;
         break;
     default:
-        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, 0)) {
+        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, VS_RECORDER_BLEND_BOTH)) {
             break;
         }
         VsRecorder_SetVBlankPaused(work, TRUE);
@@ -494,12 +494,12 @@ BOOL VsRecorder_BoxListShowProfile(VsRecorderWork *work) {
         VsRecorder_FreeListArrows(&work->listWindow, work);
         boxData->showProfile = TRUE;
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
-        VsRecorder_ApplyBlend(&boxData->eva, &boxData->evb, 8, 18, 8, 18, 1);
+        VsRecorder_ApplyBlend(&boxData->eva, &boxData->evb, GX_BLEND_PLANEMASK_BG3, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, GX_BLEND_PLANEMASK_BG3, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, VS_RECORDER_BLEND_MAIN);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
         work->step++;
         // fallthrough
     case BOX_LIST_SHOW_PROFILE_STEP_CREATE_PROFILE:
-        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, 1)) {
+        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, VS_RECORDER_BLEND_MAIN)) {
             break;
         }
         VsRecorder_LoadBoxDataOwner(work, work->listWindow.cursor);
@@ -512,7 +512,7 @@ BOOL VsRecorder_BoxListShowProfile(VsRecorderWork *work) {
         work->step++;
         break;
     case BOX_LIST_SHOW_PROFILE_STEP_BLEND_IN:
-        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, 1)) {
+        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, VS_RECORDER_BLEND_MAIN)) {
             break;
         }
         VsRecorder_SetProfileDrawFlag(&boxData->profile, TRUE);
@@ -542,7 +542,7 @@ BOOL VsRecorder_BoxListHideProfile(VsRecorderWork *work) {
         work->step++;
         // fallthrough
     case BOX_LIST_HIDE_PROFILE_STEP_BLEND_OUT:
-        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, 1)) {
+        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, TRUE, VS_RECORDER_BLEND_MAIN)) {
             break;
         }
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
@@ -552,7 +552,7 @@ BOOL VsRecorder_BoxListHideProfile(VsRecorderWork *work) {
         work->step++;
         break;
     default:
-        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, 1)) {
+        if (!VsRecorder_StepBlend(&boxData->eva, &boxData->evb, FALSE, VS_RECORDER_BLEND_MAIN)) {
             break;
         }
         VsRecorder_SetVBlankPaused(work, TRUE);

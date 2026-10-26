@@ -113,6 +113,14 @@ typedef union AgbBoxMonSubstruct {
     } condition;
 } AgbBoxMonSubstruct;
 
+// PmAgbCartridge_CheckSaveSlot / PmAgbCartridge_FindLatestSaveSlot
+enum AgbSaveSlotStatus {
+    AGB_SAVE_SLOT_EMPTY,
+    AGB_SAVE_SLOT_VALID,
+    AGB_SAVE_SLOT_CORRUPT,        // neither slot can be used
+    AGB_SAVE_SLOT_DAMAGED = 0xFF, // only some of the sectors are valid
+};
+
 extern u32 gMigrateFromAgbIcons;
 extern u32 gPmAgbSaveCounter;
 extern PmAgbRomHeader gPmAgbRomHeader;
@@ -272,7 +280,6 @@ static void *PmAgbCartridge_GetSectorData(int id) {
     return NULL;
 }
 
-// 1: all 14 sectors of the slot are valid, 0xFF: some are, 0: the slot is empty
 static int PmAgbCartridge_CheckSaveSlot(int slot, AgbSaveSector *sector, u32 *counter) {
     u32 validSectors = 0;
     u8 found = FALSE;
@@ -291,12 +298,12 @@ static int PmAgbCartridge_CheckSaveSlot(int slot, AgbSaveSector *sector, u32 *co
         }
     }
     if (found) {
-        if (validSectors == 0x3FFF) {
-            return 1;
+        if (validSectors == (1 << AGB_SAVE_SECTORS_PER_SLOT) - 1) {
+            return AGB_SAVE_SLOT_VALID;
         }
-        return 0xFF;
+        return AGB_SAVE_SLOT_DAMAGED;
     }
-    return 0;
+    return AGB_SAVE_SLOT_EMPTY;
 }
 
 // Picks the newer of the two save slots
@@ -304,7 +311,7 @@ static int PmAgbCartridge_FindLatestSaveSlot(AgbSaveSector *sector, u32 *slot, u
     u32 counter0, counter1;
     int status0 = PmAgbCartridge_CheckSaveSlot(0, sector, &counter0);
     int status1 = PmAgbCartridge_CheckSaveSlot(1, sector, &counter1);
-    if (status0 == 1 && status1 == 1) {
+    if (status0 == AGB_SAVE_SLOT_VALID && status1 == AGB_SAVE_SLOT_VALID) {
         if ((counter0 == 0xFFFFFFFF && counter1 == 0) || (counter0 == 0 && counter1 == 0xFFFFFFFF)) {
             // the counter wrapped around
             if (counter0 + 1 < counter1 + 1) {
@@ -321,34 +328,34 @@ static int PmAgbCartridge_FindLatestSaveSlot(AgbSaveSector *sector, u32 *slot, u
             *counter = counter0;
             *slot = 0;
         }
-        return 1;
+        return AGB_SAVE_SLOT_VALID;
     }
-    if (status0 == 1 && status1 != 1) {
+    if (status0 == AGB_SAVE_SLOT_VALID && status1 != AGB_SAVE_SLOT_VALID) {
         *counter = counter0;
-        if (status1 == 0xFF) {
+        if (status1 == AGB_SAVE_SLOT_DAMAGED) {
             *slot = 0;
-            return 0xFF;
+            return AGB_SAVE_SLOT_DAMAGED;
         }
         *slot = 0;
-        return 1;
+        return AGB_SAVE_SLOT_VALID;
     }
-    if (status1 == 1 && status0 != 1) {
+    if (status1 == AGB_SAVE_SLOT_VALID && status0 != AGB_SAVE_SLOT_VALID) {
         *counter = counter1;
-        if (status0 == 0xFF) {
+        if (status0 == AGB_SAVE_SLOT_DAMAGED) {
             *slot = 1;
-            return 0xFF;
+            return AGB_SAVE_SLOT_DAMAGED;
         }
         *slot = 1;
-        return 1;
+        return AGB_SAVE_SLOT_VALID;
     }
-    if (status0 == 0 && status1 == 0) {
+    if (status0 == AGB_SAVE_SLOT_EMPTY && status1 == AGB_SAVE_SLOT_EMPTY) {
         *counter = 0;
         *slot = 0;
-        return 0;
+        return AGB_SAVE_SLOT_EMPTY;
     }
     *counter = 0;
     *slot = 0;
-    return 2;
+    return AGB_SAVE_SLOT_CORRUPT;
 }
 
 // Reads the latest save into the buffer
@@ -356,13 +363,13 @@ int PmAgbCartridge_LoadSave(void) {
     int result = PmAgbCartridge_FindLatestSaveSlot((AgbSaveSector *)gPmAgbSave.buffer, (u32 *)(&gMigrateFromAgbIcons + 1), &gPmAgbSaveCounter);
     PmAgbSave *save;
 
-    if (result != 1) {
+    if (result != AGB_SAVE_SLOT_VALID) {
         switch (result) {
-        case 0xFF:
+        case AGB_SAVE_SLOT_DAMAGED:
             return PM_AGB_RESULT_SAVE_DAMAGED;
-        case 0:
+        case AGB_SAVE_SLOT_EMPTY:
             return PM_AGB_RESULT_NO_SAVE;
-        case 2:
+        case AGB_SAVE_SLOT_CORRUPT:
             return PM_AGB_RESULT_SAVE_CORRUPT;
         }
     }

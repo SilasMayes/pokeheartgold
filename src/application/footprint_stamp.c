@@ -1478,7 +1478,7 @@ static void FootprintStampBoard_ResolveChains(FootprintStampBoard *board) {
         other = board->sorted[FOOTPRINT_STAMP_STAMPS_MAX - 1 - j];
         for (k = 0; k < numActive; k++) {
             stamp = board->sorted[k];
-            if (gFootprintStampEffectFuncs[stamp->effectId].hit(board, stamp, other) == TRUE && FootprintStamp_SetEffect(other, stamp->effectId) == TRUE && other->chain == 0xFF) {
+            if (gFootprintStampEffectFuncs[stamp->effectId].hit(board, stamp, other) == TRUE && FootprintStamp_SetEffect(other, stamp->effectId) == TRUE && other->chain == FOOTPRINT_STAMP_CHAIN_NONE) {
                 other->chain = stamp->chain;
                 FootprintStampBoard_AddToChain(board, stamp->chain, stamp->effectId);
                 break;
@@ -1520,7 +1520,7 @@ static FootprintStampObj *FootprintStampBoard_CreateStamp(FootprintStamp *work, 
     fx32 x, y;
 
     MI_CpuFill8(stamp, 0, sizeof(FootprintStampObj));
-    stamp->chain = 0xFF;
+    stamp->chain = FOOTPRINT_STAMP_CHAIN_NONE;
     stamp->mon = *mon;
     if (stamp->mon.species > NATIONAL_DEX_COUNT) {
         GF_ASSERT(FALSE);

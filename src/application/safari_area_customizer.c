@@ -1623,7 +1623,7 @@ static void SafariAreaCustomizer_PrintObjectTypeLabels(SafariAreaCustomizer *cus
     if (customizer->objectsUnlocked) {
         for (i = 0; i < 5; i++) {
             Window *window = &customizer->windows[5 + i * 2];
-            ReadMsgDataIntoString(customizer->msgData, i + 10, customizer->string);
+            ReadMsgDataIntoString(customizer->msgData, i + msg_0429_00010, customizer->string);
             AddTextPrinterParameterizedWithColor(window, 0, customizer->string, 0, 0, TEXT_SPEED_INSTANT, gSafariAreaCustomizerLabelColors[i % 2], NULL);
             CopyWindowToVram(window);
         }
@@ -1652,7 +1652,7 @@ static void SafariAreaCustomizer_PrintSlotInfo(SafariAreaCustomizer *customizer,
     area = &customizer->areaSet.areas[slot];
     {
         Window *window = &customizer->windows[4];
-        ReadMsgDataIntoString(customizer->msgData, area->area_no + 16, customizer->string);
+        ReadMsgDataIntoString(customizer->msgData, area->area_no + msg_0429_00016, customizer->string);
         x = (GetWindowWidth(window) * 8 - FontID_String_GetWidth(0, customizer->string, 0)) / 2;
         FillWindowPixelBuffer(window, 12);
         AddTextPrinterParameterizedWithColor(window, 0, customizer->string, x, 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(8, 11, 12), NULL);
@@ -1686,11 +1686,11 @@ static void SafariAreaCustomizer_PrintAreaNames(SafariAreaCustomizer *customizer
 
     FillWindowPixelBuffer(window, 12);
     area = &customizer->areaSet.areas[customizer->selectedSlot];
-    ReadMsgDataIntoString(customizer->msgData, area->area_no + 16, customizer->string);
+    ReadMsgDataIntoString(customizer->msgData, area->area_no + msg_0429_00016, customizer->string);
     x = (96 - FontID_String_GetWidth(0, customizer->string, 0)) / 2;
     AddTextPrinterParameterizedWithColor(window, 0, customizer->string, x, 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(8, 11, 12), NULL);
     if (customizer->cursorPos < NUM_AREA_SLOTS) {
-        ReadMsgDataIntoString(customizer->msgData, customizer->cursorPos + 16 + customizer->page * NUM_AREA_SLOTS, customizer->string);
+        ReadMsgDataIntoString(customizer->msgData, customizer->cursorPos + msg_0429_00016 + customizer->page * NUM_AREA_SLOTS, customizer->string);
         x = (96 - FontID_String_GetWidth(0, customizer->string, 0)) / 2;
         AddTextPrinterParameterizedWithColor(window, 0, customizer->string, x + 144, 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(8, 11, 12), NULL);
     }
