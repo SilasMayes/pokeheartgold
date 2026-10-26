@@ -23,7 +23,7 @@ static int WifiSetup_HexDigitValue(u8 ch);
 
 int WifiSetupApScan_Start(void) {
     WifiSetupApScan *scan;
-    MIi_CpuClear16(0, (u16 *)gWifiSetupApScan->entries, sizeof(gWifiSetupApScan->entries));
+    MI_CpuClear16(gWifiSetupApScan->entries, sizeof(gWifiSetupApScan->entries));
     if (WM_Initialize(gWifiSetupApScan, WifiSetupApScan_Callback, 3) != WM_ERRCODE_OPERATING) {
         return 0;
     }
@@ -395,7 +395,7 @@ void WifiSetupConnections_Reset(void) {
     DwcWiFiInfo info;
     u8 *conv;
     int i;
-    MIi_CpuClear16(0, (u16 *)gWifiSetupConnections, 0x400);
+    MI_CpuClear16(gWifiSetupConnections, 0x400);
     for (i = 0; i < 3; i++) {
         gWifiSetupConnections->pages[i].settings.setupMethod = WIFI_SETUP_METHOD_ERASED;
     }

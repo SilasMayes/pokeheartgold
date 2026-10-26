@@ -724,7 +724,7 @@ static void WifiSetupConnectionTest_Start(void) {
     int mode;
     WifiSetupConnectionTestParams param;
     WifiSetupConnection *connection = WifiSetupConnections_GetEdit();
-    MIi_CpuCopy32((const void *)&gWifiSetupConnectionTestParams, (void *)&param, sizeof(param));
+    MI_CpuCopy32(&gWifiSetupConnectionTestParams, &param, sizeof(param));
     WifiSetupApp_GetScreenArgs(0, &mode);
     if (mode == 2) {
         param.slot = 4;

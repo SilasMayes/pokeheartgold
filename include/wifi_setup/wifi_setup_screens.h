@@ -67,13 +67,13 @@ typedef struct WifiSetupBytePair {
 // Top menu: two choices, the screen's graphics file.
 typedef struct WifiSetupTopMenu {
     u8 selected;
-    void *graphics;
+    u8 *graphics;
 } WifiSetupTopMenu;
 
 typedef struct WifiSetupMenu3 {
     u8 selected;
     u8 confirmed;
-    void *graphics;
+    u8 *graphics;
     GXOamAttr *oam;
 } WifiSetupMenu3;
 

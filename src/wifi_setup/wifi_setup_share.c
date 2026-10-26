@@ -1053,7 +1053,7 @@ void WifiSetupShare_GetState(u8 *state, u8 *changed) {
     gWifiSetupShare->prevState = gWifiSetupShare->state;
 }
 
-void *WifiSetupShare_GetChildUser(void) {
+WifiSetupMbParentUser *WifiSetupShare_GetChildUser(void) {
     return MB_CommGetChildUser(1);
 }
 
@@ -1278,10 +1278,10 @@ static void WifiSetupShare_UpdateChild(void) {
         WifiSetupShare *share = gWifiSetupShare;
         if (share->receivedFlags[i]) {
             u32 offset = (u32)i * (u32)stride;
-            u16 *kind = (u16 *)((u32)share + 0x100 + offset); // received.packets[i].kind
+            WifiSetupSharePacket *packet = (WifiSetupSharePacket *)(share->received.raw + offset);
             if (i == 1) {
                 if (share->sendingData == 1) {
-                    if (*kind != 16) {
+                    if (packet->kind != 16) {
                         return;
                     }
                     share->frame++;
@@ -1293,7 +1293,7 @@ static void WifiSetupShare_UpdateChild(void) {
                     }
                 } else {
                     share->unk_202 = WIFI_SETUP_SHARE_PACKET_HELLO;
-                    if (*kind == WIFI_SETUP_SHARE_PACKET_READY) {
+                    if (packet->kind == WIFI_SETUP_SHARE_PACKET_READY) {
                         gWifiSetupShare->sendingData = TRUE;
                         gWifiSetupShare->blockIndex = 0;
                         gWifiSetupShare->frame = 0;

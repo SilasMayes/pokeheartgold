@@ -78,7 +78,7 @@ void WifiSetupKeypad_SlideOutButtonsTask(WifiSetupTask *task, void *arg) {
     pos.x = (attr & 0x1ff0000) >> 16;
     pos.y = (attr & 0xff) + 12;
     WifiSetupKeypad_SetRowY(4, pos.y, pos.x);
-    if (*(int *)&pos < 192) {
+    if (*(int *)&pos < GX_LCD_SIZE_Y) { // pos.y
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupKeypad_SlideOutRow3Task);
@@ -90,7 +90,7 @@ static void WifiSetupKeypad_SlideOutRow3Task(WifiSetupTask *task, void *arg) {
     pos.x = (attr & 0x1ff0000) >> 16;
     pos.y = (attr & 0xff) + 12;
     WifiSetupKeypad_SetRowY(3, pos.y, pos.x);
-    if (*(int *)&pos < 192) {
+    if (*(int *)&pos < GX_LCD_SIZE_Y) { // pos.y
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupKeypad_SlideOutRow2Task);
@@ -102,7 +102,7 @@ static void WifiSetupKeypad_SlideOutRow2Task(WifiSetupTask *task, void *arg) {
     pos.x = (attr & 0x1ff0000) >> 16;
     pos.y = (attr & 0xff) + 12;
     WifiSetupKeypad_SetRowY(2, pos.y, pos.x);
-    if (*(int *)&pos < 192) {
+    if (*(int *)&pos < GX_LCD_SIZE_Y) { // pos.y
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupKeypad_SlideOutRow1Task);
@@ -114,7 +114,7 @@ static void WifiSetupKeypad_SlideOutRow1Task(WifiSetupTask *task, void *arg) {
     pos.x = (attr & 0x1ff0000) >> 16;
     pos.y = (attr & 0xff) + 12;
     WifiSetupKeypad_SetRowY(1, pos.y, pos.x);
-    if (*(int *)&pos < 192) {
+    if (*(int *)&pos < GX_LCD_SIZE_Y) { // pos.y
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupKeypad_SlideOutRow0Task);
@@ -126,7 +126,7 @@ static void WifiSetupKeypad_SlideOutRow0Task(WifiSetupTask *task, void *arg) {
     pos.x = (attr & 0x1ff0000) >> 16;
     pos.y = (attr & 0xff) + 12;
     WifiSetupKeypad_SetRowY(0, pos.y, pos.x);
-    if (*(int *)&pos < 192) {
+    if (*(int *)&pos < GX_LCD_SIZE_Y) { // pos.y
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupKeypad_DestroyTask);

@@ -29,7 +29,7 @@ void WifiSetupApp_StartAossClient(void) {
     WifiSetupRequestKey key;
     gWifiSetupClient.request = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupRequest), 4);
     gWifiSetupClient.done = FALSE;
-    MIi_CpuClear16(0, (u16 *)&key, sizeof(key));
+    MI_CpuClear16(&key, sizeof(key));
     key.tag = 'P';
     key.length = 12;
     MI_CpuCopy8(gWifiSetupAossClientName, key.data, 12);
@@ -159,15 +159,15 @@ static void WifiSetupApp_InitDisplay(void) {
     GX_SetVisiblePlane(0);
     GX_SetVisibleWnd(0);
     GXx_SetMasterBrightness_(&reg_GX_MASTER_BRIGHT, 0);
-    reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xffcfffef) | 0x10 | 0x200000;
-    reg_G2_BG0CNT &= ~64;
-    reg_G2_BG1CNT &= ~64;
-    reg_G2_BG2CNT &= ~64;
-    reg_G2_BG3CNT &= ~64;
-    reg_G2_BG0OFS = 0;
-    reg_G2_BG1OFS = 0;
-    reg_G2_BG2OFS = 0;
-    reg_G2_BG3OFS = 0;
+    GX_SetOBJVRamModeChar(GX_OBJVRAMMODE_CHAR_1D_128K);
+    G2_BG0Mosaic(FALSE);
+    G2_BG1Mosaic(FALSE);
+    G2_BG2Mosaic(FALSE);
+    G2_BG3Mosaic(FALSE);
+    G2_SetBG0Offset(0, 0);
+    G2_SetBG1Offset(0, 0);
+    G2_SetBG2Offset(0, 0);
+    G2_SetBG3Offset(0, 0);
     G2x_SetBlendBrightness_(&reg_G2_BLDCNT, 63, 16);
     GX_SetBankForSubBG(GX_VRAM_SUB_BG_32_H);
     GX_SetBankForSubOBJ(GX_VRAM_SUB_OBJ_16_I);
@@ -175,27 +175,27 @@ static void WifiSetupApp_InitDisplay(void) {
     GXS_SetVisiblePlane(0);
     GXS_SetVisibleWnd(0);
     GXx_SetMasterBrightness_(&reg_GXS_DB_MASTER_BRIGHT, 0);
-    reg_GXS_DB_DISPCNT = (reg_GXS_DB_DISPCNT & 0xffcfffef) | 0x10;
-    reg_G2S_DB_BG0CNT &= ~64;
-    reg_G2S_DB_BG1CNT &= ~64;
-    reg_G2S_DB_BG2CNT &= ~64;
-    reg_G2S_DB_BG3CNT &= ~64;
-    reg_G2S_DB_BG0OFS = 0;
-    reg_G2S_DB_BG1OFS = 0;
-    reg_G2S_DB_BG2OFS = 0;
-    reg_G2S_DB_BG3OFS = 0;
+    GXS_SetOBJVRamModeChar(GX_OBJVRAMMODE_CHAR_1D_32K);
+    G2S_BG0Mosaic(FALSE);
+    G2S_BG1Mosaic(FALSE);
+    G2S_BG2Mosaic(FALSE);
+    G2S_BG3Mosaic(FALSE);
+    G2S_SetBG0Offset(0, 0);
+    G2S_SetBG1Offset(0, 0);
+    G2S_SetBG2Offset(0, 0);
+    G2S_SetBG3Offset(0, 0);
     G2x_SetBlendBrightness_(&reg_G2S_DB_BLDCNT, 63, 16);
-    reg_G2_BG0CNT = (reg_G2_BG0CNT & 0x43) | 0xc00;
-    reg_G2_BG1CNT = (reg_G2_BG1CNT & 0x43) | 0x108 | 0xc00;
-    reg_G2_BG2CNT = (reg_G2_BG2CNT & 0x43) | 0xe10;
-    reg_G2_BG3CNT = (reg_G2_BG3CNT & 0x43) | 0xf10;
-    reg_G2S_DB_BG0CNT = (reg_G2S_DB_BG0CNT & 0x43) | 0xc00;
-    reg_G2S_DB_BG1CNT = (reg_G2S_DB_BG1CNT & 0x43) | 0xd00;
-    reg_G2S_DB_BG2CNT = (reg_G2S_DB_BG2CNT & 0x43) | 0xe00;
-    reg_G2S_DB_BG3CNT = (reg_G2S_DB_BG3CNT & 0x43) | 0xf00;
-    reg_GX_DISPCNT &= ~0x38000000;
-    reg_GX_DISPCNT &= ~0x7000000;
-    reg_GX_POWCNT &= ~0x8000;
+    G2_SetBG0Control(GX_BG_SCRSIZE_TEXT_256x256, GX_BG_COLORMODE_16, GX_BG_SCRBASE_0x6000, GX_BG_CHARBASE_0x00000, GX_BG_EXTPLTT_01);
+    G2_SetBG1Control(GX_BG_SCRSIZE_TEXT_256x256, GX_BG_COLORMODE_16, GX_BG_SCRBASE_0x6800, GX_BG_CHARBASE_0x08000, GX_BG_EXTPLTT_01);
+    G2_SetBG2ControlText(GX_BG_SCRSIZE_TEXT_256x256, GX_BG_COLORMODE_16, GX_BG_SCRBASE_0x7000, GX_BG_CHARBASE_0x10000);
+    G2_SetBG3ControlText(GX_BG_SCRSIZE_TEXT_256x256, GX_BG_COLORMODE_16, GX_BG_SCRBASE_0x7800, GX_BG_CHARBASE_0x10000);
+    G2S_SetBG0Control(GX_BG_SCRSIZE_TEXT_256x256, GX_BG_COLORMODE_16, GX_BG_SCRBASE_0x6000, GX_BG_CHARBASE_0x00000, GX_BG_EXTPLTT_01);
+    G2S_SetBG1Control(GX_BG_SCRSIZE_TEXT_256x256, GX_BG_COLORMODE_16, GX_BG_SCRBASE_0x6800, GX_BG_CHARBASE_0x00000, GX_BG_EXTPLTT_01);
+    G2S_SetBG2ControlText(GX_BG_SCRSIZE_TEXT_256x256, GX_BG_COLORMODE_16, GX_BG_SCRBASE_0x7000, GX_BG_CHARBASE_0x00000);
+    G2S_SetBG3ControlText(GX_BG_SCRSIZE_TEXT_256x256, GX_BG_COLORMODE_16, GX_BG_SCRBASE_0x7800, GX_BG_CHARBASE_0x00000);
+    GX_SetBGScrOffset(GX_BGSCROFFSET_0x00000);
+    GX_SetBGCharOffset(GX_BGCHAROFFSET_0x00000);
+    GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
     WifiSetupText_Init();
     WifiSetupOam_Init();
     WifiSetupCharVram_Init();
@@ -363,8 +363,8 @@ void WifiSetupTransfer_StartDownload(void) {
     WifiSetupShare_StartDownload();
 }
 
-u8 *WifiSetupTransfer_GetChildUser(void) {
-    return gWifiSetupSession->childUser;
+WifiSetupMbParentUser *WifiSetupTransfer_GetChildUser(void) {
+    return &gWifiSetupSession->childUser;
 }
 
 WifiSetupSession *gWifiSetupSession;
@@ -387,9 +387,9 @@ static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg) {
             return;
         }
         {
-            u8 *dst = gWifiSetupSession->childUser;
-            u16 *src = WifiSetupShare_GetChildUser();
-            MIi_CpuCopy16(src, (u16 *)dst, 0x16);
+            WifiSetupMbParentUser *dst = &gWifiSetupSession->childUser;
+            WifiSetupMbParentUser *src = WifiSetupShare_GetChildUser();
+            MI_CpuCopy16(src, dst, sizeof(WifiSetupMbParentUser));
         }
         if (gWifiSetupSession->callback == NULL) {
             gWifiSetupSession->missedEvent = 1;

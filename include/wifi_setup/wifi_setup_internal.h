@@ -93,8 +93,8 @@ typedef struct WifiSetupWork {
     s32 state;     // WIFI_SETUP_SIMPLE_START_*
     void *wcmWork; // WCM_Init work area
     void *buffer;  // aligned start of allocation
-    void *searchBssid;
-    void *searchSsid;
+    u8 *searchBssid;
+    u8 *searchSsid;
     void *connectAp;     // access point description
     int extendedRequest; // also send records 4 and 5
     void *allocation;

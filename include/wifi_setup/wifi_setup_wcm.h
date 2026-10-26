@@ -52,8 +52,8 @@ typedef struct WifiSetupWcm {
     int searchOption;
     WifiSetupWcmConfig *config;
     int connectOption;
-    void *searchBssid;
-    void *searchSsid;
+    u8 *searchBssid;
+    u8 *searchSsid;
     int state;
     void (*callback)(int event, int arg);
     void *connectAp;  // access point description

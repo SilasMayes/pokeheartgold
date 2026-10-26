@@ -2,7 +2,6 @@
 
 #include "global.h"
 
-
 void *WifiSetup_Alloc(int size) {
     return gWifiSetupRuntime.alloc(size);
 }
@@ -27,7 +26,7 @@ int WifiSetup_RunAoss(WifiSetupRequest *request) {
         WifiSetup_FreeWorkBuffers();
         return -1;
     }
-    gWifiSetupState.data = WifiSetup_Alloc(1528);
+    gWifiSetupState.data = WifiSetup_Alloc(WIFI_SETUP_AOSS_BUFFER_SIZE);
     if (gWifiSetupState.data == NULL) {
         request->error = WIFI_SETUP_AOSS_REQUEST_FAILED;
         WifiSetup_FreeWorkBuffers();

@@ -192,7 +192,7 @@ int WifiSetup_RunAossSession(WifiSetupRequest *request) {
         return -1;
     }
 restart:
-    data = gWifiSetupState.data;
+    data = &gWifiSetupState.data->received;
     WifiSetup_MemFill(&session.config, 0, sizeof(WifiSetupAossAddresses));
     session.config.gateway = WIFI_SETUP_AOSS_HOST_ADDRESS;
     session.config.ip = WIFI_SETUP_AOSS_AP_ADDRESS;
@@ -315,7 +315,7 @@ restart:
             WifiSetup_FreeWorkBuffers();
             return -1;
         }
-        WifiSetup_MemFill(data, 0, 0x5f8);
+        WifiSetup_MemFill(data, 0, WIFI_SETUP_AOSS_BUFFER_SIZE);
         WifiSetup_ClearPollSet(&session.set);
         WifiSetup_AddToPollSet(gWifiSetupSocket.socket, &session.set);
         session.time.seconds = seconds;

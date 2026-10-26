@@ -211,13 +211,21 @@ typedef struct WifiSetupAossPacket {
     WifiSetupAossBody body;
 } WifiSetupAossPacket;
 
-// Packet received from the access point (gWifiSetupState.data)
+// Packet received from the access point
 typedef struct WifiSetupAossReceived {
     int socket;
     int length;
     u8 padding_08[4];
     WifiSetupAossPacket packet;
 } WifiSetupAossReceived;
+
+// Packet buffer of the client (gWifiSetupState.data): the request being sent or the packet received
+#define WIFI_SETUP_AOSS_BUFFER_SIZE 1528
+
+typedef union WifiSetupAossBuffer {
+    WifiSetupAossPacket send;
+    WifiSetupAossReceived received;
+} WifiSetupAossBuffer;
 
 // WEP keys received from the setup access point: the key length and the four keys
 typedef struct WifiSetupKeyRecord {
@@ -288,11 +296,11 @@ typedef struct WifiSetupState {
     BOOL randomSeeded;
     WifiSetupAossConnectResult *connectResult;
     int error;
-    void *data;
+    WifiSetupAossBuffer *data;
     u32 randomState;
     u32 randomMultiplier;
     u32 randomIncrement;
-    void *key;
+    u8 *key;
     int keyLength;
     u32 requestedMask; // settings the caller asked for
     u32 receivedMask;  // settings received so far

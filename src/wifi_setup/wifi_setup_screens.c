@@ -973,8 +973,8 @@ static void WifiSetupOptions_LoadGraphics(void) {
             dst += 0x20;
         }
     }
-    DC_FlushRange(pal, 0x200);
-    GX_LoadBGPltt(pal, 0, 0x200);
+    DC_FlushRange(pal, HW_BG_PLTT_SIZE);
+    GX_LoadBGPltt(pal, 0, HW_BG_PLTT_SIZE);
     WifiSetupFile_Free(pal);
     G2S_SetBG0Priority(3);
     G2S_SetBG1Priority(3);
@@ -1719,13 +1719,13 @@ static void WifiSetupTransferFailed_End(void) {
 
 static void WifiSetupTransferConfirm_Init(void) {
     u16 buf[11];
-    u8 *src = WifiSetupTransfer_GetChildUser();
+    WifiSetupMbParentUser *user = WifiSetupTransfer_GetChildUser();
     WifiSetupCanvas *win = WifiSetupText_InitBgCanvas(WIFI_SETUP_SCREEN_MAIN, 0);
     gWifiSetupTransferConfirm[1] = 0;
     gWifiSetupTransferConfirm[0] = 0;
     WifiSetupTransferConfirm_LoadGraphics();
     MIi_CpuClear16(0, buf, sizeof(buf));
-    MIi_CpuCopy16((u16 *)(src + 2), buf, src[1] * 2);
+    MIi_CpuCopy16(user->name, buf, user->nameLength * 2);
     WifiSetupText_DrawInRect(win, 8, 0x35, 0xf0, 0x1c, 2, 0x480, buf);
     WifiSetupText_MarkDirty(win);
     WifiSetupTransfer_SetCallback((WifiSetupSessionCallback)WifiSetupTransferConfirm_OnTransferEvent);
@@ -2651,22 +2651,14 @@ static void WifiSetupListScreen_DrawRows(void) {
         count = 5;
     }
     row = start;
-    i = 0;
-    if (count > 0) {
-        do {
-            WifiSetupListScreen_DrawRowText(row, i);
-            ++i;
-            ++row;
-        } while (i < count);
+    for (i = 0; i < count; i++) {
+        WifiSetupListScreen_DrawRowText(row, i);
+        row++;
     }
     second = start;
-    row = 0;
-    if (count > 0) {
-        do {
-            WifiSetupListScreen_SetRowIcons(second, row);
-            ++row;
-            ++second;
-        } while (row < count);
+    for (row = 0; row < count; row++) {
+        WifiSetupListScreen_SetRowIcons(second, row);
+        second++;
     }
     WifiSetupText_MarkDirty(gWifiSetupListScreen.work->canvas);
     WifiSetupListScreen_PositionRows();

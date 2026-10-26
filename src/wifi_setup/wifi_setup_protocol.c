@@ -667,7 +667,7 @@ static int WifiSetup_SendJoinRequest(const WifiSetupAossAddresses *addresses, co
     header.value = 0;
     header.length = 0;
     header.flag = 0;
-    packet = gWifiSetupState.data;
+    packet = &gWifiSetupState.data->send;
     WifiSetup_MemFill(packet, 0, sizeof(WifiSetupAossPacket));
     payload = WifiSetup_Alloc(0x210);
     if (payload == NULL) {
@@ -725,7 +725,7 @@ static int WifiSetup_SendSettingsRequest(const WifiSetupAossAddresses *addresses
     header.value = 0;
     header.length = 0;
     header.flag = 0;
-    packet = gWifiSetupState.data;
+    packet = &gWifiSetupState.data->send;
     WifiSetup_MemFill(&record, 0, sizeof(WifiSetupAossRecord));
     WifiSetup_MemFill(packet, 0, sizeof(WifiSetupAossPacket));
     record.type = WIFI_SETUP_AOSS_RECORD_SETTINGS;
@@ -749,7 +749,7 @@ static int WifiSetup_SendSettingsRequest(const WifiSetupAossAddresses *addresses
 
 static int WifiSetup_SendDoneRequest(const WifiSetupAossAddresses *addresses, const WifiSetupAossPacketParams *params, int socket) {
     u8 data[8];
-    WifiSetupAossPacket *packet = gWifiSetupState.data;
+    WifiSetupAossPacket *packet = &gWifiSetupState.data->send;
     int size;
 
     WifiSetup_MemFill(packet, 0, sizeof(WifiSetupAossPacket));

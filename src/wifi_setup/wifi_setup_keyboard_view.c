@@ -226,7 +226,7 @@ void WifiSetupKeyboard_SlideOutButtonsTask(WifiSetupTask *task, void *arg) {
     pos.x = (word & 0x1ff0000) >> 16;
     pos.y = (word & 0xff) + 12;
     WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 4, pos.y, pos.x);
-    if (*(int *)&pos < 0xc0) { // pos.y
+    if (*(int *)&pos < GX_LCD_SIZE_Y) { // pos.y
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupKeyboard_SlideOutRow3Task);
@@ -238,7 +238,7 @@ static void WifiSetupKeyboard_SlideOutRow3Task(WifiSetupTask *task, void *arg) {
     pos.x = (word & 0x1ff0000) >> 16;
     pos.y = (word & 0xff) + 12;
     WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 3, pos.y, pos.x);
-    if (*(int *)&pos < 0xc0) { // pos.y
+    if (*(int *)&pos < GX_LCD_SIZE_Y) { // pos.y
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupKeyboard_SlideOutRow2Task);
@@ -250,7 +250,7 @@ static void WifiSetupKeyboard_SlideOutRow2Task(WifiSetupTask *task, void *arg) {
     pos.x = (word & 0x1ff0000) >> 16;
     pos.y = (word & 0xff) + 12;
     WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 2, pos.y, pos.x);
-    if (*(int *)&pos < 0xc0) { // pos.y
+    if (*(int *)&pos < GX_LCD_SIZE_Y) { // pos.y
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupKeyboard_SlideOutRow1Task);
@@ -262,7 +262,7 @@ static void WifiSetupKeyboard_SlideOutRow1Task(WifiSetupTask *task, void *arg) {
     pos.x = (word & 0x1ff0000) >> 16;
     pos.y = (word & 0xff) + 12;
     WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 1, pos.y, pos.x);
-    if (*(int *)&pos < 0xc0) { // pos.y
+    if (*(int *)&pos < GX_LCD_SIZE_Y) { // pos.y
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupKeyboard_SlideOutRow0Task);
@@ -274,7 +274,7 @@ static void WifiSetupKeyboard_SlideOutRow0Task(WifiSetupTask *task, void *arg) {
     pos.x = (word & 0x1ff0000) >> 16;
     pos.y = (word & 0xff) + 12;
     WifiSetupKeyboard_SetRowY(gWifiSetupKeyboard->page, 0, pos.y, pos.x);
-    if (*(int *)&pos < 0xc0) { // pos.y
+    if (*(int *)&pos < GX_LCD_SIZE_Y) { // pos.y
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupKeyboard_DestroyTask);

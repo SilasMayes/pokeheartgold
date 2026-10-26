@@ -44,11 +44,11 @@ extern u8 gWifiSetupMessageShown;
 extern char gWifiSetupLocalizedPath[];
 extern WifiSetupOamBlock **gWifiSetupCursorBlocks;
 extern void *gWifiSetupBackgroundScreen;
-extern u16 gWifiSetupButtonBarButtonSize[];
+extern WifiSetupPoint gWifiSetupButtonBarButtonSize;
 extern u16 gWifiSetupButtonBarButtonX[];
 extern u16 gWifiSetupButtonBarButtonY[];
-extern u8 gWifiSetupButtonBarTemplates[];
-extern u8 gWifiSetupButtonBarPositions[];
+extern u8 gWifiSetupButtonBarTemplates[][2]; // per button bar type
+extern u8 gWifiSetupButtonBarPositions[][2]; // per button bar type
 extern u8 gWifiSetupButtonBarButtonCounts[];
 extern u32 gWifiSetupTextFlagsByLanguage[];
 extern u16 gWifiSetupMessageTextX[];

@@ -49,7 +49,7 @@ static void WifiSetupButtonBar_Create(int type) {
     gWifiSetupButtonBar->selected = WIFI_SETUP_SELECTED_NOT_SHOWN;
     gWifiSetupButtonBar->type = type;
     for (i = 0; i < count; i++) {
-        gWifiSetupButtonBar->buttons[i] = WifiSetupOamTemplate_AllocBlock(0, gWifiSetupButtonBarTemplates[type * 2 + i], 1);
+        gWifiSetupButtonBar->buttons[i] = WifiSetupOamTemplate_AllocBlock(0, gWifiSetupButtonBarTemplates[type][i], 1);
         WifiSetupOamBlock_SetPriority(gWifiSetupButtonBar->buttons[i], -1, 1);
     }
     gWifiSetupButtonBar->bar = WifiSetupOamTemplate_AllocBlock(0, 1, 1);
@@ -99,7 +99,7 @@ static void WifiSetupButtonBar_SetY(int y) {
     int count = gWifiSetupButtonBarButtonCounts[gWifiSetupButtonBar->type], i;
     WifiSetupOamBlock_SetPosition(gWifiSetupButtonBar->bar, -1, 0, y);
     for (i = 0; i < count; i++) {
-        WifiSetupOamBlock_SetPosition(gWifiSetupButtonBar->buttons[i], -1, gWifiSetupButtonBarButtonX[(gWifiSetupButtonBarPositions + gWifiSetupButtonBar->type * 2)[i] * 2], y + 4);
+        WifiSetupOamBlock_SetPosition(gWifiSetupButtonBar->buttons[i], -1, gWifiSetupButtonBarButtonX[gWifiSetupButtonBarPositions[gWifiSetupButtonBar->type][i] * 2], y + 4);
     }
 }
 
@@ -133,17 +133,17 @@ static void WifiSetupButtonBar_InputTask(WifiSetupTask *task, void *arg) {
             return;
         }
         for (i = 0; i < count; i++) {
-            WifiSetup_RectFromPosSize((WifiSetupPoint *)(gWifiSetupButtonBarButtonX + (gWifiSetupButtonBarPositions + gWifiSetupButtonBar->type * 2)[i] * 2), (WifiSetupPoint *)gWifiSetupButtonBarButtonSize, &rect);
+            WifiSetup_RectFromPosSize((WifiSetupPoint *)(gWifiSetupButtonBarButtonX + gWifiSetupButtonBarPositions[gWifiSetupButtonBar->type][i] * 2), &gWifiSetupButtonBarButtonSize, &rect);
             if (WifiSetupInput_IsTouchPressed(&rect)) {
                 int templ;
                 GXOamAttr *oam;
                 if (gWifiSetupButtonBar->pressTask) {
                     break;
                 }
-                templ = (gWifiSetupButtonBarTemplates + gWifiSetupButtonBar->type * 2)[i];
+                templ = gWifiSetupButtonBarTemplates[gWifiSetupButtonBar->type][i];
                 oam = WifiSetupOamBlock_GetOam(gWifiSetupButtonBar->buttons[i], 0);
                 WifiSetupOamTemplate_Copy(0, templ + 1, oam);
-                templ = (gWifiSetupButtonBarPositions + gWifiSetupButtonBar->type * 2)[i] * 2;
+                templ = gWifiSetupButtonBarPositions[gWifiSetupButtonBar->type][i] * 2;
                 WifiSetupOamBlock_SetPosition(gWifiSetupButtonBar->buttons[i], -1, gWifiSetupButtonBarButtonX[templ], gWifiSetupButtonBarButtonY[templ]);
                 WifiSetupOamBlock_SetPriority(gWifiSetupButtonBar->buttons[i], -1, 1);
                 gWifiSetupButtonBar->pressTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupButtonBar_PressTask, NULL, 110);
@@ -160,7 +160,7 @@ static void WifiSetupButtonBar_SlideOutTask(WifiSetupTask *task, void *arg) {
     WifiSetupOamBlock_GetPosition(gWifiSetupButtonBar->bar, 0, &x, &y);
     y += 4;
     WifiSetupButtonBar_SetY(y);
-    if (y < 192) {
+    if (y < GX_LCD_SIZE_Y) {
         return;
     }
     WifiSetupTask_SetFunc(task, WifiSetupButtonBar_DestroyTask);
@@ -190,7 +190,7 @@ static void WifiSetupButtonBar_PressTask(WifiSetupTask *task, void *arg) {
     }
     count = gWifiSetupButtonBarButtonCounts[gWifiSetupButtonBar->type];
     for (i = 0; i < count; i++) {
-        int templ = (gWifiSetupButtonBarTemplates + gWifiSetupButtonBar->type * 2)[i];
+        int templ = gWifiSetupButtonBarTemplates[gWifiSetupButtonBar->type][i];
         GXOamAttr *oam = WifiSetupOamBlock_GetOam(gWifiSetupButtonBar->buttons[i], 0);
         WifiSetupOamTemplate_Copy(0, templ, oam);
         WifiSetupOamBlock_SetPriority(gWifiSetupButtonBar->buttons[i], -1, 1);

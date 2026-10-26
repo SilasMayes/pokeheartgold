@@ -13,7 +13,7 @@ static void WifiSetupLink_HandleEvent(WifiSetupWcmEvent *event);
 static BOOL WifiSetupLink_ReturnToIdle(void);
 static BOOL WifiSetupLink_StartDisconnect(void);
 static BOOL WifiSetupLink_StartCleanup(void);
-static BOOL WifiSetupLink_StartConnect(void *ap, void *key, int option);
+static BOOL WifiSetupLink_StartConnect(const WifiSetupApInfo *ap, const void *key, int option);
 static int WifiSetupLink_Init(void (*eventCallback)(u32 event, int arg), u8 *buffer, int size);
 static void WifiSetupLink_ClearEvents(void);
 static void WifiSetupLink_PushEvent(u32 event, int unused);
@@ -237,16 +237,12 @@ int WifiSetupLink_CopyApList(WifiSetupApInfo *dst, int max) {
     WCM_LockApList(1);
     count = WCM_CountApList();
     if (count > 0) {
-        i = 0;
-        if (count > 0) {
-            do {
-                if (i >= max) {
-                    break;
-                }
-                MIi_CpuCopy32(WCM_PointApList(i), (u32 *)dst, sizeof(WifiSetupApInfo));
-                i++;
-                dst++;
-            } while (i < count);
+        for (i = 0; i < count; i++) {
+            if (i >= max) {
+                break;
+            }
+            MI_CpuCopy32(WCM_PointApList(i), dst, sizeof(WifiSetupApInfo));
+            dst++;
         }
     }
     WCM_LockApList(0);
@@ -325,7 +321,7 @@ static BOOL WifiSetupLink_StartCleanup(void) {
     return FALSE;
 }
 
-static BOOL WifiSetupLink_StartConnect(void *ap, void *key, int option) {
+static BOOL WifiSetupLink_StartConnect(const WifiSetupApInfo *ap, const void *key, int option) {
     OSIntrMode irq = OS_DisableInterrupts();
     gWifiSetupWork.connectOption = option;
     if (key) {
@@ -333,7 +329,7 @@ static BOOL WifiSetupLink_StartConnect(void *ap, void *key, int option) {
     } else {
         MI_CpuFill8(gWifiSetupWork.connectKey, 0, 0x60);
     }
-    MIi_CpuCopy32(ap, gWifiSetupWork.connectAp, sizeof(WifiSetupApInfo));
+    MI_CpuCopy32(ap, gWifiSetupWork.connectAp, sizeof(WifiSetupApInfo));
     if (WifiSetupLink_ReturnToIdle() == 1) {
         gWifiSetupWork.wcmState = WIFI_SETUP_WCM_STATE_CONNECTING;
         OS_RestoreInterrupts(irq);
@@ -566,7 +562,7 @@ int WifiSetupLink_ConnectSelectedAp(void) {
         return -2;
     }
     OS_CreateAlarm(&alarm);
-    OS_SetAlarm(&alarm, 0x3FEC42, (OSAlarmHandler)WifiSetupLink_PostEvent, (void *)18);
+    OS_SetAlarm(&alarm, 0x3FEC42, (OSAlarmHandler)WifiSetupLink_PostEvent, (void *)WIFI_SETUP_WCM_EVENT_CONNECT_TIMEOUT);
     do {
         if (WifiSetup_GetMilliseconds() >= gWifiSetupConfig.deadline) {
             result = -3;
@@ -582,8 +578,8 @@ int WifiSetupLink_ConnectSelectedAp(void) {
             switch (event) {
             case 4:
             case WIFI_SETUP_WCM_EVENT_FOUND_AP:
-            case 18:
-            case 19:
+            case WIFI_SETUP_WCM_EVENT_CONNECT_TIMEOUT:
+            case WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT:
                 break;
             case WIFI_SETUP_WCM_EVENT_CONNECTED:
                 active = 0;

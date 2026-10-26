@@ -222,8 +222,8 @@ typedef struct WifiSetupShare {
     u32 frame;
     u32 counter;
     u32 timer;
-    void *childUsers[1]; // by AID - 1
-    u8 *data;            // the connection settings (WifiSetupConnections_Get)
+    WifiSetupMbParentChild *childUsers[1]; // by AID - 1
+    u8 *data;                              // the connection settings (WifiSetupConnections_Get)
     u32 unk_AA8;
     u8 request;
     WifiSetupSharePacket *sendPacket; // = &send.packet
@@ -277,6 +277,6 @@ BOOL WifiSetupShare_Start(void);
 BOOL WifiSetupShare_StartDownload(void);
 void WifiSetupShare_Update(void);
 void WifiSetupShare_GetState(u8 *state, u8 *changed);
-void *WifiSetupShare_GetChildUser(void);
+WifiSetupMbParentUser *WifiSetupShare_GetChildUser(void);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_SHARE_H

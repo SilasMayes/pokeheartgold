@@ -31,7 +31,7 @@ typedef struct WifiSetupBanner {
 } WifiSetupBanner;
 
 typedef struct WifiSetupBannerState {
-    void *screen; // BG screen data being loaded
+    u16 *screen; // BG screen data being loaded
     WifiSetupBanner *banner;
 } WifiSetupBannerState;
 

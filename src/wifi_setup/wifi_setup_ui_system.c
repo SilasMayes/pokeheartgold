@@ -360,10 +360,10 @@ void WifiSetupOamTemplate_Copy(int slot, int index, GXOamAttr *dst) {
     u16 count = headers[index].count;
     GXOamAttr tmp;
     int i;
-    MIi_CpuClear32(0, (void *)&tmp, sizeof(GXOamAttr));
+    MI_CpuClear32(&tmp, sizeof(GXOamAttr));
     for (i = 0; i < count; i++) {
-        MIi_CpuCopy16((void *)src, (void *)&tmp, 6);
-        MIi_CpuCopy32((void *)&tmp, (void *)dst, sizeof(GXOamAttr));
+        MI_CpuCopy16(src, &tmp, 6);
+        MI_CpuCopy32(&tmp, dst, sizeof(GXOamAttr));
         src += 6;
         dst++;
     }
@@ -736,7 +736,7 @@ void WifiSetup_SetPoint(u16 x, u16 y, WifiSetupPoint *point) {
     point->y = y;
 }
 
-void WifiSetup_SetRect(u16 left, u16 top, u16 right, u16 bottom, WifiSetupRect *rect) {
+void WifiSetup_SetRect(int left, int top, int right, int bottom, WifiSetupRect *rect) {
     rect->left = left;
     rect->top = top;
     rect->right = right;
@@ -1191,7 +1191,7 @@ void WifiSetupOam_Init(void) {
     WifiSetupOamBuffer *buffer;
     int i;
     gWifiSetupOamBuffer = buffer = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupOamBuffer), 4);
-    MIi_CpuClearFast(0x200, (void *)buffer, sizeof(buffer->oam));
+    MI_CpuFillFast(buffer, 0x200, sizeof(buffer->oam));
     for (i = 0; i < 2; i++) {
         gWifiSetupOamBuffer->pools[i] = WifiSetupPool_NewWithItems(0x40, gWifiSetupOamBuffer->oam[i], sizeof(GXOamAttr));
     }

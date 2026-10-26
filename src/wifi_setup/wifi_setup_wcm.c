@@ -225,16 +225,12 @@ int WifiSetupWcm_CopyApList(u8 *dst, int max) {
     WCM_LockApList(1);
     count = WCM_CountApList();
     if (count > 0) {
-        i = 0;
-        if (count > 0) {
-            do {
-                if (i >= max) {
-                    break;
-                }
-                MIi_CpuCopy32(WCM_PointApList(i), (u32 *)dst, 0xC0);
-                i++;
-                dst += 0xC0;
-            } while (i < count);
+        for (i = 0; i < count; i++) {
+            if (i >= max) {
+                break;
+            }
+            MI_CpuCopy32(WCM_PointApList(i), dst, 0xC0);
+            dst += 0xC0;
         }
     }
     WCM_LockApList(0);

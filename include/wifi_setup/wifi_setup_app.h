@@ -87,7 +87,7 @@ typedef void (*WifiSetupSessionCallback)(int event);
 
 typedef struct WifiSetupSession {
     WifiSetupShare share;
-    u8 childUser[0x18];
+    WifiSetupMbParentUser childUser; // the child that asked for the download
     WifiSetupSessionCallback callback;
     WifiSetupTask *task;
     u8 missedEvent; // an event arrived while there was no callback
@@ -129,6 +129,6 @@ void WifiSetupTransfer_Cancel(void);
 BOOL WifiSetupTransfer_IsFinished(void);
 void WifiSetupTransfer_SetCallback(WifiSetupSessionCallback callback);
 void WifiSetupTransfer_StartDownload(void);
-u8 *WifiSetupTransfer_GetChildUser(void);
+WifiSetupMbParentUser *WifiSetupTransfer_GetChildUser(void);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_APP_H

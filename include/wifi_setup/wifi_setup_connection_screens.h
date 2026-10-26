@@ -36,7 +36,7 @@ typedef struct WifiSetupApScanScreen {
 } WifiSetupApScanScreen;
 
 typedef struct WifiSetupConnectionListWork {
-    void *graphics;                     // palette rows of the slots
+    u8 *graphics;                       // palette rows of the slots
     WifiSetupOamBlock *slotIcons[3];    // one per setup method, or the empty slot icon
     WifiSetupOamBlock *eraseButtons[3]; // NULL for an empty slot
     u8 column;                          // slot the cursor left from, for the erase row
@@ -52,7 +52,7 @@ typedef struct WifiSetupMethodMenu {
     s8 lastOption; // option the cursor returns to (move table value -2)
     s8 selected;   // WIFI_SETUP_METHOD_MENU_*
     u8 confirmed;
-    void *graphics; // palette rows of the options
+    u8 *graphics; // palette rows of the options
 } WifiSetupMethodMenu;
 
 typedef struct WifiSetupPaletteRows {

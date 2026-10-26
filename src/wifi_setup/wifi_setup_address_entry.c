@@ -309,9 +309,8 @@ static void WifiSetupAddressEntry_WaitConfirm(void) {
 }
 
 static void WifiSetupAddressEntry_FinishConfirm(void) {
-    WifiSetupAddressFunc store[5];
+    WifiSetupAddressFuncs store = gWifiSetupAddressEntryFuncs;
     int kind;
-    *(WifiSetupAddressFuncs *)store = gWifiSetupAddressEntryFuncs;
     if (WifiSetupDialog_IsOpen()) {
         return;
     }
@@ -321,7 +320,7 @@ static void WifiSetupAddressEntry_FinishConfirm(void) {
         return;
     }
     WifiSetupApp_GetScreenArgs(&kind, 0);
-    store[kind](gWifiSetupAddressEntry->digits);
+    store.funcs[kind](gWifiSetupAddressEntry->digits);
     WifiSetupApp_SetStateFunc(WifiSetupAddressEntry_Exit);
 }
 

@@ -2813,7 +2813,7 @@ static void WifiSetupDialog_SetY(int y) {
         WifiSetupDialog_ClipBlock(gWifiSetupDialog->buttons[i], y);
     }
     top = (u8)y;
-    if (top >= 0xC0) {
+    if (top >= GX_LCD_SIZE_Y) {
         bottom = 0;
         top = 0;
     } else {
@@ -2821,10 +2821,10 @@ static void WifiSetupDialog_SetY(int y) {
     }
     left = gWifiSetupDialogFramePositions[gWifiSetupDialog->kind].x;
     right = left + gWifiSetupDialogFrameSizes[gWifiSetupDialog->kind].x;
-    if (bottom > 0xC0) {
-        bottom = 0xC0;
+    if (bottom > GX_LCD_SIZE_Y) {
+        bottom = GX_LCD_SIZE_Y;
     }
-    ((void (*)(int, int, int, int, WifiSetupRect *))WifiSetup_SetRect)(left, top, right, bottom, &win);
+    WifiSetup_SetRect(left, top, right, bottom, &win);
     WifiSetupDisplay_SetWindowRect(WIFI_SETUP_SCREEN_MAIN, 0, &win);
 }
 
@@ -2836,7 +2836,7 @@ static void WifiSetupDialog_ClipBlock(WifiSetupOamBlock *obj, int y) {
     int mode;
     for (i = 0; i < count; i++) {
         WifiSetupOamBlock_GetPosition(obj, i, &x, &yy);
-        if (yy >= y && yy < 0xC0) {
+        if (yy >= y && yy < GX_LCD_SIZE_Y) {
             mode = 0;
         } else {
             mode = 0x200;
@@ -2867,7 +2867,7 @@ static void WifiSetupDialog_SlideOutTask(WifiSetupTask *task, void *arg) {
     WifiSetupOamBlock_GetPosition(gWifiSetupDialog->frame, 0, &x, &y);
     y += 12;
     WifiSetupDialog_SetY(y);
-    if (y < 0xC0) {
+    if (y < GX_LCD_SIZE_Y) {
         return;
     }
     if (gWifiSetupDialog->fade) {

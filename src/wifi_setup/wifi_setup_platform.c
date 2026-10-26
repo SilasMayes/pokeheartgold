@@ -3,7 +3,9 @@
 #include "wifi_setup/wifi_setup.h"
 #include "wifi_setup/wifi_setup_wcm.h"
 
-extern int RTC_GetTime(void *time);
+#include <nitro/rtc/ARM9/api.h>
+
+RTCResult RTC_GetTime(RTCTime *time);
 
 typedef struct RateMask {
     u16 mask;
@@ -142,14 +144,14 @@ s32 WifiSetup_StrLen(const char *str) {
 }
 
 u16 WifiSetup_Random(void) {
-    u32 time[3];
+    RTCTime time;
     if (!gWifiSetupState.randomSeeded) {
         u32 seed = 0;
-        WifiSetup_MemFill(time, 0, sizeof(time));
-        if (RTC_GetTime(time) == 0) {
-            seed += time[0] << 10;
-            seed += time[1] << 3;
-            seed += time[2];
+        WifiSetup_MemFill(&time, 0, sizeof(time));
+        if (RTC_GetTime(&time) == RTC_RESULT_SUCCESS) {
+            seed += time.hour << 10;
+            seed += time.minute << 3;
+            seed += time.second;
         }
         gWifiSetupState.randomState = seed;
         gWifiSetupState.randomMultiplier = 0x5D588B65;
