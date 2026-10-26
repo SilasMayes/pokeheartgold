@@ -40,7 +40,7 @@ void PPWLobbySchedule_Process(PPWLobbySchedule *schedule) {
             return;
         }
         PPWLobbyChannel_GetName(&name, &PPWLobby_GetWork()->mainChannel);
-        LobbyChat_SetChannelMode(name.l.isLong == 0 ? name.s.buf : name.l.ptr, &gPPWLobbyMainChannelSecretMode);
+        LobbyChat_SetChannelMode(!name.l.isLong ? name.s.buf : name.l.ptr, &gPPWLobbyMainChannelSecretMode);
         LobbyString_Destroy(&name);
         zero = 0;
         PPWLobby_SendMessage(-1, PPW_LOBBY_CHANNEL_KIND_MAIN, PPW_LOBBY_MESSAGE_FORMAT_BINARY, PPW_LOBBY_MESSAGE_KIND_SYSTEM, PPW_LOBBY_SYSTEM_MESSAGE_START_SCHEDULE, &zero, sizeof(zero));

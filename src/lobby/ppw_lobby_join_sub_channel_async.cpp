@@ -11,7 +11,7 @@ extern "C" void LobbyString_Assign(Str *, const Str *);
 struct Str {
     union {
         struct {
-            u32 flag : 1;
+            u32 isLong : 1;
             u32 len : 31;
         };
 
@@ -22,7 +22,7 @@ struct Str {
     char *ptr;
 
     const char *c_str() const {
-        return (flag == 0) ? (const char *)&raw[1] : ptr;
+        return !isLong ? (const char *)&raw[1] : ptr;
     }
 
     Str() {

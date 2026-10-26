@@ -17,14 +17,14 @@ extern "C" int LobbyString_FindFirstOf(const String *s, const String &str, int p
 struct String {
     union {
         struct {
-            u32 flag : 1;
+            u32 isLong : 1;
             u32 capacity : 31;
             u32 size;
             char *data;
         } l;
 
         struct {
-            u8 flag : 1;
+            u8 isLong : 1;
             u8 size : 7;
             char data[11];
         } s;
@@ -44,7 +44,7 @@ struct String {
     }
 
     u32 size() const {
-        return !raw.l.flag ? raw.s.size : raw.l.size;
+        return !raw.l.isLong ? raw.s.size : raw.l.size;
     }
 
     bool empty() const {

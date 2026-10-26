@@ -12,21 +12,21 @@ class String {
 public:
     union {
         struct {
-            u32 flag : 1;
+            u32 isLong : 1;
             u32 capacity : 31;
             u32 size;
             char *data;
         } l;
 
         struct {
-            u8 flag : 1;
+            u8 isLong : 1;
             u8 size : 7;
             char data[11];
         } s;
     } raw;
 
     u32 Size() const {
-        return !raw.l.flag ? raw.s.size : raw.l.size;
+        return !raw.l.isLong ? raw.s.size : raw.l.size;
     }
 
     String *Assign(char *first, char *last);

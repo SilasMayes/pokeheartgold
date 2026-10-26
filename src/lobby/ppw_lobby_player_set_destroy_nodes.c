@@ -9,14 +9,14 @@
 
 typedef union S {
     struct {
-        u32 flag : 1;
+        u32 isLong : 1;
         u32 cap : 31;
         u32 len;
         char *ptr;
     } l;
 
     struct {
-        u8 flag : 1;
+        u8 isLong : 1;
         u8 len : 7;
         char data[11];
     } s;

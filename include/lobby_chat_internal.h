@@ -114,7 +114,7 @@ LobbyChannelMapNode *LobbyChannelMap_LowerBound(LobbyChannelMap *map, Str *key, 
 void LobbyChannelMap_MakeEntry(LobbyChannelMapEntry *dst, Str *name, LobbyChannel *src);
 void LobbyChatManager_GetGameKey(Str *out, LobbyChatManager *manager);
 BOOL LobbyChat_AreChannelUsersEnumerated(LobbyChatManager *manager, Str *channel);
-void LobbyChat_RemoveChannel(LobbyChatManager *manager, Str *channel);
+BOOL LobbyChat_RemoveChannel(LobbyChatManager *manager, Str *channel);
 BOOL LobbyChat_RemoveChannelUser(LobbyChatManager *manager, Str *nick, Str *channel);
 LobbyRequest *LobbyEnterChannelRequest_Delete(LobbyRequest *request);
 void LobbyEnterChannelRequest_Destroy(void);

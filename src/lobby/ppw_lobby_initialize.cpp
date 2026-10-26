@@ -68,12 +68,14 @@ struct Str {
     }
 };
 
-struct Peer {
+// The C++ view of PPWLobbyChannel.
+struct Channel {
     int kind;
     Str name;
-    u32 a, b;
+    BOOL usersEnumerated;
+    BOOL modeReady;
 
-    Peer()
+    Channel()
         : kind(PPW_LOBBY_CHANNEL_KIND_INVALID) {
     }
 };
@@ -157,9 +159,9 @@ struct Tree {
     }
 };
 
-struct Peers {
-    Peer a;
-    Peer b;
+struct Channels {
+    Channel main;
+    Channel sub;
 };
 
 struct Work {
@@ -169,17 +171,20 @@ struct Work {
     u32 userId;
     u32 prefix;
     u32 arg7;
-    Str s58;
-    u32 w64, w68, w6c, w70;
+    Str channelBaseName;
+    BOOL isNewChannel;
+    BOOL recruiting;
+    BOOL submittingQuestionnaire;
+    u32 unk_70;
     u8 pad74[0xb8 - 0x74];
-    Peers peers;
+    Channels channels;
     Sessions sessions;
     u8 pad128[0x134 - 0x128];
     Tree tree;
-    u8 b144[0x170 - 0x144];
-    u8 b170[0x17c - 0x170];
-    u8 b17c[0x194 - 0x17c];
-    u8 b194[0x47c - 0x194];
+    u8 schedule[0x170 - 0x144];
+    u8 events[0x17c - 0x170];
+    u8 pendingEvents[0x194 - 0x17c];
+    u8 vips[0x47c - 0x194];
 
     Work(u32 prefix, const Config &c, u32 userId, u32 a7)
         : state(0)
@@ -188,23 +193,23 @@ struct Work {
         , userId(userId)
         , prefix(prefix)
         , arg7(a7)
-        , w64(0)
-        , w68(0)
-        , w6c(0)
-        , w70(0) {
-        PPWLobbySchedule_Init(b144);
+        , isNewChannel(0)
+        , recruiting(0)
+        , submittingQuestionnaire(0)
+        , unk_70(0) {
+        PPWLobbySchedule_Init(schedule);
     }
 
     void Destroy() {
-        LobbyVipVector_Destroy(b194);
-        LobbyEventDeque_Destroy(b17c);
-        LobbyEventVector_Destroy(b170);
+        LobbyVipVector_Destroy(vips);
+        LobbyEventDeque_Destroy(pendingEvents);
+        LobbyEventVector_Destroy(events);
         LobbyTimerMap_Clear(&tree);
         LobbyTimerMap_Destroy(&tree);
         sessions.Destroy();
-        peers.b.name.Destroy();
-        peers.a.name.Destroy();
-        s58.Destroy();
+        channels.sub.name.Destroy();
+        channels.main.name.Destroy();
+        channelBaseName.Destroy();
     }
 };
 

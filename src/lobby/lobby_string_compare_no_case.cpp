@@ -30,16 +30,16 @@ inline It Begin(Str *s) {
 }
 
 inline It End(Str *s) {
-    char *p;
-    u32 n;
+    char *data;
+    u32 len;
     if (!s->l.isLong) {
-        p = s->s.buf;
-        n = s->s.len;
+        data = s->s.buf;
+        len = s->s.len;
     } else {
-        p = s->l.ptr;
-        n = s->l.size;
+        data = s->l.ptr;
+        len = s->l.size;
     }
-    return It(p + n);
+    return It(data + len);
 }
 
 extern "C" int LobbyString_ToLowerChar(int c);

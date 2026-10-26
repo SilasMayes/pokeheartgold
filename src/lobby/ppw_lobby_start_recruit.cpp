@@ -15,14 +15,14 @@ extern "C" void LobbyString_Assign(Str *, const Str *);
 struct Str {
     union {
         struct {
-            u32 flag : 1;
+            u32 isLong : 1;
             u32 capacity : 31;
             u32 size;
             char *data;
         } l;
 
         struct {
-            u8 flag : 1;
+            u8 isLong : 1;
             u8 size : 7;
             char data[11];
         } s;
@@ -36,7 +36,7 @@ struct Str {
     Str(const Str &o);
 
     const char *CStr() const {
-        return !raw.l.flag ? raw.s.data : raw.l.data;
+        return !raw.l.isLong ? raw.s.data : raw.l.data;
     }
 
     Str &operator=(const Str &o) {
@@ -45,9 +45,13 @@ struct Str {
     }
 };
 
-struct User {
-    u32 a, b, c, d;
-    u8 key[32];
+// The C++ view of PPWLobbyRecruitInfo.
+struct RecruitInfo {
+    int index;
+    int maxPlayers;
+    int playerCount;
+    int state;
+    u8 params[32];
     char name[20];
 };
 
@@ -103,13 +107,13 @@ struct Container {
 struct Work {
     int state;
     u8 pad04[0x4c - 4];
-    u32 code;
+    u32 userId;
     u8 pad50[0x68 - 0x50];
-    int busy;
+    BOOL recruiting;
     u8 pad6c[0x74 - 0x6c];
-    User user;
+    RecruitInfo recruitInfo;
     u8 padb8[0x134 - 0xb8];
-    Container entries;
+    Container timers;
 };
 
 extern "C" Work *gPPWLobbyWork;
@@ -120,7 +124,7 @@ extern "C" Str LobbyString_FormatN(int, const char *, ...);
 extern "C" void DWC_GetDateTime(RTCDate *, RTCTime *);
 extern "C" RawEntry LobbyTimerMap_MakeEntry(int, const Info &);
 extern "C" Result LobbyTimerMap_Insert(Container *, const Entry &);
-extern "C" int PPW_LobbyStartRecruit(User *u);
+extern "C" int PPW_LobbyStartRecruit(RecruitInfo *info);
 
 struct Tag {};
 
@@ -138,15 +142,15 @@ inline Result InsertEntry(Container *c, const Entry &e) {
 
 #pragma opt_common_subs off
 
-extern "C" int PPW_LobbyStartRecruit(User *u) {
+extern "C" int PPW_LobbyStartRecruit(RecruitInfo *info) {
     Work *w = gPPWLobbyWork;
-    if (w == 0) {
+    if (w == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (w != 0 && w->state == PPW_LOBBY_STATE_ERROR) {
+    if (w != NULL && w->state == PPW_LOBBY_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (w != 0 && gPPWLobbyWork->state != PPW_LOBBY_STATE_READY) {
+    if (w != NULL && gPPWLobbyWork->state != PPW_LOBBY_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     Str value;
@@ -156,25 +160,25 @@ extern "C" int PPW_LobbyStartRecruit(User *u) {
     }
     int ok = 0;
     Work *g = gPPWLobbyWork;
-    if (g->busy == 0) {
-        g->busy = 1;
-        g->user = *u;
-        Str tmp = LobbyString_FormatN(20, gLobbyFmt_M_IntUnderscoreUint, g->code, current_time() % 1000);
+    if (!g->recruiting) {
+        g->recruiting = TRUE;
+        g->recruitInfo = *info;
+        Str tmp = LobbyString_FormatN(20, gLobbyFmt_M_IntUnderscoreUint, g->userId, current_time() % 1000);
         value = tmp;
         LobbyString_Destroy(&tmp);
-        strncpy(g->user.name, value.CStr(), 19);
+        strncpy(g->recruitInfo.name, value.CStr(), sizeof(g->recruitInfo.name) - 1);
         ok = 1;
     }
     if (!ok) {
         LobbyString_Destroy(&value);
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    strncpy(u->name, value.CStr(), 19);
+    strncpy(info->name, value.CStr(), sizeof(info->name) - 1);
     Work *h = gPPWLobbyWork;
     RTCDate date;
     RTCTime time;
     DWC_GetDateTime(&date, &time);
-    InsertEntry(&h->entries, ConvertEntry(Tag(), LobbyTimerMap_MakeEntry(PPW_LOBBY_TIMER_SEND_RECRUIT_INFO, Info(RTC_ConvertDateTimeToSecond(&date, &time), 21, PPWLobby_TimerSendRecruitInfo))));
+    InsertEntry(&h->timers, ConvertEntry(Tag(), LobbyTimerMap_MakeEntry(PPW_LOBBY_TIMER_SEND_RECRUIT_INFO, Info(RTC_ConvertDateTimeToSecond(&date, &time), 21, PPWLobby_TimerSendRecruitInfo))));
     LobbyString_Destroy(&value);
     return PPW_LOBBY_RESULT_SUCCESS;
 }

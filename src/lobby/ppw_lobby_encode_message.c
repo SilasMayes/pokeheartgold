@@ -14,10 +14,10 @@ int LobbyString_ToLowerChar(int c) {
 
 BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32 len, Str *out) {
     char buf[PPW_LOBBY_MESSAGE_MAX_LENGTH + 1];
-    Str s0;
-    Str s1;
-    Str s2;
-    Str s3;
+    Str field0;
+    Str field1;
+    Str valueText;
+    Str text;
     if (type == PPW_LOBBY_MESSAGE_FORMAT_STRING && len > PPW_LOBBY_MESSAGE_MAX_LENGTH) {
         return FALSE;
     }
@@ -25,13 +25,13 @@ BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32
         return FALSE;
     }
     LobbyString_AssignCStr(out, gLobbyStr_Empty_16);
-    LobbyString_FormatN(&s0, 3, gLobbyFmt_Hex_3, 0);
-    LobbyString_Append(out, &s0);
-    LobbyString_Destroy(&s0);
+    LobbyString_FormatN(&field0, 3, gLobbyFmt_Hex_3, 0);
+    LobbyString_Append(out, &field0);
+    LobbyString_Destroy(&field0);
     LobbyString_AppendCStr(out, gLobbyStr_Space_2);
-    LobbyString_FormatN(&s1, 2, gLobbyFmt_Hex_3, 6);
-    LobbyString_Append(out, &s1);
-    LobbyString_Destroy(&s1);
+    LobbyString_FormatN(&field1, 2, gLobbyFmt_Hex_3, 6);
+    LobbyString_Append(out, &field1);
+    LobbyString_Destroy(&field1);
     LobbyString_AppendCStr(out, gLobbyStr_Space_2);
     switch (type) {
     case PPW_LOBBY_MESSAGE_FORMAT_STRING:
@@ -55,17 +55,17 @@ BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32
         return FALSE;
     }
     LobbyString_AppendCStr(out, gLobbyStr_Space_2);
-    LobbyString_FormatN(&s2, 8, gLobbyFmt_Hex_3, value);
-    LobbyString_Append(out, &s2);
-    LobbyString_Destroy(&s2);
+    LobbyString_FormatN(&valueText, 8, gLobbyFmt_Hex_3, value);
+    LobbyString_Append(out, &valueText);
+    LobbyString_Destroy(&valueText);
     LobbyString_AppendCStr(out, gLobbyStr_Space_2);
     LobbyString_AppendCStr(out, gLobbyStr__);
     LobbyString_AppendCStr(out, gLobbyStr_SpaceSpace);
     switch (type) {
     case PPW_LOBBY_MESSAGE_FORMAT_STRING:
-        LobbyString_FormatN(&s3, len, gLobbyFmt_Str_3, data);
-        LobbyString_Append(out, &s3);
-        LobbyString_Destroy(&s3);
+        LobbyString_FormatN(&text, len, gLobbyFmt_Str_3, data);
+        LobbyString_Append(out, &text);
+        LobbyString_Destroy(&text);
         break;
     case PPW_LOBBY_MESSAGE_FORMAT_BINARY:
         MI_CpuFill8(buf, 0, sizeof(buf));

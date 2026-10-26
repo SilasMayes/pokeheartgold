@@ -114,7 +114,7 @@ static inline void Request_Succeed(Request *r, u8 *buf, const u32 &size) {
     r->callback(1, buf, len, param);
 }
 
-static inline int Request_Send(Request *r) {
+static inline BOOL Request_Send(Request *r) {
     int ret;
     StatsUpload_Stop();
     StatsUpload_Start(r->server, StrCStr(&r->key));
@@ -126,13 +126,13 @@ static inline int Request_Send(Request *r) {
         ret = StatsUpload_Upload(StrCStr(&r->page), r->pid, LobbyByteVector_Data(&r->body), n, 0);
     }
     if (ret == 0) {
-        return 1;
+        return TRUE;
     }
     StatsUpload_Stop();
-    return 0;
+    return FALSE;
 }
 
-static inline int Request_Poll(Request *r) {
+static inline BOOL Request_Poll(Request *r) {
     int len = 0;
     switch (StatsUpload_Process()) {
     case STATS_UPLOAD_DONE: {
@@ -149,23 +149,23 @@ static inline int Request_Poll(Request *r) {
         if (buf != NULL) {
             DWC_Free(0, buf, 0);
         }
-        return 1;
+        return TRUE;
     }
     case STATS_UPLOAD_FAILED:
         DWC_ClearError();
         if (--r->retries != 0) {
             if (Request_Send(r)) {
-                return 0;
+                return FALSE;
             }
         }
         Request_Finish(r, 0, NULL, 0);
-        return 1;
+        return TRUE;
     case STATS_UPLOAD_NONE:
         DWC_ClearError();
         Request_Finish(r, 0, NULL, 0);
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 static inline void Request_Delete(Request *request) {
@@ -174,16 +174,16 @@ static inline void Request_Delete(Request *request) {
     }
 }
 
-static inline int Request_Update(void) {
+static inline BOOL Request_Update(void) {
     Request *r = gPPWLobbyCurrentRequest;
     if (r == NULL) {
-        return 0;
+        return FALSE;
     }
     if (Request_Poll(r) && gPPWLobbyFinishedRequest != NULL) {
         Request_Delete(gPPWLobbyFinishedRequest);
         gPPWLobbyFinishedRequest = NULL;
     }
-    return 1;
+    return TRUE;
 }
 
 static inline void Lobby_Destroy(PPWLobbyWork *w) {
@@ -263,11 +263,11 @@ static inline void Lobby_UpdateTimers(void) {
     PPWLobbySchedule_Process(&w->schedule);
 }
 
-static inline int Lobby_IsReady(PPWLobbyWork *w) {
+static inline BOOL Lobby_IsReady(PPWLobbyWork *w) {
     if (w->schedule.state >= PPW_LOBBY_SCHEDULE_STATE_QUESTIONNAIRE) {
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 static inline void Lobby_EnumChannels(void) {

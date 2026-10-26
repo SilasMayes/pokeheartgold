@@ -237,7 +237,7 @@ void PPWLobbyPlayerSet_DestroyNodes(PPWLobbyPlayerSet *set, PPWLobbyPlayerSetNod
 void PPWLobbyPlayerSet_Erase(Iterator *out, PPWLobbyPlayerSet *set, Iterator position);
 void PPWLobby_GenerateChannelBaseName(Str *out);
 int PPWLobby_GetWebResultError(u32 type);
-int PPWLobby_HandleLibraryData(BOOL success, BOOL broadcast, int kind, int userId, const char *key, const u8 *data, u32 len, u32 param);
+BOOL PPWLobby_HandleLibraryData(BOOL success, BOOL broadcast, int kind, int userId, const char *key, const u8 *data, u32 len, u32 param);
 void PPWLobby_HandleReceivedData(BOOL success, BOOL broadcast, const char *channel, int userId, const char *key, const char *value, u32 param);
 void PPWLobby_OnCheckProfile(BOOL success, u8 *response, u32 responseSize, void *param);
 void PPWLobby_OnEnterSubChannel(BOOL success, int error, const char *channel, int kind);

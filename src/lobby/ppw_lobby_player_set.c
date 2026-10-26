@@ -88,34 +88,34 @@ static inline int Distance(const u32 *first, const u32 *last) {
     return last - first;
 }
 
-void LobbyU32Vector_Reserve(LobbyU32Vector *v, u32 n) {
-    LobbyU32Vector b;
+void LobbyU32Vector_Reserve(LobbyU32Vector *vector, u32 capacity) {
+    LobbyU32Vector buffer;
     u32 *first;
-    int cnt;
-    b.data = NULL;
-    b.size = 0;
-    b.capacity = 0;
+    int moved;
+    buffer.data = NULL;
+    buffer.size = 0;
+    buffer.capacity = 0;
     {
-        LobbyTag ta = { 0 };
-        LobbyU32Vector_Allocate(&b, n, ta);
+        LobbyTag tag = { 0 };
+        LobbyU32Vector_Allocate(&buffer, capacity, tag);
     }
-    first = v->data;
-    cnt = Distance(v->data, first + v->size);
+    first = vector->data;
+    moved = Distance(vector->data, first + vector->size);
     TouchTag();
-    memcpy(b.data + b.size, first, cnt * sizeof(u32));
-    memset(first, 0, cnt * sizeof(u32));
-    b.size += cnt;
+    memcpy(buffer.data + buffer.size, first, moved * sizeof(u32));
+    memset(first, 0, moved * sizeof(u32));
+    buffer.size += moved;
     TouchTag();
-    v->size = 0;
+    vector->size = 0;
     {
-        u32 *pcap = &b.capacity;
-        u32 t = v->capacity;
-        v->capacity = *pcap;
-        *pcap = t;
+        u32 *bufferCapacity = &buffer.capacity;
+        u32 oldCapacity = vector->capacity;
+        vector->capacity = *bufferCapacity;
+        *bufferCapacity = oldCapacity;
     }
-    SwapPtr((void **)&v->data, (void **)&b.data);
-    SwapU32(&v->size, &b.size);
-    LobbyU32Vector_Destroy2(&b);
+    SwapPtr((void **)&vector->data, (void **)&buffer.data);
+    SwapU32(&vector->size, &buffer.size);
+    LobbyU32Vector_Destroy2(&buffer);
 }
 
 void LobbyU32Vector_PushBackSlow(LobbyU32Vector *v, u32 *x, LobbyTag unused) {
@@ -204,11 +204,11 @@ void LobbyU32Vector_AppendFillSlow(LobbyU32Vector *vector, u32 count, u32 *value
     buffer.start = vector->size;
     TouchTag();
     {
-        u32 *p = buffer.data + buffer.start + buffer.size;
-        u32 i = count;
-        while (i != 0) {
-            *p++ = *value;
-            i--;
+        u32 *dst = buffer.data + buffer.start + buffer.size;
+        u32 remaining = count;
+        while (remaining != 0) {
+            *dst++ = *value;
+            remaining--;
         }
     }
     buffer.size += count;
@@ -222,10 +222,10 @@ void LobbyU32Vector_AppendFillSlow(LobbyU32Vector *vector, u32 count, u32 *value
     TouchTag();
     vector->size = 0;
     {
-        u32 *pcap = &buffer.capacity.value;
-        u32 t = vector->capacity;
-        vector->capacity = *pcap;
-        *pcap = t;
+        u32 *bufferCapacity = &buffer.capacity.value;
+        u32 oldCapacity = vector->capacity;
+        vector->capacity = *bufferCapacity;
+        *bufferCapacity = oldCapacity;
     }
     SwapPtr((void **)&vector->data, (void **)&buffer.data);
     SwapU32(&vector->size, &buffer.size);

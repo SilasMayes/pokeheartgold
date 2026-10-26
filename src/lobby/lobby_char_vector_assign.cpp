@@ -12,7 +12,7 @@ public:
 extern "C" {
 void *memmove(void *, const void *, u32);
 void LobbyCharVector_Reallocate(LobbyCharVector *, u32, u32);
-void LobbyCharVector_AssignRange(LobbyCharVector *v, const char *first, const char *last, int unused);
+void LobbyCharVector_AssignRange(LobbyCharVector *vector, const char *first, const char *last, int unused);
 }
 
 inline u32 Allocator::recommend(LobbyCharVector *vector, u32 growth) {
@@ -48,43 +48,43 @@ union Ch {
 
 struct Narrow {
     char operator()(u8 c) const {
-        Ch x;
-        x.u = c;
-        return x.c;
+        Ch ch;
+        ch.u = c;
+        return ch.c;
     }
 };
 
-inline char Cast(const Iter &i) {
-    Narrow n = Narrow();
-    return n(*i);
+inline char Cast(const Iter &it) {
+    Narrow narrow = Narrow();
+    return narrow(*it);
 }
 
-extern "C" void LobbyCharVector_AssignIterRange(LobbyCharVector *v, Iter first, Iter last);
+extern "C" void LobbyCharVector_AssignIterRange(LobbyCharVector *vector, Iter first, Iter last);
 
-extern "C" void LobbyCharVector_AssignRange(LobbyCharVector *v, const char *first, const char *last, int unused) {
+extern "C" void LobbyCharVector_AssignRange(LobbyCharVector *vector, const char *first, const char *last, int unused) {
     u32 len = last - first;
-    if (len > v->capacity) {
+    if (len > vector->capacity) {
         volatile u8 tag = 0;
-        LobbyCharVector_Reallocate(v, len, LobbyCharVector_RecommendSize(v, len - v->capacity));
+        LobbyCharVector_Reallocate(vector, len, LobbyCharVector_RecommendSize(vector, len - vector->capacity));
     }
-    memmove(v->data, first, (u32)last - (u32)first);
-    v->size = len;
+    memmove(vector->data, first, (u32)last - (u32)first);
+    vector->size = len;
 }
 
-extern "C" void LobbyCharVector_AssignIterRange(LobbyCharVector *v, Iter first, Iter last) {
-    u32 n = last.p - first.p;
-    u32 cap = v->capacity;
-    if (n > cap) {
-        u32 growth = n - cap;
-        Allocator a = Allocator();
-        LobbyCharVector_Reallocate(v, n, a.recommend(v, growth));
+extern "C" void LobbyCharVector_AssignIterRange(LobbyCharVector *vector, Iter first, Iter last) {
+    u32 len = last.p - first.p;
+    u32 cap = vector->capacity;
+    if (len > cap) {
+        u32 growth = len - cap;
+        Allocator allocator = Allocator();
+        LobbyCharVector_Reallocate(vector, len, allocator.recommend(vector, growth));
     }
     {
         Iter it = first;
-        char *dst = v->data;
+        char *dst = vector->data;
         for (; it != last; ++it) {
             *dst++ = Cast(it);
         }
     }
-    v->size = n;
+    vector->size = len;
 }

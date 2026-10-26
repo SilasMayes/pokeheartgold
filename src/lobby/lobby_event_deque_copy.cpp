@@ -23,14 +23,14 @@ inline LobbyEvent *UninitCopy(LobbyEventVectorIterator first, LobbyEventVectorIt
     return out;
 }
 
-inline LobbyEvent *CopyRange(const LobbyEventVectorIterator &f, const LobbyEventVectorIterator &l, LobbyEvent *out) {
-    LobbyEvent *p = f.base();
-    LobbyEvent *o = out;
-    LobbyEvent *e = l.base();
-    for (; p < e; ++p, ++o) {
-        *o = *p;
+inline LobbyEvent *CopyRange(const LobbyEventVectorIterator &first, const LobbyEventVectorIterator &last, LobbyEvent *out) {
+    LobbyEvent *src = first.base();
+    LobbyEvent *dst = out;
+    LobbyEvent *end = last.base();
+    for (; src < end; ++src, ++dst) {
+        *dst = *src;
     }
-    return o;
+    return dst;
 }
 
 inline LobbyEvent *Copy(LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEvent *out) {
@@ -39,17 +39,17 @@ inline LobbyEvent *Copy(LobbyEventVectorIterator first, LobbyEventVectorIterator
 
 LobbyEventDequeIterator LobbyEventDeque_UninitializedCopy(LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEventDequeIterator result, LobbyTag, u32 *count) {
     if (first != last) {
-        int n = last - first;
+        int remaining = last - first;
         for (;;) {
-            int m;
+            int step;
             LobbyEventVectorIterator mid;
             int room = result.SegmentEnd() - result.cur;
-            m = Min(n, room);
-            mid = first + m;
+            step = Min(remaining, room);
+            mid = first + step;
             UninitCopy(first, mid, result.cur, count);
-            n -= m;
-            result += m;
-            if (n == 0) {
+            remaining -= step;
+            result += step;
+            if (remaining == 0) {
                 break;
             }
             first = mid;
@@ -60,17 +60,17 @@ LobbyEventDequeIterator LobbyEventDeque_UninitializedCopy(LobbyEventVectorIterat
 
 LobbyEventDequeIterator LobbyEventDeque_Copy(LobbyEventVectorIterator first, LobbyEventVectorIterator last, LobbyEventDequeIterator result) {
     if (first != last) {
-        int n = last - first;
+        int remaining = last - first;
         for (;;) {
-            int m;
+            int step;
             LobbyEventVectorIterator mid;
             int room = result.SegmentEnd() - result.cur;
-            m = Min(n, room);
-            mid = first + m;
+            step = Min(remaining, room);
+            mid = first + step;
             Copy(first, mid, result.cur);
-            n -= m;
-            result += m;
-            if (n == 0) {
+            remaining -= step;
+            result += step;
+            if (remaining == 0) {
                 break;
             }
             first = mid;

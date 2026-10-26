@@ -368,7 +368,7 @@ BOOL WiFiPlazaLobbyMatches_IsActive(WiFiPlazaLobbyClient *client, int index) {
 static u16 WiFiPlazaLobbyMatches_CalcTimer(WiFiPlazaLobbyClient *client, int index) {
     s64 start;
     s64 elapsed;
-    if (WiFiPlazaLobbyMatches_IsActive(client, index) == FALSE) {
+    if (!WiFiPlazaLobbyMatches_IsActive(client, index)) {
         return 0;
     }
     WiFiPlazaLobbyMatchInfo_GetStartTime(&WiFiPlazaLobbyMatches_Get(client, index)->info, &start);
@@ -530,7 +530,7 @@ WiFiPlazaPlayerObjects *WiFiPlazaPlayerObjects_New(u32 count, BOOL mode, enum He
         GF2dGfxRawResMan_AllocObj(objects->sequences, file, sWiFiPlazaSpriteSequenceFiles[i]);
     }
 
-    if (mode == FALSE) {
+    if (!mode) {
         skipped = 1;
     } else {
         skipped = 0;
@@ -918,7 +918,7 @@ static BOOL WiFiPlazaPlayerObject_ActionKeepsSequence(u32 action) {
 
 static void WiFiPlazaPlayerObject_UpdateCulling(WiFiPlazaPlayerObject *object) {
     if (WiFiPlazaPlayerObject_IsUsed(object)) {
-        if (WiFiPlaza_IsBillboardInView(object->billboard) == FALSE) {
+        if (!WiFiPlaza_IsBillboardInView(object->billboard)) {
             object->culled = TRUE;
         } else {
             object->culled = FALSE;

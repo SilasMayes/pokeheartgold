@@ -146,18 +146,18 @@ inline F ForEach(It first, It last, F f) {
     return f;
 }
 
-extern "C" int LobbyChat_RemoveChannel(Root *root, Str *key);
+extern "C" BOOL LobbyChat_RemoveChannel(Root *root, Str *key);
 
-extern "C" int LobbyChat_RemoveChannel(Root *root, Str *key) {
+extern "C" BOOL LobbyChat_RemoveChannel(Root *root, Str *key) {
     MapIt it;
     LobbyChannelMap_Find(&it, &root->channels, key);
     if (it.n == &root->channels.header) {
-        return 0;
+        return FALSE;
     }
     Vec values;
     values.Build(SetIt(it.n->first), SetIt((SetNode *)&it.n->hdr));
     LobbyChannelMap_EraseKey(&root->channels, key);
     ForEach(values.begin(), values.end(), Bound(ov45_02255358.method, root));
     values.Destroy();
-    return 1;
+    return TRUE;
 }

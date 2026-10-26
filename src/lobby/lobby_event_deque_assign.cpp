@@ -13,20 +13,20 @@ inline const T &Min(const T &a, const T &b) {
     return a < b ? a : b;
 }
 
-void LobbyEventDeque_Assign(LobbyEventDeque *d, LobbyEventVectorIterator first, const LobbyEventVectorIterator &last, LobbyTag) {
-    u32 n = Distance(first, last);
-    u32 m = Min(d->size, n);
+void LobbyEventDeque_Assign(LobbyEventDeque *deque, LobbyEventVectorIterator first, const LobbyEventVectorIterator &last, LobbyTag) {
+    u32 count = Distance(first, last);
+    u32 copied = Min(deque->size, count);
     LobbyEventVectorIterator mid = first;
-    mid.p += m;
-    LobbyEventDeque_Copy(first, mid, LobbyEventDeque_IteratorAt(d, 0));
-    n -= m;
-    if (n != 0) {
-        LobbyTag t;
-        LobbyEventDeque_AppendRange(d, &mid, last, t);
+    mid.p += copied;
+    LobbyEventDeque_Copy(first, mid, LobbyEventDeque_IteratorAt(deque, 0));
+    count -= copied;
+    if (count != 0) {
+        LobbyTag tag;
+        LobbyEventDeque_AppendRange(deque, &mid, last, tag);
     } else {
-        u32 size = d->size;
-        if (m < size) {
-            LobbyEventDeque_EraseAtEnd(d, size - m, LobbyTag());
+        u32 size = deque->size;
+        if (copied < size) {
+            LobbyEventDeque_EraseAtEnd(deque, size - copied, LobbyTag());
         }
     }
 }

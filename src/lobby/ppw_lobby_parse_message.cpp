@@ -10,14 +10,14 @@ extern "C" long strtol(const char *, char **, int);
 
 union Str {
     struct {
-        u32 flag : 1;
+        u32 isLong : 1;
         u32 capacity : 31;
         u32 size;
         char *data;
     } l;
 
     struct {
-        u8 flag : 1;
+        u8 isLong : 1;
         u8 size : 7;
         char data[11];
     } s;
@@ -25,11 +25,11 @@ union Str {
     u32 words[3];
 
     const char *c_str() const {
-        return !l.flag ? s.data : l.data;
+        return !l.isLong ? s.data : l.data;
     }
 
     u32 size() const {
-        return !l.flag ? s.size : l.size;
+        return !l.isLong ? s.size : l.size;
     }
 };
 
@@ -88,8 +88,8 @@ struct SVec {
 struct Out {
     u32 x0;
     u32 x4;
-    int decode;
-    int flag;
+    int format;
+    int kind;
     long value;
     u32 x14;
     CVec payload;
@@ -100,13 +100,13 @@ extern "C" void LobbyString_Destroy(Str *);
 extern "C" void LobbyString_Split(SVec *, const Str *, const Str *, int);
 extern "C" void LobbyStringVector_Destroy(SVec *);
 extern "C" int LobbyString_CompareNoCase(Str *, Str *, int);
-extern "C" int PPWLobby_DecodeMessageData(const char *, CVec *);
+extern "C" BOOL PPWLobby_DecodeMessageData(const char *, CVec *);
 extern "C" const char gLobbyStr_SpaceSpace[], gLobbyStr_Space_2[], gLobbyStr_B[], gLobbyStr_S[], ov45_022551D9[];
 extern "C" char ov45_022551D8[];
-extern "C" int PPWLobby_ParseMessage(const Str *, Out *);
+extern "C" BOOL PPWLobby_ParseMessage(const Str *, Out *);
 #pragma opt_common_subs off
 
-extern "C" int PPWLobby_ParseMessage(const Str *src, Out *out) {
+extern "C" BOOL PPWLobby_ParseMessage(const Str *src, Out *out) {
     SVec parts;
     SVec fields;
     Str delim;
@@ -122,17 +122,17 @@ extern "C" int PPWLobby_ParseMessage(const Str *src, Out *out) {
     LobbyString_Destroy(&delim);
     if (parts.size != 2) {
         LobbyStringVector_Destroy(&parts);
-        return 0;
+        return FALSE;
     }
     {
         p = parts.ptr;
         if (p[0].size() > 40) {
             LobbyStringVector_Destroy(&parts);
-            return 0;
+            return FALSE;
         }
         if (p[1].size() > PPW_LOBBY_MESSAGE_MAX_LENGTH) {
             LobbyStringVector_Destroy(&parts);
-            return 0;
+            return FALSE;
         }
     }
     LobbyString_InitFromCStr(&delim2, gLobbyStr_Space_2);
@@ -141,7 +141,7 @@ extern "C" int PPWLobby_ParseMessage(const Str *src, Out *out) {
     if (fields.size < 6) {
         LobbyStringVector_Destroy(&fields);
         LobbyStringVector_Destroy(&parts);
-        return 0;
+        return FALSE;
     }
     out->x0 = strtoul(fields.ptr[0].c_str(), &end, 16);
     out->x4 = strtoul(fields.ptr[1].c_str(), &end, 16);
@@ -152,7 +152,7 @@ extern "C" int PPWLobby_ParseMessage(const Str *src, Out *out) {
         int r = LobbyString_CompareNoCase(&a, &b, 1);
         LobbyString_Destroy(&b);
         LobbyString_Destroy(&a);
-        out->decode = r == 0;
+        out->format = r == 0;
     }
     {
         const char *k = gLobbyStr_S;
@@ -162,17 +162,17 @@ extern "C" int PPWLobby_ParseMessage(const Str *src, Out *out) {
         LobbyString_Destroy(&b2);
         LobbyString_Destroy(&a2);
         if (r == 0) {
-            out->flag = 0;
+            out->kind = PPW_LOBBY_MESSAGE_KIND_SYSTEM;
         } else {
-            out->flag = 1;
+            out->kind = PPW_LOBBY_MESSAGE_KIND_USER;
         }
     }
     out->value = strtol(fields.ptr[4].c_str(), &end, 16);
     LobbyStringVector_Destroy(&fields);
-    if (out->decode == 1) {
+    if (out->format == PPW_LOBBY_MESSAGE_FORMAT_BINARY) {
         if (!PPWLobby_DecodeMessageData(parts.ptr[1].c_str(), &out->payload)) {
             LobbyStringVector_Destroy(&parts);
-            return 0;
+            return FALSE;
         }
     } else {
         p = parts.ptr;
@@ -180,5 +180,5 @@ extern "C" int PPWLobby_ParseMessage(const Str *src, Out *out) {
         out->payload.PushBack(ov45_022551D8[1], ov45_022551D9);
     }
     LobbyStringVector_Destroy(&parts);
-    return 1;
+    return TRUE;
 }

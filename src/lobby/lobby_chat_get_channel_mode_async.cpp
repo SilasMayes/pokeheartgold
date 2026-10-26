@@ -18,62 +18,62 @@ inline LobbyChatManager *GetMgr() {
     return gLobbyChatManager;
 }
 
-inline void BaseInit(LobbyRequest *h, u32 param) {
-    h->vtable = &gLobbyRequestVtable;
-    h->id = 0;
-    h->param = param;
+inline void BaseInit(LobbyRequest *request, u32 param) {
+    request->vtable = &gLobbyRequestVtable;
+    request->id = 0;
+    request->param = param;
 }
 
 // The id counter is only changed here; it is declared const so that stores through the new handler cannot alias it.
 inline u32 NextHandlerId() {
-    u32 n = gLobbyChatNextRequestId;
-    *(u32 *)&gLobbyChatNextRequestId = n + 1;
-    return n;
+    u32 id = gLobbyChatNextRequestId;
+    *(u32 *)&gLobbyChatNextRequestId = id + 1;
+    return id;
 }
 
 inline LobbyCallbackRequest *NewHandler(u32 callback, u32 param) {
-    LobbyCallbackRequest *p = (LobbyCallbackRequest *)LobbyMem_Alloc(sizeof(LobbyCallbackRequest));
-    if (p) {
-        BaseInit(p, param);
-        p->id = NextHandlerId();
-        p->vtable = &gLobbyGetChannelModeRequestVtable;
-        p->callback = callback;
+    LobbyCallbackRequest *request = (LobbyCallbackRequest *)LobbyMem_Alloc(sizeof(LobbyCallbackRequest));
+    if (request) {
+        BaseInit(request, param);
+        request->id = NextHandlerId();
+        request->vtable = &gLobbyGetChannelModeRequestVtable;
+        request->callback = callback;
     }
-    return p;
+    return request;
 }
 
 extern "C" int LobbyChat_GetChannelModeAsync(const char *name, u32 callback, u32 param);
 
 struct IdTag {};
 
-inline u32 GetId(LobbyCallbackRequest *h, IdTag, IdTag) {
-    return h->vtable->getId(h);
+inline u32 GetId(LobbyCallbackRequest *request, IdTag, IdTag) {
+    return request->vtable->getId(request);
 }
 
 #pragma opt_common_subs off
 
 extern "C" int LobbyChat_GetChannelModeAsync(const char *name, u32 callback, u32 param) {
-    LobbyChatManager *m = gLobbyChatManager;
-    if (m == NULL) {
+    LobbyChatManager *manager = gLobbyChatManager;
+    if (manager == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (m != NULL && m->state == LOBBY_CHAT_STATE_ERROR) {
+    if (manager != NULL && manager->state == LOBBY_CHAT_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (m != NULL && GetMgr()->state != LOBBY_CHAT_STATE_READY) {
+    if (manager != NULL && GetMgr()->state != LOBBY_CHAT_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    LobbyRequestMapInsertResult res;
-    LobbyCallbackRequest *h;
-    h = NewHandler(callback, param);
-    LobbyRequestMap_Insert(&res, &m->requestMap, &h);
-    u32 id = GetId(h, IdTag(), IdTag());
-    Str s;
-    LobbyString_InitFromCStr(&s, name);
-    Str t = LobbyChat_GetFullChannelName(GetMgr(), s);
-    chatGetChannelModeA(GetMgr()->connection, t.c_str(), LobbyChat_OnGetChannelMode, id, 0);
-    LobbyString_Destroy(&t);
-    LobbyString_Destroy(&s);
+    LobbyRequestMapInsertResult result;
+    LobbyCallbackRequest *request;
+    request = NewHandler(callback, param);
+    LobbyRequestMap_Insert(&result, &manager->requestMap, &request);
+    u32 id = GetId(request, IdTag(), IdTag());
+    Str channelName;
+    LobbyString_InitFromCStr(&channelName, name);
+    Str fullName = LobbyChat_GetFullChannelName(GetMgr(), channelName);
+    chatGetChannelModeA(GetMgr()->connection, fullName.c_str(), LobbyChat_OnGetChannelMode, id, 0);
+    LobbyString_Destroy(&fullName);
+    LobbyString_Destroy(&channelName);
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 

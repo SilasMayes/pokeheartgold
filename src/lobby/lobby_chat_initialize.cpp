@@ -21,21 +21,21 @@ inline void Assign(T &d, const U &s, TrueType, FalseType) {
 struct String {
     union {
         struct {
-            u32 flag : 1;
+            u32 isLong : 1;
             u32 capacity : 31;
             u32 size;
             char *data;
         } l;
 
         struct {
-            u8 flag : 1;
+            u8 isLong : 1;
             u8 size : 7;
             char data[11];
         } s;
     } raw;
 
     const char *c_str() const {
-        return !raw.l.flag ? raw.s.data : raw.l.data;
+        return !raw.l.isLong ? raw.s.data : raw.l.data;
     }
 
     void destroy();
