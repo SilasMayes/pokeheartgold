@@ -37,12 +37,12 @@ typedef struct WifiSetupSettingsWork {
     u16 *screenData;    // top screen BG tiles of all items
     void *paletteData;
     void *charData;
-    WifiSetupCanvas *canvas;   // text of the visible rows
-    GXOamAttr *rows[5];        // one object per visible row
-    GXOamAttr *addressSwitch;  // buttons of the "obtain address automatically" item
-    GXOamAttr *dnsSwitch;      // buttons of the "obtain DNS automatically" item
-    GXOamAttr *ssidIcon;       // the setup method icon next to the first item, NULL for none
-    WifiSetupTask *scrollTask; // row scroll in progress
+    WifiSetupCanvas *canvas;                       // text of the visible rows
+    GXOamAttr *rows[WIFI_SETUP_SETTINGS_NUM_ROWS]; // one object per visible row
+    GXOamAttr *addressSwitch;                      // buttons of the "obtain address automatically" item
+    GXOamAttr *dnsSwitch;                          // buttons of the "obtain DNS automatically" item
+    GXOamAttr *ssidIcon;                           // the setup method icon next to the first item, NULL for none
+    WifiSetupTask *scrollTask;                     // row scroll in progress
     WifiSetupTask *vblankTask;
     u8 selection; // item chosen to leave the screen with
     u8 scrollBarTimer;

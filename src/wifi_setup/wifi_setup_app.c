@@ -108,7 +108,7 @@ static BOOL WifiSetupApp_SetParams(int language, u32 flags) {
     if (language == 1 && ((flags >> 4) & ~2) != 0) {
         return FALSE;
     }
-    if (gWifiSetupApp.flags.bits.kind > 1) {
+    if (gWifiSetupApp.flags.bits.kind > WIFI_SETUP_KIND_CONNECTION_LIST) {
         return FALSE;
     }
     if (language != 0 && (gWifiSetupApp.flags.bits.options & 1)) {
@@ -370,20 +370,20 @@ WifiSetupMbParentUser *WifiSetupTransfer_GetChildUser(void) {
 WifiSetupSession *gWifiSetupSession;
 
 static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg) {
-    u8 event;
-    u8 ok;
+    u8 state;
+    u8 changed;
 
     WifiSetupShare_Update();
     if (gWifiSetupSession->missedEvent && !gWifiSetupSession->cancelled) {
         if (gWifiSetupSession->callback != NULL) {
-            gWifiSetupSession->callback(0);
+            gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_CHILD_ENTERED);
         }
         return;
     }
-    WifiSetupShare_GetState(&event, &ok);
-    switch (event) {
-    case 5:
-        if (!ok) {
+    WifiSetupShare_GetState(&state, &changed);
+    switch (state) {
+    case WIFI_SETUP_SHARE_STATE_ENTRY_REQUESTED:
+        if (!changed) {
             return;
         }
         {
@@ -395,56 +395,56 @@ static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg) {
             gWifiSetupSession->missedEvent = 1;
             return;
         }
-        gWifiSetupSession->callback(0);
+        gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_CHILD_ENTERED);
         return;
-    case 13:
-        if (!ok) {
+    case WIFI_SETUP_SHARE_STATE_ENTRY_CANCELLED:
+        if (!changed) {
             return;
         }
         if (gWifiSetupSession->callback == NULL) {
             gWifiSetupSession->missedEvent = 1;
             return;
         }
-        gWifiSetupSession->callback(1);
+        gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_ENTRY_CANCELLED);
         return;
-    case 20:
-    case 23:
-        if (!ok) {
+    case WIFI_SETUP_SHARE_STATE_STOPPED:
+    case WIFI_SETUP_SHARE_STATE_ABORTED:
+        if (!changed) {
             return;
         }
         if (gWifiSetupSession->callback == NULL) {
             gWifiSetupSession->missedEvent = 1;
             return;
         }
-        gWifiSetupSession->callback(3);
+        gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_STOPPED);
         return;
-    case 26:
-    case 29:
-        if (!ok) {
+    case WIFI_SETUP_SHARE_STATE_FAILED:
+    case WIFI_SETUP_SHARE_STATE_ERROR:
+        if (!changed) {
             return;
         }
         if (gWifiSetupSession->callback == NULL) {
             gWifiSetupSession->missedEvent = 1;
             return;
         }
-        gWifiSetupSession->callback(4);
+        gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_FAILED);
         return;
-    case 12:
-        if (!ok) {
+    case WIFI_SETUP_SHARE_STATE_DONE:
+        if (!changed) {
             return;
         }
         if (gWifiSetupSession->callback == NULL) {
             gWifiSetupSession->missedEvent = 1;
             return;
         }
-        gWifiSetupSession->callback(2);
+        gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_DONE);
         return;
-    case 1:
-    case 2:
-    case 8:
-    case 9:
+    case WIFI_SETUP_SHARE_STATE_IDLE:
+    case WIFI_SETUP_SHARE_STATE_MEASURE_CHANNEL:
+    case WIFI_SETUP_SHARE_STATE_SHARING:
+    case WIFI_SETUP_SHARE_STATE_CHILD_READY:
         break;
-    case 34:
+    case WIFI_SETUP_SHARE_STATE_END:
         WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
         WifiSetupHeap_FreeAndClear(&gWifiSetupSession);
         break;

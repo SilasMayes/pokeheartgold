@@ -202,11 +202,11 @@ static void WifiSetupConnectionList_CheckButtons(void) {
     switch (WifiSetupButtonBar_GetSelected()) {
     case 0:
         switch (WifiSetupApp_GetKind()) {
-        case 0:
+        case WIFI_SETUP_KIND_TOP_MENU:
             WifiSetupSound_Play(7);
             gWifiSetupConnectionList.work->exit = WIFI_SETUP_CONNECTION_LIST_BACK;
             break;
-        case 1:
+        case WIFI_SETUP_KIND_CONNECTION_LIST:
             WifiSetupButtonBar_Lock();
             WifiSetupApp_SetStateFunc(WifiSetupScreens_StartQuit);
             return;
@@ -917,9 +917,9 @@ static void WifiSetupConnectionOk_UpdateTimer(void) {
     }
     WifiSetupApp_GetScreenArgs(0, &mode);
     switch (WifiSetupApp_GetKind()) {
-    case 0:
+    case WIFI_SETUP_KIND_TOP_MENU:
         break;
-    case 1:
+    case WIFI_SETUP_KIND_CONNECTION_LIST:
         if (mode != 0) {
             WifiSetupApp_SetStateFunc(WifiSetupScreens_StartQuit);
             return;

@@ -361,11 +361,11 @@ void WifiSetupBackground_Init(void) {
     gWifiSetupBackgroundScreen = WifiSetupHeap_AllocZeroed(192, 4);
     WifiSetup_LoadGraphics(sStr_CharJbBgHlNcgL, GX_LoadBG1Char);
     switch (WifiSetupApp_GetKind()) {
-    case 0:
-        WifiSetup_LoadGraphics(gWifiSetupBackgroundScreenPaths[0], GX_LoadBG1Scr);
+    case WIFI_SETUP_KIND_TOP_MENU:
+        WifiSetup_LoadGraphics(gWifiSetupBackgroundScreenPaths[WIFI_SETUP_KIND_TOP_MENU], GX_LoadBG1Scr);
         break;
-    case 1:
-        WifiSetup_LoadGraphics(gWifiSetupBackgroundScreenPaths[1], GX_LoadBG1Scr);
+    case WIFI_SETUP_KIND_CONNECTION_LIST:
+        WifiSetup_LoadGraphics(gWifiSetupBackgroundScreenPaths[WIFI_SETUP_KIND_CONNECTION_LIST], GX_LoadBG1Scr);
         break;
     }
 }

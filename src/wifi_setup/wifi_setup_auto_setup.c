@@ -610,11 +610,11 @@ static void WifiSetupAutoConnect_End(void) {
 
 static void WifiSetupAutoConnect_CheckClient(void) {
     switch (WifiSetupClient_GetResult()) {
-    case 2:
+    case WIFI_SETUP_CLIENT_RESULT_EXCHANGING_KEYS:
         gWifiSetupAutoConnectDone = TRUE;
         WifiSetupApp_SetStateFunc(WifiSetupAutoConnect_Exit);
         break;
-    case 4:
+    case WIFI_SETUP_CLIENT_RESULT_STOPPED:
         gWifiSetupAutoConnectDone = FALSE;
         WifiSetupSound_Stop();
         WifiSetupSound_Play(9);
@@ -763,13 +763,13 @@ static void WifiSetupAutoReceive_End(void) {
 
 static void WifiSetupAutoReceive_CheckClient(void) {
     switch (WifiSetupClient_GetResult()) {
-    case 3:
+    case WIFI_SETUP_CLIENT_RESULT_RECEIVED:
         gWifiSetupAutoReceiveDone = TRUE;
         WifiSetupSound_Stop();
         WifiSetupClient_StoreResult();
         WifiSetupApp_SetStateFunc(WifiSetupAutoReceive_Exit);
         break;
-    case 4:
+    case WIFI_SETUP_CLIENT_RESULT_STOPPED:
         gWifiSetupAutoReceiveDone = FALSE;
         WifiSetupSound_Stop();
         WifiSetupSound_Play(9);
@@ -777,7 +777,7 @@ static void WifiSetupAutoReceive_CheckClient(void) {
         WifiSetupButtonBar_Lock();
         WifiSetupApp_SetStateFunc(WifiSetupAutoReceive_WaitErrorDialog);
         break;
-    case 5:
+    case WIFI_SETUP_CLIENT_RESULT_KEY_UNSUPPORTED:
         gWifiSetupAutoReceiveDone = FALSE;
         WifiSetupSound_Stop();
         WifiSetupSound_Play(0x12);
@@ -1008,11 +1008,11 @@ static void WifiSetupAutoSearch_End(void) {
 
 static void WifiSetupAutoSearch_CheckClient(void) {
     switch (WifiSetupClient_GetResult()) {
-    case 1:
+    case WIFI_SETUP_CLIENT_RESULT_SEARCHING:
         gWifiSetupAutoSearchDone = TRUE;
         WifiSetupApp_SetStateFunc(WifiSetupAutoSearch_Exit);
         break;
-    case 4:
+    case WIFI_SETUP_CLIENT_RESULT_STOPPED:
         gWifiSetupAutoSearchDone = FALSE;
         WifiSetupSound_Stop();
         WifiSetupSound_Play(9);

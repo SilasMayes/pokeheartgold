@@ -2225,7 +2225,7 @@ void WifiSetupBanner_Open(int kind) {
     gWifiSetupBanner.banner = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupBanner), 4);
     res = gWifiSetupBannerLetterTemplates[kind];
     anim = gWifiSetupBannerLetterPalettes[kind];
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
         gWifiSetupBanner.banner->letters[i] = WifiSetupOamTemplate_AllocBlock(1, *res++, 1);
         WifiSetupOamBlock_SetPriority(gWifiSetupBanner.banner->letters[i], -1, 0);
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, -0x2a, gWifiSetupBannerLetterPositions[i].y);
@@ -2243,13 +2243,13 @@ static void WifiSetupBanner_SlideInTask0(WifiSetupTask *task, void *arg) {
     WifiSetupOamBlock_GetPosition(gWifiSetupBanner.banner->letters[0], 0, &x, &y);
     x += 8;
     if (x < 0x20 || x > 0x100) {
-        for (i = 0; i < 5; i++) {
+        for (i = 0; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
             WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
         }
         return;
     }
     x = 0x20;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
     }
     WifiSetupTask_SetFunc(task, WifiSetupBanner_SlideInTask1);
@@ -2262,13 +2262,13 @@ static void WifiSetupBanner_SlideInTask1(WifiSetupTask *task, void *arg) {
     WifiSetupOamBlock_GetPosition(gWifiSetupBanner.banner->letters[1], 0, &x, &y);
     x += 8;
     if (x < 0x50 || x > 0x100) {
-        for (i = 1; i < 5; i++) {
+        for (i = 1; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
             WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
         }
         return;
     }
     x = 0x50;
-    for (i = 1; i < 5; i++) {
+    for (i = 1; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
     }
     WifiSetupTask_SetFunc(task, WifiSetupBanner_SlideInTask2);
@@ -2281,13 +2281,13 @@ static void WifiSetupBanner_SlideInTask2(WifiSetupTask *task, void *arg) {
     WifiSetupOamBlock_GetPosition(gWifiSetupBanner.banner->letters[2], 0, &x, &y);
     x += 8;
     if (x < 0x68 || x > 0x100) {
-        for (i = 2; i < 5; i++) {
+        for (i = 2; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
             WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
         }
         return;
     }
     x = 0x68;
-    for (i = 2; i < 5; i++) {
+    for (i = 2; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
     }
     WifiSetupTask_SetFunc(task, WifiSetupBanner_SlideInTask3);
@@ -2300,13 +2300,13 @@ static void WifiSetupBanner_SlideInTask3(WifiSetupTask *task, void *arg) {
     WifiSetupOamBlock_GetPosition(gWifiSetupBanner.banner->letters[3], 0, &x, &y);
     x += 8;
     if (x < 0x98 || x > 0x100) {
-        for (i = 3; i < 5; i++) {
+        for (i = 3; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
             WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
         }
         return;
     }
     x = 0x98;
-    for (i = 3; i < 5; i++) {
+    for (i = 3; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
     }
     WifiSetupTask_SetFunc(task, WifiSetupBanner_SlideInTask4);
@@ -2346,7 +2346,7 @@ void WifiSetupBanner_Close(void) {
 
 void WifiSetupBanner_SetKind(int kind) {
     int i;
-    for (i = 0; i < 5; i += 2) {
+    for (i = 0; i < WIFI_SETUP_BANNER_NUM_LETTERS; i += 2) {
         WifiSetupOamTemplate_Copy(1, gWifiSetupBannerLetterTemplates[kind][i], WifiSetupOamBlock_GetOam(gWifiSetupBanner.banner->letters[i], 0));
         WifiSetupOamBlock_SetPriority(gWifiSetupBanner.banner->letters[i], -1, 0);
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, gWifiSetupBannerLetterPositions[i].x, gWifiSetupBannerLetterPositions[i].y);
@@ -2388,13 +2388,13 @@ static void WifiSetupBanner_SlideOutTask3(WifiSetupTask *task, void *arg) {
     WifiSetupOamBlock_GetPosition(gWifiSetupBanner.banner->letters[3], 0, &x, &y);
     x -= 8;
     if (x > 0x68) {
-        for (i = 3; i < 5; i++) {
+        for (i = 3; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
             WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
         }
         return;
     }
     x = 0x68;
-    for (i = 3; i < 5; i++) {
+    for (i = 3; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
     }
     WifiSetupTask_SetFunc(task, WifiSetupBanner_SlideOutTask2);
@@ -2407,13 +2407,13 @@ static void WifiSetupBanner_SlideOutTask2(WifiSetupTask *task, void *arg) {
     WifiSetupOamBlock_GetPosition(gWifiSetupBanner.banner->letters[2], 0, &x, &y);
     x -= 8;
     if (x > 0x50) {
-        for (i = 2; i < 5; i++) {
+        for (i = 2; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
             WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
         }
         return;
     }
     x = 0x50;
-    for (i = 2; i < 5; i++) {
+    for (i = 2; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
     }
     WifiSetupTask_SetFunc(task, WifiSetupBanner_SlideOutTask1);
@@ -2426,13 +2426,13 @@ static void WifiSetupBanner_SlideOutTask1(WifiSetupTask *task, void *arg) {
     WifiSetupOamBlock_GetPosition(gWifiSetupBanner.banner->letters[1], 0, &x, &y);
     x -= 8;
     if (x > 0x20) {
-        for (i = 1; i < 5; i++) {
+        for (i = 1; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
             WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
         }
         return;
     }
     x = 0x20;
-    for (i = 1; i < 5; i++) {
+    for (i = 1; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
     }
     WifiSetupTask_SetFunc(task, WifiSetupBanner_SlideOffTask);
@@ -2444,7 +2444,7 @@ static void WifiSetupBanner_SlideOffTask(WifiSetupTask *task, void *arg) {
     int i;
     WifiSetupOamBlock_GetPosition(gWifiSetupBanner.banner->letters[0], 0, &x, &y);
     x -= 8;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, x, gWifiSetupBannerLetterPositions[i].y);
     }
     if (x > 0x1D6) {
@@ -2454,7 +2454,7 @@ static void WifiSetupBanner_SlideOffTask(WifiSetupTask *task, void *arg) {
         return;
     }
     WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
         WifiSetupOamBlock_Free(gWifiSetupBanner.banner->letters[i]);
     }
     WifiSetupHeap_FreeAndClear(ov13_0224F5B0);
@@ -2580,7 +2580,7 @@ static void WifiSetupUsbScan_StoreResults(WMStartScanExCallback *arg) {
             continue;
         }
         scan = gWifiSetupUsbScan;
-        for (j = 0; j < 16; j++) {
+        for (j = 0; j < WIFI_SETUP_USB_SCAN_NUM_ENTRIES; j++) {
             if (memcmp(bss->bssid, scan->entries[j].bssid, sizeof(bss->bssid)) == 0) {
                 if (scan->entries[j].flag != 0) {
                     goto next;
@@ -2594,7 +2594,7 @@ static void WifiSetupUsbScan_StoreResults(WMStartScanExCallback *arg) {
                 return;
             }
         }
-        for (j = 0; j < 16; j++) {
+        for (j = 0; j < WIFI_SETUP_USB_SCAN_NUM_ENTRIES; j++) {
             if (memcmp(scan->entries[j].bssid, gWifiSetupUsbScanEmptyBssid, sizeof(scan->entries[j].bssid)) == 0) {
                 MI_CpuCopy8(bss->bssid, scan->entries[j].bssid, sizeof(scan->entries[j].bssid));
                 gWifiSetupUsbScan->entries[j].flag = (bss->ssid[9] & 1) ? 1 : 0;
@@ -2656,7 +2656,7 @@ static void WifiSetupUsbScan_TimeoutTask(WifiSetupTask *task, void *arg) {
         return;
     }
     flagged = FALSE;
-    for (j = 0; j < 16; j++) {
+    for (j = 0; j < WIFI_SETUP_USB_SCAN_NUM_ENTRIES; j++) {
         if (memcmp(scan->entries[j].bssid, gWifiSetupUsbScanEmptyBssid, sizeof(scan->entries[j].bssid)) != 0) {
             if (scan->entries[j].flag) {
                 flagged = TRUE;

@@ -70,11 +70,11 @@ void WifiSetupSettings_Init(void) {
         gWifiSetupSettings.work->rows[i] = WifiSetupOamTemplate_AllocOam(0, 41);
     }
     switch (record->settings.setupMethod) {
-    case 1:
+    case WIFI_SETUP_METHOD_COPIED:
         gWifiSetupSettings.work->ssidIcon = WifiSetupOamTemplate_AllocOam(0, 80);
         gWifiSetupSettings.work->ssidIcon->attr2 = (gWifiSetupSettings.work->ssidIcon->attr2 & ~0xc00) | 0xc00;
         break;
-    case 2:
+    case WIFI_SETUP_METHOD_AUTO:
         gWifiSetupSettings.work->ssidIcon = WifiSetupOamTemplate_AllocOam(0, 81);
         gWifiSetupSettings.work->ssidIcon->attr2 = (gWifiSetupSettings.work->ssidIcon->attr2 & ~0xc00) | 0xc00;
         break;
@@ -511,11 +511,11 @@ void WifiSetupSettings_DrawRows(void) {
     WifiSetupText_Clear(gWifiSetupSettings.work->canvas, 0);
     item = first;
     row = 0;
-    for (; row < 5; row++, item++) {
+    for (; row < WIFI_SETUP_SETTINGS_NUM_ROWS; row++, item++) {
         WifiSetupSettings_DrawValue(item, row);
     }
     WifiSetupBgScreen_CopyRect(gWifiSetupSettings.work->screenData + gWifiSetupSettingsRowTileOffsets[first], 0, 30, 19);
-    for (item = 0; item < 5; item++, first++) {
+    for (item = 0; item < WIFI_SETUP_SETTINGS_NUM_ROWS; item++, first++) {
         WifiSetupSettings_DrawButtons(first, item);
     }
     WifiSetupBgScreen_MarkDirty();
@@ -789,7 +789,7 @@ void WifiSetupSettings_UpdateObjects(void) {
         SetObjPos(gWifiSetupSettings.work->ssidIcon, x, top);
     }
     pos = top;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < WIFI_SETUP_SETTINGS_NUM_ROWS; i++) {
         GXOamAttr *oam = gWifiSetupSettings.work->rows[i];
         GetObjPos(oam, (u32 *)&x, (u32 *)&y);
         SetObjPos(oam, x, pos);

@@ -105,10 +105,10 @@ static void WifiSetupAddressEntry_HandleInput(void) {
     case WIFI_SETUP_KEYPAD_INPUT_DELETE:
         if (gWifiSetupAddressEntry->field != 0 || gWifiSetupAddressEntry->digits[2] != 0) {
             WifiSetupSound_Play(3);
-            if (gWifiSetupAddressEntry->digits[gWifiSetupAddressEntry->field * 3 + 2] == 0) {
+            if (gWifiSetupAddressEntry->digits[gWifiSetupAddressEntry->field * WIFI_SETUP_ADDRESS_FIELD_LEN + 2] == 0) {
                 gWifiSetupAddressEntry->field--;
             }
-            MI_CpuFill8(gWifiSetupAddressEntry->digits + gWifiSetupAddressEntry->field * 3, 0, 3);
+            MI_CpuFill8(gWifiSetupAddressEntry->digits + gWifiSetupAddressEntry->field * WIFI_SETUP_ADDRESS_FIELD_LEN, 0, 3);
             if (gWifiSetupAddressEntry->field == 0 && gWifiSetupAddressEntry->digits[2] == 0) {
                 WifiSetupKeypad_SetCanDelete(0);
             }
@@ -117,7 +117,7 @@ static void WifiSetupAddressEntry_HandleInput(void) {
         }
         break;
     case WIFI_SETUP_KEYPAD_INPUT_NEXT:
-        if (gWifiSetupAddressEntry->field < 3 && gWifiSetupAddressEntry->digits[gWifiSetupAddressEntry->field * 3 + 2] != 0) {
+        if (gWifiSetupAddressEntry->field < (WIFI_SETUP_ADDRESS_NUM_FIELDS - 1) && gWifiSetupAddressEntry->digits[gWifiSetupAddressEntry->field * WIFI_SETUP_ADDRESS_FIELD_LEN + 2] != 0) {
             WifiSetupSound_Play(1);
             gWifiSetupAddressEntry->field++;
             WifiSetupKeypad_SetCanAdvance(0);
@@ -143,38 +143,38 @@ static void WifiSetupAddressEntry_HandleInput(void) {
         WifiSetupApp_SetStateFunc(WifiSetupAddressEntry_StartClose);
         return;
     default: // digit
-        if (gWifiSetupAddressEntry->field == 3 && WifiSetupAddressEntry_IsFieldAtLeast(26)) {
+        if (gWifiSetupAddressEntry->field == (WIFI_SETUP_ADDRESS_NUM_FIELDS - 1) && WifiSetupAddressEntry_IsFieldAtLeast(26)) {
             break;
         }
         WifiSetupSound_Play(1);
         {
             u8 *entry = gWifiSetupAddressEntry->digits;
-            int index = gWifiSetupAddressEntry->field * 3;
+            int index = gWifiSetupAddressEntry->field * WIFI_SETUP_ADDRESS_FIELD_LEN;
             // the digits of a field shift in from the right
             if (entry[index + 2] == 0) {
                 entry[index + 2] = key;
             } else if (entry[index + 1] == 0) {
                 entry[index + 1] = entry[index + 2];
                 entry[index + 2] = key;
-                if (WifiSetupAddressEntry_IsFieldAtLeast(26) && gWifiSetupAddressEntry->field < 3) {
+                if (WifiSetupAddressEntry_IsFieldAtLeast(26) && gWifiSetupAddressEntry->field < (WIFI_SETUP_ADDRESS_NUM_FIELDS - 1)) {
                     gWifiSetupAddressEntry->field++;
                 }
             } else {
                 entry[index] = entry[index + 1];
                 entry[index + 1] = entry[index + 2];
                 entry[index + 2] = key;
-                if (gWifiSetupAddressEntry->field < 3) {
+                if (gWifiSetupAddressEntry->field < (WIFI_SETUP_ADDRESS_NUM_FIELDS - 1)) {
                     gWifiSetupAddressEntry->field++;
                 }
             }
         }
         WifiSetupKeypad_SetCanDelete(1);
-        if (gWifiSetupAddressEntry->field < 3) {
+        if (gWifiSetupAddressEntry->field < (WIFI_SETUP_ADDRESS_NUM_FIELDS - 1)) {
             WifiSetupKeypad_SetCanAdvance(1);
         } else {
             WifiSetupKeypad_SetCanAdvance(0);
         }
-        if (gWifiSetupAddressEntry->field == 3 && WifiSetupAddressEntry_IsFieldAtLeast(26)) {
+        if (gWifiSetupAddressEntry->field == (WIFI_SETUP_ADDRESS_NUM_FIELDS - 1) && WifiSetupAddressEntry_IsFieldAtLeast(26)) {
             WifiSetupKeypad_SetCanType(0);
         }
         break;
@@ -186,16 +186,16 @@ static void WifiSetupAddressEntry_HandleInput(void) {
 // Whether the current field is full (three digits) or its value is at least limit, so that no
 // further digit can be typed into it.
 static int WifiSetupAddressEntry_IsFieldAtLeast(int limit) {
-    u8 buf[4], *p;
+    u8 buf[WIFI_SETUP_ADDRESS_FIELD_LEN + 1], *p;
     int i;
-    u8 *text = gWifiSetupAddressEntry->digits + gWifiSetupAddressEntry->field * 3;
+    u8 *text = gWifiSetupAddressEntry->digits + gWifiSetupAddressEntry->field * WIFI_SETUP_ADDRESS_FIELD_LEN;
     if (text[0] != 0 && text[0] != ' ') {
         return 1;
     }
-    MI_CpuCopy8(text, buf, 3);
-    buf[3] = 0;
+    MI_CpuCopy8(text, buf, WIFI_SETUP_ADDRESS_FIELD_LEN);
+    buf[WIFI_SETUP_ADDRESS_FIELD_LEN] = 0;
     p = buf;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < WIFI_SETUP_ADDRESS_FIELD_LEN; i++) {
         if (*p != 0) {
             break;
         }
@@ -271,7 +271,7 @@ void WifiSetupAddressEntry_DrawDigits(void) {
     rect.height = 16;
     WifiSetupText_Clear(entry->canvas, 0);
     text[1] = 0;
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < WIFI_SETUP_ADDRESS_NUM_FIELDS * WIFI_SETUP_ADDRESS_FIELD_LEN; i++) {
         u16 x = gWifiSetupAddressEntryDigitX[i];
         text[0] = gWifiSetupAddressEntry->digits[i];
         rect.x = x;
@@ -289,7 +289,7 @@ void WifiSetupAddressEntry_UpdateCursor(void) {
     if (field > 3) {
         field = 3;
     }
-    SetOamPos(&gWifiSetupAddressEntry->cursor->attr01, gWifiSetupAddressEntryDigitX[field * 3 + 2], 0x28);
+    SetOamPos(&gWifiSetupAddressEntry->cursor->attr01, gWifiSetupAddressEntryDigitX[field * WIFI_SETUP_ADDRESS_FIELD_LEN + 2], 0x28);
 }
 
 static void WifiSetupAddressEntry_WaitConfirm(void) {
@@ -342,10 +342,10 @@ static void WifiSetupAddressEntry_PadFields(void) {
             }
             field[j] = j == 2 ? digit : space;
             j++;
-        } while (j < 3);
+        } while (j < WIFI_SETUP_ADDRESS_FIELD_LEN);
         i++;
-        offset += 3;
-    } while (i < 4);
+        offset += WIFI_SETUP_ADDRESS_FIELD_LEN;
+    } while (i < WIFI_SETUP_ADDRESS_NUM_FIELDS);
     WifiSetupAddressEntry_DrawDigits();
 }
 
@@ -359,12 +359,12 @@ static int WifiSetupAddressEntry_IsValid(void) {
     u8 *field;
     int j;
     int zero;
-    for (i = 0; i < 4; i++) {
-        field = &gWifiSetupAddressEntry->digits[i * 3];
+    for (i = 0; i < WIFI_SETUP_ADDRESS_NUM_FIELDS; i++) {
+        field = &gWifiSetupAddressEntry->digits[i * WIFI_SETUP_ADDRESS_FIELD_LEN];
         if (field[0] == ' ') {
             continue;
         }
-        for (j = 0; j < 3; j++) {
+        for (j = 0; j < WIFI_SETUP_ADDRESS_FIELD_LEN; j++) {
             if (field[j] > limit.digits[j]) {
                 return 0;
             }

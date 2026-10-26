@@ -13,6 +13,10 @@
 #define WIFI_SETUP_CLIENT_DONE   1
 #define WIFI_SETUP_CLIENT_FAILED 2
 
+// WifiSetupApp_GetKind: the screen the application starts on
+#define WIFI_SETUP_KIND_TOP_MENU        0
+#define WIFI_SETUP_KIND_CONNECTION_LIST 1 // leaving the connection list quits
+
 // How the next screen shows the banner and the button bar (WifiSetupApp_SetTransition)
 enum WifiSetupBannerMode {
     WIFI_SETUP_BANNER_KEEP,
@@ -31,7 +35,7 @@ typedef union WifiSetupAppFlags {
     u32 raw;
 
     struct {
-        u32 kind : 4;     // low bits of the caller's flags
+        u32 kind : 4;     // WIFI_SETUP_KIND_*: low bits of the caller's flags
         u32 options : 28; // the other bits
     } bits;
 } WifiSetupAppFlags;
@@ -82,6 +86,13 @@ typedef struct WifiSetupTextBanks {
     WifiSetupTextBank items[8];
     WifiSetupPool *pool;
 } WifiSetupTextBanks;
+
+// Events passed to the transfer callback
+#define WIFI_SETUP_TRANSFER_EVENT_CHILD_ENTERED   0 // a child asked for the download
+#define WIFI_SETUP_TRANSFER_EVENT_ENTRY_CANCELLED 1
+#define WIFI_SETUP_TRANSFER_EVENT_DONE            2
+#define WIFI_SETUP_TRANSFER_EVENT_STOPPED         3 // stopped or aborted
+#define WIFI_SETUP_TRANSFER_EVENT_FAILED          4
 
 typedef void (*WifiSetupSessionCallback)(int event);
 

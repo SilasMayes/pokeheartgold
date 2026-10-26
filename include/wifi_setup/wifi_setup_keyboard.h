@@ -32,9 +32,9 @@
 
 typedef struct WifiSetupKeyboard {
     WifiSetupCanvas *rows[WIFI_SETUP_KEYBOARD_NUM_PAGES][4]; // text of the four key rows of each page
-    GXOamAttr *keys[47];
-    GXOamAttr *extraKeys[4];
-    WifiSetupOamBlock *buttons[2];
+    GXOamAttr *keys[WIFI_SETUP_KEYBOARD_NUM_CHAR_KEYS];
+    GXOamAttr *extraKeys[WIFI_SETUP_KEYBOARD_NUM_EXTRA_KEYS];
+    WifiSetupOamBlock *buttons[WIFI_SETUP_KEYBOARD_NUM_BUTTONS];
     WifiSetupOamBlock *rowBlocks[4]; // objects showing the current page's rows
     WifiSetupOamBlock *cursor;
     WifiSetupTask *task;
@@ -53,11 +53,11 @@ typedef struct WifiSetupKeyboard {
 extern WifiSetupKeyboard *gWifiSetupKeyboard;
 
 // layout (positions and sizes in pixels on the touch screen)
-extern const WifiSetupPoint gWifiSetupKeyboardKeyPositions[47];
+extern const WifiSetupPoint gWifiSetupKeyboardKeyPositions[WIFI_SETUP_KEYBOARD_NUM_CHAR_KEYS];
 extern const WifiSetupPoint ov13_02244F60;
 extern const WifiSetupPoint gWifiSetupKeyboardButtonSize;
 extern const WifiSetupPoint gWifiSetupKeyboardKeySize;
-extern const WifiSetupPoint gWifiSetupKeyboardButtonPositions[2];
+extern const WifiSetupPoint gWifiSetupKeyboardButtonPositions[WIFI_SETUP_KEYBOARD_NUM_BUTTONS];
 extern const WifiSetupPoint gWifiSetupKeyboardExtraKeyPositions[];
 extern const WifiSetupPoint gWifiSetupKeyboardShiftKeyPosition[];
 extern const WifiSetupPoint gWifiSetupKeyboardSpaceDeleteKeyPositions[];

@@ -19,9 +19,10 @@
 typedef struct WifiSetupAddressEntry {
     WifiSetupCanvas *canvas; // text of the digits
     GXOamAttr *cursor;       // marks the field being typed
-    u8 digits[12];           // four fields of three characters ('0'-'9', ' ' or 0)
-    u8 field;                // field being typed (0-3)
-    u8 result;               // WIFI_SETUP_ADDRESS_*; answer of the confirmation dialog
+    // four fields of three characters ('0'-'9', ' ' or 0)
+    u8 digits[WIFI_SETUP_ADDRESS_NUM_FIELDS * WIFI_SETUP_ADDRESS_FIELD_LEN];
+    u8 field;  // field being typed (0-3)
+    u8 result; // WIFI_SETUP_ADDRESS_*; answer of the confirmation dialog
 } WifiSetupAddressEntry;
 
 // formats the stored address of one kind (IP address, subnet mask, gateway, primary/secondary DNS)

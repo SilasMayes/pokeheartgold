@@ -404,7 +404,7 @@ void WifiSetupConnections_Reset(void) {
     for (i = 0; i < 2; i++) {
         MI_CpuCopy8(conv, gWifiSetupConnections->pages[i].tail.page.info, sizeof(gWifiSetupConnections->pages[i].tail.page.info));
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < WIFI_SETUP_NUM_CONNECTIONS; i++) {
         WifiSetupConnections_WritePage(i);
     }
 }
@@ -433,7 +433,7 @@ static void WifiSetupConnections_WritePage(int index) {
     }
     i = 0;
     offset = 0;
-    for (; i < 4; i++, offset += 256) {
+    for (; i < WIFI_SETUP_NUM_CONNECTIONS; i++, offset += 256) {
         if (changed[i]) {
             gWifiSetupConnections->pages[i].tail.page.crc = MATH_CalcCRC16(&gWifiSetupConnections->crcTable, (u8 *)gWifiSetupConnections + offset, 254);
         }

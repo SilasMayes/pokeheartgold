@@ -55,7 +55,7 @@ typedef struct WifiSetupTextEntry {
 
 // Status copied from the setup client's status callback.
 typedef struct WifiSetupClientStatus {
-    int state; // 0 idle .. 7, see WifiSetupClient_GetResult
+    int state; // WIFI_SETUP_SIMPLE_START_*, 0 before the start
     int timeLeft;
     int error;
 } WifiSetupClientStatus;
@@ -95,6 +95,24 @@ typedef struct WifiSetupTextEntryParams {
     u32 confirmMessages[2];          // per second screen argument
     void (*storeFuncs[2])(u8 *text); // per field
 } WifiSetupTextEntryParams;
+
+// WifiSetupClient_GetResult
+#define WIFI_SETUP_CLIENT_RESULT_BUSY            0
+#define WIFI_SETUP_CLIENT_RESULT_SEARCHING       1
+#define WIFI_SETUP_CLIENT_RESULT_EXCHANGING_KEYS 2
+#define WIFI_SETUP_CLIENT_RESULT_RECEIVED        3
+#define WIFI_SETUP_CLIENT_RESULT_STOPPED         4
+#define WIFI_SETUP_CLIENT_RESULT_KEY_UNSUPPORTED 5 // settings received with a key type the records cannot hold
+
+// gWifiSetupTransferResult
+#define WIFI_SETUP_TRANSFER_RESULT_FAILED    0
+#define WIFI_SETUP_TRANSFER_RESULT_DONE      1
+#define WIFI_SETUP_TRANSFER_RESULT_CANCELLED 2
+
+// gWifiSetupTransferWaitResult
+#define WIFI_SETUP_TRANSFER_WAIT_BACK          0
+#define WIFI_SETUP_TRANSFER_WAIT_CHILD_ENTERED 1
+#define WIFI_SETUP_TRANSFER_WAIT_FAILED        2
 
 extern WifiSetupClientStatus *gWifiSetupClientStatus;
 extern WifiSetupTopMenu gWifiSetupTopMenu;

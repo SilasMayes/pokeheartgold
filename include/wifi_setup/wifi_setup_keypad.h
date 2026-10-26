@@ -25,9 +25,9 @@
 
 typedef struct WifiSetupKeypad {
     WifiSetupCanvas *rows[4]; // text of the four key rows
-    GXOamAttr *keys[10];
-    GXOamAttr *extraKeys[2];
-    WifiSetupOamBlock *buttons[2];
+    GXOamAttr *keys[WIFI_SETUP_KEYPAD_NUM_DIGIT_KEYS];
+    GXOamAttr *extraKeys[WIFI_SETUP_KEYPAD_NUM_EXTRA_KEYS];
+    WifiSetupOamBlock *buttons[WIFI_SETUP_KEYPAD_NUM_BUTTONS];
     WifiSetupOamBlock *rowBlocks[4]; // objects showing the rows' text
     WifiSetupOamBlock *cursor;
     WifiSetupTask *task;
@@ -49,13 +49,13 @@ extern WifiSetupKeypad *gWifiSetupKeypad;
 extern const WifiSetupPoint gWifiSetupKeypadDigitKeySize;
 extern const WifiSetupPoint gWifiSetupKeypadExtraKeySize;
 extern const WifiSetupPoint gWifiSetupKeypadButtonSize;
-extern const WifiSetupPoint gWifiSetupKeypadDigitKeyPositions[10];
-extern const WifiSetupPoint gWifiSetupKeypadExtraKeyPositions[2];
-extern const WifiSetupPoint gWifiSetupKeypadButtonPositions[2];
+extern const WifiSetupPoint gWifiSetupKeypadDigitKeyPositions[WIFI_SETUP_KEYPAD_NUM_DIGIT_KEYS];
+extern const WifiSetupPoint gWifiSetupKeypadExtraKeyPositions[WIFI_SETUP_KEYPAD_NUM_EXTRA_KEYS];
+extern const WifiSetupPoint gWifiSetupKeypadButtonPositions[WIFI_SETUP_KEYPAD_NUM_BUTTONS];
 extern WifiSetupRect gWifiSetupInputPanelRect;        // shared with the keyboard
 extern const u16 gWifiSetupKeypadKeyLabels[12];       // three per row
-extern const u8 gWifiSetupKeypadExtraKeyTemplates[2]; // OAM templates of the extra keys
-extern const u8 gWifiSetupKeypadButtonTemplates[2];   // OAM templates of the buttons
+extern const u8 gWifiSetupKeypadExtraKeyTemplates[WIFI_SETUP_KEYPAD_NUM_EXTRA_KEYS]; // OAM templates of the extra keys
+extern const u8 gWifiSetupKeypadButtonTemplates[WIFI_SETUP_KEYPAD_NUM_BUTTONS];      // OAM templates of the buttons
 extern const u16 gWifiSetupKeypadCursorX[];
 extern const u16 gWifiSetupKeypadCursorY[];
 extern const s8 gWifiSetupKeypadCursorMoves[][4]; // next key for left, up, right, down
