@@ -347,11 +347,11 @@ void PokeathlonRingDrop_InitMemberParams(PokeathlonCourseData *course) {
     int table[6][5] = { 0 };
     ReadWholeNarcMemberByIdPair(table, NARC_a_1_7_0, 9);
     u8 participant;
-    for (int i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (int i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         int member = 0;
         float half = 0.5f;
         participant = i;
-        for (; member < RING_DROP_TEAM_SIZE; member++) {
+        for (; member < POKEATHLON_TEAM_SIZE; member++) {
             u8 *stats = PokeathlonCourse_GetMonStats(course, i, member);
             PokeathlonRingDropMemberParams *params = PokeathlonRingDrop_GetMemberParams(course, participant, member);
             GF_ASSERT(stats[0] < 5);
@@ -374,16 +374,16 @@ PokeathlonRingDropMemberParams *PokeathlonRingDrop_GetMemberParams(PokeathlonCou
     PokeathlonRingDropMemberParams *params;
     PokeathlonRingDrop *ringDrop = PokeathlonCourse_GetWork(course);
     GF_ASSERT(ringDrop != NULL);
-    GF_ASSERT(participant < RING_DROP_PARTICIPANTS);
-    GF_ASSERT(member < RING_DROP_TEAM_SIZE);
-    params = &ringDrop->memberParams[participant * RING_DROP_TEAM_SIZE + member];
+    GF_ASSERT(participant < POKEATHLON_PARTICIPANTS);
+    GF_ASSERT(member < POKEATHLON_TEAM_SIZE);
+    params = &ringDrop->memberParams[participant * POKEATHLON_TEAM_SIZE + member];
     GF_ASSERT(params != NULL);
     return params;
 }
 
 void PokeathlonRingDropMon_NextMember(PokeathlonRingDropMon *mon) {
     u32 member = mon->flags.bits.member;
-    member = (member + 1) % RING_DROP_TEAM_SIZE;
+    member = (member + 1) % POKEATHLON_TEAM_SIZE;
     mon->flags.bits.member = member;
     mon->member = &mon->player->mon.members[mon->flags.bits.member];
 }

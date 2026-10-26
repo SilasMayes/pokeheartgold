@@ -13,8 +13,6 @@
 // Circle Push: the top screen, with the player names, the round counter, the scoreboard and the idle animations
 // shown while nothing else is.
 
-#define CIRCLE_PUSH_NO_MON 12 // "no Pokemon" in the 0..11 mon indices
-
 // Positions of the nameplate sprites (pixels).
 typedef struct PokeathlonCirclePushNameplateCoords {
     u8 y[4];

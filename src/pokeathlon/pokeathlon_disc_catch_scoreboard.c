@@ -102,7 +102,7 @@ void PokeathlonDiscCatchScoreboard_Delete(PokeathlonDiscCatchScoreboard *scorebo
     int i;
     GF_ASSERT(scoreboard != NULL);
     Heap_Free(scoreboard->digitsFile);
-    for (i = 0; i < DISC_CATCH_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         RemoveWindow(&scoreboard->windows[i]);
     }
     for (i = 0; i < DISC_CATCH_SCOREBOARD_SPRITES; i++) {
@@ -145,7 +145,7 @@ u8 PokeathlonDiscCatchScoreboard_SetOwnScore(PokeathlonDiscCatchScoreboard *scor
 BOOL PokeathlonDiscCatchScoreboard_OnScore(PokeathlonDiscCatchScoreboard *scoreboard, u32 participant, u16 score) {
     int delta;
     GF_ASSERT(scoreboard != NULL);
-    GF_ASSERT(participant < DISC_CATCH_PARTICIPANTS);
+    GF_ASSERT(participant < POKEATHLON_PARTICIPANTS);
     u32 badge = participant + DISC_CATCH_SCOREBOARD_BADGES;
     ManagedSprite_SetAnim(scoreboard->sprites[badge], participant + 4);
     if (participant == PokeathlonCourse_GetNetId(scoreboard->course) && score != scoreboard->shownScore) {
@@ -222,7 +222,7 @@ static void PokeathlonDiscCatchScoreboard_InitWindows(PokeathlonDiscCatchScorebo
     u8 i;
     GF_ASSERT(scoreboard != NULL);
     GF_ASSERT(scoreboard->bgConfig != NULL);
-    for (i = 0; i < DISC_CATCH_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         AddWindow(scoreboard->bgConfig, &scoreboard->windows[i], &sPokeathlonDiscCatchScoreboardWindowTemplates[i]);
     }
     BG_FillCharDataRange(scoreboard->bgConfig, GF_BG_LYR_SUB_3, 0, 1, 0);
@@ -267,7 +267,7 @@ static void PokeathlonDiscCatchScoreboard_PrintNames(PokeathlonDiscCatchScoreboa
     u8 window;
     String *name;
     GF_ASSERT(scoreboard != NULL);
-    for (i = 0; i < DISC_CATCH_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (i == scoreboard->participant) {
             x = 8;
             window = 0;

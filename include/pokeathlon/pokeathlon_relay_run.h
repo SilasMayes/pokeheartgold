@@ -16,8 +16,6 @@
 // Relay Run: each team runs laps around an oval track. The player flicks the running Pokemon with the stylus to
 // speed it up and swaps to the next member of the team before it runs out of energy.
 
-#define RELAY_RUN_TEAMS        4
-#define RELAY_RUN_MEMBERS      3
 #define RELAY_RUN_OBSTACLES    30
 #define RELAY_RUN_DURATION     2700 // frames
 #define RELAY_RUN_TRACK_LENGTH 1024 // pixels per lap
@@ -80,9 +78,9 @@ typedef struct PokeathlonRelayRunMember {
 
 // A team: the three Pokemon of one participant, one running at a time.
 typedef struct PokeathlonRelayRunTeam {
-    PokeathlonCourseMonObject *monObjects[RELAY_RUN_MEMBERS];
-    fx32 distance[RELAY_RUN_MEMBERS]; // distance each member ran
-    PokeathlonRelayRunMember members[RELAY_RUN_MEMBERS];
+    PokeathlonCourseMonObject *monObjects[POKEATHLON_TEAM_SIZE];
+    fx32 distance[POKEATHLON_TEAM_SIZE]; // distance each member ran
+    PokeathlonRelayRunMember members[POKEATHLON_TEAM_SIZE];
     PokeathlonCourseSpritePoolSprite *conditionSprite; // tired / exhausted marks above the runner
     PokeathlonCourseSpritePoolSprite *shadowSprite;
     PokeathlonCourseSpritePoolSprite *swapSprite;  // flies up from the leaving member and down with the next
@@ -92,7 +90,7 @@ typedef struct PokeathlonRelayRunTeam {
     u8 unk89[2];
     u8 current; // member running
     VecFx32 velocity;
-    u8 bumpedInto[RELAY_RUN_TEAMS]; // touching that team's runner since the last bump
+    u8 bumpedInto[POKEATHLON_PARTICIPANTS]; // touching that team's runner since the last bump
     u8 laps;
     u8 swapping;       // handing over to the next member
     u8 swapPhase;      // 1 swap, 2 wait for the display, 0 done
@@ -172,26 +170,26 @@ typedef struct PokeathlonRelayRunTouchBlock {
 
 // Everything a player draws, sent by the host every frame.
 typedef struct PokeathlonRelayRunPacket {
-    u16 x[RELAY_RUN_TEAMS];
-    u8 y[RELAY_RUN_TEAMS];
-    u8 runner[RELAY_RUN_TEAMS]; // current member | speed grade << 2
-    u8 laps[RELAY_RUN_TEAMS];   // laps | swapping << 7
-    s32 flags;                  // condition of each member (2 bits, team * 3 + member), finished << 24, bump << 25,
-                                // behindStart of each team << 26
+    u16 x[POKEATHLON_PARTICIPANTS];
+    u8 y[POKEATHLON_PARTICIPANTS];
+    u8 runner[POKEATHLON_PARTICIPANTS]; // current member | speed grade << 2
+    u8 laps[POKEATHLON_PARTICIPANTS];   // laps | swapping << 7
+    s32 flags;                          // condition of each member (2 bits, team * 3 + member), finished << 24, bump << 25,
+                                        // behindStart of each team << 26
     u16 timer;
     u16 bumpX;
     u8 bumpY;
-    u8 swapPhases;                 // swapPhase of each team (2 bits each)
-    u8 swapSigns[RELAY_RUN_TEAMS]; // "change" sign shown at the top of each player's screen
+    u8 swapPhases;                         // swapPhase of each team (2 bits each)
+    u8 swapSigns[POKEATHLON_PARTICIPANTS]; // "change" sign shown at the top of each player's screen
     u8 unk22[6];
 } PokeathlonRelayRunPacket;
 
 // The link data of the event (PokeathlonCourse_GetDataCopyArea).
 typedef struct PokeathlonRelayRunLink {
-    PokeathlonRelayRunTouchBlock touch;                    // this player's stylus
-    PokeathlonRelayRunPacket packetToSend;                 // host
-    PokeathlonRelayRunTouchBlock touches[RELAY_RUN_TEAMS]; // everyone's stylus, collected by the host
-    PokeathlonRelayRunPacket packet;                       // received from the host
+    PokeathlonRelayRunTouchBlock touch;                            // this player's stylus
+    PokeathlonRelayRunPacket packetToSend;                         // host
+    PokeathlonRelayRunTouchBlock touches[POKEATHLON_PARTICIPANTS]; // everyone's stylus, collected by the host
+    PokeathlonRelayRunPacket packet;                               // received from the host
 } PokeathlonRelayRunLink;
 
 typedef struct PokeathlonRelayRun {
@@ -201,9 +199,9 @@ typedef struct PokeathlonRelayRun {
     PokeathlonCourseSpritePool *spritePool;
     PokeathlonCourseSpritePoolSprite *signSprite;
     PokeathlonRelayRunLapCounter lapCounter;
-    PokeathlonRelayRunTeam teams[RELAY_RUN_TEAMS];
-    PokeathlonCourseTouch presses[RELAY_RUN_TEAMS];
-    BOOL dragging[RELAY_RUN_TEAMS];
+    PokeathlonRelayRunTeam teams[POKEATHLON_PARTICIPANTS];
+    PokeathlonCourseTouch presses[POKEATHLON_PARTICIPANTS];
+    BOOL dragging[POKEATHLON_PARTICIPANTS];
     u8 finished;
     u8 unk3C1;
     u8 heldTooLong; // someone held the stylus down for 255 frames: more friction
@@ -221,7 +219,7 @@ typedef struct PokeathlonRelayRun {
     u16 bumpX;
     u16 timer; // frames left
     u16 signSoundPlayed;
-    u8 swapSigns[RELAY_RUN_TEAMS]; // the sign at the top of each player's screen
+    u8 swapSigns[POKEATHLON_PARTICIPANTS]; // the sign at the top of each player's screen
 } PokeathlonRelayRun;
 
 // A team on the touch screen's track map.
@@ -248,32 +246,32 @@ typedef struct PokeathlonRelayRunHud {
     u8 unk03C[0xC];
 
     union {
-        PokeathlonRelayRunHudTeam teams[RELAY_RUN_TEAMS];
+        PokeathlonRelayRunHudTeam teams[POKEATHLON_PARTICIPANTS];
 
         struct {
             u8 unk00[0x74];
-            void *files[RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS]; // the icon files (NARC poketool/icongra)
+            void *files[POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE]; // the icon files (NARC poketool/icongra)
         } icons;
     } map;
 
-    NNSG2dCharacterData *iconChars[RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS];
-    u8 iconPalettes[RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS];
-    PokeathlonCourseMonPic pics[RELAY_RUN_MEMBERS]; // the player's own members
-    u32 picCharLocations[2];                          // VRAM of the two picture slots
+    NNSG2dCharacterData *iconChars[POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE];
+    u8 iconPalettes[POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE];
+    PokeathlonCourseMonPic pics[POKEATHLON_TEAM_SIZE]; // the player's own members
+    u32 picCharLocations[2];                           // VRAM of the two picture slots
     u32 picPaletteLocations[2];
     PokeathlonCourseSpritePoolSprite *picFrames[2]; // the picture slots
     PokeathlonCourseSpritePoolSprite *tiredMarks[2];
     u16 benchMembers[2]; // member in each picture slot
     u32 rotateState;     // PokeathlonRelayRunHud_RotateMonPics
     int rotateSlot;
-    u8 shownMembers[RELAY_RUN_TEAMS]; // member whose icon each team shows
-    String *names[RELAY_RUN_MEMBERS]; // the player's members' nicknames
-    Sprite *timerSprites[6];          // minutes, ':', tens, ones, '.', tenths
+    u8 shownMembers[POKEATHLON_PARTICIPANTS]; // member whose icon each team shows
+    String *names[POKEATHLON_TEAM_SIZE];      // the player's members' nicknames
+    Sprite *timerSprites[6];                  // minutes, ':', tens, ones, '.', tenths
 
     struct {
         u16 y;
         u16 step;
-    } cpuRotations[RELAY_RUN_TEAMS - 1]; // PokeathlonRelayRunHud_RotateCpuMonPics
+    } cpuRotations[POKEATHLON_PARTICIPANTS - 1]; // PokeathlonRelayRunHud_RotateCpuMonPics
 } PokeathlonRelayRunHud;
 
 BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course);

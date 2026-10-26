@@ -53,8 +53,8 @@ struct PokeathlonRingDropUi {
     Window windows[RING_DROP_UI_WINDOW_COUNT];
     ManagedSprite *sprites[RING_DROP_UI_SPRITE_COUNT];
     Sprite *timerDigits[2];
-    String *memberNames[RING_DROP_TEAM_SIZE];
-    s8 switchDelays[RING_DROP_PARTICIPANTS];
+    String *memberNames[POKEATHLON_TEAM_SIZE];
+    s8 switchDelays[POKEATHLON_PARTICIPANTS];
     u8 switchStep;
     u16 score;
     BOOL ranksHidden;
@@ -157,9 +157,9 @@ PokeathlonRingDropUi *PokeathlonRingDropUi_New(SpriteSystem *spriteSystem, Sprit
     ui->course = course;
     ui->iconNarc = NARC_New(NARC_poketool_icongra_poke_icon, ui->heapId);
     ui->digitsBuffer = GfGfxLoader_GetScrnData(NARC_a_2_4_0, 7, TRUE, &ui->digits, ui->heapId);
-    ui->iconPalette = SpriteSystem_LoadPlttResObj(spriteSystem, spriteManager, NARC_poketool_icongra_poke_icon, GetMonIconPlttNaix(), FALSE, 3, 2, 10004);
+    ui->iconPalette = SpriteSystem_LoadPlttResObj(spriteSystem, spriteManager, NARC_poketool_icongra_poke_icon, GetMonIconPlttNaix(), FALSE, 3, NNS_G2D_VRAM_TYPE_2DSUB, 10004);
     member = PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
-    for (i = 0; i < RING_DROP_TEAM_SIZE; i++, member += 40) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++, member += 40) {
         ui->memberNames[i] = String_New(11, ui->heapId);
         CopyU16ArrayToString(ui->memberNames[i], (const u16 *)(member + 18));
     }
@@ -179,7 +179,7 @@ void PokeathlonRingDropUi_Free(PokeathlonRingDropUi *ui) {
 
     GF_ASSERT(ui != NULL);
     NARC_Delete(ui->iconNarc);
-    for (i = 0; i < RING_DROP_TEAM_SIZE; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         String_Delete(ui->memberNames[i]);
     }
     Heap_Free(ui->digitsBuffer);
@@ -207,9 +207,9 @@ void PokeathlonRingDropUi_SetRanks(PokeathlonRingDropUi *ui, u16 participant, u1
     int i;
 
     GF_ASSERT(ui != NULL);
-    GF_ASSERT(participant < RING_DROP_PARTICIPANTS);
+    GF_ASSERT(participant < POKEATHLON_PARTICIPANTS);
     rank = 0;
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++, sorted += 2) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++, sorted += 2) {
         ManagedSprite_SetAnimNoRestart(ui->sprites[RING_DROP_UI_SPRITE_RANKS + sorted[1]], rank + 6);
         if (i != 3 && sorted[0] != sorted[2]) {
             rank = i + 1;
@@ -228,7 +228,7 @@ void PokeathlonRingDropUi_SetTimer(PokeathlonRingDropUi *ui, s32 seconds) {
     u8 ones = rest % 10;
     int i;
     ui->ranksHidden = seconds < 10 || seconds > 55;
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         ManagedSprite_SetDrawFlag(ui->sprites[RING_DROP_UI_SPRITE_RANKS + i], !ui->ranksHidden);
     }
     Sprite_SetAnimCtrlSeq(ui->timerDigits[0], tens + 1);
@@ -249,7 +249,7 @@ u16 PokeathlonRingDropUi_GetScore(PokeathlonRingDropUi *ui) {
 
 BOOL PokeathlonRingDropUi_RunSwitch(PokeathlonRingDropUi *ui, u8 participant, u8 member) {
     u8 own = PokeathlonCourse_GetNetId(ui->course);
-    u8 next = (member + 1) % RING_DROP_TEAM_SIZE;
+    u8 next = (member + 1) % POKEATHLON_TEAM_SIZE;
 
     switch (ui->switchStep) {
     case 0: {
@@ -320,7 +320,7 @@ BOOL PokeathlonRingDropUi_RunSwitch(PokeathlonRingDropUi *ui, u8 participant, u8
 
 // The computer participants' switches take 13 frames. TRUE when done.
 BOOL PokeathlonRingDropUi_WaitSwitch(PokeathlonRingDropUi *ui, u8 participant, u8 member) {
-    GF_ASSERT(participant != 0 && participant < RING_DROP_PARTICIPANTS);
+    GF_ASSERT(participant != 0 && participant < POKEATHLON_PARTICIPANTS);
     ui->switchDelays[participant]++;
     if (ui->switchDelays[participant] > 12) {
         ui->switchDelays[participant] = 0;
@@ -332,8 +332,8 @@ BOOL PokeathlonRingDropUi_WaitSwitch(PokeathlonRingDropUi *ui, u8 participant, u
 // A participant's icon while it switches (and the new member's icon after it).
 void PokeathlonRingDropUi_SetSwitching(PokeathlonRingDropUi *ui, u8 participant, u32 member, BOOL switching) {
     GF_ASSERT(ui != NULL);
-    GF_ASSERT(participant < RING_DROP_PARTICIPANTS);
-    GF_ASSERT(member < RING_DROP_TEAM_SIZE);
+    GF_ASSERT(participant < POKEATHLON_PARTICIPANTS);
+    GF_ASSERT(member < POKEATHLON_TEAM_SIZE);
     if (!switching) {
         PokeathlonRingDropUi_LoadMonIcon(ui, participant, member);
     }
@@ -418,7 +418,7 @@ static void PokeathlonRingDropUi_CreateSprites(PokeathlonRingDropUi *ui) {
 
     ui->sprites[RING_DROP_UI_SPRITE_PLATE] = PokeathlonRingDropUi_NewSprite(ui->spriteSystem, ui->spriteManager, 134, 160, ui->participant + 12, 6);
     ManagedSprite_SetPaletteOverride(ui->sprites[RING_DROP_UI_SPRITE_PLATE], 1);
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         x = i * 32 + 120;
         ui->sprites[RING_DROP_UI_SPRITE_ICONS + i] = PokeathlonRingDropUi_NewSprite(ui->spriteSystem, ui->spriteManager, x, 36, i + 1, 5);
         PokeathlonRingDropUi_LoadMonIcon(ui, i, 0);
@@ -505,7 +505,7 @@ static void PokeathlonRingDropUi_CreateTimerSprites(PokeathlonRingDropUi *ui) {
 
 static void PokeathlonRingDropUi_PrintNextName(PokeathlonRingDropUi *ui, s32 member) {
     s32 index;
-    index = (member + 1) % RING_DROP_TEAM_SIZE;
+    index = (member + 1) % POKEATHLON_TEAM_SIZE;
     index = (u8)index;
     BufferString(ui->msgFormat, 0, ui->memberNames[index], 2, 1, 2);
     PokeathlonRingDropUi_PrintMessage(&ui->windows[RING_DROP_UI_WINDOW_NEXT_NAME], ui->msgFormat, ui->msgData, msg_0309_00154, ui->heapId);

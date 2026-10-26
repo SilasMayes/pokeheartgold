@@ -158,7 +158,7 @@ static void PokeathlonCourseSprites_LoadResources(PokeathlonCourseSpriteResource
     int vram;
 
     if (resources->flags & 0x001) {
-        resources->chars[0] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 3, FALSE, 0x14, 1, resources->heapId);
+        resources->chars[0] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 3, FALSE, 0x14, NNS_G2D_VRAM_TYPE_2DMAIN, resources->heapId);
         resources->cells[0] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_3, 2, FALSE, 0x14, GF_GFX_RES_TYPE_CELL, resources->heapId);
         resources->anims[0] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_3, 1, FALSE, 0x14, GF_GFX_RES_TYPE_ANIM, resources->heapId);
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[0]);
@@ -176,55 +176,55 @@ static void PokeathlonCourseSprites_LoadResources(PokeathlonCourseSpriteResource
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[2]);
     }
     if (resources->flags & 0x010) {
-        resources->chars[4] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 16, FALSE, 0x1A, 1, resources->heapId);
+        resources->chars[4] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 16, FALSE, 0x1A, NNS_G2D_VRAM_TYPE_2DMAIN, resources->heapId);
         resources->cells[4] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_3, 15, FALSE, 0x1A, GF_GFX_RES_TYPE_CELL, resources->heapId);
         resources->anims[4] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_3, 14, FALSE, 0x1A, GF_GFX_RES_TYPE_ANIM, resources->heapId);
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[4]);
     }
     if (resources->flags & 0x020) {
-        resources->chars[5] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 19, FALSE, 0x1B, 1, resources->heapId);
+        resources->chars[5] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 19, FALSE, 0x1B, NNS_G2D_VRAM_TYPE_2DMAIN, resources->heapId);
         resources->cells[5] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_3, 18, FALSE, 0x1B, GF_GFX_RES_TYPE_CELL, resources->heapId);
         resources->anims[5] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_3, 17, FALSE, 0x1B, GF_GFX_RES_TYPE_ANIM, resources->heapId);
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[5]);
     }
     if (resources->flags & 0x008) {
-        resources->chars[3] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 13, FALSE, 0x19, 2, resources->heapId);
+        resources->chars[3] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 13, FALSE, 0x19, NNS_G2D_VRAM_TYPE_2DSUB, resources->heapId);
         resources->cells[3] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_3, 12, FALSE, 0x19, GF_GFX_RES_TYPE_CELL, resources->heapId);
         resources->anims[3] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_3, 11, FALSE, 0x19, GF_GFX_RES_TYPE_ANIM, resources->heapId);
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[3]);
     }
     if (resources->flags & 0x040) {
-        resources->chars[6] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 22, FALSE, 0x1C, 1, resources->heapId);
+        resources->chars[6] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 22, FALSE, 0x1C, NNS_G2D_VRAM_TYPE_2DMAIN, resources->heapId);
         resources->cells[6] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_3, 21, FALSE, 0x1C, GF_GFX_RES_TYPE_CELL, resources->heapId);
         resources->anims[6] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_3, 20, FALSE, 0x1C, GF_GFX_RES_TYPE_ANIM, resources->heapId);
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[6]);
     }
     if (resources->flags & 0x080) {
-        resources->chars[7] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 25, FALSE, 0x1D, 1, resources->heapId);
+        resources->chars[7] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 25, FALSE, 0x1D, NNS_G2D_VRAM_TYPE_2DMAIN, resources->heapId);
         resources->cells[7] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_3, 24, FALSE, 0x1D, GF_GFX_RES_TYPE_CELL, resources->heapId);
         resources->anims[7] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_3, 23, FALSE, 0x1D, GF_GFX_RES_TYPE_ANIM, resources->heapId);
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[7]);
     }
     if (resources->flags & 0x100) {
-        resources->chars[8] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 28, FALSE, 0x1E, 2, resources->heapId);
+        resources->chars[8] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 28, FALSE, 0x1E, NNS_G2D_VRAM_TYPE_2DSUB, resources->heapId);
         resources->cells[8] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_3, 27, FALSE, 0x1E, GF_GFX_RES_TYPE_CELL, resources->heapId);
         resources->anims[8] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_3, 26, FALSE, 0x1E, GF_GFX_RES_TYPE_ANIM, resources->heapId);
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[8]);
     }
     if (resources->flags & 0x200) {
-        resources->chars[9] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 31, FALSE, 0x1F, 1, resources->heapId);
+        resources->chars[9] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 31, FALSE, 0x1F, NNS_G2D_VRAM_TYPE_2DMAIN, resources->heapId);
         resources->cells[9] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_3, 30, FALSE, 0x1F, GF_GFX_RES_TYPE_CELL, resources->heapId);
         resources->anims[9] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_3, 29, FALSE, 0x1F, GF_GFX_RES_TYPE_ANIM, resources->heapId);
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[9]);
     }
     if (resources->flags & 0x400) {
-        resources->chars[10] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 34, FALSE, 0x1F, 2, resources->heapId);
+        resources->chars[10] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 34, FALSE, 0x1F, NNS_G2D_VRAM_TYPE_2DSUB, resources->heapId);
         resources->cells[10] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_3, 33, FALSE, 0x1F, GF_GFX_RES_TYPE_CELL, resources->heapId);
         resources->anims[10] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_3, 32, FALSE, 0x1F, GF_GFX_RES_TYPE_ANIM, resources->heapId);
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[10]);
     }
     if (resources->flags & 0x800) {
-        resources->chars[11] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 37, FALSE, 0x20, 1, resources->heapId);
+        resources->chars[11] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 37, FALSE, 0x20, NNS_G2D_VRAM_TYPE_2DMAIN, resources->heapId);
         resources->cells[11] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CELL], NARC_a_1_5_3, 36, FALSE, 0x20, GF_GFX_RES_TYPE_CELL, resources->heapId);
         resources->anims[11] = AddCellOrAnimResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_ANIM], NARC_a_1_5_3, 35, FALSE, 0x20, GF_GFX_RES_TYPE_ANIM, resources->heapId);
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[11]);
@@ -237,7 +237,7 @@ static void PokeathlonCourseSprites_LoadResources(PokeathlonCourseSpriteResource
     SpriteTransfer_CreateExtPlttTransferTask(resources->palette);
     resources->extraPalette = NULL;
     if ((resources->flags & 0x008) || (resources->flags & 0x100) || (resources->flags & 0x400)) {
-        resources->extraPalette = AddPlttResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_PLTT], NARC_a_1_5_3, 10, FALSE, 0x18, 2, 1, resources->heapId);
+        resources->extraPalette = AddPlttResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_PLTT], NARC_a_1_5_3, 10, FALSE, 0x18, NNS_G2D_VRAM_TYPE_2DSUB, 1, resources->heapId);
         SpriteTransfer_CreateExtPlttTransferTask(resources->extraPalette);
     }
 }

@@ -432,12 +432,12 @@ static void PokeathlonHurdleDashRunner_DrawFinishLine(BgConfig *bgConfig, Pokeat
         }
         palette = 2;
         edge = (palette << 9) + palette;
-        FillBgTilemapRect(bgConfig, runner->mainBg, 2, 10 * runner->lane + 2, 50, 1, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->mainBg, 3, 10 * runner->lane + 3, 50, 6, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->mainBg, edge, 10 * runner->lane + 9, 50, 1, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->subBg, 2, 10 * runner->lane + 2, 50, 1, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->subBg, 3, 10 * runner->lane + 3, 50, 6, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->subBg, edge, 10 * runner->lane + 9, 50, 1, 2, 16);
+        FillBgTilemapRect(bgConfig, runner->mainBg, 2, 10 * runner->lane + 2, 50, 1, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->mainBg, 3, 10 * runner->lane + 3, 50, 6, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->mainBg, edge, 10 * runner->lane + 9, 50, 1, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->subBg, 2, 10 * runner->lane + 2, 50, 1, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->subBg, 3, 10 * runner->lane + 3, 50, 6, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->subBg, edge, 10 * runner->lane + 9, 50, 1, 2, TILEMAP_FILL_KEEP_PAL);
         ScheduleBgTilemapBufferTransfer(bgConfig, runner->mainBg);
         ScheduleBgTilemapBufferTransfer(bgConfig, runner->subBg);
         runner->finishLineState = 1;
@@ -455,12 +455,12 @@ static void PokeathlonHurdleDashRunner_DrawFinishLine(BgConfig *bgConfig, Pokeat
             y += 64;
         }
         runner->finishLineY = y;
-        FillBgTilemapRect(bgConfig, runner->mainBg, 96, 10 * runner->lane + 2, runner->finishLineY, 1, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->mainBg, 97, 10 * runner->lane + 3, runner->finishLineY, 6, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->mainBg, 98, 10 * runner->lane + 9, runner->finishLineY, 1, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->subBg, 96, 10 * runner->lane + 2, runner->finishLineY, 1, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->subBg, 97, 10 * runner->lane + 3, runner->finishLineY, 6, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->subBg, 98, 10 * runner->lane + 9, runner->finishLineY, 1, 2, 16);
+        FillBgTilemapRect(bgConfig, runner->mainBg, 96, 10 * runner->lane + 2, runner->finishLineY, 1, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->mainBg, 97, 10 * runner->lane + 3, runner->finishLineY, 6, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->mainBg, 98, 10 * runner->lane + 9, runner->finishLineY, 1, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->subBg, 96, 10 * runner->lane + 2, runner->finishLineY, 1, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->subBg, 97, 10 * runner->lane + 3, runner->finishLineY, 6, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->subBg, 98, 10 * runner->lane + 9, runner->finishLineY, 1, 2, TILEMAP_FILL_KEEP_PAL);
         ScheduleBgTilemapBufferTransfer(bgConfig, runner->mainBg);
         ScheduleBgTilemapBufferTransfer(bgConfig, runner->subBg);
         runner->finishLineState = 2;
@@ -482,12 +482,12 @@ static void PokeathlonHurdleDashRunner_DrawFinishLine(BgConfig *bgConfig, Pokeat
             u16 palette = 2;
             edge = (palette << 9) + palette;
         }
-        FillBgTilemapRect(bgConfig, runner->mainBg, 2, 10 * runner->lane + 2, runner->finishLineY, 1, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->mainBg, 3, 10 * runner->lane + 3, runner->finishLineY, 6, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->mainBg, edge, 10 * runner->lane + 9, runner->finishLineY, 1, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->subBg, 2, 10 * runner->lane + 2, runner->finishLineY, 1, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->subBg, 3, 10 * runner->lane + 3, runner->finishLineY, 6, 2, 16);
-        FillBgTilemapRect(bgConfig, runner->subBg, edge, 10 * runner->lane + 9, runner->finishLineY, 1, 2, 16);
+        FillBgTilemapRect(bgConfig, runner->mainBg, 2, 10 * runner->lane + 2, runner->finishLineY, 1, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->mainBg, 3, 10 * runner->lane + 3, runner->finishLineY, 6, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->mainBg, edge, 10 * runner->lane + 9, runner->finishLineY, 1, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->subBg, 2, 10 * runner->lane + 2, runner->finishLineY, 1, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->subBg, 3, 10 * runner->lane + 3, runner->finishLineY, 6, 2, TILEMAP_FILL_KEEP_PAL);
+        FillBgTilemapRect(bgConfig, runner->subBg, edge, 10 * runner->lane + 9, runner->finishLineY, 1, 2, TILEMAP_FILL_KEEP_PAL);
         ScheduleBgTilemapBufferTransfer(bgConfig, runner->mainBg);
         ScheduleBgTilemapBufferTransfer(bgConfig, runner->subBg);
         runner->finishLineState = 3;

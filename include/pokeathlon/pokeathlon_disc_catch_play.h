@@ -43,7 +43,7 @@ struct PokeathlonDiscCatchScoreboard {
     u8 participant; // the own one
     void *digitsFile;
     NNSG2dScreenData *digits;                // the score digits, copied to BG 6
-    Window windows[DISC_CATCH_PARTICIPANTS]; // names (the own one first)
+    Window windows[POKEATHLON_PARTICIPANTS]; // names (the own one first)
     ManagedSprite *sprites[DISC_CATCH_SCOREBOARD_SPRITES];
     u8 secondsColor; // 0, 1 at 20 seconds, 2 at 3
     u8 wraps;        // the packet's score is 7 bits
@@ -69,7 +69,7 @@ typedef struct PokeathlonDiscCatchCpuMon {
 struct PokeathlonDiscCatchCpu {
     enum HeapID heapId;
     PokeathlonCourseData *course;
-    PokeathlonDiscCatchCpuMon teams[DISC_CATCH_TEAM_SIZE][DISC_CATCH_TEAM_SIZE]; // at most 3 CPU participants
+    PokeathlonDiscCatchCpuMon teams[POKEATHLON_PARTICIPANTS - 1][POKEATHLON_TEAM_SIZE]; // at most 3 CPU participants
     u8 count;
 };
 

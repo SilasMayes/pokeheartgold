@@ -355,7 +355,7 @@ void PokeathlonCirclePushDisplay_Update(PokeathlonCirclePushDisplay *display, BO
                 }
                 PokeathlonCirclePushDisplayAnim_StartScoreboard(anim, display->bgConfig);
             }
-        } else if (mon != CIRCLE_PUSH_NO_MON && PokeathlonCirclePushDisplayAnim_TryStart(anim, CIRCLE_PUSH_DISPLAY_MON_PIC)) {
+        } else if (mon != POKEATHLON_NO_MON && PokeathlonCirclePushDisplayAnim_TryStart(anim, CIRCLE_PUSH_DISPLAY_MON_PIC)) {
             PlaySE(SEQ_SE_GS_PUSH02);
             PokeathlonCirclePushDisplayAnim_StartMonPic(anim, display->bgConfig, mon);
         }
@@ -399,7 +399,7 @@ static int PokeathlonCirclePushDisplayAnim_TakeNewMon(PokeathlonCirclePushDispla
             return i;
         }
     }
-    return CIRCLE_PUSH_NO_MON;
+    return POKEATHLON_NO_MON;
 }
 
 static BOOL PokeathlonCirclePushDisplayAnim_CanStart(PokeathlonCirclePushDisplayAnim *anim, int phase) {

@@ -102,7 +102,7 @@ typedef struct PokeathlonCirclePushEffects {
     PokeathlonCirclePushZoneMarkers *markers;
     s16 shakeOffset;
     u16 shakeStep;
-    u32 bounceMon; // CIRCLE_PUSH_NO_MON: none
+    u32 bounceMon; // POKEATHLON_NO_MON: none
     s16 bounceOffset;
     u16 bounceStep;
     PokeathlonCourseData *course;
@@ -195,8 +195,8 @@ typedef struct PokeathlonCirclePush {
     PokeathlonCirclePushMon mons[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE];
     int scores[POKEATHLON_PARTICIPANTS];
     PokeathlonCirclePushTouch touches[POKEATHLON_PARTICIPANTS];
-    u8 heldMons[POKEATHLON_PARTICIPANTS]; // per player, CIRCLE_PUSH_NO_MON: none
-    u8 packetTeam;  // team whose score the next packet carries
+    u8 heldMons[POKEATHLON_PARTICIPANTS]; // per player, POKEATHLON_NO_MON: none
+    u8 packetTeam;                        // team whose score the next packet carries
     u8 timerTick;
     u8 timer; // 0..43
     u8 round;
@@ -213,7 +213,7 @@ typedef struct PokeathlonCirclePush {
     u8 roundStart;
     u8 scoringDelay;
     u8 scoring;
-    u8 scoringMon; // CIRCLE_PUSH_NO_MON: none
+    u8 scoringMon; // POKEATHLON_NO_MON: none
     u8 scoringEffect;
     u8 scoringTimer;
     u8 scoringCount;

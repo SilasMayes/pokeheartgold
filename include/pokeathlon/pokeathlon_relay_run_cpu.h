@@ -14,7 +14,7 @@
 #define RELAY_RUN_CPU_CELLS     (RELAY_RUN_CPU_LANES * RELAY_RUN_CPU_COLUMNS)
 #define RELAY_RUN_CPU_CELL_SIZE 40
 #define RELAY_RUN_CPU_LOOKAHEAD (RELAY_RUN_CPU_COLUMNS * RELAY_RUN_CPU_CELL_SIZE)
-#define RELAY_RUN_CPU_NONE      RELAY_RUN_TEAMS // PokeathlonRelayRunCpu_Update: no team was looked at
+#define RELAY_RUN_CPU_NONE      POKEATHLON_PARTICIPANTS // PokeathlonRelayRunCpu_Update: no team was looked at
 
 // What the CPU sees of a team: the team and the collision centre of its runner (whole pixels).
 typedef struct PokeathlonRelayRunCpuTeam {
@@ -34,9 +34,9 @@ typedef struct PokeathlonRelayRunCpuObstacle {
 } PokeathlonRelayRunCpuObstacle;
 
 typedef struct PokeathlonRelayRunCpu {
-    PokeathlonRelayRunCpuTeam teams[RELAY_RUN_TEAMS];
+    PokeathlonRelayRunCpuTeam teams[POKEATHLON_PARTICIPANTS];
     PokeathlonRelayRunCpuObstacle obstacles[RELAY_RUN_OBSTACLES];
-    u8 lanes[RELAY_RUN_TEAMS]; // lane (0-3) of each team's runner
+    u8 lanes[POKEATHLON_PARTICIPANTS]; // lane (0-3) of each team's runner
     PokeathlonCourseCpuCell cells[RELAY_RUN_CPU_CELLS];
     u32 thinking; // looking at the CPU teams one per frame
     u8 cpuCount;

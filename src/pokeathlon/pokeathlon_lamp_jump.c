@@ -544,7 +544,7 @@ BOOL PokeathlonLampJump_Play(PokeathlonCourseData *course, u8 *state) {
         break;
     case LAMP_JUMP_PLAY_FADE_IN:
         PokeathlonLampJump_UpdateDisplay(course);
-        BeginNormalPaletteFade(FADE_SUB_THEN_MAIN, FADE_TYPE_DOWNWARD_IN, FADE_TYPE_DOWNWARD_IN, 0, 6, 1, lampJump->heapId);
+        BeginNormalPaletteFade(FADE_SUB_THEN_MAIN, FADE_TYPE_DOWNWARD_IN, FADE_TYPE_DOWNWARD_IN, RGB_BLACK, 6, 1, lampJump->heapId);
         (*state)++;
         break;
     case LAMP_JUMP_PLAY_WAIT_FADE_IN:
@@ -567,7 +567,7 @@ BOOL PokeathlonLampJump_Play(PokeathlonCourseData *course, u8 *state) {
         break;
     case LAMP_JUMP_PLAY_FINISH:
         if (PokeathlonCourse_RunFinish(course)) {
-            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0, 6, 1, lampJump->heapId);
+            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, lampJump->heapId);
             PokeathlonCourse_SetNextState(course, LAMP_JUMP_STATE_CALC_SCORES);
         }
         break;
@@ -633,22 +633,22 @@ static void PokeathlonLampJump_InitBgs(BgConfig *bgConfig) {
     modes = sLampJumpGraphicsModes;
     SetBothScreensModesAndDisable(&modes);
     main2 = sLampJumpBgTemplate_Main2;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_2, &main2, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_2, &main2, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_MAIN_2);
     main1 = sLampJumpBgTemplate_Main1;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_1, &main1, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_1, &main1, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_MAIN_1);
     main3 = sLampJumpBgTemplate_Main3;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_3, &main3, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_3, &main3, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_MAIN_3);
     sub0 = sLampJumpBgTemplate_Sub0;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_0, &sub0, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_0, &sub0, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_0);
     sub1 = sLampJumpBgTemplate_Sub1;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_1, &sub1, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_1, &sub1, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_1);
     sub2 = sLampJumpBgTemplate_Sub2;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_2, &sub2, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_2, &sub2, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_2);
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG3, GF_PLANE_TOGGLE_OFF);
 }
@@ -949,7 +949,7 @@ static void PokeathlonLampJump_Init3D(PokeathlonLampJump *lampJump) {
     G3X_AlphaTest(FALSE, 0);
     G3X_AlphaBlend(FALSE);
     G3X_EdgeMarking(FALSE);
-    G3X_SetClearColor(0, 0, 0x7FFF, 63, FALSE);
+    G3X_SetClearColor(RGB_BLACK, 0, GF_GX_CLEARCOLORDEPTH_MAX, 63, FALSE);
     reg_G3_VIEWPORT = 0xBFFF0000;
     lampJump->camera = Camera_New(lampJump->heapId);
     PokeathlonLampJump_InitCamera(lampJump);

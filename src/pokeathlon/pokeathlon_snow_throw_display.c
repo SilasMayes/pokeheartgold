@@ -48,7 +48,7 @@ static const WindowTemplate sSnowThrowDisplayNameWindowTemplate = {
 };
 
 // Where each Pokemon stands on the field (fx32 field units; the CPU's copy of the table).
-static const VecFx32 sSnowThrowCpuMonPositions[SNOW_THROW_MONS] = {
+static const VecFx32 sSnowThrowCpuMonPositions[POKEATHLON_MONS] = {
     { FX32_CONST(25), 0, FX32_CONST(61) },
     { FX32_CONST(33), 0, FX32_CONST(61) },
     { FX32_CONST(41), 0, FX32_CONST(61) },
@@ -79,7 +79,7 @@ PokeathlonSnowThrowDisplay *PokeathlonSnowThrowDisplay_New(enum HeapID heapId, B
 void PokeathlonSnowThrowDisplay_Delete(PokeathlonSnowThrowDisplay *display) {
     int i;
 
-    for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         Heap_Free(display->monPics[i].chars);
         Heap_Free(display->monPics[i].palette);
     }
@@ -112,7 +112,7 @@ void PokeathlonSnowThrowDisplay_LoadSpriteGraphics(PokeathlonSnowThrowDisplay *d
 void PokeathlonSnowThrowDisplay_CreateSprites(PokeathlonSnowThrowDisplay *display, PokeathlonCourseSpritePool *pool, PokeathlonCourseMonInfo *mons) {
     int i;
 
-    for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonCourseSpritePool_CreateSprite(pool, 3, NNS_G2D_VRAM_TYPE_2DSUB, 101, 5);
     }
     PokeathlonSnowThrowDisplay_CreatePicSprites(pool, display, mons);
@@ -145,7 +145,7 @@ void PokeathlonSnowThrowDisplay_SetScore(PokeathlonSnowThrowDisplay *display, u1
 }
 
 void PokeathlonSnowThrowDisplay_SetPicAnim(PokeathlonSnowThrowDisplay *display, u8 member, int anim) {
-    GF_ASSERT(member < SNOW_THROW_MEMBERS);
+    GF_ASSERT(member < POKEATHLON_TEAM_SIZE);
     PokeathlonCourseSpritePoolSprite_TryChangeAnim(display->picSprites[member], anim + member);
 }
 
@@ -183,10 +183,10 @@ void PokeathlonSnowThrowDisplay_UpdateShake(PokeathlonSnowThrowDisplay *display)
 // The shadows under the own team's pictures.
 
 void PokeathlonSnowThrowDisplay_SetMonShadows(PokeathlonSnowThrowDisplay *display, PokeathlonCourseSpritePool *pool, PokeathlonCourseSpriteResources *monResources) {
-    PokeathlonCoursePoint positions[SNOW_THROW_MEMBERS];
+    PokeathlonCoursePoint positions[POKEATHLON_TEAM_SIZE];
     int i;
 
-    for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         VecFx32 *position = PokeathlonCourseSpritePoolSprite_GetPosition(display->picSprites[i]);
         positions[i].x = position->x / FX32_ONE;
         positions[i].y = position->y / FX32_ONE;
@@ -198,7 +198,7 @@ static void PokeathlonSnowThrowDisplay_LoadMonPics(PokeathlonSnowThrowDisplay *d
     int i;
     PokepicTemplate template;
 
-    for (i = 0; i < SNOW_THROW_MEMBERS; mons++, i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; mons++, i++) {
         GetMonSpriteCharAndPlttNarcIdsEx(&template, mons->species, mons->gender, 0, mons->isShiny, mons->form, mons->personality);
         display->monPics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, display->heapId, mons->personality, FALSE, 0, mons->species);
         display->monPics[i].palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, display->heapId);
@@ -213,13 +213,13 @@ static void PokeathlonSnowThrowDisplay_CreatePicSprites(PokeathlonCourseSpritePo
     volatile int x;
     PokeathlonCourseMonInfo *mon;
 
-    for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonCourseSpritePool_CreateSprite(pool, 3, NNS_G2D_VRAM_TYPE_2DSUB, 101, 2);
     }
     mon = mons;
     i = 0;
     x = 16;
-    for (; i < SNOW_THROW_MEMBERS; i++) {
+    for (; i < POKEATHLON_TEAM_SIZE; i++) {
         display->picSprites[i] = PokeathlonCourseSpritePool_Take(pool, 101, 2);
         position.z = 0;
         position.x = x << FX32_SHIFT;
@@ -244,7 +244,7 @@ static void PokeathlonSnowThrowDisplay_CreatePicSprites(PokeathlonCourseSpritePo
 static void PokeathlonSnowThrowDisplay_TransferMonPics(PokeathlonSnowThrowDisplay *display) {
     u8 i;
 
-    for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         DC_FlushRange(display->monPics[i].chars, 3200);
         GXS_LoadOBJ(display->monPics[i].chars, display->picCharOffsets[i], 3200);
         DC_FlushRange(display->monPics[i].palette, 32);
@@ -260,7 +260,7 @@ static void PokeathlonSnowThrowDisplay_GetPicVramOffsets(PokeathlonCourseSpriteP
     NNSG2dImagePaletteProxy *palette = SpriteTransfer_GetPaletteProxy(plttResource, image);
     u8 i;
 
-    for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         display->picCharOffsets[i] = i * 0xD00 + 0x300 + NNS_G2dGetImageLocation(image, NNS_G2D_VRAM_TYPE_2DSUB);
         display->picPlttOffsets[i] = (i << 5) + 0x20 + NNS_G2dGetImagePaletteLocation(palette, NNS_G2D_VRAM_TYPE_2DSUB);
     }
@@ -317,7 +317,7 @@ PokeathlonSnowThrowCpu *PokeathlonSnowThrowCpu_New(enum HeapID heapId, int cpuCo
     PokeathlonSnowThrowCpu *cpu = Heap_Alloc(heapId, sizeof(PokeathlonSnowThrowCpu));
     MI_CpuFill8(cpu, 0, sizeof(PokeathlonSnowThrowCpu));
     cpu->cpuCount = cpuCount;
-    cpu->humanCount = SNOW_THROW_TEAMS - cpuCount;
+    cpu->humanCount = POKEATHLON_PARTICIPANTS - cpuCount;
     cpu->firstCpu = cpu->humanCount;
     cpu->interval = 40;
     cpu->timer = cpu->interval;
@@ -340,7 +340,7 @@ int PokeathlonSnowThrowCpu_Update(PokeathlonSnowThrowCpu *cpu, int elapsed) {
     int team;
     int mon;
 
-    if (cpu->humanCount == SNOW_THROW_TEAMS) {
+    if (cpu->humanCount == POKEATHLON_PARTICIPANTS) {
         return 0;
     }
 
@@ -352,7 +352,7 @@ int PokeathlonSnowThrowCpu_Update(PokeathlonSnowThrowCpu *cpu, int elapsed) {
 
     if (cpu->thinking) {
         team = cpu->firstCpu + cpu->cursor;
-        mon = cpu->member + team * SNOW_THROW_MEMBERS;
+        mon = cpu->member + team * POKEATHLON_TEAM_SIZE;
         GF_ASSERT(mon >= cpu->firstCpu);
         if ((cpu->balls[mon]->state == SNOW_THROW_BALL_NONE || cpu->balls[mon]->state == SNOW_THROW_BALL_HELD) && cpu->mons[mon]->condition != SNOW_THROW_STUNNED) {
             PokeathlonSnowThrowCpu_Think(cpu, team, mon, elapsed);
@@ -361,7 +361,7 @@ int PokeathlonSnowThrowCpu_Update(PokeathlonSnowThrowCpu *cpu, int elapsed) {
         cpu->cursor++;
         if (cpu->cursor >= cpu->cpuCount) {
             cpu->cursor = 0;
-            cpu->member = (cpu->member + 1) % SNOW_THROW_MEMBERS;
+            cpu->member = (cpu->member + 1) % POKEATHLON_TEAM_SIZE;
             cpu->thinking = FALSE;
         }
     }
@@ -377,8 +377,8 @@ static void PokeathlonSnowThrowCpu_Think(PokeathlonSnowThrowCpu *cpu, u8 team, u
     u8 count;
     u8 pick;
     f32 speed;
-    PokeathlonSnowThrowCpuTarget *targets[SNOW_THROW_MONS];
-    PokeathlonSnowThrowCpuTarget *sorted[SNOW_THROW_MONS - SNOW_THROW_MEMBERS];
+    PokeathlonSnowThrowCpuTarget *targets[POKEATHLON_MONS];
+    PokeathlonSnowThrowCpuTarget *sorted[POKEATHLON_MONS - POKEATHLON_TEAM_SIZE];
     VecFx32 direction;
     const VecFx32 *home;
 
@@ -402,7 +402,7 @@ static void PokeathlonSnowThrowCpu_Think(PokeathlonSnowThrowCpu *cpu, u8 team, u
         }
         return;
     }
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         cpu->targets[i].mon = cpu->mons[i];
         cpu->targets[i].index = i;
         cpu->targets[i].score = cpu->mons[i]->hits / 20 + LCRandom() % 21;
@@ -411,7 +411,7 @@ static void PokeathlonSnowThrowCpu_Think(PokeathlonSnowThrowCpu *cpu, u8 team, u
         }
         cpu->targets[i].score += (SNOW_THROW_MAX_ENERGY - cpu->mons[i]->energy) / 20;
     }
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         targets[i] = &cpu->targets[i];
     }
     count = PokeathlonSnowThrowCpu_SortTargets(team, targets, sorted);
@@ -442,7 +442,7 @@ u8 PokeathlonSnowThrowCpu_SortTargets(u32 ownTeam, PokeathlonSnowThrowCpuTarget 
     u8 count;
     u8 i;
     u8 bestCount;
-    PokeathlonSnowThrowCpuTargetNode nodes[SNOW_THROW_MONS - SNOW_THROW_MEMBERS + 1];
+    PokeathlonSnowThrowCpuTargetNode nodes[POKEATHLON_MONS - POKEATHLON_TEAM_SIZE + 1];
 
     nodes[0].prev = &nodes[1];
     nodes[0].next = &nodes[1];
@@ -450,8 +450,8 @@ u8 PokeathlonSnowThrowCpu_SortTargets(u32 ownTeam, PokeathlonSnowThrowCpuTarget 
     bestCount = 0;
     count = bestCount;
 
-    for (i = count; i < SNOW_THROW_MONS; i++) {
-        if (i / SNOW_THROW_MEMBERS != ownTeam) {
+    for (i = count; i < POKEATHLON_MONS; i++) {
+        if (i / POKEATHLON_TEAM_SIZE != ownTeam) {
             u8 j;
             PokeathlonSnowThrowCpuTarget *target = targets[i];
             PokeathlonSnowThrowCpuTargetNode *node = &nodes[count + 1];
@@ -487,7 +487,7 @@ u8 PokeathlonSnowThrowCpu_SortTargets(u32 ownTeam, PokeathlonSnowThrowCpuTarget 
         PokeathlonSnowThrowCpuTargetNode *cur = nodes[0].next;
         u16 best = cur->target->score;
         cur = &nodes[0];
-        for (i = 0; i < SNOW_THROW_MONS - SNOW_THROW_MEMBERS; i++) {
+        for (i = 0; i < POKEATHLON_MONS - POKEATHLON_TEAM_SIZE; i++) {
             cur = cur->next;
             sorted[i] = cur->target;
             if (best == sorted[i]->score) {

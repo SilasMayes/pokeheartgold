@@ -13,9 +13,6 @@
 // The computer participants of Ring Drop (the host runs them). Every few frames a computer Pokemon dashes, jumps,
 // chases an opponent, waits or walks to a random spot, and the more tired it is the more likely it goes to switch.
 
-#define RING_DROP_PARTICIPANTS    4
-#define RING_DROP_MON_FALLING_OUT 3
-#define RING_DROP_MON_RETURNING   4
 
 // One computer participant.
 struct PokeathlonRingDropCpuPlayer {
@@ -71,7 +68,7 @@ PokeathlonRingDropCpu *PokeathlonRingDropCpu_New(PokeathlonCourseData *course, e
     cpu->heapId = heapId;
     cpu->course = course;
     i = 0;
-    cpu->count = RING_DROP_PARTICIPANTS - participant;
+    cpu->count = POKEATHLON_PARTICIPANTS - participant;
     if (i < cpu->count) {
         PokeathlonRingDropCpuPlayer *player = cpu->players;
         do {
@@ -152,7 +149,7 @@ static void PokeathlonRingDropCpu_Decide(PokeathlonRingDropCpuPlayer *player) {
     memset(kinds, 0, sizeof(kinds));
     ownPosition = PokeathlonRingDrop_GetMonPosition(player->course, player->participant);
     direction = PokeathlonRingDrop_GetMonDirection(player->course, player->participant);
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (i == player->participant) {
             continue;
         }
@@ -173,7 +170,7 @@ static void PokeathlonRingDropCpu_Decide(PokeathlonRingDropCpuPlayer *player) {
     }
     dashChance = chance = 0;
     memset(best, 0, sizeof(best));
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (i != player->participant && best[1] < kinds[i]) {
             best[0] = i;
             best[1] = kinds[i];
@@ -210,10 +207,10 @@ static void PokeathlonRingDropCpu_Decide(PokeathlonRingDropCpuPlayer *player) {
         first = -1;
         second = -1;
         minStamina = 999;
-        for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+        for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
             stamina = PokeathlonRingDrop_GetMonStamina(player->course, i);
             state = PokeathlonRingDrop_GetMonState(player->course, i);
-            if (i != player->participant && state != RING_DROP_MON_FALLING_OUT && state != RING_DROP_MON_RETURNING && !PokeathlonRingDrop_IsMonSwitching(player->course, player->chased) && minStamina > stamina) {
+            if (i != player->participant && state != RING_DROP_MON_FALL_OUT && state != RING_DROP_MON_RETURN && !PokeathlonRingDrop_IsMonSwitching(player->course, player->chased) && minStamina > stamina) {
                 second = first;
                 first = i;
                 minStamina = stamina;
@@ -283,7 +280,7 @@ static void PokeathlonRingDropCpu_UpdatePlayer(PokeathlonRingDropCpuPlayer *play
     if (player->chasing && !player->goingToSwitch) {
         VecFx32 *chasedPosition;
         PokeathlonRingDrop_GetMonState(player->course, player->participant);
-        if (PokeathlonRingDrop_GetMonState(player->course, player->chased) == RING_DROP_MON_FALLING_OUT || PokeathlonRingDrop_IsMonSwitching(player->course, player->chased) || PokeathlonRingDrop_IsMonPushed(player->course, player->participant)) {
+        if (PokeathlonRingDrop_GetMonState(player->course, player->chased) == RING_DROP_MON_FALL_OUT || PokeathlonRingDrop_IsMonSwitching(player->course, player->chased) || PokeathlonRingDrop_IsMonPushed(player->course, player->participant)) {
             chasedPosition = PokeathlonRingDrop_GetMonPosition(player->course, player->participant);
             position[0] = chasedPosition->x >> FX32_SHIFT;
             position[1] = chasedPosition->y >> FX32_SHIFT;
@@ -300,7 +297,7 @@ static void PokeathlonRingDropCpu_UpdatePlayer(PokeathlonRingDropCpuPlayer *play
         if (PokeathlonRingDrop_CanMonAct(player->course, player->participant)) {
             int state = PokeathlonRingDrop_GetMonState(player->course, player->participant);
             PokeathlonRingDropCpu_GoSwitch(player);
-            if (state == RING_DROP_MON_FALLING_OUT) {
+            if (state == RING_DROP_MON_FALL_OUT) {
                 player->goingToSwitch = FALSE;
             }
         }

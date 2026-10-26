@@ -55,12 +55,12 @@ void MTX_MultVec43(const VecFx32 *vec, const MtxFx43 *mtx, VecFx32 *result);
 
 // The animation state (facing) of each other team's Pokemon, by its place in the view.
 typedef struct PokeathlonSnowThrowViewAnims {
-    u32 animStates[SNOW_THROW_TEAMS - 1];
+    u32 animStates[POKEATHLON_PARTICIPANTS - 1];
 } PokeathlonSnowThrowViewAnims;
 
 // Where the marks of the other teams' colours are on the field screen.
 typedef struct PokeathlonSnowThrowTeamMarkPositions {
-    VecFx32 positions[SNOW_THROW_TEAMS - 1];
+    VecFx32 positions[POKEATHLON_PARTICIPANTS - 1];
 } PokeathlonSnowThrowTeamMarkPositions;
 
 void MATH_QSort(void *base, u32 count, u32 width, int (*compare)(const void *, const void *), void *context);
@@ -122,7 +122,7 @@ static const GraphicsModes sSnowThrowGraphicsModes = {
     ._2d3dMode = GX_BG0_AS_2D,
 };
 
-static const WindowTemplate sSnowThrowNameWindowTemplates[SNOW_THROW_TEAMS - 1] = {
+static const WindowTemplate sSnowThrowNameWindowTemplates[POKEATHLON_PARTICIPANTS - 1] = {
     {
         .bgId = GF_BG_LYR_MAIN_0,
         .left = 24,
@@ -257,9 +257,9 @@ static const BgTemplate sSnowThrowBgTemplate_Sub0 = {
     .mosaic = FALSE,
 };
 
-static const s32 sSnowThrowOtherMonX[SNOW_THROW_MONS - SNOW_THROW_MEMBERS] = { 246, 248, 249, 199, 175, 150, 82, 63, 37 };
+static const s32 sSnowThrowOtherMonX[POKEATHLON_MONS - POKEATHLON_TEAM_SIZE] = { 246, 248, 249, 199, 175, 150, 82, 63, 37 };
 
-static const s32 sSnowThrowOtherMonY[SNOW_THROW_MONS - SNOW_THROW_MEMBERS] = { 170, 130, 100, 70, 70, 70, 100, 130, 170 };
+static const s32 sSnowThrowOtherMonY[POKEATHLON_MONS - POKEATHLON_TEAM_SIZE] = { 170, 130, 100, 70, 70, 70, 100, 130, 170 };
 
 static const PokeathlonSnowThrowTeamMarkPositions sSnowThrowTeamMarkPositions = {
     .positions = {
@@ -283,7 +283,7 @@ static const GraphicsBanks sSnowThrowGraphicsBanks = {
 };
 
 // Which of two Pokemon at the same depth is drawn in front, by view (own team) and Pokemon.
-static const u8 sSnowThrowDrawOrder[SNOW_THROW_TEAMS][SNOW_THROW_MONS] = {
+static const u8 sSnowThrowDrawOrder[POKEATHLON_PARTICIPANTS][POKEATHLON_MONS] = {
     { 11, 10, 9, 8, 7, 6, 3, 4, 5, 2, 1, 0 },
     { 2, 1, 0, 11, 10, 9, 8, 7, 6, 3, 4, 5 },
     { 3, 4, 5, 2, 1, 0, 11, 10, 9, 8, 7, 6 },
@@ -291,7 +291,7 @@ static const u8 sSnowThrowDrawOrder[SNOW_THROW_TEAMS][SNOW_THROW_MONS] = {
 };
 
 // Where each Pokemon stands on the field (fx32 field units, unturned).
-static const VecFx32 sSnowThrowMonPositions[SNOW_THROW_MONS] = {
+static const VecFx32 sSnowThrowMonPositions[POKEATHLON_MONS] = {
     { FX32_CONST(25), 0, FX32_CONST(61) },
     { FX32_CONST(33), 0, FX32_CONST(61) },
     { FX32_CONST(41), 0, FX32_CONST(61) },
@@ -307,18 +307,18 @@ static const VecFx32 sSnowThrowMonPositions[SNOW_THROW_MONS] = {
 };
 
 // Draw priorities of the other teams' Pokemon, by their place in the view.
-static const u8 sSnowThrowOtherMonDrawPriorities[SNOW_THROW_MONS - SNOW_THROW_MEMBERS] = { 0, 2, 4, 6, 7, 8, 5, 3, 1 };
+static const u8 sSnowThrowOtherMonDrawPriorities[POKEATHLON_MONS - POKEATHLON_TEAM_SIZE] = { 0, 2, 4, 6, 7, 8, 5, 3, 1 };
 
 // The Pokemon the k-th of the other teams' nine is (they are listed from the team after the own one on).
 static inline u8 PokeathlonSnowThrow_OtherMon(int own, int k) {
-    return ((u8)(((own + 1) * SNOW_THROW_MEMBERS) % SNOW_THROW_MONS) + k) % SNOW_THROW_MONS;
+    return ((u8)(((own + 1) * POKEATHLON_TEAM_SIZE) % POKEATHLON_MONS) + k) % POKEATHLON_MONS;
 }
 
 // Set-up, a step per frame (PokeathlonCourse_GetEventInitState): heaps and screens, the top screen and the CPU,
 // sprites, the Pokemon graphics, then the field once they are loaded.
 
 BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
-    PokeathlonCourseMonInfo infos[SNOW_THROW_MONS];
+    PokeathlonCourseMonInfo infos[POKEATHLON_MONS];
     PokeathlonCourseMonGfxTemplate template;
     s32 stats[4][5];
     PokeathlonSnowThrow *work;
@@ -376,7 +376,7 @@ BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
     case SNOW_THROW_INIT_CREATE_DISPLAY:
         work->display = PokeathlonSnowThrowDisplay_New(work->heapId, work->bgConfig, course);
         count = PokeathlonCourse_GetParticipantCount(course);
-        work->cpu = PokeathlonSnowThrowCpu_New(work->heapId, SNOW_THROW_TEAMS - count, PokeathlonCourse_GetMode(course));
+        work->cpu = PokeathlonSnowThrowCpu_New(work->heapId, POKEATHLON_PARTICIPANTS - count, PokeathlonCourse_GetMode(course));
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
     case SNOW_THROW_INIT_CREATE_SPRITES: {
@@ -401,22 +401,22 @@ BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
     case SNOW_THROW_INIT_LOAD_MONS:
         // the other teams' Pokemon first, the own three last
         own = (u8)PokeathlonCourse_GetNetId(course);
-        for (i = 0; i < SNOW_THROW_MONS; i++) {
+        for (i = 0; i < POKEATHLON_MONS; i++) {
             count = PokeathlonSnowThrow_OtherMon(own, i);
-            member = count % SNOW_THROW_MEMBERS;
-            participant = count / SNOW_THROW_MEMBERS;
+            member = count % POKEATHLON_TEAM_SIZE;
+            participant = count / POKEATHLON_TEAM_SIZE;
             PokeathlonCourse_GetMonInfo(course, participant, member, &infos[i]);
             template.sizeTypes[i] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, participant, member));
         }
         PokeathlonSnowThrowDisplay_CreateSprites(work->display, work->spritePool, &infos[9]);
-        for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
+        for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
             VecFx32 position = { 0, 0, 0 };
             PokeathlonCourseMonInfo *info = &infos[9 + i];
             u8 height = GetMonPicHeightBySpeciesGenderForm(info->species, info->gender, 0, info->form, info->personality);
             position.x = (16 + i * 50) << FX32_SHIFT;
             position.y = (height + 376) << FX32_SHIFT;
             position.y -= FX32_ONE * 16;
-            PokeathlonCourseSpritePoolSprite_SetPosition(work->mons[own * SNOW_THROW_MEMBERS + i].stunSprite, &position);
+            PokeathlonCourseSpritePoolSprite_SetPosition(work->mons[own * POKEATHLON_TEAM_SIZE + i].stunSprite, &position);
         }
         template.loadAtOnce = FALSE;
         template.priority = 3;
@@ -435,14 +435,14 @@ BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
             PokeathlonCourse_SetVBlankIntrCB((PokeathlonCourseData *)work->bgConfig);
             PokeathlonCourse_SetEventDrawEnabled(course, TRUE);
             own = PokeathlonCourse_GetNetId(course);
-            for (k = 0; k < SNOW_THROW_MONS - SNOW_THROW_MEMBERS; k++) {
+            for (k = 0; k < POKEATHLON_MONS - POKEATHLON_TEAM_SIZE; k++) {
                 work->monObjects[k] = PokeathlonCourseMonObjects_Get(work->monObjectList, k);
                 object = work->monObjects[k];
                 PokeathlonCourseMonObject_SetDrawFlag(object, TRUE);
-                mon = ((u8)(((own + 1) * SNOW_THROW_MEMBERS) % SNOW_THROW_MONS) + k) % SNOW_THROW_MONS;
+                mon = ((u8)(((own + 1) * POKEATHLON_TEAM_SIZE) % POKEATHLON_MONS) + k) % POKEATHLON_MONS;
                 x = sSnowThrowOtherMonX[k];
                 y = sSnowThrowOtherMonY[k];
-                PokeathlonCourseMonObject_SetAnimState(object, anims.animStates[k / SNOW_THROW_MEMBERS]);
+                PokeathlonCourseMonObject_SetAnimState(object, anims.animStates[k / POKEATHLON_TEAM_SIZE]);
                 PokeathlonCourseObject_SetGroundPosition(object, x, y);
                 {
                     VecFx32 markPosition = { 0, 0, 0 };
@@ -460,9 +460,9 @@ BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
             }
             ReadWholeNarcMemberByIdPair(stats, NARC_a_1_7_0, 3);
             work->timer = SNOW_THROW_DURATION;
-            for (team = 0, first = 0; team < SNOW_THROW_TEAMS; first += SNOW_THROW_MEMBERS, team++) {
+            for (team = 0, first = 0; team < POKEATHLON_PARTICIPANTS; first += POKEATHLON_TEAM_SIZE, team++) {
                 work->heldBall[team] = SNOW_THROW_NONE;
-                for (j = 0; j < SNOW_THROW_MEMBERS; j++) {
+                for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
                     teamMon = &work->mons[j + first];
                     PokeathlonSnowThrow_InitMon(course, stats, team, j, teamMon);
                     if (PokeathlonCourse_GetNetId(course) == 0) {
@@ -504,7 +504,7 @@ BOOL PokeathlonSnowThrow_ShowResults(PokeathlonCourseData *course) {
     PokeathlonCourseScoreList *gfx = PokeathlonCourse_GetGraphicsSystem(course);
     int i;
     PokeathlonCourseScoreList_Init(gfx);
-    for (i = 0; i < SNOW_THROW_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonCourse_AddScoreEntry(course, gfx, i, PokeathlonCourse_GetReceivedScore(course, (u8)i), 0, 3, msg_0309_00299);
     }
     PokeathlonCourseScoreList_Rank(gfx, 1);
@@ -529,7 +529,7 @@ BOOL PokeathlonSnowThrow_Exit(PokeathlonCourseData *course) {
     FreeBgTilemapBuffer(work->bgConfig, GF_BG_LYR_SUB_2);
     FreeBgTilemapBuffer(work->bgConfig, GF_BG_LYR_SUB_3);
     RemoveWindow(&work->scoreWindow);
-    for (i = 0, window = work->nameWindows; i < SNOW_THROW_TEAMS - 1; i++, window++) {
+    for (i = 0, window = work->nameWindows; i < POKEATHLON_PARTICIPANTS - 1; i++, window++) {
         RemoveWindow(window);
     }
     Heap_Free(work->bgConfig);
@@ -628,7 +628,7 @@ static void PokeathlonSnowThrow_CreateSprites(PokeathlonSnowThrow *work, Pokeath
         Sprite_SetDrawPriority(work->timerDigits[i], 2);
     }
     PokeathlonSnowThrow_SetTimerDigits(work, SNOW_THROW_DURATION / 30);
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         work->balls[i].index = i;
         work->balls[i].sprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 3, NNS_G2D_VRAM_TYPE_2DBOTH, 106, 3);
         work->balls[i].shadowSprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 3, NNS_G2D_VRAM_TYPE_2DBOTH, 106, 4);
@@ -638,7 +638,7 @@ static void PokeathlonSnowThrow_CreateSprites(PokeathlonSnowThrow *work, Pokeath
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->balls[i].shadowSprite, 1000);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->balls[i].splashSprite, 5);
     }
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         work->mons[i].stunSprite = PokeathlonCourseSpritePool_CreateAndTake(pool, 3, NNS_G2D_VRAM_TYPE_2DBOTH, 106, 9);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->mons[i].stunSprite, 2);
         scale.x = FX32_ONE;
@@ -647,7 +647,7 @@ static void PokeathlonSnowThrow_CreateSprites(PokeathlonSnowThrow *work, Pokeath
         PokeathlonCourseSpritePoolSprite_SetPosition(work->mons[i].stunSprite, &scale);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->mons[i].stunSprite, 4);
     }
-    for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         work->hitMarks[i] = PokeathlonCourseSpritePool_CreateAndTake(pool, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 105, 11);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->hitMarks[i], 6);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->hitMarks[i], 2);
@@ -661,16 +661,16 @@ static void PokeathlonSnowThrow_CreateSprites(PokeathlonSnowThrow *work, Pokeath
     PokeathlonCourseSpritePoolSprite_Show(work->frameSprite, TRUE, TRUE);
     PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->frameSprite, 2);
     teamMarkPositions = sSnowThrowTeamMarkPositions;
-    anim = (own + 1) % SNOW_THROW_TEAMS;
-    for (i = 0; i < SNOW_THROW_TEAMS - 1; i++) {
+    anim = (own + 1) % POKEATHLON_PARTICIPANTS;
+    for (i = 0; i < POKEATHLON_PARTICIPANTS - 1; i++) {
         work->teamMarks[i] = PokeathlonCourseSpritePool_CreateAndTake(pool, 3, NNS_G2D_VRAM_TYPE_2DMAIN, 105, 8);
         PokeathlonCourseSpritePoolSprite_SetPosition(work->teamMarks[i], &teamMarkPositions.positions[i]);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->teamMarks[i], anim + 1);
         PokeathlonCourseSpritePoolSprite_Show(work->teamMarks[i], TRUE, TRUE);
-        anim = (anim + 1) % SNOW_THROW_TEAMS;
+        anim = (anim + 1) % POKEATHLON_PARTICIPANTS;
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->teamMarks[i], 3);
     }
-    for (i = 0; i < SNOW_THROW_MONS - SNOW_THROW_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_MONS - POKEATHLON_TEAM_SIZE; i++) {
         work->tiredMarks[i] = PokeathlonCourseSpritePool_CreateAndTake(pool, 3, NNS_G2D_VRAM_TYPE_2DMAIN, 105, 10);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->tiredMarks[i], 0);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->tiredMarks[i], 4);
@@ -720,7 +720,7 @@ BOOL PokeathlonSnowThrow_SaveScores(PokeathlonCourseData *course, u8 *state) {
         return TRUE;
     }
     packet = (PokeathlonSnowThrowPacket *)PokeathlonCourse_ToBytes(&link->packetToSend);
-    for (i = 0; i < SNOW_THROW_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonCourse_SetEventScore(course, (u8)i, packet->teams[i] & 0x3FF);
     }
     return TRUE;
@@ -759,7 +759,7 @@ static void PokeathlonSnowThrow_UpdateHost(PokeathlonCourseData *course) {
         work->timer--;
     }
     PokeathlonCourse_ToBytes(&block[1]);
-    for (i = 0; i < SNOW_THROW_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         touch = (PokeathlonSnowThrowTouch *)PokeathlonCourse_ToBytes(&(block + 2)[i]);
         if (touch->held) {
             if (work->presses[i].pressed && work->presses[i].held) {
@@ -882,8 +882,8 @@ static void PokeathlonSnowThrow_UpdateHost(PokeathlonCourseData *course) {
 // Host: packs what everyone draws (see PokeathlonSnowThrowPacket).
 
 static void PokeathlonSnowThrow_PackPacket(PokeathlonSnowThrow *work, PokeathlonSnowThrowPacket *packet) {
-    u8 sizes[SNOW_THROW_TEAMS] = { 0, 0, 0, 0 };
-    u16 hits[SNOW_THROW_TEAMS] = { 0, 0, 0, 0 };
+    u8 sizes[POKEATHLON_PARTICIPANTS] = { 0, 0, 0, 0 };
+    u16 hits[POKEATHLON_PARTICIPANTS] = { 0, 0, 0, 0 };
     int i;
     u32 states = 0;
     u8 hit, wasHit;
@@ -893,7 +893,7 @@ static void PokeathlonSnowThrow_PackPacket(PokeathlonSnowThrow *work, Pokeathlon
 
 #define BALL ((PokeathlonSnowThrowBall *)(ballBytes + offsetof(PokeathlonSnowThrow, balls)))
 #define MON  ((PokeathlonSnowThrowMon *)(monBytes + offsetof(PokeathlonSnowThrow, mons)))
-    for (i = 0, shift = 0, ballBytes = (u8 *)work, monBytes = (u8 *)work, packetBytes = (u8 *)packet; i < SNOW_THROW_MONS; shift += 2, ballBytes += sizeof(PokeathlonSnowThrowBall), packetBytes += sizeof(u16), monBytes += sizeof(PokeathlonSnowThrowMon), i++) {
+    for (i = 0, shift = 0, ballBytes = (u8 *)work, monBytes = (u8 *)work, packetBytes = (u8 *)packet; i < POKEATHLON_MONS; shift += 2, ballBytes += sizeof(PokeathlonSnowThrowBall), packetBytes += sizeof(u16), monBytes += sizeof(PokeathlonSnowThrowMon), i++) {
         states |= (u32)BALL->state << shift;
         wasHit = MON->wasHit;
         hit = BALL->hit != 0 ? 1 : 0;
@@ -910,8 +910,8 @@ static void PokeathlonSnowThrow_PackPacket(PokeathlonSnowThrow *work, Pokeathlon
         } else if (z > 64) {
             z = 64;
         }
-        team = i / SNOW_THROW_MEMBERS;
-        sizes[team] += BALL->size << ((i % SNOW_THROW_MEMBERS) * 2);
+        team = i / POKEATHLON_TEAM_SIZE;
+        sizes[team] += BALL->size << ((i % POKEATHLON_TEAM_SIZE) * 2);
         {
             int value = (x - 1) + ((z - 1) << 6) + (wasHit << 12) + (hit << 13);
             value += MON->condition << 14;
@@ -924,7 +924,7 @@ static void PokeathlonSnowThrow_PackPacket(PokeathlonSnowThrow *work, Pokeathlon
     }
 #undef BALL
 #undef MON
-    for (i = 0; i < SNOW_THROW_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         packet->teams[i] = (sizes[i] << 10) + hits[i];
     }
     packet->flags = states;
@@ -1014,16 +1014,16 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
     PokeathlonSnowThrow_SetTimerDigits(work, seconds == 0 ? 0 : (u8)(seconds - 1));
     PokeathlonSnowThrowDisplay_SetScore(work->display, packet->teams[own] & 0x3FF);
     // where the own snowballs hit someone
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
-        if ((u8)((packet->mons[i] >> 13) & 1) && own == i / SNOW_THROW_MEMBERS) {
-            PokeathlonCourseSpritePoolSprite_Show(work->hitMarks[(u8)(i % SNOW_THROW_MEMBERS)], TRUE, TRUE);
-            PokeathlonCourseSpritePoolSprite_SetAnim(work->hitMarks[(u8)(i % SNOW_THROW_MEMBERS)], 6);
+    for (i = 0; i < POKEATHLON_MONS; i++) {
+        if ((u8)((packet->mons[i] >> 13) & 1) && own == i / POKEATHLON_TEAM_SIZE) {
+            PokeathlonCourseSpritePoolSprite_Show(work->hitMarks[(u8)(i % POKEATHLON_TEAM_SIZE)], TRUE, TRUE);
+            PokeathlonCourseSpritePoolSprite_SetAnim(work->hitMarks[(u8)(i % POKEATHLON_TEAM_SIZE)], 6);
             fieldX = packet->mons[i] & 0x3F;
             fieldZ = (packet->mons[i] >> 6) & 0x3F;
             fieldX++;
             fieldZ++;
             if (own != 0) {
-                turns = SNOW_THROW_TEAMS - own;
+                turns = POKEATHLON_PARTICIPANTS - own;
                 hitFrom.x = fieldX << FX32_SHIFT;
                 hitFrom.z = fieldZ << FX32_SHIFT;
                 hitFrom.y = 0;
@@ -1042,13 +1042,13 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
             hitPosition.y = hitY << FX32_SHIFT;
             hitPosition.z = 0;
             hitPosition.y = (hitY - 8 - hitY / 20) << FX32_SHIFT;
-            PokeathlonCourseSpritePoolSprite_SetPosition(work->hitMarks[(u8)(i % SNOW_THROW_MEMBERS)], &hitPosition);
+            PokeathlonCourseSpritePoolSprite_SetPosition(work->hitMarks[(u8)(i % POKEATHLON_TEAM_SIZE)], &hitPosition);
             PlaySE(SEQ_SE_GS_POINT3);
         }
     }
     // the own team, on the top screen
-    for (k = 0; k < SNOW_THROW_MEMBERS; k++) {
-        mon = own * SNOW_THROW_MEMBERS + k;
+    for (k = 0; k < POKEATHLON_TEAM_SIZE; k++) {
+        mon = own * POKEATHLON_TEAM_SIZE + k;
         condition = (packet->mons[mon] >> 14) & 3;
         if (condition == SNOW_THROW_STUNNED) {
             PokeathlonCourseSpritePoolSprite_Show(work->mons[mon].stunSprite, TRUE, TRUE);
@@ -1101,7 +1101,7 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
         }
     }
     // the other teams' Pokemon on the field
-    for (k = 0; k < SNOW_THROW_MONS - SNOW_THROW_MEMBERS; k++) {
+    for (k = 0; k < POKEATHLON_MONS - POKEATHLON_TEAM_SIZE; k++) {
         mon = PokeathlonSnowThrow_OtherMon(own, k);
         condition = (packet->mons[mon] >> 14) & 3;
         if (condition == SNOW_THROW_STUNNED) {
@@ -1146,7 +1146,7 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
         }
     }
     // the snowballs
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         state = (packet->flags >> (i * 2)) & 3;
         if (state == SNOW_THROW_BALL_FLYING || state == SNOW_THROW_BALL_HELD) {
             work->balls[i].splashShown = FALSE;
@@ -1156,13 +1156,13 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
                 PokeathlonCourseSpritePoolSprite_Show(work->balls[i].shadowSprite, TRUE, FALSE);
             }
             PokeathlonCourseSpritePoolSprite_Show(work->balls[i].sprite, TRUE, TRUE);
-            team = i / SNOW_THROW_MEMBERS;
-            member = i % SNOW_THROW_MEMBERS;
-            size = ((u8)((packet->teams[i / SNOW_THROW_MEMBERS] >> 10) & 0x3F) >> (member * 2)) & 3;
+            team = i / POKEATHLON_TEAM_SIZE;
+            member = i % POKEATHLON_TEAM_SIZE;
+            size = ((u8)((packet->teams[i / POKEATHLON_TEAM_SIZE] >> 10) & 0x3F) >> (member * 2)) & 3;
             ballX = (packet->mons[i] & 0x3F) + 1;
             ballZ = ((packet->mons[i] >> 6) & 0x3F) + 1;
             if (own != 0) {
-                turns = SNOW_THROW_TEAMS - own;
+                turns = POKEATHLON_PARTICIPANTS - own;
                 ballFrom.x = ballX << FX32_SHIFT;
                 ballFrom.z = ballZ << FX32_SHIFT;
                 ballFrom.y = 0;
@@ -1204,10 +1204,10 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
                 PokeathlonCourseSpritePoolSprite_SetPosition(work->balls[i].splashSprite, PokeathlonCourseSpritePoolSprite_GetPosition(work->balls[i].sprite));
                 PokeathlonCourseSpritePoolSprite_SetAnim(work->balls[i].splashSprite, 3);
                 PokeathlonCourseSpritePoolSprite_Show(work->balls[i].splashSprite, TRUE, TRUE);
-                if (i / SNOW_THROW_MEMBERS == own) {
+                if (i / POKEATHLON_TEAM_SIZE == own) {
                     PlaySE(SEQ_SE_GS_TAMA3);
-                    work->unk5EF[i % SNOW_THROW_MEMBERS] = 0;
-                    work->shownSizes[i % SNOW_THROW_MEMBERS] = 0;
+                    work->unk5EF[i % POKEATHLON_TEAM_SIZE] = 0;
+                    work->shownSizes[i % POKEATHLON_TEAM_SIZE] = 0;
                 }
             }
         }
@@ -1244,7 +1244,7 @@ static u8 PokeathlonSnowThrow_FindOwnMonAt(PokeathlonSnowThrow *work, u8 team, u
         position = turned;
     }
     *out = position;
-    for (i = team * SNOW_THROW_MEMBERS; i < (team + 1) * SNOW_THROW_MEMBERS; i++) {
+    for (i = team * POKEATHLON_TEAM_SIZE; i < (team + 1) * POKEATHLON_TEAM_SIZE; i++) {
         VEC_Subtract(&sSnowThrowMonPositions[i], &position, &diff);
         if (VEC_Mag(&diff) <= 4 * FX32_ONE) {
             return i;
@@ -1272,7 +1272,7 @@ static void PokeathlonSnowThrow_InitWindows(PokeathlonSnowThrow *work) {
     AddWindow(work->bgConfig, &work->scoreWindow, &sSnowThrowScoreWindowTemplate);
     BG_FillCharDataRange(work->bgConfig, GF_BG_LYR_MAIN_3, 0, 1, 0);
     FillWindowPixelBuffer(&work->scoreWindow, 0);
-    for (i = 0; i < SNOW_THROW_TEAMS - 1; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS - 1; i++) {
         AddWindow(work->bgConfig, &work->nameWindows[i], &sSnowThrowNameWindowTemplates[i]);
         FillWindowPixelBuffer(&work->nameWindows[i], 0);
     }
@@ -1302,7 +1302,7 @@ static void PokeathlonSnowThrow_UpdateMons(PokeathlonCourseData *course) {
     PokeathlonSnowThrow *work = PokeathlonCourse_GetWork(course);
     int i;
 
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         if (work->mons[i].stunTimer != 0) {
             work->mons[i].stunTimer--;
         }
@@ -1326,7 +1326,7 @@ static void PokeathlonSnowThrow_MoveBalls(PokeathlonCourseData *course) {
     int i;
     BOOL gone;
 
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         gone = FALSE;
         if (work->balls[i].state == SNOW_THROW_BALL_FLYING) {
             VEC_MultAdd(FX32_ONE, &work->balls[i].velocity, &work->balls[i].position, &work->balls[i].position);
@@ -1366,14 +1366,14 @@ static void PokeathlonSnowThrow_HitMons(PokeathlonCourseData *course, Pokeathlon
     u8 lost;
     VecFx32 diff;
 
-    for (j = 0; j < SNOW_THROW_MONS; j++) {
+    for (j = 0; j < POKEATHLON_MONS; j++) {
         work->mons[j].wasHit = FALSE;
-        for (i = 0; i < SNOW_THROW_MONS; i++) {
+        for (i = 0; i < POKEATHLON_MONS; i++) {
             if (work->balls[i].state != SNOW_THROW_BALL_FLYING) {
                 continue;
             }
-            team = i / SNOW_THROW_MEMBERS;
-            if (team == j / SNOW_THROW_MEMBERS) {
+            team = i / POKEATHLON_TEAM_SIZE;
+            if (team == j / POKEATHLON_TEAM_SIZE) {
                 continue;
             }
             VEC_Subtract(&sSnowThrowMonPositions[j], &work->balls[i].position, &diff);
@@ -1381,7 +1381,7 @@ static void PokeathlonSnowThrow_HitMons(PokeathlonCourseData *course, Pokeathlon
                 continue;
             }
             work->balls[i].state = SNOW_THROW_BALL_SPLASHED;
-            ((PokeathlonSnowThrowAddMonCounterFunc)PokeathlonCourse_AddMonCounter)(course, team, i % SNOW_THROW_MEMBERS, 3, 1);
+            ((PokeathlonSnowThrowAddMonCounterFunc)PokeathlonCourse_AddMonCounter)(course, team, i % POKEATHLON_TEAM_SIZE, 3, 1);
             work->mons[i].hits++;
             if (work->mons[i].hits > POKEATHLON_SCORE_MAX) {
                 work->mons[i].hits = POKEATHLON_SCORE_MAX;
@@ -1419,11 +1419,11 @@ static void PokeathlonSnowThrow_HitMons(PokeathlonCourseData *course, Pokeathlon
             if (work->mons[j].stunTimer == 0) {
                 if (lost > 40) {
                     work->mons[j].stunTimer = lost;
-                    ((PokeathlonSnowThrowAddMonCounterFunc)PokeathlonCourse_AddMonCounter)(course, j / SNOW_THROW_MEMBERS, j % SNOW_THROW_MEMBERS, 1, 1);
+                    ((PokeathlonSnowThrowAddMonCounterFunc)PokeathlonCourse_AddMonCounter)(course, j / POKEATHLON_TEAM_SIZE, j % POKEATHLON_TEAM_SIZE, 1, 1);
                 }
             } else {
                 work->mons[j].stunTimer += lost;
-                ((PokeathlonSnowThrowAddMonCounterFunc)PokeathlonCourse_AddMonCounter)(course, j / SNOW_THROW_MEMBERS, j % SNOW_THROW_MEMBERS, 1, 1);
+                ((PokeathlonSnowThrowAddMonCounterFunc)PokeathlonCourse_AddMonCounter)(course, j / POKEATHLON_TEAM_SIZE, j % POKEATHLON_TEAM_SIZE, 1, 1);
             }
         }
     }
@@ -1431,19 +1431,19 @@ static void PokeathlonSnowThrow_HitMons(PokeathlonCourseData *course, Pokeathlon
 
 // Host: two flying (or held) snowballs closer than 4 units both splash.
 static void PokeathlonSnowThrow_CollideBalls(PokeathlonSnowThrow *work) {
-    u8 splash[SNOW_THROW_MONS];
+    u8 splash[POKEATHLON_MONS];
     VecFx32 diff;
     int i;
     int j;
 
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         splash[i] = FALSE;
     }
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         switch (work->balls[i].state) {
         case SNOW_THROW_BALL_FLYING:
         case SNOW_THROW_BALL_HELD:
-            for (j = 0; j < SNOW_THROW_MONS; j++) {
+            for (j = 0; j < POKEATHLON_MONS; j++) {
                 if (i == j) {
                     continue;
                 }
@@ -1461,7 +1461,7 @@ static void PokeathlonSnowThrow_CollideBalls(PokeathlonSnowThrow *work) {
             break;
         }
     }
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         if (splash[i]) {
             work->balls[i].state = SNOW_THROW_BALL_SPLASHED;
             work->balls[i].size = 0;
@@ -1482,8 +1482,8 @@ static void PokeathlonSnowThrow_PrintNames(PokeathlonSnowThrow *work, Pokeathlon
     i = 0;
     participant = own + 1;
     window = work->nameWindows;
-    for (; i < SNOW_THROW_TEAMS - 1; i++) {
-        name = PlayerProfile_GetPlayerName_NewString(PokeathlonCourse_GetPlayerProfileFromData(course, (u8)(participant % SNOW_THROW_TEAMS)), work->heapId);
+    for (; i < POKEATHLON_PARTICIPANTS - 1; i++) {
+        name = PlayerProfile_GetPlayerName_NewString(PokeathlonCourse_GetPlayerProfileFromData(course, (u8)(participant % POKEATHLON_PARTICIPANTS)), work->heapId);
         AddTextPrinterParameterizedWithColor(window, 0, name, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
         String_Delete(name);
         CopyWindowToVram(window);
@@ -1538,19 +1538,19 @@ static int PokeathlonSnowThrow_CompareDrawOrder(const void *a, const void *b) {
 
 // The snowballs and their shadows overlap in the order of their y on the screen.
 static void PokeathlonSnowThrow_SortSprites(PokeathlonSnowThrow *work, u16 own) {
-    PokeathlonSnowThrowDrawOrder orders[SNOW_THROW_MONS];
+    PokeathlonSnowThrowDrawOrder orders[POKEATHLON_MONS];
     u8 i;
     u8 ball;
     VecFx32 *position;
 
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         position = PokeathlonCourseSpritePoolSprite_GetPosition(work->balls[i].shadowSprite);
         orders[i].index = work->balls[i].index;
         orders[i].y = position->y;
         orders[i].own = own;
     }
-    MATH_QSort(orders, SNOW_THROW_MONS, sizeof(PokeathlonSnowThrowDrawOrder), PokeathlonSnowThrow_CompareDrawOrder, work->sortBuffer);
-    for (i = 0; i < SNOW_THROW_MONS; i++) {
+    MATH_QSort(orders, POKEATHLON_MONS, sizeof(PokeathlonSnowThrowDrawOrder), PokeathlonSnowThrow_CompareDrawOrder, work->sortBuffer);
+    for (i = 0; i < POKEATHLON_MONS; i++) {
         ball = orders[i].index;
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->balls[ball].sprite, i + 20);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(work->balls[ball].splashSprite, i + 5);

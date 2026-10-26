@@ -9,6 +9,7 @@
 #define POKEATHLON_PARTICIPANTS 4
 #define POKEATHLON_TEAM_SIZE    3
 #define POKEATHLON_MONS         (POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE)
+#define POKEATHLON_NO_MON       POKEATHLON_MONS // "no Pokemon" in the 0..11 mon indices
 
 #define POKEATHLON_EVENT_COUNT 10  // event ids 0..9
 #define POKEATHLON_POINTS_MAX  999 // the cap of the points of a round and of a course

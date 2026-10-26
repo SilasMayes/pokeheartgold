@@ -85,7 +85,7 @@ BOOL PokeathlonBox_Main(OverlayManager *manager, int *state) {
         break;
 
     case BOX_STATE_FADE_IN:
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0, 6, 1, HEAP_ID_POKEATHLON);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, HEAP_ID_POKEATHLON);
         data->state = BOX_STATE_WAIT_FADE_IN;
         break;
 
@@ -107,7 +107,7 @@ BOOL PokeathlonBox_Main(OverlayManager *manager, int *state) {
         break;
 
     case BOX_STATE_FADE_OUT:
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0, 6, 1, HEAP_ID_POKEATHLON);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, HEAP_ID_POKEATHLON);
         data->state = BOX_STATE_WAIT_FADE_OUT;
         break;
 

@@ -17,11 +17,7 @@
 // Goal Roll: four teams of three Pokemon kick two balls into the goals in the corners of the field. A goal scores
 // for the team that kicked the ball last (2 points for the big ball) and costs the goal's owner a point.
 
-#define GOAL_ROLL_PARTICIPANTS 4
-#define GOAL_ROLL_TEAM_SIZE    3
-#define GOAL_ROLL_MONS         (GOAL_ROLL_PARTICIPANTS * GOAL_ROLL_TEAM_SIZE)
-#define GOAL_ROLL_BALLS        2
-#define GOAL_ROLL_NO_MON       12 // "no Pokemon" in the 0..11 mon indices
+#define GOAL_ROLL_BALLS 2
 
 // The course's data copy area holds [0] the own input, [1] the frame packet the host builds, [2..5] the
 // participants' inputs (host) and [6] the frame packet received.
@@ -89,11 +85,11 @@ typedef struct PokeathlonGoalRollBall {
     VecFx32 position;
     VecFx32 velocity;
     VecFx32 direction;
-    u8 touching[GOAL_ROLL_MONS];
+    u8 touching[POKEATHLON_MONS];
     u8 kind;
     u8 state;
     u8 timer;
-    u8 lastKicker; // mon index, GOAL_ROLL_NO_MON if none
+    u8 lastKicker; // mon index, POKEATHLON_NO_MON if none
     u8 step;
     u8 steps;
     u8 speedTable;
@@ -157,7 +153,7 @@ typedef struct PokeathlonGoalRollCpuTeam {
 } PokeathlonGoalRollCpuTeam;
 
 typedef struct PokeathlonGoalRollCpu {
-    PokeathlonGoalRollCpuTeam teams[GOAL_ROLL_PARTICIPANTS];
+    PokeathlonGoalRollCpuTeam teams[POKEATHLON_PARTICIPANTS];
     PokeathlonGoalRollBall *balls;
     u32 run; // set every `interval` frames
     u8 cpuCount;
@@ -203,8 +199,8 @@ typedef struct PokeathlonGoalRollInput {
 
 // The frame the host sends every frame.
 typedef struct PokeathlonGoalRollFramePacket {
-    u8 monX[GOAL_ROLL_MONS];
-    u8 monY[GOAL_ROLL_MONS];
+    u8 monX[POKEATHLON_MONS];
+    u8 monY[POKEATHLON_MONS];
     u8 ballX[GOAL_ROLL_BALLS];
     u8 ballY[GOAL_ROLL_BALLS]; // see PokeathlonGoalRoll_EncodeBallY
     s32 states;                // 2 bits facing - 1 per mon, 2 bits state per ball (<< 24), score slot (<< 28),
@@ -216,7 +212,7 @@ typedef struct PokeathlonGoalRollFramePacket {
 // total points window template (gPokeathlonGoalRollWindowData) and the four goal palettes.
 typedef struct PokeathlonGoalRollWindowData {
     WindowTemplate window;
-    u16 goalPalettes[GOAL_ROLL_PARTICIPANTS];
+    u16 goalPalettes[POKEATHLON_PARTICIPANTS];
 } PokeathlonGoalRollWindowData;
 
 typedef struct PokeathlonGoalRollPaletteData {
@@ -229,18 +225,18 @@ typedef struct PokeathlonGoalRoll {
     PokeathlonCourseSpritePool *spritePool;
     BgConfig *bgConfig;
     Window scoreWindow;
-    Window nameWindows[GOAL_ROLL_PARTICIPANTS];
+    Window nameWindows[POKEATHLON_PARTICIPANTS];
     enum HeapID heapId;
-    PokeathlonGoalRollMon mons[GOAL_ROLL_PARTICIPANTS][GOAL_ROLL_TEAM_SIZE];
+    PokeathlonGoalRollMon mons[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE];
     PokeathlonGoalRollBall balls[GOAL_ROLL_BALLS];
-    PokeathlonCourseSpritePoolSprite *goalSprites[GOAL_ROLL_PARTICIPANTS];
-    PokeathlonCourseSpritePoolSprite *goalFlashSprites[GOAL_ROLL_PARTICIPANTS];
-    PokeathlonCourseSpritePoolSprite *goalLabelSprites[GOAL_ROLL_PARTICIPANTS];
-    s32 scores[GOAL_ROLL_PARTICIPANTS];
-    PokeathlonGoalRollTouch touch[GOAL_ROLL_PARTICIPANTS];
-    u8 heldMon[GOAL_ROLL_PARTICIPANTS]; // mon index touched by each participant
-    int timer;                          // frames left
-    u8 packetScoreSlot;                 // whose score goes into the next frame packet
+    PokeathlonCourseSpritePoolSprite *goalSprites[POKEATHLON_PARTICIPANTS];
+    PokeathlonCourseSpritePoolSprite *goalFlashSprites[POKEATHLON_PARTICIPANTS];
+    PokeathlonCourseSpritePoolSprite *goalLabelSprites[POKEATHLON_PARTICIPANTS];
+    s32 scores[POKEATHLON_PARTICIPANTS];
+    PokeathlonGoalRollTouch touch[POKEATHLON_PARTICIPANTS];
+    u8 heldMon[POKEATHLON_PARTICIPANTS]; // mon index touched by each participant
+    int timer;                           // frames left
+    u8 packetScoreSlot;                  // whose score goes into the next frame packet
     u8 unk73D;
     u8 timeUp;
     u8 unk73F[3];
@@ -253,10 +249,10 @@ typedef struct PokeathlonGoalRoll {
     VecFx32 walls[8];
     u8 ballInGoalArea[4]; // per ball, for the sound
     String *plateStrings[3];
-    String *nameStrings[GOAL_ROLL_PARTICIPANTS];
-    PokeathlonGoalRollPlate plates[GOAL_ROLL_PARTICIPANTS];
-    u8 shownScores[GOAL_ROLL_PARTICIPANTS];
-    u8 leading[GOAL_ROLL_PARTICIPANTS];
+    String *nameStrings[POKEATHLON_PARTICIPANTS];
+    PokeathlonGoalRollPlate plates[POKEATHLON_PARTICIPANTS];
+    u8 shownScores[POKEATHLON_PARTICIPANTS];
+    u8 leading[POKEATHLON_PARTICIPANTS];
     void *sortWork;
 } PokeathlonGoalRoll;
 
@@ -337,7 +333,7 @@ extern const BgTemplate gPokeathlonGoalRollBgTemplate_Main2;
 extern const GraphicsBanks gPokeathlonGoalRollGraphicsBanks;
 extern const VecFx32 gPokeathlonGoalRollLabelPositions[4];
 extern const VecFx32 gPokeathlonGoalRollGoalPositions[4];
-extern const u16 gPokeathlonGoalRollMonStartPositions[GOAL_ROLL_PARTICIPANTS][GOAL_ROLL_TEAM_SIZE][2];
+extern const u16 gPokeathlonGoalRollMonStartPositions[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE][2];
 extern const VecFx32 gPokeathlonGoalRollGoalPosts[4][2];
 extern const VecFx32 gPokeathlonGoalRollNormalTopLeft;
 extern const VecFx32 gPokeathlonGoalRollNormalBottomRight;

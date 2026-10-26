@@ -561,7 +561,7 @@ static void PokeathlonEventIntro_Create(PokeathlonCourseData *course) {
     Main_SetVBlankIntrCB((GFIntrCB)PokeathlonEventIntro_VBlankCallback, intro);
     gSystem.screensFlipped = TRUE;
     GfGfx_SwapDisplay();
-    SetBothScreensBrightnessByColor(0x7FFF);
+    SetBothScreensBrightnessByColor(RGB_WHITE);
     if (intro->linkMode) {
         intro->showRecord = FALSE;
     } else {
@@ -591,7 +591,7 @@ static void PokeathlonEventIntro_LoadPagePicture(PokeathlonEventIntro *intro, in
     GfGfxLoader_GXLoadPalFromOpenNarc(intro->narc, event + 32, GF_PAL_LOCATION_SUB_BGEXT, (enum GFPalSlotOffset)0x6000, 0, intro->heapId);
     GfGfxLoader_LoadCharDataFromOpenNarc(intro->narc, event + 42, intro->bgConfig, GF_BG_LYR_SUB_3, 0, 0, TRUE, intro->heapId);
     GfGfxLoader_LoadScrnDataFromOpenNarc(intro->narc, event + 52, intro->bgConfig, GF_BG_LYR_SUB_3, 0, 0, TRUE, intro->heapId);
-    BG_SetMaskColor(GF_BG_LYR_SUB_0, 0);
+    BG_SetMaskColor(GF_BG_LYR_SUB_0, RGB_BLACK);
     matrix._00 = FX32_ONE;
     matrix._01 = 0;
     matrix._10 = 0;
@@ -813,7 +813,7 @@ static void PokeathlonEventIntro_UpdateZoom(PokeathlonEventIntro *intro) {
 static void PokeathlonEventIntro_FadeToPage(PokeathlonCourseData *course, int page) {
     PokeathlonEventIntro *intro = PokeathlonCourse_GetWork(course);
 
-    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0x7FFF, 4, 1, intro->heapId);
+    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_WHITE, 4, 1, intro->heapId);
     intro->page = page;
 }
 
@@ -893,7 +893,7 @@ static void PokeathlonEventIntro_ShowPage(PokeathlonCourseData *course) {
     switch (intro->page) {
     case EVENT_INTRO_PAGE_DETAILS:
         PokeathlonEventIntro_ShowDetails(intro);
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0x7FFF, 4, 1, intro->heapId);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_WHITE, 4, 1, intro->heapId);
         break;
     case EVENT_INTRO_PAGE_RULES:
         PokeathlonEventIntro_ShowRules(intro);
@@ -921,7 +921,7 @@ BOOL PokeathlonEventIntro_Appear(PokeathlonCourseData *course, u8 *state) {
         break;
     case EVENT_INTRO_APPEAR_FADE_IN_SUB:
         if (PokeathlonEventIntro_IsBgmAt(0, 0)) {
-            BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0x7FFF, 1, 1, intro->heapId);
+            BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_WHITE, 1, 1, intro->heapId);
             (*step)++;
         }
         break;
@@ -935,7 +935,7 @@ BOOL PokeathlonEventIntro_Appear(PokeathlonCourseData *course, u8 *state) {
         if (intro->zooming) {
             PokeathlonEventIntro_UpdateZoom(intro);
         } else if (PokeathlonEventIntro_IsBgmAt(0, 3)) {
-            BeginNormalPaletteFade(FADE_MAIN_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0x7FFF, 12, 1, intro->heapId);
+            BeginNormalPaletteFade(FADE_MAIN_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_WHITE, 12, 1, intro->heapId);
             ManagedSprite_SetAnimateFlag(intro->sprites[2], TRUE);
             ManagedSprite_SetDrawFlag(intro->sprites[3], !intro->linkMode);
             (*step)++;
@@ -1005,7 +1005,7 @@ BOOL PokeathlonEventIntro_RulesPage(PokeathlonCourseData *course, u8 *state) {
     PokeathlonEventIntro_UpdateMascot(intro);
     switch (*state) {
     case EVENT_INTRO_PAGE_STATE_FADE_IN:
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0x7FFF, 4, 1, intro->heapId);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_WHITE, 4, 1, intro->heapId);
         (*state)++;
         // fallthrough
     case EVENT_INTRO_PAGE_STATE_INPUT:
@@ -1039,7 +1039,7 @@ BOOL PokeathlonEventIntro_ControlsPage(PokeathlonCourseData *course, u8 *state) 
     PokeathlonEventIntro_UpdateMascot(intro);
     switch (*state) {
     case EVENT_INTRO_PAGE_STATE_FADE_IN:
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0x7FFF, 4, 1, intro->heapId);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_WHITE, 4, 1, intro->heapId);
         (*state)++;
         // fallthrough
     case EVENT_INTRO_PAGE_STATE_INPUT:
@@ -1079,7 +1079,7 @@ BOOL PokeathlonEventIntro_FadeOut(PokeathlonCourseData *course, u8 *state) {
             PlaySE(SEQ_SE_GS_GAMENFADE);
         }
         GF_SndStartFadeOutBGM(0, 24);
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0x7FFF, 24, 1, intro->heapId);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_WHITE, 24, 1, intro->heapId);
         (*state)++;
         break;
     case EVENT_INTRO_FADE_OUT_WAIT:

@@ -14,11 +14,7 @@
 // Disc Catch: discs fly down from the top screen and the Pokemon catch them by jumping under them as they land
 // (1, 2, 3 or 5 points by the disc). Dragging a Pokemon moves it, tapping it makes it jump.
 
-#define DISC_CATCH_PARTICIPANTS 4
-#define DISC_CATCH_TEAM_SIZE    3
-#define DISC_CATCH_MONS         (DISC_CATCH_PARTICIPANTS * DISC_CATCH_TEAM_SIZE)
-#define DISC_CATCH_DISCS        2
-#define DISC_CATCH_NO_MON       12 // "no Pokemon" in the 0..11 mon indices
+#define DISC_CATCH_DISCS 2
 
 typedef struct PokeathlonDiscCatchScoreboard PokeathlonDiscCatchScoreboard; // the top screen
 typedef struct PokeathlonDiscCatchCpu PokeathlonDiscCatchCpu;               // the participants without a player (host only)
@@ -81,13 +77,13 @@ typedef struct PokeathlonDiscCatchTeam {
     u32 lastTouchFrames : 13; // of the last touch: up to 5 is a tap
     u32 holding : 1;
     u32 heldMon : 2;
-    PokeathlonDiscCatchMon mons[DISC_CATCH_TEAM_SIZE];
+    PokeathlonDiscCatchMon mons[POKEATHLON_TEAM_SIZE];
     PokeathlonDiscCatchResult result;
 } PokeathlonDiscCatchTeam;
 
 typedef struct PokeathlonDiscCatchField {
-    u8 touching[DISC_CATCH_MONS][DISC_CATCH_MONS]; // pairs of Pokemon in contact
-    PokeathlonDiscCatchTeam teams[DISC_CATCH_PARTICIPANTS];
+    u8 touching[POKEATHLON_MONS][POKEATHLON_MONS]; // pairs of Pokemon in contact
+    PokeathlonDiscCatchTeam teams[POKEATHLON_PARTICIPANTS];
 } PokeathlonDiscCatchField;
 
 enum PokeathlonDiscCatchDiscState {
@@ -136,8 +132,8 @@ typedef struct PokeathlonDiscCatchFrame {
     u32 touchY : 8;
     u32 touching : 1;
     u32 unk0_17 : 15;
-    u8 monX[DISC_CATCH_MONS]; // the Pokemon's places in the course's 3D field
-    u8 monY[DISC_CATCH_MONS];
+    u8 monX[POKEATHLON_MONS]; // the Pokemon's places in the course's 3D field
+    u8 monY[POKEATHLON_MONS];
     u32 facings : 24;         // 2 bits per Pokemon, facing - 1
     u32 seconds : 6;          // time left
     u32 scoreParticipant : 2; // whose score this packet carries (round robin)
@@ -182,8 +178,8 @@ typedef struct PokeathlonDiscCatchDiscSprites {
 typedef struct PokeathlonDiscCatchSprites {
     PokeathlonDiscCatchScoreboard *scoreboard;
     PokeathlonDiscCatchDiscSprites discs[DISC_CATCH_DISCS];
-    PokeathlonDiscCatchMonSprites mons[DISC_CATCH_MONS];
-    u16 shownScores[DISC_CATCH_PARTICIPANTS];
+    PokeathlonDiscCatchMonSprites mons[POKEATHLON_MONS];
+    u16 shownScores[POKEATHLON_PARTICIPANTS];
 } PokeathlonDiscCatchSprites;
 
 // Shakes the top screen when the own team catches a disc.
@@ -207,7 +203,7 @@ typedef struct PokeathlonDiscCatch {
     PokeathlonCourseSpriteResources *monPicResources;
     PokeathlonCourseMonObjects *monPics;
     Window window;
-    PokeathlonDiscCatchStats stats[DISC_CATCH_PARTICIPANTS][DISC_CATCH_TEAM_SIZE];
+    PokeathlonDiscCatchStats stats[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE];
     PokeathlonDiscCatchScoreboard *scoreboard;
     PokeathlonDiscCatchCpu *cpu;
     PokeathlonDiscCatchField field;
@@ -263,7 +259,7 @@ extern const OamManagerParam gPokeathlonDiscCatchOamManagerParam;
 extern const OamCharTransferParam gPokeathlonDiscCatchOamCharTransferParam;
 extern const u32 gPokeathlonDiscCatchBgLayers[7];
 extern const GraphicsBanks gPokeathlonDiscCatchGraphicsBanks;
-extern const s16 gPokeathlonDiscCatchMonStartPositions[DISC_CATCH_PARTICIPANTS][DISC_CATCH_TEAM_SIZE][2]; // where the Pokemon start
+extern const s16 gPokeathlonDiscCatchMonStartPositions[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE][2]; // where the Pokemon start
 extern const ManagedSpriteTemplate gPokeathlonDiscCatchDiscTopSpriteTemplate;
 extern const ManagedSpriteTemplate gPokeathlonDiscCatchDiscTouchSpriteTemplate;
 extern const ManagedSpriteTemplate gPokeathlonDiscCatchEffectSpriteTemplate;
@@ -272,7 +268,7 @@ extern const u32 gPokeathlonDiscCatchPhaseSeconds[4];
 extern const WindowTemplate gPokeathlonDiscCatchScoreWindowTemplate;
 extern const u8 gPokeathlonDiscCatchCpuHomeRowStarts[];                                                  // per member: first home row (tiles) of its band ...
 extern const u8 gPokeathlonDiscCatchCpuHomeRowCounts[];                                                  // ... and the band's rows
-extern const int gPokeathlonDiscCatchCpuJumpChances[DISC_CATCH_TEAM_SIZE];                               // per member: chance (%) to jump at a disc in reach
-extern const s16 gPokeathlonDiscCatchCpuHomePositions[DISC_CATCH_PARTICIPANTS][DISC_CATCH_TEAM_SIZE][2]; // home x
+extern const int gPokeathlonDiscCatchCpuJumpChances[POKEATHLON_TEAM_SIZE];                               // per member: chance (%) to jump at a disc in reach
+extern const s16 gPokeathlonDiscCatchCpuHomePositions[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE][2]; // home x
 
 #endif // POKEHEARTGOLD_POKEATHLON_POKEATHLON_DISC_CATCH_H

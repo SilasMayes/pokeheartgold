@@ -104,19 +104,19 @@ void PokeathlonRingDrop_CreateMonObjects(PokeathlonRingDrop *ringDrop, Pokeathlo
     spriteList = SpriteManager_GetSpriteList(ringDrop->spriteManager);
     ringDrop->monObjects = PokeathlonCourseMonObjects_Create(ringDrop->heapId, 12, 7, ringDrop->resources, spriteList);
     {
-        PokeathlonCourseMonInfo infos[RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE];
+        PokeathlonCourseMonInfo infos[POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE];
         PokeathlonCourseMonGfxTemplate template = { 0 };
         int i;
-        for (i = 0; i < RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE; i++) {
-            int member = i % RING_DROP_TEAM_SIZE;
-            int participant = i / RING_DROP_TEAM_SIZE;
+        for (i = 0; i < POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE; i++) {
+            int member = i % POKEATHLON_TEAM_SIZE;
+            int participant = i / POKEATHLON_TEAM_SIZE;
             PokeathlonCourse_GetMonInfo(course, participant, member, &infos[i]);
             template.sizeTypes[i] = PokeathlonCourse_GetSpriteSizeType(PokeathlonCourse_GetPerformance(course, participant, member));
         }
         template.priority = 3;
         template.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
         template.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
-        PokeathlonCourseMonObjects_Load(ringDrop->monObjects, RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE, infos, &template, 0, 0);
+        PokeathlonCourseMonObjects_Load(ringDrop->monObjects, POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE, infos, &template, 0, 0);
     }
 }
 
@@ -141,10 +141,10 @@ void PokeathlonRingDrop_InitMons(PokeathlonRingDrop *ringDrop, PokeathlonCourseD
     ReadWholeNarcMemberByIdPair(collisions, NARC_a_1_7_0, 19);
     GF_ASSERT(ringDrop != NULL);
     PokeathlonRingDrop_InitMemberParams(course);
-    for (i = 0; i < RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE; i++) {
         int size;
-        participant = i / RING_DROP_TEAM_SIZE;
-        member = i % RING_DROP_TEAM_SIZE;
+        participant = i / POKEATHLON_TEAM_SIZE;
+        member = i % POKEATHLON_TEAM_SIZE;
         teamMember = &ringDrop->players[participant].mon.members[member];
         object = PokeathlonCourseMonObjects_Get(ringDrop->monObjects, i);
         PokeathlonCourseMonObject_SetDrawFlag(object, member == 0);
@@ -171,7 +171,7 @@ void PokeathlonRingDrop_InitMons(PokeathlonRingDrop *ringDrop, PokeathlonCourseD
         teamMember->stamina = teamMember->params->stamina;
     }
     PokeathlonCourse_CreateStartSprites(course, 0, ringDrop->resources, SpriteManager_GetSpriteList(ringDrop->spriteManager), NNS_G2D_VRAM_TYPE_2DMAIN, 1, &own);
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         mon = &ringDrop->players[i].mon;
         mon->player = &ringDrop->players[i];
         mon->member = ringDrop->players[i].mon.members;
@@ -266,17 +266,17 @@ int PokeathlonRingDropMon_GetPushReaction(PokeathlonRingDropMon *mon) {
 static void PokeathlonRingDrop_UpdateCollisions(PokeathlonCourseData *course) {
     int i;
     PokeathlonRingDrop *ringDrop;
-    u8(*contacts)[RING_DROP_PARTICIPANTS];
+    u8(*contacts)[POKEATHLON_PARTICIPANTS];
     int j;
 
     ringDrop = PokeathlonCourse_GetWork(course);
     contacts = ringDrop->contacts;
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonRingDropMon *mon = &ringDrop->players[i].mon;
         if (!PokeathlonRingDropMon_CanCollide(mon) || mon->hitFrames > 0) {
             continue;
         }
-        for (j = i + 1; j < RING_DROP_PARTICIPANTS; j++) {
+        for (j = i + 1; j < POKEATHLON_PARTICIPANTS; j++) {
             PokeathlonRingDropMon *other = &ringDrop->players[j].mon;
             if (PokeathlonRingDropMon_CanCollide(other) && PokeathlonRingDropMon_Collide(mon, other)) {
                 VecFx32 direction = { 0, 0, 0 };
@@ -315,10 +315,10 @@ static void PokeathlonRingDrop_UpdateStamina(PokeathlonRingDropPlayer *players, 
     int i;
     int member;
 
-    for (i = 0; i < RING_DROP_PARTICIPANTS; players++, i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; players++, i++) {
         PokeathlonRingDropMon *mon = &players->mon;
         PokeathlonRingDropMember *teamMember;
-        for (member = 0, teamMember = players->mon.members; member < RING_DROP_TEAM_SIZE; member++, teamMember++) {
+        for (member = 0, teamMember = players->mon.members; member < POKEATHLON_TEAM_SIZE; member++, teamMember++) {
             int max;
             float refill = 0.0f;
             max = teamMember->params->stamina;
@@ -371,7 +371,7 @@ static inline int PokeathlonRingDrop_Abs(int x) {
 
 void PokeathlonRingDrop_UpdateMons(PokeathlonRingDropPlayer *players, PokeathlonCourseData *course) {
     int i;
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonRingDropPlayer *player = &players[i];
         VecFx32 touch = { 0, 0, 0 }, touchStart = { 0, 0, 0 };
         PokeathlonRingDropTouch *record = &player->touch;
@@ -425,7 +425,7 @@ void PokeathlonRingDrop_UpdateMons(PokeathlonRingDropPlayer *players, Pokeathlon
 // Host: writes the Pokemon into the frame packet to send.
 #define RING_DROP_CONTACTS_TO(field) (offsetof(PokeathlonRingDrop, field) - offsetof(PokeathlonRingDrop, contacts))
 
-void PokeathlonRingDrop_BuildFramePacket(u8 (*contacts)[RING_DROP_PARTICIPANTS], PokeathlonCourseData *course) {
+void PokeathlonRingDrop_BuildFramePacket(u8 (*contacts)[POKEATHLON_PARTICIPANTS], PokeathlonCourseData *course) {
     PokeathlonRingDropMonPacket *packets;
     int bumped;
     PokeathlonRingDropMon *mon;
@@ -435,7 +435,7 @@ void PokeathlonRingDrop_BuildFramePacket(u8 (*contacts)[RING_DROP_PARTICIPANTS],
 
     bumped = 0;
     packets = (void *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_OUT);
-    for (i = 0, mon = (PokeathlonRingDropMon *)((u8 *)contacts + RING_DROP_CONTACTS_TO(players[0].mon)), packet = packets; i < RING_DROP_PARTICIPANTS; i++, mon = (PokeathlonRingDropMon *)((u8 *)mon + sizeof(PokeathlonRingDropPlayer)), packet++) {
+    for (i = 0, mon = (PokeathlonRingDropMon *)((u8 *)contacts + RING_DROP_CONTACTS_TO(players[0].mon)), packet = packets; i < POKEATHLON_PARTICIPANTS; i++, mon = (PokeathlonRingDropMon *)((u8 *)mon + sizeof(PokeathlonRingDropPlayer)), packet++) {
         s32 x = (mon->position.x << 4) >> 16;
         s32 y = (mon->position.y << 4) >> 16;
         if (mon->hitMarkFrames != 0) {
@@ -473,9 +473,9 @@ void PokeathlonRingDrop_BuildFramePacket(u8 (*contacts)[RING_DROP_PARTICIPANTS],
     marks = &((PokeathlonRingDropFramePacket *)packets)->marks;
     marks->raw = (marks->raw & ~0x80) | (((u32)bumped << 31) >> 24);
     marks->raw = (u8)marks->raw;
-    for (i = 0; i < RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE; i++) {
-        int participant = i / RING_DROP_TEAM_SIZE;
-        int member = i % RING_DROP_TEAM_SIZE;
+    for (i = 0; i < POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE; i++) {
+        int participant = i / POKEATHLON_TEAM_SIZE;
+        int member = i % POKEATHLON_TEAM_SIZE;
         s32 stamina = *(fx32 *)((u8 *)contacts + participant * sizeof(PokeathlonRingDropPlayer) + member * sizeof(PokeathlonRingDropMember) + RING_DROP_CONTACTS_TO(players[0].mon.members[0].stamina)) >> FX32_SHIFT;
         int mark;
         if (stamina == 0) {
@@ -605,7 +605,7 @@ static BOOL PokeathlonRingDropMon_CanCollide(PokeathlonRingDropMon *mon) {
 static void PokeathlonRingDrop_ClearContacts(PokeathlonCourseData *course, s32 participant) {
     u8 *contact = ((PokeathlonRingDrop *)PokeathlonCourse_GetWork(course))->contacts[participant];
     s32 i;
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++, contact++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++, contact++) {
         *contact = 0;
     }
 }

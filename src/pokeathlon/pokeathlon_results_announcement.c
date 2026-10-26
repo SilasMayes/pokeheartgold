@@ -351,7 +351,7 @@ BOOL PokeathlonResults_Init(PokeathlonCourseData *course) {
         break;
     case RESULTS_INIT_FADE_IN:
         PlayBGM(SEQ_GS_PT_RESULT);
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0, 6, 1, announcement->heapId);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, announcement->heapId);
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
     case RESULTS_INIT_WAIT_FADE_IN:

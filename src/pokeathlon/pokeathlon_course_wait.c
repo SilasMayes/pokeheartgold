@@ -79,7 +79,7 @@ BOOL PokeathlonCourseWait_Init(PokeathlonCourseData *course) {
         WirelessStatusIcon_CreateOnScreenIfConnected(1);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
         GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_OFF);
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0, 4, 1, wait->heapId);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 4, 1, wait->heapId);
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
     case COURSE_WAIT_INIT_PRINT:
@@ -134,8 +134,8 @@ static void PokeathlonCourseWait_InitBgs(BgConfig *bgConfig, enum HeapID heapId)
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_OFF);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);
-        BG_SetMaskColor(GF_BG_LYR_MAIN_0, 0);
-        BG_SetMaskColor(GF_BG_LYR_SUB_0, 0);
+        BG_SetMaskColor(GF_BG_LYR_MAIN_0, RGB_BLACK);
+        BG_SetMaskColor(GF_BG_LYR_SUB_0, RGB_BLACK);
     }
 }
 
@@ -188,7 +188,7 @@ BOOL PokeathlonCourseWait_FadeOut(PokeathlonCourseData *course, u8 *state) {
     case COURSE_WAIT_FADE_OUT_START:
         if (++wait->timer > 15) {
             PokeathlonCourseMessageBox_HideWaitingIcon(wait->messageBox);
-            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0, 4, 1, wait->heapId);
+            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 4, 1, wait->heapId);
             (*state)++;
         }
         break;

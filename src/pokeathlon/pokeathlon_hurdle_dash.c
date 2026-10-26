@@ -98,7 +98,7 @@ BOOL PokeathlonHurdleDash_Play(PokeathlonCourseData *course, u8 *state) {
     }
     case HURDLE_DASH_PLAY_END:
         if (++hurdleDash->endTimer > 90) {
-            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0, 6, 1, hurdleDash->heapId);
+            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, hurdleDash->heapId);
             PokeathlonCourse_SetNextState(course, HURDLE_DASH_STATE_CALC_SCORES);
         }
         break;
@@ -388,7 +388,7 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
             }
         }
         WirelessStatusIcon_CreateOnScreenIfConnected(1);
-        BeginNormalPaletteFade(FADE_SUB_THEN_MAIN, FADE_TYPE_DOWNWARD_IN, FADE_TYPE_DOWNWARD_IN, 0, 6, 1, hurdleDash->heapId);
+        BeginNormalPaletteFade(FADE_SUB_THEN_MAIN, FADE_TYPE_DOWNWARD_IN, FADE_TYPE_DOWNWARD_IN, RGB_BLACK, 6, 1, hurdleDash->heapId);
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
     }

@@ -153,7 +153,7 @@ u32 PokeathlonGoalRoll_GetGoalCode(u32 goal, u8 team) {
         GF_ASSERT(FALSE);
         return 0;
     }
-    if (team >= GOAL_ROLL_PARTICIPANTS) {
+    if (team >= POKEATHLON_PARTICIPANTS) {
         GF_ASSERT(FALSE);
         return 0;
     }
@@ -182,17 +182,17 @@ static u32 PokeathlonGoalRoll_GetQuadrant(s32 x, s32 y) {
 void PokeathlonGoalRoll_UpdateLeaders(PokeathlonGoalRoll *goalRoll) {
     u8 best = 0, i;
     if (goalRoll->timer <= 300) {
-        for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
+        for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
             goalRoll->leading[i] = FALSE;
         }
         return;
     }
-    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (best < goalRoll->shownScores[i]) {
             best = goalRoll->shownScores[i];
         }
     }
-    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (best != 0 && best == goalRoll->shownScores[i]) {
             goalRoll->leading[i] = TRUE;
         } else {
@@ -203,7 +203,7 @@ void PokeathlonGoalRoll_UpdateLeaders(PokeathlonGoalRoll *goalRoll) {
 
 void PokeathlonGoalRoll_RefreshPlates(PokeathlonGoalRoll *goalRoll) {
     u8 i;
-    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (goalRoll->plates[i].state == PLATE_STATE_IDLE) {
             PokeathlonGoalRoll_PrintPlate(goalRoll, i, 0);
         }
@@ -221,7 +221,7 @@ void PokeathlonGoalRoll_SortOwnTeamOrder(PokeathlonGoalRollMon *team, u8 *monY) 
     PokeathlonGoalRollDrawOrder *order[3];
     PokeathlonGoalRollDrawOrder *high, *low;
     u8 i;
-    for (i = 0; i < GOAL_ROLL_TEAM_SIZE; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         mons[i].y = monY + i;
         mons[i].mon = team + i;
     }
@@ -247,7 +247,7 @@ void PokeathlonGoalRoll_SortOwnTeamOrder(PokeathlonGoalRollMon *team, u8 *monY) 
         order[1] = high;
         order[2] = low;
     }
-    for (i = 0; i < GOAL_ROLL_TEAM_SIZE; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonCourseMonObject_SetDrawPriority(order[i]->mon->object, i + 8);
     }
 }
@@ -280,8 +280,8 @@ void PokeathlonGoalRoll_SortOtherMonsOrder(PokeathlonGoalRoll *goalRoll, Pokeath
     PokeathlonGoalRollMonY mons[9];
     u8 i, count = 0;
     i = count;
-    for (; i < GOAL_ROLL_MONS; i++) {
-        if (i / GOAL_ROLL_TEAM_SIZE != own) {
+    for (; i < POKEATHLON_MONS; i++) {
+        if (i / POKEATHLON_TEAM_SIZE != own) {
             mons[count].index = i;
             mons[count].y = frame->monY[i];
             count++;
@@ -292,8 +292,8 @@ void PokeathlonGoalRoll_SortOtherMonsOrder(PokeathlonGoalRoll *goalRoll, Pokeath
         u8 j;
         for (j = 0; j < 9; j++) {
             u8 index = mons[j].index;
-            int participant = index / GOAL_ROLL_TEAM_SIZE;
-            int member = index % GOAL_ROLL_TEAM_SIZE;
+            int participant = index / POKEATHLON_TEAM_SIZE;
+            int member = index % POKEATHLON_TEAM_SIZE;
             PokeathlonCourseMonObject_SetDrawPriority(goalRoll->mons[participant][member].object, j + 16);
         }
     }

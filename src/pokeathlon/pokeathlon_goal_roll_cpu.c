@@ -101,13 +101,13 @@ PokeathlonGoalRollCpu *PokeathlonGoalRollCpu_New(enum HeapID heapId, u8 cpuCount
 }
 
 void PokeathlonGoalRollCpu_SetMon(PokeathlonGoalRollCpuTeam *teams, s32 index, PokeathlonGoalRollMon *mon) {
-    teams[(u8)(index / GOAL_ROLL_TEAM_SIZE)].mons[(u8)(index % GOAL_ROLL_TEAM_SIZE)] = mon;
+    teams[(u8)(index / POKEATHLON_TEAM_SIZE)].mons[(u8)(index % POKEATHLON_TEAM_SIZE)] = mon;
 }
 
 void PokeathlonGoalRollCpu_ChooseAllRoles(PokeathlonGoalRollCpuTeam *teams) {
     u8 i;
 
-    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonGoalRollCpu_ChooseRoles(&teams[i]);
     }
 }
@@ -121,13 +121,13 @@ static void PokeathlonGoalRollCpu_ChooseRoles(PokeathlonGoalRollCpuTeam *team) {
     u8 next;
     u8 last;
 
-    for (i = 0; i < GOAL_ROLL_TEAM_SIZE; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         first[i] = team->mons[i]->kickRow + team->mons[i]->maxPower;
         second[i] = team->mons[i]->kickRow + team->mons[i]->kickLevel;
     }
 
     selected = 0;
-    for (i = 1; i < GOAL_ROLL_TEAM_SIZE; i++) {
+    for (i = 1; i < POKEATHLON_TEAM_SIZE; i++) {
         if (first[i - 1] < first[i]) {
             selected = i;
         }
@@ -537,8 +537,8 @@ static int PokeathlonGoalRollCpu_MoveToEmptierQuadrant(PokeathlonGoalRollMon *mo
     u8 i, j;
     int chosen, x, y;
 
-    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++) {
-        for (j = 0; j < GOAL_ROLL_TEAM_SIZE; j++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
+        for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
             PokeathlonGoalRollMon *other = teams[i].order[j].mon;
             int quadrant = PokeathlonGoalRollCpu_GetQuadrant(128, 96, other->position.x / FX32_ONE, other->position.y / FX32_ONE);
             if (quadrant != 4) {

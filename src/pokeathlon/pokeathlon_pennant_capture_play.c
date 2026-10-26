@@ -51,20 +51,20 @@ void PokeathlonPennantCapture_InitBgs(BgConfig *bgConfig) {
 
     SetBothScreensModesAndDisable(&modes);
     bg0 = gPennantCaptureBgTemplate_Main0;
-    InitBgFromTemplate(bgConfig, 0, &bg0, 0);
-    BgClearTilemapBufferAndCommit(bgConfig, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_0, &bg0, GF_BG_TYPE_TEXT);
+    BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_MAIN_0);
     bg3 = gPennantCaptureBgTemplate_Main3;
-    InitBgFromTemplate(bgConfig, 3, &bg3, 0);
-    BgClearTilemapBufferAndCommit(bgConfig, 3);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_3, &bg3, GF_BG_TYPE_TEXT);
+    BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_MAIN_3);
     bg4 = gPennantCaptureBgTemplate_Sub0;
-    InitBgFromTemplate(bgConfig, 4, &bg4, 0);
-    BgClearTilemapBufferAndCommit(bgConfig, 4);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_0, &bg4, GF_BG_TYPE_TEXT);
+    BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_0);
     bg5 = gPennantCaptureBgTemplate_Sub1;
-    InitBgFromTemplate(bgConfig, 5, &bg5, 0);
-    BgClearTilemapBufferAndCommit(bgConfig, 5);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_1, &bg5, GF_BG_TYPE_TEXT);
+    BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_1);
     bg6 = gPennantCaptureBgTemplate_Sub2;
-    InitBgFromTemplate(bgConfig, 6, &bg6, 0);
-    BgClearTilemapBufferAndCommit(bgConfig, 6);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_2, &bg6, GF_BG_TYPE_TEXT);
+    BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_2);
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG3, GF_PLANE_TOGGLE_OFF);
 }
 

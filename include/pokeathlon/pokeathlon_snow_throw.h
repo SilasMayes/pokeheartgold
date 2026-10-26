@@ -12,14 +12,11 @@
 // Snow Throw: the four teams stand at the sides of a square field and throw snowballs at each other. Tapping a
 // Pokemon makes its snowball bigger and a flick throws it; a hit scores for the thrower and takes energy from the target.
 
-#define SNOW_THROW_TEAMS        4
-#define SNOW_THROW_MEMBERS      3
-#define SNOW_THROW_MONS         (SNOW_THROW_TEAMS * SNOW_THROW_MEMBERS)
 #define SNOW_THROW_DURATION     1800 // frames
 #define SNOW_THROW_MAX_ENERGY   120
 #define SNOW_THROW_TIRED_ENERGY 100
 #define SNOW_THROW_FIELD_CENTER 33              // field units; the field is turned around (33, 33) for each player's view
-#define SNOW_THROW_NONE         SNOW_THROW_MONS // no Pokemon / no snowball
+#define SNOW_THROW_NONE         POKEATHLON_MONS // no Pokemon / no snowball
 
 // PokeathlonSnowThrowBall.state
 #define SNOW_THROW_BALL_NONE     0
@@ -82,19 +79,19 @@ typedef struct PokeathlonSnowThrowTouchBlock {
 
 // Everything a player draws, sent by the host every frame.
 typedef struct PokeathlonSnowThrowPacket {
-    u16 teams[SNOW_THROW_TEAMS]; // hits of the team (bits 0-9) | size of each member's snowball (2 bits) << 10
-    u16 mons[SNOW_THROW_MONS];   // snowball x - 1 (bits 0-5), z - 1 (6-11), was hit (12), the snowball hit someone (13),
-                                 // condition (14-15)
-    s32 flags;                   // state of each snowball (2 bits), finished << 24, seconds left << 25
+    u16 teams[POKEATHLON_PARTICIPANTS]; // hits of the team (bits 0-9) | size of each member's snowball (2 bits) << 10
+    u16 mons[POKEATHLON_MONS];          // snowball x - 1 (bits 0-5), z - 1 (6-11), was hit (12), the snowball hit someone (13),
+                                        // condition (14-15)
+    s32 flags;                          // state of each snowball (2 bits), finished << 24, seconds left << 25
     u8 unk24[4];
 } PokeathlonSnowThrowPacket;
 
 // The link data of the event (PokeathlonCourse_GetDataCopyArea).
 typedef struct PokeathlonSnowThrowLink {
-    PokeathlonSnowThrowTouchBlock touch;                     // this player's stylus
-    PokeathlonSnowThrowPacket packetToSend;                  // host
-    PokeathlonSnowThrowTouchBlock touches[SNOW_THROW_TEAMS]; // everyone's stylus, collected by the host
-    PokeathlonSnowThrowPacket packet;                        // received from the host
+    PokeathlonSnowThrowTouchBlock touch;                            // this player's stylus
+    PokeathlonSnowThrowPacket packetToSend;                         // host
+    PokeathlonSnowThrowTouchBlock touches[POKEATHLON_PARTICIPANTS]; // everyone's stylus, collected by the host
+    PokeathlonSnowThrowPacket packet;                               // received from the host
 } PokeathlonSnowThrowLink;
 
 // The top screen: the own team's pictures, the score and the player's name.
@@ -106,11 +103,11 @@ typedef struct PokeathlonSnowThrowDisplay {
     Window nameWindow;
     void *scoreScreenFile;
     NNSG2dScreenData *scoreScreen; // the score digits (5 x 2 of 4 x 8 tiles)
-    PokeathlonCourseMonPic monPics[SNOW_THROW_MEMBERS];
-    u32 picCharOffsets[SNOW_THROW_MEMBERS];
-    u32 picPlttOffsets[SNOW_THROW_MEMBERS];
-    PokeathlonCourseSpritePoolSprite *picSprites[SNOW_THROW_MEMBERS];
-    PokeathlonCourseSpritePoolSprite *tiredSprites[SNOW_THROW_MEMBERS];
+    PokeathlonCourseMonPic monPics[POKEATHLON_TEAM_SIZE];
+    u32 picCharOffsets[POKEATHLON_TEAM_SIZE];
+    u32 picPlttOffsets[POKEATHLON_TEAM_SIZE];
+    PokeathlonCourseSpritePoolSprite *picSprites[POKEATHLON_TEAM_SIZE];
+    PokeathlonCourseSpritePoolSprite *tiredSprites[POKEATHLON_TEAM_SIZE];
     u8 unk6C[4];
     u8 shaking;
     u8 shakeTimer;
@@ -133,9 +130,9 @@ typedef struct PokeathlonSnowThrowCpuTargetNode {
 
 // The CPU of the teams without a player: every `interval` frames it looks at one member of each CPU team in turn.
 typedef struct PokeathlonSnowThrowCpu {
-    PokeathlonSnowThrowMon *mons[SNOW_THROW_MONS];
-    PokeathlonSnowThrowBall *balls[SNOW_THROW_MONS];
-    PokeathlonSnowThrowCpuTarget targets[SNOW_THROW_MONS];
+    PokeathlonSnowThrowMon *mons[POKEATHLON_MONS];
+    PokeathlonSnowThrowBall *balls[POKEATHLON_MONS];
+    PokeathlonSnowThrowCpuTarget targets[POKEATHLON_MONS];
     u32 thinking;
     u8 cpuCount;
     u8 cursor;
@@ -149,21 +146,21 @@ typedef struct PokeathlonSnowThrowCpu {
 
 typedef struct PokeathlonSnowThrow {
     BgConfig *bgConfig;
-    Window scoreWindow;                       // the result
-    Window nameWindows[SNOW_THROW_TEAMS - 1]; // the other players' names
+    Window scoreWindow;                              // the result
+    Window nameWindows[POKEATHLON_PARTICIPANTS - 1]; // the other players' names
     enum HeapID heapId;
     PokeathlonCourseSpritePool *spritePool;
     PokeathlonCourseSpritePoolSprite *frameSprite;
     Sprite *timerDigits[2];
-    PokeathlonCourseSpritePoolSprite *teamMarks[SNOW_THROW_TEAMS - 1];                  // the colour of each other team
-    PokeathlonCourseSpritePoolSprite *hitMarks[SNOW_THROW_MEMBERS];                     // where the own snowballs hit
-    PokeathlonCourseSpritePoolSprite *tiredMarks[SNOW_THROW_MONS - SNOW_THROW_MEMBERS]; // over the other teams' Pokemon
-    PokeathlonCourseMonObject *monObjects[SNOW_THROW_MONS - SNOW_THROW_MEMBERS]; // the other teams' Pokemon (the own are on the top screen)
-    PokeathlonSnowThrowBall balls[SNOW_THROW_MONS];
-    PokeathlonSnowThrowMon mons[SNOW_THROW_MONS];
+    PokeathlonCourseSpritePoolSprite *teamMarks[POKEATHLON_PARTICIPANTS - 1];             // the colour of each other team
+    PokeathlonCourseSpritePoolSprite *hitMarks[POKEATHLON_TEAM_SIZE];                     // where the own snowballs hit
+    PokeathlonCourseSpritePoolSprite *tiredMarks[POKEATHLON_MONS - POKEATHLON_TEAM_SIZE]; // over the other teams' Pokemon
+    PokeathlonCourseMonObject *monObjects[POKEATHLON_MONS - POKEATHLON_TEAM_SIZE];        // the other teams' Pokemon (the own are on the top screen)
+    PokeathlonSnowThrowBall balls[POKEATHLON_MONS];
+    PokeathlonSnowThrowMon mons[POKEATHLON_MONS];
     void *sortBuffer; // MATH_QSort work area
-    PokeathlonCourseTouch presses[SNOW_THROW_TEAMS];
-    u8 heldBall[SNOW_THROW_TEAMS]; // the snowball each participant is making / aiming
+    PokeathlonCourseTouch presses[POKEATHLON_PARTICIPANTS];
+    u8 heldBall[POKEATHLON_PARTICIPANTS]; // the snowball each participant is making / aiming
     u8 finished;
     u8 unk5D1[3];
     PokeathlonCourseSpriteResources *monResources;
@@ -174,8 +171,8 @@ typedef struct PokeathlonSnowThrow {
     u16 timer;     // frames left
     u8 holdFrames; // frames the stylus has been held on the own Pokemon (max 30)
     u8 unk5EB;
-    u8 shownSizes[SNOW_THROW_MEMBERS]; // drawing: size of the own snowballs shown last
-    u8 unk5EF[SNOW_THROW_MEMBERS];
+    u8 shownSizes[POKEATHLON_TEAM_SIZE]; // drawing: size of the own snowballs shown last
+    u8 unk5EF[POKEATHLON_TEAM_SIZE];
     u8 unk5F2[2];
 } PokeathlonSnowThrow;
 

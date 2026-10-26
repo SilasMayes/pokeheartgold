@@ -177,7 +177,7 @@ BOOL PokeathlonRingDrop_State_Finish(PokeathlonCourseData *course, u8 *state) {
         if (IsPaletteFadeFinished()) {
             if (!PokeathlonCourse_GetNetId(course)) {
                 int i;
-                for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+                for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
                     PokeathlonCourse_SetEventScore(course, (u8)i, ringDrop->players[i].mon.flags.bits.score);
                 }
             }
@@ -270,7 +270,7 @@ BOOL PokeathlonRingDrop_ShowResults(PokeathlonCourseData *course) {
     int i;
 
     PokeathlonCourseScoreList_Init(gfx);
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonCourse_AddScoreEntry(course, gfx, i, PokeathlonCourse_GetReceivedScore(course, (u8)i), 0, 3, msg_0309_00298);
     }
     PokeathlonCourseScoreList_Rank(gfx, 1);
@@ -413,7 +413,7 @@ static void PokeathlonRingDrop_Update(PokeathlonCourseData *course) {
         i = 0;
         data += POKEATHLON_COURSE_DATA_INPUTS;
         player = ringDrop->players;
-        for (; i < RING_DROP_PARTICIPANTS; player++, data += POKEATHLON_COURSE_DATA_SLOT_SIZE, i++) {
+        for (; i < POKEATHLON_PARTICIPANTS; player++, data += POKEATHLON_COURSE_DATA_SLOT_SIZE, i++) {
             PokeathlonRingDropInput *input = (PokeathlonRingDropInput *)PokeathlonCourse_ToBytes(data);
             PokeathlonRingDropTouch *touch = &player->touch;
             PokeathlonRingDropMon *mon = &player->mon;

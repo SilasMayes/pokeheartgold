@@ -337,7 +337,7 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
     int participant;
     PokeathlonRingDropMonPacket *packet;
     PokeathlonRingDropMonSprites *mon;
-    PokeathlonRingDropDepth depths[RING_DROP_PARTICIPANTS] = { 0 };
+    PokeathlonRingDropDepth depths[POKEATHLON_PARTICIPANTS] = { 0 };
     PokeathlonRingDrop *ringDrop;
     PokeathlonCourseMonObject *monObject;
     BOOL showHit;
@@ -360,7 +360,7 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
     display->bumped = framePacket->marks.bits.bumped;
     packet = framePacket->mons;
     mon = display->mons;
-    for (; participant < RING_DROP_PARTICIPANTS; participant++, packet++, mon++, index += RING_DROP_TEAM_SIZE) {
+    for (; participant < POKEATHLON_PARTICIPANTS; participant++, packet++, mon++, index += POKEATHLON_TEAM_SIZE) {
         BOOL cpu = PokeathlonCourse_GetParticipantCount(course) <= participant;
         BOOL host = PokeathlonCourse_GetNetId(course) == 0;
         hostCpu = FALSE;
@@ -379,9 +379,9 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
             member = packet->member;
             {
                 u32 marks = framePacket->marks.raw >> 8;
-                int next = (u8)((member + 2) % RING_DROP_TEAM_SIZE + index);
+                int next = (u8)((member + 2) % POKEATHLON_TEAM_SIZE + index);
                 BOOL nextReady = ((marks >> (next * 2)) & 3) == 1;
-                int afterNext = (u8)((member + 1) % RING_DROP_TEAM_SIZE + index);
+                int afterNext = (u8)((member + 1) % POKEATHLON_TEAM_SIZE + index);
                 BOOL afterNextReady = ((marks >> (afterNext * 2)) & 3) == 1;
                 PokeathlonRingDropUi_ShowNextReady(display->ui, nextReady, afterNextReady);
             }
@@ -585,15 +585,15 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
         int i, index;
         PokeathlonRingDropMonPacket *packet;
         PokeathlonRingDropDepth *depth;
-        for (i = 0, index = 0, packet = framePacket->mons, depth = depths; i < RING_DROP_PARTICIPANTS; i++, packet++, index += RING_DROP_TEAM_SIZE, depth++) {
+        for (i = 0, index = 0, packet = framePacket->mons, depth = depths; i < POKEATHLON_PARTICIPANTS; i++, packet++, index += POKEATHLON_TEAM_SIZE, depth++) {
             PokeathlonCourseMonObject *monObject = PokeathlonCourseMonObjects_Get(ringDrop->monObjects, (packet->member + index));
             int x = packet->x, y = packet->y;
             PokeathlonCourseObject_CenterToGround(monObject, x, y, &x, &y);
             depth->y = y;
             depth->monObject = monObject;
         }
-        MATH_QSort(depths, RING_DROP_PARTICIPANTS, sizeof(PokeathlonRingDropDepth), PokeathlonRingDropDisplay_CompareDepth, NULL);
-        for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+        MATH_QSort(depths, POKEATHLON_PARTICIPANTS, sizeof(PokeathlonRingDropDepth), PokeathlonRingDropDisplay_CompareDepth, NULL);
+        for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
             PokeathlonCourseMonObject_SetDrawPriority(depths[i].monObject, i + 7);
         }
     }
@@ -623,7 +623,7 @@ void PokeathlonRingDropDisplay_Init(PokeathlonRingDropDisplay *display, SpriteSy
         mon->monObject = ((PokeathlonRingDropGetMonObjectFunc)PokeathlonCourseMonObjects_Get)(monObjects, index);
         palette = mon->palettes[0][0];
         grey = mon->palettes[0][1];
-        for (member = 0; member < RING_DROP_TEAM_SIZE; index++, member++, palette += 32, grey += 32) {
+        for (member = 0; member < POKEATHLON_TEAM_SIZE; index++, member++, palette += 32, grey += 32) {
             PokeathlonCourseMonGfx_LoadPalette(PokeathlonCourseMonGfx_GetInfo(PokeathlonCourseMonObject_GetGfx(PokeathlonCourseMonObjects_Get(monObjects, index))), (enum HeapID)control[0], palette);
             MI_CpuCopy8(palette, grey, 32);
             TintPalette_GrayScale(grey, 16);
@@ -639,15 +639,15 @@ void PokeathlonRingDropDisplay_Init(PokeathlonRingDropDisplay *display, SpriteSy
         mon->sprites[RING_DROP_MON_SPRITE_DUST] = PokeathlonRingDrop_NewSprite(spriteSystem, spriteManager, 0, 0, 8, 2);
         ManagedSprite_SetDrawFlag(mon->sprites[RING_DROP_MON_SPRITE_DUST], FALSE);
         mon++;
-        control[1] += RING_DROP_TEAM_SIZE;
+        control[1] += POKEATHLON_TEAM_SIZE;
         next = control[2] + 1;
         control[2] = next;
-    } while (next < RING_DROP_PARTICIPANTS);
+    } while (next < POKEATHLON_PARTICIPANTS);
 }
 
 // Every participant: shows the frame packet the host sent.
 void PokeathlonRingDropDisplay_Update(PokeathlonRingDropDisplay *display, PokeathlonCourseData *course) {
-    u8 sorted[RING_DROP_PARTICIPANTS][2];
+    u8 sorted[POKEATHLON_PARTICIPANTS][2];
     PokeathlonRingDropFramePacket *packet;
     PokeathlonRingDrop *ringDrop;
     u8 status;
@@ -691,12 +691,12 @@ void PokeathlonRingDropDisplay_Update(PokeathlonRingDropDisplay *display, Pokeat
         }
     }
     display->status = status;
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         sorted[i][1] = i;
         sorted[i][0] = packet->mons[i].score;
     }
-    MATH_QSort(sorted, RING_DROP_PARTICIPANTS, 2, PokeathlonRingDropDisplay_CompareScores, NULL);
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    MATH_QSort(sorted, POKEATHLON_PARTICIPANTS, 2, PokeathlonRingDropDisplay_CompareScores, NULL);
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (packet->mons[i].score != display->scores[i]) {
             PokeathlonRingDropUi_SetRanks(display->ui, (u8)i, packet->mons[i].score, sorted[0]);
         }
@@ -714,7 +714,7 @@ void PokeathlonRingDropDisplay_Free(PokeathlonRingDropDisplay *display) {
     GF_ASSERT(display->spriteManager != NULL);
     GF_ASSERT(display->statusSprite != NULL);
     Sprite_DeleteAndFreeResources(display->statusSprite);
-    for (i = 0, mon = display->mons; i < RING_DROP_PARTICIPANTS; i++, mon++) {
+    for (i = 0, mon = display->mons; i < POKEATHLON_PARTICIPANTS; i++, mon++) {
         for (j = 0; j < RING_DROP_MON_SPRITE_COUNT; j++) {
             Sprite_DeleteAndFreeResources(mon->sprites[j]);
         }
@@ -726,7 +726,7 @@ void PokeathlonRingDropDisplay_StopAnimations(PokeathlonRingDropDisplay *display
     int j;
     BOOL animate = FALSE;
 
-    for (i = 0; i < RING_DROP_PARTICIPANTS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         for (j = 0; j < RING_DROP_MON_SPRITE_COUNT; j++) {
             ManagedSprite_SetAnimateFlag(display->mons[i].sprites[j], animate);
         }

@@ -26,6 +26,7 @@
 #include "pm_string.h"
 #include "pokemon.h"
 #include "save_vars_flags.h"
+#include "sound.h"
 #include "sound_playback.h"
 #include "sound_system.h"
 #include "sprite.h"
@@ -574,7 +575,7 @@ u32 PokeathlonCourse_State_WaitOpeningStart(PokeathlonCourseData *course) {
         PokeathlonCourseLink_SetCheckSize(PokeathlonCourse_GetSystem(course), TRUE);
         PokeathlonCourse_SetStateTransitionType(course, POKEATHLON_COURSE_SYNC_OPENING);
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_RUN_OPENING);
-        Sound_SetScene(0);
+        Sound_SetScene(SOUND_SCENE_NONE);
         Sound_SetSceneAndPlayBGM(25, SEQ_GS_PT_OPEN, 0);
     }
     return 0;
@@ -689,10 +690,10 @@ u32 PokeathlonCourse_State_WaitRoundStart(PokeathlonCourseData *course) {
         PokeathlonCourseLink_SetCheckSize(PokeathlonCourse_GetSystem(course), TRUE);
         PokeathlonCourse_SetStateTransitionType(course, POKEATHLON_COURSE_SYNC_ROUND_START);
         if (layout->round == layout->rounds - 1) {
-            Sound_SetScene(0);
+            Sound_SetScene(SOUND_SCENE_NONE);
             Sound_SetSceneAndPlayBGM(24, SEQ_GS_PT_GAMEF, 0);
         } else {
-            Sound_SetScene(0);
+            Sound_SetScene(SOUND_SCENE_NONE);
             Sound_SetSceneAndPlayBGM(24, SEQ_GS_PT_GAME, 0);
         }
         Sound_SetPlayerPause(PLAYER_BGM, TRUE);
@@ -918,7 +919,7 @@ u32 PokeathlonCourse_State_WaitClosingStart(PokeathlonCourseData *course) {
         PokeathlonCourseLink_SetCheckSize(PokeathlonCourse_GetSystem(course), TRUE);
         PokeathlonCourse_SetStateTransitionType(course, POKEATHLON_COURSE_SYNC_CLOSING);
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_RUN_CLOSING);
-        Sound_SetScene(0);
+        Sound_SetScene(SOUND_SCENE_NONE);
         Sound_SetSceneAndPlayBGM(25, SEQ_GS_PT_END, 0);
     }
     return 0;

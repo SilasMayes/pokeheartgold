@@ -15,9 +15,7 @@
 // Ring Drop: each participant has one of its three Pokemon in the ring at a time and tries to push the others
 // out. A Pokemon's stamina drains while it is in the ring and refills on the bench.
 
-#define RING_DROP_PARTICIPANTS 4
-#define RING_DROP_TEAM_SIZE    3
-#define RING_DROP_FRAMES       1800
+#define RING_DROP_FRAMES 1800
 
 // The Pokemon states (PokeathlonRingDropMon.state).
 #define RING_DROP_MON_STAND      1 // walks to its destination
@@ -117,7 +115,7 @@ typedef struct PokeathlonRingDropMon {
     u8 status; // the switch button's look (PokeathlonRingDropMon_UpdateStatus)
     PokeathlonRingDropMonFlags flags;
     u32 hitMarkFrames; // attacker and hit stay in the frame packet that long
-    PokeathlonRingDropMember members[RING_DROP_TEAM_SIZE];
+    PokeathlonRingDropMember members[POKEATHLON_TEAM_SIZE];
     u32 index; // the participant
 } PokeathlonRingDropMon;
 
@@ -183,7 +181,7 @@ typedef union PokeathlonRingDropFrameMarks {
 
 // The frame the host sends.
 typedef struct PokeathlonRingDropFramePacket {
-    PokeathlonRingDropMonPacket mons[RING_DROP_PARTICIPANTS];
+    PokeathlonRingDropMonPacket mons[POKEATHLON_PARTICIPANTS];
     u32 unk18;
     PokeathlonRingDropFrameMarks marks;
     u32 unk20_0 : 3;
@@ -206,8 +204,8 @@ enum PokeathlonRingDropMonSprite {
 typedef struct PokeathlonRingDropMonSprites {
     PokeathlonCourseMonObject *monObject;
     ManagedSprite *sprites[RING_DROP_MON_SPRITE_COUNT];
-    int state;                                // the last packet state
-    u16 palettes[RING_DROP_TEAM_SIZE][2][16]; // normal and grey per team member
+    int state;                                 // the last packet state
+    u16 palettes[POKEATHLON_TEAM_SIZE][2][16]; // normal and grey per team member
     fx32 jumpScale;
     u8 unkE0;
     s8 jumpFrames;
@@ -233,8 +231,8 @@ typedef struct PokeathlonRingDropDisplay {
     SpriteSystem *spriteSystem;
     SpriteManager *spriteManager;
     ManagedSprite *statusSprite;
-    PokeathlonRingDropMonSprites mons[RING_DROP_PARTICIPANTS];
-    u16 scores[RING_DROP_PARTICIPANTS];
+    PokeathlonRingDropMonSprites mons[POKEATHLON_PARTICIPANTS];
+    u16 scores[POKEATHLON_PARTICIPANTS];
     u8 status;
     u8 bumped : 1;
     u8 unk3B9_1 : 7;
@@ -251,11 +249,11 @@ typedef struct PokeathlonRingDrop {
     PokeathlonCourseSpriteResources *resources;
     PokeathlonCourseMonObjects *monObjects;
     Window window;
-    PokeathlonRingDropMemberParams memberParams[RING_DROP_PARTICIPANTS * RING_DROP_TEAM_SIZE];
+    PokeathlonRingDropMemberParams memberParams[POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE];
     PokeathlonRingDropUi *ui;
-    struct PokeathlonRingDropCpu *cpu;                           // the computer participants
-    u8 contacts[RING_DROP_PARTICIPANTS][RING_DROP_PARTICIPANTS]; // pairs whose push was taken already
-    PokeathlonRingDropPlayer players[RING_DROP_PARTICIPANTS];
+    struct PokeathlonRingDropCpu *cpu;                             // the computer participants
+    u8 contacts[POKEATHLON_PARTICIPANTS][POKEATHLON_PARTICIPANTS]; // pairs whose push was taken already
+    PokeathlonRingDropPlayer players[POKEATHLON_PARTICIPANTS];
     int timer; // frames left
     PokeathlonRingDropDisplay display;
     PokeathlonScreenShake shake;
@@ -316,7 +314,7 @@ void PokeathlonRingDrop_InitMons(PokeathlonRingDrop *ringDrop, PokeathlonCourseD
 void PokeathlonRingDrop_FreeMonObjects(PokeathlonRingDrop *ringDrop);
 int PokeathlonRingDropMon_GetPushReaction(PokeathlonRingDropMon *mon);
 void PokeathlonRingDrop_UpdateMons(PokeathlonRingDropPlayer *players, PokeathlonCourseData *course);
-void PokeathlonRingDrop_BuildFramePacket(u8 (*contacts)[RING_DROP_PARTICIPANTS], PokeathlonCourseData *course);
+void PokeathlonRingDrop_BuildFramePacket(u8 (*contacts)[POKEATHLON_PARTICIPANTS], PokeathlonCourseData *course);
 void PokeathlonRingDrop_SetMonAffineCenter(PokeathlonCourseMonObject *object, BOOL centered);
 void PokeathlonRingDropMon_SetState(PokeathlonRingDropMon *mon, int state);
 BOOL PokeathlonRingDropMon_CanSwitch(PokeathlonRingDropMon *mon);
@@ -352,8 +350,8 @@ BOOL PokeathlonRingDropUi_WaitSwitch(PokeathlonRingDropUi *ui, u8 participant, u
 void PokeathlonRingDropUi_SetSwitching(PokeathlonRingDropUi *ui, u8 participant, u32 member, BOOL switching);
 
 // The Pokemon start positions (ground x, y) and the switch spots: x, y, radius.
-extern const s16 gPokeathlonRingDropMonStartPositions[RING_DROP_PARTICIPANTS][2];
-extern const PokeathlonRingDropSwitchSpot gPokeathlonRingDropSwitchSpots[RING_DROP_PARTICIPANTS];
+extern const s16 gPokeathlonRingDropMonStartPositions[POKEATHLON_PARTICIPANTS][2];
+extern const PokeathlonRingDropSwitchSpot gPokeathlonRingDropSwitchSpots[POKEATHLON_PARTICIPANTS];
 // The direction 4 (PokeathlonRingDrop_GetDirection measures the angle from it).
 extern const VecFx32 gPokeathlonRingDropDirectionReference;
 // The ring's edge: two lines (x, y pairs) the Pokemon must stay right of between y 64 and 160.

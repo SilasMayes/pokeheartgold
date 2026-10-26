@@ -46,13 +46,13 @@ PokeathlonRelayRunHud *PokeathlonRelayRunHud_New(enum HeapID heapId, BgConfig *b
     PokeathlonRelayRunHud_InitWindows(hud);
     hud->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0309_bin, heapId);
     hud->msgFormat = MessageFormat_New(heapId);
-    for (i = 0; i < RELAY_RUN_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         hud->names[i] = String_New(11, heapId);
     }
     mon = PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
     {
         int member;
-        for (member = 0; member < RELAY_RUN_MEMBERS; member++) {
+        for (member = 0; member < POKEATHLON_TEAM_SIZE; member++) {
             CopyU16ArrayToString(hud->names[member], (const u16 *)(mon + 0x12)); // the Pokemon's nickname
             mon += 0x28;
         }
@@ -66,15 +66,15 @@ PokeathlonRelayRunHud *PokeathlonRelayRunHud_New(enum HeapID heapId, BgConfig *b
 
 void PokeathlonRelayRunHud_Free(PokeathlonRelayRunHud *hud) {
     int i;
-    for (i = 0; i < RELAY_RUN_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         Heap_Free(hud->pics[i].chars);
         Heap_Free(hud->pics[i].palette);
     }
-    for (i = 0; i < RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE; i++) {
         Heap_Free(hud->map.icons.files[i]);
     }
     Heap_Free(hud->digitScreenFile);
-    for (i = 0; i < RELAY_RUN_MEMBERS; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         String_Delete(hud->names[i]);
     }
     MessageFormat_Delete(hud->msgFormat);
@@ -117,7 +117,7 @@ void PokeathlonRelayRunHud_CreateSprites(PokeathlonRelayRunHud *hud, PokeathlonC
     int i, j;
     PokeathlonCourseSpritePoolSprite *plate;
     VecFx32 timerPosition, platePosition;
-    for (i = 0; i < RELAY_RUN_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonCourseSpritePool_CreateSprite(spritePool, 3, NNS_G2D_VRAM_TYPE_2DSUB, 101, 2);
         PokeathlonCourseSpritePool_CreateSprite(spritePool, 3, NNS_G2D_VRAM_TYPE_2DSUB, 101, 3);
         PokeathlonCourseSpritePool_CreateSprite(spritePool, 3, NNS_G2D_VRAM_TYPE_2DSUB, 101, 8);
@@ -126,7 +126,7 @@ void PokeathlonRelayRunHud_CreateSprites(PokeathlonRelayRunHud *hud, PokeathlonC
     for (i = 0; i < 2; i++) {
         PokeathlonCourseSpritePool_CreateSprite(spritePool, 3, NNS_G2D_VRAM_TYPE_2DSUB, 101, 16);
     }
-    for (i = 0; i < RELAY_RUN_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         hud->map.teams[i].icon = PokeathlonCourseSpritePool_Take(spritePool, 101, 2);
         hud->map.teams[i].colorMark = PokeathlonCourseSpritePool_Take(spritePool, 101, 3);
         hud->map.teams[i].swapMark = PokeathlonCourseSpritePool_Take(spritePool, 101, 8);
@@ -165,7 +165,7 @@ void PokeathlonRelayRunHud_LoadMonIcons(PokeathlonRelayRunHud *hud, PokeathlonCo
     PokeathlonRelayRunHud *cursor;
     narc = NARC_New(NARC_poketool_icongra_poke_icon, hud->heapId);
     GfGfxLoader_GXLoadPal(NARC_poketool_icongra_poke_icon, GetMonIconPlttNaix(), GF_PAL_LOCATION_SUB_OBJ, GF_PAL_SLOT_1_OFFSET, 0x60, hud->heapId);
-    for (i = 0, cursor = hud, chars = hud->iconChars; i < RELAY_RUN_TEAMS * RELAY_RUN_MEMBERS; cursor = (PokeathlonRelayRunHud *)((u8 *)cursor + sizeof(void *)), mons++, chars++, i++) {
+    for (i = 0, cursor = hud, chars = hud->iconChars; i < POKEATHLON_PARTICIPANTS * POKEATHLON_TEAM_SIZE; cursor = (PokeathlonRelayRunHud *)((u8 *)cursor + sizeof(void *)), mons++, chars++, i++) {
         cursor->map.icons.files[0] = Heap_AllocAtEnd(hud->heapId, 0x1000);
         form = (u8)mons->y;
         species = mons->x;
@@ -174,7 +174,7 @@ void PokeathlonRelayRunHud_LoadMonIcons(PokeathlonRelayRunHud *hud, PokeathlonCo
         hud->iconPalettes[i] = GetMonIconPaletteEx(species, form, FALSE) + 1;
     }
     NARC_Delete(narc);
-    for (i = 0; i < RELAY_RUN_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonRelayRunHud_SetMonIcon(hud, i, 0);
         PokeathlonCourseSpritePoolSprite_Show(hud->map.teams[i].icon, TRUE, TRUE);
         PokeathlonCourseSpritePoolSprite_Show(hud->map.teams[i].colorMark, TRUE, TRUE);
@@ -190,7 +190,7 @@ void PokeathlonRelayRunHud_LoadMonIcons(PokeathlonRelayRunHud *hud, PokeathlonCo
 void PokeathlonRelayRunHud_LoadMonPics(PokeathlonRelayRunHud *hud, const PokeathlonCourseMonInfo *mon) {
     PokepicTemplate template;
     int i;
-    for (i = 0; i < RELAY_RUN_MEMBERS; mon++, i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; mon++, i++) {
         GetMonSpriteCharAndPlttNarcIdsEx(&template, mon->species, mon->gender, 2, mon->isShiny, mon->form, mon->personality);
         hud->pics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, hud->heapId, mon->personality, FALSE, 2, mon->species);
         hud->pics[i].palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, hud->heapId);
@@ -200,7 +200,7 @@ void PokeathlonRelayRunHud_LoadMonPics(PokeathlonRelayRunHud *hud, const Pokeath
 // Shows the picture of member in picture slot 0 or 1 (the next and the one after on the touch screen).
 void PokeathlonRelayRunHud_ShowMonPic(PokeathlonRelayRunHud *hud, u32 slot, u32 member) {
     GF_ASSERT(slot < 2);
-    GF_ASSERT(member < RELAY_RUN_MEMBERS);
+    GF_ASSERT(member < POKEATHLON_TEAM_SIZE);
     DC_FlushRange(hud->pics[member].chars, 0x32 * 64);
     GXS_LoadOBJ(hud->pics[member].chars, hud->picCharLocations[slot], 0x32 * 64);
     DC_FlushRange(hud->pics[member].palette, 0x20);
@@ -210,7 +210,7 @@ void PokeathlonRelayRunHud_ShowMonPic(PokeathlonRelayRunHud *hud, u32 slot, u32 
 // Shows the icon of a team's member on the track map.
 static void PokeathlonRelayRunHud_SetMonIcon(PokeathlonRelayRunHud *hud, u8 teamId, int member) {
     Sprite *sprite = PokeathlonCourseSpritePoolSprite_GetSprite(hud->map.teams[teamId].icon);
-    int index = member + teamId * RELAY_RUN_MEMBERS;
+    int index = member + teamId * POKEATHLON_TEAM_SIZE;
     DC_FlushRange(hud->iconChars[index]->pRawData, 0x200);
     GXS_LoadOBJ(hud->iconChars[index]->pRawData, teamId * 0x200 + 0x600, 0x200);
     Sprite_SetPaletteOverride(sprite, hud->iconPalettes[index]);
@@ -317,7 +317,7 @@ BOOL PokeathlonRelayRunHud_RotateMonPics(PokeathlonRelayRunHud *hud, int member)
             PokeathlonCourseSpritePoolSprite_SetPosition(hud->picFrames[hud->rotateSlot], &position3);
             PokeathlonCourseSpritePoolSprite_SetPosition(hud->tiredMarks[hud->rotateSlot], &position3);
             hud->rotateSlot = (hud->rotateSlot + 1) % 2;
-            PokeathlonRelayRunHud_PrintMonName(hud, (u8)((member + 2) % RELAY_RUN_MEMBERS));
+            PokeathlonRelayRunHud_PrintMonName(hud, (u8)((member + 2) % POKEATHLON_TEAM_SIZE));
             *state = 0;
             return TRUE;
         }
@@ -330,7 +330,7 @@ BOOL PokeathlonRelayRunHud_RotateMonPics(PokeathlonRelayRunHud *hud, int member)
 // The same wait for a team without a player (teamId 1-3), counted without pictures; TRUE when done.
 BOOL PokeathlonRelayRunHud_RotateCpuMonPics(PokeathlonRelayRunHud *hud, u32 teamId) {
     u32 i;
-    GF_ASSERT(teamId != 0 && teamId < RELAY_RUN_TEAMS);
+    GF_ASSERT(teamId != 0 && teamId < POKEATHLON_PARTICIPANTS);
     i = teamId - 1;
     hud->cpuRotations[i].y += 32;
     if (hud->cpuRotations[i].y >= 88) {
@@ -410,7 +410,7 @@ void PokeathlonRelayRunHud_SetTimer(PokeathlonRelayRunHud *hud, int frames) {
 
 // Draw priorities of the touch screen: the player's own team (own) in front on the track map.
 void PokeathlonRelayRunHud_SetDrawPriorities(PokeathlonRelayRunHud *hud, int own) {
-    u8 order[RELAY_RUN_TEAMS];
+    u8 order[POKEATHLON_PARTICIPANTS];
     int i;
     u8 count;
     for (i = 0; i < 6; i++) {
@@ -420,17 +420,17 @@ void PokeathlonRelayRunHud_SetDrawPriorities(PokeathlonRelayRunHud *hud, int own
         Sprite_SetDrawPriority(PokeathlonCourseSpritePoolSprite_GetSprite(hud->picFrames[i]), 2);
     }
     count = 1;
-    for (i = 0; i < RELAY_RUN_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (i == own) {
             order[0] = i;
         }
     }
-    for (i = 0; i < RELAY_RUN_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         if (order[0] != i) {
             order[count++] = i;
         }
     }
-    for (i = 0; i < RELAY_RUN_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(hud->map.teams[order[i]].conditionMark, i * 2 + 3);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(hud->map.teams[order[i]].swapMark, i * 2 + 3);
         PokeathlonCourseSpritePoolSprite_SetDrawPriority(hud->map.teams[order[i]].icon, i * 2 + 4);

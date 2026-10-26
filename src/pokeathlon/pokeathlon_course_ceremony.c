@@ -355,7 +355,7 @@ BOOL PokeathlonCourseOpening_FadeIn(PokeathlonCourseData *course, u8 *state) {
         if (!PokeathlonCourse_GetNetId(course)) {
             PokeathlonCourseCeremony_ChooseIntros(course);
         }
-        BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_DOWNWARD_IN, FADE_TYPE_DOWNWARD_IN, 0, 6, 1, ceremony->heapId);
+        BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_DOWNWARD_IN, FADE_TYPE_DOWNWARD_IN, RGB_BLACK, 6, 1, ceremony->heapId);
         (*state)++;
         break;
     case CEREMONY_FADE_WAIT:
@@ -390,7 +390,7 @@ BOOL PokeathlonCourseOpening_Introduce(PokeathlonCourseData *course, u8 *state) 
             ceremony->state = OPENING_STATE_FLASH;
             break;
         case OPENING_STATE_FLASH:
-            SetBothScreensBrightnessByColor(0x7FFF);
+            SetBothScreensBrightnessByColor(RGB_WHITE);
             PlaySE(SEQ_SE_GS_VOICE01);
             ceremony->state = OPENING_STATE_WAIT_FLASH;
             break;
@@ -403,7 +403,7 @@ BOOL PokeathlonCourseOpening_Introduce(PokeathlonCourseData *course, u8 *state) 
             }
             break;
         case OPENING_STATE_FADE_IN:
-            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0x7FFF, 24, 1, ceremony->heapId);
+            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_WHITE, 24, 1, ceremony->heapId);
             ceremony->state = OPENING_STATE_WAIT_FADE_IN;
             break;
         case OPENING_STATE_WAIT_FADE_IN:
@@ -500,7 +500,7 @@ BOOL PokeathlonCourseOpening_Introduce(PokeathlonCourseData *course, u8 *state) 
 BOOL PokeathlonCourseOpening_FadeOut(PokeathlonCourseData *course, u8 *state) {
     switch (*state) {
     case CEREMONY_FADE_START:
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0x7FFF, 90, 1, PokeathlonCourse_GetHeapID(course));
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_WHITE, 90, 1, PokeathlonCourse_GetHeapID(course));
         GF_SndStartFadeOutBGM(0, 90);
         PlaySE(SEQ_SE_GS_VOICE02);
         (*state)++;
@@ -525,7 +525,7 @@ BOOL PokeathlonCourseClosing_FadeIn(PokeathlonCourseData *course, u8 *state) {
         if (!PokeathlonCourse_GetNetId(course)) {
             PokeathlonCourseCeremony_ChooseAwards(course);
         }
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_DOWNWARD_IN, FADE_TYPE_DOWNWARD_IN, 0, 6, 1, ceremony->heapId);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_DOWNWARD_IN, FADE_TYPE_DOWNWARD_IN, RGB_BLACK, 6, 1, ceremony->heapId);
         (*state)++;
         break;
     case CEREMONY_FADE_WAIT:
@@ -810,7 +810,7 @@ BOOL PokeathlonCourseClosing_FadeOut(PokeathlonCourseData *course, u8 *state) {
     PokeathlonCourseConfetti_Update(ceremony->confetti);
     switch (*state) {
     case CEREMONY_FADE_START:
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0x7FFF, 30, 1, PokeathlonCourse_GetHeapID(course));
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_WHITE, 30, 1, PokeathlonCourse_GetHeapID(course));
         GF_SndStartFadeOutBGM(0, 30);
         (*state)++;
         break;

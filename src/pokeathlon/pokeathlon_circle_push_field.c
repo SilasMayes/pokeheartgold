@@ -417,9 +417,9 @@ void PokeathlonCirclePushAi_Free(PokeathlonCirclePushAi *ai) {
 }
 
 // Every interval frames one Pokemon of each CPU team (in turn) gets a new target. Returns it
-// (CIRCLE_PUSH_NO_MON: none).
+// (POKEATHLON_NO_MON: none).
 int PokeathlonCirclePushAi_Update(PokeathlonCirclePushAi *ai, u8 layout) {
-    int result = CIRCLE_PUSH_NO_MON;
+    int result = POKEATHLON_NO_MON;
     int mon;
 
     if (ai->firstTeam2 == 4) {

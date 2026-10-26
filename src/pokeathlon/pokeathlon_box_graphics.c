@@ -204,19 +204,19 @@ static void PokeathlonBox_LoadBgGraphics(BgConfig *bgConfig, enum HeapID heapID)
 
 static void PokeathlonBox_InitBgFromTemplates(BgConfig *bgConfig) {
     BgTemplate bgTemplate1 = sPokeathlonBoxBgTemplate_Sub0;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_0, &bgTemplate1, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_0, &bgTemplate1, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_0);
 
     BgTemplate bgTemplate2 = sPokeathlonBoxBgTemplate_Sub1;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_1, &bgTemplate2, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_1, &bgTemplate2, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_1);
 
     BgTemplate bgTemplate3 = sPokeathlonBoxBgTemplate_Sub2;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_2, &bgTemplate3, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_2, &bgTemplate3, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_2);
 
     BgTemplate bgTemplate4 = sPokeathlonBoxBgTemplate_Sub3;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_3, &bgTemplate4, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_3, &bgTemplate4, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_3);
 }
 
@@ -258,18 +258,18 @@ static void PokeathlonBox_PrintMonTexts(PokeathlonBox_Graphics *graphics, Pokeat
 
     CopyU16ArrayToString(graphics->nickname, mon->nickname);
     FillWindowPixelBuffer(&graphics->window3, 0);
-    AddTextPrinterParameterizedWithColor(&graphics->window3, 0, graphics->nickname, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), 0);
+    AddTextPrinterParameterizedWithColor(&graphics->window3, 0, graphics->nickname, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     CopyWindowToVram(&graphics->window3);
     if (mon->gender == 0) {
         str = NewString_ReadMsgData(graphics->msgData, msg_0278_00002);
         FillWindowPixelBuffer(&graphics->window4, 0);
-        AddTextPrinterParameterizedWithColor(&graphics->window4, 0, str, 4, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(7, 8, 0), 0);
+        AddTextPrinterParameterizedWithColor(&graphics->window4, 0, str, 4, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(7, 8, 0), NULL);
         CopyWindowToVram(&graphics->window4);
         String_Delete(str);
     } else if (mon->gender == 1) {
         str = NewString_ReadMsgData(graphics->msgData, msg_0278_00003);
         FillWindowPixelBuffer(&graphics->window4, 0);
-        AddTextPrinterParameterizedWithColor(&graphics->window4, 0, str, 4, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(3, 4, 0), 0);
+        AddTextPrinterParameterizedWithColor(&graphics->window4, 0, str, 4, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(3, 4, 0), NULL);
         CopyWindowToVram(&graphics->window4);
         String_Delete(str);
     } else {
@@ -281,7 +281,7 @@ static void PokeathlonBox_PrintMonTexts(PokeathlonBox_Graphics *graphics, Pokeat
     String_Delete(str);
     str = ReadMsgData_ExpandPlaceholders(graphics->msgFormat, graphics->msgData, msg_0278_00009, graphics->heapID);
     FillWindowPixelBuffer(&graphics->window6, 0);
-    AddTextPrinterParameterizedWithColor(&graphics->window6, 0, str, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), 0);
+    AddTextPrinterParameterizedWithColor(&graphics->window6, 0, str, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     CopyWindowToVram(&graphics->window6);
     String_Delete(str);
 }

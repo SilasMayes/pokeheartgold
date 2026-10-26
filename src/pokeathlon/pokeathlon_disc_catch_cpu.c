@@ -34,7 +34,7 @@ PokeathlonDiscCatchCpu *PokeathlonDiscCatchCpu_New(PokeathlonCourseData *course,
     cpu->course = course;
     {
         i = 0;
-        cpu->count = DISC_CATCH_PARTICIPANTS - participant;
+        cpu->count = POKEATHLON_PARTICIPANTS - participant;
         for (; i < cpu->count; i++) {
             PokeathlonDiscCatchCpuTeam_Init(cpu->teams[i], (u8)participant, course);
             participant++;
@@ -56,14 +56,14 @@ void PokeathlonDiscCatchCpu_Update(PokeathlonDiscCatchCpu *cpu) {
     PokeathlonDiscCatch *work = PokeathlonCourse_GetWork(cpu->course);
     int total = 0;
     u32 i = 0;
-    for (; (s32)i < DISC_CATCH_PARTICIPANTS; i++) {
+    for (; (s32)i < POKEATHLON_PARTICIPANTS; i++) {
         total += PokeathlonDiscCatch_GetTeamScore(work, (u8)i);
     }
     int j = 0;
     if (j < cpu->count) {
         u16 average;
         i = (u32)cpu->teams[0];
-        average = total / DISC_CATCH_PARTICIPANTS;
+        average = total / POKEATHLON_PARTICIPANTS;
         do {
             int score = PokeathlonDiscCatch_GetTeamScore(work, (u8)j);
             PokeathlonDiscCatchCpuTeam_Update((PokeathlonDiscCatchCpuMon *)i, average, score);
@@ -79,8 +79,8 @@ void PokeathlonDiscCatchCpu_Update(PokeathlonDiscCatchCpu *cpu) {
 static void PokeathlonDiscCatchCpuTeam_Init(PokeathlonDiscCatchCpuMon *mons, int participant, PokeathlonCourseData *course) {
     int i;
     int index;
-    MI_CpuFill8(mons, 0, sizeof(PokeathlonDiscCatchCpuMon) * DISC_CATCH_TEAM_SIZE);
-    for (i = 0, index = participant * DISC_CATCH_TEAM_SIZE; i < DISC_CATCH_TEAM_SIZE; i++) {
+    MI_CpuFill8(mons, 0, sizeof(PokeathlonDiscCatchCpuMon) * POKEATHLON_TEAM_SIZE);
+    for (i = 0, index = participant * POKEATHLON_TEAM_SIZE; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonDiscCatchCpuMon_Init(&mons[i], course, index);
         index++;
     }
@@ -88,7 +88,7 @@ static void PokeathlonDiscCatchCpuTeam_Init(PokeathlonDiscCatchCpuMon *mons, int
 
 static void PokeathlonDiscCatchCpuTeam_Update(PokeathlonDiscCatchCpuMon *mons, u16 average, u16 score) {
     int i;
-    for (i = 0; i < DISC_CATCH_TEAM_SIZE; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonDiscCatchCpuMon_Update(&mons[i], average, score);
     }
 }
@@ -105,8 +105,8 @@ static void PokeathlonDiscCatchCpuMon_PickHome(PokeathlonDiscCatchCpuMon *mon) {
 }
 
 static void PokeathlonDiscCatchCpuMon_Init(PokeathlonDiscCatchCpuMon *mon, PokeathlonCourseData *course, u8 index) {
-    u8 participant = index / DISC_CATCH_TEAM_SIZE;
-    u8 member = index % DISC_CATCH_TEAM_SIZE;
+    u8 participant = index / POKEATHLON_TEAM_SIZE;
+    u8 member = index % POKEATHLON_TEAM_SIZE;
     mon->course = course;
     mon->participant = participant;
     mon->member = member;

@@ -72,7 +72,7 @@ PokeathlonRelayRunCpu *PokeathlonRelayRunCpu_New(enum HeapID heapId, int cpuCoun
 
     MI_CpuFill8(cpu, 0, sizeof(PokeathlonRelayRunCpu));
     cpu->cpuCount = cpuCount;
-    cpu->humanCount = RELAY_RUN_TEAMS - cpuCount;
+    cpu->humanCount = POKEATHLON_PARTICIPANTS - cpuCount;
     cpu->firstCpu = cpu->humanCount;
     cpu->interval = 10;
     cpu->timer = cpu->interval;
@@ -121,7 +121,7 @@ void PokeathlonRelayRunCpu_Delete(PokeathlonRelayRunCpu *cpu) {
 u8 PokeathlonRelayRunCpu_Update(PokeathlonCourseData *course, PokeathlonRelayRunCpu *cpu, s32 timer) {
     u8 result = RELAY_RUN_CPU_NONE;
 
-    if (cpu->humanCount == RELAY_RUN_TEAMS) {
+    if (cpu->humanCount == POKEATHLON_PARTICIPANTS) {
         return 0;
     }
     cpu->timer++;
@@ -149,8 +149,8 @@ u8 PokeathlonRelayRunCpu_Update(PokeathlonCourseData *course, PokeathlonRelayRun
 
 static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, PokeathlonRelayRunCpu *cpu, u8 index, s32 timer) {
     PokeathlonRelayRunCpuObstacle obstacles[RELAY_RUN_OBSTACLES];
-    PokeathlonRelayRunCpuTeam teams[RELAY_RUN_TEAMS];
-    int laneScores[RELAY_RUN_TEAMS];
+    PokeathlonRelayRunCpuTeam teams[POKEATHLON_PARTICIPANTS];
+    int laneScores[POKEATHLON_PARTICIPANTS];
     int groundX, groundY;
     fx32 centerX, centerY;
     int fromX, fromY;
@@ -167,11 +167,11 @@ static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, Pokeathlon
     if (team->swapping || team->members[team->current].condition == RELAY_RUN_EXHAUSTED || team->stunTimer) {
         return;
     }
-    for (i = 0; i < RELAY_RUN_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         laneScores[i] = 0;
     }
     threshold = 0;
-    for (i = 0; i < RELAY_RUN_TEAMS; i++) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         PokeathlonRelayRunTeam *other;
 
         teams[i] = cpu->teams[i];
@@ -189,7 +189,7 @@ static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, Pokeathlon
     }
     // near the end of the lap: look at everything shifted back so that the lookahead doesn't wrap
     if (self->x >= RELAY_RUN_TRACK_LENGTH - RELAY_RUN_CPU_LOOKAHEAD) {
-        for (i = 0; i < RELAY_RUN_TEAMS; i++) {
+        for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
             PokeathlonRelayRunCpu_WrapX(&teams[i].x, -RELAY_RUN_CPU_LOOKAHEAD);
         }
         for (i = 0; i < RELAY_RUN_OBSTACLES; i++) {
@@ -211,7 +211,7 @@ static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, Pokeathlon
     for (lane = 0, laneScore = laneScores, firstCell = 0, laneTop = 32; lane < RELAY_RUN_CPU_LANES; lane++, laneScore++, firstCell += RELAY_RUN_CPU_COLUMNS, laneTop += RELAY_RUN_CPU_CELL_SIZE) {
         // other runners: in the own lane ahead -4, in another lane ahead -2, the cell they are in -3;
         // close behind in the own lane +2
-        for (j = 0; j < RELAY_RUN_TEAMS; j++) {
+        for (j = 0; j < POKEATHLON_PARTICIPANTS; j++) {
             if (j == index) {
                 continue;
             }
@@ -271,7 +271,7 @@ static void PokeathlonRelayRunCpu_Think(PokeathlonCourseData *course, Pokeathlon
         threshold += 8;
     }
     team = self->team;
-    next = (team->current + 1) % RELAY_RUN_MEMBERS;
+    next = (team->current + 1) % POKEATHLON_TEAM_SIZE;
     if (team->members[next].condition == RELAY_RUN_TIRED) {
         threshold -= 5;
     }
