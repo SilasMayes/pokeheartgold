@@ -1258,7 +1258,7 @@ static void MigrateFromAgb_PrintIntro(MigrateFromAgbApp *app) {
     u16 name[8];
     MessageFormat *msgFormat;
     String *string;
-    void *playerName = PmAgbCartridge_GetPlayerName(app);
+    u8 *playerName = PmAgbCartridge_GetPlayerName(app);
     ConvertRSStringToDPStringInternational(playerName, name, 8, PmAgbCartridge_GetLanguage());
     msgFormat = MessageFormat_New(HEAP_ID_76);
     string = String_New(8, HEAP_ID_76);

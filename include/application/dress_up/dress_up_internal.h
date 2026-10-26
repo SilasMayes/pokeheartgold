@@ -45,7 +45,7 @@ typedef struct DressUpGfx {
     NNSGfdTexKey texKey;
     NNSGfdPlttKey plttKey;
     BOOL pokepicActive;
-    void *monPicAttrs;
+    u8 *monPicAttrs;
     GF_2DGfxRawResMan *hitMapResMan;
     NNSG2dCharacterData **hitMaps; // [accessory], [100 + backdrop], [DRESS_UP_IMAGE_MAX] mon
     int hitMapCount;
@@ -289,13 +289,14 @@ typedef struct DressUpTouch {
 } DressUpTouch;
 
 struct DressUpButton;
+struct DressUpWork;
 
-typedef void (*DressUpButtonCallback)(struct DressUpButton *button, void *arg);
+typedef void (*DressUpButtonCallback)(struct DressUpButton *button, struct DressUpWork *work);
 
 typedef struct DressUpButtonTemplate {
     const SpriteTemplate *spriteTemplate;
     DressUpButtonCallback callback;
-    void *arg;
+    struct DressUpWork *work;
     u32 trigger; // touch state that fires the callback
 } DressUpButtonTemplate;
 
@@ -312,7 +313,7 @@ typedef struct DressUpTextButtonTemplate {
 typedef struct DressUpButton {
     Sprite *sprite;
     u32 trigger;
-    void *arg;
+    struct DressUpWork *work;
     DressUpButtonCallback callback;
 } DressUpButton;
 

@@ -36,10 +36,9 @@ VsRecorderWork *VsRecorderApp_GetRecorderWork(OverlayManager *manager) {
     return app->recorder;
 }
 
-void VsRecorderApp_SetResult(void *result, u32 first, u32 second) {
-    VsRecorderAppResult *pair = result;
-    pair->first = first;
-    pair->second = second;
+void VsRecorderApp_SetResult(VsRecorderAppResult *result, u32 first, u32 second) {
+    result->first = first;
+    result->second = second;
 }
 
 static void VsRecorderApp_Create(OverlayManager *manager, u32 mode) {

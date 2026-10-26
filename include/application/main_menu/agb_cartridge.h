@@ -160,7 +160,7 @@ extern u16 gAgbSpeciesMap[144][2];     // GBA species index, national dex number
 extern const u16 sAgbToDpCharMap[][2]; // GBA character -> character of this game (Japanese, other languages)
 
 u32 PmAgbCartridge_GetTrainerId(void);
-void *PmAgbCartridge_GetPlayerName(void *unused);
+u8 *PmAgbCartridge_GetPlayerName(void *unused);
 u32 AGB_GetBoxMonData(AgbBoxMon *mon, int field, u8 *dest);
 void AGB_SetBoxMonData(AgbBoxMon *mon, int field, const void *value);
 int TranslateAgbSpecies(int species);

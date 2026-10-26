@@ -1891,7 +1891,7 @@ static void VsRecorder_CreateVideoListIcons(VsRecorderWork *work) {
         if (VIDEO_PARTY(work, scroll + i) == NULL) {
             continue;
         }
-        if (VsRecorder_HeaderUsesThreeMonLayout(VIDEO_PARTY(work, scroll + i)->species)) {
+        if (VsRecorder_HeaderUsesThreeMonLayout(&VIDEO_PARTY(work, scroll + i)->header)) {
             layout = 1;
         } else {
             layout = 0;
@@ -1902,19 +1902,19 @@ static void VsRecorder_CreateVideoListIcons(VsRecorderWork *work) {
             forms[j] = 0;
         }
         for (j = 0; j < 3; j++) {
-            if (VIDEO_PARTY(work, scroll + i)->species[order.slots[layout][j]] != SPECIES_NONE) {
-                species[count] = VIDEO_PARTY(work, scroll + i)->species[order.slots[layout][j]];
-                forms[count] = VIDEO_PARTY(work, scroll + i)->forms[order.slots[layout][j]];
+            if (VIDEO_PARTY(work, scroll + i)->header.species[order.slots[layout][j]] != SPECIES_NONE) {
+                species[count] = VIDEO_PARTY(work, scroll + i)->header.species[order.slots[layout][j]];
+                forms[count] = VIDEO_PARTY(work, scroll + i)->header.forms[order.slots[layout][j]];
                 count++;
             }
         }
-        if (VsRecorder_HeaderUsesThreeMonLayout(VIDEO_PARTY(work, scroll + i)->species)) {
+        if (VsRecorder_HeaderUsesThreeMonLayout(&VIDEO_PARTY(work, scroll + i)->header)) {
             count = 3;
         }
         for (j = 3; j < 6; j++) {
-            if (VIDEO_PARTY(work, scroll + i)->species[order.slots[layout][j]] != SPECIES_NONE) {
-                species[count] = VIDEO_PARTY(work, scroll + i)->species[order.slots[layout][j]];
-                forms[count] = VIDEO_PARTY(work, scroll + i)->forms[order.slots[layout][j]];
+            if (VIDEO_PARTY(work, scroll + i)->header.species[order.slots[layout][j]] != SPECIES_NONE) {
+                species[count] = VIDEO_PARTY(work, scroll + i)->header.species[order.slots[layout][j]];
+                forms[count] = VIDEO_PARTY(work, scroll + i)->header.forms[order.slots[layout][j]];
                 count++;
             }
         }
@@ -2010,7 +2010,7 @@ static void VsRecorder_ScrollVideoListIcons(VsRecorderWork *work) {
         int species[6] = { 0 };
         int forms[6] = { 0 };
         layout = 0;
-        if (VsRecorder_HeaderUsesThreeMonLayout(VIDEO_PARTY(work, index)->species)) {
+        if (VsRecorder_HeaderUsesThreeMonLayout(&VIDEO_PARTY(work, index)->header)) {
             layout = 1;
         }
         count = 0;
@@ -2022,19 +2022,19 @@ static void VsRecorder_ScrollVideoListIcons(VsRecorderWork *work) {
             }
         }
         for (j = 0; j < 3; j++) {
-            if (VIDEO_PARTY(work, index)->species[order.slots[layout][j]] != SPECIES_NONE) {
-                species[count] = VIDEO_PARTY(work, index)->species[order.slots[layout][j]];
-                forms[count] = VIDEO_PARTY(work, index)->forms[order.slots[layout][j]];
+            if (VIDEO_PARTY(work, index)->header.species[order.slots[layout][j]] != SPECIES_NONE) {
+                species[count] = VIDEO_PARTY(work, index)->header.species[order.slots[layout][j]];
+                forms[count] = VIDEO_PARTY(work, index)->header.forms[order.slots[layout][j]];
                 count++;
             }
         }
-        if (VsRecorder_HeaderUsesThreeMonLayout(VIDEO_PARTY(work, index)->species)) {
+        if (VsRecorder_HeaderUsesThreeMonLayout(&VIDEO_PARTY(work, index)->header)) {
             count = 3;
         }
         for (j = 3; j < 6; j++) {
-            if (VIDEO_PARTY(work, index)->species[order.slots[layout][j]] != SPECIES_NONE) {
-                species[count] = VIDEO_PARTY(work, index)->species[order.slots[layout][j]];
-                forms[count] = VIDEO_PARTY(work, index)->forms[order.slots[layout][j]];
+            if (VIDEO_PARTY(work, index)->header.species[order.slots[layout][j]] != SPECIES_NONE) {
+                species[count] = VIDEO_PARTY(work, index)->header.species[order.slots[layout][j]];
+                forms[count] = VIDEO_PARTY(work, index)->header.forms[order.slots[layout][j]];
                 count++;
             }
         }

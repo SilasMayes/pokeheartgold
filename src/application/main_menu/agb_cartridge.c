@@ -131,7 +131,7 @@ static int PmAgbCartridge_CheckSaveSlot(int slot, AgbSaveSector *sector, u32 *co
 static int PmAgbCartridge_FindLatestSaveSlot(AgbSaveSector *sector, u32 *slot, u32 *counter);
 static void PmAgbCartridge_WriteSectorAsync(int id);
 static u32 PmAgbCartridge_WriteSectorCallback(CTRDGTaskInfo *task);
-static void *PmAgbCartridge_GetTrainerInfo(void);
+static AgbTrainerInfo *PmAgbCartridge_GetTrainerInfo(void);
 static void AGB_DecryptBoxMon(AgbBoxMon *mon);
 static void AGB_EncryptBoxMon(AgbBoxMon *mon);
 static u16 AGB_CalcBoxMonChecksum(AgbBoxMon *mon);
@@ -487,7 +487,7 @@ AgbPokemonStorage *PmAgbCartridge_GetPCStorage(void) {
 }
 
 // The trainer info sector
-static void *PmAgbCartridge_GetTrainerInfo(void) {
+static AgbTrainerInfo *PmAgbCartridge_GetTrainerInfo(void) {
     return PmAgbCartridge_GetSectorData(0);
 }
 
@@ -497,8 +497,8 @@ u32 PmAgbCartridge_GetTrainerId(void) {
     return (trainerInfo->trainerId[3] << 24) | (trainerInfo->trainerId[2] << 16) | (trainerInfo->trainerId[1] << 8) | trainerInfo->trainerId[0];
 }
 
-void *PmAgbCartridge_GetPlayerName(void *unused) {
-    return PmAgbCartridge_GetTrainerInfo();
+u8 *PmAgbCartridge_GetPlayerName(void *unused) {
+    return PmAgbCartridge_GetTrainerInfo()->playerName;
 }
 
 // Substructure `which` (0 growth, 1 attacks, 2 EVs and condition, 3 misc) of the box Pokemon; the order of the four

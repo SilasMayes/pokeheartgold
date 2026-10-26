@@ -2198,7 +2198,7 @@ static void VsRecorder_RemoveVideoInfoWindows(VsRecorderVideoInfo *info, VsRecor
     } while (i < 5);
 }
 
-BOOL VsRecorder_HeaderUsesThreeMonLayout(void *header) {
+BOOL VsRecorder_HeaderUsesThreeMonLayout(BattleRecordHeader *header) {
     switch ((int)BattleRecordHeader_GetField(header, BATTLE_RECORD_HEADER_TYPE, 0)) {
     case 0xE:
     case 0x11:

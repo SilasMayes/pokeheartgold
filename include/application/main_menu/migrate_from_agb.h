@@ -90,7 +90,7 @@ typedef struct MigrateFromAgbApp {
     int nextState; // after the fade
     SpriteList *spriteList;
     G2dRenderer renderer;
-    void *resMan[6];
+    GF_2DGfxResMan *resMan[6];
     SpriteResource *resources[4];
     u8 unk_017C[8];
     SpriteResourcesHeader resHeader;

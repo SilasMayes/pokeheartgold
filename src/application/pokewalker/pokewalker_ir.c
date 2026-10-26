@@ -521,24 +521,24 @@ static void PokewalkerIr_RequestChunk(void) {
     PokewalkerIr_Send(data, 3, 0xC, 2);
 }
 
-#define LOAD_NEXT_BLOCK()                                                                                   \
-    switch (gPokewalkerIrWork.blockIndex) {                                                                    \
-    case 0:                                                                                                 \
-        gPokewalkerIrTransfer.step = 176;                                                                          \
-        PokewalkerIr_BeginTransfer((void *)(gPokewalkerIrWork.blocks->block0), (u32)((void *)0xB804), 576);    \
-        break;                                                                                              \
-    case 1:                                                                                                 \
-        gPokewalkerIrTransfer.step = 178;                                                                          \
-        PokewalkerIr_BeginTransfer((void *)((s32)gPokewalkerIrWork.blocks + 580), (u32)((void *)0xBA44), 764); \
-        break;                                                                                              \
-    case 2:                                                                                                 \
-        gPokewalkerIrTransfer.step = 180;                                                                          \
-        PokewalkerIr_BeginTransfer((void *)(&gPokewalkerIrWork.blocks->giftItem), (u32)((void *)0xBD40), 392); \
-        break;                                                                                              \
-    case 3:                                                                                                 \
-        gPokewalkerIrTransfer.step = 182;                                                                          \
-        PokewalkerIr_BeginTransfer(gPokewalkerIrWork.unk_0C, (u32)((void *)0xBF00), 3260);                     \
-        break;                                                                                              \
+#define LOAD_NEXT_BLOCK()                                                             \
+    switch (gPokewalkerIrWork.blockIndex) {                                           \
+    case 0:                                                                           \
+        gPokewalkerIrTransfer.step = 176;                                             \
+        PokewalkerIr_BeginTransfer(gPokewalkerIrWork.blocks->block0, 0xB804, 576);    \
+        break;                                                                        \
+    case 1:                                                                           \
+        gPokewalkerIrTransfer.step = 178;                                             \
+        PokewalkerIr_BeginTransfer(&gPokewalkerIrWork.blocks->giftMon, 0xBA44, 764);  \
+        break;                                                                        \
+    case 2:                                                                           \
+        gPokewalkerIrTransfer.step = 180;                                             \
+        PokewalkerIr_BeginTransfer(&gPokewalkerIrWork.blocks->giftItem, 0xBD40, 392); \
+        break;                                                                        \
+    case 3:                                                                           \
+        gPokewalkerIrTransfer.step = 182;                                             \
+        PokewalkerIr_BeginTransfer(gPokewalkerIrWork.unk_0C, 0xBF00, 3260);           \
+        break;                                                                        \
     }
 
 #define CHECK_BLOCK_LOCKED()                            \
@@ -654,7 +654,7 @@ static void PokewalkerIr_OnReceiveComplete(void) {
                 return;
             }
             gPokewalkerIrTransfer.step = 176;
-            PokewalkerIr_BeginTransfer(gPokewalkerIrWork.blocks->block0, (u32)((void *)0xB804), sizeof(gPokewalkerIrWork.blocks->block0));
+            PokewalkerIr_BeginTransfer(gPokewalkerIrWork.blocks->block0, 0xB804, sizeof(gPokewalkerIrWork.blocks->block0));
             PokewalkerIr_SendChunk();
             return;
         case 178:
@@ -663,7 +663,7 @@ static void PokewalkerIr_OnReceiveComplete(void) {
                 return;
             }
             gPokewalkerIrTransfer.step = 178;
-            PokewalkerIr_BeginTransfer((void *)((s32)gPokewalkerIrWork.blocks + 580), (u32)((void *)0xBA44), 764);
+            PokewalkerIr_BeginTransfer(&gPokewalkerIrWork.blocks->giftMon, 0xBA44, 764);
             PokewalkerIr_SendChunk();
             return;
         case 180:
@@ -672,7 +672,7 @@ static void PokewalkerIr_OnReceiveComplete(void) {
                 return;
             }
             gPokewalkerIrTransfer.step = 180;
-            PokewalkerIr_BeginTransfer((void *)(&gPokewalkerIrWork.blocks->giftItem), (u32)((void *)0xBD40), 392);
+            PokewalkerIr_BeginTransfer(&gPokewalkerIrWork.blocks->giftItem, 0xBD40, 392);
             PokewalkerIr_SendChunk();
             return;
         case 182:
@@ -681,7 +681,7 @@ static void PokewalkerIr_OnReceiveComplete(void) {
                 return;
             }
             gPokewalkerIrTransfer.step = 182;
-            PokewalkerIr_BeginTransfer(gPokewalkerIrWork.unk_0C, (u32)((void *)0xBF00), 3260);
+            PokewalkerIr_BeginTransfer(gPokewalkerIrWork.unk_0C, 0xBF00, 3260);
             PokewalkerIr_SendChunk();
             return;
         case 184:

@@ -19,11 +19,10 @@ typedef struct VsRecorderDeleteVideo {
     Window yesNoWindows[2];
 } VsRecorderDeleteVideo;
 
-// party part of a video header: the profile, then species and forms of both sides
+// a video header: the profile, then the battle record header (species and forms of both sides)
 typedef struct VsRecorderVideoParty {
     u8 profile[0x80];
-    u16 species[12];
-    u8 forms[12];
+    BattleRecordHeader header;
 } VsRecorderVideoParty;
 
 typedef struct VsRecorderVideoListIcon {

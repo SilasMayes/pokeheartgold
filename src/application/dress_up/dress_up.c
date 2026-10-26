@@ -370,11 +370,11 @@ static void DressUp_InitButtons(DressUpWork *work);
 static void DressUp_FreeButtons(DressUpWork *work);
 static void DressUp_UpdateButtons(DressUpWork *work);
 static void DressUp_ResetButtons(DressUpWork *work);
-static void DressUp_OnDoneButton(DressUpButton *button, void *arg);
-static void DressUp_OnNextPageButton(DressUpButton *button, void *arg);
-static void DressUp_OnPrevPageButton(DressUpButton *button, void *arg);
-static void DressUp_OnAccessoryTabButton(DressUpButton *button, void *arg);
-static void DressUp_OnBackdropTabButton(DressUpButton *button, void *arg);
+static void DressUp_OnDoneButton(DressUpButton *button, DressUpWork *work);
+static void DressUp_OnNextPageButton(DressUpButton *button, DressUpWork *work);
+static void DressUp_OnPrevPageButton(DressUpButton *button, DressUpWork *work);
+static void DressUp_OnAccessoryTabButton(DressUpButton *button, DressUpWork *work);
+static void DressUp_OnBackdropTabButton(DressUpButton *button, DressUpWork *work);
 static void DressUp_FreeHud(DressUpWork *work);
 static void DressUp_StartFinishTransition(DressUpWork *work, u32 *done);
 static void DressUp_FinishTransitionTask(SysTask *task, void *data);
@@ -527,8 +527,8 @@ static void DressUpButton_Delete(DressUpButton *button);
 static void DressUpButton_DeleteWithText(DressUpTextButton *button);
 static void DressUpButton_TryCallback(DressUpButton *button, u32 state);
 static void DressUp_UpdateCategoryTabs(DressUpButtonPanel *panel, int selection, int state);
-static void DressUpButton_SetCallback(DressUpButton *button, DressUpButtonCallback callback, void *arg, u32 trigger);
-static void DressUpButton_DefaultCallback(DressUpButton *button, void *arg);
+static void DressUpButton_SetCallback(DressUpButton *button, DressUpButtonCallback callback, DressUpWork *work, u32 trigger);
+static void DressUpButton_DefaultCallback(DressUpButton *button, DressUpWork *work);
 static void DressUpButton_SetAnimSelected(DressUpButton *button);
 static void DressUpButton_SetAnimNormal(DressUpButton *button);
 static void DressUpButton_SetAnimPressed(DressUpButton *button);
@@ -539,7 +539,7 @@ static int DressUpButtonPanel_UpdateInputMode(DressUpButtonPanel *panel);
 static void DressUpButtonPanel_Update(DressUpButtonPanel *panel);
 static void DressUpButtonPanel_ResetButtons(DressUpButtonPanel *panel);
 static void DressUpButtonPanel_MoveBy(DressUpButtonPanel *panel, int dx, int dy);
-static void DressUpButtonPanel_SetCallback(DressUpButtonPanel *panel, int button, DressUpButtonCallback callback, void *arg, u32 trigger);
+static void DressUpButtonPanel_SetCallback(DressUpButtonPanel *panel, int button, DressUpButtonCallback callback, DressUpWork *work, u32 trigger);
 static void DressUpButtonPanel_OnTouch(u32 which, u32 state, void *arg);
 static void DressUpButton_CreateSprite(DressUpButton *button, int resId, DressUpGfx *gfx, int x, int y, int width, int height);
 static void DressUpButton_CreateTextSprite(DressUpTextButton *button, int resId, DressUpGfx *gfx, FontSystem *fontSystem, Window *label, int x, int y, int width, int height);
@@ -1250,11 +1250,10 @@ static void DressUp_LoadBackdropCharsAndPalettes(DressUpGfx *gfx, DressUpGfxReso
         int id = i + 1;
         data = GfGfxLoader_LoadFromOpenNarc(gfx->narc, fileId, FALSE, HEAP_ID_14, TRUE);
         GF2dGfxRawResMan_AllocObj(out->plttResMan, data, id);
-        u32 paletteOffset = id * sizeof(GraphicsPaletteTemplate);
-        NNS_G2dGetUnpackedPaletteData(data, &((GraphicsPaletteTemplate *)((u32)out->palettes + paletteOffset))->palette);
-        GF_ASSERT(((GraphicsPaletteTemplate *)((u32)out->palettes + paletteOffset))->palette);
-        ((GraphicsPaletteTemplate *)((u32)out->palettes + paletteOffset))->manager = gfx->graphicsManager;
-        ((GraphicsPaletteTemplate *)((u32)out->palettes + paletteOffset))->paletteCount = 1;
+        NNS_G2dGetUnpackedPaletteData(data, &out->palettes[id].palette);
+        GF_ASSERT(out->palettes[id].palette);
+        out->palettes[id].manager = gfx->graphicsManager;
+        out->palettes[id].paletteCount = 1;
         fileId += 4;
     }
 }
@@ -1651,27 +1650,23 @@ static void DressUp_ResetButtons(DressUpWork *work) {
     DressUpButtonPanel_ResetButtons(&work->buttonPanel);
 }
 
-static void DressUp_OnDoneButton(DressUpButton *button, void *arg) {
-    DressUpWork *work = arg;
+static void DressUp_OnDoneButton(DressUpButton *button, DressUpWork *work) {
     if (DressUpTray_IsIdle(&work->tray)) {
         work->uiState = DRESS_UP_UI_DONE;
     }
 }
 
-static void DressUp_OnNextPageButton(DressUpButton *button, void *arg) {
-    DressUpWork *work = arg;
+static void DressUp_OnNextPageButton(DressUpButton *button, DressUpWork *work) {
     int group = DressUpTray_GetGroup(&work->tray);
     DressUpTray_CyclePage(&work->tray, group, FALSE);
 }
 
-static void DressUp_OnPrevPageButton(DressUpButton *button, void *arg) {
-    DressUpWork *work = arg;
+static void DressUp_OnPrevPageButton(DressUpButton *button, DressUpWork *work) {
     int group = DressUpTray_GetGroup(&work->tray);
     DressUpTray_CyclePage(&work->tray, group, TRUE);
 }
 
-static void DressUp_OnAccessoryTabButton(DressUpButton *button, void *arg) {
-    DressUpWork *work = arg;
+static void DressUp_OnAccessoryTabButton(DressUpButton *button, DressUpWork *work) {
     int page;
 
     if (work->uiState != DRESS_UP_UI_ACCESSORIES) {
@@ -1681,8 +1676,7 @@ static void DressUp_OnAccessoryTabButton(DressUpButton *button, void *arg) {
     }
 }
 
-static void DressUp_OnBackdropTabButton(DressUpButton *button, void *arg) {
-    DressUpWork *work = arg;
+static void DressUp_OnBackdropTabButton(DressUpButton *button, DressUpWork *work) {
     int page;
 
     if (work->uiState != DRESS_UP_UI_BACKDROPS) {
@@ -3985,7 +3979,7 @@ static void DressUpButton_Init(DressUpButton *button, const DressUpButtonTemplat
     button->sprite = Sprite_CreateAffine(template->spriteTemplate);
     GF_ASSERT(button->sprite);
     button->trigger = template->trigger;
-    button->arg = template->arg;
+    button->work = template->work;
     if (template->callback) {
         button->callback = template->callback;
         return;
@@ -4024,7 +4018,7 @@ static void DressUpButton_DeleteWithText(DressUpTextButton *button) {
 
 static void DressUpButton_TryCallback(DressUpButton *button, u32 state) {
     if (state == button->trigger) {
-        button->callback(button, button->arg);
+        button->callback(button, button->work);
     }
 }
 
@@ -4046,14 +4040,14 @@ static void DressUp_UpdateCategoryTabs(DressUpButtonPanel *panel, int selection,
     }
 }
 
-static void DressUpButton_SetCallback(DressUpButton *button, DressUpButtonCallback callback, void *arg, u32 trigger) {
+static void DressUpButton_SetCallback(DressUpButton *button, DressUpButtonCallback callback, DressUpWork *work, u32 trigger) {
     GF_ASSERT(button != NULL);
     button->trigger = trigger;
-    button->arg = arg;
+    button->work = work;
     button->callback = callback;
 }
 
-static void DressUpButton_DefaultCallback(DressUpButton *button, void *arg) {
+static void DressUpButton_DefaultCallback(DressUpButton *button, DressUpWork *work) {
 }
 
 static void DressUpButton_SetAnimSelected(DressUpButton *button) {
@@ -4200,12 +4194,12 @@ static void DressUpButtonPanel_MoveBy(DressUpButtonPanel *panel, int dx, int dy)
     DressUpButton_MoveTextBy(&base[0]->done, dx, dy);
 }
 
-static void DressUpButtonPanel_SetCallback(DressUpButtonPanel *panel, int button, DressUpButtonCallback callback, void *arg, u32 trigger) {
+static void DressUpButtonPanel_SetCallback(DressUpButtonPanel *panel, int button, DressUpButtonCallback callback, DressUpWork *work, u32 trigger) {
     GF_ASSERT(panel);
     if (button < DRESS_UP_BUTTON_DONE) {
-        DressUpButton_SetCallback(&panel->buttons[button], callback, arg, trigger);
+        DressUpButton_SetCallback(&panel->buttons[button], callback, work, trigger);
     } else {
-        DressUpButton_SetCallback(&panel->done.button, callback, arg, trigger);
+        DressUpButton_SetCallback(&panel->done.button, callback, work, trigger);
     }
 }
 
@@ -4260,7 +4254,7 @@ static void DressUpButton_CreateSprite(DressUpButton *button, int resId, DressUp
     template.spriteTemplate = &spriteTemplate;
     template.trigger = 1;
     template.callback = NULL;
-    template.arg = NULL;
+    template.work = NULL;
     DressUpButton_Init(button, &template);
 }
 
@@ -4279,7 +4273,7 @@ static void DressUpButton_CreateTextSprite(DressUpTextButton *button, int resId,
     spriteTemplate.heapID = HEAP_ID_14;
     template.button.spriteTemplate = &spriteTemplate;
     template.button.callback = NULL;
-    template.button.arg = NULL;
+    template.button.work = NULL;
     template.button.trigger = 1;
     template.fontSystem = fontSystem;
     template.window = label;

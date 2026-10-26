@@ -29,10 +29,7 @@
 // VS Recorder app: the VS Recorder item (mode 0) and the Global Terminal data browser (modes 1-6).
 
 typedef struct VsRecorderWork VsRecorderWork;
-
-SaveFashionDataSub *FashionEntry_New(enum HeapID heapID);
-void FashionEntry_GetMonSecondText(SaveFashionDataSub *entry, String *string);
-u16 FashionEntry_GetMailMessageWord(SaveFashionDataSub *entry);
+struct VsRecorderAppResult;
 
 // one step of a screen; TRUE when the screen is done
 typedef BOOL (*VsRecorderScreenFunc)(VsRecorderWork *work);
@@ -687,7 +684,7 @@ ManagedSprite *VsRecorder_NewMonIcon(VsRecorderWork *work, NARC *narc, int index
 void VsRecorder_DeleteMonIcon(VsRecorderWork *work, u32 index, ManagedSprite *sprite);
 void VsRecorder_DeleteSprite(VsRecorderWork *work, int resId, ManagedSprite *sprite);
 
-BOOL VsRecorder_HeaderUsesThreeMonLayout(void *header);
+BOOL VsRecorder_HeaderUsesThreeMonLayout(BattleRecordHeader *header);
 int VsRecorderVideoInfo_GetScreenId(VsRecorderVideoInfo *info);
 void VsRecorder_CreateVideoInfo(VsRecorderVideoInfo *info, VsRecorderWork *work);
 void VsRecorder_FreeVideoInfo(VsRecorderVideoInfo *info, VsRecorderWork *work);
@@ -795,7 +792,7 @@ void VsRecorder_InitNet(VsRecorderWork *work);
 void VsRecorder_UpdateNet(VsRecorderWork *work);
 void VsRecorder_FreeNet(VsRecorderWork *work);
 
-void VsRecorderApp_SetResult(void *result, u32 first, u32 second);
+void VsRecorderApp_SetResult(struct VsRecorderAppResult *result, u32 first, u32 second);
 void VsRecorderApp_CountMenuChoices(VsRecorderWork *work);
 BOOL VsRecorderApp_HasVisitedBattleFrontier(VsRecorderWork *work);
 

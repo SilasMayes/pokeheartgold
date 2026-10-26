@@ -26,6 +26,7 @@
 #include "poke_overlay.h"
 #include "pokedex.h"
 #include "render_text.h"
+#include "save_fashion.h"
 #include "sound_playback.h"
 #include "sprite_system.h"
 #include "swap_3d_buffers.h"
