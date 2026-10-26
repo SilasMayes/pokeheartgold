@@ -31,14 +31,14 @@ LobbyChannelMapNode *LobbyChannelMap_FindInsertPos(LobbyChannelMap *map, Str *ke
     LobbyChannelMapNode *parent;
     LobbyChannelMapNode *node;
     _Bool comparison;
-    *found = 0;
+    *found = NULL;
     node = map->root;
     *left = 1;
     *empty = 1;
     parent = (LobbyChannelMapNode *)&map->root;
     while (node) {
         parent = node;
-        comparison = (_Bool)(LobbyString_Compare(key, &node->entry.name) < 0);
+        comparison = LobbyString_Compare(key, &node->entry.name) < 0;
         if (comparison) {
             node = node->left;
             *left = 1;
@@ -54,7 +54,7 @@ LobbyChannelMapNode *LobbyChannelMap_FindInsertPos(LobbyChannelMap *map, Str *ke
 
 LobbyUserIdSetNode *LobbyUserIdSet_FindInsertPos(LobbyUserIdSet *set, int *key, LobbyUserIdSetNode **prev, u8 *left, u8 *first) {
     LobbyUserIdSetNode *node, *last;
-    *prev = 0;
+    *prev = NULL;
     node = set->root;
     *left = 1;
     *first = 1;
@@ -76,7 +76,7 @@ LobbyUserIdSetNode *LobbyUserIdSet_FindInsertPos(LobbyUserIdSet *set, int *key, 
 
 LobbyUserMapNode *LobbyUserMap_FindInsertPos(LobbyUserMap *map, int *key, LobbyUserMapNode **prev, u8 *left, u8 *first) {
     LobbyUserMapNode *node, *last;
-    *prev = 0;
+    *prev = NULL;
     node = map->root;
     *left = 1;
     *first = 1;

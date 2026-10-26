@@ -309,7 +309,7 @@ static inline int Lobby_Process(void) {
             gPPWLobbyWork = NULL;
         }
         return PPW_LOBBY_STATE_CLOSED;
-    case 3:
+    case LOBBY_CHAT_STATE_READY:
         if (gPPWLobbyWork->state == PPW_LOBBY_STATE_CONNECTING) {
             gPPWLobbyWork->state = PPW_LOBBY_STATE_CONNECTED;
         }

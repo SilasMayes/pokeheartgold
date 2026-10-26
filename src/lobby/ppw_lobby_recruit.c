@@ -26,7 +26,7 @@ int PPW_LobbyStopRecruit(void);
 
 char *LobbyCharVector_Data(LobbyCharVector *vector) {
     if (vector->size == 0) {
-        return 0;
+        return NULL;
     }
     return vector->data;
 }

@@ -87,10 +87,10 @@ extern "C" int LobbyChat_EnterChannelAsync(const char *name, u32 password, u32 l
     if (m == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (m != NULL && m->state == 5) {
+    if (m != NULL && m->state == LOBBY_CHAT_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (m != NULL && GetMgr()->state != 3) {
+    if (m != NULL && GetMgr()->state != LOBBY_CHAT_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     strlen(name);

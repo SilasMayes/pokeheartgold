@@ -4,10 +4,6 @@
 
 #include "lobby_chat_internal.h"
 
-extern char gLobbyStr_SERVER[];
-extern char gLobbyStr_ExcessFlood[];
-extern char gLobbyStr_SpaceColon[];
-
 static inline char *TextChars(Str *text) {
     if (text->l.isLong == 0) {
         return text->s.buf;

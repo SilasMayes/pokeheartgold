@@ -16,7 +16,7 @@ static inline BOOL active(PPWLobbyWork *w) {
 int PPW_LobbyGetSubChannelState(void) {
     Str text;
     PPWLobbyWork *w = gPPWLobbyWork;
-    int result;
+    BOOL inChannel;
     if (!w) {
         return PPW_LOBBY_CHANNEL_STATE_ERROR;
     }
@@ -28,14 +28,14 @@ int PPW_LobbyGetSubChannelState(void) {
     }
     {
         BOOL enabled = active(w);
-        if (enabled == 0) {
+        if (!enabled) {
             return PPW_LOBBY_CHANNEL_STATE_NONE;
         }
     }
     PPWLobbyChannel_GetName(&text, &w->subChannel);
-    result = LobbyChat_IsInChannel(!text.l.isLong ? text.s.buf : text.l.ptr);
+    inChannel = LobbyChat_IsInChannel(!text.l.isLong ? text.s.buf : text.l.ptr);
     LobbyString_Destroy(&text);
-    if (result) {
+    if (inChannel) {
         return PPW_LOBBY_CHANNEL_STATE_JOINED;
     }
     return PPW_LOBBY_CHANNEL_STATE_JOINING;

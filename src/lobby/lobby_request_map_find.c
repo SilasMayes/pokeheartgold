@@ -12,7 +12,7 @@ u32 LobbyRequest_GetParam(LobbyRequest *request) {
 
 void *LobbyU32Vector_Data(LobbyU32Vector *vector) {
     if (vector->size == 0) {
-        return 0;
+        return NULL;
     }
     return vector->data;
 }

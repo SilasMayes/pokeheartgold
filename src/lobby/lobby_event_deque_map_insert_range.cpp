@@ -191,7 +191,7 @@ extern "C" void LobbyEventDequeMap_InsertRange(Map *map, MapIterator pos, Source
         return;
     }
     MapBuffer buffer;
-    buffer.ptr = 0;
+    buffer.ptr = NULL;
     buffer.start = 0;
     buffer.size = 0;
     buffer.cap = 0;

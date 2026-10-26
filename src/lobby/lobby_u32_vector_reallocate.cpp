@@ -20,7 +20,7 @@ void LobbyU32Vector_Reallocate(LobbyU32Vector *v, u32 unused, u32 cap) {
     v->size -= n;
     if (v->data) {
         a.release(v->data);
-        v->data = 0;
+        v->data = NULL;
         v->capacity = 0;
     }
     LobbyU32Vector_Allocate(v, cap, LobbyTag(LobbyTag()));

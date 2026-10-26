@@ -39,7 +39,7 @@ inline u32 &Value(LobbyVectorBufferCapacity &c) {
 }
 
 static inline void InitBuffer(LobbyStringVectorBuffer *b, u32 *allocator) {
-    b->data = 0;
+    b->data = NULL;
     b->size = 0;
     b->capacity.value = 0;
     b->capacity.allocator = allocator;
@@ -92,7 +92,7 @@ inline void Release(LobbyStringVector *) {
 }
 
 static inline void InitBuffer(LobbyCharVectorBuffer *b, u32 *allocator) {
-    b->data = 0;
+    b->data = NULL;
     b->size = 0;
     b->capacity.value = 0;
     b->capacity.allocator = allocator;
@@ -118,7 +118,7 @@ inline void FillN(char *p, u32 n, char c) {
 }
 
 inline char *CopyT(const char *first, const char *last, char *out) {
-    u32 n = (u32)(last - first);
+    u32 n = last - first;
     memcpy(out, first, n);
     return out + n;
 }
@@ -128,7 +128,7 @@ inline void MoveBack(LobbyCharVectorBuffer &b, LobbyCharVector *v) {
     char *last = first + v->size;
     TrueType f = TrueType();
     (void)f;
-    u32 len = (u32)(last - first);
+    u32 len = last - first;
     b.start -= len;
     CopyT(first, last, b.data + b.start);
     memset(first, 0, len);

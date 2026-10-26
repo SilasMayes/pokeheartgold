@@ -6,8 +6,6 @@
 
 #include "lobby_chat_manager.h"
 
-extern u8 ov45_02255358[];
-
 static inline int isLess(Str *a, Str *b) {
     return LobbyString_Compare(a, b) < 0;
 }
@@ -16,7 +14,7 @@ void LobbyChannelMap_Insert(LobbyChannelMapInsertResult *out, LobbyChannelMap *m
     u8 left, first;
     LobbyChannelMapNode *previous;
     LobbyChannelMapNode *parent = LobbyChannelMap_FindInsertPos(map, &entry->name, &previous, &left, &first);
-    if (previous == 0 || isLess(&previous->entry.name, &entry->name)) {
+    if (previous == NULL || isLess(&previous->entry.name, &entry->name)) {
         out->node = LobbyChannelMap_InsertNode(map, parent, left, first, entry);
         out->inserted = ov45_02255358[4];
     } else {

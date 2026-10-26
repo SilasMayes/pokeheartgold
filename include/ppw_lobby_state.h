@@ -1,6 +1,16 @@
 #ifndef POKEHEARTGOLD_PPW_LOBBY_STATE_H
 #define POKEHEARTGOLD_PPW_LOBBY_STATE_H
 
+// LobbyChatManager.state: how far the lobby chat session has come
+enum LobbyChatState {
+    LOBBY_CHAT_STATE_INIT,
+    LOBBY_CHAT_STATE_CONNECTING,
+    LOBBY_CHAT_STATE_CONNECTED, // logged in, waits 60 frames before READY
+    LOBBY_CHAT_STATE_READY,
+    LOBBY_CHAT_STATE_DISCONNECTING,
+    LOBBY_CHAT_STATE_ERROR,
+};
+
 // The state of the lobby library (gPPWLobbyWork->state), returned by PPW_LobbyProcess
 enum PPWLobbyState {
     PPW_LOBBY_STATE_NOT_INITIALIZED,

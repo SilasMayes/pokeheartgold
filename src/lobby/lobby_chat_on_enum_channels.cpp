@@ -4,6 +4,7 @@
 
 #include "lobby_chat_manager.h"
 #include "lobby_vector.h"
+#include "ppw_lobby_state.h"
 
 extern "C" void LobbyChat_StripChannelPrefixes(LobbyU32Vector *dst, LobbyChatManager *mgr, u32 a, u32 b);
 extern "C" const char *LobbyU32Vector_Data(LobbyU32Vector *s);
@@ -36,7 +37,7 @@ extern "C" void LobbyChat_OnEnumChannels(struct ChatConnection *chat, int result
     LobbyRequestMapIterator it = FindIt(m, sid);
     LobbyEnumChannelsRequest *h;
     if (it.node == (LobbyRequestMapNode *)&m->requestMap.root) {
-        h = 0;
+        h = NULL;
     } else {
         LobbyRequestMapNode *nd = it.node;
         h = (LobbyEnumChannelsRequest *)nd->request;

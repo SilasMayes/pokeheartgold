@@ -7,12 +7,6 @@
 
 #include "lobby_mem.h"
 
-extern int printf(const char *, ...);
-extern void abort(void);
-
-extern u8 ov45_02255358[];
-extern char gLobbyStr_TreeInsertLengthError_4[];
-
 LobbyUserIdSetNode *LobbyUserIdSet_InsertNode(LobbyUserIdSet *set, LobbyUserIdSetNode *parent, int left, int last, const int *key) {
     struct {
         u8 byte;
@@ -38,9 +32,9 @@ LobbyUserIdSetNode *LobbyUserIdSet_InsertNode(LobbyUserIdSet *set, LobbyUserIdSe
     if (userId) {
         *userId = *key;
     }
-    node->right = 0;
-    frame.cleanup = 0;
-    node->left = 0;
+    node->right = NULL;
+    frame.cleanup = NULL;
+    node->left = NULL;
     link = &node->parent;
     if (link) {
         *link = (u32)parent;
@@ -127,9 +121,9 @@ LobbyUserMapNode *LobbyUserMap_InsertNode(LobbyUserMap *map, LobbyUserMapNode *p
         LobbyString_InitCopy(&dest->nick, &entry->nick);
     }
     node = guard.owned;
-    node->right = 0;
-    guard.owned = 0;
-    node->left = 0;
+    node->right = NULL;
+    guard.owned = NULL;
+    node->left = NULL;
     link = &node->parent;
     if (link) {
         *link = (u32)parent;

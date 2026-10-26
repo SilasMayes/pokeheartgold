@@ -124,7 +124,7 @@ inline Work *GetWork() {
 }
 
 inline bool IsError(Work *w) {
-    return w != 0 && w->state == PPW_LOBBY_STATE_ERROR;
+    return w != NULL && w->state == PPW_LOBBY_STATE_ERROR;
 }
 
 inline void Refresh(Work *w, Info &info) {
@@ -145,16 +145,16 @@ inline void Refresh(Work *w, Info &info) {
 extern "C" int PPW_LobbyLeaveSubChannel(void) {
     Info info;
     Work *w = GetWork();
-    if (w == 0) {
+    if (w == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     if (IsError(w)) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (w != 0 && GetWork()->state != PPW_LOBBY_STATE_READY) {
+    if (w != NULL && GetWork()->state != PPW_LOBBY_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (!(w != 0 && w->peer.IsValid())) {
+    if (!(w != NULL && w->peer.IsValid())) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     {

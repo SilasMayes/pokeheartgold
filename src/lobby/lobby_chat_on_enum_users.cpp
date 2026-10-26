@@ -3,6 +3,7 @@
 #include <nitro/code32.h>
 
 #include "lobby_chat_manager.h"
+#include "ppw_lobby_state.h"
 
 
 
@@ -75,7 +76,7 @@ extern "C" void LobbyChat_OnEnumUsers(struct ChatConnection *chat, int result, c
     LobbyRequestMapIterator it = FindIt(m, sid);
     LobbyEnumUsersRequest *h;
     if (it.node == (LobbyRequestMapNode *)&m->requestMap.root) {
-        h = 0;
+        h = NULL;
     } else {
         LobbyRequestMapNode *nd = it.node;
         h = (LobbyEnumUsersRequest *)nd->request;

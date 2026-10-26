@@ -17,13 +17,13 @@ inline bool IsEmptyChannelName(const Str &name) {
 
 int PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 param) {
     PPWLobbyWork *w = gPPWLobbyWork;
-    if (w == 0) {
+    if (w == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (w != 0 && w->state == PPW_LOBBY_STATE_ERROR) {
+    if (w != NULL && w->state == PPW_LOBBY_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (w != 0 && gPPWLobbyWork->state != PPW_LOBBY_STATE_READY) {
+    if (w != NULL && gPPWLobbyWork->state != PPW_LOBBY_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     {

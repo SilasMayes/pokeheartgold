@@ -116,7 +116,7 @@ static void FrontierLinkLobby_LaunchPartyMenu(void *frontierWork, FrontierLinkLo
     if (lobby->facility == LINK_LOBBY_FACILITY_TOWER) {
         lobby->partyMenuArgs->minMonsToSelect = 2;
         lobby->partyMenuArgs->maxMonsToSelect = 2;
-        lobby->partyMenuArgs->maxLevel = 100;
+        lobby->partyMenuArgs->maxLevel = MAX_LEVEL;
     } else if (lobby->facility == LINK_LOBBY_FACILITY_HALL) {
         lobby->partyMenuArgs->minMonsToSelect = 1;
         lobby->partyMenuArgs->maxMonsToSelect = 1;
@@ -124,11 +124,11 @@ static void FrontierLinkLobby_LaunchPartyMenu(void *frontierWork, FrontierLinkLo
     } else if (lobby->facility == LINK_LOBBY_FACILITY_CASTLE) {
         lobby->partyMenuArgs->minMonsToSelect = 2;
         lobby->partyMenuArgs->maxMonsToSelect = 2;
-        lobby->partyMenuArgs->maxLevel = 100;
+        lobby->partyMenuArgs->maxLevel = MAX_LEVEL;
     } else if (lobby->facility == LINK_LOBBY_FACILITY_ARCADE) {
         lobby->partyMenuArgs->minMonsToSelect = 2;
         lobby->partyMenuArgs->maxMonsToSelect = 2;
-        lobby->partyMenuArgs->maxLevel = 100;
+        lobby->partyMenuArgs->maxLevel = MAX_LEVEL;
     } else {
         GF_ASSERT(FALSE);
     }

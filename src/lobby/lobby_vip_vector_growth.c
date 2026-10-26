@@ -18,7 +18,7 @@ void LobbyVipVector_Reallocate(PPWLobbyVipVector *vector, u32 unused, u32 capaci
         if (vector->data) {
             DWC_Free(0, vector->data, 0);
         }
-        vector->data = 0;
+        vector->data = NULL;
         vector->capacity = 0;
     }
     LobbyTag fresh = { 0 };

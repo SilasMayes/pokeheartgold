@@ -38,14 +38,14 @@ struct TreeHdr {
         TreeHdr *t = this;
         t->count = 0;
         t->leftmost = &t->root;
-        t->root = 0;
+        t->root = NULL;
     }
 
     void copyFrom(const TreeHdr &s, const Alloc &) {
         TreeHdr *t = this;
         t->count = 0;
         t->leftmost = &t->root;
-        t->root = 0;
+        t->root = NULL;
         LobbyUserIdSet_Assign(t, &s);
     }
 };

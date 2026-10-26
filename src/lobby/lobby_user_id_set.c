@@ -8,8 +8,6 @@
 
 #include "lobby_mem.h"
 
-extern u8 ov45_02255358[];
-
 void *LobbyChannelMap_Destroy(LobbyChannelMap *map) {
     if (map->root) {
         LobbyChannelMap_DestroyNodes(map, map->root);
@@ -75,11 +73,11 @@ void LobbyUserIdSet_Assign(LobbyUserIdSet *set, LobbyUserIdSet *other) {
         }
     };
     frame.tree.count = 0;
-    frame.tree.root = 0;
+    frame.tree.root = NULL;
     frame.tree.first = (LobbyUserIdSetNode *)&frame.tree.root;
     node = frame.cleanup;
-    node->right = 0;
-    node->left = 0;
+    node->right = NULL;
+    node->left = NULL;
     node->parent = (u32)&frame.tree.root | (node->parent & 1);
     flag = (other->root->parent & 1) != 0;
     node = frame.cleanup;
@@ -94,7 +92,7 @@ void LobbyUserIdSet_Assign(LobbyUserIdSet *set, LobbyUserIdSet *other) {
     frame.tree.first = node;
     {
         LobbyUserIdSetNode *root = other->root;
-        frame.cleanup = 0;
+        frame.cleanup = NULL;
         if (root->right) {
             LobbyUserIdSet_CopyNodes(&frame.tree, node, root, 0);
         }

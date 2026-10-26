@@ -59,7 +59,7 @@ struct Bytes {
     VecStorage v;
 
     Bytes(const u8 *first, const u8 *last) {
-        v.ptr = 0;
+        v.ptr = NULL;
         v.size = 0;
         v.cap = 0;
         v.Assign(ByteIterator(first), ByteIterator(last));
@@ -101,7 +101,7 @@ struct Field {
     }
 
     Field &Init(char *b, char *e, Alloc a) {
-        v.ptr = 0;
+        v.ptr = NULL;
         v.size = 0;
         v.cap = 0;
         Field *self = (Field *)(void *)this;
@@ -127,13 +127,13 @@ extern "C" int PPW_LobbyUpdateMyProfile(const void *profile, u32 len, int flag);
 extern "C" int PPW_LobbyUpdateMyProfile(const void *profile, u32 len, int flag) {
     const u8 *data = (const u8 *)profile;
     Work *w = gPPWLobbyWork;
-    if (w == 0) {
+    if (w == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (w != 0 && w->state == PPW_LOBBY_STATE_ERROR) {
+    if (w != NULL && w->state == PPW_LOBBY_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (w != 0 && (*(Work *volatile *)&gPPWLobbyWork)->state != PPW_LOBBY_STATE_READY) {
+    if (w != NULL && (*(Work *volatile *)&gPPWLobbyWork)->state != PPW_LOBBY_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     Field f;

@@ -94,7 +94,7 @@ struct Holder {
 
     Node *release() {
         Node *r = ptr;
-        ptr = 0;
+        ptr = NULL;
         return r;
     }
 };
@@ -110,9 +110,9 @@ extern "C" Node *LobbyChannelMap_InsertNode(Tree *t, Node *parent, BOOL left, BO
     Node *p = h.a;
     new (&p->value) Value(v);
     Node *n = h.ptr;
-    n->right = 0;
-    h.ptr = 0;
-    n->left = 0;
+    n->right = NULL;
+    h.ptr = NULL;
+    n->left = NULL;
     new (&n->parent) Node *(parent);
     if (left) {
         parent->left = n;

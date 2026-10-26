@@ -7,7 +7,7 @@ extern "C" void *memset(void *p, int c, u32 n);
 extern "C" void *memcpy(void *d, const void *s, u32 n);
 
 static inline void InitBuffer(LobbyCharVectorBuffer *b, u32 *allocator) {
-    b->data = 0;
+    b->data = NULL;
     b->size = 0;
     b->capacity.value = 0;
     b->start = 0;

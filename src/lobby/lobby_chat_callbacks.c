@@ -239,7 +239,7 @@ void LobbyChat_OnConnected(struct ChatConnection *chat, int success) {
     LobbyTimerMap_EraseKey(&gLobbyChatManager->timerMap, &timerId);
     if (!success) {
         manager = gLobbyChatManager;
-        manager->lastError = 3;
+        manager->lastError = PPW_LOBBY_ERROR_SESSION;
         manager->state = LOBBY_CHAT_STATE_ERROR;
         gLobbyChatManager->disconnected = TRUE;
         return;

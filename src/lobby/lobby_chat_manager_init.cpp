@@ -1,6 +1,9 @@
 #include <nitro/types.h>
 
 #include <nitro/code32.h>
+
+#include "ppw_lobby_state.h"
+
 struct String;
 extern "C" void LobbyString_InitCopy(String *dst, const String *src);
 extern "C" void LobbyString_InitFromCStr(String *dst, const char *src);
@@ -83,7 +86,7 @@ extern "C" Obj *LobbyChatManager_Init(Obj *obj, const String &gameName, const St
 
 extern "C" Obj *LobbyChatManager_Init(Obj *obj, const String &gameName, const String &gameKey, int prefix, u32 userId, const String &nick, const String &userName, const String &realName, const Triple *config) {
     obj->connection = 0;
-    obj->state = 0;
+    obj->state = LOBBY_CHAT_STATE_INIT;
     obj->userId = userId;
     LobbyString_InitCopy(&obj->nick, &nick);
     LobbyString_InitCopy(&obj->user, &userName);
@@ -97,7 +100,7 @@ extern "C" Obj *LobbyChatManager_Init(Obj *obj, const String &gameName, const St
         i++;
     } while (i < 3);
     obj->unk54 = 0;
-    obj->lastError = 0;
+    obj->lastError = PPW_LOBBY_ERROR_NONE;
     obj->connectedFrames = 0;
     obj->disconnected = 0;
     obj->callbacks = *config;

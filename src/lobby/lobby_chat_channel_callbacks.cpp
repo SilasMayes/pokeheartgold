@@ -3,6 +3,7 @@
 #include <nitro/code32.h>
 
 #include "lobby_chat_manager.h"
+#include "ppw_lobby_state.h"
 
 
 extern "C" void LobbyChat_OnChannelModeChanged(struct ChatConnection *chat, const char *name, u32 mode, u32 id);
@@ -89,7 +90,7 @@ extern "C" void LobbyChat_OnEnterChannelEnumUsers(struct ChatConnection *chat, i
     LobbyRequestMapIterator it = FindIt(manager, sid);
     LobbyEnterChannelRequest *request;
     if (it.node == (LobbyRequestMapNode *)&manager->requestMap.root) {
-        request = 0;
+        request = NULL;
     } else {
         LobbyRequestMapNode *nd = it.node;
         request = (LobbyEnterChannelRequest *)nd->request;
@@ -206,12 +207,12 @@ extern "C" void LobbyChat_OnGetChannelKeys(struct ChatConnection *chat, int resu
     LobbyChatManager *manager = gLobbyChatManager;
     LobbyRequestMapIterator it = FindIt(manager, sid);
     if (it.node == (LobbyRequestMapNode *)&manager->requestMap.root) {
-        request = 0;
+        request = NULL;
     } else {
         LobbyRequestMapNode *nd = it.node;
         request = (LobbyGetChannelKeysRequest *)nd->request;
     }
-    key = 0;
+    key = NULL;
     value = key;
     if (result == 1 && count > 0) {
         key = *keys;

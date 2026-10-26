@@ -9,23 +9,23 @@ void LobbyUserMap_MakeEntry(LobbyUserMapEntry *entry, int userId, const Str *nic
     LobbyString_InitCopy(&entry->nick, nick);
 }
 
-int LobbyChat_AreChannelUsersEnumerated(LobbyChatManager *manager, Str *key) {
+BOOL LobbyChat_AreChannelUsersEnumerated(LobbyChatManager *manager, Str *key) {
     Iter n;
     LobbyChannelMap_Find(&n, &manager->channelMap, key);
     if (n.current == &manager->channelMap.root) {
-        return 0;
+        return FALSE;
     }
     return ((LobbyChannelMapNode *)n.current)->entry.channel.usersEnumerated;
 }
 
-int LobbyChat_SetChannelUsersEnumerated(LobbyChatManager *manager, Str *key) {
+BOOL LobbyChat_SetChannelUsersEnumerated(LobbyChatManager *manager, Str *key) {
     Iter n;
     LobbyChannelMap_Find(&n, &manager->channelMap, key);
     if (n.current == &manager->channelMap.root) {
-        return 0;
+        return FALSE;
     }
     ((LobbyChannelMapNode *)n.current)->entry.channel.usersEnumerated = TRUE;
-    return 1;
+    return TRUE;
 }
 
 int LobbyChat_GetChannelUserLimit(LobbyChatManager *manager, Str *key) {

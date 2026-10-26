@@ -105,11 +105,15 @@ extern char gLobbyStr_voice[];
 extern char gLobbyStr_ops[];
 extern char gLobbyStr_VoiceOps[];
 extern char gLobbyStr_invalid[];
+extern char gLobbyStr_Empty_18[];
+extern char gLobbyStr_SERVER[];
+extern char gLobbyStr_ExcessFlood[];
+extern char gLobbyStr_SpaceColon[];
 
 LobbyChannelMapNode *LobbyChannelMap_LowerBound(LobbyChannelMap *map, Str *key, LobbyChannelMapNode *n, LobbyChannelMapNode *res);
 void LobbyChannelMap_MakeEntry(LobbyChannelMapEntry *dst, Str *name, LobbyChannel *src);
 void LobbyChatManager_GetGameKey(Str *out, LobbyChatManager *manager);
-int LobbyChat_AreChannelUsersEnumerated(LobbyChatManager *manager, Str *channel);
+BOOL LobbyChat_AreChannelUsersEnumerated(LobbyChatManager *manager, Str *channel);
 void LobbyChat_RemoveChannel(LobbyChatManager *manager, Str *channel);
 BOOL LobbyChat_RemoveChannelUser(LobbyChatManager *manager, Str *nick, Str *channel);
 LobbyRequest *LobbyEnterChannelRequest_Delete(LobbyRequest *request);

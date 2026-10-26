@@ -8,7 +8,7 @@
 void LobbyString_FormatN(Str *out, u32 n, const char *fmt, ...) {
     va_list ap;
     LobbyCharVector v;
-    v.data = 0;
+    v.data = NULL;
     v.size = 0;
     v.capacity = 0;
     va_start(ap, fmt);

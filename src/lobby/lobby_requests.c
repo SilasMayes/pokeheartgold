@@ -13,10 +13,6 @@ typedef struct {
     LobbyRequestMapNode *pending;
 } Guard;
 
-extern int printf(const char *, ...);
-extern void abort(void);
-extern const char gLobbyStr_TreeInsertLengthError_3[];
-
 LobbyRequest *LobbyRequest_Delete(LobbyRequest *request) {
     if (request != NULL) {
         DWC_Free(0, request, 0);

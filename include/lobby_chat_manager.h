@@ -14,15 +14,6 @@
 #define LOBBY_CHAT_KEY_SIZE   20
 #define LOBBY_CHAT_VALUE_SIZE 400
 
-enum LobbyChatState {
-    LOBBY_CHAT_STATE_INIT,
-    LOBBY_CHAT_STATE_CONNECTING,
-    LOBBY_CHAT_STATE_CONNECTED, // logged in, waits 60 frames before READY
-    LOBBY_CHAT_STATE_READY,
-    LOBBY_CHAT_STATE_DISCONNECTING,
-    LOBBY_CHAT_STATE_ERROR,
-};
-
 // What the session passes on to the code that started it: private messages from users and excess flood notices.
 typedef struct LobbyChatCallbacks {
     void (*onMessage)();
@@ -118,7 +109,7 @@ void LobbyChatManager_GetNick(Str *out, LobbyChatManager *manager);
 int LobbyChat_FindUserIdByNick(LobbyChatManager *manager, const Str *nick);
 void LobbyChat_StripChannelPrefix(Str *out, LobbyChatManager *manager, Str *name);
 LobbyChannelCallbacks *LobbyChat_GetChannelCallbacks(LobbyChatManager *manager, Str *key);
-int LobbyChat_SetChannelUsersEnumerated(LobbyChatManager *manager, Str *channel);
+BOOL LobbyChat_SetChannelUsersEnumerated(LobbyChatManager *manager, Str *channel);
 int LobbyChat_GetChannelUserLimit(LobbyChatManager *manager, Str *channel);
 int LobbyChat_AddChannelUser(LobbyChatManager *manager, Str *nick, Str *channel);
 BOOL LobbyChat_RemoveUserIfUnused(LobbyChatManager *manager, int userId);
@@ -127,7 +118,7 @@ int LobbyChat_Process(void);
 int LobbyChat_Shutdown(void);
 int LobbyChat_GetLastError(void);
 int LobbyChat_ToErrorCode(int error);
-int LobbyChat_IsInChannel(char *channel);
+BOOL LobbyChat_IsInChannel(char *channel);
 int LobbyChat_SetChannelMode(const char *channel, const struct ChatChannelMode *mode);
 int LobbyChat_SendChannelMessage(const char *channel, const char *message);
 int LobbyChat_SendUserMessage(int userId, const char *message);

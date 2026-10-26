@@ -729,7 +729,7 @@ static const WiFiPlazaSpriteConfig *WiFiPlaza_GetSpriteConfig(int spriteId) {
 
 // Sequence of a sprite: the walking one (+4) or the standing one.
 static u32 WiFiPlaza_GetSpriteSequence(BOOL standing, u32 sequence) {
-    return standing == 0 ? sequence + 4 : sequence;
+    return !standing ? sequence + 4 : sequence;
 }
 
 static u32 WiFiPlaza_CalcSequenceFrame(u32 divisor, u16 value, u32 factor) {

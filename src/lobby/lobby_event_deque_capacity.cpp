@@ -59,7 +59,7 @@ inline LobbyEventDequeMapIterator End(LobbyEventDequeMap *map) {
 
 inline void InitBuffer(LobbyEventDequeMapBuffer *buffer, u32 *allocator) {
     buffer->allocator = allocator;
-    buffer->map.blocks = 0;
+    buffer->map.blocks = NULL;
     buffer->map.start = 0;
     buffer->map.size = 0;
     buffer->map.capacity = 0;
@@ -102,7 +102,7 @@ void LobbyEventDeque_EraseAtEnd(LobbyEventDeque *d, u32 n, LobbyTag) {
         LobbyEvent *&slot = d->map.blocks[(d->map.start + d->map.size - 1) % d->map.capacity];
         a.deallocate(slot);
         extra -= LOBBY_EVENT_BLOCK_SIZE;
-        slot = 0;
+        slot = NULL;
     } while (extra >= 2 * LOBBY_EVENT_BLOCK_SIZE);
 }
 
@@ -166,7 +166,7 @@ extern "C" void LobbyEventDequeMap_PushBack(LobbyEventDequeMap *map, LobbyEvent 
         return;
     }
     LobbyEventDequeMapBuffer tmp;
-    tmp.map.blocks = 0;
+    tmp.map.blocks = NULL;
     tmp.map.start = 0;
     tmp.map.size = 0;
     tmp.map.capacity = 0;

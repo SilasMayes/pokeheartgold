@@ -53,7 +53,7 @@ struct Holder {
 
     LobbyUserIdSetNode *release() {
         LobbyUserIdSetNode *r = ptr;
-        ptr = 0;
+        ptr = NULL;
         return r;
     }
 };
@@ -75,8 +75,8 @@ extern "C" void LobbyUserIdSet_CopyNodes(LobbyUserIdSet *set, LobbyUserIdSetNode
     Alloc a = Alloc();
     LobbyUserIdSetNode *p = a.allocate();
     Holder h(p, &set->root);
-    p->right = 0;
-    p->left = 0;
+    p->right = NULL;
+    p->left = NULL;
     SetParent(p, parent);
     if (left) {
         Construct(&h.ptr->userId, src->left->userId);

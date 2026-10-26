@@ -7,6 +7,7 @@ extern "C" {
 #include <nitro/code32.h>
 
 #include "lobby_chat_manager.h"
+#include "ppw_lobby_state.h"
 
 extern "C" void DWC_GetDateTime(RTCDate *date, RTCTime *time);
 extern "C" void chatThink(struct ChatConnection *chat);
@@ -144,7 +145,7 @@ extern "C" int LobbyChat_Process(void) {
     LobbyChatManager *m2 = gLobbyChatManager;
     if (g2->unk54 >= 3) {
         g2->unk54 = 0;
-        SetError(gLobbyChatManager, 3);
+        SetError(gLobbyChatManager, PPW_LOBBY_ERROR_SESSION);
         return GetState();
     }
     UpdateState(m2);

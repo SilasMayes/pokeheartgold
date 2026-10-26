@@ -117,7 +117,7 @@ struct Field {
     }
 
     void Init() {
-        v.ptr = 0;
+        v.ptr = NULL;
         v.size = 0;
         v.cap = 0;
         dirty = 1;

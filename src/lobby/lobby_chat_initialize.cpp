@@ -192,7 +192,7 @@ extern "C" int LobbyChat_Initialize(const char *gameName, const char *gameKey, i
         return PPW_LOBBY_RESULT_ERROR_ALLOC;
     }
     if (!LobbyMem_InstallOutOfMemoryHandler()) {
-        error = 1;
+        error = PPW_LOBBY_RESULT_ERROR_ALLOC;
         goto failure;
     }
     {
@@ -218,12 +218,12 @@ extern "C" int LobbyChat_Initialize(const char *gameName, const char *gameKey, i
         hostPrefix.destroy();
         hostGameName.destroy();
         if (!connection) {
-            error = 2;
+            error = PPW_LOBBY_RESULT_ERROR_SESSION;
             goto failure;
         }
         gLobbyChatManager->connection = connection;
-        if (gLobbyChatManager->state != 5) {
-            gLobbyChatManager->state = 1;
+        if (gLobbyChatManager->state != LOBBY_CHAT_STATE_ERROR) {
+            gLobbyChatManager->state = LOBBY_CHAT_STATE_CONNECTING;
         }
     }
     {
@@ -240,7 +240,7 @@ failure:
     root = gLobbyChatManager;
     if (root) {
         DeleteRoot(root);
-        gLobbyChatManager = 0;
+        gLobbyChatManager = NULL;
     }
     realName.destroy();
     userName.destroy();

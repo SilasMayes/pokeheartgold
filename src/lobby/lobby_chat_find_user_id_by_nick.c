@@ -5,8 +5,6 @@
 
 #include "lobby_chat_internal.h"
 
-extern char gLobbyStr_Empty_18[];
-
 // The ID in a nick only counts while the user map still has that nick for it.
 int LobbyChat_FindUserIdByNick(LobbyChatManager *manager, const Str *nick) {
     int id;

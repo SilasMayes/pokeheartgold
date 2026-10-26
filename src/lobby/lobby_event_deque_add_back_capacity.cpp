@@ -133,7 +133,7 @@ struct Ring : RingAlloc {
     ~Ring();
 
     void reset() {
-        ptr = 0;
+        ptr = NULL;
         start = 0;
         size = 0;
         cap = 0;

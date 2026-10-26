@@ -94,7 +94,7 @@ void LobbyMem_OnOutOfMemory(void) {
         gLobbyMemReserve.buf = NULL;
     }
     manager = gLobbyMemReserve.manager;
-    manager->lastError = 2;
+    manager->lastError = PPW_LOBBY_ERROR_ALLOC;
     manager->state = LOBBY_CHAT_STATE_ERROR;
     gLobbyMemOutOfMemoryHandler = LobbyMem_OnOutOfMemoryDisconnect;
 }

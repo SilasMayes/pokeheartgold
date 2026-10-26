@@ -89,4 +89,13 @@ void LobbyTree_InsertRebalance(void *node, void *root);
 void *LobbyTree_EraseRebalance(void *node, void *root);
 #endif
 
+// The flags the tree inserts report, and the error they print when a tree is full.
+#ifndef __cplusplus
+extern u8 ov45_02255358[];
+extern char gLobbyStr_TreeInsertLengthError_3[];
+extern char gLobbyStr_TreeInsertLengthError_4[];
+int printf(const char *, ...);
+void abort(void);
+#endif
+
 #endif // POKEHEARTGOLD_LOBBY_TREE_H

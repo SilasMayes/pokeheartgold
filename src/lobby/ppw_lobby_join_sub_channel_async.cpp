@@ -99,16 +99,16 @@ extern "C" int PPW_LobbyJoinSubChannelAsync(int mode);
 
 extern "C" int PPW_LobbyJoinSubChannelAsync(int mode) {
     Work *w = gPPWLobbyWork;
-    if (w == 0) {
+    if (w == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (w != 0 && w->state == PPW_LOBBY_STATE_ERROR) {
+    if (w != NULL && w->state == PPW_LOBBY_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (w != 0 && gPPWLobbyWork->state != PPW_LOBBY_STATE_READY) {
+    if (w != NULL && gPPWLobbyWork->state != PPW_LOBBY_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (w != 0 && (w->mode != PPW_LOBBY_CHANNEL_KIND_INVALID ? 1 : 0) != 0) {
+    if (w != NULL && (w->mode != PPW_LOBBY_CHANNEL_KIND_INVALID ? 1 : 0) != 0) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     Callbacks cb;
@@ -132,7 +132,7 @@ extern "C" int PPW_LobbyJoinSubChannelAsync(int mode) {
         t = &gPPWLobbyNewsChannelMode;
         break;
     default:
-        t = 0;
+        t = NULL;
         break;
     }
     int result = LobbyChat_EnterChannelAsync(name.c_str(), 0, t->ctx, &cb, PPWLobby_OnEnterSubChannel, mode);

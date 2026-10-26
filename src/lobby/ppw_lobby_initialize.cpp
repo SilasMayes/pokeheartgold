@@ -227,12 +227,12 @@ inline void Delete(Work *w) {
 extern "C" int PPWLobby_Initialize(u32 gameName, u32 secretKey, u32 prefix, const Config *cfg, u32 userId, u32 playerData, u32 playerDataSize, u32 a7);
 
 extern "C" int PPWLobby_Initialize(u32 gameName, u32 secretKey, u32 prefix, const Config *cfg, u32 userId, u32 playerData, u32 playerDataSize, u32 a7) {
-    if (gPPWLobbyWork != 0) {
+    if (gPPWLobbyWork != NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
     Callbacks cbs(PPWLobby_OnPlayerMessage, PPWLobby_OnExcessFlood, 5);
     gPPWLobbyWork = new (LobbyMem_Alloc(sizeof(Work))) Work(prefix, *cfg, userId, a7);
-    if (gPPWLobbyWork == 0) {
+    if (gPPWLobbyWork == NULL) {
         return PPW_LOBBY_RESULT_ERROR_ALLOC;
     }
     int result = LobbyChat_Initialize(gameName, secretKey, prefix, &cbs, userId);
@@ -246,9 +246,9 @@ extern "C" int PPWLobby_Initialize(u32 gameName, u32 secretKey, u32 prefix, cons
     }
     if (result != 0) {
         Work *w = gPPWLobbyWork;
-        if (w != 0) {
+        if (w != NULL) {
             Delete(w);
-            gPPWLobbyWork = 0;
+            gPPWLobbyWork = NULL;
         }
         return result;
     }

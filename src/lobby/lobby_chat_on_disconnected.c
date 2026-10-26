@@ -31,10 +31,10 @@ void LobbyChat_OnDisconnected(void) {
                 DWC_Free(0, manager, 0);
             }
         }
-        gLobbyChatManager = 0;
+        gLobbyChatManager = NULL;
         return;
     }
-    manager->lastError = 3;
+    manager->lastError = PPW_LOBBY_ERROR_SESSION;
     manager->state = LOBBY_CHAT_STATE_ERROR;
     gLobbyChatManager->disconnected = TRUE;
 }

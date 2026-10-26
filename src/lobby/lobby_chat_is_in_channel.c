@@ -13,12 +13,12 @@ int LobbyChat_ToErrorCode(int error) {
     return error + 42000;
 }
 
-int LobbyChat_IsInChannel(char *channel) {
+BOOL LobbyChat_IsInChannel(char *channel) {
     Str channelName;
     Str fullName;
-    int inChannel;
+    BOOL inChannel;
     if (!gLobbyChatManager) {
-        return 0;
+        return FALSE;
     }
     LobbyString_InitFromCStr(&channelName, channel);
     LobbyChat_GetFullChannelName(&fullName, gLobbyChatManager, &channelName);
