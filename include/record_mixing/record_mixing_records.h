@@ -3,6 +3,7 @@
 
 #include "friend_group.h"
 #include "save.h"
+#include "save_block_23.h"
 
 // Records of the save block 23 lists as they are mixed: the sender's trainer data + one list entry.
 typedef struct RecordMixingEntryData {
@@ -34,6 +35,6 @@ void *RecordMixing_Block23List1_Load(SaveData *saveData, enum HeapID heapID, u32
 void *RecordMixing_Block23List2_Load2(SaveData *saveData, enum HeapID heapID, u32 size);
 void *RecordMixing_Block23List0_Load2(SaveData *saveData, enum HeapID heapID, u32 size);
 void *RecordMixing_Block23List1_Load2(SaveData *saveData, enum HeapID heapID, u32 size);
-void RecordMixing_MergeBlock23(void *saveBlock23, int numPlayers, int localId, RecordMixingEntry **received, void *received2);
+void RecordMixing_MergeBlock23(SaveBlock23 *saveBlock23, int numPlayers, int localId, RecordMixingEntry **received, RecordMixingEntry **received2);
 
 #endif // POKEHEARTGOLD_RECORD_MIXING_RECORDS_H

@@ -16,8 +16,8 @@ static void RecordMixing_RemoveGroup(FRIEND_GROUP *groups, int index);
 static BOOL RecordMixing_IsAllowedEntryKind(int idx, int val);
 static void RecordMixing_FillBlock23Entries(SaveData *saveData, RecordMixingEntry *out, RecordMixingEntryData *in, int count, int unused4, int unused5);
 static int RecordMixing_InsertBlock23Entry(RecordMixingEntry *entries, int count, RecordMixingEntry *entry, int idx);
-static void *RecordMixing_SelectReceivedBuffer(u32 netId, void *a, void *b);
-static void RecordMixing_MergeBlock23List(RecordMixingEntry *entries, int count, int numPlayers, int localId, RecordMixingEntry **received, void *received2, int idx);
+static RecordMixingEntry **RecordMixing_SelectReceivedBuffer(u32 netId, RecordMixingEntry **a, RecordMixingEntry **b);
+static void RecordMixing_MergeBlock23List(RecordMixingEntry *entries, int count, int numPlayers, int localId, RecordMixingEntry **received, RecordMixingEntry **received2, int idx);
 
 static const u8 sRecordMixingAllowedEntryKinds5[8] = { 1, 3, 4, 6, 8, 9, 0xFF };
 
@@ -195,7 +195,7 @@ static int RecordMixing_InsertBlock23Entry(RecordMixingEntry *entries, int count
 }
 
 // a for partners whose profile has a version set, b otherwise
-static void *RecordMixing_SelectReceivedBuffer(u32 netId, void *a, void *b) {
+static RecordMixingEntry **RecordMixing_SelectReceivedBuffer(u32 netId, RecordMixingEntry **a, RecordMixingEntry **b) {
     PlayerProfile *profile = CommPlayerInfo_GetProfile(netId);
     if (!profile) {
         return NULL;
@@ -208,7 +208,7 @@ static void *RecordMixing_SelectReceivedBuffer(u32 netId, void *a, void *b) {
 
 // every member takes 4 entries, from the other members in turn
 
-static void RecordMixing_MergeBlock23List(RecordMixingEntry *entries, int count, int numPlayers, int localId, RecordMixingEntry **received, void *received2, int idx) {
+static void RecordMixing_MergeBlock23List(RecordMixingEntry *entries, int count, int numPlayers, int localId, RecordMixingEntry **received, RecordMixingEntry **received2, int idx) {
     u8 given[16];
     int j;
     int i;
@@ -236,6 +236,6 @@ static void RecordMixing_MergeBlock23List(RecordMixingEntry *entries, int count,
     SaveSubstruct_UpdateCRC(23);
 }
 
-void RecordMixing_MergeBlock23(void *saveBlock23, int numPlayers, int localId, RecordMixingEntry **received, void *received2) {
+void RecordMixing_MergeBlock23(SaveBlock23 *saveBlock23, int numPlayers, int localId, RecordMixingEntry **received, RecordMixingEntry **received2) {
     RecordMixing_MergeBlock23List((RecordMixingEntry *)((u8 *)saveBlock23 + 0x90C), 8, numPlayers, localId, received, received2, 0);
 }

@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "communication_command.h"
 #include "global.h"
 
 // Local wireless manager: drives the WM library for the communication layer. Every request is asynchronous: the
@@ -146,11 +147,9 @@ static void Wireless_OnLifeTimeSet(void *arg);
 static void Wireless_ForceReset(void);
 static void Wireless_OnEntrySet(void *arg);
 
-
 int CommState_GetLinkMode(void);
 int CommState_ReportsErrors(void);
 void CommState_SetError(int);
-BOOL Comm_IsCommClubLinkMode(int);
 
 static WirelessManager sWirelessManager;
 

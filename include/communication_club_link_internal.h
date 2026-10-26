@@ -4,6 +4,9 @@
 
 #include "field_system.h"
 #include "sys_task.h"
+
+struct CommPlayerManager;
+
 typedef void (*CommClubLinkState)(void);
 typedef struct CommClubLink {
     void *cards[4];
@@ -23,7 +26,7 @@ BOOL CommWireless_IsStartedUp(void);
 void CommState_ConnectToSlot(u8);
 BOOL CommState_IsLinked(void);
 u32 CommPlayerManager_sizeof(void);
-void CommPlayerManager_Init(void *, FieldSystem *, int);
+BOOL CommPlayerManager_Init(struct CommPlayerManager *manager, FieldSystem *fieldSystem, int unused);
 void CommPlayerManager_ResumeFieldOnce(void);
 void CommPlayerManager_ResyncLocalPlayer(void);
 void CommPlayerManager_SendLocalPosition(int);

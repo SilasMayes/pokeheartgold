@@ -157,7 +157,7 @@ static void GlobalTerminalSocket_Free(void *ptr);
 static void GlobalTerminalSocket_Lock(void);
 static void GlobalTerminalSocket_Unlock(void);
 static int GlobalTerminalSocket_InitMutex(void);
-static int GlobalTerminalSocket_InitSettingsStub(void *settings);
+static int GlobalTerminalSocket_InitSettingsStub(GlobalTerminalSocketSettings *settings);
 static int GlobalTerminalSocket_InitTick(void);
 static void GlobalTerminalSocket_ResetStub(void);
 static void GlobalTerminalSocket_ThreadMain(void);
@@ -455,7 +455,7 @@ static int GlobalTerminalSocket_InitMutex(void) {
     return 1;
 }
 
-static int GlobalTerminalSocket_InitSettingsStub(void *settings) {
+static int GlobalTerminalSocket_InitSettingsStub(GlobalTerminalSocketSettings *settings) {
     return 1;
 }
 

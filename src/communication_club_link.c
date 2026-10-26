@@ -187,8 +187,8 @@ void CommClubLink_IdleLinked(void) {
 
 void CommClubLink_HostInitRoom(void) {
     if (LinkSync_IsSynced(98)) {
-        void *data = Heap_Alloc(HEAP_ID_15, CommPlayerManager_sizeof());
-        CommPlayerManager_Init(data, gCommClubLink->fieldSystem, 0);
+        struct CommPlayerManager *manager = Heap_Alloc(HEAP_ID_15, CommPlayerManager_sizeof());
+        CommPlayerManager_Init(manager, gCommClubLink->fieldSystem, 0);
         CommPlayerManager_ResumeFieldOnce();
         Comm_DisableKeySync();
         LinkSync_StartSync(92);
@@ -246,8 +246,8 @@ void CommClubLink_HostPlacePlayers(void) {
 
 void CommClubLink_ChildInitRoom(void) {
     if (LinkSync_IsSynced(98)) {
-        void *data = Heap_Alloc(HEAP_ID_15, CommPlayerManager_sizeof());
-        CommPlayerManager_Init(data, gCommClubLink->fieldSystem, 0);
+        struct CommPlayerManager *manager = Heap_Alloc(HEAP_ID_15, CommPlayerManager_sizeof());
+        CommPlayerManager_Init(manager, gCommClubLink->fieldSystem, 0);
         CommPlayerManager_ResumeFieldOnce();
         LinkSync_StartSync(92);
         CommClubLink_SetState(CommClubLink_ChildShowRoom, 0);

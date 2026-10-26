@@ -30,8 +30,8 @@ typedef struct CommClubButtonsLayout {
 
 typedef struct CommClubButtonsData {
     BgConfig *bgConfig;
-    void *lastTouchMenuInput;
-    void *fieldSystem;
+    u16 *lastTouchMenuInput;
+    FieldSystem *fieldSystem;
     CommClubButtonsArgs *unk_0C;
     CommClubButtonsArgs *args;
     SysTask *task;
@@ -87,7 +87,7 @@ static const CommClubButtonsLayout sCommClubButtonsLayouts[] = {
     { sCommClubButtonsTwoButtonWindowTemplates, sCommClubButtonsTwoButtonHitboxes, 0, 5,  1 },
 };
 
-SysTask *CommClubButtons_Init(BgConfig *bgConfig, void *lastTouchMenuInput, void *fieldSystem, CommClubButtonsArgs *args) {
+SysTask *CommClubButtons_Init(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, CommClubButtonsArgs *args) {
     SysTask *task;
     CommClubButtonsData *data;
 
@@ -112,7 +112,7 @@ SysTask *CommClubButtons_Init(BgConfig *bgConfig, void *lastTouchMenuInput, void
     return task;
 }
 
-void CommClubButtons_Exit(void *bgConfig, SysTask *task) {
+void CommClubButtons_Exit(BgConfig *bgConfig, SysTask *task) {
     CommClubButtonsData *data = SysTask_GetData(task);
     CommClubButtons_RemoveWindows(data);
     CommClubButtons_FreeBgs(data->bgConfig);

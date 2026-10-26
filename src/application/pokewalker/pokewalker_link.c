@@ -640,7 +640,7 @@ int PokewalkerApp_Link_UpdateUpload(PokewalkerApp *app) {
         PokewalkerIr_Stop();
         return 32;
     }
-    if (PokewalkerIrStatus_IsConnected() == NULL) {
+    if (!PokewalkerIrStatus_IsConnected()) {
         PokewalkerApp_ShowSubBg1(app, TRUE);
         if (PokewalkerApp_GetTouchedButton(5) == 0 || (gSystem.newKeys & PAD_BUTTON_A) || (gSystem.newKeys & PAD_BUTTON_B)) {
             app->linkError = 33;

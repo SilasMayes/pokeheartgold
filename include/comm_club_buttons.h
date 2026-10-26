@@ -2,6 +2,7 @@
 #define POKEHEARTGOLD_COMM_CLUB_BUTTONS_H
 
 #include "bg_window.h"
+#include "field_types_def.h"
 #include "sys_task.h"
 
 enum CommClubButtonsCloseRequest {
@@ -18,8 +19,8 @@ typedef struct CommClubButtonsArgs {
     u16 selection;   // touched button, 0xFFFF = none
 } CommClubButtonsArgs;
 
-SysTask *CommClubButtons_Init(BgConfig *bgConfig, void *lastTouchMenuInput, void *fieldSystem, CommClubButtonsArgs *args);
-void CommClubButtons_Exit(void *bgConfig, SysTask *task);
+SysTask *CommClubButtons_Init(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, CommClubButtonsArgs *args);
+void CommClubButtons_Exit(BgConfig *bgConfig, SysTask *task);
 BOOL CommClubButtons_IsExitDone(void);
 
 #endif // POKEHEARTGOLD_COMM_CLUB_BUTTONS_H

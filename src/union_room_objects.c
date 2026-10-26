@@ -6,6 +6,7 @@
 
 #include "assert.h"
 #include "field_effects.h"
+#include "field_shadow.h"
 #include "field_system.h"
 #include "field_union_chat_marker.h"
 #include "field_warp_reset.h"
@@ -60,7 +61,6 @@ FieldSystem *UnionRoom_GetFieldSystem(struct UnionRoom *unionRoom);
 UnionRoomPlayerRecord *UnionRoom_GetRecord(struct UnionRoom *unionRoom, int index);
 s32 CommState_GetJoinResult(void);
 s32 CommState_IsAlternateLinked(void);
-FieldEffect *FieldShadow_CreateFriendShadow(LocalMapObject *object, int index);
 
 extern const u16 gUnionRoomGroupFirstSlot[];
 

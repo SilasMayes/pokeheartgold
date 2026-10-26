@@ -62,7 +62,7 @@ static void PalPadDetailsSlot_AddWindows(PalPadDetailsSlot *slot, PalPadGfx *gfx
 static void PalPadDetailsSlot_RemoveWindows(PalPadDetailsSlot *slot, u32 page);
 static void PalPadDetailsSlot_CopyWindowsToVram(PalPadDetailsSlot *slot, u32 page);
 static void PalPadDetailsSlot_ClearWindows(PalPadDetailsSlot *slot, u32 page);
-static void PalPadDetailsSlot_DrawPage(PalPadDetailsSlot *slot, PalPadShared *shared, PalPadGfx *gfx, u32 page, void *unused, BOOL frontier, enum HeapID heapId);
+static void PalPadDetailsSlot_DrawPage(PalPadDetailsSlot *slot, PalPadShared *shared, PalPadGfx *gfx, u32 page, PalPadDetailsScreen *unused, BOOL frontier, enum HeapID heapId);
 static void PalPadDetailsSlot_Clear(PalPadDetailsSlot *slot, PalPadGfx *gfx);
 
 static inline int Abs16(s16 value) {
@@ -640,7 +640,7 @@ static void PalPadDetailsSlot_ClearWindows(PalPadDetailsSlot *slot, u32 page) {
     }
 }
 
-static void PalPadDetailsSlot_DrawPage(PalPadDetailsSlot *slot, PalPadShared *shared, PalPadGfx *gfx, u32 page, void *unused, BOOL frontier, enum HeapID heapId) {
+static void PalPadDetailsSlot_DrawPage(PalPadDetailsSlot *slot, PalPadShared *shared, PalPadGfx *gfx, u32 page, PalPadDetailsScreen *unused, BOOL frontier, enum HeapID heapId) {
     PalPadDetailsSlot_Clear(slot, gfx);
     if (frontier) {
         gPalPadDetailsFrontierPagePrinters[page](slot, shared, gfx, heapId);

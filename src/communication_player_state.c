@@ -26,7 +26,7 @@ u8 Comm_FindFriendIndexOfPlayer(SaveData *saveData, s32 netId);
 static CommPlayerInfo *sCommPlayerInfo;
 
 void CommPlayerInfo_Init(SaveData *save, LinkBattleRuleset *rules) {
-    void *profile;
+    PlayerProfile *profile;
     int i;
 
     profile = Save_PlayerData_GetProfile(save);
@@ -69,10 +69,10 @@ BOOL CommPlayerInfo_Exists(void) {
 
 void CommPlayerInfo_SendLocal(void) {
     int netId;
-    void *friends;
-    void *friendRoster;
-    void *wifi;
-    void *profile;
+    SAV_FRIEND_GRP *friends;
+    FriendRoster *friendRoster;
+    SaveWiFiHistory *wifi;
+    PlayerProfile *profile;
 
     netId = Comm_GetLocalNetId();
     friends = Save_FriendGroup_Get(sCommPlayerInfo->save);
@@ -349,21 +349,21 @@ static void CommPlayerInfo_AddToRecords(int mode, int delta) {
 }
 
 void CommPlayerInfo_SaveRecords(SaveData *save) {
-    void *r;
-    int val;
+    FriendRoster *roster;
+    int slot;
     int i;
-    void *tok;
+    void *token;
 
-    r = Save_FriendRoster_Get(save);
+    roster = Save_FriendRoster_Get(save);
     for (i = 0; i < Comm_CountConnected(); i++) {
-        tok = CommPlayerInfo_GetExchangeToken(i);
-        if (tok != NULL) {
-            int res = Comm_FindFriendSlot(save, tok, &val);
-            switch (res) {
+        token = CommPlayerInfo_GetExchangeToken(i);
+        if (token != NULL) {
+            int result = Comm_FindFriendSlot(save, token, &slot);
+            switch (result) {
             case 0:
             case 1:
-                GF_ASSERT(val >= 0);
-                FriendRoster_AddWinsLossesTrades(r, val, sCommPlayerInfo->scores[i].wins, sCommPlayerInfo->scores[i].losses, sCommPlayerInfo->scores[i].trades);
+                GF_ASSERT(slot >= 0);
+                FriendRoster_AddWinsLossesTrades(roster, slot, sCommPlayerInfo->scores[i].wins, sCommPlayerInfo->scores[i].losses, sCommPlayerInfo->scores[i].trades);
             }
         }
     }
