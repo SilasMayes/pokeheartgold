@@ -788,7 +788,7 @@ u32 PokeathlonCourse_State_SendEventResults(PokeathlonCourseData *course) {
     u8 *dataCopy = PokeathlonCourse_GetDataCopyArea(course);
     void *size = PokeathlonCourseCmd_PacketSize();
     void *link = PokeathlonCourse_GetSystem(course);
-    if (PokeathlonCourseLink_SendCommand(POKEATHLON_COURSE_CMD_EVENT_RESULTS, dataCopy + sizeof(PokeathlonCoursePacket), size, (int)link)) {
+    if (PokeathlonCourseLink_SendCommand(POKEATHLON_COURSE_CMD_EVENT_RESULTS, dataCopy + POKEATHLON_COURSE_DATA_FRAME_OUT, size, (int)link)) {
         PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_WAIT_FOR_COMMAND);
     }
     return 0;
@@ -1052,11 +1052,11 @@ static BOOL PokeathlonCourse_SendEventResults(PokeathlonCourseData *course) {
     }
     for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         size = PokeathlonCourse_GetEventResultSize(course);
-        memcpy(PokeathlonCourse_ToBytes(dataCopy + sizeof(PokeathlonCoursePacket)) + i * size, &layout->eventResults[i], size);
+        memcpy(PokeathlonCourse_ToBytes(dataCopy + POKEATHLON_COURSE_DATA_FRAME_OUT) + i * size, &layout->eventResults[i], size);
     }
     packetSize = PokeathlonCourseCmd_PacketSize();
     link = PokeathlonCourse_GetSystem(course);
-    return PokeathlonCourseLink_SendCommand(POKEATHLON_COURSE_CMD_EVENT_RESULTS, dataCopy + sizeof(PokeathlonCoursePacket), packetSize, (int)link);
+    return PokeathlonCourseLink_SendCommand(POKEATHLON_COURSE_CMD_EVENT_RESULTS, dataCopy + POKEATHLON_COURSE_DATA_FRAME_OUT, packetSize, (int)link);
 }
 
 // Stores the points and scores of the round from the score list, and whether the player won it or came last.

@@ -305,8 +305,9 @@ s32 PokeathlonRingDrop_GetMonState(PokeathlonCourseData *course, u8 participant)
 }
 
 VecFx32 *PokeathlonRingDrop_GetMonPosition(PokeathlonCourseData *course, u8 participant) {
-    u32 mon = (u32) & ((PokeathlonRingDrop *)PokeathlonCourse_GetWork(course))->players[participant].mon;
-    return (VecFx32 *)(mon + offsetof(PokeathlonRingDropMon, position));
+    PokeathlonRingDrop *ringDrop = PokeathlonCourse_GetWork(course);
+    PokeathlonRingDropMon *mon = &ringDrop->players[participant].mon;
+    return &mon->position;
 }
 
 void PokeathlonRingDrop_GetMonScreenPosition(PokeathlonCourseData *course, u8 participant, VecFx32 *out) {

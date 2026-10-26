@@ -411,9 +411,8 @@ BOOL PokeathlonGoalRoll_Exit(PokeathlonCourseData *course) {
     PokeathlonGoalRoll_DestroyPlateTasks(goalRoll);
     PokeathlonGoalRoll_FreeStrings(course);
     RemoveWindow(&goalRoll->scoreWindow);
-    window = (Window *)goalRoll;
     i = 0;
-    window = (Window *)((u8 *)window + offsetof(PokeathlonGoalRoll, nameWindows));
+    window = goalRoll->nameWindows;
     while (i < GOAL_ROLL_PARTICIPANTS) {
         RemoveWindow(window);
         i++;
@@ -581,7 +580,6 @@ static void PokeathlonGoalRoll_HostUpdate(PokeathlonCourseData *course) {
     PokeathlonGoalRollFramePacket *out;
     u8 *area;
     PokeathlonGoalRoll *goalRoll;
-    PokeathlonGoalRoll *touchCursor;
     PokeathlonGoalRollInput *input;
     PokeathlonGoalRollFramePacket *ownInput;
     int i;
@@ -607,20 +605,20 @@ static void PokeathlonGoalRoll_HostUpdate(PokeathlonCourseData *course) {
     *ownInput = *(PokeathlonGoalRollFramePacket *)PokeathlonCourse_ToBytes(area);
     area += 80;
     frame.team = goalRoll->mons[0];
-    for (i = 0, touchCursor = goalRoll; i < GOAL_ROLL_PARTICIPANTS; i++, touchCursor = (PokeathlonGoalRoll *)((u8 *)touchCursor + sizeof(PokeathlonGoalRollTouch)), area += 40, frame.team += GOAL_ROLL_TEAM_SIZE) {
+    for (i = 0; i < GOAL_ROLL_PARTICIPANTS; i++, area += 40, frame.team += GOAL_ROLL_TEAM_SIZE) {
         input = (PokeathlonGoalRollInput *)PokeathlonCourse_ToBytes(area);
         if (input->touching) {
-            if (touchCursor->touch[0].newPress && touchCursor->touch[0].held) {
-                touchCursor->touch[0].newPress = FALSE;
-            } else if (!touchCursor->touch[0].newPress && !touchCursor->touch[0].held) {
-                touchCursor->touch[0].newPress = TRUE;
-                touchCursor->touch[0].held = TRUE;
+            if (goalRoll->touch[i].newPress && goalRoll->touch[i].held) {
+                goalRoll->touch[i].newPress = FALSE;
+            } else if (!goalRoll->touch[i].newPress && !goalRoll->touch[i].held) {
+                goalRoll->touch[i].newPress = TRUE;
+                goalRoll->touch[i].held = TRUE;
             }
         } else {
-            touchCursor->touch[0].newPress = FALSE;
-            touchCursor->touch[0].held = FALSE;
+            goalRoll->touch[i].newPress = FALSE;
+            goalRoll->touch[i].held = FALSE;
         }
-        if (touchCursor->touch[0].newPress) {
+        if (goalRoll->touch[i].newPress) {
             monIndex = PokeathlonGoalRoll_GetTouchedMon(goalRoll, i, input->x, input->y);
             if (monIndex != GOAL_ROLL_NO_MON) {
                 PokeathlonGoalRollMon *mon = &frame.team[monIndex % GOAL_ROLL_TEAM_SIZE];
@@ -629,7 +627,7 @@ static void PokeathlonGoalRoll_HostUpdate(PokeathlonCourseData *course) {
                     goalRoll->holdFrames = 0;
                 }
             }
-        } else if (touchCursor->touch[0].held) {
+        } else if (goalRoll->touch[i].held) {
             if (goalRoll->heldMon[i] != GOAL_ROLL_NO_MON) {
                 if (goalRoll->holdFrames < 20) {
                     goalRoll->holdFrames++;

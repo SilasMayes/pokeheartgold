@@ -598,7 +598,7 @@ static void PokeathlonHurdleDash_UpdateStandings(PokeathlonHurdleDash *hurdleDas
 static void PokeathlonHurdleDash_UpdateRanks(PokeathlonCourseData *course) {
     PokeathlonHurdleDashStatus *status;
     PokeathlonHurdleDash *hurdleDash = PokeathlonCourse_GetWork(course);
-    status = (PokeathlonHurdleDashStatus *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + 6 * sizeof(PokeathlonCoursePacket));
+    status = (PokeathlonHurdleDashStatus *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_IN);
     if (hurdleDash->started) {
         hurdleDash->rankTimer++;
     }
@@ -692,7 +692,7 @@ static void PokeathlonHurdleDash_CalcRanks(PokeathlonCourseData *course) {
     PokeathlonHurdleDashRankNode head;
     PokeathlonHurdleDashRankNode nodes[12];
     block = PokeathlonCourse_GetDataCopyArea(course);
-    status = (PokeathlonHurdleDashStatus *)PokeathlonCourse_ToBytes(block + sizeof(PokeathlonCoursePacket));
+    status = (PokeathlonHurdleDashStatus *)PokeathlonCourse_ToBytes(block + POKEATHLON_COURSE_DATA_FRAME_OUT);
     participant = 0;
     head.prev = NULL;
     head.next = &nodes[0];
@@ -701,7 +701,7 @@ static void PokeathlonHurdleDash_CalcRanks(PokeathlonCourseData *course) {
     head.finishTime = 0;
     head.finished = 0;
     head.tied = FALSE;
-    block += 2 * sizeof(PokeathlonCoursePacket);
+    block += POKEATHLON_COURSE_DATA_INPUTS;
     base = participant;
     for (; participant < POKEATHLON_PARTICIPANTS; participant++) {
         packet = (PokeathlonHurdleDashPacket *)PokeathlonCourse_ToBytes(block);
@@ -739,7 +739,7 @@ static void PokeathlonHurdleDash_CalcRanks(PokeathlonCourseData *course) {
             }
             packet = (PokeathlonHurdleDashPacket *)((u16 *)packet + 1);
         }
-        block += sizeof(PokeathlonCoursePacket);
+        block += POKEATHLON_COURSE_DATA_SLOT_SIZE;
         base += 3;
     }
     {
@@ -856,7 +856,7 @@ void PokeathlonHurdleDash_UpdateCpuParticipants(PokeathlonCourseData *course) {
         count = PokeathlonCourse_GetParticipantCount(course);
         participant = count;
         if (participant < POKEATHLON_PARTICIPANTS) {
-            packetBlock = block + 2 * sizeof(PokeathlonCoursePacket) + participant * sizeof(PokeathlonCoursePacket);
+            packetBlock = block + POKEATHLON_COURSE_DATA_INPUTS + participant * POKEATHLON_COURSE_DATA_SLOT_SIZE;
             do {
                 packet = (PokeathlonHurdleDashPacket *)PokeathlonCourse_ToBytes(packetBlock);
                 member = 0;
@@ -867,7 +867,7 @@ void PokeathlonHurdleDash_UpdateCpuParticipants(PokeathlonCourseData *course) {
                     member++;
                     cpuIndex++;
                 } while (member < POKEATHLON_TEAM_SIZE);
-                packetBlock += sizeof(PokeathlonCoursePacket);
+                packetBlock += POKEATHLON_COURSE_DATA_SLOT_SIZE;
                 participant++;
             } while (participant < POKEATHLON_PARTICIPANTS);
         }

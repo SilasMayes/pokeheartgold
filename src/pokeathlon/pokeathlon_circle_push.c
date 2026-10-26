@@ -733,13 +733,10 @@ BOOL PokeathlonCirclePush_End(PokeathlonCourseData *course, u8 *state) {
     for (team = 0; team < POKEATHLON_PARTICIPANTS; team++) {
         int points = 0;
         int member = points;
-        PokeathlonCirclePush *view = circlePush;
         for (; member < POKEATHLON_TEAM_SIZE; member++) {
-            points += view->mons[0][0].points;
+            points += circlePush->mons[team][member].points;
             PokeathlonCourse_SetEventScore(course, (u8)team, points);
-            view = (PokeathlonCirclePush *)((u8 *)view + sizeof(PokeathlonCirclePushMon));
         }
-        circlePush = (PokeathlonCirclePush *)((u8 *)circlePush + sizeof(circlePush->mons[0]));
     }
     return TRUE;
 }

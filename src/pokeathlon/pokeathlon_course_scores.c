@@ -293,9 +293,9 @@ void PokeathlonCourseCmd_RecvPacket(int netId, int size, void *data, void *conte
     PokeathlonCourseData *course = context;
     u8 *dataCopy = PokeathlonCourse_GetDataCopyArea(course);
     if (((PokeathlonCoursePacket *)data)->isHostPacket) {
-        memcpy(dataCopy + 6 * sizeof(PokeathlonCoursePacket), data, size);
+        memcpy(dataCopy + POKEATHLON_COURSE_DATA_FRAME_IN, data, size);
     } else {
-        memcpy(dataCopy + 2 * sizeof(PokeathlonCoursePacket) + netId * sizeof(PokeathlonCoursePacket), data, size);
+        memcpy(dataCopy + POKEATHLON_COURSE_DATA_INPUTS + netId * POKEATHLON_COURSE_DATA_SLOT_SIZE, data, size);
     }
 }
 
@@ -310,7 +310,7 @@ void PokeathlonCourseCmd_RecvEventResult(int netId, int size, void *data, void *
     u8 *dataCopy = PokeathlonCourse_GetDataCopyArea(course);
     if (!PokeathlonCourse_GetNetId(course)) {
         u32 resultSize = PokeathlonCourse_GetEventResultSize(course);
-        memcpy(PokeathlonCourse_ToBytes(dataCopy + sizeof(PokeathlonCoursePacket)) + netId * resultSize, data, resultSize);
+        memcpy(PokeathlonCourse_ToBytes(dataCopy + POKEATHLON_COURSE_DATA_FRAME_OUT) + netId * resultSize, data, resultSize);
         PokeathlonCourse_IncrementReceivedCount(course);
         if (PokeathlonCourse_GetParticipantCount(course) == PokeathlonCourse_GetReceivedCount(course)) {
             PokeathlonCourse_ResetReceivedCount(course);
@@ -321,7 +321,7 @@ void PokeathlonCourseCmd_RecvEventResult(int netId, int size, void *data, void *
 
 void PokeathlonCourseCmd_RecvEventResults(int netId, int size, void *data, void *context) {
     PokeathlonCourseData *course = context;
-    memcpy(PokeathlonCourse_GetDataCopyArea(course) + 6 * sizeof(PokeathlonCoursePacket), data, size);
+    memcpy(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_IN, data, size);
     PokeathlonCourse_SetNextState(course, POKEATHLON_COURSE_STATE_END_ROUND);
 }
 
@@ -372,7 +372,7 @@ void PokeathlonCourseCmd_RecvJuiceRecord(int netId, int size, void *data, void *
 }
 
 int PokeathlonCourseCmd_EventsSize(void) {
-    return 4;
+    return POKEATHLON_LINK_ROUNDS;
 }
 
 int PokeathlonCourseCmd_ParticipantSize(void) {
@@ -380,11 +380,11 @@ int PokeathlonCourseCmd_ParticipantSize(void) {
 }
 
 int PokeathlonCourseCmd_AllParticipantsSize(void) {
-    return sizeof(PokeathlonCourseParticipant) * 4;
+    return sizeof(PokeathlonCourseParticipant) * POKEATHLON_PARTICIPANTS;
 }
 
 u32 PokeathlonCourseCmd_ProfilesSize(void) {
-    return PlayerProfile_sizeof() * 4;
+    return PlayerProfile_sizeof() * POKEATHLON_PARTICIPANTS;
 }
 
 int PokeathlonCourseCmd_RecordSize(void) {

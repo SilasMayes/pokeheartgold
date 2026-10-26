@@ -638,7 +638,8 @@ BOOL PokeathlonRelayRun_Play(PokeathlonCourseData *course, u8 *state) {
 BOOL PokeathlonRelayRun_SaveScores(PokeathlonCourseData *course, u8 *state) {
     int i;
     PokeathlonCourseData *savedCourse = course;
-    PokeathlonRelayRunTeam *team = PokeathlonCourse_GetWork(course);
+    PokeathlonRelayRun *relayRun = PokeathlonCourse_GetWork(course);
+    PokeathlonRelayRunTeam *team;
 
     if (*state == 0) {
         if (IsPaletteFadeFinished()) {
@@ -649,7 +650,7 @@ BOOL PokeathlonRelayRun_SaveScores(PokeathlonCourseData *course, u8 *state) {
     if (PokeathlonCourse_GetNetId(savedCourse)) {
         return TRUE;
     }
-    for (i = 0, team = (PokeathlonRelayRunTeam *)((u8 *)team + offsetof(PokeathlonRelayRun, teams)); i < RELAY_RUN_TEAMS; i++, team++) {
+    for (i = 0, team = relayRun->teams; i < RELAY_RUN_TEAMS; i++, team++) {
         PokeathlonCourse_SetEventScore(savedCourse, (u8)i, team->position.x / FX32_ONE + (team->laps << 10));
     }
     return TRUE;

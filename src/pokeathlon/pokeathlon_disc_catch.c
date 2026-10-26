@@ -49,8 +49,6 @@ s32 _s32_div_f(s32 dividend, s32 divisor);
 
 void MATH_QSort(void *head, u32 num, u32 size, s32 (*compare)(const void *, const void *), void *work);
 
-#define NEXT_TEAM_RESULT(result) ((PokeathlonDiscCatchResult *)((u8 *)(result) + sizeof(PokeathlonDiscCatchTeam)))
-
 // A Pokemon sprite and the y its draw order goes by.
 typedef struct PokeathlonDiscCatchDrawOrder {
     u8 y;
@@ -770,10 +768,8 @@ u32 PokeathlonDiscCatch_Finish(PokeathlonCourseData *course, u8 *state) {
             work = PokeathlonCourse_GetWork(course);
             if (!isGuest) {
                 int i;
-                PokeathlonDiscCatchResult *result;
-                for (i = 0, result = &work->field.teams[0].result; i < DISC_CATCH_PARTICIPANTS; i++) {
-                    PokeathlonCourse_SetEventScore(course, (u8)i, result->score);
-                    result = NEXT_TEAM_RESULT(result);
+                for (i = 0; i < DISC_CATCH_PARTICIPANTS; i++) {
+                    PokeathlonCourse_SetEventScore(course, (u8)i, work->field.teams[i].result.score);
                 }
             }
             return 1;
@@ -933,19 +929,16 @@ u8 PokeathlonDiscCatch_CountTeamsAhead(PokeathlonCourseData *course, u32 partici
     PokeathlonDiscCatch *work;
     int i;
     u16 score;
-    PokeathlonDiscCatchResult *result;
     GF_ASSERT(course != NULL);
     work = PokeathlonCourse_GetWork(course);
     GF_ASSERT(work != NULL);
     i = 0;
     score = work->field.teams[participant].result.score;
-    result = &work->field.teams[0].result;
     for (; i < DISC_CATCH_PARTICIPANTS; i++) {
-        u16 other = result->score;
+        u16 other = work->field.teams[i].result.score;
         if (i != (int)participant && score < other) {
             count++;
         }
-        result = NEXT_TEAM_RESULT(result);
     }
     return count;
 }

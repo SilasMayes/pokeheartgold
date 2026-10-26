@@ -195,18 +195,14 @@ void PokeathlonSnowThrowDisplay_SetMonShadows(PokeathlonSnowThrowDisplay *displa
 }
 
 static void PokeathlonSnowThrowDisplay_LoadMonPics(PokeathlonSnowThrowDisplay *display, PokeathlonCourseMonInfo *mons) {
-    int i = 0;
-    u8 *pic = (u8 *)display;
+    int i;
     PokepicTemplate template;
 
-    do {
+    for (i = 0; i < SNOW_THROW_MEMBERS; mons++, i++) {
         GetMonSpriteCharAndPlttNarcIdsEx(&template, mons->species, mons->gender, 0, mons->isShiny, mons->form, mons->personality);
-        ((PokeathlonCourseMonPic *)(pic + offsetof(PokeathlonSnowThrowDisplay, monPics)))->chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, display->heapId, mons->personality, FALSE, 0, mons->species);
-        ((PokeathlonCourseMonPic *)(pic + offsetof(PokeathlonSnowThrowDisplay, monPics)))->palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, display->heapId);
-        mons++;
-        pic += sizeof(PokeathlonCourseMonPic);
-        i++;
-    } while (i < SNOW_THROW_MEMBERS);
+        display->monPics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, display->heapId, mons->personality, FALSE, 0, mons->species);
+        display->monPics[i].palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, display->heapId);
+    }
 }
 
 // The own team's pictures (slid in from the left, 50 pixels apart) and the tired marks above them.
@@ -265,15 +261,8 @@ static void PokeathlonSnowThrowDisplay_GetPicVramOffsets(PokeathlonCourseSpriteP
     u8 i;
 
     for (i = 0; i < SNOW_THROW_MEMBERS; i++) {
-        u32 *offsets = (u32 *)((u8 *)display + i * 4);
-        u32 offset = i;
-        offset *= 0xD00;
-        *(u32 *)((u8 *)offsets + offsetof(PokeathlonSnowThrowDisplay, picCharOffsets)) = offset + 0x300 + NNS_G2dGetImageLocation(image, NNS_G2D_VRAM_TYPE_2DSUB);
-        {
-            u32 offset = i << 5;
-            offset += 0x20;
-            *(u32 *)((u8 *)offsets + offsetof(PokeathlonSnowThrowDisplay, picPlttOffsets)) = offset + NNS_G2dGetImagePaletteLocation(palette, NNS_G2D_VRAM_TYPE_2DSUB);
-        }
+        display->picCharOffsets[i] = i * 0xD00 + 0x300 + NNS_G2dGetImageLocation(image, NNS_G2D_VRAM_TYPE_2DSUB);
+        display->picPlttOffsets[i] = (i << 5) + 0x20 + NNS_G2dGetImagePaletteLocation(palette, NNS_G2D_VRAM_TYPE_2DSUB);
     }
 }
 

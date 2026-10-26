@@ -329,7 +329,7 @@ typedef struct PokeathlonCoursePacket {
 
 // Callbacks of the event that is running (PokeathlonCourseData.state points to the event's table).
 typedef struct PokeathlonCourseEvent {
-    void *init;
+    BOOL (*init)(PokeathlonCourseData *course);
     void (*draw)(PokeathlonCourseData *course, u32 param);
     void (*onResults)(PokeathlonCourseData *course, u32 param);
     void (*exit)(PokeathlonCourseData *course, u32 param);
