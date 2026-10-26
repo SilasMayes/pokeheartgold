@@ -1087,7 +1087,7 @@ static int PokemonSummary_HandleRibbonInput(PokemonSummary *summary) {
 
 // State 13: the up arrow was touched; scroll up a page once its animation ends.
 static int PokemonSummary_WaitRibbonPageUp(PokemonSummary *summary) {
-    if (Sprite_IsAnimated(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP]) == FALSE) {
+    if (!Sprite_IsAnimated(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP])) {
         PokemonSummary_MoveRibbonCursor(summary, -9);
         return POKEMON_SUMMARY_STATE_RIBBON_INPUT;
     }
@@ -1096,7 +1096,7 @@ static int PokemonSummary_WaitRibbonPageUp(PokemonSummary *summary) {
 
 // State 14: the same for the down arrow.
 static int PokemonSummary_WaitRibbonPageDown(PokemonSummary *summary) {
-    if (Sprite_IsAnimated(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN]) == FALSE) {
+    if (!Sprite_IsAnimated(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN])) {
         PokemonSummary_MoveRibbonCursor(summary, 9);
         return POKEMON_SUMMARY_STATE_RIBBON_INPUT;
     }

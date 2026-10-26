@@ -8,6 +8,7 @@
 #include "heap.h"
 #include "party.h"
 #include "pm_string.h"
+#include "pokemon_storage_system.h"
 #include "sprite.h"
 #include "touchscreen.h"
 #include "sprite_resource_header.h"
@@ -117,7 +118,7 @@ typedef struct BoxMonSelector {
     Sprite *emptyPickSlots[BOX_MON_SELECTOR_MAX_PICKS - 1];
     BoxMonSelectorMark *marks;
     BoxMonSelectorIconChars iconChars[BOX_MON_SELECTOR_BOX_SLOTS];
-    void *storage;
+    PCStorage *storage;
     Party *party;
     BoxMonSelectorCallback vblankTask;
     BoxMonSelectorGetMon getMon;
@@ -150,7 +151,7 @@ typedef struct BoxMonSelector {
 
 BoxMonSelector *BoxMonSelector_New(enum HeapID heapId, int maxPicks, int numPages);
 void BoxMonSelector_Delete(BoxMonSelector *selector);
-void BoxMonSelector_Init(BoxMonSelector *selector, BgConfig *bgConfig, void *storage, Party *party, int unused11, int unused12, BOOL canCancel, int initialPage, BoxMonSelectorGetMon getMon, BoxMonSelectorGetPageName getPageName, BoxMonSelectorResult *results, BoxMonSelectorCursorCallback onCursorMove, void *onCursorMoveArg);
+void BoxMonSelector_Init(BoxMonSelector *selector, BgConfig *bgConfig, PCStorage *storage, Party *party, int unused11, int unused12, BOOL canCancel, int initialPage, BoxMonSelectorGetMon getMon, BoxMonSelectorGetPageName getPageName, BoxMonSelectorResult *results, BoxMonSelectorCursorCallback onCursorMove, void *onCursorMoveArg);
 void BoxMonSelector_VBlank(BoxMonSelector *selector);
 int BoxMonSelector_Run(BoxMonSelector *selector);
 void BoxMonSelector_RenderSprites(BoxMonSelector *selector);

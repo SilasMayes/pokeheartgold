@@ -899,19 +899,19 @@ static void NintendoWfc_SetState(NintendoWfcConnect *wfc, int state, int nextSta
 
 static void NintendoWfc_SetSpritePosition(Sprite *sprite, int x, int y) {
     VecFx32 pos;
-    float f;
+    float rounded;
     if (x > 0) {
-        f = (float)(x << FX32_SHIFT) + 0.5f;
+        rounded = (float)(x << FX32_SHIFT) + 0.5f;
     } else {
-        f = (float)(x << FX32_SHIFT) - 0.5f;
+        rounded = (float)(x << FX32_SHIFT) - 0.5f;
     }
-    pos.x = (fx32)f;
+    pos.x = (fx32)rounded;
     if (y > 0) {
-        f = (float)(y << FX32_SHIFT) + 0.5f;
+        rounded = (float)(y << FX32_SHIFT) + 0.5f;
     } else {
-        f = (float)(y << FX32_SHIFT) - 0.5f;
+        rounded = (float)(y << FX32_SHIFT) - 0.5f;
     }
-    pos.y = (fx32)f;
+    pos.y = (fx32)rounded;
     pos.z = 0;
     Sprite_SetMatrix(sprite, &pos);
 }

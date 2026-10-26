@@ -38,7 +38,7 @@ BOOL FriendRoster_IsFriendValid(FriendRoster *data, int index);
 s32 FriendRoster_GetEntryField(FriendRoster *data, s32 index, s32 field);
 void FriendRoster_Compact(FriendRoster *data);
 void FriendRoster_UpdateDate(FriendRoster *data, s32 index);
-void FriendRoster_AddWinsLossesTrades(FriendRoster *data, s32 index, s32 a, s32 b, s32 c);
+void FriendRoster_AddWinsLossesTrades(FriendRoster *data, s32 index, s32 wins, s32 losses, s32 trades);
 void FriendRoster_AddPlazaGame0Plays(FriendRoster *data, s32 index, s32 value);
 void FriendRoster_AddPlazaGame1Plays(FriendRoster *data, s32 index, s32 value);
 void FriendRoster_AddPlazaGame2Plays(FriendRoster *data, s32 index, s32 value);

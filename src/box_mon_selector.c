@@ -231,7 +231,7 @@ void BoxMonSelector_Delete(BoxMonSelector *selector) {
     Heap_Free(selector);
 }
 
-void BoxMonSelector_Init(BoxMonSelector *selector, BgConfig *bgConfig, void *storage, Party *party, int unused11, int unused12, BOOL canCancel, int initialPage, BoxMonSelectorGetMon getMon, BoxMonSelectorGetPageName getPageName, BoxMonSelectorResult *results, BoxMonSelectorCursorCallback onCursorMove, void *onCursorMoveArg) {
+void BoxMonSelector_Init(BoxMonSelector *selector, BgConfig *bgConfig, PCStorage *storage, Party *party, int unused11, int unused12, BOOL canCancel, int initialPage, BoxMonSelectorGetMon getMon, BoxMonSelectorGetPageName getPageName, BoxMonSelectorResult *results, BoxMonSelectorCursorCallback onCursorMove, void *onCursorMoveArg) {
     selector->yesNoPrompt = YesNoPrompt_Create(selector->heapId);
     selector->storage = storage;
     selector->party = party;

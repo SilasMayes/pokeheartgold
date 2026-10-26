@@ -239,17 +239,17 @@ void FriendRoster_UpdateDate(FriendRoster *data, s32 index) {
     }
 }
 
-void FriendRoster_AddWinsLossesTrades(FriendRoster *data, s32 index, s32 a, s32 b, s32 c) {
+void FriendRoster_AddWinsLossesTrades(FriendRoster *data, s32 index, s32 wins, s32 losses, s32 trades) {
     if (index >= 0 && index < FRIEND_ROSTER_MAX) {
-        data->roster.entries[index].wins += a;
+        data->roster.entries[index].wins += wins;
         if (data->roster.entries[index].wins > FRIEND_ROSTER_RECORD_MAX) {
             data->roster.entries[index].wins = FRIEND_ROSTER_RECORD_MAX;
         }
-        data->roster.entries[index].losses += b;
+        data->roster.entries[index].losses += losses;
         if (data->roster.entries[index].losses > FRIEND_ROSTER_RECORD_MAX) {
             data->roster.entries[index].losses = FRIEND_ROSTER_RECORD_MAX;
         }
-        data->roster.entries[index].trades += c;
+        data->roster.entries[index].trades += trades;
         if (data->roster.entries[index].trades > FRIEND_ROSTER_RECORD_MAX) {
             data->roster.entries[index].trades = FRIEND_ROSTER_RECORD_MAX;
         }

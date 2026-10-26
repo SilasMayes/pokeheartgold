@@ -67,22 +67,22 @@ void PokemonSummary_CreateCamera(PokemonSummary *summary) {
     Camera_SetStaticPtr(summary->camera);
 }
 
-static void ConditionChart_GetVertex(const ConditionChartVertexAnim *src, ConditionChartVertex *dst, int t) {
-    if (t == 0xFF) {
+static void ConditionChart_GetVertex(const ConditionChartVertexAnim *src, ConditionChartVertex *dst, int stat) {
+    if (stat == 0xFF) {
         dst->x = src->max[0];
         dst->y = src->max[1];
         dst->z = src->max[2];
         return;
     }
-    if (t == 0) {
+    if (stat == 0) {
         dst->x = src->min[0];
         dst->y = src->min[1];
         dst->z = src->min[2];
         return;
     }
-    dst->x = ((const ConditionChartVertexAnimS *)src)->min[0] + ((const ConditionChartVertexAnimS *)src)->step[0] * t;
-    dst->y = ((const ConditionChartVertexAnimS *)src)->min[1] + ((const ConditionChartVertexAnimS *)src)->step[1] * t;
-    dst->z = ((const ConditionChartVertexAnimS *)src)->min[2] + ((const ConditionChartVertexAnimS *)src)->step[2] * t;
+    dst->x = ((const ConditionChartVertexAnimS *)src)->min[0] + ((const ConditionChartVertexAnimS *)src)->step[0] * stat;
+    dst->y = ((const ConditionChartVertexAnimS *)src)->min[1] + ((const ConditionChartVertexAnimS *)src)->step[1] * stat;
+    dst->z = ((const ConditionChartVertexAnimS *)src)->min[2] + ((const ConditionChartVertexAnimS *)src)->step[2] * stat;
 }
 
 static void ConditionChart_GetStep(const ConditionChartVertex *from, const ConditionChartVertex *to, ConditionChartVertex *out) {

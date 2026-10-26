@@ -27,7 +27,7 @@
 // Pokemon summary screen text: the screen's windows and the text of each page.
 
 
-#define PokemonSummary_NewTrainerMemo(mon, isMine, heapID) ((TrainerMemo * (*)(void *, int, enum HeapID)) TrainerMemo_New)(mon, isMine, heapID)
+#define PokemonSummary_NewTrainerMemo(mon, isMine, heapID) ((TrainerMemo * (*)(Pokemon *, BOOL, enum HeapID)) TrainerMemo_New)(mon, isMine, heapID)
 
 static BOOL PokemonSummary_IsPlayersMon(PokemonSummary *summary);
 static void PokemonSummary_PrintBuffer(PokemonSummary *summary, Window *window, u32 color, int alignment);
@@ -37,7 +37,7 @@ static void PokemonSummary_FormatNumber(PokemonSummary *summary, int msgNo, int 
 static void PokemonSummary_PrintValuePair(PokemonSummary *summary, int window, int labelMsg, int firstMsg, int secondMsg, u16 firstValue, u16 secondValue, volatile u8 digits, u8 centerX, u8 y);
 static void PokemonSummary_PrintLabels(PokemonSummary *summary);
 static void PokemonSummary_PrintInfo(PokemonSummary *summary);
-static void PokemonSummary_PrintTrainerMemo(Window *window, void *mon, BOOL isMine);
+static void PokemonSummary_PrintTrainerMemo(Window *window, Pokemon *mon, BOOL isMine);
 static int PokemonSummary_CountShinyLeaves(PokemonSummary *summary);
 static void PokemonSummary_PrintMemo(PokemonSummary *summary);
 static void PokemonSummary_PrintStats(PokemonSummary *summary);
@@ -481,7 +481,7 @@ static void PokemonSummary_PrintInfo(PokemonSummary *summary) {
 }
 
 // The trainer memo: nature, where and when it was met, characteristic, egg watch.
-static void PokemonSummary_PrintTrainerMemo(Window *window, void *mon, BOOL isMine) {
+static void PokemonSummary_PrintTrainerMemo(Window *window, Pokemon *mon, BOOL isMine) {
     TrainerMemo *memo = PokemonSummary_NewTrainerMemo(mon, isMine, HEAP_ID_19);
     if (memo->notepad.nature != NULL) {
         AddTextPrinterParameterizedWithColor(window, 0, memo->notepad.nature, 6, (memo->notepad.natureLine - 1) * 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
@@ -504,22 +504,22 @@ static int PokemonSummary_CountShinyLeaves(PokemonSummary *summary) {
 }
 
 static void PokemonSummary_PrintMemo(PokemonSummary *summary) {
-    BoxPokemon *boxMon;
+    void *shownMon;
     BOOL isMine;
     Pokemon *mon;
     String *string;
 
     ScheduleWindowCopyToVram(&summary->windows[1]);
     FillWindowPixelBuffer(&summary->pageWindows[6], 0);
-    boxMon = PokemonSummary_GetShownMon(summary);
+    shownMon = PokemonSummary_GetShownMon(summary);
     isMine = PokemonSummary_IsPlayersMon(summary);
     if (summary->args->monDataType == POKEMON_SUMMARY_BOX_MON_ARRAY) {
         mon = AllocMonZeroed(HEAP_ID_19);
-        CopyBoxPokemonToPokemon(boxMon, mon);
+        CopyBoxPokemonToPokemon(shownMon, mon);
         PokemonSummary_PrintTrainerMemo(&summary->pageWindows[6], mon, isMine);
         Heap_Free(mon);
     } else {
-        PokemonSummary_PrintTrainerMemo(&summary->pageWindows[6], boxMon, isMine);
+        PokemonSummary_PrintTrainerMemo(&summary->pageWindows[6], shownMon, isMine);
     }
     ScheduleWindowCopyToVram(&summary->pageWindows[6]);
     if (PokemonSummary_CountShinyLeaves(summary) != 0) {

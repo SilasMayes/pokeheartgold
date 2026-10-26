@@ -468,24 +468,19 @@ void ApricornBox_StoreJuiceRecords(SaveApricornBox *box, ApricornRecord *records
     volatile int found;
     int numRecords = 0;
     int outerIndex;
-    int initialIndex = 0;
+    int initialIndex;
     int foundIndex;
     int j;
     u32 destIndex;
 
-    do {
+    for (initialIndex = 0; initialIndex < APRICORN_JUICE_RECORD_COUNT; initialIndex++) {
         if (!ApricornJuice_IsValid(&box->juiceRecords[initialIndex].data)) {
             break;
         }
         numRecords++;
-        initialIndex++;
-    } while (initialIndex < APRICORN_JUICE_RECORD_COUNT);
-
-    outerIndex = 0;
-    if (count <= 0) {
-        return;
     }
-    do {
+
+    for (outerIndex = 0; outerIndex < count; outerIndex++) {
         if (outerIndex != skip && ApricornJuice_IsValid(&records->data)) {
             foundIndex = 0;
             found = FALSE;
@@ -512,19 +507,14 @@ void ApricornBox_StoreJuiceRecords(SaveApricornBox *box, ApricornRecord *records
                 numRecords++;
             }
             if (found && (u32)foundIndex < destIndex) {
-                int limit = numRecords - 1;
-                if (foundIndex < limit) {
-                    do {
-                        box->juiceRecords[foundIndex] = box->juiceRecords[foundIndex + 1];
-                        foundIndex++;
-                    } while (foundIndex < limit);
+                for (; foundIndex < numRecords - 1; foundIndex++) {
+                    box->juiceRecords[foundIndex] = box->juiceRecords[foundIndex + 1];
                 }
             }
             box->juiceRecords[destIndex] = *records;
         }
         records++;
-        outerIndex++;
-    } while (outerIndex < count);
+    }
 }
 
 String *ApricornBox_GetJuiceName(SaveApricornBox *box, int type, u32 heapId) {
