@@ -114,9 +114,9 @@ Field2DObjectSpriteManager *Field2DObjectSpriteManager_New(SpriteList *spriteLis
     Field2DObjectSpriteManager *objectSpriteManager = Heap_Alloc(heapID, sizeof(Field2DObjectSpriteManager));
     objectSpriteManager->charSprites = CharSpriteManager_New(spriteList, paletteData, maxSprites, heapID);
     objectSpriteManager->maxSprites = maxSprites;
-    Field2DObjectSprite *objectSprite = Heap_Alloc(heapID, 20 * objectSpriteManager->maxSprites);
+    Field2DObjectSprite *objectSprite = Heap_Alloc(heapID, sizeof(Field2DObjectSprite) * objectSpriteManager->maxSprites);
     objectSpriteManager->sprites = objectSprite;
-    memset(objectSprite, 0, 20 * objectSpriteManager->maxSprites);
+    memset(objectSprite, 0, sizeof(Field2DObjectSprite) * objectSpriteManager->maxSprites);
     objectSpriteManager->bgPriority = 2;
     objectSpriteManager->vramType = vramType;
     return objectSpriteManager;
@@ -126,9 +126,9 @@ Field2DObjectSpriteManager *Field2DObjectSpriteManager_NewWithShadow(SpriteList 
     Field2DObjectSpriteManager *objectSpriteManager = Heap_Alloc(heapID, sizeof(Field2DObjectSpriteManager));
     objectSpriteManager->charSprites = CharSpriteManager_New(spriteList, paletteData, maxSprites, heapID);
     objectSpriteManager->maxSprites = maxSprites;
-    Field2DObjectSprite *objectSprite = Heap_Alloc(heapID, 20 * objectSpriteManager->maxSprites);
+    Field2DObjectSprite *objectSprite = Heap_Alloc(heapID, sizeof(Field2DObjectSprite) * objectSpriteManager->maxSprites);
     objectSpriteManager->sprites = objectSprite;
-    memset(objectSprite, 0, 20 * objectSpriteManager->maxSprites);
+    memset(objectSprite, 0, sizeof(Field2DObjectSprite) * objectSpriteManager->maxSprites);
     objectSpriteManager->bgPriority = 2;
     objectSpriteManager->vramType = vramType;
     CharSpriteManager_LoadChar(objectSpriteManager->charSprites, spriteId, objectSpriteManager->vramType, animSet, heapID);

@@ -265,7 +265,7 @@ u32 GetMovementForDirection(s32 direction, u32 movement) {
     const u32 *scan;
     const u32 *entry;
 
-    GF_ASSERT(direction < 4);
+    GF_ASSERT(direction < DIR_MAX);
     table = gMovementsByDirection;
     entry = *table;
     if (entry != NULL) {
@@ -278,7 +278,7 @@ u32 GetMovementForDirection(s32 direction, u32 movement) {
                 }
                 i++;
                 scan++;
-            } while (i < 4);
+            } while (i < DIR_MAX);
             table++;
             entry = *table;
         } while (entry != NULL);
@@ -294,7 +294,7 @@ s32 GetMovementDirection(u32 movement) {
 
     if (entry != NULL) {
         do {
-            for (i = 0; i < 4; i++) {
+            for (i = 0; i < DIR_MAX; i++) {
                 if (entry[i] == movement) {
                     return i;
                 }
@@ -319,7 +319,7 @@ u32 GetMovement8ForDirection(s32 direction) {
         u32 movements[4];
     } table = *(const struct DirectionMovements *)_020FDA28;
 
-    GF_ASSERT(direction < 4);
+    GF_ASSERT(direction < DIR_MAX);
     return table.movements[direction];
 }
 

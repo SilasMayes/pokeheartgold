@@ -117,7 +117,7 @@ BOOL FieldSystem_CanPlaceSafariObject(FieldSystem *fieldSystem) {
     } else {
         fx = (f32)(vx << 12) - 0.5f;
     }
-    newHeight = Terrain_GetHeight_Bdhc(fieldSystem, pos.y, (s32)fx, (s32)fz, &kind);
+    newHeight = Terrain_GetHeight_Bdhc(fieldSystem, pos.y, fx, fz, &kind);
     if (kind != CALCULATED_HEIGHT_SOURCE_BDHC) {
         return FALSE;
     }
@@ -412,7 +412,7 @@ static BOOL SafariZone_FindSpotFor2x2Object(FieldSystem *fieldSystem, s16 x, s16
     case DIR_SOUTH:
         if (SafariZone_FindSpotFor1x2Object(fieldSystem, x, z, direction, y, outX, outZ, onWater)) {
             for (i = 0; i < 2; i++) {
-                if (SafariZone_FindSpotFor1x2Object(fieldSystem, (s16)(x + offsets[i]), z, direction, y, outX, outZ, onWater)) {
+                if (SafariZone_FindSpotFor1x2Object(fieldSystem, x + offsets[i], z, direction, y, outX, outZ, onWater)) {
                     *outX = x - i;
                     if (direction == DIR_NORTH) {
                         *outZ = z - 1;
@@ -428,7 +428,7 @@ static BOOL SafariZone_FindSpotFor2x2Object(FieldSystem *fieldSystem, s16 x, s16
     case DIR_EAST:
         if (SafariZone_FindSpotFor2x1Object(fieldSystem, x, z, direction, y, outX, outZ, onWater)) {
             for (i = 0; i < 2; i++) {
-                if (SafariZone_FindSpotFor2x1Object(fieldSystem, x, (s16)(z - offsets[i]), direction, y, outX, outZ, onWater)) {
+                if (SafariZone_FindSpotFor2x1Object(fieldSystem, x, z - offsets[i], direction, y, outX, outZ, onWater)) {
                     if (direction == DIR_WEST) {
                         *outX = x - 2;
                     } else {

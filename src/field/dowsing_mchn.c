@@ -199,10 +199,10 @@ SysTask *DowsingMchn_Init(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSyst
     dowsing->task = task;
     dowsing->touchActive = FALSE;
     dowsing->actionType = FieldSystem_GetFacingActionType(dowsing->fieldSystem);
-    if (dowsing->actionType == 1) {
+    if (dowsing->actionType == TOUCHSCREEN_MENU_ACTION_TALK) {
         FieldSystem_GetFacingObject(dowsing->fieldSystem, &facingObj);
         if (IsScriptIdWithoutTalkAction(MapObject_GetScriptID(facingObj)) == TRUE || IsSpriteIdWithoutTalkAction(MapObject_GetSpriteID(facingObj)) == TRUE) {
-            dowsing->actionType = 0;
+            dowsing->actionType = TOUCHSCREEN_MENU_ACTION_CHECK;
         }
     }
     narc = NARC_New(NARC_a_2_5_1, HEAP_ID_8);
@@ -827,27 +827,27 @@ static BOOL DowsingMchn_UpdateTouchPos(DowsingMchn *dowsing) {
     return TRUE;
 }
 
-// Action types: 0/2 CHECK, 1 TALK, 3 FISHING, 4 NEXT (a textbox is open).
+// NEXT while a textbox is open, FISHING while fishing.
 static void DowsingMchn_UpdateActionLabel(DowsingMchn *dowsing) {
     int actionType;
 
     if (dowsing->fieldSystem->textbox_open == TRUE) {
-        actionType = 4;
+        actionType = TOUCHSCREEN_MENU_ACTION_NEXT;
     } else if (!FieldSystem_IsPlayerMovementAllowed(dowsing->fieldSystem)) {
         LocalMapObject *playerObj = PlayerAvatar_GetMapObject(FieldSystem_GetPlayerAvatar(dowsing->fieldSystem));
         u32 spriteId = MapObject_GetSpriteID(playerObj);
         if ((u32)(spriteId - SPRITE_FISHINGHERO) <= SPRITE_FISH_HEROINE - SPRITE_FISHINGHERO) {
-            actionType = MapObject_GetAnimation(playerObj) == 1 ? 3 : 4;
+            actionType = MapObject_GetAnimation(playerObj) == 1 ? TOUCHSCREEN_MENU_ACTION_FISHING : TOUCHSCREEN_MENU_ACTION_NEXT;
         } else {
             actionType = dowsing->actionType;
         }
     } else {
         actionType = FieldSystem_GetFacingActionType(dowsing->fieldSystem);
-        if (actionType == 1) {
+        if (actionType == TOUCHSCREEN_MENU_ACTION_TALK) {
             LocalMapObject *facingObj;
             FieldSystem_GetFacingObject(dowsing->fieldSystem, &facingObj);
             if (IsScriptIdWithoutTalkAction(MapObject_GetScriptID(facingObj)) == TRUE || IsSpriteIdWithoutTalkAction(MapObject_GetSpriteID(facingObj)) == TRUE) {
-                actionType = 0;
+                actionType = TOUCHSCREEN_MENU_ACTION_CHECK;
             }
         }
     }

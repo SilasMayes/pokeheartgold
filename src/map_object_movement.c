@@ -225,7 +225,7 @@ static const int sDirectionTable38[] = { DIR_NORTH, DIR_SOUTH, DIR_WEST, DIR_EAS
 
 static const int sDirectionTable00[] = { DIR_NORTH, DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NONE };
 
-static const int sWalkingSpinOrders[][4] = {
+static const int sWalkingSpinOrders[][DIR_MAX] = {
     { DIR_NORTH, DIR_WEST, DIR_SOUTH, DIR_EAST },
     { DIR_NORTH, DIR_EAST, DIR_SOUTH, DIR_WEST },
 };
@@ -1127,12 +1127,12 @@ static void WalkingSpin_Init(LocalMapObject *object, WalkingSpinState *state) {
 static void WalkingSpin_TurnBeforeStep(LocalMapObject *object, WalkingSpinState *state) {
     int facing = MapObject_GetFacingDirection(object);
     int i = 0;
-    while (i < 4 && facing != sWalkingSpinOrders[state->order][i]) {
+    while (i < DIR_MAX && facing != sWalkingSpinOrders[state->order][i]) {
         i++;
     }
-    GF_ASSERT(i < 4);
+    GF_ASSERT(i < DIR_MAX);
     state->facing = facing;
-    i = (i + 1) % 4;
+    i = (i + 1) % DIR_MAX;
     facing = sWalkingSpinOrders[state->order][i];
     if (MapObject_GetFlagsBitsMask(object, MAPOBJECTFLAG_UNK7)) {
         state->wasTurning = 1;

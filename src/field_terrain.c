@@ -68,8 +68,8 @@ static int Terrain_CalcHeight(FieldSystem *fieldSystem, int objectHeightMode, in
     mapMatrixWidth = MapMatrix_GetWidth(fieldSystem->mapMatrix);
     mapMatrixWidthTiles = mapMatrixWidth * MAP_TILES_COUNT_X;
 
-    tileX = objectX / 0x10000;
-    tileZ = objectZ / 0x10000;
+    tileX = objectX / MAP_TILE_SIZE;
+    tileZ = objectZ / MAP_TILE_SIZE;
 
     u8 dynHeightPlateIndex;
     dynHeightPlateFound = DynamicTerrainHeightManager_FindPlate(tileX, tileZ, fieldSystem->dynamicTerrainHeightManager, &dynHeightPlateIndex);
@@ -145,7 +145,7 @@ int Terrain_CalcHeightWithMode(FieldSystem *fieldSystem, int objectHeightMode, i
 }
 
 static int Terrain_GetHeight_Simple(FieldSystem *fieldSystem, int objectHeight, fx32 x, fx32 z, u8 *outKind) {
-    BOOL ok = MapLoadManager_GetMapSlotAt(fieldSystem->mapLoadManager, x / 0x10000, z / 0x10000, NULL);
+    BOOL ok = MapLoadManager_GetMapSlotAt(fieldSystem->mapLoadManager, x / MAP_TILE_SIZE, z / MAP_TILE_SIZE, NULL);
     if (outKind != NULL) {
         *outKind = ok ? CALCULATED_HEIGHT_SOURCE_BDHC : CALCULATED_HEIGHT_SOURCE_NONE;
     }

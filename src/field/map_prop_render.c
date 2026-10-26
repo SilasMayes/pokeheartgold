@@ -424,7 +424,7 @@ static void AreaMapAnimation_InitAnimObj(NNSG3dAnmObj *alloc, ResAnim_4004 *anim
     alloc->resAnm = anim;
     alloc->next = NULL;
     alloc->priority = 0x7F;
-    alloc->ratio = 0x1000;
+    alloc->ratio = FX32_ONE;
     alloc->resTex = NULL;
     AreaMapAnimation_InitAnimObjMapData(alloc, anim);
 }

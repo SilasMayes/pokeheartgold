@@ -54,6 +54,16 @@ BOOL BottomScreen_Apps_IsDone(FieldSystem *fieldSystem);
 void FieldSystem_RequestTouchscreenMenuSelectedIconAnim(FieldSystem *fieldSystem);
 void FieldSystem_RequestTouchscreenMenuRegisteredItemAnim(FieldSystem *fieldSystem, int item);
 
+// The label of the touchscreen menu's and the dowsing machine's action button: what the A button does now
+// (FieldSystem_GetFacingActionType gives check / talk / check BG event).
+enum TouchscreenMenuActionType {
+    TOUCHSCREEN_MENU_ACTION_CHECK,
+    TOUCHSCREEN_MENU_ACTION_TALK,
+    TOUCHSCREEN_MENU_ACTION_CHECK_BG_EVENT,
+    TOUCHSCREEN_MENU_ACTION_FISHING,
+    TOUCHSCREEN_MENU_ACTION_NEXT,
+};
+
 BOOL IsSpriteIdWithoutTalkAction(int spriteId);
 BOOL IsScriptIdWithoutTalkAction(int scriptId);
 

@@ -137,13 +137,13 @@ BOOL MapObject_IsMoveBlockedByBehavior(LocalMapObject *object, int x, int z, int
 }
 
 BOOL MapObject_CheckWaterBehavior(LocalMapObject *object, int behavior) {
-    if (MetatileBehavior_IsBridgeOverWater((u8)behavior)) {
+    if (MetatileBehavior_IsBridgeOverWater(behavior)) {
         if (!MapObject_CheckFlag28(object)) {
             return TRUE;
         }
-    } else if (MetatileBehavior_IsSurfableWater((u8)behavior)) {
+    } else if (MetatileBehavior_IsSurfableWater(behavior)) {
         return TRUE;
-    } else if (MetatileBehavior_Is34((u8)behavior)) {
+    } else if (MetatileBehavior_Is34(behavior)) {
         u32 sprite = MapObject_GetSpriteID(object) - 0xB2;
         if (sprite <= 1) {
             return TRUE;
@@ -174,7 +174,7 @@ BOOL MapObject_CheckSnowFootprintBehavior(LocalMapObject *object, int behavior) 
 }
 
 BOOL MapObject_IsOnBridge(LocalMapObject *object, int behavior) {
-    if (MapObject_CheckFlag28(object) == 1 && MetatileBehavior_IsBridge((u8)behavior) == 1) {
+    if (MapObject_CheckFlag28(object) == 1 && MetatileBehavior_IsBridge(behavior) == 1) {
         return TRUE;
     }
     return FALSE;

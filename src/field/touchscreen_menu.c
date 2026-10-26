@@ -110,14 +110,6 @@ enum TouchscreenMenuLayout {
     TOUCHSCREEN_MENU_LAYOUT_BATTLE_TOWER_PARTNER_ROOM,
 };
 
-enum TouchscreenMenuActionType {
-    TOUCHSCREEN_MENU_ACTION_CHECK,
-    TOUCHSCREEN_MENU_ACTION_TALK,
-    TOUCHSCREEN_MENU_ACTION_CHECK_BG_EVENT,
-    TOUCHSCREEN_MENU_ACTION_FISHING,
-    TOUCHSCREEN_MENU_ACTION_NEXT,
-};
-
 typedef struct TouchscreenMenuIcon {
     u8 shown;
     String *label;

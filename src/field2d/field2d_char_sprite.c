@@ -118,9 +118,9 @@ CharSprite *CharSpriteManager_CreateSprite(CharSpriteManager *charSpriteManager,
     spriteTemplate.position.x = spriteParams[0] << FX32_SHIFT;
     spriteTemplate.position.y = spriteParams[1] << FX32_SHIFT;
 
-    spriteTemplate.scale.x = 4096;
-    spriteTemplate.scale.y = 4096;
-    spriteTemplate.scale.z = 4096;
+    spriteTemplate.scale.x = FX32_ONE;
+    spriteTemplate.scale.y = FX32_ONE;
+    spriteTemplate.scale.z = FX32_ONE;
     spriteTemplate.drawPriority = spriteParams[2];
     spriteTemplate.heapID = heapID;
 
@@ -149,9 +149,9 @@ CharSprite *CharSpriteManager_CreateSprite(CharSpriteManager *charSpriteManager,
         spriteTemplate.position.x = spriteParams[0] << FX32_SHIFT;
         spriteTemplate.position.y = spriteParams[1] << FX32_SHIFT;
 
-        spriteTemplate.scale.x = 4096;
-        spriteTemplate.scale.y = 4096;
-        spriteTemplate.scale.z = 4096;
+        spriteTemplate.scale.x = FX32_ONE;
+        spriteTemplate.scale.y = FX32_ONE;
+        spriteTemplate.scale.z = FX32_ONE;
         spriteTemplate.drawPriority = charSpriteManager->shadowDrawPriority;
         spriteTemplate.heapID = heapID;
 
@@ -188,8 +188,8 @@ void CharSprite_SetPosition(CharSprite *charSprite, s16 x, s16 y) {
     position.z = 0;
     Sprite_SetMatrix(charSprite->sprite, &position);
     if (charSprite->shadow != 0) {
-        position.x += 32768;
-        position.y += 57344;
+        position.x += FX32_CONST(8);
+        position.y += FX32_CONST(14);
         Sprite_SetMatrix(charSprite->shadow, &position);
     }
 }

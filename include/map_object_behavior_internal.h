@@ -65,7 +65,7 @@ typedef struct TwoByTwoValues {
 } TwoByTwoValues;
 
 typedef struct DirectionMovementTable {
-    u32 values[2][4];
+    u32 values[2][DIR_MAX];
 } DirectionMovementTable;
 
 typedef void (*MapObjectAction)(LocalMapObject *object);

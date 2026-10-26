@@ -537,7 +537,7 @@ static BOOL Field_TryDropBoulderIntoHole(FieldSystem *fieldSystem, LocalMapObjec
     u32 i;
     for (i = 0; i < NELEMS(sIcePathBoulderHoles); i++) {
         if (sIcePathBoulderHoles[i].mapId == MapObject_GetMapID(boulder) && sIcePathBoulderHoles[i].objectId == MapObject_GetID(boulder) && sIcePathBoulderHoles[i].x == MapObject_GetXCoord(boulder) && sIcePathBoulderHoles[i].z == MapObject_GetZCoord(boulder)) {
-            FieldSystem_FlagSet(fieldSystem, (u16)MapObject_GetEventFlag(boulder));
+            FieldSystem_FlagSet(fieldSystem, MapObject_GetEventFlag(boulder));
             MapObject_Delete(boulder);
             {
                 const BoulderHole *hole = sIcePathBoulderHoles + i;
@@ -633,7 +633,7 @@ static BOOL Task_Surf(TaskManager *taskManager) {
     case SURF_STATE_PLAY_CRY: {
         int species = GetMonData(work->anim.mon, MON_DATA_SPECIES, NULL);
         int form = GetMonData(work->anim.mon, MON_DATA_FORM, NULL);
-        PlayCry((u16)species, (u8)form);
+        PlayCry(species, form);
         work->state = SURF_STATE_WAIT_CRY;
         break;
     }
@@ -679,7 +679,7 @@ static BOOL Task_Surf(TaskManager *taskManager) {
             SurfMountEffect_SetBobbing(work->surfMount, TRUE);
             Field_PlayerAvatar_SetSprite(work->playerAvatar, PlayerAvatar_GetSpriteByStateAndGender(PLAYER_STATE_SURFING, PlayerAvatar_GetGender(work->playerAvatar)));
             if (FollowMon_IsActive(work->fieldSystem)) {
-                FollowMon_MoveToPlayer(work->fieldSystem, (u8)work->direction);
+                FollowMon_MoveToPlayer(work->fieldSystem, work->direction);
                 MapObject_ChangeMovement(FollowMon_GetMapObject(work->fieldSystem), 56);
             }
             FieldSystem_ProcessSoundplate(work->fieldSystem, FALSE);
@@ -741,7 +741,7 @@ static BOOL Task_StopSurfing(TaskManager *taskManager) {
             PlayerAvatar_SetState(work->playerAvatar, PLAYER_STATE_WALKING);
             FieldSystem_ProcessSoundplate(work->fieldSystem, FALSE);
             if (FollowMon_IsActive(work->fieldSystem)) {
-                FollowMon_MoveToPlayer(work->fieldSystem, (u8)work->direction);
+                FollowMon_MoveToPlayer(work->fieldSystem, work->direction);
                 FollowMon_HideUntilStep(FollowMon_GetMapObject(work->fieldSystem), TRUE);
                 FollowMon_SetFacingDirection(work->fieldSystem, DIR_SOUTH);
                 MapObject_ChangeMovement(FollowMon_GetMapObject(work->fieldSystem), 0x30);
@@ -779,7 +779,7 @@ static BOOL Field_PlayerAvatar_TryWaterfallUp(FieldSystem *fieldSystem, PlayerAv
     if (direction != 1 || collision != 1 || PlayerAvatar_GetState(playerAvatar) != PLAYER_STATE_SURFING) {
         return FALSE;
     }
-    if (!MetatileBehavior_IsWaterfall((u8)PlayerAvatar_GetMetatileBehaviorInDirection(playerAvatar, direction))) {
+    if (!MetatileBehavior_IsWaterfall(PlayerAvatar_GetMetatileBehaviorInDirection(playerAvatar, direction))) {
         return FALSE;
     }
     Field_StartWaterfallTask(fieldSystem, direction);
@@ -826,13 +826,13 @@ BOOL MetatileBehavior_IsRockClimbInDirection(int facingTile, int facingDirection
     switch (facingDirection) {
     case DIR_NORTH:
     case DIR_SOUTH:
-        if (MetatileBehavior_IsRockClimbNorthSouth((u8)facingTile) == TRUE) {
+        if (MetatileBehavior_IsRockClimbNorthSouth(facingTile) == TRUE) {
             return TRUE;
         }
         break;
     case DIR_WEST:
     case DIR_EAST:
-        if (MetatileBehavior_IsRockClimbEastWest((u8)facingTile) == TRUE) {
+        if (MetatileBehavior_IsRockClimbEastWest(facingTile) == TRUE) {
             return TRUE;
         }
         break;
@@ -851,7 +851,7 @@ static BOOL Task_RockClimb(TaskManager *taskManager) {
         }
     } while (result == FIELD_MOVE_TASK_STEP_NEXT);
     if (result == FIELD_MOVE_TASK_STEP_DONE) {
-        FollowMon_MoveToPlayer(work->fieldSystem, (u8)work->direction);
+        FollowMon_MoveToPlayer(work->fieldSystem, work->direction);
         FollowMon_HideUntilStep(FollowMon_GetMapObject(work->fieldSystem), TRUE);
         FollowMon_SetFacingDirection(work->fieldSystem, DIR_SOUTH);
         FieldMoveTask_FreeWork(work);
@@ -889,7 +889,7 @@ static int RockClimb_FollowMonReact(RockClimbWork *work, TaskManager *taskManage
 static int RockClimb_PlayFollowMonCry(RockClimbWork *work, TaskManager *taskManager) {
     int species = GetMonData(work->anim.mon, MON_DATA_SPECIES, NULL);
     int form = GetMonData(work->anim.mon, MON_DATA_FORM, NULL);
-    PlayCry((u16)species, (u8)form);
+    PlayCry(species, form);
     work->state++;
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
@@ -1004,7 +1004,7 @@ static BOOL Task_Waterfall(TaskManager *taskManager) {
         }
     } while (result == FIELD_MOVE_TASK_STEP_NEXT);
     if (result == FIELD_MOVE_TASK_STEP_DONE) {
-        FollowMon_MoveToPlayer(work->fieldSystem, (u8)work->direction);
+        FollowMon_MoveToPlayer(work->fieldSystem, work->direction);
         FieldMoveTask_FreeWork(work);
         return TRUE;
     }
@@ -1210,7 +1210,7 @@ static BOOL Task_Whirlpool(TaskManager *taskManager) {
         result = sWhirlpoolSteps[work->state](work);
     } while (result == FIELD_MOVE_TASK_STEP_NEXT);
     if (result == FIELD_MOVE_TASK_STEP_DONE) {
-        FollowMon_MoveToPlayer(work->fieldSystem, (u8)work->direction);
+        FollowMon_MoveToPlayer(work->fieldSystem, work->direction);
         FieldMoveTask_FreeWork(work);
     }
     return result;

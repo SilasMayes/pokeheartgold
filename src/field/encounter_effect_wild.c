@@ -919,7 +919,7 @@ static void WildEffect_RunWave(SysTask *task, EncounterEffectTask *effect, BOOL 
         break;
     case WAVE_EFFECT_STATE_START_WAVE:
         work->timer = 10;
-        EncounterEffectHBlankWave_Start(&work->wave, 0, 191, 3410, 0x3000, 400, (void *)&reg_G2_BG0HOFS, 0, 4);
+        EncounterEffectHBlankWave_Start(&work->wave, 0, GX_LCD_SIZE_Y - 1, 3410, FX32_CONST(3), 400, (void *)&reg_G2_BG0HOFS, 0, 4);
         work->bg3Scrolling = TRUE;
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG3, GF_PLANE_TOGGLE_ON);
         effect->state = WAVE_EFFECT_STATE_WAIT_BG1_DELAY;

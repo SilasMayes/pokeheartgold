@@ -353,7 +353,7 @@ static BOOL FollowPlayerMovement_StartFollowMonStep(LocalMapObject *object, Foll
     previousZ = PlayerAvatar_GetPreviousZCoord(avatar);
     if (x != previousX || z != previousZ) {
         playerMovement = FollowMon_GetMovement(object);
-        direction = GetDirectionTowards((int)x, (int)z, (int)previousX, (int)previousZ);
+        direction = GetDirectionTowards(x, z, previousX, previousZ);
         movement = FollowMon_GetPendingHop(object);
         fastMovement = IsMovement56To59(playerMovement);
         nextState = 1;
@@ -361,7 +361,7 @@ static BOOL FollowPlayerMovement_StartFollowMonStep(LocalMapObject *object, Foll
             if (fastMovement) {
                 movement = FollowMon_GetFasterMovement(movement, GetMovement8ForDirection(movement));
                 state->hopSpeed = GetMovementSpeed(movement);
-                FollowMon_SetHopMovement(object, (u8)movement);
+                FollowMon_SetHopMovement(object, movement);
                 nextState = 2;
                 state->hopCount = 0;
                 state->hopFrame = 0;
@@ -370,9 +370,9 @@ static BOOL FollowPlayerMovement_StartFollowMonStep(LocalMapObject *object, Foll
                 if (!PlayerAvatar_CheckFlag6(avatar)) {
                     return FALSE;
                 }
-                movement = FollowMon_GetFasterMovement(movement, (u32)playerMovement);
+                movement = FollowMon_GetFasterMovement(movement, playerMovement);
                 state->hopSpeed = GetMovementSpeed(movement);
-                FollowMon_SetHopMovement(object, (u8)movement);
+                FollowMon_SetHopMovement(object, movement);
                 nextState = 2;
                 state->hopCount = 0;
                 state->hopFrame = 0;
@@ -382,7 +382,7 @@ static BOOL FollowPlayerMovement_StartFollowMonStep(LocalMapObject *object, Foll
             movement = GetMovement8ForDirection(direction);
             FollowMon_SetPendingHop(object, (u8)PlayerAvatar_GetFacingDirection(avatar));
         } else {
-            movement = GetMovementForDirection(direction, (u32)playerMovement);
+            movement = GetMovementForDirection(direction, playerMovement);
         }
         MapObject_ForceSetHeldMovement(object, movement);
         state->state = nextState;

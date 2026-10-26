@@ -311,12 +311,12 @@ BOOL TypeBehavior_SpinUpdate(LocalMapObject *object) {
     case TRAINER_TURN_STATE_INIT:
         dir = MapObject_GetFacingDirection(object);
         i = 0;
-        while (i < 4 && dir != spinOrders.values[state->sequence][i]) {
+        while (i < DIR_MAX && dir != spinOrders.values[state->sequence][i]) {
             i++;
         }
-        GF_ASSERT(i < 4);
+        GF_ASSERT(i < DIR_MAX);
         state->direction = dir;
-        state->index = (i + 1) % 4;
+        state->index = (i + 1) % DIR_MAX;
         state->turnState++;
     case TRAINER_TURN_STATE_TURN:
         MapObject_ForceSetHeldMovement(object, GetMovementForDirection(spinOrders.values[state->sequence][state->index], MOVEMENT_FACE_UP));
@@ -334,7 +334,7 @@ BOOL TypeBehavior_SpinUpdate(LocalMapObject *object) {
         state->timer = 0;
         state->turns++;
         if (state->turns < 4) {
-            state->index = (state->index + 1) % 4;
+            state->index = (state->index + 1) % DIR_MAX;
             state->turnState = TRAINER_TURN_STATE_TURN;
             return TRUE;
         }
@@ -573,7 +573,7 @@ static int TrainerSight_FindPlayer(LocalMapObject *object, PlayerAvatar *player,
         int z = PlayerAvatar_GetZCoord(player);
         int param = MapObject_GetParam(object, 0);
         int dir;
-        for (dir = 0; dir < 4; dir++) {
+        for (dir = 0; dir < DIR_MAX; dir++) {
             int dist = TrainerSight_GetDistanceInDirection(object, dir, param, x, z, 0);
             if (dist != -1 && !TrainerSight_IsPathBlocked(object, dir, dist)) {
                 *outDir = dir;

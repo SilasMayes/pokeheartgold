@@ -57,7 +57,7 @@ enum ZigzagWipeState {
 struct ZigzagWipe {
     EncounterEffectInterp edge;
     u32 state;
-    u8 lines[192];
+    u8 lines[GX_LCD_SIZE_Y];
     HBlankSystem *hBlankSystem;
     HBlankTask *hBlankTask;
     SysTask *task;
@@ -315,7 +315,7 @@ SysTask *ZigzagWipe_Start(EncounterEffectTask *effect, ZigzagWipe *wipe, s32 dur
     wipe->state = ZIGZAG_WIPE_STATE_RUN;
     wipe->done = &effect->wipeDone;
     EncounterEffectInterp_Init(&wipe->edge, 255, 0, duration);
-    for (i = 0; i < 192; i++) {
+    for (i = 0; i < GX_LCD_SIZE_Y; i++) {
         u32 step = i % period;
         u32 product = step * width;
         u32 x = product / period;

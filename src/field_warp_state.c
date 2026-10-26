@@ -203,7 +203,7 @@ BOOL FieldTask_Fly(TaskManager *task) {
     case FLY_TASK_PLAY_CRY: {
         u32 species = GetMonData(env->mon, MON_DATA_SPECIES, NULL);
         u32 form = GetMonData(env->mon, MON_DATA_FORM, NULL);
-        PlayCry((u16)species, (u8)form);
+        PlayCry(species, form);
         env->state++;
         break;
     }

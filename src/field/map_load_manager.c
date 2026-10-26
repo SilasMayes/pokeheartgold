@@ -64,7 +64,7 @@ typedef struct MapSoundplates {
 
 // One cell of the loaded window
 typedef struct LoadedMap {
-    u16 permissions[0x400];
+    u16 permissions[MAP_TILES_COUNT_X * MAP_TILES_COUNT_Z];
     NNSG3dRenderObj renderObj;
     NNSG3dResFileHeader *modelFile;
     u8 *bdhcBuffer;
@@ -369,8 +369,8 @@ static void MapLoadManager_AllocMaps(MapLoadManager *mapLoadManager, BOOL withPe
         mapLoadManager->maps[i]->matrixIndex = -1;
         MI_CpuFillFast(mapLoadManager->maps[i], -1, sizeof(mapLoadManager->maps[i]->permissions));
         if (withPermissionBytes) {
-            mapLoadManager->maps[i]->permissionBytes = Heap_Alloc(HEAP_ID_FIELD1, 0x400);
-            MI_CpuFill8(mapLoadManager->maps[i]->permissionBytes, 0xFF, 0x400);
+            mapLoadManager->maps[i]->permissionBytes = Heap_Alloc(HEAP_ID_FIELD1, MAP_TILES_COUNT_X * MAP_TILES_COUNT_Z);
+            MI_CpuFill8(mapLoadManager->maps[i]->permissionBytes, 0xFF, MAP_TILES_COUNT_X * MAP_TILES_COUNT_Z);
         }
         MI_CpuClear32(&mapLoadManager->maps[i]->soundplates, sizeof(mapLoadManager->maps[i]->soundplates));
     }
@@ -441,7 +441,7 @@ static void MapLoadManager_ReadPermissions(MapLoadManager *mapLoadManager, Loade
 
     NARC_ReadFile(mapLoadManager->narc, size, map);
     if (map->permissionBytes != NULL) {
-        for (i = 0; i < 0x400; i++) {
+        for (i = 0; i < MAP_TILES_COUNT_X * MAP_TILES_COUNT_Z; i++) {
             map->permissionBytes[i] = map->permissions[i];
         }
     }
@@ -1225,8 +1225,8 @@ static void CalcMapPosition(int matrixIndex, int width, MapMatrix *mapMatrix, Ve
         int matrixWidth = MapMatrix_GetWidth(mapMatrix);
         u8 matrixId = MapMatrix_GetMatrixId(mapMatrix);
         pos->y = MapMatrix_GetMapAltitude(mapMatrix, matrixId, x, z, matrixWidth) << 15;
-        pos->x += x << 21;
-        pos->z += z << 21;
+        pos->x += x * MAP_TILES_COUNT_X * MAP_TILE_SIZE;
+        pos->z += z * MAP_TILES_COUNT_Z * MAP_TILE_SIZE;
     }
 }
 
@@ -1254,7 +1254,7 @@ MapLoadManager *MapLoadManager_New(MapMatrix *mapMatrix, AreaDataManager *areaDa
     mapLoadManager->renderObjManager = renderObjManager;
     mapLoadManager->width = MapMatrix_GetWidth(mapMatrix);
     mapLoadManager->height = MapMatrix_GetHeight(mapMatrix);
-    mapLoadManager->stride = mapLoadManager->width << 5;
+    mapLoadManager->stride = mapLoadManager->width * MAP_TILES_COUNT_X;
     mapLoadManager->mapPropAnimationManager = mapPropAnimationManager;
     mapLoadManager->areaMapAnimation = areaMapAnimation;
     mapLoadManager->tracking.enabled = TRUE;
@@ -1355,16 +1355,16 @@ u8 MapLoadManager_GetCurrentMapSlot(MapLoadManager *mapLoadManager) {
 
 // The quarter of its map the tile is in
 int TileIndex_GetQuadrant(int tile, int stride) {
-    int z = (int)((u32)tile / (u32)stride) % 32;
-    int x = tile & 0x1F;
+    int z = (int)((u32)tile / (u32)stride) % MAP_TILES_COUNT_Z;
+    int x = tile & (MAP_TILES_COUNT_X - 1);
 
-    if (x < 16) {
-        if (z < 16) {
+    if (x < MAP_TILES_COUNT_X / 2) {
+        if (z < MAP_TILES_COUNT_Z / 2) {
             return MAP_QUADRANT_TOP_LEFT;
         }
         return MAP_QUADRANT_BOTTOM_LEFT;
     }
-    if (z < 16) {
+    if (z < MAP_TILES_COUNT_Z / 2) {
         return MAP_QUADRANT_TOP_RIGHT;
     }
     return MAP_QUADRANT_BOTTOM_RIGHT;

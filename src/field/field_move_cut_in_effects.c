@@ -374,7 +374,7 @@ void CutInScrollSprite_Update(FieldEffect *effect, CutInScrollSprite *work) {
         if (cutIn->scrollSpriteMode == 2) {
             int visible = FALSE;
             int top = cutIn->windowTop, bottom = cutIn->windowBottom;
-            int spriteTop = pos.y - 8192;
+            int spriteTop = pos.y - FX32_CONST(2);
             if (spriteTop >= top && spriteTop <= bottom && pos.y + FX32_CONST(2) >= top && pos.y + FX32_CONST(2) <= bottom) {
                 visible = TRUE;
             }
@@ -626,7 +626,7 @@ BOOL CutInFlyer_PickUpTrainer(CutInFlyer *flyer) {
     y = Sprite_GetMatrixPtr(sprite)->y;
     flyer->trainerOffsetY = y - Sprite_GetMatrixPtr(flyer->sprite)->y;
     TrainerJumpEffect_Stop(flyer->trainerJumpEffect);
-    FieldCameraZoom_Set(flyer->cameraZoom, 2, 0, 0xc);
+    FieldCameraZoom_Set(flyer->cameraZoom, FIELD_CAMERA_ZOOM_BACK, 0, 12);
     flyer->scaleSpeed = 0x100;
     flyer->angle = FX32_CONST(128);
     flyer->distance = 0;
@@ -650,7 +650,7 @@ BOOL CutInFlyer_FlyAway(CutInFlyer *flyer) {
         flyer->speed = FX32_CONST(16);
     }
     flyer->offset.x = GF_CosDeg(flyer->angle / FX32_ONE) * (flyer->distance / FX32_ONE);
-    flyer->offset.y = GF_SinDeg(0x80) * (flyer->distance / FX32_ONE);
+    flyer->offset.y = GF_SinDeg(128) * (flyer->distance / FX32_ONE);
     if (flyer->angle < FX32_CONST(135)) {
         flyer->angle += FX32_ONE;
     }

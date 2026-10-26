@@ -372,7 +372,7 @@ void EncounterEffect_TrainerFadeSpin(SysTask *task, EncounterEffectTask *effect)
     case FADE_SPIN_STATE_WAIT_FLASH:
         work->timer--;
         if (work->timer == 0) {
-            EncounterEffectHBlankWave_Start(&work->wave, 0, 191, 682, FX32_CONST(12), 800, (void *)&reg_G2_BG0HOFS, 0, HEAP_ID_FIELD1);
+            EncounterEffectHBlankWave_Start(&work->wave, 0, GX_LCD_SIZE_Y - 1, 682, FX32_CONST(12), 800, (void *)&reg_G2_BG0HOFS, 0, HEAP_ID_FIELD1);
             work->waveActive = TRUE;
         }
         if (effect->fadeDone) {
@@ -510,7 +510,7 @@ void EncounterEffect_TrainerBallDrop(SysTask *task, EncounterEffectTask *effect)
         break;
     case BALL_DROP_STATE_WAIT_FLASH:
         if (--work->timer == 0) {
-            EncounterEffectHBlankWave_Start(&work->wave, 0, 191, 682, FX32_CONST(12), 800, (void *)&reg_G2_BG0HOFS, 0, HEAP_ID_FIELD1);
+            EncounterEffectHBlankWave_Start(&work->wave, 0, GX_LCD_SIZE_Y - 1, 682, FX32_CONST(12), 800, (void *)&reg_G2_BG0HOFS, 0, HEAP_ID_FIELD1);
             work->waveActive = TRUE;
         }
         if (effect->fadeDone) {

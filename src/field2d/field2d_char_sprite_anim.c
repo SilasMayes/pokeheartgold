@@ -49,11 +49,11 @@ void CharSprite_StartAnimWalkFast(CharSprite *charSprite, s32 direction) {
 }
 
 void CharSprite_UpdateAnimLoop(CharSprite *charSprite) {
-    Sprite_UpdateAnim(charSprite->sprite, 8192);
+    Sprite_UpdateAnim(charSprite->sprite, FX32_CONST(2));
 }
 
 void CharSprite_UpdateAnimWalk(CharSprite *charSprite) {
-    Sprite_UpdateAnim(charSprite->sprite, 8192);
+    Sprite_UpdateAnim(charSprite->sprite, FX32_CONST(2));
 }
 
 void CharSprite_UpdateAnimTurn(CharSprite *charSprite) {
@@ -65,19 +65,19 @@ void CharSprite_UpdateAnimTurn(CharSprite *charSprite) {
 }
 
 void CharSprite_UpdateAnimRun(CharSprite *charSprite) {
-    Sprite_UpdateAnim(charSprite->sprite, 8192);
+    Sprite_UpdateAnim(charSprite->sprite, FX32_CONST(2));
 }
 
 void CharSprite_UpdateAnimBump(CharSprite *charSprite) {
-    Sprite_UpdateAnim(charSprite->sprite, 4096);
+    Sprite_UpdateAnim(charSprite->sprite, FX32_ONE);
 }
 
 void CharSprite_UpdateAnimWalkSlow(CharSprite *charSprite) {
-    Sprite_UpdateAnim(charSprite->sprite, 4096);
+    Sprite_UpdateAnim(charSprite->sprite, FX32_ONE);
 }
 
 void CharSprite_UpdateAnimWalkVeryFast(CharSprite *charSprite) {
-    Sprite_UpdateAnim(charSprite->sprite, 32768);
+    Sprite_UpdateAnim(charSprite->sprite, FX32_CONST(8));
 }
 
 void CharSprite_UpdateAnimWalkFast(CharSprite *charSprite) {
