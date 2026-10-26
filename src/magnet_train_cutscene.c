@@ -126,7 +126,7 @@ BOOL MagnetTrainCutscene_Init(OverlayManager *man, int *state) {
     NNS_G3dGlbMaterialColorDiffAmb(args->lighting->diffuse, args->lighting->ambient, args->lighting->diffAmbFlag);
     NNS_G3dGlbMaterialColorSpecEmi(args->lighting->specular, args->lighting->emission, args->lighting->specEmiFlag);
     NNS_G3dGlbPolygonAttr(args->lighting->polygonAttr[0], (GXPolygonMode)args->lighting->polygonAttr[1], (GXCull)args->lighting->polygonAttr[2], args->lighting->polygonAttr[3], args->lighting->polygonAttr[4], args->lighting->polygonAttr[5]);
-    BeginNormalPaletteFade(FADE_MAIN_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0, 6, 1, HEAP_ID_149);
+    BeginNormalPaletteFade(FADE_MAIN_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, HEAP_ID_149);
     return TRUE;
 }
 
@@ -322,8 +322,8 @@ static BOOL MagnetTrainCutscene_IsStepAnimDone(MagnetTrainCutsceneModel *model, 
 
 static void MagnetTrainCutscene_StartStepFadeOut(int idx, enum HeapID heapId) {
     if (idx + 1 >= 3) {
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0, 6, 1, heapId);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, heapId);
     } else {
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_UNK_8, FADE_TYPE_BRIGHTNESS_OUT, 0, 6, 1, heapId);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_UNK_8, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, heapId);
     }
 }

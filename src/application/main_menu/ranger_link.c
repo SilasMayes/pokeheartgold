@@ -1007,7 +1007,7 @@ static void RangerLink_StartMPCallback(void *arg) {
                 RangerLink_SetState(RANGER_LINK_STATE_CHILD_MP);
             }
         }
-    } else if (errCode != 9 && errCode != 13 && errCode != 15) {
+    } else if (errCode != WM_ERRCODE_TIMEOUT && errCode != WM_ERRCODE_INVALID_POLLBITMAP && errCode != WM_ERRCODE_SEND_FAILED) {
         RangerLink_Abort();
     }
 }

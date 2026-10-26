@@ -261,7 +261,7 @@ int GtsSearch_Init(GtsApp *app, int state) {
     args.countryNames = app->countryNames;
     args.pokedex = app->args->pokedex;
     args.johtoDexFlags = app->searchCursor->johtoDexFlags;
-    app->selector = GtsSelector_New(&args, 2, 1);
+    app->selector = GtsSelector_New(&args, GF_BG_LYR_MAIN_2, 1);
     GtsSearch_DrawFieldLabels(app->infoWindows, &app->wideWindows[0], app->gtsMsgData);
     GtsSearch_DrawResultsButton(app->bgConfig, &app->infoWindows[8], app->gtsMsgData, app->hasSearchResults);
     Gts_PrintSpeciesName(&app->infoWindows[1], app->speciesNames, app->searchCriteria.species, 0, 0, MAKE_TEXT_COLOR(1, 2, 0));

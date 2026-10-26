@@ -9,6 +9,7 @@
 #include "communication_core.h"
 #include "comm_state.h"
 #include "field_comm_cmds.h"
+#include "union_room_talk.h"
 
 enum UnionRoomJoinStatus {
     UNION_ROOM_JOIN_PENDING,
@@ -155,17 +156,17 @@ void UnionRoom_ParentLinked(struct UnionRoom *unionRoom) {
 
     gUnionRoomScratch.waitFrames++;
     status = CommWireless_GetRuleset();
-    if (Comm_GetConnectedChildren() && UnionRoom_AnyOtherPlayerPresent() == TRUE && status->activity != 4) {
+    if (Comm_GetConnectedChildren() && UnionRoom_AnyOtherPlayerPresent() == TRUE && status->activity != UNION_ACTIVITY_BUSY) {
         CommPlayerInfo_SendLocal();
         CommState_SetErrorWatch(1, 1);
-        UnionRoom_SetBeaconActivity(11);
+        UnionRoom_SetBeaconActivity(UNION_ACTIVITY_LINKED);
         UnionRoom_SetState(unionRoom, UnionRoom_ParentInSession, 0);
     }
 
     if (!CommState_IsAlternateLinked()) {
         CommState_ResumeAlternateSearch();
         UnionRoom_ResetTalk(unionRoom);
-        UnionRoom_SetBeaconActivity(0);
+        UnionRoom_SetBeaconActivity(UNION_ACTIVITY_NONE);
         UnionRoom_SetState(unionRoom, UnionRoom_WaitSearchReady, 2);
     }
 }
@@ -179,7 +180,7 @@ void UnionRoom_ParentInSession(struct UnionRoom *unionRoom) {
     if (!Comm_GetConnectedChildren()) {
         CommState_ResumeAlternateSearch();
         UnionRoom_ResetTalk(unionRoom);
-        UnionRoom_SetBeaconActivity(0);
+        UnionRoom_SetBeaconActivity(UNION_ACTIVITY_NONE);
         UnionRoom_SetState(unionRoom, UnionRoom_WaitSearchReady, 2);
     }
 }
@@ -250,7 +251,7 @@ void UnionRoom_WaitFieldTask(struct UnionRoom *unionRoom) {
     if (!FieldSystem_TaskIsRunning(unionRoom->fieldSystem)) {
         CommState_ResumeAlternateSearch();
         UnionRoom_ResetTalk(unionRoom);
-        UnionRoom_SetBeaconActivity(0);
+        UnionRoom_SetBeaconActivity(UNION_ACTIVITY_NONE);
         UnionRoom_SetState(unionRoom, UnionRoom_WaitSearchReady, 2);
     }
 }
@@ -315,21 +316,21 @@ int UnionRoom_GetPlayerActivityType(struct UnionRoom *unionRoom, int objId) {
     info = &record->info;
     gUnionRoomScratch.lastActivity = (UnionRoomStatus *)((u8 *)info + 0x30);
     switch (gUnionRoomScratch.lastActivity->activity) {
-    case 0:
+    case UNION_ACTIVITY_NONE:
         return 1;
-    case 1:
+    case UNION_ACTIVITY_DRAWING_RECRUIT:
         return 2;
-    case 2:
+    case UNION_ACTIVITY_RECORD_MIX_RECRUIT:
         return 3;
     case 3:
-    case 13:
+    case UNION_ACTIVITY_SPIN_TRADE_RECRUIT:
         return 4;
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 11:
+    case UNION_ACTIVITY_BUSY:
+    case UNION_ACTIVITY_TRAINER_CARD:
+    case UNION_ACTIVITY_BATTLE:
+    case UNION_ACTIVITY_TRADE:
+    case UNION_ACTIVITY_DRAWING:
+    case UNION_ACTIVITY_LINKED:
         return 5;
     default:
         return 5;
@@ -347,7 +348,7 @@ int UnionRoom_RequestJoinPlayer(struct UnionRoom *unionRoom, int objId, int kind
     status = &((UnionRoomRecordInfo *)(record + 0x50))->status;
     gUnionRoomScratch.lastActivity = status;
     switch (status->activity) {
-    case 2:
+    case UNION_ACTIVITY_RECORD_MIX_RECRUIT:
         if (kind != 3) {
             return 5;
         }
@@ -357,7 +358,7 @@ int UnionRoom_RequestJoinPlayer(struct UnionRoom *unionRoom, int objId, int kind
         unionRoom->unk24 = 0;
         unionRoom->joinStatus = UNION_ROOM_JOIN_PENDING;
         return 1;
-    case 0:
+    case UNION_ACTIVITY_NONE:
         if (kind != 1) {
             return 5;
         }
@@ -366,7 +367,7 @@ int UnionRoom_RequestJoinPlayer(struct UnionRoom *unionRoom, int objId, int kind
         unionRoom->unk24 = 0;
         unionRoom->joinStatus = UNION_ROOM_JOIN_PENDING;
         return 1;
-    case 1:
+    case UNION_ACTIVITY_DRAWING_RECRUIT:
         if (kind != 2) {
             return 5;
         }
@@ -376,7 +377,7 @@ int UnionRoom_RequestJoinPlayer(struct UnionRoom *unionRoom, int objId, int kind
         unionRoom->joinStatus = UNION_ROOM_JOIN_PENDING;
         return 1;
     case 3:
-    case 13:
+    case UNION_ACTIVITY_SPIN_TRADE_RECRUIT:
         if (kind != 4) {
             return 5;
         }
@@ -385,16 +386,16 @@ int UnionRoom_RequestJoinPlayer(struct UnionRoom *unionRoom, int objId, int kind
         unionRoom->connectRequest = UNION_ROOM_CONNECT_JOIN;
         unionRoom->joinStatus = UNION_ROOM_JOIN_PENDING;
         return 1;
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 11:
+    case UNION_ACTIVITY_BUSY:
+    case UNION_ACTIVITY_TRAINER_CARD:
+    case UNION_ACTIVITY_BATTLE:
+    case UNION_ACTIVITY_TRADE:
+    case UNION_ACTIVITY_DRAWING:
+    case UNION_ACTIVITY_LINKED:
         return 5;
-    case 9:
+    case UNION_ACTIVITY_RECORD_MIX:
     case 10:
-    case 12:
+    case UNION_ACTIVITY_SPIN_TRADE:
     default:
         return 5;
     }

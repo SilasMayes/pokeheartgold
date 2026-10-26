@@ -3,6 +3,7 @@
 #include "global.h"
 
 #include "constants/comm_type.h"
+#include "constants/dwc_status.h"
 
 #include "dwc/dwc_account_internal.h"
 #include "dwc/dwc_main_internal.h"
@@ -183,7 +184,7 @@ int WifiConnection_Init(SaveData *saveData, int heapId, u32 heapSize, int maxPla
     sWifiConnection->disconnectWhenAlone = 1;
     sWifiConnection->friendStatusData = NULL;
     for (i = 0; i < 32; i++) {
-        sWifiConnection->friendStatus[i] = 0;
+        sWifiConnection->friendStatus[i] = DWC_STATUS_OFFLINE;
     }
     WifiConnection_CreateTokenAndScanFriends();
     if (!DWC_CheckHasProfile(sWifiConnection->userData)) {
@@ -225,7 +226,7 @@ int WifiConnection_UpdateLogin(void) {
         sWifiConnection->voiceChatActive = 0;
     case WIFI_CONNECTION_STATE_WAIT_LINK:
         if (DWC_CheckInet()) {
-            if (DWC_GetInetStatus() == 4) {
+            if (DWC_GetInetStatus() == DWC_CONNECTINET_STATE_CONNECTED) {
                 sWifiConnection->state = WIFI_CONNECTION_STATE_LOGIN;
             } else {
                 sWifiConnection->state = WIFI_CONNECTION_STATE_ERROR;

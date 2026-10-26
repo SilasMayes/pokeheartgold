@@ -1161,7 +1161,7 @@ static BOOL SwalotPlopCurve_Update(SwalotPlopCurve *curve) {
     s32 step = curve->step;
     s32 slopePart = (s32)(((s64)curve->slope * (step << 12) + 0x800) >> 12);
     s32 curvePart = (s32)(((s64)curve->curvature * ((step * step) << 12) + 0x800) >> 12);
-    curve->value = curve->start + (slopePart + FX_Div(curvePart, 0x2000));
+    curve->value = curve->start + (slopePart + FX_Div(curvePart, FX32_CONST(2)));
     s32 current = curve->step;
     s32 duration = curve->duration;
     s32 next = current + 1;
@@ -1444,7 +1444,7 @@ static void SwalotPlopIntro_HideWindow(SwalotPlopIntro *intro, SwalotPlopGfx *gf
 
 static void SwalotPlopIntro_StartScene(SwalotPlopIntro *intro, SwalotPlopGfx *gfx) {
     SwalotPlopScene_SetAnimation(&gfx->scene, 1);
-    ModelAnimation_SetFrame(&gfx->scene.animations[1], 0xB4000);
+    ModelAnimation_SetFrame(&gfx->scene.animations[1], FX32_CONST(180));
     SwalotPlopScene_SetBaseAnimation(&gfx->scene, 1);
 }
 
@@ -1475,7 +1475,7 @@ static void SwalotPlopFinish_Start(SwalotPlopGfx *gfx) {
 static BOOL SwalotPlopFinish_Update(SwalotPlopGfx *gfx) {
     gfx->finish.counter = gfx->finish.counter + 1;
     if (gfx->finish.counter >= 60) {
-        if (ModelAnimation_Advance(&gfx->scene.animations[5], 0x2000) == TRUE) {
+        if (ModelAnimation_Advance(&gfx->scene.animations[5], FX32_CONST(2)) == TRUE) {
             return TRUE;
         }
     }
@@ -1496,9 +1496,9 @@ static void SwalotPlopBody_Init(SwalotPlopGame *game, SwalotPlopBody *body) {
     SwalotPlopBody_SetTilt(body, 0xE38);
     body->active = FALSE;
     body->mouthOpen = TRUE;
-    body->pushRadius = 0xC8000;
+    body->pushRadius = FX32_CONST(200);
     body->pushStrength = 123;
-    body->mouthDepth = 0x50000;
+    body->mouthDepth = FX32_CONST(80);
     offset = gSwalotPlopBodyOffset;
     body->offset = offset;
     SwalotPlopBody_SetScale(body, 0x9C4);
@@ -1545,7 +1545,7 @@ static void SwalotPlopBody_SetSpin(SwalotPlopBody *body, u16 spin) {
     MTX_MultVec33(&mouthOffset, &body->rotation, &body->mouthPos);
     mouthOffset.x = body->mouthOffsetX + body->offset.x;
     mouthOffset.y = body->mouthOffsetY;
-    mouthOffset.z = body->offset.z + 0x50000;
+    mouthOffset.z = body->offset.z + FX32_CONST(80);
     MTX_MultVec33(&mouthOffset, &body->spinMtx, &mouthOffset);
     VEC_Add(&mouthOffset, &body->mouthPos, &body->mouthPos);
     dot = FX_Mul(body->normal.x, body->mouthPos.x) + FX_Mul(body->normal.y, body->mouthPos.y) + FX_Mul(body->normal.z, body->mouthPos.z);
@@ -1693,9 +1693,9 @@ static void SwalotPlopShot_ToRecord(const SwalotPlopShotParams *params, SwalotPl
     record->dir[1] = params->direction.y;
     record->dir[2] = params->direction.z;
     record->speed = (s64)((s64)params->speed * 0x28F + 0x800) >> 12;
-    record->start[0] = params->start.x >> 12;
-    record->start[1] = params->start.y >> 12;
-    record->start[2] = params->start.z >> 12;
+    record->start[0] = params->start.x >> FX32_SHIFT;
+    record->start[1] = params->start.y >> FX32_SHIFT;
+    record->start[2] = params->start.z >> FX32_SHIFT;
     record->combo = params->combo;
     record->big = params->big;
 }
@@ -1706,7 +1706,7 @@ static void SwalotPlopShot_FromRecord(const SwalotPlopShotRecord *record, Swalot
     params->direction.x = record->dir[0];
     params->direction.y = record->dir[1];
     params->direction.z = record->dir[2];
-    params->speed = FX_Div(record->speed, 0x28F);
+    params->speed = FX_Div(record->speed, FX32_CONST(0.16));
     params->start.x = record->start[0] << 12;
     params->start.y = record->start[1] << 12;
     params->start.z = record->start[2] << 12;
@@ -1831,22 +1831,22 @@ static void SwalotPlopGame_UpdateFlyingShot(SwalotPlopGame *game, SwalotPlopShot
             PlaySE(SEQ_SE_DP_023);
         }
         SwalotPlopShot_Bounce(shot, game, TRUE);
-    } else if (shot->position.y <= -0x32000) {
+    } else if (shot->position.y <= FX32_CONST(-50)) {
         if (!SwalotPlopShot_IsOnRim(shot)) {
             result = 1;
-            if (oldY <= -0x32000) {
+            if (oldY <= FX32_CONST(-50)) {
                 SwalotPlopShot_End(game, shot, 0, game->combo);
             } else {
                 SwalotPlopShot_Bounce(shot, game, FALSE);
             }
-        } else if (shot->position.y <= 0x400) {
+        } else if (shot->position.y <= FX32_CONST(0.25)) {
             result = 1;
             SwalotPlopShot_End(game, shot, 0, game->combo);
         }
     } else if (SwalotPlopShot_CheckOutside(shot) == TRUE) {
         result = 1;
         VEC_Subtract(&shot->position, &move, &shot->position);
-        SwalotPlopShot_BounceEx(shot, game, TRUE, 0x400, FALSE);
+        SwalotPlopShot_BounceEx(shot, game, TRUE, FX32_CONST(0.25), FALSE);
     }
     if (result == 1 && state == SHOT_STATE_FLYING) {
         game->combo = 0;
@@ -1927,9 +1927,9 @@ static void SwalotPlopShot_GetMove(SwalotPlopShot *shot, VecFx32 *move) {
 static void SwalotPlopShot_Bounce(SwalotPlopShot *shot, SwalotPlopGame *game, BOOL bounce) {
     fx32 damping;
     if (bounce == TRUE) {
-        damping = 0xD9A;
+        damping = FX32_CONST(0.85);
     } else {
-        damping = 0xCCD;
+        damping = FX32_CONST(0.8);
     }
     SwalotPlopShot_BounceEx(shot, game, bounce, damping, TRUE);
 }
@@ -1981,22 +1981,22 @@ static void SwalotPlopGame_UpdateBouncedShot(SwalotPlopShot *shot, SwalotPlopGam
         shot->frames++;
         if (SwalotPlopBody_IsInside(&game->body, &shot->position) == TRUE) {
             SwalotPlopShot_Bounce(shot, game, TRUE);
-        } else if (shot->position.y <= -0x32000) {
+        } else if (shot->position.y <= FX32_CONST(-50)) {
             if (!SwalotPlopShot_IsOnRim(shot)) {
-                if (oldY <= -0x32000) {
+                if (oldY <= FX32_CONST(-50)) {
                     done = TRUE;
                 } else {
                     SwalotPlopShot_Bounce(shot, game, FALSE);
                 }
-            } else if (shot->position.y <= -0x64000) {
+            } else if (shot->position.y <= FX32_CONST(-100)) {
                 done = TRUE;
             }
-            if (shot->params.speed <= 0x2000) {
+            if (shot->params.speed <= FX32_CONST(2)) {
                 done = TRUE;
             }
         } else if (SwalotPlopShot_CheckOutside(shot) == TRUE) {
             VEC_Subtract(&shot->position, &move, &shot->position);
-            SwalotPlopShot_BounceEx(shot, game, TRUE, 0x400, FALSE);
+            SwalotPlopShot_BounceEx(shot, game, TRUE, FX32_CONST(0.25), FALSE);
         }
         if (shot->params.speed <= FX32_ONE) {
             done = TRUE;
@@ -2009,16 +2009,16 @@ static void SwalotPlopGame_UpdateBouncedShot(SwalotPlopShot *shot, SwalotPlopGam
 
 static BOOL SwalotPlopShot_IsOnRim(SwalotPlopShot *shot) {
     fx32 distance = shot->distance;
-    return distance >= 0xBC000 && distance <= 0xF0000;
+    return distance >= FX32_CONST(188) && distance <= FX32_CONST(240);
 }
 
 static BOOL SwalotPlopShot_IsInPool(SwalotPlopShot *shot) {
-    return shot->distance <= 0x78000;
+    return shot->distance <= FX32_CONST(120);
 }
 
 static BOOL SwalotPlopShot_CheckOutside(SwalotPlopShot *shot) {
     fx32 distance = shot->distance;
-    if (distance >= 0xF0000) {
+    if (distance >= FX32_CONST(240)) {
         if (shot->crossedRim == TRUE) {
             return TRUE;
         }
@@ -2095,7 +2095,7 @@ static void SwalotPlopGame_Throw(SwalotPlopGame *game) {
         params.direction.z = (s16)((last.y - first.y) / count) << 12;
         params.direction.y = 0;
         speed = VEC_Mag(&params.direction);
-        if (speed < 0x8000) {
+        if (speed < FX32_CONST(8)) {
             if (speed) {
                 VEC_Normalize(&params.direction, &params.direction);
                 params.direction.x = (s64)(params.direction.x) * 0x8000 + 0x800 >> 12;
@@ -2109,7 +2109,7 @@ static void SwalotPlopGame_Throw(SwalotPlopGame *game) {
             params.direction.z = ((s64)params.direction.z * 0x1E200 + 0x800) >> 12;
         }
         if (!tooSlow) {
-            params.direction.y = 0x26000;
+            params.direction.y = FX32_CONST(38);
             params.speed = VEC_Mag(&params.direction);
             params.speed = ((s64)params.speed * 0x99A + 0x800) >> 12;
             VEC_Normalize(&params.direction, &params.direction);
@@ -2343,7 +2343,7 @@ static void SwalotPlopDemo_Init(SwalotPlopDemo *demo, SwalotPlopGfx *gfx, enum H
     template.spriteList = gfx->spriteList;
     template.header = &demo->header;
     template.position.x = 128 * FX32_ONE;
-    template.position.y = 0x278000;
+    template.position.y = FX32_CONST(632);
     template.priority = 0;
     template.whichScreen = NNS_G2D_VRAM_TYPE_2DSUB;
     template.heapID = heapId;
@@ -2484,7 +2484,7 @@ static void SwalotPlopGfx_Setup3D(void) {
     *reg = (*reg & ~0x3000) | 8;
     *reg = (*reg & ~0x3000) | 32;
     G3X_SetFog(FALSE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x8000, 0);
-    G3X_SetClearColor(0x6B5A, 0, 0x7FFF, 63, FALSE);
+    G3X_SetClearColor(GX_RGB(26, 26, 26), 0, GF_GX_CLEARCOLORDEPTH_MAX, 63, FALSE);
     reg_G3_VIEWPORT = 0xBFFF0000;
 }
 
@@ -2721,7 +2721,7 @@ static void SwalotPlopGfx_InitCamera(SwalotPlopGfx *gfx, int playerCount, int lo
     up.z = 0;
     Camera_SetLookAtCamUp(&up, gfx->camera);
     Camera_SetStaticPtr(gfx->camera);
-    Camera_SetPerspectiveClippingPlane(0xC8000, 0x3E8000, gfx->camera);
+    Camera_SetPerspectiveClippingPlane(FX32_CONST(200), FX32_CONST(1000), gfx->camera);
 }
 
 static void SwalotPlopGfx_FreeCamera(SwalotPlopGfx *gfx) {
@@ -2779,8 +2779,8 @@ static void SwalotPlopScene_Init(SwalotPlopScene *scene, NARC *narc, enum HeapID
         ModelResource_LoadFromNarc(&scene->resources[i], narc, gSwalotPlopSceneModelFiles[i], heapId);
         ModelInstance_Init(&scene->models[i], &scene->resources[i]);
         ModelInstance_SetVisible(&scene->models[i], FALSE);
-        ModelInstance_SetPosition(&scene->models[i], 0, -0x122000, 0);
-        ModelInstance_SetScale(&scene->models[i], 0x1800, 0x1800, 0x1800);
+        ModelInstance_SetPosition(&scene->models[i], 0, FX32_CONST(-290), 0);
+        ModelInstance_SetScale(&scene->models[i], FX32_CONST(1.5), FX32_CONST(1.5), FX32_CONST(1.5));
     }
     for (i = 0; i < 6; i++) {
         ModelAnimation_LoadFromNarc(&scene->animations[i], &scene->resources[gSwalotPlopSceneAnimModels[i]], narc, gSwalotPlopSceneAnimFiles[i], heapId, allocator);
@@ -2972,8 +2972,8 @@ static void SwalotPlop_TouchToWorld(int x, int y, VecFx32 *pos) {
 }
 
 static void SwalotPlop_WorldToTouch(const VecFx32 *pos, SwalotPlopPoint *point) {
-    point->x = 0xFF - (pos->x + 0x4B000) / 0x960;
-    point->y = (-0xE1000 - pos->z) / 0x960;
+    point->x = 0xFF - (pos->x + FX32_CONST(75)) / 0x960;
+    point->y = (FX32_CONST(-225) - pos->z) / 0x960;
 }
 
 static void SwalotPlop_RotateToSeat(const VecFx32 *src, VecFx32 *dst, int seat, int playerCount) {
@@ -3148,20 +3148,20 @@ static void SwalotPlopShotView_PlaceShadow(SwalotPlopShotView *view) {
     fx32 groundY, height, scale, value;
     fx32 factor = FX32_ONE;
     if (SwalotPlopShot_IsInPool(view->shot) == TRUE) {
-        groundY = -0x12C000;
+        groundY = FX32_CONST(-300);
     } else if (!SwalotPlopShot_IsOnRim(view->shot)) {
-        groundY = -0x33000;
+        groundY = FX32_CONST(-51);
     } else {
-        groundY = -0x12C000;
+        groundY = FX32_CONST(-300);
     }
     ModelInstance_SetPosition(&view->shadow, view->shot->position.x, groundY, view->shot->position.z);
     height = view->shot->position.y - groundY;
     value = (fx32)(((s64)height * factor + factor / 2) >> 12);
-    scale = FX_Div(value, 0x12C000) + FX32_ONE;
+    scale = FX_Div(value, FX32_CONST(300)) + FX32_ONE;
     ModelInstance_SetScale(&view->shadow, scale, scale, scale);
     value = (fx32)(((s64)height * 65536 + 2048) >> 12);
-    value = FX_Div(value, 0x12C000);
-    NNS_G3dGlbPolygonAttr(0, GX_POLYGONMODE_MODULATE, GX_CULL_ALL, 0, 24 - (value >> 12), 0);
+    value = FX_Div(value, FX32_CONST(300));
+    NNS_G3dGlbPolygonAttr(0, GX_POLYGONMODE_MODULATE, GX_CULL_ALL, 0, 24 - (value >> FX32_SHIFT), 0);
 }
 
 static void SwalotPlopShotView_ResetPolygonAttr(SwalotPlopShotView *view) {
@@ -3343,7 +3343,7 @@ static void SwalotPlopParticles_Update(SwalotPlopParticle *particles) {
             particle->position.y += dy << FX32_SHIFT;
             Sprite_SetMatrix(particle->sprite, &particle->position);
 
-            if (particle->position.x < -0x20000 || particle->position.x > 0x120000 || particle->position.y < 0x1E0000 || particle->position.y > 0x2E0000) {
+            if (particle->position.x < FX32_CONST(-32) || particle->position.x > FX32_CONST(288) || particle->position.y < FX32_CONST(480) || particle->position.y > FX32_CONST(736)) {
                 particle->active = FALSE;
                 Sprite_SetDrawFlag(particle->sprite, FALSE);
             }
@@ -3401,8 +3401,8 @@ static void SwalotPlopStage_Init(SwalotPlopStage *stage, SwalotPlopGfx *gfx, NAR
         }
         ModelResource_LoadFromNarc(resource, narc, fileId, heapId);
         ModelInstance_Init(model, resource);
-        ModelInstance_SetPosition(model, 0, -0x62000, 0);
-        ModelInstance_SetScale(model, 0x1800, 0x1800, 0x1800);
+        ModelInstance_SetPosition(model, 0, FX32_CONST(-98), 0);
+        ModelInstance_SetScale(model, FX32_CONST(1.5), FX32_CONST(1.5), FX32_CONST(1.5));
         if (i == 1) {
             ModelInstance_SetVisible(model, FALSE);
         }
@@ -3444,10 +3444,10 @@ static void SwalotPlopStage_Draw(SwalotPlopStage *stage) {
             } else {
                 stage->mouthFrame = 0;
             }
-            if (stage->mouthStep + 410 <= 0x24CD) {
-                stage->mouthStep += 410;
+            if (stage->mouthStep + FX32_CONST(0.1) <= FX32_CONST(2.3)) {
+                stage->mouthStep += FX32_CONST(0.1);
             } else {
-                stage->mouthStep = 0x24CD;
+                stage->mouthStep = FX32_CONST(2.3);
                 stage->mouthTimer = 24;
                 stage->mouthState++;
             }
@@ -3463,15 +3463,15 @@ static void SwalotPlopStage_Draw(SwalotPlopStage *stage) {
             stage->mouthTimer--;
             if (stage->mouthTimer <= 0) {
                 stage->mouthState++;
-                stage->mouthFrame = 0x33000;
+                stage->mouthFrame = FX32_CONST(51);
             }
             break;
         }
         case SWALOT_PLOP_MOUTH_LOOP:
-            if (stage->mouthFrame + FX32_ONE < 0x64000) {
+            if (stage->mouthFrame + FX32_ONE < FX32_CONST(100)) {
                 stage->mouthFrame += FX32_ONE;
             } else {
-                stage->mouthFrame = 0x33000;
+                stage->mouthFrame = FX32_CONST(51);
             }
             break;
         default:
@@ -3625,8 +3625,8 @@ static void SwalotPlopCombo_Init(SwalotPlopCombo *combo, SwalotPlopGfx *gfx, NAR
     CreateSpriteResourcesHeader(&combo->header, 140, 140, 140, 140, -1, -1, FALSE, 0, gfx->resMan[GF_GFX_RES_TYPE_CHAR], gfx->resMan[GF_GFX_RES_TYPE_PLTT], gfx->resMan[GF_GFX_RES_TYPE_CELL], gfx->resMan[GF_GFX_RES_TYPE_ANIM], NULL, NULL);
     spriteTemplate.spriteList = gfx->spriteList;
     spriteTemplate.header = &combo->header;
-    spriteTemplate.position.x = -0x40000;
-    spriteTemplate.position.y = 0x30000;
+    spriteTemplate.position.x = FX32_CONST(-64);
+    spriteTemplate.position.y = FX32_CONST(48);
     spriteTemplate.priority = 1;
     spriteTemplate.whichScreen = NNS_G2D_VRAM_TYPE_2DMAIN;
     spriteTemplate.heapID = heapId;

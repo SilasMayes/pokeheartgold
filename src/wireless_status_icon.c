@@ -386,7 +386,7 @@ static void WirelessStatusIcon_CreateAt(int x, int y, int isWifi, int screen, u3
         if (sWirelessStatusIcon != NULL) {
             WirelessStatusIcon_Destroy();
         }
-        sWirelessStatusIcon = WirelessStatusIcon_New(0, (enum HeapID)0x59, x, y, isWifi, sWirelessStatusIconAnims, screen, plttBase);
+        sWirelessStatusIcon = WirelessStatusIcon_New(0, HEAP_ID_89, x, y, isWifi, sWirelessStatusIconAnims, screen, plttBase);
     }
 }
 

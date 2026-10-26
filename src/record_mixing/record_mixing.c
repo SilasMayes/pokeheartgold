@@ -382,7 +382,7 @@ BOOL RecordMixing_Init(OverlayManager *man, int *state) {
         CommState_SetRecordMixingLinkMode();
         CommState_SetMaxEntries(3);
         if (!Comm_GetLocalNetId()) {
-            UnionRoom_SetBeaconActivity(2);
+            UnionRoom_SetBeaconActivity(UNION_ACTIVITY_RECORD_MIX_RECRUIT);
         }
         WirelessStatusIcon_Create();
         RecordMixing_BuildSendBuffer(app->saveData, &app->sendBuffer);
@@ -471,7 +471,7 @@ BOOL RecordMixing_Exit(OverlayManager *man, int *state) {
     RecordMixing_FreeResources(app);
     OverlayManager_FreeData(man);
     reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;
-    UnionRoom_SetBeaconActivity(0);
+    UnionRoom_SetBeaconActivity(UNION_ACTIVITY_NONE);
     Main_SetVBlankIntrCB(NULL, NULL);
     Heap_Destroy(HEAP_ID_50);
     return TRUE;
@@ -1624,7 +1624,7 @@ static int RecordMixing_LeaderUpdateMembers(RecordMixingApp *app, int index) {
     case 2:
     case 3:
     case 4:
-        UnionRoom_SetBeaconActivity(2);
+        UnionRoom_SetBeaconActivity(UNION_ACTIVITY_RECORD_MIX_RECRUIT);
         if (n < app->lastMemberCount) {
             switch (app->maxEntriesMode) {
             case 0:
@@ -1638,7 +1638,7 @@ static int RecordMixing_LeaderUpdateMembers(RecordMixingApp *app, int index) {
         }
         break;
     case 5:
-        UnionRoom_SetBeaconActivity(9);
+        UnionRoom_SetBeaconActivity(UNION_ACTIVITY_RECORD_MIX);
         RecordMixing_UpdateMaxEntries(app, index);
         break;
     }

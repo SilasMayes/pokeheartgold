@@ -111,7 +111,7 @@ static BOOL Task_MagnetTrainRide(TaskManager *taskManager) {
 
     switch (env->state) {
     case MAGNET_TRAIN_RIDE_FADE_OUT:
-        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0, 6, 1, HEAP_ID_FIELD2);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, HEAP_ID_FIELD2);
         GF_SndStartFadeOutBGM(0, 6);
         env->state = MAGNET_TRAIN_RIDE_LEAVE_OVERWORLD;
         break;

@@ -295,7 +295,7 @@ static BOOL TradeSequenceArrive_LowerAndFade(TradeSequenceArrive *arrive, u32 *s
 static BOOL TradeSequenceArrive_ZoomOut(TradeSequenceArrive *arrive, u32 *state) {
     switch (*state) {
     case TRADE_ARRIVE_ZOOM_START:
-        arrive->bgZoom = TradeSequence_StartBgZoom(arrive->bgConfig, FX32_ONE, 0x400, 1, 0x128, 1, &arrive->bgZoomFinished);
+        arrive->bgZoom = TradeSequence_StartBgZoom(arrive->bgConfig, FX32_ONE, FX32_CONST(0.25), 1, 0x128, 1, &arrive->bgZoomFinished);
         arrive->timer = 0;
         (*state)++;
         break;
@@ -385,7 +385,7 @@ static void TradeSequenceArrive_Init3D(TradeSequenceArrive *arrive) {
     G3X_AlphaBlend(TRUE);
     G3X_EdgeMarking(TRUE);
     G3X_SetEdgeColorTable(sTradeSequenceArriveEdgeColors);
-    G3X_SetClearColor(RGB(31, 31, 16), 0, 0x7FFF, 63, FALSE);
+    G3X_SetClearColor(RGB(31, 31, 16), 0, GF_GX_CLEARCOLORDEPTH_MAX, 63, FALSE);
     G3_SwapBuffers(GX_SORTMODE_AUTO, GX_BUFFERMODE_W);
     G3_ViewPort(0, 0, 255, 191);
     GF_3DVramMan_InitFrameTexVramManager(1, TRUE);

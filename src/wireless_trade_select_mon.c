@@ -52,7 +52,7 @@
 #include "save_palpad.h"
 #include "save_special_ribbons.h"
 #include "save_vars_flags.h"
-#include "screen_fade_legacy.h"
+#include "screen_fade.h"
 #include "sound_chatot.h"
 #include "sound_playback.h"
 #include "sound_system.h"
@@ -291,7 +291,7 @@ BOOL WirelessTradeSelectMon_Init(OverlayManager *man, int *state) {
     SetKeyRepeatTimers(4, 8);
     WirelessTradeSelectMon_SetGfxBanks();
     WirelessTradeSelectMon_InitBgs(work->bgConfig);
-    BeginNormalPaletteFade(0, 1, 1, RGB_BLACK, 16, 1, HEAP_ID_26);
+    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 16, 1, HEAP_ID_26);
     WirelessTradeSelectMon_LoadBgGraphics(work, narc);
     Main_SetVBlankIntrCB((GFIntrCB)WirelessTradeSelectMon_VBlankCB, work);
     WirelessTradeSelectMon_InitObjTransfer();
@@ -400,11 +400,11 @@ BOOL WirelessTradeSelectMon_Main(OverlayManager *man, int *state) {
             work->state = WirelessTradeSelectMon_RunSelect(work);
             break;
         case WIRELESS_TRADE_SELECT_STATE_EXIT:
-            BeginNormalPaletteFade(0, 0, 0, RGB_BLACK, 8, 1, HEAP_ID_26);
+            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 8, 1, HEAP_ID_26);
             *state = 2;
             break;
         case WIRELESS_TRADE_SELECT_STATE_START_SUMMARY:
-            BeginNormalPaletteFade(0, 0, 0, RGB_BLACK, 8, 1, HEAP_ID_26);
+            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 8, 1, HEAP_ID_26);
             work->state = WIRELESS_TRADE_SELECT_STATE_OPEN_SUMMARY;
             break;
         case WIRELESS_TRADE_SELECT_STATE_OPEN_SUMMARY:
@@ -430,7 +430,7 @@ BOOL WirelessTradeSelectMon_Main(OverlayManager *man, int *state) {
             }
             break;
         case WIRELESS_TRADE_SELECT_STATE_START_FADE_IN:
-            BeginNormalPaletteFade(0, 1, 1, RGB_BLACK, 8, 1, HEAP_ID_26);
+            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 8, 1, HEAP_ID_26);
             work->state = WIRELESS_TRADE_SELECT_STATE_WAIT_FADE_IN;
             break;
         case WIRELESS_TRADE_SELECT_STATE_WAIT_FADE_IN:

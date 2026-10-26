@@ -77,13 +77,13 @@ int PokewalkerApp_Link_Exit(PokewalkerApp *app) {
 }
 
 int PokewalkerApp_Link_Start(PokewalkerApp *app) {
-    if (app->linkAction == 1) {
+    if (app->linkAction == POKEWALKER_LINK_RETURN_FROM_STROLL) {
         app->nextState = 1;
         return 19;
-    } else if (app->linkAction == 2) {
+    } else if (app->linkAction == POKEWALKER_LINK_RECEIVE_GIFT) {
         app->nextState = 22;
         return 19;
-    } else if (app->linkAction == 4) {
+    } else if (app->linkAction == POKEWALKER_LINK_SEND_MON_BACK) {
         return 43;
     } else if (app->strollMonSpecies) {
         return 5;

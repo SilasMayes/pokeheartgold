@@ -417,7 +417,7 @@ void WiFiPlazaEventEffect_UpdatePhase3(WiFiPlazaEventEffect *effect, u32 tick) {
             }
             if (active == 1) {
                 if (i < 0x11) {
-                    result = WiFiPlazaModels_ShowEffectProp(effect->models, *id, show, 0x1000);
+                    result = WiFiPlazaModels_ShowEffectProp(effect->models, *id, show, FX32_ONE);
                     GF_ASSERT(result == 1);
                 } else {
                     result = 0;
@@ -443,13 +443,13 @@ void WiFiPlazaEventEffect_UpdatePhase4(WiFiPlazaEventEffect *effect, u32 tick) {
     kind = gWiFiPlazaEventPhase4Steps[effect->step * 2];
     WiFiPlazaEvent_GetModelList(gWiFiPlazaEventPhase4HideSteps[effect->step * 2], &list);
     for (i = 0; i < list.count; i++) {
-        if (WiFiPlazaModels_ShowEffectProp(effect->models, list.ids[i], FALSE, 0x1000) != 1) {
+        if (WiFiPlazaModels_ShowEffectProp(effect->models, list.ids[i], FALSE, FX32_ONE) != 1) {
             GF_ASSERT(FALSE);
         }
     }
     WiFiPlazaEvent_GetModelList(kind, &list);
     for (i = 0; i < list.count; i++) {
-        if (WiFiPlazaModels_ShowEffectProp(effect->models, list.ids[i], TRUE, 0x1000) != 1) {
+        if (WiFiPlazaModels_ShowEffectProp(effect->models, list.ids[i], TRUE, FX32_ONE) != 1) {
             GF_ASSERT(FALSE);
         }
     }
@@ -482,24 +482,24 @@ static void WiFiPlazaEventEffect_StartPhase(WiFiPlazaEventEffect *effect, u32 in
 }
 
 void WiFiPlazaEventEffect_StartHideProps(WiFiPlazaEventEffect *effect) {
-    WiFiPlazaModels_ShowEffectProps(effect->models, FALSE, 0x1000);
+    WiFiPlazaModels_ShowEffectProps(effect->models, FALSE, FX32_ONE);
 }
 
 void WiFiPlazaEventEffect_StartPhase2(WiFiPlazaEventEffect *effect) {
-    WiFiPlazaModels_ShowEffectProps(effect->models, TRUE, 0x1000);
+    WiFiPlazaModels_ShowEffectProps(effect->models, TRUE, FX32_ONE);
 }
 
 void WiFiPlazaEventEffect_StartPhase3(WiFiPlazaEventEffect *effect) {
-    WiFiPlazaModels_ShowEffectProps(effect->models, FALSE, 0x1000);
+    WiFiPlazaModels_ShowEffectProps(effect->models, FALSE, FX32_ONE);
 }
 
 void WiFiPlazaEventEffect_StartPhase4(WiFiPlazaEventEffect *effect) {
-    WiFiPlazaModels_ShowEffectProps(effect->models, FALSE, 0x1000);
+    WiFiPlazaModels_ShowEffectProps(effect->models, FALSE, FX32_ONE);
 }
 
 void WiFiPlazaEventEffect_StartPhase5(WiFiPlazaEventEffect *effect) {
     WiFiPlazaEvent_StopLoopSE(effect);
-    WiFiPlazaModels_ShowEffectProps(effect->models, FALSE, 0x1000);
+    WiFiPlazaModels_ShowEffectProps(effect->models, FALSE, FX32_ONE);
     WiFiPlazaModels_SetEffectActive(effect->models, FALSE);
 }
 
@@ -730,7 +730,7 @@ static u8 WiFiPlazaEventMovers_GetState(WiFiPlazaEventMovers *work, u32 index, i
 static void WiFiPlazaEventMovers_UpdateX(WiFiPlazaEventMovers *work, int index) {
     int value = WiFiPlazaWork_GetGroupCounter(work->lobby, index);
     int max = WiFiPlazaWork_GetGroupDuration(work->lobby);
-    fx32 ratio = FX_Div(work->range, 8192);
+    fx32 ratio = FX_Div(work->range, FX32_CONST(2));
     float maxF;
     float valueF;
     fx32 scaled;

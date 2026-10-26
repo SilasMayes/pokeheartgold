@@ -319,7 +319,7 @@ static void TradeSequenceRecede_Init3D(TradeSequenceRecede *recede) {
     G3X_AlphaBlend(TRUE);
     G3X_EdgeMarking(TRUE);
     G3X_SetEdgeColorTable(sTradeSequenceRecedeEdgeColors);
-    G3X_SetClearColor(RGB(31, 31, 16), 0, 0x7FFF, 63, FALSE);
+    G3X_SetClearColor(RGB(31, 31, 16), 0, GF_GX_CLEARCOLORDEPTH_MAX, 63, FALSE);
     G3_SwapBuffers(GX_SORTMODE_AUTO, GX_BUFFERMODE_W);
     G3_ViewPort(0, 0, 255, 191);
     GF_3DVramMan_InitFrameTexVramManager(1, TRUE);
@@ -381,7 +381,7 @@ static void TradeSequenceRecede_StartFlight(TradeSequenceRecede *recede, TradeSe
     flight->models = recede->models;
     flight->center.x = 0;
     flight->center.y = -0xAF200;
-    flight->center.z = 0xE2000;
+    flight->center.z = FX32_CONST(226);
     flight->angle = -10128;
     flight->angleSpeed = -2736;
     flight->centerStepY = 0x134C4;
@@ -394,8 +394,8 @@ static void TradeSequenceRecede_StartFlight(TradeSequenceRecede *recede, TradeSe
     flight->rotation.z = 0;
     TradeSequence_SetModelRotation(flight->ball, &flight->rotation);
     flight->scale = FX32_ONE;
-    flight->radiusX = 0x12800;
-    flight->radiusY = 0x18C00;
+    flight->radiusX = FX32_CONST(18.5);
+    flight->radiusY = FX32_CONST(24.75);
     flight->stepFrames = 0;
     TradeSequenceRecede_UpdateFlight(flight);
     TradeSequence_SetModelPosition(flight->ball, &flight->position);
@@ -475,7 +475,7 @@ static void TradeSequenceRecede_FlightTask(SysTask *task, void *data) {
         TradeSequenceRecede_UpdateFlight(flight);
         TradeSequence_SetModelPosition(flight->ball, &flight->position);
         if (flight->elapsed >= 60) {
-            TradeSequenceRecede_SetFlightTargets(flight, 0x800, 0x800, 0x200, 12);
+            TradeSequenceRecede_SetFlightTargets(flight, FX32_CONST(0.5), FX32_CONST(0.5), FX32_CONST(0.125), 12);
             flight->timer = 0;
             flight->state++;
         }

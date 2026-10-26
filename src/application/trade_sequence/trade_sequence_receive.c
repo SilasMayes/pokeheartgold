@@ -447,7 +447,7 @@ static void TradeSequenceReceive_Init3D(TradeSequenceReceive *receive) {
     G3X_AntiAlias(TRUE);
     G3X_AlphaTest(FALSE, 0);
     G3X_AlphaBlend(TRUE);
-    G3X_SetClearColor(RGB_BLACK, 0, 0x7FFF, 63, FALSE);
+    G3X_SetClearColor(RGB_BLACK, 0, GF_GX_CLEARCOLORDEPTH_MAX, 63, FALSE);
     G3_SwapBuffers(GX_SORTMODE_AUTO, GX_BUFFERMODE_W);
     G3_ViewPort(0, 0, 255, 191);
     GF_3DVramMan_InitFrameTexVramManager(1, TRUE);

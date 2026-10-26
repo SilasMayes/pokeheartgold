@@ -505,8 +505,8 @@ static void WiFiPlazaSurveyAnswer_Setup(WiFiPlazaSurveyAnswer *answer, WiFiPlaza
     GfGfxLoader_GXLoadPalFromOpenNarc(work->narc, 0xC7, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_0_OFFSET, 0x80, heapID);
     GfGfxLoader_LoadCharDataFromOpenNarc(work->narc, 0xC8, work->bgConfig, GF_BG_LYR_MAIN_0, 0, 0, FALSE, heapID);
     GfGfxLoader_LoadScrnDataFromOpenNarc(work->narc, 0xC9, work->bgConfig, GF_BG_LYR_MAIN_0, 0, 0, FALSE, heapID);
-    answer->resources[GF_GFX_RES_TYPE_CHAR] = AddCharResObjFromOpenNarc(work->resMans[GF_GFX_RES_TYPE_CHAR], work->narc, 0xCD, FALSE, 20, 1, heapID);
-    answer->resources[GF_GFX_RES_TYPE_PLTT] = AddPlttResObjFromOpenNarc(work->resMans[GF_GFX_RES_TYPE_PLTT], work->narc, 0xCC, FALSE, 20, 1, 3, heapID);
+    answer->resources[GF_GFX_RES_TYPE_CHAR] = AddCharResObjFromOpenNarc(work->resMans[GF_GFX_RES_TYPE_CHAR], work->narc, 0xCD, FALSE, 20, NNS_G2D_VRAM_TYPE_2DMAIN, heapID);
+    answer->resources[GF_GFX_RES_TYPE_PLTT] = AddPlttResObjFromOpenNarc(work->resMans[GF_GFX_RES_TYPE_PLTT], work->narc, 0xCC, FALSE, 20, NNS_G2D_VRAM_TYPE_2DMAIN, 3, heapID);
     GF_ASSERT(SpriteTransfer_CreateCharTransferTask_AllocAtEnd(answer->resources[GF_GFX_RES_TYPE_CHAR]));
     GF_ASSERT(SpriteTransfer_CreatePlttTransferTask(answer->resources[GF_GFX_RES_TYPE_PLTT]));
     GF2DGfxResObj_FreeData(answer->resources[GF_GFX_RES_TYPE_CHAR]);

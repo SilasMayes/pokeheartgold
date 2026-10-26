@@ -306,7 +306,7 @@ static void TradeSequenceApproach_Init3D(TradeSequenceApproach *approach) {
     G3X_AlphaBlend(TRUE);
     G3X_EdgeMarking(TRUE);
     G3X_SetEdgeColorTable(sTradeSequenceApproachEdgeColors);
-    G3X_SetClearColor(RGB(31, 31, 16), 0, 0x7FFF, 63, FALSE);
+    G3X_SetClearColor(RGB(31, 31, 16), 0, GF_GX_CLEARCOLORDEPTH_MAX, 63, FALSE);
     G3_SwapBuffers(GX_SORTMODE_AUTO, GX_BUFFERMODE_W);
     G3_ViewPort(0, 0, 255, 191);
     GF_3DVramMan_InitFrameTexVramManager(1, TRUE);
@@ -369,8 +369,8 @@ static void TradeSequenceApproach_StartFlight(TradeSequenceApproach *approach, T
     flight->ball = approach->ball;
     flight->models = approach->models;
     flight->center.x = 0;
-    flight->center.y = 0x3D6C00;
-    flight->center.z = -0x1BC000;
+    flight->center.y = FX32_CONST(982.75);
+    flight->center.z = FX32_CONST(-444);
     flight->angle = -10128;
     flight->angleSpeed = -2736;
     flight->centerStepY = -0x10D3A;
@@ -382,9 +382,9 @@ static void TradeSequenceApproach_StartFlight(TradeSequenceApproach *approach, T
     flight->rotation.y = -0x2000;
     flight->rotation.z = 0;
     TradeSequence_SetModelRotation(flight->ball, &flight->rotation);
-    flight->scale = 0x200;
-    flight->radiusX = 0x800;
-    flight->radiusY = 0x800;
+    flight->scale = FX32_CONST(0.125);
+    flight->radiusX = FX32_CONST(0.5);
+    flight->radiusY = FX32_CONST(0.5);
     flight->stepFrames = 0;
     TradeSequenceApproach_SetFlightTargets(flight, 74 << 10, 99 << 10, FX32_ONE, 12);
     TradeSequenceApproach_UpdateFlight(flight);

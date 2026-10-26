@@ -1775,21 +1775,21 @@ static BOOL WiFiPlazaPlayerState_OwnEnterMinigame(WiFiPlazaPlayerState *state, W
         u8 *selection = WiFiPlazaPlayerState_AllocWork(state, 4);
         WiFiPlazaObj_SetHandler(objManager, ownPlayer, WIFI_PLAZA_OBJ_HANDLER_IDLE);
         WiFiPlazaPlayerState_NextStep(state);
-        selection[0] = 0;
+        selection[0] = WIFI_PLAZA_ACTIVITY_NONE;
         switch (WiFiPlazaRoom_GetActionTile(room)) {
         case 30:
-            selection[1] = 0;
-            selection[2] = 0;
+            selection[1] = WIFI_PLAZA_ACTIVITY_NONE;
+            selection[2] = WIFI_PLAZA_ACTIVITY_NONE;
             selection[3] = WIFI_PLAZA_ACTIVITY_SWALOT_PLOP;
             break;
         case 31:
-            selection[1] = 1;
-            selection[2] = 1;
+            selection[1] = WIFI_PLAZA_ACTIVITY_FREE;
+            selection[2] = WIFI_PLAZA_ACTIVITY_FREE;
             selection[3] = WIFI_PLAZA_ACTIVITY_MIME_JR_TOP;
             break;
         case 32:
-            selection[1] = 2;
-            selection[2] = 2;
+            selection[1] = WIFI_PLAZA_ACTIVITY_SWALOT_PLOP;
+            selection[2] = WIFI_PLAZA_ACTIVITY_SWALOT_PLOP;
             selection[3] = WIFI_PLAZA_ACTIVITY_WOBBUFFET_POP;
             break;
         default:

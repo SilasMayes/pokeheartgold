@@ -98,7 +98,7 @@ void ciThink(ChatConnection *chat, int id) {
     ChatMessage *message;
     ChatRawArgs args;
     ASSERT_CHAT(chat, gChatStr_ciThink, 154);
-    if (chat->socket.state == 1) {
+    if (chat->socket.state == ciConnected) {
         ciSocketThink(&chat->socket);
         message = ciSocketRecv(&chat->socket);
         while (message) {
@@ -109,7 +109,7 @@ void ciThink(ChatConnection *chat, int id) {
             ciProcessServerMessage(chat, message);
             message = ciSocketRecv(&chat->socket);
         }
-        if (chat->socket.state == 2) {
+        if (chat->socket.state == ciDisconnected) {
             ciHandleDisconnect(chat, gChatStr_Disconnected);
         }
     }

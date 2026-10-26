@@ -1492,7 +1492,7 @@ static void SpinTrade_Init3D(SpinTradeApp *app) {
         app->edgeColors[i] = GX_RGB(4, 4, 4);
     }
     G3X_SetEdgeColorTable(app->edgeColors);
-    G3X_SetClearColor(GX_RGB(31, 31, 31), 0, 0x7FFF, 0x3F, FALSE);
+    G3X_SetClearColor(GX_RGB(31, 31, 31), 0, GF_GX_CLEARCOLORDEPTH_MAX, 0x3F, FALSE);
     G3_SwapBuffers(GX_SORTMODE_AUTO, GX_BUFFERMODE_W);
     G3_ViewPort(0, 0, 255, 191);
     GF_3DVramMan_InitFrameTexVramManager(1, TRUE);

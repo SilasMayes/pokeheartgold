@@ -373,7 +373,7 @@ GtsSelector *GtsSelector_New(GtsSelectorArgs *args, int bgId, int levelRangeKind
     selector->savedCursor = 0;
     selector->state = GTS_SELECTOR_STATE_IDLE;
     selector->cellManager = BgCellManager_New(selector->bgConfig, 2, 1, HEAP_ID_61);
-    BgCellManager_InitCell(selector->cellManager, 0, 2, 32, 20);
+    BgCellManager_InitCell(selector->cellManager, 0, GF_BG_LYR_MAIN_2, 32, 20);
     Gts_SetSpritePosition(selector->cursorSprite, 136, 40);
     Sprite_SetAnimCtrlSeq(selector->cursorSprite, 47);
     selector->printer = MessagePrinter_New(15, 14, 2, HEAP_ID_61);

@@ -1433,7 +1433,7 @@ static void VisitorProfiles_Setup3D(void) {
     reg_G3X_DISP3DCNT = (reg_G3X_DISP3DCNT & ~0x3000) | 8;
     reg_G3X_DISP3DCNT = (reg_G3X_DISP3DCNT & ~0x3000) | 32;
     G3X_SetFog(FALSE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x8000, 0);
-    G3X_SetClearColor(RGB(26, 26, 26), 0, 0x7FFF, 63, FALSE);
+    G3X_SetClearColor(RGB(26, 26, 26), 0, GF_GX_CLEARCOLORDEPTH_MAX, 63, FALSE);
     reg_G3_VIEWPORT = 0xBFFF0000;
 }
 
@@ -1520,7 +1520,7 @@ static void VisitorProfilesPlaces_Draw(VisitorProfilesPlaces *places, VisitorPro
         marker = &places->markers[i];
         ModelInstance_SetPosition(marker, position.x, position.y, position.z);
         if (i == 2) {
-            ModelInstance_SetScale(marker, places->markerScale.x, places->markerScale.y, places->markerScale.z + 410);
+            ModelInstance_SetScale(marker, places->markerScale.x, places->markerScale.y, places->markerScale.z + FX32_CONST(0.1));
         } else {
             ModelInstance_SetScale(marker, places->markerScale.x, places->markerScale.y, places->markerScale.z);
         }
@@ -1617,10 +1617,10 @@ static void VisitorProfilesCamera_Init(VisitorProfilesCamera *camera, VisitorPro
     Camera_SetStaticPtr(camera->camera);
     if (settings.fullGlobe == 0) {
         camera->zoomedIn = 1;
-        camera->distance = 0x50000;
+        camera->distance = FX32_CONST(80);
     } else {
         camera->zoomedIn = 0;
-        camera->distance = 0x128000;
+        camera->distance = FX32_CONST(296);
     }
     Camera_SetDistance(camera->distance, camera->camera);
 }
@@ -1651,22 +1651,22 @@ static int VisitorProfilesCamera_UpdateZoom(VisitorProfilesCamera *camera, Visit
     }
     switch (camera->zoomedIn) {
     case 1:
-        if (camera->distance > 0x58000) {
-            camera->distance -= 0x8000;
+        if (camera->distance > FX32_CONST(88)) {
+            camera->distance -= FX32_CONST(8);
             places->markerScale.x -= 128;
             places->markerScale.y = places->markerScale.x;
         } else {
-            camera->distance = 0x50000;
+            camera->distance = FX32_CONST(80);
             camera->zooming = 0;
         }
         break;
     case 0:
-        if (camera->distance < 0x120000) {
-            camera->distance += 0x8000;
+        if (camera->distance < FX32_CONST(288)) {
+            camera->distance += FX32_CONST(8);
             places->markerScale.x += 128;
             places->markerScale.y = places->markerScale.x;
         } else {
-            camera->distance = 0x128000;
+            camera->distance = FX32_CONST(296);
             camera->zooming = 0;
         }
         break;

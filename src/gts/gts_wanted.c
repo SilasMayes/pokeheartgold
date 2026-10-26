@@ -113,7 +113,7 @@ int GtsWanted_Init(GtsApp *app, int state) {
     args.countryNames = app->countryNames;
     args.pokedex = app->args->pokedex;
     args.johtoDexFlags = app->searchCursor->johtoDexFlags;
-    app->selector = GtsSelector_New(&args, 2, 0);
+    app->selector = GtsSelector_New(&args, GF_BG_LYR_MAIN_2, 0);
     app->state = GTS_WANTED_STATE_START;
     return GTS_APP_STATE_WAIT_FADE_IN;
 }

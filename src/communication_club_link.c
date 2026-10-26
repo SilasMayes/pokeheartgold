@@ -208,7 +208,7 @@ void CommClubLink_HostShowRoom(void) {
         CommPlayerInfo_HostRedistribute();
     }
     if (LinkSync_IsSynced(92)) {
-        BeginNormalPaletteFade((enum FadeMode)0, (enum FadeType)1, (enum FadeType)1, 0, 6, 1, HEAP_ID_FIELD1);
+        BeginNormalPaletteFade((enum FadeMode)0, (enum FadeType)1, (enum FadeType)1, RGB_BLACK, 6, 1, HEAP_ID_FIELD1);
         ResetVisibleHardwareWindows((PMLCDTarget)0);
         ResetVisibleHardwareWindows((PMLCDTarget)1);
         CommPlayerManager_ResyncLocalPlayer();
@@ -271,7 +271,7 @@ void CommClubLink_ChildShowRoom(void) {
         CommPlayerManager_SendLocalPosition(0);
         flag = 1;
         Comm_SendFixedCommand(94, &flag);
-        BeginNormalPaletteFade((enum FadeMode)0, (enum FadeType)1, (enum FadeType)1, 0, 6, 1, HEAP_ID_FIELD1);
+        BeginNormalPaletteFade((enum FadeMode)0, (enum FadeType)1, (enum FadeType)1, RGB_BLACK, 6, 1, HEAP_ID_FIELD1);
         ResetVisibleHardwareWindows((PMLCDTarget)0);
         ResetVisibleHardwareWindows((PMLCDTarget)1);
         CommClubLink_SetState(CommClubLink_WaitOnSpot, 0);

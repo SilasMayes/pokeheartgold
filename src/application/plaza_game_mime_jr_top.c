@@ -507,10 +507,10 @@ static void MimeJrTop_InitGame(MimeJrTopApp *app) {
     ModelInstance_AddAnimation(&model->instance, &model->animations[0]);
     ModelAnimation_SetFrame(&model->animations[0], 0);
     if (app->start.selection) {
-        app->game->top.position.y = -0x8000;
-        app->game->mimeJr[0].position.y = -0x8000;
-        app->game->mimeJr[1].position.y = -0x8000;
-        app->game->mimeJr[2].position.y = -0x8000;
+        app->game->top.position.y = FX32_CONST(-8);
+        app->game->mimeJr[0].position.y = FX32_CONST(-8);
+        app->game->mimeJr[1].position.y = FX32_CONST(-8);
+        app->game->mimeJr[2].position.y = FX32_CONST(-8);
     }
     app->sign = PlazaGameSign_New(SpriteManager_GetSpriteList(app->resources.spriteManager), HEAP_ID_113);
     PaletteData_LoadPaletteSlotFromHardware(app->resources.palette, PLTTBUF_MAIN_OBJ, 0, 0x200);
@@ -570,7 +570,7 @@ static void MimeJrTopGame_RubDemo(MimeJrTopGame *game, int x, int y) {
         MimeJrTopModel_Turn(&game->mimeJr[0], game->lastTouchX, game->lastTouchY, game->lastTouchX, game->lastTouchY, 0.22f, FALSE);
         return;
     }
-    tiltY = game->tilt.y >> 12;
+    tiltY = game->tilt.y >> FX32_SHIFT;
     lean = (100 - tiltY) / 40;
     if (tiltY >= 95) {
         lean = 0.1f;
@@ -1113,15 +1113,15 @@ static void MimeJrTopModel_Load(MimeJrTopModel *model, NARC *narc, int fileId) {
 
 static void MimeJrTopModel_Init(MimeJrTopModel *model, int large) {
     ModelInstance_Init(&model->instance, &model->resource);
-    ModelInstance_SetPosition(&model->instance, 0, -0x14000, 0);
+    ModelInstance_SetPosition(&model->instance, 0, FX32_CONST(-20), 0);
     if (large == 0) {
         ModelInstance_SetScale(&model->instance, FX32_ONE, FX32_ONE, FX32_ONE);
     } else {
-        ModelInstance_SetScale(&model->instance, 0x1800, 0x1800, 0x1800);
+        ModelInstance_SetScale(&model->instance, FX32_CONST(1.5), FX32_CONST(1.5), FX32_CONST(1.5));
     }
     ModelInstance_SetVisible(&model->instance, TRUE);
     model->position.x = 0;
-    model->position.y = -0x14000;
+    model->position.y = FX32_CONST(-20);
     model->position.z = 0;
     model->spinX = 0;
     model->spinY = 0;
@@ -1147,9 +1147,9 @@ static void MimeJrTop_DrawScene(MimeJrTopApp *app) {
     light = gMimeJrTopLightVector;
     VEC_Normalize(&light, &light);
     NNS_G3dGlbLightVector(GX_LIGHTID_0, light.x, light.y, light.z);
-    NNS_G3dGlbLightColor(GX_LIGHTID_0, 32767);
-    NNS_G3dGlbMaterialColorDiffAmb(32767, 32767, FALSE);
-    NNS_G3dGlbMaterialColorSpecEmi(32767, 32767, FALSE);
+    NNS_G3dGlbLightColor(GX_LIGHTID_0, GX_RGB(31, 31, 31));
+    NNS_G3dGlbMaterialColorDiffAmb(GX_RGB(31, 31, 31), GX_RGB(31, 31, 31), FALSE);
+    NNS_G3dGlbMaterialColorSpecEmi(GX_RGB(31, 31, 31), GX_RGB(31, 31, 31), FALSE);
     for (i = 0; i < 8; i++) {
         model = &app->game->audience[i];
         NNS_G3dGeBufferOP_N(G3OP_MTX_PUSH, NULL, 0);
@@ -1235,7 +1235,7 @@ static void MimeJrTop_InitCamera(MimeJrTopApp *app) {
     VecFx32 target = { 0, 0, 0 };
     VecFx32 pos = gMimeJrTopCameraPosition;
     Camera_Init_FromTargetAndPos(&target, &pos, 0xB60, 0, FALSE, app->resources.camera);
-    Camera_SetPerspectiveClippingPlane((fx32)0xFFC18000, 0x3E8000, app->resources.camera);
+    Camera_SetPerspectiveClippingPlane(FX32_CONST(-1000), FX32_CONST(1000), app->resources.camera);
     Camera_SetStaticPtr(app->resources.camera);
 }
 
@@ -1688,7 +1688,7 @@ static MimeJrTopGame *MimeJrTopGame_New(u32 playerCount, u32 localIndex, MimeJrT
 static void MimeJrTopGame_ResetBalance(MimeJrTopGame *game) {
     int i;
     game->tilt.x = 0;
-    game->tilt.y = 0x64000;
+    game->tilt.y = FX32_CONST(100);
     game->tilt.z = 0;
     game->mimeJr[0].spinX = 0;
     game->mimeJr[0].spinY = 0;
@@ -1721,7 +1721,7 @@ static void MimeJrTopGame_Free(MimeJrTopGame *game) {
 }
 
 static BOOL MimeJrTopGame_HasFallen(MimeJrTopGame *game, int unused) {
-    if ((game->tilt.y >> 12) <= 45) {
+    if ((game->tilt.y >> FX32_SHIFT) <= 45) {
         return TRUE;
     }
     return FALSE;
@@ -1729,7 +1729,7 @@ static BOOL MimeJrTopGame_HasFallen(MimeJrTopGame *game, int unused) {
 
 // Mime Jr. wobbles harder the further the top leans.
 static void MimeJrTopGame_UpdateMimeJrAnimation(MimeJrTopGame *game) {
-    int height = game->tilt.y >> 12;
+    int height = game->tilt.y >> FX32_SHIFT;
     if (height < 75 && height > 61) {
         MimeJrTopGame_SetMimeJrAnimation(game, 1);
     } else if (height < 60 && height > 46) {
@@ -1801,7 +1801,7 @@ static void MimeJrTopGame_StartFall(MimeJrTopGame *game) {
 
 // Mime Jr. falls off the side the top leans to (pose 1), lies there (pose 2), then climbs back.
 static void MimeJrTopFall_Task(SysTask *sysTask, MimeJrTopFallTask *task) {
-    int direction = (s16)(task->tilt.z >> 12), a, b;
+    int direction = (s16)(task->tilt.z >> FX32_SHIFT), a, b;
     if (!IsPaletteFadeFinished() || task->resources->connectionLost == TRUE) {
         SysTask_Destroy(sysTask);
         Heap_Free(task);
@@ -1810,18 +1810,18 @@ static void MimeJrTopFall_Task(SysTask *sysTask, MimeJrTopFallTask *task) {
     switch (task->state) {
     case MIME_JR_TOP_FALL_START_HOP:
         if (task->step == MIME_JR_TOP_FALL_STEP_FALL_OFF) {
-            MimeJrTopTween_Init(&task->tweenY, task->mimeJr->position.y, task->mimeJr->position.y + 0xC000, 4);
+            MimeJrTopTween_Init(&task->tweenY, task->mimeJr->position.y, task->mimeJr->position.y + FX32_CONST(12), 4);
             if (direction > 0) {
-                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z + 0x10000, 4);
+                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z + FX32_CONST(16), 4);
             } else {
-                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z - 0x10000, 4);
+                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z - FX32_CONST(16), 4);
             }
         } else {
-            MimeJrTopTween_Init(&task->tweenY, task->mimeJr->position.y, task->mimeJr->position.y + 0x30000, 8);
+            MimeJrTopTween_Init(&task->tweenY, task->mimeJr->position.y, task->mimeJr->position.y + FX32_CONST(48), 8);
             if (direction > 0) {
-                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z - 0x10000, 8);
+                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z - FX32_CONST(16), 8);
             } else {
-                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z + 0x10000, 4);
+                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z + FX32_CONST(16), 4);
             }
         }
         PlaySE(SEQ_SE_DP_DANSA);
@@ -1842,18 +1842,18 @@ static void MimeJrTopFall_Task(SysTask *sysTask, MimeJrTopFallTask *task) {
             MimeJrTop_QuatIdentity(&task->mimeJr->lastTurn);
             MimeJrTopModel_Turn(task->mimeJr, 0, 0, 5, 5, 0.8f, FALSE);
             MimeJrTopModel_Turn(task->mimeJr, 0, 0, -5, -5, 0.8f, FALSE);
-            MimeJrTopTween_Init(&task->tweenY, task->mimeJr->position.y, task->mimeJr->position.y - 0x30000, 8);
+            MimeJrTopTween_Init(&task->tweenY, task->mimeJr->position.y, task->mimeJr->position.y - FX32_CONST(48), 8);
             if (direction > 0) {
-                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z + 0x10000, 8);
+                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z + FX32_CONST(16), 8);
             } else {
-                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z - 0x10000, 8);
+                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z - FX32_CONST(16), 8);
             }
         } else {
-            MimeJrTopTween_Init(&task->tweenY, task->mimeJr->position.y, task->mimeJr->position.y - 0xC000, 4);
+            MimeJrTopTween_Init(&task->tweenY, task->mimeJr->position.y, task->mimeJr->position.y - FX32_CONST(12), 4);
             if (direction > 0) {
-                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z - 0x10000, 4);
+                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z - FX32_CONST(16), 4);
             } else {
-                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z + 0x10000, 4);
+                MimeJrTopTween_Init(&task->tweenZ, task->mimeJr->position.z, task->mimeJr->position.z + FX32_CONST(16), 4);
             }
         }
         task->state++;
@@ -1902,9 +1902,9 @@ static void MimeJrTopFall_Task(SysTask *sysTask, MimeJrTopFallTask *task) {
                 break;
             }
             if (task->selection) {
-                task->mimeJr->position.y = -0x8000;
+                task->mimeJr->position.y = FX32_CONST(-8);
             } else {
-                task->mimeJr->position.y = -0x14000;
+                task->mimeJr->position.y = FX32_CONST(-20);
             }
             task->mimeJr->position.z = 0;
             SysTask_Destroy(sysTask);
@@ -1930,9 +1930,9 @@ static void MimeJrTopRivalFall_Task(SysTask *sysTask, void *data) {
         task->timer = 0;
         ManagedSprite_GetSpritePositionFxXY(task->face, &x, &y);
         if (task->step == MIME_JR_TOP_FALL_STEP_FALL_OFF) {
-            MimeJrTopTween_Init(&task->tween, y, y + 0x20000, 0x10);
+            MimeJrTopTween_Init(&task->tween, y, y + FX32_CONST(32), 0x10);
         } else {
-            MimeJrTopTween_Init(&task->tween, y, y - 0x20000, 4);
+            MimeJrTopTween_Init(&task->tween, y, y - FX32_CONST(32), 4);
         }
         task->state++;
         return;
@@ -1990,7 +1990,7 @@ static void MimeJrTopRivalTier_Task(SysTask *sysTask, void *data) {
             roundedFloat = y * 4096.0f - 0.5f;
         }
         rounded = (s32)roundedFloat;
-        MimeJrTopTween_Init(&task->tween, rounded, 0x2000, 2);
+        MimeJrTopTween_Init(&task->tween, rounded, FX32_CONST(2), 2);
         ((MimeJrTopSetPaletteOffsetFunc)ManagedSprite_SetPaletteOverrideOffset)(task->sprite, *task->current - 1);
         task->state++;
     case MIME_JR_TOP_RIVAL_TIER_GROW:
@@ -2002,7 +2002,7 @@ static void MimeJrTopRivalTier_Task(SysTask *sysTask, void *data) {
         }
         return;
     case MIME_JR_TOP_RIVAL_TIER_START_SHRINK:
-        MimeJrTopTween_Init(&task->tween, 0x2000, 0x666, 4);
+        MimeJrTopTween_Init(&task->tween, FX32_CONST(2), FX32_CONST(0.4), 4);
         task->state++;
     case MIME_JR_TOP_RIVAL_TIER_SHRINK:
         done = MimeJrTopTween_Update(&task->tween);
@@ -2017,9 +2017,9 @@ static void MimeJrTopRivalTier_Task(SysTask *sysTask, void *data) {
             task->state = MIME_JR_TOP_RIVAL_TIER_START_GROW;
         } else {
             if (task->mode == 0) {
-                MimeJrTopTween_Init(&task->tween, 0x666, 0xCCD, 2);
+                MimeJrTopTween_Init(&task->tween, FX32_CONST(0.4), FX32_CONST(0.8), 2);
             } else {
-                MimeJrTopTween_Init(&task->tween, 0xCCD, 0x666, 4);
+                MimeJrTopTween_Init(&task->tween, FX32_CONST(0.8), FX32_CONST(0.4), 4);
             }
             task->state++;
         }
@@ -2111,10 +2111,10 @@ static void MimeJrTopTierModels_Task(SysTask *sysTask, MimeJrTopTierModelsTask *
         MimeJrTopModel_Turn(modelB, 0, 0, 5, 5, 0.8f, FALSE);
         MimeJrTopModel_Turn(modelB, 0, 0, -5, -5, 0.8f, FALSE);
         if (task->selection) {
-            ModelInstance_SetPosition(&modelA->instance, 0, -0x8000, 0);
-            ModelInstance_SetPosition(&modelB->instance, 0, -0x8000, 0);
-            modelA->position.y = -0x8000;
-            modelB->position.y = -0x8000;
+            ModelInstance_SetPosition(&modelA->instance, 0, FX32_CONST(-8), 0);
+            ModelInstance_SetPosition(&modelB->instance, 0, FX32_CONST(-8), 0);
+            modelA->position.y = FX32_CONST(-8);
+            modelB->position.y = FX32_CONST(-8);
         }
         task->state++;
         return;
@@ -2349,7 +2349,7 @@ static void MimeJrTopGame_HandleTouch(MimeJrTopGame *game) {
         MimeJrTopModel_Turn(&game->mimeJr[0], game->lastTouchX, game->lastTouchY, game->lastTouchX, game->lastTouchY, 0.22f, FALSE);
         return;
     }
-    tiltY = game->tilt.y >> 12;
+    tiltY = game->tilt.y >> FX32_SHIFT;
     lean = (100 - tiltY) / 40;
     if (tiltY >= 95) {
         lean = 0.1f;
@@ -2438,8 +2438,8 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
                     game->kickY.value -= oldY;
                 }
             } else {
-                x = game->kickX.value >> 12;
-                y = (s16)(game->kickY.value >> 12);
+                x = game->kickX.value >> FX32_SHIFT;
+                y = (s16)(game->kickY.value >> FX32_SHIFT);
             }
         } else {
             int s1, s2;
@@ -2469,16 +2469,16 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
         game->wobbleDue = TRUE;
     }
     if (!game->touched && game->settled == TRUE) {
-        y = (s16)(game->settleY.value >> 12);
-        x = game->settleX.value >> 12;
+        y = (s16)(game->settleY.value >> FX32_SHIFT);
+        x = game->settleX.value >> FX32_SHIFT;
         MimeJrTopModel_Turn(&game->top, 0, 0, x, y, 1.88f, FALSE);
         if (MimeJrTopModel_Turn(&game->mimeJr[0], 0, 0, x, y, 0.8f, FALSE)) {
             settleAxis = gMimeJrTopSettleTiltAxis;
             MTX_MultVec43(&settleAxis, &game->mimeJr[0].rotationFx, &game->tilt);
         }
     } else if (game->touched == TRUE && game->settled == TRUE) {
-        y = (s16)(game->settleY.value >> 12);
-        x = game->settleX.value >> 12;
+        y = (s16)(game->settleY.value >> FX32_SHIFT);
+        x = game->settleX.value >> FX32_SHIFT;
         MimeJrTopModel_Turn(&game->top, 0, 0, x, y, 1.88f, FALSE);
         if (MimeJrTopModel_Turn(&game->mimeJr[0], 0, 0, x, y, 0.8f, FALSE)) {
             settleTouchAxis = gMimeJrTopSettleTouchTiltAxis;
@@ -2501,8 +2501,8 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
         total += gMimeJrTopWobbleChoices[game->tier][i + 1].weight;
     }
     speed = gMimeJrTopWobbleChoices[game->tier][i].speed;
-    dx = game->tilt.x >> 12;
-    dz = game->tilt.z >> 12;
+    dx = game->tilt.x >> FX32_SHIFT;
+    dz = game->tilt.z >> FX32_SHIFT;
     if (game->tilt.z == 0) {
         if (LCRandom() % 2) {
             sy = 1;
@@ -2668,7 +2668,7 @@ static BOOL MimeJrTopTween_UpdateAccel(MimeJrTopTween *tween) {
     int t = tween->frame;
     fx32 a = (fx32)(((s64)tween->velocity * (t << 12) + 2048) >> 12);
     fx32 b = (fx32)(((s64)tween->delta * ((t * t) << 12) + 2048) >> 12);
-    tween->value = tween->start + (a + FX_Div(b, 8192));
+    tween->value = tween->start + (a + FX_Div(b, FX32_CONST(2)));
     t = tween->frame;
     b = tween->duration;
     t++;
@@ -2745,8 +2745,8 @@ static void MimeJrTopBurst_Task(SysTask *sysTask, MimeJrTopBurst *burst) {
         yTween = &burst->tweens[0][1];
         for (; i < 3; i++) {
             ManagedSprite_GetSpritePositionFxXY(cur->sprites[0], &x, &y);
-            MimeJrTopTween_InitAccel(xTween, x, x + *xOffset, 0x4CD, 8);
-            MimeJrTopTween_InitAccel(yTween, y, y + *yOffset, 0x333, 8);
+            MimeJrTopTween_InitAccel(xTween, x, x + *xOffset, FX32_CONST(0.3), 8);
+            MimeJrTopTween_InitAccel(yTween, y, y + *yOffset, FX32_CONST(0.2), 8);
             cur = (MimeJrTopBurst *)((u8 *)cur + 4);
             xOffset++;
             xTween += 2;
@@ -3370,20 +3370,20 @@ static void MimeJrTopDance_SlideIn(MimeJrTopDance *dance) {
     int i;
     switch (dance->slideState) {
     case MIME_JR_TOP_SLIDE_START:
-        MimeJrTopTween_Init(&dance->slides[0], 0, 0x28000, 10);
-        MimeJrTopTween_Init(&dance->slides[1], 0, 0x50000, 10);
-        MimeJrTopTween_Init(&dance->slides[2], 0, -0x50000, 10);
+        MimeJrTopTween_Init(&dance->slides[0], 0, FX32_CONST(40), 10);
+        MimeJrTopTween_Init(&dance->slides[1], 0, FX32_CONST(80), 10);
+        MimeJrTopTween_Init(&dance->slides[2], 0, FX32_CONST(-80), 10);
         dance->slideState++;
         break;
     case MIME_JR_TOP_SLIDE_MOVE:
         for (i = 0; i < 3; i++) {
             done[i] = MimeJrTopTween_Update(&dance->slides[i]);
         }
-        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_3, BG_POS_OP_SET_Y, dance->slides[0].value >> 12);
-        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_X, dance->slides[1].value >> 12);
-        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_2, BG_POS_OP_SET_X, dance->slides[2].value >> 12);
-        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_X, dance->slides[1].value >> 12);
-        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_X, dance->slides[2].value >> 12);
+        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_3, BG_POS_OP_SET_Y, dance->slides[0].value >> FX32_SHIFT);
+        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_X, dance->slides[1].value >> FX32_SHIFT);
+        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_2, BG_POS_OP_SET_X, dance->slides[2].value >> FX32_SHIFT);
+        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_X, dance->slides[1].value >> FX32_SHIFT);
+        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_X, dance->slides[2].value >> FX32_SHIFT);
         if (done[0] && done[1] && done[2]) {
             dance->slideState++;
         }
@@ -3409,20 +3409,20 @@ static void MimeJrTopDance_SlideOut(MimeJrTopDance *dance) {
     int i;
     switch (dance->slideState) {
     case MIME_JR_TOP_SLIDE_START:
-        MimeJrTopTween_Init(&dance->slides[0], 0x28000, 0, 10);
-        MimeJrTopTween_Init(&dance->slides[1], 0x50000, 0, 10);
-        MimeJrTopTween_Init(&dance->slides[2], -0x50000, 0, 10);
+        MimeJrTopTween_Init(&dance->slides[0], FX32_CONST(40), 0, 10);
+        MimeJrTopTween_Init(&dance->slides[1], FX32_CONST(80), 0, 10);
+        MimeJrTopTween_Init(&dance->slides[2], FX32_CONST(-80), 0, 10);
         dance->slideState++;
         break;
     case MIME_JR_TOP_SLIDE_MOVE:
         for (i = 0; i < 3; i++) {
             done[i] = MimeJrTopTween_Update(&dance->slides[i]);
         }
-        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_3, BG_POS_OP_SET_Y, dance->slides[0].value >> 12);
-        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_X, dance->slides[1].value >> 12);
-        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_2, BG_POS_OP_SET_X, dance->slides[2].value >> 12);
-        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_X, dance->slides[1].value >> 12);
-        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_X, dance->slides[2].value >> 12);
+        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_3, BG_POS_OP_SET_Y, dance->slides[0].value >> FX32_SHIFT);
+        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_1, BG_POS_OP_SET_X, dance->slides[1].value >> FX32_SHIFT);
+        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_SUB_2, BG_POS_OP_SET_X, dance->slides[2].value >> FX32_SHIFT);
+        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_X, dance->slides[1].value >> FX32_SHIFT);
+        ScheduleSetBgPosText(dance->resources->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SET_X, dance->slides[2].value >> FX32_SHIFT);
         if (done[0] && done[1] && done[2]) {
             dance->slideState++;
         }
@@ -3608,14 +3608,14 @@ static BOOL MimeJrTopDancer_Slide(MimeJrTopDancer *dancer, int speed, s32 xdir, 
     case MIME_JR_TOP_DANCER_START:
         ManagedSprite_GetPositionFxXYWithSubscreenOffset(dancer->sprite, &x, &y, FX32_CONST(256));
         if (xdir == 0) {
-            MimeJrTopTween_Init(&dancer->tweenX, x, x - 0xb4000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenX, x, x - FX32_CONST(180), MimeJrTop_GetDanceStepFrames(speed));
         } else {
-            MimeJrTopTween_Init(&dancer->tweenX, x, x + 0xb4000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenX, x, x + FX32_CONST(180), MimeJrTop_GetDanceStepFrames(speed));
         }
         if (ydir == 2) {
-            MimeJrTopTween_Init(&dancer->tweenY, y, y - 0x18000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenY, y, y - FX32_CONST(24), MimeJrTop_GetDanceStepFrames(speed));
         } else {
-            MimeJrTopTween_Init(&dancer->tweenY, y, y + 0x18000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenY, y, y + FX32_CONST(24), MimeJrTop_GetDanceStepFrames(speed));
         }
         dancer->state++;
     case MIME_JR_TOP_DANCER_MOVE:
@@ -3637,14 +3637,14 @@ static BOOL MimeJrTopDancer_EnterLow(MimeJrTopDancer *dancer, int speed, s32 xdi
     switch (dancer->state) {
     case MIME_JR_TOP_DANCER_START:
         if (xdir == 0) {
-            MimeJrTopTween_Init(&dancer->tweenX, 0x134000, 0x80000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenX, FX32_CONST(308), FX32_CONST(128), MimeJrTop_GetDanceStepFrames(speed));
         } else {
-            MimeJrTopTween_Init(&dancer->tweenX, -0x3e000, 0x80000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenX, FX32_CONST(-62), FX32_CONST(128), MimeJrTop_GetDanceStepFrames(speed));
         }
         if (ydir == 2) {
-            MimeJrTopTween_Init(&dancer->tweenY, 0xa0000, 0x88000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenY, FX32_CONST(160), FX32_CONST(136), MimeJrTop_GetDanceStepFrames(speed));
         } else {
-            MimeJrTopTween_Init(&dancer->tweenY, 0xa0000, 0xb8000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenY, FX32_CONST(160), FX32_CONST(184), MimeJrTop_GetDanceStepFrames(speed));
         }
         dancer->state++;
     case MIME_JR_TOP_DANCER_MOVE:
@@ -3666,14 +3666,14 @@ static BOOL MimeJrTopDancer_EnterHigh(MimeJrTopDancer *dancer, int speed, s32 xd
     switch (dancer->state) {
     case MIME_JR_TOP_DANCER_START:
         if (xdir == 0) {
-            MimeJrTopTween_Init(&dancer->tweenX, 0x134000, 0x80000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenX, FX32_CONST(308), FX32_CONST(128), MimeJrTop_GetDanceStepFrames(speed));
         } else {
-            MimeJrTopTween_Init(&dancer->tweenX, -0x3e000, 0x80000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenX, FX32_CONST(-62), FX32_CONST(128), MimeJrTop_GetDanceStepFrames(speed));
         }
         if (ydir == 2) {
-            MimeJrTopTween_Init(&dancer->tweenY, 0x60000, 0x48000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenY, FX32_CONST(96), FX32_CONST(72), MimeJrTop_GetDanceStepFrames(speed));
         } else {
-            MimeJrTopTween_Init(&dancer->tweenY, 0x60000, 0x78000, MimeJrTop_GetDanceStepFrames(speed));
+            MimeJrTopTween_Init(&dancer->tweenY, FX32_CONST(96), FX32_CONST(120), MimeJrTop_GetDanceStepFrames(speed));
         }
         dancer->state++;
     case MIME_JR_TOP_DANCER_MOVE:

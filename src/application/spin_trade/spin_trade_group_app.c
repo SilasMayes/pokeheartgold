@@ -468,7 +468,7 @@ BOOL SpinTradeGroupApp_Init(OverlayManager *manager, int *state) {
         CommState_SetSpinTradeLinkMode();
         CommState_SetMaxEntries(3);
         if (!Comm_GetLocalNetId()) {
-            UnionRoom_SetBeaconActivity(13);
+            UnionRoom_SetBeaconActivity(UNION_ACTIVITY_SPIN_TRADE_RECRUIT);
         }
         WirelessStatusIcon_Create();
         app->blinkTask = SysTask_CreateOnVBlankQueue(SpinTradeGroup_VBlankTask, app, 5);
@@ -689,12 +689,12 @@ static void SpinTradeGroup_InitSpriteResources(SpinTradeGroupApp *app, NARC *nar
     OamManager_Create(0, 0x7E, 0, 0x20, 0, 0x7E, 0, 0x20, HEAP_ID_102);
     app->spriteList = G2dRenderer_Init(0x1E, &app->renderer, HEAP_ID_102);
     GF_ASSERT(app->spriteList != NULL);
-    G2dRenderer_SetSubSurfaceCoords(&app->renderer, 0, 0x100000);
+    G2dRenderer_SetSubSurfaceCoords(&app->renderer, 0, FX32_CONST(256));
     for (i = 0; i < 4; i++) {
         app->resMan[i] = Create2DGfxResObjMan(3, (GfGfxResType)i, HEAP_ID_102);
     }
-    app->charRes = AddCharResObjFromOpenNarc(app->resMan[0], narc, 0xC, TRUE, 2, 1, HEAP_ID_102);
-    app->plttRes = AddPlttResObjFromOpenNarc(app->resMan[1], narc, 1, FALSE, 2, 1, 0xF, HEAP_ID_102);
+    app->charRes = AddCharResObjFromOpenNarc(app->resMan[0], narc, 0xC, TRUE, 2, NNS_G2D_VRAM_TYPE_2DMAIN, HEAP_ID_102);
+    app->plttRes = AddPlttResObjFromOpenNarc(app->resMan[1], narc, 1, FALSE, 2, NNS_G2D_VRAM_TYPE_2DMAIN, 0xF, HEAP_ID_102);
     app->cellRes = AddCellOrAnimResObjFromOpenNarc(app->resMan[2], narc, 0xD, TRUE, 2, GF_GFX_RES_TYPE_CELL, HEAP_ID_102);
     app->animRes = AddCellOrAnimResObjFromOpenNarc(app->resMan[3], narc, 0xE, TRUE, 2, GF_GFX_RES_TYPE_ANIM, HEAP_ID_102);
     SpriteTransfer_CreateCharTransferTask(app->charRes);
@@ -709,9 +709,9 @@ static void SpinTradeGroup_CreateAvatarSprites(SpinTradeGroupApp *app) {
     tmpl.spriteList = app->spriteList;
     tmpl.header = &app->resHeader;
     tmpl.position.z = 0;
-    tmpl.scale.x = 0x1000;
-    tmpl.scale.y = 0x1000;
-    tmpl.scale.z = 0x1000;
+    tmpl.scale.x = FX32_ONE;
+    tmpl.scale.y = FX32_ONE;
+    tmpl.scale.z = FX32_ONE;
     tmpl.rotation = 0;
     tmpl.drawPriority = 1;
     tmpl.whichScreen = (NNS_G2D_VRAM_TYPE)1;
@@ -724,8 +724,8 @@ static void SpinTradeGroup_CreateAvatarSprites(SpinTradeGroupApp *app) {
         Sprite_SetAnimCtrlSeq(app->avatars[i], (i - 1) * 2 + 0x1B);
         Sprite_SetDrawFlag(app->avatars[i], FALSE);
     }
-    tmpl.position.x = 0x18000;
-    tmpl.position.y = 0x1A0000;
+    tmpl.position.x = FX32_CONST(24);
+    tmpl.position.y = FX32_CONST(416);
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
 }
@@ -979,7 +979,7 @@ static int SpinTradeGroup_State_HandleConfirmYesNo(SpinTradeGroupApp *app, int s
             } else if (Comm_GetLocalNetId() == 0) {
                 app->subState = SPIN_TRADE_GROUP_STATE_SEND_START_SYNC;
                 app->startMemberCount = SpinTradeGroup_CountMembers();
-                UnionRoom_SetBeaconActivity(0xC);
+                UnionRoom_SetBeaconActivity(UNION_ACTIVITY_SPIN_TRADE);
             } else {
                 GF_ASSERT(FALSE);
             }
@@ -1056,7 +1056,7 @@ static int SpinTradeGroup_State_ShowCanceled(SpinTradeGroupApp *app, int state) 
 static int SpinTradeGroup_State_FadeOutCanceled(SpinTradeGroupApp *app, int state) {
     app->timer++;
     if (app->timer > 0x3C) {
-        BeginNormalPaletteFade(0, 0x10, 0x10, 0, 0x10, 1, HEAP_ID_102);
+        BeginNormalPaletteFade(0, 0x10, 0x10, RGB_BLACK, 0x10, 1, HEAP_ID_102);
         state = 3;
     }
     SpinTradeGroup_UpdateDummy(app);
@@ -1131,7 +1131,7 @@ static int SpinTradeGroup_State_StartExitSync(SpinTradeGroupApp *app, int state)
 static int SpinTradeGroup_State_WaitExitSync(SpinTradeGroupApp *app, int state) {
     if (LinkSync_IsSynced(0xCA)) {
         CommState_SetErrorWatch(0, 0);
-        BeginNormalPaletteFade(0, 0x10, 0x10, 0, 0x10, 1, HEAP_ID_102);
+        BeginNormalPaletteFade(0, 0x10, 0x10, RGB_BLACK, 0x10, 1, HEAP_ID_102);
         state = 3;
     }
     SpinTradeGroup_UpdateDummy(app);
@@ -1205,8 +1205,8 @@ static int SpinTradeGroup_State_WaitMemberLeft(SpinTradeGroupApp *app, int state
 
 static int SpinTradeGroup_State_Proceed(SpinTradeGroupApp *app, int state) {
 #pragma unused(state)
-    UnionRoom_SetBeaconActivity(0xC);
-    BeginNormalPaletteFade(0, 0x10, 0x10, 0, 0x10, 1, HEAP_ID_102);
+    UnionRoom_SetBeaconActivity(UNION_ACTIVITY_SPIN_TRADE);
+    BeginNormalPaletteFade(0, 0x10, 0x10, RGB_BLACK, 0x10, 1, HEAP_ID_102);
     app->result = 1;
     SpinTradeGroup_UpdateDummy(app);
     return 3;
@@ -1310,7 +1310,7 @@ static void SpinTradeGroup_CycleHighlightColor(u16 *p) {
     if (*p > 360) {
         *p = 0;
     }
-    color = (((GF_SinDeg(*p) * 10) / 0x1000) + 15) << 5 | 29;
+    color = (((GF_SinDeg(*p) * 10) / FX32_ONE) + 15) << 5 | 29;
     GX_LoadOBJPltt(&color, 10, 2);
     GX_LoadOBJPltt(&color, 42, 2);
 }
@@ -1568,7 +1568,7 @@ static int SpinTradeGroup_CheckMembers(SpinTradeGroupApp *app, int extraEntries)
     case 2:
     case 3:
     case 4:
-        UnionRoom_SetBeaconActivity(0xD);
+        UnionRoom_SetBeaconActivity(UNION_ACTIVITY_SPIN_TRADE_RECRUIT);
         if (memberCount < (int)app->lastMemberCount) {
             switch (app->maxEntriesMode) {
             case 0:
@@ -1582,7 +1582,7 @@ static int SpinTradeGroup_CheckMembers(SpinTradeGroupApp *app, int extraEntries)
         }
         break;
     case 5:
-        UnionRoom_SetBeaconActivity(0xC);
+        UnionRoom_SetBeaconActivity(UNION_ACTIVITY_SPIN_TRADE);
         SpinTradeGroup_SetMaxConnections(app, extraEntries);
         break;
     }

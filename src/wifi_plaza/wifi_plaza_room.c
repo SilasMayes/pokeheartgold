@@ -23,7 +23,7 @@
 #include "palette.h"
 #include "pokemon.h"
 #include "render_text.h"
-#include "screen_fade_legacy.h"
+#include "screen_fade.h"
 #include "sound_playback.h"
 #include "sprite_transfer.h"
 #include "swap_3d_buffers.h"
@@ -369,7 +369,7 @@ BOOL WiFiPlazaRoom_Main(OverlayManager *manager, int *state) {
     OverlayManager_GetArgs(manager);
     switch (*state) {
     case WIFI_PLAZA_ROOM_FADE_IN:
-        BeginNormalPaletteFade(0, 1, 1, 0, 6, 1, (enum HeapID)0x77);
+        BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, HEAP_ID_119);
         room->fading = TRUE;
         (*state)++;
         break;
@@ -438,11 +438,11 @@ BOOL WiFiPlazaRoom_Main(OverlayManager *manager, int *state) {
     case WIFI_PLAZA_ROOM_FADE_OUT:
         result = WiFiPlazaInfoPanel_GetState(&room->infoPanel);
         if (result == WIFI_PLAZA_PANEL_IDLE) {
-            BeginNormalPaletteFade(0, 0, 0, 0, 6, 1, (enum HeapID)0x77);
+            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, HEAP_ID_119);
             room->fading = TRUE;
             (*state)++;
         } else if (result == WIFI_PLAZA_PANEL_WAIT_START) {
-            BeginNormalPaletteFade(0, 0, 0, 0, 6, 1, (enum HeapID)0x77);
+            BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, HEAP_ID_119);
             room->fading = TRUE;
             (*state)++;
         }
@@ -703,7 +703,7 @@ void WiFiPlazaRoom_BufferPlayerName(WiFiPlazaRoomWork *room, u32 playerIndex, u3
     } else {
         player = WiFiPlazaWork_GetPlayer(room->lobby, playerIndex);
     }
-    WiFiPlazaPlayer_CopyToProfile(player, profile, (enum HeapID)0x77);
+    WiFiPlazaPlayer_CopyToProfile(player, profile, HEAP_ID_119);
     WiFiPlazaRoomMsg_BufferPlayerName(&room->msg, profile, field);
     Heap_Free(profile);
 }
@@ -921,7 +921,7 @@ static void WiFiPlazaRoom_Setup3D(void) {
     G3X_EdgeMarking(TRUE);
     G3X_SetEdgeColorTable(sWiFiPlazaRoomEdgeColors);
     G3X_SetFog(FALSE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x8000, 0);
-    G3X_SetClearColor(GX_RGB(26, 26, 26), 0, 0x7FFF, 63, FALSE);
+    G3X_SetClearColor(GX_RGB(26, 26, 26), 0, GF_GX_CLEARCOLORDEPTH_MAX, 63, FALSE);
     G3_ViewPort(0, 0, 255, 191);
     NNS_G3dGlbLightVector(GX_LIGHTID_0, -2043, -3548, 110);
 
@@ -1631,7 +1631,7 @@ static void WiFiPlazaInfoPanel_Update(WiFiPlazaInfoPanel *panel, WiFiPlazaRoomWo
         }
         break;
     case WIFI_PLAZA_PANEL_FADE_OUT_START:
-        BeginNormalPaletteFade(4, 0, 0, RGB_WHITE, 4, 1, heapID);
+        BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_WHITE, 4, 1, heapID);
         panel->state++;
         break;
     case WIFI_PLAZA_PANEL_SHOW_START_CARD:
@@ -1646,7 +1646,7 @@ static void WiFiPlazaInfoPanel_Update(WiFiPlazaInfoPanel *panel, WiFiPlazaRoomWo
         }
         break;
     case WIFI_PLAZA_PANEL_FADE_IN_START:
-        BeginNormalPaletteFade(4, 1, 1, RGB_WHITE, 6, 1, heapID);
+        BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_WHITE, 6, 1, heapID);
         panel->state++;
         break;
     case WIFI_PLAZA_PANEL_WAIT_FADE_IN_START:
@@ -1692,7 +1692,7 @@ static void WiFiPlazaInfoPanel_Update(WiFiPlazaInfoPanel *panel, WiFiPlazaRoomWo
         }
         break;
     case WIFI_PLAZA_PANEL_FADE_OUT:
-        BeginNormalPaletteFade(4, 1, 0, 0, 3, 1, heapID);
+        BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 3, 1, heapID);
         panel->state++;
         break;
     case WIFI_PLAZA_PANEL_HIDE_PAGE:
@@ -1758,7 +1758,7 @@ static void WiFiPlazaInfoPanel_Update(WiFiPlazaInfoPanel *panel, WiFiPlazaRoomWo
         panel->state++;
         break;
     case WIFI_PLAZA_PANEL_FADE_IN:
-        BeginNormalPaletteFade(4, 1, 1, 0, 3, 1, heapID);
+        BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 3, 1, heapID);
         if (panel->page == WIFI_PLAZA_PANEL_PAGE_PLAYER_CARD) {
             WiFiPlazaPlayerCard_Update(&panel->card, &room->signWindow);
         }

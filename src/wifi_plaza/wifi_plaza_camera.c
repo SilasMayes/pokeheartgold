@@ -27,7 +27,7 @@ WiFiPlazaCamera *WiFiPlazaCamera_Create(enum HeapID heapID) {
     camera->camera = Camera_New(heapID);
     Camera_Init_FromTargetDistanceAndAngle(&camera->target, 0x29AEC1, &sWiFiPlazaCameraAngle, 0x5C1, 0, TRUE, camera->camera);
     Camera_SetStaticPtr(camera->camera);
-    Camera_SetPerspectiveClippingPlane(0x96000, 0x384000, camera->camera);
+    Camera_SetPerspectiveClippingPlane(FX32_CONST(150), FX32_CONST(900), camera->camera);
     return camera;
 }
 
@@ -40,8 +40,8 @@ void WiFiPlazaCamera_Delete(WiFiPlazaCamera *camera) {
 void WiFiPlazaCamera_Update(WiFiPlazaCamera *camera) {
     if (camera->followObject != NULL) {
         WiFiPlazaObj_GetPosition(camera->followObject, &camera->target);
-        camera->target.x += 0x8000;
-        camera->target.z -= 0x20000;
+        camera->target.x += FX32_CONST(8);
+        camera->target.z -= FX32_CONST(32);
     }
     Camera_PushLookAtToNNSGlb();
 }
@@ -53,9 +53,9 @@ void WiFiPlazaCamera_SetTarget(WiFiPlazaCamera *camera, fx32 x, fx32 y, fx32 z) 
 }
 
 void WiFiPlazaCamera_SetTargetWithOffset(WiFiPlazaCamera *camera, fx32 x, fx32 y, fx32 z) {
-    camera->target.x = x + 0x8000;
+    camera->target.x = x + FX32_CONST(8);
     camera->target.y = y;
-    camera->target.z = z - 0x20000;
+    camera->target.z = z - FX32_CONST(32);
 }
 
 void WiFiPlazaCamera_SetFollowObject(WiFiPlazaCamera *camera, WiFiPlazaObj *object) {

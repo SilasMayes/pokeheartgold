@@ -269,8 +269,8 @@ BOOL GlobalTerminalConnect_Init(OverlayManager *manager, int *state) {
     GfGfx_DisableEngineBPlanes();
     GX_SetVisiblePlane(GX_PLANEMASK_NONE);
     GXS_SetVisiblePlane(GX_PLANEMASK_NONE);
-    GX_SetVisibleWnd(0);
-    GXS_SetVisibleWnd(0);
+    GX_SetVisibleWnd(GX_WNDMASK_NONE);
+    GXS_SetVisibleWnd(GX_WNDMASK_NONE);
     G2_BlendNone();
     G2S_BlendNone();
     Heap_Create(HEAP_ID_3, HEAP_ID_124, 0x50000);

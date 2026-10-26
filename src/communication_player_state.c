@@ -303,7 +303,7 @@ BOOL CommPlayerInfo_RulesetsMatch(void) {
         if (!Comm_IsNetIdConnected((u16)(i + 1))) {
             continue;
         }
-        if (sCommPlayerInfo->status[i + 1] == 0) {
+        if (sCommPlayerInfo->status[i + 1] == COMM_PLAYER_STATUS_NONE) {
             continue;
         }
         for (j = 0; j < (int)sizeof(CommPlayerRules); j++) {

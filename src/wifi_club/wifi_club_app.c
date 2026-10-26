@@ -938,17 +938,17 @@ BOOL WifiClub_Init(OverlayManager *man, int *state) {
         WifiClubArgs *overlayArgs = OverlayManager_GetArgs(man);
         if (CommState_IsWifi()) {
             switch (overlayArgs->choice) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 12:
+            case WIFI_CLUB_BATTLE_SINGLE_LV50:
+            case WIFI_CLUB_BATTLE_SINGLE_LV100:
+            case WIFI_CLUB_BATTLE_SINGLE_FREE:
+            case WIFI_CLUB_BATTLE_DOUBLE_LV50:
+            case WIFI_CLUB_BATTLE_DOUBLE_LV100:
+            case WIFI_CLUB_BATTLE_DOUBLE_FREE:
+            case WIFI_CLUB_TRADE:
+            case WIFI_CLUB_EXIT:
+            case WIFI_CLUB_WIFI_SETTINGS:
+            case WIFI_CLUB_CANCEL:
+            case WIFI_CLUB_FRONTIER:
                 Heap_Create(HEAP_ID_3, HEAP_ID_128, 0x10000);
                 break;
             }
@@ -956,7 +956,7 @@ BOOL WifiClub_Init(OverlayManager *man, int *state) {
             Heap_Create(HEAP_ID_3, HEAP_ID_128, 0x10000);
         }
         HandleLoadOverlay(FS_OVERLAY_ID(OVY_42), OVY_LOAD_ASYNC);
-        if (overlayArgs->choice == 1) {
+        if (overlayArgs->choice == WIFI_CLUB_BATTLE_SINGLE_LV50) {
             Heap_Create(HEAP_ID_3, HEAP_ID_53, 0x70000);
         } else {
             Heap_Create(HEAP_ID_3, HEAP_ID_53, 0xA0000);
@@ -1112,52 +1112,52 @@ void WifiClub_InitBgs(BgConfig *bgConfig) {
     SetBothScreensModesAndDisable(&graphicsModes);
 
     BgTemplate bgTemplate0 = sWifiClubBgTemplate_Main0;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_0, &bgTemplate0, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_0, &bgTemplate0, GF_BG_TYPE_TEXT);
     BG_ClearCharDataRange(GF_BG_LYR_MAIN_0, 32, 0, HEAP_ID_53);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_MAIN_0);
 
     BgTemplate bgTemplate1 = sWifiClubBgTemplate_Main1;
-    InitBgFromTemplate(bgConfig, 1, &bgTemplate1, 0);
-    BG_ClearCharDataRange(1, 32, 0, HEAP_ID_53);
-    BgClearTilemapBufferAndCommit(bgConfig, 1);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_1, &bgTemplate1, GF_BG_TYPE_TEXT);
+    BG_ClearCharDataRange(GF_BG_LYR_MAIN_1, 32, 0, HEAP_ID_53);
+    BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_MAIN_1);
 
     BgTemplate bgTemplate2 = sWifiClubBgTemplate_Main2;
-    InitBgFromTemplate(bgConfig, 2, &bgTemplate2, 0);
-    BG_ClearCharDataRange(2, 32, 0, HEAP_ID_53);
-    BgClearTilemapBufferAndCommit(bgConfig, 2);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_2, &bgTemplate2, GF_BG_TYPE_TEXT);
+    BG_ClearCharDataRange(GF_BG_LYR_MAIN_2, 32, 0, HEAP_ID_53);
+    BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_MAIN_2);
 
     BgTemplate bgTemplate3 = sWifiClubBgTemplate_Main3;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_3, &bgTemplate3, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_MAIN_3, &bgTemplate3, GF_BG_TYPE_TEXT);
     BG_ClearCharDataRange(GF_BG_LYR_MAIN_3, 32, 0, HEAP_ID_53);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_MAIN_3);
 
     BgTemplate bgTemplate4 = sWifiClubBgTemplate_Sub0;
-    InitBgFromTemplate(bgConfig, 4, &bgTemplate4, 0);
-    BgClearTilemapBufferAndCommit(bgConfig, 4);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_0, &bgTemplate4, GF_BG_TYPE_TEXT);
+    BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_0);
 
     BgTemplate bgTemplate5 = sWifiClubBgTemplate_Sub1;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_1, &bgTemplate5, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_1, &bgTemplate5, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_1);
 
     BgTemplate bgTemplate6 = sWifiClubBgTemplate_Sub2;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_2, &bgTemplate6, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_2, &bgTemplate6, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_2);
 
     BgTemplate bgTemplate7 = sWifiClubBgTemplate_Sub3;
-    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_3, &bgTemplate7, 0);
+    InitBgFromTemplate(bgConfig, GF_BG_LYR_SUB_3, &bgTemplate7, GF_BG_TYPE_TEXT);
     BgClearTilemapBufferAndCommit(bgConfig, GF_BG_LYR_SUB_3);
     BG_ClearCharDataRange(GF_BG_LYR_MAIN_0, 32, 0, HEAP_ID_53);
-    BG_ClearCharDataRange(1, 32, 0, HEAP_ID_53);
-    BG_ClearCharDataRange(2, 32, 0, HEAP_ID_53);
+    BG_ClearCharDataRange(GF_BG_LYR_MAIN_1, 32, 0, HEAP_ID_53);
+    BG_ClearCharDataRange(GF_BG_LYR_MAIN_2, 32, 0, HEAP_ID_53);
     BG_ClearCharDataRange(GF_BG_LYR_MAIN_3, 32, 0, HEAP_ID_53);
-    BG_ClearCharDataRange(4, 32, 0, HEAP_ID_53);
+    BG_ClearCharDataRange(GF_BG_LYR_SUB_0, 32, 0, HEAP_ID_53);
     BG_ClearCharDataRange(GF_BG_LYR_SUB_1, 32, 0, HEAP_ID_53);
     BG_ClearCharDataRange(GF_BG_LYR_SUB_2, 32, 0, HEAP_ID_53);
     BG_ClearCharDataRange(GF_BG_LYR_SUB_3, 32, 0, HEAP_ID_53);
     SetBgPriority(GF_BG_LYR_MAIN_0, 3);
-    SetBgPriority(1, 1);
+    SetBgPriority(GF_BG_LYR_MAIN_1, 1);
     SetBgPriority(GF_BG_LYR_MAIN_3, 0);
-    SetBgPriority(2, 0);
+    SetBgPriority(GF_BG_LYR_MAIN_2, 0);
     reg_G2_BLDCNT = 0;
     reg_G2S_DB_BLDCNT = 0;
 }
@@ -1388,10 +1388,10 @@ void WifiClub_FreeBgConfig(BgConfig *bgConfig) {
     FreeBgTilemapBuffer(bgConfig, GF_BG_LYR_SUB_3);
     FreeBgTilemapBuffer(bgConfig, GF_BG_LYR_SUB_2);
     FreeBgTilemapBuffer(bgConfig, GF_BG_LYR_SUB_1);
-    FreeBgTilemapBuffer(bgConfig, 4);
+    FreeBgTilemapBuffer(bgConfig, GF_BG_LYR_SUB_0);
     FreeBgTilemapBuffer(bgConfig, GF_BG_LYR_MAIN_3);
-    FreeBgTilemapBuffer(bgConfig, 2);
-    FreeBgTilemapBuffer(bgConfig, 1);
+    FreeBgTilemapBuffer(bgConfig, GF_BG_LYR_MAIN_2);
+    FreeBgTilemapBuffer(bgConfig, GF_BG_LYR_MAIN_1);
     FreeBgTilemapBuffer(bgConfig, GF_BG_LYR_MAIN_0);
     Heap_Free(bgConfig);
 }
@@ -1431,7 +1431,7 @@ void WifiClub_InitSpriteSystem(WifiClubApp *app, NARC *narc) {
     NNS_G2dInitOamManagerModule();
     OamManager_Create(0, 126, 0, 32, 0, 126, 0, 32, HEAP_ID_53);
     app->spriteList = G2dRenderer_Init(8, &app->g2dRenderer, HEAP_ID_53);
-    G2dRenderer_SetSubSurfaceCoords(&app->g2dRenderer, 0, 0x100000);
+    G2dRenderer_SetSubSurfaceCoords(&app->g2dRenderer, 0, FX32_CONST(256));
     for (int i = 0; i < 4; i++) {
         app->gfxResMan[i] = Create2DGfxResObjMan(1, (GfGfxResType)i, HEAP_ID_53);
     }
@@ -1511,9 +1511,9 @@ s32 WifiClub_State_Start(WifiClubApp *app, s32 mainState) {
         FriendRoster_GetUserData(app->friendRoster);
         if (!DWC_CheckHasProfile()) {
             SetBgPriority(GF_BG_LYR_MAIN_0, 3);
-            SetBgPriority(1, 0);
+            SetBgPriority(GF_BG_LYR_MAIN_1, 0);
             SetBgPriority(GF_BG_LYR_MAIN_3, 0);
-            SetBgPriority(2, 1);
+            SetBgPriority(GF_BG_LYR_MAIN_2, 1);
             WifiClub_ShowConnectionNotice(app, msg_0800_00018);
             app->yesNoPrompt = WifiClub_CreateYesNoPrompt(app->bgConfig, &sUserInfoPromptWindowTemplate, 0);
             app->state = WIFI_CLUB_STATE_SAVE_USER_INFO_PROMPT;
@@ -1561,8 +1561,8 @@ s32 WifiClub_State_AskUpdateUserInfo(WifiClubApp *app, s32 mainState) {
     if ((gSystem.newKeys & (PAD_BUTTON_B | PAD_BUTTON_A)) || (System_GetTouchNew() == 1)) {
         WifiClub_ShowConnectionNotice(app, msg_0800_00021);
         SetBgPriority(GF_BG_LYR_MAIN_3, 0);
-        SetBgPriority(2, 1);
-        SetBgPriority(1, 0);
+        SetBgPriority(GF_BG_LYR_MAIN_2, 1);
+        SetBgPriority(GF_BG_LYR_MAIN_1, 0);
         SetBgPriority(GF_BG_LYR_MAIN_0, 3);
         app->yesNoPrompt = WifiClub_CreateYesNoPrompt(app->bgConfig, &sUserInfoPromptWindowTemplate, 1);
         app->state = WIFI_CLUB_STATE_UPDATE_USER_INFO_PROMPT;
@@ -1595,8 +1595,8 @@ s32 WifiClub_State_ConfirmUpdateUserInfoPrompt(WifiClubApp *app, s32 mainState) 
     if (response == YESNORESPONSE_YES) {
         YesNoPrompt_Destroy(app->yesNoPrompt);
         SetBgPriority(GF_BG_LYR_MAIN_3, 0);
-        SetBgPriority(2, 0);
-        SetBgPriority(1, 1);
+        SetBgPriority(GF_BG_LYR_MAIN_2, 0);
+        SetBgPriority(GF_BG_LYR_MAIN_1, 1);
         SetBgPriority(GF_BG_LYR_MAIN_0, 3);
         ClearFrameAndWindow2(&app->noticeWindow, FALSE);
         RemoveWindow(&app->noticeWindow);
@@ -1613,8 +1613,8 @@ s32 WifiClub_State_ConfirmUpdateUserInfoPrompt(WifiClubApp *app, s32 mainState) 
     } else if (response == YESNORESPONSE_NO) {
         YesNoPrompt_Destroy(app->yesNoPrompt);
         SetBgPriority(GF_BG_LYR_MAIN_3, 0);
-        SetBgPriority(2, 0);
-        SetBgPriority(1, 1);
+        SetBgPriority(GF_BG_LYR_MAIN_2, 0);
+        SetBgPriority(GF_BG_LYR_MAIN_1, 1);
         SetBgPriority(GF_BG_LYR_MAIN_0, 3);
         ClearFrameAndWindow2(&app->noticeWindow, FALSE);
         RemoveWindow(&app->noticeWindow);
@@ -1631,9 +1631,9 @@ s32 WifiClub_State_SaveUserInfoPrompt(WifiClubApp *app, s32 mainState) {
     if (response == YESNORESPONSE_YES) {
         YesNoPrompt_Destroy(app->yesNoPrompt);
         SetBgPriority(GF_BG_LYR_MAIN_0, 3);
-        SetBgPriority(1, 1);
+        SetBgPriority(GF_BG_LYR_MAIN_1, 1);
         SetBgPriority(GF_BG_LYR_MAIN_3, 0);
-        SetBgPriority(2, 0);
+        SetBgPriority(GF_BG_LYR_MAIN_2, 0);
         ClearFrameAndWindow2(&app->noticeWindow, FALSE);
         RemoveWindow(&app->noticeWindow);
         app->state = WIFI_CLUB_STATE_START_CONNECTING;
@@ -1645,9 +1645,9 @@ s32 WifiClub_State_SaveUserInfoPrompt(WifiClubApp *app, s32 mainState) {
     } else if (response == YESNORESPONSE_NO) {
         YesNoPrompt_Destroy(app->yesNoPrompt);
         SetBgPriority(GF_BG_LYR_MAIN_0, 3);
-        SetBgPriority(1, 1);
+        SetBgPriority(GF_BG_LYR_MAIN_1, 1);
         SetBgPriority(GF_BG_LYR_MAIN_3, 0);
-        SetBgPriority(2, 0);
+        SetBgPriority(GF_BG_LYR_MAIN_2, 0);
         ClearFrameAndWindow2(&app->noticeWindow, FALSE);
         RemoveWindow(&app->noticeWindow);
         app->state = WIFI_CLUB_STATE_EXIT;
@@ -1659,9 +1659,9 @@ s32 WifiClub_State_SaveUserInfoPrompt(WifiClubApp *app, s32 mainState) {
 
 s32 WifiClub_State_StartConnecting(WifiClubApp *app, s32 mainState) {
     SetBgPriority(GF_BG_LYR_MAIN_0, 3);
-    SetBgPriority(1, 1);
+    SetBgPriority(GF_BG_LYR_MAIN_1, 1);
     SetBgPriority(GF_BG_LYR_MAIN_3, 0);
-    SetBgPriority(2, 0);
+    SetBgPriority(GF_BG_LYR_MAIN_2, 0);
     app->state = WIFI_CLUB_STATE_CONNECTING;
     return mainState;
 }
@@ -2081,14 +2081,14 @@ void WifiClub_PrintOwnStatus(WifiClubApp *app) {
         ReadMsgDataIntoString(app->msgData, statusMsgId, app->msgRaw);
     }
     AddTextPrinterParameterizedWithColor(&app->statusWindow, 0, app->msgRaw, 102, 0, TEXT_SPEED_NOTRANSFER, color, NULL);
-    WifiClub_DrawStatusIconToBg(app->bgConfig, &app->statusIcons, 1, 2, 1, ownStatus);
+    WifiClub_DrawStatusIconToBg(app->bgConfig, &app->statusIcons, GF_BG_LYR_MAIN_1, 2, 1, ownStatus);
     s32 var_r0_2;
     if (app->clubData->own.voiceChat != 0) {
         var_r0_2 = 8;
     } else {
         var_r0_2 = 1;
     }
-    WifiClub_DrawIconToBg(app->bgConfig, &app->statusIcons, 1, 26, 1, var_r0_2, 0);
+    WifiClub_DrawIconToBg(app->bgConfig, &app->statusIcons, GF_BG_LYR_MAIN_1, 26, 1, var_r0_2, 0);
     ScheduleWindowCopyToVram(&app->statusWindow);
 }
 
@@ -2107,7 +2107,7 @@ void WifiClub_CreateStatusBarWindows(WifiClubApp *app) {
         RemoveWindow(&app->titleWindow);
     }
     AddWindowParameterized(app->bgConfig, &app->statusWindow, GF_BG_LYR_MAIN_3, 1, 1, 28, 2, 13, 402);
-    AddWindowParameterized(app->bgConfig, &app->titleWindow, 1, 1, 1, 28, 2, 13, 417);
+    AddWindowParameterized(app->bgConfig, &app->titleWindow, GF_BG_LYR_MAIN_1, 1, 1, 28, 2, 13, 417);
     FillWindowPixelBuffer(&app->titleWindow, 15);
     ScheduleWindowCopyToVram(&app->titleWindow);
     DrawFrameAndWindow1(&app->titleWindow, FALSE, 473, 11);
@@ -2482,9 +2482,9 @@ s32 WifiClub_State_VoiceChat(WifiClubApp *app, s32 mainState) {
         WifiClub_PrintMessage(app, msg_0778_00020, 0);
         app->state = WIFI_CLUB_STATE_CREATE_END_VOICE_CHAT_PROMPT;
     } else if (WifiConnection_GetVoiceActivity()) {
-        WifiClub_DrawIconToBg(app->bgConfig, &app->statusIcons, 1, 2, 1, 2, 0);
+        WifiClub_DrawIconToBg(app->bgConfig, &app->statusIcons, GF_BG_LYR_MAIN_1, 2, 1, 2, 0);
     } else {
-        WifiClub_DrawIconToBg(app->bgConfig, &app->statusIcons, 1, 2, 1, 3, 0);
+        WifiClub_DrawIconToBg(app->bgConfig, &app->statusIcons, GF_BG_LYR_MAIN_1, 2, 1, 3, 0);
     }
     return mainState;
 }
@@ -2779,7 +2779,7 @@ s32 WifiClub_State_OpenSeekMenu(WifiClubApp *app, s32 mainState) {
         RemoveWindow(&app->menuWindow);
     }
     s32 height = (listLen + 1) * 2;
-    AddWindowParameterized(app->bgConfig, &app->menuWindow, 2, 16, 3, 15, height, 13, 59 - height);
+    AddWindowParameterized(app->bgConfig, &app->menuWindow, GF_BG_LYR_MAIN_2, 16, 3, 15, height, 13, 59 - height);
     DrawFrameAndWindow1(&app->menuWindow, TRUE, 473, 11);
     listMenuTemplate.items = app->menuItems;
     listMenuTemplate.window = &app->menuWindow;
@@ -2943,7 +2943,7 @@ s32 WifiClub_OpenSeekSubmenu(WifiClubApp *app, s32 menuChoice) {
         RemoveWindow(&app->menuWindow);
     }
     u32 windowHeight = listLen * 2;
-    AddWindowParameterized(app->bgConfig, &app->menuWindow, 2, 16, 9, 15, windowHeight, 13, 59 - windowHeight);
+    AddWindowParameterized(app->bgConfig, &app->menuWindow, GF_BG_LYR_MAIN_2, 16, 9, 15, windowHeight, 13, 59 - windowHeight);
     DrawFrameAndWindow1(&app->menuWindow, TRUE, 473, 11);
     listMenuTemplate.items = app->menuItems;
     listMenuTemplate.window = &app->menuWindow;
@@ -3135,7 +3135,7 @@ s32 WifiClub_State_OpenApplyMenu(WifiClubApp *app, s32 mainState) {
             ListMenuItems_AppendFromMsgData(app->menuItems, app->msgData, listMenuItems[i].strno, listMenuItems[i].value);
         }
     }
-    AddWindowParameterized(app->bgConfig, &app->menuWindow, 2, 16, ((3 - itemCount) * 2) + 11, 15, itemCount * 2, 13, 59);
+    AddWindowParameterized(app->bgConfig, &app->menuWindow, GF_BG_LYR_MAIN_2, 16, ((3 - itemCount) * 2) + 11, 15, itemCount * 2, 13, 59);
     DrawFrameAndWindow1(&app->menuWindow, TRUE, 473, 11);
     listMenuTemplate.items = app->menuItems;
     listMenuTemplate.window = &app->menuWindow;
@@ -3577,40 +3577,40 @@ s32 WifiClub_State_StartActivity(WifiClubApp *app, s32 mainState) {
         u32 partnerStatus = WifiClub_GetPlayerStatus(app, WifiClub_GetFriendStatusData(app, WifiConnection_GetTargetFriendIndex()));
         u32 activityStatus = partnerStatus;
         if ((activityStatus == WIFI_CLUB_STATUS_SEEK_TRADE) || (activityStatus == WIFI_CLUB_STATUS_TRADING)) {
-            activityStatus = 8;
+            activityStatus = WIFI_CLUB_STATUS_TRADING;
             app->exitChoice = 7;
         } else if (partnerStatus - 18 <= 1) {
-            activityStatus = 18;
+            activityStatus = WIFI_CLUB_STATUS_COOKING;
             app->exitChoice = 11;
         } else if (activityStatus - 20 <= 1) {
-            activityStatus = 20;
+            activityStatus = WIFI_CLUB_STATUS_IN_FRONTIER;
             app->exitChoice = 12;
         } else if (activityStatus - 22 <= 1) {
-            activityStatus = 22;
+            activityStatus = WIFI_CLUB_STATUS_PLAYING_GAME_1;
             app->exitChoice = 13;
         } else if (activityStatus - 24 <= 1) {
-            activityStatus = 24;
+            activityStatus = WIFI_CLUB_STATUS_PLAYING_GAME_2;
             app->exitChoice = 14;
         } else if (activityStatus - 26 <= 1) {
-            activityStatus = 26;
+            activityStatus = WIFI_CLUB_STATUS_PLAYING_GAME_3;
             app->exitChoice = 15;
         } else if (activityStatus == WIFI_CLUB_STATUS_SEEK_LV50_SINGLE || activityStatus == WIFI_CLUB_STATUS_IN_LV50_SINGLE) {
-            activityStatus = 2;
+            activityStatus = WIFI_CLUB_STATUS_IN_LV50_SINGLE;
             app->exitChoice = 1;
         } else if (activityStatus == WIFI_CLUB_STATUS_SEEK_LV100_SINGLE || activityStatus == WIFI_CLUB_STATUS_IN_LV100_SINGLE) {
-            activityStatus = 3;
+            activityStatus = WIFI_CLUB_STATUS_IN_LV100_SINGLE;
             app->exitChoice = 2;
         } else if (activityStatus == WIFI_CLUB_STATUS_SEEK_FREE_SINGLE || activityStatus == WIFI_CLUB_STATUS_IN_FREE_SINGLE) {
-            activityStatus = 4;
+            activityStatus = WIFI_CLUB_STATUS_IN_FREE_SINGLE;
             app->exitChoice = 3;
         } else if (activityStatus == WIFI_CLUB_STATUS_SEEK_LV50_DOUBLE || activityStatus == WIFI_CLUB_STATUS_IN_LV50_DOUBLE) {
-            activityStatus = 5;
+            activityStatus = WIFI_CLUB_STATUS_IN_LV50_DOUBLE;
             app->exitChoice = 4;
         } else if (activityStatus == WIFI_CLUB_STATUS_SEEK_LV100_DOUBLE || activityStatus == WIFI_CLUB_STATUS_IN_LV100_DOUBLE) {
-            activityStatus = 6;
+            activityStatus = WIFI_CLUB_STATUS_IN_LV100_DOUBLE;
             app->exitChoice = 5;
         } else if (activityStatus == WIFI_CLUB_STATUS_SEEK_FREE_DOUBLE || activityStatus == WIFI_CLUB_STATUS_IN_FREE_DOUBLE) {
-            activityStatus = 7;
+            activityStatus = WIFI_CLUB_STATUS_IN_FREE_DOUBLE;
             app->exitChoice = 6;
         }
         WifiClub_SetStatusAndSend(app, activityStatus);
@@ -4009,7 +4009,7 @@ void WifiClub_PrintMessage(WifiClubApp *app, s32 msgId, s32 isConnectionMsg) {
         RemoveTextPrinter(app->textPrinterId);
         app->textPrinterId = 8;
     }
-    AddWindowParameterized(app->bgConfig, &app->msgWindow, 2, 2, 19, 27, 4, 12, 301);
+    AddWindowParameterized(app->bgConfig, &app->msgWindow, GF_BG_LYR_MAIN_2, 2, 19, 27, 4, 12, 301);
     if (isConnectionMsg != 0) {
         ReadMsgDataIntoString(app->connectionMsgData, msgId, app->msgRaw);
     } else {
@@ -4040,7 +4040,7 @@ void WifiClub_ShowConnectionNotice(WifiClubApp *app, s32 msgId) {
         RemoveTextPrinter(app->textPrinterId);
         app->textPrinterId = 8;
     }
-    AddWindowParameterized(app->bgConfig, &app->noticeWindow, 2, 4, 4, 23, 16, 12, 105);
+    AddWindowParameterized(app->bgConfig, &app->noticeWindow, GF_BG_LYR_MAIN_2, 4, 4, 23, 16, 12, 105);
     ReadMsgDataIntoString(app->connectionMsgData, msgId, app->msgRaw);
     StringExpandPlaceholders(app->msgFormat, app->msgExpanded, app->msgRaw);
     FillWindowPixelBuffer(&app->noticeWindow, 15);
@@ -4287,7 +4287,7 @@ void WifiClub_RosterHitboxCallback(s32 index, enum HeapID event, WifiClubApp *ap
 void WifiClub_LoadRosterGraphics(WifiClubApp *app, NARC *narc, enum HeapID heapID) {
     s32 i;
     s32 j;
-    BgClearTilemapBufferAndCommit(app->bgConfig, 4);
+    BgClearTilemapBufferAndCommit(app->bgConfig, GF_BG_LYR_SUB_0);
     GfGfxLoader_GXLoadPalFromOpenNarc(narc, 17, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_0_OFFSET, 128, heapID);
     GfGfxLoader_GXLoadPalFromOpenNarc(narc, 20, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_4_OFFSET, 160, heapID);
     GfGfxLoader_LoadCharDataFromOpenNarc(narc, 16, app->bgConfig, GF_BG_LYR_SUB_0, 0, 0, FALSE, heapID);
@@ -4393,8 +4393,8 @@ void WifiClub_RequestRosterRedraw(WifiClubApp *app) {
 }
 
 void WifiClub_SetRosterPagePalette(WifiClubApp *app) {
-    BgTilemapRectChangePalette(app->bgConfig, 4, 0, 0, 32, 24, app->roster.page);
-    ScheduleBgTilemapBufferTransfer(app->bgConfig, 4);
+    BgTilemapRectChangePalette(app->bgConfig, GF_BG_LYR_SUB_0, 0, 0, 32, 24, app->roster.page);
+    ScheduleBgTilemapBufferTransfer(app->bgConfig, GF_BG_LYR_SUB_0);
 }
 
 void WifiClub_DrawRosterPage(WifiClubApp *app) {
@@ -4556,7 +4556,7 @@ void WifiClub_DrawProfileSummary(WifiClubApp *app, enum HeapID heapID) {
         width = 232 - FontID_String_GetWidth(0, app->tmpString, 0);
         AddTextPrinterParameterizedWithColor(&app->roster.profileWindow, 0, app->tmpString, width, 128, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
     }
-    WifiClub_DrawStatusIconToBg(app->bgConfig, &app->statusIcons, 6, 2, 2, friendStatus);
+    WifiClub_DrawStatusIconToBg(app->bgConfig, &app->statusIcons, GF_BG_LYR_SUB_2, 2, 2, friendStatus);
 
     s32 iconIndex;
     if (friendStatusData->voiceChat != 0) {
@@ -4564,7 +4564,7 @@ void WifiClub_DrawProfileSummary(WifiClubApp *app, enum HeapID heapID) {
     } else {
         iconIndex = 1;
     }
-    WifiClub_DrawIconToBg(app->bgConfig, &app->statusIcons, 6, 28, 2, iconIndex, 0);
+    WifiClub_DrawIconToBg(app->bgConfig, &app->statusIcons, GF_BG_LYR_SUB_2, 28, 2, iconIndex, 0);
 }
 
 void WifiClub_DrawProfileBattleTower(WifiClubApp *app, enum HeapID heapID) {
@@ -4955,7 +4955,7 @@ void WifiClub_CreateProfileButtons(WifiClubApp *app, NARC *narc, enum HeapID hea
     textObjTemplate.y = -8;
     textObjTemplate.bgPriority = 0;
     textObjTemplate.drawPriority = 0;
-    textObjTemplate.vram = 2;
+    textObjTemplate.vram = NNS_G2D_VRAM_TYPE_2DSUB;
     textObjTemplate.heapID = heapID;
     app->roster.closeText = TextOBJ_Create(&textObjTemplate, textLayout);
     TextOBJLayout_Delete(textLayout);

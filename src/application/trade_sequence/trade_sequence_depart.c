@@ -484,7 +484,7 @@ static void TradeSequenceDepart_Init3D(TradeSequenceDepart *depart) {
     G3X_AlphaBlend(TRUE);
     G3X_EdgeMarking(TRUE);
     G3X_SetEdgeColorTable(sTradeSequenceDepartEdgeColors);
-    G3X_SetClearColor(RGB(31, 31, 16), 0, 0x7FFF, 63, FALSE);
+    G3X_SetClearColor(RGB(31, 31, 16), 0, GF_GX_CLEARCOLORDEPTH_MAX, 63, FALSE);
     G3_SwapBuffers(GX_SORTMODE_AUTO, GX_BUFFERMODE_W);
     G3_ViewPort(0, 0, 255, 191);
     GF_3DVramMan_InitFrameTexVramManager(1, TRUE);
@@ -492,12 +492,12 @@ static void TradeSequenceDepart_Init3D(TradeSequenceDepart *depart) {
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);
     G2_SetBG0Priority(0);
     depart->models = TradeSequence_CreateModels(1, 0, 0, 0);
-    depart->ball = TradeSequence_LoadModel(depart->models, 0, NARC_a_0_8_9, 27, 0, -0x37800, 0, FALSE);
+    depart->ball = TradeSequence_LoadModel(depart->models, 0, NARC_a_0_8_9, 27, 0, FX32_CONST(-55.5), 0, FALSE);
     sTradeSequenceDepartCameraAngle.x = 0xEBE0;
     sTradeSequenceDepartCameraAngle.y = 0;
     sTradeSequenceDepartCameraAngle.z = 0;
     TradeSequence_SetCameraAngle(depart->models, &sTradeSequenceDepartCameraAngle);
-    TradeSequence_SetModelScale(depart->ball, 0x1C00);
+    TradeSequence_SetModelScale(depart->ball, FX32_CONST(1.75));
 }
 
 static void TradeSequenceDepart_Free3D(TradeSequenceDepart *depart) {
@@ -703,7 +703,7 @@ static SysTask *TradeSequenceDepart_StartFlight(TradeSequenceDepart *depart) {
     flight->models = depart->models;
     flight->model = depart->ball;
     flight->height = flight->center.y;
-    flight->speed = (-0x8000 - flight->center.y) / 30;
+    flight->speed = (FX32_CONST(-8) - flight->center.y) / 30;
     flight->frames = 30;
     flight->radiusX = 0;
     flight->radiusZ = 0;
@@ -721,7 +721,7 @@ static SysTask *TradeSequenceDepart_StartFlight(TradeSequenceDepart *depart) {
     }
     flight->outOfView = FALSE;
     TradeSequenceDepart_SetAngleSpeed(flight, 0xD00, 30);
-    TradeSequenceDepart_SetRadius(flight, 0x29000, 0x14000, 30);
+    TradeSequenceDepart_SetRadius(flight, FX32_CONST(41), FX32_CONST(20), 30);
     return SysTask_CreateOnMainQueue(TradeSequenceDepart_FlightTask_Appear, flight, 0);
 }
 
@@ -816,9 +816,9 @@ static void TradeSequenceDepart_FlightTask_Appear(SysTask *task, void *data) {
         flight->position.y = flight->height;
         flight->frames--;
         if (flight->frames <= 0) {
-            flight->acceleration = 0x200;
+            flight->acceleration = FX32_CONST(0.125);
             flight->speed = 0;
-            TradeSequenceDepart_SetRadius(flight, 0x4000, 0x4000, 60);
+            TradeSequenceDepart_SetRadius(flight, FX32_CONST(4), FX32_CONST(4), 60);
             TradeSequenceDepart_SetSpin(flight, 0, -0x800, 30);
             flight->flyingAway = TRUE;
             SysTask_SetFunc(task, TradeSequenceDepart_FlightTask_FlyAway);
@@ -899,7 +899,7 @@ static void TradeSequenceDepart_FlightTask_Hover(SysTask *task, void *data) {
     TradeSequenceDepart_UpdateFlight(flight);
     flight->frames++;
     if (flight->frames > 110) {
-        flight->speed = (-0x3A800 - flight->height) / 53;
+        flight->speed = (FX32_CONST(-58.5) - flight->height) / 53;
         flight->frames = 53;
         SysTask_SetFunc(task, TradeSequenceDepart_FlightTask_Sink);
     }

@@ -389,7 +389,7 @@ int UnionRoom_GetOwnChatMessageMsg(struct UnionRoom *unionRoom, MessageFormat *m
 
 static void UnionRoomStatus_Init(UnionRoomStatus *status) {
     int i;
-    status->activity = 0;
+    status->activity = UNION_ACTIVITY_NONE;
     for (i = 0; i < 4; i++) {
         status->memberIds[i] = 0;
         status->memberAvatars[i] = 0;
@@ -470,7 +470,7 @@ void UnionRoom_BufferPartnerLanguage(MessageFormat *msgFmt, u16 mode, u16 objId,
 void UnionRoom_BroadcastChatMessage(MailMessage *message) {
     UnionRoomStatus status;
     UnionRoomStatus_Init(&status);
-    status.activity = 0;
+    status.activity = UNION_ACTIVITY_NONE;
     CommWireless_SetMail(message);
     CommWireless_SetRuleset(&status);
     CommWireless_RefreshBeacon();
