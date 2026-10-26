@@ -42,7 +42,7 @@ typedef struct FrontierPartySelectEnv {
 typedef struct FrontierWifiConnectionEnv {
     u32 result;
     u32 state;
-    void *app;
+    NintendoWifiConnectArgs *app;
     u8 padding_C[4];
     u16 outputVar;
     u16 mode;
@@ -211,7 +211,7 @@ static u32 FrontierWifiConnection_Wait(FrontierWifiConnectionEnv *env, FieldSyst
     if (FieldSystem_ApplicationIsRunning(fieldSystem)) {
         return WIFI_CONNECTION_WAIT;
     }
-    env->result = ((u32 *)env->app)[8];
+    env->result = env->app->incomplete;
     Heap_Free(env->app);
     return WIFI_CONNECTION_EXIT;
 }

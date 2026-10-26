@@ -105,15 +105,15 @@ static BOOL Frontier_Main(OverlayManager *manager, int *state) {
         if (OverlayManager_Run(work->childManager) == 1) {
             OverlayManager_Delete(work->childManager);
             Frontier_LoadOverlays();
-            if (work->childExit != 0) {
+            if (work->childExit != NULL) {
                 work->childExit(work->childArgs);
             }
-            if (work->childArgs != 0 && work->freeChildArgs == 1) {
+            if (work->childArgs != NULL && work->freeChildArgs == 1) {
                 Heap_Free(work->childArgs);
             }
             work->childManager = NULL;
-            work->childExit = 0;
-            work->childArgs = 0;
+            work->childExit = NULL;
+            work->childArgs = NULL;
             Frontier_CreateMap(work);
             FrontierMap_RestoreObjects(work->map);
             *state = FRONTIER_MAIN_RUN;
@@ -241,9 +241,7 @@ FrontierMapSpriteState *Frontier_GetMapSpriteState(FrontierWork *work) {
 void Frontier_ResetMapSpriteState(FrontierWork *work) {
     int i;
     MI_CpuFill8(work->spriteState.resourceIds, 0, 8);
-    i = 0;
-    do {
+    for (i = 0; i < FRONTIER_MAP_SPRITE_MAX; i++) {
         work->spriteState.resourceIds[i] = FRONTIER_MAP_NO_ID;
-        i++;
-    } while (i < FRONTIER_MAP_SPRITE_MAX);
+    }
 }

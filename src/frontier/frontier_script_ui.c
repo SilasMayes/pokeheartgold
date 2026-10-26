@@ -610,7 +610,7 @@ enum {
 // Runs a movement script on a map object: (opcode, count) pairs ending with 0xFD13; opcodes 0x20-0x26 wait,
 // 0x27/0x28 turn the object's sprite flag on/off, the others are steps (Field2DMoveQueue_Push) repeated count times.
 void FrontierScript_MovementTask(SysTask *task, FrontierMovementTask *data) {
-    FrontierMovementStep step;
+    Field2DMove step;
     u16 opcode = data->script[0];
     u16 count = data->script[1];
 
@@ -668,25 +668,25 @@ void FrontierScript_MovementTask(SysTask *task, FrontierMovementTask *data) {
     }
 }
 
-void FrontierScript_GetMovementStep(FrontierMovementStep *step, Field2DObject *object, u16 id, s32 opcode) {
-    step->id = id;
+void FrontierScript_GetMovementStep(Field2DMove *step, Field2DObject *object, u16 id, s32 opcode) {
+    step->objectId = id;
     step->direction = sFrontierMovementSteps[opcode][1];
-    step->sequence = sFrontierMovementSteps[opcode][0];
-    if (step->sequence == 2 || step->sequence == 3 || step->sequence == 6) {
+    step->action = sFrontierMovementSteps[opcode][0];
+    if (step->action == 2 || step->action == 3 || step->action == 6) {
         volatile u16 position[2];
         u32 raw = ((FrontierObjectGetPosFunc)Field2DObject_GetPrevPos)(object);
         position[0] = raw;
         position[1] = raw >> 16;
-        step->x = position[0];
-        step->y = position[1];
+        step->startPos.x = position[0];
+        step->startPos.y = position[1];
         return;
     } else {
         volatile u16 position[2];
         u32 raw = ((FrontierObjectGetPosFunc)Field2DObject_GetPos)(object);
         position[0] = raw;
         position[1] = raw >> 16;
-        step->x = position[0];
-        step->y = position[1];
+        step->startPos.x = position[0];
+        step->startPos.y = position[1];
     }
 }
 

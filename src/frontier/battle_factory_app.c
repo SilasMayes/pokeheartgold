@@ -73,17 +73,6 @@ FS_EXTERN_OVERLAY(OVY_80);
 #define FACTORY_LINK_RENTALS 8
 #define FACTORY_LINK_SWAP    10
 
-typedef struct BattleFactoryAppArgs {
-    SaveData *saveData;
-    u8 frontierType;
-    u8 levelMode;
-    u8 screen;
-    u8 unk_07;
-    Party *party;
-    Party *otherParty;
-    u16 result[3];
-} BattleFactoryAppArgs;
-
 static BOOL BattleFactoryApp_SlideIn(BattleFactoryApp *app);
 static BOOL BattleFactoryApp_ShowScreen(BattleFactoryApp *app);
 static void BattleFactoryApp_SetupRentalScreen(BattleFactoryApp *app);
@@ -363,7 +352,7 @@ static const GraphicsBanks sBattleFactoryAppGraphicsBanks = {
 
 BOOL BattleFactoryApp_Init(OverlayManager *man, int *state) {
     BattleFactoryApp *app;
-    BattleFactoryAppArgs *args;
+    BattleFactoryAppLaunchArgs *args;
 
     HandleLoadOverlay(FS_OVERLAY_ID(OVY_80), OVY_LOAD_ASYNC);
     BattleFactoryApp_DisableDisplay();
@@ -375,11 +364,11 @@ BOOL BattleFactoryApp_Init(OverlayManager *man, int *state) {
     app->manager = man;
     args = OverlayManager_GetArgs(man);
     app->saveData = args->saveData;
-    app->frontierType = args->frontierType;
+    app->frontierType = args->type;
     app->levelMode = args->levelMode;
     app->screen = args->screen;
-    app->party = args->party;
-    app->otherParty = args->otherParty;
+    app->party = args->playerParty;
+    app->otherParty = args->opponentParty;
     app->resultOut = args->result;
     app->options = Save_PlayerData_GetOptionsAddr(app->saveData);
     app->bgAnimTimer = 8;
@@ -3179,7 +3168,7 @@ static void BattleFactoryApp_SetBallsTranslucent(BattleFactoryApp *app, int enab
     u32 i;
 
     if (enable == TRUE) {
-        G2S_SetBlendAlpha(0, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, 6, 10);
+        G2S_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, 6, 10);
         for (i = 0; i < app->numBalls; i++) {
             if (app->balls[i] != NULL) {
                 BattleFactoryBall_SetOamMode(app->balls[i], GX_OAM_MODE_XLU);

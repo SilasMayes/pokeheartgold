@@ -3,10 +3,12 @@
 
 #include "global.h"
 
+#include "communication_command.h"
+
 // Link command ids of the frontier commands, in the order of their handlers in FrontierLink_RegisterCommands
 // (they follow the communication core's own commands).
 enum FrontierLinkCommandId {
-    FRONTIER_LINK_CMD_FACTORY_RECORD = 22,
+    FRONTIER_LINK_CMD_FACTORY_RECORD = COMM_BASE_COMMAND_COUNT,
     FRONTIER_LINK_CMD_FACTORY_TRAINER_IDS,
     FRONTIER_LINK_CMD_FACTORY_RENTAL_MONS,
     FRONTIER_LINK_CMD_FACTORY_OPPONENT_MONS,
@@ -84,7 +86,7 @@ void BattleFactory_ReceiveSwap(int netId, int size, const struct BattleFactoryLi
 void BattleHall_ReceivePing(u32 netId);
 void BattleHall_ReceiveChoice(u32 netId, u32 unused, const u16 *msg, struct BattleHallApp *app);
 void BattleHall_ReceiveAnswer(u32 netId, u32 unused, const u16 *msg, struct BattleHallApp *app);
-void BattleCastlePartyApp_ReceiveRanks(int netId, void *unused, void *data, struct BattleCastlePartyApp *app);
+void BattleCastlePartyApp_ReceiveRanks(int netId, void *unused, u16 *data, struct BattleCastlePartyApp *app);
 void BattleCastlePartyApp_ReceiveAction(int netId, int unused, u16 *data, struct BattleCastlePartyApp *app);
 void BattleCastlePartyApp_ReceiveCursor(int netId, int unused, u16 *data, struct BattleCastlePartyApp *app);
 void BattleCastlePartyApp_ReceiveExit(int netId, int unused, u16 *data, struct BattleCastlePartyApp *app);

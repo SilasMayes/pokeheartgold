@@ -248,7 +248,7 @@ ArcadeContext *BattleArcadeData_Alloc(SaveData *saveData, u32 resume, u8 type, u
         saved->round = saved->winStreak / 7;
         for (i = 0; i < 3; i++) {
             ctx[0] = sBattleArcadeData;
-            ctx[0]->partySlots[i] = ArcadeChallenge_GetField(record, ARCADE_CHALLENGE_PARTY_SLOTS, (u8)i, 0, 0);
+            ctx[0]->partySlots[i] = ArcadeChallenge_GetField(record, ARCADE_CHALLENGE_PARTY_SLOTS, i, 0, 0);
         }
     }
 

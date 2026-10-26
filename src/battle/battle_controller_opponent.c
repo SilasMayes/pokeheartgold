@@ -3429,7 +3429,7 @@ static void Task_PokemonSendOut(SysTask *task, void *data) {
             work->state++;
         }
     case SEND_OUT_STATE_GROW:
-        if (Pokepic_GetAttr(work->opponentData->pokepic, POKEPIC_AFFINEW) == 0x100 && BallSealEffect_IsActive(work->ballOpenEffect) == 0) {
+        if (Pokepic_GetAttr(work->opponentData->pokepic, POKEPIC_AFFINEW) == 0x100 && !BallSealEffect_IsActive(work->ballOpenEffect)) {
             if (work->facing == 2) {
                 Pokepic_SetAttr(work->opponentData->pokepic, POKEPIC_SHADOW_AFFINE, 0);
             }
@@ -3452,7 +3452,7 @@ static void Task_PokemonSendOut(SysTask *task, void *data) {
         }
         break;
     case SEND_OUT_STATE_WAIT_BALL_EFFECT:
-        if (BallSealEffect_IsActive(work->ballOpenEffect) == 0) {
+        if (!BallSealEffect_IsActive(work->ballOpenEffect)) {
             work->state = SEND_OUT_STATE_WAIT_MON_ANIM;
         }
         break;
@@ -4277,7 +4277,7 @@ static void Task_PlayerSelectCommand(SysTask *task, void *data) {
         OpponentData_StartPokepicBobTask(opponent, work->battleSystem);
         work->state = SELECT_COMMAND_STATE_OPEN_MENU;
     case SELECT_COMMAND_STATE_OPEN_MENU:
-        if (BattleInput_CheckFeedbackDone(battleInput) != 0) {
+        if (BattleInput_CheckFeedbackDone(battleInput)) {
             NARC *narc0 = NARC_New(NARC_a_0_0_7, HEAP_ID_BATTLE);
             NARC *narc1 = NARC_New(NARC_a_0_0_8, HEAP_ID_BATTLE);
             BattleInputMainMenu action;
@@ -4495,7 +4495,7 @@ static void Task_PlayerSelectMove(SysTask *task, void *data) {
 
     switch (work->state) {
     case SELECT_MOVE_STATE_OPEN_MENU:
-        if (BattleInput_CheckFeedbackDone(battleInput) == 0) {
+        if (!BattleInput_CheckFeedbackDone(battleInput)) {
             break;
         }
         {
@@ -4638,7 +4638,7 @@ static void Task_PlayerSelectTarget(SysTask *task, void *data) {
 
     switch (work->state) {
     case SELECT_TARGET_STATE_OPEN_MENU:
-        if (BattleInput_CheckFeedbackDone(battleInput) != 0) {
+        if (BattleInput_CheckFeedbackDone(battleInput)) {
             NARC *narc0 = NARC_New(NARC_a_0_0_7, HEAP_ID_BATTLE);
             NARC *narc1 = NARC_New(NARC_a_0_0_8, HEAP_ID_BATTLE);
             BattleInputTargetMenu menu;

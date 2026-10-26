@@ -69,15 +69,6 @@ typedef struct FrontierMovementTask {
     FrontierMapObject *object;
 } FrontierMovementTask;
 
-// One step passed to Field2DMoveQueue_Push
-typedef struct FrontierMovementStep {
-    u16 x;
-    u16 y;
-    u16 sequence;
-    u8 direction;
-    u8 id;
-} FrontierMovementStep;
-
 void FrontierSystem_PrintMessage(FrontierSystem *system, MsgData *msgData, u16 msgId, u16 canABSpeedUp, const FrontierMessageParams *params);
 void FrontierSystem_CloseMessageWindow(FrontierSystem *system);
 FrontierMenu *FrontierMenu_New(FrontierSystem *system, u8 x, u8 y, u8 initialSelection, u8 canCancel, u16 *result, MessageFormat *msgFormat, MsgData *msgData);
@@ -88,7 +79,7 @@ void FrontierListMenu_AddItem(FrontierMenu *menu, u16 msgId, u16 description, u1
 void FrontierListMenu_Show(FrontierMenu *menu);
 void FrontierListMenu_Cancel(FrontierMenu *menu);
 void FrontierScript_MovementTask(SysTask *task, FrontierMovementTask *data);
-void FrontierScript_GetMovementStep(FrontierMovementStep *step, Field2DObject *object, u16 id, s32 opcode);
+void FrontierScript_GetMovementStep(Field2DMove *step, Field2DObject *object, u16 id, s32 opcode);
 void FrontierMap_CreateMonSprite(FrontierMap *map, Pokemon *mon, enum HeapID heapId, int id, int x, int y, int drawPriority, int bgPriority, int blend, u16 blendColor);
 void FrontierMap_DeleteMonSprite(FrontierMap *map, u32 id);
 void FrontierMap_LoadMonIconResources(FrontierMap *map);

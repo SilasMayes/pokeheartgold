@@ -581,7 +581,7 @@ void BattleAnimScanline_FreeWave(BattleAnimScanlineWave *wave) {
     Heap_Free(wave);
 }
 
-void *BattleAnimScanline_GetWaveBuffer(BattleAnimScanlineWave *wave) {
+u32 *BattleAnimScanline_GetWaveBuffer(BattleAnimScanlineWave *wave) {
     GF_ASSERT(wave != NULL);
     return ScanlineEffect_GetBuffer(wave->effect);
 }

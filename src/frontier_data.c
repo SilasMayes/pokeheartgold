@@ -44,7 +44,7 @@ struct FrontierData {
 
     u16 towerRounds[6]; // per tower mode
     u16 wifiScore;
-    u8 wifiTeams[2][0xA8];
+    FrontierMon wifiTeams[2][3];
 };
 
 typedef struct BattleRoomDownload {
@@ -284,19 +284,19 @@ u32 FrontierData_WifiRankAction(FrontierData *data, u32 action) {
     return data->wifiRank;
 }
 
-void FrontierData_SetWifiTeam(FrontierData *data, u32 index, void *src) {
+void FrontierData_SetWifiTeam(FrontierData *data, u32 index, const FrontierMon *src) {
     if (index == 0) {
-        MI_CpuCopy8(src, data->wifiTeams[1], 0xA8);
+        MI_CpuCopy8(src, data->wifiTeams[1], sizeof(data->wifiTeams[1]));
     } else {
-        MI_CpuCopy8(src, data->wifiTeams[0], 0xA8);
+        MI_CpuCopy8(src, data->wifiTeams[0], sizeof(data->wifiTeams[0]));
     }
 }
 
 void FrontierData_GetWifiTeam(FrontierData *data, s32 index, FrontierWifiUploadRecord *dst) {
     if (index == 0) {
-        MI_CpuCopy8(data->wifiTeams[1], dst, 0xA8);
+        MI_CpuCopy8(data->wifiTeams[1], dst, sizeof(data->wifiTeams[1]));
     } else {
-        MI_CpuCopy8(data->wifiTeams[0], dst, 0xA8);
+        MI_CpuCopy8(data->wifiTeams[0], dst, sizeof(data->wifiTeams[0]));
     }
 }
 

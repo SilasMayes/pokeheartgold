@@ -1705,13 +1705,9 @@ void BattleCastleOpponentApp_ReceiveRanks(int netId, void *unused, u16 *data, Ba
 
     app->linkRecvCount++;
     if (netId != Comm_GetLocalNetId()) {
-        i = 0;
-        rank = data + 2;
-        do {
+        for (i = 0, rank = data + 2; i < CASTLE_RANK_KIND_COUNT; i++, rank++) {
             app->partnerRanks[i] = *rank;
-            i++;
-            rank++;
-        } while (i < CASTLE_RANK_KIND_COUNT);
+        }
     }
 }
 

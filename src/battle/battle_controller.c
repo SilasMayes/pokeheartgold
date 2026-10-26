@@ -126,7 +126,7 @@ void BattleController_EmitPacket(BattleSystem *battleSystem, int direction, int 
                 BattleContext_AddLinkBufferEntry(battleSystem->ctx, i, battlerId, *(const u8 *)data);
             }
         }
-        BattleLink_QueueSendData(battleSystem, direction, battlerId, (u8 *)data, size);
+        BattleLink_QueueSendData(battleSystem, direction, battlerId, data, size);
     } else {
         if (direction == BATTLE_PACKET_COMMAND) {
             BattleContext_AddLinkBufferEntry(battleSystem->ctx, 0, battlerId, *(const u8 *)data);

@@ -1115,7 +1115,7 @@ static void BattleHallApp_PrintTypeRanks(BattleHallApp *app, Window *window) {
             int index = column + base;
             u32 type = BattleHall_GetCellType(index);
             if (type != TYPE_CELL_EMPTY && type != TYPE_MYSTERY) {
-                u8 rank = HallTypeRanks_Get(BattleHallApp_GetRecordIndex((u8)index), app->hallRecords) + 1;
+                u8 rank = HallTypeRanks_Get(BattleHallApp_GetRecordIndex(index), app->hallRecords) + 1;
                 if (rank > MAX_TYPE_RANK) {
                     rank = MAX_TYPE_RANK;
                 }

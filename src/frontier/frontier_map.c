@@ -37,7 +37,7 @@ static void FrontierMap_ProcessEvents(FrontierMap *map);
 static void FrontierMap_SetVramBank(BgConfig *bgConfig, u32 mapId);
 static void FrontierMap_LoadPaletteData(FrontierMap *map);
 static void FrontierMap_LoadSubScreenGfx(FrontierMap *map);
-static void FrontierMap_InitMapObjects(FrontierMap *map, u32 mapId, void *profile);
+static void FrontierMap_InitMapObjects(FrontierMap *map, u32 mapId, PlayerProfile *profile);
 static void FrontierMap_FreeMapObjects(FrontierMap *map);
 static GF3DVramMan *FrontierMap_Create3DVramMan(enum HeapID heapID);
 static void FrontierMap_Init3D(void);
@@ -637,7 +637,7 @@ static void FrontierMap_LoadSubScreenGfx(FrontierMap *map) {
 }
 
 // Creates the 2D object system for the map and loads the map BGs (BG3, optional BG2).
-static void FrontierMap_InitMapObjects(FrontierMap *map, u32 mapId, void *profile) {
+static void FrontierMap_InitMapObjects(FrontierMap *map, u32 mapId, PlayerProfile *profile) {
     Field2DBgLayerTemplate layerTemplate;
     NNSG2dPaletteData *bg3Pltt;
     NNSG2dPaletteData *bg2Pltt;

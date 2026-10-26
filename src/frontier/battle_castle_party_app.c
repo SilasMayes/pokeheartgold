@@ -2341,13 +2341,13 @@ static void BattleCastlePartyApp_PrepareLinkRanks(BattleCastlePartyApp *app, int
 }
 
 // Link receive: the partner's three Castle ranks (sent by BattleCastlePartyApp_PrepareLinkRanks)
-void BattleCastlePartyApp_ReceiveRanks(int netId, void *unused, void *data, BattleCastlePartyApp *app) {
+void BattleCastlePartyApp_ReceiveRanks(int netId, void *unused, u16 *data, BattleCastlePartyApp *app) {
     int i;
     u16 *rank;
 
     app->linkRecvCount++;
     if (netId != Comm_GetLocalNetId()) {
-        for (i = 0, rank = (u16 *)data + 2; i < CASTLE_RANK_KIND_COUNT; i++, rank++) {
+        for (i = 0, rank = data + 2; i < CASTLE_RANK_KIND_COUNT; i++, rank++) {
             app->partnerRanks[i] = *rank;
         }
     }

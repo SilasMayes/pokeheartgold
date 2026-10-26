@@ -41,7 +41,7 @@ static const u8 sBattleFactoryMultiBattlePoints[12] = { 0, 10, 11, 12, 13, 16, 1
 
 BattleFactoryData *BattleFactoryData_Alloc(SaveData *saveData, int resume, u8 type, u8 levelMode) {
     BattleFactoryData *data;
-    void *challenge;
+    FactoryChallenge *challenge;
     int flags;
 
     gBattleFactoryData = Heap_Alloc(HEAP_ID_FIELD2, sizeof(BattleFactoryData));

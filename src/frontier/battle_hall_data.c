@@ -55,7 +55,7 @@ BattleHallData *BattleHallData_Alloc(SaveData *saveData, BOOL resume, u8 type, u
     BattleHallData *data2;
     BattleHallData *data5;
     BattleHallData *data6;
-    void *challenge;
+    HallChallenge *challenge;
     int flags;
     u8 partySize;
     u16 i;

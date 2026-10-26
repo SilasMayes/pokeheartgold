@@ -62,7 +62,7 @@ u32 BattleTowerChallenge_GetSaved(u32 record);
 void BattleTowerChallenge_SetSaved(u32 challenge, u32 value);
 u32 FrontierData_WifiStreakAction(FrontierData *frontierData, u32 action);
 u32 FrontierData_WifiRankAction(FrontierData *frontierData, u32 action);
-void FrontierData_SetWifiTeam(FrontierData *frontierData, u32 index, void *src);
+void FrontierData_SetWifiTeam(FrontierData *frontierData, u32 index, const FrontierMon *src);
 void FrontierData_GetWifiTeam(FrontierData *frontierData, s32 index, FrontierWifiUploadRecord *dst);
 u16 FrontierData_CalcWifiScore(FrontierData *frontierData, u32 challenge);
 u16 FrontierData_GetWifiScore(FrontierData *frontierData);

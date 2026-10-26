@@ -57,7 +57,7 @@ static const u8 sBattleCastleRoundValues_Multi[12] = { 0, 8, 9, 11, 12, 14, 15, 
 BattleCastleData *BattleCastleData_Alloc(SaveData *saveData, BOOL resume, u8 type, int slot0, u16 slot1, u16 slot2, u16 *resultVar) {
     static BattleCastleData *sBattleCastleData;
     BattleCastleData *data;
-    void *challenge;
+    CastleChallenge *challenge;
     Party *party;
     Pokemon *mon;
     FrontierSave *frontierSave;

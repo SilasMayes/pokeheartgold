@@ -60,7 +60,7 @@ void EncounterEffect_FrontierOrLinkSingle(SysTask *task, EncounterEffectTask *ct
         ctx->state++;
         break;
     case FRONTIER_SINGLE_STATE_WAIT_FLASH:
-        if (ctx->fadeDone != 0) {
+        if (ctx->fadeDone) {
             ctx->state++;
         }
         break;
@@ -153,7 +153,7 @@ void EncounterEffect_Double(SysTask *task, EncounterEffectTask *ctx) {
         ctx->state++;
         break;
     case DOUBLE_EFFECT_STATE_WAIT_FLASH:
-        if (ctx->fadeDone != 0) {
+        if (ctx->fadeDone) {
             ctx->state++;
         }
         break;

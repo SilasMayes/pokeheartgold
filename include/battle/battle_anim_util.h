@@ -203,7 +203,7 @@ u32 *BattleAnimScanline_GetWriteBuffer(BattleAnimScanline *scanline);
 void BattleAnimScanline_Disable(BattleAnimScanline *scanline);
 BattleAnimScanlineWave *BattleAnimScanline_NewWave(u8 firstLine, u8 lastLine, u8 step, fx32 amplitude, s16 speed, int bgLayer, u32 priority, u32 fill, enum HeapID heapId);
 void BattleAnimScanline_FreeWave(BattleAnimScanlineWave *wave);
-void *BattleAnimScanline_GetWaveBuffer(BattleAnimScanlineWave *wave);
+u32 *BattleAnimScanline_GetWaveBuffer(BattleAnimScanlineWave *wave);
 void BattleAnimScanline_DisableWave(BattleAnimScanlineWave *wave);
 u32 BattleAnimUtil_PackXY(u16 x, u16 y);
 void *BattleAnimUtil_GetBgOffsetRegister(int bgLayer);

@@ -380,8 +380,8 @@ static void BattleAnimEmitter_SetTransformFromScript(BattleAnimSystem *system, S
         break;
     }
     sign = ((s8(*)(BattleAnimSystem *, int, int))BattleAnimSystem_GetSideSign)(system, battlerA, battlerB);
-    memset((void *)&posArg, 0, sizeof(posArg));
-    BattleAnimSystem_ReadScriptArgs(system, (u32 *)&posArg, 3);
+    memset(&posArg, 0, sizeof(posArg));
+    BattleAnimSystem_ReadScriptArgs(system, &posArg, 3);
     BattleAnimUtil_GetBattlerEmitterPositionKind0(system, battlerA, &pos);
     if (posArg.x == 0 && posArg.y == 0 && posArg.z == 0) {
         final = pos;

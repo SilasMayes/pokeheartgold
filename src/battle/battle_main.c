@@ -880,7 +880,7 @@ static void BattleSystem_InitFromSetup(BattleSystem *battleSystem, BattleSetup *
 
     if (battleSystem->battleType & BATTLE_TYPE_PAL_PARK) {
         mon = Party_GetMonByIndex(battleSystem->trainerParty[1], 0);
-        GetMonData(mon, MON_DATA_OT_NAME, (u8 *)&battleSystem->trainers[1].name);
+        GetMonData(mon, MON_DATA_OT_NAME, &battleSystem->trainers[1].name);
     }
 
     if (battleSystem->battleType & BATTLE_TYPE_TRAINER) {

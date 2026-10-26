@@ -119,8 +119,9 @@ BOOL FrtCmd_FactoryLaunchTradeApp(FrontierScriptContext *ctx) {
 }
 
 static void BattleFactory_OnAppExit(void *args) {
-    BattleFactory_StoreAppResult(((BattleFactoryAppLaunchArgs *)args)->data, args);
-    Heap_Free(args);
+    BattleFactoryAppLaunchArgs *appArgs = args;
+    BattleFactory_StoreAppResult(appArgs->data, appArgs);
+    Heap_Free(appArgs);
 }
 
 BOOL FrtCmd_FactorySetRentalParty(FrontierScriptContext *ctx) {
