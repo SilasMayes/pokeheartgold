@@ -21,6 +21,7 @@
 #include "sys_flags.h"
 
 // The Safari Zone map is a 3x2 grid of 32x32 areas, starting at (32, 32).
+#define SAFARI_AREA_SIZE  32
 #define SAFARI_AREA_MIN_X 32
 #define SAFARI_AREA_MAX_X 128
 #define SAFARI_AREA_MIN_Z 32
@@ -45,8 +46,8 @@ static BOOL MapId_IsSafariZone(u32 mapId) {
 }
 
 static int SafariZone_GetAreaIndexAt(s32 x, s32 z) {
-    int area = (x - SAFARI_AREA_MIN_X) / 32 + ((z - SAFARI_AREA_MIN_Z) / 32) * 3;
-    if (area < 0 || area >= 6) {
+    int area = (x - SAFARI_AREA_MIN_X) / SAFARI_AREA_SIZE + ((z - SAFARI_AREA_MIN_Z) / SAFARI_AREA_SIZE) * SAFARI_ZONE_AREA_SET_COLS;
+    if (area < 0 || area >= SAFARI_ZONE_MAX_AREAS_PER_SET) {
         area = 0;
     }
     return area;
@@ -213,8 +214,8 @@ u16 FieldSystem_CheckSafariObjectPlacement(FieldSystem *fieldSystem) {
 
     PlayerAvatar_CopyPositionVector(fieldSystem->playerAvatar, &position);
     areaSet = SafariZone_GetAreaSet(Save_SafariZone_Get(fieldSystem->saveData), 0);
-    areaIndex = (x - SAFARI_AREA_MIN_X) / 32 + (z - SAFARI_AREA_MIN_Z) / 32 * 3;
-    if (areaSet->areas[areaIndex].active_object_count >= 30) {
+    areaIndex = (x - SAFARI_AREA_MIN_X) / SAFARI_AREA_SIZE + (z - SAFARI_AREA_MIN_Z) / SAFARI_AREA_SIZE * SAFARI_ZONE_AREA_SET_COLS;
+    if (areaSet->areas[areaIndex].active_object_count >= SAFARI_ZONE_MAX_OBJECTS) {
         return 1;
     }
     if (PlayerAvatar_GetState(fieldSystem->playerAvatar) != PLAYER_STATE_SURFING) {
@@ -239,8 +240,8 @@ u16 FieldSystem_GetFacingSafariObject(FieldSystem *fieldSystem, u16 *objectIndex
     SAFARIZONE_AREA *area;
     int i;
 
-    x %= 32;
-    z %= 32;
+    x %= SAFARI_AREA_SIZE;
+    z %= SAFARI_AREA_SIZE;
     area = &SafariZone_GetAreaSet(Save_SafariZone_Get(fieldSystem->saveData), 0)->areas[areaIndex];
     for (i = 0; i < area->active_object_count; i++) {
         SafariObjectConfig config;

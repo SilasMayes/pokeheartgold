@@ -1464,7 +1464,7 @@ static void MapObject_ChangeBillboardSpriteKeepingCopy(LocalMapObject *object, u
     int fog;
     u32 oldSpriteId;
     Billboard *billboards;
-    void *oldBillboard;
+    BillboardObject *oldBillboard;
     int priority;
     VecFx32 position;
     VecFx32 reflectionPosition;

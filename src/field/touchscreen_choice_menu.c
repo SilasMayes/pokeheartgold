@@ -183,7 +183,7 @@ static void TouchscreenChoiceMenu_Task(SysTask *task, void *taskData) {
         G2S_BlendNone();
     } else if (gTouchscreenChoiceMenuStateFuncs[data->state](data) == TRUE) {
         data->fieldSystem->startMenuState = 0;
-        FieldSystem_SwitchBottomScreenApp(data->fieldSystem, 0, NULL); // back to the start menu (app 0)
+        FieldSystem_SwitchBottomScreenApp(data->fieldSystem, BOTTOM_SCREEN_APP_TOUCHSCREEN_MENU, NULL);
     }
     SpriteList_RenderAndAnimateSprites(data->spriteList);
 }

@@ -66,7 +66,7 @@ BOOL Task_UseSweetScentInField(TaskManager *taskManager) {
 
     switch (*state) {
     case SWEET_SCENT_STATE_ALLOC: {
-        u32 partySlot = ((FieldMoveData *)work)->partySlot;
+        u32 partySlot = env->moveData->partySlot;
         Heap_Free(work);
         work = Heap_AllocAtEnd(HEAP_ID_FIELD2, sizeof(SweetScentFieldEnv));
         env->moveData = (FieldMoveData *)work;

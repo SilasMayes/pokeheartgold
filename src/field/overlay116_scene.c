@@ -115,7 +115,7 @@ void EncounterEffect_Legendary(SysTask *sysTask, EncounterEffectTask *task) {
     case LEGENDARY_STATE_END:
         SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_WHITE);
         FieldMotionBlur_Stop(&work->motionBlur);
-        *(vu16 *)0x04000050 = 0;
+        reg_G2_BLDCNT = 0;
         if (task->done != NULL) {
             *task->done = 1;
         }
@@ -191,7 +191,7 @@ static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTas
     case LEGENDARY_BIRD_STATE_END:
         SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_WHITE);
         FieldMotionBlur_Stop(&work->motionBlur);
-        *(vu16 *)0x04000050 = 0;
+        reg_G2_BLDCNT = 0;
         if (task->done != NULL) {
             *task->done = 1;
         }

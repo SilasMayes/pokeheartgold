@@ -19,8 +19,10 @@ typedef struct FieldEffectRendererEntry {
     void *data;
 } FieldEffectRendererEntry;
 
+#define FIELD_EFFECT_RECORD_SLOT_FREE 0xF
+
 typedef struct FieldEffectRecordSlot {
-    u32 id; // 0xF: free
+    u32 id; // FIELD_EFFECT_RECORD_SLOT_FREE: unused
     BillboardResource *record;
 } FieldEffectRecordSlot;
 
@@ -46,7 +48,7 @@ struct FieldEffectManager {
     FieldSystem *fieldSystem;
     FieldEffectRendererEntry *renderers;
     NARC *narc;
-    void *effects;
+    FieldEffectPool *effects;
     FieldEffectGfx *gfx;
 };
 

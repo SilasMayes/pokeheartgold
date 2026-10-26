@@ -41,8 +41,8 @@ typedef struct {
     s32 delay;
 } Ov116MoveWork;
 
-void EncounterEffect_Legendary(SysTask *, EncounterEffectTask *);
-void EncounterEffect_HoOh(SysTask *, EncounterEffectTask *);
-void EncounterEffect_Lugia(SysTask *, EncounterEffectTask *);
+void EncounterEffect_Legendary(SysTask *sysTask, EncounterEffectTask *task);
+void EncounterEffect_HoOh(SysTask *sysTask, EncounterEffectTask *task);
+void EncounterEffect_Lugia(SysTask *sysTask, EncounterEffectTask *task);
 
 #endif

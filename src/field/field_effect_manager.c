@@ -350,7 +350,7 @@ static void FieldEffectGfx_InitRecords(FieldEffectManager *manager, FieldEffectG
     slots = FieldEffectManager_HeapAlloc(manager, count * sizeof(FieldEffectRecordSlot), FALSE);
     gfx->slots = slots;
     do {
-        slots->id = 0xF;
+        slots->id = FIELD_EFFECT_RECORD_SLOT_FREE;
         slots->record = records;
         slots++;
         records++;
@@ -367,7 +367,7 @@ static void FieldEffectGfx_ReleaseRecord(FieldEffectGfx *gfx, u32 id) {
     FieldEffectRecordSlot *slot = gfx->slots;
     do {
         if (slot->id == id) {
-            slot->id = 0xF;
+            slot->id = FIELD_EFFECT_RECORD_SLOT_FREE;
             return;
         }
         slot++;
@@ -392,7 +392,7 @@ static BillboardResource *FieldEffectGfx_AddRecord(FieldEffectGfx *gfx, u32 id, 
     i = count;
     slot = slots;
     do {
-        if (slot->id == 0xF) {
+        if (slot->id == FIELD_EFFECT_RECORD_SLOT_FREE) {
             slot->id = id;
             record = slot->record;
             break;

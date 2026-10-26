@@ -53,12 +53,6 @@ struct AreaDataManager {
     NARC *mapPropAnimListNarc;
 };
 
-typedef struct FieldAnmRes {
-    u32 unk_00;
-    u16 numFrames;
-    u16 unk_06;
-} FieldAnmRes;
-
 int sprintf(char *buf, const char *fmt, ...);
 
 NNSG3dResFileHeader **AreaDataManager_GetMapPropModel(u32 mapPropId, AreaDataManager *areaDataManager);
@@ -332,7 +326,7 @@ void Field3dModelAnimation_Unload(Field3DModelAnimation *anim, NNSFndAllocator *
 }
 
 void Field3dModelAnimation_FrameAdvanceAndLoop(Field3DModelAnimation *anim, fx32 delta) {
-    fx32 numFrames = ((const FieldAnmRes *)anim->animObj->resAnm)->numFrames << FX32_SHIFT;
+    fx32 numFrames = NNS_G3dAnmObjGetNumFrame(anim->animObj);
     if (delta > 0) {
         anim->frame = (anim->frame + delta) % numFrames;
     } else {
@@ -345,7 +339,7 @@ void Field3dModelAnimation_FrameAdvanceAndLoop(Field3DModelAnimation *anim, fx32
 }
 
 BOOL Field3dModelAnimation_FrameAdvanceAndCheck(Field3DModelAnimation *anim, fx32 delta) {
-    fx32 numFrames = ((const FieldAnmRes *)anim->animObj->resAnm)->numFrames << FX32_SHIFT;
+    fx32 numFrames = NNS_G3dAnmObjGetNumFrame(anim->animObj);
     BOOL ret = FALSE;
     if (delta > 0) {
         if (anim->frame + delta < numFrames) {

@@ -375,14 +375,15 @@ void FollowMonBillboard_SetResource(BOOL alternate, LocalMapObject *object, Bill
 
 void FollowMonBillboard_InitSequence(BOOL alternate, LocalMapObject *object, BillboardObject *billboard, BillboardResource *resource) {
     MapObjectRender *render = MapObjectManager_GetRender(MapObject_GetManager(object));
-    void *sequence = ResourceBank_Get(render->sequenceBank, alternate ? BILLBOARD_SEQUENCE_FOLLOW_MON_ALT : BILLBOARD_SEQUENCE_FOLLOW_MON);
+    BillboardSequenceData *sequence = ResourceBank_Get(render->sequenceBank, alternate ? BILLBOARD_SEQUENCE_FOLLOW_MON_ALT : BILLBOARD_SEQUENCE_FOLLOW_MON);
     BillboardGfxSequence_Init(sequence, &resource->gfxSequence);
 }
 
 // Reloads the billboard's palette from the object's model file in sepia and re-uploads its texture.
 void MapObject_SetBillboardSepia(BOOL unused, LocalMapObject *object, BillboardObject *billboard) {
     SepiaBillboardTransfer *transfer = Heap_AllocAtEnd(HEAP_ID_FIELD2, sizeof(SepiaBillboardTransfer));
-    void *texture, *palette;
+    NNSG3dResTex *texture;
+    void *palette;
     u32 texKey;
     int member;
     MI_CpuFill8(transfer, 0, 4);

@@ -30,9 +30,9 @@ void MapObject_CreateBillboard(LocalMapObject *object, BillboardObject **billboa
 void MapObject_CancelAndFreeBillboard(LocalMapObject *object, BillboardObject **billboard, u32 spriteId);
 void MapObject_SetBillboardVisibleFromFlags(LocalMapObject *object, BillboardObject *billboard);
 void MapObject_DeleteBillboard(LocalMapObject *object, BillboardObject **billboard);
-u32 Facing_GetBillboardStandSequence(u32);
-u32 Facing_GetBillboardWalkSequence(u32);
-u32 MapObjectRender_GetFacingSequence(u32);
+u32 Facing_GetBillboardStandSequence(u32 facing);
+u32 Facing_GetBillboardWalkSequence(u32 facing);
+u32 MapObjectRender_GetFacingSequence(u32 facing);
 
 void MapObjectRender_Init(MapObjectRender *render, MapObjectManager *manager, u32 count, u32 priority, u32 textureCount, u32 residentTextureCount, const u32 *textureIds, u32 loadsPerFrame);
 void MapObjectRender_Free(MapObjectRender *render);

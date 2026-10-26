@@ -10,14 +10,14 @@ typedef struct FieldEffectPool FieldEffectPool;
 struct FieldEffect;
 struct FieldEffectBasicTemplate;
 
-FieldEffectPool *FieldEffectPool_New(enum HeapID, int);
-void FieldEffectPool_Delete(FieldEffectPool *);
-struct FieldEffect *FieldEffectPool_AddBasicEffect(FieldEffectPool *, const struct FieldEffectBasicTemplate *, const VecFx32 *, int, void *, u32);
+FieldEffectPool *FieldEffectPool_New(enum HeapID heapID, int count);
+void FieldEffectPool_Delete(FieldEffectPool *pool);
+struct FieldEffect *FieldEffectPool_AddBasicEffect(FieldEffectPool *pool, const struct FieldEffectBasicTemplate *template, const VecFx32 *position, int parameter, void *userData, u32 priority);
 void FieldEffect_Destroy(int value);
-void FieldEffectPool_DrawAll(FieldEffectPool *);
-void *FieldEffect_GetUserData(struct FieldEffect *);
-void FieldEffect_GetPosition(struct FieldEffect *, VecFx32 *);
-void FieldEffect_DefaultDraw(struct FieldEffect *, void *);
-void FieldEffect_DefaultDestroy(struct FieldEffect *, void *);
+void FieldEffectPool_DrawAll(FieldEffectPool *pool);
+void *FieldEffect_GetUserData(struct FieldEffect *effect);
+void FieldEffect_GetPosition(struct FieldEffect *effect, VecFx32 *position);
+void FieldEffect_DefaultDraw(struct FieldEffect *effect, void *state);
+void FieldEffect_DefaultDestroy(struct FieldEffect *effect, void *state);
 
 #endif // POKEHEARTGOLD_FIELD_EFFECTS_H
