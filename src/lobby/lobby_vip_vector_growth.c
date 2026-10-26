@@ -8,36 +8,36 @@
 #include "ppw_lobby_internal.h"
 
 
-void LobbyVipVector_Reallocate(PPWLobbyVipVector *b, u32 unused, u32 n) {
-    u32 size = b->size;
+void LobbyVipVector_Reallocate(PPWLobbyVipVector *vector, u32 unused, u32 capacity) {
+    u32 size = vector->size;
     LobbyTag old = { 0 };
     volatile LobbyTag copy;
     (void)old;
-    b->size -= size;
-    if (b->data) {
-        if (b->data) {
-            DWC_Free(0, b->data, 0);
+    vector->size -= size;
+    if (vector->data) {
+        if (vector->data) {
+            DWC_Free(0, vector->data, 0);
         }
-        b->data = 0;
-        b->capacity = 0;
+        vector->data = 0;
+        vector->capacity = 0;
     }
     LobbyTag fresh = { 0 };
     copy.unused = 0;
-    LobbyVipVector_Allocate(b, n, fresh);
+    LobbyVipVector_Allocate(vector, capacity, fresh);
 }
 
-u32 LobbyVipVector_RecommendSize(PPWLobbyVipVector *p, u32 n) {
-    u32 used = p->capacity, a, b;
-    if (n > 0x1fffffff - used) {
+u32 LobbyVipVector_RecommendSize(PPWLobbyVipVector *vector, u32 extra) {
+    u32 capacity = vector->capacity, growth, half;
+    if (extra > 0x1fffffff - capacity) {
         _ZNSt15__vector_commonILb1EE18throw_length_errorEv();
     }
-    if (used < 0xaaaaaaa) {
-        a = (used + 1) * 3 / 5;
-        return used + *(n > a ? &n : &a);
+    if (capacity < 0xaaaaaaa) {
+        growth = (capacity + 1) * 3 / 5;
+        return capacity + *(extra > growth ? &extra : &growth);
     }
-    if (used < 0x15555554) {
-        b = (used + 1) / 2;
-        return used + *(n > b ? &n : &b);
+    if (capacity < 0x15555554) {
+        half = (capacity + 1) / 2;
+        return capacity + *(extra > half ? &extra : &half);
     }
     return 0x1fffffff;
 }

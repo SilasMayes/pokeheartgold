@@ -24,35 +24,35 @@ void LobbyTimerMap_Erase(Iterator *, LobbyTimerMap *, Iterator);
 int PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info);
 int PPW_LobbyStopRecruit(void);
 
-char *LobbyCharVector_Data(LobbyCharVector *p) {
-    if (p->size == 0) {
+char *LobbyCharVector_Data(LobbyCharVector *vector) {
+    if (vector->size == 0) {
         return 0;
     }
-    return p->data;
+    return vector->data;
 }
 
 int PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info) {
-    PPWLobbyWork *w = CurrentWork();
+    PPWLobbyWork *work = CurrentWork();
     int result;
-    if (!w) {
+    if (!work) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (w && w->state == PPW_LOBBY_STATE_ERROR) {
+    if (work && work->state == PPW_LOBBY_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (w && CurrentWork()->state != PPW_LOBBY_STATE_READY) {
+    if (work && CurrentWork()->state != PPW_LOBBY_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    w = CurrentWork();
-    if (!w->recruiting) {
+    work = CurrentWork();
+    if (!work->recruiting) {
         result = 0;
     } else {
-        w->recruitInfo.index = info->index;
-        w->recruitInfo.maxPlayers = info->maxPlayers;
-        w->recruitInfo.playerCount = info->playerCount;
-        w->recruitInfo.state = info->state;
-        w->recruitInfo.params = info->params;
-        w->recruitInfo.name = info->name;
+        work->recruitInfo.index = info->index;
+        work->recruitInfo.maxPlayers = info->maxPlayers;
+        work->recruitInfo.playerCount = info->playerCount;
+        work->recruitInfo.state = info->state;
+        work->recruitInfo.params = info->params;
+        work->recruitInfo.name = info->name;
         result = 1;
     }
     if (!result) {
@@ -63,24 +63,24 @@ int PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info) {
 
 int PPW_LobbyStopRecruit(void) {
     u32 timerId;
-    PPWLobbyWork *w = CurrentWork();
+    PPWLobbyWork *work = CurrentWork();
     int result;
-    if (!w) {
+    if (!work) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    if (w && w->state == PPW_LOBBY_STATE_ERROR) {
+    if (work && work->state == PPW_LOBBY_STATE_ERROR) {
         return PPW_LOBBY_RESULT_ERROR_CONDITION;
     }
-    if (w && CurrentWork()->state != PPW_LOBBY_STATE_READY) {
+    if (work && CurrentWork()->state != PPW_LOBBY_STATE_READY) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    w = CurrentWork();
-    result = release(w);
+    work = CurrentWork();
+    result = release(work);
     if (!result) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
-    w = CurrentWork();
-    PPWLobby_SendMessage(w->userId, PPW_LOBBY_CHANNEL_KIND_MAIN, PPW_LOBBY_MESSAGE_FORMAT_BINARY, PPW_LOBBY_MESSAGE_KIND_SYSTEM, PPW_LOBBY_SYSTEM_MESSAGE_STOP_RECRUIT, &w->recruitInfo, sizeof(PPWLobbyRecruitInfo));
+    work = CurrentWork();
+    PPWLobby_SendMessage(work->userId, PPW_LOBBY_CHANNEL_KIND_MAIN, PPW_LOBBY_MESSAGE_FORMAT_BINARY, PPW_LOBBY_MESSAGE_KIND_SYSTEM, PPW_LOBBY_SYSTEM_MESSAGE_STOP_RECRUIT, &work->recruitInfo, sizeof(PPWLobbyRecruitInfo));
     timerId = PPW_LOBBY_TIMER_SEND_RECRUIT_INFO;
     LobbyTimerMap_EraseKey(&CurrentWork()->timers, &timerId);
     return PPW_LOBBY_RESULT_SUCCESS;

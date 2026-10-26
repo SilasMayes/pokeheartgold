@@ -4,52 +4,52 @@
 
 #include "ppw_lobby_work.h"
 
-void LobbyVipVector_AssignRange(PPWLobbyVipVector *p, const PPWLobbyVipRecord *first, const PPWLobbyVipRecord *last, LobbyTag tag) {
-    u32 n = last - first, growth;
+void LobbyVipVector_AssignRange(PPWLobbyVipVector *vector, const PPWLobbyVipRecord *first, const PPWLobbyVipRecord *last, LobbyTag tag) {
+    u32 count = last - first, growth;
     const PPWLobbyVipRecord *end;
     PPWLobbyVipRecord *dest;
     volatile u8 a, c, d, b;
-    if (p->capacity < n) {
+    if (vector->capacity < count) {
         a = 0;
-        growth = LobbyVipVector_RecommendSize(p, n - p->capacity);
+        growth = LobbyVipVector_RecommendSize(vector, count - vector->capacity);
     } else {
         end = first;
-        end += *(p->size < n ? &p->size : &n);
-        dest = p->data;
+        end += *(vector->size < count ? &vector->size : &count);
+        dest = vector->data;
         while (first < end) {
             dest->id = first->id;
             dest->value = first->value;
             ++first;
             ++dest;
         }
-        if (n < p->size) {
-            u32 old = p->size;
+        if (count < vector->size) {
+            u32 old = vector->size;
             c = 0;
-            p->size = *(volatile u32 *)&p->size - (old - n);
+            vector->size = *(volatile u32 *)&vector->size - (old - count);
             return;
         }
-        if (p->size >= n) {
+        if (vector->size >= count) {
             return;
         }
         d = 0;
-        dest = *(PPWLobbyVipRecord *volatile *)&p->data + *(volatile u32 *)&p->size;
+        dest = *(PPWLobbyVipRecord *volatile *)&vector->data + *(volatile u32 *)&vector->size;
         while (end != last) {
             if (dest) {
                 *dest = *end;
             }
-            ++p->size;
+            ++vector->size;
             ++end;
             ++dest;
         }
         return;
     }
-    LobbyVipVector_Reallocate(p, n, growth);
+    LobbyVipVector_Reallocate(vector, count, growth);
     b = 0;
-    dest = p->data + *(volatile u32 *)&p->size;
+    dest = vector->data + *(volatile u32 *)&vector->size;
     for (; first != last; ++first, ++dest) {
         if (dest) {
             *dest = *first;
         }
-        ++p->size;
+        ++vector->size;
     }
 }

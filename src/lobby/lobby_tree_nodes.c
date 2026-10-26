@@ -29,22 +29,22 @@ void *LobbyRequestMap_Destroy(LobbyRequestMap *map) {
 
 LobbyChannelMapNode *LobbyChannelMap_FindInsertPos(LobbyChannelMap *map, Str *key, LobbyChannelMapNode **found, u8 *left, u8 *empty) {
     LobbyChannelMapNode *parent;
-    LobbyChannelMapNode *p;
+    LobbyChannelMapNode *node;
     _Bool comparison;
     *found = 0;
-    p = map->root;
+    node = map->root;
     *left = 1;
     *empty = 1;
     parent = (LobbyChannelMapNode *)&map->root;
-    while (p) {
-        parent = p;
-        comparison = (_Bool)(LobbyString_Compare(key, &p->entry.name) < 0);
+    while (node) {
+        parent = node;
+        comparison = (_Bool)(LobbyString_Compare(key, &node->entry.name) < 0);
         if (comparison) {
-            p = p->left;
+            node = node->left;
             *left = 1;
         } else {
-            *found = p;
-            p = p->right;
+            *found = node;
+            node = node->right;
             *left = 0;
             *empty = 0;
         }
@@ -117,30 +117,30 @@ void *LobbyUserIdSet_Destroy2(LobbyUserIdSet *set) {
     return set;
 }
 
-void LobbyUserIdSet_Swap(LobbyUserIdSet *p, LobbyUserIdSet *q) {
-    int n;
-    LobbyUserIdSetNode *v;
-    if (p == q) {
+void LobbyUserIdSet_Swap(LobbyUserIdSet *set, LobbyUserIdSet *other) {
+    int count;
+    LobbyUserIdSetNode *node;
+    if (set == other) {
         return;
     }
-    n = p->count;
-    p->count = q->count;
-    q->count = n;
-    v = p->root;
-    p->root = q->root;
-    q->root = v;
-    v = p->first;
-    p->first = q->first;
-    q->first = v;
-    if (!p->root) {
-        p->first = (LobbyUserIdSetNode *)&p->root;
+    count = set->count;
+    set->count = other->count;
+    other->count = count;
+    node = set->root;
+    set->root = other->root;
+    other->root = node;
+    node = set->first;
+    set->first = other->first;
+    other->first = node;
+    if (!set->root) {
+        set->first = (LobbyUserIdSetNode *)&set->root;
     } else {
-        p->root->parent = (u32)&p->root | (p->root->parent & 1);
+        set->root->parent = (u32)&set->root | (set->root->parent & 1);
     }
-    if (!q->root) {
-        q->first = (LobbyUserIdSetNode *)&q->root;
+    if (!other->root) {
+        other->first = (LobbyUserIdSetNode *)&other->root;
     } else {
-        q->root->parent = (u32)&q->root | (q->root->parent & 1);
+        other->root->parent = (u32)&other->root | (other->root->parent & 1);
     }
 }
 

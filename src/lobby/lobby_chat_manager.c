@@ -30,22 +30,22 @@ void LobbyChat_StripChannelPrefix(Str *out, LobbyChatManager *manager, Str *name
     LobbyString_Substr(out, name, StrSize(&manager->channelPrefix), -1);
 }
 
-void LobbyChat_StripChannelPrefixes(LobbyU32Vector *out, LobbyChatManager *manager, int n, u32 *arr) {
+void LobbyChat_StripChannelPrefixes(LobbyU32Vector *out, LobbyChatManager *manager, int count, u32 *names) {
     int i;
     out->data = NULL;
     out->size = 0;
     out->capacity = 0;
-    for (i = 0; i < n; i++) {
-        u32 v;
-        v = arr[i] + StrSize(&manager->channelPrefix);
+    for (i = 0; i < count; i++) {
+        u32 name;
+        name = names[i] + StrSize(&manager->channelPrefix);
         TagTemp();
         if (out->size < out->capacity) {
             out->size++;
-            out->data[out->size - 1] = v;
+            out->data[out->size - 1] = name;
         } else {
-            LobbyTag t1;
-            t1 = (LobbyTag) { 0 };
-            LobbyU32Vector_PushBackSlow(out, &v, t1);
+            LobbyTag tag;
+            tag = (LobbyTag) { 0 };
+            LobbyU32Vector_PushBackSlow(out, &name, tag);
         }
     }
 }
