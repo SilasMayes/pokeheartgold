@@ -54,10 +54,6 @@ typedef struct BillboardSequenceData {
     u16 frames[1];
 } BillboardSequenceData;
 
-typedef struct MovementTable {
-    u32 movements[4];
-} MovementTable;
-
 typedef struct HopHeightTable {
     fx32 heights[3][16];
 } HopHeightTable;
@@ -104,10 +100,10 @@ typedef struct FollowMonFlash {
     u16 blended[32];
 } FollowMonFlash;
 
-extern const MovementTable gFollowMonFastMovements;
-extern const MovementTable gFollowMonSlowMovements;
-extern const MovementTable gFollowMonStepMovements;
-extern const MovementTable gFollowMonRunMovements;
+extern const MovementList gFollowMonFastMovements;
+extern const MovementList gFollowMonSlowMovements;
+extern const MovementList gFollowMonStepMovements;
+extern const MovementList gFollowMonRunMovements;
 extern const HopHeightTable gFollowMonHopHeights;
 extern const HopOffsets gFollowMonHopIntoBallZOffsets;
 
@@ -142,22 +138,22 @@ void FollowMon_MarkForRecreate(FieldSystem *fieldSystem) {
 
 // The next faster movement in direction after movement (8-11, then steps 12-15, runs 16-19, 20-23).
 u32 FollowMon_GetFasterMovement(u32 direction, u32 movement) {
-    MovementTable slow = gFollowMonSlowMovements;
-    MovementTable step = gFollowMonStepMovements;
-    MovementTable run = gFollowMonRunMovements;
-    MovementTable fast = gFollowMonFastMovements;
+    MovementList slow = gFollowMonSlowMovements;
+    MovementList step = gFollowMonStepMovements;
+    MovementList run = gFollowMonRunMovements;
+    MovementList fast = gFollowMonFastMovements;
     u8 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < DIR_MAX; i++) {
         if (movement == slow.movements[i]) {
             return step.movements[direction];
         }
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < DIR_MAX; i++) {
         if (movement == step.movements[i]) {
             return run.movements[direction];
         }
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < DIR_MAX; i++) {
         if (movement == run.movements[i]) {
             return fast.movements[direction];
         }

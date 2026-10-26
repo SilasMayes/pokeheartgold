@@ -42,7 +42,7 @@ typedef BOOL (*FollowPartnerStateFunc)(LocalMapObject *object, FollowPartnerMove
 typedef BOOL (*HiddenObjectStateFunc)(LocalMapObject *object, HiddenObjectMovementState *state);
 
 typedef struct MovementList {
-    u32 movements[4];
+    u32 movements[DIR_MAX];
 } MovementList;
 
 extern const FollowPartnerStateFunc gFollowPartnerStates[2];

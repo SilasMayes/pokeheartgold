@@ -38,7 +38,7 @@
 #include "touchscreen.h"
 
 // The touch YES/NO buttons of ScrCmd_GetMenuChoice and the touch multichoice list of ScrCmd_MenuExec. Scripts wait
-// for TOUCHSCREEN_CHOICE_MENU_STATE_DONE or for *result != 0xEEEE.
+// for TOUCHSCREEN_CHOICE_MENU_STATE_DONE or for *result != SCRIPT_MENU_RESULT_WAITING.
 
 typedef BOOL (*TouchscreenChoiceMenuStateFunc)(TouchscreenChoiceMenuData *data);
 
@@ -376,7 +376,7 @@ BOOL TouchscreenChoiceMenu_State_ShowList(TouchscreenChoiceMenuData *data) {
     if (data->selectionCallback) {
         data->selectionCallback(data->selectionCallbackMenu, data->selection);
     }
-    *data->result = 0xEEEE; // no choice yet
+    *data->result = SCRIPT_MENU_RESULT_WAITING;
     return FALSE;
 }
 

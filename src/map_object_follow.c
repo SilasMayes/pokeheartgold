@@ -660,17 +660,17 @@ static int GetMovementSpeed(u32 movement) {
     MovementList fastRun = gFastRunMovements;
     u8 i;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < DIR_MAX; i++) {
         if (movement == step.movements[i]) {
             return 3;
         }
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < DIR_MAX; i++) {
         if (movement == run.movements[i]) {
             return 2;
         }
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < DIR_MAX; i++) {
         if (movement == fastRun.movements[i]) {
             return 1;
         }

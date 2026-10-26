@@ -2,6 +2,7 @@
 
 #include "global.h"
 
+#include "constants/buildmodel.h"
 #include "constants/movements.h"
 #include "constants/sndseq.h"
 
@@ -101,11 +102,11 @@ typedef struct DoorModelList {
 } DoorModelList;
 
 static const DoorModelList sSideDoorEntryModels = {
-    .ids = { 11, 13, 12, 14 },
+    .ids = { BUILD_MODEL_EN_H01A, BUILD_MODEL_EN_DOOR1, BUILD_MODEL_EN_H01B, BUILD_MODEL_EN_DOOR2 },
 };
 
 static const DoorModelList sSideDoorExitModels = {
-    .ids = { 11, 13, 12, 14 },
+    .ids = { BUILD_MODEL_EN_H01A, BUILD_MODEL_EN_DOOR1, BUILD_MODEL_EN_H01B, BUILD_MODEL_EN_DOOR2 },
 };
 
 static const CameraTranslationPathTemplate sDoorCameraPaths[2] = {
@@ -252,7 +253,7 @@ BOOL DoorTransition_WalkIntoDoor(FieldSystem *fieldSystem, FieldTransitionWork *
         MapObject_SetVisible(PlayerAvatar_GetMapObject(fieldSystem->playerAvatar), TRUE);
         return TRUE;
     case WALK_INTO_DOOR_STATE_CAMERA_PAN: {
-        Camera_SetPerspectiveClippingPlane(0x96000, 0x456000, fieldSystem->camera);
+        Camera_SetPerspectiveClippingPlane(FX32_CONST(150), FX32_CONST(1110), fieldSystem->camera);
         work->translation = CreateCameraTranslationWrapper(HEAP_ID_FIELD1, fieldSystem->camera);
         SetCameraTranslationPath(work->translation, (CameraTranslationPathTemplate *)&sDoorCameraPaths[work->cameraPathIndex], 24);
         work->state++;
@@ -456,10 +457,10 @@ static int GetDoorSE(FieldSystem *fieldSystem, int modelId, BOOL opening) {
 static int DoorTransition_GetCameraPathIndex(int modelId) {
     int ret = 0xFFFF;
     switch (modelId) {
-    case 0x3D:
+    case BUILD_MODEL_KK_DOOR3:
         ret = 0;
         break;
-    case 0xE0:
+    case BUILD_MODEL_POKE_C_DOOR:
         ret = 1;
         break;
     }
@@ -485,7 +486,7 @@ BOOL DoorTransition_WalkOutOfSideDoor(FieldSystem *fieldSystem, FieldTransitionW
             Terrain_MakeTileRect(work->x, work->z, 0, 0, 2, 1, rect);
         }
         work->animTag = SIDE_DOOR_ANIM_TAG;
-        if (FieldSystem_FindMapPropOfModelsInRect(fieldSystem, models.ids, 4, rect, &prop, &modelId)) {
+        if (FieldSystem_FindMapPropOfModelsInRect(fieldSystem, models.ids, NELEMS(models.ids), rect, &prop, &modelId)) {
             texture = AreaDataManager_GetMapPropTexture(fieldSystem->areaDataManager);
             renderObj = MapProp_GetRenderSurface(prop);
             model = MapProp_GetResModel(prop);
@@ -568,7 +569,7 @@ BOOL DoorTransition_WalkIntoSideDoor(FieldSystem *fieldSystem, FieldTransitionWo
             Terrain_MakeTileRect(work->x, work->z, 0, 0, 2, 1, rect);
         }
         work->animTag = SIDE_DOOR_ANIM_TAG;
-        if (FieldSystem_FindMapPropOfModelsInRect(fieldSystem, models.ids, 4, rect, &prop, &modelId)) {
+        if (FieldSystem_FindMapPropOfModelsInRect(fieldSystem, models.ids, NELEMS(models.ids), rect, &prop, &modelId)) {
             texture = AreaDataManager_GetMapPropTexture(fieldSystem->areaDataManager);
             renderObj = MapProp_GetRenderSurface(prop);
             model = MapProp_GetResModel(prop);
@@ -999,13 +1000,13 @@ BOOL Task_ArriveWithFade(TaskManager *taskman) {
     return FALSE;
 }
 
-// Doors that keep the camera still: in buildings models 0x3F, 0xA2 and 0xC5, outside model 0x7C.
+// Doors that keep the camera still: three models inside buildings, one outside.
 static BOOL DoorTransition_ModelSkipsCameraZoom(FieldSystem *fieldSystem, int modelId) {
     if (MapHeader_IsInBuilding(fieldSystem->location->mapId)) {
-        if (modelId == 0x3F || modelId == 0xA2 || modelId == 0xC5) {
+        if (modelId == BUILD_MODEL_KK_FS || modelId == BUILD_MODEL_AR_SHRINE1_6 || modelId == BUILD_MODEL_SAF_RO03) {
             return TRUE;
         }
-    } else if (modelId == 0x7C) {
+    } else if (modelId == BUILD_MODEL_ELE_DOOR_DUN) {
         return TRUE;
     }
     return FALSE;

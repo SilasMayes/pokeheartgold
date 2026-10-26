@@ -22,14 +22,10 @@
 #include "player_avatar.h"
 
 // Map object reflections: an upside-down copy of the object's billboard below it while it stands on a puddle, other
-// water or a reflective floor (kinds 0-2; 3-5 for a large following Pokemon). Only water reflections ripple.
+// water or a reflective floor. Only water reflections ripple.
 
 #define REFLECTION_RESOURCE       2
 #define REFLECTION_RESOURCE_LARGE 13
-
-#define REFLECTION_KIND_FLOOR       2
-#define REFLECTION_KIND_LARGE_FLOOR 5
-#define REFLECTION_KIND_COUNT       6
 
 #define REFLECTION_SCALE_STEP 0x40
 #define REFLECTION_SCALE_MIN  0xE00

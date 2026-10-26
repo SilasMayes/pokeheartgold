@@ -1537,13 +1537,13 @@ static void MapObject_ChangeBillboardSpriteKeepingCopy(LocalMapObject *object, u
     BillboardObject_UpdateTextureAnimation(work->billboard);
     if (MapObject_CheckFlag24(object) == TRUE) {
         priority = MapObject_GetPriorityPlusValue(object, 2);
-        behavior = MapObject_GetMetatileBehaviorInDirection(object, 1);
+        behavior = MapObject_GetMetatileBehaviorInDirection(object, DIR_SOUTH);
         if (MetatileBehavior_IsReflective(behavior) == TRUE) {
-            reflectionKind = 2;
+            reflectionKind = REFLECTION_KIND_FLOOR;
         } else if (MetatileBehavior_IsPuddle(behavior) == TRUE) {
-            reflectionKind = 0;
+            reflectionKind = REFLECTION_KIND_PUDDLE;
         } else {
-            reflectionKind = 1;
+            reflectionKind = REFLECTION_KIND_WATER;
         }
         MapObject_CopyPositionVector(object, &reflectionPosition);
         work->reflection = Reflection_SpawnForBillboard(FieldEffectManager_GetFromMapObject(object), &work->resource, work->billboard, &reflectionPosition, reflectionKind, priority);

@@ -8,6 +8,8 @@
 #include "constants/sndseq.h"
 #include "constants/species.h"
 
+#include "msgdata/msg/msg_0666.h"
+
 #include "field_system.h"
 #include "heap.h"
 #include "map_object.h"
@@ -78,106 +80,106 @@ BOOL ItemIsTMOrHM(u16 item) {
 u16 GetOakJohtoDexRating(u16 count, u16 playerGender, u16 *fanfare) {
     *fanfare = SEQ_ME_HYOUKA1;
     if (count <= 9) {
-        return 28;
+        return msg_0666_00028;
     }
     if (count <= 19) {
-        return 29;
+        return msg_0666_00029;
     }
     if (count <= 34) {
-        return 30;
+        return msg_0666_00030;
     }
     if (count <= 49) {
-        return 31;
+        return msg_0666_00031;
     }
     if (count <= 64) {
-        return 32;
+        return msg_0666_00032;
     }
     if (count <= 79) {
-        return 33;
+        return msg_0666_00033;
     }
     if (count <= 94) {
-        return 34;
+        return msg_0666_00034;
     }
     if (count <= 109) {
-        return 35;
+        return msg_0666_00035;
     }
     if (count <= 124) {
-        return 36;
+        return msg_0666_00036;
     }
     if (count <= 139) {
-        return 37;
+        return msg_0666_00037;
     }
     if (count <= 154) {
-        return 38;
+        return msg_0666_00038;
     }
     if (count <= 169) {
-        return 39;
+        return msg_0666_00039;
     }
     if (count <= 184) {
-        return 40;
+        return msg_0666_00040;
     }
     if (count <= 199) {
-        return 41;
+        return msg_0666_00041;
     }
     if (count <= 214) {
-        return 42;
+        return msg_0666_00042;
     }
     if (count <= 229) {
-        return 43;
+        return msg_0666_00043;
     }
     if (count <= 244) {
-        return 44;
+        return msg_0666_00044;
     }
     if (count <= 253) {
-        return 45;
+        return msg_0666_00045;
     }
     *fanfare = SEQ_ME_HYOUKA6;
     if (playerGender) {
-        return 23;
+        return msg_0666_00023;
     }
-    return 22;
+    return msg_0666_00022;
 }
 
 u16 GetOakNationalDexRating(u16 count, u16 playerGender, u16 *fanfare) {
     *fanfare = SEQ_ME_HYOUKA1;
     if (count <= 100) {
-        return 46;
+        return msg_0666_00046;
     }
     if (count <= 150) {
-        return 47;
+        return msg_0666_00047;
     }
     if (count <= 200) {
-        return 48;
+        return msg_0666_00048;
     }
     if (count <= 250) {
-        return 49;
+        return msg_0666_00049;
     }
     if (count <= 300) {
-        return 50;
+        return msg_0666_00050;
     }
     if (count <= 350) {
-        return 51;
+        return msg_0666_00051;
     }
     if (count <= 400) {
-        return 52;
+        return msg_0666_00052;
     }
     if (count <= 435) {
-        return 53;
+        return msg_0666_00053;
     }
     if (count <= 465) {
-        return 54;
+        return msg_0666_00054;
     }
     if (count <= 475) {
-        return 55;
+        return msg_0666_00055;
     }
     if (count <= 483) {
-        return 56;
+        return msg_0666_00056;
     }
     *fanfare = SEQ_ME_HYOUKA6;
     if (playerGender) {
-        return 25;
+        return msg_0666_00025;
     }
-    return 24;
+    return msg_0666_00024;
 }
 
 u16 Save_GetPartyLead(SaveData *saveData) {
@@ -210,7 +212,7 @@ BOOL Save_PlayerHasAllRegisInParty(SaveData *saveData) {
     int found = 0;
     Party *party = SaveArray_Party_Get(saveData);
     int count = Party_GetCount(party);
-    u16 species[6];
+    u16 species[PARTY_SIZE];
     int i;
     int j;
 

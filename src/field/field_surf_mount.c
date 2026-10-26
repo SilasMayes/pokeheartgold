@@ -96,8 +96,8 @@ FieldEffect *SurfMountEffect_Create(LocalMapObject *mapObject, u32 x, u32 z, u32
     args.mapObject = mapObject;
     if (!bobbing) {
         FieldSystem *fieldSystem = MapObject_GetFieldSystem(mapObject);
-        position.x = (x << 16) + (2 << 14);
-        position.z = (z << 16) + (2 << 14);
+        position.x = (x << 16) + FX32_CONST(8);
+        position.z = (z << 16) + FX32_CONST(8);
         FieldSystem_SnapToTerrainHeight(fieldSystem, &position);
     } else {
         offset = sSurfMountBobbingOffset;

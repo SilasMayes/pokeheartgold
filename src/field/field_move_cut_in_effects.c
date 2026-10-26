@@ -243,7 +243,7 @@ void *FieldMoveCutIn_LoadMonPltt(PokepicTemplate *template, enum HeapID heapID) 
 }
 
 SpriteResource *FieldMoveCutIn_AddMonCharResource(FieldMoveCutIn *cutIn, NARC *narc) {
-    return AddCharResObjFromOpenNarc(cutIn->resMan[GF_GFX_RES_TYPE_CHAR], narc, 9, FALSE, 3, NNS_G2D_VRAM_TYPE_2DMAIN, HEAP_ID_FIELD1);
+    return AddCharResObjFromOpenNarc(cutIn->resMan[GF_GFX_RES_TYPE_CHAR], narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000009_NCGR, FALSE, 3, NNS_G2D_VRAM_TYPE_2DMAIN, HEAP_ID_FIELD1);
 }
 
 void FieldMoveCutIn_TransferMonChar(FieldMoveCutIn *cutIn, void *data) {
@@ -255,7 +255,7 @@ void FieldMoveCutIn_TransferMonChar(FieldMoveCutIn *cutIn, void *data) {
 }
 
 SpriteResource *FieldMoveCutIn_AddMonPlttResource(FieldMoveCutIn *cutIn, NARC *narc) {
-    return AddPlttResObjFromOpenNarc(cutIn->resMan[GF_GFX_RES_TYPE_PLTT], narc, 6, FALSE, 3, NNS_G2D_VRAM_TYPE_2DMAIN, 1, HEAP_ID_FIELD1);
+    return AddPlttResObjFromOpenNarc(cutIn->resMan[GF_GFX_RES_TYPE_PLTT], narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000006_NCLR, FALSE, 3, NNS_G2D_VRAM_TYPE_2DMAIN, 1, HEAP_ID_FIELD1);
 }
 
 void FieldMoveCutIn_TransferMonPltt(FieldMoveCutIn *cutIn, void *data) {
@@ -471,7 +471,7 @@ BOOL CutInFlyer_TakeOff(CutInFlyer *flyer) {
     if (flyer->speed < FX32_CONST(16)) {
         flyer->speed += FX32_CONST(4);
     }
-    flyer->offset.x = GF_CosDeg(0x13B) * (flyer->distance / FX32_ONE);
+    flyer->offset.x = GF_CosDeg(315) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg(flyer->angle / FX32_ONE) * (flyer->distance / FX32_ONE);
     if (flyer->angle / FX32_ONE < 270) {
         flyer->angle += FX32_CONST(4);
@@ -529,7 +529,7 @@ void FieldMoveCutIn_StartFlyerPickUp(FieldMoveCutIn *cutIn) {
     flyer->angle = FX32_CONST(225);
     flyer->distance = FX32_CONST(192);
     flyer->speed = FX32_CONST(32);
-    flyer->offset.x = GF_CosDeg(0x13b) * (flyer->distance / FX32_ONE);
+    flyer->offset.x = GF_CosDeg(315) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg(flyer->angle / FX32_ONE) * (flyer->distance / FX32_ONE);
     position.x = flyer->origin.x + flyer->offset.x;
     position.y = flyer->origin.y + flyer->offset.y;
@@ -540,7 +540,7 @@ void FieldMoveCutIn_StartFlyerPickUp(FieldMoveCutIn *cutIn) {
     flyer->trainerJumpEffect = FieldMoveCutIn_CreateTrainerJumpEffect(cutIn->effectPool, cutIn->trainerSprite);
     cutIn->flyStarted = TRUE;
     flyer->cameraZoom = FieldCameraZoom_Start(cutIn->fieldSystem, HEAP_ID_FIELD1);
-    FieldCameraZoom_Set(flyer->cameraZoom, 1, (fx32)0xfff88000, 0xc);
+    FieldCameraZoom_Set(flyer->cameraZoom, FIELD_CAMERA_ZOOM_BY, FX32_CONST(-120), 12);
     {
         fx32 *values = (fx32 *)&matrix;
         values[0] = 0;
@@ -570,7 +570,7 @@ BOOL CutInFlyer_SwoopDown(CutInFlyer *flyer) {
     if (flyer->speed < FX32_ONE) {
         flyer->speed = FX32_ONE;
     }
-    flyer->offset.x = GF_CosDeg(0x13b) * (flyer->distance / FX32_ONE);
+    flyer->offset.x = GF_CosDeg(315) * (flyer->distance / FX32_ONE);
     flyer->offset.y = GF_SinDeg(flyer->angle / FX32_ONE) * (flyer->distance / FX32_ONE);
     if (flyer->angle / FX32_ONE < 270) {
         flyer->angle += FX32_CONST(4);

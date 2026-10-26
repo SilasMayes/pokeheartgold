@@ -39,7 +39,7 @@ typedef struct ScriptMenuItem {
 } ScriptMenuItem;
 
 // A script multichoice (2D menu of entries) or scrolling list (items with optional help messages printed
-// to printWindow); the chosen value or 0xFFFE (cancelled) is written to *ret_p.
+// to printWindow); the chosen value or SCRIPT_MENU_RESULT_CANCEL is written to *ret_p.
 struct ScriptMenu {
     FieldSystem *fieldSystem;
     SysTask *task;
@@ -135,7 +135,7 @@ static void ScriptMenu_Init(FieldSystem *fieldSystem, ScriptMenu *menu, u8 x, u8
     for (i = 0; i < SCRIPT_MENU_MAX_ITEMS; i++) {
         menu->strbufs[i] = String_New(80, HEAP_ID_FIELD1);
     }
-    *menu->ret_p = 0xEEEE;
+    *menu->ret_p = SCRIPT_MENU_RESULT_WAITING;
 }
 
 static ScriptMenu *ScriptMenu_New(FieldSystem *fieldSystem, u8 x, u8 y, u8 initCursorPos, u8 cancellable, u16 *ret_p, MessageFormat *msgFmt, Window *window, MsgData *msgData) {
@@ -229,7 +229,7 @@ static void ScriptMenu_MultichoiceTask(SysTask *task, void *data) {
         switch (input) {
         case LIST_CANCEL:
             if (menu->cancellable == 1) {
-                *menu->ret_p = 0xfffe;
+                *menu->ret_p = SCRIPT_MENU_RESULT_CANCEL;
                 ScriptMenu_CloseMultichoice(menu);
                 return;
             }
@@ -446,7 +446,7 @@ static void ScriptMenu_ListTask(SysTask *task, void *data) {
         case LIST_CANCEL:
             if (menu->cancellable == 1) {
                 PlaySE(SEQ_SE_DP_SELECT);
-                *menu->ret_p = 0xfffe;
+                *menu->ret_p = SCRIPT_MENU_RESULT_CANCEL;
                 ScriptMenu_CloseList(menu);
                 return;
             }

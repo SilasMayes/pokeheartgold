@@ -233,20 +233,20 @@ static BOOL Footprints_Spawn(LocalMapObject *mapObject, u32 kind) {
     case 1:
     case 4:
     case 5:
-        position.y = y - 0x8000;
+        position.y = y - FX32_CONST(8);
         if (kind == 2 || kind == 3) {
-            position.z = position.z - 0x2000;
+            position.z = position.z - FX32_CONST(2);
         } else {
-            position.z = position.z + 0x1000;
+            position.z = position.z + FX32_ONE;
         }
         break;
     case 2:
     case 3:
-        position.y = y - 0xA000;
+        position.y = y - FX32_CONST(10);
         if (kind == 2 || kind == 3) {
-            position.z = position.z - 0x2000;
+            position.z = position.z - FX32_CONST(2);
         } else {
-            position.z = position.z + 0x2000;
+            position.z = position.z + FX32_CONST(2);
         }
         break;
     }

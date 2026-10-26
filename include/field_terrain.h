@@ -7,6 +7,9 @@
 
 struct MapProp;
 
+// Width of one map tile in world units
+#define MAP_TILE_SIZE FX32_CONST(16)
+
 // Where the height returned by the terrain height queries came from
 enum CalculatedHeightSource {
     CALCULATED_HEIGHT_SOURCE_NONE = 0,

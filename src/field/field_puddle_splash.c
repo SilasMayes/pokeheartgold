@@ -80,8 +80,8 @@ void PuddleSplash_Spawn(LocalMapObject *mapObject, int x, int y, int z) {
     args.manager = FieldEffectManager_GetFromMapObject(mapObject);
     args.splash = FieldEffectManager_GetRendererData(args.manager, FIELD_EFFECT_RENDERER_PUDDLE_SPLASH);
     SetPositionToTileCenter(x, z, &position);
-    position.z += y * 8 + 0x1000;
-    position.y = (MapObject_GetPreviousYCoord(mapObject) << 15) - 0x8000;
+    position.z += y * 8 + FX32_ONE;
+    position.y = (MapObject_GetPreviousYCoord(mapObject) << 15) - FX32_CONST(8);
     FieldEffectManager_CreateEffect(args.manager, &sPuddleSplashEffectTemplate, &position, 0, &args, MapObject_GetPriorityPlusValue(mapObject, 2));
 }
 

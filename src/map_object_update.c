@@ -553,11 +553,11 @@ static void MapObject_CreateReflection(LocalMapObject *object, u8 behavior, u8 p
                     }
                     MapObject_SetFlag24(object, TRUE);
                     if (MetatileBehavior_IsReflective(selected) == TRUE) {
-                        kind = 5;
+                        kind = REFLECTION_KIND_LARGE_FLOOR;
                     } else if (MetatileBehavior_IsPuddle(selected) == TRUE) {
-                        kind = 3;
+                        kind = REFLECTION_KIND_LARGE_PUDDLE;
                     } else {
-                        kind = 4;
+                        kind = REFLECTION_KIND_LARGE_WATER;
                     }
                     Reflection_SpawnForFollower(object, kind);
                 } else {
@@ -578,11 +578,11 @@ static void MapObject_CreateReflection(LocalMapObject *object, u8 behavior, u8 p
                     }
                     MapObject_SetFlag24(object, TRUE);
                     if (MetatileBehavior_IsReflective(selected) == TRUE) {
-                        kind = 2;
+                        kind = REFLECTION_KIND_FLOOR;
                     } else if (MetatileBehavior_IsPuddle(selected) == TRUE) {
-                        kind = 0;
+                        kind = REFLECTION_KIND_PUDDLE;
                     } else {
-                        kind = 1;
+                        kind = REFLECTION_KIND_WATER;
                     }
                     Reflection_SpawnForFollower(object, kind);
                 }
@@ -604,11 +604,11 @@ static void MapObject_CreateReflection(LocalMapObject *object, u8 behavior, u8 p
                 }
                 MapObject_SetFlag24(object, TRUE);
                 if (MetatileBehavior_IsReflective(selected) == TRUE) {
-                    kind = 2;
+                    kind = REFLECTION_KIND_FLOOR;
                 } else if (MetatileBehavior_IsPuddle(selected) == TRUE) {
-                    kind = 0;
+                    kind = REFLECTION_KIND_PUDDLE;
                 } else {
-                    kind = 1;
+                    kind = REFLECTION_KIND_WATER;
                 }
                 Reflection_Spawn(object, kind);
             }

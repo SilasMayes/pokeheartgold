@@ -48,10 +48,6 @@ static int Terrain_AbsDiff(int lhs, int rhs) {
     return rhs - lhs;
 }
 
-#define MAP_TILES_COUNT_X    32
-#define MAP_TILES_COUNT_Z    32
-#define MAP_OBJECT_TILE_SIZE FX32_CONST(16)
-
 static int Terrain_CalcHeight(FieldSystem *fieldSystem, int objectHeightMode, int objectHeight, fx32 objectX, fx32 objectZ, u8 *newObjectHeightSourceOut) {
     BOOL dynHeightPlateFound;
     u32 tileX, tileZ;
@@ -82,8 +78,8 @@ static int Terrain_CalcHeight(FieldSystem *fieldSystem, int objectHeightMode, in
     mapMatrixZ = tileZ / MAP_TILES_COUNT_Z;
     u32 mapMatrixIndex = mapMatrixX + mapMatrixZ * mapMatrixWidth;
 
-    fx32 currentMapOriginX = (mapMatrixX * MAP_TILES_COUNT_X + MAP_TILES_COUNT_X / 2) * MAP_OBJECT_TILE_SIZE;
-    fx32 currentMapOriginZ = (mapMatrixZ * MAP_TILES_COUNT_Z + MAP_TILES_COUNT_Z / 2) * MAP_OBJECT_TILE_SIZE;
+    fx32 currentMapOriginX = (mapMatrixX * MAP_TILES_COUNT_X + MAP_TILES_COUNT_X / 2) * MAP_TILE_SIZE;
+    fx32 currentMapOriginZ = (mapMatrixZ * MAP_TILES_COUNT_Z + MAP_TILES_COUNT_Z / 2) * MAP_TILE_SIZE;
 
     objectPosition.x = objectX - currentMapOriginX;
     objectPosition.z = objectZ - currentMapOriginZ;
@@ -229,7 +225,7 @@ int FieldSystem_GetTerrainHeight(FieldSystem *fieldSystem, int objectHeight, fx3
 static int FieldSystem_GetHeightStep(FieldSystem *fieldSystem, VecFx32 *playerPos, int x, int z, u8 *outKind) {
     int dir;
     fx32 hi, lo;
-    fx32 height = FieldSystem_GetTerrainHeight(fieldSystem, playerPos->y, (x << 16) + 0x8000, (z << 16) + 0x8000, outKind);
+    fx32 height = FieldSystem_GetTerrainHeight(fieldSystem, playerPos->y, (x << 16) + FX32_CONST(8), (z << 16) + FX32_CONST(8), outKind);
     if (height < playerPos->y) {
         hi = playerPos->y;
         lo = height;
@@ -241,7 +237,7 @@ static int FieldSystem_GetHeightStep(FieldSystem *fieldSystem, VecFx32 *playerPo
     } else {
         return 0;
     }
-    if (hi - lo >= 0x14000) {
+    if (hi - lo >= FX32_CONST(20)) {
         GF_ASSERT(dir != 0);
     } else {
         dir = 0;

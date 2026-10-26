@@ -7,6 +7,10 @@
 #include "message_format.h"
 #include "msgdata.h"
 
+// Values a script menu writes to its result besides the chosen item's value
+#define SCRIPT_MENU_RESULT_WAITING 0xEEEE
+#define SCRIPT_MENU_RESULT_CANCEL  0xFFFE
+
 // Script menus (multichoice, list, floor display) and the money, points and savings boxes.
 typedef struct ScriptMenu ScriptMenu;
 

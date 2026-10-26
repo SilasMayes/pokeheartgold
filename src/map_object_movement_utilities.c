@@ -304,8 +304,8 @@ void OffsetPositionInDirection(int direction, VecFx32 *position, int distance) {
 }
 
 void SetPositionToTileCenter(int x, int z, VecFx32 *position) {
-    position->x = (x << 16) + 0x8000;
-    position->z = (z << 16) + 0x8000;
+    position->x = (x << 16) + FX32_CONST(8);
+    position->z = (z << 16) + FX32_CONST(8);
 }
 
 void MapObject_UpdateHiddenMovement(LocalMapObject *object) {

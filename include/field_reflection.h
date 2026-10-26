@@ -7,6 +7,17 @@
 
 // Map object reflections on water and ice.
 
+// What a reflection is drawn on; the large kinds are for a large following Pokemon.
+enum ReflectionKind {
+    REFLECTION_KIND_PUDDLE,
+    REFLECTION_KIND_WATER,
+    REFLECTION_KIND_FLOOR,
+    REFLECTION_KIND_LARGE_PUDDLE,
+    REFLECTION_KIND_LARGE_WATER,
+    REFLECTION_KIND_LARGE_FLOOR,
+    REFLECTION_KIND_COUNT,
+};
+
 typedef struct Reflection Reflection;
 
 Reflection *Reflection_New(FieldEffectManager *manager);

@@ -77,7 +77,7 @@ void MudSplash_Spawn(LocalMapObject *mapObject, int x, int y, int z) {
     args.splash = FieldEffectManager_GetRendererData(args.manager, FIELD_EFFECT_RENDERER_MUD_SPLASH);
     SetPositionToTileCenter(x, z, &position);
     position.z += y * 8;
-    position.y = MapObject_GetPreviousYCoord(mapObject) * 0x8000 - 0x8000;
+    position.y = MapObject_GetPreviousYCoord(mapObject) * FX32_CONST(8) - FX32_CONST(8);
     FieldEffectManager_CreateEffect(args.manager, &sMudSplashEffectTemplate, &position, 0, &args, MapObject_GetPriorityPlusValue(mapObject, 2));
 }
 

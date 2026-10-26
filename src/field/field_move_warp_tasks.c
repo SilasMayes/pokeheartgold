@@ -142,7 +142,7 @@ int FieldEscapeRope_SpinStart(TaskManager *taskManager, FieldSystem *fieldSystem
     SysTask *cameraZoom = FieldCameraZoom_Start(fieldSystem, HEAP_ID_FIELD1);
 
     env->cameraZoom = cameraZoom;
-    FieldCameraZoom_Set(cameraZoom, FIELD_CAMERA_ZOOM_BY, -0x96000, 15);
+    FieldCameraZoom_Set(cameraZoom, FIELD_CAMERA_ZOOM_BY, FX32_CONST(-150), 15);
     env->playerMovement = EventObjectMovementMan_Create(env->playerObject, gEscapeRopeSpinStartMovement);
     if (env->withFollowMon) {
         env->followMonMovement = EventObjectMovementMan_Create(fieldSystem->followMon.mapObject, gEscapeRopeSpinStartMovement);
@@ -236,7 +236,7 @@ int FieldMoveArrival_FadeIn(TaskManager *taskManager, FieldSystem *fieldSystem, 
     }
     cameraZoom = FieldCameraZoom_Start(fieldSystem, HEAP_ID_FIELD1);
     env->cameraZoom = cameraZoom;
-    FieldCameraZoom_Set(cameraZoom, FIELD_CAMERA_ZOOM_BY, -0x96000, 1);
+    FieldCameraZoom_Set(cameraZoom, FIELD_CAMERA_ZOOM_BY, FX32_CONST(-150), 1);
     env->playerMovement = EventObjectMovementMan_Create(env->playerObject, gEscapeRopeSpinMovement);
     env->state++;
     return FIELD_MOVE_STEP_WAIT;
@@ -456,7 +456,7 @@ int FieldTeleport_FollowMonFlash(TaskManager *taskManager, FieldSystem *fieldSys
 int FieldTeleport_FollowMonSpinStart(TaskManager *taskManager, FieldSystem *fieldSystem, FieldMoveTaskEnvironment *env) {
     SysTask *cameraZoom = FieldCameraZoom_Start(fieldSystem, HEAP_ID_FIELD1);
     env->cameraZoom = cameraZoom;
-    FieldCameraZoom_Set(cameraZoom, FIELD_CAMERA_ZOOM_BY, -0x96000, 15);
+    FieldCameraZoom_Set(cameraZoom, FIELD_CAMERA_ZOOM_BY, FX32_CONST(-150), 15);
     env->followMonMovement = EventObjectMovementMan_Create(fieldSystem->followMon.mapObject, gTeleportFollowMonSpinMovement);
     env->state++;
     PlaySE(SEQ_SE_DP_TELE);
@@ -478,7 +478,7 @@ int FieldTeleport_FollowMonWaitSpin(TaskManager *taskManager, FieldSystem *field
 int FieldTeleport_SpinStart(TaskManager *taskManager, FieldSystem *fieldSystem, FieldMoveTaskEnvironment *env) {
     SysTask *cameraZoom = FieldCameraZoom_Start(fieldSystem, HEAP_ID_FIELD1);
     env->cameraZoom = cameraZoom;
-    FieldCameraZoom_Set(cameraZoom, FIELD_CAMERA_ZOOM_BY, -0x96000, 15);
+    FieldCameraZoom_Set(cameraZoom, FIELD_CAMERA_ZOOM_BY, FX32_CONST(-150), 15);
     env->playerMovement = EventObjectMovementMan_Create(env->playerObject, gEscapeRopeSpinStartMovement);
     env->state++;
     PlaySE(SEQ_SE_DP_TELE);
@@ -540,7 +540,7 @@ int FieldTeleport_Warp(TaskManager *taskManager, FieldSystem *fieldSystem, Field
 int FieldDig_SinkStart(TaskManager *taskManager, FieldSystem *fieldSystem, FieldMoveTaskEnvironment *env) {
     SysTask *cameraZoom = FieldCameraZoom_Start(fieldSystem, HEAP_ID_FIELD1);
     env->cameraZoom = cameraZoom;
-    FieldCameraZoom_Set(cameraZoom, FIELD_CAMERA_ZOOM_BY, -0x96000, 15);
+    FieldCameraZoom_Set(cameraZoom, FIELD_CAMERA_ZOOM_BY, FX32_CONST(-150), 15);
     env->playerMovement = EventObjectMovementMan_Create(env->playerObject, gDigSinkMovement);
     if (env->withFollowMon) {
         env->followMonMovement = EventObjectMovementMan_Create(fieldSystem->followMon.mapObject, gDigSinkMovement);

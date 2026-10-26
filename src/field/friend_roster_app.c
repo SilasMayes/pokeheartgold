@@ -443,14 +443,14 @@ static void FriendRosterApp_FreeSprites(FriendRosterAppData *data) {
 
 static void FriendRosterApp_CreateResourceManagers(FriendRosterAppData *data) {
     u32 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(data->resMans); i++) {
         data->resMans[i] = Create2DGfxResObjMan(1, (GfGfxResType)i, HEAP_ID_8);
     }
 }
 
 static void FriendRosterApp_DestroyResourceManagers(FriendRosterAppData *data) {
     u32 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(data->resMans); i++) {
         Destroy2DGfxResObjMan(data->resMans[i]);
     }
 }

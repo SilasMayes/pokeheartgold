@@ -535,7 +535,7 @@ static BOOL Task_PushBoulder(TaskManager *taskManager) {
 
 static BOOL Field_TryDropBoulderIntoHole(FieldSystem *fieldSystem, LocalMapObject *boulder) {
     u32 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(sIcePathBoulderHoles); i++) {
         if (sIcePathBoulderHoles[i].mapId == MapObject_GetMapID(boulder) && sIcePathBoulderHoles[i].objectId == MapObject_GetID(boulder) && sIcePathBoulderHoles[i].x == MapObject_GetXCoord(boulder) && sIcePathBoulderHoles[i].z == MapObject_GetZCoord(boulder)) {
             FieldSystem_FlagSet(fieldSystem, (u16)MapObject_GetEventFlag(boulder));
             MapObject_Delete(boulder);

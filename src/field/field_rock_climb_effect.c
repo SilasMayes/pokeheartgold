@@ -126,8 +126,8 @@ FieldEffect *RockClimbEffect_Create(LocalMapObject *mapObject, int x, int z, int
     args.rockClimb = FieldEffectManager_GetRendererData(manager, FIELD_EFFECT_RENDERER_ROCK_CLIMB);
     args.mapObject = mapObject;
     if (!follow) {
-        position.x = (x << 16) + 0x8000;
-        position.z = (z << 16) + 0x8000;
+        position.x = (x << 16) + FX32_CONST(8);
+        position.z = (z << 16) + FX32_CONST(8);
         FieldSystem_SnapToTerrainHeight(args.fieldSystem, &position);
     } else {
         MapObject_CopyPositionVector(mapObject, &position);

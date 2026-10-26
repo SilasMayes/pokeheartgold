@@ -323,14 +323,14 @@ static void DowsingMchn_DestroySprites(DowsingMchn *dowsing) {
 
 static void DowsingMchn_CreateResourceManagers(DowsingMchn *dowsing) {
     u32 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(dowsing->resMans); i++) {
         dowsing->resMans[i] = Create2DGfxResObjMan(2, (GfGfxResType)i, HEAP_ID_8);
     }
 }
 
 static void DowsingMchn_DestroyResourceManagers(DowsingMchn *dowsing) {
     u32 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(dowsing->resMans); i++) {
         Destroy2DGfxResObjMan(dowsing->resMans[i]);
     }
 }

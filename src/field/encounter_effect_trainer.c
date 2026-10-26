@@ -176,7 +176,7 @@ void EncounterEffect_TrainerSpinZoom(SysTask *task, EncounterEffectTask *effect)
         Sprite_SetAnimCtrlSeq(work->sprites[1], 2);
         EncounterEffectQuadInterp_Init(&work->movement, 0, FX32_CONST(255), FX32_CONST(10), 6);
         distance = Camera_GetDistance(work->camera);
-        EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - (125 << 14), -FX32_CONST(10), 6);
+        EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - FX32_CONST(500), -FX32_CONST(10), 6);
         Sprite_SetAffineZRotation(work->sprites[0], 0);
         Sprite_SetAffineZRotation(work->sprites[1], 0);
         effect->state++;
@@ -297,7 +297,7 @@ void EncounterEffect_TrainerSpinApart(SysTask *task, EncounterEffectTask *effect
     case SPIN_APART_STATE_START_WIPE:
         SplitWipe_Start(effect, work->wipe, 8, FX32_ONE, FX32_ONE);
         distance = Camera_GetDistance(work->camera);
-        EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - (125 << 14), -FX32_CONST(10), 8);
+        EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - FX32_CONST(500), -FX32_CONST(10), 8);
         effect->state++;
         break;
     case SPIN_APART_STATE_ZOOM:
@@ -419,7 +419,7 @@ void EncounterEffect_TrainerFadeSpin(SysTask *task, EncounterEffectTask *effect)
         }
         {
             s32 distance = Camera_GetDistance(work->camera);
-            EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - (125 << 14), -FX32_CONST(10), 8);
+            EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - FX32_CONST(500), -FX32_CONST(10), 8);
         }
         BeginNormalPaletteFade(3, 24, 0, RGB_BLACK, 8, 1, HEAP_ID_FIELD1);
         effect->state++;
@@ -521,7 +521,7 @@ void EncounterEffect_TrainerBallDrop(SysTask *task, EncounterEffectTask *effect)
     case BALL_DROP_STATE_START_TRAIL_1:
         if (--work->timer < 0) {
             distance = Camera_GetDistance(work->camera);
-            EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - (125 << 14), -FX32_CONST(10), 16);
+            EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - FX32_CONST(500), -FX32_CONST(10), 16);
             EncounterEffectInterp_Init(&work->rotation[0], 0, 0xFFFF, 6);
             EncounterEffectInterp_Init(&work->y[0], 231, -32, 6);
             RectTrail_Start(work->trails[0], 43, 43, 312, 0, 6, work->window, 86, 64, 15);
@@ -680,7 +680,7 @@ void EncounterEffect_TrainerRisingBall(SysTask *task, EncounterEffectTask *effec
     case RISING_BALL_STATE_START_ZOOM:
         HBlankSystem_Stop(effect->fieldSystem->mapSystems->hBlankSystem);
         distance = Camera_GetDistance(work->camera);
-        EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - (250 << 14), FX32_CONST(10), 8);
+        EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - FX32_CONST(1000), FX32_CONST(10), 8);
         BeginNormalPaletteFade(3, 18, 0, RGB_BLACK, 8, 1, HEAP_ID_FIELD1);
         effect->state++;
         break;
@@ -812,7 +812,7 @@ void EncounterEffect_TrainerBallFall(SysTask *task, EncounterEffectTask *effect)
     case BALL_FALL_STATE_START_WIPE:
         BlockWipe_Start(work->blockWipe, 1, 1, work->window, 15);
         distance = Camera_GetDistance(work->camera);
-        EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - (125 << 15), FX32_CONST(10), 64);
+        EncounterEffectQuadInterp_Init(&work->cameraDistance, distance, distance - FX32_CONST(1000), FX32_CONST(10), 64);
         effect->state++;
         break;
     case BALL_FALL_STATE_WIPE:

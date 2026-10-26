@@ -37,8 +37,7 @@
 #define HALL_OF_FAME_ANIM_TAG 0x10
 
 // A map tile is 16 units wide; objects stand at the tile center.
-#define TILE_SIZE         FX32_CONST(16)
-#define TILE_TO_POS(tile) ((tile) * TILE_SIZE + TILE_SIZE / 2)
+#define TILE_TO_POS(tile) ((tile) * MAP_TILE_SIZE + MAP_TILE_SIZE / 2)
 
 #define NUM_ROCK_CLIMB_DEBRIS_PIECES 16
 #define NUM_ROCK_DEBRIS_PIECES       18
@@ -725,10 +724,10 @@ static void RockClimbDebris_UpdateOffsets(RockClimbDebris *debris) {
     PlayerAvatar_CopyPositionVector(debris->fieldSystem->playerAvatar, &pos);
     if (pos.x - debris->lastPlayerPos.x == 0 && pos.y < debris->lastPlayerPos.y && pos.z > debris->lastPlayerPos.z) {
         debris->offsetY = 0;
-        debris->offsetZ = 2 * TILE_SIZE;
+        debris->offsetZ = 2 * MAP_TILE_SIZE;
     } else {
-        debris->offsetY = 2 * TILE_SIZE;
-        debris->offsetZ = TILE_SIZE;
+        debris->offsetY = 2 * MAP_TILE_SIZE;
+        debris->offsetZ = MAP_TILE_SIZE;
     }
     debris->lastPlayerPos = pos;
 }
@@ -826,16 +825,16 @@ void HeadbuttEffect_InitAtPlayer(Field3dObjectTask *task, FieldSystem *fieldSyst
     coords[2] = 0;
     switch (PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar)) {
     case DIR_NORTH:
-        offset.z -= TILE_SIZE / 2;
+        offset.z -= MAP_TILE_SIZE / 2;
         break;
     case DIR_SOUTH:
-        offset.z += TILE_SIZE / 2;
+        offset.z += MAP_TILE_SIZE / 2;
         break;
     case DIR_WEST:
-        offset.x -= TILE_SIZE / 2;
+        offset.x -= MAP_TILE_SIZE / 2;
         break;
     case DIR_EAST:
-        offset.x += TILE_SIZE / 2;
+        offset.x += MAP_TILE_SIZE / 2;
         break;
     }
     effect->shakeOffset = offset;
@@ -859,16 +858,16 @@ void HeadbuttEffect_InitAtFollower(Field3dObjectTask *task, FieldSystem *fieldSy
     coords[2] = 0;
     switch (PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar)) {
     case DIR_NORTH:
-        offset.z -= TILE_SIZE / 2;
+        offset.z -= MAP_TILE_SIZE / 2;
         break;
     case DIR_SOUTH:
-        offset.z += TILE_SIZE / 2;
+        offset.z += MAP_TILE_SIZE / 2;
         break;
     case DIR_WEST:
-        offset.x -= TILE_SIZE / 2;
+        offset.x -= MAP_TILE_SIZE / 2;
         break;
     case DIR_EAST:
-        offset.x += TILE_SIZE / 2;
+        offset.x += MAP_TILE_SIZE / 2;
         break;
     }
     effect->shakeOffset = offset;

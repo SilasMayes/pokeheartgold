@@ -427,7 +427,7 @@ static void NumberEntry_CreateButtonLabels(NumberEntryData *data) {
 
     msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0196_bin, HEAP_ID_8);
     FontID_Alloc(4, HEAP_ID_8);
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < NELEMS(data->windows); i++) {
         AddWindow(data->bgConfig, &data->windows[i], &sRodata.windowTemplates[i]);
         FillWindowPixelBuffer(&data->windows[i], 0);
         string = NewString_ReadMsgData(msgData, msg_0196_00024 + i);
@@ -444,7 +444,7 @@ static void NumberEntry_CreateButtonLabels(NumberEntryData *data) {
 
 static void NumberEntry_RemoveWindows(NumberEntryData *data) {
     u32 i;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < NELEMS(data->windows); i++) {
         RemoveWindow(&data->windows[i]);
     }
 }
@@ -465,14 +465,14 @@ static void NumberEntry_FreeSprites(NumberEntryData *data) {
 
 static void NumberEntry_CreateResourceManagers(NumberEntryData *data) {
     u32 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(data->resMans); i++) {
         data->resMans[i] = Create2DGfxResObjMan(2, (GfGfxResType)i, HEAP_ID_8);
     }
 }
 
 static void NumberEntry_DestroyResourceManagers(NumberEntryData *data) {
     u32 i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(data->resMans); i++) {
         Destroy2DGfxResObjMan(data->resMans[i]);
     }
 }

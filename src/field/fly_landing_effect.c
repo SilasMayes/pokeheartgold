@@ -136,7 +136,7 @@ void FlyLandingEffect_Start(FieldEffect *effect) {
     Sprite_SetDrawFlag(landing->flyerSprite, TRUE);
     landing->trainerJumpEffect = FieldMoveCutIn_CreateTrainerJumpEffect(landing->args.effectPool, landing->args.trainerSprite);
     landing->cameraZoom = FieldCameraZoom_Start(landing->args.fieldSystem, HEAP_ID_FIELD1);
-    FieldCameraZoom_Set(landing->cameraZoom, 1, FX32_CONST(-120), 12);
+    FieldCameraZoom_Set(landing->cameraZoom, FIELD_CAMERA_ZOOM_BY, FX32_CONST(-120), 12);
     {
         fx32 *zero = (fx32 *)&matrix;
         zero[0] = 0;
@@ -200,7 +200,7 @@ BOOL FlyLandingEffect_SwoopIn(FlyLandingEffect *landing) {
 
 BOOL FlyLandingEffect_StartClimb(FlyLandingEffect *landing) {
     TrainerJumpEffect_StartHop(landing->trainerJumpEffect);
-    FieldCameraZoom_Set(landing->cameraZoom, 2, 0, 12);
+    FieldCameraZoom_Set(landing->cameraZoom, FIELD_CAMERA_ZOOM_BACK, 0, 12);
     landing->scaleSpeed = 0x400;
     landing->angle = FX32_CONST(128);
     landing->radius = 0;

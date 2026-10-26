@@ -201,8 +201,8 @@ BOOL TallGrassEffect_Init(FieldEffect *effect, TallGrassEffect *work) {
     position.z = work->args.z << 16;
     position.y = MapObject_GetPositionVectorYCoord(work->args.mapObject);
     work->onGround = FieldSystem_SnapToTerrainHeight(work->args.fieldSystem, &position);
-    position.x = position.x + (2 << 14);
-    position.z = position.z + (0x12 << 12);
+    position.x = position.x + FX32_CONST(8);
+    position.z = position.z + FX32_CONST(18);
     FieldEffect_SetPosition(effect, &position);
     work->billboard = FieldEffectManager_CreateBillboardFromRecord(work->args.manager, TALL_GRASS_RECORD, &position);
     if (MapObject_TestFlagsBits(work->args.mapObject, MAPOBJECTFLAG_VISIBLE) == TRUE) {
@@ -299,8 +299,8 @@ BOOL TallGrassUnusedEffect_Init(FieldEffect *effect, TallGrassUnusedEffect *work
 
     work->args = *args;
     work->kind = FieldEffect_GetParam(effect);
-    position.x = (work->args.x << 16) + 0x8000;
-    position.z = (work->args.z << 16) + 0x9000;
+    position.x = (work->args.x << 16) + FX32_CONST(8);
+    position.z = (work->args.z << 16) + FX32_CONST(9);
     position.y = 0;
     FieldSystem_SnapToTerrainHeight(work->args.fieldSystem, &position);
     position.y += FX32_ONE;
