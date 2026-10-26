@@ -159,13 +159,10 @@ PokeathlonRingDropUi *PokeathlonRingDropUi_New(SpriteSystem *spriteSystem, Sprit
     ui->digitsBuffer = GfGfxLoader_GetScrnData(NARC_a_2_4_0, 7, TRUE, &ui->digits, ui->heapId);
     ui->iconPalette = SpriteSystem_LoadPlttResObj(spriteSystem, spriteManager, NARC_poketool_icongra_poke_icon, GetMonIconPlttNaix(), FALSE, 3, 2, 10004);
     member = PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
-    i = 0;
-    do {
+    for (i = 0; i < RING_DROP_TEAM_SIZE; i++, member += 40) {
         ui->memberNames[i] = String_New(11, ui->heapId);
         CopyU16ArrayToString(ui->memberNames[i], (const u16 *)(member + 18));
-        i++;
-        member += 40;
-    } while (i < RING_DROP_TEAM_SIZE);
+    }
     PokeathlonRingDropUi_AddWindows(ui);
     return ui;
 }
@@ -464,7 +461,7 @@ static void PokeathlonRingDropUi_LoadMonIcon(PokeathlonRingDropUi *ui, u8 partic
     PokeathlonCourse_LoadMonIcon(sprite, &info, ui->iconPalette, ui->iconNarc, participant << 9, ui->heapId);
 }
 
-static void *PokeathlonRingDropUi_NewTimerSprite(SpriteSystem *spriteSystem, SpriteManager *spriteManager, u16 x, u16 y, u16 animation, u16 priority) {
+static ManagedSprite *PokeathlonRingDropUi_NewTimerSprite(SpriteSystem *spriteSystem, SpriteManager *spriteManager, u16 x, u16 y, u16 animation, u16 priority) {
     ManagedSpriteTemplate template = sPokeathlonRingDropUiTimerSpriteTemplate;
     ManagedSprite *sprite;
     GF_ASSERT(spriteSystem != NULL);
@@ -474,7 +471,7 @@ static void *PokeathlonRingDropUi_NewTimerSprite(SpriteSystem *spriteSystem, Spr
     template.animation = animation;
     template.drawPriority = priority;
     sprite = SpriteSystem_NewSpriteWithYOffset(spriteSystem, spriteManager, &template, FX32_CONST(480));
-    ManagedSprite_SetAnimateFlag(sprite, 1);
+    ManagedSprite_SetAnimateFlag(sprite, TRUE);
     return sprite;
 }
 

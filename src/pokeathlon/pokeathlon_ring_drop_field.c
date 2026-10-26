@@ -318,9 +318,7 @@ static void PokeathlonRingDrop_UpdateStamina(PokeathlonRingDropPlayer *players, 
     for (i = 0; i < RING_DROP_PARTICIPANTS; players++, i++) {
         PokeathlonRingDropMon *mon = &players->mon;
         PokeathlonRingDropMember *teamMember;
-        member = 0;
-        teamMember = players->mon.members;
-        do {
+        for (member = 0, teamMember = players->mon.members; member < RING_DROP_TEAM_SIZE; member++, teamMember++) {
             int max;
             float refill = 0.0f;
             max = teamMember->params->stamina;
@@ -346,9 +344,7 @@ static void PokeathlonRingDrop_UpdateStamina(PokeathlonRingDropPlayer *players, 
             if (teamMember->stamina > max) {
                 teamMember->stamina = max;
             }
-            member++;
-            teamMember++;
-        } while (member < RING_DROP_TEAM_SIZE);
+        }
     }
 }
 
@@ -608,12 +604,10 @@ static BOOL PokeathlonRingDropMon_CanCollide(PokeathlonRingDropMon *mon) {
 
 static void PokeathlonRingDrop_ClearContacts(PokeathlonCourseData *course, s32 participant) {
     u8 *contact = ((PokeathlonRingDrop *)PokeathlonCourse_GetWork(course))->contacts[participant];
-    s32 i = 0;
-    do {
-        i++;
+    s32 i;
+    for (i = 0; i < RING_DROP_PARTICIPANTS; i++, contact++) {
         *contact = 0;
-        contact++;
-    } while (i < RING_DROP_PARTICIPANTS);
+    }
 }
 
 // A pushed Pokemon slides (its velocity decays) until it stops; otherwise it walks to its destination at its

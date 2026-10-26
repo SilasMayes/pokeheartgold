@@ -150,13 +150,9 @@ PokeathlonHurdleDashTrack *PokeathlonHurdleDashTrack_New(enum HeapID heapId) {
     PokeathlonHurdleDashLane *lane;
     PokeathlonHurdleDashTrack *track = Heap_Alloc(heapId, sizeof(PokeathlonHurdleDashTrack));
     MI_CpuFill8(track, 0, sizeof(PokeathlonHurdleDashTrack));
-    lane = track->lanes;
-    i = 0;
-    do {
+    for (i = 0, lane = track->lanes; i < POKEATHLON_TEAM_SIZE; i++, lane++) {
         lane->hurdles = PokeathlonHurdleDash_AllocHurdles(HURDLE_DASH_LANE_HURDLES, heapId);
-        i++;
-        lane++;
-    } while (i < POKEATHLON_TEAM_SIZE);
+    }
     return track;
 }
 
@@ -165,21 +161,17 @@ void PokeathlonHurdleDashTrack_Free(PokeathlonHurdleDashTrack *track) {
     int i;
     PokeathlonHurdleDashLane *lane;
     base = track;
-    i = 0;
-    lane = base->lanes;
-    do {
+    for (i = 0, lane = base->lanes; i < POKEATHLON_TEAM_SIZE; i++, lane++) {
         PokeathlonHurdleDash_FreeHurdles(lane->hurdles);
-        i++;
-        lane++;
-    } while (i < POKEATHLON_TEAM_SIZE);
+    }
     Heap_Free(base);
 }
 
 void PokeathlonHurdleDashTrack_CreateHurdleSprites(PokeathlonHurdleDashTrack *track, PokeathlonCourseSpritePool *spritePool) {
     PokeathlonHurdleDashLane *lane = track->lanes;
-    int i = 0;
+    int i;
     int j;
-    do {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         for (j = 0; j < HURDLE_DASH_LANE_HURDLES; j++) {
             PokeathlonHurdle *hurdle = PokeathlonHurdleDash_GetHurdle(lane->hurdles, j);
             PokeathlonCourseSpritePoolSprite *standing = PokeathlonCourseSpritePool_Take(spritePool, 101, 2);
@@ -187,8 +179,7 @@ void PokeathlonHurdleDashTrack_CreateHurdleSprites(PokeathlonHurdleDashTrack *tr
             PokeathlonHurdle_SetSprites(hurdle, standing, knocked);
         }
         lane++;
-        i++;
-    } while (i < POKEATHLON_TEAM_SIZE);
+    }
 }
 
 PokeathlonHurdle *PokeathlonHurdleDashTrack_GetLaneHurdles(PokeathlonHurdleDashTrack *track, u32 lane) {

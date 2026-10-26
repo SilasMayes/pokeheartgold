@@ -528,7 +528,7 @@ static void PokeathlonTrophies_CreateSummary(PokeathlonTrophies *work, Pokeathlo
     PokeathlonSave *pokeathlon;
     PlayerProfile *profile;
     Pokeathlon_RecordsSolo *recordsSolo;
-    void *medals;
+    u8 *medals;
     PokeathlonCourseRecordEntry *courseRecords;
     int i;
 

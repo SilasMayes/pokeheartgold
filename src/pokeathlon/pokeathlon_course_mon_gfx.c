@@ -96,7 +96,7 @@ PokeathlonCourseMonInfo *PokeathlonCourseMonGfx_GetInfo(PokeathlonCourseMonGfx *
 }
 
 // Copies the Pokemon's (shiny) palette out of its overworld model.
-void PokeathlonCourseMonGfx_LoadPalette(PokeathlonCourseMonInfo *info, enum HeapID heapId, void *dest) {
+void PokeathlonCourseMonGfx_LoadPalette(PokeathlonCourseMonInfo *info, enum HeapID heapId, u16 *dest) {
     void *model;
     u8 *palette;
 
@@ -110,7 +110,7 @@ void PokeathlonCourseMonGfx_LoadPalette(PokeathlonCourseMonInfo *info, enum Heap
     Heap_Free(model);
 }
 
-void PokeathlonCourseMonGfx_SetPalette(PokeathlonCourseMonGfxManager *manager, int index, int vram, void *palette) {
+void PokeathlonCourseMonGfx_SetPalette(PokeathlonCourseMonGfxManager *manager, int index, int vram, const u16 *palette) {
     BOOL loadMain = FALSE;
     BOOL loadSub = FALSE;
     NNSG2dImagePaletteProxy *paletteProxy;
@@ -368,15 +368,13 @@ static u8 PokeathlonCourseMonGfx_FindTopRowInTile(const u8 *data, u32 offset) {
 
     data += offset;
     for (row = 0; row < 8; row++) {
-        u8 column = 0;
-        do {
+        u8 column;
+        for (column = 0; column < 4; column++, data++) {
             if (*data != 0) {
                 result = row;
                 break;
             }
-            column++;
-            data++;
-        } while (column < 4);
+        }
         if (column != 4) {
             break;
         }

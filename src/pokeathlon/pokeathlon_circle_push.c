@@ -423,7 +423,7 @@ BOOL PokeathlonCirclePush_Init(PokeathlonCourseData *course) {
         int i;
         PokeathlonCourseSpritePoolTemplate template = sPokeathlonCirclePushSpritePoolTemplate;
         circlePush->spritePool = PokeathlonCourseSpritePool_New(circlePush->heapId, &template);
-        PokeathlonCourseSpritePool_SetSurfaceCoords(circlePush->spritePool, 0, 0, 0, 0x200000);
+        PokeathlonCourseSpritePool_SetSurfaceCoords(circlePush->spritePool, 0, 0, 0, FX32_CONST(512));
         circlePush->objects = PokeathlonCourseMonObjects_Create(circlePush->heapId, POKEATHLON_MONS, 5, circlePush->spriteResources, PokeathlonCourseSpritePool_GetSpriteList(circlePush->spritePool));
         PokeathlonCourseSpritePool_SetResourceId(circlePush->spritePool, 0, 101);
         PokeathlonCourseSpritePool_SetResourceId(circlePush->spritePool, 1, 104);
@@ -2110,7 +2110,7 @@ static void PokeathlonCirclePush_PrintScore(PokeathlonCirclePush *circlePush, s3
     msgFormat = MessageFormat_New(circlePush->heapId);
     BufferIntegerAsString(msgFormat, 0, score, 3, PRINTING_MODE_LEFT_ALIGN, TRUE);
     string = ReadMsgData_ExpandPlaceholders(msgFormat, msgData, msg_0309_00158, circlePush->heapId);
-    AddTextPrinterParameterizedWithColor(&circlePush->scoreWindow, 4, string, 0, 0, 0xFF, 0xF0E00, NULL); // no transfer; colours 15, 14, 0
+    AddTextPrinterParameterizedWithColor(&circlePush->scoreWindow, 4, string, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
     String_Delete(string);
     MessageFormat_Delete(msgFormat);
     DestroyMsgData(msgData);

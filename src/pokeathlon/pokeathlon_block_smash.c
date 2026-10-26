@@ -62,7 +62,7 @@ void PokeathlonBlockSmashMon_OnHit(PokeathlonBlockSmashMon *mon, int hitSpot, in
 void PokeathlonBlockSmashMon_StartSwitch(PokeathlonBlockSmashMon *mon);
 void PokeathlonBlockSmashMon_SetAnimate(PokeathlonBlockSmashMon *mon, int animate);
 u8 PokeathlonBlockSmashMon_GetMode(PokeathlonBlockSmashMon *mon);
-void *PokeathlonBlockSmashMon_GetActiveMember(PokeathlonBlockSmashMon *mon);
+PokeathlonBlockSmashMember *PokeathlonBlockSmashMon_GetActiveMember(PokeathlonBlockSmashMon *mon);
 BOOL PokeathlonBlockSmashMon_CanSwitch(PokeathlonBlockSmashMon *mon);
 u32 PokeathlonBlockSmashMon_IsGaugeFull(PokeathlonBlockSmashMon *mon);
 u32 PokeathlonBlockSmashMon_IsTired(PokeathlonBlockSmashMon *mon);

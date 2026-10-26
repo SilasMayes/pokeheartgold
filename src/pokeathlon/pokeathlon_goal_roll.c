@@ -172,7 +172,7 @@ BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
     case GOAL_ROLL_INIT_CREATE_SPRITES: {
         work.poolConfig = gPokeathlonGoalRollSpritePoolConfig;
         goalRoll->spritePool = PokeathlonCourseSpritePool_New(goalRoll->heapId, &work.poolConfig);
-        PokeathlonCourseSpritePool_SetSurfaceCoords(goalRoll->spritePool, 0, 0, 0, 0x200000);
+        PokeathlonCourseSpritePool_SetSurfaceCoords(goalRoll->spritePool, 0, 0, 0, FX32_CONST(512));
         goalRoll->monObjects = PokeathlonCourseMonObjects_Create(goalRoll->heapId, 12, 8, goalRoll->resources, PokeathlonCourseSpritePool_GetSpriteList(goalRoll->spritePool));
         PokeathlonCourseSpritePool_SetResourceId(goalRoll->spritePool, 0, 101);
         PokeathlonCourseSpritePool_SetResourceId(goalRoll->spritePool, 1, 102);

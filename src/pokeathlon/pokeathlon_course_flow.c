@@ -1278,18 +1278,14 @@ static void PokeathlonCourse_InsertRankEntry(u32 order, PokeathlonCourseRankEntr
     PokeathlonCourseRankEntry temp;
     if (PokeathlonCourse_BeatsRecord(top[POKEATHLON_RECORD_RANKS - 1].score, entry->score, order)) {
         top[POKEATHLON_RECORD_RANKS - 1] = *entry;
-        i = POKEATHLON_RECORD_RANKS - 1;
-        slot = &top[POKEATHLON_RECORD_RANKS - 1];
-        do {
+        for (i = POKEATHLON_RECORD_RANKS - 1, slot = &top[POKEATHLON_RECORD_RANKS - 1]; i > 0; i--, slot--) {
             if (!PokeathlonCourse_BeatsRecord(slot[-1].score, slot->score, order)) {
                 return;
             }
             temp = slot[-1];
             slot[-1] = *slot;
             *slot = temp;
-            i--;
-            slot--;
-        } while (i > 0);
+        }
     }
 }
 

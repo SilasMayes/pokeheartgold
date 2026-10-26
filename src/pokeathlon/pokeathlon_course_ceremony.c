@@ -920,7 +920,7 @@ static void PokeathlonCourseCeremony_InitSpriteSystem(PokeathlonCourseCeremony *
     SpriteSystem_Init(ceremony->spriteSystem, &oamManagerParam, &charTransferParam, 32);
     SpriteSystem_InitSprites(ceremony->spriteSystem, ceremony->spriteManager, 0x80);
     SpriteSystem_InitManagerWithCapacities(ceremony->spriteSystem, ceremony->spriteManager, &counts);
-    G2dRenderer_SetSubSurfaceCoords(SpriteSystem_GetRenderer(ceremony->spriteSystem), 0, 0x20C000);
+    G2dRenderer_SetSubSurfaceCoords(SpriteSystem_GetRenderer(ceremony->spriteSystem), 0, FX32_CONST(524));
 }
 
 static void PokeathlonCourseCeremony_FreeSprites(PokeathlonCourseCeremony *ceremony) {
@@ -956,7 +956,7 @@ static void PokeathlonCourseCeremony_CreateTrainerSprites(PokeathlonCourseCeremo
             template.x = 128;
             template.y = 112;
         }
-        cursor->trainerSprites[0] = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, 0x20C000);
+        cursor->trainerSprites[0] = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, FX32_CONST(524));
         ManagedSprite_SetAnimateFlag(cursor->trainerSprites[0], TRUE);
         i++;
         x += 64;
@@ -981,7 +981,7 @@ static void PokeathlonCourseCeremony_CreateScoreSprites(PokeathlonCourseCeremony
         template.y = 72;
         template.animation = 0;
         template.pal = i + 1;
-        ceremony->sprites[index] = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, 0x20C000);
+        ceremony->sprites[index] = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, FX32_CONST(524));
         ManagedSprite_SetAnimateFlag(ceremony->sprites[index], TRUE);
         template.pal = 0;
         template.bgPriority = 1;
@@ -990,7 +990,7 @@ static void PokeathlonCourseCeremony_CreateScoreSprites(PokeathlonCourseCeremony
         template.animation = 1;
         for (j = 0; j < 3; j++) {
             int digit = index + 1 + j;
-            ceremony->sprites[digit] = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, 0x20C000);
+            ceremony->sprites[digit] = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, FX32_CONST(524));
             ManagedSprite_SetAnimateFlag(ceremony->sprites[digit], TRUE);
             template.x += 16;
         }
@@ -1016,7 +1016,7 @@ static void PokeathlonCourseCeremony_CreateMonPicSprites(PokeathlonCourseCeremon
         template.drawPriority = 1;
         {
             PokeathlonCourseCeremony *slot = (PokeathlonCourseCeremony *)((u8 *)ceremony + (21 + i) * sizeof(ManagedSprite *));
-            sprite = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, 0x20C000);
+            sprite = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, FX32_CONST(524));
             slot->sprites[0] = sprite;
             ManagedSprite_SetPaletteOverride(sprite, palette);
             ManagedSprite_SetDrawFlag(slot->sprites[0], FALSE);
@@ -1043,7 +1043,7 @@ static void PokeathlonCourseCeremony_CreateMedalSprites(PokeathlonCourseCeremony
         if (ceremony->course < POKEATHLON_SOLO_COURSES) {
             template.x = 128;
         }
-        ceremony->sprites[index] = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, 0x20C000);
+        ceremony->sprites[index] = SpriteSystem_NewSpriteWithYOffset(ceremony->spriteSystem, ceremony->spriteManager, &template, FX32_CONST(524));
         ManagedSprite_SetAnimateFlag(ceremony->sprites[index], TRUE);
         ManagedSprite_SetDrawFlag(ceremony->sprites[index], FALSE);
     }
@@ -1360,7 +1360,7 @@ static void PokeathlonCourseConfetti_Spawn(PokeathlonCourseConfettiPiece *piece,
     if (!(MTRandom() & 1)) {
         template.animation = 12;
     }
-    piece->sprite = SpriteSystem_NewSpriteWithYOffset(spriteSystem, spriteManager, &template, 0x20C000);
+    piece->sprite = SpriteSystem_NewSpriteWithYOffset(spriteSystem, spriteManager, &template, FX32_CONST(524));
     ManagedSprite_SetAnimateFlag(piece->sprite, TRUE);
 }
 
@@ -1378,7 +1378,7 @@ static BOOL PokeathlonCourseConfetti_Fall(PokeathlonCourseConfettiPiece *piece) 
     velocity = sine * xVelocity;
     piece->x += (velocity + 0x800) >> FX32_SHIFT;
     piece->y += piece->yVelocity;
-    ManagedSprite_SetPositionFxXYWithSubscreenOffset(piece->sprite, piece->x, piece->y, 0x20C000);
+    ManagedSprite_SetPositionFxXYWithSubscreenOffset(piece->sprite, piece->x, piece->y, FX32_CONST(524));
     if ((piece->y >> FX32_SHIFT) > 224) {
         if (piece->state.landed) {
             piece->state.active = FALSE;
@@ -1402,7 +1402,7 @@ static void PokeathlonCourseConfetti_MoveToTopScreen(PokeathlonCourseConfettiPie
     template.x = piece->x >> FX32_SHIFT;
     template.y = piece->y >> FX32_SHIFT;
     Sprite_DeleteAndFreeResources(piece->sprite);
-    piece->sprite = SpriteSystem_NewSpriteWithYOffset(spriteSystem, spriteManager, &template, 0x20C000);
+    piece->sprite = SpriteSystem_NewSpriteWithYOffset(spriteSystem, spriteManager, &template, FX32_CONST(524));
     ManagedSprite_SetAnimateFlag(piece->sprite, TRUE);
 }
 

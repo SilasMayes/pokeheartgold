@@ -700,7 +700,7 @@ static void PokeathlonEventIntro_InitSprites(PokeathlonEventIntro *intro) {
     SpriteSystem_InitManagerWithCapacities(intro->spriteSystem, intro->spriteManager, &counts);
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
-    G2dRenderer_SetSubSurfaceCoords(SpriteSystem_GetRenderer(intro->spriteSystem), 0, 2 << 20);
+    G2dRenderer_SetSubSurfaceCoords(SpriteSystem_GetRenderer(intro->spriteSystem), 0, FX32_CONST(512));
     PokeathlonEventIntro_LoadSpriteResources(intro);
     PokeathlonEventIntro_CreateSprites(intro);
 }
@@ -726,12 +726,11 @@ static void PokeathlonEventIntro_UpdateMascot(PokeathlonEventIntro *intro) {
 }
 
 static void PokeathlonEventIntro_PlaceSprites(PokeathlonEventIntro *intro, int layout) {
-    int i = 0;
+    int i;
     const s16(*position)[2] = sPokeathlonEventIntroSpritePositions + layout * 4;
-    do {
-        ManagedSprite_SetPositionXYWithSubscreenOffset(intro->sprites[i], (*position)[0], (*position)[1], 2 << 20);
-        position++;
-    } while (++i < 4);
+    for (i = 0; i < 4; i++) {
+        ManagedSprite_SetPositionXYWithSubscreenOffset(intro->sprites[i], position[i][0], position[i][1], FX32_CONST(512));
+    }
 }
 
 static void PokeathlonEventIntro_ResetMascot(PokeathlonEventIntro *intro) {
@@ -752,7 +751,7 @@ static void PokeathlonEventIntro_CreateSprites(PokeathlonEventIntro *intro) {
         SpriteManager *spriteManager = intro->spriteManager;
         coords[0] = (*position)[0];
         coords[1] = (*position)[1];
-        cursor->sprites[0] = SpriteSystem_NewSpriteWithYOffset(spriteSystem, spriteManager, template, 2 << 20);
+        cursor->sprites[0] = SpriteSystem_NewSpriteWithYOffset(spriteSystem, spriteManager, template, FX32_CONST(512));
         ManagedSprite_SetAnimateFlag(cursor->sprites[0], TRUE);
         position++;
         coords += sizeof(ManagedSpriteTemplate) / sizeof(s16);
