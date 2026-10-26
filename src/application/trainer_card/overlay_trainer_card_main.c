@@ -473,10 +473,10 @@ static void TrainerCardMain_LoadStrings(TrainerCardMain *cardMain) {
     cardMain->colonString = String_New(5, HEAP_ID_25);
     ReadMsgDataIntoString(cardMain->msgData, msg_0727_00011, cardMain->colonString);
     for (i = 0; i < 3; i++) {
-        cardMain->buttonStrings[i] = NewString_ReadMsgData(cardMain->msgData, i + 14);
+        cardMain->buttonStrings[i] = NewString_ReadMsgData(cardMain->msgData, i + msg_0727_00014);
     }
     for (i = 0; i < 2; i++) {
-        cardMain->promptStrings[i] = NewString_ReadMsgData(cardMain->msgData, i + 17);
+        cardMain->promptStrings[i] = NewString_ReadMsgData(cardMain->msgData, i + msg_0727_00017);
     }
     for (i = 0; i < 14; i++) {
         cardMain->labelStrings[i] = NewString_ReadMsgData(cardMain->msgData, i);

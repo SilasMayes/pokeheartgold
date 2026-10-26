@@ -449,7 +449,7 @@ void PokedexApp_DrawWeightLabel(PokedexAppData *pokedexApp, u32 windowId) {
     ScheduleWindowCopyToVram(&pokedexApp->windows[windowId]);
 }
 
-// The height text of species (state 2: caught; else the placeholder, message 0).
+// The height text of species (state 2: caught; else the SPECIES_NONE placeholder).
 void PokedexApp_PrintHeight(PokedexAppData *pokedexApp, u32 species, u32 state, u32 windowId, u32 x, u32 y, u32 color, u32 align) {
     MsgData *msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, GetDexHeightMsgBank(), HEAP_ID_POKEDEX_APP);
     String *string;
@@ -457,7 +457,7 @@ void PokedexApp_PrintHeight(PokedexAppData *pokedexApp, u32 species, u32 state, 
     if (state == 2) {
         string = NewString_ReadMsgData(msgData, species);
     } else {
-        string = NewString_ReadMsgData(msgData, 0);
+        string = NewString_ReadMsgData(msgData, SPECIES_NONE);
     }
     PokedexApp_PrintString(&pokedexApp->windows[windowId], string, x, y, 0, color, align);
     String_Delete(string);
@@ -477,7 +477,7 @@ void PokedexApp_PrintWeight(PokedexAppData *pokedexApp, u32 species, u32 state, 
     if (state == 2) {
         string = NewString_ReadMsgData(msgData, species);
     } else {
-        string = NewString_ReadMsgData(msgData, 0);
+        string = NewString_ReadMsgData(msgData, SPECIES_NONE);
     }
     PokedexApp_PrintString(&pokedexApp->windows[windowId], string, x, y, 0, color, align);
     String_Delete(string);

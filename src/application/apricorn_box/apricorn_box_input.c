@@ -210,17 +210,17 @@ static int ApricornBoxScreen_BlenderSelect(ApricornBoxScreen *screen, u32 input)
         ApricornBoxScreen_UpdateCursor(screen);
         screen->selectedApricorn = input;
         if (screen->juiceServings == 0 && screen->numBlending == 0) {
-            ApricornBoxScreen_PrintMessage(screen, 25, TEXT_SPEED_NOTRANSFER);
+            ApricornBoxScreen_PrintMessage(screen, APRICORN_BOX_TEXT_JUICE_NOT_DONE, TEXT_SPEED_NOTRANSFER);
             ApricornBoxScreen_SetApricornsFocus(screen, 1);
             return APRICORN_BOX_SCREEN_STATE_WAIT_JUICE_TASTE;
         }
         if (screen->juiceServings == 0 && screen->numBlending != 0) {
-            ApricornBoxScreen_PrintMessage(screen, 27, TEXT_SPEED_NOTRANSFER);
+            ApricornBoxScreen_PrintMessage(screen, APRICORN_BOX_TEXT_BEING_MADE, TEXT_SPEED_NOTRANSFER);
             ApricornBoxScreen_SetApricornsFocus(screen, 1);
             return APRICORN_BOX_SCREEN_STATE_WAIT_JUICE_TASTE;
         }
         if (screen->juiceServings != 0 && screen->numBlending != 0) {
-            ApricornBoxScreen_PrintMessage(screen, 28, TEXT_SPEED_NOTRANSFER);
+            ApricornBoxScreen_PrintMessage(screen, APRICORN_BOX_TEXT_IMPROVING, TEXT_SPEED_NOTRANSFER);
             ApricornBoxScreen_SetApricornsFocus(screen, 1);
             return APRICORN_BOX_SCREEN_STATE_WAIT_JUICE_TASTE;
         }

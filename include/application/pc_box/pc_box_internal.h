@@ -44,6 +44,10 @@ void DrawFrame2AroundWindow(Window *window, u32 baseTile, u32 paletteNum);
 #define PC_BOX_SLOT_COUNT       36
 #define PC_BOX_SLOT_NONE        0xFF
 
+// Move and drop targets beyond the slots: box i of the tray is PC_BOX_TARGET_TRAY_BOX + i.
+#define PC_BOX_TARGET_TRAY_BOX 0x80
+#define PC_BOX_TRAY_BOX_COUNT  6
+
 // PCBoxView.sprites
 enum PCBoxSprite {
     PC_BOX_SPRITE_PREV_BOX_ARROW,
@@ -60,7 +64,7 @@ enum PCBoxSprite {
     PC_BOX_SPRITE_INFO_ITEM,
     PC_BOX_SPRITE_TYPE_ICONS,
     PC_BOX_SPRITE_TRAY_BOXES = PC_BOX_SPRITE_TYPE_ICONS + 2,
-    PC_BOX_SPRITE_WALLPAPERS = PC_BOX_SPRITE_TRAY_BOXES + 6,
+    PC_BOX_SPRITE_WALLPAPERS = PC_BOX_SPRITE_TRAY_BOXES + PC_BOX_TRAY_BOX_COUNT,
     PC_BOX_SPRITE_MON_ICONS = PC_BOX_SPRITE_WALLPAPERS + 4,              // slotIcons maps a slot to its icon
     PC_BOX_SPRITE_OUTLINE = PC_BOX_SPRITE_MON_ICONS + PC_BOX_SLOT_COUNT, // 8 icon outline pieces
     PC_BOX_SPRITE_COUNT = PC_BOX_SPRITE_OUTLINE + 8,

@@ -105,10 +105,18 @@ typedef struct DressUpScale {
 #define DRESS_UP_UI_DRESSED_NO  9
 #define DRESS_UP_UI_EXIT        10
 
+// DressUpNode.mode; also the tray group of the object
+enum DressUpObjectMode {
+    DRESS_UP_OBJ_ACCESSORY,
+    DRESS_UP_OBJ_BACKDROP,
+    DRESS_UP_OBJ_BACKDROP_2, // handled like a backdrop; nothing creates one
+    DRESS_UP_OBJ_MON,
+};
+
 // object on the canvas or in the tray; lists are circular with a sentinel node
 typedef struct DressUpNode {
     void *object; // DressUpSlot (accessory, backdrop) or DressUpMonPic (mon)
-    u32 mode;     // 0 accessory, 1/2 backdrop, 3 mon
+    u32 mode;     // enum DressUpObjectMode
     struct DressUpNode *next;
     struct DressUpNode *prev;
 } DressUpNode;
@@ -206,7 +214,7 @@ typedef struct DressUpTrayGroup {
 
 // accessory / backdrop picker
 typedef struct DressUpTray {
-    int group; // shown group: 0 accessories, 1 backdrops, 3 none (DONE)
+    int group; // shown group: DRESS_UP_OBJ_ACCESSORY, DRESS_UP_OBJ_BACKDROP, 3 none (DONE)
     u32 *caseTable;
     DressUpNodePool *nodePool;
     DressUpTrayGroup groups[4];

@@ -792,16 +792,16 @@ u32 PCBox_UpdateMoveModeBoxDrag(PCBoxWork *work) {
     switch (view->subState) {
     case 0:
         if (!System_GetTouchHeldCoords(&x, &y)) {
-            a = 0xff;
+            a = PC_BOX_SLOT_NONE;
             if (work->trayOpen != 0) {
                 a = PCBox_GetTouchedTrayBox(work->view->touchX, work->view->touchY);
             }
-            if (a == 0xff) {
+            if (a == PC_BOX_SLOT_NONE) {
                 a = PCBox_GetTouchedBoxSlot(work->view->touchX, work->view->touchY);
             }
             PCBox_SetupMonMove(work, work->selectedSlot, a);
             PCBox_SetSelectedIconOutlineVisible(work, 0);
-            if (!(a & 0x80)) {
+            if (!(a & PC_BOX_TARGET_TRAY_BOX)) {
                 work->selectedSlot = PCBox_GetMoveEntryTarget(work, work->selectedSlot);
             }
             PCBox_SlideInActionMenu(work->view->panels);
@@ -868,7 +868,7 @@ u32 PCBox_UpdateMoveModePartyDrag(PCBoxWork *work) {
                     break;
                 }
                 PCBox_SlideInPartyPanel(work->view->panels);
-                PCBox_ShowSlotMonInfo(work, 0xff);
+                PCBox_ShowSlotMonInfo(work, PC_BOX_SLOT_NONE);
                 view->subState = 1;
                 break;
             }
@@ -903,7 +903,7 @@ u32 PCBox_UpdateMoveModePartyDrag(PCBoxWork *work) {
         if (PCBox_AnimateSelectedSlotMoveEntry(work) == 0) {
             PCBox_ApplyMoveEntryIcons(work, view->temp);
             PCBox_SlideInPartyPanel(work->view->panels);
-            PCBox_ShowSlotMonInfo(work, 0xff);
+            PCBox_ShowSlotMonInfo(work, PC_BOX_SLOT_NONE);
             work->selectedSlot = PC_BOX_SLOT_NONE;
             view->subState++;
         }
@@ -931,19 +931,19 @@ u32 PCBox_UpdateBoxTrayDrag(PCBoxWork *work) {
     switch (view->subState) {
     case 0:
         if (!System_GetTouchHeldCoords(&x, &y)) {
-            a = 0xff;
+            a = PC_BOX_SLOT_NONE;
             if (work->trayOpen != 0) {
                 a = PCBox_GetTouchedTrayBox(work->view->touchX, work->view->touchY);
             }
-            if (a == 0xff) {
+            if (a == PC_BOX_SLOT_NONE) {
                 a = PCBox_GetTouchedBoxSlot(work->view->touchX, work->view->touchY);
             }
-            if (a == 0xff) {
+            if (a == PC_BOX_SLOT_NONE) {
                 a = PCBox_GetTouchedPartySlot(work->view->touchX, work->view->touchY, gPCBoxTrayPartyDropRects);
             }
             PCBox_SetupMonMove(work, work->selectedSlot, a);
             PCBox_SetSelectedIconOutlineVisible(work, 0);
-            if (!(a & 0x80)) {
+            if (!(a & PC_BOX_TARGET_TRAY_BOX)) {
                 work->selectedSlot = PCBox_GetMoveEntryTarget(work, work->selectedSlot);
             }
             PCBox_SlideOutMovesPanel(work->view);
@@ -958,7 +958,7 @@ u32 PCBox_UpdateBoxTrayDrag(PCBoxWork *work) {
     case 1:
         if (a == 0 && summaryButtonMoving == 0) {
             PCBoxMoveWork *moveWork = view->temp;
-            if (moveWork->to != 0xff && (moveWork->to & 0x80)) {
+            if (moveWork->to != PC_BOX_SLOT_NONE && (moveWork->to & PC_BOX_TARGET_TRAY_BOX)) {
                 if (moveWork->from >= PC_BOX_SLOT_PARTY_START && moveWork->from - PC_BOX_SLOT_PARTY_START < (u32)(Party_GetCount(work->party) - 1)) {
                     PCBox_SlideInSummaryButton(work->view->panels);
                 }
@@ -1367,7 +1367,7 @@ u32 PCBox_UpdateDepositDrag(PCBoxWork *work) {
                 work->view->sprites[work->view->slotIcons[work->selectedSlot]],
                 coords.pos[1],
                 coords.pos[0]);
-            u32 value = 0xff;
+            u32 value = PC_BOX_SLOT_NONE;
             if (work->view->partyPanelLowered == 2) {
                 value = PCBox_GetTouchedBoxSlot(work->view->touchX,
                     work->view->touchY);
@@ -1449,7 +1449,7 @@ u32 PCBox_UpdateWithdrawDrag(PCBoxWork *work) {
             PCBox_DrawWindowFrame(work, 40);
         }
         if (!System_GetTouchHeldCoords(&touchY, &touchX)) {
-            u32 value = 0xff;
+            u32 value = PC_BOX_SLOT_NONE;
             if (work->view->partyPanelLowered == 2) {
                 value = PCBox_GetTouchedPartySlot(work->view->touchX,
                     work->view->touchY,
@@ -1727,7 +1727,7 @@ u32 PCBox_AnimateTrayDrop(PCBoxWork *work) {
             target += 0x5b;
         }
         PCBox_SetupMonMove(work, work->selectedSlot, target);
-        if ((target & 0x80) == 0) {
+        if ((target & PC_BOX_TARGET_TRAY_BOX) == 0) {
             work->selectedSlot = (u8)PCBox_GetMoveEntryTarget(work, work->selectedSlot);
         }
         view->subState++;

@@ -1244,7 +1244,7 @@ static void SafariAreaCustomizer_CreateStrings(SafariAreaCustomizer *customizer)
     customizer->pageTemplate = NewString_ReadMsgData(customizer->msgData, msg_0429_00009);
     customizer->countTemplate = NewString_ReadMsgData(customizer->msgData, msg_0429_00015);
     for (i = 0; i < 5; i++) {
-        customizer->labelStrings[i] = NewString_ReadMsgData(customizer->msgData, i + 4);
+        customizer->labelStrings[i] = NewString_ReadMsgData(customizer->msgData, i + msg_0429_00004);
     }
     for (i = 0; i < 4; i++) {
         customizer->menuStrings[i] = NewString_ReadMsgData(customizer->msgData, i);

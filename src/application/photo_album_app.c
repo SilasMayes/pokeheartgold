@@ -1317,10 +1317,10 @@ static void PhotoAlbumApp_LoadStrings(PhotoAlbumApp *app) {
     app->str_2C = String_New(0x80, app->heapId);
     app->str_30 = NewString_ReadMsgData(app->msgData, msg_0000_00000);
     for (i = 0; i < 5; i++) {
-        app->strs_34[i] = NewString_ReadMsgData(app->msgData, i + 5);
+        app->strs_34[i] = NewString_ReadMsgData(app->msgData, i + msg_0000_00005);
     }
     for (i = 0; i < 2; i++) {
-        app->strs_48[i] = NewString_ReadMsgData(app->msgData, i + 10);
+        app->strs_48[i] = NewString_ReadMsgData(app->msgData, i + msg_0000_00010);
     }
     app->listMenuItems = ListMenuItems_New(4, app->heapId);
     for (i = 0; i < 4; i++) {

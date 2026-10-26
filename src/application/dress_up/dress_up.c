@@ -1564,17 +1564,17 @@ static void DressUp_InitTray(DressUpWork *work) {
     template.pageCounts[1] = 2;
     template.pageCounts[2] = 1;
     DressUpTray_Init(&work->tray, &template);
-    DressUpTray_SetPageImmediate(&work->tray, 0, 0);
+    DressUpTray_SetPageImmediate(&work->tray, DRESS_UP_OBJ_ACCESSORY, 0);
     for (i = 0; i < DRESS_UP_ACCESSORY_NUM; i++) {
         n = DressUp_GetAccessoryCount(work->caseTable, i);
         for (j = 0; j < n; j++) {
-            DressUpTray_AddItem(&work->tray, 0, i);
+            DressUpTray_AddItem(&work->tray, DRESS_UP_OBJ_ACCESSORY, i);
         }
     }
     for (i = 0; i < DRESS_UP_BACKDROP_NUM; i++) {
         n = DressUp_GetBackdropByOrder(work->caseTable, i);
         if (n < DRESS_UP_BACKDROP_NUM) {
-            DressUpTray_AddItem(&work->tray, 1, n);
+            DressUpTray_AddItem(&work->tray, DRESS_UP_OBJ_BACKDROP, n);
         }
     }
     DressUpTray_RefreshPriorities(&work->tray);
@@ -1664,8 +1664,8 @@ static void DressUp_OnAccessoryTabButton(DressUpButton *button, DressUpWork *wor
     int page;
 
     if (work->uiState != DRESS_UP_UI_ACCESSORIES) {
-        page = DressUpTray_GetGroupPage(&work->tray, 0);
-        DressUpTray_SetPageImmediate(&work->tray, 0, page);
+        page = DressUpTray_GetGroupPage(&work->tray, DRESS_UP_OBJ_ACCESSORY);
+        DressUpTray_SetPageImmediate(&work->tray, DRESS_UP_OBJ_ACCESSORY, page);
         work->uiState = DRESS_UP_UI_ACCESSORIES;
     }
 }
@@ -1674,8 +1674,8 @@ static void DressUp_OnBackdropTabButton(DressUpButton *button, DressUpWork *work
     int page;
 
     if (work->uiState != DRESS_UP_UI_BACKDROPS) {
-        page = DressUpTray_GetGroupPage(&work->tray, 1);
-        DressUpTray_SetPageImmediate(&work->tray, 1, page);
+        page = DressUpTray_GetGroupPage(&work->tray, DRESS_UP_OBJ_BACKDROP);
+        DressUpTray_SetPageImmediate(&work->tray, DRESS_UP_OBJ_BACKDROP, page);
         work->uiState = DRESS_UP_UI_BACKDROPS;
     }
 }
@@ -1851,14 +1851,14 @@ static void DressUp_SaveDesign(SaveFashionDataSub *entry, DressUpCanvas *canvas,
     node = canvas->monList.next;
     list = &canvas->monList;
     for (; node != list; node = node->next) {
-        if (node->mode == 0) {
+        if (node->mode == DRESS_UP_OBJ_ACCESSORY) {
             FashionEntry_PlaceItem(entry, node->object, count);
             count++;
         }
     }
     list = &canvas->looseList;
     for (node = canvas->looseList.next; node != list; node = node->next) {
-        if (node->mode == 0) {
+        if (node->mode == DRESS_UP_OBJ_ACCESSORY) {
             FashionEntry_PlaceItem(entry, node->object, count);
             count++;
         }
@@ -2112,7 +2112,7 @@ void DressUpCanvas_Init(DressUpCanvas *canvas, const DressUpCanvasTemplate *temp
     canvas->monList.prev = &canvas->monList;
     canvas->count = 0;
     canvas->limit = template->limit;
-    DressUpList_InsertAfter(DressUpNodePool_Acquire(canvas->nodePool, &canvas->monPic, 3), &canvas->monList);
+    DressUpList_InsertAfter(DressUpNodePool_Acquire(canvas->nodePool, &canvas->monPic, DRESS_UP_OBJ_MON), &canvas->monList);
 }
 
 void DressUpCanvas_Destroy(DressUpCanvas *canvas) {
@@ -2161,7 +2161,7 @@ BOOL AccessoryPortrait_PlaceCanvasAccessory(DressUpCanvas *canvas, int accessory
         template.paletteSlot = canvas->paletteSlots[accessory];
         slot = DressUpGfx_AddSlotObject(&template);
         DressUpGfx_SetSlotPriority(slot, priority);
-        DressUpList_InsertAfter(DressUpNodePool_Acquire(canvas->nodePool, slot, 0), &canvas->looseList);
+        DressUpList_InsertAfter(DressUpNodePool_Acquire(canvas->nodePool, slot, DRESS_UP_OBJ_ACCESSORY), &canvas->looseList);
         canvas->count++;
         return TRUE;
     }
@@ -2217,7 +2217,7 @@ static void DressUpCanvas_SetPriorities(DressUpCanvas *canvas, int priority) {
     DressUpNode *node = canvas->monList.next;
     DressUpNode *end = &canvas->monList;
     while (node != end) {
-        if (node->mode == 0) {
+        if (node->mode == DRESS_UP_OBJ_ACCESSORY) {
             DressUpGfx_SetSlotPriority(node->object, priority);
         } else {
             DressUpMon_SetPriority(node->object, priority);
@@ -2230,7 +2230,7 @@ static void DressUpCanvas_SetPriorities(DressUpCanvas *canvas, int priority) {
     end = &canvas->looseList;
     priority -= 8;
     while (node != end) {
-        if (node->mode == 0) {
+        if (node->mode == DRESS_UP_OBJ_ACCESSORY) {
             DressUpGfx_SetSlotPriority(node->object, priority);
         } else {
             DressUpMon_SetPriority(node->object, priority);
@@ -2456,7 +2456,7 @@ static void DressUpTray_Destroy(DressUpTray *tray) {
 // page of an item: accessories by category, backdrops 9 per page in fashion case order
 static int DressUpTray_GetItemPage(int mode, int id, u32 *caseTable) {
     switch (mode) {
-    case 0:
+    case DRESS_UP_OBJ_ACCESSORY:
         if (id <= 5) {
             return 0;
         }
@@ -2500,9 +2500,9 @@ static int DressUpTray_GetItemPage(int mode, int id, u32 *caseTable) {
             return 13;
         }
         break;
-    case 1:
+    case DRESS_UP_OBJ_BACKDROP:
         return DressUp_GetBackdropOrder(caseTable, id) / 9;
-    case 2:
+    case DRESS_UP_OBJ_BACKDROP_2:
         mode = DressUp_GetBackdropOrder(caseTable, id) / 9;
         break;
     }
@@ -2512,14 +2512,14 @@ static int DressUpTray_GetItemPage(int mode, int id, u32 *caseTable) {
 // accessories land at a random spot of the tray, backdrops on a 3x3 grid
 static void DressUpTray_GetItemSpawnPos(int mode, int id, int *outX, int *outY, int width, int height, u32 *caseTable) {
     switch (mode) {
-    case 0:
+    case DRESS_UP_OBJ_ACCESSORY:
         *outX = 10;
         *outY = 18;
         *outX += MTRandom() % (108 - width);
         *outY += MTRandom() % (125 - height);
         break;
-    case 1:
-    case 2:
+    case DRESS_UP_OBJ_BACKDROP:
+    case DRESS_UP_OBJ_BACKDROP_2:
         DressUpTray_GetGridPos(DressUp_GetBackdropOrder(caseTable, id), outX, outY);
         break;
     }
@@ -2541,18 +2541,18 @@ static void DressUpTray_AddItem(DressUpTray *tray, int mode, int id) {
     template.x = 0;
     template.y = 0;
     switch (mode) {
-    case 0:
+    case DRESS_UP_OBJ_ACCESSORY:
         imageIndex = id;
         paletteIndex = 0;
         template.paletteSlot = tray->paletteSlots[id];
         break;
-    case 1:
+    case DRESS_UP_OBJ_BACKDROP:
         imageIndex = id;
         imageIndex += DRESS_UP_ACCESSORY_NUM;
         paletteIndex = id + 1;
         template.paletteSlot = 0;
         break;
-    case 2:
+    case DRESS_UP_OBJ_BACKDROP_2:
         imageIndex = id;
         imageIndex += DRESS_UP_ACCESSORY_NUM;
         paletteIndex = id + 1;
@@ -2601,7 +2601,7 @@ static void DressUpTray_RefreshPriorities(DressUpTray *tray) {
     DressUpNode *head = DressUpTray_GetCurPageHead(tray);
     node = head->next;
     while (node != head) {
-        if (node->mode <= 2) {
+        if (node->mode <= DRESS_UP_OBJ_BACKDROP_2) {
             DressUpGfx_SetSlotPriority(node->object, priority);
         }
         node = node->next;
@@ -2770,7 +2770,7 @@ static void DressUpTray_InitPageLists(DressUpTray *tray, const DressUpTrayTempla
 static void DressUpTray_SetListVisible(DressUpNode *head, BOOL visible) {
     DressUpNode *node = head->next;
     while (node != head) {
-        if (node->mode <= 2) {
+        if (node->mode <= DRESS_UP_OBJ_BACKDROP_2) {
             DressUpGfx_SetSlotVisible(node->object, visible);
         }
         node = node->next;
@@ -3113,11 +3113,11 @@ static void DressUpDrag_OnTouchIdle(DressUpTouch *touch) {
     int priority;
     if (DressUpCanvas_IsTouchHeldIn(drag->canvas)) {
         node = DressUpCanvas_FindObjectAt(drag->canvas, &x, &y, drag->gfx->hitMaps);
-        if (node && node->mode == 3 && !drag->allowMonDrag) {
+        if (node && node->mode == DRESS_UP_OBJ_MON && !drag->allowMonDrag) {
             node = NULL;
         }
         if (node) {
-            if (!node->mode) {
+            if (node->mode == DRESS_UP_OBJ_ACCESSORY) {
                 DressUpCanvas_RemoveAccessory(drag->canvas, node);
                 priority = 0;
             } else {
@@ -3141,17 +3141,17 @@ static void DressUpDrag_OnTouchIdle(DressUpTouch *touch) {
     if (drag->selected) {
         int se = SEQ_SE_DP_BOX02;
         switch (drag->selected->mode) {
-        case 0:
+        case DRESS_UP_OBJ_ACCESSORY:
             touch->onRelease = DressUpDrag_OnReleaseAccessory;
             touch->onHeld = DressUpDrag_OnHeldAccessory;
             break;
-        case 1:
+        case DRESS_UP_OBJ_BACKDROP:
             touch->onRelease = DressUpDrag_OnReleaseBackdrop;
             touch->onHeld = DressUpDrag_OnHeldBackdrop;
             DressUpDrag_ApplyBackdrop(touch);
             se = SEQ_SE_DP_SYARAAN;
             break;
-        case 3:
+        case DRESS_UP_OBJ_MON:
             touch->onRelease = DressUpDrag_OnReleaseMon;
             touch->onHeld = DressUpDrag_OnHeldMon;
             break;
@@ -3169,7 +3169,7 @@ static void DressUpDrag_OnHeldBackdrop(DressUpTouch *touch) {
 static void DressUpDrag_OnReleaseBackdrop(DressUpTouch *touch) {
     DressUpDrag *drag = touch->drag;
     if (drag->selected != NULL) {
-        GF_ASSERT(drag->selected->mode == 1);
+        GF_ASSERT(drag->selected->mode == DRESS_UP_OBJ_BACKDROP);
         DressUp_StartTweenToTray(drag, 4, drag->originX, drag->originY, drag->selected->mode, drag->trayPage);
         DressUpDrag_ClearSelection(drag);
     }
@@ -3292,7 +3292,7 @@ static void DressUpDrag_ApplyBackdrop(DressUpTouch *touch) {
     DressUpDrag *drag = touch->drag;
     if (drag->selected != NULL) {
         DressUpSlot *slot;
-        GF_ASSERT(drag->selected->mode == 1);
+        GF_ASSERT(drag->selected->mode == DRESS_UP_OBJ_BACKDROP);
         slot = drag->selected->object;
         DressUpCanvas_FreeBackdrop(drag->canvas);
         DressUpCanvas_SetBackdrop(drag->canvas, slot->id, HEAP_ID_14);
@@ -3387,9 +3387,9 @@ static void DressUp_TweenToTrayTask(SysTask *task, void *data) {
 }
 
 static void DressUp_PrintSelectedItemName(DressUpDrag *drag) {
-    if (drag->selected->mode == 0) {
+    if (drag->selected->mode == DRESS_UP_OBJ_ACCESSORY) {
         DressUpHud_PrintMsgInstant(drag->hud, NARC_msgdata_msg, NARC_msg_msg_0216_bin, ((DressUpSlot *)drag->selected->object)->id);
-    } else if (drag->selected->mode == 1) {
+    } else if (drag->selected->mode == DRESS_UP_OBJ_BACKDROP) {
         DressUpHud_PrintMsgInstant(drag->hud, NARC_msgdata_msg, NARC_msg_msg_0218_bin, ((DressUpSlot *)drag->selected->object)->id);
     }
 }
@@ -3669,7 +3669,7 @@ static void DressUpList_Clear(DressUpNode *head) {
 }
 
 static void DressUpObj_SetPriority(DressUpNode *node, int priority) {
-    if ((int)node->mode < 3) {
+    if ((int)node->mode < DRESS_UP_OBJ_MON) {
         DressUpGfx_SetSlotPriority(node->object, priority);
     } else {
         DressUpMon_SetPriority(node->object, priority);
@@ -3678,16 +3678,16 @@ static void DressUpObj_SetPriority(DressUpNode *node, int priority) {
 
 // hit maps: [accessory], [100 + backdrop], [DRESS_UP_IMAGE_MAX] the mon
 static BOOL DressUpObj_HitTest(DressUpNode *node, int *x, int *y, NNSG2dCharacterData **hitMaps) {
-    if (node->mode == 0) {
+    if (node->mode == DRESS_UP_OBJ_ACCESSORY) {
         return DressUpGfx_HitTestSlotPixels(node->object, x, y, hitMaps[((DressUpSlot *)node->object)->id]);
     }
-    if (node->mode == 1) {
+    if (node->mode == DRESS_UP_OBJ_BACKDROP) {
         DressUpSlot *slot = node->object;
         u32 index = slot->id;
         index += DRESS_UP_ACCESSORY_NUM;
         return DressUpGfx_HitTestSlotPixels(slot, x, y, hitMaps[index]);
     }
-    if (node->mode == 2) {
+    if (node->mode == DRESS_UP_OBJ_BACKDROP_2) {
         DressUpSlot *slot = node->object;
         u32 index = slot->id;
         index += DRESS_UP_ACCESSORY_NUM;
@@ -3700,7 +3700,7 @@ static BOOL DressUpObj_HitTest(DressUpNode *node, int *x, int *y, NNSG2dCharacte
 static void DressUpObj_SetPos(DressUpNode *node, int x, int y) {
     int width;
     int height;
-    if ((int)node->mode < 3) {
+    if ((int)node->mode < DRESS_UP_OBJ_MON) {
         DressUpGfx_SetSlotPos(node->object, x, y);
         return;
     }
@@ -3716,7 +3716,7 @@ static void DressUpObj_SetPos(DressUpNode *node, int x, int y) {
 static void DressUpObj_GetPos(DressUpNode *node, int *x, int *y) {
     int width;
     int height;
-    if ((int)node->mode < 3) {
+    if ((int)node->mode < DRESS_UP_OBJ_MON) {
         DressUpGfx_GetSlotPos(node->object, x, y);
         return;
     }
@@ -3732,7 +3732,7 @@ static void DressUpObj_GetPos(DressUpNode *node, int *x, int *y) {
 }
 
 static void DressUpObj_GetSize(DressUpNode *node, int *width, int *height) {
-    if ((int)node->mode < 3) {
+    if ((int)node->mode < DRESS_UP_OBJ_MON) {
         DressUpGfx_GetSlotSize(node->object, width, height);
     } else {
         DressUpMon_GetSize(node->object, width, height);
@@ -3741,7 +3741,7 @@ static void DressUpObj_GetSize(DressUpNode *node, int *width, int *height) {
 
 static void DressUpObj_GetMargins(DressUpNode *node, int *left, int *right, int *top, int *bottom) {
     u8 margins[4];
-    if ((int)node->mode < 3) {
+    if ((int)node->mode < DRESS_UP_OBJ_MON) {
         DressUpGfx_GetSlotMargins(node->object, left, top);
         *right = *left;
         *bottom = *top;

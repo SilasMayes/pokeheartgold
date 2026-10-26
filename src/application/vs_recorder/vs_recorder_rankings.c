@@ -218,7 +218,7 @@ static void VsRecorder_CreateRankingsButtonLabels(VsRecorderWork *work) {
         AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_SUB_2, rect->x, rect->y, rect->width, rect->height, 14, baseTile);
         baseTile += rect->width * rect->height;
         FillWindowPixelBuffer(window, 0);
-        str = NewString_ReadMsgData(work->msgData, i + 80); // SWITCH RANKINGS, SWITCH TEAMS
+        str = NewString_ReadMsgData(work->msgData, i + msg_0013_00080); // SWITCH RANKINGS, SWITCH TEAMS
         AddTextPrinterParameterizedWithColor(window, 0, str, VsRecorder_GetCenteredTextX(window, str), 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 13, 0), NULL);
         ScheduleWindowCopyToVram(window);
         String_Delete(str);
@@ -317,7 +317,7 @@ static void VsRecorder_PrintRankingsInfo(VsRecorderWork *work) {
     String_Delete(template);
     FillWindowPixelBuffer(&rankings->windows[1], 0);
     if (rankings->lastWeek == FALSE) {
-        template = NewString_ReadMsgData(work->msgData, rankings->team + 82); // Team: Trainer type / Birth month / Favorite Pokemon
+        template = NewString_ReadMsgData(work->msgData, rankings->team + msg_0013_00082); // Team: Trainer type / Birth month / Favorite Pokemon
     } else {
         template = NewString_ReadMsgData(work->msgData, msg_0013_00091); // LAST WEEK'S RESULTS!
     }

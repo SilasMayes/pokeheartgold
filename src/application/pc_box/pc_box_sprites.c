@@ -228,7 +228,7 @@ void PCBox_LoadBoxIconImages(PCBoxWork *work, int box) {
     void *allocation;
     BoxPokemon *boxMon;
 
-    for (i = 0; i < 30; i++) {
+    for (i = 0; i < MONS_PER_BOX; i++) {
         if (!PCStorage_GetMonDataByIndexPair(work->storage, box, i, MON_DATA_SPECIES_EXISTS, NULL)) {
             work->view->iconDraw[i] = 0;
         } else {
@@ -269,7 +269,7 @@ void PCBox_RefreshSlotIcon(PCBoxWork *work, int box, int slot, int index) {
 void PCBox_LoadBoxIcons(PCBoxWork *work) {
     u32 i;
 
-    for (i = 0; i < 30; i++) {
+    for (i = 0; i < MONS_PER_BOX; i++) {
         PCBox_RefreshSlotIcon(work, work->activeBox, i, i + 25);
     }
 }
@@ -306,7 +306,7 @@ void PCBox_PlacePartyIconsLeftHidden(PCBoxWork *work) {
 
     count = Party_GetCount(work->party);
     pos = gPCBoxPartySlotPositions;
-    for (i = 0; i < 6; i++, pos++) {
+    for (i = 0; i < PARTY_SIZE; i++, pos++) {
         u8 index = work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i];
         ManagedSprite_SetPositionXY(work->view->sprites[index], pos->x + 0, pos->y + 0);
         PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, TRUE);
@@ -325,7 +325,7 @@ void PCBox_PlacePartyIconsRightHidden(PCBoxWork *work) {
 
     count = Party_GetCount(work->party);
     pos = gPCBoxPartySlotPositions;
-    for (i = 0; i < 6; i++, pos++) {
+    for (i = 0; i < PARTY_SIZE; i++, pos++) {
         u8 index = work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i];
         ManagedSprite_SetPositionXY(work->view->sprites[index], pos->x + 152, pos->y + 0);
         PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, TRUE);
@@ -344,7 +344,7 @@ void PCBox_PlacePartyIconsLeft(PCBoxWork *work) {
 
     count = Party_GetCount(work->party);
     pos = gPCBoxPartySlotPositions;
-    for (i = 0; i < 6; i++, pos++) {
+    for (i = 0; i < PARTY_SIZE; i++, pos++) {
         u8 index = work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i];
         ManagedSprite_SetPositionXY(work->view->sprites[index], pos->x + 0, pos->y + -144);
         PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, TRUE);
@@ -363,7 +363,7 @@ void PCBox_PlacePartyIconsRight(PCBoxWork *work) {
 
     count = Party_GetCount(work->party);
     pos = gPCBoxPartySlotPositions;
-    for (i = 0; i < 6; i++, pos++) {
+    for (i = 0; i < PARTY_SIZE; i++, pos++) {
         u8 index = work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i];
         ManagedSprite_SetPositionXY(work->view->sprites[index], pos->x + 152, pos->y + -144);
         PCBox_SetIconLayer(work->view, PC_BOX_SLOT_PARTY_START + i, TRUE);
@@ -420,7 +420,7 @@ void PCBox_ScrollBoxIcons(PCBoxWork *work, s32 amount) {
         stop = -8;
         wrap = 176;
     }
-    for (i = 0; i < 30; i++) {
+    for (i = 0; i < MONS_PER_BOX; i++) {
         int index = work->view->slotIcons[i];
         ManagedSprite_GetPositionXY(work->view->sprites[index], &position.x, &position.y);
         position.x += amount;
@@ -444,7 +444,7 @@ void PCBox_UpdatePartyIconPositions(PCBoxWork *work) {
     BgCellManager_GetCellPosition(work->view->panels, PC_BOX_PANEL_PARTY, &cell[1], &cell[0]);
     y = cell[0] * 8;
     x = cell[1] * 8;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         ManagedSprite_SetPositionXY(work->view->sprites[work->view->slotIcons[PC_BOX_SLOT_PARTY_START + i]], x + gPCBoxPartyIconOffsets[i][0], y + gPCBoxPartyIconOffsets[i][1]);
     }
 }
@@ -863,7 +863,7 @@ void PCBox_UpdateSelectedIconOutline(PCBoxWork *work) {
 static void PCBox_LoadTrayBoxResources(PCBoxView *view) {
     u32 i;
 
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PC_BOX_TRAY_BOX_COUNT; i++) {
         SpriteSystem_LoadCharResObj(view->spriteSystem, view->spriteManager, NARC_a_0_1_9, 0x46, FALSE, 1, 0xc123 + i);
     }
     SpriteSystem_LoadPlttResObj(view->spriteSystem, view->spriteManager, NARC_a_0_1_9, 0x47, FALSE, 1, 1, 0xc0ff);
@@ -878,7 +878,7 @@ static void PCBox_CreateTrayBoxSprites(PCBoxView *view) {
     u8 *slot = (u8 *)view;
 
     template[0] = gPCBoxTrayBoxSpriteTemplate;
-    for (; i < 6; dx += 34, slot += sizeof(ManagedSprite *), i++) {
+    for (; i < PC_BOX_TRAY_BOX_COUNT; dx += 34, slot += sizeof(ManagedSprite *), i++) {
         template[1] = template[0];
         template[1].x += dx;
         template[1].resIdList[0] = 0xc123 + i;
@@ -1052,7 +1052,7 @@ void PCBox_MoveBoxTraySprites(PCBoxWork *work, s32 dy) {
         ManagedSprite_SetPositionXY(work->view->sprites[i], x, y + dy);
     }
     PCBox_PlaceTrayTextObjs(work->view);
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PC_BOX_TRAY_BOX_COUNT; i++) {
         ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_BOXES + i], &x, &y);
         ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_BOXES + i], x, y + dy);
     }

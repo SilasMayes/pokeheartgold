@@ -392,8 +392,8 @@ static void PokedexEntryPopup_DrawWindows(PokedexEntryPopup *popup) {
     x = (GetWindowWidth(&popup->windows[4]) * 8 - FontID_String_GetWidthMultiline(0, string, 0)) / 2;
     PokedexApp_PrintString(&popup->windows[4], string, x, 0, 0, MAKE_TEXT_COLOR(2, 1, 0), POKEDEX_TEXT_ALIGN_LEFT);
     String_Delete(string);
-    PokedexApp_PrintMessage(&popup->windows[5], msgData, 10, 20, 0, 0, MAKE_TEXT_COLOR(2, 1, 0), POKEDEX_TEXT_ALIGN_CENTER);
-    PokedexApp_PrintMessage(&popup->windows[7], msgData, 11, 20, 0, 0, MAKE_TEXT_COLOR(2, 1, 0), POKEDEX_TEXT_ALIGN_CENTER);
+    PokedexApp_PrintMessage(&popup->windows[5], msgData, msg_0802_00010, 20, 0, 0, MAKE_TEXT_COLOR(2, 1, 0), POKEDEX_TEXT_ALIGN_CENTER);
+    PokedexApp_PrintMessage(&popup->windows[7], msgData, msg_0802_00011, 20, 0, 0, MAKE_TEXT_COLOR(2, 1, 0), POKEDEX_TEXT_ALIGN_CENTER);
     MessageFormat_Delete(msgFormat);
     DestroyMsgData(msgData);
     msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, GetDexHeightMsgBank(), popup->heapId);
@@ -457,7 +457,7 @@ static void PokedexEntryPopup_InitSprites(PokedexEntryPopup *popup) {
 }
 
 static void PokedexEntryPopup_LoadBannerResources(PokedexEntryPopup *popup) {
-    PokedexEntryPopup_LoadSpriteResources(popup->sprites[0].resources, popup->resourceManagers, popup->heapId, popup->gfxNarc, 29, 32, 30, 31, 2, 0xC618, 0xC618, 0xC618, 0xC618);
+    PokedexEntryPopup_LoadSpriteResources(popup->sprites[0].resources, popup->resourceManagers, popup->heapId, popup->gfxNarc, NARC_zukan_gra_zukan_gra_00000029_NCGR_lz, NARC_zukan_gra_zukan_gra_00000032_NCLR, NARC_zukan_gra_zukan_gra_00000030_NCER_lz, NARC_zukan_gra_zukan_gra_00000031_NANR_lz, 2, 0xC618, 0xC618, 0xC618, 0xC618);
     PaletteData_LoadPaletteSlotFromHardware(popup->paletteData, PLTTBUF_MAIN_OBJ, SpriteTransfer_GetPlttOffset(popup->sprites[0].resources[1], NNS_G2D_VRAM_TYPE_2DMAIN) << 4, 0x40);
 }
 
@@ -467,8 +467,8 @@ static void PokedexEntryPopup_FreeBannerResources(PokedexEntryPopup *popup) {
 
 // Both type icons share the first icon's palettes, cell and animation.
 static void PokedexEntryPopup_LoadTypeIconResources(PokedexEntryPopup *popup) {
-    PokedexEntryPopup_LoadSpriteResources(popup->sprites[1].resources, popup->resourceManagers, popup->heapId, popup->gfxNarc, PokedexApp_GetTypeIconCharFile(popup->type1), 35, 33, 34, 4, 0xC619, 0xC619, 0xC619, 0xC619);
-    PokedexEntryPopup_LoadSpriteResources(popup->sprites[2].resources, popup->resourceManagers, popup->heapId, popup->gfxNarc, PokedexApp_GetTypeIconCharFile(popup->type2), -1, 33, 34, 4, 0xC61A, 0xC61A, 0xC61A, 0xC61A);
+    PokedexEntryPopup_LoadSpriteResources(popup->sprites[1].resources, popup->resourceManagers, popup->heapId, popup->gfxNarc, PokedexApp_GetTypeIconCharFile(popup->type1), NARC_zukan_gra_zukan_gra_00000035_NCLR, NARC_zukan_gra_zukan_gra_00000033_NCER_lz, NARC_zukan_gra_zukan_gra_00000034_NANR_lz, 4, 0xC619, 0xC619, 0xC619, 0xC619);
+    PokedexEntryPopup_LoadSpriteResources(popup->sprites[2].resources, popup->resourceManagers, popup->heapId, popup->gfxNarc, PokedexApp_GetTypeIconCharFile(popup->type2), -1, NARC_zukan_gra_zukan_gra_00000033_NCER_lz, NARC_zukan_gra_zukan_gra_00000034_NANR_lz, 4, 0xC61A, 0xC61A, 0xC61A, 0xC61A);
     PaletteData_LoadPaletteSlotFromHardware(popup->paletteData, PLTTBUF_MAIN_OBJ, SpriteTransfer_GetPlttOffset(popup->sprites[1].resources[1], NNS_G2D_VRAM_TYPE_2DMAIN) << 4, 0x80);
 }
 
@@ -482,7 +482,7 @@ static void PokedexEntryPopup_UnloadTypeIconResources(PokedexEntryPopup *popup) 
 
 static void PokedexEntryPopup_LoadFootprintResources(PokedexEntryPopup *popup) {
     NARC *narc = NARC_New(Pokefoot_GetNarcId(), popup->heapId);
-    PokedexEntryPopup_LoadSpriteResources(popup->sprites[3].resources, popup->resourceManagers, popup->heapId, popup->gfxNarc, 77, -1, 78, 79, 1, 0xC61B, 0xC61B, 0xC61B, 0xC61B);
+    PokedexEntryPopup_LoadSpriteResources(popup->sprites[3].resources, popup->resourceManagers, popup->heapId, popup->gfxNarc, NARC_zukan_gra_zukan_gra_00000077_NCGR_lz, -1, NARC_zukan_gra_zukan_gra_00000078_NCER_lz, NARC_zukan_gra_zukan_gra_00000079_NANR_lz, 1, 0xC61B, 0xC61B, 0xC61B, 0xC61B);
     popup->sprites[3].resources[1] = PokedexEntryPopup_LoadPaletteResource(popup->resourceManagers[1], popup->heapId, narc, Pokefoot_GetPlttFileId(), 1, 0xC61B);
     PaletteData_LoadPaletteSlotFromHardware(popup->paletteData, PLTTBUF_MAIN_OBJ, SpriteTransfer_GetPlttOffset(popup->sprites[3].resources[1], NNS_G2D_VRAM_TYPE_2DMAIN) << 4, 0x20);
     NARC_Delete(narc);

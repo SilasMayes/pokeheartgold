@@ -122,7 +122,7 @@ void BagApp_ClearDescriptionWindow(BagApp *app, Window *window) {
 }
 
 void BagApp_ShowPocketDescription(BagApp *app, Window *window, u32 pocket) {
-    String *string = NewString_ReadMsgData(app->msgData, pocket + 120);
+    String *string = NewString_ReadMsgData(app->msgData, pocket + msg_0010_00120);
     FillWindowPixelBuffer(window, 0);
     AddTextPrinterParameterizedWithColor(window, 0, string, 20, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
     String_Delete(string);

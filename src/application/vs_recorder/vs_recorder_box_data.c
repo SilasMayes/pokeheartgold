@@ -731,7 +731,7 @@ void VsRecorder_CreateBoxDataCategoryButtons(VsRecorderWork *work) {
         int x;
         InitWindow(window);
         AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_SUB_2, rect->x, rect->y, rect->width, rect->height, 14, baseTile);
-        str = NewString_ReadMsgData(work->msgData, i + 60); // FAVORITE ... SELECT
+        str = NewString_ReadMsgData(work->msgData, i + msg_0013_00060); // FAVORITE ... SELECT
         x = VsRecorder_GetCenteredTextX(window, str);
         FillWindowPixelBuffer(window, 0);
         AddTextPrinterParameterizedWithColor(window, 0, str, x, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 13, 0), NULL);
@@ -781,7 +781,7 @@ void VsRecorder_PrintBoxDataMessage(VsRecorderWork *work, int msgId) {
 // "<sender>'S <category> PC BOX"
 void VsRecorder_PrintBoxDataOwnerMessage(VsRecorderWork *work, int unused) {
     VsRecorderBoxData *boxData = work->screenWork;
-    String *template = NewString_ReadMsgData(work->msgData, boxData->category + 28);
+    String *template = NewString_ReadMsgData(work->msgData, boxData->category + msg_0013_00028);
     String *name = String_New(255, HEAP_ID_109);
     String *str = String_New(255, HEAP_ID_109);
     MessageFormat *msgFormat = VsRecorder_NewMessageFormat(HEAP_ID_109);
@@ -1258,7 +1258,7 @@ void VsRecorder_CreateBoxListTitle(VsRecorderWork *work) {
         AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_MAIN_2, rect->x, rect->y, rect->width, rect->height, 14, baseTile);
         FillWindowPixelBuffer(window, 0);
         if (i == 0) {
-            str = NewString_ReadMsgData(work->msgData, boxData->category + 310);
+            str = NewString_ReadMsgData(work->msgData, boxData->category + msg_0013_00310);
             textX = VsRecorder_GetCenteredTextX(window, str);
             textY = 0;
         }

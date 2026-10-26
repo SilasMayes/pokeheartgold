@@ -1262,7 +1262,7 @@ u32 PCBox_State_EndBoxTrayDrag(PCBoxWork *work) {
 
     PlaySE(SEQ_SE_DP_BOX01);
     PCBox_ApplyMonMove(work);
-    high = selected & 0x80;
+    high = selected & PC_BOX_TARGET_TRAY_BOX;
     if (high == 0) {
         PCBox_RevertShayminFormOnMove(work, moveWork->from, moveWork->to);
     }
@@ -1273,7 +1273,7 @@ u32 PCBox_State_EndBoxTrayDrag(PCBoxWork *work) {
     }
     if (PCBox_GetSlotMonData(work, work->selectedSlot, MON_DATA_SPECIES_EXISTS, NULL) == 0) {
         PCBox_ClearMonInfo(work);
-    } else if (selected != 0xff) {
+    } else if (selected != PC_BOX_SLOT_NONE) {
         if (high != 0) {
             PCBox_ShowSlotMonInfo(work, work->selectedSlot);
         }
@@ -1303,8 +1303,8 @@ u32 PCBox_State_EndBoxTrayDrag(PCBoxWork *work) {
                 }
             }
         }
-        if (current != 0xff && (current & 0x80) != 0) {
-            u32 next = (current ^ 0x80) + (work->trayBox / 6) * 6;
+        if (current != PC_BOX_SLOT_NONE && (current & PC_BOX_TARGET_TRAY_BOX) != 0) {
+            u32 next = (current ^ PC_BOX_TARGET_TRAY_BOX) + (work->trayBox / PC_BOX_TRAY_BOX_COUNT) * PC_BOX_TRAY_BOX_COUNT;
             if (work->activeBox != next) {
                 s32 index = work->selectedSlot;
                 if ((u32)index < PC_BOX_SLOT_PARTY_START) {
@@ -1332,7 +1332,7 @@ u32 PCBox_State_EndTrayHoldingDrop(PCBoxWork *work) {
 
     PlaySE(SEQ_SE_DP_BOX01);
     PCBox_ApplyMonMove(work);
-    if ((selected & 0x80) == 0) {
+    if ((selected & PC_BOX_TARGET_TRAY_BOX) == 0) {
         PCBox_RevertShayminFormOnMove(work, moveWork->from, moveWork->to);
     }
     PCBox_FreeMoveWork(work);
@@ -1340,7 +1340,7 @@ u32 PCBox_State_EndTrayHoldingDrop(PCBoxWork *work) {
         PCBox_DrawTrayBoxNameAndCount(work);
     }
     input = GridInputHandler_GetNextInput(work->view->gridInput);
-    if (work->view->dropCancelled == 0 && selected == 0xff) {
+    if (work->view->dropCancelled == 0 && selected == PC_BOX_SLOT_NONE) {
         index = work->selectedSlot;
         if (input != index) {
             if ((u32)index >= PC_BOX_SLOT_PARTY_START) {
@@ -2940,7 +2940,7 @@ u32 PCBox_State_ItemTrayHoldingInput(PCBoxWork *work) {
     case GRID_MENU_CANCEL:
     case 0x24:
         PlaySE(SEQ_SE_DP_BOX01);
-        return PCBox_DropTrayItem(work, 0xff);
+        return PCBox_DropTrayItem(work, PC_BOX_SLOT_NONE);
     default:
         PlaySE(SEQ_SE_DP_BOX01);
         return PCBox_DropTrayItem(work, input);
@@ -3443,7 +3443,7 @@ static void PCBox_AllocMoveWork(PCBoxWork *work) {
     PCBoxMoveEntry *entry;
 
     moveWork = Heap_Alloc(HEAP_ID_10, sizeof(PCBoxMoveWork));
-    for (i = 0, entry = moveWork->entries; i < 7; i++, entry++) {
+    for (i = 0, entry = moveWork->entries; i < NELEMS(moveWork->entries); i++, entry++) {
         entry->mon = AllocMonZeroed(HEAP_ID_10);
     }
     moveWork->timer = 0;
@@ -3948,7 +3948,7 @@ static u32 PCBox_DropTrayMon(PCBoxWork *work, u32 index) {
         s16 y, x;
     } xy;
 
-    work->view->dropCancelled = index == 255;
+    work->view->dropCancelled = index == PC_BOX_SLOT_NONE;
     ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], &xy.x, &xy.y);
     ManagedSprite_SetPositionXY(work->view->sprites[work->view->slotIcons[work->selectedSlot]], xy.x, xy.y + 4);
     if (index < PC_BOX_SLOT_COUNT) {
@@ -4151,7 +4151,7 @@ static u32 PCBox_DropTrayItem(PCBoxWork *work, u32 value) {
     work->view->cursorHolding = 0;
     ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_CURSOR], &xy[1], &xy[0]);
     ManagedSprite_SetPositionXY(work->view->sprites[PC_BOX_SPRITE_HELD_ITEM], xy[1], (s16)(xy[0] + 8));
-    if (work->view->dropTarget == 0xff) {
+    if (work->view->dropTarget == PC_BOX_SLOT_NONE) {
         return PCBox_ReturnTrayItem(work);
     }
     if (PCBox_CanSwapHeldItems(work, work->selectedSlot, value) == 0) {
@@ -4263,7 +4263,7 @@ u32 PCBox_State_BoxTrayHoldingInput(PCBoxWork *work) {
         return PCBox_WaitForPendingUpdateFunc(work, PC_BOX_STATE_END_CURSOR_SLIDE_TO_BOX_TRAY_HOLDING);
     case (u32)-2:
     case 0x24:
-        return PCBox_DropTrayMon(work, 0xff);
+        return PCBox_DropTrayMon(work, PC_BOX_SLOT_NONE);
     case 0x25:
     case 0x26:
     case 0x27:

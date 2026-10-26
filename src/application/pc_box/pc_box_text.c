@@ -71,7 +71,7 @@ void PCBox_LoadTrayPageThumbnails(PCBoxWork *work) {
     index = 15;
     i = 0;
     offset = offset << 10;
-    for (; i < 6; i++) {
+    for (; i < PC_BOX_TRAY_BOX_COUNT; i++) {
         PCBox_LoadSpriteCharsMain(work->view, index, (u8 *)work->view->boxThumbnails + offset, 0x400);
         index++;
         offset += 0x400;
@@ -151,7 +151,7 @@ void PCBox_SetupDepositBoxSprites(PCBoxWork *work) {
     PCBox_PlaceSpriteOnTop(work->view, PC_BOX_SPRITE_TRAY_MARKER, 43, 84, 1);
     PCBox_PlaceSpriteOnTop(work->view, PC_BOX_SPRITE_TRAY_CURSOR, 128, 65, 1);
     PCBox_PlaceSpriteOnTop(work->view, PC_BOX_SPRITE_TRAY_LABEL, 128, 77, 1);
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PC_BOX_TRAY_BOX_COUNT; i++) {
         ManagedSprite_GetPositionXY(work->view->sprites[PC_BOX_SPRITE_TRAY_BOXES + i], &x, &y);
         PCBox_PlaceSpriteOnTop(work->view, PC_BOX_SPRITE_TRAY_BOXES + i, x, 84, 1);
     }
@@ -172,7 +172,7 @@ void PCBox_HideBoxTraySprites(PCBoxWork *work) {
     PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_MARKER, FALSE);
     PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_CURSOR, FALSE);
     PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_LABEL, FALSE);
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PC_BOX_TRAY_BOX_COUNT; i++) {
         PCBox_SetSpriteVisible(work->view, PC_BOX_SPRITE_TRAY_BOXES + i, FALSE);
     }
     TextOBJ_SetSpritesDrawFlag(work->view->textObjs[0].textObj, FALSE);

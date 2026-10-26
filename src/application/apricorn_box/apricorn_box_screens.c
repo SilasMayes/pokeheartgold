@@ -316,13 +316,13 @@ static int ApricornBoxScreen_ShowBlenderNews(ApricornBoxScreen *screen) {
         kind = ApricornBox_GetMixState(screen->apricornBox);
         switch (kind) {
         case 0:
-            ApricornBoxScreen_PrintMessage(screen, 22, screen->textFrameDelay);
+            ApricornBoxScreen_PrintMessage(screen, APRICORN_BOX_TEXT_HOW_TO_MAKE, screen->textFrameDelay);
             break;
         case 2:
-            ApricornBoxScreen_PrintMessage(screen, 23, TEXT_SPEED_NOTRANSFER);
+            ApricornBoxScreen_PrintMessage(screen, APRICORN_BOX_TEXT_JUICE_MADE, TEXT_SPEED_NOTRANSFER);
             break;
         case 3:
-            ApricornBoxScreen_PrintMessage(screen, 24, TEXT_SPEED_NOTRANSFER);
+            ApricornBoxScreen_PrintMessage(screen, APRICORN_BOX_TEXT_FLAVOR_CHANGED, TEXT_SPEED_NOTRANSFER);
             break;
         }
         ApricornBox_SetMixState(screen->apricornBox, 1);
@@ -367,7 +367,7 @@ static int ApricornBoxScreen_KurtQuantityState(ApricornBoxScreen *screen) {
     case 0:
         ApricornBoxScreen_SetApricornsFocus(screen, 2);
         ApricornBoxScreen_ShowQuantityPanel(screen, 1);
-        ApricornBoxScreen_PrintHeader(screen, 11);
+        ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_GIVE_HOW_MANY);
         screen->subState++;
         break;
     case 1:
@@ -386,11 +386,11 @@ static int ApricornBoxScreen_KurtQuantityState(ApricornBoxScreen *screen) {
         if (screen->quantityInputResult == 1) {
             ApricornBoxScreen_SetApricornsFocus(screen, 0);
             ApricornBoxScreen_ShowQuantityPanel(screen, 0);
-            ApricornBoxScreen_PrintHeader(screen, 10);
+            ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_SELECT_TO_GIVE);
             screen->subState = 0;
             return APRICORN_BOX_SCREEN_STATE_KURT;
         }
-        ApricornBoxScreen_PrintHeader(screen, 12);
+        ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_GIVE_CONFIRM);
         ApricornBoxScreen_ShowQuantityPanel(screen, 0);
         ApricornBoxScreen_ShowYesNo(screen);
         screen->subState++;
@@ -406,7 +406,7 @@ static int ApricornBoxScreen_KurtQuantityState(ApricornBoxScreen *screen) {
             return APRICORN_BOX_SCREEN_STATE_FADE_OUT;
         }
         ApricornBoxScreen_SetApricornsFocus(screen, 0);
-        ApricornBoxScreen_PrintHeader(screen, 10);
+        ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_SELECT_TO_GIVE);
         // fallthrough
     default:
         screen->subState = 0;
@@ -522,9 +522,9 @@ static int ApricornBoxScreen_PutBackApricornState(ApricornBoxScreen *screen) {
 static int ApricornBoxScreen_BlendApricornState(ApricornBoxScreen *screen) {
     switch (screen->subState) {
     case 0:
-        if (screen->numBlending >= 5) {
-            ApricornBoxScreen_PrintHeader(screen, 7);
-            ApricornBoxScreen_PrintMessage(screen, 26, TEXT_SPEED_NOTRANSFER);
+        if (screen->numBlending >= APRICORN_QUEUE_SLOT_COUNT) {
+            ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_BLENDER_FULL);
+            ApricornBoxScreen_PrintMessage(screen, APRICORN_BOX_TEXT_SHAKE_BLENDER, TEXT_SPEED_NOTRANSFER);
             screen->subState = 1;
         } else {
             screen->cursorArea = 2;
@@ -563,10 +563,10 @@ static int ApricornBoxScreen_BlendApricornState(ApricornBoxScreen *screen) {
         if (screen->activeTasks != 0) {
             break;
         }
-        if (screen->numBlending >= 5) {
-            ApricornBoxScreen_PrintHeader(screen, 7);
+        if (screen->numBlending >= APRICORN_QUEUE_SLOT_COUNT) {
+            ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_BLENDER_FULL);
         } else {
-            ApricornBoxScreen_PrintHeader(screen, 6);
+            ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_CAN_PUT_IN);
         }
         ApricornBoxScreen_DrawApricornCount(screen, screen->selectedApricorn);
         ApricornBoxScreen_SetApricornsFocus(screen, 0);
@@ -581,7 +581,7 @@ static int ApricornBoxScreen_JuiceMenuState(ApricornBoxScreen *screen) {
     switch (screen->subState) {
     case 0:
         ApricornBoxScreen_CreateJuiceMenu(screen);
-        ApricornBoxScreen_PrintHeader(screen, 8);
+        ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_JUICE_MENU);
         ApricornBoxScreen_SetApricornsFocus(screen, 1);
         screen->subState++;
         break;
@@ -596,7 +596,7 @@ static int ApricornBoxScreen_JuiceMenuState(ApricornBoxScreen *screen) {
             return APRICORN_BOX_SCREEN_STATE_BLENDER;
         }
         if (result == 1) {
-            ApricornBoxScreen_PrintHeader(screen, 9);
+            ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_TASTED);
             ApricornBoxScreen_PrintJuiceTaste(screen);
             ApricornBoxScreen_SetApricornsFocus(screen, 1);
             return APRICORN_BOX_SCREEN_STATE_WAIT_JUICE_TASTE;
@@ -689,7 +689,7 @@ static void ApricornBoxScreen_DrawScreen(ApricornBoxScreen *screen) {
     width = (u8)FontID_String_GetWidth(0, screen->string, 0);
     x = (80 - width) / 2;
     AddTextPrinterParameterizedWithColor(&screen->windows[3], 0, screen->string, x, 0, TEXT_SPEED_INSTANT, MAKE_TEXT_COLOR(15, 2, 0), NULL);
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < APRICORN_TYPE_COUNT; i++) {
         ApricornBoxScreen_DrawApricornCount(screen, i);
     }
     mode = screen->mode;
@@ -698,13 +698,13 @@ static void ApricornBoxScreen_DrawScreen(ApricornBoxScreen *screen) {
         ApricornBoxScreen_PrintBlenderStatus(screen);
         return;
     case APRICORN_BOX_MODE_KURT:
-        ApricornBoxScreen_PrintHeader(screen, 10);
+        ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_SELECT_TO_GIVE);
         return;
     case APRICORN_BOX_MODE_VIEW:
     default:
         break;
     }
-    ApricornBoxScreen_PrintHeader(screen, 0);
+    ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_COLLECTED);
 }
 
 static void ApricornBoxScreen_LoadBoxState(ApricornBoxScreen *screen) {
@@ -717,7 +717,7 @@ static void ApricornBoxScreen_LoadBoxState(ApricornBoxScreen *screen) {
     screen->flavorTotal = ApricornJuice_GetFlavorTotal(&screen->juiceRecord);
     ApricornJuice_RankFlavors(&screen->juiceRecord, &screen->juice);
     screen->mixStage = ApricornBox_GetMixProgressLevel(screen->apricornBox);
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < APRICORN_TYPE_COUNT; i++) {
         screen->apricornCounts[i] = ApricornBox_CountApricorn(screen->apricornBox, i);
     }
 }
@@ -850,9 +850,9 @@ static void ApricornBoxScreen_ShowQuantityPanel(ApricornBoxScreen *screen, int s
 
 static void ApricornBoxScreen_PrintBlenderStatus(ApricornBoxScreen *screen) {
     if (screen->numBlending == 0) {
-        ApricornBoxScreen_PrintHeader(screen, 1);
+        ApricornBoxScreen_PrintHeader(screen, APRICORN_BOX_TEXT_PUT_IN_BLENDER);
     } else {
-        ApricornBoxScreen_PrintHeader(screen, screen->mixStage + 1);
+        ApricornBoxScreen_PrintHeader(screen, screen->mixStage + APRICORN_BOX_TEXT_PUT_IN_BLENDER);
     }
 }
 
@@ -878,11 +878,11 @@ static void ApricornBoxScreen_PrintDescription(ApricornBoxScreen *screen) {
             ScheduleWindowCopyToVram(window);
             return;
         }
-        ApricornBoxScreen_ReadMessage(screen, selection + 13);
+        ApricornBoxScreen_ReadMessage(screen, selection + APRICORN_BOX_TEXT_APRICORN_INFO);
     } else if (screen->juiceServings != 0) {
-        ApricornBoxScreen_ReadMessage(screen, 21);
+        ApricornBoxScreen_ReadMessage(screen, APRICORN_BOX_TEXT_JUICE_INFO);
     } else {
-        ApricornBoxScreen_ReadMessage(screen, 20);
+        ApricornBoxScreen_ReadMessage(screen, APRICORN_BOX_TEXT_BLENDER_INFO);
     }
     AddTextPrinterParameterized(window, 0, screen->string2, 0, 0, TEXT_SPEED_NOTRANSFER, NULL);
     ScheduleWindowCopyToVram(window);
@@ -1000,7 +1000,7 @@ static int ApricornBoxScreen_HandleYesNo(ApricornBoxScreen *screen) {
 void ApricornBoxScreen_SetApricornsFocus(ApricornBoxScreen *screen, int mode) {
     int i;
     if (mode == 1 || mode == 2) {
-        for (i = 0; i < 7; i++) {
+        for (i = 0; i < APRICORN_TYPE_COUNT; i++) {
             if (i == screen->selectedApricorn && mode == 2) {
                 Sprite_SetOamMode(screen->sprites[i + 2], GX_OAM_MODE_NORMAL);
             } else {
@@ -1013,7 +1013,7 @@ void ApricornBoxScreen_SetApricornsFocus(ApricornBoxScreen *screen, int mode) {
             Sprite_SetDrawPriority(screen->sprites[screen->selectedApricorn + 2], 2);
         }
     } else {
-        for (i = 0; i < 7; i++) {
+        for (i = 0; i < APRICORN_TYPE_COUNT; i++) {
             Sprite_SetOamMode(screen->sprites[i + 2], GX_OAM_MODE_NORMAL);
         }
         ApricornBoxScreen_SetCursorAnimActive(screen, 1);
@@ -1233,14 +1233,14 @@ static void ApricornBoxScreen_InitStrings(ApricornBoxScreen *screen) {
     for (i = 0; i < 22; i++) {
         screen->infoTexts[i] = NewString_ReadMsgData(screen->msgData, i + msg_0021_00027);
     }
-    for (j = 0; j < 7; j++) {
+    for (j = 0; j < APRICORN_TYPE_COUNT; j++) {
         screen->apricornNames[j] = NewString_ReadMsgData(screen->msgData, j + msg_0021_00007);
     }
 }
 
 static void ApricornBoxScreen_FreeStrings(ApricornBoxScreen *screen) {
     int i;
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < APRICORN_TYPE_COUNT; i++) {
         String_Delete(screen->apricornNames[i]);
     }
     for (i = 0; i < 22; i++) {
@@ -1270,7 +1270,7 @@ static void ApricornBoxScreen_AddWindows(ApricornBoxScreen *screen) {
     tile = 444;
     i = 0;
     y = 6;
-    for (; i < 7; i++) {
+    for (; i < APRICORN_TYPE_COUNT; i++) {
         AddWindowParameterized(screen->bgConfig, &screen->windows[i + 11], GF_BG_LYR_MAIN_2, (u8)((i % 2) * 6 + 5), y, 2, 2, 12, tile);
         FillWindowPixelBuffer(&screen->windows[i + 11], 0);
         tile += 4;
@@ -1354,7 +1354,7 @@ static void ApricornBoxScreen_CreateSprites(ApricornBoxScreen *screen) {
     }
     Sprite_SetPriority(screen->sprites[1], 2);
     position = (const s16 *)gApricornBoxApricornPositions;
-    for (i = 0; i < 7; position += 2, i++) {
+    for (i = 0; i < APRICORN_TYPE_COUNT; position += 2, i++) {
         screen->sprites[(u8)(i + 2)] = SpriteSystem_CreateSpriteFromResourceHeader(screen->spriteSystem, screen->spriteManager, &gApricornBoxSpriteTemplates[2]);
         Sprite_SetPositionXY(screen->sprites[(u8)(i + 2)], position[0], position[1]);
         Sprite_SetAnimActiveFlag(screen->sprites[(u8)(i + 2)], FALSE);
@@ -1438,12 +1438,12 @@ static void ApricornBoxScreen_MoveTask(SysTask *task, void *data) {
 
 static void ApricornBoxScreen_ReadMessage(ApricornBoxScreen *screen, int msgNo) {
     switch (msgNo) {
-    case 6: {
+    case APRICORN_BOX_TEXT_CAN_PUT_IN: {
         int count = ApricornBox_CountQueuedApricorns(screen->apricornBox);
-        BufferIntegerAsString(screen->msgFormat, 0, 5 - count, 1, PRINTING_MODE_LEFT_ALIGN, TRUE);
+        BufferIntegerAsString(screen->msgFormat, 0, APRICORN_QUEUE_SLOT_COUNT - count, 1, PRINTING_MODE_LEFT_ALIGN, TRUE);
         break;
     }
-    case 12:
+    case APRICORN_BOX_TEXT_GIVE_CONFIRM:
         if (screen->quantity > 1) {
             BufferItemNamePlural(screen->msgFormat, 0, ITEM_RED_APRICORN + screen->selectedApricorn);
         } else {
@@ -1451,13 +1451,13 @@ static void ApricornBoxScreen_ReadMessage(ApricornBoxScreen *screen, int msgNo) 
         }
         BufferIntegerAsString(screen->msgFormat, 1, screen->quantity, 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
         break;
-    case 21: {
+    case APRICORN_BOX_TEXT_JUICE_INFO: {
         int juice = ApricornJuice_GetFlavorNameIndex(&screen->juiceRecord);
         ReadMsgDataIntoString(screen->msgData, juice + msg_0021_00019, screen->string);
         BufferString(screen->msgFormat, 0, screen->string, 2, 0, 2);
         BufferIntegerAsString(screen->msgFormat, 1, screen->flavorTotal, 3, PRINTING_MODE_LEFT_ALIGN, TRUE);
         BufferIntegerAsString(screen->msgFormat, 2, screen->juiceMildness, 3, PRINTING_MODE_LEFT_ALIGN, TRUE);
-        BufferIntegerAsString(screen->msgFormat, 3, 5 - screen->numBlending, 1, PRINTING_MODE_LEFT_ALIGN, TRUE);
+        BufferIntegerAsString(screen->msgFormat, 3, APRICORN_QUEUE_SLOT_COUNT - screen->numBlending, 1, PRINTING_MODE_LEFT_ALIGN, TRUE);
         break;
     }
     default:

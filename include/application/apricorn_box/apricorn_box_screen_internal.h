@@ -30,6 +30,33 @@ enum ApricornBoxScreenState {
     APRICORN_BOX_SCREEN_STATE_EXIT,
 };
 
+// ApricornBoxScreen_PrintMessage / ApricornBoxScreen_PrintHeader texts, counted from msg_0021_00027
+enum ApricornBoxText {
+    APRICORN_BOX_TEXT_COLLECTED,
+    APRICORN_BOX_TEXT_PUT_IN_BLENDER,
+    APRICORN_BOX_TEXT_NOT_BLENDED_ENOUGH,
+    APRICORN_BOX_TEXT_ALMOST_DONE,
+    APRICORN_BOX_TEXT_BIT_LONGER,
+    APRICORN_BOX_TEXT_JUICE_READY,
+    APRICORN_BOX_TEXT_CAN_PUT_IN,
+    APRICORN_BOX_TEXT_BLENDER_FULL,
+    APRICORN_BOX_TEXT_JUICE_MENU,
+    APRICORN_BOX_TEXT_TASTED,
+    APRICORN_BOX_TEXT_SELECT_TO_GIVE,
+    APRICORN_BOX_TEXT_GIVE_HOW_MANY,
+    APRICORN_BOX_TEXT_GIVE_CONFIRM,
+    APRICORN_BOX_TEXT_APRICORN_INFO, // one per apricorn
+    APRICORN_BOX_TEXT_BLENDER_INFO = APRICORN_BOX_TEXT_APRICORN_INFO + APRICORN_TYPE_COUNT,
+    APRICORN_BOX_TEXT_JUICE_INFO,
+    APRICORN_BOX_TEXT_HOW_TO_MAKE,
+    APRICORN_BOX_TEXT_JUICE_MADE,
+    APRICORN_BOX_TEXT_FLAVOR_CHANGED,
+    APRICORN_BOX_TEXT_JUICE_NOT_DONE,
+    APRICORN_BOX_TEXT_SHAKE_BLENDER,
+    APRICORN_BOX_TEXT_BEING_MADE,
+    APRICORN_BOX_TEXT_IMPROVING,
+};
+
 // The Apricorn Box screen: view the apricorns, put them into the Apriblender, give them to Kurt.
 typedef struct ApricornBoxScreen {
     enum HeapID heapId;
@@ -42,7 +69,7 @@ typedef struct ApricornBoxScreen {
     u8 topMixIndex;   // ApricornJuice_GetTopMixIndex(juiceRecord)
     u8 numBlending;   // apricorns in the blender (ApricornBox_CountQueuedApricorns, at most 5)
     u8 mixStage;      // ApricornBox_GetMixProgressLevel
-    u8 apricornCounts[7];
+    u8 apricornCounts[APRICORN_TYPE_COUNT];
     u8 padding_21;
     ApricornJuice juiceRecord;
     ApricornJuiceRanking juice;
@@ -74,9 +101,9 @@ typedef struct ApricornBoxScreen {
     String *string2;
     String *closeText; // message 1 "CLOSE"
     String *unk_70;
-    String *numberTemplate;   // message 25
-    String *infoTexts[22];    // messages 27-48
-    String *apricornNames[7]; // messages 7-13
+    String *numberTemplate;                     // message 25
+    String *infoTexts[22];                      // messages 27-48
+    String *apricornNames[APRICORN_TYPE_COUNT]; // messages 7-13
     u8 padding_EC[0x3C];
     Window windows[18];
     YesNoPrompt *yesNoPrompt;

@@ -871,7 +871,7 @@ static void VsRecorder_CreateSearchCategoryWindows(VsRecorderWork *work) {
         InitWindow(window);
         AddWindowParameterized(work->bgConfig, window, GF_BG_LYR_SUB_2, x, y, width, height, 14, baseTile);
         FillWindowPixelBuffer(window, 0);
-        str = NewString_ReadMsgData(work->msgData, i + 68);
+        str = NewString_ReadMsgData(work->msgData, i + msg_0013_00068);
         textX = VsRecorder_GetCenteredTextX(window, str);
         textY = (height * 8 - 16) / 2;
         if (VsRecorder_SearchCategoryHasSeen(work, i) == TRUE) {

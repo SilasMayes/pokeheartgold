@@ -1382,7 +1382,7 @@ int VsRecorder_RedrawRankingList(VsRecorderListWindow *list, VsRecorderWork *wor
             }
         }
         for (i = start; i < end; i++) {
-            label = NewString_ReadMsgData(work->msgData, type + 88);
+            label = NewString_ReadMsgData(work->msgData, type + msg_0013_00088);
             number = String_New(255, HEAP_ID_109);
             expanded = String_New(255, HEAP_ID_109);
             valueString = String_New(255, HEAP_ID_109);
