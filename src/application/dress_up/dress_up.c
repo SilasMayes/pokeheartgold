@@ -820,7 +820,7 @@ void DressUpGfx_FreeAllTexAndPltt(DressUpGfx *gfx) {
 Sprite *DressUpGfx_CreateSprite(DressUpGfx *gfx, int id, int x, int y, u32 priority, NNS_G2D_VRAM_TYPE whichScreen) {
     SpriteResourcesHeader header;
     SimpleSpriteTemplate template;
-    CreateSpriteResourcesHeader(&header, id, id, id, id, -1, -1, 0, 0, gfx->charResMan, gfx->plttResMan, gfx->cellResMan, gfx->animResMan, NULL, NULL);
+    CreateSpriteResourcesHeader(&header, id, id, id, id, -1, -1, 0, 0, gfx->resMans[GF_GFX_RES_TYPE_CHAR], gfx->resMans[GF_GFX_RES_TYPE_PLTT], gfx->resMans[GF_GFX_RES_TYPE_CELL], gfx->resMans[GF_GFX_RES_TYPE_ANIM], NULL, NULL);
     template.spriteList = gfx->spriteList;
     template.header = &header;
     template.position.x = x << FX32_SHIFT;
@@ -833,41 +833,41 @@ Sprite *DressUpGfx_CreateSprite(DressUpGfx *gfx, int id, int x, int y, u32 prior
 }
 
 void DressUpGfx_LoadCharRes(DressUpGfx *gfx, NARC *narc, int fileId, BOOL compressed, int vram, int id) {
-    SpriteResource *resource = AddCharResObjFromOpenNarc(gfx->charResMan, narc, fileId, compressed, id, vram, HEAP_ID_14);
+    SpriteResource *resource = AddCharResObjFromOpenNarc(gfx->resMans[GF_GFX_RES_TYPE_CHAR], narc, fileId, compressed, id, vram, HEAP_ID_14);
     SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resource);
 }
 
 void DressUpGfx_LoadPlttRes(DressUpGfx *gfx, NARC *narc, int fileId, BOOL compressed, int vram, int plttNum, int id) {
-    SpriteResource *resource = AddPlttResObjFromOpenNarc(gfx->plttResMan, narc, fileId, compressed, id, vram, plttNum, HEAP_ID_14);
+    SpriteResource *resource = AddPlttResObjFromOpenNarc(gfx->resMans[GF_GFX_RES_TYPE_PLTT], narc, fileId, compressed, id, vram, plttNum, HEAP_ID_14);
     SpriteTransfer_CreatePlttTransferTask(resource);
 }
 
 void DressUpGfx_LoadCellRes(DressUpGfx *gfx, NARC *narc, int fileId, BOOL compressed, int id) {
-    AddCellOrAnimResObjFromOpenNarc(gfx->cellResMan, narc, fileId, compressed, id, GF_GFX_RES_TYPE_CELL, HEAP_ID_14);
+    AddCellOrAnimResObjFromOpenNarc(gfx->resMans[GF_GFX_RES_TYPE_CELL], narc, fileId, compressed, id, GF_GFX_RES_TYPE_CELL, HEAP_ID_14);
 }
 
 void DressUpGfx_LoadAnimRes(DressUpGfx *gfx, NARC *narc, int fileId, BOOL compressed, int id) {
-    AddCellOrAnimResObjFromOpenNarc(gfx->animResMan, narc, fileId, compressed, id, GF_GFX_RES_TYPE_ANIM, HEAP_ID_14);
+    AddCellOrAnimResObjFromOpenNarc(gfx->resMans[GF_GFX_RES_TYPE_ANIM], narc, fileId, compressed, id, GF_GFX_RES_TYPE_ANIM, HEAP_ID_14);
 }
 
 void DressUpGfx_FreeCharRes(DressUpGfx *gfx, int id) {
-    SpriteResource *resource = SpriteResourceCollection_Find(gfx->charResMan, id);
-    DestroySingle2DGfxResObj(gfx->charResMan, resource);
+    SpriteResource *resource = SpriteResourceCollection_Find(gfx->resMans[GF_GFX_RES_TYPE_CHAR], id);
+    DestroySingle2DGfxResObj(gfx->resMans[GF_GFX_RES_TYPE_CHAR], resource);
 }
 
 void DressUpGfx_FreePlttRes(DressUpGfx *gfx, int id) {
-    SpriteResource *resource = SpriteResourceCollection_Find(gfx->plttResMan, id);
-    DestroySingle2DGfxResObj(gfx->plttResMan, resource);
+    SpriteResource *resource = SpriteResourceCollection_Find(gfx->resMans[GF_GFX_RES_TYPE_PLTT], id);
+    DestroySingle2DGfxResObj(gfx->resMans[GF_GFX_RES_TYPE_PLTT], resource);
 }
 
 void DressUpGfx_FreeCellRes(DressUpGfx *gfx, int id) {
-    SpriteResource *resource = SpriteResourceCollection_Find(gfx->cellResMan, id);
-    DestroySingle2DGfxResObj(gfx->cellResMan, resource);
+    SpriteResource *resource = SpriteResourceCollection_Find(gfx->resMans[GF_GFX_RES_TYPE_CELL], id);
+    DestroySingle2DGfxResObj(gfx->resMans[GF_GFX_RES_TYPE_CELL], resource);
 }
 
 void DressUpGfx_FreeAnimRes(DressUpGfx *gfx, int id) {
-    SpriteResource *resource = SpriteResourceCollection_Find(gfx->animResMan, id);
-    DestroySingle2DGfxResObj(gfx->animResMan, resource);
+    SpriteResource *resource = SpriteResourceCollection_Find(gfx->resMans[GF_GFX_RES_TYPE_ANIM], id);
+    DestroySingle2DGfxResObj(gfx->resMans[GF_GFX_RES_TYPE_ANIM], resource);
 }
 
 static void DressUp_LoadRawResTables(DressUpGfx *gfx, DressUpGfxResources *resources) {
@@ -1190,24 +1190,18 @@ static void DressUpGfx_InitSpriteSystem(DressUpGfx *gfx) {
     OamManager_Create(0, 0x7C, 0, 0x1F, 0, 0x7C, 0, 0x1F, HEAP_ID_14);
     gfx->spriteList = G2dRenderer_Init(0x30, &gfx->renderer, HEAP_ID_14);
     G2dRenderer_SetSubSurfaceCoords(&gfx->renderer, 0, 2 << 20);
-    gfx->charResMan = Create2DGfxResObjMan(8, GF_GFX_RES_TYPE_CHAR, HEAP_ID_14);
-    gfx->plttResMan = Create2DGfxResObjMan(5, GF_GFX_RES_TYPE_PLTT, HEAP_ID_14);
-    gfx->cellResMan = Create2DGfxResObjMan(0x30, GF_GFX_RES_TYPE_CELL, HEAP_ID_14);
-    gfx->animResMan = Create2DGfxResObjMan(0x30, GF_GFX_RES_TYPE_ANIM, HEAP_ID_14);
+    gfx->resMans[GF_GFX_RES_TYPE_CHAR] = Create2DGfxResObjMan(8, GF_GFX_RES_TYPE_CHAR, HEAP_ID_14);
+    gfx->resMans[GF_GFX_RES_TYPE_PLTT] = Create2DGfxResObjMan(5, GF_GFX_RES_TYPE_PLTT, HEAP_ID_14);
+    gfx->resMans[GF_GFX_RES_TYPE_CELL] = Create2DGfxResObjMan(0x30, GF_GFX_RES_TYPE_CELL, HEAP_ID_14);
+    gfx->resMans[GF_GFX_RES_TYPE_ANIM] = Create2DGfxResObjMan(0x30, GF_GFX_RES_TYPE_ANIM, HEAP_ID_14);
 }
 
 static void DressUpGfx_FreeSpriteSystem(DressUpGfx *gfx) {
     int i;
-    DressUpGfx *walk;
 
     SpriteList_Delete(gfx->spriteList);
-    i = 0;
-    walk = gfx;
-    // walks the four managers from charResMan on
-    while (i < 4) {
-        Destroy2DGfxResObjMan(walk->charResMan);
-        i++;
-        walk = (DressUpGfx *)((u8 *)walk + 4);
+    for (i = 0; i < 4; i++) {
+        Destroy2DGfxResObjMan(gfx->resMans[i]);
     }
     ObjCharTransfer_Destroy();
     ObjPlttTransfer_Destroy();
@@ -1691,7 +1685,7 @@ static void DressUp_InitHud(DressUpWork *work, Options *options) {
 
     template.bgConfig = work->gfx.bgConfig;
     template.spriteList = work->gfx.spriteList;
-    template.resMans = &work->gfx.charResMan;
+    template.resMans = work->gfx.resMans;
     template.options = options;
     template.countMax = 10;
     template.narc = work->gfx.narc;
@@ -4242,7 +4236,7 @@ static void DressUpButton_CreateSprite(DressUpButton *button, int resId, DressUp
     DressUpButtonTemplate template;
     SpriteResourcesHeader header;
     SpriteTemplate spriteTemplate;
-    CreateSpriteResourcesHeader(&header, resId, 0, resId, resId, -1, -1, 0, 0, gfx->charResMan, gfx->plttResMan, gfx->cellResMan, gfx->animResMan, NULL, NULL);
+    CreateSpriteResourcesHeader(&header, resId, 0, resId, resId, -1, -1, 0, 0, gfx->resMans[GF_GFX_RES_TYPE_CHAR], gfx->resMans[GF_GFX_RES_TYPE_PLTT], gfx->resMans[GF_GFX_RES_TYPE_CELL], gfx->resMans[GF_GFX_RES_TYPE_ANIM], NULL, NULL);
     spriteTemplate.spriteList = gfx->spriteList;
     spriteTemplate.header = &header;
     spriteTemplate.position.x = (u32)x << FX32_SHIFT;
@@ -4262,7 +4256,7 @@ static void DressUpButton_CreateTextSprite(DressUpTextButton *button, int resId,
     DressUpTextButtonTemplate template;
     SpriteResourcesHeader header;
     SpriteTemplate spriteTemplate;
-    CreateSpriteResourcesHeader(&header, resId, 0, resId, resId, -1, -1, 0, 0, gfx->charResMan, gfx->plttResMan, gfx->cellResMan, gfx->animResMan, NULL, NULL);
+    CreateSpriteResourcesHeader(&header, resId, 0, resId, resId, -1, -1, 0, 0, gfx->resMans[GF_GFX_RES_TYPE_CHAR], gfx->resMans[GF_GFX_RES_TYPE_PLTT], gfx->resMans[GF_GFX_RES_TYPE_CELL], gfx->resMans[GF_GFX_RES_TYPE_ANIM], NULL, NULL);
     spriteTemplate.spriteList = gfx->spriteList;
     spriteTemplate.header = &header;
     spriteTemplate.position.x = x * FX32_ONE;
@@ -4279,7 +4273,7 @@ static void DressUpButton_CreateTextSprite(DressUpTextButton *button, int resId,
     template.window = label;
     template.x = 0;
     template.y = 19;
-    template.plttProxy = SpriteTransfer_GetPaletteProxy(SpriteResourceCollection_Find(gfx->plttResMan, 1), NULL);
+    template.plttProxy = SpriteTransfer_GetPaletteProxy(SpriteResourceCollection_Find(gfx->resMans[GF_GFX_RES_TYPE_PLTT], 1), NULL);
     GF_ASSERT(ObjCharTransfer_ReserveCharSpace(FontOAM_GetCharSize(label, NNS_G2D_VRAM_TYPE_2DMAIN, HEAP_ID_13), TRUE, NNS_G2D_VRAM_TYPE_2DMAIN, &button->charAlloc));
     template.charOffset = button->charAlloc.offset;
     DressUpButton_InitWithText(button, &template);

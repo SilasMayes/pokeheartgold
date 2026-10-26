@@ -947,7 +947,7 @@ static BOOL VsRecorder_DressUpViewShowPhoto(VsRecorderWork *work) {
     case DRESS_UP_VIEW_SHOW_PHOTO_STEP_CREATE_PHOTO:
         dressUp->showProfile = FALSE;
         {
-            VsRecorderDressUpDownload *download = dressUp->downloads[dressUp->photoIndex];
+            GlobalTerminalNetDressUpUpload *download = dressUp->downloads[dressUp->photoIndex];
             GlobalTerminalNet_UnpackDressUpPhoto(&download->form, (GlobalTerminalNetDressUpRecord *)dressUp->photo);
             dressUp->portrait = AccessoryPortrait_Create(&dressUp->portraitConfig, dressUp->photo);
         }

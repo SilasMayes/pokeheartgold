@@ -833,7 +833,7 @@ static int PhotoAlbumApp_HandleGridTouch(PhotoAlbumApp *app, int *done) {
 static int PhotoAlbumApp_HandleGridKeys(PhotoAlbumApp *app) {
     u32 keys;
     u8 hit;
-    if (app->nextMenuState == 1 && (gSystem.newKeys & 0xF3)) {
+    if (app->nextMenuState == 1 && (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_KEY_UP | PAD_KEY_DOWN | PAD_KEY_LEFT | PAD_KEY_RIGHT))) {
         PhotoAlbumApp_ToggleMenuInputState(app);
     }
     keys = gSystem.newKeys;
@@ -1007,7 +1007,7 @@ static int PhotoAlbumApp_HandleMoveTouch(PhotoAlbumApp *app, int *done) {
 static int PhotoAlbumApp_HandleMoveKeys(PhotoAlbumApp *app) {
     u8 hit;
 
-    if (app->nextMenuState == 1 && (gSystem.newKeys & 0xF3)) {
+    if (app->nextMenuState == 1 && (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_KEY_UP | PAD_KEY_DOWN | PAD_KEY_LEFT | PAD_KEY_RIGHT))) {
         PhotoAlbumApp_ToggleMenuInputState(app);
     }
 

@@ -352,12 +352,6 @@ typedef struct VsRecorderFrontierRecord {
     int evb;
 } VsRecorderFrontierRecord;
 
-// a dress-up photo from the server: the sender's profile and the photo
-typedef struct VsRecorderDressUpDownload {
-    u8 header[0x80]; // GlobalTerminalNet_CopyRequestHeader source
-    GlobalTerminalNetDressUpForm form;
-} VsRecorderDressUpDownload;
-
 // VsRecorderWork.screenWork of the dress-up photo screens (send the own photo / view photos of a species)
 typedef struct VsRecorderDressUp {
     int eva; // top screen blend
@@ -384,18 +378,12 @@ typedef struct VsRecorderDressUp {
     int unk_230;
     int photoIndex;
     SaveFashionDataSub *photo; // unpacked downloaded photo
-    VsRecorderDressUpDownload *downloads[5];
+    GlobalTerminalNetDressUpUpload *downloads[5];
     VsRecorderProfile profile;
     FrontierCard *uploadCard;
     int species; // chosen species
     int downloadCount;
 } VsRecorderDressUp;
-
-// a box from the server: the sender's profile and the box
-typedef struct VsRecorderBoxDataDownload {
-    u8 header[0x80]; // GlobalTerminalNet_CopyRequestHeader source, starts with the sender's name
-    GlobalTerminalNetBoxForm form;
-} VsRecorderBoxDataDownload;
 
 // VsRecorderWork.screenWork of the box data screens (send a box of the PC / view boxes by category)
 typedef struct VsRecorderBoxData {
@@ -419,8 +407,8 @@ typedef struct VsRecorderBoxData {
     int category; // 0-5
     FrontierCard *card;
     int downloadCount;
-    VsRecorderBoxDataDownload *downloads[20];
-    VsRecorderBoxDataDownload unk_3DC[20];
+    GlobalTerminalNetBoxUpload *downloads[20];
+    GlobalTerminalNetBoxUpload unk_3DC[20];
     String *listItems[20][2]; // box name, sender's name
     VsRecorderListConfig listConfig;
     VsRecorderProfile profile; // sender of the chosen box

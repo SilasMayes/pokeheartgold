@@ -985,7 +985,6 @@ static void MailView_CreateMonIcons(MailView *mailView) {
     int i;
     int iconOffset;
     int xOffset;
-    MailView *shifted;
 
     WirelessStatusIcon_CreateIfConnected();
     if (mailView->screen == MAIL_VIEW_SCREEN_WRITE) {
@@ -1010,8 +1009,7 @@ static void MailView_CreateMonIcons(MailView *mailView) {
     i = 0;
     iconOffset = i;
     xOffset = i;
-    shifted = mailView;
-    for (; i < 3; i++, iconOffset += sizeof(u16), shifted = (MailView *)((u8 *)shifted + sizeof(ManagedSprite *)), xOffset += 40) {
+    for (; i < 3; iconOffset += sizeof(u16), i++, xOffset += 40) {
         if (MAIL_VIEW_ICON(mailView->args, iconOffset)->raw == 0xFFFF) {
             return;
         }
@@ -1031,9 +1029,9 @@ static void MailView_CreateMonIcons(MailView *mailView) {
         template.resIdList[GF_GFX_RES_TYPE_ANIM] = 0;
         template.resIdList[GF_GFX_RES_TYPE_MCEL] = -1;
         template.resIdList[GF_GFX_RES_TYPE_MANM] = -1;
-        shifted->icons[0] = SpriteSystem_NewSprite(mailView->spriteSystem, mailView->spriteManager, &template);
+        mailView->icons[i] = SpriteSystem_NewSprite(mailView->spriteSystem, mailView->spriteManager, &template);
         if (MAIL_VIEW_ICON(mailView->args, iconOffset)->fileId == 7) {
-            ManagedSprite_SetDrawFlag(shifted->icons[0], FALSE);
+            ManagedSprite_SetDrawFlag(mailView->icons[i], FALSE);
         }
     }
 }

@@ -516,16 +516,11 @@ static void PokewalkerApp_CreateSprites(PokewalkerApp *app) {
     u32 i = 0;
     const ManagedSpriteTemplate *template = gPokewalkerAppSpriteTemplates;
     const u8 *palette = gPokewalkerAppSpritePalettes;
-    PokewalkerApp *slot = app;
 
-    for (; i < 17;) {
-        slot->sprites[0] = SpriteSystem_NewSpriteWithYOffset(app->spriteSystem, app->spriteManager, template, FX32_CONST(256));
-        ManagedSprite_SetPaletteOverride(slot->sprites[0], *palette);
-        ManagedSprite_SetDrawFlag(slot->sprites[0], FALSE);
-        i++;
-        template ++;
-        slot = (PokewalkerApp *)((u8 *)slot + sizeof(ManagedSprite *));
-        palette++;
+    for (; i < 17; template ++, i++, palette++) {
+        app->sprites[i] = SpriteSystem_NewSpriteWithYOffset(app->spriteSystem, app->spriteManager, template, FX32_CONST(256));
+        ManagedSprite_SetPaletteOverride(app->sprites[i], *palette);
+        ManagedSprite_SetDrawFlag(app->sprites[i], FALSE);
     }
     ManagedSprite_SetPriority(app->sprites[1], 2);
     for (; i < 117; i++) {

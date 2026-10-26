@@ -825,25 +825,21 @@ static void BallCapsuleEditor_ShiftSealsToCapsule(BallCapsuleEditor *editor) {
 
 static void BallCapsuleEditor_LoadSeals(BallCapsuleEditor *editor) {
     const SEAL *seal = editor->capsules[editor->cursorCapsule[0]].capsule->seals;
-    int i = 0;
-    BallCapsuleEditor *shifted = editor;
+    int i;
 
-    do {
+    for (i = 0; i < MAX_SEALS_ON_CAPSULE; seal++, i++) {
         if (seal->kind != SEAL_NONE) {
-            shifted->seals[0].seal.kind = seal->kind;
-            shifted->seals[0].seal.x = seal->x;
-            shifted->seals[0].seal.y = seal->y;
+            editor->seals[i].seal.kind = seal->kind;
+            editor->seals[i].seal.x = seal->x;
+            editor->seals[i].seal.y = seal->y;
             BallCapsuleEditor_CreateSealSprite(editor, i);
-            BallCapsuleEditor_UpdateSealHitbox(shifted->seals[0].hitbox, shifted->seals[0].sprite, FALSE);
-            shifted->seals[0].active = TRUE;
+            BallCapsuleEditor_UpdateSealHitbox(editor->seals[i].hitbox, editor->seals[i].sprite, FALSE);
+            editor->seals[i].active = TRUE;
         } else {
-            shifted->seals[0].active = FALSE;
-            shifted->seals[0].seal.kind = SEAL_NONE;
+            editor->seals[i].active = FALSE;
+            editor->seals[i].seal.kind = SEAL_NONE;
         }
-        i++;
-        seal++;
-        shifted = (BallCapsuleEditor *)((u8 *)shifted + sizeof(BallCapsuleEditorSeal));
-    } while (i < MAX_SEALS_ON_CAPSULE);
+    }
 }
 
 static u32 BallCapsuleEditor_AddSeal(BallCapsuleEditor *editor, u8 caseIndex) {
@@ -948,19 +944,18 @@ static void BallCapsuleEditor_SortSeals(BallCapsuleEditor *editor) {
     copy = seals;
     {
         s32 *sorted;
-        BallCapsuleEditor *dst = editor;
         s32 slot = 0;
         sorted = order;
         u8 *src = copy.bytes;
-        for (; slot < MAX_SEALS_ON_CAPSULE; slot++, sorted++, dst = (BallCapsuleEditor *)((u8 *)dst + sizeof(BallCapsuleEditorSeal))) {
+        for (; slot < MAX_SEALS_ON_CAPSULE; sorted++, slot++) {
             if (*sorted == 0xFF) {
-                dst->seals[0].seal.kind = SEAL_NONE;
-                dst->seals[0].seal.x = 0;
-                dst->seals[0].seal.y = 0;
+                editor->seals[slot].seal.kind = SEAL_NONE;
+                editor->seals[slot].seal.x = 0;
+                editor->seals[slot].seal.y = 0;
             } else {
-                dst->seals[0].seal.kind = src[*sorted * 3];
-                dst->seals[0].seal.x = src[*sorted * 3 + 1];
-                dst->seals[0].seal.y = src[*sorted * 3 + 2];
+                editor->seals[slot].seal.kind = src[*sorted * 3];
+                editor->seals[slot].seal.x = src[*sorted * 3 + 1];
+                editor->seals[slot].seal.y = src[*sorted * 3 + 2];
                 if (editor->seals[*sorted].sprite != NULL) {
                     ((BallCapsuleEditorSetDrawPriorityFunc)ManagedSprite_SetDrawPriority)(editor->seals[*sorted].sprite, slot);
                 }

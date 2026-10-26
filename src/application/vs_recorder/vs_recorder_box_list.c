@@ -330,8 +330,6 @@ BOOL VsRecorder_BoxListBack(VsRecorderWork *work) {
     return FALSE;
 }
 
-BOOL VsRecorder_BoxDataViewOpenBox(VsRecorderWork *work);
-
 // view screen, substate 9: show the chosen box
 BOOL VsRecorder_BoxDataViewOpenBox(VsRecorderWork *work) {
     VsRecorderBoxData *boxData = work->screenWork;

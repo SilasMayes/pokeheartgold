@@ -143,7 +143,6 @@ void TrainerCardMain_CreateBadgeSprites(TrainerCardMainSprites *sprites, const u
     SpriteTemplate template;
     int yOffset;
     int i;
-    TrainerCardMainSprites *cursor; // advanced by one Sprite pointer per badge
     const TrainerCardSpritePosition *position;
 
     CreateSpriteResourcesHeader(&header, 0, 0, 0, 0, -1, -1, 0, 1, sprites->resourceManagers[0][0], sprites->resourceManagers[0][1], sprites->resourceManagers[0][2], sprites->resourceManagers[0][3], NULL, NULL);
@@ -164,16 +163,15 @@ void TrainerCardMain_CreateBadgeSprites(TrainerCardMainSprites *sprites, const u
     } else {
         yOffset = 0;
     }
-    cursor = sprites;
     position = sTrainerCardBadgeSpritePositions;
-    for (i = 0; i < 16; i++, position++, cursor = (TrainerCardMainSprites *)((u8 *)cursor + sizeof(Sprite *))) {
+    for (i = 0; i < 16; position++, i++) {
         template.position.x = position->x << FX32_SHIFT;
         template.position.y = (yOffset + position->y) << FX32_SHIFT;
-        cursor->badgeSprites[0] = Sprite_CreateAffine(&template);
-        Sprite_SetAnimActiveFlag(cursor->badgeSprites[0], TRUE);
-        Sprite_SetAnimCtrlSeq(cursor->badgeSprites[0], i);
+        sprites->badgeSprites[i] = Sprite_CreateAffine(&template);
+        Sprite_SetAnimActiveFlag(sprites->badgeSprites[i], TRUE);
+        Sprite_SetAnimCtrlSeq(sprites->badgeSprites[i], i);
         if (badgeFlags[i] == 0 || (showKantoBadges == 0 && i > 7)) {
-            Sprite_SetDrawFlag(cursor->badgeSprites[0], FALSE);
+            Sprite_SetDrawFlag(sprites->badgeSprites[i], FALSE);
         }
     }
 }

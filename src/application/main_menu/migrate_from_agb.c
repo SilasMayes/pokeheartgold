@@ -806,11 +806,10 @@ static void MigrateFromAgb_CreateButtons(MigrateFromAgbApp *app) {
     app->hitboxes[33].rect.top = TOUCHSCREEN_RECTLIST_END;
     int i = 0;
     int x = 0;
-    MigrateFromAgbApp *cursor = app;
-    for (; i < MIGRATE_FROM_AGB_MON_COUNT; i++, x += 36, cursor = (MigrateFromAgbApp *)((u8 *)cursor + sizeof(MigrateFromAgbPick))) {
-        cursor->picks[0].sprite = MigrateFromAgb_CreateSprite(app, x, 64, 9, FALSE);
-        cursor->picks[0].slot = -1;
-        cursor->picks[0].box = AGB_BOX_COUNT;
+    for (; i < MIGRATE_FROM_AGB_MON_COUNT; x += 36, i++) {
+        app->picks[i].sprite = MigrateFromAgb_CreateSprite(app, x, 64, 9, FALSE);
+        app->picks[i].slot = -1;
+        app->picks[i].box = AGB_BOX_COUNT;
     }
     app->pickCount = 0;
 }

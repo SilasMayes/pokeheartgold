@@ -51,10 +51,7 @@ typedef struct DressUpGfx {
     int hitMapCount;
     BgConfig *bgConfig;
     SpriteList *spriteList;
-    GF_2DGfxResMan *charResMan;
-    GF_2DGfxResMan *plttResMan;
-    GF_2DGfxResMan *cellResMan;
-    GF_2DGfxResMan *animResMan;
+    GF_2DGfxResMan *resMans[4]; // by GfGfxResType
     G2dRenderer renderer;
     NARC *narc;
 } DressUpGfx;
@@ -347,7 +344,7 @@ typedef struct DressUpButtonPanel {
 typedef struct DressUpHudTemplate {
     BgConfig *bgConfig;
     SpriteList *spriteList;
-    GF_2DGfxResMan **resMans; // DressUpGfx.charResMan..animResMan
+    GF_2DGfxResMan **resMans; // DressUpGfx.resMans
     Options *options;
     int countMax;    // accessories the meter shows
     u32 infoMsgBank; // info window (DRESS_UP_HUD_INFO_WINDOW)

@@ -1,5 +1,7 @@
 #include "wobbuffet_pop.h"
 
+#include <nnsys/g2d_internal.h>
+
 #include "global.h"
 
 #include "constants/sndseq.h"
@@ -34,9 +36,6 @@
 #include "wireless_status_icon.h"
 #include "wobbuffet_pop_internal.h"
 
-void GX_BeginLoadTexPltt(void);
-void GX_LoadTexPltt(const void *src, u32 destSlotAddr, u32 size);
-void GX_EndLoadTexPltt(void);
 void CommState_FrameDummy(enum HeapID heapId, BgConfig *bgConfig);
 
 static BOOL WobbuffetPop_Init(OverlayManager *man, int *state);

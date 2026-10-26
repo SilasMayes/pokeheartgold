@@ -10,6 +10,7 @@
 #include "game_stats.h"
 #include "heap.h"
 #include "poke_overlay.h"
+#include "sound.h"
 #include "sound_system.h"
 #include "vs_recorder_app_internal.h"
 
@@ -210,7 +211,7 @@ static BOOL VsRecorderApp_RunPlayback(VsRecorderApp *work, enum HeapID heapId) {
             BattleSetup_Delete(work->setup);
             OverlayManager_Delete(work->manager);
             Sound_SetChatotRecordingDisabled(FALSE);
-            Sound_SetScene(0);
+            Sound_SetScene(SOUND_SCENE_NONE);
             bgm = FieldBGM_GetEffective(work->fieldSystem, work->fieldSystem->location->mapId);
             Sound_SetFieldBGM(FieldBGM_GetForMapHeader(work->fieldSystem, work->fieldSystem->location->mapId));
             FieldBGM_Play(NULL, bgm);

@@ -733,7 +733,7 @@ static void PokewalkerIr_OnConnect(int result) {
         break;
     case 0xE2:
         data[0] = 0x80;
-        value = *(u16 *)&gPokewalkerIrWork;
+        value = gPokewalkerIrWork.unk_00;
         data[1] = value >> 8;
         data[2] = value;
         data[3] = (data[1] + 1) + data[2];

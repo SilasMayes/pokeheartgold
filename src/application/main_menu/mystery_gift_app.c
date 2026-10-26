@@ -1267,107 +1267,99 @@ static void MysteryGiftAnim_InitSparkles(MysteryGiftAnimData *anim) {
 }
 
 static void MysteryGiftAnim_StartSparkleTasks(MysteryGiftAnimData *anim) {
-    MysteryGiftAnimData *cursor = anim;
-    MysteryGiftParticle *taskData = (MysteryGiftParticle *)cursor;
     int i;
 
-    i = 0;
-    taskData = (MysteryGiftParticle *)((u8 *)taskData + offsetof(MysteryGiftAnimData, sparkles));
-    for (; i < MYSTERY_GIFT_PARTICLE_COUNT; i++, cursor = NEXT_PARTICLE(cursor), taskData++) {
+    for (i = 0; i < MYSTERY_GIFT_PARTICLE_COUNT; i++) {
         VecFx32 position;
         u32 angle;
         s32 radius;
 
-        if (cursor->sparkles[0].sprite == NULL) {
+        if (anim->sparkles[i].sprite == NULL) {
             continue;
         }
-        cursor->sparkles[0].destX = FX32_CONST(128);
-        cursor->sparkles[0].destY = FX32_CONST(96);
-        cursor->sparkles[0].speed = FX32_CONST(12);
-        cursor->sparkles[0].minDistance = FX32_CONST(1);
-        cursor->sparkles[0].kind = 255;
-        cursor->sparkles[0].phase = 0;
-        cursor->sparkles[0].frames = 0;
-        cursor->sparkles[0].done = FALSE;
+        anim->sparkles[i].destX = FX32_CONST(128);
+        anim->sparkles[i].destY = FX32_CONST(96);
+        anim->sparkles[i].speed = FX32_CONST(12);
+        anim->sparkles[i].minDistance = FX32_CONST(1);
+        anim->sparkles[i].kind = 255;
+        anim->sparkles[i].phase = 0;
+        anim->sparkles[i].frames = 0;
+        anim->sparkles[i].done = FALSE;
         if (i > 30) {
-            cursor->sparkles[0].delay = (s32)(LCRandom() % 10) + 15;
+            anim->sparkles[i].delay = (s32)(LCRandom() % 10) + 15;
         } else if (i > 20) {
-            cursor->sparkles[0].delay = (s32)(LCRandom() % 10) + 10;
+            anim->sparkles[i].delay = (s32)(LCRandom() % 10) + 10;
         } else if (i > 10) {
-            cursor->sparkles[0].delay = (s32)(LCRandom() % 5) + 10;
+            anim->sparkles[i].delay = (s32)(LCRandom() % 5) + 10;
         } else {
-            cursor->sparkles[0].delay = (s32)(LCRandom() % 5) + 5;
+            anim->sparkles[i].delay = (s32)(LCRandom() % 5) + 5;
         }
         // BUG: the random delay chosen above is overwritten, so every sparkle starts moving at once
-        cursor->sparkles[0].delay = 0;
-        cursor->sparkles[0].radiusX = cursor->sparkles[0].amplitude;
-        cursor->sparkles[0].radiusY = cursor->sparkles[0].amplitude;
+        anim->sparkles[i].delay = 0;
+        anim->sparkles[i].radiusX = anim->sparkles[i].amplitude;
+        anim->sparkles[i].radiusY = anim->sparkles[i].amplitude;
         angle = LCRandom() % 360;
         radius = (s32)(LCRandom() % 32) + 64;
-        position.x = cursor->sparkles[0].destX + GF_SinDeg(angle) * radius;
-        position.y = cursor->sparkles[0].destY + GF_CosDeg(angle) * radius;
-        Sprite_SetMatrix(cursor->sparkles[0].sprite, &position);
-        Sprite_TryChangeAnimSeq(cursor->sparkles[0].sprite, 1);
-        Sprite_SetDrawFlag(cursor->sparkles[0].sprite, FALSE);
-        cursor->sparkles[0].task = SysTask_CreateOnMainQueue(MysteryGiftAnim_UpdateParticle, taskData, 6);
+        position.x = anim->sparkles[i].destX + GF_SinDeg(angle) * radius;
+        position.y = anim->sparkles[i].destY + GF_CosDeg(angle) * radius;
+        Sprite_SetMatrix(anim->sparkles[i].sprite, &position);
+        Sprite_TryChangeAnimSeq(anim->sparkles[i].sprite, 1);
+        Sprite_SetDrawFlag(anim->sparkles[i].sprite, FALSE);
+        anim->sparkles[i].task = SysTask_CreateOnMainQueue(MysteryGiftAnim_UpdateParticle, &anim->sparkles[i], 6);
     }
 }
 
 static void MysteryGiftAnim_StartRibbonTasks(MysteryGiftAnimData *anim) {
-    MysteryGiftParticle *taskData;
-    MysteryGiftAnimData *cursor = anim;
     int i;
 
-    taskData = (MysteryGiftParticle *)((u8 *)cursor + offsetof(MysteryGiftAnimData, ribbons));
-    i = 0;
-    for (; i < MYSTERY_GIFT_PARTICLE_COUNT; i++, cursor = NEXT_PARTICLE(cursor), taskData++) {
+    for (i = 0; i < MYSTERY_GIFT_PARTICLE_COUNT; i++) {
         VecFx32 position;
 
-        cursor->ribbons[0].destX = FX32_CONST(128);
-        cursor->ribbons[0].destY = FX32_CONST(384);
-        cursor->ribbons[0].speed = FX32_CONST(4);
-        cursor->ribbons[0].minDistance = FX32_CONST(5);
-        cursor->ribbons[0].kind = i % 2 + 4;
-        cursor->ribbons[0].phase = 0;
-        cursor->ribbons[0].frames = 0;
-        cursor->ribbons[0].grow = LCRandom() % 4 + 2;
+        anim->ribbons[i].destX = FX32_CONST(128);
+        anim->ribbons[i].destY = FX32_CONST(384);
+        anim->ribbons[i].speed = FX32_CONST(4);
+        anim->ribbons[i].minDistance = FX32_CONST(5);
+        anim->ribbons[i].kind = i % 2 + 4;
+        anim->ribbons[i].phase = 0;
+        anim->ribbons[i].frames = 0;
+        anim->ribbons[i].grow = LCRandom() % 4 + 2;
         {
             s32 value = i / 30 + 4;
             float rounded;
 
             rounded = value > 0 ? (float)(value << FX32_SHIFT) + 0.5f : (float)(value << FX32_SHIFT) - 0.5f;
-            cursor->ribbons[0].speed = (s32)rounded;
+            anim->ribbons[i].speed = (s32)rounded;
         }
         if (i > 60) {
-            cursor->ribbons[0].amplitude = 5;
-            cursor->ribbons[0].delay = LCRandom() % 10 + 70;
+            anim->ribbons[i].amplitude = 5;
+            anim->ribbons[i].delay = LCRandom() % 10 + 70;
         } else if (i > 50) {
-            cursor->ribbons[0].amplitude = 5;
-            cursor->ribbons[0].delay = LCRandom() % 10 + 60;
+            anim->ribbons[i].amplitude = 5;
+            anim->ribbons[i].delay = LCRandom() % 10 + 60;
         } else if (i > 40) {
-            cursor->ribbons[0].amplitude = 5;
-            cursor->ribbons[0].delay = LCRandom() % 5 + 50;
+            anim->ribbons[i].amplitude = 5;
+            anim->ribbons[i].delay = LCRandom() % 5 + 50;
         } else if (i > 30) {
-            cursor->ribbons[0].amplitude = 5;
-            cursor->ribbons[0].delay = LCRandom() % 10 + 40;
+            anim->ribbons[i].amplitude = 5;
+            anim->ribbons[i].delay = LCRandom() % 10 + 40;
         } else if (i > 20) {
-            cursor->ribbons[0].amplitude = 5;
-            cursor->ribbons[0].delay = LCRandom() % 10 + 30;
+            anim->ribbons[i].amplitude = 5;
+            anim->ribbons[i].delay = LCRandom() % 10 + 30;
         } else if (i > 10) {
-            cursor->ribbons[0].amplitude = 5;
-            cursor->ribbons[0].delay = LCRandom() % 5 + 20;
+            anim->ribbons[i].amplitude = 5;
+            anim->ribbons[i].delay = LCRandom() % 5 + 20;
         } else {
-            cursor->ribbons[0].amplitude = 5;
-            cursor->ribbons[0].delay = LCRandom() % 5 + 10;
+            anim->ribbons[i].amplitude = 5;
+            anim->ribbons[i].delay = LCRandom() % 5 + 10;
         }
-        cursor->ribbons[0].radiusX = cursor->ribbons[0].amplitude;
-        cursor->ribbons[0].radiusY = cursor->ribbons[0].amplitude;
-        position = *Sprite_GetMatrixPtr(cursor->ribbons[0].sprite);
+        anim->ribbons[i].radiusX = anim->ribbons[i].amplitude;
+        anim->ribbons[i].radiusY = anim->ribbons[i].amplitude;
+        position = *Sprite_GetMatrixPtr(anim->ribbons[i].sprite);
         position.x = FX32_CONST(128);
         position.y = FX32_CONST(384);
-        Sprite_SetMatrix(cursor->ribbons[0].sprite, &position);
-        Sprite_SetDrawFlag(cursor->ribbons[0].sprite, TRUE);
-        cursor->ribbons[0].task = SysTask_CreateOnMainQueue(MysteryGiftAnim_UpdateParticle, taskData, 6);
+        Sprite_SetMatrix(anim->ribbons[i].sprite, &position);
+        Sprite_SetDrawFlag(anim->ribbons[i].sprite, TRUE);
+        anim->ribbons[i].task = SysTask_CreateOnMainQueue(MysteryGiftAnim_UpdateParticle, &anim->ribbons[i], 6);
     }
 }
 

@@ -127,17 +127,17 @@ static const VsRecorderMsgIdSet sVsRecorderVideoInfoLabelMsgIds = {
 };
 
 // per colour scheme (VsRecorderWork.colorScheme)
-static const u32 sVsRecorderSchemeBgFramePaletteFiles[7] = { 102, 103, 104, 105, 106, 129, 134 };
+static const VsRecorderSchemeTable sVsRecorderSchemeBgFramePaletteFiles = { { 102, 103, 104, 105, 106, 129, 134 } };
 
-static const u32 sVsRecorderSchemeBgPaletteFiles[7] = { 112, 113, 114, 115, 116, 131, 136 };
+static const VsRecorderSchemeTable sVsRecorderSchemeBgPaletteFiles = { { 112, 113, 114, 115, 116, 131, 136 } };
 
-static const u32 sVsRecorderSchemeMenuBlendColors[7] = { 0x1642, 0x357F, 0x3DEF, 0x31F, 188, 0x131, 0x23F };
+static const VsRecorderSchemeTable sVsRecorderSchemeMenuBlendColors = { { 0x1642, 0x357F, 0x3DEF, 0x31F, 188, 0x131, 0x23F } };
 
-static const u32 sVsRecorderSchemeObjPaletteFiles[7] = { 117, 118, 119, 120, 121, 132, 137 };
+static const VsRecorderSchemeTable sVsRecorderSchemeObjPaletteFiles = { { 117, 118, 119, 120, 121, 132, 137 } };
 
-static const u32 sVsRecorderSchemeFileIds1[7] = { 107, 108, 109, 110, 111, 130, 135 };
+static const VsRecorderSchemeTable sVsRecorderSchemeFileIds1 = { { 107, 108, 109, 110, 111, 130, 135 } };
 
-static const u32 sVsRecorderSchemeBlendColors[7] = { 0x73FA, 0x771F, 0x6F7B, 0x6FFF, 0x4EBF, 0x575E, 0x5B9F };
+static const VsRecorderSchemeTable sVsRecorderSchemeBlendColors = { { 0x73FA, 0x771F, 0x6F7B, 0x6FFF, 0x4EBF, 0x575E, 0x5B9F } };
 
 static const VsRecorderWindowRectSet sVsRecorderVideoInfoLabelWindows = {
     .rects = {
@@ -532,12 +532,12 @@ MessageFormat *VsRecorder_NewMessageFormat(enum HeapID heapID) {
 }
 
 u32 VsRecorder_GetBlendColor(VsRecorderWork *work) {
-    VsRecorderSchemeTable table = *(const VsRecorderSchemeTable *)sVsRecorderSchemeBlendColors;
+    VsRecorderSchemeTable table = sVsRecorderSchemeBlendColors;
     return table.values[work->colorScheme];
 }
 
 u32 VsRecorder_GetMenuBlendColor(VsRecorderWork *work) {
-    VsRecorderSchemeTable table = *(const VsRecorderSchemeTable *)sVsRecorderSchemeMenuBlendColors;
+    VsRecorderSchemeTable table = sVsRecorderSchemeMenuBlendColors;
     if (work->mode != 0) {
         return 0x7E05;
     }
@@ -546,17 +546,17 @@ u32 VsRecorder_GetMenuBlendColor(VsRecorderWork *work) {
 
 // NARC_a_1_9_1 palette file of the colour scheme: 0 BG frame, 2 OBJ, 3 BG
 u32 VsRecorder_GetSchemeFileId(VsRecorderWork *work, u32 kind) {
-    VsRecorderSchemeTable bgFrame = *(const VsRecorderSchemeTable *)sVsRecorderSchemeBgFramePaletteFiles;
-    VsRecorderSchemeTable b = *(const VsRecorderSchemeTable *)sVsRecorderSchemeFileIds1;
-    VsRecorderSchemeTable obj = *(const VsRecorderSchemeTable *)sVsRecorderSchemeObjPaletteFiles;
-    VsRecorderSchemeTable bg = *(const VsRecorderSchemeTable *)sVsRecorderSchemeBgPaletteFiles;
+    VsRecorderSchemeTable bgFrame = sVsRecorderSchemeBgFramePaletteFiles;
+    VsRecorderSchemeTable fileIds1 = sVsRecorderSchemeFileIds1;
+    VsRecorderSchemeTable obj = sVsRecorderSchemeObjPaletteFiles;
+    VsRecorderSchemeTable bg = sVsRecorderSchemeBgPaletteFiles;
     u32 index = work->colorScheme;
 
     switch (kind) {
     case 0:
         return bgFrame.values[index];
     case 1:
-        return b.values[index];
+        return fileIds1.values[index];
     case 2:
         return obj.values[index];
     case 3:
@@ -1496,7 +1496,6 @@ int VsRecorder_RedrawNameList(VsRecorderListWindow *list, VsRecorderWork *work) 
     }
     i = 0;
     if (list->rows > 0) {
-        VsRecorderWork *item = (VsRecorderWork *)((GlobalTerminalNetVideoHeader **)work + start);
         int y = 4;
         do {
             String *nameStr = String_New(0xFF, HEAP_ID_109);
@@ -1504,7 +1503,7 @@ int VsRecorder_RedrawNameList(VsRecorderListWindow *list, VsRecorderWork *work) 
             String *message = NewString_ReadMsgData(work->msgData, msg_0013_00099);
             int width;
             String16_FormatInteger(number, start + i + 1, 2, PRINTING_MODE_RIGHT_ALIGN, TRUE);
-            CopyU16ArrayToString(nameStr, (const u16 *)item->net.videoList.headers[0]);
+            CopyU16ArrayToString(nameStr, (const u16 *)work->net.videoList.headers[start + i]);
             VsRecorder_SanitizeName(work, nameStr);
             width = FontID_String_GetWidth(0, number, 0);
             AddTextPrinterParameterizedWithColor(window, 0, number, 0x10 - width, y, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 13, 0), NULL);
@@ -1513,7 +1512,6 @@ int VsRecorder_RedrawNameList(VsRecorderListWindow *list, VsRecorderWork *work) 
             String_Delete(nameStr);
             String_Delete(number);
             String_Delete(message);
-            item = (VsRecorderWork *)((GlobalTerminalNetVideoHeader **)item + 1);
             i++;
             y += 0x18;
         } while (i < list->rows);
@@ -1901,15 +1899,12 @@ void VsRecorder_OnVideoListReceived(VsRecorderWork *work, int *state) {
     VsRecorderNetData *net = &work->net;
     if (*state != 1) {
         int result = GlobalTerminalNet_GetVideoList(VsRecorder_GetNet(work), net->videoList.headers, 30);
-        int i = 0;
+        int i;
         net->videoList.count = result;
-        if (net->videoList.count > 0) {
-            do {
-                GF_ASSERT(work->net.videoList.headers[i]);
-                MI_CpuCopy8(work->net.videoList.headers[i], &work->net.videoList.videos[i], sizeof(GlobalTerminalNetVideoHeader));
-                work->net.videoList.flags[i] = work->net.videoList.headers[i]->data[0x27];
-                i++;
-            } while (i < net->videoList.count);
+        for (i = 0; i < net->videoList.count; i++) {
+            GF_ASSERT(work->net.videoList.headers[i]);
+            MI_CpuCopy8(work->net.videoList.headers[i], &work->net.videoList.videos[i], sizeof(GlobalTerminalNetVideoHeader));
+            work->net.videoList.flags[i] = work->net.videoList.headers[i]->data[0x27];
         }
     }
 }
@@ -2187,15 +2182,10 @@ static void VsRecorder_PrintVideoInfo(VsRecorderVideoInfo *info, VsRecorderWork 
 
 static void VsRecorder_RemoveVideoInfoWindows(VsRecorderVideoInfo *info, VsRecorderWork *work) {
     int i;
-    Window *window;
-    i = 0;
-    window = info->windows;
-    do {
-        ClearWindowTilemapAndCopyToVram(window);
-        RemoveWindow(window);
-        i++;
-        window++;
-    } while (i < 5);
+    for (i = 0; i < 5; i++) {
+        ClearWindowTilemapAndCopyToVram(&info->windows[i]);
+        RemoveWindow(&info->windows[i]);
+    }
 }
 
 BOOL VsRecorder_HeaderUsesThreeMonLayout(BattleRecordHeader *header) {
@@ -2816,15 +2806,14 @@ void VsRecorder_MessageScreen(VsRecorderWork *work) {
 
 // TRUE if one of the saved videos 1-3 has this video number
 BOOL VsRecorder_IsVideoSaved(VsRecorderWork *work, u64 number) {
-    int i = 1;
+    int i;
 
-    do {
-        void *header = work->savedVideos[i];
+    for (i = 1; i < 4; i++) {
+        BattleRecordHeader *header = work->savedVideos[i];
         if (header != NULL && BattleRecordHeader_GetField(header, BATTLE_RECORD_HEADER_VIDEO_NUMBER, 0) == number) {
             return TRUE;
         }
-        i++;
-    } while (i < 4);
+    }
     return FALSE;
 }
 
