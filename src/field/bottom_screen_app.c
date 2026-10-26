@@ -6,8 +6,11 @@
 
 #include "field/field_hook_unused.h"
 #include "field/pal_pad_registration.h"
+#include "field/touchscreen_choice_menu.h"
+#include "field/touchscreen_menu.h"
 
 #include "assert.h"
+#include "overlay_01.h"
 #include "poke_overlay.h"
 #include "screen_fade.h"
 #include "sys_task_api.h"
@@ -48,14 +51,6 @@ typedef struct BottomScreenAppManager {
     void *args;
 } BottomScreenAppManager;
 
-// The task data of the touchscreen choice menu.
-typedef struct TouchscreenChoiceMenuView {
-    u32 state;
-    void *result;
-    u8 unk_08[0x4];
-    struct ScriptMenu *menu;
-} TouchscreenChoiceMenuView;
-
 void *TouchscreenMenu_Create(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, void *args);
 void TouchscreenMenu_Destroy(BgConfig *bgConfig, void *app);
 BOOL TouchscreenMenu_IsExitDone(BgConfig *bgConfig);
@@ -83,17 +78,6 @@ BOOL CommClubButtons_IsExitDone(BgConfig *bgConfig);
 void *UnionChatLog_Init(FieldSystem *fieldSystem);
 void UnionChatLog_Exit(void *data);
 
-void TouchscreenChoiceMenu_SetCallback(void *app, void *callback, void *arg);
-void TouchscreenMenu_RequestSelectedIconAnim(void *app);
-void TouchscreenMenu_RequestRegisteredItemAnim(void *app, int item);
-
-void FieldSystem_SwitchBottomScreenApp(FieldSystem *fieldSystem, int appId, void *args);
-void FieldSystem_SetTouchscreenChoiceMenuState(FieldSystem *fieldSystem, int appId, int state, void *result);
-u32 FieldSystem_GetTouchscreenChoiceMenuState(FieldSystem *fieldSystem);
-u8 FieldSystem_GetBottomScreenAppId(FieldSystem *fieldSystem);
-u8 FieldSystem_GetBottomScreenAppState(FieldSystem *fieldSystem);
-struct ScriptMenu **FieldSystem_GetTouchscreenChoiceMenuList(FieldSystem *fieldSystem);
-void FieldSystem_SetTouchscreenChoiceMenuCallback(FieldSystem *fieldSystem, void *callback, void *arg);
 static SysTask *BottomScreenApps_CreateTask(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem);
 static void BottomScreenApps_ExitApp(FieldSystem *fieldSystem);
 static BOOL BottomScreenApps_IsExitDone(FieldSystem *fieldSystem);
@@ -302,7 +286,7 @@ void FieldSystem_SwitchBottomScreenApp(FieldSystem *fieldSystem, int appId, void
 // The choice menu app: TOUCHSCREEN_CHOICE_MENU_STATE_SHOW_YES_NO / SHOW_LIST; the answer is written to *result.
 void FieldSystem_SetTouchscreenChoiceMenuState(FieldSystem *fieldSystem, int appId, int state, void *result) {
     BottomScreenAppManager *manager = SysTask_GetData(fieldSystem->bottomScreenTask);
-    TouchscreenChoiceMenuView *menu = SysTask_GetData(manager->app);
+    TouchscreenChoiceMenuData *menu = SysTask_GetData(manager->app);
     if (appId != FieldSystem_GetBottomScreenAppId(fieldSystem)) {
         GF_ASSERT(FALSE);
     }
@@ -310,9 +294,9 @@ void FieldSystem_SetTouchscreenChoiceMenuState(FieldSystem *fieldSystem, int app
     menu->result = result;
 }
 
-u32 FieldSystem_GetTouchscreenChoiceMenuState(FieldSystem *fieldSystem) {
+int FieldSystem_GetTouchscreenChoiceMenuState(FieldSystem *fieldSystem) {
     BottomScreenAppManager *manager = SysTask_GetData(fieldSystem->bottomScreenTask);
-    TouchscreenChoiceMenuView *menu = SysTask_GetData(manager->app);
+    TouchscreenChoiceMenuData *menu = SysTask_GetData(manager->app);
     return menu->state;
 }
 
@@ -328,13 +312,13 @@ u8 FieldSystem_GetBottomScreenAppState(FieldSystem *fieldSystem) {
 
 struct ScriptMenu **FieldSystem_GetTouchscreenChoiceMenuList(FieldSystem *fieldSystem) {
     BottomScreenAppManager *manager = SysTask_GetData(fieldSystem->bottomScreenTask);
-    TouchscreenChoiceMenuView *menu = SysTask_GetData(manager->app);
+    TouchscreenChoiceMenuData *menu = SysTask_GetData(manager->app);
     return &menu->menu;
 }
 
-void FieldSystem_SetTouchscreenChoiceMenuCallback(FieldSystem *fieldSystem, void *callback, void *arg) {
+void FieldSystem_SetTouchscreenChoiceMenuCallback(FieldSystem *fieldSystem, TouchscreenChoiceMenuCallback callback, struct ScriptMenu *menu) {
     BottomScreenAppManager *manager = SysTask_GetData(fieldSystem->bottomScreenTask);
-    TouchscreenChoiceMenu_SetCallback(manager->app, callback, arg);
+    TouchscreenChoiceMenu_SetCallback(manager->app, callback, menu);
 }
 
 void FieldSystem_RequestTouchscreenMenuSelectedIconAnim(FieldSystem *fieldSystem) {

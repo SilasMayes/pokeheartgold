@@ -453,7 +453,7 @@ void ApricornTreeObject_Resume(LocalMapObject *object) {
     MapObject_ClearFlagsBits(object, MAPOBJECTFLAG_UNK21);
 }
 
-void *ApricornTreeObject_GetBillboard(LocalMapObject *object) {
+BillboardObject *ApricornTreeObject_GetBillboard(LocalMapObject *object) {
     if (MapObject_IsBillboardPending(object) == TRUE) {
         GF_ASSERT(FALSE);
         return NULL;

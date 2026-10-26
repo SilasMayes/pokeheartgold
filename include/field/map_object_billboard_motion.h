@@ -4,9 +4,11 @@
 #include "map_object.h"
 #include "sprite.h"
 
+struct BillboardObject;
+
 void *MapObject_GetBillboard(LocalMapObject *object);
 void FollowMonDraw_UpdatePositionOnly(LocalMapObject *object);
-void *MapObjectManager_GetFollowMonBillboard(MapObjectManager *manager);
+struct BillboardObject *MapObjectManager_GetFollowMonBillboard(MapObjectManager *manager);
 
 void BillboardDraw_Init(LocalMapObject *object);
 void BillboardDraw_Delete(LocalMapObject *object);

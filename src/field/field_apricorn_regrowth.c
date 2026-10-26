@@ -56,7 +56,10 @@ static void ApricornRegrowthEffect_Destroy(FieldEffect *effect, void *state);
 static void ApricornRegrowthEffect_Update(FieldEffect *effect, void *state);
 static void ApricornRegrowthEffect_Draw(FieldEffect *effect, void *state);
 
-static const u32 sApricornRegrowthRecordParams[6] = { 0, 9, 1, 0, 0, 2 };
+static const BillboardSequenceRange sApricornRegrowthRanges[2] = {
+    { 0, 9, 1 },
+    { 0, 0, 2 },
+};
 
 static const FieldEffectBasicTemplate sApricornRegrowthTemplate = {
     sizeof(ApricornRegrowthEffect),
@@ -92,7 +95,7 @@ static void ApricornRegrowth_LoadGfx(ApricornRegrowth *regrowth) {
         FieldEffectManager_LoadBillboardResource(regrowth->manager, APRICORN_REGROWTH_RESOURCE, 0x80);
         FieldEffectManager_LoadBillboardSequence(regrowth->manager, APRICORN_REGROWTH_SEQUENCE, 0x95);
         FieldEffectManager_LoadTexResource(regrowth->manager, APRICORN_REGROWTH_TEXTURE, 0x1A, TRUE);
-        FieldEffectManager_AddRecord(regrowth->manager, APRICORN_REGROWTH_RECORD, APRICORN_REGROWTH_RESOURCE, APRICORN_REGROWTH_SEQUENCE, APRICORN_REGROWTH_TEXTURE, 0, sApricornRegrowthRecordParams);
+        FieldEffectManager_AddRecord(regrowth->manager, APRICORN_REGROWTH_RECORD, APRICORN_REGROWTH_RESOURCE, APRICORN_REGROWTH_SEQUENCE, APRICORN_REGROWTH_TEXTURE, 0, sApricornRegrowthRanges);
     }
 }
 

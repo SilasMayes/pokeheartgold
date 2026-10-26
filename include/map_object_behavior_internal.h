@@ -98,7 +98,7 @@ void ApricornTreeObject_Update(LocalMapObject *object);
 void ApricornTreeObject_Delete(LocalMapObject *object);
 void ApricornTreeObject_Pause(LocalMapObject *object);
 void ApricornTreeObject_Resume(LocalMapObject *object);
-void *ApricornTreeObject_GetBillboard(LocalMapObject *object);
+BillboardObject *ApricornTreeObject_GetBillboard(LocalMapObject *object);
 BOOL TryGetSeenByNpcTrainers(FieldSystem *fieldSystem, BOOL doublesEligible);
 u32 MapObjectBehavior_GetTrainerNum(LocalMapObject *object);
 SysTask *TrainerApproach_Start(FieldSystem *fieldSystem, LocalMapObject *trainer, PlayerAvatar *player, int movement, int remaining, int unk10, int encounterType, int trainerIndex);

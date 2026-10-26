@@ -9,7 +9,7 @@ static BOOL Field3dObjectList_IsShared(Field3dRenderObjManager *renderObjManager
 static Field3dRenderObj *Field3dObjectList_InitNextObject(Field3dRenderObjManager *renderObjManager, NNSG3dResFileHeader **resFileHeader, int index);
 static void MapPropAnimation_AdvanceFrame(MapPropAnimation *animation);
 static BOOL MapPropAnimation_IsOnLastFrame(MapPropAnimation *animation);
-static void AreaMapAnimation_AllocAnimObj(NNSFndAllocator *pAllocator, NNSG3dAnmObj **pAlloc, void *res);
+static void AreaMapAnimation_AllocAnimObj(MapPropAnimationPool *pool, MapPropAnimation *animation, void *res, int unused);
 static void *AreaMapAnimation_AllocAnimObjMem(NNSFndAllocator *pAllocator, ResAnim_4004 *anim);
 static void AreaMapAnimation_InitAnimObj(NNSG3dAnmObj *alloc, ResAnim_4004 *anim);
 
@@ -261,15 +261,15 @@ void MapPropAnimationPool_LoadAnimObj(MapPropAnimationPool *pool, MapPropAnimati
     animation->res = res;
 }
 
-static void MapPropAnimationPool_RunLoadFunc(MapPropAnimationPool *pool, MapPropAnimation *animation, void *res, int arg3) {
-    void (*loadFunc)() = pool->loadFunc;
+static void MapPropAnimationPool_RunLoadFunc(MapPropAnimationPool *pool, MapPropAnimation *animation, void *res, int unused) {
+    MapPropAnimationLoadFunc loadFunc = pool->loadFunc;
     if (loadFunc != NULL) {
-        loadFunc(pool, animation, res, arg3);
+        loadFunc(pool, animation, res, unused);
         animation->res = res;
     }
 }
 
-static void MapPropAnimationPool_SetLoadFunc(MapPropAnimationPool *pool, void *loadFunc) {
+static void MapPropAnimationPool_SetLoadFunc(MapPropAnimationPool *pool, MapPropAnimationLoadFunc loadFunc) {
     pool->loadFunc = loadFunc;
 }
 
@@ -366,7 +366,7 @@ AreaMapAnimation *AreaMapAnimation_New(MapPropAnimationPoolList *poolList) {
     AreaMapAnimation *areaMapAnimation = Heap_Alloc(HEAP_ID_FIELD1, sizeof(AreaMapAnimation));
     MapPropAnimationPool *pool = MapPropAnimationPoolList_AddPool(poolList, HEAP_ID_FIELD1, 1);
     areaMapAnimation->pool = pool;
-    MapPropAnimationPool_SetLoadFunc(pool, &AreaMapAnimation_AllocAnimObj);
+    MapPropAnimationPool_SetLoadFunc(pool, AreaMapAnimation_AllocAnimObj);
     return areaMapAnimation;
 }
 
@@ -394,10 +394,10 @@ BOOL AreaMapAnimation_IsLoaded(AreaMapAnimation *areaMapAnimation) {
     return MapPropAnimationPool_GetNumUsed(areaMapAnimation->pool);
 }
 
-static void AreaMapAnimation_AllocAnimObj(NNSFndAllocator *pAllocator, NNSG3dAnmObj **pAlloc, void *res) {
+static void AreaMapAnimation_AllocAnimObj(MapPropAnimationPool *pool, MapPropAnimation *animation, void *res, int unused) {
     void *anim = NNS_G3dGetAnmByIdx(res, 0);
-    NNSG3dAnmObj *alloc = AreaMapAnimation_AllocAnimObjMem(pAllocator, anim);
-    *pAlloc = alloc;
+    NNSG3dAnmObj *alloc = AreaMapAnimation_AllocAnimObjMem(&pool->allocator, anim);
+    animation->animObj = alloc;
     AreaMapAnimation_InitAnimObj(alloc, anim);
 }
 

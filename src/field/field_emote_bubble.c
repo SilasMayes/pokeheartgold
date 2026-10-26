@@ -92,7 +92,7 @@ static BOOL EmoteBubble_Show(LocalMapObject *mapObject, int kind);
 static BOOL EmoteBubble_ShowTask(TaskManager *taskManager);
 static void EmoteBubble_LoadGfx(EmoteBubble *bubble);
 static void EmoteBubble_FreeGfx(EmoteBubble *bubble);
-static void *EmoteBubble_CreateBillboard(FieldEffectManager *manager, const VecFx32 *position);
+static BillboardObject *EmoteBubble_CreateBillboard(FieldEffectManager *manager, const VecFx32 *position);
 static BOOL EmoteBubbleEffect_Init(FieldEffect *effect, void *state);
 static void EmoteBubbleEffect_Destroy(FieldEffect *effect, void *state);
 static void EmoteBubbleEffect_Update(FieldEffect *effect, void *state);
@@ -107,7 +107,10 @@ static const FieldEffectBasicTemplate sEmoteBubbleEffectTemplate = {
     EmoteBubbleEffect_Draw,
 };
 
-static const u32 sEmoteBubbleRecordParams[6] = { 0, 1, 0, 0, 0, 2 };
+static const BillboardSequenceRange sEmoteBubbleRanges[2] = {
+    { 0, 1, 0 },
+    { 0, 0, 2 },
+};
 
 static const EmoteBubbleFiles sEmoteBubbleFiles[14] = {
     { 0x2, 0x96 },
@@ -193,7 +196,7 @@ static void EmoteBubble_LoadGfx(EmoteBubble *bubble) {
     FieldEffectManager_LoadBillboardResource(bubble->manager, EMOTE_BUBBLE_RESOURCE, 0x82);
     FieldEffectManager_LoadBillboardSequence(bubble->manager, EMOTE_BUBBLE_RESOURCE, 0x8c);
     FieldEffectManager_LoadTexResource(bubble->manager, EMOTE_BUBBLE_TEXTURE, 0x1c, TRUE);
-    FieldEffectManager_AddRecord(bubble->manager, EMOTE_BUBBLE_RECORD, EMOTE_BUBBLE_RESOURCE, EMOTE_BUBBLE_RESOURCE, EMOTE_BUBBLE_TEXTURE, 0, sEmoteBubbleRecordParams);
+    FieldEffectManager_AddRecord(bubble->manager, EMOTE_BUBBLE_RECORD, EMOTE_BUBBLE_RESOURCE, EMOTE_BUBBLE_RESOURCE, EMOTE_BUBBLE_TEXTURE, 0, sEmoteBubbleRanges);
 }
 
 static void EmoteBubble_FreeGfx(EmoteBubble *bubble) {
@@ -203,7 +206,7 @@ static void EmoteBubble_FreeGfx(EmoteBubble *bubble) {
     FieldEffectManager_ReleaseRecord(bubble->manager, EMOTE_BUBBLE_RECORD);
 }
 
-static void *EmoteBubble_CreateBillboard(FieldEffectManager *manager, const VecFx32 *position) {
+static BillboardObject *EmoteBubble_CreateBillboard(FieldEffectManager *manager, const VecFx32 *position) {
     BillboardObject *billboard = FieldEffectManager_CreateBillboardFromRecord(manager, EMOTE_BUBBLE_RECORD, position);
     NNS_G3dMdlSetMdlFogEnableFlagAll(BillboardObject_GetModel(billboard), FALSE);
     return billboard;

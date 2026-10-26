@@ -299,7 +299,7 @@ static void FieldEffectManager_FreeGfx(FieldEffectManager *manager) {
     }
 }
 
-void *FieldEffectManager_CreateBillboard(FieldEffectManager *manager, BillboardResource *resource, const VecFx32 *position) {
+BillboardObject *FieldEffectManager_CreateBillboard(FieldEffectManager *manager, BillboardResource *resource, const VecFx32 *position) {
     BillboardObjectCreateParams params;
     BillboardObject *billboard;
     params.billboard = manager->gfx->billboards;
@@ -315,7 +315,7 @@ void *FieldEffectManager_CreateBillboard(FieldEffectManager *manager, BillboardR
     return billboard;
 }
 
-void *FieldEffectManager_CreateBillboardFromRecord(FieldEffectManager *manager, u32 id, const VecFx32 *position) {
+BillboardObject *FieldEffectManager_CreateBillboardFromRecord(FieldEffectManager *manager, u32 id, const VecFx32 *position) {
     return FieldEffectManager_CreateBillboard(manager, FieldEffectGfx_GetRecord(manager->gfx, id), position);
 }
 
@@ -323,7 +323,7 @@ static inline FieldEffectGfx *FieldEffectManager_GetGfx(FieldEffectManager *mana
     return manager->gfx;
 }
 
-BillboardResource *FieldEffectManager_AddRecord(FieldEffectManager *manager, u32 id, int resourceId, int sequenceId, int resId, int noTexKeys, const void *ranges) {
+BillboardResource *FieldEffectManager_AddRecord(FieldEffectManager *manager, u32 id, int resourceId, int sequenceId, int resId, int noTexKeys, const BillboardSequenceRange *ranges) {
     BillboardGfxSequence sequence;
     int seqId = sequenceId;
     FieldEffectGfx *gfx = FieldEffectManager_GetGfx(manager);

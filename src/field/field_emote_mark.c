@@ -85,7 +85,7 @@ static void EmoteMark_FreeExclamationGfxIfUnused(EmoteMark *emoteMark);
 static void EmoteMark_FreeQuestionGfxIfUnused(EmoteMark *emoteMark);
 static void EmoteMark_LoadGfxIfUnused(EmoteMark *emoteMark, int kind);
 static void EmoteMark_FreeGfxIfUnused(EmoteMark *emoteMark, int kind);
-static void *EmoteMark_CreateBillboard(FieldEffectManager *manager, int kind, VecFx32 *position);
+static BillboardObject *EmoteMark_CreateBillboard(FieldEffectManager *manager, int kind, VecFx32 *position);
 BOOL EmoteMark_IsDone(FieldEffect *effect);
 void EmoteMark_Hide(FieldEffect *effect);
 BOOL EmoteMarkEffect_Init(FieldEffect *effect, EmoteMarkEffect *work);
@@ -99,7 +99,7 @@ void MapObjectEmoteMarkEffect_Update(FieldEffect *effect, EmoteMarkEffect *work)
 // sEmoteMarkTemplate is a mark at a fixed position that nothing creates; gMapObjectEmoteMarkTemplate follows a
 // map object.
 extern const FieldEffectBasicTemplate gMapObjectEmoteMarkTemplate;
-extern const u32 gEmoteMarkRecordParams[6];
+extern const BillboardSequenceRange gEmoteMarkRecordParams[2];
 
 EmoteMark *EmoteMark_New(FieldEffectManager *manager) {
     EmoteMark *emoteMark = FieldEffectManager_HeapAllocAndFill(manager, sizeof(EmoteMark), FALSE, 0);
@@ -226,7 +226,7 @@ static void EmoteMark_FreeGfxIfUnused(EmoteMark *emoteMark, int kind) {
     }
 }
 
-static void *EmoteMark_CreateBillboard(FieldEffectManager *manager, int kind, VecFx32 *position) {
+static BillboardObject *EmoteMark_CreateBillboard(FieldEffectManager *manager, int kind, VecFx32 *position) {
     int records[2] = { EMOTE_MARK_EXCLAMATION_RECORD, EMOTE_MARK_QUESTION_RECORD };
     BillboardObject *billboard = FieldEffectManager_CreateBillboardFromRecord(manager, records[kind], position);
     NNSG3dResMdl *model = BillboardObject_GetModel(billboard);

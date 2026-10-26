@@ -53,7 +53,10 @@ static const FieldEffectBasicTemplate sUnionChatMarkerEffectTemplate = {
     UnionChatMarkerEffect_Draw,
 };
 
-static const u32 sUnionChatMarkerRecordParams[6] = { 0, 1, 1, 0, 0, 2 };
+static const BillboardSequenceRange sUnionChatMarkerRanges[2] = {
+    { 0, 1, 1 },
+    { 0, 0, 2 },
+};
 
 UnionChatMarker *UnionChatMarker_New(FieldEffectManager *manager) {
     UnionChatMarker *marker = FieldEffectManager_HeapAllocAndFill(manager, sizeof(UnionChatMarker), FALSE, 0);
@@ -70,7 +73,7 @@ void UnionChatMarker_Free(UnionChatMarker *marker) {
 static void UnionChatMarker_LoadGfx(UnionChatMarker *marker) {
     FieldEffectManager_LoadBillboardResource(marker->manager, UNION_CHAT_MARKER_RESOURCE, 0x78);
     FieldEffectManager_LoadTexResource(marker->manager, UNION_CHAT_MARKER_TEXTURE, 0x13, TRUE);
-    FieldEffectManager_AddRecord(marker->manager, UNION_CHAT_MARKER_RECORD, UNION_CHAT_MARKER_RESOURCE, 0, UNION_CHAT_MARKER_TEXTURE, 0, sUnionChatMarkerRecordParams);
+    FieldEffectManager_AddRecord(marker->manager, UNION_CHAT_MARKER_RECORD, UNION_CHAT_MARKER_RESOURCE, 0, UNION_CHAT_MARKER_TEXTURE, 0, sUnionChatMarkerRanges);
 }
 
 static void UnionChatMarker_FreeGfx(UnionChatMarker *marker) {

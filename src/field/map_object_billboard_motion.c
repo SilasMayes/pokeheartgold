@@ -440,7 +440,7 @@ void FollowMonDraw_ClearBob(LocalMapObject *object) {
     MapObject_GetFacingVector(object)->y = 0;
 }
 
-void *MapObjectManager_GetFollowMonBillboard(MapObjectManager *manager) {
+BillboardObject *MapObjectManager_GetFollowMonBillboard(MapObjectManager *manager) {
     return ((FollowMonBillboardWork *)MapObject_GetDrawData(MapObjectManager_GetFirstActiveObjectByID(manager, obj_partner_poke)))->billboard;
 }
 

@@ -1,3 +1,5 @@
+#include "field/touchscreen_menu.h"
+
 #include <nitro/gx/gx_vramcnt.h>
 
 #include "global.h"
@@ -282,8 +284,6 @@ static void TouchscreenMenu_OnDummyCheckDummy(void);
 SysTask *TouchscreenMenu_Create(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, void *args);
 void TouchscreenMenu_Destroy(BgConfig *bgConfig, SysTask *task);
 BOOL TouchscreenMenu_IsExitDone(BgConfig *bgConfig);
-void TouchscreenMenu_RequestSelectedIconAnim(SysTask *task);
-void TouchscreenMenu_RequestRegisteredItemAnim(SysTask *task, int item);
 
 SysTask *TouchscreenMenu_Create(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, void *args) {
     SysTask *task;

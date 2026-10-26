@@ -55,7 +55,10 @@ static const FieldEffectBasicTemplate sShallowWaterRippleEffectTemplate = {
     ShallowWaterRippleEffect_Draw,
 };
 
-static const u32 sShallowWaterRippleRecordParams[6] = { 0, 0xC, 1, 0, 0, 2 };
+static const BillboardSequenceRange sShallowWaterRippleRanges[2] = {
+    { 0, 12, 1 },
+    { 0, 0,  2 },
+};
 
 ShallowWaterRipple *ShallowWaterRipple_New(FieldEffectManager *manager) {
     ShallowWaterRipple *ripple = FieldEffectManager_HeapAllocAndFill(manager, sizeof(ShallowWaterRipple), FALSE, 0);
@@ -73,7 +76,7 @@ static void ShallowWaterRipple_LoadGfx(ShallowWaterRipple *ripple) {
     FieldEffectManager_LoadBillboardResource(ripple->manager, SHALLOW_WATER_RIPPLE_RESOURCE, 0x77);
     FieldEffectManager_LoadBillboardSequence(ripple->manager, SHALLOW_WATER_RIPPLE_SEQUENCE, 0x90);
     FieldEffectManager_LoadTexResource(ripple->manager, SHALLOW_WATER_RIPPLE_TEXTURE, 0x12, TRUE);
-    FieldEffectManager_AddRecord(ripple->manager, SHALLOW_WATER_RIPPLE_RECORD, SHALLOW_WATER_RIPPLE_RESOURCE, SHALLOW_WATER_RIPPLE_SEQUENCE, SHALLOW_WATER_RIPPLE_TEXTURE, 0, sShallowWaterRippleRecordParams);
+    FieldEffectManager_AddRecord(ripple->manager, SHALLOW_WATER_RIPPLE_RECORD, SHALLOW_WATER_RIPPLE_RESOURCE, SHALLOW_WATER_RIPPLE_SEQUENCE, SHALLOW_WATER_RIPPLE_TEXTURE, 0, sShallowWaterRippleRanges);
 }
 
 static void ShallowWaterRipple_FreeGfx(ShallowWaterRipple *ripple) {

@@ -19,6 +19,9 @@ typedef struct MapPropAnimation {
 
 typedef struct MapPropAnimationPool MapPropAnimationPool;
 
+// Creates the animation object of a newly loaded animation resource.
+typedef void (*MapPropAnimationLoadFunc)(MapPropAnimationPool *pool, MapPropAnimation *animation, void *res, int unused);
+
 typedef struct AreaMapAnimation {
     MapPropAnimationPool *pool;
     MapPropAnimation *mapPropAnimation;
@@ -29,7 +32,7 @@ struct MapPropAnimationPool {
     MapPropAnimation *animations;
     MapPropAnimation **freeList;
     MapPropAnimationPool *next;
-    void *loadFunc;
+    MapPropAnimationLoadFunc loadFunc;
     u16 capacity;
     u16 numUsed;
 };

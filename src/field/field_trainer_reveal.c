@@ -47,7 +47,7 @@ static void TrainerRevealEffect_Update(FieldEffect *effect, void *state);
 static void TrainerRevealEffect_Draw(FieldEffect *effect, void *state);
 
 static const FieldEffectBasicTemplate sTrainerRevealEffectTemplate;
-static const u32 sTrainerRevealRecordParams[6];
+static const BillboardSequenceRange sTrainerRevealRanges[2];
 
 TrainerReveal *TrainerReveal_New(FieldEffectManager *manager) {
     TrainerReveal *reveal = FieldEffectManager_HeapAllocAndFill(manager, sizeof(TrainerReveal), FALSE, 0);
@@ -65,7 +65,7 @@ static void TrainerReveal_LoadGfx(TrainerReveal *reveal) {
     FieldEffectManager_LoadBillboardResource(reveal->manager, TRAINER_REVEAL_RESOURCE, 0x7C);
     FieldEffectManager_LoadBillboardSequence(reveal->manager, TRAINER_REVEAL_SEQUENCE, 0x94);
     FieldEffectManager_LoadTexResource(reveal->manager, TRAINER_REVEAL_TEXTURE, 0x17, TRUE);
-    FieldEffectManager_AddRecord(reveal->manager, TRAINER_REVEAL_RECORD, TRAINER_REVEAL_RESOURCE, TRAINER_REVEAL_SEQUENCE, TRAINER_REVEAL_TEXTURE, 0, sTrainerRevealRecordParams);
+    FieldEffectManager_AddRecord(reveal->manager, TRAINER_REVEAL_RECORD, TRAINER_REVEAL_RESOURCE, TRAINER_REVEAL_SEQUENCE, TRAINER_REVEAL_TEXTURE, 0, sTrainerRevealRanges);
 }
 
 static void TrainerReveal_FreeGfx(TrainerReveal *reveal) {
@@ -136,4 +136,7 @@ static const FieldEffectBasicTemplate sTrainerRevealEffectTemplate = {
     TrainerRevealEffect_Draw,
 };
 
-static const u32 sTrainerRevealRecordParams[6] = { 0, 7, 1, 0, 0, 2 };
+static const BillboardSequenceRange sTrainerRevealRanges[2] = {
+    { 0, 7, 1 },
+    { 0, 0, 2 },
+};

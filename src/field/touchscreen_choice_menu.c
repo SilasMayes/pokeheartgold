@@ -1,3 +1,5 @@
+#include "field/touchscreen_choice_menu.h"
+
 #include <nitro/gx/gx_vramcnt.h>
 
 #include "global.h"
@@ -37,39 +39,6 @@
 
 // The touch YES/NO buttons of ScrCmd_GetMenuChoice and the touch multichoice list of ScrCmd_MenuExec. Scripts wait
 // for TOUCHSCREEN_CHOICE_MENU_STATE_DONE or for *result != 0xEEEE.
-
-#define TOUCHSCREEN_CHOICE_MENU_MAX_ITEMS 28
-
-typedef struct TouchscreenChoiceMenuData {
-    u32 state;
-    u16 *result;
-    u32 unk_08;
-    struct ScriptMenu *menu; // ScrCmd_MenuExec list
-    int frameCounter;
-    u32 unk_14;
-    BgConfig *bgConfig;
-    SysTask *task;
-    u16 *lastTouchMenuInput;
-    FieldSystem *fieldSystem;
-    Window yesWindow;
-    Window noWindow;
-    u32 unk_48;
-    MsgData *msgData;
-    MessageFormat *msgFormat;
-    Window listWindows[TOUCHSCREEN_CHOICE_MENU_MAX_ITEMS];
-    int itemCount;
-    SpriteList *spriteList;
-    G2dRenderer renderer;
-    GF_2DGfxResMan *resMans[4];
-    SpriteResource *resObjs[4];
-    SpriteResourcesHeader header;
-    Sprite *cursorSprite;
-    u8 unk_38C[8];
-    int selection;
-    u32 unk_398;
-    void (*selectionCallback)(void *arg, int selection); // ScrCmd_MenuExec: MenuExec_PrintItemHelp
-    void *selectionCallbackArg;
-} TouchscreenChoiceMenuData;
 
 typedef BOOL (*TouchscreenChoiceMenuStateFunc)(TouchscreenChoiceMenuData *data);
 
@@ -115,7 +84,6 @@ static BOOL TouchscreenChoiceMenu_HandleYesNoInput(TouchscreenChoiceMenuData *da
 SysTask *TouchscreenChoiceMenu_Create(BgConfig *bgConfig, u16 *lastTouchMenuInput, FieldSystem *fieldSystem, u16 *result);
 void TouchscreenChoiceMenu_Destroy(BgConfig *bgConfig, SysTask *task);
 BOOL TouchscreenChoiceMenu_IsExitDone(BgConfig *bgConfig);
-void TouchscreenChoiceMenu_SetCallback(SysTask *task, void (*callback)(void *arg, int selection), void *arg);
 BOOL TouchscreenChoiceMenu_State_Init(TouchscreenChoiceMenuData *data);
 BOOL TouchscreenChoiceMenu_State_ShowYesNo(TouchscreenChoiceMenuData *data);
 BOOL TouchscreenChoiceMenu_State_YesNoInput(TouchscreenChoiceMenuData *data);
@@ -157,7 +125,7 @@ SysTask *TouchscreenChoiceMenu_Create(BgConfig *bgConfig, u16 *lastTouchMenuInpu
     data->state = TOUCHSCREEN_CHOICE_MENU_STATE_INIT;
     data->result = result;
     data->selectionCallback = NULL;
-    data->selectionCallbackArg = NULL;
+    data->selectionCallbackMenu = NULL;
     data->yesWindow.pixelBuffer = NULL;
     data->noWindow.pixelBuffer = NULL;
     FontID_Alloc(4, HEAP_ID_8);
@@ -199,10 +167,10 @@ BOOL TouchscreenChoiceMenu_IsExitDone(BgConfig *bgConfig) {
 }
 
 // FieldSystem_SetTouchscreenChoiceMenuCallback (ScrCmd_MenuExec): called with the list index on every selection change.
-void TouchscreenChoiceMenu_SetCallback(SysTask *task, void (*callback)(void *arg, int selection), void *arg) {
+void TouchscreenChoiceMenu_SetCallback(SysTask *task, BOOL (*callback)(struct ScriptMenu *menu, int selection), struct ScriptMenu *menu) {
     TouchscreenChoiceMenuData *data = SysTask_GetData(task);
     data->selectionCallback = callback;
-    data->selectionCallbackArg = arg;
+    data->selectionCallbackMenu = menu;
 }
 
 static void TouchscreenChoiceMenu_Task(SysTask *task, void *taskData) {
@@ -406,7 +374,7 @@ BOOL TouchscreenChoiceMenu_State_ShowList(TouchscreenChoiceMenuData *data) {
     Sprite_SetDrawFlag(data->cursorSprite, TRUE);
     TouchscreenChoiceMenu_SetListCursorPos(data, data->itemCount, data->selection);
     if (data->selectionCallback) {
-        data->selectionCallback(data->selectionCallbackArg, data->selection);
+        data->selectionCallback(data->selectionCallbackMenu, data->selection);
     }
     *data->result = 0xEEEE; // no choice yet
     return FALSE;
@@ -422,11 +390,11 @@ static BOOL TouchscreenChoiceMenu_MoveListSelection(int *selection, int count, i
     return TRUE;
 }
 
-#define TouchscreenChoiceMenu_NotifySelection(data)                                     \
-    do {                                                                                \
-        if ((data)->selectionCallback) {                                                \
-            (data)->selectionCallback((data)->selectionCallbackArg, (data)->selection); \
-        }                                                                               \
+#define TouchscreenChoiceMenu_NotifySelection(data)                                      \
+    do {                                                                                 \
+        if ((data)->selectionCallback) {                                                 \
+            (data)->selectionCallback((data)->selectionCallbackMenu, (data)->selection); \
+        }                                                                                \
     } while (0)
 
 #define TouchscreenChoiceMenu_MoveSelection(data, dir)                                             \

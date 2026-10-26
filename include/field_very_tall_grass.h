@@ -11,6 +11,6 @@ VeryTallGrass *VeryTallGrass_New(FieldEffectManager *manager);
 void VeryTallGrass_Free(VeryTallGrass *grass);
 void VeryTallGrass_Spawn(LocalMapObject *mapObject, BOOL animate);
 
-extern const u32 gVeryTallGrassRecordParams[6];
+extern const struct BillboardSequenceRange gVeryTallGrassRecordParams[2];
 
 #endif // POKEHEARTGOLD_FIELD_VERY_TALL_GRASS_H

@@ -54,7 +54,10 @@ static const FieldEffectBasicTemplate sGroundDustEffectTemplate = {
     GroundDustEffect_Draw,
 };
 
-static const u32 sGroundDustRecordParams[6] = { 0, 9, 1, 0, 0, 2 };
+static const BillboardSequenceRange sGroundDustRanges[2] = {
+    { 0, 9, 1 },
+    { 0, 0, 2 },
+};
 
 GroundDust *GroundDust_New(FieldEffectManager *manager) {
     GroundDust *dust = FieldEffectManager_HeapAllocAndFill(manager, sizeof(GroundDust), FALSE, 0);
@@ -72,7 +75,7 @@ static void GroundDust_LoadGfx(GroundDust *dust) {
     FieldEffectManager_LoadBillboardResource(dust->manager, GROUND_DUST_RESOURCE, 0x79);
     FieldEffectManager_LoadBillboardSequence(dust->manager, GROUND_DUST_SEQUENCE, 0x91);
     FieldEffectManager_LoadTexResource(dust->manager, GROUND_DUST_TEXTURE, 0x14, TRUE);
-    FieldEffectManager_AddRecord(dust->manager, GROUND_DUST_RECORD, GROUND_DUST_RESOURCE, GROUND_DUST_SEQUENCE, GROUND_DUST_TEXTURE, 0, sGroundDustRecordParams);
+    FieldEffectManager_AddRecord(dust->manager, GROUND_DUST_RECORD, GROUND_DUST_RESOURCE, GROUND_DUST_SEQUENCE, GROUND_DUST_TEXTURE, 0, sGroundDustRanges);
 }
 
 static void GroundDust_FreeGfx(GroundDust *dust) {

@@ -58,7 +58,10 @@ void UnusedBillboardEffect_Destroy(FieldEffect *effect, UnusedBillboardEffect *w
 void UnusedBillboardEffect_Update(FieldEffect *effect, UnusedBillboardEffect *work);
 void UnusedBillboardEffect_Draw(FieldEffect *effect, UnusedBillboardEffect *work);
 
-static const u32 sUnusedBillboardRecordParams[6] = { 0, 2, 0, 0, 0, 2 };
+static const BillboardSequenceRange sUnusedBillboardRanges[2] = {
+    { 0, 2, 0 },
+    { 0, 0, 2 },
+};
 
 UnusedBillboard *UnusedBillboard_New(FieldEffectManager *manager) {
     UnusedBillboard *renderer = FieldEffectManager_HeapAllocAndFill(manager, sizeof(UnusedBillboard), FALSE, 0);
@@ -76,7 +79,7 @@ static void UnusedBillboard_LoadGfx(UnusedBillboard *renderer) {
     FieldEffectManager_LoadBillboardResource(renderer->manager, UNUSED_BILLBOARD_RESOURCE, 0x7B);
     FieldEffectManager_LoadBillboardSequence(renderer->manager, UNUSED_BILLBOARD_SEQUENCE, 0x93);
     FieldEffectManager_LoadTexResource(renderer->manager, UNUSED_BILLBOARD_TEXTURE, 0x16, TRUE);
-    FieldEffectManager_AddRecord(renderer->manager, UNUSED_BILLBOARD_RECORD, UNUSED_BILLBOARD_RESOURCE, UNUSED_BILLBOARD_SEQUENCE, UNUSED_BILLBOARD_TEXTURE, 0, sUnusedBillboardRecordParams);
+    FieldEffectManager_AddRecord(renderer->manager, UNUSED_BILLBOARD_RECORD, UNUSED_BILLBOARD_RESOURCE, UNUSED_BILLBOARD_SEQUENCE, UNUSED_BILLBOARD_TEXTURE, 0, sUnusedBillboardRanges);
 }
 
 static void UnusedBillboard_FreeGfx(UnusedBillboard *renderer) {
