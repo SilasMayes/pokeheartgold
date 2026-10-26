@@ -53,59 +53,59 @@ void LobbyUserIdSet_Assign(LobbyUserIdSet *set, LobbyUserIdSet *other) {
         void *owner;
         LobbyUserIdSetNode *cleanup;
         LobbyUserIdSet tree;
-    } f;
+    } frame;
 
-    LobbyUserIdSetNode *n;
+    LobbyUserIdSetNode *node;
     int *userId;
     u32 flag;
     if (!other->root) {
         return;
     }
-    f.byte = 0;
-    n = LobbyMem_Alloc(16);
-    f.owner = &set->root;
-    f.a = n;
-    f.b = n;
-    f.cleanup = n;
-    userId = &n->userId;
+    frame.byte = 0;
+    node = LobbyMem_Alloc(sizeof(LobbyUserIdSetNode));
+    frame.owner = &set->root;
+    frame.a = node;
+    frame.b = node;
+    frame.cleanup = node;
+    userId = &node->userId;
     {
         LobbyUserIdSetNode *root = other->root;
         if (userId) {
             *userId = root->userId;
         }
     };
-    f.tree.count = 0;
-    f.tree.root = 0;
-    f.tree.first = (LobbyUserIdSetNode *)&f.tree.root;
-    n = f.cleanup;
-    n->right = 0;
-    n->left = 0;
-    n->parent = (u32)&f.tree.root | (n->parent & 1);
+    frame.tree.count = 0;
+    frame.tree.root = 0;
+    frame.tree.first = (LobbyUserIdSetNode *)&frame.tree.root;
+    node = frame.cleanup;
+    node->right = 0;
+    node->left = 0;
+    node->parent = (u32)&frame.tree.root | (node->parent & 1);
     flag = (other->root->parent & 1) != 0;
-    n = f.cleanup;
+    node = frame.cleanup;
     if (flag) {
-        n->parent |= 1;
+        node->parent |= 1;
     } else {
-        n->parent &= ~1;
+        node->parent &= ~1;
     }
-    n = f.cleanup;
-    f.tree.root = n;
-    f.tree.count = 1;
-    f.tree.first = n;
+    node = frame.cleanup;
+    frame.tree.root = node;
+    frame.tree.count = 1;
+    frame.tree.first = node;
     {
         LobbyUserIdSetNode *root = other->root;
-        f.cleanup = 0;
+        frame.cleanup = 0;
         if (root->right) {
-            LobbyUserIdSet_CopyNodes(&f.tree, n, root, 0);
+            LobbyUserIdSet_CopyNodes(&frame.tree, node, root, 0);
         }
     }
     if (other->root->left) {
-        LobbyUserIdSet_CopyNodes(&f.tree, f.tree.root, other->root, 1);
+        LobbyUserIdSet_CopyNodes(&frame.tree, frame.tree.root, other->root, 1);
     }
-    LobbyUserIdSet_Swap(set, &f.tree);
-    LobbyUserIdSet_Destroy2(&f.tree);
+    LobbyUserIdSet_Swap(set, &frame.tree);
+    LobbyUserIdSet_Destroy2(&frame.tree);
     {
-        LobbyUserIdSetNode *cleanup = f.cleanup;
+        LobbyUserIdSetNode *cleanup = frame.cleanup;
         if (cleanup) {
             DWC_Free(0, cleanup, 0);
         }

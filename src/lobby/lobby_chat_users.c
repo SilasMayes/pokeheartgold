@@ -7,24 +7,24 @@
 #include "lobby_chat_internal.h"
 
 void LobbyUserIdSet_Find(Iter *out, LobbyUserIdSet *set, const int *key) {
-    LobbyUserIdSetNode *n = LobbyUserIdSet_LowerBound(set, key, set->root, (LobbyUserIdSetNode *)&set->root);
-    if (n == (LobbyUserIdSetNode *)&set->root || *key < n->userId) {
+    LobbyUserIdSetNode *node = LobbyUserIdSet_LowerBound(set, key, set->root, (LobbyUserIdSetNode *)&set->root);
+    if (node == (LobbyUserIdSetNode *)&set->root || *key < node->userId) {
         out->current = &set->root;
         return;
     }
-    out->current = n;
+    out->current = node;
 }
 
-LobbyUserIdSetNode *LobbyUserIdSet_LowerBound(LobbyUserIdSet *set, const int *key, LobbyUserIdSetNode *node, LobbyUserIdSetNode *res) {
+LobbyUserIdSetNode *LobbyUserIdSet_LowerBound(LobbyUserIdSet *set, const int *key, LobbyUserIdSetNode *node, LobbyUserIdSetNode *best) {
     while (node != NULL) {
         if (node->userId >= *key) {
-            res = node;
+            best = node;
             node = node->left;
         } else {
             node = node->right;
         }
     }
-    return res;
+    return best;
 }
 
 BOOL LobbyUserMap_EraseKey(LobbyUserMap *map, int *key) {
@@ -41,24 +41,24 @@ BOOL LobbyUserMap_EraseKey(LobbyUserMap *map, int *key) {
 }
 
 void LobbyUserMap_Find(Iter *out, LobbyUserMap *map, int *key) {
-    LobbyUserMapNode *n = LobbyUserMap_LowerBound(map, key, map->root, (LobbyUserMapNode *)&map->root);
-    if (n == (LobbyUserMapNode *)&map->root || *key < n->entry.userId) {
+    LobbyUserMapNode *node = LobbyUserMap_LowerBound(map, key, map->root, (LobbyUserMapNode *)&map->root);
+    if (node == (LobbyUserMapNode *)&map->root || *key < node->entry.userId) {
         out->current = &map->root;
         return;
     }
-    out->current = n;
+    out->current = node;
 }
 
-LobbyUserMapNode *LobbyUserMap_LowerBound(LobbyUserMap *map, int *key, LobbyUserMapNode *node, LobbyUserMapNode *res) {
+LobbyUserMapNode *LobbyUserMap_LowerBound(LobbyUserMap *map, int *key, LobbyUserMapNode *node, LobbyUserMapNode *best) {
     while (node != NULL) {
         if (node->entry.userId >= *key) {
-            res = node;
+            best = node;
             node = node->left;
         } else {
             node = node->right;
         }
     }
-    return res;
+    return best;
 }
 
 BOOL LobbyChat_RemoveChannelUser(LobbyChatManager *manager, Str *nick, Str *channel) {
@@ -80,7 +80,7 @@ BOOL LobbyChat_RemoveChannelUser(LobbyChatManager *manager, Str *nick, Str *chan
     return TRUE;
 }
 
-int LobbyUserIdSet_EraseKey(LobbyUserIdSet *set, void *key) {
+int LobbyUserIdSet_EraseKey(LobbyUserIdSet *set, const int *key) {
     Iter it, out;
     LobbyUserIdSet_Find(&it, set, key);
     if (it.current == &set->root) {

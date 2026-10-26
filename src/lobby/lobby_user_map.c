@@ -20,49 +20,49 @@ LobbyUserIdSetNode *LobbyUserIdSet_InsertNode(LobbyUserIdSet *set, LobbyUserIdSe
         LobbyUserIdSetNode *a, *b;
         void *owner;
         LobbyUserIdSetNode *volatile cleanup;
-    } f;
+    } frame;
 
-    LobbyUserIdSetNode *n;
+    LobbyUserIdSetNode *node;
     int *userId;
     u32 *link;
     if (set->count == -1) {
         printf(gLobbyStr_TreeInsertLengthError_4);
         abort();
     }
-    f.byte = 0;
-    n = LobbyMem_Alloc(16);
-    f.owner = &set->root;
-    userId = &n->userId;
-    f.cleanup = n;
-    f.a = n;
+    frame.byte = 0;
+    node = LobbyMem_Alloc(sizeof(LobbyUserIdSetNode));
+    frame.owner = &set->root;
+    userId = &node->userId;
+    frame.cleanup = node;
+    frame.a = node;
     if (userId) {
         *userId = *key;
     }
-    n->right = 0;
-    f.cleanup = 0;
-    n->left = 0;
-    link = &n->parent;
+    node->right = 0;
+    frame.cleanup = 0;
+    node->left = 0;
+    link = &node->parent;
     if (link) {
         *link = (u32)parent;
     }
     if (left) {
-        parent->left = n;
+        parent->left = node;
     } else {
-        parent->right = n;
+        parent->right = node;
     }
     set->count++;
-    f.b = n;
-    LobbyTree_InsertRebalance(n, set->root);
+    frame.b = node;
+    LobbyTree_InsertRebalance(node, set->root);
     if (last) {
-        set->first = n;
+        set->first = node;
     }
     {
-        LobbyUserIdSetNode *cleanup = f.cleanup;
+        LobbyUserIdSetNode *cleanup = frame.cleanup;
         if (cleanup) {
             DWC_Free(0, cleanup, 0);
         }
     };
-    return n;
+    return node;
 }
 
 void *LobbyUserIdSet_Destroy(LobbyUserIdSet *set) {
@@ -108,7 +108,7 @@ LobbyUserMapNode *LobbyUserMap_InsertNode(LobbyUserMap *map, LobbyUserMapNode *p
         LobbyUserMapNode *volatile owned;
     } guard;
 
-    LobbyUserMapNode *n, *owned;
+    LobbyUserMapNode *node, *owned;
     LobbyUserMapEntry *dest;
     u32 *link;
     if (map->count == -1) {
@@ -116,37 +116,37 @@ LobbyUserMapNode *LobbyUserMap_InsertNode(LobbyUserMap *map, LobbyUserMapNode *p
         abort();
     }
     guard.flag = 0;
-    n = LobbyMem_Alloc(28);
-    guard.a = n;
-    guard.b = n;
+    node = LobbyMem_Alloc(sizeof(LobbyUserMapNode));
+    guard.a = node;
+    guard.b = node;
     guard.root = &map->root;
-    guard.owned = n;
-    dest = &n->entry;
+    guard.owned = node;
+    dest = &node->entry;
     if (dest) {
         dest->userId = entry->userId;
         LobbyString_InitCopy(&dest->nick, &entry->nick);
     }
-    n = guard.owned;
-    n->right = 0;
+    node = guard.owned;
+    node->right = 0;
     guard.owned = 0;
-    n->left = 0;
-    link = &n->parent;
+    node->left = 0;
+    link = &node->parent;
     if (link) {
         *link = (u32)parent;
     }
     if (left) {
-        parent->left = n;
+        parent->left = node;
     } else {
-        parent->right = n;
+        parent->right = node;
     }
     map->count++;
-    LobbyTree_InsertRebalance(n, map->root);
+    LobbyTree_InsertRebalance(node, map->root);
     if (first) {
-        map->first = n;
+        map->first = node;
     }
     owned = guard.owned;
     if (owned) {
         DWC_Free(0, owned, 0);
     }
-    return n;
+    return node;
 }

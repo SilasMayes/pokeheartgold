@@ -5,42 +5,42 @@
 
 #include <nitro/code32.h>
 
-void LobbyEventDequeMap_Allocate(LobbyEventDequeMap *map, u32 n, LobbyTag unused) {
+void LobbyEventDequeMap_Allocate(LobbyEventDequeMap *map, u32 capacity, LobbyTag unused) {
     if (!(gLobbyEventDequeMapMaxSizeSet & 1)) {
         gLobbyEventDequeMapMaxSize = 0x3FFFFFFE;
         gLobbyEventDequeMapMaxSizeSet |= 1;
     }
-    if (n > gLobbyEventDequeMapMaxSize) {
+    if (capacity > gLobbyEventDequeMapMaxSize) {
         LobbyEventDequeMap_LengthError();
     }
-    map->blocks = LobbyMem_Alloc((n + 1) * sizeof(LobbyEvent *));
-    map->capacity = n + 1;
+    map->blocks = LobbyMem_Alloc((capacity + 1) * sizeof(LobbyEvent *));
+    map->capacity = capacity + 1;
 }
 
-LobbyEventDequeMapIterator *LobbyEventDequeMapIterator_Advance2(LobbyEventDequeMapIterator *it, int n) {
+LobbyEventDequeMapIterator *LobbyEventDequeMapIterator_Advance2(LobbyEventDequeMapIterator *it, int offset) {
     int size = it->last - it->first;
-    n += it->cur - it->first;
-    if (n < 0) {
-        n += size;
-    } else if (n >= size) {
-        n -= size;
+    offset += it->cur - it->first;
+    if (offset < 0) {
+        offset += size;
+    } else if (offset >= size) {
+        offset -= size;
     }
-    it->cur = it->first + n;
+    it->cur = it->first + offset;
     return it;
 }
 
-int LobbyEventDequeMapIterator_Distance2(const LobbyEventDequeMapIterator *x, const LobbyEventDequeMapIterator *y) {
-    int n;
-    LobbyEvent **m = x->mid;
-    n = x->cur - y->cur;
-    if (x->cur >= m) {
-        if (y->cur < m) {
-            n -= x->last - x->first;
+int LobbyEventDequeMapIterator_Distance2(const LobbyEventDequeMapIterator *it, const LobbyEventDequeMapIterator *from) {
+    int count;
+    LobbyEvent **mid = it->mid;
+    count = it->cur - from->cur;
+    if (it->cur >= mid) {
+        if (from->cur < mid) {
+            count -= it->last - it->first;
         }
     } else {
-        if (y->cur >= m) {
-            n += x->last - x->first;
+        if (from->cur >= mid) {
+            count += it->last - it->first;
         }
     }
-    return n;
+    return count;
 }

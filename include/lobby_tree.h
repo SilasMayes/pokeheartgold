@@ -64,7 +64,7 @@ void *LobbyUserIdSet_Destroy(LobbyUserIdSet *set);
 void *LobbyUserIdSet_Destroy2(LobbyUserIdSet *set);
 void LobbyUserIdSet_DestroyNodes(LobbyUserIdSet *set, LobbyUserIdSetNode *node);
 void LobbyUserIdSet_Erase(Iterator *out, LobbyUserIdSet *set, Iterator node);
-int LobbyUserIdSet_EraseKey(LobbyUserIdSet *set, void *key);
+int LobbyUserIdSet_EraseKey(LobbyUserIdSet *set, const int *key);
 void LobbyUserIdSet_Find(Iterator *out, LobbyUserIdSet *set, const int *key);
 LobbyUserIdSetNode *LobbyUserIdSet_FindInsertPos(LobbyUserIdSet *set, int *key, LobbyUserIdSetNode **prev, u8 *left, u8 *first);
 void LobbyUserIdSet_Insert(LobbyUserIdSetInsertResult *out, LobbyUserIdSet *set, int *key);

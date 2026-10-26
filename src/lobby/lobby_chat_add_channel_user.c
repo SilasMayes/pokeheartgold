@@ -27,24 +27,24 @@ LobbyChannelCallbacks *LobbyChat_GetChannelCallbacks(LobbyChatManager *manager, 
 }
 
 void LobbyChannelMap_Find(Iter *out, LobbyChannelMap *map, Str *key) {
-    LobbyChannelMapNode *n = LobbyChannelMap_LowerBound(map, key, map->root, (LobbyChannelMapNode *)&map->root);
-    if (n == (LobbyChannelMapNode *)&map->root || StrLess(key, &n->entry.name)) {
+    LobbyChannelMapNode *node = LobbyChannelMap_LowerBound(map, key, map->root, (LobbyChannelMapNode *)&map->root);
+    if (node == (LobbyChannelMapNode *)&map->root || StrLess(key, &node->entry.name)) {
         out->current = &map->root;
         return;
     }
-    out->current = n;
+    out->current = node;
 }
 
-LobbyChannelMapNode *LobbyChannelMap_LowerBound(LobbyChannelMap *map, Str *key, LobbyChannelMapNode *n, LobbyChannelMapNode *res) {
-    while (n != NULL) {
-        if (!StrLess(&n->entry.name, key)) {
-            res = n;
-            n = n->left;
+LobbyChannelMapNode *LobbyChannelMap_LowerBound(LobbyChannelMap *map, Str *key, LobbyChannelMapNode *node, LobbyChannelMapNode *best) {
+    while (node != NULL) {
+        if (!StrLess(&node->entry.name, key)) {
+            best = node;
+            node = node->left;
         } else {
-            n = n->right;
+            node = node->right;
         }
     }
-    return res;
+    return best;
 }
 
 // Add the user to the channel's user set and record its nick; returns the user ID or -1.
@@ -53,9 +53,9 @@ int LobbyChat_AddChannelUser(LobbyChatManager *manager, Str *nick, Str *channel)
     int id;
     Iter it;
     LobbyChannelMapNode *node;
-    LobbyUserIdSetInsertResult ir;
-    LobbyTag t1;
-    LobbyTag t0;
+    LobbyUserIdSetInsertResult inserted;
+    LobbyTag userTag;
+    LobbyTag nickTag;
     id = LobbyChat_GetUserIdFromNick(nick);
     if (id == -1) {
         return -1;
@@ -65,9 +65,9 @@ int LobbyChat_AddChannelUser(LobbyChatManager *manager, Str *nick, Str *channel)
     if (node == (LobbyChannelMapNode *)&channels->root) {
         return -1;
     }
-    LobbyUserIdSet_Insert(&ir, &node->entry.channel.users, &id);
-    t1 = (LobbyTag) { 0 };
-    t0 = (LobbyTag) { 0 };
+    LobbyUserIdSet_Insert(&inserted, &node->entry.channel.users, &id);
+    userTag = (LobbyTag) { 0 };
+    nickTag = (LobbyTag) { 0 };
     LobbyString_Assign(&LobbyUserMap_GetOrInsert(&manager->userMap, &id)->nick, nick);
     return id;
 }
@@ -80,33 +80,33 @@ LobbyUserMapEntry *LobbyUserMap_GetOrInsert(LobbyUserMap *map, int *key) {
     if (pos == NULL || pos->entry.userId < *key) {
         Str empty;
         LobbyUserMapEntry pair;
-        LobbyUserMapNode *n;
+        LobbyUserMapNode *node;
         StrInit(&empty);
         PairInit(&pair, key, &empty);
-        n = LobbyUserMap_InsertNode(map, parent, insertLeft, isLeftmost, &pair);
+        node = LobbyUserMap_InsertNode(map, parent, insertLeft, isLeftmost, &pair);
         LobbyString_Destroy(&pair.nick);
         LobbyString_Destroy(&empty);
-        return &n->entry;
+        return &node->entry;
     }
     return &pos->entry;
 }
 
 LobbyUserMapNode *LobbyUserMap_FindInsertPos2(LobbyUserMap *map, int *key, LobbyUserMapNode **pos, u8 *insertLeft, u8 *isLeftmost) {
     LobbyUserMapNode *parent;
-    LobbyUserMapNode *n;
+    LobbyUserMapNode *node;
     *pos = NULL;
-    n = map->root;
+    node = map->root;
     *insertLeft = 1;
     *isLeftmost = 1;
     parent = (LobbyUserMapNode *)&map->root;
-    while (n != NULL) {
-        parent = n;
-        if (*key < n->entry.userId) {
-            n = n->left;
+    while (node != NULL) {
+        parent = node;
+        if (*key < node->entry.userId) {
+            node = node->left;
             *insertLeft = 1;
         } else {
-            *pos = n;
-            n = n->right;
+            *pos = node;
+            node = node->right;
             *insertLeft = 0;
             *isLeftmost = 0;
         }

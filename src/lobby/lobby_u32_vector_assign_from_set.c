@@ -11,7 +11,7 @@ typedef struct {
     void *other;
 } Iter;
 
-void LobbyU32Vector_AssignFromSet(LobbyU32Vector *, Iter, Iter);
+void LobbyU32Vector_AssignFromSet(LobbyU32Vector *vector, Iter first, Iter last);
 
 typedef struct {
     u8 fillFlag, reserveFlag;
@@ -26,26 +26,26 @@ typedef struct {
     Iter fill, count;
 } Frame;
 
-void LobbyU32Vector_AssignFromSet(LobbyU32Vector *v, Iter first, Iter last) {
+void LobbyU32Vector_AssignFromSet(LobbyU32Vector *vector, Iter first, Iter last) {
     Frame frame;
     LobbyUserIdSetNode *node;
     int value;
     u32 *out;
-    u32 n, capacity;
+    u32 count, capacity;
     frame.count = first;
     Iter *counter = &frame.count;
-    n = 0;
+    count = 0;
     while (frame.count.advance.current != last.advance.current) {
-        n++;
+        count++;
         LobbyTreeIterator_Advance(&counter->advance);
     }
-    capacity = v->capacity;
-    if (n > capacity) {
+    capacity = vector->capacity;
+    if (count > capacity) {
         frame.reserveFlag = 0;
-        u32 p = LobbyU32Vector_RecommendSize(v, n - capacity);
-        LobbyU32Vector_Reallocate(v, n, p);
+        u32 newCapacity = LobbyU32Vector_RecommendSize(vector, count - capacity);
+        LobbyU32Vector_Reallocate(vector, count, newCapacity);
     }
-    out = v->data;
+    out = vector->data;
     frame.fill = first;
     if (frame.fill.advance.current != last.advance.current) {
         do {
@@ -59,5 +59,5 @@ void LobbyU32Vector_AssignFromSet(LobbyU32Vector *v, Iter first, Iter last) {
         frame.tail.a = node;
         frame.tail.c = node;
     }
-    v->size = n;
+    vector->size = count;
 }

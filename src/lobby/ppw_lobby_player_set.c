@@ -147,87 +147,87 @@ PPWLobbyPlayerSetNode *PPWLobbyPlayerSet_FindInsertPos(PPWLobbyPlayerSet *set, P
     return position;
 }
 
-LobbyU32Vector *LobbyU32Vector_Destroy2(LobbyU32Vector *v) {
-    if (v->data != NULL) {
-        u32 n = v->size;
-        LobbyTag a = { 0 };
-        v->size -= n;
-        if (v->data != NULL) {
-            DWC_Free(0, v->data, 0);
+LobbyU32Vector *LobbyU32Vector_Destroy2(LobbyU32Vector *vector) {
+    if (vector->data != NULL) {
+        u32 count = vector->size;
+        LobbyTag tag = { 0 };
+        vector->size -= count;
+        if (vector->data != NULL) {
+            DWC_Free(0, vector->data, 0);
         }
     }
-    return v;
+    return vector;
 }
 
-void LobbyU32Vector_Allocate(LobbyU32Vector *v, u32 n, LobbyTag unused) {
-    if (n > 0x3FFFFFFF) {
+void LobbyU32Vector_Allocate(LobbyU32Vector *vector, u32 capacity, LobbyTag unused) {
+    if (capacity > 0x3FFFFFFF) {
         _ZNSt15__vector_commonILb1EE18throw_length_errorEv();
     }
-    v->data = LobbyMem_Alloc(n * sizeof(u32));
-    v->capacity = n;
+    vector->data = LobbyMem_Alloc(capacity * sizeof(u32));
+    vector->capacity = capacity;
 }
 
-u32 LobbyU32Vector_RecommendSize(LobbyU32Vector *v, u32 n) {
-    u32 cap = v->capacity;
-    u32 g1;
-    u32 g2;
-    if (n > 0x3FFFFFFF - cap) {
+u32 LobbyU32Vector_RecommendSize(LobbyU32Vector *vector, u32 extra) {
+    u32 capacity = vector->capacity;
+    u32 growth;
+    u32 half;
+    if (extra > 0x3FFFFFFF - capacity) {
         _ZNSt15__vector_commonILb1EE18throw_length_errorEv();
     }
-    if (cap < 0x15555555) {
-        g1 = (cap + 1) * 3 / 5;
-        return cap + *(n > g1 ? &n : &g1);
+    if (capacity < 0x15555555) {
+        growth = (capacity + 1) * 3 / 5;
+        return capacity + *(extra > growth ? &extra : &growth);
     }
-    if (cap < 0x2AAAAAAA) {
-        g2 = (cap + 1) / 2;
-        return cap + *(n > g2 ? &n : &g2);
+    if (capacity < 0x2AAAAAAA) {
+        half = (capacity + 1) / 2;
+        return capacity + *(extra > half ? &extra : &half);
     }
     return 0x3FFFFFFF;
 }
 
-void LobbyU32Vector_AppendFillSlow(LobbyU32Vector *v, u32 n, u32 *x) {
+void LobbyU32Vector_AppendFillSlow(LobbyU32Vector *vector, u32 count, u32 *value) {
     volatile LobbyTag t4;
-    LobbyU32VectorBuffer b;
+    LobbyU32VectorBuffer buffer;
     u32 *first;
-    int cnt;
-    b.data = NULL;
-    b.size = 0;
-    b.capacity.value = 0;
-    b.start = 0;
-    b.capacity.allocator = &v->capacity;
+    int moved;
+    buffer.data = NULL;
+    buffer.size = 0;
+    buffer.capacity.value = 0;
+    buffer.start = 0;
+    buffer.capacity.allocator = &vector->capacity;
     {
-        u32 rec = LobbyU32Vector_RecommendSize(v, v->size + n - v->capacity);
+        u32 newCapacity = LobbyU32Vector_RecommendSize(vector, vector->size + count - vector->capacity);
         LobbyTag t3 = { 0 };
         t4.unused = 0;
-        LobbyU32VectorBuffer_Allocate(&b, rec, t3);
+        LobbyU32VectorBuffer_Allocate(&buffer, newCapacity, t3);
     }
-    b.start = v->size;
+    buffer.start = vector->size;
     TouchTag();
     {
-        u32 *p = b.data + b.start + b.size;
-        u32 i = n;
+        u32 *p = buffer.data + buffer.start + buffer.size;
+        u32 i = count;
         while (i != 0) {
-            *p++ = *x;
+            *p++ = *value;
             i--;
         }
     }
-    b.size += n;
-    first = v->data;
-    cnt = Distance(v->data, first + v->size);
+    buffer.size += count;
+    first = vector->data;
+    moved = Distance(vector->data, first + vector->size);
     TouchTag();
-    b.start -= cnt;
-    memcpy(b.data + b.start, first, cnt * sizeof(u32));
-    memset(first, 0, cnt * sizeof(u32));
-    b.size += cnt;
+    buffer.start -= moved;
+    memcpy(buffer.data + buffer.start, first, moved * sizeof(u32));
+    memset(first, 0, moved * sizeof(u32));
+    buffer.size += moved;
     TouchTag();
-    v->size = 0;
+    vector->size = 0;
     {
-        u32 *pcap = &b.capacity.value;
-        u32 t = v->capacity;
-        v->capacity = *pcap;
+        u32 *pcap = &buffer.capacity.value;
+        u32 t = vector->capacity;
+        vector->capacity = *pcap;
         *pcap = t;
     }
-    SwapPtr((void **)&v->data, (void **)&b.data);
-    SwapU32(&v->size, &b.size);
-    LobbyU32VectorBuffer_Destroy(&b);
+    SwapPtr((void **)&vector->data, (void **)&buffer.data);
+    SwapU32(&vector->size, &buffer.size);
+    LobbyU32VectorBuffer_Destroy(&buffer);
 }

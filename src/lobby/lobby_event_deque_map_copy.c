@@ -14,9 +14,9 @@ static inline void CopyBackward(LobbyEvent **first, LobbyEvent **last, LobbyEven
 }
 
 static inline void CopyForward(LobbyEvent **first, LobbyEvent **last, LobbyEvent **dest) {
-    LobbyEvent **a = first;
-    LobbyEvent **b = last;
-    memmove(dest, a, (b - a) * sizeof(LobbyEvent *));
+    LobbyEvent **from = first;
+    LobbyEvent **to = last;
+    memmove(dest, from, (to - from) * sizeof(LobbyEvent *));
 }
 
 #pragma opt_propagation off

@@ -40,20 +40,20 @@ int LobbyString_FindFirstOfChars(Str *s, const char *chars, u32 pos, u32 n) {
 // Find the parent for a new node with this key, the last node not greater than it, and which side it goes on.
 LobbyRequestMapNode *LobbyRequestMap_FindInsertPos(LobbyRequestMap *map, LobbyRequest **key, LobbyRequestMapNode **pos, u8 *insertLeft, u8 *isLeftmost) {
     LobbyRequestMapNode *parent;
-    LobbyRequestMapNode *n;
+    LobbyRequestMapNode *node;
     *pos = NULL;
-    n = map->root;
+    node = map->root;
     *insertLeft = 1;
     *isLeftmost = 1;
     parent = (LobbyRequestMapNode *)&map->root;
-    while (n != NULL) {
-        parent = n;
-        if ((*key)->id < n->request->id) {
-            n = n->left;
+    while (node != NULL) {
+        parent = node;
+        if ((*key)->id < node->request->id) {
+            node = node->left;
             *insertLeft = 1;
         } else {
-            *pos = n;
-            n = n->right;
+            *pos = node;
+            node = node->right;
             *insertLeft = 0;
             *isLeftmost = 0;
         }
@@ -62,22 +62,22 @@ LobbyRequestMapNode *LobbyRequestMap_FindInsertPos(LobbyRequestMap *map, LobbyRe
 }
 
 void *LobbyMem_Alloc(u32 size) {
-    void *p;
+    void *block;
     if (size == 0) {
         size = 1;
     }
     for (;;) {
-        VoidFunc f;
-        p = DWC_Alloc(0, size);
-        if (p != NULL) {
-            return p;
+        VoidFunc handler;
+        block = DWC_Alloc(0, size);
+        if (block != NULL) {
+            return block;
         }
-        f = gLobbyMemOutOfMemoryHandler;
-        gLobbyMemOutOfMemoryHandler = f;
-        if (f == NULL) {
+        handler = gLobbyMemOutOfMemoryHandler;
+        gLobbyMemOutOfMemoryHandler = handler;
+        if (handler == NULL) {
             break;
         }
-        f();
+        handler();
     }
     return NULL;
 }
@@ -161,14 +161,14 @@ void LobbyRequestMap_DeleteAll(LobbyRequestMap *map) {
 }
 
 void LobbyRequestMap_Erase(Iter *out, LobbyRequestMap *map, Iter pos) {
-    LobbyRequestMapNode *n = pos.current;
-    if (n == map->leftmost) {
+    LobbyRequestMapNode *node = pos.current;
+    if (node == map->leftmost) {
         LobbyTreeIterator_Advance(&pos);
         map->leftmost = pos.current;
     }
-    out->current = LobbyTree_EraseRebalance(n, map->root);
-    if (n != NULL) {
-        DWC_Free(0, n, 0);
+    out->current = LobbyTree_EraseRebalance(node, map->root);
+    if (node != NULL) {
+        DWC_Free(0, node, 0);
     }
     map->count--;
 }
