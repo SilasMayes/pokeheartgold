@@ -189,8 +189,8 @@ static int WifiSetup_GetSimpleStartStatus(s32 *status) {
     return 1;
 }
 
-int WifiSetup_GetSimpleStartResult(void *dst) {
-    memcpy(dst, (u8 *)&gWifiSetupResult, sizeof(gWifiSetupResult));
+int WifiSetup_GetSimpleStartResult(WifiSetupResult *dst) {
+    memcpy(dst, &gWifiSetupResult, sizeof(gWifiSetupResult));
     return 1;
 }
 

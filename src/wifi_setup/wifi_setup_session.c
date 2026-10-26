@@ -9,12 +9,6 @@ typedef struct WifiSetupAossRetry {
     s16 delay;
 } WifiSetupAossRetry;
 
-typedef struct WifiSetupAossAddresses {
-    u32 ip;
-    u8 padding_04[12];
-    u32 gateway;
-} WifiSetupAossAddresses;
-
 typedef struct AossSession {
     SocAddress address;
     WifiSetupPollTime time;

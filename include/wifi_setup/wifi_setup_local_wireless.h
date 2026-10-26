@@ -72,65 +72,9 @@ typedef struct WifiSetupDialog {
     u8 fade; // fade the screen in and out
 } WifiSetupDialog;
 
-// DS Download Play parent states (WifiSetupMbParent_GetState)
-#define WIFI_SETUP_MB_PARENT_STATE_NONE        0 // not set up, or ended without booting the children
-#define WIFI_SETUP_MB_PARENT_STATE_READY       1 // MB_Init done
-#define WIFI_SETUP_MB_PARENT_STATE_ACCEPTING   2 // children connect and ask for the download
-#define WIFI_SETUP_MB_PARENT_STATE_DOWNLOADING 3
-#define WIFI_SETUP_MB_PARENT_STATE_BOOTING     4
-#define WIFI_SETUP_MB_PARENT_STATE_BOOTED      5 // ended after booting the children
-#define WIFI_SETUP_MB_PARENT_STATE_ENDING      6
-#define WIFI_SETUP_MB_PARENT_STATE_FAILED      7
-
-// State of the DS Download Play parent: bit masks of child AIDs per stage.
-typedef struct WifiSetupMbParentState {
-    u16 state; // WIFI_SETUP_MB_PARENT_STATE_*
-    u16 connectedMask;
-    u16 requestedMask;
-    u16 waitingMask;
-    u16 sendingMask;
-    u16 sentMask;
-    u16 bootableMask;
-} WifiSetupMbParentState;
-
-typedef struct WifiSetupMbParentChild {
-    u8 user[0x16];
-    u8 macAddr[6];
-    u16 aid;
-} WifiSetupMbParentChild;
-
-typedef struct WifiSetupMbParentUser {
-    u8 favoriteColor : 4;
-    u8 playerNo : 4;
-    u8 nameLength;
-    u16 name[10];
-} WifiSetupMbParentUser;
-
-typedef struct WifiSetupMbParentFile {
-    const char *path;
-} WifiSetupMbParentFile;
-
-typedef struct WifiSetupMbParentConnectArg {
-    u8 unk_00[0xA];
-    u8 macAddr[6];
-} WifiSetupMbParentConnectArg;
-
-// Download Play parent work, inside the buffer given to WifiSetupMbParent_Init.
-typedef struct WifiSetupMbParent {
-    WifiSetupMbParentState head;
-    WifiSetupMbParentChild children[1]; // indexed by aid - 1
-    u8 segment[0x10040 - 0x2C];
-    u8 mbWork[0x1B140 - 0x10040];
-    void *mbWorkPtr;
-    void *segmentPtr;
-    u8 padding_1B148[0x18];
-    u8 whWork[0x1D780 - 0x1B160]; // WifiSetupWhWork
-} WifiSetupMbParent;
-
 extern WifiSetupBannerState gWifiSetupBanner;
 extern WifiSetupUsbScan *gWifiSetupUsbScan;
 extern WifiSetupDialog *gWifiSetupDialog;
-extern WifiSetupMbParent *gWifiSetupMbParent;
 
 extern const u8 gWifiSetupBannerLetterTemplates[][WIFI_SETUP_BANNER_NUM_LETTERS]; // per kind
 extern const u8 gWifiSetupBannerLetterPalettes[][WIFI_SETUP_BANNER_NUM_LETTERS];  // per kind
@@ -174,15 +118,5 @@ void WifiSetupDialog_Open(int message, int kind, u8 fade, int digitPos, int digi
 void WifiSetupDialog_Close(void);
 int WifiSetupDialog_GetSelected(void);
 BOOL WifiSetupDialog_IsOpen(void);
-
-void WifiSetupMbParent_Init(void *buf);
-void WifiSetupMbParent_Setup(u32 ggid, u32 tgid);
-void WifiSetupMbParent_Start(WifiSetupMbParentFile *file, u32 channel);
-void WifiSetupMbParent_StartDownload(void);
-BOOL WifiSetupMbParent_AreAllBootable(void);
-void WifiSetupMbParent_BootChildren(void);
-void WifiSetupMbParent_End(void);
-u16 WifiSetupMbParent_GetState(void);
-u16 WifiSetupMbParent_GetMask(int index);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_LOCAL_WIRELESS_H

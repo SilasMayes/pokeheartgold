@@ -56,6 +56,22 @@ typedef struct WifiSetupClient {
 } WifiSetupClient;
 
 // A loaded text bank: a table of offsets into a block of u16 strings.
+// String offset block of a message file; the string data block follows it.
+typedef struct WifiSetupMessageInfo {
+    u32 magic;
+    u32 size; // header included
+    u16 count;
+    u16 entrySize;
+    u32 unk_0C;
+    u32 offsets[1];
+} WifiSetupMessageInfo;
+
+// Message file: a 32-byte file header, then the string offset block.
+typedef struct WifiSetupMessageFile {
+    u8 header[0x20];
+    WifiSetupMessageInfo info;
+} WifiSetupMessageFile;
+
 typedef struct WifiSetupTextBank {
     u32 *offsets;
     u8 *strings;
@@ -103,7 +119,7 @@ void WifiSetupApp_Exit(void);
 
 void WifiSetupText_InitBanks(void);
 void WifiSetupText_FreeBanks(void);
-WifiSetupTextBank *WifiSetupText_LoadBank(void *path);
+WifiSetupTextBank *WifiSetupText_LoadBank(const char *path);
 void WifiSetupText_UnloadBank(WifiSetupTextBank *bank);
 u16 *WifiSetupText_GetString(WifiSetupTextBank *bank, int index);
 u16 *WifiSetupText_GetStringWithDigit(WifiSetupTextBank *bank, u32 index, int pos, u32 digit);

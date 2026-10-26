@@ -291,15 +291,15 @@ void WifiSetupText_FreeBanks(void) {
     WifiSetupHeap_FreeAndClear(&gWifiSetupTextBanks);
 }
 
-WifiSetupTextBank *WifiSetupText_LoadBank(void *path) {
+WifiSetupTextBank *WifiSetupText_LoadBank(const char *path) {
     u32 size;
     WifiSetupTextBank *bank = WifiSetupPool_Pop(gWifiSetupTextBanks->pool);
-    u8 *file = WifiSetupFile_Load(path, &size, 4);
-    u8 *block;
+    WifiSetupMessageFile *file = WifiSetupFile_Load(path, &size, 4);
+    WifiSetupMessageInfo *info;
     bank->file = file;
-    block = file + 0x20;
-    bank->offsets = (u32 *)(block + 0x10);
-    bank->strings = block + *(u32 *)(block + 4) + 8;
+    info = &file->info;
+    bank->offsets = info->offsets;
+    bank->strings = (u8 *)info + info->size + 8;
     return bank;
 }
 

@@ -59,8 +59,8 @@ static void WifiSetupWh_IndicationCallback(void *arg);
 static BOOL WifiSetupWh_InitializeWm(void);
 static void WifiSetupWh_InitializeCallback(void *arg);
 static void WifiSetupWh_SetJudgeCallback(WifiSetupWhJudgeFunc judge);
-static void *WifiSetupWh_GetSharedData(u16 aid);
-static BOOL WifiSetupWh_StepDataSharing(void *data);
+static WifiSetupSharePacket *WifiSetupWh_GetSharedData(u16 aid);
+static BOOL WifiSetupWh_StepDataSharing(const WifiSetupSharePacket *packet);
 static void WifiSetupWh_TryReset(void);
 static void WifiSetupWh_Finalize(void);
 static BOOL WifiSetupWh_End(void);
@@ -74,7 +74,7 @@ static void WifiSetupShare_SetDone(void);
 static BOOL WifiSetupShare_EndWireless(void);
 static BOOL WifiSetupShare_JudgeChild(WMStartParentCallback *arg);
 static void WifiSetupShare_ClearPackets(void);
-static void WifiSetupShare_SendPacket(u16 kind, u16 index, void *data);
+static void WifiSetupShare_SendPacket(u16 kind, u16 index, const u8 *data);
 static void WifiSetupShare_UpdateChild(void);
 static u16 WifiSetupShare_GetChildKind(void);
 
@@ -129,8 +129,8 @@ static u16 WifiSetupMbParent_FindAid(const u8 *macAddr) {
     return 0;
 }
 
-void WifiSetupWh_Init(u8 *work) {
-    gWifiSetupWh.work = (WifiSetupWhWork *)work;
+void WifiSetupWh_Init(WifiSetupWhWork *work) {
+    gWifiSetupWh.work = work;
     gWifiSetupWh.work->state = WIFI_SETUP_WH_STATE_STOP;
     gWifiSetupWh.work->unk_13A8 = 0;
     gWifiSetupWh.work->getWepKey = NULL;
@@ -729,12 +729,12 @@ static void WifiSetupWh_SetJudgeCallback(WifiSetupWhJudgeFunc judge) {
     gWifiSetupWh.work->judgeChild = judge;
 }
 
-static void *WifiSetupWh_GetSharedData(u16 aid) {
+static WifiSetupSharePacket *WifiSetupWh_GetSharedData(u16 aid) {
     return WM_GetSharedDataAddress(&gWifiSetupWh.work->dataSharingInfo, &gWifiSetupWh.work->dataSet, aid);
 }
 
-static BOOL WifiSetupWh_StepDataSharing(void *data) {
-    int result = WM_StepDataSharing(&gWifiSetupWh.work->dataSharingInfo, data, &gWifiSetupWh.work->dataSet);
+static BOOL WifiSetupWh_StepDataSharing(const WifiSetupSharePacket *packet) {
+    int result = WM_StepDataSharing(&gWifiSetupWh.work->dataSharingInfo, packet, &gWifiSetupWh.work->dataSet);
     if (result == WM_ERRCODE_NO_CHILD) {
         if (gWifiSetupWh.log) {
             gWifiSetupWh.log(WH_LOG_LEVEL, gWifiSetupWhStr_StepNoChild);
@@ -820,7 +820,7 @@ static BOOL WifiSetupWh_End(void) {
 
 void WifiSetupShare_Init(WifiSetupShare *share, const WifiSetupSessionParams *params) {
     gWifiSetupShare = share;
-    WifiSetupMbParent_Init(gWifiSetupShare->mbParent);
+    WifiSetupMbParent_Init(&gWifiSetupShare->mbParent);
     gWifiSetupShare->tgid = 0;
     gWifiSetupShare->channel = 0;
     gWifiSetupShare->state = WIFI_SETUP_SHARE_STATE_IDLE;
@@ -1090,7 +1090,7 @@ static void WifiSetupShare_UpdateDownload(void) {
     int state;
     switch (WifiSetupMbParent_GetState()) {
     case WIFI_SETUP_MB_PARENT_STATE_READY:
-        WifiSetupMbParent_Start((WifiSetupMbParentFile *)&gWifiSetupShare->params, gWifiSetupShare->channel);
+        WifiSetupMbParent_Start(&gWifiSetupShare->params, gWifiSetupShare->channel);
         break;
     case WIFI_SETUP_MB_PARENT_STATE_ACCEPTING:
         if (WifiSetupMbParent_GetMask(2)) {
@@ -1232,7 +1232,7 @@ static void WifiSetupShare_ClearPackets(void) {
     gWifiSetupShare->sendPacket = &gWifiSetupShare->send.packet;
 }
 
-static void WifiSetupShare_SendPacket(u16 kind, u16 index, void *data) {
+static void WifiSetupShare_SendPacket(u16 kind, u16 index, const u8 *data) {
     u16 i;
     if (gWifiSetupShare->sendingData == 1) {
         gWifiSetupShare->sendPacket->kind = kind;
@@ -1246,7 +1246,7 @@ static void WifiSetupShare_SendPacket(u16 kind, u16 index, void *data) {
     if (WifiSetupWh_GetState() != WIFI_SETUP_WH_STATE_DATASHARING) {
         return;
     }
-    if (!WifiSetupWh_StepDataSharing(gWifiSetupShare)) {
+    if (!WifiSetupWh_StepDataSharing(&gWifiSetupShare->send.packet)) {
         gWifiSetupShare->errorCount += 4;
         return;
     }
@@ -1260,7 +1260,7 @@ static void WifiSetupShare_SendPacket(u16 kind, u16 index, void *data) {
         }
     }
     for (i = 0; i < 2; i++) {
-        void *shared = WifiSetupWh_GetSharedData(i);
+        WifiSetupSharePacket *shared = WifiSetupWh_GetSharedData(i);
         if (shared != NULL) {
             MI_CpuCopy8(shared, &gWifiSetupShare->received.packets[i], sizeof(WifiSetupSharePacket));
             gWifiSetupShare->receivedFlags[i] = 1;

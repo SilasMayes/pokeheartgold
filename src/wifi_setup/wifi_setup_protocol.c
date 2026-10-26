@@ -18,7 +18,7 @@ static int WifiSetup_HandleJoinReply(int state, WifiSetupAossReceived *received,
 static int WifiSetup_HandleSettingsReply(int state, WifiSetupAossReceived *received, int *counter, WifiSetupAossPacketParams *params);
 static int WifiSetup_HandleDoneReply(int state, void *packet, int *counter, void *context);
 static int WifiSetup_DecryptPacket(WifiSetupAossPacket *packet);
-static int WifiSetup_CheckPeer(int value, const void *data);
+static int WifiSetup_CheckPeer(int value, const u8 *address);
 static int WifiSetup_CheckReplySequence(const WifiSetupAossTag *expected, WifiSetupAossTag *received);
 static int WifiSetup_ParseJoinReply(const u8 *src, u8 *dst);
 static int WifiSetup_ReadLittleEndian(const u8 *src, int length);
@@ -27,15 +27,15 @@ static int WifiSetup_ParseWpaRecord(const u8 *src, WifiSetupWpaKeyRecord *dst);
 static int WifiSetup_ParseType70Record(const u8 *src, u8 *dst);
 static int WifiSetup_ParseSecurityRecords(int id, u8 *cursor, int remaining, WifiSetupAossKeyRecords *out, u8 *other);
 static BOOL WifiSetup_IsEncryptionRequested(int value);
-static int WifiSetup_SendJoinRequest(void *unused, const WifiSetupAossPacketParams *params, int socket);
-static int WifiSetup_SendSettingsRequest(void *unused, const WifiSetupAossPacketParams *params, int socket);
-static int WifiSetup_SendDoneRequest(void *unused, const WifiSetupAossPacketParams *params, int socket);
+static int WifiSetup_SendJoinRequest(const WifiSetupAossAddresses *addresses, const WifiSetupAossPacketParams *params, int socket);
+static int WifiSetup_SendSettingsRequest(const WifiSetupAossAddresses *addresses, const WifiSetupAossPacketParams *params, int socket);
+static int WifiSetup_SendDoneRequest(const WifiSetupAossAddresses *addresses, const WifiSetupAossPacketParams *params, int socket);
 static int WifiSetup_BuildJoinPayload(u8 *dst);
 static void WifiSetup_WriteBody(int mode, WifiSetupAossBody *body, const void *src, s16 *length, s16 *flag, const void *extra);
-static void WifiSetup_WritePacketHeader(WifiSetupAossPacket *packet, int kind, int length, int flags, s8 checksum, s8 protocol, const void *tag);
+static void WifiSetup_WritePacketHeader(WifiSetupAossPacket *packet, int kind, int length, int flags, s8 checksum, s8 protocol, const u8 *tag);
 static void WifiSetup_SendPacket(const WifiSetupAossPacket *packet, int size, int index, int socket);
-static int WifiSetup_Encrypt(void *src, void *dst, int size, u8 *checksum, void *seedDst, const void *seedSrc, int seedSize);
-static int WifiSetup_Decrypt(void *dst, const void *src, int size, int expected, void *seedDst, const void *seedSrc, int seedSize);
+static int WifiSetup_Encrypt(void *src, void *dst, int size, u8 *checksum, u16 *seedDst, const u8 *seedSrc, int seedSize);
+static int WifiSetup_Decrypt(void *dst, const void *src, int size, int expected, u16 *seedDst, const u8 *seedSrc, int seedSize);
 static void WifiSetup_CipherInit(WifiSetupCipher *state, const u8 *key, u32 keySize, u32 tableSize);
 static void WifiSetup_CipherXor(WifiSetupCipher *state, u8 *dst, const u8 *src, u32 size);
 static u8 WifiSetup_CipherNextByte(WifiSetupCipher *state);
@@ -331,7 +331,7 @@ static int WifiSetup_DecryptPacket(WifiSetupAossPacket *packet) {
     return result;
 }
 
-static int WifiSetup_CheckPeer(int value, const void *data) {
+static int WifiSetup_CheckPeer(int value, const u8 *address) {
     int i;
     BOOL present;
     int result;
@@ -344,7 +344,7 @@ static int WifiSetup_CheckPeer(int value, const void *data) {
         }
     }
     if (present) {
-        if (WifiSetup_MemCompare(gWifiSetupPeerAddress, data, 6) != 0) {
+        if (WifiSetup_MemCompare(gWifiSetupPeerAddress, address, 6) != 0) {
             result = 1;
         }
     } else if (value != WIFI_SETUP_AOSS_KIND_JOIN) {
@@ -634,23 +634,23 @@ static BOOL WifiSetup_IsEncryptionRequested(int value) {
     return result;
 }
 
-int WifiSetup_SendRequest(int which, void *unused, WifiSetupAossPacketParams *params, int socket) {
+int WifiSetup_SendRequest(int which, const WifiSetupAossAddresses *addresses, WifiSetupAossPacketParams *params, int socket) {
     switch (which) {
     case WIFI_SETUP_AOSS_STEP_JOIN:
         WifiSetup_SetStatus(WIFI_SETUP_AOSS_STATUS_JOINING);
-        return WifiSetup_SendJoinRequest(unused, params, socket);
+        return WifiSetup_SendJoinRequest(addresses, params, socket);
     case WIFI_SETUP_AOSS_STEP_SETTINGS:
         WifiSetup_SetStatus(WIFI_SETUP_AOSS_STATUS_GETTING_SETTINGS);
-        return WifiSetup_SendSettingsRequest(unused, params, socket);
+        return WifiSetup_SendSettingsRequest(addresses, params, socket);
     case WIFI_SETUP_AOSS_STEP_DONE:
         WifiSetup_SetStatus(WIFI_SETUP_AOSS_STATUS_FINISHING);
-        return WifiSetup_SendDoneRequest(unused, params, socket);
+        return WifiSetup_SendDoneRequest(addresses, params, socket);
     default:
         return -1;
     }
 }
 
-static int WifiSetup_SendJoinRequest(void *unused, const WifiSetupAossPacketParams *params, int socket) {
+static int WifiSetup_SendJoinRequest(const WifiSetupAossAddresses *addresses, const WifiSetupAossPacketParams *params, int socket) {
     struct Header {
         s8 value;
         u8 pad;
@@ -707,7 +707,7 @@ static int WifiSetup_SendJoinRequest(void *unused, const WifiSetupAossPacketPara
     return 0;
 }
 
-static int WifiSetup_SendSettingsRequest(void *unused, const WifiSetupAossPacketParams *params, int socket) {
+static int WifiSetup_SendSettingsRequest(const WifiSetupAossAddresses *addresses, const WifiSetupAossPacketParams *params, int socket) {
     struct Header {
         s8 value;
         u8 pad;
@@ -747,7 +747,7 @@ static int WifiSetup_SendSettingsRequest(void *unused, const WifiSetupAossPacket
     return 0;
 }
 
-static int WifiSetup_SendDoneRequest(void *unused, const WifiSetupAossPacketParams *params, int socket) {
+static int WifiSetup_SendDoneRequest(const WifiSetupAossAddresses *addresses, const WifiSetupAossPacketParams *params, int socket) {
     u8 data[8];
     WifiSetupAossPacket *packet = gWifiSetupState.data;
     int size;
@@ -800,7 +800,7 @@ static void WifiSetup_WriteBody(int mode, WifiSetupAossBody *body, const void *s
     }
 }
 
-static void WifiSetup_WritePacketHeader(WifiSetupAossPacket *packet, int kind, int length, int flags, s8 checksum, s8 protocol, const void *tag) {
+static void WifiSetup_WritePacketHeader(WifiSetupAossPacket *packet, int kind, int length, int flags, s8 checksum, s8 protocol, const u8 *tag) {
     packet->version = WifiSetup_HostToNet16(1);
     packet->unk_02 = 0;
     packet->unk_04 = 0;
@@ -810,7 +810,7 @@ static void WifiSetup_WritePacketHeader(WifiSetupAossPacket *packet, int kind, i
     packet->flags = WifiSetup_HostToNet16((u16)flags);
     packet->checksum = checksum;
     packet->protocol = protocol;
-    WifiSetup_MemCopy(&packet->tag, tag, 8);
+    WifiSetup_MemCopy(&packet->tag, tag, sizeof(packet->tag));
 }
 
 static void WifiSetup_SendPacket(const WifiSetupAossPacket *packet, int size, int index, int socket) {
@@ -828,7 +828,7 @@ static void WifiSetup_SendPacket(const WifiSetupAossPacket *packet, int size, in
     WifiSetup_SendTo(socket, packet, size, 0, &address, sizeof(address));
 }
 
-static int WifiSetup_Encrypt(void *src, void *dst, int size, u8 *checksum, void *seedDst, const void *seedSrc, int seedSize) {
+static int WifiSetup_Encrypt(void *src, void *dst, int size, u8 *checksum, u16 *seedDst, const u8 *seedSrc, int seedSize) {
     u16 seed;
     WifiSetupCipher state;
 
@@ -847,7 +847,7 @@ static int WifiSetup_Encrypt(void *src, void *dst, int size, u8 *checksum, void 
     return 0;
 }
 
-static int WifiSetup_Decrypt(void *dst, const void *src, int size, int expected, void *seedDst, const void *seedSrc, int seedSize) {
+static int WifiSetup_Decrypt(void *dst, const void *src, int size, int expected, u16 *seedDst, const u8 *seedSrc, int seedSize) {
     WifiSetupCipher state;
 
     state.table = WifiSetup_Alloc(size);

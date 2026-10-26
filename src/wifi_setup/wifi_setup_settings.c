@@ -100,7 +100,7 @@ static void WifiSetupSettings_LoadGraphics(void) {
     WifiSetup_LoadGraphics(plttName.text, GX_LoadBGPltt);
     WifiSetup_LoadGraphics(gWifiSetupSettingsJb3ListNscPath, GX_LoadBG3Scr);
     {
-        void *path;
+        char *path;
         void *data;
         path = WifiSetup_LocalizePath(scrName.text);
         data = WifiSetupFile_Load(path, 0, 4);

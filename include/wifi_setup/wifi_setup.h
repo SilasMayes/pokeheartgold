@@ -161,6 +161,13 @@ typedef struct WifiSetupAossTag {
     u16 sequence;
 } WifiSetupAossTag;
 
+// Addresses of the session, handed to WifiSetup_SendRequest
+typedef struct WifiSetupAossAddresses {
+    u32 ip;
+    u8 padding_04[12];
+    u32 gateway;
+} WifiSetupAossAddresses;
+
 // Tags of the join, settings and done requests
 typedef struct WifiSetupAossPacketParams {
     WifiSetupAossTag tags[3];
@@ -347,7 +354,7 @@ void WifiSetup_ClearPollSet(SocPollFd *set);
 void WifiSetup_AddToPollSet(int socket, SocPollFd *set);
 void WifiSetup_CopyConnectSsid(const WifiSetupAossConnectInfo *src, void *dst);
 void WifiSetup_StoreConnectResult(WifiSetupAossConnectResult *dst, const void *src, u32 value);
-BOOL WifiSetup_OnTimeoutAlarm(void *message);
+void WifiSetup_OnTimeoutAlarm(void *message);
 int WifiSetup_Startup(WifiSetupAllocFunc alloc, WifiSetupFreeFunc free);
 int WifiSetup_Cleanup(void);
 int WifiSetup_SearchAccessPoints(WifiSetupAossApList **output);
@@ -357,6 +364,6 @@ int WifiSetup_FindAossAccessPoint(WifiSetupAossApList *list);
 int WifiSetup_InitAossConnectInfo(WifiSetupAossConnectInfo *info);
 void WifiSetup_InitPacketAddresses(int count, WifiSetupAossPacketParams *params, const u8 *mac);
 int WifiSetup_HandlePacket(int state, WifiSetupAossReceived *received, int *counter, WifiSetupAossPacketParams *params, int socket);
-int WifiSetup_SendRequest(int which, void *unused, WifiSetupAossPacketParams *params, int socket);
+int WifiSetup_SendRequest(int which, const WifiSetupAossAddresses *addresses, WifiSetupAossPacketParams *params, int socket);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_H

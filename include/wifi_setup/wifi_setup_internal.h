@@ -218,9 +218,9 @@ int WifiSetup_SendSetupPacket(int socket, const WifiSetupSockAddr *to, const voi
 u8 *WifiSetup_FirstRecord(u8 *data, u32 *type, u32 *length);
 u32 WifiSetup_BuildPacket(u8 *dest, u32 type, u8 *data, u32 length, const void *key);
 u32 WifiSetup_BuildSingleRecordList(u8 *dst, u16 type, const void *src, u32 length);
-BOOL WifiSetup_CheckVersionReply(void *data, int *extended);
-int WifiSetup_ReadPacket(u8 *data, u32 expectedType, void *dst, const u8 *key);
-u32 WifiSetup_BuildVersionRequest(void *dst);
+BOOL WifiSetup_CheckVersionReply(u8 *data, int *extended);
+int WifiSetup_ReadPacket(u8 *data, u32 expectedType, u8 *dst, const u8 *key);
+u32 WifiSetup_BuildVersionRequest(u8 *dst);
 BOOL WifiSetup_BuildMacPair(WifiSetupMacPair *pair, void *unused);
 int WifiSetup_ParseSettingsRecords(const u8 *data);
 int WifiSetup_StoreSimpleStartResult(void);
@@ -252,7 +252,7 @@ void WifiSetup_WorkFree(void *ptr);
 int WifiSetup_FormatMacAddress(char *dst, const s8 *mac);
 int WifiSetup_StartSimpleStart(u32 priority, u32 count, void (*statusCallback)(s32 *), WifiSetupWorkAllocFunc alloc, WifiSetupWorkFreeFunc free, u32 stackSize);
 int WifiSetup_StopSimpleStart(void);
-int WifiSetup_GetSimpleStartResult(void *dst);
+int WifiSetup_GetSimpleStartResult(WifiSetupResult *dst);
 void WifiSetup_ReportSimpleStartStatus(void);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_INTERNAL_H

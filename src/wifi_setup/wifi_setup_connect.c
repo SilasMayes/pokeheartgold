@@ -60,7 +60,7 @@ int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, WifiSetupAossC
     if (WifiSetupWcm_StartSearch(NULL, param->ssid, param->ssidLength, 0x0030BFFE)) {
         retries = 0;
         OS_CreateAlarm(&alarm);
-        OS_SetAlarm(&alarm, 0x003FEC42, (OSAlarmHandler)WifiSetup_OnTimeoutAlarm, (void *)WIFI_SETUP_WCM_EVENT_CONNECT_TIMEOUT);
+        OS_SetAlarm(&alarm, 0x003FEC42, WifiSetup_OnTimeoutAlarm, (void *)WIFI_SETUP_WCM_EVENT_CONNECT_TIMEOUT);
         while (running) {
             OS_ReceiveMessage(&gWifiSetupMessageQueue, &message, OS_MESSAGE_BLOCK);
             switch ((u32)message) {

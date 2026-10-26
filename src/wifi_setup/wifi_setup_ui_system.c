@@ -144,7 +144,7 @@ void *WifiSetupFile_Load(const char *path, u32 *outSize, int align) {
     if (loadAlign > 0) {
         return buf;
     }
-    size = *(u32 *)buf >> 8;
+    size = MI_GetUncompressedSize(buf);
     if (outSize != NULL) {
         *outSize = size;
     }

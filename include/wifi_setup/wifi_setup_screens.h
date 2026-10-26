@@ -13,7 +13,7 @@
 typedef struct WifiSetupListWork {
     WifiSetupScanEntry *entries;
 
-    void *bgScreenFile;
+    u16 *bgScreenFile;
     void *paletteFile;
     WifiSetupCanvas *canvas;
     GXOamAttr *rowOams[5];

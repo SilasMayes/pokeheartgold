@@ -219,9 +219,9 @@ static void WifiSetupUsbConnector_WaitChoiceClosed(void) {
     WifiSetupApp_SetStateFunc(WifiSetupUsbConnector_Main);
 }
 
-void WifiSetupBgScreen_Create(void *src) {
+void WifiSetupBgScreen_Create(const u16 *src) {
     WifiSetupBgScreen *screen = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupBgScreen), 4);
     gWifiSetupBgScreen.screen = screen;
-    MIi_CpuCopyFast(src, (u32 *)screen->data, 0x600);
+    MI_CpuCopyFast(src, screen->data, sizeof(screen->data));
     gWifiSetupBgScreen.screen->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupBgScreen_UpdateTask, NULL, 0x78);
 }

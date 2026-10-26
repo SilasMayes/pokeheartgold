@@ -57,7 +57,7 @@ static void WifiSetupDialog_CloseDelayTask(WifiSetupTask *task, void *arg);
 static void WifiSetupDialog_SlideOutTask(WifiSetupTask *task, void *arg);
 static void WifiSetupDialog_FadeOutTask(WifiSetupTask *task, void *arg);
 static void WifiSetupDialog_FreeTask(WifiSetupTask *task, void *arg);
-static BOOL WifiSetupMbParent_RegisterFile(WifiSetupMbParentFile *reg);
+static BOOL WifiSetupMbParent_RegisterFile(const WifiSetupSessionParams *params);
 static void WifiSetupMbParent_AcceptChild(u16 aid);
 static void WifiSetupMbParent_KickChild(u16 aid);
 static void WifiSetupMbParent_StartSending(u16 aid);
@@ -71,7 +71,7 @@ void MB_CommSetParentStateCallback(void *callback);
 int MB_StartParentFromIdle(u32 channel);
 u32 MB_GetSegmentLength(FSFile *file);
 BOOL MB_ReadSegment(FSFile *file, void *buf, u32 len);
-BOOL MB_RegisterFile(void *file, void *buf);
+BOOL MB_RegisterFile(const void *game, void *buf);
 BOOL MB_CommResponseRequest(u16 aid, u32 ack);
 void MB_DisconnectChild(u16 aid);
 BOOL MB_CommIsBootable(u16 aid);
@@ -2901,9 +2901,9 @@ static void WifiSetupDialog_FreeTask(WifiSetupTask *task, void *arg) {
     WifiSetupHeap_FreeAndClear(&ov13_0224F5B0[2]);
 }
 
-void WifiSetupMbParent_Init(void *buf) {
-    gWifiSetupMbParent = buf;
-    WifiSetupWh_Init(gWifiSetupMbParent->whWork);
+void WifiSetupMbParent_Init(WifiSetupMbParent *parent) {
+    gWifiSetupMbParent = parent;
+    WifiSetupWh_Init(&gWifiSetupMbParent->whWork);
     gWifiSetupMbParent->mbWorkPtr = NULL;
     gWifiSetupMbParent->segmentPtr = NULL;
 }
@@ -2926,26 +2926,26 @@ void WifiSetupMbParent_Setup(u32 ggid, u32 tgid) {
     WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_READY);
 }
 
-void WifiSetupMbParent_Start(WifiSetupMbParentFile *reg, u32 channel) {
+void WifiSetupMbParent_Start(const WifiSetupSessionParams *params, u32 channel) {
     WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_ACCEPTING);
     if (MB_StartParentFromIdle(channel) != 0) {
         WifiSetupMbParent_SetState(WIFI_SETUP_MB_PARENT_STATE_FAILED);
         return;
     }
-    if (!WifiSetupMbParent_RegisterFile(reg)) {
+    if (!WifiSetupMbParent_RegisterFile(params)) {
         OS_Terminate();
     }
 }
 
-static BOOL WifiSetupMbParent_RegisterFile(WifiSetupMbParentFile *reg) {
+static BOOL WifiSetupMbParent_RegisterFile(const WifiSetupSessionParams *params) {
     FSFile file;
     FSFile *fp;
     BOOL ok = FALSE;
-    if (reg->path == NULL) {
+    if (params->filePath == NULL) {
         fp = NULL;
     } else {
         FS_InitFile(&file);
-        if (!FS_OpenFile(&file, reg->path)) {
+        if (!FS_OpenFile(&file, params->filePath)) {
             return FALSE;
         }
         fp = &file;
@@ -2953,7 +2953,7 @@ static BOOL WifiSetupMbParent_RegisterFile(WifiSetupMbParentFile *reg) {
     if (MB_GetSegmentLength(fp) != 0) {
         gWifiSetupMbParent->segmentPtr = gWifiSetupMbParent->segment;
         if (gWifiSetupMbParent->segmentPtr != NULL && MB_ReadSegment(fp, gWifiSetupMbParent->segmentPtr, 0x10000)) {
-            if (MB_RegisterFile(reg, gWifiSetupMbParent->segmentPtr)) {
+            if (MB_RegisterFile(params, gWifiSetupMbParent->segmentPtr)) {
                 ok = TRUE;
             }
         }

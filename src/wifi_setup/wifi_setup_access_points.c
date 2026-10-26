@@ -172,7 +172,7 @@ void WifiSetupConnections_SetAutoDns(int on) {
     gWifiSetupConnections->edit.autoDns = on;
 }
 
-void WifiSetupConnections_SetSsid(const void *ssid) {
+void WifiSetupConnections_SetSsid(const u8 *ssid) {
     MI_CpuCopy8(ssid, gWifiSetupConnections->edit.settings.ssid, sizeof(gWifiSetupConnections->edit.settings.ssid));
     gWifiSetupConnections->edit.settings.setupMethod = WIFI_SETUP_METHOD_MANUAL;
 }
@@ -244,8 +244,8 @@ void WifiSetupConnections_SetSecondaryDns(const char *str) {
 
 #pragma force_active reset
 
-void WifiSetupConnections_GetSsid(void *dst) {
-    MI_CpuCopy8(gWifiSetupConnections->edit.settings.ssid, dst, 0x20);
+void WifiSetupConnections_GetSsid(u8 *dst) {
+    MI_CpuCopy8(gWifiSetupConnections->edit.settings.ssid, dst, sizeof(gWifiSetupConnections->edit.settings.ssid));
 }
 
 void WifiSetupConnections_FormatIpAddress(char *buf) {

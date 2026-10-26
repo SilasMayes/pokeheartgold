@@ -304,7 +304,7 @@ u32 WifiSetup_BuildSingleRecordList(u8 *dst, u16 type, const void *src, u32 leng
 }
 
 // Reply of type 1: records 1 and 2 must be 1; record 5 >= 1 asks for the extended request.
-BOOL WifiSetup_CheckVersionReply(void *data, int *extended) {
+BOOL WifiSetup_CheckVersionReply(u8 *data, int *extended) {
     u32 type;
     u32 length;
     u32 tag;
@@ -351,7 +351,7 @@ BOOL WifiSetup_CheckVersionReply(void *data, int *extended) {
 }
 
 // Copies the payload of a packet of `expectedType`, AES-key-unwrapped when `key` is given.
-int WifiSetup_ReadPacket(u8 *data, u32 expectedType, void *dst, const u8 *key) {
+int WifiSetup_ReadPacket(u8 *data, u32 expectedType, u8 *dst, const u8 *key) {
     u32 type, length;
     u8 *payload = WifiSetup_GetPacketPayload(data, &type, &length);
     if (payload == NULL) {
@@ -370,7 +370,7 @@ int WifiSetup_ReadPacket(u8 *data, u32 expectedType, void *dst, const u8 *key) {
 }
 
 // First request (type 2): version records, plus own MAC address in the extended form.
-u32 WifiSetup_BuildVersionRequest(void *dst) {
+u32 WifiSetup_BuildVersionRequest(u8 *dst) {
     WifiSetupVersionRecord record;
     u8 *ptr;
     record.value = 256;

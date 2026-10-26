@@ -37,14 +37,14 @@ void WifiSetupBgScreen_UpdateTask(WifiSetupTask *task, void *arg) {
     if (!gWifiSetupBgScreen.screen->dirty) {
         return;
     }
-    DC_FlushRange(gWifiSetupBgScreen.screen->data, 0x600);
-    GX_LoadBG2Scr(gWifiSetupBgScreen.screen->data, 0, 0x600);
+    DC_FlushRange(gWifiSetupBgScreen.screen->data, sizeof(gWifiSetupBgScreen.screen->data));
+    GX_LoadBG2Scr(gWifiSetupBgScreen.screen->data, 0, sizeof(gWifiSetupBgScreen.screen->data));
     gWifiSetupBgScreen.screen->dirty = FALSE;
 }
 
 void WifiSetupPalette_LoadRow(u8 *src, int index, int palette) {
     gWifiSetupBgScreen.paletteSrc = src + index * 32;
-    gWifiSetupBgScreen.paletteDst = (void *)(palette * 32 + 0x5000000);
+    gWifiSetupBgScreen.paletteDst = (void *)(HW_BG_PLTT + palette * 32);
     WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupPalette_LoadRowTask, NULL, 0x78);
 }
 
@@ -59,7 +59,7 @@ void WifiSetupPalette_Load(void *src) {
 }
 
 static void WifiSetupPalette_LoadTask(WifiSetupTask *task, void *arg) {
-    MIi_CpuCopy16(gWifiSetupBgScreen.paletteSrc, (void *)0x5000000, 0x200);
+    MIi_CpuCopy16(gWifiSetupBgScreen.paletteSrc, (void *)HW_BG_PLTT, HW_BG_PLTT_SIZE);
     WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_VBLANK, task);
 }
 

@@ -131,8 +131,8 @@ typedef struct WifiSetupSharePacket {
     u8 data[0x40];
 } WifiSetupSharePacket;
 
-// Parameters of the session (WifiSetupShare_Init); the first part is also the Download Play parent's
-// file description (WifiSetupMbParentFile).
+// Parameters of the session (WifiSetupShare_Init), also the Download Play parent's file description
+// (WifiSetupMbParent_Start).
 typedef struct WifiSetupSessionParams {
     const char *filePath;
     const u16 *title;
@@ -142,6 +142,57 @@ typedef struct WifiSetupSessionParams {
     u32 ggid;
     u8 languageCode; // the session's copy holds 2 here
 } WifiSetupSessionParams;
+
+// DS Download Play parent states (WifiSetupMbParent_GetState)
+#define WIFI_SETUP_MB_PARENT_STATE_NONE        0 // not set up, or ended without booting the children
+#define WIFI_SETUP_MB_PARENT_STATE_READY       1 // MB_Init done
+#define WIFI_SETUP_MB_PARENT_STATE_ACCEPTING   2 // children connect and ask for the download
+#define WIFI_SETUP_MB_PARENT_STATE_DOWNLOADING 3
+#define WIFI_SETUP_MB_PARENT_STATE_BOOTING     4
+#define WIFI_SETUP_MB_PARENT_STATE_BOOTED      5 // ended after booting the children
+#define WIFI_SETUP_MB_PARENT_STATE_ENDING      6
+#define WIFI_SETUP_MB_PARENT_STATE_FAILED      7
+
+// State of the DS Download Play parent: bit masks of child AIDs per stage.
+typedef struct WifiSetupMbParentState {
+    u16 state; // WIFI_SETUP_MB_PARENT_STATE_*
+    u16 connectedMask;
+    u16 requestedMask;
+    u16 waitingMask;
+    u16 sendingMask;
+    u16 sentMask;
+    u16 bootableMask;
+} WifiSetupMbParentState;
+
+typedef struct WifiSetupMbParentChild {
+    u8 user[0x16];
+    u8 macAddr[6];
+    u16 aid;
+} WifiSetupMbParentChild;
+
+typedef struct WifiSetupMbParentUser {
+    u8 favoriteColor : 4;
+    u8 playerNo : 4;
+    u8 nameLength;
+    u16 name[10];
+} WifiSetupMbParentUser;
+
+typedef struct WifiSetupMbParentConnectArg {
+    u8 unk_00[0xA];
+    u8 macAddr[6];
+} WifiSetupMbParentConnectArg;
+
+// Download Play parent work (WifiSetupShare.mbParent).
+typedef struct WifiSetupMbParent {
+    WifiSetupMbParentState head;
+    WifiSetupMbParentChild children[1]; // indexed by aid - 1
+    u8 segment[0x10040 - 0x2C];
+    u8 mbWork[0x1B140 - 0x10040];
+    void *mbWorkPtr;
+    void *segmentPtr;
+    u8 padding_1B148[0x18];
+    WifiSetupWhWork whWork;
+} WifiSetupMbParent;
 
 // Session work: the start of WifiSetupSession (wifi_setup_app.h).
 typedef struct WifiSetupShare {
@@ -178,11 +229,12 @@ typedef struct WifiSetupShare {
     WifiSetupSharePacket *sendPacket; // = &send.packet
     WifiSetupSessionParams params;
     u8 unk_AD0[0x30];
-    u8 mbParent[0x1E280 - 0xB00]; // WifiSetupMbParent
+    WifiSetupMbParent mbParent;
 } WifiSetupShare;
 
 extern WifiSetupWh gWifiSetupWh;
 extern WifiSetupShare *gWifiSetupShare;
+extern WifiSetupMbParent *gWifiSetupMbParent;
 
 extern char *gWifiSetupWhStateNames[];                   // state names, see WIFI_SETUP_WH_STATE_*
 extern char gWifiSetupWhFmt_StateFrom[];                 // "%s -> "
@@ -205,9 +257,18 @@ extern char gWifiSetupArchivePath[];                     // "rom:/dwc/utility.bi
 extern char gWifiSetupArchivePrefixFormat[];             // "%s:/"
 extern char gWifiSetupArchiveName[];
 
+void WifiSetupMbParent_Init(WifiSetupMbParent *parent);
+void WifiSetupMbParent_Setup(u32 ggid, u32 tgid);
+void WifiSetupMbParent_Start(const WifiSetupSessionParams *params, u32 channel);
+void WifiSetupMbParent_StartDownload(void);
+BOOL WifiSetupMbParent_AreAllBootable(void);
+void WifiSetupMbParent_BootChildren(void);
+void WifiSetupMbParent_End(void);
+u16 WifiSetupMbParent_GetState(void);
+u16 WifiSetupMbParent_GetMask(int index);
 int WifiSetupMbParent_GetChildState(int aid);
 
-void WifiSetupWh_Init(u8 *work);
+void WifiSetupWh_Init(WifiSetupWhWork *work);
 int WifiSetupWh_StartConnection(u32 mode, u16 tgid, u16 channel);
 
 void WifiSetupShare_Init(WifiSetupShare *share, const WifiSetupSessionParams *params);

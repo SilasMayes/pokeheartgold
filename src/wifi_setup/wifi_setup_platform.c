@@ -220,8 +220,8 @@ static void WifiSetup_OnWcmNotify(int event, int arg) {
     OS_SendMessage(&gWifiSetupMessageQueue, (OSMessage)event, OS_MESSAGE_NOBLOCK);
 }
 
-BOOL WifiSetup_OnTimeoutAlarm(void *message) {
-    return OS_SendMessage(&gWifiSetupMessageQueue, message, OS_MESSAGE_NOBLOCK);
+void WifiSetup_OnTimeoutAlarm(void *message) {
+    OS_SendMessage(&gWifiSetupMessageQueue, message, OS_MESSAGE_NOBLOCK);
 }
 
 int WifiSetup_Startup(WifiSetupAllocFunc alloc, WifiSetupFreeFunc free) {
@@ -384,7 +384,7 @@ int WifiSetup_SearchAccessPoints(WifiSetupAossApList **output) {
 started:
 
     OS_CreateAlarm(&local.alarm);
-    OS_SetAlarm(&local.alarm, 0x003FEC42, (OSAlarmHandler)WifiSetup_OnTimeoutAlarm, (void *)WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT);
+    OS_SetAlarm(&local.alarm, 0x003FEC42, WifiSetup_OnTimeoutAlarm, (void *)WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT);
     do {
         OS_ReceiveMessage(&gWifiSetupMessageQueue, &local.message, OS_MESSAGE_BLOCK);
         switch ((u32)local.message) {
