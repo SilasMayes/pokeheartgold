@@ -30,6 +30,16 @@ enum BoxMonSelectorRunResult {
     BOX_MON_SELECTOR_CANCEL,
 };
 
+// Grid cursor panels: the type of each panel of the grid cursor (the last byte of its dimensions).
+enum BoxMonSelectorPanel {
+    BOX_MON_SELECTOR_PANEL_CANCEL = 1,
+    BOX_MON_SELECTOR_PANEL_BOX,
+    BOX_MON_SELECTOR_PANEL_PICKS,
+    BOX_MON_SELECTOR_PANEL_PLACE, // choosing a pick slot for the Pokemon in hand
+    BOX_MON_SELECTOR_PANEL_PAGE,
+    BOX_MON_SELECTOR_PANEL_PARTY,
+};
+
 // A Pokemon as the getMon callback describes it; the caller's own data follows the common part.
 typedef struct BoxMonSelectorMon {
     u32 species;

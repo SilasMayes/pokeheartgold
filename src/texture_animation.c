@@ -175,7 +175,7 @@ u32 Texture_GetImageVramOffsetByIndex(NNSG3dResTex *texture, u32 index) {
 static u32 Texture_GetImageSize(NNSG3dResTex *texture, u32 *entry) {
     u32 packed = *entry;
     u32 divisor;
-    switch ((packed & (7 << 26)) >> 26) {
+    switch ((packed & REG_G3_TEXIMAGE_PARAM_TEXFMT_MASK) >> REG_G3_TEXIMAGE_PARAM_TEXFMT_SHIFT) {
     case GX_TEXFMT_PLTT4:
         divisor = 4;
         break;
@@ -194,7 +194,7 @@ static u32 Texture_GetImageSize(NNSG3dResTex *texture, u32 *entry) {
     default:
         return 0;
     }
-    return ((((packed & (7 << 20)) >> 20) << 4) * (((packed & (7 << 23)) >> 23) << 4)) / divisor;
+    return ((((packed & REG_G3_TEXIMAGE_PARAM_V_SIZE_MASK) >> REG_G3_TEXIMAGE_PARAM_V_SIZE_SHIFT) << 4) * (((packed & REG_G3_TEXIMAGE_PARAM_T_SIZE_MASK) >> REG_G3_TEXIMAGE_PARAM_T_SIZE_SHIFT) << 4)) / divisor;
 }
 
 u32 Texture_GetImageSizeByIndex(NNSG3dResTex *texture, u32 index) {

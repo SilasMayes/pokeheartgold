@@ -523,7 +523,7 @@ BOOL PlayCryEx(u32 pattern, u16 species, int pan, int volume, int heapId, u8 for
         Sound_SetInitialVolumeWithVoiceChat(species, SND_HANDLE_PV, 127);
         PlayChorusCryWithPitch(species, 20, form);
         GF_SndHandleSetTrackPan(SND_HANDLE_CHORUS, 0xFFFF, pan);
-        GF_SndHandleMoveVolume(8, volume, 0);
+        GF_SndHandleMoveVolume(SND_HANDLE_CHORUS, volume, 0);
         break;
     case 14:
         PlayCry(species, form);
@@ -748,7 +748,7 @@ static BOOL Sound_StartSeq(enum SoundHandleNo handleNo, int playerNo, int bankNo
             if (playerNo != -1) {
                 seqPlayerNo = (u8)playerNo;
             }
-            if (seqPlayerNo == 7) {
+            if (seqPlayerNo == PLAYER_BGM) {
                 GF_Snd_LoadSeqEx(gbSeqNo, 1);
             }
         }

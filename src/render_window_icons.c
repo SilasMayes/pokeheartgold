@@ -46,6 +46,13 @@ enum WaitingIconState {
     WAITING_ICON_DELETE_WITHOUT_RESTORE,
 };
 
+// WaitingIcon_Draw modes
+enum WaitingIconDrawMode {
+    WAITING_ICON_DRAW_TILES,   // load the current frame's tiles
+    WAITING_ICON_DRAW_TILEMAP, // and put them on the tilemap
+    WAITING_ICON_DRAW_RESTORE, // restore the saved tiles and the frame
+};
+
 enum PokemonPicWindowState {
     POKEMON_PIC_WINDOW_IDLE,
     POKEMON_PIC_WINDOW_CLOSE,
@@ -257,17 +264,16 @@ WaitingIcon *WaitingIcon_New(Window *window, int baseTile) {
     icon->frame = 0;
     icon->state = WAITING_ICON_RUNNING;
     SysTask_CreateOnVBlankQueue(WaitingIcon_Task, icon, 0);
-    WaitingIcon_Draw(icon, 1);
+    WaitingIcon_Draw(icon, WAITING_ICON_DRAW_TILEMAP);
     return icon;
 }
 
-// mode 0: load the current frame's tiles, 1: also put them on the tilemap, 2: restore the saved tiles and the frame.
 static void WaitingIcon_Draw(WaitingIcon *icon, int mode) {
     u8 bgId = GetWindowBgId(icon->window);
     u8 x = GetWindowX(icon->window);
     u8 y = GetWindowY(icon->window);
     u8 width = GetWindowWidth(icon->window);
-    if (mode == 2) {
+    if (mode == WAITING_ICON_DRAW_RESTORE) {
         BG_LoadCharTilesData(icon->window->bgConfig, bgId, icon->savedTiles, 128, icon->baseTile + 18);
         FillBgTilemapRect(icon->window->bgConfig, bgId, icon->baseTile + 10, x + width + 1, y + 2, 1, 1, TILEMAP_FILL_KEEP_PAL);
         FillBgTilemapRect(icon->window->bgConfig, bgId, icon->baseTile + 11, x + width + 2, y + 2, 1, 1, TILEMAP_FILL_KEEP_PAL);
@@ -277,7 +283,7 @@ static void WaitingIcon_Draw(WaitingIcon *icon, int mode) {
         return;
     }
     BG_LoadCharTilesData(icon->window->bgConfig, bgId, icon->frameTiles[icon->frame], 128, icon->baseTile + 18);
-    if (mode != 0) {
+    if (mode != WAITING_ICON_DRAW_TILES) {
         FillBgTilemapRect(icon->window->bgConfig, bgId, icon->baseTile + 18, x + width + 1, y + 2, 1, 1, TILEMAP_FILL_KEEP_PAL);
         FillBgTilemapRect(icon->window->bgConfig, bgId, icon->baseTile + 19, x + width + 2, y + 2, 1, 1, TILEMAP_FILL_KEEP_PAL);
         FillBgTilemapRect(icon->window->bgConfig, bgId, icon->baseTile + 20, x + width + 1, y + 3, 1, 1, TILEMAP_FILL_KEEP_PAL);
@@ -290,7 +296,7 @@ static void WaitingIcon_Task(SysTask *task, void *data) {
     WaitingIcon *icon = data;
     if (icon->state != WAITING_ICON_RUNNING) {
         if (icon->state == WAITING_ICON_DELETE) {
-            WaitingIcon_Draw(icon, 2);
+            WaitingIcon_Draw(icon, WAITING_ICON_DRAW_RESTORE);
         }
         SysTask_Destroy(task);
         return;
@@ -299,7 +305,7 @@ static void WaitingIcon_Task(SysTask *task, void *data) {
     if (icon->timer == 16) {
         icon->timer = 0;
         icon->frame = (icon->frame + 1) & 7;
-        WaitingIcon_Draw(icon, 0);
+        WaitingIcon_Draw(icon, WAITING_ICON_DRAW_TILES);
     }
 }
 

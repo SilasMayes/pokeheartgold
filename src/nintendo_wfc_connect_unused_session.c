@@ -230,7 +230,7 @@ static const BgTemplate sNintendoWfcUnusedBgTemplate_Sub1 = {
 
 int NintendoWfcUnused_SessionInit(NintendoWfcUnused *wfc, int state) {
     NintendoWfcUnused_InitStrings(wfc);
-    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0, 8, 1, HEAP_ID_150);
+    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 8, 1, HEAP_ID_150);
     NintendoWfcUnused_InitBgs(wfc->bgConfig);
     NintendoWfcUnused_LoadBgGraphics(wfc);
     NintendoWfcUnused_AddWindows(wfc);
@@ -423,7 +423,7 @@ static void NintendoWfcUnused_AddWindows(NintendoWfcUnused *wfc) {
     FillWindowPixelBuffer(&wfc->rankWindow, 15);
     AddWindowParameterized(wfc->bgConfig, &wfc->titleWindow, GF_BG_LYR_MAIN_0, 4, 1, 24, 2, 13, 0x214);
     FillWindowPixelBuffer(&wfc->titleWindow, 0);
-    NintendoWfcUnused_PrintAlignedText(&wfc->titleWindow, wfc->titleString, 0, 1, 1, MAKE_TEXT_COLOR(15, 14, 0));
+    NintendoWfcUnused_PrintAlignedText(&wfc->titleWindow, wfc->titleString, 0, 1, NINTENDO_WFC_ALIGN_CENTER, MAKE_TEXT_COLOR(15, 14, 0));
     AddWindowParameterized(wfc->bgConfig, &wfc->msgWindow, GF_BG_LYR_MAIN_0, 2, 19, 27, 4, 13, 0x28);
     FillWindowPixelBuffer(&wfc->msgWindow, 15);
 }
@@ -1280,7 +1280,7 @@ static int NintendoWfcUnused_UnusedState_Idle(NintendoWfcUnused *wfc) {
 static int NintendoWfcUnused_StartExit(NintendoWfcUnused *wfc) {
     WirelessStatusIcon_Destroy();
     CommState_FreeWfcSession();
-    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0, 8, 1, HEAP_ID_150);
+    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 8, 1, HEAP_ID_150);
     wfc->state = NINTENDO_WFC_UNUSED_STATE_ASK_CONNECT;
     return NINTENDO_WFC_MAIN_SESSION_EXIT;
 }
@@ -1417,11 +1417,11 @@ static void NintendoWfcUnused_PrintMessage(NintendoWfcUnused *wfc, MsgData *msgD
 static int NintendoWfcUnused_GetAlignedTextX(const Window *window, String *string, int x, int alignment, int unused, int fontId) {
     int width;
     switch (alignment) {
-    case 1:
+    case NINTENDO_WFC_ALIGN_CENTER:
         width = FontID_String_GetWidth(fontId, string, 0);
         x = ((window->width << 3) - width) / 2;
         break;
-    case 2:
+    case NINTENDO_WFC_ALIGN_RIGHT:
         width = FontID_String_GetWidth(fontId, string, 0);
         x = (window->width << 3) - width;
         break;
@@ -1442,7 +1442,7 @@ static void NintendoWfcUnused_PrintAlignedTextSmall(Window *window, String *stri
 static void NintendoWfcUnused_PrintNumber(Window *window, String *string, int number, int digits) {
     FillWindowPixelBuffer(window, 15);
     String16_FormatInteger(string, number, digits, PRINTING_MODE_LEADING_ZEROS, TRUE);
-    NintendoWfcUnused_PrintAlignedTextSmall(window, string, 0, 1, 1, MAKE_TEXT_COLOR(1, 2, 0));
+    NintendoWfcUnused_PrintAlignedTextSmall(window, string, 0, 1, NINTENDO_WFC_ALIGN_CENTER, MAKE_TEXT_COLOR(1, 2, 0));
 }
 
 static void NintendoWfcUnused_CreateWirelessIcon(NintendoWfcUnused *wfc) {

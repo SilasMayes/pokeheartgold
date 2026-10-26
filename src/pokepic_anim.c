@@ -130,7 +130,7 @@ struct PokepicScriptAnim {
     u32 *cursor; // current script word
     BOOL active;
     u32 scriptId; // NARC member
-    u32 yield;    // set by a command that ends the frame
+    BOOL yield;   // set by a command that ends the frame
     BOOL done;    // the script ended
     u32 state;
     s32 vars[8];
@@ -314,9 +314,9 @@ void PokepicAnimManager_StartAnim(void *managerArg, void *picArg, struct Pokepic
     mgr->anims[index].cursor = mgr->anims[index].script;
     mgr->anims[index].done = FALSE;
     mgr->anims[index].state = POKEPIC_SCRIPT_ANIM_RUNNING;
-    mgr->anims[index].runMotions = 0;
+    mgr->anims[index].runMotions = FALSE;
     mgr->anims[index].scaleMode = POKEPIC_SCALE_CENTERED;
-    mgr->anims[index].waitPaletteFade = 0;
+    mgr->anims[index].waitPaletteFade = FALSE;
     mgr->anims[index].task = SysTask_CreateOnMainQueue(PokepicScriptAnim_Task, &mgr->anims[index], 0);
     mgr->anims[index].delay = delay;
     mgr->anims[index].baseX = Pokepic_GetAttr(pic, POKEPIC_X);
@@ -365,7 +365,7 @@ static void PokepicScriptAnim_RunFrame(PokepicScriptAnim *anim) {
     u8 ended;
     u8 i;
 
-    anim->yield = 0;
+    anim->yield = FALSE;
     anim->commandCount = 0;
     ended = 0;
     for (i = 0; i < NELEMS(anim->motions); i++) {
@@ -380,17 +380,17 @@ static void PokepicScriptAnim_RunFrame(PokepicScriptAnim *anim) {
             ended++;
         }
     }
-    if (ended == 4) {
-        anim->runMotions = 0;
+    if (ended == NELEMS(anim->motions)) {
+        anim->runMotions = FALSE;
     }
-    if (anim->runMotions != 0) {
+    if (anim->runMotions) {
         PokepicScriptAnimCmd_ApplyPosition(anim);
         PokepicScriptAnimCmd_ApplyTransform(anim);
         return;
     }
-    if (anim->waitPaletteFade != 0) {
-        if (Pokepic_ResumePaletteFade(anim->pic) == 0) {
-            anim->waitPaletteFade = 0;
+    if (anim->waitPaletteFade) {
+        if (!Pokepic_ResumePaletteFade(anim->pic)) {
+            anim->waitPaletteFade = FALSE;
         } else {
             return;
         }
@@ -403,10 +403,10 @@ static void PokepicScriptAnim_RunFrame(PokepicScriptAnim *anim) {
             return;
         }
         anim->cursor++;
-        if (anim->yield != 0) {
+        if (anim->yield) {
             return;
         }
-        if (anim->runMotions != 0) {
+        if (anim->runMotions) {
             PokepicScriptAnimCmd_ApplyPosition(anim);
             PokepicScriptAnimCmd_ApplyTransform(anim);
             return;
@@ -556,12 +556,12 @@ static void PokepicScriptAnim_AdjustYForScale(PokepicScriptAnim *anim) {
 
 static void PokepicScriptAnimCmd_End(PokepicScriptAnim *anim) {
     PokepicScriptAnimCmd_ResetTransform(anim);
-    anim->yield = 1;
+    anim->yield = TRUE;
     anim->done = TRUE;
 }
 
 static void PokepicScriptAnimCmd_Yield(PokepicScriptAnim *anim) {
-    anim->yield = 1;
+    anim->yield = TRUE;
 }
 
 static void PokepicScriptAnimCmd_ResetTransform(PokepicScriptAnim *anim) {
@@ -807,7 +807,7 @@ static void PokepicScriptAnimCmd_SetOrAddTransform(PokepicScriptAnim *anim) {
 }
 
 static void PokepicScriptAnimCmd_ApplyPosition(PokepicScriptAnim *anim) {
-    if (anim->reverseX != 0) {
+    if (anim->reverseX) {
         Pokepic_SetAttr(anim->pic, POKEPIC_X, anim->baseX - (anim->x + anim->dx));
     } else {
         Pokepic_SetAttr(anim->pic, POKEPIC_X, anim->baseX + anim->x + anim->dx);
@@ -849,7 +849,7 @@ static void PokepicScriptAnimCmd_SetOffsetFromVar(PokepicScriptAnim *anim) {
 
 static void PokepicScriptAnimCmd_Wait(PokepicScriptAnim *anim) {
     PokepicScriptAnim_ReadArg(anim, &anim->delay);
-    anim->yield = 1;
+    anim->yield = TRUE;
 }
 
 static void PokepicScriptAnimCmd_StartPaletteFade(PokepicScriptAnim *anim) {
@@ -864,13 +864,13 @@ static void PokepicScriptAnimCmd_StartPaletteFade(PokepicScriptAnim *anim) {
 
 static void PokepicScriptAnimCmd_WaitPaletteFade(PokepicScriptAnim *anim) {
     if (Pokepic_ResumePaletteFade(anim->pic)) {
-        anim->waitPaletteFade = 1;
-        anim->yield = 1;
+        anim->waitPaletteFade = TRUE;
+        anim->yield = TRUE;
     }
 }
 
 static void PokepicScriptAnimCmd_RunMotions(PokepicScriptAnim *anim) {
-    anim->runMotions = 1;
+    anim->runMotions = TRUE;
 }
 
 static void PokepicScriptAnimCmd_SetScaleMode(PokepicScriptAnim *anim) {

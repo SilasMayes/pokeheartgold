@@ -97,7 +97,7 @@ BOOL StatsUpload_SetKey(char *gameName, char *secretKey, u32 multiplier, u32 inc
 // between two copies of the secret key. On success the rest becomes the body.
 static BOOL StatsUpload_CheckResponseHash(const char *response, int length) {
     char hash[41];
-    u8 digest[20];
+    u8 digest[MATH_SHA1_DIGEST_SIZE];
     HexDigits hex;
     u32 bodyLength;
     u8 *buf;
@@ -121,7 +121,7 @@ static BOOL StatsUpload_CheckResponseHash(const char *response, int length) {
     }
     MATH_CalcSHA1(digest, buf, StatsUpload_GetBase64Length(bodyLength) + 40);
     DWC_Free(7, buf, 0);
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < MATH_SHA1_DIGEST_SIZE; i++) {
         hash[i * 2] = hex.chars[digest[i] >> 4];
         hash[i * 2 + 1] = hex.chars[digest[i] & 0xF];
     }
@@ -154,13 +154,13 @@ static void StatsUpload_OnRequestCompleted(char *response, int length, int error
                 } block;
 
                 char hex[17];
-                u8 *digest = (u8 *)gStatsUpload.hash + 20;
+                u8 *digest = (u8 *)gStatsUpload.hash + MATH_SHA1_DIGEST_SIZE;
                 int i, j;
                 memcpy(hex, gStatsUploadStr_0123456789abcdef_2, 17);
                 memcpy(&block.key, gStatsUploadSecretKey, 20);
                 memcpy(block.challenge, response, 32);
                 MATH_CalcSHA1(digest, &block, 52);
-                for (i = 0, j = 0; i < 20; i++, j += 2) {
+                for (i = 0, j = 0; i < MATH_SHA1_DIGEST_SIZE; i++, j += 2) {
                     gStatsUpload.hash[j] = hex[digest[i] >> 4];
                     gStatsUpload.hash[j + 1] = hex[digest[i] & 15];
                 }

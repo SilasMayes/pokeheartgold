@@ -985,7 +985,7 @@ static void NintendoWfc_FreeGraphics(NintendoWfcConnect *wfc) {
 
 int NintendoWfc_SessionInit(NintendoWfcConnect *wfc, int state) {
     NintendoWfc_InitStrings(wfc);
-    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0, 8, 1, HEAP_ID_67);
+    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 8, 1, HEAP_ID_67);
     NintendoWfc_InitBgs(wfc->bgConfig);
     NintendoWfc_LoadBgGraphics(wfc);
     NintendoWfc_AddWindows(wfc);
@@ -1202,7 +1202,7 @@ static void NintendoWfc_AddWindows(NintendoWfcConnect *wfc) {
     FillWindowPixelBuffer(&wfc->rankWindow, 15);
     AddWindowParameterized(wfc->bgConfig, &wfc->titleWindow, GF_BG_LYR_MAIN_0, 4, 1, 24, 2, 13, 0x214);
     FillWindowPixelBuffer(&wfc->titleWindow, 0);
-    NintendoWfc_PrintAlignedText(&wfc->titleWindow, wfc->titleString, 0, 1, 1, MAKE_TEXT_COLOR(15, 14, 0));
+    NintendoWfc_PrintAlignedText(&wfc->titleWindow, wfc->titleString, 0, 1, NINTENDO_WFC_ALIGN_CENTER, MAKE_TEXT_COLOR(15, 14, 0));
     AddWindowParameterized(wfc->bgConfig, &wfc->msgWindow, GF_BG_LYR_MAIN_0, 2, 19, 27, 4, 13, 0x28);
     FillWindowPixelBuffer(&wfc->msgWindow, 15);
 }
@@ -2032,7 +2032,7 @@ int NintendoWfc_UnusedState_Idle(void) {
 int NintendoWfc_StartExit(NintendoWfcConnect *wfc) {
     WirelessStatusIcon_Destroy();
     CommState_FreeWfcSession();
-    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0, 8, 1, HEAP_ID_67);
+    BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 8, 1, HEAP_ID_67);
     wfc->state = NINTENDO_WFC_STATE_ASK_CONNECT;
     return NINTENDO_WFC_MAIN_SESSION_EXIT;
 }
@@ -2179,11 +2179,11 @@ static void NintendoWfc_PrintMessage(NintendoWfcConnect *wfc, MsgData *msgData, 
 static int NintendoWfc_GetAlignedTextX(const Window *window, String *string, int x, int alignment, int unused, int fontId) {
     int width;
     switch (alignment) {
-    case 1:
+    case NINTENDO_WFC_ALIGN_CENTER:
         width = FontID_String_GetWidth(fontId, string, 0);
         x = ((window->width << 3) - width) / 2;
         break;
-    case 2:
+    case NINTENDO_WFC_ALIGN_RIGHT:
         width = FontID_String_GetWidth(fontId, string, 0);
         x = (window->width << 3) - width;
         break;
@@ -2269,7 +2269,7 @@ static int NintendoWfc_RunNumberInput(NintendoWfcConnect *wfc) {
 }
 
 int NintendoWfc_NumberInput_FadeOut(NintendoWfcConnect *wfc) {
-    BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0, 4, 1, HEAP_ID_67);
+    BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 4, 1, HEAP_ID_67);
     wfc->numberInput.state = NINTENDO_WFC_NUMBER_INPUT_SETUP;
     return 0;
 }
@@ -2284,7 +2284,7 @@ int NintendoWfc_NumberInput_Setup(NintendoWfcConnect *wfc) {
         NintendoWfc_PrintButtonLabel(&wfc->buttonWindows[1], wfc->msgDataTower, msg_0774_00021);
         NintendoWfc_PrintButtonLabel(&wfc->buttonWindows[2], wfc->msgDataTower, msg_0774_00022);
         ToggleBgLayer(GF_BG_LYR_SUB_0, TRUE);
-        BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0, 4, 1, HEAP_ID_67);
+        BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 4, 1, HEAP_ID_67);
         wfc->numberInput.state = NINTENDO_WFC_NUMBER_INPUT_WAIT_FADE_IN;
     }
     return 0;
@@ -2537,7 +2537,7 @@ int NintendoWfc_NumberInput_UnusedState6(void) {
 }
 
 int NintendoWfc_NumberInput_StartFadeOut(NintendoWfcConnect *wfc) {
-    BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, 0, 4, 1, HEAP_ID_67);
+    BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 4, 1, HEAP_ID_67);
     wfc->numberInput.state = NINTENDO_WFC_NUMBER_INPUT_TEARDOWN;
     return 0;
 }
@@ -2546,7 +2546,7 @@ int NintendoWfc_NumberInput_Teardown(NintendoWfcConnect *wfc) {
     if (IsPaletteFadeFinished() == TRUE) {
         NintendoWfc_HideNumberInput(wfc);
         NintendoWfc_LoadSubScreenBg(wfc, 0);
-        BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, 0, 4, 1, HEAP_ID_67);
+        BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 4, 1, HEAP_ID_67);
         wfc->numberInput.state = NINTENDO_WFC_NUMBER_INPUT_WAIT_FADE_OUT;
     }
     return 0;

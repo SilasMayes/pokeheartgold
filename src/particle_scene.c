@@ -24,7 +24,7 @@ static void ParticleScene_SetEmitterPosition(SPLEmitter *emitter);
 void ParticleScene_HidePlanes(void) {
     GfGfx_DisableEngineAPlanes();
     GfGfx_DisableEngineBPlanes();
-    GX_SetVisiblePlane(0);
+    GX_SetVisiblePlane(GX_PLANEMASK_NONE);
     GXS_SetVisiblePlane(0);
 }
 
@@ -46,7 +46,7 @@ static void ParticleScene_Setup3D(void) {
     G3X_AlphaBlend(TRUE);
     G3X_EdgeMarking(FALSE);
     G3X_SetFog(FALSE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x8000, 0);
-    G3X_SetClearColor(RGB_BLACK, 0, 0x7FFF, 63, FALSE);
+    G3X_SetClearColor(RGB_BLACK, 0, GF_GX_CLEARCOLORDEPTH_MAX, 63, FALSE);
     G3_ViewPort(0, 0, 255, 191);
 }
 

@@ -545,12 +545,12 @@ static BOOL Save_FashionData_IsNewEntry(SaveFashionData *fashionData, SaveFashio
     u32 crc;
     int i;
     if (FashionEntry_IsSaved(candidate) == TRUE) {
-        MATHi_CRC32InitTableRev(table, 0xEDB88320);
+        MATHi_CRC32InitTableRev(table, MATH_CRC32_STANDARD_POLY);
         crc = MATH_CalcCRC32(table, candidate, sizeof(SaveFashionDataSub));
         for (i = 0; i < FASHION_ENTRY_COUNT; i++) {
             SaveFashionDataSub *entry = Save_FashionData_GetEntry(fashionData, i);
             u32 other;
-            MATHi_CRC32InitTableRev(table, 0xEDB88320);
+            MATHi_CRC32InitTableRev(table, MATH_CRC32_STANDARD_POLY);
             other = MATH_CalcCRC32(table, entry, sizeof(SaveFashionDataSub));
             if (other == crc) {
                 result = FALSE;

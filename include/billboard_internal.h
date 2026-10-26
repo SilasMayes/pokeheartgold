@@ -17,7 +17,7 @@ typedef void (*BillboardCallback)(BillboardObject *, void *);
 typedef struct BillboardSequenceRange {
     s32 start;
     s32 end;
-    s32 stopAtEnd;
+    BOOL stopAtEnd;
 } BillboardSequenceRange;
 
 // The graphics of a billboard: its model file, the texture file holding every frame's texture and palette, the

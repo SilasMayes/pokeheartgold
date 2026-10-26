@@ -212,7 +212,7 @@ static void TrainerCardData_SetBadges(PlayerProfile *profile, FieldSystem *field
     TrainerCard_GetBadgeShininessArr(Save_TrainerCard_Get(fieldSystem->saveData));
     i = 0;
     words = card->badgeShininess;
-    for (; i < 8; i++) {
+    for (; i < NELEMS(card->badgeShininess); i++) {
         words[i] &= ~1;
         words[i] &= 1;
     }

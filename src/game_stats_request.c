@@ -126,16 +126,16 @@ static void GameStats_ResponseCallback(const char *response, int length, int err
         switch (gGameStatsRequest.state) {
         case GAME_STATS_STATE_WAIT_CHALLENGE:
             if (length == 32) {
-                // The 20-byte SHA1 digest is computed in the second half of the hash text and
+                // The SHA1 digest is computed in the second half of the hash text and
                 // expanded to 40 hex digits in place.
-                u8 *digest = (u8 *)gGameStatsRequest.hashText + 20;
+                u8 *digest = (u8 *)gGameStatsRequest.hashText + MATH_SHA1_DIGEST_SIZE;
                 char hexDigits[] = "0123456789abcdef";
 
                 strcpy(text, "sAdeqWo3voLeC5r16DYv");
                 strncat(text, response, length);
                 MATH_CalcSHA1(digest, text, strlen(text));
                 strcat(gGameStatsRequest.url, "&hash=");
-                for (i = 0, j = 0; i < 20; i++, j += 2) {
+                for (i = 0, j = 0; i < MATH_SHA1_DIGEST_SIZE; i++, j += 2) {
                     gGameStatsRequest.hashText[j] = hexDigits[digest[i] >> 4];
                     gGameStatsRequest.hashText[j + 1] = hexDigits[digest[i] & 15];
                 }

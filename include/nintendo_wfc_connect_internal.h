@@ -20,6 +20,13 @@ enum NintendoWfcMode {
     NINTENDO_WFC_MODE_CHECK_LEADERS,
 };
 
+// Text alignment of the aligned text printers: the given x, centered or right-aligned
+enum NintendoWfcTextAlign {
+    NINTENDO_WFC_ALIGN_X,
+    NINTENDO_WFC_ALIGN_CENTER,
+    NINTENDO_WFC_ALIGN_RIGHT,
+};
+
 enum NintendoWfcPaletteScreens {
     NINTENDO_WFC_PALETTE_BOTH_SCREENS,
     NINTENDO_WFC_PALETTE_MAIN_SCREEN,

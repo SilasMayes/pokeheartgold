@@ -519,12 +519,12 @@ void ApricornBox_StoreJuiceRecords(SaveApricornBox *box, ApricornRecord *records
 
 String *ApricornBox_GetJuiceName(SaveApricornBox *box, int type, u32 heapId) {
     String *result = String_New(9, (enum HeapID)heapId);
-    if (type < 5) {
+    if (type < APRICORN_JUICE_FIRST_RECORD) {
         MsgData *msgData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0021_bin, (enum HeapID)heapId);
         ReadMsgDataIntoString(msgData, type + msg_0021_00014, result);
         DestroyMsgData(msgData);
-    } else if (type < 8) {
-        int slot = (u8)(type - 5);
+    } else if (type < APRICORN_JUICE_OWN) {
+        int slot = (u8)(type - APRICORN_JUICE_FIRST_RECORD);
         if (ApricornJuice_IsValid(&box->juiceRecords[slot].data)) {
             CopyU16ArrayToString(result, box->juiceRecords[slot].name);
         }

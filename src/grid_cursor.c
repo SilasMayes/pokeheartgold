@@ -18,12 +18,12 @@ static void GridPanel5_Enter(GridCursor *cursor, GridPosition *position, const u
 static void GridPanel6_Move(GridCursor *cursor, GridPosition *position, const u8 *dimensions, s8 dx, s8 dy);
 static void GridPanel6_Enter(GridCursor *cursor, GridPosition *position, const u8 *dimensions, const GridMove *move);
 
-static const u8 sGridPanel2Dimensions[] = { 6, 5, 30, 2 };
-static const u8 sGridPanel1Dimensions[] = { 1, 1, 1, 1 };
-static const u8 sGridPanel3Dimensions[] = { 1, 3, 3, 3 };
-static const u8 sGridPanel5Dimensions[] = { 1, 1, 1, 5 };
-static const u8 sGridPanel4Dimensions[] = { 1, 3, 3, 4 };
-static const u8 sGridPanel6Dimensions[] = { 6, 1, 6, 6 };
+static const u8 sGridPanel2Dimensions[] = { 6, 5, 30, BOX_MON_SELECTOR_PANEL_BOX };
+static const u8 sGridPanel1Dimensions[] = { 1, 1, 1, BOX_MON_SELECTOR_PANEL_CANCEL };
+static const u8 sGridPanel3Dimensions[] = { 1, 3, 3, BOX_MON_SELECTOR_PANEL_PICKS };
+static const u8 sGridPanel5Dimensions[] = { 1, 1, 1, BOX_MON_SELECTOR_PANEL_PAGE };
+static const u8 sGridPanel4Dimensions[] = { 1, 3, 3, BOX_MON_SELECTOR_PANEL_PLACE };
+static const u8 sGridPanel6Dimensions[] = { 6, 1, 6, BOX_MON_SELECTOR_PANEL_PARTY };
 
 static const GridEntry sGridCursorPanels[] = {
     { sGridPanel2Dimensions, GridPanel2_Move, GridPanel2_Enter },
@@ -43,19 +43,19 @@ static void GridPanel2_Move(GridCursor *cursor, GridPosition *position, const u8
         break;
     case GRID_EXIT_LEFT:
         move.value = position->y;
-        GridCursor_EnterPanel(cursor, 3, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PICKS, &move);
         return;
     case GRID_EXIT_RIGHT:
         move.value = position->y;
-        GridCursor_EnterPanel(cursor, 3, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PICKS, &move);
         return;
     case GRID_EXIT_UP:
         move.value = position->x;
-        GridCursor_EnterPanel(cursor, 5, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PAGE, &move);
         return;
     case GRID_EXIT_DOWN:
         move.value = position->x;
-        GridCursor_EnterPanel(cursor, 5, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PAGE, &move);
         return;
     }
 }
@@ -93,17 +93,17 @@ static void GridPanel1_Move(GridCursor *cursor, GridPosition *position, const u8
     if (move.type != GRID_EXIT_LEFT) {
         if (move.type == GRID_EXIT_UP) {
             move.value = 0;
-            GridCursor_EnterPanel(cursor, 3, &move);
+            GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PICKS, &move);
             return;
         }
     } else {
         if (*cursor->page == BOX_MON_SELECTOR_PARTY_PAGE) {
             move.value = 0;
-            GridCursor_EnterPanel(cursor, 6, &move);
+            GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PARTY, &move);
             return;
         }
         move.value = 4;
-        GridCursor_EnterPanel(cursor, 2, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_BOX, &move);
         return;
     }
 }
@@ -131,22 +131,22 @@ static void GridPanel3_Move(GridCursor *cursor, GridPosition *position, const u8
     case GRID_EXIT_LEFT:
         if (*cursor->page == BOX_MON_SELECTOR_PARTY_PAGE) {
             move.value = 0;
-            GridCursor_EnterPanel(cursor, 6, &move);
+            GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PARTY, &move);
             return;
         }
-        GridCursor_EnterPanel(cursor, 2, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_BOX, &move);
         return;
     case GRID_EXIT_RIGHT:
         if (*cursor->page == BOX_MON_SELECTOR_PARTY_PAGE) {
             move.value = 0;
-            GridCursor_EnterPanel(cursor, 6, &move);
+            GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PARTY, &move);
             return;
         }
-        GridCursor_EnterPanel(cursor, 2, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_BOX, &move);
         return;
     case GRID_EXIT_DOWN:
         if (cursor->canCancel != 0) {
-            GridCursor_EnterPanel(cursor, 1, &move);
+            GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_CANCEL, &move);
         }
         return;
     }
@@ -183,10 +183,10 @@ static void GridPanel4_Move(GridCursor *cursor, GridPosition *position, const u8
     default:
         break;
     case GRID_EXIT_UP:
-        GridCursor_EnterPanel(cursor, 4, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PLACE, &move);
         return;
     case GRID_EXIT_DOWN:
-        GridCursor_EnterPanel(cursor, 4, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PLACE, &move);
         return;
     }
 }
@@ -210,17 +210,17 @@ static void GridPanel5_Move(GridCursor *cursor, GridPosition *position, const u8
         break;
     case GRID_EXIT_UP:
         if (*cursor->page == BOX_MON_SELECTOR_PARTY_PAGE) {
-            GridCursor_EnterPanel(cursor, 6, &move);
+            GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PARTY, &move);
             return;
         }
-        GridCursor_EnterPanel(cursor, 2, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_BOX, &move);
         return;
     case GRID_EXIT_DOWN:
         if (*cursor->page == BOX_MON_SELECTOR_PARTY_PAGE) {
-            GridCursor_EnterPanel(cursor, 6, &move);
+            GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PARTY, &move);
             return;
         }
-        GridCursor_EnterPanel(cursor, 2, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_BOX, &move);
         return;
     }
 }
@@ -241,19 +241,19 @@ static void GridPanel6_Move(GridCursor *cursor, GridPosition *position, const u8
         break;
     case GRID_EXIT_LEFT:
         move.value = position->y;
-        GridCursor_EnterPanel(cursor, 3, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PICKS, &move);
         return;
     case GRID_EXIT_RIGHT:
         move.value = position->y;
-        GridCursor_EnterPanel(cursor, 3, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PICKS, &move);
         return;
     case GRID_EXIT_UP:
         move.value = position->x;
-        GridCursor_EnterPanel(cursor, 5, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PAGE, &move);
         return;
     case GRID_EXIT_DOWN:
         move.value = position->x;
-        GridCursor_EnterPanel(cursor, 5, &move);
+        GridCursor_EnterPanel(cursor, BOX_MON_SELECTOR_PANEL_PAGE, &move);
         return;
     }
 }

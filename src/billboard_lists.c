@@ -716,7 +716,7 @@ static BOOL BillboardSequence_Step(const BillboardSequenceRange *range, fx32 *fr
     if (start > current || (end = range->end << FX32_SHIFT) < current) {
         *frame = start;
     } else if (end < current + delta) {
-        if (range->stopAtEnd == 0) {
+        if (!range->stopAtEnd) {
             *frame = start;
         } else {
             finished = TRUE;

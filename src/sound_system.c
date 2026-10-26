@@ -400,7 +400,7 @@ static void Sound_PlayBGMForFieldScene(u16 seqNo, int mode) {
     u8 *reload = GF_SdatGetAttrPtr(SOUND_ATTR_FIELD_PLAYER_PAUSED);
     GF_SdatGetAttrPtr(SOUND_ATTR_SAVED_HEAP_LEVEL_1);
     GF_SdatGetAttrPtr(SOUND_ATTR_FIELD_SEQ);
-    playingSeqNo = GF_NNS_SndPlayerGetSeqNo(GF_GetSoundHandle(0));
+    playingSeqNo = GF_NNS_SndPlayerGetSeqNo(GF_GetSoundHandle(SND_HANDLE_FIELD));
     u16 currentSeqNo = playingSeqNo;
     if (playingSeqNo > SEQ_GS_P_START) {
         currentSeqNo = GBSounds_GetDSSeqNoByGBSeqNo(currentSeqNo);
@@ -583,7 +583,7 @@ void Sound_ClearBGMPauseFlags(void) {
 
 void GF_SndHandleMoveVolume(int handleNo, int volume, int frames) {
     NNS_SndPlayerMoveVolume(GF_GetSoundHandle(handleNo), volume, frames);
-    if (handleNo == 0) {
+    if (handleNo == SND_HANDLE_FIELD) {
         GF_SndWorkSetGbSoundsVolume(volume);
     }
 }
@@ -669,19 +669,19 @@ BOOL Sound_IsMicCounterFull(void) {
 
 BOOL GF_MIC_StartAutoSampling(MICAutoParam *param) {
     MICResult result = MIC_StartAutoSampling(param);
-    gSoundSystemFlags.micSampling = 1;
+    gSoundSystemFlags.micSampling = TRUE;
     sSoundMicAutoParam = *param;
     return result;
 }
 
 void GF_MIC_StopAutoSampling(void) {
     GetSoundDataPointer();
-    gSoundSystemFlags.micSampling = 0;
+    gSoundSystemFlags.micSampling = FALSE;
     MIC_StopAutoSampling();
 }
 
 void GF_MicPauseOnLidClose(void) {
-    if (gSoundSystemFlags.micSampling != 0) {
+    if (gSoundSystemFlags.micSampling) {
         if (MIC_StopAutoSampling() != MIC_RESULT_SUCCESS) {
             GF_ASSERT(FALSE);
         }
@@ -689,7 +689,7 @@ void GF_MicPauseOnLidClose(void) {
 }
 
 void GF_MicResumeOnLidOpen(void) {
-    if (gSoundSystemFlags.micSampling != 0) {
+    if (gSoundSystemFlags.micSampling) {
         if (MIC_StartAutoSampling(&sSoundMicAutoParam) != MIC_RESULT_SUCCESS) {
             GF_ASSERT(FALSE);
         }
@@ -999,7 +999,7 @@ void Sound_SetBGMPlayerChannels(int mode) {
 }
 
 static void Sound_PauseOrStopFieldBGM(void) {
-    if (GF_SndGetFadeTimer() == 0 && GF_NNS_SndPlayerGetSeqNo(GF_GetSoundHandle(0)) != -1) {
+    if (GF_SndGetFadeTimer() == 0 && GF_NNS_SndPlayerGetSeqNo(GF_GetSoundHandle(SND_HANDLE_FIELD)) != -1) {
         StopBGMSEAndCry();
         Sound_SetPlayerPause(PLAYER_FIELD, 1);
     } else {

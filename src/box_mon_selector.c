@@ -39,16 +39,6 @@ enum BoxMonSelectorState {
     BOX_MON_SELECTOR_STATE_FINISH,
 };
 
-// GridCursor panels (gGridCursorPanels).
-enum BoxMonSelectorPanel {
-    BOX_MON_SELECTOR_PANEL_CANCEL = 1,
-    BOX_MON_SELECTOR_PANEL_BOX,
-    BOX_MON_SELECTOR_PANEL_PICKS,
-    BOX_MON_SELECTOR_PANEL_PLACE, // choosing a pick slot for the Pokemon in hand
-    BOX_MON_SELECTOR_PANEL_PAGE,
-    BOX_MON_SELECTOR_PANEL_PARTY,
-};
-
 // Touch hitboxes: the 30 box slots, the CANCEL button, the page arrows, the pick slots.
 #define HITBOX_CANCEL    30
 #define HITBOX_PREV_PAGE 31
@@ -63,6 +53,12 @@ enum BoxMonSelectorPanel {
 
 #define DRAG_FROM_BOX   1
 #define DRAG_FROM_PICKS 2
+
+// Results of BoxMonSelector_HandleDrop (BoxMonSelector_EndDrag)
+#define DROP_NONE        0 // nothing happened: the Pokemon in hand goes back
+#define DROP_ADD_PICK    1 // placed in a free pick slot
+#define DROP_REMOVE_PICK 2 // dropped back on the box, the pick removed
+#define DROP_MOVE_PICK   3 // a pick moved to another pick slot
 
 static int BoxMonSelector_HandleInput(BoxMonSelector *selector);
 static void BoxMonSelector_ShowConfirmPrompt(BoxMonSelector *selector);
@@ -486,7 +482,7 @@ static void BoxMonSelector_HandleRemovePrompt(BoxMonSelector *selector) {
         YesNoPrompt_Reset(selector->yesNoPrompt);
         BoxMonSelector_RemovePick(selector, selector->dragIndex);
         Sprite_SetAnimCtrlSeq(selector->handCursor, 45);
-        BoxMonSelector_EndDrag(selector, 2);
+        BoxMonSelector_EndDrag(selector, DROP_REMOVE_PICK);
         selector->keyDragging = FALSE;
         BoxMonSelector_ResetBlend();
         BoxMonSelector_NotifyCursorMove(selector);
@@ -495,7 +491,7 @@ static void BoxMonSelector_HandleRemovePrompt(BoxMonSelector *selector) {
     case YESNORESPONSE_NO:
         BoxMonSelector_ClearMessageWindow(&selector->messageWindow, TRUE);
         YesNoPrompt_Reset(selector->yesNoPrompt);
-        BoxMonSelector_EndDrag(selector, 0);
+        BoxMonSelector_EndDrag(selector, DROP_NONE);
         BoxMonSelector_ResetBlend();
         selector->state = BOX_MON_SELECTOR_STATE_SELECT;
         break;
@@ -567,8 +563,6 @@ static void BoxMonSelector_CreatePickSlots(BoxMonSelector *selector) {
     selector->boxDropArea.occupied = FALSE;
 }
 
-// Returns 0 when nothing happened, 1 when the Pokemon in hand was placed in a free pick slot, 2 when it was dropped
-// back on the box (pick removed), 3 when a pick was moved to another pick slot.
 static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
     if (selector->dragSource == DRAG_FROM_BOX) {
         int i = 0, count;
@@ -579,7 +573,7 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
                 u32 left = selector->pickDropAreas[i].left, top = selector->pickDropAreas[i].top, bottom = selector->pickDropAreas[i].bottom, right = selector->pickDropAreas[i].right;
                 if ((selector->touchX - left) < (right - left) && (y - top) < (bottom - top)) {
                     BoxMonSelector_AddPick(selector, i);
-                    return 1;
+                    return DROP_ADD_PICK;
                 }
             } else {
                 u32 y = selector->touchY;
@@ -587,7 +581,7 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
                 if ((selector->touchX - left) < (right - left) && (y - top) < (bottom - top)) {
                     BoxMonSelector_RemovePick(selector, i);
                     BoxMonSelector_AddPick(selector, i);
-                    return 1;
+                    return DROP_ADD_PICK;
                 }
             }
         }
@@ -599,7 +593,7 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
         if ((x - left) < (right - left) && (y - top) < (bottom - top)) {
             BoxMonSelector_RemovePick(selector, selector->dragIndex);
             BoxMonSelector_NotifyCursorMove(selector);
-            return 2;
+            return DROP_REMOVE_PICK;
         } else {
             int i, count = selector->maxPicks;
             for (i = 0; i < count; i++) {
@@ -607,7 +601,7 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
                     u32 left = selector->pickDropAreas[i].left, top = selector->pickDropAreas[i].top, bottom = selector->pickDropAreas[i].bottom, right = selector->pickDropAreas[i].right;
                     if ((x - left) < (right - left) && (y - top) < (bottom - top)) {
                         BoxMonSelector_MovePick(selector, selector->dragIndex, i);
-                        return 3;
+                        return DROP_MOVE_PICK;
                     }
                 }
             }
@@ -615,7 +609,7 @@ static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
     } else {
         GF_ASSERT(FALSE);
     }
-    return 0;
+    return DROP_NONE;
 }
 
 static void BoxMonSelector_AddPick(BoxMonSelector *selector, u8 pick) {
@@ -1000,14 +994,14 @@ static void BoxMonSelector_Drop(BoxMonSelector *selector) {
     }
 }
 
-// result: 0 puts the Pokemon in hand back, otherwise the result of BoxMonSelector_HandleDrop.
+// result: a BoxMonSelector_HandleDrop result; DROP_NONE puts the Pokemon in hand back.
 static void BoxMonSelector_EndDrag(BoxMonSelector *selector, int result) {
     VecFx32 position;
 
     if (result) {
         u8 index;
         if (selector->dragSource == DRAG_FROM_PICKS) {
-            if (result == 2) {
+            if (result == DROP_REMOVE_PICK) {
                 position = selector->dragOrigin;
                 index = selector->dragIndex;
             } else {
@@ -1371,7 +1365,7 @@ static int BoxMonSelector_HandleBButton(BoxMonSelector *selector) {
     switch (GridCursor_GetPanel(selector->cursor)) {
     case BOX_MON_SELECTOR_PANEL_PLACE:
         PlaySE(SEQ_SE_DP_SELECT);
-        BoxMonSelector_EndDrag(selector, 0);
+        BoxMonSelector_EndDrag(selector, DROP_NONE);
         break;
     case BOX_MON_SELECTOR_PANEL_CANCEL:
         BoxMonSelector_PressCancelButton(selector);

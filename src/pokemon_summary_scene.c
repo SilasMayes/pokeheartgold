@@ -35,7 +35,7 @@ void PokemonSummary_Init3D(PokemonSummary *summary) {
     G3X_AntiAlias(TRUE);
     G3X_EdgeMarking(FALSE);
     G3X_SetFog(FALSE, GX_FOGBLEND_COLOR_ALPHA, GX_FOGSLOPE_0x8000, 0);
-    G3X_SetClearColor(RGB_BLACK, 0, 0x7FFF, 0x3F, FALSE);
+    G3X_SetClearColor(RGB_BLACK, 0, GF_GX_CLEARCOLORDEPTH_MAX, 0x3F, FALSE);
     G3_SwapBuffers(GX_SORTMODE_AUTO, GX_BUFFERMODE_Z);
     G3_ViewPort(0, 0, 255, 191);
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);

@@ -729,7 +729,7 @@ static int PokemonSummary_HandleInput(PokemonSummary *summary) {
     }
     if (summary->page == POKEMON_SUMMARY_PAGE_RIBBONS) {
         selection = PokemonSummary_GetRibbonTouch(summary);
-        if (selection != -1 && selection < 9 && selection < summary->ribbonCount) {
+        if (selection != -1 && selection < POKEMON_SUMMARY_RIBBONS_PER_PAGE && selection < summary->ribbonCount) {
             PlaySE(SEQ_SE_DP_DECIDE);
             summary->ribbonCursor = selection;
             return POKEMON_SUMMARY_STATE_OPEN_RIBBON_LIST;
@@ -890,7 +890,7 @@ static int PokemonSummary_HandleMoveSwapInput(PokemonSummary *summary) {
     return POKEMON_SUMMARY_STATE_MOVE_SWAP_INPUT;
 }
 
-// State 8 (learning a move): pick the move to forget; slot 4 is the move to learn.
+// State 8 (learning a move): pick the move to forget; the slot after the four moves is the move to learn.
 static int PokemonSummary_HandleForgetMoveInput(PokemonSummary *summary) {
     u32 keys;
     int index;
@@ -914,8 +914,8 @@ static int PokemonSummary_HandleForgetMoveInput(PokemonSummary *summary) {
     if (keys & PAD_BUTTON_A) {
         PlaySE(SEQ_SE_DP_DECIDE);
         index = summary->moveSlot;
-        if (index == 4) {
-            summary->args->selectedMoveSlot = 4;
+        if (index == POKEMON_SUMMARY_MOVE_SLOT_NEW) {
+            summary->args->selectedMoveSlot = POKEMON_SUMMARY_MOVE_SLOT_NEW;
             summary->args->exitedWithB = 0;
             return POKEMON_SUMMARY_STATE_START_FADE_OUT;
         }
@@ -928,7 +928,7 @@ static int PokemonSummary_HandleForgetMoveInput(PokemonSummary *summary) {
     }
     if (keys & PAD_BUTTON_B) {
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        summary->args->selectedMoveSlot = 4;
+        summary->args->selectedMoveSlot = POKEMON_SUMMARY_MOVE_SLOT_NEW;
         summary->args->exitedWithB = 1;
         return PokemonSummary_FlashCancelButton(summary, POKEMON_SUMMARY_STATE_START_FADE_OUT);
     }
@@ -937,17 +937,17 @@ static int PokemonSummary_HandleForgetMoveInput(PokemonSummary *summary) {
     switch (index) {
     case -1:
         break;
-    case 4:
+    case POKEMON_SUMMARY_MOVE_SLOT_NEW:
         if (summary->args->moveToLearn != MOVE_NONE) {
             PlaySE(SEQ_SE_DP_DECIDE);
-            summary->moveSlot = 4;
+            summary->moveSlot = POKEMON_SUMMARY_MOVE_SLOT_NEW;
             PokemonSummary_ShowSelectedMoveInfo(summary);
         }
         break;
-    case 5:
+    case POKEMON_SUMMARY_MOVE_SLOT_CANCEL:
         PlaySE(SEQ_SE_GS_GEARCANCEL);
-        summary->moveSlot = 5;
-        summary->args->selectedMoveSlot = 4;
+        summary->moveSlot = POKEMON_SUMMARY_MOVE_SLOT_CANCEL;
+        summary->args->selectedMoveSlot = POKEMON_SUMMARY_MOVE_SLOT_NEW;
         summary->args->exitedWithB = 0;
         return PokemonSummary_FlashCancelButton(summary, POKEMON_SUMMARY_STATE_START_FADE_OUT);
     default:
@@ -1042,11 +1042,11 @@ static int PokemonSummary_HandleRibbonInput(PokemonSummary *summary) {
         return POKEMON_SUMMARY_STATE_RIBBON_INPUT;
     }
     if (gSystem.newAndRepeatedKeys & PAD_KEY_UP) {
-        PokemonSummary_MoveRibbonCursor(summary, -3);
+        PokemonSummary_MoveRibbonCursor(summary, -POKEMON_SUMMARY_RIBBON_COLUMNS);
         return POKEMON_SUMMARY_STATE_RIBBON_INPUT;
     }
     if (gSystem.newAndRepeatedKeys & PAD_KEY_DOWN) {
-        PokemonSummary_MoveRibbonCursor(summary, 3);
+        PokemonSummary_MoveRibbonCursor(summary, POKEMON_SUMMARY_RIBBON_COLUMNS);
         return POKEMON_SUMMARY_STATE_RIBBON_INPUT;
     }
     if (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
@@ -1088,7 +1088,7 @@ static int PokemonSummary_HandleRibbonInput(PokemonSummary *summary) {
 // State 13: the up arrow was touched; scroll up a page once its animation ends.
 static int PokemonSummary_WaitRibbonPageUp(PokemonSummary *summary) {
     if (!Sprite_IsAnimated(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP])) {
-        PokemonSummary_MoveRibbonCursor(summary, -9);
+        PokemonSummary_MoveRibbonCursor(summary, -POKEMON_SUMMARY_RIBBONS_PER_PAGE);
         return POKEMON_SUMMARY_STATE_RIBBON_INPUT;
     }
     return POKEMON_SUMMARY_STATE_RIBBON_PAGE_UP;
@@ -1097,7 +1097,7 @@ static int PokemonSummary_WaitRibbonPageUp(PokemonSummary *summary) {
 // State 14: the same for the down arrow.
 static int PokemonSummary_WaitRibbonPageDown(PokemonSummary *summary) {
     if (!Sprite_IsAnimated(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN])) {
-        PokemonSummary_MoveRibbonCursor(summary, 9);
+        PokemonSummary_MoveRibbonCursor(summary, POKEMON_SUMMARY_RIBBONS_PER_PAGE);
         return POKEMON_SUMMARY_STATE_RIBBON_INPUT;
     }
     return POKEMON_SUMMARY_STATE_RIBBON_PAGE_DOWN;
@@ -1680,7 +1680,7 @@ static BOOL PokemonSummary_CanShowMonAt(PokemonSummary *summary, int slot) {
         mons = (u8 *)summary->args->party;
         offset = slot * size;
         if (GetMonData((Pokemon *)(mons + offset), MON_DATA_SPECIES, NULL) != SPECIES_NONE) {
-            if (GetMonData((Pokemon *)(mons + offset), MON_DATA_IS_EGG, NULL) != 0) {
+            if (GetMonData((Pokemon *)(mons + offset), MON_DATA_IS_EGG, NULL)) {
                 return TRUE;
             }
         }
@@ -1689,7 +1689,7 @@ static BOOL PokemonSummary_CanShowMonAt(PokemonSummary *summary, int slot) {
         if (slot < summary->args->partyCount) {
             mon = Party_GetMonByIndex(summary->args->party, slot);
             if (GetMonData(mon, MON_DATA_SPECIES, NULL) != SPECIES_NONE) {
-                if (GetMonData(mon, MON_DATA_IS_EGG, NULL) != 0) {
+                if (GetMonData(mon, MON_DATA_IS_EGG, NULL)) {
                     if (PokemonSummary_CanShowEgg(summary) != TRUE) {
                         break;
                     }
@@ -1704,7 +1704,7 @@ static BOOL PokemonSummary_CanShowMonAt(PokemonSummary *summary, int slot) {
         mons = (u8 *)summary->args->party;
         offset = slot * size;
         if (GetBoxMonData((BoxPokemon *)(mons + offset), MON_DATA_SPECIES, NULL) != SPECIES_NONE) {
-            if (GetBoxMonData((BoxPokemon *)(mons + offset), MON_DATA_IS_EGG, NULL) != 0) {
+            if (GetBoxMonData((BoxPokemon *)(mons + offset), MON_DATA_IS_EGG, NULL)) {
                 return TRUE;
             }
         }
@@ -1737,7 +1737,7 @@ static int PokemonSummary_FindNextMonInArray(PokemonSummary *summary, int direct
         size = Pokemon_sizeof();
         mons = (u8 *)summary->args->party;
         if (GetMonData((Pokemon *)(mons + slot * size), MON_DATA_SPECIES, NULL) != SPECIES_NONE) {
-            if (GetMonData((Pokemon *)(mons + slot * size), MON_DATA_IS_EGG, NULL) == 0 || PokemonSummary_CanShowEgg(summary) == TRUE) {
+            if (!GetMonData((Pokemon *)(mons + slot * size), MON_DATA_IS_EGG, NULL) || PokemonSummary_CanShowEgg(summary) == TRUE) {
                 return slot;
             }
         }
@@ -1754,7 +1754,7 @@ static int PokemonSummary_FindNextPartyMon(PokemonSummary *summary, int directio
         }
         mon = Party_GetMonByIndex(summary->args->party, slot);
         if (GetMonData(mon, MON_DATA_SPECIES, NULL) != SPECIES_NONE) {
-            if (GetMonData(mon, MON_DATA_IS_EGG, NULL) == 0 || PokemonSummary_CanShowEgg(summary) == TRUE) {
+            if (!GetMonData(mon, MON_DATA_IS_EGG, NULL) || PokemonSummary_CanShowEgg(summary) == TRUE) {
                 return slot;
             }
         }
@@ -1773,7 +1773,7 @@ static int PokemonSummary_FindNextBoxMon(PokemonSummary *summary, int direction)
         size = BoxPokemon_sizeof();
         mons = (u8 *)summary->args->party;
         if (GetBoxMonData((BoxPokemon *)(mons + slot * size), MON_DATA_SPECIES, NULL) != SPECIES_NONE) {
-            if (GetBoxMonData((BoxPokemon *)(mons + slot * size), MON_DATA_IS_EGG, NULL) == 0 || PokemonSummary_CanShowEgg(summary) == TRUE) {
+            if (!GetBoxMonData((BoxPokemon *)(mons + slot * size), MON_DATA_IS_EGG, NULL) || PokemonSummary_CanShowEgg(summary) == TRUE) {
                 return slot;
             }
         }
@@ -1862,7 +1862,7 @@ static BOOL PokemonSummary_SlideOutMoveInfo(PokemonSummary *summary) {
     return FALSE;
 }
 
-// Moves the move cursor up or down, skipping empty slots; slot 4 (the move to learn) only when picking a move to
+// Moves the move cursor up or down, skipping empty slots; the move to learn only when picking a move to
 // forget. TRUE if it moved.
 static BOOL PokemonSummary_MoveMoveCursor(PokemonSummary *summary, int direction) {
     u8 old = summary->moveSlot;
@@ -1870,12 +1870,12 @@ static BOOL PokemonSummary_MoveMoveCursor(PokemonSummary *summary, int direction
     s8 max;
     if (summary->args->mode == POKEMON_SUMMARY_MODE_FORGET_MOVE) {
         if (summary->args->moveToLearn) {
-            max = 4;
+            max = POKEMON_SUMMARY_MOVE_SLOT_NEW;
         } else {
-            max = 3;
+            max = MAX_MON_MOVES - 1;
         }
     } else {
-        max = 3;
+        max = MAX_MON_MOVES - 1;
     }
     do {
         slot += direction;
@@ -1884,7 +1884,7 @@ static BOOL PokemonSummary_MoveMoveCursor(PokemonSummary *summary, int direction
         } else if (slot > max) {
             slot = 0;
         }
-        if (slot == 4) {
+        if (slot == POKEMON_SUMMARY_MOVE_SLOT_NEW) {
             break;
         }
         if (summary->mon.moves[slot] != MOVE_NONE) {
@@ -1902,14 +1902,14 @@ static void PokemonSummary_ShowSelectedMoveInfo(PokemonSummary *summary) {
     u32 slot;
     PokemonSummary_UpdateMoveCursorSprite(summary);
     slot = summary->moveSlot;
-    if (slot == 4) {
+    if (slot == POKEMON_SUMMARY_MOVE_SLOT_NEW) {
         u16 move = summary->args->moveToLearn;
         if (move != MOVE_NONE) {
             PokemonSummary_ShowMoveInfo(summary, move);
         } else {
             PokemonSummary_ShowMoveInfo(summary, -1);
         }
-    } else if (slot == 5) {
+    } else if (slot == POKEMON_SUMMARY_MOVE_SLOT_CANCEL) {
         PokemonSummary_ShowMoveInfo(summary, -1);
     } else {
         PokemonSummary_ShowMoveInfo(summary, summary->mon.moves[slot]);
@@ -2045,47 +2045,47 @@ static BOOL PokemonSummary_SlideOutRibbonList(PokemonSummary *summary) {
     return FALSE;
 }
 
-// Moves the ribbon cursor in the 3x3 grid: +-1 left/right, +-3 up/down (turning the page at the edges), +-9 a page.
+// Moves the ribbon cursor in the grid: +-1 left/right, +-a row up/down (turning the page at the edges), +-a page.
 static void PokemonSummary_MoveRibbonCursor(PokemonSummary *summary, int direction) {
     u8 cursor = summary->ribbonCursor, row = summary->ribbonRow;
     if (direction == 1) {
-        if (cursor % 3 == 2) {
+        if (cursor % POKEMON_SUMMARY_RIBBON_COLUMNS == POKEMON_SUMMARY_RIBBON_COLUMNS - 1) {
             return;
         }
         summary->ribbonCursor++;
     } else if (direction == -1) {
-        if (cursor % 3 == 0) {
+        if (cursor % POKEMON_SUMMARY_RIBBON_COLUMNS == 0) {
             return;
         }
         summary->ribbonCursor--;
-    } else if (direction == 3) {
-        if (cursor >= 6) {
-            if ((row + 1) * 9 < summary->ribbonCount) {
+    } else if (direction == POKEMON_SUMMARY_RIBBON_COLUMNS) {
+        if (cursor >= POKEMON_SUMMARY_RIBBONS_PER_PAGE - POKEMON_SUMMARY_RIBBON_COLUMNS) {
+            if ((row + 1) * POKEMON_SUMMARY_RIBBONS_PER_PAGE < summary->ribbonCount) {
                 summary->ribbonRow++;
-                summary->ribbonCursor = summary->ribbonCursor % 3;
+                summary->ribbonCursor = summary->ribbonCursor % POKEMON_SUMMARY_RIBBON_COLUMNS;
             }
         } else {
-            summary->ribbonCursor = cursor + 3;
+            summary->ribbonCursor = cursor + POKEMON_SUMMARY_RIBBON_COLUMNS;
         }
-    } else if (direction == -3) {
-        if (cursor <= 2) {
+    } else if (direction == -POKEMON_SUMMARY_RIBBON_COLUMNS) {
+        if (cursor <= POKEMON_SUMMARY_RIBBON_COLUMNS - 1) {
             if (row != 0) {
                 summary->ribbonRow--;
-                summary->ribbonCursor = summary->ribbonCursor % 3 + 6;
+                summary->ribbonCursor = summary->ribbonCursor % POKEMON_SUMMARY_RIBBON_COLUMNS + POKEMON_SUMMARY_RIBBONS_PER_PAGE - POKEMON_SUMMARY_RIBBON_COLUMNS;
             }
         } else {
-            summary->ribbonCursor = cursor - 3;
+            summary->ribbonCursor = cursor - POKEMON_SUMMARY_RIBBON_COLUMNS;
         }
-    } else if (direction == 9) {
-        if ((row + 1) * 9 < summary->ribbonCount) {
+    } else if (direction == POKEMON_SUMMARY_RIBBONS_PER_PAGE) {
+        if ((row + 1) * POKEMON_SUMMARY_RIBBONS_PER_PAGE < summary->ribbonCount) {
             summary->ribbonRow++;
         }
-    } else if (direction == -9) {
+    } else if (direction == -POKEMON_SUMMARY_RIBBONS_PER_PAGE) {
         if (row != 0) {
             summary->ribbonRow--;
         }
     }
-    if ((cursor != summary->ribbonCursor || row != summary->ribbonRow) && direction != 9 && direction != -9) {
+    if ((cursor != summary->ribbonCursor || row != summary->ribbonRow) && direction != POKEMON_SUMMARY_RIBBONS_PER_PAGE && direction != -POKEMON_SUMMARY_RIBBONS_PER_PAGE) {
         PlaySE(SEQ_SE_DP_SELECT);
     }
     summary->ribbonId = PokemonSummary_GetRibbonAt(summary, summary->ribbonCursor);
@@ -2099,7 +2099,7 @@ static void PokemonSummary_MoveRibbonCursor(PokemonSummary *summary, int directi
     } else {
         Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_UP], FALSE);
     }
-    if ((summary->ribbonRow + 1) * 9 < summary->ribbonCount) {
+    if ((summary->ribbonRow + 1) * POKEMON_SUMMARY_RIBBONS_PER_PAGE < summary->ribbonCount) {
         Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN], TRUE);
     } else {
         Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_PAGE_DOWN], FALSE);
@@ -2113,7 +2113,7 @@ static u8 PokemonSummary_GetRibbonAt(PokemonSummary *summary, u8 cell) {
     u8 found;
     found = 0;
     i = found;
-    target = summary->ribbonRow * 9 + cell;
+    target = summary->ribbonRow * POKEMON_SUMMARY_RIBBONS_PER_PAGE + cell;
     for (; i < RIBBON_MAX; i++) {
         if ((summary->mon.ribbons[(u32)i >> 5] & (1 << (i & 31))) != 0) {
             if (target == found) {
@@ -2210,17 +2210,17 @@ static int PokemonSummary_GetMoveSelectTouch(PokemonSummary *summary) {
     return -1;
 }
 
-// Picking a move to forget: a move (0-3), the move to learn (4), cancel (5) or -1.
+// Picking a move to forget: a move (0-3), the move to learn, cancel or -1.
 static int PokemonSummary_GetForgetMoveTouch(PokemonSummary *summary) {
     int ret = TouchscreenHitbox_FindRectAtTouchNew(gPokemonSummaryMoveHitboxes);
     if (ret != -1) {
         return ret;
     }
     if (TouchscreenHitbox_TouchNewIsIn(gPokemonSummaryConfirmButtonHitbox) == TRUE) {
-        return 4;
+        return POKEMON_SUMMARY_MOVE_SLOT_NEW;
     }
     if (TouchscreenHitbox_TouchNewIsIn(gPokemonSummaryCancelButtonHitbox) == TRUE) {
-        return 5;
+        return POKEMON_SUMMARY_MOVE_SLOT_CANCEL;
     }
     return -1;
 }
@@ -2670,11 +2670,11 @@ static void PokemonSummary_SetMoveCategorySprite(PokemonSummary *summary, u16 mo
     thunk_Sprite_SetPaletteOverride(summary->sprites[POKEMON_SUMMARY_SPRITE_MOVE_CATEGORY], MoveCategoryIcon_GetPalette(category) + 3);
 }
 
-// Move slot 4 is the move to learn, 5 the cancel button.
+// The slots after the four moves are the move to learn and the cancel button.
 static void PokemonSummary_UpdateMoveCursorSprite(PokemonSummary *summary) {
     u32 slot = summary->moveSlot;
     switch (slot) {
-    case 4:
+    case POKEMON_SUMMARY_MOVE_SLOT_NEW:
         if (summary->args->mode == POKEMON_SUMMARY_MODE_FORGET_MOVE) {
             Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 68, slot * 32 + 40);
         } else {
@@ -2682,7 +2682,7 @@ static void PokemonSummary_UpdateMoveCursorSprite(PokemonSummary *summary) {
         }
         Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 0);
         break;
-    case 5:
+    case POKEMON_SUMMARY_MOVE_SLOT_CANCEL:
         if (summary->args->mode == POKEMON_SUMMARY_MODE_FORGET_MOVE) {
             Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 220, 176);
             Sprite_SetAnimCtrlSeq(summary->sprites[POKEMON_SUMMARY_SPRITE_CURSOR], 3);
@@ -2910,7 +2910,7 @@ static void PokemonSummary_ShowRibbonSprites(PokemonSummary *summary) {
         Sprite_SetDrawFlag(summary->sprites[i], FALSE);
     }
     if (summary->page == POKEMON_SUMMARY_PAGE_RIBBONS) {
-        for (i = 0; i < 9; i++) {
+        for (i = 0; i < POKEMON_SUMMARY_RIBBONS_PER_PAGE; i++) {
             if (i < summary->ribbonCount) {
                 Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBONS + i], TRUE);
                 PokemonSummary_SetRibbonSprite(summary, PokemonSummary_GetRibbonAt(summary, i), (u8)i);
@@ -2922,8 +2922,8 @@ static void PokemonSummary_ShowRibbonSprites(PokemonSummary *summary) {
 
 static void PokemonSummary_UpdateRibbonSprites(PokemonSummary *summary) {
     u16 i;
-    for (i = 0; i < 9; i++) {
-        if (summary->ribbonRow * 9 + i < summary->ribbonCount) {
+    for (i = 0; i < POKEMON_SUMMARY_RIBBONS_PER_PAGE; i++) {
+        if (summary->ribbonRow * POKEMON_SUMMARY_RIBBONS_PER_PAGE + i < summary->ribbonCount) {
             Sprite_SetDrawFlag(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBONS + i], TRUE);
             PokemonSummary_SetRibbonSprite(summary, PokemonSummary_GetRibbonAt(summary, i), (u8)i);
         } else {
@@ -2934,8 +2934,8 @@ static void PokemonSummary_UpdateRibbonSprites(PokemonSummary *summary) {
 
 static void PokemonSummary_UpdateRibbonCursorSprite(PokemonSummary *summary) {
     int cursor = summary->ribbonCursor;
-    int column = cursor % 3;
-    int row = cursor / 3;
+    int column = cursor % POKEMON_SUMMARY_RIBBON_COLUMNS;
+    int row = cursor / POKEMON_SUMMARY_RIBBON_COLUMNS;
     Sprite_SetPositionXY(summary->sprites[POKEMON_SUMMARY_SPRITE_RIBBON_CURSOR], column * 32 + 32, row * 40 + 24);
 }
 

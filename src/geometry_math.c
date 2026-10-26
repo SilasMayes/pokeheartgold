@@ -140,11 +140,11 @@ BOOL Point2D_CalcSegmentIntersection(Point2D *a, Point2D *b, Point2D *c, Point2D
     }
     ix = FX_Div(line2[1] - line1[1], line1[0] - line2[0]);
     iy = line2[1] + FX_Mul(line2[0], ix);
-    if (FX_Modf(ix, &intPartX) >= 0x800) {
+    if (FX_Modf(ix, &intPartX) >= FX32_CONST(0.5)) {
         intPartX += FX32_ONE;
     }
     out->x = intPartX >> FX32_SHIFT;
-    if (FX_Modf(iy, &intPartY) >= 0x800) {
+    if (FX_Modf(iy, &intPartY) >= FX32_CONST(0.5)) {
         intPartY += FX32_ONE;
     }
     out->y = intPartY >> FX32_SHIFT;

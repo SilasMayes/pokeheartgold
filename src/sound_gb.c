@@ -217,7 +217,7 @@ void SoundSys_ToggleGBSounds(void) {
         if (seqNo != GBSounds_GetGBSeqNoByDSSeqNo(seqNo)) {
             PlayBGM(seqNo);
         }
-        GF_SndHandleMoveVolume(0, volume, 0);
+        GF_SndHandleMoveVolume(SND_HANDLE_FIELD, volume, 0);
     }
 }
 

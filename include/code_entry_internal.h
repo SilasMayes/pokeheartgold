@@ -27,10 +27,11 @@ enum CodeEntryCursor {
     CODE_ENTRY_CURSOR_COUNT,
 };
 
-// Key cursor anims: around a digit key, around BACK / OK.
+// Key cursor anims: around a digit key, around BACK / OK, the flash of a pressed key.
 enum CodeEntryKeyCursorAnim {
     CODE_ENTRY_KEY_CURSOR_DIGIT = 1,
     CODE_ENTRY_KEY_CURSOR_BUTTON,
+    CODE_ENTRY_KEY_CURSOR_PRESS,
 };
 
 // A digit slot, a group separator, one of the three cursors or a BACK/OK button.

@@ -302,7 +302,7 @@ static void PlayerAvatar_PlayFootstepSound(LocalMapObject *object, PlayerAvatar 
     case PLAYER_STATE_SURFING:
         return;
     }
-    if (behavior < 16) {
+    if (behavior < NELEMS(sPlayerFootstepSounds)) {
         if (behavior == 0 && PlayerAvatar_IsRunning(avatar) == TRUE) {
             behavior = 1;
         }
@@ -316,7 +316,7 @@ static void PlayerAvatar_PlayFootstepSound(LocalMapObject *object, PlayerAvatar 
         Sound_ApplyFootstepVariation(sequence);
         return;
     }
-    GF_ASSERT(behavior < 16);
+    GF_ASSERT(behavior < NELEMS(sPlayerFootstepSounds));
 }
 
 void PlayerAvatar_UpdateMovement(PlayerAvatar *avatar) {

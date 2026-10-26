@@ -231,7 +231,7 @@ void CodeEntry_CreateCursorSprites(CodeEntryApp *app) {
     ManagedSprite_SetOamMode(app->cursors[CODE_ENTRY_CURSOR_KEY].sprite, GX_OAM_MODE_XLU);
     app->cursors[CODE_ENTRY_CURSOR_FLASH].column = 0;
     app->cursors[CODE_ENTRY_CURSOR_FLASH].row = 0;
-    app->cursors[CODE_ENTRY_CURSOR_FLASH].value = 1;
+    app->cursors[CODE_ENTRY_CURSOR_FLASH].value = CODE_ENTRY_KEY_CURSOR_DIGIT;
     CodeEntry_MoveKeyCursor(app, 0);
     ManagedSprite_SetAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite, app->cursors[CODE_ENTRY_CURSOR_FLASH].value);
     ManagedSprite_TickFrame(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite);
@@ -306,7 +306,7 @@ void CodeEntry_UpdateCursors(CodeEntryApp *app) {
     ManagedSprite_TickFrame(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite);
     for (i = CODE_ENTRY_CURSOR_KEY; i < CODE_ENTRY_CURSOR_COUNT; i++) {
         int anim = ManagedSprite_GetActiveAnim(app->cursors[i].sprite);
-        if (anim == 3) {
+        if (anim == CODE_ENTRY_KEY_CURSOR_PRESS) {
             if (!ManagedSprite_IsAnimated(app->cursors[i].sprite)) {
                 ManagedSprite_SetAnim(app->cursors[i].sprite, app->cursors[i].value);
                 if (app->touchActive == TRUE) {
@@ -320,7 +320,7 @@ void CodeEntry_UpdateCursors(CodeEntryApp *app) {
             if (anim != app->cursors[i].value) {
                 ManagedSprite_SetAnim(app->cursors[i].sprite, app->cursors[i].value);
             }
-            if (ManagedSprite_GetActiveAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite) != 3) {
+            if (ManagedSprite_GetActiveAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite) != CODE_ENTRY_KEY_CURSOR_PRESS) {
                 if (app->touchActive == TRUE) {
                     CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_KEY, FALSE);
                 } else {

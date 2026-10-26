@@ -311,7 +311,7 @@ static void CodeEntry_HandleKeys(CodeEntryApp *app) {
             CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_FLASH, TRUE);
             CodeEntry_MoveCursorToKey(app, key, CODE_ENTRY_CURSOR_FLASH);
             ManagedSprite_SetAnim(app->digits[cursor].sprite, CodeEntry_GetDigitAnim(app->digits[cursor].value, app->digits[cursor].active));
-            ManagedSprite_SetAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite, 3);
+            ManagedSprite_SetAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite, CODE_ENTRY_KEY_CURSOR_PRESS);
             group = app->digits[cursor].group;
             if (cursor + 1 == app->digitCount) {
                 moved = TRUE;
@@ -524,7 +524,7 @@ static void CodeEntry_OnTouch(u32 index, u32 event, void *arg) {
             CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_KEY, FALSE);
             CodeEntry_SetCursorVisible(app, CODE_ENTRY_CURSOR_FLASH, TRUE);
             CodeEntry_MoveCursorToKey(app, index - CODE_ENTRY_HITBOX_KEYS, CODE_ENTRY_CURSOR_FLASH);
-            ManagedSprite_SetAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite, 3);
+            ManagedSprite_SetAnim(app->cursors[CODE_ENTRY_CURSOR_FLASH].sprite, CODE_ENTRY_KEY_CURSOR_PRESS);
             group = app->digits[cursor].group;
             if (cursor + 1 == app->digitCount) {
                 app->pendingAction = CODE_ENTRY_ACTION_SELECT_GROUP;

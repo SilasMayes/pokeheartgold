@@ -6,9 +6,11 @@
 // A FontSystem shows text that was drawn into a BG window as sprites: the window is split into OBJ cells of the 12
 // hardware sizes (largest first, row by row), each cell's tiles are loaded to OBJ VRAM and get one sprite.
 
+#define FONT_OAM_CELL_SIZE_COUNT 12
+
 struct FontSystem {
-    void *cellFiles[12];
-    NNSG2dCellDataBank *cellBanks[12]; // one per entry of sFontOAMCellSizes
+    void *cellFiles[FONT_OAM_CELL_SIZE_COUNT];
+    NNSG2dCellDataBank *cellBanks[FONT_OAM_CELL_SIZE_COUNT]; // one per entry of sFontOAMCellSizes
     TextOBJ *objects;
     int capacity;
 };
@@ -65,8 +67,7 @@ static void FontOAMCell_Delete(FontOAMCell *node);
 static void FontOAMCell_FreeList(FontOAMCell *list);
 static void FontOAMCell_InsertBefore(FontOAMCell *node, FontOAMCell *next);
 
-
-static const u8 sFontOAMCellSizes[12][2] = {
+static const u8 sFontOAMCellSizes[FONT_OAM_CELL_SIZE_COUNT][2] = {
     { 8, 8 },
     { 8, 4 },
     { 4, 8 },
@@ -84,7 +85,7 @@ static const u8 sFontOAMCellSizes[12][2] = {
 FontSystem *FontSystem_NewInit(int count, enum HeapID heapId) {
     FontSystem *system = Heap_Alloc(heapId, sizeof(FontSystem));
     GF_ASSERT(system != NULL);
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < FONT_OAM_CELL_SIZE_COUNT; i++) {
         system->cellFiles[i] = GfGfxLoader_GetCellBank(NARC_a_0_3_5, i, FALSE, &system->cellBanks[i], heapId);
         GF_ASSERT(system->cellFiles[i] != NULL);
     }
@@ -97,7 +98,7 @@ FontSystem *FontSystem_NewInit(int count, enum HeapID heapId) {
 
 void FontSystem_Delete(FontSystem *system) {
     GF_ASSERT(system != NULL);
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < FONT_OAM_CELL_SIZE_COUNT; i++) {
         Heap_Free(system->cellFiles[i]);
     }
     Heap_Free(system->objects);
@@ -332,7 +333,7 @@ static TextOBJ *FontSystem_GetFreeTextOBJ(FontSystem *input) {
 }
 
 static int FontOAM_GetCellSizeIndex(int width, int height) {
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < FONT_OAM_CELL_SIZE_COUNT; i++) {
         if (sFontOAMCellSizes[i][0] <= width && sFontOAMCellSizes[i][1] <= height) {
             return i;
         }

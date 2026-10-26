@@ -27,6 +27,13 @@
 // Pokemon summary screen text: the screen's windows and the text of each page.
 
 
+// PokemonSummary_PrintBuffer alignments
+enum PokemonSummaryTextAlign {
+    POKEMON_SUMMARY_ALIGN_LEFT,
+    POKEMON_SUMMARY_ALIGN_RIGHT,
+    POKEMON_SUMMARY_ALIGN_CENTER,
+};
+
 #define PokemonSummary_NewTrainerMemo(mon, isMine, heapID) ((TrainerMemo * (*)(Pokemon *, BOOL, enum HeapID)) TrainerMemo_New)(mon, isMine, heapID)
 
 static BOOL PokemonSummary_IsPlayersMon(PokemonSummary *summary);
@@ -214,10 +221,10 @@ void PokemonSummary_PrintNickname(PokemonSummary *summary) {
         value = summary->mon.gender;
         if (value == MON_MALE) {
             ReadMsgDataIntoString(summary->msgData, msg_0302_00001, summary->buffer);
-            PokemonSummary_PrintBuffer(summary, window, MAKE_TEXT_COLOR(3, 4, 0), 1);
+            PokemonSummary_PrintBuffer(summary, window, MAKE_TEXT_COLOR(3, 4, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
         } else if (value == MON_FEMALE) {
             ReadMsgDataIntoString(summary->msgData, msg_0302_00002, summary->buffer);
-            PokemonSummary_PrintBuffer(summary, window, MAKE_TEXT_COLOR(5, 6, 0), 1);
+            PokemonSummary_PrintBuffer(summary, window, MAKE_TEXT_COLOR(5, 6, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
         }
     }
     ScheduleWindowCopyToVram(window);
@@ -252,7 +259,7 @@ void PokemonSummary_PrintHeldItem(PokemonSummary *summary) {
     } else {
         ReadMsgDataIntoString(summary->msgData, msg_0302_00006, summary->buffer);
     }
-    PokemonSummary_PrintBuffer(summary, &summary->windows[31], MAKE_TEXT_COLOR(1, 2, 0), 0);
+    PokemonSummary_PrintBuffer(summary, &summary->windows[31], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_LEFT);
     ScheduleWindowCopyToVram(&summary->windows[6]);
     ScheduleWindowCopyToVram(&summary->windows[31]);
 }
@@ -265,19 +272,19 @@ static BOOL PokemonSummary_IsPlayersMon(PokemonSummary *summary) {
     return FALSE;
 }
 
-// alignment: 0 left, 1 right, 2 centered, otherwise the x position.
+// alignment: an enum PokemonSummaryTextAlign value, otherwise the x position.
 static void PokemonSummary_PrintBuffer(PokemonSummary *summary, Window *window, u32 color, int alignment) {
     int x;
     switch (alignment) {
-    case 0:
+    case POKEMON_SUMMARY_ALIGN_LEFT:
         x = 0;
         break;
-    case 1: {
+    case POKEMON_SUMMARY_ALIGN_RIGHT: {
         u8 width = FontID_String_GetWidth(0, summary->buffer, 0);
         x = (u8)((u8)(GetWindowWidth(window) * 8) - width);
         break;
     }
-    case 2: {
+    case POKEMON_SUMMARY_ALIGN_CENTER: {
         u8 width = FontID_String_GetWidth(0, summary->buffer, 0);
         x = (u8)(((u8)(GetWindowWidth(window) * 8) - width) / 2);
         break;
@@ -339,41 +346,41 @@ static void PokemonSummary_PrintValuePair(PokemonSummary *summary, int window, i
 }
 
 static void PokemonSummary_PrintLabels(PokemonSummary *summary) {
-    PokemonSummary_PrintMessage(summary, 0, msg_0302_00007, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 1, msg_0302_00023, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 2, msg_0302_00109, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 3, msg_0302_00126, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 4, msg_0302_00128, MAKE_TEXT_COLOR(14, 15, 0), 0);
+    PokemonSummary_PrintMessage(summary, 0, msg_0302_00007, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 1, msg_0302_00023, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 2, msg_0302_00109, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 3, msg_0302_00126, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 4, msg_0302_00128, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
     if (summary->args->isFlag982Set) {
-        PokemonSummary_PrintMessage(summary, 5, msg_0302_00157, MAKE_TEXT_COLOR(14, 15, 0), 0);
+        PokemonSummary_PrintMessage(summary, 5, msg_0302_00157, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
     } else {
         FillWindowPixelBuffer(&summary->windows[5], 0);
     }
-    PokemonSummary_PrintMessage(summary, 6, msg_0302_00004, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 7, msg_0302_00008, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 8, msg_0302_00010, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 9, msg_0302_00012, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 10, msg_0302_00013, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 11, msg_0302_00015, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 12, msg_0302_00017, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 13, msg_0302_00019, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 15, msg_0302_00110, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintStatLabel(summary, 16, msg_0302_00111, 0, 0);
-    PokemonSummary_PrintStatLabel(summary, 17, msg_0302_00112, 1, 0);
-    PokemonSummary_PrintStatLabel(summary, 18, msg_0302_00113, 3, 0);
-    PokemonSummary_PrintStatLabel(summary, 19, msg_0302_00114, 4, 0);
-    PokemonSummary_PrintStatLabel(summary, 20, msg_0302_00115, 2, 0);
+    PokemonSummary_PrintMessage(summary, 6, msg_0302_00004, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 7, msg_0302_00008, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 8, msg_0302_00010, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 9, msg_0302_00012, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 10, msg_0302_00013, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 11, msg_0302_00015, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 12, msg_0302_00017, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 13, msg_0302_00019, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 15, msg_0302_00110, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintStatLabel(summary, 16, msg_0302_00111, 0, POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintStatLabel(summary, 17, msg_0302_00112, 1, POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintStatLabel(summary, 18, msg_0302_00113, 3, POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintStatLabel(summary, 19, msg_0302_00114, 4, POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintStatLabel(summary, 20, msg_0302_00115, 2, POKEMON_SUMMARY_ALIGN_LEFT);
     ReadMsgDataIntoString(summary->msgData, msg_0302_00116, summary->buffer);
     AddTextPrinterParameterizedWithColor(&summary->windows[21], 0, summary->buffer, 3, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(14, 15, 0), NULL);
     ReadMsgDataIntoString(summary->msgData, msg_0302_00146, summary->buffer);
     AddTextPrinterParameterizedWithColor(&summary->windows[23], 4, summary->buffer, 0, 0, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(14, 15, 0), NULL);
-    PokemonSummary_PrintMessage(summary, 24, msg_0302_00149, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 25, msg_0302_00147, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 26, msg_0302_00148, MAKE_TEXT_COLOR(14, 15, 0), 0);
-    PokemonSummary_PrintMessage(summary, 27, msg_0302_00162, MAKE_TEXT_COLOR(14, 15, 0), 2);
-    PokemonSummary_PrintMessage(summary, 28, msg_0302_00160, MAKE_TEXT_COLOR(1, 2, 0), 2);
-    PokemonSummary_PrintMessage(summary, 29, msg_0302_00182, MAKE_TEXT_COLOR(1, 2, 0), 0);
-    PokemonSummary_PrintMessage(summary, 30, msg_0302_00179, MAKE_TEXT_COLOR(14, 15, 0), 0);
+    PokemonSummary_PrintMessage(summary, 24, msg_0302_00149, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 25, msg_0302_00147, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 26, msg_0302_00148, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 27, msg_0302_00162, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_CENTER);
+    PokemonSummary_PrintMessage(summary, 28, msg_0302_00160, MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_CENTER);
+    PokemonSummary_PrintMessage(summary, 29, msg_0302_00182, MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintMessage(summary, 30, msg_0302_00179, MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
 }
 
 void PokemonSummary_PrintPage(PokemonSummary *summary) {
@@ -445,9 +452,9 @@ static void PokemonSummary_PrintInfo(PokemonSummary *summary) {
         }
     }
     if (!summary->mon.shiny) {
-        PokemonSummary_PrintBuffer(summary, summary->pageWindows, MAKE_TEXT_COLOR(1, 2, 0), 2);
+        PokemonSummary_PrintBuffer(summary, summary->pageWindows, MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_CENTER);
     } else {
-        PokemonSummary_PrintBuffer(summary, summary->pageWindows, MAKE_TEXT_COLOR(5, 6, 0), 2);
+        PokemonSummary_PrintBuffer(summary, summary->pageWindows, MAKE_TEXT_COLOR(5, 6, 0), POKEMON_SUMMARY_ALIGN_CENTER);
     }
     {
         int x = FontID_String_GetCenterAlignmentX(0, summary->mon.speciesName, 0, 72);
@@ -463,15 +470,15 @@ static void PokemonSummary_PrintInfo(PokemonSummary *summary) {
         }
     }
     PokemonSummary_FormatNumber(summary, msg_0302_00016, (u16)summary->mon.otId, 5, PRINTING_MODE_LEADING_ZEROS);
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[3], MAKE_TEXT_COLOR(1, 2, 0), 2);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[3], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_CENTER);
     PokemonSummary_FormatNumber(summary, msg_0302_00018, summary->mon.exp, 7, PRINTING_MODE_LEFT_ALIGN);
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[4], MAKE_TEXT_COLOR(1, 2, 0), 1);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[4], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
     if (summary->mon.level < MAX_LEVEL) {
         PokemonSummary_FormatNumber(summary, msg_0302_00021, summary->mon.nextLevelExp - summary->mon.exp, 7, PRINTING_MODE_LEFT_ALIGN);
     } else {
         PokemonSummary_FormatNumber(summary, msg_0302_00021, 0, 7, PRINTING_MODE_LEFT_ALIGN);
     }
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[5], MAKE_TEXT_COLOR(1, 2, 0), 1);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[5], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
     ScheduleWindowCopyToVram(&summary->pageWindows[0]);
     ScheduleWindowCopyToVram(&summary->pageWindows[1]);
     ScheduleWindowCopyToVram(&summary->pageWindows[2]);
@@ -535,11 +542,11 @@ static void PokemonSummary_PrintStats(PokemonSummary *summary) {
     String *template;
     MsgData *abilityDescriptions;
 
-    PokemonSummary_PrintStatLabel(summary, 16, msg_0302_00111, 0, 0);
-    PokemonSummary_PrintStatLabel(summary, 17, msg_0302_00112, 1, 0);
-    PokemonSummary_PrintStatLabel(summary, 18, msg_0302_00113, 3, 0);
-    PokemonSummary_PrintStatLabel(summary, 19, msg_0302_00114, 4, 0);
-    PokemonSummary_PrintStatLabel(summary, 20, msg_0302_00115, 2, 0);
+    PokemonSummary_PrintStatLabel(summary, 16, msg_0302_00111, 0, POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintStatLabel(summary, 17, msg_0302_00112, 1, POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintStatLabel(summary, 18, msg_0302_00113, 3, POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintStatLabel(summary, 19, msg_0302_00114, 4, POKEMON_SUMMARY_ALIGN_LEFT);
+    PokemonSummary_PrintStatLabel(summary, 20, msg_0302_00115, 2, POKEMON_SUMMARY_ALIGN_LEFT);
     ScheduleWindowCopyToVram(&summary->windows[2]);
     ScheduleWindowCopyToVram(&summary->windows[15]);
     ScheduleWindowCopyToVram(&summary->windows[16]);
@@ -558,20 +565,20 @@ static void PokemonSummary_PrintStats(PokemonSummary *summary) {
     FillWindowPixelBuffer(&summary->pageWindows[7], 0);
     PokemonSummary_PrintValuePair(summary, 0, 117, 119, 118, summary->mon.hp, summary->mon.maxHp, 3, (GetWindowWidth(summary->pageWindows) * 4), 0);
     PokemonSummary_FormatNumber(summary, msg_0302_00120, summary->mon.attack, 3, PRINTING_MODE_LEFT_ALIGN);
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[1], MAKE_TEXT_COLOR(1, 2, 0), 1);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[1], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
     PokemonSummary_FormatNumber(summary, msg_0302_00121, summary->mon.defense, 3, PRINTING_MODE_LEFT_ALIGN);
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[2], MAKE_TEXT_COLOR(1, 2, 0), 1);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[2], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
     PokemonSummary_FormatNumber(summary, msg_0302_00122, summary->mon.spAttack, 3, PRINTING_MODE_LEFT_ALIGN);
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[3], MAKE_TEXT_COLOR(1, 2, 0), 1);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[3], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
     PokemonSummary_FormatNumber(summary, msg_0302_00123, summary->mon.spDefense, 3, PRINTING_MODE_LEFT_ALIGN);
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[4], MAKE_TEXT_COLOR(1, 2, 0), 1);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[4], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
     PokemonSummary_FormatNumber(summary, msg_0302_00124, summary->mon.speed, 3, PRINTING_MODE_LEFT_ALIGN);
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[5], MAKE_TEXT_COLOR(1, 2, 0), 1);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[5], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
     BufferAbilityName(summary->msgFormat, 0, summary->mon.ability);
     template = NewString_ReadMsgData(summary->msgData, msg_0302_00125);
     StringExpandPlaceholders(summary->msgFormat, summary->buffer, template);
     String_Delete(template);
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[6], MAKE_TEXT_COLOR(1, 2, 0), 0);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[6], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_LEFT);
     abilityDescriptions = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0722_bin, HEAP_ID_19);
     ReadMsgDataIntoString(abilityDescriptions, summary->mon.ability, summary->buffer);
     DestroyMsgData(abilityDescriptions);
@@ -637,7 +644,7 @@ static void PokemonSummary_PrintRibbonCount(PokemonSummary *summary) {
     ScheduleWindowCopyToVram(&summary->windows[23]);
     FillWindowPixelBuffer(summary->pageWindows, 0);
     PokemonSummary_FormatNumber(summary, msg_0302_00183, summary->ribbonCount, 3, PRINTING_MODE_LEFT_ALIGN);
-    PokemonSummary_PrintBuffer(summary, summary->pageWindows, MAKE_TEXT_COLOR(1, 2, 0), 0);
+    PokemonSummary_PrintBuffer(summary, summary->pageWindows, MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_LEFT);
     ScheduleWindowCopyToVram(summary->pageWindows);
     BgCommitTilemapBufferToVram(summary->bgConfig, GF_BG_LYR_SUB_0);
 }
@@ -651,7 +658,7 @@ static void PokemonSummary_PrintFlavorPreference(PokemonSummary *summary) {
     {
         FillWindowPixelBuffer(&summary->pageWindows[1], 0);
         ReadMsgDataIntoString(summary->msgData, msg_0302_00165, summary->buffer);
-        PokemonSummary_PrintBuffer(summary, &summary->pageWindows[1], MAKE_TEXT_COLOR(14, 15, 0), 0);
+        PokemonSummary_PrintBuffer(summary, &summary->pageWindows[1], MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
         ReadMsgDataIntoString(summary->msgData, summary->mon.favoriteFlavor + 166, summary->buffer);
         AddTextPrinterParameterizedWithColor(&summary->pageWindows[1], 0, summary->buffer, 0, 16, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
         ScheduleWindowCopyToVram(&summary->pageWindows[1]);
@@ -661,13 +668,13 @@ static void PokemonSummary_PrintFlavorPreference(PokemonSummary *summary) {
 void PokemonSummary_PrintRibbonInfo(PokemonSummary *summary) {
     FillWindowPixelBuffer(&summary->pageWindows[1], 0);
     FillWindowPixelBuffer(&summary->pageWindows[2], 0);
-    if (summary->ribbonCursor + summary->ribbonRow * 9 < summary->ribbonCount) {
+    if (summary->ribbonCursor + summary->ribbonRow * POKEMON_SUMMARY_RIBBONS_PER_PAGE < summary->ribbonCount) {
         int msgNo = GetRibbonAttr(summary->ribbonId, RIBBONDAT_NAMEGMM);
         ReadMsgDataIntoString(summary->ribbonMsgData, msgNo, summary->buffer);
-        PokemonSummary_PrintBuffer(summary, &summary->pageWindows[1], MAKE_TEXT_COLOR(14, 15, 0), 0);
+        PokemonSummary_PrintBuffer(summary, &summary->pageWindows[1], MAKE_TEXT_COLOR(14, 15, 0), POKEMON_SUMMARY_ALIGN_LEFT);
         msgNo = GetRibbonDescGmm((const u8 *)summary->args->ribbons, summary->ribbonId);
         ReadMsgDataIntoString(summary->ribbonMsgData, msgNo, summary->buffer);
-        PokemonSummary_PrintBuffer(summary, &summary->pageWindows[2], MAKE_TEXT_COLOR(1, 2, 0), 0);
+        PokemonSummary_PrintBuffer(summary, &summary->pageWindows[2], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_LEFT);
     }
     ScheduleWindowCopyToVram(&summary->pageWindows[1]);
     ScheduleWindowCopyToVram(&summary->pageWindows[2]);
@@ -681,7 +688,7 @@ static void PokemonSummary_PrintMoveSlot(PokemonSummary *summary, int slot) {
     u8 maxPP;
 
     window = &summary->pageWindows[slot + 8];
-    if (slot != 4) {
+    if (slot != POKEMON_SUMMARY_MOVE_SLOT_NEW) {
         move = summary->mon.moves[slot];
         pp = summary->mon.pp[slot];
         maxPP = summary->mon.maxPP[slot];
@@ -720,17 +727,17 @@ void PokemonSummary_PrintMoveInfo(PokemonSummary *summary, u16 move) {
     } else {
         PokemonSummary_FormatNumber(summary, msg_0302_00150, attr, 3, PRINTING_MODE_LEFT_ALIGN);
     }
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[13], MAKE_TEXT_COLOR(1, 2, 0), 1);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[13], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
     attr = GetMoveAttr(move, MOVEATTR_ACCURACY);
     if (attr == 0) {
         ReadMsgDataIntoString(summary->msgData, msg_0302_00154, summary->buffer);
     } else {
         PokemonSummary_FormatNumber(summary, msg_0302_00151, attr, 3, PRINTING_MODE_LEFT_ALIGN);
     }
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[14], MAKE_TEXT_COLOR(1, 2, 0), 1);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[14], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_RIGHT);
     moveDescriptions = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0749_bin, HEAP_ID_19);
     ReadMsgDataIntoString(moveDescriptions, move, summary->buffer);
-    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[15], MAKE_TEXT_COLOR(1, 2, 0), 0);
+    PokemonSummary_PrintBuffer(summary, &summary->pageWindows[15], MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_LEFT);
     DestroyMsgData(moveDescriptions);
     ScheduleWindowCopyToVram(&summary->pageWindows[13]);
     ScheduleWindowCopyToVram(&summary->pageWindows[14]);
@@ -749,7 +756,7 @@ void PokemonSummary_ClearMoveInfo(PokemonSummary *summary) {
 void PokemonSummary_PrintMoveToLearn(PokemonSummary *summary) {
     if (summary->args->moveToLearn != MOVE_NONE) {
         FillWindowPixelBuffer(&summary->pageWindows[12], 0);
-        PokemonSummary_PrintMoveSlot(summary, 4);
+        PokemonSummary_PrintMoveSlot(summary, POKEMON_SUMMARY_MOVE_SLOT_NEW);
         ScheduleWindowCopyToVram(&summary->pageWindows[12]);
     } else {
         ScheduleWindowCopyToVram(&summary->windows[23]);
@@ -781,7 +788,7 @@ void PokemonSummary_PrintCantForgetHMMessage(PokemonSummary *summary) {
     }
     FillWindowPixelBuffer(window, 0);
     ReadMsgDataIntoString(summary->msgData, msg_0302_00156, summary->buffer);
-    PokemonSummary_PrintBuffer(summary, window, MAKE_TEXT_COLOR(1, 2, 0), 0);
+    PokemonSummary_PrintBuffer(summary, window, MAKE_TEXT_COLOR(1, 2, 0), POKEMON_SUMMARY_ALIGN_LEFT);
     ScheduleWindowCopyToVram(window);
 }
 
@@ -796,7 +803,7 @@ void PokemonSummary_ShowForgetLabel(PokemonSummary *summary, BOOL show) {
         ClearWindowTilemapAndScheduleTransfer(&summary->pageWindows[16]);
         if (summary->args->moveToLearn != MOVE_NONE) {
             FillWindowPixelBuffer(&summary->pageWindows[12], 0);
-            PokemonSummary_PrintMoveSlot(summary, 4);
+            PokemonSummary_PrintMoveSlot(summary, POKEMON_SUMMARY_MOVE_SLOT_NEW);
             ScheduleWindowCopyToVram(&summary->pageWindows[12]);
         }
     }

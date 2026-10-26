@@ -87,6 +87,10 @@ enum PokemonSummaryPage {
     POKEMON_SUMMARY_PAGE_COUNT,     // ends a page list
 };
 
+// The ribbons are shown a page at a time, in a grid of 3 x 3
+#define POKEMON_SUMMARY_RIBBON_COLUMNS   3
+#define POKEMON_SUMMARY_RIBBONS_PER_PAGE (POKEMON_SUMMARY_RIBBON_COLUMNS * 3)
+
 // What args->party holds (args->monDataType).
 enum PokemonSummaryMonDataType {
     POKEMON_SUMMARY_MON_ARRAY,
@@ -101,6 +105,13 @@ enum PokemonSummaryMode {
     POKEMON_SUMMARY_MODE_FORGET_MOVE,
     POKEMON_SUMMARY_MODE_CONDITION,
     POKEMON_SUMMARY_MODE_UPDATE_CONDITION,
+};
+
+// summary->moveSlot after the four moves when picking a move to forget; args->selectedMoveSlot is
+// POKEMON_SUMMARY_MOVE_SLOT_NEW when no move was forgotten.
+enum PokemonSummaryMoveSlot {
+    POKEMON_SUMMARY_MOVE_SLOT_NEW = MAX_MON_MOVES, // the move to learn
+    POKEMON_SUMMARY_MOVE_SLOT_CANCEL,              // the cancel button
 };
 
 enum PokemonSummaryPokerus {

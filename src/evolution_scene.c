@@ -116,6 +116,8 @@ enum EvolutionMenuResult {
     EVO_MENU_BOTTOM,
 };
 
+#define EVO_MENU_CURSOR_ANIM_SELECTED 3 // the menu cursor's animation once an option is chosen
+
 struct EvolutionTaskData {
     BgConfig *bgConfig;
     Window *window; // message box
@@ -524,7 +526,7 @@ static BOOL EvolutionScene_HandleMenuInput(EvolutionTaskData *data) {
     }
     if (selected) {
         EvolutionScene_UpdateMenuCursor(data);
-        ManagedSprite_SetAnim(data->cursorSprite, 3);
+        ManagedSprite_SetAnim(data->cursorSprite, EVO_MENU_CURSOR_ANIM_SELECTED);
         PlaySE(SEQ_SE_DP_SELECT);
     }
     return selected;
@@ -532,7 +534,7 @@ static BOOL EvolutionScene_HandleMenuInput(EvolutionTaskData *data) {
 
 static BOOL EvolutionScene_IsMenuCursorAnimDone(EvolutionTaskData *data) {
     GF_ASSERT(data->spritesReady);
-    GF_ASSERT(ManagedSprite_GetActiveAnim(data->cursorSprite) == 3);
+    GF_ASSERT(ManagedSprite_GetActiveAnim(data->cursorSprite) == EVO_MENU_CURSOR_ANIM_SELECTED);
     if (!ManagedSprite_IsAnimated(data->cursorSprite)) {
         return TRUE;
     }

@@ -196,7 +196,7 @@ static void GraphicsObject_SetRotation(GraphicsObject *object, u32 rotation) {
 static void GraphicsObject_Init(GraphicsObject *object) {
     memset(object, 0, sizeof(GraphicsObject));
     object->alpha = 31;
-    object->color = GX_RGB(31, 31, 31);
+    object->color = RGB_WHITE;
 }
 
 static void GraphicsImage_Init(GraphicsImage *image) {
@@ -296,8 +296,8 @@ static void GraphicsObject_Draw(GraphicsObject *object) {
     int u0, u1, v0, v1;
 
     G3_PushMtx();
-    G3_MaterialColorDiffAmb(object->color, GX_RGB(31, 31, 31), TRUE);
-    G3_MaterialColorSpecEmi(GX_RGB(16, 16, 16), GX_RGB(0, 0, 0), FALSE);
+    G3_MaterialColorDiffAmb(object->color, RGB_WHITE, TRUE);
+    G3_MaterialColorSpecEmi(GX_RGB(16, 16, 16), RGB_BLACK, FALSE);
     G3_TexImageParam(object->imageAttr->fmt, GX_TEXGEN_TEXCOORD, object->imageAttr->sizeS, object->imageAttr->sizeT, GX_TEXREPEAT_NONE, GX_TEXFLIP_NONE, object->imageAttr->plttUse, object->imageAddr);
     G3_TexPlttBase(object->paletteAddr + object->paletteSlot * 32, object->imageAttr->fmt);
     G3_PolygonAttr(0, GX_POLYGONMODE_MODULATE, GX_CULL_NONE, 0, object->alpha, 0);
