@@ -1,9 +1,10 @@
 #ifndef POKEHEARTGOLD_WIFI_SETUP_APP_H
 #define POKEHEARTGOLD_WIFI_SETUP_APP_H
 
-#include "wifi_setup/wifi_setup.h"
 #include "wifi_setup/wifi_setup_share.h"
 #include "wifi_setup/wifi_setup_ui.h"
+
+struct WifiSetupRequest;
 
 // Access-point setup screens, application core: the entry point the game calls, the per-frame main loop, the setup
 // client request, the text banks and the session started from the screens.
@@ -56,7 +57,7 @@ typedef struct WifiSetupApp {
 typedef struct WifiSetupClient {
     u8 done; // the request finished successfully
     u8 unk_01[3];
-    WifiSetupRequest *request;
+    struct WifiSetupRequest *request;
 } WifiSetupClient;
 
 // A loaded text bank: a table of offsets into a block of u16 strings.
@@ -106,7 +107,7 @@ typedef struct WifiSetupSession {
 } WifiSetupSession;
 
 extern WifiSetupClient gWifiSetupClient;
-extern WifiSetupRequest *ov13_0224F4C8;
+extern struct WifiSetupRequest *ov13_0224F4C8;
 extern WifiSetupApp gWifiSetupApp;
 extern WifiSetupTextBanks *gWifiSetupTextBanks;
 extern WifiSetupSession *gWifiSetupSession;

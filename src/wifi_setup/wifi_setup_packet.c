@@ -2,6 +2,7 @@
 
 #include "nitrowifi/socl_internal.h"
 #include "wifi_setup/wifi_setup_internal.h"
+#include "wifi_setup/wifi_setup_wcm.h"
 
 #include "WM.h"
 
@@ -51,7 +52,7 @@ int WifiSetup_FindSetupAccessPoint(void) {
     WifiSetupApEntryList *out;
     WifiSetupApEntryList *previous;
     int result;
-    int running;
+    BOOL running;
     int event;
     int found;
     WifiSetupApInfo *ap;
@@ -72,7 +73,7 @@ int WifiSetup_FindSetupAccessPoint(void) {
         if (WifiSetup_GetMilliseconds() >= gWifiSetupConfig.deadline) {
             break;
         }
-        if (!WifiSetupLink_StartSearch(0, 0, 0, 0x30BFFE)) {
+        if (!WifiSetupLink_StartSearch(NULL, NULL, 0, 0x30BFFE)) {
             result = -2;
             goto done;
         }
@@ -304,7 +305,7 @@ u32 WifiSetup_BuildSingleRecordList(u8 *dst, u16 type, const void *src, u32 leng
 }
 
 // Reply of type 1: records 1 and 2 must be 1; record 5 >= 1 asks for the extended request.
-BOOL WifiSetup_CheckVersionReply(u8 *data, int *extended) {
+BOOL WifiSetup_CheckVersionReply(u8 *data, BOOL *extended) {
     u32 type;
     u32 length;
     u32 tag;
@@ -343,9 +344,9 @@ BOOL WifiSetup_CheckVersionReply(u8 *data, int *extended) {
         return FALSE;
     }
     if (record5 >= 1) {
-        *extended = 1;
+        *extended = TRUE;
     } else {
-        *extended = 0;
+        *extended = FALSE;
     }
     return TRUE;
 }

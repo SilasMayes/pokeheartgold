@@ -693,7 +693,7 @@ void WifiSetupConnectionTest_Init(void) {
     int mode;
     gWifiSetupConnectionTestPassed = FALSE;
     WifiSetupConnectionTest_LoadGraphics();
-    WifiSetupApp_GetScreenArgs(0, &mode);
+    WifiSetupApp_GetScreenArgs(NULL, &mode);
     if (mode == WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupMessage_Show(0x31, -1, 0);
     }
@@ -725,7 +725,7 @@ static void WifiSetupConnectionTest_Start(void) {
     WifiSetupConnectionTestParams param;
     WifiSetupConnection *connection = WifiSetupConnections_GetEdit();
     MI_CpuCopy32(&gWifiSetupConnectionTestParams, &param, sizeof(param));
-    WifiSetupApp_GetScreenArgs(0, &mode);
+    WifiSetupApp_GetScreenArgs(NULL, &mode);
     if (mode == WIFI_SETUP_TEST_USB_CONNECTOR) {
         param.slot = 4;
     } else {
@@ -744,7 +744,7 @@ static void WifiSetupConnectionTest_FadeIn(void) {
     int mode;
     WifiSetupFade_Start(WIFI_SETUP_FADE_IN_FROM_WHITE, WIFI_SETUP_SCREEN_MAIN, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
     WifiSetupDisplay_ShowPlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
-    WifiSetupApp_GetScreenArgs(0, &mode);
+    WifiSetupApp_GetScreenArgs(NULL, &mode);
     if (mode == WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupFade_Start(WIFI_SETUP_FADE_IN_FROM_WHITE, WIFI_SETUP_SCREEN_SUB, GX_BLEND_PLANEMASK_BG0, 8);
         WifiSetupDisplay_ShowPlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
@@ -876,7 +876,7 @@ static void WifiSetupConnectionOk_Update(void) {
 
 static void WifiSetupConnectionOk_FadeOut(void) {
     int mode;
-    WifiSetupApp_GetScreenArgs(0, &mode);
+    WifiSetupApp_GetScreenArgs(NULL, &mode);
     if (mode != WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupBanner_Close();
     }
@@ -901,7 +901,7 @@ static void WifiSetupConnectionOk_End(void) {
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_CREATE);
-    WifiSetupApp_GetScreenArgs(0, &mode);
+    WifiSetupApp_GetScreenArgs(NULL, &mode);
     if (mode == WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupApp_SetScreenArgs(0, 0);
         WifiSetupApp_SetStateFunc(WifiSetupSettings_Init);
@@ -915,7 +915,7 @@ static void WifiSetupConnectionOk_UpdateTimer(void) {
     if (++gWifiSetupConnectionOkTimer < 0xB4) {
         return;
     }
-    WifiSetupApp_GetScreenArgs(0, &mode);
+    WifiSetupApp_GetScreenArgs(NULL, &mode);
     switch (WifiSetupApp_GetKind()) {
     case WIFI_SETUP_KIND_TOP_MENU:
         break;
@@ -932,7 +932,7 @@ static void WifiSetupConnectionOk_UpdateTimer(void) {
 void WifiSetupTestPrompt_Init(void) {
     int mode;
     WifiSetupApScan_FreeWork();
-    WifiSetupApp_GetScreenArgs(0, &mode);
+    WifiSetupApp_GetScreenArgs(NULL, &mode);
     WifiSetupTestPrompt_LoadGraphics();
     WifiSetupMessage_Show(0x31, -1, 0);
     if (mode != WIFI_SETUP_TEST_USB_CONNECTOR) {
@@ -969,7 +969,7 @@ static void WifiSetupTestPrompt_WaitFadeIn(void) {
     if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_MAIN)) {
         return;
     }
-    WifiSetupApp_GetScreenArgs(0, &mode);
+    WifiSetupApp_GetScreenArgs(NULL, &mode);
     WifiSetupDialog_Open(prompts.messages[mode], 1, 1, -1, 0);
     WifiSetupApp_SetStateFunc(WifiSetupTestPrompt_Main);
 }

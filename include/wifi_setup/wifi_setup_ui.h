@@ -328,7 +328,7 @@ void *WifiSetupPool_Pop(WifiSetupPool *pool);
 
 void WifiSetupFade_Init(void);
 void WifiSetupFade_Free(void);
-u8 WifiSetupFade_IsActive(enum WifiSetupScreen screen);
+BOOL WifiSetupFade_IsActive(enum WifiSetupScreen screen);
 BOOL WifiSetupFade_Start(enum WifiSetupFadeKind kind, enum WifiSetupScreen screen, int planes, int duration);
 BOOL WifiSetupFade_StartDelay(int duration);
 
@@ -396,6 +396,6 @@ WifiSetupTask *WifiSetupTask_Create(enum WifiSetupTaskQueueId queue, WifiSetupTa
 void WifiSetupTask_SetFunc(WifiSetupTask *task, WifiSetupTaskFunc func);
 void WifiSetupTask_DestroyLater(enum WifiSetupTaskQueueId queue, WifiSetupTask *task);
 void WifiSetupTask_Destroy(enum WifiSetupTaskQueueId queue, WifiSetupTask *task);
-void WifiSetupTask_SetQueueEnabled(enum WifiSetupTaskQueueId queue, u8 enabled);
+void WifiSetupTask_SetQueueEnabled(enum WifiSetupTaskQueueId queue, BOOL enabled);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_UI_H

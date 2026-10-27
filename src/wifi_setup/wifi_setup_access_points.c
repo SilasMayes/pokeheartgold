@@ -4,6 +4,7 @@
 
 #include "dwc/dwc_bm_internal.h"
 #include "wifi_setup/wifi_setup.h"
+#include "wifi_setup/wifi_setup_internal.h"
 #include "nnsys/snd_arc_internal.h"
 #include "wifi_setup/wifi_setup_local_wireless.h"
 #include "wifi_setup/wifi_setup_ui.h"
@@ -164,11 +165,11 @@ WifiSetupConnection *WifiSetupConnections_GetEdit(void) {
     return &gWifiSetupConnections->edit;
 }
 
-void WifiSetupConnections_SetAutoAddress(int on) {
+void WifiSetupConnections_SetAutoAddress(BOOL on) {
     gWifiSetupConnections->edit.autoAddress = on;
 }
 
-void WifiSetupConnections_SetAutoDns(int on) {
+void WifiSetupConnections_SetAutoDns(BOOL on) {
     gWifiSetupConnections->edit.autoDns = on;
 }
 
@@ -413,29 +414,28 @@ static void WifiSetupConnections_WritePage(int index) {
     BOOL changed[4];
     void *temp;
     int status = gWifiSetupConnections->pages[index].settings.setupMethod;
-    int active = 0, i, offset;
+    BOOL active = FALSE;
+    int i;
     int value = 1 << index;
     MI_CpuFill8(changed, 0, sizeof(changed));
-    changed[index] = 1;
+    changed[index] = TRUE;
     if (index <= 2) {
         if (gWifiSetupConnections->pages[0].settings.usedMask & value) {
-            active = 1;
+            active = TRUE;
         }
         if (status == WIFI_SETUP_METHOD_ERASED && active) {
             gWifiSetupConnections->pages[0].settings.usedMask &= ~value;
             gWifiSetupConnections->pages[1].settings.usedMask &= ~value;
-            changed[0] = changed[1] = 1;
+            changed[0] = changed[1] = TRUE;
         } else if (status != WIFI_SETUP_METHOD_ERASED && !active) {
             gWifiSetupConnections->pages[0].settings.usedMask |= value;
             gWifiSetupConnections->pages[1].settings.usedMask |= value;
-            changed[0] = changed[1] = 1;
+            changed[0] = changed[1] = TRUE;
         }
     }
-    i = 0;
-    offset = 0;
-    for (; i < WIFI_SETUP_NUM_CONNECTIONS; i++, offset += 256) {
+    for (i = 0; i < WIFI_SETUP_NUM_CONNECTIONS; i++) {
         if (changed[i]) {
-            gWifiSetupConnections->pages[i].tail.page.crc = MATH_CalcCRC16(&gWifiSetupConnections->crcTable, (u8 *)gWifiSetupConnections + offset, 254);
+            gWifiSetupConnections->pages[i].tail.page.crc = MATH_CalcCRC16(&gWifiSetupConnections->crcTable, &gWifiSetupConnections->pages[i], 254);
         }
     }
     temp = WifiSetupHeap_AllocZeroed(256, 32);

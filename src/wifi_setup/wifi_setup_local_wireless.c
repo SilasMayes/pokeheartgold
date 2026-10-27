@@ -2341,7 +2341,7 @@ static void WifiSetupBanner_StopTask(WifiSetupTask *task, void *arg) {
 
 void WifiSetupBanner_Close(void) {
     gWifiSetupBanner.banner->closing = TRUE;
-    gWifiSetupBanner.banner->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupBanner_SlideOutTask4, 0, 0x78);
+    gWifiSetupBanner.banner->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupBanner_SlideOutTask4, NULL, 0x78);
 }
 
 void WifiSetupBanner_SetKind(int kind) {
@@ -2468,8 +2468,8 @@ BOOL WifiSetupBanner_IsNotClosing(void) {
 }
 
 void WifiSetupBanner_LoadScreen(int kind) {
-    gWifiSetupBanner.screen = WifiSetupFile_Load(WifiSetup_LocalizePath(gWifiSetupBannerScreenPaths[kind]), 0, 4);
-    WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupBanner_LoadScreenTask, 0, 0x78);
+    gWifiSetupBanner.screen = WifiSetupFile_Load(WifiSetup_LocalizePath(gWifiSetupBannerScreenPaths[kind]), NULL, 4);
+    WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupBanner_LoadScreenTask, NULL, 0x78);
 }
 
 static void WifiSetupBanner_LoadScreenTask(WifiSetupTask *task, void *arg) {
@@ -2497,7 +2497,7 @@ BOOL WifiSetupUsbScan_Start(void (*cb)(int)) {
         gWifiSetupUsbScan->param.ssid[9] = 1;
         MI_CpuCopy8(info.nickName, &gWifiSetupUsbScan->param.ssid[12], info.nickNameLength * 2);
         if (WifiSetupUsbScan_StartScan()) {
-            gWifiSetupUsbScan->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupUsbScan_TimeoutTask, 0, 0x78);
+            gWifiSetupUsbScan->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupUsbScan_TimeoutTask, NULL, 0x78);
             return TRUE;
         }
     }
@@ -2713,15 +2713,15 @@ void WifiSetupDialog_Open(int message, int kind, u8 fade, int digitPos, int digi
     WifiSetupDialog_SetY(0xC0);
     GX_SetVisibleWnd(GX_WNDMASK_W0 | GX_WNDMASK_W1);
     if (fade) {
-        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_FadeInTask, 0, 0x78);
+        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_FadeInTask, NULL, 0x78);
     } else {
-        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_SlideInTask, 0, 0x78);
+        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_SlideInTask, NULL, 0x78);
     }
 }
 
 void WifiSetupDialog_Close(void) {
     WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, gWifiSetupDialog->task);
-    gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_CloseDelayTask, 0, 0x78);
+    gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_CloseDelayTask, NULL, 0x78);
 }
 
 int WifiSetupDialog_GetSelected(void) {
@@ -2752,9 +2752,9 @@ static void WifiSetupDialog_SlideInTask(WifiSetupTask *task, void *arg) {
     }
     WifiSetupDialog_SetY(gWifiSetupDialogFramePositions[gWifiSetupDialog->kind].y);
     if (gWifiSetupDialog->kind == 5) {
-        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupDialog_TimerTask, 0, 0x78);
+        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupDialog_TimerTask, NULL, 0x78);
     } else {
-        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupDialog_InputTask, 0, 0x78);
+        gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupDialog_InputTask, NULL, 0x78);
     }
     WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_VBLANK, task);
 }
@@ -2792,7 +2792,7 @@ static void WifiSetupDialog_TimerTask(WifiSetupTask *task, void *arg) {
         return;
     }
     WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
-    gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_CloseDelayTask, 0, 0x78);
+    gWifiSetupDialog->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupDialog_CloseDelayTask, NULL, 0x78);
 }
 
 static void WifiSetupDialog_SetY(int y) {

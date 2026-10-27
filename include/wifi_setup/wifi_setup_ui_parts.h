@@ -1,7 +1,6 @@
 #ifndef POKEHEARTGOLD_WIFI_SETUP_UI_PARTS_H
 #define POKEHEARTGOLD_WIFI_SETUP_UI_PARTS_H
 
-#include "wifi_setup/wifi_setup_keyboard.h"
 #include "wifi_setup/wifi_setup_ui.h"
 
 // Screen parts shared by the access-point setup screens: busy icon, sliding button bar, message window, cursors,

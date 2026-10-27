@@ -6,9 +6,9 @@
 #include "global.h"
 
 #include "wifi_setup/wifi_setup_connection.h"
-#include "wifi_setup/wifi_setup_internal.h"
 
 struct WifiSetupAossResult;
+struct WifiSetupResult;
 
 // Access-point data of the access-point setup: the scan for nearby access points, the saved connection settings
 // (four backup pages, the first three editable) with an edit copy of one of them, and the sound archive.
@@ -70,8 +70,8 @@ int WifiSetupApScan_GetEntries(WifiSetupScanEntry **out);
 void WifiSetupConnections_Load(void);
 void WifiSetupConnections_Free(void);
 WifiSetupConnection *WifiSetupConnections_GetEdit(void);
-void WifiSetupConnections_SetAutoAddress(int on);
-void WifiSetupConnections_SetAutoDns(int on);
+void WifiSetupConnections_SetAutoAddress(BOOL on);
+void WifiSetupConnections_SetAutoDns(BOOL on);
 void WifiSetupConnections_SetSsid(const u8 *ssid);
 void WifiSetupConnections_SetWepKey(const char *key);
 void WifiSetupConnections_SetIpAddress(const char *text);
@@ -88,7 +88,7 @@ void WifiSetupConnections_FormatSecondaryDns(char *buf);
 u8 WifiSetupConnections_GetSetupMethod(int index);
 void WifiSetupConnections_Edit(int index);
 void WifiSetupConnections_SaveEdit(void);
-void WifiSetupConnections_SetFromClientResult(WifiSetupResult *result);
+void WifiSetupConnections_SetFromClientResult(struct WifiSetupResult *result);
 void WifiSetupConnections_SetFromInfo(const struct WifiSetupAossResult *result);
 WifiSetupConnections *WifiSetupConnections_Get(void);
 void WifiSetupConnections_Erase(int index);

@@ -436,7 +436,7 @@ void WifiSetupFade_Free(void) {
     WifiSetupHeap_FreeAndClear(&gWifiSetupFades);
 }
 
-u8 WifiSetupFade_IsActive(enum WifiSetupScreen screen) {
+BOOL WifiSetupFade_IsActive(enum WifiSetupScreen screen) {
     WifiSetupFade *fade;
     if (screen == WIFI_SETUP_SCREEN_SUB) {
         fade = &gWifiSetupFades[0];
@@ -1474,6 +1474,6 @@ static void WifiSetupTask_DestroyNow(enum WifiSetupTaskQueueId queue, WifiSetupT
     WifiSetupPool_Push(gWifiSetupTaskQueues[queue].taskPool, task);
 }
 
-void WifiSetupTask_SetQueueEnabled(enum WifiSetupTaskQueueId queue, u8 enabled) {
+void WifiSetupTask_SetQueueEnabled(enum WifiSetupTaskQueueId queue, BOOL enabled) {
     gWifiSetupTaskQueues[queue].enabled = enabled;
 }

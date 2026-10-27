@@ -377,12 +377,9 @@ int WifiSetup_SearchAccessPoints(WifiSetupAossApList **output) {
         return -1;
     }
     base = buffer;
-    if (WifiSetupWcm_StartSearch(NULL, NULL, 0, 0x0030BFFE)) {
-        goto started;
+    if (!WifiSetupWcm_StartSearch(NULL, NULL, 0, 0x0030BFFE)) {
+        goto cleanup;
     }
-    goto cleanup;
-
-started:
 
     OS_CreateAlarm(&local.alarm);
     OS_SetAlarm(&local.alarm, 0x003FEC42, WifiSetup_OnTimeoutAlarm, (void *)WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT);
@@ -474,8 +471,8 @@ allocated: {
 
 finish:
     OS_CancelAlarm(&local.alarm);
-    do {
-    } while (OS_ReceiveMessage(&gWifiSetupMessageQueue, &local.message, OS_MESSAGE_NOBLOCK) == TRUE);
+    while (OS_ReceiveMessage(&gWifiSetupMessageQueue, &local.message, OS_MESSAGE_NOBLOCK) == TRUE) {
+    }
 
 cleanup:
     gWifiSetupRuntime.free(base);

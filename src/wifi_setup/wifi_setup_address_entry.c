@@ -246,7 +246,7 @@ static void WifiSetupAddressEntry_Exit(void) {
     WifiSetup_LoadGraphics(gWifiSetupAddressEntryYbObjMainNclPath, GX_LoadOBJPltt);
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
-    WifiSetupApp_GetScreenArgs(&kind, 0);
+    WifiSetupApp_GetScreenArgs(&kind, NULL);
     if (kind >= 3) {
         kind++;
     }
@@ -319,7 +319,7 @@ static void WifiSetupAddressEntry_FinishConfirm(void) {
         WifiSetupApp_SetStateFunc(WifiSetupAddressEntry_OpenKeypad);
         return;
     }
-    WifiSetupApp_GetScreenArgs(&kind, 0);
+    WifiSetupApp_GetScreenArgs(&kind, NULL);
     store.funcs[kind](gWifiSetupAddressEntry->digits);
     WifiSetupApp_SetStateFunc(WifiSetupAddressEntry_Exit);
 }
@@ -328,24 +328,18 @@ static void WifiSetupAddressEntry_FinishConfirm(void) {
 // an empty last digit becomes '0'.
 static void WifiSetupAddressEntry_PadFields(void) {
     u8 *field;
-    int i = 0;
+    int i;
     int j;
-    int offset = i;
-    int space = ' ', digit = '0', zero = i;
-    do {
-        field = &gWifiSetupAddressEntry->digits[offset];
-        j = zero;
-        do {
+    for (i = 0; i < WIFI_SETUP_ADDRESS_NUM_FIELDS; i++) {
+        field = &gWifiSetupAddressEntry->digits[i * WIFI_SETUP_ADDRESS_FIELD_LEN];
+        for (j = 0; j < WIFI_SETUP_ADDRESS_FIELD_LEN; j++) {
             u8 ch = field[j];
-            if (ch != digit && ch != space && ch != zero) {
+            if (ch != '0' && ch != ' ' && ch != 0) {
                 break;
             }
-            field[j] = j == 2 ? digit : space;
-            j++;
-        } while (j < WIFI_SETUP_ADDRESS_FIELD_LEN);
-        i++;
-        offset += WIFI_SETUP_ADDRESS_FIELD_LEN;
-    } while (i < WIFI_SETUP_ADDRESS_NUM_FIELDS);
+            field[j] = j == 2 ? '0' : ' ';
+        }
+    }
     WifiSetupAddressEntry_DrawDigits();
 }
 
@@ -358,7 +352,7 @@ static BOOL WifiSetupAddressEntry_IsValid(void) {
     u8 address[4];
     u8 *field;
     int j;
-    int zero;
+    BOOL zeroSeen;
     for (i = 0; i < WIFI_SETUP_ADDRESS_NUM_FIELDS; i++) {
         field = &gWifiSetupAddressEntry->digits[i * WIFI_SETUP_ADDRESS_FIELD_LEN];
         if (field[0] == ' ') {
@@ -374,17 +368,17 @@ static BOOL WifiSetupAddressEntry_IsValid(void) {
         }
     }
     WifiSetup_ParseAddress((const char *)gWifiSetupAddressEntry->digits, address);
-    WifiSetupApp_GetScreenArgs(&kind, 0);
+    WifiSetupApp_GetScreenArgs(&kind, NULL);
     if (kind == 1) {
-        zero = 0;
+        zeroSeen = FALSE;
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 8; j++) {
-                if (zero) {
+                if (zeroSeen) {
                     if (address[i] & (1 << (7 - j))) {
                         return FALSE;
                     }
                 } else if (!(address[i] & (1 << (7 - j)))) {
-                    zero = 1;
+                    zeroSeen = TRUE;
                 }
             }
         }

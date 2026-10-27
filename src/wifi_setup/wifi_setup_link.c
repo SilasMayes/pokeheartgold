@@ -470,7 +470,7 @@ int WifiSetupLink_Open(u32 count) {
     u16 alignMask = 31;
     s16 alignClear = -32;
     int event;
-    int running = TRUE;
+    BOOL running = TRUE;
     int result;
     u32 size;
     u32 aligned;
@@ -514,11 +514,9 @@ int WifiSetupLink_Open(u32 count) {
 
 // Shuts WCM down (waits for event 20) and frees the buffers.
 int WifiSetupLink_Close(void) {
-    int running = 1;
+    BOOL running = TRUE;
 
     if (WifiSetupLink_StartCleanup()) {
-        int zero = 0;
-        int keepGoing = zero;
         do {
             OS_Sleep(10);
             int event = WifiSetupLink_PopEvent();
@@ -528,15 +526,15 @@ int WifiSetupLink_Close(void) {
                 case WIFI_SETUP_WCM_EVENT_FOUND_AP:
                     break;
                 case WIFI_SETUP_WCM_EVENT_CLEANED_UP:
-                    running = keepGoing;
+                    running = FALSE;
                     break;
                 default:
-                    running = zero;
+                    running = FALSE;
                     break;
                 }
                 event = WifiSetupLink_PopEvent();
             }
-        } while (running != 0);
+        } while (running);
     }
 
     if (gWifiSetupWork.allocation != NULL) {
@@ -551,7 +549,7 @@ int WifiSetupLink_Close(void) {
 // Returns 1, 0 (no access point), -2, -3 (deadline passed) or -8 (stopped).
 int WifiSetupLink_ConnectSelectedAp(void) {
     OSAlarm alarm;
-    int active = 1;
+    BOOL active = TRUE;
     int result = -2;
     int event;
     WifiSetupApInfo *ap = &gWifiSetupWork.apList[gWifiSetupWork.selection];
@@ -582,19 +580,19 @@ int WifiSetupLink_ConnectSelectedAp(void) {
             case WIFI_SETUP_WCM_EVENT_SEARCH_TIMEOUT:
                 break;
             case WIFI_SETUP_WCM_EVENT_CONNECTED:
-                active = 0;
+                active = FALSE;
                 result = 1;
                 break;
             case WIFI_SETUP_WCM_EVENT_CONNECT_FAILED:
                 if (gWifiSetupWork.stop) {
-                    active = 0;
+                    active = FALSE;
                     result = -8;
                 } else if (!WifiSetupLink_StartConnect(ap, NULL, 0x30000)) {
                     return result;
                 }
                 break;
             default:
-                active = 0;
+                active = FALSE;
                 break;
             }
             event = WifiSetupLink_PopEvent();
@@ -615,12 +613,10 @@ int WifiSetupLink_ConnectSelectedAp(void) {
 
 // Disconnects (waits for event 14) and stops the socket library.
 void WifiSetupLink_DisconnectAp(void) {
-    int running = 1;
+    BOOL running = TRUE;
 
     if (gWifiSetupWork.connected) {
         if (WifiSetupLink_StartDisconnect()) {
-            int zero = 0;
-            int keepGoing = zero;
             do {
                 OS_Sleep(10);
                 int event = WifiSetupLink_PopEvent();
@@ -630,15 +626,15 @@ void WifiSetupLink_DisconnectAp(void) {
                     case WIFI_SETUP_WCM_EVENT_FOUND_AP:
                         break;
                     case WIFI_SETUP_WCM_EVENT_DISCONNECTED:
-                        running = keepGoing;
+                        running = FALSE;
                         break;
                     default:
-                        running = zero;
+                        running = FALSE;
                         break;
                     }
                     event = WifiSetupLink_PopEvent();
                 }
-            } while (running != 0);
+            } while (running);
         }
         gWifiSetupWork.connected = FALSE;
     }

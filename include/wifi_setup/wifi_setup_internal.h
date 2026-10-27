@@ -3,7 +3,7 @@
 
 #include "global.h"
 
-#include "wifi_setup/wifi_setup_wcm.h"
+struct WifiSetupWcmConfig;
 
 // Access-point setup client: worker thread, access-point scan, packet records, AES key wrap, MD5.
 
@@ -74,18 +74,32 @@ typedef struct WifiSetupApEntryList {
     WifiSetupApEntry entries[];
 } WifiSetupApEntryList;
 
+// WifiSetup_RunSession steps (WifiSetupWork.step)
+enum WifiSetupSessionStep {
+    WIFI_SETUP_SESSION_STEP_FIND_AP = 1,
+    WIFI_SETUP_SESSION_STEP_CONNECT_AP,
+    WIFI_SETUP_SESSION_STEP_OPEN_SOCKET,
+    WIFI_SETUP_SESSION_STEP_WAIT_VERSION,
+    WIFI_SETUP_SESSION_STEP_SEND_VERSION_REQUEST,
+    WIFI_SETUP_SESSION_STEP_WAIT_KEY,
+    WIFI_SETUP_SESSION_STEP_SEND_KEY,
+    WIFI_SETUP_SESSION_STEP_WAIT_SETTINGS,
+    WIFI_SETUP_SESSION_STEP_SEND_RESULT,
+    WIFI_SETUP_SESSION_STEP_RESEND_RESULT,
+};
+
 typedef struct WifiSetupWork {
     u8 unk_00; // sent as record 0x301
     u8 unk_01[3];
     WifiSetupWorkAllocFunc alloc;
-    WifiSetupWcmConfig *wcmConfig;
+    struct WifiSetupWcmConfig *wcmConfig;
     WifiSetupWorkFreeFunc free;
     u32 stop; // set to make the worker thread finish
     int packetLength;
     u32 selection; // index of the chosen access point
-    int step;      // WifiSetup_RunSession state machine
-    u32 connected;
-    u32 socketStarted;
+    enum WifiSetupSessionStep step;
+    BOOL connected;
+    BOOL socketStarted;
     void *connectKey; // key description
     int wcmState;     // see wifi_setup_wcm.h
     void *threadStack;
@@ -96,12 +110,12 @@ typedef struct WifiSetupWork {
     u8 *searchBssid;
     u8 *searchSsid;
     void *connectAp;     // access point description
-    int extendedRequest; // also send records 4 and 5
+    BOOL extendedRequest; // also send records 4 and 5
     void *allocation;
     int connectOption;
     WifiSetupApInfo *apList; // room for apListCount entries
     int searchOption;
-    s32 active;
+    BOOL active;
     int eventWrite; // gWifiSetupLinkEventQueue queue
     int eventRead;
     int apListCount;
@@ -218,7 +232,7 @@ int WifiSetup_SendSetupPacket(int socket, const WifiSetupSockAddr *to, const voi
 u8 *WifiSetup_FirstRecord(u8 *data, u32 *type, u32 *length);
 u32 WifiSetup_BuildPacket(u8 *dest, u32 type, u8 *data, u32 length, const void *key);
 u32 WifiSetup_BuildSingleRecordList(u8 *dst, u16 type, const void *src, u32 length);
-BOOL WifiSetup_CheckVersionReply(u8 *data, int *extended);
+BOOL WifiSetup_CheckVersionReply(u8 *data, BOOL *extended);
 int WifiSetup_ReadPacket(u8 *data, u32 expectedType, u8 *dst, const u8 *key);
 u32 WifiSetup_BuildVersionRequest(u8 *dst);
 BOOL WifiSetup_BuildMacPair(WifiSetupMacPair *pair, void *unused);

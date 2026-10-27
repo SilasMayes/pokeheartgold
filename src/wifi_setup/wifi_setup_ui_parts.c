@@ -7,6 +7,7 @@
 
 #include "wifi_setup/wifi_setup_access_points.h"
 #include "wifi_setup/wifi_setup_app.h"
+#include "wifi_setup/wifi_setup_keyboard.h"
 #include "wifi_setup/wifi_setup_local_wireless.h"
 #include "wifi_setup/wifi_setup_ui.h"
 
@@ -283,7 +284,8 @@ void WifiSetupButtonBar_Show(int type) {
 }
 
 void WifiSetup_PrintMessage(int message) {
-    void *canvas, *text;
+    WifiSetupCanvas *canvas;
+    u16 *text;
     u32 flags;
     canvas = WifiSetupText_InitBgCanvas(WIFI_SETUP_SCREEN_MAIN, 0);
     text = WifiSetupText_GetString(gWifiSetupTextBank, message);
@@ -293,7 +295,8 @@ void WifiSetup_PrintMessage(int message) {
 }
 
 void WifiSetup_PrintMessageWithText(const u16 *str, int message) {
-    void *canvas, *text;
+    WifiSetupCanvas *canvas;
+    u16 *text;
     u32 flags;
     int x, y;
     canvas = WifiSetupText_InitBgCanvas(WIFI_SETUP_SCREEN_MAIN, 0);

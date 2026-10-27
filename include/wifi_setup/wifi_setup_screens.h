@@ -3,15 +3,16 @@
 
 #include "global.h"
 
-#include "wifi_setup/wifi_setup_access_points.h"
 #include "wifi_setup/wifi_setup_ui.h"
+
+struct WifiSetupScanEntry;
 
 // Access-point setup screens: the list screen and the text entry screen shared with the screens that
 // follow them.
 
 // Work of the list screen (allocated by the screen, gWifiSetupListScreen.work).
 typedef struct WifiSetupListWork {
-    WifiSetupScanEntry *entries;
+    struct WifiSetupScanEntry *entries;
 
     u16 *bgScreenFile;
     void *paletteFile;

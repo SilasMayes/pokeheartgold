@@ -3,6 +3,7 @@
 #include "global.h"
 
 #include "dwc/dwc_bm_internal.h"
+#include "wifi_setup/wifi_setup.h"
 #include "wifi_setup/wifi_setup_access_points.h"
 #include "wifi_setup/wifi_setup_screens.h"
 

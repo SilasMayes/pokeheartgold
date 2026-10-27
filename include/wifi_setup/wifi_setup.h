@@ -291,7 +291,7 @@ typedef struct WifiSetupSocketState {
 } WifiSetupSocketState;
 
 typedef struct WifiSetupState {
-    int encryptBody;
+    BOOL encryptBody;
     WifiSetupAossApList *connection; // access points found by the last search
     BOOL randomSeeded;
     WifiSetupAossConnectResult *connectResult;

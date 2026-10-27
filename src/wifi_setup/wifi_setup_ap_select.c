@@ -18,18 +18,17 @@ static inline char *CopyName(char *name, const WifiSetupApEntry *entry) {
 // (same SSID and BSSID) but has just dropped privacy, or else the open setup access point
 // (sWifiSetupSetupApSsid) when it is new in current. Returns 1 and its index in *selected if one was found.
 int WifiSetup_PickSetupAccessPoint(const WifiSetupApEntryList *current, const WifiSetupApEntryList *previous, u32 *selected) {
-    int changed = 0;
+    BOOL changed = FALSE;
     int result = 0;
-    int newHas;
-    int oldHas;
+    BOOL newHas;
+    BOOL oldHas;
     u32 count;
     u32 i;
     u32 j;
     const WifiSetupApEntry *left = current->entries;
     const WifiSetupApEntry *right = previous->entries;
 
-    i = changed;
-    for (; i < current->count; i++) {
+    for (i = 0; i < current->count; i++) {
         char newName[34] = { 0 };
         memcpy(newName, left->ssid, 32);
         newName[left->ssidLength] = 0;
@@ -46,7 +45,7 @@ int WifiSetup_PickSetupAccessPoint(const WifiSetupApEntryList *current, const Wi
                     break;
                 }
                 if (!memcmp(newName, right->ssid, strlen(newName)) && !memcmp(left->bssid, right->bssid, sizeof(left->bssid)) && left->privacy != right->privacy && left->privacy == 0) {
-                    changed = 1;
+                    changed = TRUE;
                     break;
                 }
                 j++;
@@ -61,26 +60,26 @@ int WifiSetup_PickSetupAccessPoint(const WifiSetupApEntryList *current, const Wi
     }
     if (!changed) {
         char oldName[34] = { 0 };
-        newHas = 0;
-        oldHas = 0;
+        newHas = FALSE;
+        oldHas = FALSE;
         left = current->entries;
         right = previous->entries;
         for (j = 0; j < previous->count; j++, right++) {
             memcpy(oldName, right->ssid, 32);
             oldName[right->ssidLength] = 0;
             if (!memcmp(oldName, sWifiSetupSetupApSsid, strlen(sWifiSetupSetupApSsid)) && right->privacy == 0) {
-                oldHas = 1;
+                oldHas = TRUE;
                 break;
             }
         }
         for (i = 0; i < current->count; i++, left++) {
             if (NameEqual(CopyName(oldName, left), sWifiSetupSetupApSsid) && left->privacy == 0) {
-                newHas = 1;
+                newHas = TRUE;
                 break;
             }
         }
         if (newHas && !oldHas) {
-            changed = 1;
+            changed = TRUE;
         }
     }
     if (changed) {

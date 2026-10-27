@@ -31,7 +31,7 @@ static int WifiSetup_SendJoinRequest(const WifiSetupAossAddresses *addresses, co
 static int WifiSetup_SendSettingsRequest(const WifiSetupAossAddresses *addresses, const WifiSetupAossPacketParams *params, int socket);
 static int WifiSetup_SendDoneRequest(const WifiSetupAossAddresses *addresses, const WifiSetupAossPacketParams *params, int socket);
 static int WifiSetup_BuildJoinPayload(u8 *dst);
-static void WifiSetup_WriteBody(int mode, WifiSetupAossBody *body, const void *src, s16 *length, s16 *flag, const void *extra);
+static void WifiSetup_WriteBody(BOOL encrypt, WifiSetupAossBody *body, const void *src, s16 *length, s16 *flag, const void *extra);
 static void WifiSetup_WritePacketHeader(WifiSetupAossPacket *packet, enum WifiSetupAossPacketKind kind, int length, int flags, s8 checksum, s8 protocol, const u8 *tag);
 static void WifiSetup_SendPacket(const WifiSetupAossPacket *packet, int size, int index, int socket);
 static int WifiSetup_Encrypt(void *src, void *dst, int size, u8 *checksum, u16 *seedDst, const u8 *seedSrc, int seedSize);
@@ -689,7 +689,7 @@ static int WifiSetup_SendJoinRequest(const WifiSetupAossAddresses *addresses, co
     payload[0] = 0;
     *(u16 *)(payload + 2) = WifiSetup_HostToNet16((u16)header.length);
     header.length += 4;
-    WifiSetup_WriteBody(0, body, payload, &header.length, &header.flag, &header);
+    WifiSetup_WriteBody(FALSE, body, payload, &header.length, &header.flag, &header);
     header.flag |= 0x10;
     if (WifiSetup_Scramble(data, sizeof(data), sStr_MELCO, 6) != 0) {
         WifiSetup_SetError(WIFI_SETUP_AOSS_ERROR_OUT_OF_MEMORY);
@@ -789,8 +789,8 @@ static int WifiSetup_BuildJoinPayload(u8 *dst) {
     return total;
 }
 
-static void WifiSetup_WriteBody(int mode, WifiSetupAossBody *body, const void *src, s16 *length, s16 *flag, const void *extra) {
-    if (mode == 1) {
+static void WifiSetup_WriteBody(BOOL encrypt, WifiSetupAossBody *body, const void *src, s16 *length, s16 *flag, const void *extra) {
+    if (encrypt == TRUE) {
         *flag = 1;
         WifiSetup_Encrypt(src, body->encrypted.data, *length, extra, &body->encrypted.seed, gWifiSetupPeerAddress, 8);
         body->encrypted.length = WifiSetup_HostToNet16((u16)*length);

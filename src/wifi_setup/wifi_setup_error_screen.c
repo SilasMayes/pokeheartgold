@@ -67,7 +67,7 @@ static void WifiSetupErrorScreen_DrawMessage(void) {
     u16 *msg;
     u16 text[8];
     int error;
-    WifiSetupApp_GetScreenArgs(0, &out);
+    WifiSetupApp_GetScreenArgs(NULL, &out);
     error = gWifiSetupErrorCode;
     // message index per error code range
     if (error >= -20099) {
@@ -235,7 +235,7 @@ static void WifiSetupErrorScreen_Exit(void) {
     WifiSetupMessage_Hide();
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
-    WifiSetupApp_GetScreenArgs(0, &mode);
+    WifiSetupApp_GetScreenArgs(NULL, &mode);
     if (mode != WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_CREATE);
         WifiSetupApp_SetStateFunc(WifiSetupConnectionList_Init);

@@ -57,7 +57,6 @@ int WifiSetup_RunAossSession(WifiSetupRequest *request) {
     int timeout;
     int tmp;
     int result;
-    int zero;
     u8 error;
     s16 i;
     s16 limit;
@@ -65,10 +64,9 @@ int WifiSetup_RunAossSession(WifiSetupRequest *request) {
     session.connection = sWifiSetupUnsetConnection;
     ClearRetry(&session.retry, &mode);
     session.option = 1;
-    zero = mode;
-    session.attempts = zero;
-    ip = zero;
-    WifiSetup_MemFill(&session.params, mode, sizeof(WifiSetupAossPacketParams));
+    session.attempts = 0;
+    ip = 0;
+    WifiSetup_MemFill(&session.params, 0, sizeof(WifiSetupAossPacketParams));
     session.connection.max = request->connectRetries;
     if (session.connection.max == -1) {
         session.connection.max = 10;
@@ -320,7 +318,7 @@ restart:
         WifiSetup_AddToPollSet(gWifiSetupSocket.socket, &session.set);
         session.time.seconds = seconds;
         session.time.microseconds = microseconds;
-        if (WifiSetup_Poll(gWifiSetupSocket.socket + 1, &session.set, 0, 0, &session.time) <= 0) {
+        if (WifiSetup_Poll(gWifiSetupSocket.socket + 1, &session.set, NULL, NULL, &session.time) <= 0) {
             session.attempts++;
             if (session.attempts > session.retry.max) {
                 int current = mode;

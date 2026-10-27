@@ -34,8 +34,8 @@ static void WifiSetupSettings_WaitFadeIn(void);
 static void WifiSetupSettings_HandleKeys(void);
 static BOOL WifiSetupSettings_HandleTouch(void);
 static void WifiSetupSettings_SelectItem(int item);
-static void WifiSetupSettings_SetAutoAddress(u32 on);
-static void WifiSetupSettings_SetAutoDns(int on);
+static void WifiSetupSettings_SetAutoAddress(BOOL on);
+static void WifiSetupSettings_SetAutoDns(BOOL on);
 static void WifiSetupSettings_HandleScrollBar(void);
 static void WifiSetupSettings_StartClose(void);
 static void WifiSetupSettings_FadeOut(void);
@@ -79,8 +79,8 @@ void WifiSetupSettings_Init(void) {
         gWifiSetupSettings.work->ssidIcon->attr2 = (gWifiSetupSettings.work->ssidIcon->attr2 & ~0xc00) | 0xc00;
         break;
     }
-    gWifiSetupSettings.work->vblankTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupSettings_ScrollTask, 0, 110);
-    gWifiSetupSettings.work->buttonTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ButtonTask, 0, 120);
+    gWifiSetupSettings.work->vblankTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_VBLANK, WifiSetupSettings_ScrollTask, NULL, 110);
+    gWifiSetupSettings.work->buttonTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ButtonTask, NULL, 120);
     WifiSetupSettings_DrawRows();
     WifiSetupSettings_ShowCursor();
     WifiSetupApp_SetStateFunc(WifiSetupSettings_FadeIn);
@@ -103,15 +103,15 @@ static void WifiSetupSettings_LoadGraphics(void) {
         char *path;
         void *data;
         path = WifiSetup_LocalizePath(scrName.text);
-        data = WifiSetupFile_Load(path, 0, 4);
+        data = WifiSetupFile_Load(path, NULL, 4);
         gWifiSetupSettings.work->screenData = data;
         WifiSetupBgScreen_Create(gWifiSetupSettings.work->screenData);
         WifiSetupBgScreen_MarkDirty();
         path = WifiSetup_LocalizePath(plttName.text);
-        data = WifiSetupFile_Load(path, 0, 4);
+        data = WifiSetupFile_Load(path, NULL, 4);
         gWifiSetupSettings.work->paletteData = data;
         path = WifiSetup_LocalizePath(charName.text);
-        data = WifiSetupFile_Load(path, 0, 4);
+        data = WifiSetupFile_Load(path, NULL, 4);
         gWifiSetupSettings.work->charData = data;
     }
     G2S_SetBG0Priority(3);
@@ -125,7 +125,7 @@ static void WifiSetupSettings_LoadGraphics(void) {
 static void WifiSetupSettings_ResetPosition(void) {
     int returning;
     WifiSetupConnections_GetEdit();
-    WifiSetupApp_GetScreenArgs(0, &returning);
+    WifiSetupApp_GetScreenArgs(NULL, &returning);
     if (returning) {
         return;
     }
@@ -184,7 +184,7 @@ static void WifiSetupSettings_HandleKeys(void) {
             return;
         }
         WifiSetupSound_Play(19);
-        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollDownTask, 0, 120);
+        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollDownTask, NULL, 120);
         return;
     }
     if (WifiSetupInput_IsKeyReleased(PAD_BUTTON_L)) {
@@ -201,7 +201,7 @@ static void WifiSetupSettings_HandleKeys(void) {
             return;
         }
         WifiSetupSound_Play(19);
-        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollUpTask, 0, 120);
+        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollUpTask, NULL, 120);
         return;
     }
     if (WifiSetupInput_IsKeyReleased(PAD_BUTTON_R)) {
@@ -300,8 +300,8 @@ static void WifiSetupSettings_SelectItem(int item) {
     WifiSetupApp_SetStateFunc(WifiSetupSettings_StartClose);
 }
 
-static void WifiSetupSettings_SetAutoAddress(u32 on) {
-    int autoDns;
+static void WifiSetupSettings_SetAutoAddress(BOOL on) {
+    BOOL autoDns;
     WifiSetupConnection *record = WifiSetupConnections_GetEdit();
     if (record->autoAddress == on) {
         return;
@@ -310,14 +310,14 @@ static void WifiSetupSettings_SetAutoAddress(u32 on) {
         autoDns = gWifiSetupSettings.work->autoDns != 0;
     } else {
         gWifiSetupSettings.work->autoDns = record->autoDns;
-        autoDns = 0;
+        autoDns = FALSE;
     }
     WifiSetupConnections_SetAutoAddress(on);
     WifiSetupConnections_SetAutoDns(autoDns);
     WifiSetupSettings_DrawRows();
 }
 
-static void WifiSetupSettings_SetAutoDns(int on) {
+static void WifiSetupSettings_SetAutoDns(BOOL on) {
     u32 old = WifiSetupConnections_GetEdit()->autoDns;
     if (old == (u32)on) {
         return;
@@ -361,9 +361,9 @@ static void WifiSetupSettings_HandleScrollBar(void) {
             return;
         }
         if (rem < 16) {
-            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollUpTask, 0, 120);
+            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollUpTask, NULL, 120);
         } else {
-            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollDownTask, 0, 120);
+            gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollDownTask, NULL, 120);
             return;
         }
         return;
@@ -377,7 +377,7 @@ static void WifiSetupSettings_HandleScrollBar(void) {
             return;
         }
         WifiSetupSound_Play(19);
-        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollUpTask, 0, 120);
+        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollUpTask, NULL, 120);
         return;
     case WIFI_SETUP_SCROLL_BAR_EVENT_DOWN_PRESSED:
         if (gWifiSetupSettings.scroll == WIFI_SETUP_SETTINGS_MAX_SCROLL) {
@@ -389,7 +389,7 @@ static void WifiSetupSettings_HandleScrollBar(void) {
             return;
         }
         WifiSetupSound_Play(19);
-        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollDownTask, 0, 120);
+        gWifiSetupSettings.work->scrollTask = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupSettings_ScrollDownTask, NULL, 120);
         return;
     case WIFI_SETUP_SCROLL_BAR_EVENT_UP_RELEASED:
     case WIFI_SETUP_SCROLL_BAR_EVENT_DOWN_RELEASED:
