@@ -51,14 +51,6 @@ typedef struct PokeathlonCourseCeremonySync {
     u8 finished;
 } PokeathlonCourseCeremonySync;
 
-// A Pokemon of a participant's team (PokeathlonCourse_GetParticipantMons).
-typedef struct PokeathlonCourseCeremonyMon {
-    u16 species;
-    u16 form;
-    u8 unk04[0xE];
-    u16 nickname[POKEMON_NAME_LENGTH + 1];
-} PokeathlonCourseCeremonyMon;
-
 // Statistics of a Pokemon in the events of the course (PokeathlonCourseData field data).
 typedef struct PokeathlonCourseMonEventStats {
     u32 failed;
@@ -179,7 +171,7 @@ typedef struct PokeathlonCourseCeremony {
     BOOL finished;
 } PokeathlonCourseCeremony;
 
-typedef u32 (*PokeathlonCourseCeremonyAwardTest)(PokeathlonCourseData *course, int team, int member);
+typedef BOOL (*PokeathlonCourseCeremonyAwardTest)(PokeathlonCourseData *course, int team, int member);
 
 BOOL PokeathlonCourseOpening_Init(PokeathlonCourseData *course);
 BOOL PokeathlonCourseOpening_Main(PokeathlonCourseData *course);

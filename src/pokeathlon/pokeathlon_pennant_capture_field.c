@@ -1250,7 +1250,7 @@ static void PokeathlonPennantCapture_PlaySEIfOnScreen(int x, int y, int seq, BOO
 }
 
 void PokeathlonPennantCapture_UpdateOwnScore(PokeathlonCourseData *course) {
-    PokeathlonPennantCaptureFrame *frame = (PokeathlonPennantCaptureFrame *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + 240);
+    PokeathlonPennantCaptureFrame *frame = (PokeathlonPennantCaptureFrame *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_IN);
     PokeathlonPennantCapture *work = PokeathlonCourse_GetWork(course);
     u8 self = PokeathlonCourse_GetNetId(course);
     u16 score = (frame->words[self] >> 18) & 1023;

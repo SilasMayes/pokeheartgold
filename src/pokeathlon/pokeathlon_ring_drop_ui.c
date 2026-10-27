@@ -135,7 +135,7 @@ static const ManagedSpriteTemplate sPokeathlonRingDropUiTimerSpriteTemplate = {
 
 PokeathlonRingDropUi *PokeathlonRingDropUi_New(SpriteSystem *spriteSystem, SpriteManager *spriteManager, PokeathlonCourseSpriteResources *resources, BgConfig *bgConfig, MsgData *msgData, MessageFormat *msgFormat, u8 participant, enum HeapID heapId, PokeathlonCourseData *course) {
     PokeathlonRingDropUi *ui;
-    u8 *member;
+    PokeathlonCourseMon *member;
     int i;
 
     GF_ASSERT(spriteSystem);
@@ -158,10 +158,10 @@ PokeathlonRingDropUi *PokeathlonRingDropUi_New(SpriteSystem *spriteSystem, Sprit
     ui->iconNarc = NARC_New(NARC_poketool_icongra_poke_icon, ui->heapId);
     ui->digitsBuffer = GfGfxLoader_GetScrnData(NARC_a_2_4_0, 7, TRUE, &ui->digits, ui->heapId);
     ui->iconPalette = SpriteSystem_LoadPlttResObj(spriteSystem, spriteManager, NARC_poketool_icongra_poke_icon, GetMonIconPlttNaix(), FALSE, 3, NNS_G2D_VRAM_TYPE_2DSUB, 10004);
-    member = PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
-    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++, member += 40) {
+    member = (PokeathlonCourseMon *)PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++, member++) {
         ui->memberNames[i] = String_New(11, ui->heapId);
-        CopyU16ArrayToString(ui->memberNames[i], (const u16 *)(member + 18));
+        CopyU16ArrayToString(ui->memberNames[i], member->nickname);
     }
     PokeathlonRingDropUi_AddWindows(ui);
     return ui;

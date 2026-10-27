@@ -335,12 +335,12 @@ u8 PokeathlonRingDrop_GetMonStaminaPercent(PokeathlonCourseData *course, u8 part
     return (FX_Div(member->stamina, member->params->stamina) * 100) >> FX32_SHIFT;
 }
 
-u32 PokeathlonRingDrop_IsMonSwitching(PokeathlonCourseData *course, u8 participant) {
+BOOL PokeathlonRingDrop_IsMonSwitching(PokeathlonCourseData *course, u8 participant) {
     PokeathlonRingDrop *ringDrop = PokeathlonCourse_GetWork(course);
     return ringDrop->players[participant].mon.flags.bits.switching;
 }
 
-u32 PokeathlonRingDrop_IsMonPushed(PokeathlonCourseData *course, u8 participant) {
+BOOL PokeathlonRingDrop_IsMonPushed(PokeathlonCourseData *course, u8 participant) {
     PokeathlonRingDrop *ringDrop = PokeathlonCourse_GetWork(course);
     return ringDrop->players[participant].mon.flags.bits.pushed;
 }

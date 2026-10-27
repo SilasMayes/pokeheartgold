@@ -438,8 +438,8 @@ static BOOL PokeathlonResults_AllPlayersFinished(PokeathlonCourseData *course) {
 
 // State 0 of the screen: the announcer's lines, the ranking, the winner and the scoreboard.
 BOOL PokeathlonResults_Run(PokeathlonCourseData *course, u8 *state) {
-    int waiting = FALSE;
-    int done;
+    BOOL waiting = FALSE;
+    BOOL done;
     PokeathlonResultsAnnouncement *announcement = PokeathlonCourse_GetWork(course);
     MessageFormat *messageFormat;
     int msgId;
@@ -827,7 +827,7 @@ static BOOL PokeathlonResults_WaitForPlayers(PokeathlonCourseData *course) {
                 if (!player[2]) {
                     allFinished = FALSE;
                 }
-                block += 0x28;
+                block += POKEATHLON_COURSE_DATA_SLOT_SIZE;
                 i++;
             } while (i < PokeathlonCourse_GetParticipantCount(course));
         }

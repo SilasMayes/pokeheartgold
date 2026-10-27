@@ -78,8 +78,8 @@ void PokeathlonPennantCapture_LoadBgGfx(PokeathlonPennantCapture *work) {
 }
 
 void PokeathlonPennantCapture_LoadSpriteResources(PokeathlonCourseSpritePool *pool) {
-    PokeathlonCourseSpritePool_LoadChar(pool, NARC_a_2_2_4, 17, 0x68, 1);
-    PokeathlonCourseSpritePool_LoadPltt(pool, NARC_a_2_2_4, 14, 0x68, 1, 2);
+    PokeathlonCourseSpritePool_LoadChar(pool, NARC_a_2_2_4, 17, 0x68, NNS_G2D_VRAM_TYPE_2DMAIN);
+    PokeathlonCourseSpritePool_LoadPltt(pool, NARC_a_2_2_4, 14, 0x68, NNS_G2D_VRAM_TYPE_2DMAIN, 2);
     PokeathlonCourseSpritePool_LoadCell(pool, NARC_a_2_2_4, 16, 0x68);
     PokeathlonCourseSpritePool_LoadAnim(pool, NARC_a_2_2_4, 15, 0x68);
 }
@@ -136,7 +136,7 @@ BOOL PokeathlonPennantCapture_State_Setup(PokeathlonCourseData *course, u8 *stat
 
     switch (*state) {
     case PENNANT_CAPTURE_SETUP_LAYOUT:
-        PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + 0xF0);
+        PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_IN);
         ReadWholeNarcMemberByIdPair(&layout, NARC_a_2_2_5, work->layoutFileId);
         spot = layout.pennantSpots[0];
         fieldItem = layout.fieldItems[0];
@@ -239,7 +239,7 @@ BOOL PokeathlonPennantCapture_State_End(PokeathlonCourseData *course, u8 *state)
     if (PokeathlonCourse_GetNetId(course)) {
         return TRUE;
     }
-    link += 0x28;
+    link += POKEATHLON_COURSE_DATA_FRAME_OUT;
     frame = (u32 *)PokeathlonCourse_ToBytes(link);
     for (i = 0; i < POKEATHLON_PARTICIPANTS; i++) {
         u16 score = (frame[i] >> 18) & 0x3FF;
@@ -465,7 +465,7 @@ static BOOL PokeathlonPennantCapture_SendInput(PokeathlonCourseData *course) {
     link = PokeathlonCourse_GetDataCopyArea(course);
     input = (PokeathlonPennantCaptureInput *)PokeathlonCourse_ToBytes(link);
     input->touching = FALSE;
-    frame = (PokeathlonPennantCaptureFrame *)PokeathlonCourse_ToBytes(link + 0xF0);
+    frame = (PokeathlonPennantCaptureFrame *)PokeathlonCourse_ToBytes(link + POKEATHLON_COURSE_DATA_FRAME_IN);
     {
         u8 finished = 1;
         finished &= frame->words[4] >> 31;
@@ -492,7 +492,7 @@ static BOOL PokeathlonPennantCapture_SendInput(PokeathlonCourseData *course) {
 static void PokeathlonPennantCapture_ShowFrame(PokeathlonCourseData *course) {
     PokeathlonPennantCapture *work = PokeathlonCourse_GetWork(course);
     u8 *link = PokeathlonCourse_GetDataCopyArea(course);
-    PokeathlonPennantCaptureFrame *frame = (PokeathlonPennantCaptureFrame *)PokeathlonCourse_ToBytes(link + 0xF0);
+    PokeathlonPennantCaptureFrame *frame = (PokeathlonPennantCaptureFrame *)PokeathlonCourse_ToBytes(link + POKEATHLON_COURSE_DATA_FRAME_IN);
     u8 viewer = PokeathlonCourse_GetNetId(course);
     u32 packed = frame->words[viewer];
     u32 x = packed & 0x1FF;

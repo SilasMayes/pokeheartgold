@@ -64,11 +64,11 @@ void PokeathlonBlockSmashMon_SetAnimate(PokeathlonBlockSmashMon *mon, int animat
 u8 PokeathlonBlockSmashMon_GetMode(PokeathlonBlockSmashMon *mon);
 PokeathlonBlockSmashMember *PokeathlonBlockSmashMon_GetActiveMember(PokeathlonBlockSmashMon *mon);
 BOOL PokeathlonBlockSmashMon_CanSwitch(PokeathlonBlockSmashMon *mon);
-u32 PokeathlonBlockSmashMon_IsGaugeFull(PokeathlonBlockSmashMon *mon);
-u32 PokeathlonBlockSmashMon_IsTired(PokeathlonBlockSmashMon *mon);
+BOOL PokeathlonBlockSmashMon_IsGaugeFull(PokeathlonBlockSmashMon *mon);
+BOOL PokeathlonBlockSmashMon_IsTired(PokeathlonBlockSmashMon *mon);
 u16 PokeathlonBlockSmashMon_GetGauge(PokeathlonBlockSmashMon *mon);
 u8 PokeathlonBlockSmashMon_GetActiveMemberIndex(PokeathlonBlockSmashMon *mon);
-u32 PokeathlonBlockSmashMon_CanHit(PokeathlonBlockSmashMon *mon);
+BOOL PokeathlonBlockSmashMon_CanHit(PokeathlonBlockSmashMon *mon);
 PokeathlonBlockSmashRivals *PokeathlonBlockSmashRivals_New(enum HeapID heapId, SpriteSystem *spriteSystem, SpriteManager *spriteManager, PokeathlonCourseData *course, PokeathlonCourseMonObjects *monPics);
 void PokeathlonBlockSmashRivals_Delete(PokeathlonBlockSmashRivals *rivals);
 void PokeathlonBlockSmashRivals_Update(PokeathlonBlockSmashRivals *rivals);
@@ -440,12 +440,12 @@ BOOL PokeathlonBlockSmash_Finish(PokeathlonCourseData *course) {
         if (participant == 0) {
             count = PokeathlonCourse_GetParticipantCount(course);
             if (count < 4) {
-                offset = count * 0x28;
+                offset = count * POKEATHLON_COURSE_DATA_SLOT_SIZE;
                 do {
                     u8 *block = PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_INPUTS + offset;
                     PokeathlonCourse_SetEventScore(course, (u8)count, ((PokeathlonBlockSmashReport *)PokeathlonCourse_ToBytes(block))->score);
                     count++;
-                    offset += 0x28;
+                    offset += POKEATHLON_COURSE_DATA_SLOT_SIZE;
                 } while (count < 4);
             }
         }
@@ -453,12 +453,6 @@ BOOL PokeathlonBlockSmash_Finish(PokeathlonCourseData *course) {
     }
     return FALSE;
 }
-
-// PokeathlonCourse_GetParticipantMons: the participant's team.
-typedef struct PokeathlonBlockSmashTeamMon {
-    u8 unk0[0x12];
-    u16 nickname[POKEMON_NAME_LENGTH + 1];
-} PokeathlonBlockSmashTeamMon;
 
 // Sets up the event over several frames; TRUE when done.
 BOOL PokeathlonBlockSmash_Init(PokeathlonCourseData *course) {
@@ -625,7 +619,7 @@ static void PokeathlonBlockSmash_InitSpriteSystem(PokeathlonBlockSmash *work) {
     SpriteSystem_InitSprites(work->spriteSystem, work->spriteManager, 256);
     SpriteSystem_InitManagerWithCapacities(work->spriteSystem, work->spriteManager, &counts);
     G2dRenderer_SetSubSurfaceCoords(SpriteSystem_GetRenderer(work->spriteSystem), 0, FX32_CONST(256));
-    work->iconResources = PokeathlonCourseSprites_CreateResources(work->heapId, 743, 1);
+    work->iconResources = PokeathlonCourseSprites_CreateResources(work->heapId, 743, NNS_G2D_VRAM_TYPE_2DMAIN);
     work->icons.narc = NARC_New(NARC_poketool_icongra_poke_icon, work->heapId);
 }
 
@@ -696,7 +690,7 @@ static void PokeathlonBlockSmash_LoadSpriteResources(PokeathlonBlockSmash *work)
 
 static void PokeathlonBlockSmash_LoadMainAndSubSpriteRes(SpriteSystem *spriteSystem, SpriteManager *spriteManager) {
     int i;
-    int vram;
+    NNS_G2D_VRAM_TYPE vram;
     vram = NNS_G2D_VRAM_TYPE_2DMAIN;
     SpriteSystem_LoadCharResObj(spriteSystem, spriteManager, NARC_a_2_3_2, 16, TRUE, vram, 10002);
     SpriteSystem_LoadPlttResObj(spriteSystem, spriteManager, NARC_a_2_3_2, 15, FALSE, 1, vram, 10003);
@@ -783,7 +777,7 @@ static void PokeathlonBlockSmash_LoadBgGraphics(PokeathlonBlockSmash *work) {
 static void PokeathlonBlockSmash_InitText(PokeathlonCourseData *course) {
     PokeathlonBlockSmash *work = PokeathlonCourse_GetWork(course);
     int i;
-    PokeathlonBlockSmashTeamMon *mons;
+    PokeathlonCourseMon *mons;
     work->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0309_bin, work->heapId);
     work->msgFormat = MessageFormat_New(work->heapId);
     for (i = 0; i < 4; i++) {
@@ -791,7 +785,7 @@ static void PokeathlonBlockSmash_InitText(PokeathlonCourseData *course) {
         FillWindowPixelBuffer(&work->windows[i], 0);
         ClearWindowTilemap(&work->windows[i]);
     }
-    mons = (PokeathlonBlockSmashTeamMon *)PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
+    mons = (PokeathlonCourseMon *)PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
     for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         work->names[i] = String_New(POKEMON_NAME_LENGTH + 1, work->heapId);
         CopyU16ArrayToString(work->names[i], mons[i].nickname);

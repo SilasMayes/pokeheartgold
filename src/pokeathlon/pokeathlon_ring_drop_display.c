@@ -44,7 +44,7 @@ void PokeathlonRingDrop_InitSprites(PokeathlonRingDrop *ringDrop) {
     SpriteSystem_InitSprites(ringDrop->spriteSystem, ringDrop->spriteManager, 128);
     SpriteSystem_InitManagerWithCapacities(ringDrop->spriteSystem, ringDrop->spriteManager, &counts);
     G2dRenderer_SetSubSurfaceCoords(SpriteSystem_GetRenderer(ringDrop->spriteSystem), 0, FX32_CONST(480));
-    ringDrop->resources = PokeathlonCourseSprites_CreateResources(ringDrop->heapId, 743, 1);
+    ringDrop->resources = PokeathlonCourseSprites_CreateResources(ringDrop->heapId, 743, NNS_G2D_VRAM_TYPE_2DMAIN);
 }
 
 void PokeathlonRingDrop_FreeSprites(PokeathlonRingDrop *ringDrop) {
@@ -512,8 +512,8 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
             }
             mon->airborne = airborne;
         }
-        PokeathlonCourseObject_SetCenterPosition(monObject, packet->x, packet->y, 1);
-        PokeathlonCourseObject_SetCenterPosition(monObject, packet->x, packet->y - packet->height, 0);
+        PokeathlonCourseObject_SetCenterPosition(monObject, packet->x, packet->y, TRUE);
+        PokeathlonCourseObject_SetCenterPosition(monObject, packet->x, packet->y - packet->height, FALSE);
         if (mon->jumping) {
             if (mon->recordJump) {
                 if (hostCpu) {
@@ -538,7 +538,7 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
                 if (y >= 160) {
                     int fall = 6 - mon->jumpFrames;
                     fall = packet->y + fall * 4;
-                    PokeathlonCourseObject_SetCenterPosition(monObject, packet->x, fall, 1);
+                    PokeathlonCourseObject_SetCenterPosition(monObject, packet->x, fall, TRUE);
                 }
             }
         } else {

@@ -390,7 +390,7 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
         if (!PokeathlonCourseMonObjects_IsLoaded(lampJump->monSpriteManager)) {
             break;
         }
-        lampJump->spriteResources = PokeathlonCourseSprites_CreateResources(lampJump->heapId, 929, 1);
+        lampJump->spriteResources = PokeathlonCourseSprites_CreateResources(lampJump->heapId, 929, NNS_G2D_VRAM_TYPE_2DMAIN);
         {
             Sprite **playerSprite = PokeathlonCourse_CreateHudSpritesInPool(course, 192, lampJump->spriteResources, lampJump->scene);
             Sprite_SetDrawPriority(*playerSprite, 1);
@@ -1407,8 +1407,8 @@ static void PokeathlonLampJump_SetDent(PokeathlonLampJump *lampJump, int mon, u8
 }
 
 void PokeathlonLampJump_LoadSpriteResources(PokeathlonCourseSpritePool *scene) {
-    PokeathlonCourseSpritePool_LoadChar(scene, NARC_a_1_6_8, 3, 101, 3);
-    PokeathlonCourseSpritePool_LoadPltt(scene, NARC_a_1_6_8, 0, 101, 3, 4);
+    PokeathlonCourseSpritePool_LoadChar(scene, NARC_a_1_6_8, 3, 101, NNS_G2D_VRAM_TYPE_2DBOTH);
+    PokeathlonCourseSpritePool_LoadPltt(scene, NARC_a_1_6_8, 0, 101, NNS_G2D_VRAM_TYPE_2DBOTH, 4);
     PokeathlonCourseSpritePool_LoadCell(scene, NARC_a_1_6_8, 2, 101);
     PokeathlonCourseSpritePool_LoadAnim(scene, NARC_a_1_6_8, 1, 101);
 }

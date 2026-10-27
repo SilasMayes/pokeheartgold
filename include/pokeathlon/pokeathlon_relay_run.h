@@ -291,13 +291,13 @@ f32 PokeathlonRelayRunTeam_GetMaxSpeed(PokeathlonRelayRunTeam *team, int member)
 void PokeathlonRelayRun_AddFlick(const VecFx32 *velocity, const VecFx32 *flick, VecFx32 *out);
 BOOL PokeathlonRelayRun_CollideRunners(PokeathlonCourseData *course, PokeathlonRelayRunTeam *teams, VecFx32 *where);
 void PokeathlonRelayRunObstacle_SetDrawPriority(PokeathlonRelayRunObstacle *obstacle);
-void PokeathlonRelayRunTeam_SetDrawPriority(PokeathlonRelayRunTeam *team, u8 y, int isOwn);
+void PokeathlonRelayRunTeam_SetDrawPriority(PokeathlonRelayRunTeam *team, u8 y, BOOL isOwn);
 void PokeathlonRelayRun_UpdateStartLine(BgConfig *bgConfig, int x);
 
 void PokeathlonRelayRun_UpdateLapCounter(PokeathlonRelayRunLapCounter *counter, u8 laps);
 void PokeathlonRelayRun_AddResultWindow(PokeathlonRelayRun *relayRun);
-void PokeathlonRelayRun_PlaySEIfOnScreen(int x, int seqNo, int isOwn);
-void PokeathlonRelayRun_UpdateSwapSign(PokeathlonRelayRun *relayRun, u8 teamId, int touchingSwapButton);
+void PokeathlonRelayRun_PlaySEIfOnScreen(int x, int seqNo, BOOL isOwn);
+void PokeathlonRelayRun_UpdateSwapSign(PokeathlonRelayRun *relayRun, u8 teamId, BOOL touchingSwapButton);
 void PokeathlonRelayRun_SaveResult(PokeathlonCourseData *course);
 PokeathlonRelayRunHud *PokeathlonRelayRunHud_New(enum HeapID heapId, BgConfig *bgConfig, PokeathlonCourseData *course);
 void PokeathlonRelayRunHud_Free(PokeathlonRelayRunHud *hud);

@@ -60,7 +60,7 @@ void PokeathlonCourseObject_SetGroundPosition(PokeathlonCourseMonObject *object,
 }
 
 // Places the Pokemon so that the middle of its visible part is at (x, y).
-void PokeathlonCourseObject_SetCenterPosition(PokeathlonCourseMonObject *object, int x, int y, int moveShadow) {
+void PokeathlonCourseObject_SetCenterPosition(PokeathlonCourseMonObject *object, int x, int y, BOOL moveShadow) {
     s32 halfWidth = object->halfWidth;
     s32 topRow = object->topRow;
     s32 visibleHeight = 2 * object->halfHeight - topRow;
@@ -192,12 +192,12 @@ void PokeathlonCourseSpritePool_SetResourceId(PokeathlonCourseSpritePool *pool, 
     pool->resources[index].id = id;
 }
 
-void PokeathlonCourseSpritePool_LoadChar(PokeathlonCourseSpritePool *pool, NarcId narcId, int fileId, int id, int vram) {
+void PokeathlonCourseSpritePool_LoadChar(PokeathlonCourseSpritePool *pool, NarcId narcId, int fileId, int id, NNS_G2D_VRAM_TYPE vram) {
     SpriteResource **slot = PokeathlonCourseSpritePool_GetResourceSlot(pool, id, 0);
     *slot = AddCharResObjFromNarc(pool->resMans[0], narcId, fileId, FALSE, id, vram, pool->heapId);
 }
 
-void PokeathlonCourseSpritePool_LoadPltt(PokeathlonCourseSpritePool *pool, NarcId narcId, int fileId, int id, int vram, u8 count) {
+void PokeathlonCourseSpritePool_LoadPltt(PokeathlonCourseSpritePool *pool, NarcId narcId, int fileId, int id, NNS_G2D_VRAM_TYPE vram, u8 count) {
     SpriteResource **slot = PokeathlonCourseSpritePool_GetResourceSlot(pool, id, 1);
     *slot = AddPlttResObjFromNarc(pool->resMans[1], narcId, fileId, FALSE, id, vram, count, pool->heapId);
 }
@@ -373,7 +373,7 @@ void PokeathlonCourseSpritePoolSprite_SetDrawPriority(PokeathlonCourseSpritePool
 
 void PokeathlonCourseSpritePool_PauseAnims(PokeathlonCourseSpritePool *pool, BOOL paused) {
     int i = 0;
-    int active;
+    BOOL active;
     int offset;
     if (pool->template.capacity > 0) {
         offset = 0;

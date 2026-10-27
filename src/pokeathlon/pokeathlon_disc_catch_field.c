@@ -19,7 +19,7 @@
 BOOL PokeathlonDiscCatch_UpdateFrame(PokeathlonCourseData *course) {
     PokeathlonDiscCatch *work = PokeathlonCourse_GetWork(course);
     u8 *area = PokeathlonCourse_GetDataCopyArea(course);
-    PokeathlonDiscCatchFrame *received = (PokeathlonDiscCatchFrame *)PokeathlonCourse_ToBytes(area + 0xF0);
+    PokeathlonDiscCatchFrame *received = (PokeathlonDiscCatchFrame *)PokeathlonCourse_ToBytes(area + POKEATHLON_COURSE_DATA_FRAME_IN);
     PokeathlonDiscCatchFrame *own = (PokeathlonDiscCatchFrame *)PokeathlonCourse_ToBytes(area);
     if (received->finished == TRUE) {
         PokeathlonDiscCatch_StopAnims(work);
@@ -572,7 +572,7 @@ static void PokeathlonDiscCatchDiscs_LaunchNext(PokeathlonDiscCatchDiscs *discs,
 
 void PokeathlonDiscCatchDiscs_Update(PokeathlonDiscCatchDiscs *discs, u8 *area, u32 seconds) {
     int i;
-    PokeathlonDiscCatchDiscPacket *packets = (PokeathlonDiscCatchDiscPacket *)PokeathlonCourse_ToBytes(area + 0x28);
+    PokeathlonDiscCatchDiscPacket *packets = (PokeathlonDiscCatchDiscPacket *)PokeathlonCourse_ToBytes(area + POKEATHLON_COURSE_DATA_FRAME_OUT);
     if (discs->delay == 0) {
         PokeathlonDiscCatchDiscs_LaunchNext(discs, seconds);
     } else {

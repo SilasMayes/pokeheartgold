@@ -73,7 +73,7 @@ static BOOL PokeathlonRelayRun_IsTouchingRunner(PokeathlonRelayRun *relayRun, in
 static BOOL PokeathlonRelayRun_IsTouchingSwapButton(PokeathlonRelayRun *relayRun, u32 x, u32 y);
 static void PokeathlonRelayRun_MoveTeams(PokeathlonCourseData *course);
 static void PokeathlonRelayRunTeam_UpdateStun(PokeathlonCourseData *course, PokeathlonRelayRun *relayRun, PokeathlonRelayRunTeam *team);
-static void PokeathlonRelayRunTeam_DrawSwap(PokeathlonRelayRunHud *hud, PokeathlonRelayRunTeam *team, VecFx32 *ground, PokeathlonRelayRunPacket *packet, u8 teamId, u8 member, PokeathlonRelayRunTouch *touch, int isHost, int isOwn, int isCpu);
+static void PokeathlonRelayRunTeam_DrawSwap(PokeathlonRelayRunHud *hud, PokeathlonRelayRunTeam *team, VecFx32 *ground, PokeathlonRelayRunPacket *packet, u8 teamId, u8 member, PokeathlonRelayRunTouch *touch, BOOL isHost, BOOL isOwn, BOOL isCpu);
 static fx32 PokeathlonRelayRun_CalcCircleEntry(const VecFx32 *a, const VecFx32 *b, const VecFx32 *c, fx32 r);
 static void PokeathlonRelayRun_PlaceAboveMon(PokeathlonCoursePerformance *performance, const VecFx32 *position, PokeathlonCourseSpritePoolSprite *sprite);
 
@@ -274,7 +274,7 @@ BOOL PokeathlonRelayRun_Init(PokeathlonCourseData *course) {
         int count = PokeathlonCourse_GetParticipantCount(course);
         int mode = PokeathlonCourse_GetMode(course);
         relayRun->cpu = PokeathlonRelayRunCpu_New(relayRun->heapId, POKEATHLON_PARTICIPANTS - count, mode);
-        relayRun->monResources = PokeathlonCourseSprites_CreateResources(relayRun->heapId, 0x2BF, 1);
+        relayRun->monResources = PokeathlonCourseSprites_CreateResources(relayRun->heapId, 0x2BF, NNS_G2D_VRAM_TYPE_2DMAIN);
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
     }
@@ -515,8 +515,8 @@ static void PokeathlonRelayRun_LoadBgGraphics(PokeathlonRelayRun *relayRun) {
 }
 
 static void PokeathlonRelayRun_LoadSpriteGraphics(PokeathlonCourseSpritePool *spritePool) {
-    PokeathlonCourseSpritePool_LoadChar(spritePool, NARC_a_1_7_8, 17, 104, 1);
-    PokeathlonCourseSpritePool_LoadPltt(spritePool, NARC_a_1_7_8, 14, 104, 1, 2);
+    PokeathlonCourseSpritePool_LoadChar(spritePool, NARC_a_1_7_8, 17, 104, NNS_G2D_VRAM_TYPE_2DMAIN);
+    PokeathlonCourseSpritePool_LoadPltt(spritePool, NARC_a_1_7_8, 14, 104, NNS_G2D_VRAM_TYPE_2DMAIN, 2);
     PokeathlonCourseSpritePool_LoadCell(spritePool, NARC_a_1_7_8, 16, 104);
     PokeathlonCourseSpritePool_LoadAnim(spritePool, NARC_a_1_7_8, 15, 104);
 }
@@ -673,7 +673,7 @@ static void PokeathlonRelayRun_UpdateHost(PokeathlonCourseData *course) {
     int i;
     PokeathlonRelayRun *relayRun;
     u8 *link;
-    int clear;
+    BOOL clear;
     f32 acceleration, maxSpeed;
     PokeathlonRelayRun *pressCursor;
     PokeathlonRelayRun *teamCursor;
@@ -1264,12 +1264,12 @@ void PokeathlonRelayRun_DrawTeams(PokeathlonCourseData *course, int own, Pokeath
     u8 runner;
     u8 member;
     int i;
-    int isHost;
-    int isOwn;
+    BOOL isHost;
+    BOOL isOwn;
     int bumpX;
     u32 teamX;
     PokeathlonRelayRunTouch *touch;
-    int isCpu;
+    BOOL isCpu;
     BOOL running;
     BOOL exhausted;
     u8 bench0;
@@ -1559,7 +1559,7 @@ static void PokeathlonRelayRunTeam_AnimateArrive(PokeathlonRelayRunTeam *team, V
 }
 
 // The swap is over: the new member runs.
-static void PokeathlonRelayRunTeam_EndSwap(PokeathlonRelayRunTeam *team, u8 unused, u8 member, PokeathlonRelayRunTouch *touch, BOOL reportPhase, int isOwn) {
+static void PokeathlonRelayRunTeam_EndSwap(PokeathlonRelayRunTeam *team, u8 unused, u8 member, PokeathlonRelayRunTouch *touch, BOOL reportPhase, BOOL isOwn) {
     VecFx32 position;
     PokeathlonCourseMonObject_SetDrawFlag(team->monObjects[member], TRUE);
     team->runnerHidden = FALSE;
@@ -1575,7 +1575,7 @@ static void PokeathlonRelayRunTeam_EndSwap(PokeathlonRelayRunTeam *team, u8 unus
 
 // Plays the member swap of a team as far as the host's packet says it has got (2 bits of swapPhases each).
 
-static void PokeathlonRelayRunTeam_DrawSwap(PokeathlonRelayRunHud *hud, PokeathlonRelayRunTeam *team, VecFx32 *ground, PokeathlonRelayRunPacket *packet, u8 teamId, u8 member, PokeathlonRelayRunTouch *touch, int isHost, int isOwn, int isCpu) {
+static void PokeathlonRelayRunTeam_DrawSwap(PokeathlonRelayRunHud *hud, PokeathlonRelayRunTeam *team, VecFx32 *ground, PokeathlonRelayRunPacket *packet, u8 teamId, u8 member, PokeathlonRelayRunTouch *touch, BOOL isHost, BOOL isOwn, BOOL isCpu) {
     u16 changed = FALSE;
     u8 phase = (packet->swapPhases >> (teamId * 2)) & 3;
     s32 x, y;
@@ -2115,7 +2115,7 @@ void PokeathlonRelayRunObstacle_SetDrawPriority(PokeathlonRelayRunObstacle *obst
 }
 
 // Draw priorities of a team at y: in front of the obstacles above it, the player's own team before the others.
-void PokeathlonRelayRunTeam_SetDrawPriority(PokeathlonRelayRunTeam *team, u8 y, int isOwn) {
+void PokeathlonRelayRunTeam_SetDrawPriority(PokeathlonRelayRunTeam *team, u8 y, BOOL isOwn) {
     int row = 168 - y;
     int priority;
     if (row < 0) {
@@ -2223,7 +2223,7 @@ static void PokeathlonRelayRun_PrintResult(PokeathlonRelayRun *relayRun, int lap
 
 // Plays a sound effect for something at screen x if it is on screen, on the player's own channel (3) when it
 // belongs to the player's own team.
-void PokeathlonRelayRun_PlaySEIfOnScreen(int x, int seqNo, int isOwn) {
+void PokeathlonRelayRun_PlaySEIfOnScreen(int x, int seqNo, BOOL isOwn) {
     if (x >= 0 && x < 256) {
         PlaySEOnPlayer(seqNo, isOwn ? 3 : 4);
     }
@@ -2231,7 +2231,7 @@ void PokeathlonRelayRun_PlaySEIfOnScreen(int x, int seqNo, int isOwn) {
 
 // The sign at the top of a player's screen (swapSigns): 1 the runner is tired, 2 the swap button is pressed,
 // 3 a swap is not possible now (swapping, stunned or exhausted), 4 pressed while it is not possible.
-void PokeathlonRelayRun_UpdateSwapSign(PokeathlonRelayRun *relayRun, u8 teamId, int touchingSwapButton) {
+void PokeathlonRelayRun_UpdateSwapSign(PokeathlonRelayRun *relayRun, u8 teamId, BOOL touchingSwapButton) {
     u8 *signs = relayRun->swapSigns;
     u8 sign = 0;
     u8 condition = relayRun->teams[teamId].members[relayRun->teams[teamId].current].condition;

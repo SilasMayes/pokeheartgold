@@ -283,12 +283,12 @@ PokeathlonBlockSmashMember *PokeathlonBlockSmashMon_GetActiveMember(PokeathlonBl
     return &mon->members[mon->member];
 }
 
-u32 PokeathlonBlockSmashMon_IsGaugeFull(PokeathlonBlockSmashMon *mon) {
+BOOL PokeathlonBlockSmashMon_IsGaugeFull(PokeathlonBlockSmashMon *mon) {
     GF_ASSERT(mon != NULL);
     return mon->gaugeFull;
 }
 
-u32 PokeathlonBlockSmashMon_IsTired(PokeathlonBlockSmashMon *mon) {
+BOOL PokeathlonBlockSmashMon_IsTired(PokeathlonBlockSmashMon *mon) {
     GF_ASSERT(mon != NULL);
     return mon->tired;
 }
@@ -304,8 +304,9 @@ u8 PokeathlonBlockSmashMon_GetActiveMemberIndex(PokeathlonBlockSmashMon *mon) {
 }
 
 // Ready, or two frames into the hit animation.
-u32 PokeathlonBlockSmashMon_CanHit(PokeathlonBlockSmashMon *mon) {
-    u32 mode, result;
+BOOL PokeathlonBlockSmashMon_CanHit(PokeathlonBlockSmashMon *mon) {
+    u32 mode;
+    BOOL result;
     GF_ASSERT(mon != NULL);
     result = TRUE;
     mode = mon->mode;

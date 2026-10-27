@@ -14,7 +14,7 @@ static void PokeathlonCourseMonObjects_FinishLoad(SysTask *task, void *data);
 static Sprite *PokeathlonCourseMonObjects_CreateSprite(PokeathlonCourseMonObjects *objects, int priority, NNS_G2D_VRAM_TYPE whichScreen, int resourceId);
 
 // Allocates the course sprite resources; flags selects which of the 12 sprite groups get loaded.
-PokeathlonCourseSpriteResources *PokeathlonCourseSprites_CreateResources(enum HeapID heapId, u32 flags, int charVram) {
+PokeathlonCourseSpriteResources *PokeathlonCourseSprites_CreateResources(enum HeapID heapId, u32 flags, NNS_G2D_VRAM_TYPE charVram) {
     u8 counts[POKEATHLON_RES_TYPES];
     PokeathlonCourseSpriteResources *resources;
     int i;
@@ -155,7 +155,7 @@ static GF_2DGfxResMan *PokeathlonCourseSprites_GetResMan(PokeathlonCourseSpriteR
 
 // Loads the character, cell and animation files of each selected group (NARC a/1/5/3) and the palettes.
 static void PokeathlonCourseSprites_LoadResources(PokeathlonCourseSpriteResources *resources) {
-    int vram;
+    NNS_G2D_VRAM_TYPE vram;
 
     if (resources->flags & 0x001) {
         resources->chars[0] = AddCharResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_CHAR], NARC_a_1_5_3, 3, FALSE, 0x14, NNS_G2D_VRAM_TYPE_2DMAIN, resources->heapId);

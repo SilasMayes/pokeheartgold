@@ -50,7 +50,7 @@ void PokeathlonUtil_FreeSpriteContext(PokeathlonSpriteContext *ctx, ManagedSprit
 void PokeathlonUtil_DrawSprites(PokeathlonSpriteContext *ctx);
 ManagedSprite *PokeathlonUtil_NewSprite(PokeathlonSpriteContext *ctx, const ManagedSpriteTemplate *template);
 void PokeathlonUtil_CreateSpriteRow(PokeathlonSpriteContext *ctx, ManagedSprite **sprites, const int *resources, u32 activeCount, u32 startIndex, s16 x, s16 y, BOOL subScreen);
-void PokeathlonUtil_LoadMonPicSpriteResources(SpriteSystem *system, SpriteManager *manager, const int *resourceIds, int vram);
+void PokeathlonUtil_LoadMonPicSpriteResources(SpriteSystem *system, SpriteManager *manager, const int *resourceIds, NNS_G2D_VRAM_TYPE vram);
 void PokeathlonUtil_LoadMonPicSprite(ManagedSprite *sprite, const PokeathlonMonInfo *mon, BOOL isMain, BOOL grayscale, enum HeapID heapId);
 void PokeathlonUtil_LoadMonIconResources(PokeathlonSpriteContext *ctx, const int *resIds, int count, int screen, BOOL flag);
 void PokeathlonUtil_SetMonIconSprite(PokeathlonSpriteContext *ctx, ManagedSprite *sprite, const PokeathlonMonInfo *mon, BOOL isMain, BOOL animate);

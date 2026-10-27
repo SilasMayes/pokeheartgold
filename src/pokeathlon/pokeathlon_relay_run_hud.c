@@ -38,7 +38,7 @@ static const u8 sRelayRunTimerSpriteAnims[6] = { 1, 12, 1, 1, 11, 1 };
 PokeathlonRelayRunHud *PokeathlonRelayRunHud_New(enum HeapID heapId, BgConfig *bgConfig, PokeathlonCourseData *course) {
     PokeathlonRelayRunHud *hud = Heap_Alloc(heapId, sizeof(PokeathlonRelayRunHud));
     int i;
-    u8 *mon;
+    PokeathlonCourseMon *mon;
     MI_CpuFill8(hud, 0, sizeof(PokeathlonRelayRunHud));
     hud->heapId = heapId;
     hud->bgConfig = bgConfig;
@@ -49,12 +49,12 @@ PokeathlonRelayRunHud *PokeathlonRelayRunHud_New(enum HeapID heapId, BgConfig *b
     for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         hud->names[i] = String_New(11, heapId);
     }
-    mon = PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
+    mon = (PokeathlonCourseMon *)PokeathlonCourse_GetParticipantMons(course, PokeathlonCourse_GetNetId(course));
     {
         int member;
         for (member = 0; member < POKEATHLON_TEAM_SIZE; member++) {
-            CopyU16ArrayToString(hud->names[member], (const u16 *)(mon + 0x12)); // the Pokemon's nickname
-            mon += 0x28;
+            CopyU16ArrayToString(hud->names[member], mon->nickname);
+            mon++;
         }
     }
     PokeathlonRelayRunHud_PrintMonName(hud, 1);
@@ -99,13 +99,13 @@ void PokeathlonRelayRunHud_LoadSpriteGraphics(PokeathlonRelayRunHud *hud, Pokeat
     resIds[0] = gPokeathlonRelayRunPicIds[4];
     resIds[1] = gPokeathlonRelayRunPicIds[5];
     for (i = 0; i < 2; i++, resId++) {
-        PokeathlonCourseSpritePool_LoadChar(spritePool, NARC_application_choose_starter_choose_starter_sub_res, NARC_choose_starter_sub_res_choose_starter_sub_res_00000009_NCGR, *resId, 2);
-        PokeathlonCourseSpritePool_LoadPltt(spritePool, NARC_application_choose_starter_choose_starter_sub_res, NARC_choose_starter_sub_res_choose_starter_sub_res_00000006_NCLR, *resId, 2, 1);
+        PokeathlonCourseSpritePool_LoadChar(spritePool, NARC_application_choose_starter_choose_starter_sub_res, NARC_choose_starter_sub_res_choose_starter_sub_res_00000009_NCGR, *resId, NNS_G2D_VRAM_TYPE_2DSUB);
+        PokeathlonCourseSpritePool_LoadPltt(spritePool, NARC_application_choose_starter_choose_starter_sub_res, NARC_choose_starter_sub_res_choose_starter_sub_res_00000006_NCLR, *resId, NNS_G2D_VRAM_TYPE_2DSUB, 1);
         PokeathlonCourseSpritePool_LoadCell(spritePool, NARC_application_choose_starter_choose_starter_sub_res, NARC_choose_starter_sub_res_choose_starter_sub_res_00000010_NCER, *resId);
         PokeathlonCourseSpritePool_LoadAnim(spritePool, NARC_application_choose_starter_choose_starter_sub_res, NARC_choose_starter_sub_res_choose_starter_sub_res_00000010_NCER, *resId);
     }
-    PokeathlonCourseSpritePool_LoadChar(spritePool, NARC_a_1_7_8, 13, 101, 2);
-    PokeathlonCourseSpritePool_LoadPltt(spritePool, NARC_a_1_7_8, 10, 101, 2, 5);
+    PokeathlonCourseSpritePool_LoadChar(spritePool, NARC_a_1_7_8, 13, 101, NNS_G2D_VRAM_TYPE_2DSUB);
+    PokeathlonCourseSpritePool_LoadPltt(spritePool, NARC_a_1_7_8, 10, 101, NNS_G2D_VRAM_TYPE_2DSUB, 5);
     PokeathlonCourseSpritePool_LoadCell(spritePool, NARC_a_1_7_8, 12, 101);
     PokeathlonCourseSpritePool_LoadAnim(spritePool, NARC_a_1_7_8, 11, 101);
 }

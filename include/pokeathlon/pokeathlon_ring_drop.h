@@ -287,8 +287,8 @@ void PokeathlonRingDrop_GetMonScreenPosition(PokeathlonCourseData *course, u8 pa
 u32 PokeathlonRingDrop_GetMonDirection(PokeathlonCourseData *course, u8 participant);
 u8 PokeathlonRingDrop_GetMonStamina(PokeathlonCourseData *course, u8 participant);
 u8 PokeathlonRingDrop_GetMonStaminaPercent(PokeathlonCourseData *course, u8 participant);
-u32 PokeathlonRingDrop_IsMonSwitching(PokeathlonCourseData *course, u8 participant);
-u32 PokeathlonRingDrop_IsMonPushed(PokeathlonCourseData *course, u8 participant);
+BOOL PokeathlonRingDrop_IsMonSwitching(PokeathlonCourseData *course, u8 participant);
+BOOL PokeathlonRingDrop_IsMonPushed(PokeathlonCourseData *course, u8 participant);
 BOOL PokeathlonRingDrop_CanMonAct(PokeathlonCourseData *course, u8 participant);
 void PokeathlonRingDrop_SetMonTarget(PokeathlonCourseData *course, u8 participant, const s16 *target);
 void PokeathlonRingDrop_RequestJump(PokeathlonCourseData *course, u8 participant);

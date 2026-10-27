@@ -45,7 +45,7 @@ void PokeathlonCourseObject_GetCollisionCircle(PokeathlonCourseMonObject *object
 s32 PokeathlonCourseObject_GetCollisionRadius(PokeathlonCourseMonObject *object);
 s32 PokeathlonCourseObject_GetCollisionOffsetY(PokeathlonCourseMonObject *object);
 void PokeathlonCourseObject_SetGroundPosition(PokeathlonCourseMonObject *object, s32 x, s32 y);
-void PokeathlonCourseObject_SetCenterPosition(PokeathlonCourseMonObject *object, int x, int y, int moveShadow);
+void PokeathlonCourseObject_SetCenterPosition(PokeathlonCourseMonObject *object, int x, int y, BOOL moveShadow);
 void PokeathlonCourseObject_GetCollisionCenter(PokeathlonCourseMonObject *object, fx32 x, fx32 y, fx32 *outX, fx32 *outY);
 void PokeathlonCourseObject_CenterToGround(PokeathlonCourseMonObject *object, int x, int y, int *outX, int *outY);
 void PokeathlonCourseObject_GroundToCenter(PokeathlonCourseMonObject *object, s32 x, s32 y, s32 *outX, s32 *outY);
@@ -57,8 +57,8 @@ void PokeathlonCourseObjects_PauseAnims(PokeathlonCourseMonObjects *objects, BOO
 PokeathlonCourseSpritePool *PokeathlonCourseSpritePool_New(enum HeapID heapId, PokeathlonCourseSpritePoolTemplate *template);
 void PokeathlonCourseSpritePool_Free(PokeathlonCourseSpritePool *pool);
 void PokeathlonCourseSpritePool_SetResourceId(PokeathlonCourseSpritePool *pool, int index, u32 id);
-void PokeathlonCourseSpritePool_LoadChar(PokeathlonCourseSpritePool *pool, NarcId narcId, int fileId, int id, int vram);
-void PokeathlonCourseSpritePool_LoadPltt(PokeathlonCourseSpritePool *pool, NarcId narcId, int fileId, int id, int vram, u8 count);
+void PokeathlonCourseSpritePool_LoadChar(PokeathlonCourseSpritePool *pool, NarcId narcId, int fileId, int id, NNS_G2D_VRAM_TYPE vram);
+void PokeathlonCourseSpritePool_LoadPltt(PokeathlonCourseSpritePool *pool, NarcId narcId, int fileId, int id, NNS_G2D_VRAM_TYPE vram, u8 count);
 void PokeathlonCourseSpritePool_LoadCell(PokeathlonCourseSpritePool *pool, NarcId narcId, int fileId, int id);
 void PokeathlonCourseSpritePool_LoadAnim(PokeathlonCourseSpritePool *pool, NarcId narcId, int fileId, int id);
 void PokeathlonCourseSpritePool_TransferResources(PokeathlonCourseSpritePool *pool);

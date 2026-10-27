@@ -424,8 +424,8 @@ static void PokeathlonCourse_LoadSpriteChars(Sprite *sprite, void *data, u32 siz
 }
 
 void PokeathlonCourse_LoadSpritePalette(ManagedSprite *sprite, NarcId narcId, int fileId, BOOL mainScreen, BOOL grayScale, enum HeapID heapId) {
-    int vramType;
-    int location;
+    NNS_G2D_VRAM_TYPE vramType;
+    enum GFPalLoadLocation location;
     u32 offset;
 
     if (mainScreen) {
@@ -435,8 +435,8 @@ void PokeathlonCourse_LoadSpritePalette(ManagedSprite *sprite, NarcId narcId, in
         vramType = NNS_G2D_VRAM_TYPE_2DSUB;
         location = GF_PAL_LOCATION_SUB_OBJ;
     }
-    offset = NNS_G2dGetImagePaletteLocation(Sprite_GetPaletteProxy(sprite->sprite), (NNS_G2D_VRAM_TYPE)vramType);
-    GfGfxLoader_GXLoadPal(narcId, fileId, (enum GFPalLoadLocation)location, (enum GFPalSlotOffset)offset, 0x20, heapId);
+    offset = NNS_G2dGetImagePaletteLocation(Sprite_GetPaletteProxy(sprite->sprite), vramType);
+    GfGfxLoader_GXLoadPal(narcId, fileId, location, (enum GFPalSlotOffset)offset, 0x20, heapId);
     if (grayScale) {
         void *palette;
         if (mainScreen) {

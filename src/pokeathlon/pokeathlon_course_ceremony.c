@@ -136,9 +136,9 @@ static BOOL PokeathlonCourseCeremony_Exit(PokeathlonCourseData *course);
 static void PokeathlonCourseCeremony_BufferMonName(PokeathlonCourseData *course, int team, int member, int field);
 static void PokeathlonCourseCeremony_BufferTeamPoints(PokeathlonCourseData *course, int team, int points);
 static u32 PokeathlonCourseCeremony_HasNoMissBonus(PokeathlonCourseData *course);
-static u32 PokeathlonCourseCeremony_IsNoMissMon(PokeathlonCourseData *course, int team, int member);
-static u32 PokeathlonCourseCeremony_IsPointsLeader(PokeathlonCourseData *course, int team, int member);
-static u32 PokeathlonCourseCeremony_IsEffortPrizeMon(PokeathlonCourseData *course, int team, int member);
+static BOOL PokeathlonCourseCeremony_IsNoMissMon(PokeathlonCourseData *course, int team, int member);
+static BOOL PokeathlonCourseCeremony_IsPointsLeader(PokeathlonCourseData *course, int team, int member);
+static BOOL PokeathlonCourseCeremony_IsEffortPrizeMon(PokeathlonCourseData *course, int team, int member);
 static int PokeathlonCourseConfetti_GetRandomDelay(void);
 static u8 PokeathlonCourseCeremony_GetChallengeBonus(PokeathlonCourseData *course, u8 team);
 static u32 PokeathlonCourseCeremony_GetEventPoints(PokeathlonCourseData *course, u8 team, u8 round);
@@ -1500,7 +1500,7 @@ static BOOL PokeathlonCourseCeremony_Init(PokeathlonCourseData *course) {
         ceremony->bgConfig = BgConfig_Alloc(ceremony->heapId);
         ceremony->messageBox = PokeathlonCourseMessageBox_New(ceremony->heapId);
         PokeathlonCourseCeremony_InitSpriteSystem(ceremony);
-        ceremony->spriteResources = PokeathlonCourseSprites_CreateResources(ceremony->heapId, 6, 1);
+        ceremony->spriteResources = PokeathlonCourseSprites_CreateResources(ceremony->heapId, 6, NNS_G2D_VRAM_TYPE_2DMAIN);
         gSystem.screensFlipped = TRUE;
         GfGfx_SwapDisplay();
         PokeathlonCourse_AdvanceEventInitState(course);
@@ -1599,7 +1599,7 @@ static BOOL PokeathlonCourseCeremony_Exit(PokeathlonCourseData *course) {
 // Puts the nickname of the team's member-th Pokemon into placeholder field.
 static void PokeathlonCourseCeremony_BufferMonName(PokeathlonCourseData *course, int team, int member, int field) {
     PokeathlonCourseCeremony *ceremony = PokeathlonCourse_GetWork(course);
-    PokeathlonCourseCeremonyMon *mons = (PokeathlonCourseCeremonyMon *)PokeathlonCourse_GetParticipantMons(course, team);
+    PokeathlonCourseMon *mons = (PokeathlonCourseMon *)PokeathlonCourse_GetParticipantMons(course, team);
     String *string = String_New(11, ceremony->heapId);
     CopyU16ArrayToString(string, mons[member].nickname);
     BufferString(PokeathlonCourseMessageBox_GetMsgFormat(ceremony->messageBox), field, string, 2, 1, 0);
@@ -1629,7 +1629,7 @@ static u32 PokeathlonCourseCeremony_HasNoMissBonus(PokeathlonCourseData *course)
     return MATH_CountPopulation(data->noMissMons);
 }
 
-static u32 PokeathlonCourseCeremony_IsNoMissMon(PokeathlonCourseData *course, int team, int member) {
+static BOOL PokeathlonCourseCeremony_IsNoMissMon(PokeathlonCourseData *course, int team, int member) {
     int index = member + team * 3;
     u8 *copyArea = PokeathlonCourse_GetDataCopyArea(course);
     PokeathlonCourseCeremonyClosingData *data = (PokeathlonCourseCeremonyClosingData *)PokeathlonCourse_ToBytes(copyArea + POKEATHLON_COURSE_DATA_FRAME_IN);
@@ -1640,7 +1640,7 @@ static u32 PokeathlonCourseCeremony_IsNoMissMon(PokeathlonCourseData *course, in
     return data->noMissMons & (1 << index);
 }
 
-static u32 PokeathlonCourseCeremony_IsPointsLeader(PokeathlonCourseData *course, int team, int member) {
+static BOOL PokeathlonCourseCeremony_IsPointsLeader(PokeathlonCourseData *course, int team, int member) {
     int index = member + team * 3;
     u8 *copyArea = PokeathlonCourse_GetDataCopyArea(course);
     PokeathlonCourseCeremonyClosingData *data = (PokeathlonCourseCeremonyClosingData *)PokeathlonCourse_ToBytes(copyArea + POKEATHLON_COURSE_DATA_FRAME_IN);
@@ -1651,7 +1651,7 @@ static u32 PokeathlonCourseCeremony_IsPointsLeader(PokeathlonCourseData *course,
     return data->pointsLeaderMons & (1 << index);
 }
 
-static u32 PokeathlonCourseCeremony_IsEffortPrizeMon(PokeathlonCourseData *course, int team, int member) {
+static BOOL PokeathlonCourseCeremony_IsEffortPrizeMon(PokeathlonCourseData *course, int team, int member) {
     int index = member + team * 3;
     u8 *copyArea = PokeathlonCourse_GetDataCopyArea(course);
     PokeathlonCourseCeremonyClosingData *data = (PokeathlonCourseCeremonyClosingData *)PokeathlonCourse_ToBytes(copyArea + POKEATHLON_COURSE_DATA_FRAME_IN);
@@ -1785,11 +1785,11 @@ static void PokeathlonCourseCeremony_ChooseIntros(PokeathlonCourseData *course) 
 static u32 PokeathlonCourseCeremony_CalcChallengeBonus(PokeathlonCourseData *course, u8 team) {
     PokeathlonCoursePerformance performance;
     NARC *narc;
-    PokeathlonCourseCeremonyMon *mon;
+    PokeathlonCourseMon *mon;
     s32 bonus = 75;
     s32 i;
     narc = NARC_New(NARC_poketool_personal_performance, PokeathlonCourse_GetHeapID(course));
-    mon = (PokeathlonCourseCeremonyMon *)PokeathlonCourse_GetParticipantMons(course, team);
+    mon = (PokeathlonCourseMon *)PokeathlonCourse_GetParticipantMons(course, team);
     for (i = 0; i < POKEATHLON_TEAM_SIZE; i++, mon++) {
         NARC_ReadWholeMember(narc, PokeathlonCourse_GetPerformanceFileId(mon->species, mon->form), &performance);
         bonus -= performance.stats[0] + 1;

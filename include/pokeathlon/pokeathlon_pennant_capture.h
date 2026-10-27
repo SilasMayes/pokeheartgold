@@ -347,7 +347,7 @@ void PokeathlonPennantCaptureDisplay_ShowPoint(PokeathlonPennantCaptureDisplay *
 
 void PokeathlonPennantCaptureDisplay_GetPicVramOffsets(PokeathlonCourseSpritePool *pool, PokeathlonPennantCaptureDisplay *display);
 void PokeathlonPennantCaptureDisplay_InitWindow(PokeathlonPennantCaptureDisplay *display);
-void PokeathlonPennantCaptureDisplay_ShowStatus(PokeathlonCourseSpritePoolSprite **sprites, int show);
+void PokeathlonPennantCaptureDisplay_ShowStatus(PokeathlonCourseSpritePoolSprite **sprites, BOOL show);
 PokeathlonPennantCaptureCpu *PokeathlonPennantCaptureCpu_New(enum HeapID heapId, int cpuCount, int mode);
 void PokeathlonPennantCaptureCpu_SetPlayer(PokeathlonPennantCaptureCpu *cpu, u8 participant, PokeathlonPennantCapturePlayer *player);
 void PokeathlonPennantCaptureCpu_SetPennants(PokeathlonPennantCaptureCpu *cpu, PokeathlonPennantCapturePennant *pennants);

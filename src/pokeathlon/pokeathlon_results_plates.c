@@ -394,8 +394,8 @@ void PokeathlonResults_FreeScoreboard(PokeathlonResultsAnnouncementScoreboard *s
 
 void PokeathlonResults_LoadScoreboardResources(PokeathlonResultsAnnouncementScoreboard *scoreboard, s32 index) {
     PokeathlonCourseSpritePool_SetResourceId(scoreboard->scene, index, 104);
-    PokeathlonCourseSpritePool_LoadChar(scoreboard->scene, NARC_poketool_pokezukan, 3, 104, 2);
-    PokeathlonCourseSpritePool_LoadPltt(scoreboard->scene, NARC_poketool_pokezukan, 0, 104, 2, 5);
+    PokeathlonCourseSpritePool_LoadChar(scoreboard->scene, NARC_poketool_pokezukan, 3, 104, NNS_G2D_VRAM_TYPE_2DSUB);
+    PokeathlonCourseSpritePool_LoadPltt(scoreboard->scene, NARC_poketool_pokezukan, 0, 104, NNS_G2D_VRAM_TYPE_2DSUB, 5);
     PokeathlonCourseSpritePool_LoadCell(scoreboard->scene, NARC_poketool_pokezukan, 2, 104);
     PokeathlonCourseSpritePool_LoadAnim(scoreboard->scene, NARC_poketool_pokezukan, 1, 104);
 }

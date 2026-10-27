@@ -55,7 +55,7 @@ void PokeathlonPennantCaptureDisplay_InitWindow(PokeathlonPennantCaptureDisplay 
     LoadFontPal0(GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_15_OFFSET, display->heapId);
 }
 
-void PokeathlonPennantCaptureDisplay_ShowStatus(PokeathlonCourseSpritePoolSprite **sprites, int show) {
+void PokeathlonPennantCaptureDisplay_ShowStatus(PokeathlonCourseSpritePoolSprite **sprites, BOOL show) {
     PokeathlonCourseSpritePoolSprite_Show(sprites[0], TRUE, show);
     PokeathlonCourseSpritePoolSprite_Show(sprites[2], TRUE, show);
     PokeathlonCourseSpritePoolSprite_Show(sprites[1], TRUE, show);

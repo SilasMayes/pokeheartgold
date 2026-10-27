@@ -122,13 +122,6 @@ typedef struct PokeathlonHurdleDash {
     u8 started;
 } PokeathlonHurdleDash;
 
-// A Pokemon of a team in the course data (PokeathlonCourse_GetParticipantMons).
-typedef struct PokeathlonHurdleDashTeamMon {
-    u16 species;
-    u16 form;
-    u8 unk04[0x24];
-} PokeathlonHurdleDashTeamMon;
-
 // NARC a/1/7/0 member 10.
 typedef struct PokeathlonHurdleDashParams {
     PokeathlonCourseCollision collisions[POKEATHLON_SIZE_CLASSES];

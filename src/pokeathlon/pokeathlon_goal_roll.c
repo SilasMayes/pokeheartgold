@@ -164,7 +164,7 @@ BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
         count = PokeathlonCourse_GetParticipantCount(course);
         mode = PokeathlonCourse_GetMode(course);
         goalRoll->cpu = ((PokeathlonGoalRollCpuNewFunc)PokeathlonGoalRollCpu_New)(goalRoll->heapId, 4 - count, mode);
-        goalRoll->resources = PokeathlonCourseSprites_CreateResources(goalRoll->heapId, 2735, 1);
+        goalRoll->resources = PokeathlonCourseSprites_CreateResources(goalRoll->heapId, 2735, NNS_G2D_VRAM_TYPE_2DMAIN);
         PokeathlonCourse_InitMarkers(course);
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
@@ -176,12 +176,12 @@ BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
         goalRoll->monObjects = PokeathlonCourseMonObjects_Create(goalRoll->heapId, 12, 8, goalRoll->resources, PokeathlonCourseSpritePool_GetSpriteList(goalRoll->spritePool));
         PokeathlonCourseSpritePool_SetResourceId(goalRoll->spritePool, 0, 101);
         PokeathlonCourseSpritePool_SetResourceId(goalRoll->spritePool, 1, 102);
-        PokeathlonCourseSpritePool_LoadChar(goalRoll->spritePool, NARC_a_2_3_4, 18, 101, 1);
-        PokeathlonCourseSpritePool_LoadPltt(goalRoll->spritePool, NARC_a_2_3_4, 15, 101, 1, 2);
+        PokeathlonCourseSpritePool_LoadChar(goalRoll->spritePool, NARC_a_2_3_4, 18, 101, NNS_G2D_VRAM_TYPE_2DMAIN);
+        PokeathlonCourseSpritePool_LoadPltt(goalRoll->spritePool, NARC_a_2_3_4, 15, 101, NNS_G2D_VRAM_TYPE_2DMAIN, 2);
         PokeathlonCourseSpritePool_LoadCell(goalRoll->spritePool, NARC_a_2_3_4, 17, 101);
         PokeathlonCourseSpritePool_LoadAnim(goalRoll->spritePool, NARC_a_2_3_4, 16, 101);
-        PokeathlonCourseSpritePool_LoadChar(goalRoll->spritePool, NARC_a_2_3_4, 14, 102, 2);
-        PokeathlonCourseSpritePool_LoadPltt(goalRoll->spritePool, NARC_a_2_3_4, 11, 102, 2, 1);
+        PokeathlonCourseSpritePool_LoadChar(goalRoll->spritePool, NARC_a_2_3_4, 14, 102, NNS_G2D_VRAM_TYPE_2DSUB);
+        PokeathlonCourseSpritePool_LoadPltt(goalRoll->spritePool, NARC_a_2_3_4, 11, 102, NNS_G2D_VRAM_TYPE_2DSUB, 1);
         PokeathlonCourseSpritePool_LoadCell(goalRoll->spritePool, NARC_a_2_3_4, 13, 102);
         PokeathlonCourseSpritePool_LoadAnim(goalRoll->spritePool, NARC_a_2_3_4, 12, 102);
         PokeathlonCourseSpritePool_TransferResources(goalRoll->spritePool);
@@ -596,16 +596,16 @@ static void PokeathlonGoalRoll_HostUpdate(PokeathlonCourseData *course) {
         return;
     }
     if (goalRoll->timeUp) {
-        area += 40;
+        area += POKEATHLON_COURSE_DATA_FRAME_OUT;
         PokeathlonGoalRoll_PackFrame(goalRoll, (PokeathlonGoalRollFramePacket *)PokeathlonCourse_ToBytes(area));
         return;
     }
     out = (PokeathlonGoalRollFramePacket *)PokeathlonCourse_ToBytes(area + POKEATHLON_COURSE_DATA_FRAME_OUT);
     ownInput = (PokeathlonGoalRollFramePacket *)PokeathlonCourse_ToBytes(area + POKEATHLON_COURSE_DATA_INPUTS);
     *ownInput = *(PokeathlonGoalRollFramePacket *)PokeathlonCourse_ToBytes(area);
-    area += 80;
+    area += POKEATHLON_COURSE_DATA_INPUTS;
     frame.team = goalRoll->mons[0];
-    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++, area += 40, frame.team += POKEATHLON_TEAM_SIZE) {
+    for (i = 0; i < POKEATHLON_PARTICIPANTS; i++, area += POKEATHLON_COURSE_DATA_SLOT_SIZE, frame.team += POKEATHLON_TEAM_SIZE) {
         input = (PokeathlonGoalRollInput *)PokeathlonCourse_ToBytes(area);
         if (input->touching) {
             if (goalRoll->touch[i].newPress && goalRoll->touch[i].held) {
@@ -830,7 +830,7 @@ static void PokeathlonGoalRoll_ApplyFrame(PokeathlonCourseData *course) {
         } else {
             PokeathlonCourseMonObject_SetAnimState(object, (u8)(state + 1));
         }
-        PokeathlonCourseObject_SetCenterPosition(object, x, y, 1);
+        PokeathlonCourseObject_SetCenterPosition(object, x, y, TRUE);
     }
     PokeathlonGoalRoll_SortOwnTeamOrder(goalRoll->mons[own], &frame->monY[own * 3]);
     PokeathlonGoalRoll_SortOtherMonsOrder(goalRoll, frame, own);

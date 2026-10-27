@@ -56,7 +56,7 @@ static const PokeathlonEventBannerWindows sPokeathlonEventBannerWindows = {
 
 BOOL PokeathlonCourseCeremony_IsOpeningFinished(PokeathlonCourseData *course) {
     u8 *copyArea = PokeathlonCourse_GetDataCopyArea(course);
-    PokeathlonCourseCeremonyOpeningData *data = (PokeathlonCourseCeremonyOpeningData *)PokeathlonCourse_ToBytes(copyArea + 0xF0);
+    PokeathlonCourseCeremonyOpeningData *data = (PokeathlonCourseCeremonyOpeningData *)PokeathlonCourse_ToBytes(copyArea + POKEATHLON_COURSE_DATA_FRAME_IN);
     GF_ASSERT(course != NULL);
     GF_ASSERT(copyArea != NULL);
     GF_ASSERT(data != NULL);
@@ -65,7 +65,7 @@ BOOL PokeathlonCourseCeremony_IsOpeningFinished(PokeathlonCourseData *course) {
 
 BOOL PokeathlonCourseCeremony_IsClosingFinished(PokeathlonCourseData *course) {
     u8 *copyArea = PokeathlonCourse_GetDataCopyArea(course);
-    PokeathlonCourseCeremonyClosingData *data = (PokeathlonCourseCeremonyClosingData *)PokeathlonCourse_ToBytes(copyArea + 0xF0);
+    PokeathlonCourseCeremonyClosingData *data = (PokeathlonCourseCeremonyClosingData *)PokeathlonCourse_ToBytes(copyArea + POKEATHLON_COURSE_DATA_FRAME_IN);
     GF_ASSERT(course != NULL);
     GF_ASSERT(copyArea != NULL);
     GF_ASSERT(data != NULL);

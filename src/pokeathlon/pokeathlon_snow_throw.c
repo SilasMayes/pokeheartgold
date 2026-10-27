@@ -390,7 +390,7 @@ BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
         PokeathlonSnowThrow_LoadSpriteGraphics(work->spritePool);
         PokeathlonSnowThrowDisplay_LoadSpriteGraphics(work->display, work->spritePool);
         PokeathlonCourseSpritePool_TransferResources(work->spritePool);
-        work->monResources = PokeathlonCourseSprites_CreateResources(work->heapId, 1255, 1);
+        work->monResources = PokeathlonCourseSprites_CreateResources(work->heapId, 1255, NNS_G2D_VRAM_TYPE_2DMAIN);
         work->monObjectList = PokeathlonCourseMonObjects_Create(work->heapId, 9, 32, work->monResources, PokeathlonCourseSpritePool_GetSpriteList(work->spritePool));
         Sprite_SetDrawPriority(*PokeathlonCourse_CreateHudSpritesInPool(course, 0, work->monResources, work->spritePool), 1);
         own = PokeathlonCourse_GetNetId(course);
@@ -597,12 +597,12 @@ static void PokeathlonSnowThrow_LoadBgGraphics(PokeathlonSnowThrow *work, u8 own
 }
 
 static void PokeathlonSnowThrow_LoadSpriteGraphics(PokeathlonCourseSpritePool *pool) {
-    PokeathlonCourseSpritePool_LoadChar(pool, NARC_a_2_1_7, 21, 106, 3);
-    PokeathlonCourseSpritePool_LoadPltt(pool, NARC_a_2_1_7, 18, 106, 3, 2);
+    PokeathlonCourseSpritePool_LoadChar(pool, NARC_a_2_1_7, 21, 106, NNS_G2D_VRAM_TYPE_2DBOTH);
+    PokeathlonCourseSpritePool_LoadPltt(pool, NARC_a_2_1_7, 18, 106, NNS_G2D_VRAM_TYPE_2DBOTH, 2);
     PokeathlonCourseSpritePool_LoadCell(pool, NARC_a_2_1_7, 20, 106);
     PokeathlonCourseSpritePool_LoadAnim(pool, NARC_a_2_1_7, 19, 106);
-    PokeathlonCourseSpritePool_LoadChar(pool, NARC_a_2_1_7, 17, 105, 1);
-    PokeathlonCourseSpritePool_LoadPltt(pool, NARC_a_2_1_7, 14, 105, 1, 3);
+    PokeathlonCourseSpritePool_LoadChar(pool, NARC_a_2_1_7, 17, 105, NNS_G2D_VRAM_TYPE_2DMAIN);
+    PokeathlonCourseSpritePool_LoadPltt(pool, NARC_a_2_1_7, 14, 105, NNS_G2D_VRAM_TYPE_2DMAIN, 3);
     PokeathlonCourseSpritePool_LoadCell(pool, NARC_a_2_1_7, 16, 105);
     PokeathlonCourseSpritePool_LoadAnim(pool, NARC_a_2_1_7, 15, 105);
 }
@@ -1004,7 +1004,7 @@ static void PokeathlonSnowThrow_DrawPacket(PokeathlonCourseData *course) {
     int fieldX;
     int fieldZ;
     int i;
-    int done;
+    BOOL done;
     f32 factor;
 
     work = PokeathlonCourse_GetWork(course);

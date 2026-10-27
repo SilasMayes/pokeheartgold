@@ -105,7 +105,7 @@ struct PokeathlonCourseMonGfxTemplate {
     BOOL loadAtOnce; // load all Pokemon in one frame
     int priority;
     BOOL vramTransfer;
-    int vram; // NNS_G2D_VRAM_TYPE_2DMAIN, _2DSUB or _2DBOTH
+    NNS_G2D_VRAM_TYPE vram;
     NNS_G2D_VRAM_TYPE whichScreen;
     int sizeTypes[POKEATHLON_MONS]; // 1..3, selects the shadow / marker offsets of each Pokemon
 };
@@ -126,7 +126,7 @@ typedef struct PokeathlonCourseMonGfxLoad {
 struct PokeathlonCourseSpriteResources {
     enum HeapID heapId;
     u32 flags; // which of the 12 sprite groups are loaded
-    int charVram;
+    NNS_G2D_VRAM_TYPE charVram;
     GF_2DGfxResMan *resMans[POKEATHLON_RES_TYPES];
     SpriteResource *chars[POKEATHLON_MONS];
     SpriteResource *cells[POKEATHLON_MONS];
@@ -319,13 +319,6 @@ typedef struct PokeathlonCoursePacket {
     u8 isHostPacket;
     u8 unk25[3];
 } PokeathlonCoursePacket;
-
-// Where the packets of the data copy area (PokeathlonCourse_GetDataCopyArea) are: the own input, the frame the host
-// builds, the inputs it collects from the four participants, then the frame every participant receives.
-#define POKEATHLON_COURSE_DATA_SLOT_SIZE 0x28
-#define POKEATHLON_COURSE_DATA_FRAME_OUT (1 * POKEATHLON_COURSE_DATA_SLOT_SIZE)
-#define POKEATHLON_COURSE_DATA_INPUTS    (2 * POKEATHLON_COURSE_DATA_SLOT_SIZE)
-#define POKEATHLON_COURSE_DATA_FRAME_IN  (6 * POKEATHLON_COURSE_DATA_SLOT_SIZE)
 
 // Callbacks of the event that is running (PokeathlonCourseData.state points to the event's table).
 typedef struct PokeathlonCourseEvent {
@@ -537,45 +530,45 @@ void PokeathlonCourse_StopMarkerAnims(PokeathlonCourseData *course);
 void PokeathlonCourse_SetHudPlanes(PokeathlonCourseData *course, u32 planes);
 BOOL PokeathlonCourse_RunFinish(PokeathlonCourseData *course);
 int PokeathlonCourse_GetPerformanceFileId(int species, int form);
-u32 PokeathlonCourse_State_SendEvents(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_RunEventOverlay(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_RunWait(PokeathlonCourseData *course, u8 *state);
-u32 PokeathlonCourse_State_SendParticipant(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_SendParticipants(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_SendProfiles(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_SendRecord(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_StartOpening(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_WaitOpeningStart(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_RunOpening(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_EndOpening(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_StartEventIntro(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_WaitEventIntroStart(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_RunEventIntro(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_EndEventIntro(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_StartRound(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_WaitRoundStart(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_SendEventData(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_RunEvent(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_ResetDataCopyArea(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_SendEventResult(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_SendEventResults(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_EndRound(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_ExitEvent(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_NextRound(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_StartResults(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_WaitResultsStart(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_RunResults(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_EndResults(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_StartClosing(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_WaitClosingStart(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_RunClosing(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_CreateJuiceRecords(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_SendMonCounters(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_SendResults(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_SendJuiceRecord(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_StoreJuiceRecords(PokeathlonCourseData *course);
-u32 PokeathlonCourse_State_Exit(PokeathlonCourseData *course);
-int PokeathlonCourse_State_WaitForCommand(void);
+BOOL PokeathlonCourse_State_SendEvents(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_RunEventOverlay(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_RunWait(PokeathlonCourseData *course, u8 *state);
+BOOL PokeathlonCourse_State_SendParticipant(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_SendParticipants(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_SendProfiles(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_SendRecord(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_StartOpening(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_WaitOpeningStart(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_RunOpening(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_EndOpening(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_StartEventIntro(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_WaitEventIntroStart(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_RunEventIntro(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_EndEventIntro(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_StartRound(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_WaitRoundStart(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_SendEventData(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_RunEvent(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_ResetDataCopyArea(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_SendEventResult(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_SendEventResults(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_EndRound(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_ExitEvent(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_NextRound(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_StartResults(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_WaitResultsStart(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_RunResults(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_EndResults(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_StartClosing(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_WaitClosingStart(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_RunClosing(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_CreateJuiceRecords(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_SendMonCounters(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_SendResults(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_SendJuiceRecord(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_StoreJuiceRecords(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_Exit(PokeathlonCourseData *course);
+BOOL PokeathlonCourse_State_WaitForCommand(void);
 void PokeathlonCourse_AddMonCounter(PokeathlonCourseData *course, u8 participant, u8 mon, int counter, int amount);
 void PokeathlonCourse_SetRecordScore(PokeathlonCourseData *course, u16 score);
 void PokeathlonCourse_SetFinishCallback(PokeathlonCourseData *course, PokeathlonCourseFinishFunc callback);
@@ -596,7 +589,7 @@ PokeathlonCourseMonGfx *PokeathlonCourseMonGfx_Get(PokeathlonCourseMonGfxManager
 Sprite *PokeathlonCourseMonGfx_GetSprite(PokeathlonCourseMonGfx *mon);
 PokeathlonCourseMonInfo *PokeathlonCourseMonGfx_GetInfo(PokeathlonCourseMonGfx *mon);
 void PokeathlonCourseMonGfx_LoadPalette(PokeathlonCourseMonInfo *info, enum HeapID heapId, u16 *dest);
-void PokeathlonCourseMonGfx_SetPalette(PokeathlonCourseMonGfxManager *manager, int index, int vram, const u16 *palette);
+void PokeathlonCourseMonGfx_SetPalette(PokeathlonCourseMonGfxManager *manager, int index, NNS_G2D_VRAM_TYPE vram, const u16 *palette);
 u8 PokeathlonCourseMonGfx_GetTopRow(PokeathlonCourseMonGfx *mon);
 void PokeathlonCourseMonGfx_SetScale(PokeathlonCourseMonGfx *mon, f32 x, f32 y);
 void PokeathlonCourseMonGfx_ShiftLargeUp(PokeathlonCourseMonGfxManager *manager);
@@ -643,7 +636,7 @@ void *PokeathlonCourseCmd_GetMonCountersBuffer(int netId, void *context, int siz
 void *PokeathlonCourseCmd_GetJuiceRecordBuffer(int netId, void *context);
 
 // Sprite resources and course Pokemon objects
-PokeathlonCourseSpriteResources *PokeathlonCourseSprites_CreateResources(enum HeapID heapId, u32 flags, int charVram);
+PokeathlonCourseSpriteResources *PokeathlonCourseSprites_CreateResources(enum HeapID heapId, u32 flags, NNS_G2D_VRAM_TYPE charVram);
 void PokeathlonCourseSprites_FreeResources(PokeathlonCourseSpriteResources *resources);
 Sprite *PokeathlonCourseSprites_CreateCountdown(PokeathlonCourseSpriteResources *resources, SpriteList *spriteList, int priority, NNS_G2D_VRAM_TYPE whichScreen, enum HeapID heapId);
 Sprite *PokeathlonCourseSprites_CreateTimerDigit(PokeathlonCourseSpriteResources *resources, SpriteList *spriteList, int priority, enum HeapID heapId);
@@ -659,7 +652,7 @@ void PokeathlonCourseMonObjects_Free(PokeathlonCourseMonObjects *objects);
 void PokeathlonCourseMonObjects_Load(PokeathlonCourseMonObjects *objects, int count, PokeathlonCourseMonInfo *infos, PokeathlonCourseMonGfxTemplate *template, u32 priority, int baseIndex);
 BOOL PokeathlonCourseMonObjects_IsLoaded(PokeathlonCourseMonObjects *objects);
 PokeathlonCourseMonObject *PokeathlonCourseMonObjects_Get(PokeathlonCourseMonObjects *objects, u8 index);
-void PokeathlonCourseMonObjects_SetPalette(PokeathlonCourseMonObjects *objects, u8 index, int vram, const u16 *palette);
+void PokeathlonCourseMonObjects_SetPalette(PokeathlonCourseMonObjects *objects, u8 index, NNS_G2D_VRAM_TYPE vram, const u16 *palette);
 PokeathlonCourseMonGfx *PokeathlonCourseMonObject_GetGfx(PokeathlonCourseMonObject *object);
 void PokeathlonCourseMonObject_SetDrawFlag(PokeathlonCourseMonObject *object, u8 draw);
 void PokeathlonCourseMonObject_SetShadowDrawFlag(PokeathlonCourseMonObject *object, BOOL draw);

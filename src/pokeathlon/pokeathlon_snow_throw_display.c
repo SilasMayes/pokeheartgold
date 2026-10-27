@@ -103,8 +103,8 @@ void PokeathlonSnowThrowDisplay_LoadBgGraphics(PokeathlonSnowThrowDisplay *displ
 
 void PokeathlonSnowThrowDisplay_LoadSpriteGraphics(PokeathlonSnowThrowDisplay *display, PokeathlonCourseSpritePool *pool) {
 #pragma unused(display)
-    PokeathlonCourseSpritePool_LoadChar(pool, NARC_a_2_1_7, 13, 101, 2);
-    PokeathlonCourseSpritePool_LoadPltt(pool, NARC_a_2_1_7, 10, 101, 2, 4);
+    PokeathlonCourseSpritePool_LoadChar(pool, NARC_a_2_1_7, 13, 101, NNS_G2D_VRAM_TYPE_2DSUB);
+    PokeathlonCourseSpritePool_LoadPltt(pool, NARC_a_2_1_7, 10, 101, NNS_G2D_VRAM_TYPE_2DSUB, 4);
     PokeathlonCourseSpritePool_LoadCell(pool, NARC_a_2_1_7, 12, 101);
     PokeathlonCourseSpritePool_LoadAnim(pool, NARC_a_2_1_7, 11, 101);
 }

@@ -115,7 +115,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
         int count = PokeathlonCourse_GetParticipantCount(course);
         int mode = PokeathlonCourse_GetMode(course);
         work->cpu = PokeathlonPennantCaptureCpu_New(work->heapId, 4 - count, mode);
-        work->monResources = PokeathlonCourseSprites_CreateResources(work->heapId, 0x2BF, 1);
+        work->monResources = PokeathlonCourseSprites_CreateResources(work->heapId, 0x2BF, NNS_G2D_VRAM_TYPE_2DMAIN);
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
     }
@@ -203,7 +203,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
             work->players[team].participant = team;
         }
         if (PokeathlonCourse_GetNetId(course) == 0) {
-            PokeathlonPennantCapture_PackFrame(work, (PokeathlonPennantCaptureFrame *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + 40));
+            PokeathlonPennantCapture_PackFrame(work, (PokeathlonPennantCaptureFrame *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_OUT));
         }
         PokeathlonCourse_CreateStartSpritesInPool(course, 0, work->monResources, work->spritePool, NNS_G2D_VRAM_TYPE_2DMAIN, 1, &ownPosition);
         PokeathlonPennantCapture_LoadBgGfx(work);

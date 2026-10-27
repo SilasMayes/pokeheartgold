@@ -110,7 +110,7 @@ void PokeathlonCourseMonGfx_LoadPalette(PokeathlonCourseMonInfo *info, enum Heap
     Heap_Free(model);
 }
 
-void PokeathlonCourseMonGfx_SetPalette(PokeathlonCourseMonGfxManager *manager, int index, int vram, const u16 *palette) {
+void PokeathlonCourseMonGfx_SetPalette(PokeathlonCourseMonGfxManager *manager, int index, NNS_G2D_VRAM_TYPE vram, const u16 *palette) {
     BOOL loadMain = FALSE;
     BOOL loadSub = FALSE;
     NNSG2dImagePaletteProxy *paletteProxy;
@@ -135,7 +135,7 @@ void PokeathlonCourseMonGfx_SetPalette(PokeathlonCourseMonGfxManager *manager, i
 
 // Adds the sprite resources of one Pokemon (cell / animation files of NARC a/1/4/9 by size and transfer mode)
 // and converts the 8 frames of its overworld model texture into sprite characters.
-static void PokeathlonCourseMonGfx_Load(PokeathlonCourseMonGfxManager *manager, PokeathlonCourseMonGfx *mon, PokeathlonCourseMonInfo *info, int vram, u8 id, BOOL vramTransfer) {
+static void PokeathlonCourseMonGfx_Load(PokeathlonCourseMonGfxManager *manager, PokeathlonCourseMonGfx *mon, PokeathlonCourseMonInfo *info, NNS_G2D_VRAM_TYPE vram, u8 id, BOOL vramTransfer) {
     int cellFile;
     int animFile;
     int dim;

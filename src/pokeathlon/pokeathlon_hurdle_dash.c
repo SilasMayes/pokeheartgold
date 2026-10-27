@@ -233,32 +233,32 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
         PokeathlonCourseSpritePool_SetResourceId(hurdleDash->scene, 3, 104);
         PokeathlonCourseSpritePool_SetResourceId(hurdleDash->scene, 4, 105);
         PokeathlonCourseSpritePool_SetResourceId(hurdleDash->scene, 5, 106);
-        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 9, 101, 3);
-        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 6, 101, 3, 1);
+        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 9, 101, NNS_G2D_VRAM_TYPE_2DBOTH);
+        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 6, 101, NNS_G2D_VRAM_TYPE_2DBOTH, 1);
         PokeathlonCourseSpritePool_LoadCell(hurdleDash->scene, NARC_a_1_5_6, 8, 101);
         PokeathlonCourseSpritePool_LoadAnim(hurdleDash->scene, NARC_a_1_5_6, 7, 101);
-        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 16, 102, 1);
-        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 13, 102, 1, 1);
+        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 16, 102, NNS_G2D_VRAM_TYPE_2DMAIN);
+        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 13, 102, NNS_G2D_VRAM_TYPE_2DMAIN, 1);
         PokeathlonCourseSpritePool_LoadCell(hurdleDash->scene, NARC_a_1_5_6, 15, 102);
         PokeathlonCourseSpritePool_LoadAnim(hurdleDash->scene, NARC_a_1_5_6, 14, 102);
-        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 12, 103, 1);
-        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 6, 103, 1, 1);
+        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 12, 103, NNS_G2D_VRAM_TYPE_2DMAIN);
+        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 6, 103, NNS_G2D_VRAM_TYPE_2DMAIN, 1);
         PokeathlonCourseSpritePool_LoadCell(hurdleDash->scene, NARC_a_1_5_6, 11, 103);
         PokeathlonCourseSpritePool_LoadAnim(hurdleDash->scene, NARC_a_1_5_6, 10, 103);
-        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 20, 105, 1);
-        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 17, 105, 1, 1);
+        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 20, 105, NNS_G2D_VRAM_TYPE_2DMAIN);
+        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 17, 105, NNS_G2D_VRAM_TYPE_2DMAIN, 1);
         PokeathlonCourseSpritePool_LoadCell(hurdleDash->scene, NARC_a_1_5_6, 19, 105);
         PokeathlonCourseSpritePool_LoadAnim(hurdleDash->scene, NARC_a_1_5_6, 18, 105);
-        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 28, 104, 1);
-        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 25, 104, 1, 1);
+        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 28, 104, NNS_G2D_VRAM_TYPE_2DMAIN);
+        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 25, 104, NNS_G2D_VRAM_TYPE_2DMAIN, 1);
         PokeathlonCourseSpritePool_LoadCell(hurdleDash->scene, NARC_a_1_5_6, 27, 104);
         PokeathlonCourseSpritePool_LoadAnim(hurdleDash->scene, NARC_a_1_5_6, 26, 104);
-        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 32, 106, 1);
-        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 29, 106, 1, 1);
+        PokeathlonCourseSpritePool_LoadChar(hurdleDash->scene, NARC_a_1_5_6, 32, 106, NNS_G2D_VRAM_TYPE_2DMAIN);
+        PokeathlonCourseSpritePool_LoadPltt(hurdleDash->scene, NARC_a_1_5_6, 29, 106, NNS_G2D_VRAM_TYPE_2DMAIN, 1);
         PokeathlonCourseSpritePool_LoadCell(hurdleDash->scene, NARC_a_1_5_6, 31, 106);
         PokeathlonCourseSpritePool_LoadAnim(hurdleDash->scene, NARC_a_1_5_6, 30, 106);
         PokeathlonCourseSpritePool_TransferResources(hurdleDash->scene);
-        hurdleDash->spriteResources = PokeathlonCourseSprites_CreateResources(hurdleDash->heapId, 743, 1);
+        hurdleDash->spriteResources = PokeathlonCourseSprites_CreateResources(hurdleDash->heapId, 743, NNS_G2D_VRAM_TYPE_2DMAIN);
         hurdleDash->monSpriteManager = PokeathlonCourseMonObjects_Create(hurdleDash->heapId, 3, 4, hurdleDash->spriteResources, PokeathlonCourseSpritePool_GetSpriteList(hurdleDash->scene));
         PokeathlonCourse_AdvanceEventInitState(course);
         break;
@@ -296,7 +296,7 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
             i = 0;
             out = mons;
             for (; i < POKEATHLON_PARTICIPANTS; i++) {
-                PokeathlonHurdleDashTeamMon *mon = (PokeathlonHurdleDashTeamMon *)PokeathlonCourse_GetParticipantMons(course, i);
+                PokeathlonCourseMon *mon = (PokeathlonCourseMon *)PokeathlonCourse_GetParticipantMons(course, i);
                 for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
                     out->species = mon->species;
                     out->form = mon->form;
@@ -374,14 +374,14 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
         }
         dataCopy = PokeathlonCourse_GetDataCopyArea(course);
         {
-            u8 *block = PokeathlonCourse_ToBytes(dataCopy + 240);
+            u8 *block = PokeathlonCourse_ToBytes(dataCopy + POKEATHLON_COURSE_DATA_FRAME_IN);
             u8 k;
             for (k = 0; k < 6; k++) {
                 block[28 + k] = 17;
             }
         }
         if (PokeathlonCourse_GetNetId(course) == 0) {
-            u8 *block = PokeathlonCourse_ToBytes(dataCopy + 40);
+            u8 *block = PokeathlonCourse_ToBytes(dataCopy + POKEATHLON_COURSE_DATA_FRAME_OUT);
             u8 k;
             for (k = 0; k < 6; k++) {
                 block[28 + k] = 17;

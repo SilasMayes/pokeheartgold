@@ -49,7 +49,7 @@ static const OamCharTransferParam sPokeathlonUtilOamCharTransferParam = {
 
 static const TileRect sPokeathlonMonPicRect = { 0, 0, 10, 10 };
 
-static const u32 sPokeathlonUtilScreenVramTypes[2] = { NNS_G2D_VRAM_TYPE_2DSUB, NNS_G2D_VRAM_TYPE_2DMAIN };
+static const NNS_G2D_VRAM_TYPE sPokeathlonUtilScreenVramTypes[2] = { NNS_G2D_VRAM_TYPE_2DSUB, NNS_G2D_VRAM_TYPE_2DMAIN };
 
 SpriteSystem *PokeathlonUtil_GetSpriteSystem(PokeathlonSpriteContext *ctx) {
     GF_ASSERT(ctx != NULL);
@@ -134,7 +134,7 @@ void PokeathlonUtil_CreateSpriteRow(PokeathlonSpriteContext *ctx, ManagedSprite 
     }
 }
 
-void PokeathlonUtil_LoadMonPicSpriteResources(SpriteSystem *system, SpriteManager *manager, const int *resourceIds, int vram) {
+void PokeathlonUtil_LoadMonPicSpriteResources(SpriteSystem *system, SpriteManager *manager, const int *resourceIds, NNS_G2D_VRAM_TYPE vram) {
     SpriteSystem_LoadCharResObj(system, manager, NARC_a_0_0_8, 76, FALSE, vram, resourceIds[0]);
     SpriteSystem_LoadPlttResObj(system, manager, NARC_a_0_0_8, 75, FALSE, 1, vram, resourceIds[1]);
     SpriteSystem_LoadCellResObj(system, manager, NARC_a_0_0_8, 77, FALSE, resourceIds[2]);

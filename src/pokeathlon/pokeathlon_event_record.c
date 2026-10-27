@@ -532,7 +532,7 @@ static void PokeathlonEventRecord_UpdateEventGrid(PokeathlonEventRecord *work) {
         ypos = (u16)y;
         do {
             u8 event = col + base;
-            s32 altTiles;
+            BOOL altTiles;
             s32 index;
             if (work->linkMode) {
                 altTiles = TRUE;

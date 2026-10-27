@@ -111,11 +111,11 @@ void PokeathlonBlockSmashMon_SetAnimate(PokeathlonBlockSmashMon *mon, BOOL anima
 u32 PokeathlonBlockSmashMon_GetMode(PokeathlonBlockSmashMon *mon);
 BOOL PokeathlonBlockSmashMon_CanSwitch(PokeathlonBlockSmashMon *mon);
 PokeathlonBlockSmashMember *PokeathlonBlockSmashMon_GetActiveMember(PokeathlonBlockSmashMon *mon);
-u32 PokeathlonBlockSmashMon_IsGaugeFull(PokeathlonBlockSmashMon *mon);
-u32 PokeathlonBlockSmashMon_IsTired(PokeathlonBlockSmashMon *mon);
+BOOL PokeathlonBlockSmashMon_IsGaugeFull(PokeathlonBlockSmashMon *mon);
+BOOL PokeathlonBlockSmashMon_IsTired(PokeathlonBlockSmashMon *mon);
 u16 PokeathlonBlockSmashMon_GetGauge(PokeathlonBlockSmashMon *mon);
 u8 PokeathlonBlockSmashMon_GetActiveMemberIndex(PokeathlonBlockSmashMon *mon);
-u32 PokeathlonBlockSmashMon_CanHit(PokeathlonBlockSmashMon *mon);
+BOOL PokeathlonBlockSmashMon_CanHit(PokeathlonBlockSmashMon *mon);
 PokeathlonBlockSmashRivals *PokeathlonBlockSmashRivals_New(enum HeapID heapId, SpriteSystem *spriteSystem, SpriteManager *spriteManager, PokeathlonCourseData *course, PokeathlonCourseMonObjects *monPics);
 void PokeathlonBlockSmashRivals_Delete(PokeathlonBlockSmashRivals *rivals);
 void PokeathlonBlockSmashRivals_Update(PokeathlonBlockSmashRivals *rivals);

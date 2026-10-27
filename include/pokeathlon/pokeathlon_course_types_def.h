@@ -160,6 +160,13 @@ enum PokeathlonCourseMode {
     POKEATHLON_COURSE_MODE_LINK,
 };
 
+// Where the packets of the data copy area (PokeathlonCourse_GetDataCopyArea) are: the own input, the frame the host
+// builds, the inputs it collects from the four participants, then the frame every participant receives.
+#define POKEATHLON_COURSE_DATA_SLOT_SIZE 0x28
+#define POKEATHLON_COURSE_DATA_FRAME_OUT (1 * POKEATHLON_COURSE_DATA_SLOT_SIZE)
+#define POKEATHLON_COURSE_DATA_INPUTS    (2 * POKEATHLON_COURSE_DATA_SLOT_SIZE)
+#define POKEATHLON_COURSE_DATA_FRAME_IN  (6 * POKEATHLON_COURSE_DATA_SLOT_SIZE)
+
 // What the host keeps of one participant's stylus.
 typedef struct PokeathlonCourseTouch {
     BOOL pressed; // on the frame the stylus touches the screen
