@@ -101,7 +101,7 @@ typedef struct PokeathlonGoalRollBall {
     u8 shownState; // state shown last (every participant)
     u8 strength;
     u16 kickLevel; // of the last kick
-    int bounced;
+    BOOL bounced;
 } PokeathlonGoalRollBall;
 
 // Blinking name plate of a participant (top of the touch screen).
@@ -117,12 +117,6 @@ typedef struct PokeathlonGoalRollPlate {
     u8 gained; // 1 = scored, 0 = lost a point
     u8 bigBall;
 } PokeathlonGoalRollPlate;
-
-typedef struct PokeathlonGoalRollTouch {
-    int newPress; // set on the first frame of a touch
-    int held;
-    int unk08;
-} PokeathlonGoalRollTouch;
 
 // The top screen (timer, the own name).
 typedef struct PokeathlonGoalRollDisplay {
@@ -233,7 +227,7 @@ typedef struct PokeathlonGoalRoll {
     PokeathlonCourseSpritePoolSprite *goalFlashSprites[POKEATHLON_PARTICIPANTS];
     PokeathlonCourseSpritePoolSprite *goalLabelSprites[POKEATHLON_PARTICIPANTS];
     s32 scores[POKEATHLON_PARTICIPANTS];
-    PokeathlonGoalRollTouch touch[POKEATHLON_PARTICIPANTS];
+    PokeathlonCourseTouch touch[POKEATHLON_PARTICIPANTS];
     u8 heldMon[POKEATHLON_PARTICIPANTS]; // mon index touched by each participant
     int timer;                           // frames left
     u8 packetScoreSlot;                  // whose score goes into the next frame packet

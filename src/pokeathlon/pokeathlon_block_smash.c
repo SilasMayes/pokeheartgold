@@ -57,10 +57,10 @@ typedef struct PokeathlonBlockSmashBgTemplates {
 
 PokeathlonBlockSmashMon *PokeathlonBlockSmashMon_New(enum HeapID heapId, SpriteSystem *spriteSystem, SpriteManager *spriteManager, PokeathlonCourseData *course);
 void PokeathlonBlockSmashMon_Delete(PokeathlonBlockSmashMon *mon);
-void PokeathlonBlockSmashMon_Update(PokeathlonBlockSmashMon *mon, int touched);
-void PokeathlonBlockSmashMon_OnHit(PokeathlonBlockSmashMon *mon, int hitSpot, int broken);
+void PokeathlonBlockSmashMon_Update(PokeathlonBlockSmashMon *mon, BOOL stackDropping);
+void PokeathlonBlockSmashMon_OnHit(PokeathlonBlockSmashMon *mon, BOOL hitSpot, int broken);
 void PokeathlonBlockSmashMon_StartSwitch(PokeathlonBlockSmashMon *mon);
-void PokeathlonBlockSmashMon_SetAnimate(PokeathlonBlockSmashMon *mon, int animate);
+void PokeathlonBlockSmashMon_SetAnimate(PokeathlonBlockSmashMon *mon, BOOL animate);
 u8 PokeathlonBlockSmashMon_GetMode(PokeathlonBlockSmashMon *mon);
 PokeathlonBlockSmashMember *PokeathlonBlockSmashMon_GetActiveMember(PokeathlonBlockSmashMon *mon);
 BOOL PokeathlonBlockSmashMon_CanSwitch(PokeathlonBlockSmashMon *mon);
@@ -353,7 +353,7 @@ static BOOL PokeathlonBlockSmash_UpdateGame(PokeathlonCourseData *course) {
     if (((PokeathlonBlockSmashFrame *)PokeathlonCourse_ToBytes(PokeathlonCourse_GetDataCopyArea(course) + POKEATHLON_COURSE_DATA_FRAME_IN))->finished == 1) {
         PokeathlonBlockSmash_PrintScore(course, PokeathlonBlockSmashBlocks_GetScore(work->blocks));
         PokeathlonBlockSmash_StopHudAnims(work);
-        PokeathlonBlockSmashMon_SetAnimate(work->mon, 0);
+        PokeathlonBlockSmashMon_SetAnimate(work->mon, FALSE);
         PokeathlonBlockSmashRivals_Pause(work->rivals);
         PokeathlonBlockSmashBlocks_Pause(work->blocks);
         PokeathlonCourseObjects_PauseAnims(work->monPics, TRUE);

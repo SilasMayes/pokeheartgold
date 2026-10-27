@@ -21,7 +21,7 @@
 
 u8 *PokeathlonCourse_GetPerformance(PokeathlonCourseData *course, int participant, u16 member);
 u8 *PokeathlonCourse_GetMonStats(PokeathlonCourseData *course, int participant, u8 member);
-void PokeathlonCourse_AddMonCounter(PokeathlonCourseData *course, u8 participant, u8 member, int kind, int amount);
+void PokeathlonCourse_AddMonCounter(PokeathlonCourseData *course, u8 participant, u8 member, enum PokeathlonMonCounter counter, int amount);
 void PokeathlonCourse_SetRecordScore(PokeathlonCourseData *course, int score);
 void PokeathlonCourseMonObject_SetDrawFlag(PokeathlonCourseMonObject *object, int visible);
 void PokeathlonCourseMonObject_SetDrawPriority(PokeathlonCourseMonObject *object, int priority);
@@ -32,7 +32,7 @@ void PokeathlonCourseObject_GetCollisionCircle(PokeathlonCourseMonObject *object
 int PokeathlonCourseObject_GetCollisionRadius(PokeathlonCourseMonObject *object);
 void PokeathlonCourseObject_SetGroundPosition(PokeathlonCourseMonObject *object, int x, int y);
 void PokeathlonCourseObject_GroundToCenter(PokeathlonCourseMonObject *object, int x, int y, int *outX, int *outY);
-void PokeathlonCourseSpritePoolSprite_Show(PokeathlonCourseSpritePoolSprite *sprite, int shown, int show);
+void PokeathlonCourseSpritePoolSprite_Show(PokeathlonCourseSpritePoolSprite *sprite, BOOL shown, BOOL show);
 void PokeathlonCourseSpritePoolSprite_SetAnim(PokeathlonCourseSpritePoolSprite *sprite, int anim);
 void PokeathlonCourseSpritePoolSprite_SetPosition(PokeathlonCourseSpritePoolSprite *sprite, VecFx32 *position);
 VecFx32 *PokeathlonCourseSpritePoolSprite_GetPosition(PokeathlonCourseSpritePoolSprite *sprite);
@@ -293,7 +293,7 @@ void PokeathlonPennantCapture_ApplyFrame(PokeathlonCourseData *course, int viewe
         y = (frame->words[5] >> 9) & 0x1FF;
         work->pickupEffectX[work->nextPickupEffect] = x;
         work->pickupEffectY[work->nextPickupEffect] = y;
-        PokeathlonCourseSpritePoolSprite_Show(work->pickupEffects[work->nextPickupEffect], 1, 1);
+        PokeathlonCourseSpritePoolSprite_Show(work->pickupEffects[work->nextPickupEffect], TRUE, TRUE);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->pickupEffects[work->nextPickupEffect], 7);
         work->nextPickupEffect = (work->nextPickupEffect + 1) % 4;
         PokeathlonPennantCapture_PlaySEIfOnScreen(x + 128 - baseX, y + 96 - baseY, SEQ_SE_GS_THLON06, TRUE);
@@ -306,7 +306,7 @@ void PokeathlonPennantCapture_ApplyFrame(PokeathlonCourseData *course, int viewe
         y = (frame->words[4] >> 9) & 0x1FF;
         work->dropEffectX[work->nextDropEffect] = x;
         work->dropEffectY[work->nextDropEffect] = y;
-        PokeathlonCourseSpritePoolSprite_Show(work->dropEffects[work->nextDropEffect], 1, 1);
+        PokeathlonCourseSpritePoolSprite_Show(work->dropEffects[work->nextDropEffect], TRUE, TRUE);
         PokeathlonCourseSpritePoolSprite_SetAnim(work->dropEffects[work->nextDropEffect], 4);
         work->nextDropEffect = (work->nextDropEffect + 1) % 4;
         PokeathlonPennantCapture_PlaySEIfOnScreen(x + 128 - baseX, y + 96 - baseY, SEQ_SE_GS_SAA, TRUE);
@@ -389,7 +389,7 @@ void PokeathlonPennantCapture_ApplyFrame(PokeathlonCourseData *course, int viewe
             remote = FALSE;
             if (knockedDown == TRUE) {
                 if (knockedDown != player->active) {
-                    PokeathlonCourseSpritePoolSprite_Show(player->carrySprite, 1, 1);
+                    PokeathlonCourseSpritePoolSprite_Show(player->carrySprite, TRUE, TRUE);
                 }
                 PokeathlonCourseMonObject_SetAnim(object, 21);
                 player->flashTimer = 0;
@@ -402,7 +402,7 @@ void PokeathlonPennantCapture_ApplyFrame(PokeathlonCourseData *course, int viewe
                     PokeathlonPennantCapture_PlaySEIfOnScreen(position.x / FX32_ONE, position.y / FX32_ONE, SEQ_SE_GS_W146, FALSE);
                 }
             } else {
-                PokeathlonCourseSpritePoolSprite_Show(player->carrySprite, 1, 0);
+                PokeathlonCourseSpritePoolSprite_Show(player->carrySprite, TRUE, FALSE);
             }
             if (!remote) {
                 PokeathlonCourseMonObject_SetAnimStateRaw(object, direction);
@@ -414,7 +414,7 @@ void PokeathlonPennantCapture_ApplyFrame(PokeathlonCourseData *course, int viewe
                 }
             }
         } else {
-            PokeathlonCourseSpritePoolSprite_Show(player->carrySprite, 1, 0);
+            PokeathlonCourseSpritePoolSprite_Show(player->carrySprite, TRUE, FALSE);
             PokeathlonCourseMonObject_SetAnimState(object, direction);
         }
         player->active = knockedDown;
@@ -423,7 +423,7 @@ void PokeathlonPennantCapture_ApplyFrame(PokeathlonCourseData *course, int viewe
         if (player->shownPennants < pennants) {
             player->flashTimer = 10;
             PokeathlonCourseSpritePoolSprite_SetAnim(player->pennantSprite, 8);
-            PokeathlonCourseSpritePoolSprite_Show(player->pennantSprite, 1, 1);
+            PokeathlonCourseSpritePoolSprite_Show(player->pennantSprite, TRUE, TRUE);
             if (self == i) {
                 PokeathlonPennantCapture_PlaySEIfOnScreen(position.x / FX32_ONE, position.y / FX32_ONE, SEQ_SE_DP_PIRORIRO, TRUE);
             } else {
@@ -431,7 +431,7 @@ void PokeathlonPennantCapture_ApplyFrame(PokeathlonCourseData *course, int viewe
             }
         } else if (!depositing && player->shownPennants > pennants) {
             PokeathlonCourseSpritePoolSprite_SetAnim(player->pennantSprite, 9);
-            PokeathlonCourseSpritePoolSprite_Show(player->pennantSprite, 1, 1);
+            PokeathlonCourseSpritePoolSprite_Show(player->pennantSprite, TRUE, TRUE);
         }
         player->shownPennants = pennants;
         PokeathlonCourseSpritePoolSprite_SetPosition(player->pennantSprite, &position);
@@ -441,7 +441,7 @@ void PokeathlonPennantCapture_ApplyFrame(PokeathlonCourseData *course, int viewe
         }
         if (player->shownScore < score) {
             PokeathlonCourseSpritePoolSprite_SetAnim(player->pointSprites[player->nextPointSprite], 3);
-            PokeathlonCourseSpritePoolSprite_Show(player->pointSprites[player->nextPointSprite], 1, 1);
+            PokeathlonCourseSpritePoolSprite_Show(player->pointSprites[player->nextPointSprite], TRUE, TRUE);
             player->nextPointSprite = (player->nextPointSprite + 1) % 2;
             PokeathlonPennantCaptureDisplay_ShowPoint(work->display, i);
             if (self == i) {
@@ -474,9 +474,9 @@ void PokeathlonPennantCapture_UpdateObstacleSprites(PokeathlonPennantCapture *wo
         position.y = dy * FX32_ONE;
         PokeathlonCourseSpritePoolSprite_SetPosition(work->obstacles[i].sprite, &position);
         if (dx >= -32 && dx <= 288 && dy >= -32 && dy <= 224) {
-            PokeathlonCourseSpritePoolSprite_Show(work->obstacles[i].sprite, 1, 1);
+            PokeathlonCourseSpritePoolSprite_Show(work->obstacles[i].sprite, TRUE, TRUE);
         } else {
-            PokeathlonCourseSpritePoolSprite_Show(work->obstacles[i].sprite, 1, 0);
+            PokeathlonCourseSpritePoolSprite_Show(work->obstacles[i].sprite, TRUE, FALSE);
         }
     }
 }
@@ -499,11 +499,11 @@ void PokeathlonPennantCapture_UpdateFieldItemSprites(PokeathlonPennantCapture *w
         PokeathlonCourseSpritePoolSprite_SetPosition(work->fieldItems[i].sprite, &position);
         PokeathlonCourseSpritePoolSprite_SetPosition(work->fieldItems[i].shadowSprite, &position);
         if (dx >= -32 && dx <= 288 && dy >= -32 && dy <= 224) {
-            PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].sprite, 1, 1);
-            PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].shadowSprite, 1, 1);
+            PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].sprite, TRUE, TRUE);
+            PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].shadowSprite, TRUE, TRUE);
         } else {
-            PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].sprite, 1, 0);
-            PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].shadowSprite, 1, 0);
+            PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].sprite, TRUE, FALSE);
+            PokeathlonCourseSpritePoolSprite_Show(work->fieldItems[i].shadowSprite, TRUE, FALSE);
         }
     }
 }
@@ -526,11 +526,11 @@ void PokeathlonPennantCapture_UpdatePennantSprites(PokeathlonPennantCapture *wor
         PokeathlonCourseSpritePoolSprite_SetPosition(work->pennants.pennants[i].sprite, &position);
         PokeathlonCourseSpritePoolSprite_SetPosition(work->pennants.pennants[i].poleSprite, &position);
         if (dx >= -32 && dx <= 288 && dy >= -32 && dy <= 224) {
-            PokeathlonCourseSpritePoolSprite_Show(work->pennants.pennants[i].sprite, 1, 1);
-            PokeathlonCourseSpritePoolSprite_Show(work->pennants.pennants[i].poleSprite, 1, 1);
+            PokeathlonCourseSpritePoolSprite_Show(work->pennants.pennants[i].sprite, TRUE, TRUE);
+            PokeathlonCourseSpritePoolSprite_Show(work->pennants.pennants[i].poleSprite, TRUE, TRUE);
         } else {
-            PokeathlonCourseSpritePoolSprite_Show(work->pennants.pennants[i].sprite, 1, 0);
-            PokeathlonCourseSpritePoolSprite_Show(work->pennants.pennants[i].poleSprite, 1, 0);
+            PokeathlonCourseSpritePoolSprite_Show(work->pennants.pennants[i].sprite, TRUE, FALSE);
+            PokeathlonCourseSpritePoolSprite_Show(work->pennants.pennants[i].poleSprite, TRUE, FALSE);
         }
         if (spot != work->shownPennantSpots[i]) {
             PokeathlonCourseSpritePoolSprite_SetAnim(work->pennants.pennants[i].poleSprite, 4);

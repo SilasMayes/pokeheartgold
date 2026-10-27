@@ -1586,7 +1586,7 @@ static void PokeathlonCourse_MarkerTask(SysTask *task, void *data) {
 
 // Adds to a counter of a participant's Pokemon (counter 0: the course's own count). On the host the counters
 // of every participant are kept; the others keep only their own, which they send at the end.
-void PokeathlonCourse_AddMonCounter(PokeathlonCourseData *course, u8 participant, u8 mon, int counter, int amount) {
+void PokeathlonCourse_AddMonCounter(PokeathlonCourseData *course, u8 participant, u8 mon, enum PokeathlonMonCounter counter, int amount) {
     PokeathlonCourseLayout *layout = (PokeathlonCourseLayout *)course;
     if (counter == POKEATHLON_COUNTER_INSTRUCTIONS) {
         GF_ASSERT(participant == PokeathlonCourse_GetNetId(course));

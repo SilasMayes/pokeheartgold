@@ -1379,7 +1379,7 @@ static void PokeathlonSnowThrow_HitMons(PokeathlonCourseData *course, Pokeathlon
                 continue;
             }
             work->balls[i].state = SNOW_THROW_BALL_SPLASHED;
-            PokeathlonCourse_AddMonCounter(course, team, i % POKEATHLON_TEAM_SIZE, 3, 1);
+            PokeathlonCourse_AddMonCounter(course, team, i % POKEATHLON_TEAM_SIZE, POKEATHLON_COUNTER_POINTS, 1);
             work->mons[i].hits++;
             if (work->mons[i].hits > POKEATHLON_SCORE_MAX) {
                 work->mons[i].hits = POKEATHLON_SCORE_MAX;
@@ -1417,11 +1417,11 @@ static void PokeathlonSnowThrow_HitMons(PokeathlonCourseData *course, Pokeathlon
             if (work->mons[j].stunTimer == 0) {
                 if (lost > 40) {
                     work->mons[j].stunTimer = lost;
-                    PokeathlonCourse_AddMonCounter(course, j / POKEATHLON_TEAM_SIZE, j % POKEATHLON_TEAM_SIZE, 1, 1);
+                    PokeathlonCourse_AddMonCounter(course, j / POKEATHLON_TEAM_SIZE, j % POKEATHLON_TEAM_SIZE, POKEATHLON_COUNTER_FAILURES, 1);
                 }
             } else {
                 work->mons[j].stunTimer += lost;
-                PokeathlonCourse_AddMonCounter(course, j / POKEATHLON_TEAM_SIZE, j % POKEATHLON_TEAM_SIZE, 1, 1);
+                PokeathlonCourse_AddMonCounter(course, j / POKEATHLON_TEAM_SIZE, j % POKEATHLON_TEAM_SIZE, POKEATHLON_COUNTER_FAILURES, 1);
             }
         }
     }

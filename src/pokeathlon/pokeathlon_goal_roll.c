@@ -608,17 +608,17 @@ static void PokeathlonGoalRoll_HostUpdate(PokeathlonCourseData *course) {
     for (i = 0; i < POKEATHLON_PARTICIPANTS; i++, area += POKEATHLON_COURSE_DATA_SLOT_SIZE, frame.team += POKEATHLON_TEAM_SIZE) {
         input = (PokeathlonGoalRollInput *)PokeathlonCourse_ToBytes(area);
         if (input->touching) {
-            if (goalRoll->touch[i].newPress && goalRoll->touch[i].held) {
-                goalRoll->touch[i].newPress = FALSE;
-            } else if (!goalRoll->touch[i].newPress && !goalRoll->touch[i].held) {
-                goalRoll->touch[i].newPress = TRUE;
+            if (goalRoll->touch[i].pressed && goalRoll->touch[i].held) {
+                goalRoll->touch[i].pressed = FALSE;
+            } else if (!goalRoll->touch[i].pressed && !goalRoll->touch[i].held) {
+                goalRoll->touch[i].pressed = TRUE;
                 goalRoll->touch[i].held = TRUE;
             }
         } else {
-            goalRoll->touch[i].newPress = FALSE;
+            goalRoll->touch[i].pressed = FALSE;
             goalRoll->touch[i].held = FALSE;
         }
-        if (goalRoll->touch[i].newPress) {
+        if (goalRoll->touch[i].pressed) {
             monIndex = PokeathlonGoalRoll_GetTouchedMon(goalRoll, i, input->x, input->y);
             if (monIndex != POKEATHLON_NO_MON) {
                 PokeathlonGoalRollMon *mon = &frame.team[monIndex % POKEATHLON_TEAM_SIZE];

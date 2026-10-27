@@ -53,12 +53,6 @@ typedef struct PokeathlonCirclePushRingData {
     u32 runSpeeds[5];
 } PokeathlonCirclePushRingData;
 
-typedef struct PokeathlonCirclePushTouch {
-    BOOL pressed; // first frame of a touch
-    BOOL held;
-    u8 unk8[4];
-} PokeathlonCirclePushTouch;
-
 #define CIRCLE_PUSH_LAYOUTS      15
 #define CIRCLE_PUSH_LAYOUT_NONE  CIRCLE_PUSH_LAYOUTS // the ring without bonus zones
 #define CIRCLE_PUSH_LAYOUT_ZONES 4
@@ -194,7 +188,7 @@ typedef struct PokeathlonCirclePush {
     Sprite *markerSprite;
     PokeathlonCirclePushMon mons[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE];
     int scores[POKEATHLON_PARTICIPANTS];
-    PokeathlonCirclePushTouch touches[POKEATHLON_PARTICIPANTS];
+    PokeathlonCourseTouch touches[POKEATHLON_PARTICIPANTS];
     u8 heldMons[POKEATHLON_PARTICIPANTS]; // per player, POKEATHLON_NO_MON: none
     u8 packetTeam;                        // team whose score the next packet carries
     u8 timerTick;

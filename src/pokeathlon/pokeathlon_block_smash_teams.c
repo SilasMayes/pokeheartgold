@@ -60,7 +60,7 @@ static void PokeathlonBlockSmashRival_Init(PokeathlonBlockSmashRival *row, Sprit
 static void PokeathlonBlockSmashRival_Update(PokeathlonBlockSmashRival *row);
 static void PokeathlonBlockSmashMon_CreateSprites(ManagedSprite **sprites, SpriteSystem *spriteSystem, SpriteManager *spriteManager);
 static void PokeathlonBlockSmashMon_SetMonSprite(PokeathlonBlockSmashMon *mon, int sprite, u8 participant, u8 member, BOOL mainScreen);
-static void PokeathlonBlockSmashMon_SetMode(PokeathlonBlockSmashMon *mon, int mode);
+static void PokeathlonBlockSmashMon_SetMode(PokeathlonBlockSmashMon *mon, enum PokeathlonBlockSmashMonMode mode);
 static void PokeathlonBlockSmashMon_UpdateGauge(PokeathlonBlockSmashMon *mon);
 static void PokeathlonBlockSmashMon_AddGauge(PokeathlonBlockSmashMon *mon, BOOL hitSpot, u8 broken);
 static BOOL PokeathlonBlockSmash_SetTiredAnimSpeed(ManagedSprite *sprite, fx32 stamina, fx32 maxStamina);
@@ -78,7 +78,7 @@ static u32 PokeathlonBlockSmashCpuPlayer_UpdateExhausted(PokeathlonBlockSmashCpu
 static BOOL PokeathlonBlockSmashCpuPlayer_DecideHitAgain(PokeathlonBlockSmashCpuPlayer *player);
 static u32 PokeathlonBlockSmashCpuPlayer_DecideSpotHit(PokeathlonBlockSmashCpuPlayer *player);
 static BOOL PokeathlonBlockSmashCpuPlayer_DecideSwitch(PokeathlonBlockSmashCpuPlayer *player);
-static void PokeathlonBlockSmashCpuPlayer_SetMode(PokeathlonBlockSmashCpuPlayer *player, int mode);
+static void PokeathlonBlockSmashCpuPlayer_SetMode(PokeathlonBlockSmashCpuPlayer *player, enum PokeathlonBlockSmashCpuMode mode);
 static void PokeathlonBlockSmashCpuPlayer_Hit(PokeathlonBlockSmashCpuPlayer *player, int hitSpot);
 static void PokeathlonBlockSmashCpuPlayer_WriteReport(PokeathlonBlockSmashCpuPlayer *player, u32 result, PokeathlonCourseData *course);
 static void PokeathlonBlockSmashCpuPlayer_AddGauge(PokeathlonBlockSmashCpuPlayer *player, int hitSpot, u32 broken);
@@ -847,7 +847,7 @@ static void PokeathlonBlockSmashMon_SetMonSprite(PokeathlonBlockSmashMon *mon, i
     PokeathlonCourse_LoadMonPic(managedSprite, &info, mainScreen, 0, heapId);
 }
 
-static void PokeathlonBlockSmashMon_SetMode(PokeathlonBlockSmashMon *mon, int mode) {
+static void PokeathlonBlockSmashMon_SetMode(PokeathlonBlockSmashMon *mon, enum PokeathlonBlockSmashMonMode mode) {
     s32 gauge;
     switch (mode) {
     case BLOCK_SMASH_MON_EXHAUSTED:
@@ -1203,7 +1203,7 @@ static BOOL PokeathlonBlockSmashCpuPlayer_DecideSwitch(PokeathlonBlockSmashCpuPl
     return FALSE;
 }
 
-static void PokeathlonBlockSmashCpuPlayer_SetMode(PokeathlonBlockSmashCpuPlayer *player, int mode) {
+static void PokeathlonBlockSmashCpuPlayer_SetMode(PokeathlonBlockSmashCpuPlayer *player, enum PokeathlonBlockSmashCpuMode mode) {
     if (mode != BLOCK_SMASH_CPU_SWITCHING) {
         if (mode == BLOCK_SMASH_CPU_EXHAUSTED) {
             player->frames = 0;

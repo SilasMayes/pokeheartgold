@@ -249,7 +249,7 @@ void PokeathlonGoalRoll_CollideBalls(PokeathlonCourseData *course) {
             mon = &teams[participant][member];
             PokeathlonCourseObject_GetCollisionCircle(mon->object, mon->position.x, mon->position.y, &center.x, &center.y, &monRadius);
             if (PokeathlonGoalRoll_CirclesOverlap(&center, monRadius * FX32_ONE, ballPosition, ballRadius)) {
-                if ((ball->touching[i] != 0 && ball->bounced != 0) || mon->motion == GOAL_ROLL_MOTION_KNOCKBACK || mon->motion == GOAL_ROLL_MOTION_2) {
+                if ((ball->touching[i] != 0 && ball->bounced) || mon->motion == GOAL_ROLL_MOTION_KNOCKBACK || mon->motion == GOAL_ROLL_MOTION_2) {
                     continue;
                 }
                 VEC_Subtract(ballPosition, &center, &normal);

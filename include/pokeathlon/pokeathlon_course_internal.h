@@ -569,7 +569,7 @@ BOOL PokeathlonCourse_State_SendJuiceRecord(PokeathlonCourseData *course);
 BOOL PokeathlonCourse_State_StoreJuiceRecords(PokeathlonCourseData *course);
 BOOL PokeathlonCourse_State_Exit(PokeathlonCourseData *course);
 BOOL PokeathlonCourse_State_WaitForCommand(void);
-void PokeathlonCourse_AddMonCounter(PokeathlonCourseData *course, u8 participant, u8 mon, int counter, int amount);
+void PokeathlonCourse_AddMonCounter(PokeathlonCourseData *course, u8 participant, u8 mon, enum PokeathlonMonCounter counter, int amount);
 void PokeathlonCourse_SetRecordScore(PokeathlonCourseData *course, u16 score);
 void PokeathlonCourse_SetFinishCallback(PokeathlonCourseData *course, PokeathlonCourseFinishFunc callback);
 u16 PokeathlonCourse_GetNpcTeamSpriteId(u32 npcTeam);

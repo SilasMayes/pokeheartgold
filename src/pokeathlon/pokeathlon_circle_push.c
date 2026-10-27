@@ -1042,7 +1042,7 @@ static void PokeathlonCirclePush_RunHost(PokeathlonCourseData *course) {
         u8 *inputs = frame.copyArea + POKEATHLON_COURSE_DATA_INPUTS;
         PokeathlonCirclePush *view = circlePush;
         PokeathlonCirclePushMon *teamMons = circlePush->mons[0];
-        for (; player < POKEATHLON_PARTICIPANTS; player++, inputs += POKEATHLON_COURSE_DATA_SLOT_SIZE, view = (PokeathlonCirclePush *)((u8 *)view + sizeof(PokeathlonCirclePushTouch)), teamMons += 3) {
+        for (; player < POKEATHLON_PARTICIPANTS; player++, inputs += POKEATHLON_COURSE_DATA_SLOT_SIZE, view = (PokeathlonCirclePush *)((u8 *)view + sizeof(PokeathlonCourseTouch)), teamMons += 3) {
             PokeathlonCirclePushInput *input = (PokeathlonCirclePushInput *)PokeathlonCourse_ToBytes(inputs);
             if (input->touching) {
                 if (view->touches[0].pressed && view->touches[0].held) {
