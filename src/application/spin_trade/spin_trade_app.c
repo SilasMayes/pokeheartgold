@@ -566,7 +566,7 @@ static void SpinTrade_StartSubBgFade(SpinTradeApp *app, int fadeOut);
 static void SpinTrade_AddAngle(fx32 *angle, fx32 delta);
 static void SpinTrade_RotateAll(SpinTradeApp *app, fx32 delta);
 static BOOL SpinTrade_TickSpinTimer(SpinTradeApp *app);
-static void *SpinTrade_LoadNarcMember(SpinTradeApp *app, u32 member, int atStart);
+static void *SpinTrade_LoadNarcMember(SpinTradeApp *app, u32 member, BOOL atStart);
 void SpinTrade_ReceiveJump(SpinTradeApp *app, u8 jump);
 void SpinTrade_ReceiveSpinData(SpinTradeApp *app, const u16 *data);
 static void *SpinTrade_ClearScratch(SpinTradeApp *app, u32 size);
@@ -1228,7 +1228,7 @@ BOOL SpinTrade_State_WaitEggFanfare(SpinTradeApp *app) {
 BOOL SpinTrade_State_GiveBonusBerry(SpinTradeApp *app) {
     u32 item, high;
     int playerCount;
-    int result;
+    BOOL result;
 
     SpinTrade_HoverBonusEggs(app);
     if (!(app->bonusMask & (1 << app->landedEgg->netId))) {
@@ -2799,7 +2799,7 @@ static BOOL SpinTrade_TickSpinTimer(SpinTradeApp *app) {
     return TRUE;
 }
 
-static void *SpinTrade_LoadNarcMember(SpinTradeApp *app, u32 member, int atStart) {
+static void *SpinTrade_LoadNarcMember(SpinTradeApp *app, u32 member, BOOL atStart) {
     void *buf;
     u32 size = NARC_GetMemberSize(app->narc, member);
     if (atStart == 1) {

@@ -43,7 +43,7 @@ void PalPadMenu_Init(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx, enu
     PalPadMenu_Setup(menu, shared, gfx, heapId);
 }
 
-int PalPadMenu_Main(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId) {
+BOOL PalPadMenu_Main(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId) {
     int valid;
 
     switch (shared->subState) {

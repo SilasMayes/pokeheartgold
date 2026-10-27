@@ -224,7 +224,7 @@ BOOL WiFiPlaza_Init(OverlayManager *man, int *state) {
 
 BOOL WiFiPlaza_Main(OverlayManager *man, int *state) {
     WiFiPlaza *plaza = OverlayManager_GetData(man);
-    int done = WiFiPlazaApps_Run(plaza->apps);
+    BOOL done = WiFiPlazaApps_Run(plaza->apps);
     WiFiPlazaWork_Update(plaza->work);
     if (done == TRUE) {
         return TRUE;
@@ -665,7 +665,7 @@ void WiFiPlazaWork_SetSurveyAnswer(WiFiPlazaWork *work, u32 a, u32 b) {
 
 void WiFiPlazaPlayer_CopyToProfile(WiFiPlazaPlayer *player, PlayerProfile *profile, enum HeapID heapID) {
     BOOL invalid;
-    int ok = WiFiPlaza_IsNameTerminated(player->name, 8, heapID);
+    BOOL ok = WiFiPlaza_IsNameTerminated(player->name, 8, heapID);
     String *name;
     String *invalidChars;
     invalid = FALSE;
@@ -1329,7 +1329,7 @@ static void WiFiPlaza_OnPlayerEnter(int id, WiFiPlazaPlayer *player, WiFiPlazaWo
     int region;
     int slot;
     int index;
-    int valid;
+    BOOL valid;
     if (isOwn) {
         WiFiPlazaProfile_CopyToPlayerProfile(&work->ownProfileData.profile, &work->profile, work->heapID);
         if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {

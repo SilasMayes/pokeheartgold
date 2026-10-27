@@ -60,15 +60,15 @@ static void GtsSummary_CreateWindows(GtsApp *app);
 static void GtsSummary_RemoveWindows(GtsApp *app);
 static void GtsSummary_CreateStrings(GtsApp *app);
 static void GtsSummary_DeleteStrings(GtsApp *app);
-static int GtsSummary_Start(GtsApp *app);
-static int GtsSummary_HandleInput(GtsApp *app);
-static int GtsSummary_FadeOut(GtsApp *app);
-static int GtsSummary_ShowTakeBackPrompt(GtsApp *app);
-static int GtsSummary_HandleTakeBackPrompt(GtsApp *app);
-static int GtsSummary_ShowMenu(GtsApp *app);
-static int GtsSummary_HandleMenu(GtsApp *app);
-static int GtsSummary_WaitText(GtsApp *app);
-static int GtsSummary_WaitTextAndPause(GtsApp *app);
+static enum GtsAppState GtsSummary_Start(GtsApp *app);
+static enum GtsAppState GtsSummary_HandleInput(GtsApp *app);
+static enum GtsAppState GtsSummary_FadeOut(GtsApp *app);
+static enum GtsAppState GtsSummary_ShowTakeBackPrompt(GtsApp *app);
+static enum GtsAppState GtsSummary_HandleTakeBackPrompt(GtsApp *app);
+static enum GtsAppState GtsSummary_ShowMenu(GtsApp *app);
+static enum GtsAppState GtsSummary_HandleMenu(GtsApp *app);
+static enum GtsAppState GtsSummary_WaitText(GtsApp *app);
+static enum GtsAppState GtsSummary_WaitTextAndPause(GtsApp *app);
 static void GtsSummary_PrintMonMessage(GtsApp *app, int msgId, int textSpeed, int unused3, u32 unused4, Pokemon *mon);
 static void GtsSummary_DrawWanted(GtsApp *app);
 
@@ -151,7 +151,7 @@ static const GtsWindowRect sGtsSummaryInfoWindowRects[14] = {
     { 8,  7,  8,  2 },
 };
 
-static int (*sGtsSummaryStates[])(GtsApp *app) = {
+static enum GtsAppState (*sGtsSummaryStates[])(GtsApp *app) = {
     GtsSummary_Start,
     GtsSummary_HandleInput,
     GtsSummary_FadeOut,
@@ -186,7 +186,7 @@ void Gts_CreatePanelWindow(GtsApp *app, int caption) {
     Gts_PrintPanelCaption(&app->panelWindow, app->gtsMsgData, caption);
 }
 
-int GtsSummary_Init(GtsApp *app, int state) {
+enum GtsAppState GtsSummary_Init(GtsApp *app, int state) {
     int levelRange;
 
     GtsSummary_CreateStrings(app);
@@ -204,11 +204,11 @@ int GtsSummary_Init(GtsApp *app, int state) {
     return GTS_APP_STATE_WAIT_FADE_IN;
 }
 
-int GtsSummary_Main(GtsApp *app, int state) {
+enum GtsAppState GtsSummary_Main(GtsApp *app, int state) {
     return sGtsSummaryStates[app->state](app);
 }
 
-int GtsSummary_Exit(GtsApp *app, int state) {
+enum GtsAppState GtsSummary_Exit(GtsApp *app, int state) {
     GtsSummary_DeleteMonSprite(app);
     GtsSummary_DeleteStrings(app);
     GtsSummary_RemoveWindows(app);
@@ -327,12 +327,12 @@ static void GtsSummary_DeleteStrings(GtsApp *app) {
     String_Delete(app->titleString);
 }
 
-static int GtsSummary_Start(GtsApp *app) {
+static enum GtsAppState GtsSummary_Start(GtsApp *app) {
     app->state = GTS_SUMMARY_STATE_HANDLE_INPUT;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSummary_HandleInput(GtsApp *app) {
+static enum GtsAppState GtsSummary_HandleInput(GtsApp *app) {
     if ((gSystem.newKeys & PAD_BUTTON_A) || gSystem.touchNew) {
         GtsSummary_PrintMonMessage(app, msg_0775_00005, 1, 0, 0xF0F, &app->record.mon); // Do what with this Pokemon?
         Gts_SetState(app, GTS_SUMMARY_STATE_WAIT_TEXT, GTS_SUMMARY_STATE_SHOW_MENU);
@@ -345,20 +345,20 @@ static int GtsSummary_HandleInput(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSummary_FadeOut(GtsApp *app) {
+static enum GtsAppState GtsSummary_FadeOut(GtsApp *app) {
     BeginNormalPaletteFade(FADE_MAIN_ONLY, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, HEAP_ID_61);
     app->state = GTS_SUMMARY_STATE_START;
     return GTS_APP_STATE_EXIT_SCREEN;
 }
 
-static int GtsSummary_ShowTakeBackPrompt(GtsApp *app) {
+static enum GtsAppState GtsSummary_ShowTakeBackPrompt(GtsApp *app) {
     app->yesNoPrompt = Gts_CreateYesNoPrompt(app->bgConfig, 12, 0x16A, 8, 1);
     app->state = GTS_SUMMARY_STATE_HANDLE_TAKE_BACK_PROMPT;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSummary_HandleTakeBackPrompt(GtsApp *app) {
-    int response = Gts_HandleYesNoPrompt(app);
+static enum GtsAppState GtsSummary_HandleTakeBackPrompt(GtsApp *app) {
+    YesNoResponse response = Gts_HandleYesNoPrompt(app);
     if (response == YESNORESPONSE_YES) {
         YesNoPrompt_Destroy(app->yesNoPrompt);
         app->state = GTS_SUMMARY_STATE_FADE_OUT;
@@ -374,7 +374,7 @@ static int GtsSummary_HandleTakeBackPrompt(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSummary_ShowMenu(GtsApp *app) {
+static enum GtsAppState GtsSummary_ShowMenu(GtsApp *app) {
     app->listItems = ListMenuItems_New(2, HEAP_ID_61);
     ListMenuItems_AppendFromMsgData(app->listItems, app->gtsMsgData, msg_0775_00055, 1); // TAKE BACK
     ListMenuItems_AppendFromMsgData(app->listItems, app->gtsMsgData, msg_0775_00056, 2); // LEAVE AS IS
@@ -384,7 +384,7 @@ static int GtsSummary_ShowMenu(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSummary_HandleMenu(GtsApp *app) {
+static enum GtsAppState GtsSummary_HandleMenu(GtsApp *app) {
     int result = TouchscreenListMenu_HandleInput(app->menu);
     if (result == 1) {
         Gts_DestroyListMenu(app);
@@ -408,14 +408,14 @@ static int GtsSummary_HandleMenu(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSummary_WaitText(GtsApp *app) {
+static enum GtsAppState GtsSummary_WaitText(GtsApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId)) {
         app->state = app->nextState;
     }
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSummary_WaitTextAndPause(GtsApp *app) {
+static enum GtsAppState GtsSummary_WaitTextAndPause(GtsApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId)) {
         app->waitFrames++;
         if (app->waitFrames > 45) {

@@ -162,7 +162,7 @@ static void SwalotPlop_ReceiveSync(SwalotPlopApp *app);
 static void SwalotPlop_VBlankCallback(void *data);
 static void SwalotPlop_SendShots(SwalotPlopApp *app);
 static void SwalotPlop_SendScoreReport(SwalotPlopApp *app);
-static void SwalotPlop_LoadSharedData(SwalotPlopApp *app, int heapId);
+static void SwalotPlop_LoadSharedData(SwalotPlopApp *app, enum HeapID heapId);
 static void SwalotPlop_FreeSharedData(SwalotPlopApp *app);
 static void SwalotPlop_Abort(SwalotPlopApp *app, PlazaGameArgs *args);
 static BOOL SwalotPlop_SendCommand(SwalotPlopApp *app, int command, void *data, int size);
@@ -738,7 +738,7 @@ static void SwalotPlop_SendScoreReport(SwalotPlopApp *app) {
     }
 }
 
-static void SwalotPlop_LoadSharedData(SwalotPlopApp *app, int heapId) {
+static void SwalotPlop_LoadSharedData(SwalotPlopApp *app, enum HeapID heapId) {
     u32 size;
     int i;
     app->shared.levelTable.levels = GfGfxLoader_LoadFromNarc_GetSizeOut(NARC_a_2_1_0, 0, FALSE, (enum HeapID)heapId, FALSE, &size);

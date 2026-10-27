@@ -708,7 +708,7 @@ static void WiFiPlazaObj_HandlerWander(WiFiPlazaObj *obj, WiFiPlazaObjManager *m
 
 // Waits 32 frames, then raises the avatar by 500 over 24 frames.
 static void WiFiPlazaObj_HandlerRiseOut(WiFiPlazaObj *obj, WiFiPlazaObjManager *manager) {
-    int done;
+    BOOL done;
     VecFx32 position;
 
     switch (obj->step) {
@@ -746,7 +746,7 @@ static void WiFiPlazaObj_HandlerRiseOut(WiFiPlazaObj *obj, WiFiPlazaObjManager *
 
 // Lowers the avatar from 500 to the ground over 24 frames, then waits 32 frames.
 static void WiFiPlazaObj_HandlerDropIn(WiFiPlazaObj *obj, WiFiPlazaObjManager *manager) {
-    int done;
+    BOOL done;
     VecFx32 position;
 
     switch (obj->step) {

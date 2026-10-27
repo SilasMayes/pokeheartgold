@@ -53,7 +53,7 @@ struct WifiConnection {
     int friendStatusStride;
     int friendStatusIndex;
     int state;
-    int matchType;
+    enum WifiMatchType matchType;
     int sendBusy;
     int maxPlayers;
     int conferenceAidMask;
@@ -796,7 +796,7 @@ static void WifiConnection_ClearVoiceChatActive(void) {
 
 void WifiConnection_StartVoiceChat(int heapId) {
     int count = 1;
-    int online;
+    BOOL online;
     int codec;
 
     online = Comm_IsWifiPeerLinkMode(CommState_GetLinkMode());

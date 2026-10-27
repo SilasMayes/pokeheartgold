@@ -1446,7 +1446,7 @@ static void MimeJrTopGame_ShowRivalNames(MimeJrTopApp *app, MimeJrTopGame *game)
         int rival = 0;
         do {
             if (i != game->localIndex) {
-                int flag = PlazaGameRoster_IsSpecialVisitor(&app->roster, i);
+                BOOL flag = PlazaGameRoster_IsSpecialVisitor(&app->roster, i);
                 PlayerProfile *profile = PlazaGameRoster_GetProfile(&app->roster, i);
                 InitWindow(window);
                 s16 *coords = (s16 *)((u8 *)table + game->playerCount * 24 + rival * 8);
@@ -2411,8 +2411,8 @@ static void MimeJrTopGame_UpdateWobble(MimeJrTopGame *game) {
     s32 y;
     s32 oldX;
     s32 oldY;
-    int kickXDone;
-    int kickYDone;
+    BOOL kickXDone;
+    BOOL kickYDone;
     int i;
     s32 total;
     int rnd;

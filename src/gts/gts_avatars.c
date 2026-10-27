@@ -215,7 +215,7 @@ int Gts_GetTouchedAvatar(int count) {
 }
 
 // Shows the trainers of the first count search results (animate: they walk in).
-void Gts_ShowResultAvatars(GtsApp *app, int count, int animate) {
+void Gts_ShowResultAvatars(GtsApp *app, int count, BOOL animate) {
     int i;
     int walkSeq;
     int standSeq;
@@ -309,7 +309,7 @@ void Gts_LowerAvatars(GtsApp *app) {
 }
 
 // Screen 8: the summary of the Pokemon at selectedBox/selectedSlot, then back to screen 5.
-int GtsViewMon_Init(GtsApp *app, int state) {
+enum GtsAppState GtsViewMon_Init(GtsApp *app, int state) {
     app->summaryArgs.party = (Party *)Gts_GetBoxMon(app->args->party, app->args->pcStorage, app->selectedBox, app->selectedSlot);
     app->summaryArgs.monDataType = 2;
     app->summaryArgs.partyCount = 1;
@@ -328,17 +328,17 @@ int GtsViewMon_Init(GtsApp *app, int state) {
     return GTS_APP_STATE_WAIT_FADE_IN;
 }
 
-int GtsViewMon_Main(GtsApp *app, int state) {
-    int ret = 3;
+enum GtsAppState GtsViewMon_Main(GtsApp *app, int state) {
+    enum GtsAppState ret = GTS_APP_STATE_RUN_SCREEN;
     if (OverlayManager_Run(app->tradeSequence)) {
         OverlayManager_Delete(app->tradeSequence);
         Gts_SetNextScreen(app, GTS_SCREEN_SELECT_MON, app->nextScreenArg);
-        ret = 4;
+        ret = GTS_APP_STATE_EXIT_SCREEN;
     }
     return ret;
 }
 
-int GtsViewMon_Exit(GtsApp *app, int state) {
+enum GtsAppState GtsViewMon_Exit(GtsApp *app, int state) {
     Gts_SwitchScreen(app);
     return GTS_APP_STATE_INIT_SCREEN;
 }

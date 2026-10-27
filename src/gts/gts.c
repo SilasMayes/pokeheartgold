@@ -51,9 +51,9 @@ enum GtsInitState {
 
 // One screen of the app: init, main and exit, each returns the next Gts_Main state.
 typedef struct GtsScreen {
-    int (*init)(GtsApp *app, int state);
-    int (*main)(GtsApp *app, int state);
-    int (*exit)(GtsApp *app, int state);
+    enum GtsAppState (*init)(GtsApp *app, int state);
+    enum GtsAppState (*main)(GtsApp *app, int state);
+    enum GtsAppState (*exit)(GtsApp *app, int state);
 } GtsScreen;
 
 static void Gts_VBlankCB(void *arg);
@@ -505,7 +505,7 @@ int Gts_GetWifiIconLevel(void) {
     return 3 - DWC_GetLinkLevel();
 }
 
-void Gts_SetNextScreen(GtsApp *app, int screen, int arg) {
+void Gts_SetNextScreen(GtsApp *app, enum GtsScreenId screen, int arg) {
     app->nextScreen = screen;
     app->nextScreenArg = arg;
 }

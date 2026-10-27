@@ -53,7 +53,7 @@ static void WiFiPlazaEventMovers_Delete(WiFiPlazaEventMovers *work);
 static void WiFiPlazaEventMovers_Update(WiFiPlazaEventMovers *work);
 static u8 WiFiPlazaEventMovers_GetState(WiFiPlazaEventMovers *work, u32 index, int field);
 static void WiFiPlazaEventMovers_UpdateX(WiFiPlazaEventMovers *work, int index);
-static void WiFiPlazaEventMovers_StartActions(WiFiPlazaEventMovers *work, u32 index, BOOL hasOwnSelection, int isOwnIndex, int ownColumn);
+static void WiFiPlazaEventMovers_StartActions(WiFiPlazaEventMovers *work, u32 index, BOOL hasOwnSelection, BOOL isOwnIndex, int ownColumn);
 static void WiFiPlazaEventMovers_PlaySE(BOOL hasOwnSelection, BOOL isOwnIndex, BOOL isOwnColumn, u32 seqNo);
 static void WiFiPlazaEventMovers_PlayCry(BOOL hasOwnSelection, BOOL isOwnIndex, BOOL isOwnColumn, u32 species);
 static BOOL WiFiPlazaEventWobble_Start(WiFiPlazaEventWobble *wobble, int kind, WiFiPlazaModels *models, int index);
@@ -405,7 +405,7 @@ void WiFiPlazaEventEffect_UpdatePhase3(WiFiPlazaEventEffect *effect, u32 tick) {
         id = gWiFiPlazaEventPhase3PropIds;
         i = 0;
         do {
-            int show;
+            BOOL show;
             int active = 0;
 
             if ((i & 3) == gWiFiPlazaEventPhase3PropGroups[effect->step][0]) {
@@ -681,8 +681,8 @@ static void WiFiPlazaEventMovers_Delete(WiFiPlazaEventMovers *work) {
 static void WiFiPlazaEventMovers_Update(WiFiPlazaEventMovers *work) {
     int selected = WiFiPlazaWork_FindGroupPlace(work->lobby, WiFiPlazaWork_GetOwnSlot(work->lobby));
     u32 column;
-    int present;
-    int isOwnIndex;
+    BOOL present;
+    BOOL isOwnIndex;
     int i;
 
     if (selected == -1) {
@@ -754,14 +754,14 @@ static void WiFiPlazaEventMovers_UpdateX(WiFiPlazaEventMovers *work, int index) 
     WiFiPlazaModels_SetMoverX(work->models, index, x);
 }
 
-static void WiFiPlazaEventMovers_StartActions(WiFiPlazaEventMovers *work, u32 index, BOOL hasOwnSelection, int isOwnIndex, int ownColumn) {
+static void WiFiPlazaEventMovers_StartActions(WiFiPlazaEventMovers *work, u32 index, BOOL hasOwnSelection, BOOL isOwnIndex, int ownColumn) {
     int type = WiFiPlazaWork_GetScheduleValue2(work->lobby);
     int i;
 
     WiFiPlazaWork_GetScheduleValue3(work->lobby);
     for (i = 0; i < 3; i++) {
         int active = WiFiPlazaWork_GetGroupActionRequest(work->lobby, index * 3 + i);
-        int isOwnColumn = FALSE;
+        BOOL isOwnColumn = FALSE;
 
         if (isOwnIndex == TRUE && i == ownColumn) {
             isOwnColumn = TRUE;

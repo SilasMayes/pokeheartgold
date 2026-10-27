@@ -76,7 +76,7 @@ BOOL PalPad_Init(OverlayManager *man, int *state) {
 
 BOOL PalPad_Main(OverlayManager *man, int *state) {
     PalPadWork *work = OverlayManager_GetData(man);
-    int result;
+    BOOL result;
 
     switch (*state) {
     case PALPAD_STATE_RUN_SCREEN:
@@ -614,8 +614,8 @@ void PalPadGfx_StartYesNo(u32 *inputState, PalPadGfx *gfx, int initialCursorPos)
     StartBrightnessTransition(4, 8, 0, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), SCREEN_MASK_MAIN);
 }
 
-int PalPadGfx_HandleYesNo(u32 *inputState, PalPadGfx *gfx) {
-    int result = YesNoPrompt_HandleInput(gfx->yesNoPrompt);
+YesNoResponse PalPadGfx_HandleYesNo(u32 *inputState, PalPadGfx *gfx) {
+    YesNoResponse result = YesNoPrompt_HandleInput(gfx->yesNoPrompt);
 
     if (result == YESNORESPONSE_YES || result == YESNORESPONSE_NO) {
         *inputState = YesNoPrompt_IsInTouchMode(gfx->yesNoPrompt);

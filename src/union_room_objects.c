@@ -65,7 +65,7 @@ static void UnionRoomMessage_Init(UnionRoomMessage *message);
 static void UnionRoomMessages_Init(UnionChatLogMessages *messages);
 static void UnionRoomMessage_Free(UnionRoomMessage *message);
 static void UnionRoomMessages_FreeAll(UnionChatLogMessages *messages);
-static UnionChatLogMessages *UnionRoomMessages_New(int heapID);
+static UnionChatLogMessages *UnionRoomMessages_New(enum HeapID heapID);
 static void UnionRoomMessages_Free(UnionChatLogMessages *messages);
 
 UnionRoomObjects *UnionRoomObjects_New(struct UnionRoom *unionRoom) {
@@ -78,7 +78,7 @@ UnionRoomObjects *UnionRoomObjects_New(struct UnionRoom *unionRoom) {
     objects->palPad = SaveArray_Get(objects->fieldSystem->saveData, SAVE_PALPAD);
     objects->avatar = objects->fieldSystem->playerAvatar;
     Heap_CreateAtEnd(HEAP_ID_FIELD2, HEAP_ID_87, 0x2710);
-    objects->messages = UnionRoomMessages_New(0x57);
+    objects->messages = UnionRoomMessages_New(HEAP_ID_87);
     UnionRoomObjects_ResetSlots(objects);
     return objects;
 }
@@ -454,7 +454,7 @@ static void UnionRoomMessages_FreeAll(UnionChatLogMessages *messages) {
     }
 }
 
-static UnionChatLogMessages *UnionRoomMessages_New(int heapID) {
+static UnionChatLogMessages *UnionRoomMessages_New(enum HeapID heapID) {
     UnionChatLogMessages *messages = Heap_Alloc((enum HeapID)heapID, sizeof(UnionChatLogMessages));
     UnionRoomMessages_Init(messages);
     return messages;

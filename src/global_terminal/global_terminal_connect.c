@@ -678,7 +678,7 @@ static BOOL GlobalTerminalConnect_ErrorAllowsRetry(int errorCode, int errorType)
 }
 
 static BOOL GlobalTerminalConnect_StateAskConnect(GlobalTerminalConnectWork *work) {
-    int result;
+    YesNoResponse result;
 
     if (GlobalTerminalConnect_IsPrinting(work->printerId) == TRUE) {
         return FALSE;

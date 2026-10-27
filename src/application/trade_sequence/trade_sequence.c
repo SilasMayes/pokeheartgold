@@ -809,7 +809,7 @@ BOOL TradeSequence_IsModelInView(TradeSequenceModel *model) {
     MtxFx33 matrix;
     MtxFx33 rot;
     int one;
-    int result;
+    BOOL result;
 
     MTX_Identity33(&matrix);
     MTX_RotX33(&rot, FX_SinIdx((u16)model->rotation.x), FX_CosIdx((u16)model->rotation.x));

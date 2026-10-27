@@ -1260,7 +1260,7 @@ static int EasyChatApp_GetWordListTouch(EasyChatApp *app) {
     int hit;
     u16 index;
     int row;
-    int done;
+    BOOL done;
     int top;
     TouchscreenHitbox hitbox;
 

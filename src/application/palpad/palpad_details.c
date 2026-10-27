@@ -34,7 +34,7 @@ extern const u16 gPalPadTables[];
 
 static inline int Abs16(s16 value);
 static BOOL PalPadDetails_IsLastPage(PalPadDetails *details, int page);
-static int PalPadDetails_HandleAction(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, int input);
+static int PalPadDetails_HandleAction(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, enum PalPadDetailsInput input);
 static int PalPadDetails_HandleKeys(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx);
 static int PalPadDetails_HandleTouch(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, BOOL *touched);
 static int PalPadDetails_HandleInput(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx);
@@ -75,7 +75,7 @@ void PalPadDetails_Init(PalPadDetails *details, PalPadShared *shared, PalPadGfx 
     PalPadDetails_Setup(details, shared, gfx, heapId);
 }
 
-int PalPadDetails_Main(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId) {
+BOOL PalPadDetails_Main(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId) {
     switch (shared->subState) {
     case PALPAD_DETAILS_STATE_INIT:
         details->friendChangeHeld = FALSE;
@@ -132,7 +132,7 @@ static BOOL PalPadDetails_IsLastPage(PalPadDetails *details, int page) {
     return page == last;
 }
 
-static int PalPadDetails_HandleAction(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, int input) {
+static int PalPadDetails_HandleAction(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, enum PalPadDetailsInput input) {
     switch (input) {
     case DETAILS_INPUT_SELECT:
         if (!PalPadDetails_IsLastPage(details, details->page)) {

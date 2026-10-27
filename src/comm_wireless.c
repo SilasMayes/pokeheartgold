@@ -104,7 +104,7 @@ enum CommWirelessStopState {
 typedef struct CommWireless {
     u16 tgid;
     u16 unk_02;
-    int state; // 0 off, 1 starting up, 2 started (WVR)
+    enum CommWirelessPowerState state; // started through WVR
     CommWirelessWork *work;
 } CommWireless;
 
@@ -128,12 +128,12 @@ void Wireless_SetGgid(void *ggid);
 void Wireless_SetParentGameInfo(void *gameInfo, u32 length);
 void Wireless_ClearBeaconCount(void);
 void Wireless_SetReceiveCallback(void (*callback)(void), int port);
-int Wireless_StartMeasureChannels(void);
+BOOL Wireless_StartMeasureChannels(void);
 BOOL Wireless_StartScan(void (*callback)(void *), const void *bssid, int channel);
-int Wireless_IsScanning(void);
+BOOL Wireless_IsScanning(void);
 void Wireless_StopScan(void);
-int Wireless_IsBusy(void);
-int Wireless_HasError(void);
+BOOL Wireless_IsBusy(void);
+BOOL Wireless_HasError(void);
 int Wireless_IsIdle();
 int Wireless_GetConnectedBitmap();
 int Wireless_GetState();
@@ -144,7 +144,7 @@ int Wireless_IsEntryLocked(void);
 void Wireless_UpdateGameInfo(void *gameInfo, int length, void *ggid, u16 tgid);
 int Wireless_GetAid(void);
 u32 Wireless_GetError(void);
-int Wireless_End(void);
+BOOL Wireless_End(void);
 u16 Wireless_SelectChannel(void);
 BOOL Wireless_StartParent(int, u16, u16, int, u32, u32);
 BOOL Wireless_HasSentBeacons(void);
@@ -595,7 +595,7 @@ static void CommWireless_UpdateBeaconMemberCount(void) {
 // follows the shutdown request, and starts the parent once the channels are measured.
 static void CommWireless_Update(int count, CommWirelessWork *unused) {
     int state = Wireless_GetState(count);
-    int dropped = CommPlayerInfo_DropDisconnected();
+    BOOL dropped = CommPlayerInfo_DropDisconnected();
     CommWireless_UpdateBeaconMemberCount();
     if (Wireless_GetAid() == 0 && CommWireless_GetConnectedChildren() == 0 && sCommWireless.work->lostWhenAlone) {
         sCommWireless.work->linkLost = 1;

@@ -255,7 +255,7 @@ BOOL WiFiPlazaConnect_Main(OverlayManager *man, int *state) {
         }
         break;
     case WIFI_PLAZA_CONNECT_HANDLE_CONNECT_PROMPT: {
-        int result = YesNoPrompt_HandleInput(work->yesNoPrompt);
+        YesNoResponse result = YesNoPrompt_HandleInput(work->yesNoPrompt);
         if (result == YESNORESPONSE_YES) {
             YesNoPrompt_Destroy(work->yesNoPrompt);
             *state = WIFI_PLAZA_CONNECT_CONNECT;
@@ -337,7 +337,7 @@ BOOL WiFiPlazaConnect_Main(OverlayManager *man, int *state) {
         (*state)++;
         break;
     case WIFI_PLAZA_CONNECT_HANDLE_RECONNECT_PROMPT: {
-        int result = YesNoPrompt_HandleInput(work->yesNoPrompt);
+        YesNoResponse result = YesNoPrompt_HandleInput(work->yesNoPrompt);
         if (result == YESNORESPONSE_YES) {
             YesNoPrompt_Destroy(work->yesNoPrompt);
             CommState_LeaveWifiPlaza();

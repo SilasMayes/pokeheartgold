@@ -701,7 +701,7 @@ static void Wireless_OnReset(void *arg) {
 
 // Sends data to every AID on port; callback (the request's argument) learns whether it was sent.
 static BOOL Wireless_SetSendData(const void *data, u16 length, int port, WirelessSentFunc callback) {
-    int result;
+    WMErrCode result;
     DC_FlushRange(sWirelessManager.work->sendBuffer, sWirelessManager.work->sendBufferSize);
     result = WM_SetMPDataToPortEx(Wireless_OnDataSent, (void *)callback, data, length, 0xFFFF, port, 2);
     if (result == WM_ERRCODE_OPERATING) {
@@ -1065,7 +1065,7 @@ BOOL Wireless_StartChild(int mode, const void *parentInfo) {
 }
 
 void Wireless_SetReceiveCallback(void *callback, int port) {
-    int result;
+    WMErrCode result;
     sWirelessManager.work->receiveCallback = callback;
     result = WM_SetPortCallback((u16)port, Wireless_OnPortEvent, NULL);
     if (result != WM_ERRCODE_SUCCESS) {

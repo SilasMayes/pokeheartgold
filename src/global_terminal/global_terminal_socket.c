@@ -143,11 +143,11 @@ extern u8 ov39_0222AA78[];
 extern u8 sGlobalTerminalSocketCipher[];
 
 static void GlobalTerminalSocket_Reset(void);
-static int GlobalTerminalSocket_Start(char *host, int port, GlobalTerminalNetLogin *login);
+static BOOL GlobalTerminalSocket_Start(char *host, int port, GlobalTerminalNetLogin *login);
 static void GlobalTerminalSocket_ClearRequest(void);
 static inline int GlobalTerminalSocket_FetchTokenNextState(BOOL *done);
 static void GlobalTerminalSocket_RunRequest(void);
-static int GlobalTerminalSocket_SendRequest(int command, void *payload, void *response, int payloadSize);
+static BOOL GlobalTerminalSocket_SendRequest(int command, void *payload, void *response, int payloadSize);
 static int GlobalTerminalSocket_GetStateUnlocked(void);
 static void *GlobalTerminalSocket_GetResponse(void);
 static int GlobalTerminalSocket_GetResponseSize(void);
@@ -205,7 +205,7 @@ static void GlobalTerminalSocket_Reset(void) {
     GlobalTerminalSocket_ResetStub();
 }
 
-static int GlobalTerminalSocket_Start(char *host, int port, GlobalTerminalNetLogin *login) {
+static BOOL GlobalTerminalSocket_Start(char *host, int port, GlobalTerminalNetLogin *login) {
     if (login) {
         sGlobalTerminalSocket.login = *login;
         sGlobalTerminalSocket.hasToken = FALSE;
@@ -331,7 +331,7 @@ static void GlobalTerminalSocket_RunRequest(void) {
     GlobalTerminalSocket_Unlock();
 }
 
-static int GlobalTerminalSocket_SendRequest(int command, void *payload, void *response, int payloadSize) {
+static BOOL GlobalTerminalSocket_SendRequest(int command, void *payload, void *response, int payloadSize) {
     u32 size;
     GlobalTerminalSocket_Lock();
     switch (sGlobalTerminalSocket.state) {

@@ -369,16 +369,16 @@ void PalPadGfx_AnimateArrow(PalPadGfx *gfx, u8 arrow, int pressed);
 void PalPadGfx_SetCursor(PalPadGfx *gfx, BOOL visible, int animSeq);
 void PalPadGfx_SetCursorPriority(PalPadGfx *gfx, u8 priority, int drawPriority);
 void PalPadGfx_StartYesNo(u32 *inputState, PalPadGfx *gfx, int initialCursorPos);
-int PalPadGfx_HandleYesNo(u32 *inputState, PalPadGfx *gfx);
+YesNoResponse PalPadGfx_HandleYesNo(u32 *inputState, PalPadGfx *gfx);
 
 void PalPadMenu_Init(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
-int PalPadMenu_Main(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
+BOOL PalPadMenu_Main(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 void PalPadMenu_Exit(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx);
 void PalPadMenu_Setup(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 void PalPadMenu_Teardown(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx);
 
 void PalPadRoster_Init(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
-int PalPadRoster_Main(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
+BOOL PalPadRoster_Main(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 void PalPadRoster_Exit(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx);
 void PalPadRoster_Setup(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 void PalPadRoster_Teardown(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx);
@@ -387,19 +387,19 @@ void PalPadRoster_DrawTabsOnScroll(PalPadRoster *roster, PalPadGfx *gfx, s16 pag
 
 void PalPadNaming_Init(PalPadNaming *naming, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 
-int PalPadNaming_Main(PalPadNaming *naming, PalPadWork *work, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
+BOOL PalPadNaming_Main(PalPadNaming *naming, PalPadWork *work, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 void PalPadNaming_Exit(PalPadNaming *naming, PalPadShared *shared, PalPadGfx *gfx);
 void PalPadNaming_Setup(PalPadNaming *naming, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 void PalPadNaming_Teardown(PalPadNaming *naming, PalPadShared *shared, PalPadGfx *gfx);
 
 void PalPadFriendCode_Init(PalPadFriendCode *friendCode, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
-int PalPadFriendCode_Main(PalPadFriendCode *friendCode, PalPadShared *shared, PalPadGfx *gfx);
+BOOL PalPadFriendCode_Main(PalPadFriendCode *friendCode, PalPadShared *shared, PalPadGfx *gfx);
 void PalPadFriendCode_Exit(PalPadFriendCode *friendCode, PalPadShared *shared, PalPadGfx *gfx);
 void PalPadFriendCode_Setup(PalPadFriendCode *friendCode, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 void PalPadFriendCode_Teardown(PalPadFriendCode *friendCode, PalPadShared *shared, PalPadGfx *gfx);
 
 void PalPadDetails_Init(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
-int PalPadDetails_Main(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
+BOOL PalPadDetails_Main(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 void PalPadDetails_Exit(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx);
 void PalPadDetails_Setup(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 void PalPadDetails_Teardown(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx);

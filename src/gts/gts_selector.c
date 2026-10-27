@@ -100,8 +100,8 @@ struct GtsSelector {
     s8 levelRange;           // the result of GTS_SELECTOR_MODE_LEVEL
     u8 padding_46[2];
     s32 cursor;
-    int state; // GtsSelectorState
-    int nextState;
+    GtsSelectorState state;
+    GtsSelectorState nextState;
     u32 bgId;           // of the windows
     s16 mode;           // GtsSelectorMode
     s16 page;           // of the list
@@ -111,8 +111,8 @@ struct GtsSelector {
     u8 savedCursor;     // the grid cursor while on a button below the grid
 };
 
-static void GtsSelector_AddWindows(GtsSelector *selector, int page);
-static void GtsSelector_RemoveWindows(GtsSelector *selector, int page);
+static void GtsSelector_AddWindows(GtsSelector *selector, GtsSelectorPage page);
+static void GtsSelector_RemoveWindows(GtsSelector *selector, GtsSelectorPage page);
 static int GtsSelector_GetTouchedButton(GtsSelector *selector, u32 page);
 static int GtsSelector_HandleGroupInput(GtsSelector *selector, const u8 *enabled);
 static int GtsSelector_GetLetter(GtsSelector *selector, int button);
@@ -130,7 +130,7 @@ static int GtsSelector_HandleCountryGroupInput(GtsSelector *selector, const u8 *
 static int GtsSelector_SelectCountryButton(GtsSelector *selector, int button);
 static void GtsSelector_ChangeCountryPage(GtsSelector *selector, int direction);
 static int GtsSelector_HandleCountryListInput(GtsSelector *selector);
-static void GtsSelector_ShowGroups(GtsSelector *selector, int page, int y);
+static void GtsSelector_ShowGroups(GtsSelector *selector, GtsSelectorPage page, int y);
 static void GtsSelector_ShowGenders(GtsSelector *selector);
 static void GtsSelector_ShowLevels(GtsSelector *selector);
 static void GtsSelector_PrintString(BgCellManager *cellManager, Window *window, String *string, int x, u32 color);
@@ -179,7 +179,7 @@ int GtsSelector_OpenLevels(GtsSelector *selector);
 int GtsSelector_HandleLevels(GtsSelector *selector);
 int GtsSelector_FinishLevel(GtsSelector *selector);
 
-static void GtsSelector_AddWindows(GtsSelector *selector, int page) {
+static void GtsSelector_AddWindows(GtsSelector *selector, GtsSelectorPage page) {
     int i;
     switch (page) {
     case GTS_SELECTOR_PAGE_SPECIES_GROUPS:
@@ -251,7 +251,7 @@ static void GtsSelector_AddWindows(GtsSelector *selector, int page) {
     }
 }
 
-static void GtsSelector_RemoveWindows(GtsSelector *selector, int page) {
+static void GtsSelector_RemoveWindows(GtsSelector *selector, GtsSelectorPage page) {
     s8 position[2];
 
     BgCellManager_GetCellPosition(selector->cellManager, 0, &position[1], &position[0]);
@@ -1046,7 +1046,7 @@ static int GtsSelector_HandleCountryListInput(GtsSelector *selector) {
 
 // The letter groups of species (GTS_SELECTOR_PAGE_SPECIES_GROUPS) or countries (GTS_SELECTOR_PAGE_COUNTRY_GROUPS,
 // with ANY), the panel at row y.
-static void GtsSelector_ShowGroups(GtsSelector *selector, int page, int y) {
+static void GtsSelector_ShowGroups(GtsSelector *selector, GtsSelectorPage page, int y) {
     int fileId;
     if (page == GTS_SELECTOR_PAGE_COUNTRY_GROUPS) {
         fileId = 33;
@@ -1206,7 +1206,7 @@ int GtsSelector_HandleSpeciesGroups(GtsSelector *selector) {
 }
 
 int GtsSelector_CloseSpeciesGroups(GtsSelector *selector) {
-    int state;
+    GtsSelectorState state;
     GtsSelector_RemoveWindows(selector, GTS_SELECTOR_PAGE_SPECIES_GROUPS);
     Sprite_SetDrawFlag(selector->cursorSprite, FALSE);
     if (selector->group >= 0) {

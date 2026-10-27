@@ -50,10 +50,10 @@ static inline int Abs16(s16 value);
 static inline int AddTiles(int a, int b);
 static void PalPadRoster_Show(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 static void PalPadRoster_Hide(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx);
-static int PalPadRoster_HandleAction(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, int input);
-static int PalPadRoster_HandleKeys(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx);
-static int PalPadRoster_HandleTouch(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, BOOL *touched);
-static int PalPadRoster_HandleInput(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx);
+static enum PalPadRosterAction PalPadRoster_HandleAction(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum PalPadRosterInput input);
+static enum PalPadRosterAction PalPadRoster_HandleKeys(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx);
+static enum PalPadRosterAction PalPadRoster_HandleTouch(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, BOOL *touched);
+static enum PalPadRosterAction PalPadRoster_HandleInput(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx);
 static void PalPadRoster_StartPageScroll(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 static BOOL PalPadRoster_UpdatePageScroll(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
 static void PalPadRoster_OpenFriendMenu(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId);
@@ -76,7 +76,7 @@ static void PalPadRosterPage_Init(PalPadRosterPage *page, PalPadGfx *gfx, const 
 static void PalPadRosterPage_Free(PalPadRosterPage *page, PalPadGfx *gfx);
 static void PalPadRosterPage_DrawFrame(PalPadRosterPage *page, PalPadGfx *gfx, PalPadScreens *screens);
 static void PalPadRoster_SetCursor(PalPadRosterPage *page, PalPadGfx *gfx, int cursor);
-static void PalPadRosterPage_HighlightSlot(PalPadRosterPage *page, PalPadGfx *gfx, int cursor, int highlight);
+static void PalPadRosterPage_HighlightSlot(PalPadRosterPage *page, PalPadGfx *gfx, int cursor, BOOL highlight);
 static void PalPadRosterPage_Draw(PalPadRosterPage *page, PalPadShared *shared, PalPadGfx *gfx, CharSpriteManager *trainerIcons, PalPadScreens *screens, PalPadFriendList *friends, int pageNo, enum HeapID heapId);
 static void PalPadRosterPage_Clear(PalPadRosterPage *page, PalPadGfx *gfx, PalPadScreens *screens);
 static void PalPadRosterPage_DeleteIcons(PalPadRosterPage *page, PalPadGfx *gfx);
@@ -96,7 +96,7 @@ void PalPadRoster_Init(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gf
     PalPadRoster_Setup(roster, shared, gfx, heapId);
 }
 
-int PalPadRoster_Main(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId) {
+BOOL PalPadRoster_Main(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId) {
     int index;
     FriendRoster *wifiList;
 
@@ -348,7 +348,7 @@ static void PalPadRoster_Hide(PalPadRoster *roster, PalPadShared *shared, PalPad
     ScheduleBgTilemapBufferTransfer(gfx->bgConfig, GF_BG_LYR_MAIN_0);
 }
 
-static int PalPadRoster_HandleAction(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, int input) {
+static enum PalPadRosterAction PalPadRoster_HandleAction(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, enum PalPadRosterInput input) {
     int cursor;
     int page;
     u32 count;
@@ -384,7 +384,7 @@ static int PalPadRoster_HandleAction(PalPadRoster *roster, PalPadShared *shared,
 }
 
 // Slots 0-3 are the left column, 4-7 the right one, 8 the return button.
-static int PalPadRoster_HandleKeys(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx) {
+static enum PalPadRosterAction PalPadRoster_HandleKeys(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx) {
     u16 prevCursor;
     BOOL moved, turnPage, right;
 
@@ -485,7 +485,7 @@ static int PalPadRoster_HandleKeys(PalPadRoster *roster, PalPadShared *shared, P
 }
 
 // hitboxes: 0-7 slots, 8 return, 9/10 arrows, 11-14 page tabs
-static int PalPadRoster_HandleTouch(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, BOOL *touched) {
+static enum PalPadRosterAction PalPadRoster_HandleTouch(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx, BOOL *touched) {
     u32 hit;
     int delta;
 
@@ -523,9 +523,9 @@ static int PalPadRoster_HandleTouch(PalPadRoster *roster, PalPadShared *shared, 
     return PalPadRoster_HandleAction(roster, shared, gfx, ROSTER_INPUT_PAGE_LEFT);
 }
 
-static int PalPadRoster_HandleInput(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx) {
+static enum PalPadRosterAction PalPadRoster_HandleInput(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx) {
     BOOL touched = FALSE;
-    int result = PalPadRoster_HandleTouch(roster, shared, gfx, &touched);
+    enum PalPadRosterAction result = PalPadRoster_HandleTouch(roster, shared, gfx, &touched);
 
     if (touched) {
         shared->inputState = TRUE;
@@ -854,7 +854,7 @@ static void PalPadRoster_SetCursor(PalPadRosterPage *page, PalPadGfx *gfx, int c
     PalPadGfx_SetCursor(gfx, TRUE, 0xFF);
 }
 
-static void PalPadRosterPage_HighlightSlot(PalPadRosterPage *page, PalPadGfx *gfx, int cursor, int highlight) {
+static void PalPadRosterPage_HighlightSlot(PalPadRosterPage *page, PalPadGfx *gfx, int cursor, BOOL highlight) {
     int i;
 
     for (i = 0; i < 9; i++) {

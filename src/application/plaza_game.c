@@ -166,10 +166,10 @@ enum PlazaGameTeamState {
 
 static u8 PlazaGameRoster_GetNetId(const PlazaGameRoster *roster, u32 index);
 static void PlazaGameEntry_SetSelection(PlazaGameEntry *entry, int selection);
-static void PlazaGameResults_ReceiveVote(PlazaGameResults *results, int netId, int yes);
+static void PlazaGameResults_ReceiveVote(PlazaGameResults *results, int netId, BOOL yes);
 static void PlazaGameResults_ReceiveContinue(PlazaGameResults *results, u8 result);
 static void PlazaGameMotion_Init(PlazaGameMotion *motion, fx32 start, fx32 end, fx32 velocity, int duration);
-static int PlazaGameMotion_Update(PlazaGameMotion *motion, int frame);
+static BOOL PlazaGameMotion_Update(PlazaGameMotion *motion, int frame);
 static void PlazaGame_OffsetScreenTiles(NNSG2dScreenData *screen, u16 offset);
 static void PlazaGameGfx_Init(PlazaGameGfx *gfx, int count, enum HeapID heapId);
 static void PlazaGameGfx_Free(PlazaGameGfx *gfx);
@@ -223,7 +223,7 @@ static void PlazaGamePlayer_ShowSprite(PlazaGamePlayer *player);
 static void PlazaGamePlayer_Free(PlazaGamePlayer *player);
 static void PlazaGamePlayer_StartSlideIn(PlazaGamePlayer *player, int x, s16 delay);
 static void PlazaGamePlayer_StartSlideOut(PlazaGamePlayer *player, s16 delay);
-static int PlazaGamePlayer_UpdateSlide(PlazaGamePlayer *player);
+static BOOL PlazaGamePlayer_UpdateSlide(PlazaGamePlayer *player);
 static void PlazaGamePlayer_SetSpritePos(PlazaGamePlayer *player, u32 x);
 static int PlazaGame_GetRelativeSeat(u32 count, int index, u32 localIndex);
 static void PlazaGameLineScroll_Init(PlazaGameLineScroll *lineScroll, PlazaGameBg *bg, enum HeapID heapId);
@@ -258,7 +258,7 @@ static void PlazaGameContinue_Init(PlazaGameContinue *prompt, PlazaGameBg *bg, u
 static void PlazaGameContinue_Free(PlazaGameContinue *prompt);
 static BOOL PlazaGameContinue_Run(PlazaGameContinue *prompt, PlazaGameMessageBox *messageBox, PlazaGameText *text, int game, volatile enum HeapID heapId);
 static u8 PlazaGameContinue_GetResult(const PlazaGameContinue *prompt);
-static void PlazaGameContinue_ReceiveVote(PlazaGameContinue *prompt, int netId, int yes, int count);
+static void PlazaGameContinue_ReceiveVote(PlazaGameContinue *prompt, int netId, BOOL yes, int count);
 static void PlazaGameContinue_SetResult(PlazaGameContinue *prompt, u8 result);
 static void PlazaGameBalloons_Init(PlazaGameBalloons *balloons, PlazaGameBg *bg, PlazaGameSprites *sprites, PlazaGameGfx *gfx, NARC *narc, enum HeapID heapId);
 static void PlazaGameBalloons_Free(PlazaGameBalloons *balloons);
@@ -463,7 +463,7 @@ static void PlazaGameEntry_SetSelection(PlazaGameEntry *entry, int selection) {
     entry->selectionReceived = 1;
 }
 
-static void PlazaGameResults_ReceiveVote(PlazaGameResults *results, int netId, int yes) {
+static void PlazaGameResults_ReceiveVote(PlazaGameResults *results, int netId, BOOL yes) {
     if (!results->roster.localIndex) {
         PlazaGameContinue_ReceiveVote(&results->continuePrompt, netId, yes, results->roster.count);
     }
@@ -566,8 +566,8 @@ static void PlazaGameMotion_Init(PlazaGameMotion *motion, fx32 start, fx32 end, 
     motion->duration = duration;
 }
 
-static int PlazaGameMotion_Update(PlazaGameMotion *motion, int frame) {
-    int done;
+static BOOL PlazaGameMotion_Update(PlazaGameMotion *motion, int frame) {
+    BOOL done;
     fx32 linear;
     fx32 quadratic;
     if (frame >= motion->duration) {
@@ -834,7 +834,7 @@ static void PlazaGameMessageBox_Init(PlazaGameMessageBox *messageBox, PlazaGameB
     window = messageBox->windows;
     i = 0;
     do {
-        int bgId;
+        GFBgLayer bgId;
         u8 y;
         if (i == 0) {
             bgId = GF_BG_LYR_MAIN_2;
@@ -1288,8 +1288,8 @@ static void PlazaGamePlayer_StartSlideOut(PlazaGamePlayer *player, s16 delay) {
     PlazaGamePlayer_SetSpritePos(player, -(player->motion.current >> FX32_SHIFT));
 }
 
-static int PlazaGamePlayer_UpdateSlide(PlazaGamePlayer *player) {
-    int done;
+static BOOL PlazaGamePlayer_UpdateSlide(PlazaGamePlayer *player) {
+    BOOL done;
     if (player->delay <= 0) {
         if (player->frame == 0) {
             PlaySE(player->se);
@@ -1481,7 +1481,7 @@ static void PlazaGameTitle_StartSlideOut(PlazaGameTitle *title, PlazaGameBg *bg)
 }
 
 static BOOL PlazaGameTitle_UpdateSlideIn(PlazaGameTitle *title, PlazaGameBg *bg) {
-    int done;
+    BOOL done;
 
     switch (title->state) {
     case PLAZA_GAME_TITLE_SLIDE_IN:
@@ -1520,7 +1520,7 @@ static BOOL PlazaGameTitle_UpdateSlideIn(PlazaGameTitle *title, PlazaGameBg *bg)
 }
 
 static BOOL PlazaGameTitle_UpdateSlideOut(PlazaGameTitle *title, PlazaGameBg *bg) {
-    int done;
+    BOOL done;
     switch (title->state) {
     case PLAZA_GAME_TITLE_SLIDE_OUT:
         done = PlazaGameMotion_Update(&title->motion, title->frame);
@@ -2293,7 +2293,7 @@ static u8 PlazaGameContinue_GetResult(const PlazaGameContinue *prompt) {
     return prompt->result;
 }
 
-static void PlazaGameContinue_ReceiveVote(PlazaGameContinue *prompt, int netId, int yes, int count) {
+static void PlazaGameContinue_ReceiveVote(PlazaGameContinue *prompt, int netId, BOOL yes, int count) {
     int bit = 1 << netId;
     int i;
     u32 votes;

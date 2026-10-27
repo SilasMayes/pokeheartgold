@@ -906,7 +906,7 @@ static int RecordMixing_State_ShowCancelYesNo(RecordMixingApp *app, int state) {
 static int RecordMixing_State_HandleCancelYesNo(RecordMixingApp *app, int state) {
     u32 noData;
     u8 data[4];
-    int input;
+    YesNoResponse input;
 
     if (Comm_GetLocalNetId() != 0) {
         if (app->leaderJoinPending != 0) {
@@ -1000,7 +1000,7 @@ static int RecordMixing_State_ShowConfirmYesNo(RecordMixingApp *app, int state) 
 
 static int RecordMixing_State_HandleConfirmYesNo(RecordMixingApp *app, int state) {
     u32 data;
-    int input;
+    YesNoResponse input;
 
     if (app->participantCount != RecordMixing_CountMembers() || app->leavingMask != 0) {
         if (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_KEY_UP | PAD_KEY_DOWN)) {
@@ -1119,7 +1119,7 @@ static int RecordMixing_State_ShowDisbandYesNo(RecordMixingApp *app, int state) 
 }
 
 static int RecordMixing_State_HandleDisbandYesNo(RecordMixingApp *app, int state) {
-    int input;
+    YesNoResponse input;
     int data;
 
     if (app->participantCount != RecordMixing_CountMembers() || app->leavingMask) {

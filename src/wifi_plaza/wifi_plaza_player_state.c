@@ -248,7 +248,7 @@ typedef struct WiFiPlazaPlayerStateResult {
 static void WiFiPlazaPlayerState_Set(WiFiPlazaPlayerStateManager *manager, u32 index, const WiFiPlazaPlayerStateHandlers *handlers, void *arg);
 static void WiFiPlazaPlayerState_Push(WiFiPlazaPlayerStateManager *manager, u32 index, const WiFiPlazaPlayerStateHandlers *handlers, void *arg);
 static void WiFiPlazaPlayerState_RunAll(WiFiPlazaPlayerStateManager *manager, u32 which);
-static void WiFiPlazaPlayerState_Init(WiFiPlazaPlayerState *state, u32 index, u32 heapID);
+static void WiFiPlazaPlayerState_Init(WiFiPlazaPlayerState *state, u32 index, enum HeapID heapID);
 static void WiFiPlazaPlayerState_Clear(WiFiPlazaPlayerState *state);
 static void WiFiPlazaPlayerState_Run(WiFiPlazaPlayerState *state, WiFiPlazaPlayerStateManager *manager, u32 which, u32 index);
 static void WiFiPlazaPlayerState_SetFrame(WiFiPlazaPlayerState *state, const WiFiPlazaPlayerStateHandlers *handlers, void *arg);
@@ -671,7 +671,7 @@ static void WiFiPlazaPlayerState_RunAll(WiFiPlazaPlayerStateManager *manager, u3
     }
 }
 
-static void WiFiPlazaPlayerState_Init(WiFiPlazaPlayerState *state, u32 index, u32 heapID) {
+static void WiFiPlazaPlayerState_Init(WiFiPlazaPlayerState *state, u32 index, enum HeapID heapID) {
     state->heapID = heapID;
     state->active = TRUE;
     state->index = index;
@@ -1495,7 +1495,7 @@ static BOOL WiFiPlazaPlayerState_OwnWalkLate(WiFiPlazaPlayerState *state, WiFiPl
 static BOOL WiFiPlazaPlayerState_OwnExit(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, u32 index) {
     WiFiPlazaObjManager *objManager;
     WiFiPlazaObj *ownPlayer;
-    int closed;
+    BOOL closed;
 
     switch (WiFiPlazaPlayerState_GetStep(state)) {
     case WIFI_PLAZA_EXIT_ASK_EXIT:
@@ -2430,8 +2430,8 @@ static BOOL WiFiPlazaPlayerState_OtherWaitForPlayer(WiFiPlazaPlayerState *state,
         WiFiPlazaPlayerState_AllocWork(state, 8);
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_OTHER_WAIT_WAIT_ENTER);
     case WIFI_PLAZA_OTHER_WAIT_WAIT_ENTER: {
-        int joined = WiFiPlazaWork_TakePlayerEntered(lobby, index);
-        int present = WiFiPlazaWork_IsSlotOccupied(lobby, index);
+        BOOL joined = WiFiPlazaWork_TakePlayerEntered(lobby, index);
+        BOOL present = WiFiPlazaWork_IsSlotOccupied(lobby, index);
         if (joined == TRUE || present == TRUE) {
             WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_OTHER_WAIT_CREATE_OBJ);
         }

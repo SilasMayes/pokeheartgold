@@ -2024,7 +2024,7 @@ static BOOL VisitorProfilesPanel_RevealFast(VisitorProfilesPanel *panel, Visitor
 
 // One more row (from the bottom) every ticksPerRow frames; TRUE once all rows are done.
 static BOOL VisitorProfilesPanel_Reveal(VisitorProfilesPanel *panel, VisitorProfilesGraphics *gfx, int ticksPerRow) {
-    int done = TRUE;
+    BOOL done = TRUE;
     int i;
     int ticks = panel->ticks;
     if (ticks % ticksPerRow == 0) {

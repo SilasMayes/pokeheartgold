@@ -71,25 +71,25 @@ static void GtsWanted_DrawOfferedMon(MsgData *msgData, MessageFormat *msgFormat,
 static u16 *Gts_LoadAlphabeticalSpecies(enum HeapID heapID, int unused, u32 *count);
 static void GtsWanted_InitDepositRecord(GtsRecord *record, GtsApp *app);
 
-int GtsWanted_Start(GtsApp *app);
-int GtsWanted_HandleInput(GtsApp *app);
-int GtsWanted_OpenSpeciesSelector(GtsApp *app);
-int GtsWanted_InvalidState4(GtsApp *app);
-int GtsWanted_InvalidState5(GtsApp *app);
-int GtsWanted_HandleSpeciesSelector(GtsApp *app);
-int GtsWanted_AskGender(GtsApp *app);
-int GtsWanted_OpenGenderSelector(GtsApp *app);
-int GtsWanted_HandleGenderSelector(GtsApp *app);
-int GtsWanted_AskLevel(GtsApp *app);
-int GtsWanted_OpenLevelSelector(GtsApp *app);
-int GtsWanted_HandleLevelSelector(GtsApp *app);
-int GtsWanted_AskConfirm(GtsApp *app);
-int GtsWanted_ShowConfirmPrompt(GtsApp *app);
-int GtsWanted_HandleConfirmPrompt(GtsApp *app);
-int GtsWanted_FadeOut(GtsApp *app);
-int GtsWanted_WaitText(GtsApp *app);
+enum GtsAppState GtsWanted_Start(GtsApp *app);
+enum GtsAppState GtsWanted_HandleInput(GtsApp *app);
+enum GtsAppState GtsWanted_OpenSpeciesSelector(GtsApp *app);
+enum GtsAppState GtsWanted_InvalidState4(GtsApp *app);
+enum GtsAppState GtsWanted_InvalidState5(GtsApp *app);
+enum GtsAppState GtsWanted_HandleSpeciesSelector(GtsApp *app);
+enum GtsAppState GtsWanted_AskGender(GtsApp *app);
+enum GtsAppState GtsWanted_OpenGenderSelector(GtsApp *app);
+enum GtsAppState GtsWanted_HandleGenderSelector(GtsApp *app);
+enum GtsAppState GtsWanted_AskLevel(GtsApp *app);
+enum GtsAppState GtsWanted_OpenLevelSelector(GtsApp *app);
+enum GtsAppState GtsWanted_HandleLevelSelector(GtsApp *app);
+enum GtsAppState GtsWanted_AskConfirm(GtsApp *app);
+enum GtsAppState GtsWanted_ShowConfirmPrompt(GtsApp *app);
+enum GtsAppState GtsWanted_HandleConfirmPrompt(GtsApp *app);
+enum GtsAppState GtsWanted_FadeOut(GtsApp *app);
+enum GtsAppState GtsWanted_WaitText(GtsApp *app);
 
-int GtsWanted_Init(GtsApp *app, int state) {
+enum GtsAppState GtsWanted_Init(GtsApp *app, int state) {
     GtsSelectorArgs args;
 
     GtsWanted_CreateData(app);
@@ -118,12 +118,12 @@ int GtsWanted_Init(GtsApp *app, int state) {
     return GTS_APP_STATE_WAIT_FADE_IN;
 }
 
-int GtsWanted_Main(GtsApp *app, int state) {
+enum GtsAppState GtsWanted_Main(GtsApp *app, int state) {
     WirelessStatusIcon_SetLevel(Gts_GetWifiIconLevel());
     return gGtsWantedStates[app->state](app);
 }
 
-int GtsWanted_Exit(GtsApp *app, int state) {
+enum GtsAppState GtsWanted_Exit(GtsApp *app, int state) {
     WirelessStatusIcon_Destroy();
     GtsWanted_DeleteSprites(app);
     GtsSelector_Delete(app->selector);
@@ -268,7 +268,7 @@ static void GtsWanted_FreeData(GtsApp *app) {
     String_Delete(app->msgBuffer);
 }
 
-int GtsWanted_Start(GtsApp *app) {
+enum GtsAppState GtsWanted_Start(GtsApp *app) {
     if (IsPaletteFadeFinished()) {
         GtsWanted_PrintMessage(app, msg_0775_00009, 1, 0, 0xF0F); // Please choose the Pokemon you want.
         Gts_SetState(app, GTS_WANTED_STATE_WAIT_TEXT, GTS_WANTED_STATE_HANDLE_INPUT);
@@ -276,7 +276,7 @@ int GtsWanted_Start(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_HandleInput(GtsApp *app) {
+enum GtsAppState GtsWanted_HandleInput(GtsApp *app) {
     if (gSystem.newKeys & PAD_BUTTON_B) {
         Gts_SetNextScreen(app, GTS_SCREEN_SELECT_MON, 5);
         app->state = GTS_WANTED_STATE_FADE_OUT;
@@ -286,19 +286,19 @@ int GtsWanted_HandleInput(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_OpenSpeciesSelector(GtsApp *app) {
+enum GtsAppState GtsWanted_OpenSpeciesSelector(GtsApp *app) {
     GtsSelector_Start(app->selector, GTS_SELECTOR_MODE_SPECIES);
     app->state = GTS_WANTED_STATE_HANDLE_SPECIES_SELECTOR;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
 // States 4 and 5 are not used.
-int GtsWanted_InvalidState4(GtsApp *app) {
+enum GtsAppState GtsWanted_InvalidState4(GtsApp *app) {
     GF_ASSERT(FALSE);
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_InvalidState5(GtsApp *app) {
+enum GtsAppState GtsWanted_InvalidState5(GtsApp *app) {
     GF_ASSERT(FALSE);
     return GTS_APP_STATE_RUN_SCREEN;
 }
@@ -320,7 +320,7 @@ BOOL Gts_SetFixedGender(GtsWantedMon *wanted, u32 genderRatio) {
     }
 }
 
-int GtsWanted_HandleSpeciesSelector(GtsApp *app) {
+enum GtsAppState GtsWanted_HandleSpeciesSelector(GtsApp *app) {
     int selection = GtsSelector_Main(app->selector);
     switch (selection) {
     case GTS_SELECTOR_BACK:
@@ -350,20 +350,20 @@ int GtsWanted_HandleSpeciesSelector(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_AskGender(GtsApp *app) {
+enum GtsAppState GtsWanted_AskGender(GtsApp *app) {
     GtsWanted_PrintMessage(app, msg_0775_00010, 1, 0, 0xF0F); // Please choose its gender.
     Gts_SetState(app, GTS_WANTED_STATE_WAIT_TEXT, GTS_WANTED_STATE_OPEN_GENDER_SELECTOR);
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_OpenGenderSelector(GtsApp *app) {
+enum GtsAppState GtsWanted_OpenGenderSelector(GtsApp *app) {
     app->unk_0118 = 0xFFFF;
     GtsSelector_Start(app->selector, GTS_SELECTOR_MODE_GENDER);
     app->state = GTS_WANTED_STATE_HANDLE_GENDER_SELECTOR;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_HandleGenderSelector(GtsApp *app) {
+enum GtsAppState GtsWanted_HandleGenderSelector(GtsApp *app) {
     u32 selection = GtsSelector_Main(app->selector);
     switch (selection) {
     case GTS_SELECTOR_BACK:
@@ -381,13 +381,13 @@ int GtsWanted_HandleGenderSelector(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_AskLevel(GtsApp *app) {
+enum GtsAppState GtsWanted_AskLevel(GtsApp *app) {
     GtsWanted_PrintMessage(app, msg_0775_00011, 1, 0, 0xF0F); // Please choose the level.
     Gts_SetState(app, GTS_WANTED_STATE_WAIT_TEXT, GTS_WANTED_STATE_OPEN_LEVEL_SELECTOR);
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_OpenLevelSelector(GtsApp *app) {
+enum GtsAppState GtsWanted_OpenLevelSelector(GtsApp *app) {
     GtsSelector_Start(app->selector, GTS_SELECTOR_MODE_LEVEL);
     app->unk_0118 = 0xFFFF;
     app->state = GTS_WANTED_STATE_HANDLE_LEVEL_SELECTOR;
@@ -395,7 +395,7 @@ int GtsWanted_OpenLevelSelector(GtsApp *app) {
 }
 
 // Canceling goes back to the gender, or to the species when it has only one gender.
-int GtsWanted_HandleLevelSelector(GtsApp *app) {
+enum GtsAppState GtsWanted_HandleLevelSelector(GtsApp *app) {
     u32 selection = GtsSelector_Main(app->selector);
     switch (selection) {
     case 12: // past the 12 level ranges
@@ -421,20 +421,20 @@ int GtsWanted_HandleLevelSelector(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_AskConfirm(GtsApp *app) {
+enum GtsAppState GtsWanted_AskConfirm(GtsApp *app) {
     GtsWanted_PrintMessage(app, msg_0775_00023, 1, 0, 0xF0F); // Are these conditions OK?
     Gts_SetState(app, GTS_WANTED_STATE_WAIT_TEXT, GTS_WANTED_STATE_SHOW_CONFIRM_PROMPT);
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_ShowConfirmPrompt(GtsApp *app) {
+enum GtsAppState GtsWanted_ShowConfirmPrompt(GtsApp *app) {
     app->yesNoPrompt = Gts_CreateYesNoPrompt(app->bgConfig, 12, 0x11A, 3, FALSE);
     app->state = GTS_WANTED_STATE_HANDLE_CONFIRM_PROMPT;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_HandleConfirmPrompt(GtsApp *app) {
-    int response = Gts_HandleYesNoPrompt(app);
+enum GtsAppState GtsWanted_HandleConfirmPrompt(GtsApp *app) {
+    YesNoResponse response = Gts_HandleYesNoPrompt(app);
     if (response == YESNORESPONSE_YES) {
         YesNoPrompt_Destroy(app->yesNoPrompt);
         Gts_SetNextScreen(app, GTS_SCREEN_TRANSACTION, 7);
@@ -449,7 +449,7 @@ int GtsWanted_HandleConfirmPrompt(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsWanted_FadeOut(GtsApp *app) {
+enum GtsAppState GtsWanted_FadeOut(GtsApp *app) {
     if (app->nextScreen == GTS_SCREEN_CONNECTION) {
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, HEAP_ID_61);
         app->fadedBothScreens = 1;
@@ -460,7 +460,7 @@ int GtsWanted_FadeOut(GtsApp *app) {
     return GTS_APP_STATE_EXIT_SCREEN;
 }
 
-int GtsWanted_WaitText(GtsApp *app) {
+enum GtsAppState GtsWanted_WaitText(GtsApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId)) {
         app->state = app->nextState;
     }

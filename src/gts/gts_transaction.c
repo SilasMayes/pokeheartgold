@@ -97,7 +97,7 @@ static void GtsTransaction_PrintServerError(GtsApp *app);
 static void GtsTransaction_StoreSelectedMon(GtsApp *app, BOOL setDeposited);
 static void GtsTransaction_ReceiveMon(GtsApp *app, Pokemon *mon, int box, int traded);
 static void GtsTransaction_ReceiveExchangedMon(GtsApp *app, Pokemon *mon, int box);
-static void GtsTransaction_SaveTradeDate(void *gtsSave, int exchange);
+static void GtsTransaction_SaveTradeDate(void *gtsSave, BOOL exchange);
 static void GtsTransaction_AddPartnerToWifiHistory(SaveWiFiHistory *wifiHistory, GtsRecord *record);
 static int GtsTransaction_CheckCanReceive(GtsApp *app, Pokemon *mon);
 static void GtsTransaction_SetSaveStates(GtsApp *app, u16 midState, u16 doneState);
@@ -105,48 +105,48 @@ static BOOL GtsTransaction_IsDepositMissingFromSave(GtsApp *app);
 
 void CommState_ShowRestartErrorAndHalt(void);
 
-int GtsTransaction_Start(GtsApp *app);
-int GtsTransaction_SendPost(GtsApp *app);
-int GtsTransaction_WaitPost(GtsApp *app);
-int GtsTransaction_SendPostFinish(GtsApp *app);
-int GtsTransaction_WaitPostFinish(GtsApp *app);
-int GtsTransaction_SendGet(GtsApp *app);
-int GtsTransaction_WaitGet(GtsApp *app);
-int GtsTransaction_SendReturn(GtsApp *app);
-int GtsTransaction_WaitReturn(GtsApp *app);
-int GtsTransaction_SendExchange(GtsApp *app);
-int GtsTransaction_WaitExchange(GtsApp *app);
-int GtsTransaction_SendExchangeFinish(GtsApp *app);
-int GtsTransaction_WaitExchangeFinish(GtsApp *app);
-int GtsTransaction_SendResult(GtsApp *app);
-int GtsTransaction_WaitResult(GtsApp *app);
-int GtsTransaction_ExitToMainMenu(GtsApp *app);
-int GtsTransaction_SendStatusGet(GtsApp *app);
-int GtsTransaction_WaitStatusGet(GtsApp *app);
-int GtsTransaction_ReceiveTradedMon(GtsApp *app);
-int GtsTransaction_SendDelete(GtsApp *app);
-int GtsTransaction_WaitDelete(GtsApp *app);
-int GtsTransaction_Idle(GtsApp *app);
-int GtsTransaction_DepositDone(GtsApp *app);
-int GtsTransaction_ReceiveDone(GtsApp *app);
-int GtsTransaction_ExchangeDone(GtsApp *app);
-int GtsTransaction_TradedDone(GtsApp *app);
-int GtsTransaction_SendUnsavedReturn(GtsApp *app);
-int GtsTransaction_WaitUnsavedReturn(GtsApp *app);
-int GtsTransaction_AlreadyTraded(GtsApp *app);
-int GtsTransaction_ServerErrorExit(GtsApp *app);
-int GtsTransaction_ServerError(GtsApp *app);
-int GtsTransaction_SaveAndExit(GtsApp *app);
-int GtsTransaction_StartSave(GtsApp *app);
-int GtsTransaction_WaitSaveDelay(GtsApp *app);
-int GtsTransaction_SaveFirstPart(GtsApp *app);
-int GtsTransaction_SaveRest(GtsApp *app);
-int GtsTransaction_StartSaveWithMessage(GtsApp *app);
-int GtsTransaction_SaveWithMessage(GtsApp *app);
-int GtsTransaction_FadeOut(GtsApp *app);
-int GtsTransaction_WaitText(GtsApp *app);
+enum GtsAppState GtsTransaction_Start(GtsApp *app);
+enum GtsAppState GtsTransaction_SendPost(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitPost(GtsApp *app);
+enum GtsAppState GtsTransaction_SendPostFinish(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitPostFinish(GtsApp *app);
+enum GtsAppState GtsTransaction_SendGet(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitGet(GtsApp *app);
+enum GtsAppState GtsTransaction_SendReturn(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitReturn(GtsApp *app);
+enum GtsAppState GtsTransaction_SendExchange(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitExchange(GtsApp *app);
+enum GtsAppState GtsTransaction_SendExchangeFinish(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitExchangeFinish(GtsApp *app);
+enum GtsAppState GtsTransaction_SendResult(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitResult(GtsApp *app);
+enum GtsAppState GtsTransaction_ExitToMainMenu(GtsApp *app);
+enum GtsAppState GtsTransaction_SendStatusGet(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitStatusGet(GtsApp *app);
+enum GtsAppState GtsTransaction_ReceiveTradedMon(GtsApp *app);
+enum GtsAppState GtsTransaction_SendDelete(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitDelete(GtsApp *app);
+enum GtsAppState GtsTransaction_Idle(GtsApp *app);
+enum GtsAppState GtsTransaction_DepositDone(GtsApp *app);
+enum GtsAppState GtsTransaction_ReceiveDone(GtsApp *app);
+enum GtsAppState GtsTransaction_ExchangeDone(GtsApp *app);
+enum GtsAppState GtsTransaction_TradedDone(GtsApp *app);
+enum GtsAppState GtsTransaction_SendUnsavedReturn(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitUnsavedReturn(GtsApp *app);
+enum GtsAppState GtsTransaction_AlreadyTraded(GtsApp *app);
+enum GtsAppState GtsTransaction_ServerErrorExit(GtsApp *app);
+enum GtsAppState GtsTransaction_ServerError(GtsApp *app);
+enum GtsAppState GtsTransaction_SaveAndExit(GtsApp *app);
+enum GtsAppState GtsTransaction_StartSave(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitSaveDelay(GtsApp *app);
+enum GtsAppState GtsTransaction_SaveFirstPart(GtsApp *app);
+enum GtsAppState GtsTransaction_SaveRest(GtsApp *app);
+enum GtsAppState GtsTransaction_StartSaveWithMessage(GtsApp *app);
+enum GtsAppState GtsTransaction_SaveWithMessage(GtsApp *app);
+enum GtsAppState GtsTransaction_FadeOut(GtsApp *app);
+enum GtsAppState GtsTransaction_WaitText(GtsApp *app);
 
-int GtsTransaction_Init(GtsApp *app, int state) {
+enum GtsAppState GtsTransaction_Init(GtsApp *app, int state) {
     GtsTransaction_CreateStrings(app);
     GtsTransaction_InitBgs(app->bgConfig);
     GtsTransaction_LoadGraphics(app);
@@ -158,12 +158,12 @@ int GtsTransaction_Init(GtsApp *app, int state) {
     return GTS_APP_STATE_WAIT_FADE_IN;
 }
 
-int GtsTransaction_Main(GtsApp *app, int state) {
+enum GtsAppState GtsTransaction_Main(GtsApp *app, int state) {
     WirelessStatusIcon_SetLevel(Gts_GetWifiIconLevel());
     return gGtsTransactionStates[app->state](app);
 }
 
-int GtsTransaction_Exit(GtsApp *app, int state) {
+enum GtsAppState GtsTransaction_Exit(GtsApp *app, int state) {
     if (GXS_GetMasterBrightness()) {
         Gts_LowerAvatars(app);
     }
@@ -249,7 +249,7 @@ static void GtsTransaction_DeleteStrings(GtsApp *app) {
     String_Delete(app->msgBuffer);
 }
 
-int GtsTransaction_Start(GtsApp *app) {
+enum GtsAppState GtsTransaction_Start(GtsApp *app) {
     switch (app->nextScreenArg) {
     case 7:
         Gts_PrintMessage(app, app->gtsMsgData, msg_0775_00024, 1, 0xF0F); // Checking GTS's status...
@@ -285,7 +285,7 @@ int GtsTransaction_Start(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SendPost(GtsApp *app) {
+enum GtsAppState GtsTransaction_SendPost(GtsApp *app) {
     Pokemon_RemoveCapsule(&app->record.mon);
     GtsServer_RequestPost(&app->record);
     app->state = GTS_TRANSACTION_STATE_WAIT_POST;
@@ -295,7 +295,7 @@ int GtsTransaction_SendPost(GtsApp *app) {
 }
 
 // Each request is given a minute; then the connection is dropped (CommState_ShowRestartErrorAndHalt).
-int GtsTransaction_WaitPost(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitPost(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -343,7 +343,7 @@ int GtsTransaction_WaitPost(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SendPostFinish(GtsApp *app) {
+enum GtsAppState GtsTransaction_SendPostFinish(GtsApp *app) {
     GtsServer_RequestPostFinish();
     app->state = GTS_TRANSACTION_STATE_WAIT_POST_FINISH;
     app->requestFrames = 0;
@@ -351,7 +351,7 @@ int GtsTransaction_SendPostFinish(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_WaitPostFinish(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitPostFinish(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -385,7 +385,7 @@ int GtsTransaction_WaitPostFinish(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SendGet(GtsApp *app) {
+enum GtsAppState GtsTransaction_SendGet(GtsApp *app) {
     GtsServer_RequestGet(&app->record);
     app->state = GTS_TRANSACTION_STATE_WAIT_GET;
     app->requestFrames = 0;
@@ -394,7 +394,7 @@ int GtsTransaction_SendGet(GtsApp *app) {
 }
 
 // The deposited Pokemon comes back unless it was traded in the meantime (then the status check takes over).
-int GtsTransaction_WaitGet(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitGet(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -438,14 +438,14 @@ int GtsTransaction_WaitGet(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SendReturn(GtsApp *app) {
+enum GtsAppState GtsTransaction_SendReturn(GtsApp *app) {
     GtsServer_RequestReturn();
     app->state = GTS_TRANSACTION_STATE_WAIT_RETURN;
     app->requestFrames = 0;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_WaitReturn(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitReturn(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -477,7 +477,7 @@ int GtsTransaction_WaitReturn(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SendExchange(GtsApp *app) {
+enum GtsAppState GtsTransaction_SendExchange(GtsApp *app) {
     Pokemon_RemoveCapsule(&app->record.mon);
     GtsServer_RequestExchange(app->searchResults[app->selectedResult].exchangeId, &app->record, &app->searchResults[7]);
     GtsTransaction_SetSaveStates(app, GTS_TRANSACTION_STATE_SEND_EXCHANGE_FINISH, GTS_TRANSACTION_STATE_EXCHANGE_DONE);
@@ -486,7 +486,7 @@ int GtsTransaction_SendExchange(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_WaitExchange(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitExchange(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -534,14 +534,14 @@ int GtsTransaction_WaitExchange(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SendExchangeFinish(GtsApp *app) {
+enum GtsAppState GtsTransaction_SendExchangeFinish(GtsApp *app) {
     GtsServer_RequestExchangeFinish();
     app->state = GTS_TRANSACTION_STATE_WAIT_EXCHANGE_FINISH;
     app->requestFrames = 0;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_WaitExchangeFinish(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitExchangeFinish(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -571,7 +571,7 @@ int GtsTransaction_WaitExchangeFinish(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SendResult(GtsApp *app) {
+enum GtsAppState GtsTransaction_SendResult(GtsApp *app) {
     GtsServer_RequestResult(&app->record);
     app->state = GTS_TRANSACTION_STATE_WAIT_RESULT;
     app->requestFrames = 0;
@@ -580,7 +580,7 @@ int GtsTransaction_SendResult(GtsApp *app) {
 
 // 0: the deposited Pokemon is still offered, 1: it was traded, -3: the server has no deposit (the Pokemon in the
 // save comes back), -4: neither has one ("appears to have fled").
-int GtsTransaction_WaitResult(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitResult(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -661,20 +661,20 @@ int GtsTransaction_WaitResult(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_ExitToMainMenu(GtsApp *app) {
+enum GtsAppState GtsTransaction_ExitToMainMenu(GtsApp *app) {
     Gts_SetNextScreen(app, GTS_SCREEN_MAIN_MENU, 0);
     app->state = GTS_TRANSACTION_STATE_FADE_OUT;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SendStatusGet(GtsApp *app) {
+enum GtsAppState GtsTransaction_SendStatusGet(GtsApp *app) {
     GtsServer_RequestGet(&app->record);
     app->state = GTS_TRANSACTION_STATE_WAIT_STATUS_GET;
     app->requestFrames = 0;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_WaitStatusGet(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitStatusGet(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -744,7 +744,7 @@ static void GtsTransaction_RecordTradeStats(GtsApp *app, Pokemon *mon) {
     }
 }
 
-int GtsTransaction_ReceiveTradedMon(GtsApp *app) {
+enum GtsAppState GtsTransaction_ReceiveTradedMon(GtsApp *app) {
     GtsTransaction_ReceiveMon(app, &app->record.mon, GtsSave_GetStoredMonBox((void *)app->args->gtsSave), app->record.isTraded);
     GtsTransaction_AddPartnerToWifiHistory(app->args->wifiHistory, &app->record);
     GtsTransaction_RecordTradeStats(app, &app->record.mon);
@@ -754,14 +754,14 @@ int GtsTransaction_ReceiveTradedMon(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SendDelete(GtsApp *app) {
+enum GtsAppState GtsTransaction_SendDelete(GtsApp *app) {
     GtsServer_RequestDelete();
     app->state = GTS_TRANSACTION_STATE_WAIT_DELETE;
     app->requestFrames = 0;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_WaitDelete(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitDelete(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -794,32 +794,32 @@ int GtsTransaction_WaitDelete(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_Idle(GtsApp *app) {
+enum GtsAppState GtsTransaction_Idle(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_DepositDone(GtsApp *app) {
+enum GtsAppState GtsTransaction_DepositDone(GtsApp *app) {
     app->hasDepositedMon = TRUE;
     Gts_SetNextScreen(app, GTS_SCREEN_TRADE, 7);
     app->state = GTS_TRANSACTION_STATE_FADE_OUT;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_ReceiveDone(GtsApp *app) {
+enum GtsAppState GtsTransaction_ReceiveDone(GtsApp *app) {
     app->hasDepositedMon = FALSE;
     Gts_SetNextScreen(app, GTS_SCREEN_TRADE, 8);
     app->state = GTS_TRANSACTION_STATE_FADE_OUT;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_ExchangeDone(GtsApp *app) {
+enum GtsAppState GtsTransaction_ExchangeDone(GtsApp *app) {
     Gts_SetNextScreen(app, GTS_SCREEN_TRADE, 9);
     app->state = GTS_TRANSACTION_STATE_FADE_OUT;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
 // No state leads here.
-int GtsTransaction_TradedDone(GtsApp *app) {
+enum GtsAppState GtsTransaction_TradedDone(GtsApp *app) {
     app->hasDepositedMon = FALSE;
     Gts_SetNextScreen(app, GTS_SCREEN_TRADE, 10);
     app->state = GTS_TRANSACTION_STATE_START_SAVE;
@@ -827,14 +827,14 @@ int GtsTransaction_TradedDone(GtsApp *app) {
 }
 
 // The server holds a Pokemon the save does not know about: it is taken off the GTS.
-int GtsTransaction_SendUnsavedReturn(GtsApp *app) {
+enum GtsAppState GtsTransaction_SendUnsavedReturn(GtsApp *app) {
     GtsServer_RequestReturn();
     app->state = GTS_TRANSACTION_STATE_WAIT_UNSAVED_RETURN;
     app->requestFrames = 0;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_WaitUnsavedReturn(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitUnsavedReturn(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -870,7 +870,7 @@ int GtsTransaction_WaitUnsavedReturn(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_AlreadyTraded(GtsApp *app) {
+enum GtsAppState GtsTransaction_AlreadyTraded(GtsApp *app) {
     Gts_PrintMessage(app, app->gtsMsgData, msg_0775_00147, 1, 0xF0F); // Unfortunately, it was traded to another Trainer.
     Gts_SetState(app, GTS_TRANSACTION_STATE_WAIT_TEXT, GTS_TRANSACTION_STATE_FADE_OUT);
     Gts_SetNextScreen(app, GTS_SCREEN_MAIN_MENU, 0);
@@ -902,7 +902,7 @@ static void GtsTransaction_PrintServerError(GtsApp *app) {
     Gts_PrintMessage(app, app->gtsMsgData, msgId, 1, 0xF0F);
 }
 
-int GtsTransaction_ServerErrorExit(GtsApp *app) {
+enum GtsAppState GtsTransaction_ServerErrorExit(GtsApp *app) {
     GtsTransaction_PrintServerError(app);
     Gts_SetState(app, GTS_TRANSACTION_STATE_WAIT_TEXT, GTS_TRANSACTION_STATE_FADE_OUT);
     Gts_SetNextScreen(app, GTS_SCREEN_CONNECTION, 0);
@@ -910,7 +910,7 @@ int GtsTransaction_ServerErrorExit(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_ServerError(GtsApp *app) {
+enum GtsAppState GtsTransaction_ServerError(GtsApp *app) {
     GtsTransaction_PrintServerError(app);
     Gts_SetState(app, GTS_TRANSACTION_STATE_WAIT_TEXT, GTS_TRANSACTION_STATE_FADE_OUT);
     Gts_SetNextScreen(app, GTS_SCREEN_MAIN_MENU, 0);
@@ -919,14 +919,14 @@ int GtsTransaction_ServerError(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SaveAndExit(GtsApp *app) {
+enum GtsAppState GtsTransaction_SaveAndExit(GtsApp *app) {
     Gts_SetState(app, GTS_TRANSACTION_STATE_WAIT_TEXT, GTS_TRANSACTION_STATE_START_SAVE);
     GtsTransaction_SetSaveStates(app, GTS_TRANSACTION_STATE_SAVE_REST, GTS_TRANSACTION_STATE_FADE_OUT);
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
 // The save starts after 2..61 frames.
-int GtsTransaction_StartSave(GtsApp *app) {
+enum GtsAppState GtsTransaction_StartSave(GtsApp *app) {
     SetAllPCBoxesModified();
     Save_PrepareForAsyncWrite(app->args->saveData, 2);
     app->state = GTS_TRANSACTION_STATE_WAIT_SAVE_DELAY;
@@ -934,7 +934,7 @@ int GtsTransaction_StartSave(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_WaitSaveDelay(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitSaveDelay(GtsApp *app) {
     app->waitFrames--;
     if (app->waitFrames == 0) {
         app->state = GTS_TRANSACTION_STATE_SAVE_FIRST_PART;
@@ -942,14 +942,14 @@ int GtsTransaction_WaitSaveDelay(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SaveFirstPart(GtsApp *app) {
+enum GtsAppState GtsTransaction_SaveFirstPart(GtsApp *app) {
     if (Save_WriteFileAsync(app->args->saveData) == WRITE_STATUS_NEXT) {
         app->state = app->saveMidState;
     }
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SaveRest(GtsApp *app) {
+enum GtsAppState GtsTransaction_SaveRest(GtsApp *app) {
     if (Save_WriteFileAsync(app->args->saveData) == WRITE_STATUS_SUCCESS) {
         app->state = app->saveDoneState;
         Gts_DeleteWaitingIcon(app);
@@ -957,14 +957,14 @@ int GtsTransaction_SaveRest(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_StartSaveWithMessage(GtsApp *app) {
+enum GtsAppState GtsTransaction_StartSaveWithMessage(GtsApp *app) {
     SetAllPCBoxesModified();
     Save_PrepareForAsyncWrite(app->args->saveData, 2);
     app->state = GTS_TRANSACTION_STATE_SAVE_WITH_MESSAGE;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_SaveWithMessage(GtsApp *app) {
+enum GtsAppState GtsTransaction_SaveWithMessage(GtsApp *app) {
     if (Save_WriteFileAsync(app->args->saveData) == WRITE_STATUS_SUCCESS) {
         Gts_SetNextScreen(app, GTS_SCREEN_MAIN_MENU, 0);
         Gts_DeleteWaitingIcon(app);
@@ -974,7 +974,7 @@ int GtsTransaction_SaveWithMessage(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-int GtsTransaction_FadeOut(GtsApp *app) {
+enum GtsAppState GtsTransaction_FadeOut(GtsApp *app) {
     Gts_DeleteWaitingIcon(app);
     WirelessStatusIcon_Destroy();
     if (app->fadedBothScreens == 1) {
@@ -986,7 +986,7 @@ int GtsTransaction_FadeOut(GtsApp *app) {
     return GTS_APP_STATE_EXIT_SCREEN;
 }
 
-int GtsTransaction_WaitText(GtsApp *app) {
+enum GtsAppState GtsTransaction_WaitText(GtsApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId)) {
         app->state = app->nextState;
     }
@@ -1100,7 +1100,7 @@ static void GtsTransaction_ReceiveExchangedMon(GtsApp *app, Pokemon *mon, int bo
 
 // Today's date packed as year, month, day, weekday bytes (SEEK POKEMON reads them back): the date the deposited
 // Pokemon was traded, or (exchange) the date of the last exchange.
-static void GtsTransaction_SaveTradeDate(void *gtsSave, int exchange) {
+static void GtsTransaction_SaveTradeDate(void *gtsSave, BOOL exchange) {
     RTCDate date;
     RTCTime time;
     u32 packed;

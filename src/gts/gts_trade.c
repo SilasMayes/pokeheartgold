@@ -18,7 +18,7 @@ static Pokemon *GtsTrade_GetReceivedMon(GtsApp *app, int kind);
 static void GtsTrade_StoreReceivedMon(GtsApp *app);
 
 // Starts the trade sequence for the kind of trade in nextScreenArg (7..10).
-int GtsTrade_Init(GtsApp *app, int state) {
+enum GtsAppState GtsTrade_Init(GtsApp *app, int state) {
     app->depositedMon = AllocMonZeroed(HEAP_ID_61);
     switch (app->nextScreenArg) {
     case 7:
@@ -64,14 +64,14 @@ int GtsTrade_Init(GtsApp *app, int state) {
 
 // After the trade sequence the received Pokemon may evolve by trade (kind 9; kinds 8 and 10 only when it is
 // not the deposited Pokemon itself); then it is stored and the app goes to screen 7 (or back to screen 1).
-int GtsTrade_Main(GtsApp *app, int state) {
+enum GtsAppState GtsTrade_Main(GtsApp *app, int state) {
     u32 kind;
     int method;
     int methodAfterCheck;
     Pokemon *mon;
     Pokemon *deposited;
     u16 species;
-    int ret = 3;
+    enum GtsAppState ret = GTS_APP_STATE_RUN_SCREEN;
 
     switch (app->state) {
     case 0:
@@ -80,7 +80,7 @@ int GtsTrade_Main(GtsApp *app, int state) {
         }
         OverlayManager_Delete(app->tradeSequence);
         kind = app->nextScreenArg;
-        if (kind == ret + 6) { // kind 9
+        if (kind == 9) {
             mon = GtsTrade_GetReceivedMon(app, kind);
             species = GetMonEvolution(NULL, mon, EVOCTX_TRADE, GetMonData(mon, MON_DATA_HELD_ITEM, NULL), &method);
             if (species != SPECIES_NONE) {
@@ -89,7 +89,7 @@ int GtsTrade_Main(GtsApp *app, int state) {
                 app->state = 1;
             } else {
                 Gts_SetNextScreen(app, GTS_SCREEN_MAIN_MENU, 0);
-                ret = 4;
+                ret = GTS_APP_STATE_EXIT_SCREEN;
             }
         } else if (kind == 8 || kind == 10) {
             mon = GtsTrade_GetReceivedMon(app, kind);
@@ -103,16 +103,16 @@ int GtsTrade_Main(GtsApp *app, int state) {
                     app->state = 1;
                 } else {
                     Gts_SetNextScreen(app, GTS_SCREEN_MAIN_MENU, 0);
-                    ret = 4;
+                    ret = GTS_APP_STATE_EXIT_SCREEN;
                 }
             } else {
                 Gts_SetNextScreen(app, GTS_SCREEN_MAIN_MENU, 0);
-                ret = 4;
+                ret = GTS_APP_STATE_EXIT_SCREEN;
             }
             Heap_Free(deposited);
         } else {
             Gts_SetNextScreen(app, GTS_SCREEN_MAIN_MENU, 0);
-            ret = 4;
+            ret = GTS_APP_STATE_EXIT_SCREEN;
         }
         break;
     case 1:
@@ -121,14 +121,14 @@ int GtsTrade_Main(GtsApp *app, int state) {
             GtsTrade_StoreReceivedMon(app);
             GX_SetVisibleWnd(GX_WNDMASK_NONE);
             Gts_SetNextScreen(app, GTS_SCREEN_TRANSACTION, 12);
-            ret = 4;
+            ret = GTS_APP_STATE_EXIT_SCREEN;
         }
         break;
     }
     return ret;
 }
 
-int GtsTrade_Exit(GtsApp *app, int state) {
+enum GtsAppState GtsTrade_Exit(GtsApp *app, int state) {
     Heap_Free(app->depositedMon);
     Heap_Free(app->partnerProfile);
     Gts_SwitchScreen(app);

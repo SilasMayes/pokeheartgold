@@ -35,7 +35,7 @@ static void PalPadFriendCode_Show(PalPadFriendCode *friendCode, PalPadShared *sh
 static void PalPadFriendCode_Hide(PalPadFriendCode *friendCode, PalPadGfx *gfx);
 static void PalPadFriendCode_HighlightReturn(PalPadFriendCode *friendCode, PalPadGfx *gfx, int highlight);
 
-int PalPadNaming_Main(PalPadNaming *naming, PalPadWork *work, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId) {
+BOOL PalPadNaming_Main(PalPadNaming *naming, PalPadWork *work, PalPadShared *shared, PalPadGfx *gfx, enum HeapID heapId) {
     u32 codeEntryParams[4];
 
     switch (shared->subState) {
@@ -131,7 +131,7 @@ void PalPadFriendCode_Init(PalPadFriendCode *friendCode, PalPadShared *shared, P
     PalPadFriendCode_Setup(friendCode, shared, gfx, heapId);
 }
 
-int PalPadFriendCode_Main(PalPadFriendCode *friendCode, PalPadShared *shared, PalPadGfx *gfx) {
+BOOL PalPadFriendCode_Main(PalPadFriendCode *friendCode, PalPadShared *shared, PalPadGfx *gfx) {
     switch (shared->subState) {
     case PALPAD_FRIEND_CODE_STATE_SHOW:
         PalPadFriendCode_Show(friendCode, shared, gfx);

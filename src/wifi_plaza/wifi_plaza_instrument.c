@@ -791,7 +791,7 @@ BOOL WiFiPlazaInstrument_UpdateRipple(WiFiPlazaInstrumentManager *manager, WiFiP
     int limit;
     int step;
     int i;
-    int result;
+    BOOL result;
     int next = effect->frame + 1;
 
     if (next <= 54) {

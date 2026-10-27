@@ -60,38 +60,38 @@ static void GtsSearch_CreateWindows(GtsApp *app);
 static void GtsSearch_RemoveWindows(GtsApp *app);
 static void GtsSearch_CreateData(GtsApp *app);
 static void GtsSearch_FreeData(GtsApp *app);
-static int GtsSearch_Start(GtsApp *app);
+static enum GtsAppState GtsSearch_Start(GtsApp *app);
 static int GtsSearch_GetTouchedButton(void);
 static void GtsSearch_SelectButton(GtsApp *app, int button);
-static int GtsSearch_HandleInput(GtsApp *app);
-static int GtsSearch_StartSearch(GtsApp *app);
+static enum GtsAppState GtsSearch_HandleInput(GtsApp *app);
+static enum GtsAppState GtsSearch_StartSearch(GtsApp *app);
 static BOOL GtsSearch_IsDateRecent(GtsApp *app, int which);
-static int GtsSearch_SendSearch(GtsApp *app);
-static int GtsSearch_WaitSearch(GtsApp *app);
-static int GtsSearch_ShowResultCount(GtsApp *app);
-static int GtsSearch_WaitResultsShown(GtsApp *app);
-static int GtsSearch_SearchFailed(GtsApp *app);
-static int GtsSearch_ServerError(GtsApp *app);
-static int GtsSearch_ServerErrorExit(GtsApp *app);
+static enum GtsAppState GtsSearch_SendSearch(GtsApp *app);
+static enum GtsAppState GtsSearch_WaitSearch(GtsApp *app);
+static enum GtsAppState GtsSearch_ShowResultCount(GtsApp *app);
+static enum GtsAppState GtsSearch_WaitResultsShown(GtsApp *app);
+static enum GtsAppState GtsSearch_SearchFailed(GtsApp *app);
+static enum GtsAppState GtsSearch_ServerError(GtsApp *app);
+static enum GtsAppState GtsSearch_ServerErrorExit(GtsApp *app);
 static int GtsSearch_GetCursorButton(GtsApp *app);
 static void GtsSearch_MoveCursor(GtsApp *app);
 static void GtsSearch_SetCursor(GtsApp *app, int button);
-static int GtsSearch_FadeOut(GtsApp *app);
-static int GtsSearch_AskSpecies(GtsApp *app);
-static int GtsSearch_OpenSpeciesSelector(GtsApp *app);
-static int GtsSearch_HandleSpeciesSelector(GtsApp *app);
-static int GtsSearch_AskGender(GtsApp *app);
-static int GtsSearch_OpenGenderSelector(GtsApp *app);
-static int GtsSearch_HandleGenderSelector(GtsApp *app);
-static int GtsSearch_AskLevel(GtsApp *app);
-static int GtsSearch_OpenLevelSelector(GtsApp *app);
-static int GtsSearch_HandleLevelSelector(GtsApp *app);
-static int GtsSearch_AskCountry(GtsApp *app);
-static int GtsSearch_OpenCountrySelector(GtsApp *app);
-static int GtsSearch_HandleCountrySelector(GtsApp *app);
-static int GtsSearch_ShowExitPrompt(GtsApp *app);
-static int GtsSearch_HandleExitPrompt(GtsApp *app);
-static int GtsSearch_ReturnToInput(GtsApp *app);
+static enum GtsAppState GtsSearch_FadeOut(GtsApp *app);
+static enum GtsAppState GtsSearch_AskSpecies(GtsApp *app);
+static enum GtsAppState GtsSearch_OpenSpeciesSelector(GtsApp *app);
+static enum GtsAppState GtsSearch_HandleSpeciesSelector(GtsApp *app);
+static enum GtsAppState GtsSearch_AskGender(GtsApp *app);
+static enum GtsAppState GtsSearch_OpenGenderSelector(GtsApp *app);
+static enum GtsAppState GtsSearch_HandleGenderSelector(GtsApp *app);
+static enum GtsAppState GtsSearch_AskLevel(GtsApp *app);
+static enum GtsAppState GtsSearch_OpenLevelSelector(GtsApp *app);
+static enum GtsAppState GtsSearch_HandleLevelSelector(GtsApp *app);
+static enum GtsAppState GtsSearch_AskCountry(GtsApp *app);
+static enum GtsAppState GtsSearch_OpenCountrySelector(GtsApp *app);
+static enum GtsAppState GtsSearch_HandleCountrySelector(GtsApp *app);
+static enum GtsAppState GtsSearch_ShowExitPrompt(GtsApp *app);
+static enum GtsAppState GtsSearch_HandleExitPrompt(GtsApp *app);
+static enum GtsAppState GtsSearch_ReturnToInput(GtsApp *app);
 
 void CommState_ShowRestartErrorAndHalt(void);
 
@@ -135,7 +135,7 @@ static GtsSearchCursorPosition sGtsSearchCursorPositions[] = {
     { 192, 112, 46 },
 };
 
-static int (*sGtsSearchStates[])(GtsApp *app) = {
+static enum GtsAppState (*sGtsSearchStates[])(GtsApp *app) = {
     GtsSearch_Start,
     GtsSearch_HandleInput,
     GtsSearch_FadeOut,
@@ -241,7 +241,7 @@ static const TouchscreenHitbox sGtsSearchButtonHitboxes[8] = {
     { .rect = { TOUCHSCREEN_RECTLIST_END } },
 };
 
-int GtsSearch_Init(GtsApp *app, int state) {
+enum GtsAppState GtsSearch_Init(GtsApp *app, int state) {
     GtsSelectorArgs args;
 
     GtsSearch_CreateData(app);
@@ -276,8 +276,8 @@ int GtsSearch_Init(GtsApp *app, int state) {
     return GTS_APP_STATE_WAIT_FADE_IN;
 }
 
-int GtsSearch_Main(GtsApp *app, int state) {
-    int ret = sGtsSearchStates[app->state](app);
+enum GtsAppState GtsSearch_Main(GtsApp *app, int state) {
+    enum GtsAppState ret = sGtsSearchStates[app->state](app);
     int i;
     int x;
     int y;
@@ -292,7 +292,7 @@ int GtsSearch_Main(GtsApp *app, int state) {
     return ret;
 }
 
-int GtsSearch_Exit(GtsApp *app, int state) {
+enum GtsAppState GtsSearch_Exit(GtsApp *app, int state) {
     app->vblankFunc = NULL;
     GtsSelector_Delete(app->selector);
     GtsSearch_DeleteSprites(app);
@@ -461,7 +461,7 @@ static void GtsSearch_FreeData(GtsApp *app) {
     String_Delete(app->titleString);
 }
 
-static int GtsSearch_Start(GtsApp *app) {
+static enum GtsAppState GtsSearch_Start(GtsApp *app) {
     if (app->nextScreenArg == 15) {
         GtsSearch_PrintMessage(app, msg_0775_00032, 0, 0, 0xF0F); // Touch "SELECT" to set trade partner.
         if (GX_GetMasterBrightness() == -16) {
@@ -527,7 +527,7 @@ static void GtsSearch_SelectButton(GtsApp *app, int button) {
     }
 }
 
-static int GtsSearch_HandleInput(GtsApp *app) {
+static enum GtsAppState GtsSearch_HandleInput(GtsApp *app) {
     int button = GtsSearch_GetTouchedButton();
     if (button != -1) {
         GtsSearch_SetCursor(app, button);
@@ -545,7 +545,7 @@ static int GtsSearch_HandleInput(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_StartSearch(GtsApp *app) {
+static enum GtsAppState GtsSearch_StartSearch(GtsApp *app) {
     if (app->searchCriteria.species == SPECIES_NONE) {
         GtsSearch_PrintMessage(app, msg_0775_00012, 1, 0, 0xF0F); // Please choose the Pokemon you want!
         Gts_SetState(app, GTS_SEARCH_STATE_WAIT_TEXT, GTS_SEARCH_STATE_HANDLE_INPUT);
@@ -586,7 +586,7 @@ static BOOL GtsSearch_IsDateRecent(GtsApp *app, int which) {
 }
 
 // Three results, two more for each recent deposit or trade.
-static int GtsSearch_SendSearch(GtsApp *app) {
+static enum GtsAppState GtsSearch_SendSearch(GtsApp *app) {
     int count = 3;
     GtsSearchRequestEx request;
 
@@ -619,7 +619,7 @@ static int GtsSearch_SendSearch(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_WaitSearch(GtsApp *app) {
+static enum GtsAppState GtsSearch_WaitSearch(GtsApp *app) {
     if (GtsServer_IsRequestDone()) {
         int result = GtsServer_GetResult();
         app->requestFrames = 0;
@@ -663,7 +663,7 @@ static int GtsSearch_WaitSearch(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_ShowResultCount(GtsApp *app) {
+static enum GtsAppState GtsSearch_ShowResultCount(GtsApp *app) {
     if (app->searchResultCount == 0) {
         GtsSearch_PrintMessage(app, msg_0775_00014, 1, 0, 0xF0F); // None were found!
         Gts_SetState(app, GTS_SEARCH_STATE_WAIT_TEXT, GTS_SEARCH_STATE_HANDLE_INPUT);
@@ -676,7 +676,7 @@ static int GtsSearch_ShowResultCount(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_WaitResultsShown(GtsApp *app) {
+static enum GtsAppState GtsSearch_WaitResultsShown(GtsApp *app) {
     app->waitFrames++;
     if (app->waitFrames > 45) {
         GtsSearch_PrintMessage(app, msg_0775_00032, 1, 0, 0xF0F); // Touch "SELECT" to set trade partner.
@@ -686,7 +686,7 @@ static int GtsSearch_WaitResultsShown(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_SearchFailed(GtsApp *app) {
+static enum GtsAppState GtsSearch_SearchFailed(GtsApp *app) {
     app->lastSearch.species = SPECIES_NONE;
     GtsSearch_PrintMessage(app, msg_0775_00038, 1, 0, 0xF0F); // GTS check failed.
     Gts_SetState(app, GTS_SEARCH_STATE_WAIT_TEXT, GTS_SEARCH_STATE_HANDLE_INPUT);
@@ -694,7 +694,7 @@ static int GtsSearch_SearchFailed(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_ServerError(GtsApp *app) {
+static enum GtsAppState GtsSearch_ServerError(GtsApp *app) {
     GtsSearch_PrintMessage(app, msg_0775_00153, 4, 0, 0xF0F);
     Gts_SetState(app, GTS_SEARCH_STATE_WAIT_TEXT_AND_PAUSE, GTS_SEARCH_STATE_SERVER_ERROR_EXIT);
     app->waitFrames = 0;
@@ -702,7 +702,7 @@ static int GtsSearch_ServerError(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_ServerErrorExit(GtsApp *app) {
+static enum GtsAppState GtsSearch_ServerErrorExit(GtsApp *app) {
     GtsSearch_PrintMessage(app, msg_0775_00158, 4, 0, 0xF0F);
     Gts_SetState(app, GTS_SEARCH_STATE_WAIT_TEXT_AND_PAUSE, GTS_SEARCH_STATE_FADE_OUT);
     Gts_SetNextScreen(app, GTS_SCREEN_CONNECTION, 0);
@@ -786,7 +786,7 @@ static void GtsSearch_SetCursor(GtsApp *app, int button) {
     Sprite_SetAnimCtrlSeq(app->cursorSprite, sGtsSearchCursorPositions[y].anim);
 }
 
-static int GtsSearch_FadeOut(GtsApp *app) {
+static enum GtsAppState GtsSearch_FadeOut(GtsApp *app) {
     if (app->scrollY == 0) {
         BeginNormalPaletteFade(FADE_MAIN_ONLY, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, HEAP_ID_61);
     }
@@ -794,20 +794,20 @@ static int GtsSearch_FadeOut(GtsApp *app) {
     return GTS_APP_STATE_EXIT_SCREEN;
 }
 
-static int GtsSearch_AskSpecies(GtsApp *app) {
+static enum GtsAppState GtsSearch_AskSpecies(GtsApp *app) {
     GtsSearch_PrintMessage(app, msg_0775_00009, 1, 0, 0xF0F); // Please choose the Pokemon you want.
     Gts_SetState(app, GTS_SEARCH_STATE_WAIT_TEXT, GTS_SEARCH_STATE_OPEN_SPECIES_SELECTOR);
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_OpenSpeciesSelector(GtsApp *app) {
+static enum GtsAppState GtsSearch_OpenSpeciesSelector(GtsApp *app) {
     GtsSelector_Start(app->selector, GTS_SELECTOR_MODE_SPECIES);
     GtsSearch_SetBlendBrightness(9);
     app->state = GTS_SEARCH_STATE_HANDLE_SPECIES_SELECTOR;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_HandleSpeciesSelector(GtsApp *app) {
+static enum GtsAppState GtsSearch_HandleSpeciesSelector(GtsApp *app) {
     int selection = GtsSelector_Main(app->selector);
     switch (selection) {
     case GTS_SELECTOR_BACK:
@@ -834,20 +834,20 @@ static int GtsSearch_HandleSpeciesSelector(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_AskGender(GtsApp *app) {
+static enum GtsAppState GtsSearch_AskGender(GtsApp *app) {
     GtsSearch_PrintMessage(app, msg_0775_00010, 1, 0, 0xF0F); // Please choose its gender.
     Gts_SetState(app, GTS_SEARCH_STATE_WAIT_TEXT, GTS_SEARCH_STATE_OPEN_GENDER_SELECTOR);
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_OpenGenderSelector(GtsApp *app) {
+static enum GtsAppState GtsSearch_OpenGenderSelector(GtsApp *app) {
     GtsSelector_Start(app->selector, GTS_SELECTOR_MODE_GENDER);
     GtsSearch_SetBlendBrightness(9);
     app->state = GTS_SEARCH_STATE_HANDLE_GENDER_SELECTOR;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_HandleGenderSelector(GtsApp *app) {
+static enum GtsAppState GtsSearch_HandleGenderSelector(GtsApp *app) {
     u32 selection = GtsSelector_Main(app->selector);
     switch (selection) {
     case (u32)GTS_SELECTOR_BACK:
@@ -868,13 +868,13 @@ static int GtsSearch_HandleGenderSelector(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_AskLevel(GtsApp *app) {
+static enum GtsAppState GtsSearch_AskLevel(GtsApp *app) {
     GtsSearch_PrintMessage(app, msg_0775_00011, 1, 0, 0xF0F); // Please choose the level.
     Gts_SetState(app, GTS_SEARCH_STATE_WAIT_TEXT, GTS_SEARCH_STATE_OPEN_LEVEL_SELECTOR);
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_OpenLevelSelector(GtsApp *app) {
+static enum GtsAppState GtsSearch_OpenLevelSelector(GtsApp *app) {
     app->unk_0118 = 0xFFFF;
     GtsSelector_Start(app->selector, GTS_SELECTOR_MODE_LEVEL);
     GtsSearch_SetBlendBrightness(9);
@@ -882,7 +882,7 @@ static int GtsSearch_OpenLevelSelector(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_HandleLevelSelector(GtsApp *app) {
+static enum GtsAppState GtsSearch_HandleLevelSelector(GtsApp *app) {
     u32 selection = GtsSelector_Main(app->selector);
     switch (selection) {
     case 11:
@@ -903,13 +903,13 @@ static int GtsSearch_HandleLevelSelector(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_AskCountry(GtsApp *app) {
+static enum GtsAppState GtsSearch_AskCountry(GtsApp *app) {
     GtsSearch_PrintMessage(app, msg_0775_00176, 1, 0, 0xF0F);
     Gts_SetState(app, GTS_SEARCH_STATE_WAIT_TEXT, GTS_SEARCH_STATE_OPEN_COUNTRY_SELECTOR);
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_OpenCountrySelector(GtsApp *app) {
+static enum GtsAppState GtsSearch_OpenCountrySelector(GtsApp *app) {
     app->unk_0118 = 0xFFFF;
     GtsSelector_Start(app->selector, GTS_SELECTOR_MODE_COUNTRY);
     GtsSearch_SetBlendBrightness(9);
@@ -917,7 +917,7 @@ static int GtsSearch_OpenCountrySelector(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_HandleCountrySelector(GtsApp *app) {
+static enum GtsAppState GtsSearch_HandleCountrySelector(GtsApp *app) {
     int selection = GtsSelector_Main(app->selector);
     if (selection != GTS_SELECTOR_NONE) {
         if (selection == GTS_SELECTOR_BACK || selection == gGtsCountryCount[0] + 1) {
@@ -935,14 +935,14 @@ static int GtsSearch_HandleCountrySelector(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_ShowExitPrompt(GtsApp *app) {
+static enum GtsAppState GtsSearch_ShowExitPrompt(GtsApp *app) {
     app->yesNoPrompt = Gts_CreateYesNoPrompt(app->bgConfig, 12, 0x120, 3, 1);
     app->state = GTS_SEARCH_STATE_HANDLE_EXIT_PROMPT;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_HandleExitPrompt(GtsApp *app) {
-    int response = Gts_HandleYesNoPrompt(app);
+static enum GtsAppState GtsSearch_HandleExitPrompt(GtsApp *app) {
+    YesNoResponse response = Gts_HandleYesNoPrompt(app);
     if (response == YESNORESPONSE_YES) {
         YesNoPrompt_Destroy(app->yesNoPrompt);
         app->state = GTS_SEARCH_STATE_FADE_OUT;
@@ -956,7 +956,7 @@ static int GtsSearch_HandleExitPrompt(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearch_ReturnToInput(GtsApp *app) {
+static enum GtsAppState GtsSearch_ReturnToInput(GtsApp *app) {
     app->state = GTS_SEARCH_STATE_HANDLE_INPUT;
     return GTS_APP_STATE_RUN_SCREEN;
 }

@@ -230,10 +230,10 @@ struct GtsApp {
     GtsArgs *args;
     BgConfig *bgConfig;
     u8 padding_0008[0xC];
-    int screen; // enum GtsScreenId
-    int nextScreen;
+    enum GtsScreenId screen;
+    enum GtsScreenId nextScreen;
     int statusCheckCaller;
-    int prevScreen;
+    enum GtsScreenId prevScreen;
     int nextScreenArg;
     int afterSaveMsgId; // printed once the save of screen 7 is written
     int state;          // of the current screen
@@ -356,7 +356,7 @@ struct GtsApp {
 };
 
 // Helpers shared by the GTS screens.
-extern int (*const gGtsConnectionStates[])(GtsApp *app);
+extern enum GtsAppState (*const gGtsConnectionStates[])(GtsApp *app);
 extern const BgTemplate gGtsConnectionBg0Template;
 extern const BgTemplate gGtsConnectionBg1Template;
 extern const BgTemplate gGtsConnectionSubBg0Template;
@@ -431,7 +431,7 @@ extern int gGtsCountryCount[];
 
 extern const OverlayManagerTemplate gGtsTradeSequenceTemplate;
 
-extern int (*const gGtsTransactionStates[])(GtsApp *app);
+extern enum GtsAppState (*const gGtsTransactionStates[])(GtsApp *app);
 extern const GraphicsModes gGtsTransactionGraphicsModes;
 extern const BgTemplate gGtsTransactionBg0Template;
 extern const BgTemplate gGtsTransactionBg1Template;
@@ -457,7 +457,7 @@ typedef struct GtsCountryGroup {
     u8 group;
 } GtsCountryGroup;
 
-extern int (*const gGtsWantedStates[])(GtsApp *app);
+extern enum GtsAppState (*const gGtsWantedStates[])(GtsApp *app);
 extern const BgTemplate gGtsWantedBg0Template;
 extern const BgTemplate gGtsWantedBg1Template;
 extern const BgTemplate gGtsWantedBg2Template;
@@ -481,7 +481,7 @@ void Gts_DestroyListMenu(GtsApp *app);
 void Gts_SetState(GtsApp *app, int state, int nextState);
 void Gts_SetSpritePositionRounded(Sprite *sprite, int x, int y);
 int Gts_GetWifiIconLevel(void);
-void Gts_SetNextScreen(GtsApp *app, int screen, int arg);
+void Gts_SetNextScreen(GtsApp *app, enum GtsScreenId screen, int arg);
 void Gts_SwitchScreen(GtsApp *app);
 int Gts_GetTextFrameDelay(GtsApp *app);
 void Gts_StartCountingBoxMons(GtsApp *app);
@@ -515,7 +515,7 @@ void Gts_CreateAvatars(GtsApp *app, u32 gender);
 void Gts_StartPlayerEnterAnim(GtsApp *app, int gender);
 void Gts_StartPlayerExitAnim(GtsApp *app, int gender);
 int Gts_GetTouchedAvatar(int count);
-void Gts_ShowResultAvatars(GtsApp *app, int count, int animate);
+void Gts_ShowResultAvatars(GtsApp *app, int count, BOOL animate);
 void Gts_StopAvatarAnims(GtsApp *app);
 void Gts_FreeAvatarGraphics(GtsApp *app);
 void Gts_SetAvatarMarker(GtsApp *app, u32 index, u32 scrollY);
@@ -533,30 +533,30 @@ BOOL Gts_MonHoldsMail(Pokemon *mon);
 BOOL Gts_SetFixedGender(GtsWantedMon *wanted, u32 genderRatio);
 
 // The screens: init, main and exit return the next Gts_Main state.
-int GtsConnection_Init(GtsApp *, int);
-int GtsConnection_Main(GtsApp *, int);
-int GtsConnection_Exit(GtsApp *, int);
-int GtsMainMenu_Init(GtsApp *, int);
-int GtsMainMenu_Main(GtsApp *, int);
-int GtsMainMenu_Exit(GtsApp *, int);
-int GtsSummary_Init(GtsApp *, int);
-int GtsSummary_Main(GtsApp *, int);
-int GtsSummary_Exit(GtsApp *, int);
-int GtsSearchResult_Init(GtsApp *, int);
-int GtsSearchResult_Main(GtsApp *, int);
-int GtsSearchResult_Exit(GtsApp *, int);
-int GtsSearch_Init(GtsApp *, int);
-int GtsSearch_Main(GtsApp *, int);
-int GtsSearch_Exit(GtsApp *, int);
-int GtsSelectMon_Init(GtsApp *, int);
-int GtsSelectMon_Main(GtsApp *, int);
-int GtsSelectMon_Exit(GtsApp *, int);
-int GtsWanted_Init(GtsApp *, int);
-int GtsWanted_Main(GtsApp *, int);
-int GtsWanted_Exit(GtsApp *, int);
-int GtsTransaction_Init(GtsApp *, int);
-int GtsTransaction_Main(GtsApp *, int);
-int GtsTransaction_Exit(GtsApp *, int);
+enum GtsAppState GtsConnection_Init(GtsApp *, int);
+enum GtsAppState GtsConnection_Main(GtsApp *, int);
+enum GtsAppState GtsConnection_Exit(GtsApp *, int);
+enum GtsAppState GtsMainMenu_Init(GtsApp *, int);
+enum GtsAppState GtsMainMenu_Main(GtsApp *, int);
+enum GtsAppState GtsMainMenu_Exit(GtsApp *, int);
+enum GtsAppState GtsSummary_Init(GtsApp *, int);
+enum GtsAppState GtsSummary_Main(GtsApp *, int);
+enum GtsAppState GtsSummary_Exit(GtsApp *, int);
+enum GtsAppState GtsSearchResult_Init(GtsApp *, int);
+enum GtsAppState GtsSearchResult_Main(GtsApp *, int);
+enum GtsAppState GtsSearchResult_Exit(GtsApp *, int);
+enum GtsAppState GtsSearch_Init(GtsApp *, int);
+enum GtsAppState GtsSearch_Main(GtsApp *, int);
+enum GtsAppState GtsSearch_Exit(GtsApp *, int);
+enum GtsAppState GtsSelectMon_Init(GtsApp *, int);
+enum GtsAppState GtsSelectMon_Main(GtsApp *, int);
+enum GtsAppState GtsSelectMon_Exit(GtsApp *, int);
+enum GtsAppState GtsWanted_Init(GtsApp *, int);
+enum GtsAppState GtsWanted_Main(GtsApp *, int);
+enum GtsAppState GtsWanted_Exit(GtsApp *, int);
+enum GtsAppState GtsTransaction_Init(GtsApp *, int);
+enum GtsAppState GtsTransaction_Main(GtsApp *, int);
+enum GtsAppState GtsTransaction_Exit(GtsApp *, int);
 
 // The search screen states; some of them are next to the Pokemon selection screen
 typedef enum GtsSearchState {
@@ -594,19 +594,19 @@ typedef enum GtsSearchState {
     GTS_SEARCH_STATE_SCROLLED_OUT,
 } GtsSearchState;
 
-int GtsSearch_PrintSearchFailed(GtsApp *);
-int GtsSearch_WaitText(GtsApp *);
-int GtsSearch_WaitTextAndPause(GtsApp *);
-int GtsSearch_ScrollOut(GtsApp *);
-int GtsSearch_ScrollIn(GtsApp *);
-int GtsSearch_HandleScrolledOut(GtsApp *);
+enum GtsAppState GtsSearch_PrintSearchFailed(GtsApp *);
+enum GtsAppState GtsSearch_WaitText(GtsApp *);
+enum GtsAppState GtsSearch_WaitTextAndPause(GtsApp *);
+enum GtsAppState GtsSearch_ScrollOut(GtsApp *);
+enum GtsAppState GtsSearch_ScrollIn(GtsApp *);
+enum GtsAppState GtsSearch_HandleScrolledOut(GtsApp *);
 
-int GtsViewMon_Init(GtsApp *, int);
-int GtsViewMon_Main(GtsApp *, int);
-int GtsViewMon_Exit(GtsApp *, int);
-int GtsTrade_Init(GtsApp *, int);
-int GtsTrade_Main(GtsApp *, int);
-int GtsTrade_Exit(GtsApp *, int);
+enum GtsAppState GtsViewMon_Init(GtsApp *, int);
+enum GtsAppState GtsViewMon_Main(GtsApp *, int);
+enum GtsAppState GtsViewMon_Exit(GtsApp *, int);
+enum GtsAppState GtsTrade_Init(GtsApp *, int);
+enum GtsAppState GtsTrade_Main(GtsApp *, int);
+enum GtsAppState GtsTrade_Exit(GtsApp *, int);
 
 void Gts_PrintSpeciesName(Window *window, MsgData *speciesNames, int species, int align, int y, u32 color);
 void Gts_PrintSpeciesNameNoTransfer(Window *window, MsgData *speciesNames, int species, int y, u32 color);

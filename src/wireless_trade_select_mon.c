@@ -119,7 +119,7 @@ static void WirelessTradeSelectMon_SetGfxBanks(void);
 static void WirelessTradeSelectMon_InitBgs(BgConfig *bgConfig);
 static void WirelessTradeSelectMon_InitWork(WirelessTradeSelectMon *work, OverlayManager *man);
 static void WirelessTradeSelectMon_FreeBgs(BgConfig *bgConfig);
-static void WirelessTradeSelectMon_LoadScreenData(NARC *narc, int memberNo, BgConfig *bgConfig, int layer, int unused, u32 size, BOOL isCompressed, enum HeapID heapID);
+static void WirelessTradeSelectMon_LoadScreenData(NARC *narc, int memberNo, BgConfig *bgConfig, GFBgLayer layer, int unused, u32 size, BOOL isCompressed, enum HeapID heapID);
 static void WirelessTradeSelectMon_CommitNameBg(BgConfig *bgConfig, int count, int partnerCount);
 static void WirelessTradeSelectMon_LoadBgGraphics(WirelessTradeSelectMon *work, NARC *narc);
 static void WirelessTradeSelectMon_InitObjTransfer(void);
@@ -382,7 +382,7 @@ static void WirelessTradeSelectMon_PrintPartyNicknames(WirelessTradeSelectMon *w
 
 BOOL WirelessTradeSelectMon_Main(OverlayManager *man, int *state) {
     WirelessTradeSelectMon *work = OverlayManager_GetData(man);
-    int ret = FALSE;
+    BOOL ret = FALSE;
 
     switch (*state) {
     case 0:
@@ -964,7 +964,7 @@ static void WirelessTradeSelectMon_FreeBgs(BgConfig *bgConfig) {
     FreeBgTilemapBuffer(bgConfig, GF_BG_LYR_MAIN_0);
 }
 
-static void WirelessTradeSelectMon_LoadScreenData(NARC *narc, int memberNo, BgConfig *bgConfig, int layer, int unused, u32 size, BOOL isCompressed, enum HeapID heapID) {
+static void WirelessTradeSelectMon_LoadScreenData(NARC *narc, int memberNo, BgConfig *bgConfig, GFBgLayer layer, int unused, u32 size, BOOL isCompressed, enum HeapID heapID) {
     NNSG2dScreenData *screen;
     void *raw = GfGfxLoader_LoadFromOpenNarc(narc, memberNo, isCompressed, heapID, TRUE);
 

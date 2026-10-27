@@ -54,22 +54,22 @@ static void GtsMainMenu_CreateWindows(GtsApp *app);
 static void GtsMainMenu_RemoveWindows(GtsApp *app);
 static void GtsMainMenu_CreateStrings(GtsApp *app);
 static void GtsMainMenu_DeleteStrings(GtsApp *app);
-static int GtsMainMenu_WaitEnterAnim(GtsApp *app);
-static int GtsMainMenu_WaitTextBeforeFadeIn(GtsApp *app);
+static enum GtsAppState GtsMainMenu_WaitEnterAnim(GtsApp *app);
+static enum GtsAppState GtsMainMenu_WaitTextBeforeFadeIn(GtsApp *app);
 static void GtsMainMenu_StartFadeIn(GtsApp *app);
-static int GtsMainMenu_WaitFadeIn(GtsApp *app);
-static int GtsMainMenu_WaitFadeIn2(GtsApp *app);
-static int GtsMainMenu_ShowPrompt(GtsApp *app);
+static enum GtsAppState GtsMainMenu_WaitFadeIn(GtsApp *app);
+static enum GtsAppState GtsMainMenu_WaitFadeIn2(GtsApp *app);
+static enum GtsAppState GtsMainMenu_ShowPrompt(GtsApp *app);
 static int GtsMainMenu_GetTouchedButton(void);
 static void GtsMainMenu_SelectButton(GtsApp *app, int button);
-static int GtsMainMenu_HandleInput(GtsApp *app);
-static int GtsMainMenu_StartExitAnim(GtsApp *app);
-static int GtsMainMenu_WaitExitAnim(GtsApp *app);
-static int GtsMainMenu_FadeOut(GtsApp *app);
-static int GtsMainMenu_ShowExitPrompt(GtsApp *app);
-static int GtsMainMenu_HandleExitPrompt(GtsApp *app);
-static int GtsMainMenu_WaitText(GtsApp *app);
-static int GtsMainMenu_WaitTextAndPause(GtsApp *app);
+static enum GtsAppState GtsMainMenu_HandleInput(GtsApp *app);
+static enum GtsAppState GtsMainMenu_StartExitAnim(GtsApp *app);
+static enum GtsAppState GtsMainMenu_WaitExitAnim(GtsApp *app);
+static enum GtsAppState GtsMainMenu_FadeOut(GtsApp *app);
+static enum GtsAppState GtsMainMenu_ShowExitPrompt(GtsApp *app);
+static enum GtsAppState GtsMainMenu_HandleExitPrompt(GtsApp *app);
+static enum GtsAppState GtsMainMenu_WaitText(GtsApp *app);
+static enum GtsAppState GtsMainMenu_WaitTextAndPause(GtsApp *app);
 static void GtsMainMenu_DrawButtons(GtsApp *app);
 static void GtsMainMenu_PrintMessage(GtsApp *app, int msgId, int textSpeed, int unused3, u32 unused4);
 static void GtsMainMenu_PrintPrompt(GtsApp *app, int msgId, int textSpeed, int unused3, u32 unused4);
@@ -209,10 +209,10 @@ static const BgTemplate sGtsSubBg3Template = {
     .mosaic = FALSE,
 };
 
-static int (*sGtsMainMenuStates[])(GtsApp *app) = {
+static enum GtsAppState (*sGtsMainMenuStates[])(GtsApp *app) = {
     GtsMainMenu_WaitEnterAnim,
     GtsMainMenu_WaitTextBeforeFadeIn,
-    (int (*)(GtsApp *))GtsMainMenu_StartFadeIn,
+    (enum GtsAppState (*)(GtsApp *))GtsMainMenu_StartFadeIn,
     GtsMainMenu_WaitFadeIn,
     GtsMainMenu_WaitFadeIn2,
     GtsMainMenu_ShowPrompt,
@@ -226,7 +226,7 @@ static int (*sGtsMainMenuStates[])(GtsApp *app) = {
     GtsMainMenu_HandleExitPrompt,
 };
 
-int GtsMainMenu_Init(GtsApp *app, int state) {
+enum GtsAppState GtsMainMenu_Init(GtsApp *app, int state) {
     GtsMainMenu_CreateStrings(app);
     GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
     GtsMainMenu_InitBgs(app->bgConfig);
@@ -255,12 +255,12 @@ int GtsMainMenu_Init(GtsApp *app, int state) {
     return GTS_APP_STATE_WAIT_FADE_IN;
 }
 
-int GtsMainMenu_Main(GtsApp *app, int state) {
+enum GtsAppState GtsMainMenu_Main(GtsApp *app, int state) {
     WirelessStatusIcon_SetLevel(Gts_GetWifiIconLevel());
     return sGtsMainMenuStates[app->state](app);
 }
 
-int GtsMainMenu_Exit(GtsApp *app, int state) {
+enum GtsAppState GtsMainMenu_Exit(GtsApp *app, int state) {
     WirelessStatusIcon_Destroy();
     GtsMainMenu_DeleteCursor(app);
     GtsMainMenu_DeleteStrings(app);
@@ -430,7 +430,7 @@ static void GtsMainMenu_DeleteStrings(GtsApp *app) {
 }
 
 // Waits for the player to walk in, then checks the GTS's status (screen 7).
-static int GtsMainMenu_WaitEnterAnim(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_WaitEnterAnim(GtsApp *app) {
     if (app->playerAnimDone) {
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_OFF);
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_OFF);
@@ -442,7 +442,7 @@ static int GtsMainMenu_WaitEnterAnim(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsMainMenu_WaitTextBeforeFadeIn(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_WaitTextBeforeFadeIn(GtsApp *app) {
     Gts_SetState(app, GTS_MAIN_MENU_STATE_WAIT_TEXT, GTS_MAIN_MENU_STATE_START_FADE_IN);
     return GTS_APP_STATE_RUN_SCREEN;
 }
@@ -453,21 +453,21 @@ static void GtsMainMenu_StartFadeIn(GtsApp *app) {
     app->state = GTS_MAIN_MENU_STATE_WAIT_FADE_IN;
 }
 
-static int GtsMainMenu_WaitFadeIn(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_WaitFadeIn(GtsApp *app) {
     if (IsPaletteFadeFinished()) {
         app->state = GTS_MAIN_MENU_STATE_SHOW_PROMPT;
     }
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsMainMenu_WaitFadeIn2(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_WaitFadeIn2(GtsApp *app) {
     if (IsPaletteFadeFinished()) {
         app->state = GTS_MAIN_MENU_STATE_SHOW_PROMPT;
     }
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsMainMenu_ShowPrompt(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_ShowPrompt(GtsApp *app) {
     GtsMainMenu_PrintMessage(app, msg_0775_00004, 1, 0, 0xF0F); // Are you seeking or offering a Pokemon?
     Gts_SetState(app, GTS_MAIN_MENU_STATE_WAIT_TEXT, GTS_MAIN_MENU_STATE_HANDLE_INPUT);
     Sprite_SetAnimActiveFlag(app->cursorSprite, TRUE);
@@ -515,7 +515,7 @@ static void GtsMainMenu_SelectButton(GtsApp *app, int button) {
     }
 }
 
-static int GtsMainMenu_HandleInput(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_HandleInput(GtsApp *app) {
     int button = GtsMainMenu_GetTouchedButton();
     int cursor;
 
@@ -551,7 +551,7 @@ static int GtsMainMenu_HandleInput(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsMainMenu_StartExitAnim(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_StartExitAnim(GtsApp *app) {
     int gender = PlayerProfile_GetTrainerGender(app->args->profile);
     Gts_StartPlayerExitAnim(app, gender);
     app->state = GTS_MAIN_MENU_STATE_WAIT_EXIT_ANIM;
@@ -559,14 +559,14 @@ static int GtsMainMenu_StartExitAnim(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsMainMenu_WaitExitAnim(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_WaitExitAnim(GtsApp *app) {
     if (app->playerAnimDone) {
         app->state = GTS_MAIN_MENU_STATE_FADE_OUT;
     }
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsMainMenu_FadeOut(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_FadeOut(GtsApp *app) {
     if (app->nextScreen == GTS_SCREEN_CONNECTION) {
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, HEAP_ID_61);
     } else {
@@ -576,15 +576,15 @@ static int GtsMainMenu_FadeOut(GtsApp *app) {
     return GTS_APP_STATE_EXIT_SCREEN;
 }
 
-static int GtsMainMenu_ShowExitPrompt(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_ShowExitPrompt(GtsApp *app) {
     app->yesNoPrompt = Gts_CreateYesNoPrompt(app->bgConfig, 10, 258, 3, 1);
     app->state = GTS_MAIN_MENU_STATE_HANDLE_EXIT_PROMPT;
     Sprite_SetDrawFlag(app->cursorSprite, FALSE);
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsMainMenu_HandleExitPrompt(GtsApp *app) {
-    int response = Gts_HandleYesNoPrompt(app);
+static enum GtsAppState GtsMainMenu_HandleExitPrompt(GtsApp *app) {
+    YesNoResponse response = Gts_HandleYesNoPrompt(app);
     if (response == YESNORESPONSE_YES) {
         YesNoPrompt_Destroy(app->yesNoPrompt);
         ClearFrameAndWindow2(&app->promptWindow, TRUE);
@@ -605,14 +605,14 @@ static int GtsMainMenu_HandleExitPrompt(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsMainMenu_WaitText(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_WaitText(GtsApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId)) {
         app->state = app->nextState;
     }
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsMainMenu_WaitTextAndPause(GtsApp *app) {
+static enum GtsAppState GtsMainMenu_WaitTextAndPause(GtsApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId)) {
         app->waitFrames++;
         if (app->waitFrames > 45) {

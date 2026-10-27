@@ -62,17 +62,17 @@ static void GtsSearchResult_CreateWindows(GtsApp *app);
 static void GtsSearchResult_RemoveWindows(GtsApp *app);
 static void GtsSearchResult_CreateStrings(GtsApp *app);
 static void GtsSearchResult_DeleteStrings(GtsApp *app);
-static int GtsSearchResult_Start(GtsApp *app);
+static enum GtsAppState GtsSearchResult_Start(GtsApp *app);
 static void GtsSearchResult_Select(GtsApp *app, int result);
-static int GtsSearchResult_HandleInput(GtsApp *app);
-static int GtsSearchResult_FadeOut(GtsApp *app);
-static int GtsSearchResult_ShowTradePrompt(GtsApp *app);
-static int GtsSearchResult_HandleTradePrompt(GtsApp *app);
+static enum GtsAppState GtsSearchResult_HandleInput(GtsApp *app);
+static enum GtsAppState GtsSearchResult_FadeOut(GtsApp *app);
+static enum GtsAppState GtsSearchResult_ShowTradePrompt(GtsApp *app);
+static enum GtsAppState GtsSearchResult_HandleTradePrompt(GtsApp *app);
 static void GtsSearchResult_DrawDetails(GtsApp *app);
-static int GtsSearchResult_Redraw(GtsApp *app);
-static int GtsSearchResult_ScrollIn(GtsApp *app);
-static int GtsSearchResult_ScrollOut(GtsApp *app);
-static int GtsSearchResult_WaitText(GtsApp *app);
+static enum GtsAppState GtsSearchResult_Redraw(GtsApp *app);
+static enum GtsAppState GtsSearchResult_ScrollIn(GtsApp *app);
+static enum GtsAppState GtsSearchResult_ScrollOut(GtsApp *app);
+static enum GtsAppState GtsSearchResult_WaitText(GtsApp *app);
 static void GtsSearchResult_PrintMessage(GtsApp *app, int msgId, int textSpeed, int unused3, u32 unused4);
 static void GtsSearchResult_PrintLabel(MsgData *msgData, Window *window, int msgId);
 static void GtsSearchResult_PrintButtonLabel(MsgData *msgData, Window *window, int msgId);
@@ -96,7 +96,7 @@ static const GtsSearchResultNeighbors sGtsSearchResultNeighbors[7] = {
     { 4, 6 },
 };
 
-static int (*sGtsSearchResultStates[])(GtsApp *app) = {
+static enum GtsAppState (*sGtsSearchResultStates[])(GtsApp *app) = {
     GtsSearchResult_Start,
     GtsSearchResult_HandleInput,
     GtsSearchResult_FadeOut,
@@ -157,7 +157,7 @@ static const GtsWindowTemplate sGtsSearchResultInfoWindows[16] = {
     { 2,  3,  27, 2, 7 },
 };
 
-int GtsSearchResult_Init(GtsApp *app, int state) {
+enum GtsAppState GtsSearchResult_Init(GtsApp *app, int state) {
     GtsSearchResult_CreateStrings(app);
     GtsSearchResult_InitBgs(app->bgConfig, -32 - app->scrollY);
     GtsSearchResult_LoadGraphics(app);
@@ -187,8 +187,8 @@ int GtsSearchResult_Init(GtsApp *app, int state) {
     return GTS_APP_STATE_WAIT_FADE_IN;
 }
 
-int GtsSearchResult_Main(GtsApp *app, int state) {
-    int ret = sGtsSearchResultStates[app->state](app);
+enum GtsAppState GtsSearchResult_Main(GtsApp *app, int state) {
+    enum GtsAppState ret = sGtsSearchResultStates[app->state](app);
     int i;
 
     for (i = 0; i < 8; i++) {
@@ -202,7 +202,7 @@ int GtsSearchResult_Main(GtsApp *app, int state) {
     return ret;
 }
 
-int GtsSearchResult_Exit(GtsApp *app, int state) {
+enum GtsAppState GtsSearchResult_Exit(GtsApp *app, int state) {
     app->vblankFunc = NULL;
     GtsSearchResult_DeleteMonSprite(app);
     GtsSearchResult_DeleteStrings(app);
@@ -334,7 +334,7 @@ static void GtsSearchResult_DeleteStrings(GtsApp *app) {
     String_Delete(app->msgBuffer);
 }
 
-static int GtsSearchResult_Start(GtsApp *app) {
+static enum GtsAppState GtsSearchResult_Start(GtsApp *app) {
     Sprite_SetDrawFlag(app->panelSprite, FALSE);
     if (app->nextScreenArg == 16) {
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 16, 1, HEAP_ID_61);
@@ -358,7 +358,7 @@ static void GtsSearchResult_Select(GtsApp *app, int result) {
     }
 }
 
-static int GtsSearchResult_HandleInput(GtsApp *app) {
+static enum GtsAppState GtsSearchResult_HandleInput(GtsApp *app) {
     if (gSystem.newKeys & PAD_BUTTON_A) {
         GtsSearchResult_PrintMessage(app, msg_0775_00016, 1, 0, 0xF0F); // Trade Pokemon with this Trainer?
         Gts_SetState(app, GTS_SEARCH_RESULT_STATE_WAIT_TEXT, GTS_SEARCH_RESULT_STATE_SHOW_TRADE_PROMPT);
@@ -399,7 +399,7 @@ static int GtsSearchResult_HandleInput(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearchResult_FadeOut(GtsApp *app) {
+static enum GtsAppState GtsSearchResult_FadeOut(GtsApp *app) {
     Sprite_SetDrawFlag(app->avatarMarkerSprite, FALSE);
     if (app->nextScreenArg != 15) {
         if (app->nextScreenArg == 6) {
@@ -412,14 +412,14 @@ static int GtsSearchResult_FadeOut(GtsApp *app) {
     return GTS_APP_STATE_EXIT_SCREEN;
 }
 
-static int GtsSearchResult_ShowTradePrompt(GtsApp *app) {
+static enum GtsAppState GtsSearchResult_ShowTradePrompt(GtsApp *app) {
     app->yesNoPrompt = Gts_CreateYesNoPromptOnBg(app->bgConfig, 10, 0x12E, 3, GF_BG_LYR_SUB_0, 1);
     app->state = GTS_SEARCH_RESULT_STATE_HANDLE_TRADE_PROMPT;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearchResult_HandleTradePrompt(GtsApp *app) {
-    int response = Gts_HandleYesNoPrompt(app);
+static enum GtsAppState GtsSearchResult_HandleTradePrompt(GtsApp *app) {
+    YesNoResponse response = Gts_HandleYesNoPrompt(app);
     if (response == YESNORESPONSE_YES) {
         YesNoPrompt_Destroy(app->yesNoPrompt);
         app->state = GTS_SEARCH_RESULT_STATE_FADE_OUT;
@@ -443,14 +443,14 @@ static void GtsSearchResult_DrawDetails(GtsApp *app) {
     GtsSearchResult_DrawWanted(&app->infoWindows[15], app->gtsMsgData, app->speciesNames, &app->searchResults[app->selectedResult].wanted);
 }
 
-static int GtsSearchResult_Redraw(GtsApp *app) {
+static enum GtsAppState GtsSearchResult_Redraw(GtsApp *app) {
     GtsSearchResult_DrawDetails(app);
     app->state = GTS_SEARCH_RESULT_STATE_HANDLE_INPUT;
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
 // Scrolls the screens back into place after the search screen (screen 4) scrolled them away.
-static int GtsSearchResult_ScrollIn(GtsApp *app) {
+static enum GtsAppState GtsSearchResult_ScrollIn(GtsApp *app) {
     app->scrollY++;
     if (IsPaletteFadeFinished()) {
         app->scrollY = 0;
@@ -460,7 +460,7 @@ static int GtsSearchResult_ScrollIn(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearchResult_ScrollOut(GtsApp *app) {
+static enum GtsAppState GtsSearchResult_ScrollOut(GtsApp *app) {
     app->scrollY--;
     if (IsPaletteFadeFinished()) {
         GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
@@ -471,7 +471,7 @@ static int GtsSearchResult_ScrollOut(GtsApp *app) {
     return GTS_APP_STATE_RUN_SCREEN;
 }
 
-static int GtsSearchResult_WaitText(GtsApp *app) {
+static enum GtsAppState GtsSearchResult_WaitText(GtsApp *app) {
     if (!TextPrinterCheckActive(app->textPrinterId)) {
         app->state = app->nextState;
     }

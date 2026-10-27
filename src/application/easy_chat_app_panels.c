@@ -29,7 +29,7 @@
 // Scrolls a BG layer by a fixed amount over a number of frames (VBlank task).
 typedef struct EasyChatBgScroll {
     BgConfig *bgConfig;
-    int layer;
+    GFBgLayer layer;
     enum BgPosAdjustOp op;
     int position; // fx32 while running
     int target;
@@ -215,7 +215,7 @@ static void EasyChatWordListView_CreateSprites(EasyChatWordListView *wordList);
 static void EasyChatWordListView_ClearRows(EasyChatWordListView *wordList, int rows);
 static void EasyChatWordListView_ResetScroll(EasyChatWordListView *wordList);
 static void EasyChatWordListView_DrawWord(EasyChatWordListView *wordList, int index, u32 y);
-static void EasyChatBgScroll_Start(EasyChatBgScroll *scroll, BgConfig *bgConfig, int layer, int axis, int delta, int frames);
+static void EasyChatBgScroll_Start(EasyChatBgScroll *scroll, BgConfig *bgConfig, GFBgLayer layer, int axis, int delta, int frames);
 static BOOL EasyChatBgScroll_Update(EasyChatBgScroll *scroll);
 static void EasyChatBgScroll_Task(SysTask *task, void *data);
 static void EasyChatBlendFade_StartAlpha(EasyChatBlendFade *fade, u32 plane1, u32 plane2, s32 start, s32 target, s32 frames);
@@ -1568,7 +1568,7 @@ void EasyChatPageButtonsView_SetPressed(EasyChatPageButtonsView *pageButtons, in
 #pragma unused(pageButtons, button, pressed)
 }
 
-static void EasyChatBgScroll_Start(EasyChatBgScroll *scroll, BgConfig *bgConfig, int layer, int axis, int delta, int frames) {
+static void EasyChatBgScroll_Start(EasyChatBgScroll *scroll, BgConfig *bgConfig, GFBgLayer layer, int axis, int delta, int frames) {
     scroll->bgConfig = bgConfig;
     scroll->layer = layer;
     if (axis == 0) {

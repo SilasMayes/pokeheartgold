@@ -520,7 +520,7 @@ BOOL WiFiPlazaTalk_Start(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, u
     int option;
     int response;
     int myToy;
-    int result;
+    BOOL result;
     int direction;
     int partnerIndex;
     WiFiPlazaObj *partnerObj;
@@ -687,7 +687,7 @@ BOOL WiFiPlazaTalk_Start(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, u
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_TALK_HANDLE_MENU);
         break;
     case WIFI_PLAZA_TALK_HANDLE_MENU: {
-        int done;
+        BOOL done;
 
         switch (WiFiPlazaRoom_ProcessList(room)) {
         case 0:
@@ -742,7 +742,7 @@ BOOL WiFiPlazaTalk_Start(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, u
         WiFiPlazaPlayerState_SetStep(state, WIFI_PLAZA_TALK_HANDLE_TAP_TOY_MENU);
         break;
     case WIFI_PLAZA_TALK_HANDLE_TAP_TOY_MENU: {
-        int done;
+        BOOL done;
 
         switch (WiFiPlazaRoom_ProcessList(room)) {
         case 0: {
@@ -1031,7 +1031,7 @@ BOOL WiFiPlazaTalk_Answer(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, 
     switch (WiFiPlazaPlayerState_GetStep(state)) {
     case WIFI_PLAZA_ANSWER_START: {
         u32 partnerIndex;
-        int result;
+        BOOL result;
 
         talk = WiFiPlazaPlayerState_AllocWork(state, sizeof(WiFiPlazaTalk));
         talk->historyPending = 0;
@@ -1257,7 +1257,7 @@ BOOL WiFiPlazaTalk_Answer(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, 
         break;
     case WIFI_PLAZA_ANSWER_HANDLE_ANSWER_MENU: {
         u32 choice = WiFiPlazaRoom_ProcessList(room);
-        int done;
+        BOOL done;
 
         switch (choice) {
         case 0:
@@ -1781,8 +1781,8 @@ static String *WiFiPlazaTalk_GetMsg(WiFiPlazaRoomWork *room, u32 playerIndex, u3
 
 static String *WiFiPlazaTalk_GetReunionMsg(WiFiPlazaRoomWork *room, u32 speaker, u32 listener) {
     WiFiPlazaWork *lobby = WiFiPlazaRoom_GetLobby(room);
-    int speakerHighlighted = WiFiPlazaWork_IsSpecialVisitor(lobby, speaker);
-    int listenerHighlighted = WiFiPlazaWork_IsSpecialVisitor(lobby, listener);
+    BOOL speakerHighlighted = WiFiPlazaWork_IsSpecialVisitor(lobby, speaker);
+    BOOL listenerHighlighted = WiFiPlazaWork_IsSpecialVisitor(lobby, listener);
     u32 msgId = msg_0766_00041;
 
     if (speakerHighlighted == 1 && listenerHighlighted == 1) {

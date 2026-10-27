@@ -712,7 +712,7 @@ BOOL CommPlayerManager_AssignBattleSlots(void) {
     u16 coords4[8];
     int mapping[4];
     int count;
-    int result;
+    BOOL result;
     int maxPlayers;
     int i;
     int j;
