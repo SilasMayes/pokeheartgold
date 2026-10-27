@@ -102,7 +102,7 @@ static void VsRecorder_TouchIndicatorTask(SysTask *task, void *data);
 static void VsRecorder_ShowTouchIndicator(VsRecorderWork *work);
 static void VsRecorder_SetPlaceholderName(String *str, enum HeapID heapID);
 static int VsRecorder_CountDigits(u64 value);
-static u32 VsRecorder_IsVBlankPaused(VsRecorderWork *work);
+static BOOL VsRecorder_IsVBlankPaused(VsRecorderWork *work);
 static void VsRecorder_UpdateListArrows(VsRecorderListWindow *list);
 static void VsRecorder_UpdateListArrowsCursor(VsRecorderListWindow *list);
 
@@ -599,11 +599,11 @@ u16 *VsRecorder_LoadSpeciesList(enum HeapID heapID, int unused, int *count) {
     return data;
 }
 
-void VsRecorder_SetBoxUploaded(VsRecorderWork *work, u32 value) {
-    work->boxUploaded = value;
+void VsRecorder_SetBoxUploaded(VsRecorderWork *work, BOOL uploaded) {
+    work->boxUploaded = uploaded;
 }
 
-u32 VsRecorder_IsBoxUploaded(VsRecorderWork *work) {
+BOOL VsRecorder_IsBoxUploaded(VsRecorderWork *work) {
     return work->boxUploaded;
 }
 
@@ -1852,13 +1852,13 @@ static void VsRecorder_FlipScreensTask(SysTask *task, void *data) {
     SysTask_Destroy(task);
 }
 
-SysTask *VsRecorder_StartFlipScreens(VsRecorderWork *work, int flipped) {
+SysTask *VsRecorder_StartFlipScreens(VsRecorderWork *work, BOOL flipped) {
     work->flipArgs.flipped = flipped;
     work->flipArgs.done = FALSE;
     return SysTask_CreateOnVBlankQueue(VsRecorder_FlipScreensTask, &work->flipArgs, 4);
 }
 
-u32 VsRecorder_IsFlipScreensDone(VsRecorderWork *work) {
+BOOL VsRecorder_IsFlipScreensDone(VsRecorderWork *work) {
     return work->flipArgs.done;
 }
 
@@ -2431,11 +2431,11 @@ void VsRecorder_OnTouchConfirm(VsRecorderWork *work) {
     PlaySE(SEQ_SE_PL_BREC57);
 }
 
-static u32 VsRecorder_IsVBlankPaused(VsRecorderWork *work) {
+static BOOL VsRecorder_IsVBlankPaused(VsRecorderWork *work) {
     return work->vblankPaused;
 }
 
-void VsRecorder_SetVBlankPaused(VsRecorderWork *work, u32 paused) {
+void VsRecorder_SetVBlankPaused(VsRecorderWork *work, BOOL paused) {
     work->vblankPaused = paused;
 }
 

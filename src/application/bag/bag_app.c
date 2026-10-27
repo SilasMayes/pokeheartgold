@@ -219,16 +219,6 @@ static void BagApp_FreeQuantityTemplates(BagApp *app);
 static void BagApp_MeasureQuantityText(BagApp *app, u16 number, u32 unused2, u32 unused3);
 static void BagApp_DrawHMMarker(BagApp *app, Window *window, u32 y);
 
-int BagApp_ItemAction_Use(BagApp *app);
-int BagApp_ItemAction_Action9(BagApp *app);
-int BagApp_ItemAction_Confirm(BagApp *app);
-int BagApp_ItemAction_Trash(BagApp *app);
-int BagApp_ItemAction_Register(BagApp *app);
-int BagApp_ItemAction_Deselect(BagApp *app);
-int BagApp_ItemAction_Move(BagApp *app);
-int BagApp_ItemAction_Give(BagApp *app);
-int BagApp_ItemAction_ChooseForBerryPatch(BagApp *app);
-
 BOOL Bag_Init(OverlayManager *man, int *state) {
     BagApp *app;
 

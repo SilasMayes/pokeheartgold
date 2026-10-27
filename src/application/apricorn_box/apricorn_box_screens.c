@@ -58,20 +58,20 @@ static void ApricornBoxScreen_InitFromArgs(ApricornBoxScreen *screen);
 static void ApricornBoxScreen_RestoreMenuInputState(ApricornBoxScreen *screen);
 static BOOL ApricornBoxScreen_Setup(ApricornBoxScreen *screen);
 static BOOL ApricornBoxScreen_Teardown(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_FadeIn(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_FadeOut(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_ShowBlenderNews(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_FadeIn(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_FadeOut(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_ShowBlenderNews(ApricornBoxScreen *screen);
 static int ApricornBoxScreen_ViewState(ApricornBoxScreen *screen);
 static int ApricornBoxScreen_BlenderState(ApricornBoxScreen *screen);
 static int ApricornBoxScreen_KurtState(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_KurtQuantityState(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_LiftApricornState(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_DragApricornState(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_PutBackApricornState(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_BlendApricornState(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_JuiceMenuState(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_KurtQuantityState(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_LiftApricornState(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_DragApricornState(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_PutBackApricornState(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_BlendApricornState(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_JuiceMenuState(ApricornBoxScreen *screen);
 static int ApricornBoxScreen_WaitMessageState(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_WaitJuiceTasteState(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_WaitJuiceTasteState(ApricornBoxScreen *screen);
 static BOOL ApricornBoxScreen_IsMessageDone(ApricornBoxScreen *screen);
 static void ApricornBoxScreen_ResetDisplay(void);
 static void ApricornBoxScreen_InitGraphics(ApricornBoxScreen *screen);
@@ -264,7 +264,7 @@ static BOOL ApricornBoxScreen_Teardown(ApricornBoxScreen *screen) {
     return FALSE;
 }
 
-static int ApricornBoxScreen_FadeIn(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_FadeIn(ApricornBoxScreen *screen) {
     switch (screen->subState) {
     case 0:
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, screen->heapId);
@@ -293,7 +293,7 @@ static int ApricornBoxScreen_FadeIn(ApricornBoxScreen *screen) {
     return APRICORN_BOX_SCREEN_STATE_FADE_IN;
 }
 
-static int ApricornBoxScreen_FadeOut(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_FadeOut(ApricornBoxScreen *screen) {
     switch (screen->subState) {
     case 0:
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, screen->heapId);
@@ -309,7 +309,7 @@ static int ApricornBoxScreen_FadeOut(ApricornBoxScreen *screen) {
     return APRICORN_BOX_SCREEN_STATE_FADE_OUT;
 }
 
-static int ApricornBoxScreen_ShowBlenderNews(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_ShowBlenderNews(ApricornBoxScreen *screen) {
     if (screen->subState == 0) {
         u32 kind;
         ApricornBoxScreen_SetApricornsFocus(screen, 1);
@@ -361,7 +361,7 @@ static int ApricornBoxScreen_KurtState(ApricornBoxScreen *screen) {
     return ApricornBoxScreen_HandleKurtInput(screen);
 }
 
-static int ApricornBoxScreen_KurtQuantityState(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_KurtQuantityState(ApricornBoxScreen *screen) {
     int result;
     switch (screen->subState) {
     case 0:
@@ -415,7 +415,7 @@ static int ApricornBoxScreen_KurtQuantityState(ApricornBoxScreen *screen) {
     return APRICORN_BOX_SCREEN_STATE_KURT_QUANTITY;
 }
 
-static int ApricornBoxScreen_LiftApricornState(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_LiftApricornState(ApricornBoxScreen *screen) {
     switch (screen->subState) {
     case 0:
         ApricornBoxScreen_SetApricornsFocus(screen, 2);
@@ -464,7 +464,7 @@ static int ApricornBoxScreen_LiftApricornState(ApricornBoxScreen *screen) {
     return APRICORN_BOX_SCREEN_STATE_LIFT_APRICORN;
 }
 
-static int ApricornBoxScreen_DragApricornState(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_DragApricornState(ApricornBoxScreen *screen) {
     int result;
     switch (screen->subState) {
     case 0:
@@ -493,7 +493,7 @@ static int ApricornBoxScreen_DragApricornState(ApricornBoxScreen *screen) {
     return APRICORN_BOX_SCREEN_STATE_DRAG_APRICORN;
 }
 
-static int ApricornBoxScreen_PutBackApricornState(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_PutBackApricornState(ApricornBoxScreen *screen) {
     switch (screen->subState) {
     case 0:
         ApricornBoxScreen_StartMoveTask(screen, 0, 1);
@@ -519,7 +519,7 @@ static int ApricornBoxScreen_PutBackApricornState(ApricornBoxScreen *screen) {
     return APRICORN_BOX_SCREEN_STATE_PUT_BACK_APRICORN;
 }
 
-static int ApricornBoxScreen_BlendApricornState(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_BlendApricornState(ApricornBoxScreen *screen) {
     switch (screen->subState) {
     case 0:
         if (screen->numBlending >= APRICORN_QUEUE_SLOT_COUNT) {
@@ -576,7 +576,7 @@ static int ApricornBoxScreen_BlendApricornState(ApricornBoxScreen *screen) {
     return APRICORN_BOX_SCREEN_STATE_BLEND_APRICORN;
 }
 
-static int ApricornBoxScreen_JuiceMenuState(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_JuiceMenuState(ApricornBoxScreen *screen) {
     int result;
     switch (screen->subState) {
     case 0:
@@ -614,7 +614,7 @@ static int ApricornBoxScreen_WaitMessageState(ApricornBoxScreen *screen) {
     return ApricornBoxScreen_IsMessageDone(screen) ? APRICORN_BOX_SCREEN_STATE_BLENDER : APRICORN_BOX_SCREEN_STATE_WAIT_MESSAGE;
 }
 
-static int ApricornBoxScreen_WaitJuiceTasteState(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_WaitJuiceTasteState(ApricornBoxScreen *screen) {
     if (ApricornBoxScreen_IsMessageDone(screen)) {
         ApricornBoxScreen_ClearMessage(screen);
         ApricornBoxScreen_PrintBlenderStatus(screen);

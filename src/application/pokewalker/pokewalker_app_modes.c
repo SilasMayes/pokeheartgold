@@ -125,7 +125,7 @@ enum LinkSaveState {
     LINK_SAVE_DONE,
 };
 
-int PokewalkerApp_LinkSave_Enter(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_LinkSave_Enter(PokewalkerApp *app) {
     app->strollMon = NULL;
     if (app->linkAction == POKEWALKER_LINK_RETURN_FROM_STROLL) {
         PokewalkerApp_ReturnStrollMon(app);
@@ -162,7 +162,7 @@ int PokewalkerApp_LinkSave_Enter(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_LinkSave_Update(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_LinkSave_Update(PokewalkerApp *app) {
     int state = gLinkSaveStates[app->state](app);
     app->state = state;
     if (state == LINK_SAVE_DONE) {
@@ -172,7 +172,7 @@ int PokewalkerApp_LinkSave_Update(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_LinkSave_Exit(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_LinkSave_Exit(PokewalkerApp *app) {
     PokewalkerApp_HideSprite(app, 8);
     return POKEWALKER_APP_STATE_ENTER;
 }
@@ -247,7 +247,7 @@ int PokewalkerApp_LinkSave_End(PokewalkerApp *app) {
 
 #define SELECT_MON_WORK(app, member) ((u8 *)(app) + 0x1D764 + offsetof(PokewalkerSelectMonWork, member))
 
-int PokewalkerApp_SelectMon_Enter(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_SelectMon_Enter(PokewalkerApp *app) {
     PCStorage *storage;
     Party *party;
 
@@ -278,7 +278,7 @@ int PokewalkerApp_SelectMon_Enter(PokewalkerApp *app) {
 
 #undef SELECT_MON_WORK
 
-int PokewalkerApp_SelectMon_Update(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_SelectMon_Update(PokewalkerApp *app) {
     PokewalkerSelectMonWork *work = (PokewalkerSelectMonWork *)&app->selectMonState;
 
     switch (work->state) {
@@ -322,7 +322,7 @@ int PokewalkerApp_SelectMon_Update(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_SelectMon_Exit(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_SelectMon_Exit(PokewalkerApp *app) {
     app->selectMonState = 0;
     Main_SetVBlankIntrCB(NULL, NULL);
     BoxMonSelector_Delete(app->boxSelector);
@@ -514,7 +514,7 @@ static void PokewalkerApp_SelectMon_ShowMonInfo(int box, int slot, void *arg) {
     PokewalkerBoxDisplay_ShowMon(work->boxDisplay, &info);
 }
 
-int PokewalkerApp_EventLog_Enter(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_EventLog_Enter(PokewalkerApp *app) {
     app->eventLogSaveData = app->saveData;
     app->eventLogRecords = app->irStatus.records;
     BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_WHITE, 6, 1, HEAP_ID_154);
@@ -522,7 +522,7 @@ int PokewalkerApp_EventLog_Enter(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_EventLog_Update(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_EventLog_Update(PokewalkerApp *app) {
     switch (app->state) {
     case 0:
         if (IsPaletteFadeFinished() == TRUE) {
@@ -549,18 +549,18 @@ int PokewalkerApp_EventLog_Update(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_EventLog_Exit(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_EventLog_Exit(PokewalkerApp *app) {
     PokewalkerApp_Setup(app);
     app->state = 0;
     app->nextMode = POKEWALKER_APP_MODE_STROLL_REPORT;
     return POKEWALKER_APP_STATE_ENTER;
 }
 
-int PokewalkerApp_WaitKey_Enter(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_WaitKey_Enter(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_WaitKey_Update(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_WaitKey_Update(PokewalkerApp *app) {
     if (gSystem.newKeys & PAD_KEY_DOWN) {
         app->nextMode = POKEWALKER_APP_MODE_LINK;
         return POKEWALKER_APP_STATE_EXIT;
@@ -568,17 +568,17 @@ int PokewalkerApp_WaitKey_Update(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_WaitKey_Exit(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_WaitKey_Exit(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_ENTER;
 }
 
-int PokewalkerApp_StrollReport_Enter(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_StrollReport_Enter(PokewalkerApp *app) {
     PokewalkerApp_RemoveWindowBank(app, 1);
     PokewalkerApp_AddWindowBank(app, 4);
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_StrollReport_Update(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_StrollReport_Update(PokewalkerApp *app) {
     int state = gStrollReportStates[app->state](app);
     app->state = state;
     if (state == STROLL_REPORT_DONE) {
@@ -588,7 +588,7 @@ int PokewalkerApp_StrollReport_Update(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_StrollReport_Exit(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_StrollReport_Exit(PokewalkerApp *app) {
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_2, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
     BgCommitTilemapBufferToVram(app->bgConfig, GF_BG_LYR_MAIN_1);

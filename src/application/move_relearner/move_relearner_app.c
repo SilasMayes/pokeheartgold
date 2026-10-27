@@ -160,8 +160,8 @@ typedef struct MoveRelearner {
 
 // What answering the yes/no question does, per MoveRelearnerQuestion.
 typedef struct MoveRelearnerYesNoAction {
-    int (*onYes)(MoveRelearner *relearner);
-    int (*onNo)(MoveRelearner *relearner);
+    enum MoveRelearnerState (*onYes)(MoveRelearner *relearner);
+    enum MoveRelearnerState (*onNo)(MoveRelearner *relearner);
 } MoveRelearnerYesNoAction;
 
 static void MoveRelearner_Setup(MoveRelearner *relearner);
@@ -177,16 +177,16 @@ static void MoveRelearner_RemoveWindows(MoveRelearner *relearner);
 static void MoveRelearner_InitStrings(MoveRelearner *relearner);
 static void MoveRelearner_FreeStrings(MoveRelearner *relearner);
 static int MoveRelearner_WaitFade(MoveRelearner *relearner);
-static int MoveRelearner_HandleInput(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_HandleInput(MoveRelearner *relearner);
 static int MoveRelearner_WaitMessage(MoveRelearner *relearner);
-static int MoveRelearner_ShowYesNo(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_ShowYesNo(MoveRelearner *relearner);
 static int MoveRelearner_HandleYesNo(MoveRelearner *relearner);
-static int MoveRelearner_TeachMove(MoveRelearner *relearner);
-static int MoveRelearner_PrintLearned(MoveRelearner *relearner);
-static int MoveRelearner_AskAfterSummary(MoveRelearner *relearner);
-static int MoveRelearner_FadeOut(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_TeachMove(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_PrintLearned(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_AskAfterSummary(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_FadeOut(MoveRelearner *relearner);
 static void MoveRelearner_PrintSelectedMove(MoveRelearner *relearner);
-static void MoveRelearner_PrintString(MoveRelearner *relearner, u32 windowId, FontID fontId, u32 color, u32 alignment, u8 y);
+static void MoveRelearner_PrintString(MoveRelearner *relearner, enum MoveRelearnerWindow windowId, FontID fontId, u32 color, u32 alignment, u8 y);
 static void MoveRelearner_FormatNumber(MoveRelearner *relearner, u32 msgId, s32 value, u32 numDigits, u8 mode);
 static void MoveRelearner_PrintStaticTexts(MoveRelearner *relearner);
 static u32 MoveRelearner_CountEligibleMoves(MoveRelearner *relearner);
@@ -217,32 +217,32 @@ static void MoveRelearner_Draw3D(MoveRelearnerMonPic *monPic);
 static void MoveRelearner_Free3D(MoveRelearnerMonPic *monPic);
 static void MoveRelearner_SetCursorPos(MoveRelearner *relearner, u32 pos, int palette);
 static void MoveRelearner_UpdateScrollArrows(MoveRelearner *relearner, int which, BOOL animate);
-static int MoveRelearner_FadeOutToSummary(MoveRelearner *relearner);
-static int MoveRelearner_OpenSummary(MoveRelearner *relearner);
-static int MoveRelearner_RunSummary(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_FadeOutToSummary(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OpenSummary(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_RunSummary(MoveRelearner *relearner);
 static void MoveRelearner_CreateGridInput(MoveRelearner *relearner);
 static void MoveRelearner_FreeGridInput(MoveRelearner *relearner);
 static void MoveRelearner_SetLearnButtonActive(MoveRelearner *relearner, u32 active);
 static void MoveRelearner_UpdateScrollButtons(MoveRelearner *relearner);
 static void MoveRelearner_AnimateScrollArrows(MoveRelearner *relearner, s32 direction);
 static void MoveRelearner_DrawListRows(MoveRelearner *relearner, u32 selected);
-static int MoveRelearner_StartReturnButtonFlash(MoveRelearner *relearner, int nextState);
-static int MoveRelearner_StartLearnButtonFlash(MoveRelearner *relearner, int nextState);
+static enum MoveRelearnerState MoveRelearner_StartReturnButtonFlash(MoveRelearner *relearner, int nextState);
+static enum MoveRelearnerState MoveRelearner_StartLearnButtonFlash(MoveRelearner *relearner, int nextState);
 static int MoveRelearner_UpdateButtonFlash(MoveRelearner *relearner);
-static int MoveRelearner_AskGiveUp(MoveRelearner *relearner);
-static int MoveRelearner_AskTeachAfterFlash(MoveRelearner *relearner);
-static int MoveRelearner_AskTeach(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_AskGiveUp(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_AskTeachAfterFlash(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_AskTeach(MoveRelearner *relearner);
 
-static int MoveRelearner_OnTeachYes(MoveRelearner *relearner);
-static int MoveRelearner_OnTeachNo(MoveRelearner *relearner);
-static int MoveRelearner_OnGiveUpYes(MoveRelearner *relearner);
-static int MoveRelearner_OnGiveUpNo(MoveRelearner *relearner);
-static int MoveRelearner_OnDeleteMoveYes(MoveRelearner *relearner);
-static int MoveRelearner_OnDeleteMoveNo(MoveRelearner *relearner);
-static int MoveRelearner_OnStopTeachingYes(MoveRelearner *relearner);
-static int MoveRelearner_OnStopTeachingNo(MoveRelearner *relearner);
-static int MoveRelearner_OnForgetMoveYes(MoveRelearner *relearner);
-static int MoveRelearner_OnForgetMoveNo(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OnTeachYes(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OnTeachNo(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OnGiveUpYes(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OnGiveUpNo(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OnDeleteMoveYes(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OnDeleteMoveNo(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OnStopTeachingYes(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OnStopTeachingNo(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OnForgetMoveYes(MoveRelearner *relearner);
+static enum MoveRelearnerState MoveRelearner_OnForgetMoveNo(MoveRelearner *relearner);
 static void MoveRelearner_GridNoop(void *data, int input, int prevInput);
 static void MoveRelearner_GridOnKeyMove(void *data, int input, int direction);
 static void MoveRelearner_GridOnTouch(void *data, int input, int prevInput);
@@ -858,7 +858,7 @@ static int MoveRelearner_WaitFade(MoveRelearner *relearner) {
     return MOVE_RELEARNER_STATE_WAIT_FADE;
 }
 
-static int MoveRelearner_HandleInput(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_HandleInput(MoveRelearner *relearner) {
     u32 input;
 
     relearner->lastGridInput = GridInputHandler_GetNextInput(relearner->gridInput);
@@ -911,7 +911,7 @@ static int MoveRelearner_WaitMessage(MoveRelearner *relearner) {
     }
 }
 
-static int MoveRelearner_ShowYesNo(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_ShowYesNo(MoveRelearner *relearner) {
     YesNoPromptTemplate template;
 
     MI_CpuFill8(&template, 0, sizeof(template));
@@ -948,7 +948,7 @@ static int MoveRelearner_HandleYesNo(MoveRelearner *relearner) {
     return nextState;
 }
 
-static int MoveRelearner_TeachMove(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_TeachMove(MoveRelearner *relearner) {
     u32 value = MoveRelearner_GetSelectedMove(relearner);
     MoveRelearnerArgs *args = relearner->args;
 
@@ -963,13 +963,13 @@ static int MoveRelearner_TeachMove(MoveRelearner *relearner) {
     return MOVE_RELEARNER_STATE_FADE_OUT;
 }
 
-static int MoveRelearner_PrintLearned(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_PrintLearned(MoveRelearner *relearner) {
     MoveRelearner_PrintMessage(relearner, 6);
     relearner->nextState = MOVE_RELEARNER_STATE_TEACH_MOVE;
     return MOVE_RELEARNER_STATE_WAIT_MESSAGE;
 }
 
-static int MoveRelearner_AskAfterSummary(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_AskAfterSummary(MoveRelearner *relearner) {
     if (relearner->args->moveSlot < MAX_MON_MOVES) {
         MoveRelearner_PrintMessage(relearner, 10);
         relearner->question = MOVE_RELEARNER_QUESTION_FORGET_MOVE;
@@ -981,7 +981,7 @@ static int MoveRelearner_AskAfterSummary(MoveRelearner *relearner) {
     return MOVE_RELEARNER_STATE_WAIT_MESSAGE;
 }
 
-static int MoveRelearner_FadeOut(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_FadeOut(MoveRelearner *relearner) {
     BeginAppScreenFade(1, HEAP_ID_66);
     relearner->nextState = MOVE_RELEARNER_STATE_EXIT;
     return MOVE_RELEARNER_STATE_WAIT_FADE;
@@ -999,7 +999,7 @@ static void MoveRelearner_PrintSelectedMove(MoveRelearner *relearner) {
 }
 
 // Prints relearner->string. alignment: 0 left, 1 right, 2 centered.
-static void MoveRelearner_PrintString(MoveRelearner *relearner, u32 windowId, FontID fontId, u32 color, u32 alignment, u8 y) {
+static void MoveRelearner_PrintString(MoveRelearner *relearner, enum MoveRelearnerWindow windowId, FontID fontId, u32 color, u32 alignment, u8 y) {
     u8 textWidth;
     u8 x;
 
@@ -1328,14 +1328,14 @@ static u32 MoveRelearner_CountKnownMoves(MoveRelearner *relearner) {
     return i;
 }
 
-static int MoveRelearner_OnTeachYes(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OnTeachYes(MoveRelearner *relearner) {
     MoveRelearner_PrintMessage(relearner, 3);
     relearner->args->moveSlot = MoveRelearner_CountKnownMoves(relearner);
     relearner->nextState = MOVE_RELEARNER_STATE_TEACH_MOVE;
     return MOVE_RELEARNER_STATE_WAIT_MESSAGE;
 }
 
-static int MoveRelearner_OnTeachNo(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OnTeachNo(MoveRelearner *relearner) {
     MoveRelearner_ClearMessage(relearner);
     if (!relearner->learnButtonActive) {
         MoveRelearner_DrawListRows(relearner, 5);
@@ -1343,49 +1343,49 @@ static int MoveRelearner_OnTeachNo(MoveRelearner *relearner) {
     return MOVE_RELEARNER_STATE_INPUT;
 }
 
-static int MoveRelearner_OnGiveUpYes(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OnGiveUpYes(MoveRelearner *relearner) {
     relearner->args->cancelled = TRUE;
     return MOVE_RELEARNER_STATE_FADE_OUT;
 }
 
-static int MoveRelearner_OnGiveUpNo(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OnGiveUpNo(MoveRelearner *relearner) {
     MoveRelearner_ClearMessage(relearner);
     return MOVE_RELEARNER_STATE_INPUT;
 }
 
-static int MoveRelearner_OnDeleteMoveYes(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OnDeleteMoveYes(MoveRelearner *relearner) {
     relearner->nextState = MOVE_RELEARNER_STATE_FADE_OUT_TO_SUMMARY;
     return MOVE_RELEARNER_STATE_WAIT_FADE;
 }
 
-static int MoveRelearner_OnDeleteMoveNo(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OnDeleteMoveNo(MoveRelearner *relearner) {
     MoveRelearner_PrintMessage(relearner, 7);
     relearner->question = MOVE_RELEARNER_QUESTION_STOP_TEACHING;
     relearner->nextState = MOVE_RELEARNER_STATE_SHOW_YES_NO;
     return MOVE_RELEARNER_STATE_WAIT_MESSAGE;
 }
 
-static int MoveRelearner_OnStopTeachingYes(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OnStopTeachingYes(MoveRelearner *relearner) {
     MoveRelearner_PrintMessage(relearner, 8);
     relearner->nextState = MOVE_RELEARNER_STATE_FADE_OUT;
     relearner->args->cancelled = TRUE;
     return MOVE_RELEARNER_STATE_WAIT_MESSAGE;
 }
 
-static int MoveRelearner_OnStopTeachingNo(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OnStopTeachingNo(MoveRelearner *relearner) {
     MoveRelearner_PrintMessage(relearner, 4);
     relearner->question = MOVE_RELEARNER_QUESTION_DELETE_MOVE;
     relearner->nextState = MOVE_RELEARNER_STATE_SHOW_YES_NO;
     return MOVE_RELEARNER_STATE_WAIT_MESSAGE;
 }
 
-static int MoveRelearner_OnForgetMoveYes(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OnForgetMoveYes(MoveRelearner *relearner) {
     MoveRelearner_PrintMessage(relearner, 5);
     relearner->nextState = MOVE_RELEARNER_STATE_PRINT_LEARNED;
     return MOVE_RELEARNER_STATE_WAIT_MESSAGE;
 }
 
-static int MoveRelearner_OnForgetMoveNo(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OnForgetMoveNo(MoveRelearner *relearner) {
     relearner->nextState = MOVE_RELEARNER_STATE_FADE_OUT_TO_SUMMARY;
     return MOVE_RELEARNER_STATE_WAIT_FADE;
 }
@@ -1609,13 +1609,13 @@ static void MoveRelearner_UpdateScrollArrows(MoveRelearner *relearner, int which
     ManagedSprite_SetAnimateFlag(relearner->sprites[MOVE_RELEARNER_SPRITE_UP_ARROW], anim);
 }
 
-static int MoveRelearner_FadeOutToSummary(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_FadeOutToSummary(MoveRelearner *relearner) {
     BeginAppScreenFade(1, HEAP_ID_66);
     relearner->nextState = MOVE_RELEARNER_STATE_OPEN_SUMMARY;
     return MOVE_RELEARNER_STATE_WAIT_FADE;
 }
 
-static int MoveRelearner_OpenSummary(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_OpenSummary(MoveRelearner *relearner) {
     u8 pages[] = { 1, 4 };
 
     MoveRelearner_Teardown(relearner);
@@ -1634,7 +1634,7 @@ static int MoveRelearner_OpenSummary(MoveRelearner *relearner) {
     return MOVE_RELEARNER_STATE_RUN_SUMMARY;
 }
 
-static int MoveRelearner_RunSummary(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_RunSummary(MoveRelearner *relearner) {
     if (OverlayManager_Run(relearner->summaryManager)) {
         OverlayManager_Delete(relearner->summaryManager);
         MoveRelearner_Setup(relearner);
@@ -1835,7 +1835,7 @@ static void MoveRelearner_DrawListRows(MoveRelearner *relearner, u32 selected) {
     } while (i < MOVE_RELEARNER_VISIBLE_ROWS);
 }
 
-static int MoveRelearner_StartReturnButtonFlash(MoveRelearner *relearner, int nextState) {
+static enum MoveRelearnerState MoveRelearner_StartReturnButtonFlash(MoveRelearner *relearner, int nextState) {
     MoveRelearnerButtonFlash *flash = &relearner->buttonFlash;
 
     flash->x = 24;
@@ -1848,7 +1848,7 @@ static int MoveRelearner_StartReturnButtonFlash(MoveRelearner *relearner, int ne
     return MOVE_RELEARNER_STATE_BUTTON_FLASH;
 }
 
-static int MoveRelearner_StartLearnButtonFlash(MoveRelearner *relearner, int nextState) {
+static enum MoveRelearnerState MoveRelearner_StartLearnButtonFlash(MoveRelearner *relearner, int nextState) {
     MoveRelearnerButtonFlash *flash = &relearner->buttonFlash;
 
     flash->x = 15;
@@ -1889,18 +1889,18 @@ static int MoveRelearner_UpdateButtonFlash(MoveRelearner *relearner) {
     return MOVE_RELEARNER_STATE_BUTTON_FLASH;
 }
 
-static int MoveRelearner_AskGiveUp(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_AskGiveUp(MoveRelearner *relearner) {
     MoveRelearner_PrintMessage(relearner, 2);
     relearner->question = MOVE_RELEARNER_QUESTION_GIVE_UP;
     relearner->nextState = MOVE_RELEARNER_STATE_SHOW_YES_NO;
     return MOVE_RELEARNER_STATE_WAIT_MESSAGE;
 }
 
-static int MoveRelearner_AskTeachAfterFlash(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_AskTeachAfterFlash(MoveRelearner *relearner) {
     return MoveRelearner_AskTeach(relearner);
 }
 
-static int MoveRelearner_AskTeach(MoveRelearner *relearner) {
+static enum MoveRelearnerState MoveRelearner_AskTeach(MoveRelearner *relearner) {
     u8 question;
 
     if (MoveRelearner_CountKnownMoves(relearner) < MAX_MON_MOVES) {

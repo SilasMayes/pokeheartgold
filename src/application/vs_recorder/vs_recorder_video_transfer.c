@@ -440,7 +440,7 @@ BOOL VsRecorder_VideoSearchEnter(VsRecorderWork *work) {
     default:
         switch (work->selection) {
         case VS_RECORDER_SELECTION_NEWEST_30:
-            VsRecorder_StartFlipScreens(work, 0);
+            VsRecorder_StartFlipScreens(work, FALSE);
             OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
             if (VsRecorder_HasResumeScreen(work) == TRUE) {
                 VsRecorder_SetSubState(work, 6);
@@ -449,7 +449,7 @@ BOOL VsRecorder_VideoSearchEnter(VsRecorderWork *work) {
             }
             break;
         case VS_RECORDER_SELECTION_SEARCH: // video search
-            VsRecorder_StartFlipScreens(work, 0);
+            VsRecorder_StartFlipScreens(work, FALSE);
             OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
             if (VsRecorder_HasResumeScreen(work) == TRUE) {
                 VsRecorder_SetSubState(work, SEARCH_RESUME);
@@ -466,7 +466,7 @@ BOOL VsRecorder_VideoSearchEnter(VsRecorderWork *work) {
             OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
             break;
         default:
-            VsRecorder_StartFlipScreens(work, 0);
+            VsRecorder_StartFlipScreens(work, FALSE);
             OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
             VsRecorder_SetSubState(work, 2);
             break;
@@ -624,7 +624,7 @@ BOOL VsRecorder_NumberSearchDownloadVideo(VsRecorderWork *work) {
             StopSE(SEQ_SE_PL_BREC80, 0);
             reg_G2_BLDCNT = 0;
             VsRecorder_ShowMessageScreen(work, VS_RECORDER_REQUEST_VIDEO_DOWNLOAD, error->code, error->type);
-            VsRecorder_StartFlipScreens(work, 0);
+            VsRecorder_StartFlipScreens(work, FALSE);
             work->step++;
             search->downloaded = FALSE;
         } else {
@@ -640,7 +640,7 @@ BOOL VsRecorder_NumberSearchDownloadVideo(VsRecorderWork *work) {
         OrbitCursor_SetRadius(work->orbitCursors[1], 0, 0);
         break;
     case NUMBER_SEARCH_DOWNLOAD_VIDEO_STEP_FLIP_SCREENS:
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     case NUMBER_SEARCH_DOWNLOAD_VIDEO_STEP_WAIT:
@@ -692,7 +692,7 @@ BOOL VsRecorder_NumberSearchShowDetails(VsRecorderWork *work) {
 
     switch (work->step) {
     case NUMBER_SEARCH_SHOW_DETAILS_STEP_FLIP_SCREENS:
-        VsRecorder_StartFlipScreens(work, 0);
+        VsRecorder_StartFlipScreens(work, FALSE);
         work->step++;
         break;
     case NUMBER_SEARCH_SHOW_DETAILS_STEP_LOAD_DETAILS:
@@ -807,7 +807,7 @@ BOOL VsRecorder_NumberSearchExitDetails(VsRecorderWork *work) {
         VsRecorder_SetVBlankPaused(work, TRUE);
         VsRecorder_RebuildMenuRowsParent(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     case NUMBER_SEARCH_EXIT_DETAILS_STEP_FADE_IN_MENU:
@@ -1057,7 +1057,7 @@ BOOL VsRecorder_NumberSearchShowSlots(VsRecorderWork *work) {
             VsRecorder_FreeFoundVideoDetails(work);
             VsRecorder_RebuildMenuRowsParent(work);
             VsRecorder_SetVBlankPaused(work, FALSE);
-            VsRecorder_StartFlipScreens(work, 1);
+            VsRecorder_StartFlipScreens(work, TRUE);
             work->step++;
             break;
         default:
@@ -1153,7 +1153,7 @@ BOOL VsRecorder_NumberSearchResume(VsRecorderWork *work) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
             GfGfxLoader_LoadCharDataFromOpenNarc(work->narc, 0x3E, work->bgConfig, GF_BG_LYR_MAIN_3, 0, 0, FALSE, HEAP_ID_109);
             GfGfxLoader_LoadCharDataFromOpenNarc(work->narc, 0x3E, work->bgConfig, GF_BG_LYR_SUB_3, 0, 0, FALSE, HEAP_ID_109);
-            VsRecorder_StartFlipScreens(work, 0);
+            VsRecorder_StartFlipScreens(work, FALSE);
             work->step++;
         }
         break;
@@ -1307,7 +1307,7 @@ BOOL VsRecorder_SendVideoExit(VsRecorderWork *work) {
         VsRecorder_SetVBlankPaused(work, TRUE);
         VsRecorder_RebuildMenuRowsParent(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
     } else if (VsRecorder_IsFlipScreensDone(work)) {
         if (VsRecorder_StepFade(&search->fade, 0)) {
@@ -1963,7 +1963,7 @@ BOOL VsRecorder_FoundVideoSave(VsRecorderWork *work) {
         VsRecorder_RebuildMenuRowsParent(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
         WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_109);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     default:

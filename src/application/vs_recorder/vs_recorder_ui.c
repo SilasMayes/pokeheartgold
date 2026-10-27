@@ -349,7 +349,7 @@ void VsRecorder_ClearResumeState(VsRecorderWork *work) {
     }
 }
 
-u32 VsRecorder_HasResumeScreen(VsRecorderWork *work) {
+BOOL VsRecorder_HasResumeScreen(VsRecorderWork *work) {
     return work->hasResumeScreen;
 }
 

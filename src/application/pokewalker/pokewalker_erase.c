@@ -66,12 +66,12 @@ enum EraseRecordsState {
     ERASE_RECORDS_DONE,
 };
 
-int PokewalkerApp_QuitMessage_Enter(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_QuitMessage_Enter(PokewalkerApp *app) {
     BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, HEAP_ID_154);
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_QuitMessage_Update(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_QuitMessage_Update(PokewalkerApp *app) {
     app->state = gQuitMessageStates[app->state](app);
     if (app->state == QUIT_MESSAGE_DONE) {
         app->nextMode = POKEWALKER_APP_MODE_EXIT;
@@ -81,7 +81,7 @@ int PokewalkerApp_QuitMessage_Update(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_QuitMessage_Exit(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_QuitMessage_Exit(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_ENTER;
 }
 
@@ -108,7 +108,7 @@ int PokewalkerApp_QuitMessage_End(PokewalkerApp *app) {
     return QUIT_MESSAGE_DONE;
 }
 
-int PokewalkerApp_EraseRecords_Enter(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_EraseRecords_Enter(PokewalkerApp *app) {
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_SUB_0, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_SUB_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
     FillBgTilemapRect(app->bgConfig, GF_BG_LYR_MAIN_1, 0, 0, 0, 32, 24, TILEMAP_FILL_KEEP_PAL);
@@ -122,7 +122,7 @@ int PokewalkerApp_EraseRecords_Enter(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_EraseRecords_Update(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_EraseRecords_Update(PokewalkerApp *app) {
     app->state = gEraseRecordsStates[app->state](app);
     if (app->state == ERASE_RECORDS_DONE) {
         app->state = 0;
@@ -132,7 +132,7 @@ int PokewalkerApp_EraseRecords_Update(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_EraseRecords_Exit(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_EraseRecords_Exit(PokewalkerApp *app) {
     PokewalkerApp_HideSprite(app, 8);
     PokewalkerApp_HideConnectionSprites(app);
     return POKEWALKER_APP_STATE_ENTER;

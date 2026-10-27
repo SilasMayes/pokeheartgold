@@ -55,13 +55,13 @@ enum MainMenuState {
     MAIN_MENU_DONE,
 };
 
-int PokewalkerApp_MainMenu_Enter(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_MainMenu_Enter(PokewalkerApp *app) {
     Sound_SetSceneAndPlayBGM(73, SEQ_GS_PHC, 0);
     PlayBGM(SEQ_GS_PHC);
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_MainMenu_Update(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_MainMenu_Update(PokewalkerApp *app) {
     app->state = gMainMenuStates[app->state](app);
     if (app->state == MAIN_MENU_DONE) {
         app->state = 0;
@@ -70,7 +70,7 @@ int PokewalkerApp_MainMenu_Update(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_MainMenu_Exit(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_MainMenu_Exit(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_ENTER;
 }
 

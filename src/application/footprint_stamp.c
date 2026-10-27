@@ -104,7 +104,7 @@ static void FootprintStamp_ShowParty(FootprintStamp *work);
 static void FootprintStamp_StartSelectEffect(FootprintStamp *work, int slot);
 static void FootprintStamp_UpdateDummy(FootprintStamp *work);
 static void FootprintStamp_UpdateInkGauge(FootprintStamp *work);
-static int FootprintStamp_UpdatePlayers(FootprintStamp *work);
+static enum FootprintStampPlayersChange FootprintStamp_UpdatePlayers(FootprintStamp *work);
 static void FootprintStamp_UpdateSelectEffects(FootprintStamp *work);
 static BOOL FootprintStamp_UseInk(FootprintStamp *work, fx32 amount);
 
@@ -1151,7 +1151,7 @@ BOOL FootprintStamp_PlaceStamp(FootprintStamp *work, FootprintStampMon *mon, u32
 #pragma opt_propagation off
 // Syncs the player list with the lobby: prints joined players' names, clears the rows of players who left.
 
-static int FootprintStamp_UpdatePlayers(FootprintStamp *work) {
+static enum FootprintStampPlayersChange FootprintStamp_UpdatePlayers(FootprintStamp *work) {
     BOOL joined;
     int left;
     WiFiPlazaPlayerList list;

@@ -42,9 +42,9 @@ typedef struct WiiMessageSettings {
     u8 screenStartState;
     u8 unk_7B;
     BOOL networkLoaded;
-    u32 currentApp;
+    enum WiiMessageSettingsApp currentApp;
     u32 unk_84;
-    u32 nextApp;
+    enum WiiMessageSettingsApp nextApp;
     u32 followingApp; // the app after nextApp
     u32 unk_90;
     void *childArgs;
@@ -59,7 +59,7 @@ typedef struct WiiMessageSettings {
     BOOL serverSessionStarted;
 } WiiMessageSettings;
 
-void WiiMessageSettings_SetNextApp(WiiMessageSettings *app, int nextApp, int followingApp);
+void WiiMessageSettings_SetNextApp(WiiMessageSettings *app, enum WiiMessageSettingsApp nextApp, int followingApp);
 void WiiMessageSettings_Quit(WiiMessageSettings *app);
 void WiiMessageSettings_SetScreenStartState(WiiMessageSettings *app, int state);
 u8 WiiMessageSettings_GetScreenStartState(WiiMessageSettings *app);

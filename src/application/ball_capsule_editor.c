@@ -335,7 +335,7 @@ static GF3DVramMan *BallCapsuleEditor_Create3DVramMan(void);
 static void BallCapsuleEditor_Init3D(void);
 static void BallCapsuleEditor_Alloc3DVram(void);
 static void BallCapsuleEditor_End3DFrame(void);
-static inline int BallCapsuleEditor_GetMenuItems(int items[4], int kind);
+static inline int BallCapsuleEditor_GetMenuItems(int items[4], enum BallCapsuleMenuKind kind);
 static void BallCapsuleEditor_CreateMenu(BgConfig *bgConfig, Window *unusedWindow, int unused, BallCapsuleEditor *editor, int capsule);
 static void BallCapsuleEditor_DestroyMenu(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_GetCapsulePosition(s32 capsule, s16 *x, s16 *y);
@@ -381,33 +381,33 @@ static void BallCapsuleEditor_SetCaseSpritesDrawFlag(BallCapsuleEditor *editor, 
 static void BallCapsuleEditor_Noop(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_DeleteCaseButtons(BallCapsuleEditor *editor);
 static BOOL BallCapsuleEditor_CapsuleHasSeals(CAPSULE *capsule);
-static int BallCapsuleEditor_GetMenuKind(BallCapsuleEditor *editor, int capsule);
+static enum BallCapsuleMenuKind BallCapsuleEditor_GetMenuKind(BallCapsuleEditor *editor, int capsule);
 static BOOL BallCapsuleEditor_RunMode(BallCapsuleEditor *editor);
-static int BallCapsuleEditor_EnterEdit(BallCapsuleEditor *editor);
+static enum BallCapsuleEditState BallCapsuleEditor_EnterEdit(BallCapsuleEditor *editor);
 static BOOL BallCapsuleEditor_LeaveEdit(BallCapsuleEditor *editor);
 static int BallCapsuleEditor_ConfirmQuitEdit(BallCapsuleEditor *editor);
-static int BallCapsuleEditor_PreviewCapsule(BallCapsuleEditor *editor);
+static enum BallCapsuleEditState BallCapsuleEditor_PreviewCapsule(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_HitboxCallback(u32 index, u32 event, void *arg);
 static BOOL BallCapsuleEditor_UpdateMenuInputState(BallCapsuleEditor *editor);
-static int BallCapsuleEditor_HandleSelectInput(BallCapsuleEditor *editor);
-static int BallCapsuleEditor_HandleSelection(BallCapsuleEditor *editor, int selection);
-static int BallCapsuleEditor_HandleSelectKeys(BallCapsuleEditor *editor);
-static int BallCapsuleEditor_HandleSelectTouch(BallCapsuleEditor *editor);
-static int BallCapsuleEditor_HandleSwitchInput(BallCapsuleEditor *editor);
-static int BallCapsuleEditor_FinishSwitch(BallCapsuleEditor *editor, BOOL confirm);
-static int BallCapsuleEditor_HandleSwitchSelection(BallCapsuleEditor *editor, int selection);
-static int BallCapsuleEditor_HandleSwitchKeys(BallCapsuleEditor *editor);
-static int BallCapsuleEditor_HandleSwitchTouch(BallCapsuleEditor *editor);
+static enum BallCapsuleSelectState BallCapsuleEditor_HandleSelectInput(BallCapsuleEditor *editor);
+static enum BallCapsuleSelectState BallCapsuleEditor_HandleSelection(BallCapsuleEditor *editor, int selection);
+static enum BallCapsuleSelectState BallCapsuleEditor_HandleSelectKeys(BallCapsuleEditor *editor);
+static enum BallCapsuleSelectState BallCapsuleEditor_HandleSelectTouch(BallCapsuleEditor *editor);
+static enum BallCapsuleSwitchState BallCapsuleEditor_HandleSwitchInput(BallCapsuleEditor *editor);
+static enum BallCapsuleSwitchState BallCapsuleEditor_FinishSwitch(BallCapsuleEditor *editor, BOOL confirm);
+static enum BallCapsuleSwitchState BallCapsuleEditor_HandleSwitchSelection(BallCapsuleEditor *editor, int selection);
+static enum BallCapsuleSwitchState BallCapsuleEditor_HandleSwitchKeys(BallCapsuleEditor *editor);
+static enum BallCapsuleSwitchState BallCapsuleEditor_HandleSwitchTouch(BallCapsuleEditor *editor);
 static BOOL BallCapsuleEditor_MoveCapsuleCursor(int *capsule);
 static void BallCapsuleEditor_UpdateCursors(BallCapsuleEditor *editor, int which, int copy);
 static int BallCapsuleEditor_GetTouchedCapsule(BallCapsuleEditor *editor);
-static int BallCapsuleEditor_HandleEditKeys(BallCapsuleEditor *editor);
+static enum BallCapsuleEditState BallCapsuleEditor_HandleEditKeys(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_SaveEditedCapsule(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_RestoreEditedCapsule(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_SaveSealCounts(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_RestoreSealCounts(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_CopyPreviewMon(BallCapsuleEditor *editor);
-static void BallCapsuleEditor_SetMode(BallCapsuleEditor *editor, u32 mode, u32 state, u32 returnState);
+static void BallCapsuleEditor_SetMode(BallCapsuleEditor *editor, enum BallCapsuleEditorMode mode, u32 state, u32 returnState);
 static void BallCapsuleEditor_SetButtonFrame(ManagedSprite *button, u32 event);
 static void BallCapsuleEditor_MoveButtonLabel(TextOBJ *label, s32 dx, s32 dy);
 static void BallCapsuleEditor_Task_ButtonPress(SysTask *task, void *data);
@@ -1372,7 +1372,7 @@ static void BallCapsuleEditor_End3DFrame(void) {
     RequestSwap3DBuffers(GX_SORTMODE_MANUAL, GX_BUFFERMODE_Z);
 }
 
-static inline int BallCapsuleEditor_GetMenuItems(int items[4], int kind) {
+static inline int BallCapsuleEditor_GetMenuItems(int items[4], enum BallCapsuleMenuKind kind) {
     int size;
 
     switch (kind) {
@@ -2062,7 +2062,7 @@ static BOOL BallCapsuleEditor_CapsuleHasSeals(CAPSULE *capsule) {
 }
 
 // 0: empty capsule, 1: capsule with seals, 2: with seals and on a Pokémon, 3: other
-static int BallCapsuleEditor_GetMenuKind(BallCapsuleEditor *editor, int capsule) {
+static enum BallCapsuleMenuKind BallCapsuleEditor_GetMenuKind(BallCapsuleEditor *editor, int capsule) {
     u32 partySlot = editor->capsuleIcons[capsule].partySlot;
     u32 hasSeals = editor->capsuleIcons[capsule].hasSeals;
 
@@ -2327,7 +2327,7 @@ BOOL BallCapsuleEditor_ModeNone(BallCapsuleEditor *editor) {
     return FALSE;
 }
 
-static int BallCapsuleEditor_EnterEdit(BallCapsuleEditor *editor) {
+static enum BallCapsuleEditState BallCapsuleEditor_EnterEdit(BallCapsuleEditor *editor) {
     switch (editor->subState) {
     case 0:
         BallCapsuleEditor_SetInputEnabled(editor, FALSE);
@@ -2512,7 +2512,7 @@ static int BallCapsuleEditor_ConfirmQuitEdit(BallCapsuleEditor *editor) {
 }
 
 // "Confirming...": the party Pokémon (or the first non-Egg) comes out of its ball with the capsule's seals.
-static int BallCapsuleEditor_PreviewCapsule(BallCapsuleEditor *editor) {
+static enum BallCapsuleEditState BallCapsuleEditor_PreviewCapsule(BallCapsuleEditor *editor) {
     u32 capsuleId;
     BallThrowParams ballParams;
     CAPSULE capsule;
@@ -2768,7 +2768,7 @@ static BOOL BallCapsuleEditor_UpdateMenuInputState(BallCapsuleEditor *editor) {
     return FALSE;
 }
 
-static int BallCapsuleEditor_HandleSelectInput(BallCapsuleEditor *editor) {
+static enum BallCapsuleSelectState BallCapsuleEditor_HandleSelectInput(BallCapsuleEditor *editor) {
     BallCapsuleEditor_UpdateMenuInputState(editor);
     if (editor->menuInputState == MENU_INPUT_STATE_BUTTONS) {
         return BallCapsuleEditor_HandleSelectKeys(editor);
@@ -2777,7 +2777,7 @@ static int BallCapsuleEditor_HandleSelectInput(BallCapsuleEditor *editor) {
     }
 }
 
-static int BallCapsuleEditor_HandleSelection(BallCapsuleEditor *editor, int selection) {
+static enum BallCapsuleSelectState BallCapsuleEditor_HandleSelection(BallCapsuleEditor *editor, int selection) {
     switch (selection) {
     case BALL_CAPSULE_EDITOR_SELECT_BACK:
         PlaySE(SEQ_SE_DP_DECIDE);
@@ -2811,7 +2811,7 @@ static int BallCapsuleEditor_HandleSelection(BallCapsuleEditor *editor, int sele
     return BALL_CAPSULE_SELECT_INPUT;
 }
 
-static int BallCapsuleEditor_HandleSelectKeys(BallCapsuleEditor *editor) {
+static enum BallCapsuleSelectState BallCapsuleEditor_HandleSelectKeys(BallCapsuleEditor *editor) {
     int selection;
 
     if (gSystem.newKeys & PAD_BUTTON_B) {
@@ -2832,7 +2832,7 @@ static int BallCapsuleEditor_HandleSelectKeys(BallCapsuleEditor *editor) {
     }
 }
 
-static int BallCapsuleEditor_HandleSelectTouch(BallCapsuleEditor *editor) {
+static enum BallCapsuleSelectState BallCapsuleEditor_HandleSelectTouch(BallCapsuleEditor *editor) {
     int selection = BallCapsuleEditor_GetTouchedCapsule(editor);
 
     if (selection < 0) {
@@ -2841,7 +2841,7 @@ static int BallCapsuleEditor_HandleSelectTouch(BallCapsuleEditor *editor) {
     return BallCapsuleEditor_HandleSelection(editor, (u8)selection);
 }
 
-static int BallCapsuleEditor_HandleSwitchInput(BallCapsuleEditor *editor) {
+static enum BallCapsuleSwitchState BallCapsuleEditor_HandleSwitchInput(BallCapsuleEditor *editor) {
     BallCapsuleEditor_UpdateMenuInputState(editor);
     if (editor->menuInputState == MENU_INPUT_STATE_BUTTONS) {
         return BallCapsuleEditor_HandleSwitchKeys(editor);
@@ -2849,7 +2849,7 @@ static int BallCapsuleEditor_HandleSwitchInput(BallCapsuleEditor *editor) {
     return BallCapsuleEditor_HandleSwitchTouch(editor);
 }
 
-static int BallCapsuleEditor_FinishSwitch(BallCapsuleEditor *editor, BOOL confirm) {
+static enum BallCapsuleSwitchState BallCapsuleEditor_FinishSwitch(BallCapsuleEditor *editor, BOOL confirm) {
     int target = editor->cursorCapsule[1];
     int current = editor->cursorCapsule[0];
 
@@ -2870,7 +2870,7 @@ static int BallCapsuleEditor_FinishSwitch(BallCapsuleEditor *editor, BOOL confir
     return BALL_CAPSULE_SWITCH_FINISH;
 }
 
-static int BallCapsuleEditor_HandleSwitchSelection(BallCapsuleEditor *editor, int selection) {
+static enum BallCapsuleSwitchState BallCapsuleEditor_HandleSwitchSelection(BallCapsuleEditor *editor, int selection) {
     switch (selection) {
     case BALL_CAPSULE_EDITOR_SELECT_BACK:
         return BallCapsuleEditor_FinishSwitch(editor, FALSE);
@@ -2889,7 +2889,7 @@ static int BallCapsuleEditor_HandleSwitchSelection(BallCapsuleEditor *editor, in
     return BALL_CAPSULE_SWITCH_INPUT;
 }
 
-static int BallCapsuleEditor_HandleSwitchKeys(BallCapsuleEditor *editor) {
+static enum BallCapsuleSwitchState BallCapsuleEditor_HandleSwitchKeys(BallCapsuleEditor *editor) {
     int selection;
 
     if (gSystem.newKeys & PAD_BUTTON_B) {
@@ -2908,7 +2908,7 @@ static int BallCapsuleEditor_HandleSwitchKeys(BallCapsuleEditor *editor) {
     return BallCapsuleEditor_HandleSwitchSelection(editor, (u8)selection);
 }
 
-static int BallCapsuleEditor_HandleSwitchTouch(BallCapsuleEditor *editor) {
+static enum BallCapsuleSwitchState BallCapsuleEditor_HandleSwitchTouch(BallCapsuleEditor *editor) {
     int selection = BallCapsuleEditor_GetTouchedCapsule(editor);
 
     if (selection < 0) {
@@ -3009,7 +3009,7 @@ static int BallCapsuleEditor_GetTouchedCapsule(BallCapsuleEditor *editor) {
     return found;
 }
 
-static int BallCapsuleEditor_HandleEditKeys(BallCapsuleEditor *editor) {
+static enum BallCapsuleEditState BallCapsuleEditor_HandleEditKeys(BallCapsuleEditor *editor) {
     u32 keys;
 
     BallCapsuleEditor_UpdateMenuInputState(editor);
@@ -3122,7 +3122,7 @@ static void BallCapsuleEditor_CopyPreviewMon(BallCapsuleEditor *editor) {
 }
 
 // state 0xFF: the saved returnState.
-static void BallCapsuleEditor_SetMode(BallCapsuleEditor *editor, u32 mode, u32 state, u32 returnState) {
+static void BallCapsuleEditor_SetMode(BallCapsuleEditor *editor, enum BallCapsuleEditorMode mode, u32 state, u32 returnState) {
     if (state == 0xFF) {
         editor->state = editor->returnState;
     } else {

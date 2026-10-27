@@ -185,7 +185,7 @@ static void WiiMessageSettings_UnloadNetworkOverlays(WiiMessageSettings *app) {
     }
 }
 
-void WiiMessageSettings_SetNextApp(WiiMessageSettings *app, int nextApp, int followingApp) {
+void WiiMessageSettings_SetNextApp(WiiMessageSettings *app, enum WiiMessageSettingsApp nextApp, int followingApp) {
     app->nextApp = nextApp;
     app->followingApp = followingApp;
 }

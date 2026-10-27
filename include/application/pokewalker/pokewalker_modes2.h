@@ -87,9 +87,9 @@ typedef struct PokewalkerBoxDisplay {
 } PokewalkerBoxDisplay;
 
 // Modes of the app's mode table: enter / update / exit.
-int PokewalkerApp_LinkSave_Enter(PokewalkerApp *app);
-int PokewalkerApp_LinkSave_Update(PokewalkerApp *app);
-int PokewalkerApp_LinkSave_Exit(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_LinkSave_Enter(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_LinkSave_Update(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_LinkSave_Exit(PokewalkerApp *app);
 int PokewalkerApp_LinkSave_PrintSaving(PokewalkerApp *app);
 int PokewalkerApp_LinkSave_WaitSaving(PokewalkerApp *app);
 int PokewalkerApp_LinkSave_Save(PokewalkerApp *app);
@@ -101,18 +101,18 @@ int PokewalkerApp_LinkSave_Save2(PokewalkerApp *app);
 int PokewalkerApp_LinkSave_EndSave2(PokewalkerApp *app);
 int PokewalkerApp_LinkSave_GoToStrollReport(PokewalkerApp *app);
 int PokewalkerApp_LinkSave_End(PokewalkerApp *app);
-int PokewalkerApp_SelectMon_Enter(PokewalkerApp *app);
-int PokewalkerApp_SelectMon_Update(PokewalkerApp *app);
-int PokewalkerApp_SelectMon_Exit(PokewalkerApp *app);
-int PokewalkerApp_EventLog_Enter(PokewalkerApp *app);
-int PokewalkerApp_EventLog_Update(PokewalkerApp *app);
-int PokewalkerApp_EventLog_Exit(PokewalkerApp *app);
-int PokewalkerApp_WaitKey_Enter(PokewalkerApp *app);
-int PokewalkerApp_WaitKey_Update(PokewalkerApp *app);
-int PokewalkerApp_WaitKey_Exit(PokewalkerApp *app);
-int PokewalkerApp_StrollReport_Enter(PokewalkerApp *app);
-int PokewalkerApp_StrollReport_Update(PokewalkerApp *app);
-int PokewalkerApp_StrollReport_Exit(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_SelectMon_Enter(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_SelectMon_Update(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_SelectMon_Exit(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_EventLog_Enter(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_EventLog_Update(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_EventLog_Exit(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_WaitKey_Enter(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_WaitKey_Update(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_WaitKey_Exit(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_StrollReport_Enter(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_StrollReport_Update(PokewalkerApp *app);
+enum PokewalkerAppState PokewalkerApp_StrollReport_Exit(PokewalkerApp *app);
 
 // States of mode 10 (gStrollReportStates).
 int PokewalkerApp_StrollReport_Start(PokewalkerApp *app);

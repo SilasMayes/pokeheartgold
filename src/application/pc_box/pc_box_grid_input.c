@@ -701,15 +701,15 @@ void PCBox_StartCursorSlide(PCBoxView *view, u32 newTarget, u32 prevTarget) {
     view->temp = slide;
 }
 
-u32 PCBox_IsSummaryShortcutPressed(PCBoxWork *work) {
+BOOL PCBox_IsSummaryShortcutPressed(PCBoxWork *work) {
     if (PCBox_IsSummaryButtonShown(work->view->panels) == 0) {
-        return 0;
+        return FALSE;
     }
     if (gSystem.newKeys & PAD_BUTTON_Y) {
-        return 1;
+        return TRUE;
     }
     if (TouchscreenHitbox_TouchNewIsIn(gPCBoxSummaryShortcutHitbox) == TRUE) {
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }

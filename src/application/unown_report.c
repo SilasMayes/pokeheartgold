@@ -147,10 +147,10 @@ static void UnownReport_InitData(UnownReportApp *app);
 static void UnownReport_RestoreMenuInputState(UnownReportApp *app);
 static BOOL UnownReport_SetupGraphics(UnownReportApp *app);
 static BOOL UnownReport_Teardown(UnownReportApp *app);
-static int UnownReport_FadeIn(UnownReportApp *app);
-static int UnownReport_FadeOut(UnownReportApp *app);
+static enum UnownReportMainState UnownReport_FadeIn(UnownReportApp *app);
+static enum UnownReportMainState UnownReport_FadeOut(UnownReportApp *app);
 static int UnownReport_HandleInput(UnownReportApp *app);
-static int UnownReport_TurnPage(UnownReportApp *app);
+static enum UnownReportMainState UnownReport_TurnPage(UnownReportApp *app);
 static void UnownReport_CreateGraphics(UnownReportApp *app);
 static void UnownReport_DestroyGraphics(UnownReportApp *app);
 static void UnownReport_DrawFirstPage(UnownReportApp *app);
@@ -159,9 +159,9 @@ static u8 UnownReport_GetNumInfoPages(UnownReportApp *app);
 static void UnownReport_DrawPage(UnownReportApp *app, int unused);
 static void UnownReport_DrawTitle(UnownReportApp *app, int bookAnimSeq);
 static BOOL UnownReport_IsBookAnimating(UnownReportApp *app);
-static int UnownReport_HandleButton(UnownReportApp *app, u32 button);
-static int UnownReport_HandleKeys(UnownReportApp *app);
-static int UnownReport_HandleTouch(UnownReportApp *app, BOOL *touched);
+static enum UnownReportMainState UnownReport_HandleButton(UnownReportApp *app, u32 button);
+static enum UnownReportMainState UnownReport_HandleKeys(UnownReportApp *app);
+static enum UnownReportMainState UnownReport_HandleTouch(UnownReportApp *app, BOOL *touched);
 static void UnownReport_DrawCoverPage(UnownReportApp *app);
 static void UnownReport_DrawFormSpread(UnownReportApp *app, u8 spread);
 static void UnownReport_DrawInfoPage(UnownReportApp *app, u8 infoPage);
@@ -570,7 +570,7 @@ static BOOL UnownReport_Teardown(UnownReportApp *app) {
     return TRUE;
 }
 
-static int UnownReport_FadeIn(UnownReportApp *app) {
+static enum UnownReportMainState UnownReport_FadeIn(UnownReportApp *app) {
     switch (app->subState) {
     case UNOWN_REPORT_FADE_START:
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, app->heapID);
@@ -586,7 +586,7 @@ static int UnownReport_FadeIn(UnownReportApp *app) {
     return UNOWN_REPORT_MAIN_FADE_IN;
 }
 
-static int UnownReport_FadeOut(UnownReportApp *app) {
+static enum UnownReportMainState UnownReport_FadeOut(UnownReportApp *app) {
     switch (app->subState) {
     case UNOWN_REPORT_FADE_START:
         if (!UnownReport_IsBookAnimating(app)) {
@@ -608,7 +608,7 @@ static int UnownReport_HandleInput(UnownReportApp *app) {
     return UnownReport_ProcessInput(app);
 }
 
-static int UnownReport_TurnPage(UnownReportApp *app) {
+static enum UnownReportMainState UnownReport_TurnPage(UnownReportApp *app) {
     switch (app->subState) {
     case UNOWN_REPORT_TURN_PAGE_FADE_OUT:
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_UPWARD_OUT, FADE_TYPE_DOWNWARD_OUT, RGB_BLACK, 6, 1, app->heapID);
@@ -717,7 +717,7 @@ static BOOL UnownReport_IsBookAnimating(UnownReportApp *app) {
 }
 
 // button: 0 close, 1 previous page, 2 next page (also the touch hitbox index)
-static int UnownReport_HandleButton(UnownReportApp *app, u32 button) {
+static enum UnownReportMainState UnownReport_HandleButton(UnownReportApp *app, u32 button) {
     switch (button) {
     case 0:
         PlaySE(SEQ_SE_DP_DECIDE);
@@ -744,7 +744,7 @@ static int UnownReport_HandleButton(UnownReportApp *app, u32 button) {
     }
 }
 
-static int UnownReport_HandleKeys(UnownReportApp *app) {
+static enum UnownReportMainState UnownReport_HandleKeys(UnownReportApp *app) {
     if (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_KEY_RIGHT | PAD_KEY_LEFT | PAD_KEY_UP | PAD_KEY_DOWN | PAD_BUTTON_X | PAD_BUTTON_Y)) {
         app->menuInputState = MENU_INPUT_STATE_BUTTONS;
     }
@@ -760,7 +760,7 @@ static int UnownReport_HandleKeys(UnownReportApp *app) {
     return UNOWN_REPORT_MAIN_INPUT;
 }
 
-static int UnownReport_HandleTouch(UnownReportApp *app, BOOL *touched) {
+static enum UnownReportMainState UnownReport_HandleTouch(UnownReportApp *app, BOOL *touched) {
     int hitbox = TouchscreenHitbox_FindHitboxAtTouchNew(gUnownReportHitboxes);
 
     if (hitbox == TOUCH_MENU_NO_INPUT) {

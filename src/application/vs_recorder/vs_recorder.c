@@ -353,7 +353,7 @@ static void VsRecorder_InitBgLayers(BgConfig *bgConfig) {
     G2S_SetBlendAlpha(GX_BLEND_PLANEMASK_BG2, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ, 7, 8);
 }
 
-void VsRecorder_SetScreensFlipped(int flipped) {
+void VsRecorder_SetScreensFlipped(BOOL flipped) {
     gSystem.screensFlipped = flipped;
     GfGfx_SwapDisplay();
 }

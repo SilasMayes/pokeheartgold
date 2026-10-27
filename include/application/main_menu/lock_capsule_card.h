@@ -34,6 +34,6 @@ enum MysteryGiftCheckResult {
     MYSTERY_GIFT_CHECK_OTHER_ROUTE, // delivered by another route
 };
 
-int MysteryGift_CheckCanReceive(SaveData *saveData, WonderCardInfo *header);
+enum MysteryGiftCheckResult MysteryGift_CheckCanReceive(SaveData *saveData, WonderCardInfo *header);
 
 #endif // POKEHEARTGOLD_APPLICATION_MAIN_MENU_LOCK_CAPSULE_CARD_H

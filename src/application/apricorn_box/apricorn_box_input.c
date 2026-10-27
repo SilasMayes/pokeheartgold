@@ -11,15 +11,15 @@
 #include "text.h"
 #include "touchscreen.h"
 
-static int ApricornBoxScreen_ViewSelect(ApricornBoxScreen *screen, u32 input);
-static int ApricornBoxScreen_ViewKeys(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_ViewTouch(ApricornBoxScreen *screen, int *hit);
+static enum ApricornBoxScreenState ApricornBoxScreen_ViewSelect(ApricornBoxScreen *screen, u32 input);
+static enum ApricornBoxScreenState ApricornBoxScreen_ViewKeys(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_ViewTouch(ApricornBoxScreen *screen, int *hit);
 static int ApricornBoxScreen_BlenderSelect(ApricornBoxScreen *screen, u32 input);
 static int ApricornBoxScreen_BlenderKeys(ApricornBoxScreen *screen);
 static int ApricornBoxScreen_BlenderTouch(ApricornBoxScreen *screen, int *hit);
-static int ApricornBoxScreen_KurtSelect(ApricornBoxScreen *screen, u32 input);
-static int ApricornBoxScreen_KurtKeys(ApricornBoxScreen *screen);
-static int ApricornBoxScreen_KurtTouch(ApricornBoxScreen *screen, int *hit);
+static enum ApricornBoxScreenState ApricornBoxScreen_KurtSelect(ApricornBoxScreen *screen, u32 input);
+static enum ApricornBoxScreenState ApricornBoxScreen_KurtKeys(ApricornBoxScreen *screen);
+static enum ApricornBoxScreenState ApricornBoxScreen_KurtTouch(ApricornBoxScreen *screen, int *hit);
 static int ApricornBoxScreen_QuantitySelect(ApricornBoxScreen *screen, int input);
 static int ApricornBoxScreen_StepQuantity(int value, int max, int delta);
 static int ApricornBoxScreen_QuantityKeys(ApricornBoxScreen *screen);
@@ -136,7 +136,7 @@ int ApricornBoxScreen_HandleQuantityInput(ApricornBoxScreen *screen) {
     return result;
 }
 
-static int ApricornBoxScreen_ViewSelect(ApricornBoxScreen *screen, u32 input) {
+static enum ApricornBoxScreenState ApricornBoxScreen_ViewSelect(ApricornBoxScreen *screen, u32 input) {
     if (input <= 6) {
         PlaySE(SEQ_SE_DP_SELECT);
         ApricornBoxScreen_UpdateCursor(screen);
@@ -151,7 +151,7 @@ static int ApricornBoxScreen_ViewSelect(ApricornBoxScreen *screen, u32 input) {
     return APRICORN_BOX_SCREEN_STATE_VIEW;
 }
 
-static int ApricornBoxScreen_ViewKeys(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_ViewKeys(ApricornBoxScreen *screen) {
     u32 keys = gSystem.newKeys;
     if (keys & 0xCF3) {
         screen->menuInputState = MENU_INPUT_STATE_BUTTONS;
@@ -171,7 +171,7 @@ static int ApricornBoxScreen_ViewKeys(ApricornBoxScreen *screen) {
     return APRICORN_BOX_SCREEN_STATE_VIEW;
 }
 
-static int ApricornBoxScreen_ViewTouch(ApricornBoxScreen *screen, int *hit) {
+static enum ApricornBoxScreenState ApricornBoxScreen_ViewTouch(ApricornBoxScreen *screen, int *hit) {
     int input = TouchscreenHitbox_FindHitboxAtTouchNew(sApricornBoxHitboxes);
     if (input == TOUCH_MENU_NO_INPUT || input == 7) {
         return APRICORN_BOX_SCREEN_STATE_VIEW;
@@ -279,7 +279,7 @@ static int ApricornBoxScreen_BlenderTouch(ApricornBoxScreen *screen, int *hit) {
     return ApricornBoxScreen_BlenderSelect(screen, input);
 }
 
-static int ApricornBoxScreen_KurtSelect(ApricornBoxScreen *screen, u32 input) {
+static enum ApricornBoxScreenState ApricornBoxScreen_KurtSelect(ApricornBoxScreen *screen, u32 input) {
     if (input <= 6) {
         PlaySE(SEQ_SE_DP_SELECT);
         ApricornBoxScreen_UpdateCursor(screen);
@@ -299,7 +299,7 @@ static int ApricornBoxScreen_KurtSelect(ApricornBoxScreen *screen, u32 input) {
     return APRICORN_BOX_SCREEN_STATE_KURT;
 }
 
-static int ApricornBoxScreen_KurtKeys(ApricornBoxScreen *screen) {
+static enum ApricornBoxScreenState ApricornBoxScreen_KurtKeys(ApricornBoxScreen *screen) {
     u32 keys = gSystem.newKeys;
     if (keys & 0xCF3) {
         screen->menuInputState = MENU_INPUT_STATE_BUTTONS;
@@ -319,7 +319,7 @@ static int ApricornBoxScreen_KurtKeys(ApricornBoxScreen *screen) {
     return APRICORN_BOX_SCREEN_STATE_KURT;
 }
 
-static int ApricornBoxScreen_KurtTouch(ApricornBoxScreen *screen, int *hit) {
+static enum ApricornBoxScreenState ApricornBoxScreen_KurtTouch(ApricornBoxScreen *screen, int *hit) {
     int input = TouchscreenHitbox_FindHitboxAtTouchNew(sApricornBoxHitboxes);
     if (input == TOUCH_MENU_NO_INPUT || input == 7) {
         return APRICORN_BOX_SCREEN_STATE_KURT;

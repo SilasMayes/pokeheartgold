@@ -53,7 +53,7 @@ typedef struct MailboxAppSubApp {
 static int MailboxApp_StartFadeIn(MailboxApp *app, int nextState);
 static int MailboxApp_StartFadeOut(MailboxApp *app, int nextState);
 static int MailboxApp_WaitForText(MailboxApp *app, u8 waitForInput, int nextState);
-static int MailboxApp_AskYesNo(MailboxApp *app, u32 question);
+static int MailboxApp_AskYesNo(MailboxApp *app, enum MailboxQuestion question);
 static int MailboxApp_StartCellFlash(MailboxApp *app, int cell, int nextState);
 static int MailboxApp_StartSpriteFlash(MailboxApp *app, int sprite, int nextState);
 static void MailboxAppData_SetListDimmed(MailboxAppData *data, BOOL enable);
@@ -497,7 +497,7 @@ static int MailboxApp_WaitForText(MailboxApp *app, u8 waitForInput, int nextStat
     return MAILBOX_STATE_WAIT_TEXT;
 }
 
-static int MailboxApp_AskYesNo(MailboxApp *app, u32 question) {
+static int MailboxApp_AskYesNo(MailboxApp *app, enum MailboxQuestion question) {
     app->data->yesNoQuestion = question;
     MailboxApp_ShowYesNoPrompt(app);
     return MAILBOX_STATE_YES_NO;

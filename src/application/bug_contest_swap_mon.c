@@ -149,10 +149,10 @@ typedef struct BugContestSwapMonBgTemplates {
 
 static void BugContestSwapMon_ShowBothMons(BugContestSwapMon *swapMon);
 static void BugContestSwapMon_InitYesNoPrompt(BugContestSwapMon *swapMon);
-static int BugContestSwapMon_GetInitialState(int noPokemonCaught);
+static enum BugContestSwapMonState BugContestSwapMon_GetInitialState(int noPokemonCaught);
 static void BugContestSwapMon_SetBanks(void);
 static void BugContestSwapMon_ResetDisplay(void);
-static void BugContestSwapMon_SetResult(BugContestSwapMon *swapMon, int choice);
+static void BugContestSwapMon_SetResult(BugContestSwapMon *swapMon, enum SwapMonChoice choice);
 static void BugContestSwapMon_DrawHpBar(Window *window, u16 hp, u16 maxHp);
 static void BugContestSwapMon_VBlank(void *data);
 static void BugContestSwapMon_Setup(OverlayManager *man);
@@ -542,7 +542,7 @@ static void BugContestSwapMon_InitYesNoPrompt(BugContestSwapMon *swapMon) {
     YesNoPrompt_InitFromTemplate(swapMon->yesNoPrompt, &template);
 }
 
-static int BugContestSwapMon_GetInitialState(int noPokemonCaught) {
+static enum BugContestSwapMonState BugContestSwapMon_GetInitialState(int noPokemonCaught) {
     switch (noPokemonCaught) {
     case FALSE:
         return SWAP_MON_STATE_CHOOSE_MON;
@@ -570,7 +570,7 @@ static void BugContestSwapMon_ResetDisplay(void) {
     GXS_SetVisiblePlane(0);
 }
 
-static void BugContestSwapMon_SetResult(BugContestSwapMon *swapMon, int choice) {
+static void BugContestSwapMon_SetResult(BugContestSwapMon *swapMon, enum SwapMonChoice choice) {
     switch (choice) {
     case SWAP_MON_CHOICE_KEEP_NEW: {
         BugContestSwapMonArgs *args = swapMon->args;

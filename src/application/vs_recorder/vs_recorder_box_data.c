@@ -426,7 +426,7 @@ BOOL VsRecorder_BoxDataEnter(VsRecorderWork *work) {
         VsRecorder_SetVBlankPaused(work, TRUE);
         VsRecorder_FreeMenuRows(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
-        VsRecorder_StartFlipScreens(work, 0);
+        VsRecorder_StartFlipScreens(work, FALSE);
         OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
         work->step++;
         break;
@@ -597,7 +597,7 @@ BOOL VsRecorder_BoxDataSendUpload(VsRecorderWork *work) {
         } else {
             StopSE(SEQ_SE_PL_BREC80, 0);
             VsRecorder_AddGameStatsScore(work, 37);
-            VsRecorder_SetBoxUploaded(work, 1);
+            VsRecorder_SetBoxUploaded(work, TRUE);
             PlaySE(SEQ_SE_PL_BREC12);
             work->step++;
         }
@@ -1074,7 +1074,7 @@ BOOL VsRecorder_BoxDataSendExit(VsRecorderWork *work) {
         VsRecorder_FreeBoxDataButtons(work);
         OrbitCursor_SetActive(work->orbitCursors[1], FALSE);
         OrbitCursor_SetVisible(work->orbitCursors[1], FALSE);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     case BOX_DATA_SEND_EXIT_STEP_REBUILD_MENU:

@@ -270,8 +270,8 @@ typedef struct VsRecorderTouchScroll {
 } VsRecorderTouchScroll;
 
 typedef struct VsRecorderFlipArgs {
-    int flipped;
-    u32 done;
+    BOOL flipped;
+    BOOL done;
 } VsRecorderFlipArgs;
 
 // video list received from the server
@@ -513,7 +513,7 @@ struct VsRecorderWork {
     VsRecorderMessageScreen messageScreen;
     u32 unk_0520;
     u32 vblankBusy;
-    u32 vblankPaused;
+    BOOL vblankPaused;
     VsRecorderFlipArgs flipArgs;
     VsRecorderMenuRow pathRows[5];
     VsRecorderMenuRow choiceRows[5];
@@ -537,7 +537,7 @@ struct VsRecorderWork {
     void *unk_0864;
     void *result; // VsRecorderAppResult of the launcher
     u32 selection;
-    u32 boxUploaded; // a box was sent (only one per visit)
+    BOOL boxUploaded; // a box was sent (only one per visit)
     u32 battleResult;
     u8 *videoFlag;
     BattleRecordHeader *savedVideos[4];
@@ -552,7 +552,7 @@ struct VsRecorderWork {
 
 void VsRecorder_InitResources(VsRecorderWork *work);
 void VsRecorder_FreeResources(VsRecorderWork *work);
-void VsRecorder_SetScreensFlipped(int flipped);
+void VsRecorder_SetScreensFlipped(BOOL flipped);
 void VsRecorder_ResetBg2(VsRecorderWork *work);
 void VsRecorder_VBlankCB(void *data);
 BOOL VsRecorder_Main(VsRecorderWork *work, int *screen);
@@ -568,7 +568,7 @@ void VsRecorder_UpdateMenuHitboxes(VsRecorderWork *work);
 void VsRecorder_UpdateMenuTouch(VsRecorderWork *work);
 void VsRecorder_MenuPop(VsRecorderWork *work);
 void VsRecorder_ClearResumeState(VsRecorderWork *work);
-u32 VsRecorder_HasResumeScreen(VsRecorderWork *work);
+BOOL VsRecorder_HasResumeScreen(VsRecorderWork *work);
 void VsRecorder_SetResumeScreen(VsRecorderWork *work, u32 screen);
 void VsRecorder_LoadFrameBg(VsRecorderWork *work);
 void VsRecorder_LoadMessageBg(VsRecorderWork *work, GFBgLayer layer, BOOL alternate);
@@ -624,8 +624,8 @@ u32 VsRecorder_GetSchemeFileId(VsRecorderWork *work, u32 kind);
 void VsRecorder_ReloadSchemePalettes(VsRecorderWork *work, u32 unused);
 void VsRecorder_ClearPaletteBlend(VsRecorderWork *work);
 u16 *VsRecorder_LoadSpeciesList(enum HeapID heapID, int unused, int *count);
-void VsRecorder_SetBoxUploaded(VsRecorderWork *work, u32 uploaded);
-u32 VsRecorder_IsBoxUploaded(VsRecorderWork *work);
+void VsRecorder_SetBoxUploaded(VsRecorderWork *work, BOOL uploaded);
+BOOL VsRecorder_IsBoxUploaded(VsRecorderWork *work);
 
 void VsRecorder_ShowNotice(VsRecorderWork *work, int msgId);
 void VsRecorder_HideNotice(VsRecorderWork *work);
@@ -663,8 +663,8 @@ void VsRecorder_TouchScrollSetEnabled(VsRecorderTouchScroll *scroll, VsRecorderL
 void VsRecorder_UpdateTouchScroll(VsRecorderTouchScroll *scroll);
 void VsRecorder_AddGameStatsScore(VsRecorderWork *work, int score);
 void VsRecorder_ImportBattleRecord(VsRecorderWork *work);
-SysTask *VsRecorder_StartFlipScreens(VsRecorderWork *work, int flipped);
-u32 VsRecorder_IsFlipScreensDone(VsRecorderWork *work);
+SysTask *VsRecorder_StartFlipScreens(VsRecorderWork *work, BOOL flipped);
+BOOL VsRecorder_IsFlipScreensDone(VsRecorderWork *work);
 void VsRecorder_StartVBlankTask(VsRecorderWork *work);
 BOOL VsRecorder_StepRecordSave(VsRecorderWork *work, u32 index, u32 sealed); // TRUE when done
 void VsRecorder_SetBattleResult(VsRecorderWork *work, u32 result);
@@ -691,7 +691,7 @@ void VsRecorder_ResetBgPriorities(void);
 void VsRecorder_PlaceOrbitCursor(VsRecorderWork *work, struct OrbitCursor *cursor, s16 x, s16 y);
 void VsRecorder_LoadScreen(VsRecorderWork *work, int fileId, GFBgLayer layer);
 void VsRecorder_OnTouchConfirm(VsRecorderWork *work);
-void VsRecorder_SetVBlankPaused(VsRecorderWork *work, u32 paused);
+void VsRecorder_SetVBlankPaused(VsRecorderWork *work, BOOL paused);
 void VsRecorder_CreateLabeledSprite(VsRecorderWork *work, VsRecorderTextSprite *textSprite, NNS_G2D_VRAM_TYPE vram, int msgId, s16 x, s16 y, s16 textX, s16 textY, int anim, BOOL draw);
 void VsRecorder_FreeLabeledSprite(VsRecorderTextSprite *textSprite);
 u32 VsRecorder_SetupMessageScreenMsg(VsRecorderWork *work, u32 group, u32 index, u32 type);

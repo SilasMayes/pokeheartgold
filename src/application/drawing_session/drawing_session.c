@@ -119,7 +119,7 @@ static BOOL DrawingSession_IsPrinterDone(u32 printerId);
 static void DrawingSession_ClearMessageWindow(DrawingSessionWork *work);
 static void DrawingSession_UpdateMaxEntries(DrawingSessionWork *work, int extra);
 static inline BOOL DrawingSession_IsOneMemberBit(u32 bits);
-static int DrawingSession_HandleMemberCount(DrawingSessionWork *work);
+static enum DrawingSessionMainState DrawingSession_HandleMemberCount(DrawingSessionWork *work);
 static void DrawingSession_SetNextSubState(DrawingSessionWork *work, int state);
 static void DrawingSession_ApplyNextSubState(DrawingSessionWork *work, int mainState);
 static BOOL DrawingSession_ShowYesNo(DrawingSessionWork *work, const YesNoPromptTemplate *template);
@@ -1588,7 +1588,7 @@ static inline BOOL DrawingSession_IsOneMemberBit(u32 bits) {
     return result;
 }
 
-static int DrawingSession_HandleMemberCount(DrawingSessionWork *work) {
+static enum DrawingSessionMainState DrawingSession_HandleMemberCount(DrawingSessionWork *work) {
     int count = DrawingSession_CountMembers();
     switch (count) {
     case 1:

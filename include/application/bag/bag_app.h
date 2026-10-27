@@ -327,6 +327,15 @@ extern const u8 gBagAppItemMenuNavTable[][4];
 extern u8 gItemMenuCursorButtons[]; // not const: BagApp_HandleItemMenuInput stores the cursor before reading it
 extern const TouchscreenHitbox *const gTouchHitboxTables[];
 extern int (*const gItemActionFuncs[])(BagApp *app);
+int BagApp_ItemAction_Use(BagApp *app);
+int BagApp_ItemAction_Action9(BagApp *app);
+int BagApp_ItemAction_Confirm(BagApp *app);
+int BagApp_ItemAction_Trash(BagApp *app);
+int BagApp_ItemAction_Register(BagApp *app);
+int BagApp_ItemAction_Deselect(BagApp *app);
+int BagApp_ItemAction_Move(BagApp *app);
+int BagApp_ItemAction_Give(BagApp *app);
+int BagApp_ItemAction_ChooseForBerryPatch(BagApp *app);
 extern const BagAppTilemapCommand gSubScreenTilemapCommands[][4];
 extern const BagAppTileRect gUnusedSlotRects[][2];
 extern const BagAppTileRect gItemSlotRects[];

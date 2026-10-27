@@ -43,8 +43,8 @@ static void PCBox_MovePartyMonToEnd(PCBoxWork *work, PCBoxMoveEntry *entry);
 static void PCBox_MoveBoxMonToOtherBox(PCBoxWork *work, PCBoxMoveEntry *entry);
 static void PCBox_MovePartyMonToOtherBox(PCBoxWork *work, PCBoxMoveEntry *entry);
 static u32 PCBox_GetTargetBoxId(PCBoxWork *work, u32 target);
-static u32 PCBox_CanMoveMon(PCBoxWork *work, u32 from, u32 to);
-static u32 PCBox_CanMovePartyMonToEmptySlot(PCBoxWork *work, u32 from, u32 to);
+static BOOL PCBox_CanMoveMon(PCBoxWork *work, u32 from, u32 to);
+static BOOL PCBox_CanMovePartyMonToEmptySlot(PCBoxWork *work, u32 from, u32 to);
 static void PCBox_SetupMoveEntryToSlot(PCBoxWork *work, PCBoxMoveEntry *entry);
 static void PCBox_SetupMoveEntryToSprite(PCBoxWork *work, PCBoxMoveEntry *entry);
 static void PCBox_SetupMonSwapEntries(PCBoxWork *work, u32 from, u32 to);
@@ -56,7 +56,7 @@ static void PCBox_LoadWallpaperChars(PCBoxWork *work, s32 member, u32 unused, u3
 static void PCBox_LoadWallpaperPalette(PCBoxWork *work, s32 member, u32 palette);
 static void PCBox_LoadWallpaperTilemap(PCBoxWork *work, s32 unused, u32 tile, u32 addend, u32 palette);
 static void PCBox_LoadWallpaper(PCBoxWork *work, s32 member, u32 tile, u32 offset, u32 palette);
-static u32 PCBox_IsPointInRect(s32 x, s32 y, const u8 *rect);
+static BOOL PCBox_IsPointInRect(s32 x, s32 y, const u8 *rect);
 
 BOOL PCBox_Init(OverlayManager *manager, int *state) {
     PCBoxWork *work;
@@ -647,7 +647,7 @@ u32 PCBox_AnimateMoveEntries(PCBoxWork *work) {
     return 1;
 }
 
-static u32 PCBox_CanMoveMon(PCBoxWork *work, u32 from, u32 to) {
+static BOOL PCBox_CanMoveMon(PCBoxWork *work, u32 from, u32 to) {
     u32 box;
     u32 targetExists;
     Pokemon *mon;
@@ -655,7 +655,7 @@ static u32 PCBox_CanMoveMon(PCBoxWork *work, u32 from, u32 to) {
     if ((to & PC_BOX_TARGET_TRAY_BOX) != 0) {
         box = PCBox_GetTargetBoxId(work, to);
         if (box == work->activeBox || PCStorage_CountMonsAndEggsInBox(work->storage, box) == MONS_PER_BOX) {
-            return 0;
+            return FALSE;
         }
         to ^= PC_BOX_TARGET_TRAY_BOX;
         targetExists = 0;
@@ -667,78 +667,78 @@ static u32 PCBox_CanMoveMon(PCBoxWork *work, u32 from, u32 to) {
         if (PCBox_PartyHasOtherUsableMon(work, from - PC_BOX_SLOT_PARTY_START) == 0) {
             if (targetExists == 0) {
                 if (to < PC_BOX_SLOT_PARTY_START || box != work->activeBox) {
-                    return 0;
+                    return FALSE;
                 }
             } else if (PCBox_GetSlotMonData(work, to, MON_DATA_IS_EGG, NULL) != 0 && to < PC_BOX_SLOT_PARTY_START) {
-                return 0;
+                return FALSE;
             }
         }
         if (to < PC_BOX_SLOT_PARTY_START) {
             mon = Party_GetMonByIndex(work->party, from - PC_BOX_SLOT_PARTY_START);
             if (ItemIdIsMail((u16)GetMonData(mon, MON_DATA_HELD_ITEM, NULL)) == TRUE) {
-                return 0;
+                return FALSE;
             }
             if (GetMonData(mon, MON_DATA_BALL_CAPSULE_ID, NULL) != 0) {
-                return 0;
+                return FALSE;
             }
         }
     } else if (to >= PC_BOX_SLOT_PARTY_START && targetExists != 0) {
         mon = Party_GetMonByIndex(work->party, to - PC_BOX_SLOT_PARTY_START);
         if (ItemIdIsMail((u16)GetMonData(mon, MON_DATA_HELD_ITEM, NULL)) == TRUE) {
-            return 0;
+            return FALSE;
         }
         if (GetMonData(mon, MON_DATA_BALL_CAPSULE_ID, NULL) != 0) {
-            return 0;
+            return FALSE;
         }
         if (PCBox_GetSlotMonData(work, from, MON_DATA_IS_EGG, NULL) != 0 && PCBox_PartyHasOtherUsableMon(work, to - PC_BOX_SLOT_PARTY_START) == 0) {
-            return 0;
+            return FALSE;
         }
     }
-    return 1;
+    return TRUE;
 }
 
-static u32 PCBox_CanMovePartyMonToEmptySlot(PCBoxWork *work, u32 from, u32 to) {
+static BOOL PCBox_CanMovePartyMonToEmptySlot(PCBoxWork *work, u32 from, u32 to) {
     Pokemon *mon;
     if (PCBox_GetSlotMonData(work, to, MON_DATA_SPECIES_EXISTS, NULL) != 0) {
-        return 0;
+        return FALSE;
     }
     if (PCBox_PartyHasOtherUsableMon(work, from - PC_BOX_SLOT_PARTY_START) == 0) {
-        return 0;
+        return FALSE;
     }
     mon = Party_GetMonByIndex(work->party, from - PC_BOX_SLOT_PARTY_START);
     if (ItemIdIsMail((u16)GetMonData(mon, MON_DATA_HELD_ITEM, NULL)) == TRUE) {
-        return 0;
+        return FALSE;
     }
     if (GetMonData(mon, MON_DATA_BALL_CAPSULE_ID, NULL) != 0) {
-        return 0;
+        return FALSE;
     }
-    return 1;
+    return TRUE;
 }
 
-u32 PCBox_CanSwapHeldItems(PCBoxWork *work, u32 from, u32 to) {
+BOOL PCBox_CanSwapHeldItems(PCBoxWork *work, u32 from, u32 to) {
     u16 itemA;
     u16 itemB;
     if (PCBox_GetSlotMonData(work, to, MON_DATA_SPECIES_EXISTS, NULL) == 0) {
-        return 0;
+        return FALSE;
     }
     if (PCBox_GetSlotMonData(work, to, MON_DATA_IS_EGG, NULL) != 0) {
-        return 0;
+        return FALSE;
     }
     itemA = PCBox_GetSlotMonData(work, from, MON_DATA_HELD_ITEM, NULL);
     if (ItemIdIsMail(itemA) == TRUE) {
-        return 0;
+        return FALSE;
     }
     itemB = PCBox_GetSlotMonData(work, to, MON_DATA_HELD_ITEM, NULL);
     if (ItemIdIsMail(itemB) == TRUE) {
-        return 0;
+        return FALSE;
     }
     if (itemA == ITEM_GRISEOUS_ORB && PCBox_GetSlotMonData(work, to, MON_DATA_SPECIES, NULL) != SPECIES_GIRATINA) {
-        return 0;
+        return FALSE;
     }
     if (itemB == ITEM_GRISEOUS_ORB && PCBox_GetSlotMonData(work, from, MON_DATA_SPECIES, NULL) != SPECIES_GIRATINA) {
-        return 0;
+        return FALSE;
     }
-    return 1;
+    return TRUE;
 }
 
 static void PCBox_SetupMoveEntryToSlot(PCBoxWork *work, PCBoxMoveEntry *entry) {
@@ -1340,11 +1340,11 @@ u32 PCBox_GetWallpaperGfxIndex(PCBoxWork *work, u32 box) {
     return wallpaper;
 }
 
-static u32 PCBox_IsPointInRect(s32 x, s32 y, const u8 *rect) {
+static BOOL PCBox_IsPointInRect(s32 x, s32 y, const u8 *rect) {
     if (x >= rect[0] && x <= rect[1] && y >= rect[2] && y < rect[3]) {
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 u32 PCBox_GetTouchedBoxSlot(s16 x, s16 y) {

@@ -427,7 +427,7 @@ void PCBox_SlideInReturnButton(BgCellManager *panels) {
     BgCellManager_StartCellMove(panels, PC_BOX_PANEL_RETURN_BUTTON, 0, -1, 3);
 }
 
-u32 PCBox_IsMenuExitButtonShown(BgCellManager *panels) {
+BOOL PCBox_IsMenuExitButtonShown(BgCellManager *panels) {
     s8 x;
     s8 y;
     BgCellManager_GetCellPosition(panels, PC_BOX_PANEL_MENU_EXIT_BUTTON, &x, &y);
@@ -514,7 +514,7 @@ static u32 PCBox_UpdateActionMenuSlide(BgCellManager *panels) {
     return ret;
 }
 
-u32 PCBox_IsActionMenuOpen(BgCellManager *panels) {
+BOOL PCBox_IsActionMenuOpen(BgCellManager *panels) {
     s8 x;
     s8 y;
     BgCellManager_GetCellPosition(panels, PC_BOX_PANEL_MENU_ROW_0, &x, &y);
@@ -543,7 +543,7 @@ void PCBox_SlideOutChangeBoxButton(BgCellManager *panels) {
     BgCellManager_StartCellMove(panels, PC_BOX_PANEL_CHANGE_BOX_BUTTON, 0, 1, 3);
 }
 
-u32 PCBox_IsChangeBoxButtonShown(BgCellManager *panels) {
+BOOL PCBox_IsChangeBoxButtonShown(BgCellManager *panels) {
     s8 x;
     s8 y;
     BgCellManager_GetCellPosition(panels, PC_BOX_PANEL_CHANGE_BOX_BUTTON, &x, &y);
@@ -566,7 +566,7 @@ void PCBox_SlideOutSummaryButton(BgCellManager *panels) {
     BgCellManager_StartCellMove(panels, PC_BOX_PANEL_SUMMARY_BUTTON, 0, 1, 3);
 }
 
-u32 PCBox_IsSummaryButtonShown(BgCellManager *panels) {
+BOOL PCBox_IsSummaryButtonShown(BgCellManager *panels) {
     s8 x;
     s8 y;
     BgCellManager_GetCellPosition(panels, PC_BOX_PANEL_SUMMARY_BUTTON, &x, &y);

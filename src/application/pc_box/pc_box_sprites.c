@@ -75,7 +75,7 @@ void PCBox_SetSpriteAnim(PCBoxView *view, u32 index, u32 anim) {
     ManagedSprite_SetAnim(view->sprites[index], anim);
 }
 
-u32 PCBox_IsSpriteAnimated(PCBoxView *view, u32 index) {
+BOOL PCBox_IsSpriteAnimated(PCBoxView *view, u32 index) {
     return ManagedSprite_IsAnimated(view->sprites[index]);
 }
 
@@ -87,11 +87,11 @@ void PCBox_SetSpriteVisible(PCBoxView *view, int index, BOOL visible) {
     }
 }
 
-int PCBox_IsSpriteVisible(PCBoxView *view, int index) {
+BOOL PCBox_IsSpriteVisible(PCBoxView *view, int index) {
     if (ManagedSprite_GetDrawFlag(view->sprites[index]) == TRUE) {
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 void PCBox_SetSpritePriority(PCBoxView *view, u32 index, u32 priority) {

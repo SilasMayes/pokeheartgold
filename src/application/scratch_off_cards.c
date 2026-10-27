@@ -284,7 +284,7 @@ static int ScratchOffCards_PrintNextCardButton(ScratchOffCardsWork *work);
 static int ScratchOffCards_PrintCancelButton(ScratchOffCardsWork *work);
 static int ScratchOffCards_PrintPrizeName(ScratchOffCardsWork *work, int prizeNo);
 static void ScratchOffCards_BufferNumber(ScratchOffCardsWork *work, int fieldNo, int number);
-static void ScratchOffCards_SetState(ScratchOffCardsWork *work, int *state, u32 newState);
+static void ScratchOffCards_SetState(ScratchOffCardsWork *work, int *state, enum ScratchOffCardsState newState);
 static void ScratchOffCards_PlaceWildcards(ScratchOffCardsWork *work);
 static void ScratchOffCards_FillCells(ScratchOffCardsWork *work);
 static void ScratchOffCards_ShuffleCells(ScratchOffCardsWork *work, int unused);
@@ -332,7 +332,7 @@ static void ScratchOffCardsSprite_SetScale(ScratchOffCardsSprite *sprite, VecFx3
 static void ScratchOffCardsSprite_SetPalette(ScratchOffCardsSprite *sprite, int palette);
 static void ScratchOffCardsSprite_SetAnimActive(ScratchOffCardsSprite *sprite, int active);
 static void ScratchOffCardsSprite_SetMosaic(ScratchOffCardsSprite *sprite, int mosaic);
-static int ScratchOffCardsSprite_IsAnimated(ScratchOffCardsSprite *sprite);
+static BOOL ScratchOffCardsSprite_IsAnimated(ScratchOffCardsSprite *sprite);
 static void ScratchOffCards_AddWindows(BgConfig *bgConfig, Window *windows);
 static void ScratchOffCards_RemoveWindows(Window *windows);
 static void ScratchOffCards_DrawMessageFrame(BgConfig *bgConfig, Window *window);
@@ -1316,7 +1316,7 @@ static void ScratchOffCards_BufferNumber(ScratchOffCardsWork *work, int fieldNo,
     BufferIntegerAsString(work->msgFormat, fieldNo, number, 1, PRINTING_MODE_LEFT_ALIGN, TRUE);
 }
 
-static void ScratchOffCards_SetState(ScratchOffCardsWork *work, int *state, u32 newState) {
+static void ScratchOffCards_SetState(ScratchOffCardsWork *work, int *state, enum ScratchOffCardsState newState) {
     work->subState = 0;
     *state = newState;
 }
@@ -1917,7 +1917,7 @@ static void ScratchOffCardsSprite_SetMosaic(ScratchOffCardsSprite *sprite, int m
     Sprite_SetMosaic(sprite->sprite, mosaic);
 }
 
-static int ScratchOffCardsSprite_IsAnimated(ScratchOffCardsSprite *sprite) {
+static BOOL ScratchOffCardsSprite_IsAnimated(ScratchOffCardsSprite *sprite) {
     return Sprite_IsAnimated(sprite->sprite);
 }
 

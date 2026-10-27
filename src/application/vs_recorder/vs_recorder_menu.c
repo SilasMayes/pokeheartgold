@@ -85,7 +85,7 @@ typedef struct VsRecorderMenuMove {
     int arrived;
 } VsRecorderMenuMove;
 
-static int VsRecorder_CheckSchemeArrowTouch(void);
+static enum VsRecorderSchemeArrow VsRecorder_CheckSchemeArrowTouch(void);
 static void VsRecorder_RowMoveTask(SysTask *task, void *data);
 static BOOL VsRecorder_MenuBack(VsRecorderWork *work);
 static BOOL VsRecorder_MenuExit(VsRecorderWork *work);
@@ -133,7 +133,7 @@ static BOOL VsRecorder_MenuMain(VsRecorderWork *work) {
     return FALSE;
 }
 
-static int VsRecorder_CheckSchemeArrowTouch(void) {
+static enum VsRecorderSchemeArrow VsRecorder_CheckSchemeArrowTouch(void) {
     if (TouchscreenHitbox_TouchHeldIsIn(&sVsRecorderPrevSchemeHitbox)) {
         return VS_RECORDER_SCHEME_ARROW_PREV;
     }

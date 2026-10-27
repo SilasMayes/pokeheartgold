@@ -16,8 +16,8 @@ void PokewalkerIr_RequestReceiveGifts(PokewalkerIrStatus *status, void *records)
     gPokewalkerIrTransfer.totalChunks = (gPokewalkerIrTransfer.totalSize + 0x7F) / 0x80;
 }
 
-void *PokewalkerIrStatus_IsConnected(void) {
-    return (void *)PokewalkerIr_IsConnected();
+BOOL PokewalkerIrStatus_IsConnected(void) {
+    return PokewalkerIr_IsConnected();
 }
 
 // Progress of the current block, 0-255.

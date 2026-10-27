@@ -184,7 +184,7 @@ static void WiiMessageSettingsScreen_LoadGraphics(WiiMessageSettingsScreen *scre
 static void WiiMessageSettingsScreen_AnimatePaletteTask(SysTask *task, void *data);
 static void WiiMessageSettingsScreen_AddWindows(WiiMessageSettingsScreen *screen);
 static void WiiMessageSettingsScreen_RemoveWindows(WiiMessageSettingsScreen *screen);
-static void WiiMessageSettingsScreen_SetState(WiiMessageSettingsScreen *screen, int state, int nextState);
+static void WiiMessageSettingsScreen_SetState(WiiMessageSettingsScreen *screen, enum WiiMessageSettingsScreenState state, enum WiiMessageSettingsScreenState nextState);
 static void WiiMessageSettingsScreen_ShowWaitingIcon(WiiMessageSettingsScreen *screen);
 static void WiiMessageSettingsScreen_HideWaitingIcon(WiiMessageSettingsScreen *screen);
 static YesNoPrompt *WiiMessageSettingsScreen_CreateYesNoPrompt(BgConfig *bgConfig, int tileStart, int initialCursorPos);
@@ -789,7 +789,7 @@ static void WiiMessageSettingsScreen_RemoveWindows(WiiMessageSettingsScreen *scr
     RemoveWindow(&screen->errorWindow);
 }
 
-static void WiiMessageSettingsScreen_SetState(WiiMessageSettingsScreen *screen, int state, int nextState) {
+static void WiiMessageSettingsScreen_SetState(WiiMessageSettingsScreen *screen, enum WiiMessageSettingsScreenState state, enum WiiMessageSettingsScreenState nextState) {
     screen->state = state;
     screen->nextState = nextState;
 }

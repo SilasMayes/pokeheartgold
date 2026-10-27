@@ -157,13 +157,13 @@ BOOL VsRecorder_DeleteEnter(VsRecorderWork *work) {
         SetBgPriority(GF_BG_LYR_SUB_3, 2);
         GfGfxLoader_LoadCharDataFromOpenNarc(work->narc, 0x3E, work->bgConfig, GF_BG_LYR_MAIN_3, 0, 0, FALSE, HEAP_ID_109);
         GfGfxLoader_LoadCharDataFromOpenNarc(work->narc, 0x3E, work->bgConfig, GF_BG_LYR_SUB_3, 0, 0, FALSE, HEAP_ID_109);
-        VsRecorder_SetVBlankPaused(work, 1);
+        VsRecorder_SetVBlankPaused(work, TRUE);
         VsRecorder_FreeMenuRows(work);
-        VsRecorder_SetVBlankPaused(work, 0);
+        VsRecorder_SetVBlankPaused(work, FALSE);
         work->step++;
         break;
     default:
-        VsRecorder_StartFlipScreens(work, 0);
+        VsRecorder_StartFlipScreens(work, FALSE);
         VsRecorder_SetSubState(work, DELETE_MAIN);
         break;
     }
@@ -267,7 +267,7 @@ BOOL VsRecorder_DeleteExit(VsRecorderWork *work) {
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_3);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     default:

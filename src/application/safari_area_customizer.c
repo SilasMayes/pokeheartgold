@@ -213,35 +213,35 @@ extern const OamManagerParam gSafariAreaCustomizerOamManagerParam;
 
 static void SafariAreaCustomizer_InitFromArgs(SafariAreaCustomizer *customizer, SafariAreaCustomizerArgs *args);
 static void SafariAreaCustomizer_SaveResults(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_State_Setup(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_State_Teardown(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerState SafariAreaCustomizer_State_Setup(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerState SafariAreaCustomizer_State_Teardown(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_State_SelectSlot(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_State_SelectArea(SafariAreaCustomizer *customizer);
 static int SafariAreaCustomizer_State_MoveArea(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_State_FadeIn(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_State_FadeOut(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerState SafariAreaCustomizer_State_FadeIn(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerState SafariAreaCustomizer_State_FadeOut(SafariAreaCustomizer *customizer);
 static BOOL SafariAreaCustomizer_Setup(SafariAreaCustomizer *customizer);
 static BOOL SafariAreaCustomizer_Teardown(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleSlotInput(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleSlotMenu(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_ScrollPages(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleAreaInput(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleConfirmArea(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_ChangePage(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleMoveInput(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_SwapAreas(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleSlotInput(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleSlotMenu(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_ScrollPages(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleAreaInput(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleConfirmArea(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_ChangePage(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleMoveInput(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_SwapAreas(SafariAreaCustomizer *customizer);
 static void SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *customizer);
 static void thunk_SafariAreaCustomizer_ShowCursors(SafariAreaCustomizer *customizer);
 static BOOL SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_ChooseArea(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleAreaTouch(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_ChooseArea(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleAreaTouch(SafariAreaCustomizer *customizer);
 static void SafariAreaCustomizer_StartMove(SafariAreaCustomizer *customizer);
 static void SafariAreaCustomizer_EndMove(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *customizer);
-static int SafariAreaCustomizer_HandleMoveTouch(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *customizer);
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleMoveTouch(SafariAreaCustomizer *customizer);
 static void SafariAreaCustomizer_OpenSlotMenu(SafariAreaCustomizer *customizer);
 static void SafariAreaCustomizer_AskConfirmArea(SafariAreaCustomizer *customizer);
 static void SafariAreaCustomizer_VBlankCB(void *cbArg);
@@ -377,14 +377,14 @@ static void SafariAreaCustomizer_SaveResults(SafariAreaCustomizer *customizer) {
     MenuInputStateMgr_SetState(customizer->args->menuInputStatePtr, (MenuInputState)customizer->touchMode);
 }
 
-static int SafariAreaCustomizer_State_Setup(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerState SafariAreaCustomizer_State_Setup(SafariAreaCustomizer *customizer) {
     if (SafariAreaCustomizer_Setup(customizer)) {
         return SAC_STATE_FADE_IN;
     }
     return SAC_STATE_SETUP;
 }
 
-static int SafariAreaCustomizer_State_Teardown(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerState SafariAreaCustomizer_State_Teardown(SafariAreaCustomizer *customizer) {
     if (SafariAreaCustomizer_Teardown(customizer)) {
         return SAC_STATE_EXIT;
     }
@@ -458,7 +458,7 @@ static int SafariAreaCustomizer_State_MoveArea(SafariAreaCustomizer *customizer)
     return SAC_STATE_MOVE_AREA;
 }
 
-static int SafariAreaCustomizer_State_FadeIn(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerState SafariAreaCustomizer_State_FadeIn(SafariAreaCustomizer *customizer) {
     switch (customizer->state) {
     case SAC_FADE_START:
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, customizer->heapId);
@@ -478,7 +478,7 @@ static int SafariAreaCustomizer_State_FadeIn(SafariAreaCustomizer *customizer) {
     return SAC_STATE_FADE_IN;
 }
 
-static int SafariAreaCustomizer_State_FadeOut(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerState SafariAreaCustomizer_State_FadeOut(SafariAreaCustomizer *customizer) {
     switch (customizer->state) {
     case SAC_FADE_START:
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, customizer->heapId);
@@ -557,7 +557,7 @@ static BOOL SafariAreaCustomizer_Teardown(SafariAreaCustomizer *customizer) {
     return FALSE;
 }
 
-static int SafariAreaCustomizer_HandleSlotInput(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleSlotInput(SafariAreaCustomizer *customizer) {
     if (SafariAreaCustomizer_CheckInputModeSwitch(customizer)) {
         return SAC_INPUT_STATE_WAIT;
     }
@@ -567,7 +567,7 @@ static int SafariAreaCustomizer_HandleSlotInput(SafariAreaCustomizer *customizer
     return SafariAreaCustomizer_HandleSlotTouch(customizer);
 }
 
-static int SafariAreaCustomizer_HandleSlotMenu(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleSlotMenu(SafariAreaCustomizer *customizer) {
     s32 input = TouchscreenListMenu_HandleInput(customizer->listMenu);
     u32 touchMode;
 
@@ -603,7 +603,7 @@ static int SafariAreaCustomizer_HandleSlotMenu(SafariAreaCustomizer *customizer)
     }
 }
 
-static int SafariAreaCustomizer_ScrollPages(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_ScrollPages(SafariAreaCustomizer *customizer) {
     switch (customizer->subState) {
     case SAC_ANIM_START:
         SafariAreaCustomizer_StartPageScroll(customizer);
@@ -634,7 +634,7 @@ static int SafariAreaCustomizer_ScrollPages(SafariAreaCustomizer *customizer) {
     return SAC_INPUT_STATE_SCROLL;
 }
 
-static int SafariAreaCustomizer_HandleAreaInput(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleAreaInput(SafariAreaCustomizer *customizer) {
     if (SafariAreaCustomizer_CheckInputModeSwitch(customizer)) {
         return SAC_INPUT_STATE_WAIT;
     }
@@ -644,7 +644,7 @@ static int SafariAreaCustomizer_HandleAreaInput(SafariAreaCustomizer *customizer
     return SafariAreaCustomizer_HandleAreaTouch(customizer);
 }
 
-static int SafariAreaCustomizer_HandleConfirmArea(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleConfirmArea(SafariAreaCustomizer *customizer) {
     BOOL yes;
     int touchMode;
 
@@ -689,7 +689,7 @@ static int SafariAreaCustomizer_HandleConfirmArea(SafariAreaCustomizer *customiz
     return SAC_INPUT_STATE_WAIT;
 }
 
-static int SafariAreaCustomizer_ChangePage(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_ChangePage(SafariAreaCustomizer *customizer) {
     switch (customizer->subState) {
     case SAC_ANIM_START:
         SafariAreaCustomizer_StartPageChange(customizer);
@@ -708,7 +708,7 @@ static int SafariAreaCustomizer_ChangePage(SafariAreaCustomizer *customizer) {
     return SAC_INPUT_STATE_CHANGE_PAGE;
 }
 
-static int SafariAreaCustomizer_HandleMoveInput(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleMoveInput(SafariAreaCustomizer *customizer) {
     if (SafariAreaCustomizer_CheckInputModeSwitch(customizer)) {
         return SAC_INPUT_STATE_WAIT;
     }
@@ -718,7 +718,7 @@ static int SafariAreaCustomizer_HandleMoveInput(SafariAreaCustomizer *customizer
     return SafariAreaCustomizer_HandleMoveTouch(customizer);
 }
 
-static int SafariAreaCustomizer_SwapAreas(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_SwapAreas(SafariAreaCustomizer *customizer) {
     u32 bank = customizer->spriteBank * NUM_AREA_SLOTS;
 
     switch (customizer->subState) {
@@ -805,7 +805,7 @@ static BOOL SafariAreaCustomizer_CheckInputModeSwitch(SafariAreaCustomizer *cust
     return FALSE;
 }
 
-static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *customizer) {
     u32 keys = gSystem.newKeys;
     u8 old;
     u8 column;
@@ -853,7 +853,7 @@ static int SafariAreaCustomizer_HandleSlotButtons(SafariAreaCustomizer *customiz
     return SAC_INPUT_STATE_WAIT;
 }
 
-static int SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *customizer) {
     s32 hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariAreaCustomizerSlotHitboxes);
 
     if (hit == TOUCH_MENU_NO_INPUT) {
@@ -877,7 +877,7 @@ static int SafariAreaCustomizer_HandleSlotTouch(SafariAreaCustomizer *customizer
     return SAC_INPUT_STATE_MENU;
 }
 
-static int SafariAreaCustomizer_ChooseArea(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_ChooseArea(SafariAreaCustomizer *customizer) {
     u8 area;
 
     PlaySE(SEQ_SE_DP_SELECT);
@@ -893,7 +893,7 @@ static int SafariAreaCustomizer_ChooseArea(SafariAreaCustomizer *customizer) {
     return SAC_INPUT_STATE_SCROLL;
 }
 
-static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *customizer) {
     u8 old = customizer->cursorPos;
     u32 keys = gSystem.newKeys;
     u8 column;
@@ -967,7 +967,7 @@ static int SafariAreaCustomizer_HandleAreaButtons(SafariAreaCustomizer *customiz
     return SAC_INPUT_STATE_WAIT;
 }
 
-static int SafariAreaCustomizer_HandleAreaTouch(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleAreaTouch(SafariAreaCustomizer *customizer) {
     s32 hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariAreaCustomizerAreaHitboxes);
 
     if (hit == TOUCH_MENU_NO_INPUT) {
@@ -1032,7 +1032,7 @@ static void SafariAreaCustomizer_EndMove(SafariAreaCustomizer *customizer) {
     SafariAreaCustomizer_PrintWindowText(customizer, 0, 0, TRUE);
 }
 
-static int SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *customizer) {
     u32 keys = gSystem.newKeys;
     u8 column;
     u8 row;
@@ -1078,7 +1078,7 @@ static int SafariAreaCustomizer_HandleMoveButtons(SafariAreaCustomizer *customiz
     return SAC_INPUT_STATE_WAIT;
 }
 
-static int SafariAreaCustomizer_HandleMoveTouch(SafariAreaCustomizer *customizer) {
+static enum SafariAreaCustomizerInputState SafariAreaCustomizer_HandleMoveTouch(SafariAreaCustomizer *customizer) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariAreaCustomizerSlotHitboxes);
 
     if (hit == TOUCH_MENU_NO_INPUT) {

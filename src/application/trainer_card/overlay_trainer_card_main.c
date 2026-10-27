@@ -78,11 +78,11 @@ static void TrainerCardMain_LoadBgGraphics(TrainerCardMain *cardMain);
 static void TrainerCardMain_FreeBgLayers(BgConfig *bgConfig);
 static void TrainerCardMain_LoadSideLayout(TrainerCardMain *cardMain);
 static void TrainerCardMain_DrawCard(TrainerCardMain *cardMain);
-static int TrainerCardMain_RunSignPrompt(TrainerCardMain *cardMain);
+static enum TrainerCardSignPromptResult TrainerCardMain_RunSignPrompt(TrainerCardMain *cardMain);
 static int TrainerCardMain_RunFlip(TrainerCardMain *cardMain);
 static void TrainerCardMain_ApplyFlipScale(TrainerCardMain *cardMain);
-static int TrainerCardMain_HandleKeys(TrainerCardMain *cardMain);
-static int TrainerCardMain_HandleTouch(TrainerCardMain *cardMain, int *touched);
+static enum TrainerCardInput TrainerCardMain_HandleKeys(TrainerCardMain *cardMain);
+static enum TrainerCardInput TrainerCardMain_HandleTouch(TrainerCardMain *cardMain, int *touched);
 static int TrainerCardMain_HandleInput(TrainerCardMain *cardMain);
 static void TrainerCardMain_VBlankCB(void *data);
 static void TrainerCardMain_ResetBgAffine(void);
@@ -702,7 +702,7 @@ static void TrainerCardMain_DrawCard(TrainerCardMain *cardMain) {
     TrainerCardMain_CopySideWindowsToVram(cardMain, cardMain->windows);
 }
 
-static int TrainerCardMain_RunSignPrompt(TrainerCardMain *cardMain) {
+static enum TrainerCardSignPromptResult TrainerCardMain_RunSignPrompt(TrainerCardMain *cardMain) {
     switch (cardMain->subState) {
     case TRAINER_CARD_SIGN_PROMPT_PRINT:
         TrainerCardMain_PrintSignPrompt(cardMain, 0);
@@ -835,7 +835,7 @@ static void TrainerCardMain_ApplyFlipScale(TrainerCardMain *cardMain) {
     cardMain->scaleChanged = FALSE;
 }
 
-static int TrainerCardMain_HandleKeys(TrainerCardMain *cardMain) {
+static enum TrainerCardInput TrainerCardMain_HandleKeys(TrainerCardMain *cardMain) {
     if (gSystem.newKeys & PAD_BUTTON_A) {
         if (cardMain->showingBack && !cardMain->isConnected) {
             PlaySE(SEQ_SE_DP_SELECT);
@@ -851,7 +851,7 @@ static int TrainerCardMain_HandleKeys(TrainerCardMain *cardMain) {
     return TRAINER_CARD_INPUT_NONE;
 }
 
-static int TrainerCardMain_HandleTouch(TrainerCardMain *cardMain, int *touched) {
+static enum TrainerCardInput TrainerCardMain_HandleTouch(TrainerCardMain *cardMain, int *touched) {
     if (!System_GetTouchNew()) {
         return TRAINER_CARD_INPUT_NONE;
     }

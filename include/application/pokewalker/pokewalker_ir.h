@@ -149,7 +149,7 @@ void PokewalkerIr_RequestUpload(u8 *uploadImage, u8 *strollData, u8 *records);
 void PokewalkerIr_RequestReceive(u8 *walkerMon, u8 *status, u8 *blocks, u8 *records);
 void PokewalkerIr_RequestSendStroll(u8 *strollData, u8 *records, u8 *status, u8 *blocks);
 void PokewalkerIr_RequestReceiveGifts(PokewalkerIrStatus *status, void *records);
-void *PokewalkerIrStatus_IsConnected(void);
+BOOL PokewalkerIrStatus_IsConnected(void);
 u8 PokewalkerIr_GetChunkProgress(void);
 u8 PokewalkerIr_GetTotalProgress(void);
 u32 PokewalkerIr_GetAndClearError(void);

@@ -66,7 +66,7 @@ static void FadeWork_UpdateFrame(BOOL *active, ScreenFade *fade);
 static BOOL CallFadeFunc(ScreenFade *fade);
 static void PaletteFade_SetMode(enum FadeMode mode, PaletteFade *fade);
 static void PaletteFade_SetScreenOrder(PaletteFade *fade, enum PaletteFadeOrder order, BOOL main, BOOL sub);
-static void ScreenFade_Init(ScreenFade *fade, u32 type, int steps, int framesPerStep, int state, void *effect, int screen, WindowRegisterQueue *regQueue, FadeBlankPair *blankPair, enum HeapID heapId, u16 color);
+static void ScreenFade_Init(ScreenFade *fade, u32 type, int steps, int framesPerStep, enum ScreenFadeState state, void *effect, int screen, WindowRegisterQueue *regQueue, FadeBlankPair *blankPair, enum HeapID heapId, u16 color);
 static void FadeBlankPair_Init(FadeBlankPair *blankPair);
 static void FadeBlankPair_HBlankCallback(void *data);
 static void FadeBlankPair_Start(FadeBlankPair *blankPair, void *data, FadeHBlankCallback callback, int screen);
@@ -326,7 +326,7 @@ static void PaletteFade_SetScreenOrder(PaletteFade *fade, enum PaletteFadeOrder 
     fade->subEnabled = sub;
 }
 
-static void ScreenFade_Init(ScreenFade *fade, u32 type, int steps, int framesPerStep, int state, void *effect, int screen, WindowRegisterQueue *regQueue, FadeBlankPair *blankPair, enum HeapID heapId, u16 color) {
+static void ScreenFade_Init(ScreenFade *fade, u32 type, int steps, int framesPerStep, enum ScreenFadeState state, void *effect, int screen, WindowRegisterQueue *regQueue, FadeBlankPair *blankPair, enum HeapID heapId, u16 color) {
     fade->type = type;
     fade->steps = steps;
     fade->framesPerStep = framesPerStep;

@@ -679,7 +679,7 @@ static void PokewalkerEventLog_SetSceneVisible(PokewalkerEventLog *eventLog, BOO
 }
 
 // Plays the next animation of a visible sprite once its current one has ended.
-static void PokewalkerEventLog_AdvanceSpriteAnim(PokewalkerEventLog *eventLog, int spriteId) {
+static void PokewalkerEventLog_AdvanceSpriteAnim(PokewalkerEventLog *eventLog, enum PokewalkerEventLogSprite spriteId) {
     if (ManagedSprite_GetDrawFlag(eventLog->sprites[spriteId]) && !ManagedSprite_IsAnimated(eventLog->sprites[spriteId])) {
         u16 animation = ManagedSprite_GetActiveAnim(eventLog->sprites[spriteId]) + 1;
         ManagedSprite_SetAnim(eventLog->sprites[spriteId], animation);
@@ -896,7 +896,7 @@ static void PokewalkerEventLog_ShowTrainer(ManagedSprite *sprite, int gender, in
     ManagedSprite_SetAnim(sprite, pose);
 }
 
-static void PokewalkerEventLog_ShowEffectAboveMon(PokewalkerEventLog *eventLog, int side, int spriteId, int animation) {
+static void PokewalkerEventLog_ShowEffectAboveMon(PokewalkerEventLog *eventLog, int side, enum PokewalkerEventLogSprite spriteId, int animation) {
     s16 x, y;
     ManagedSprite_GetPositionXY(eventLog->sprites[spriteId], &x, &y);
     y = eventLog->monSprites[side].isLarge ? 24 : 40;

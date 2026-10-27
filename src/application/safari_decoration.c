@@ -239,9 +239,9 @@ static void SafariDecoration_InitFromArgs(SafariDecoration *decor, SafariDecorat
 static void SafariDecoration_SaveResults(SafariDecoration *decor);
 static void SafariDecoration_ResetGraphics(void);
 static int SafariDecoration_State_SelectObject(SafariDecoration *decor);
-static int SafariDecoration_State_ConfirmPlace(SafariDecoration *decor);
-static int SafariDecoration_State_FadeIn(SafariDecoration *decor);
-static int SafariDecoration_State_FadeOut(SafariDecoration *decor);
+static enum SafariDecorationState SafariDecoration_State_ConfirmPlace(SafariDecoration *decor);
+static enum SafariDecorationState SafariDecoration_State_FadeIn(SafariDecoration *decor);
+static enum SafariDecorationState SafariDecoration_State_FadeOut(SafariDecoration *decor);
 static void SafariDecoration_PlaceObject(SafariDecoration *decor);
 static void SafariDecorationModelView_Init(SafariDecorationModelView *view, int timeOfDay, enum HeapID heapId);
 static void SafariDecorationModelView_Draw(SafariDecorationModelView *view);
@@ -260,13 +260,13 @@ static void SafariDecorationModelView_InitCamera(SafariDecorationModelView *view
 static BOOL SafariDecoration_Setup(SafariDecoration *decor);
 static BOOL SafariDecoration_Teardown(SafariDecoration *decor);
 static int SafariDecoration_HandleListInput(SafariDecoration *decor);
-static int SafariDecoration_WaitMessageDismiss(SafariDecoration *decor);
+static enum SafariDecorationSelectState SafariDecoration_WaitMessageDismiss(SafariDecoration *decor);
 static void SafariDecoration_SetConfirmMode(SafariDecoration *decor, BOOL confirm);
 static void SafariDecoration_OpenYesNoPrompt(SafariDecoration *decor);
 static int SafariDecoration_HandleYesNoPrompt(SafariDecoration *decor);
-static int SafariDecoration_ChooseObject(SafariDecoration *decor, u32 cursorPos);
-static int SafariDecoration_HandleListButtons(SafariDecoration *decor);
-static int SafariDecoration_HandleListTouch(SafariDecoration *decor, u32 *touched);
+static enum SafariDecorationSelectState SafariDecoration_ChooseObject(SafariDecoration *decor, u32 cursorPos);
+static enum SafariDecorationSelectState SafariDecoration_HandleListButtons(SafariDecoration *decor);
+static enum SafariDecorationSelectState SafariDecoration_HandleListTouch(SafariDecoration *decor, u32 *touched);
 static void SafariDecoration_VBlankCB(void *cbArg);
 static void SafariDecoration_SetGfxBanks(void);
 static void SafariDecoration_InitBgLayers(SafariDecoration *decor);
@@ -292,7 +292,7 @@ static void SafariDecoration_PrintMessage(SafariDecoration *decor, int msg);
 static void SafariDecoration_ShowErrorMessage(SafariDecoration *decor, int msg);
 static void SafariDecoration_PrintObjectDescription(SafariDecoration *decor);
 static void SafariDecoration_ShowObjectList(SafariDecoration *decor);
-static int SafariDecoration_CheckObjectPlaceable(SafariDecoration *decor, int index);
+static enum SafariDecorationPlaceResult SafariDecoration_CheckObjectPlaceable(SafariDecoration *decor, int index);
 static void SafariDecoration_StartPageScroll(SafariDecoration *decor, u8 dir, u32 *taskCount, u8 priority);
 static void SafariDecoration_Task_PageScroll(SysTask *task, void *data);
 static void SafariDecoration_RequestModelUpdate(SafariDecoration *decor);
@@ -470,7 +470,7 @@ static int SafariDecoration_State_SelectObject(SafariDecoration *decor) {
     return SAFARI_DECORATION_STATE_SELECT_OBJECT;
 }
 
-static int SafariDecoration_State_ConfirmPlace(SafariDecoration *decor) {
+static enum SafariDecorationState SafariDecoration_State_ConfirmPlace(SafariDecoration *decor) {
     switch (decor->state) {
     case SAFARI_DECORATION_CONFIRM_OPEN_PROMPT:
         SafariDecoration_SetConfirmMode(decor, TRUE);
@@ -498,7 +498,7 @@ static int SafariDecoration_State_ConfirmPlace(SafariDecoration *decor) {
     return SAFARI_DECORATION_STATE_CONFIRM_PLACE;
 }
 
-static int SafariDecoration_State_FadeIn(SafariDecoration *decor) {
+static enum SafariDecorationState SafariDecoration_State_FadeIn(SafariDecoration *decor) {
     switch (decor->state) {
     case SAFARI_DECORATION_FADE_START:
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, decor->heapId);
@@ -516,7 +516,7 @@ static int SafariDecoration_State_FadeIn(SafariDecoration *decor) {
     return SAFARI_DECORATION_STATE_FADE_IN;
 }
 
-static int SafariDecoration_State_FadeOut(SafariDecoration *decor) {
+static enum SafariDecorationState SafariDecoration_State_FadeOut(SafariDecoration *decor) {
     switch (decor->state) {
     case SAFARI_DECORATION_FADE_START:
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 6, 1, decor->heapId);
@@ -801,7 +801,7 @@ static int SafariDecoration_HandleListInput(SafariDecoration *decor) {
     return result;
 }
 
-static int SafariDecoration_WaitMessageDismiss(SafariDecoration *decor) {
+static enum SafariDecorationSelectState SafariDecoration_WaitMessageDismiss(SafariDecoration *decor) {
     BOOL done = FALSE;
 
     if (System_GetTouchNew()) {
@@ -880,7 +880,7 @@ static int SafariDecoration_HandleYesNoPrompt(SafariDecoration *decor) {
     return result;
 }
 
-static int SafariDecoration_ChooseObject(SafariDecoration *decor, u32 cursorPos) {
+static enum SafariDecorationSelectState SafariDecoration_ChooseObject(SafariDecoration *decor, u32 cursorPos) {
     u8 result;
 
     if (cursorPos >= NUM_OBJECTS_PER_PAGE) {
@@ -907,7 +907,7 @@ static int SafariDecoration_ChooseObject(SafariDecoration *decor, u32 cursorPos)
     return SAFARI_DECORATION_SELECT_CONFIRM;
 }
 
-static int SafariDecoration_HandleListButtons(SafariDecoration *decor) {
+static enum SafariDecorationSelectState SafariDecoration_HandleListButtons(SafariDecoration *decor) {
     int scroll = 0;
     u32 keys;
     u8 row;
@@ -972,7 +972,7 @@ static int SafariDecoration_HandleListButtons(SafariDecoration *decor) {
     return SAFARI_DECORATION_SELECT_INPUT;
 }
 
-static int SafariDecoration_HandleListTouch(SafariDecoration *decor, u32 *touched) {
+static enum SafariDecorationSelectState SafariDecoration_HandleListTouch(SafariDecoration *decor, u32 *touched) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(gSafariDecorationListHitboxes);
 
     if (hit == TOUCH_MENU_NO_INPUT) {
@@ -1377,7 +1377,7 @@ static void SafariDecoration_ShowObjectList(SafariDecoration *decor) {
     SafariDecoration_PrintObjectDescription(decor);
 }
 
-static int SafariDecoration_CheckObjectPlaceable(SafariDecoration *decor, int index) {
+static enum SafariDecorationPlaceResult SafariDecoration_CheckObjectPlaceable(SafariDecoration *decor, int index) {
     if (!decor->objectSlotsLeft) {
         return SAFARI_DECORATION_PLACE_AREA_FULL;
     }

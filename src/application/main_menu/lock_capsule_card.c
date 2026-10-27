@@ -867,7 +867,7 @@ void WonderCard_InitBgLayers(BgConfig *bgConfig) {
 
 // Whether the gift can be received (enum MysteryGiftCheckResult). A header with all bits set wipes the Mystery Gift
 // save data and resets the system.
-int MysteryGift_CheckCanReceive(SaveData *saveData, WonderCardInfo *header) {
+enum MysteryGiftCheckResult MysteryGift_CheckCanReceive(SaveData *saveData, WonderCardInfo *header) {
     MysteryGiftSave *mg = Save_MysteryGift_Get(saveData);
     u32 versions = header->version;
 

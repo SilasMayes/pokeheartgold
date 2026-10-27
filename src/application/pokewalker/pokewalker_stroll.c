@@ -39,11 +39,11 @@ enum StartStrollState {
     START_STROLL_DONE,
 };
 
-int PokewalkerApp_WaitKeyToSave_Enter(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_WaitKeyToSave_Enter(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_WaitKeyToSave_Update(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_WaitKeyToSave_Update(PokewalkerApp *app) {
     if (gSystem.newKeys & PAD_KEY_DOWN) {
         app->nextMode = POKEWALKER_APP_MODE_LINK_SAVE;
         return POKEWALKER_APP_STATE_EXIT;
@@ -51,11 +51,11 @@ int PokewalkerApp_WaitKeyToSave_Update(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_WaitKeyToSave_Exit(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_WaitKeyToSave_Exit(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_ENTER;
 }
 
-int PokewalkerApp_StartStroll_Enter(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_StartStroll_Enter(PokewalkerApp *app) {
     PCStorage *pcStorage = SaveArray_PCStorage_Get(app->saveData);
     int box = app->strollMonSelection.page;
     int slot = app->strollMonSelection.slot;
@@ -67,7 +67,7 @@ int PokewalkerApp_StartStroll_Enter(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_StartStroll_Update(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_StartStroll_Update(PokewalkerApp *app) {
     app->state = gStartStrollStates[app->state](app);
     if (app->state == START_STROLL_DONE) {
         app->state = 0;
@@ -76,7 +76,7 @@ int PokewalkerApp_StartStroll_Update(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_UPDATE;
 }
 
-int PokewalkerApp_StartStroll_Exit(PokewalkerApp *app) {
+enum PokewalkerAppState PokewalkerApp_StartStroll_Exit(PokewalkerApp *app) {
     return POKEWALKER_APP_STATE_ENTER;
 }
 
