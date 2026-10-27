@@ -352,7 +352,7 @@ BOOL Task_FieldDig(TaskManager *taskManager) {
 
 // Dig / Teleport without the following Pokemon: the cut-in of the Pokemon using the move first.
 int FieldMove_ShowCutIn(TaskManager *taskManager, FieldSystem *fieldSystem, FieldMoveTaskEnvironment *env) {
-    int gender = PlayerAvatar_GetGender(fieldSystem->playerAvatar);
+    u32 gender = PlayerAvatar_GetGender(fieldSystem->playerAvatar);
     env->cutIn = FieldMoveCutIn_Start(fieldSystem, FIELD_MOVE_CUT_IN_BANNER, env->mon, gender);
     env->state++;
     return FIELD_MOVE_STEP_WAIT;

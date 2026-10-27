@@ -188,7 +188,7 @@ SafariDecorationArgs *SafariDecoration_CreateArgs(FieldSystem *fieldSystem, enum
 
 static BOOL SafariZone_IsWaterObjectPlacementUnlocked(SaveData *saveData) {
     u32 trainerId = PlayerProfile_GetTrainerID(Save_PlayerData_GetProfile(saveData));
-    int unlockLevel = SafariZone_GetObjectUnlockLevel(Save_SafariZone_Get(saveData));
+    u8 unlockLevel = SafariZone_GetObjectUnlockLevel(Save_SafariZone_Get(saveData));
     u8 digit = trainerId % 10;
     u8 value;
 
@@ -232,7 +232,7 @@ u16 FieldSystem_CheckSafariObjectPlacement(FieldSystem *fieldSystem) {
 
 // Returns the id of the placed object the player is facing (0xFF if none) and its index in its area.
 u16 FieldSystem_GetFacingSafariObject(FieldSystem *fieldSystem, u16 *objectIndex) {
-    int direction = PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar);
+    u32 direction = PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar);
     int x = PlayerAvatar_GetXCoord(fieldSystem->playerAvatar) + GetDeltaXByFacingDirection(direction);
     int z = PlayerAvatar_GetZCoord(fieldSystem->playerAvatar) + GetDeltaYByFacingDirection(direction);
     u8 gender = PlayerProfile_GetTrainerGender(Save_PlayerData_GetProfile(fieldSystem->saveData));

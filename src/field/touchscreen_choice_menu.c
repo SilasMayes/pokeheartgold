@@ -249,7 +249,7 @@ static void TouchscreenChoiceMenu_ShowList(TouchscreenChoiceMenuData *data) {
 }
 
 static void TouchscreenChoiceMenu_HideList(TouchscreenChoiceMenuData *data) {
-    int count = ScriptMenu_GetCount(data->menu);
+    u8 count = ScriptMenu_GetCount(data->menu);
     int i;
 
     BgClearTilemapBufferAndCommit(data->bgConfig, GF_BG_LYR_SUB_0);

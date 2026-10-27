@@ -79,7 +79,7 @@ void CallFieldTask_Waterfall(TaskManager *taskManager, int playerDirection, int 
 void CallFieldTask_Whirlpool(TaskManager *taskManager, int playerDirection, int partySlot);
 int MapNumToFloorNo(int mapId);
 void PrintCurFloorInNewWindow(FieldSystem *fieldSystem, u8 x, u8 y, u16 *p_ret, MessageFormat *msgFmt, u16 floor);
-int Field_SaveGameNormal(FieldSystem *fieldSystem);
+BOOL Field_SaveGameNormal(FieldSystem *fieldSystem);
 void DoorAnimation_Load(FieldSystem *fieldSystem, int x, int z, u8 tag);
 void DoorAnimation_WaitForEnd(FieldSystem *fieldSystem, u8 tag);
 void DoorAnimation_Unload(FieldSystem *fieldSystem, u8 tag);

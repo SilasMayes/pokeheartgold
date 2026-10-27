@@ -161,7 +161,7 @@ static BOOL EmoteBubble_Show(LocalMapObject *mapObject, int kind) {
     MapObject_CopyFacingVector(mapObject, &facing);
     facing.y = 0;
     VEC_Add(&position, &facing, &position);
-    int priority = MapObject_GetPriority(mapObject) + 1;
+    u32 priority = MapObject_GetPriority(mapObject) + 1;
     FieldEffectManager_CreateEffect(manager, &sEmoteBubbleEffectTemplate, &position, kind, &args, priority);
 }
 

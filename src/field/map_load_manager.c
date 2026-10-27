@@ -458,7 +458,7 @@ static void MapLoadManager_LoadSafariZoneProps(MapLoadManager *mapLoadManager, L
         MapPropManager_LoadFromNARC(mapLoadManager->narc, header->propsSize, map->propManager, (int)mapLoadManager->mapPropAnimationManager);
     } else {
         SafariZone *safariZone = Save_SafariZone_Get(mapLoadManager->saveData);
-        int linkLeader = SafariZone_GetActiveAreaSet(safariZone);
+        u8 linkLeader = SafariZone_GetActiveAreaSet(safariZone);
         areaSet = SafariZone_GetAreaSet(safariZone, linkLeader);
         int gender;
         if (linkLeader == 0) {
@@ -1222,7 +1222,7 @@ static void CalcMapPosition(int matrixIndex, int width, MapMatrix *mapMatrix, Ve
     if (matrixIndex != -1) {
         u16 x = matrixIndex % width;
         u16 z = matrixIndex / width;
-        int matrixWidth = MapMatrix_GetWidth(mapMatrix);
+        u8 matrixWidth = MapMatrix_GetWidth(mapMatrix);
         u8 matrixId = MapMatrix_GetMatrixId(mapMatrix);
         pos->y = MapMatrix_GetMapAltitude(mapMatrix, matrixId, x, z, matrixWidth) << 15;
         pos->x += x * MAP_TILES_COUNT_X * MAP_TILE_SIZE;
@@ -1275,7 +1275,7 @@ void MapLoadManager_InitialLoad(MapLoadManager *mapLoadManager, int x, int z) {
 // the current map
 static void MapLoadManager_OnTileStep(u8 direction, MapLoadManager *mapLoadManager) {
     int tile = TileIndex_Step(direction, mapLoadManager->height, mapLoadManager->stride, mapLoadManager->currentTile);
-    int matrixIndex = TileIndex_ToMatrixIndex(tile, mapLoadManager->width, mapLoadManager->stride);
+    u32 matrixIndex = TileIndex_ToMatrixIndex(tile, mapLoadManager->width, mapLoadManager->stride);
     int quadrant = TileIndex_GetQuadrant(tile, mapLoadManager->stride);
     if (mapLoadManager->currentMatrixIndex == matrixIndex && mapLoadManager->quadrant != quadrant) {
         MapLoadManager_Scroll(matrixIndex, direction, mapLoadManager);

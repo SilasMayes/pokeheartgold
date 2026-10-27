@@ -913,7 +913,7 @@ static void WildEffect_RunWave(SysTask *task, EncounterEffectTask *effect, BOOL 
         break;
     case WAVE_EFFECT_STATE_WAIT_FLASH:
         if (effect->fadeDone) {
-            EncounterEffectHBlankWave_Init(&work->wave, 4);
+            EncounterEffectHBlankWave_Init(&work->wave, HEAP_ID_FIELD1);
             effect->state = WAVE_EFFECT_STATE_START_WAVE;
         }
         break;

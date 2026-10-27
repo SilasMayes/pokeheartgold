@@ -58,7 +58,6 @@ static BOOL Task_PalPadRegistration(TaskManager *taskman);
 static void PalPadRegistration_PrintMessage(PalPadRegistration *registration, u32 msgId);
 static void PalPadRegistration_Init(PalPadRegistration *registration);
 static void PalPadRegistration_Free(PalPadRegistration *registration);
-void FieldSystem_StartPalPadRegistration(FieldSystem *fieldSystem);
 
 static BOOL PalPadRegistration_Start(PalPadRegistration *registration) {
     FriendRoster_GetDwcFriendData(Save_FriendRoster_Get(registration->saveData), 0);

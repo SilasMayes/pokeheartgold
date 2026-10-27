@@ -432,7 +432,7 @@ BOOL FieldSystem_FindMapPropOfModels(FieldSystem *fieldSystem, int *models, u32 
     return FALSE;
 }
 
-int *FieldSystem_CollectMapPropModelsInRect(FieldSystem *fieldSystem, u32 heapId, int capacity, fx32 *rect, u32 fill) {
+int *FieldSystem_CollectMapPropModelsInRect(FieldSystem *fieldSystem, enum HeapID heapId, int capacity, fx32 *rect, u32 fill) {
     u8 outer;
     int *array = Heap_AllocAtEnd((enum HeapID)heapId, capacity * sizeof(int));
     int i;

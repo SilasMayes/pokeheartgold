@@ -324,7 +324,7 @@ static int FollowMon_GetMovement(LocalMapObject *object) {
 }
 
 static int FollowPlayerMovement_GetPlayerMovement(LocalMapObject *object) {
-    int movement = MapObject_GetMovementCommand(PlayerAvatar_GetMapObject(FieldSystem_GetPlayerAvatar(MapObject_GetFieldSystem(object))));
+    u32 movement = MapObject_GetMovementCommand(PlayerAvatar_GetMapObject(FieldSystem_GetPlayerAvatar(MapObject_GetFieldSystem(object))));
     switch (movement) {
     case 0x58:
         return MOVEMENT_RUN_UP;

@@ -4,6 +4,7 @@
 #include "field_system.h"
 #include "map_object.h"
 #include "map_object_follow.h"
+#include "map_object_movement_commands_internal.h"
 
 // Movement state of the follow-player movement types (the following Pokemon and objects that trail the player).
 typedef struct FollowPlayerMovementState {
@@ -40,10 +41,6 @@ typedef struct HiddenObjectMovementState {
 typedef BOOL (*FollowPlayerStateFunc)(LocalMapObject *object, FollowPlayerMovementState *state);
 typedef BOOL (*FollowPartnerStateFunc)(LocalMapObject *object, FollowPartnerMovementState *state);
 typedef BOOL (*HiddenObjectStateFunc)(LocalMapObject *object, HiddenObjectMovementState *state);
-
-typedef struct MovementList {
-    u32 movements[DIR_MAX];
-} MovementList;
 
 extern const FollowPartnerStateFunc gFollowPartnerStates[2];
 extern const HiddenObjectStateFunc gHiddenObjectStates[2];

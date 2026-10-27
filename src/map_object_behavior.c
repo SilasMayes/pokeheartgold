@@ -230,7 +230,7 @@ BOOL TypeBehavior_LookSidewaysUpdate(LocalMapObject *object) {
     switch (state->turnState) {
     case TRAINER_TURN_STATE_INIT: {
         FourValues dirTable = gLookSidewaysAxisByFacing;
-        int dir = MapObject_GetFacingDirection(object);
+        u32 dir = MapObject_GetFacingDirection(object);
         state->direction = dir;
         state->sequence = dirTable.values[dir];
         state->turnState++;
@@ -356,7 +356,7 @@ void ApricornTreeObject_Init(LocalMapObject *object) {
 void ApricornTreeObject_Update(LocalMapObject *object) {
     MapObjectSpriteState *spriteState = (MapObjectSpriteState *)MapObject_GetMovementData(object);
     ApricornTreeState *state = (ApricornTreeState *)MapObject_GetDrawData(object);
-    int apricorn = FieldSystem_ApricornTree_HasApricorn(MapObject_GetFieldSystem(object), object);
+    BOOL apricorn = FieldSystem_ApricornTree_HasApricorn(MapObject_GetFieldSystem(object), object);
     if (MapObject_IsBillboardPending(object) == TRUE) {
         return;
     }
@@ -535,7 +535,7 @@ static void GetEngagingTrainerParams(EngageParams *out, LocalMapObject *object, 
 }
 
 static int MapObject_GetTrainerSightType(LocalMapObject *object) {
-    int type = MapObject_GetType(object);
+    u32 type = MapObject_GetType(object);
     switch (type) {
     case 0:
     case 1:
@@ -559,7 +559,7 @@ static int TrainerSight_FindPlayer(LocalMapObject *object, PlayerAvatar *player,
     if (mode == 1) {
         int x = PlayerAvatar_GetXCoord(player);
         int z = PlayerAvatar_GetZCoord(player);
-        int dir = MapObject_GetFacingDirection(object);
+        u32 dir = MapObject_GetFacingDirection(object);
         int param = MapObject_GetParam(object, 0);
         int dist = TrainerSight_GetDistanceInDirection(object, dir, param, x, z, 0);
         if (dist != -1 && !TrainerSight_IsPathBlocked(object, dir, dist)) {

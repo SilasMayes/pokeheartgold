@@ -443,14 +443,14 @@ static void MapObject_SpawnGroundDust(LocalMapObject *object, u8 behavior, u8 pr
 }
 
 static void MapObject_SpawnVeryTallGrassStanding(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags) {
-    int id = MapObject_GetID(object);
+    u32 id = MapObject_GetID(object);
     if (MetatileBehavior_IsVeryTallGrass(behavior) == 1 && (id != obj_partner_poke || MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) != 1)) {
         VeryTallGrass_Spawn(object, 0);
     }
 }
 
 static void MapObject_SpawnVeryTallGrassOnStep(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags) {
-    int id = MapObject_GetID(object);
+    u32 id = MapObject_GetID(object);
     if (MetatileBehavior_IsVeryTallGrass(behavior) == 1 && (id != obj_partner_poke || MapObject_TestFlagsBits(object, MAPOBJECTFLAG_VISIBLE) != 1)) {
         VeryTallGrass_Spawn(object, 1);
     }

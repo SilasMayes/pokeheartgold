@@ -1513,7 +1513,7 @@ static void Weather_SetFog(FogData *fog, GXFogSlope fogSlope, s32 fogOffset, GXR
 }
 
 static void WeatherFogChange_Init(WeatherFogChange *fogChange, FogData *fog, s32 targetSlope, s32 targetOffset, GXRgb rgb, s32 duration) {
-    int slope = Fog_GetSlope(fog);
+    GXFogSlope slope = Fog_GetSlope(fog);
     int offset = Fog_GetOffset(fog);
     GXRgb rgb2 = Fog_GetColor(fog);
 

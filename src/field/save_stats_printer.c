@@ -283,7 +283,7 @@ void Field_SaveStatsPrinter_DeleteTouchSave(struct SaveStatsPrinter *printer) {
     Heap_Free(printer);
 }
 
-int Field_SaveGameNormal(FieldSystem *fieldSystem) {
+BOOL Field_SaveGameNormal(FieldSystem *fieldSystem) {
     FieldSystem_StorePlayerLocation(fieldSystem);
     if (SaveGameNormal(fieldSystem->saveData) == 2) {
         return TRUE;

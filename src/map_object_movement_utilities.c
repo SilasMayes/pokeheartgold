@@ -14,7 +14,7 @@
 BOOL MapObject_IsTileOccupiedInLink(LocalMapObject *self, int x, int y, int z) {
     MapObjectManager *manager = MapObject_GetManager(self);
     LocalMapObject *object = MapObjectManager_GetObjects2(manager);
-    int count = MapObjectManager_GetObjectCount(manager);
+    u32 count = MapObjectManager_GetObjectCount(manager);
 
     do {
         if (object != self && MapObject_GetFlagsBitsMask(object, MAPOBJECTFLAG_ACTIVE) != 0 && MapObject_GetFlagsBitsMask(object, MAPOBJECTFLAG_UNK18) == 0) {
@@ -52,7 +52,7 @@ BOOL MapObject_IsTileOccupied(LocalMapObject *self, int x, int y, int z) {
     int objectZ;
     MapObjectManager *manager = MapObject_GetManager(self);
     LocalMapObject *object = MapObjectManager_GetObjects2(manager);
-    int count = MapObjectManager_GetObjectCount(manager);
+    u32 count = MapObjectManager_GetObjectCount(manager);
 
     do {
         if (object != self && MapObject_GetFlagsBitsMask(object, MAPOBJECTFLAG_ACTIVE) != 0) {
@@ -239,7 +239,7 @@ void MapObject_OffsetPositionInDirection(LocalMapObject *object, int direction, 
 BOOL MapObject_UpdateHeight(LocalMapObject *object) {
     VecFx32 position;
     VecFx32 adjusted;
-    int result;
+    BOOL result;
 
     MapObject_CopyPositionVector(object, &position);
     adjusted = position;

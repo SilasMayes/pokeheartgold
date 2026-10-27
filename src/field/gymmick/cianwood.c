@@ -156,7 +156,7 @@ static int CianwoodGymmick_RebindAnims(FieldSystem *fieldSystem) {
     Field3dRenderObj *renderObj174 = Field3dObjectList_GetRenderObjectByID(fieldSystem->renderObjManager, 174);
     Field3dRenderObj *renderObj175 = Field3dObjectList_GetRenderObjectByID(fieldSystem->renderObjManager, 175);
 
-    int numPropAnims = MapPropAnimationManager_GetPropAnimationCount(fieldSystem->mapPropAnimationManager, 173);
+    u8 numPropAnims = MapPropAnimationManager_GetPropAnimationCount(fieldSystem->mapPropAnimationManager, 173);
     for (int i = 0; i < numPropAnims; ++i) {
         MapPropAnimationManager_RemoveAnimationFromRenderObj(fieldSystem->mapPropAnimationManager, &renderObj173->renderObj, 173, i);
     }

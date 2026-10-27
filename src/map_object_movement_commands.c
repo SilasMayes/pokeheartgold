@@ -315,9 +315,7 @@ BOOL IsMovement56To59(u32 movement) {
 }
 
 u32 GetMovement8ForDirection(s32 direction) {
-    struct DirectionMovements {
-        u32 movements[4];
-    } table = *(const struct DirectionMovements *)_020FDA28;
+    MovementList table = _020FDA28;
 
     GF_ASSERT(direction < DIR_MAX);
     return table.movements[direction];

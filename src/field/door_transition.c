@@ -671,7 +671,7 @@ void DoorAnimation_Load(FieldSystem *fieldSystem, int x, int z, u8 tag) {
     }
     Heap_Free(props);
     if (found) {
-        int count = MapPropAnimationManager_GetPropAnimationCount(fieldSystem->mapPropAnimationManager, modelId);
+        u8 count = MapPropAnimationManager_GetPropAnimationCount(fieldSystem->mapPropAnimationManager, modelId);
         if (count) {
             NNSG3dResTex *texture = AreaDataManager_GetMapPropTexture(fieldSystem->areaDataManager);
             NNSG3dRenderObj *renderObj = MapProp_GetRenderSurface(door.prop);

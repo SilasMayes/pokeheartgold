@@ -967,14 +967,14 @@ static int DirectionList_Count(const int *list, int value) {
 }
 
 static int DirectionList_GetRandom(const int *list, int value) {
-    int random = LCRandom();
+    u16 random = LCRandom();
     int count = DirectionList_Count(list, value);
     return list[random % count];
 }
 
 static int GetRandomDirectionFromTable(int tableId, int value) {
     const int *list = GetDirectionTable(tableId);
-    int random = LCRandom();
+    u16 random = LCRandom();
     int count = DirectionList_Count(list, value);
     return list[random % count];
 }
@@ -996,7 +996,7 @@ static const int *GetDirectionTable(int id) {
 
 static int MapObject_GetDirectionToNearbyPlayer(LocalMapObject *object) {
     PlayerAvatar *avatar;
-    int type = MapObject_GetType(object);
+    u32 type = MapObject_GetType(object);
     int i, movement, entry, x, z, distance, objectX, objectZ, maxZ, minX, minZ, maxX;
     u32 y;
     if (type != 1 && type != 2) {
@@ -1125,7 +1125,7 @@ static void WalkingSpin_Init(LocalMapObject *object, WalkingSpinState *state) {
 }
 
 static void WalkingSpin_TurnBeforeStep(LocalMapObject *object, WalkingSpinState *state) {
-    int facing = MapObject_GetFacingDirection(object);
+    u32 facing = MapObject_GetFacingDirection(object);
     int i = 0;
     while (i < DIR_MAX && facing != sWalkingSpinOrders[state->order][i]) {
         i++;

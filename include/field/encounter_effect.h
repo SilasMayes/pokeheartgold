@@ -129,7 +129,7 @@ typedef struct EncounterEffectState {
 extern EncounterEffectState gEncounterEffectState;
 
 // HBlank BG offset wave
-void EncounterEffectHBlankWave_Init(EncounterEffectHBlankWave *wave, int heapID);
+void EncounterEffectHBlankWave_Init(EncounterEffectHBlankWave *wave, enum HeapID heapID);
 void EncounterEffectHBlankWave_Free(EncounterEffectHBlankWave *wave);
 void EncounterEffectHBlankWave_Start(EncounterEffectHBlankWave *wave, u8 firstLine, u8 lastLine, u32 step, fx32 amplitude, s16 speed, void *destination, u32 fill, u32 priority);
 void EncounterEffectHBlankWave_AlternateDirection(EncounterEffectHBlankWave *wave, u32 period);

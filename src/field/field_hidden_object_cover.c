@@ -100,7 +100,7 @@ FieldEffect *HiddenObjectCover_Spawn(LocalMapObject *mapObject, int coverType) {
     args.mapObject = mapObject;
     args.renderObj = HiddenObjectCover_GetRenderObj(cover, coverType);
 
-    int priority = MapObject_GetPriorityPlusValue(mapObject, 2);
+    u32 priority = MapObject_GetPriorityPlusValue(mapObject, 2);
     return FieldEffectManager_CreateEffect(manager, &sHiddenObjectCoverEffectTemplate, &position, 0, &args, priority);
 }
 

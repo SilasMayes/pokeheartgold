@@ -86,7 +86,7 @@ BOOL FieldTransition_EnterThroughSideDoor(TaskManager *taskMan) {
     }
     case SIDE_DOOR_ENTER_WALK_OUT: {
         FieldTransitionWork *work = env->transitionWork;
-        int direction = PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar);
+        u32 direction = PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar);
         if (DoorTransition_WalkOutOfSideDoor(fieldSystem, work, direction)) {
             DoorTransition_Free(env->transitionWork);
             env->transitionState++;

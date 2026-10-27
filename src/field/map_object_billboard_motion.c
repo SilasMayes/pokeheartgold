@@ -377,8 +377,8 @@ void FollowMonDraw_Resume(LocalMapObject *object) {
     if (!work->spriteLoaded && MapObject_GetID(object) == obj_partner_poke) {
         FieldSystem *fieldSystem = MapObjectManager_GetFieldSystem(MapObject_GetManager(object));
         Pokemon *mon = GetFirstAliveMonInParty_CrashIfNone(SaveArray_Party_Get(fieldSystem->saveData));
-        int species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-        int form = GetMonData(mon, MON_DATA_FORM, NULL);
+        u32 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+        u32 form = GetMonData(mon, MON_DATA_FORM, NULL);
         u8 gender = GetMonGender(mon);
         u32 spriteId = FollowMon_GetSpriteID(species, form, gender);
         u8 shiny = MonIsShiny(mon);
@@ -1218,7 +1218,7 @@ void PlayerDraw_UpdateHeal(LocalMapObject *object) {
     PlayerDrawWork *work = (PlayerDrawWork *)MapObject_GetDrawData(object);
     BillboardObject *billboard = work->billboard;
     if (MapObject_IsBillboardPending(object) != TRUE && billboard) {
-        int facing = MapObject_GetFacingDirection(object);
+        u32 facing = MapObject_GetFacingDirection(object);
         movement = MapObject_GetAnimation(object);
         if (movement != work->movement) {
             if (movement == 0) {

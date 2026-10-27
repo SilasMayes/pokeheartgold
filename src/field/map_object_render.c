@@ -801,7 +801,7 @@ static void MapObjectRender_FreeUnusedTextures(MapObjectManager *manager, MapObj
     u32 id;
     GF_3DGfxRawResMan *textures = MapObjectRender_GetTextures(render);
     u32 *cursor = MapObjectRender_GetTextureIds(render) + MapObjectRender_GetResidentTextureCount(render);
-    int count = MapObjectRender_GetDynamicTextureCount(render);
+    u32 count = MapObjectRender_GetDynamicTextureCount(render);
     do {
         id = *cursor;
         if (id != MAP_OBJECT_GFX_ID_INVALID && !MapObjectManager_IsSpriteInUse(manager, id, NULL)) {

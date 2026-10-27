@@ -26,6 +26,10 @@ enum MapObjectAnim {
 
 typedef BOOL (*MovementCommandFunc)(LocalMapObject *object);
 
+typedef struct MovementList {
+    u32 movements[DIR_MAX];
+} MovementList;
+
 typedef struct EventObjectMovementWork EventObjectMovementWork;
 
 void MapObject_ForceSetHeldMovement(LocalMapObject *object, u32 movement);
@@ -194,7 +198,7 @@ BOOL MapObjectMovementCmd111_Step16(LocalMapObject *object);
 BOOL MapObjectMovementCmd111_Step18(LocalMapObject *object);
 BOOL MapObjectMovementCmd112_Step0(LocalMapObject *object);
 
-extern const u32 _020FDA28[4];
+extern const MovementList _020FDA28;
 extern const u32 *const gMovementsByDirection[];
 extern const MovementCommandFunc *const gMovementCmdTable[];
 extern const fx32 *gJumpHeightTables[];

@@ -592,7 +592,7 @@ static void FollowMonSituation_SetNearbyObjects(FieldSystem *fieldSystem, Follow
             int z = MapObject_GetZCoord(object);
             int dx = playerX - x;
             int dz = playerZ - z;
-            int sprite = MapObject_GetSpriteID(object);
+            u32 sprite = MapObject_GetSpriteID(object);
             if (sprite == SPRITE_ROCK) {
                 situation->nearRock = TRUE;
             } else if (sprite == SPRITE_BREAKROCK) {
@@ -600,7 +600,7 @@ static void FollowMonSituation_SetNearbyObjects(FieldSystem *fieldSystem, Follow
             } else if (sprite == SPRITE_TREE) {
                 situation->nearTree = TRUE;
             } else if (dx >= -1 && dx <= 1 && dz >= -1 && dz <= 1) {
-                int id = MapObject_GetID(object);
+                u32 id = MapObject_GetID(object);
                 if (id != obj_partner_poke && id != obj_player) {
                     situation->nearbyObjects++;
                 }
@@ -692,7 +692,7 @@ static void FollowMonSituation_SetBestPokeathlonStat(FieldSystem *fieldSystem, i
     int stat;
     u32 best;
     Party *party = SaveArray_Party_Get(fieldSystem->saveData);
-    int slot = GetIdxOfFirstAliveMonInParty_CrashIfNone(party);
+    u8 slot = GetIdxOfFirstAliveMonInParty_CrashIfNone(party);
 
     Party_GetMonAprijuiceModifiers(party, &aprijuice, slot);
     CalcMonPokeathlonStars(&stars, Party_GetMonByIndex(party, slot), (s8 *)&aprijuice, HEAP_ID_FIELD2);
@@ -1214,8 +1214,8 @@ static BOOL Task_FollowMonInteract(TaskManager *taskManager) {
             fieldSystem->followMonInteraction->state = INTERACTION_STATE_WAIT_CHOICE_APP;
             break;
         case INTERACTION_STATE_WAIT_CHOICE_APP: {
-            int appId = FieldSystem_GetBottomScreenAppId(fieldSystem);
-            int appState = FieldSystem_GetBottomScreenAppState(fieldSystem);
+            u8 appId = FieldSystem_GetBottomScreenAppId(fieldSystem);
+            u8 appState = FieldSystem_GetBottomScreenAppState(fieldSystem);
             if (appId == BOTTOM_SCREEN_APP_CHOICE_MENU && appState == BOTTOM_SCREEN_APP_STATE_RUNNING) {
                 FieldSystem_SetTouchscreenChoiceMenuState(fieldSystem, BOTTOM_SCREEN_APP_CHOICE_MENU, TOUCHSCREEN_CHOICE_MENU_STATE_SHOW_YES_NO, &fieldSystem->followMonInteraction->answer);
                 fieldSystem->followMonInteraction->state = INTERACTION_STATE_WAIT_ANSWER;
@@ -1223,7 +1223,7 @@ static BOOL Task_FollowMonInteract(TaskManager *taskManager) {
             break;
         }
         case INTERACTION_STATE_WAIT_ANSWER: {
-            int appId = FieldSystem_GetBottomScreenAppId(fieldSystem);
+            u8 appId = FieldSystem_GetBottomScreenAppId(fieldSystem);
             int menuState = FieldSystem_GetTouchscreenChoiceMenuState(fieldSystem);
             if (appId == BOTTOM_SCREEN_APP_CHOICE_MENU && menuState == TOUCHSCREEN_CHOICE_MENU_STATE_DONE) {
                 FieldSystem_SwitchBottomScreenApp(fieldSystem, BOTTOM_SCREEN_APP_TOUCHSCREEN_MENU, 0);
@@ -1232,8 +1232,8 @@ static BOOL Task_FollowMonInteract(TaskManager *taskManager) {
             break;
         }
         case INTERACTION_STATE_CLOSE_CHOICE: {
-            int appId = FieldSystem_GetBottomScreenAppId(fieldSystem);
-            int appState = FieldSystem_GetBottomScreenAppState(fieldSystem);
+            u8 appId = FieldSystem_GetBottomScreenAppId(fieldSystem);
+            u8 appState = FieldSystem_GetBottomScreenAppState(fieldSystem);
             if (appId == BOTTOM_SCREEN_APP_TOUCHSCREEN_MENU && appState == BOTTOM_SCREEN_APP_STATE_RUNNING) {
                 switch (fieldSystem->followMonInteraction->answer) {
                 case 0:
@@ -1334,7 +1334,7 @@ static void FollowMon_PlaceholdersSet(FieldSystem *fieldSystem, MessageFormat *m
 
 static void FollowMon_ApplyInteractionEffects(FieldSystem *fieldSystem, FollowMonInteraction *interaction) {
     Pokemon *mon = GetFirstAliveMonInParty_CrashIfNone(SaveArray_Party_Get(fieldSystem->saveData));
-    int mood = FollowMonMood_Get(fieldSystem->followMonMood);
+    s8 mood = FollowMonMood_Get(fieldSystem->followMonMood);
     int value = mood;
 
     value += fieldSystem->followMonInteraction->moodChange;
@@ -1560,8 +1560,8 @@ BOOL FollowMonRule_CheckShinyLeaf(int leaf, u8 shinyLeaves) {
 
 BOOL FieldSystem_FirstAliveMonHasType(FieldSystem *fieldSystem, u8 type) {
     Pokemon *mon = GetFirstAliveMonInParty_CrashIfNone(SaveArray_Party_Get(fieldSystem->saveData));
-    int type1 = GetMonData(mon, MON_DATA_TYPE_1, NULL);
-    int type2 = GetMonData(mon, MON_DATA_TYPE_2, NULL);
+    u32 type1 = GetMonData(mon, MON_DATA_TYPE_1, NULL);
+    u32 type2 = GetMonData(mon, MON_DATA_TYPE_2, NULL);
     if (type1 == type || type2 == type) {
         return TRUE;
     }

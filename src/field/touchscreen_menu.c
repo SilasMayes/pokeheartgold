@@ -488,7 +488,7 @@ static BOOL TouchscreenMenu_UpdateRunningShoesVisibility(TouchscreenMenuData *da
 
 // Touching the action button simulates an A press (and keeps doing so while it stays pressed).
 static void TouchscreenMenu_HandleActionButton(TouchscreenMenuData *data, int heldButton) {
-    int anim = Sprite_GetAnimationNumber(data->sprites[TOUCHSCREEN_MENU_SPRITE_ACTION]);
+    u16 anim = Sprite_GetAnimationNumber(data->sprites[TOUCHSCREEN_MENU_SPRITE_ACTION]);
 
     if (Sprite_GetDrawFlag(data->sprites[TOUCHSCREEN_MENU_SPRITE_ACTION])) {
         if (heldButton == 1 && System_GetTouchNew()) {
@@ -516,7 +516,7 @@ static int TouchscreenMenu_GetActionType(TouchscreenMenuData *data) {
     }
     if (!FieldSystem_IsPlayerMovementAllowed(fieldSystem)) {
         playerObj = PlayerAvatar_GetMapObject(FieldSystem_GetPlayerAvatar(fieldSystem));
-        int facing = MapObject_GetAnimation(playerObj);
+        u32 facing = MapObject_GetAnimation(playerObj);
         u32 spriteId = MapObject_GetSpriteID(playerObj);
         if ((u32)(spriteId - SPRITE_FISHINGHERO) <= SPRITE_FISH_HEROINE - SPRITE_FISHINGHERO) {
             return facing == 1 ? TOUCHSCREEN_MENU_ACTION_FISHING : TOUCHSCREEN_MENU_ACTION_NEXT;
@@ -791,7 +791,7 @@ static void TouchscreenMenu_LoadSpriteResources(TouchscreenMenuData *data) {
         data->resMans[i] = Create2DGfxResObjMan(TOUCHSCREEN_MENU_NUM_RESOURCES, (GfGfxResType)i, HEAP_ID_8);
     }
     for (i = 0; i < TOUCHSCREEN_MENU_NUM_RESOURCES; i++) {
-        int gender = PlayerProfile_GetTrainerGender(Save_PlayerData_GetProfile(data->fieldSystem->saveData));
+        u32 gender = PlayerProfile_GetTrainerGender(Save_PlayerData_GetProfile(data->fieldSystem->saveData));
         Bag *bag = Save_Bag_Get(data->fieldSystem->saveData);
         TouchscreenMenu_LoadIconResources(data->fieldSystem, data->resMans, data->resObjs[i], i, i + 100, gender, bag, data->layout);
     }

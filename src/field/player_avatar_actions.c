@@ -631,8 +631,8 @@ static BOOL Task_Surf(TaskManager *taskManager) {
         }
         break;
     case SURF_STATE_PLAY_CRY: {
-        int species = GetMonData(work->anim.mon, MON_DATA_SPECIES, NULL);
-        int form = GetMonData(work->anim.mon, MON_DATA_FORM, NULL);
+        u32 species = GetMonData(work->anim.mon, MON_DATA_SPECIES, NULL);
+        u32 form = GetMonData(work->anim.mon, MON_DATA_FORM, NULL);
         PlayCry(species, form);
         work->state = SURF_STATE_WAIT_CRY;
         break;
@@ -887,8 +887,8 @@ static int RockClimb_FollowMonReact(RockClimbWork *work, TaskManager *taskManage
 }
 
 static int RockClimb_PlayFollowMonCry(RockClimbWork *work, TaskManager *taskManager) {
-    int species = GetMonData(work->anim.mon, MON_DATA_SPECIES, NULL);
-    int form = GetMonData(work->anim.mon, MON_DATA_FORM, NULL);
+    u32 species = GetMonData(work->anim.mon, MON_DATA_SPECIES, NULL);
+    u32 form = GetMonData(work->anim.mon, MON_DATA_FORM, NULL);
     PlayCry(species, form);
     work->state++;
     return FIELD_MOVE_TASK_STEP_WAIT;
