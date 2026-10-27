@@ -1,11 +1,10 @@
 #include "global.h"
 
+#include "dwc/dwc_bm_internal.h"
 #include "wifi_setup/wifi_setup.h"
 #include "wifi_setup/wifi_setup_wcm.h"
 
 #include <nitro/rtc/ARM9/api.h>
-
-RTCResult RTC_GetTime(RTCTime *time);
 
 typedef struct RateMask {
     u16 mask;

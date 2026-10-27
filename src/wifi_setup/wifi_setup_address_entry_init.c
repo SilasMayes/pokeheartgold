@@ -34,8 +34,8 @@ void WifiSetupAddressEntry_Init(void) {
     WifiSetupApp_GetScreenArgs(&kind, 0);
     funcs.funcs[kind]((char *)gWifiSetupAddressEntry->digits);
     work = gWifiSetupAddressEntry;
-    if (memcmp(work->digits, gWifiSetupAddressEntryUnsetAddress, 3) != 0) {
-        work->field = 3;
+    if (memcmp(work->digits, gWifiSetupAddressEntryUnsetAddress, WIFI_SETUP_ADDRESS_FIELD_LEN) != 0) {
+        work->field = WIFI_SETUP_ADDRESS_NUM_FIELDS - 1;
     } else {
         MI_CpuFill8(work->digits, 0, sizeof(work->digits));
         gWifiSetupAddressEntry->field = 0;

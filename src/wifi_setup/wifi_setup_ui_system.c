@@ -42,11 +42,11 @@ static WifiSetupTask *WifiSetupTask_CreateEx(int queue, WifiSetupTaskFunc func, 
 static void WifiSetupTask_DestroyNow(int queue, WifiSetupTask *task);
 
 static inline int GX_GetVisiblePlane13(void) {
-    return (reg_GX_DISPCNT & 0x1F00) >> 8;
+    return (reg_GX_DISPCNT & REG_GX_DISPCNT_DISPLAY_MASK) >> REG_GX_DISPCNT_DISPLAY_SHIFT;
 }
 
 static inline int GXS_GetVisiblePlane13(void) {
-    return (reg_GXS_DB_DISPCNT & 0x1F00) >> 8;
+    return (reg_GXS_DB_DISPCNT & REG_GXS_DB_DISPCNT_DISPLAY_MASK) >> REG_GXS_DB_DISPCNT_DISPLAY_SHIFT;
 }
 
 static inline void OamSetPosition(GXOamAttr *oam, int x, int y) {
@@ -768,13 +768,13 @@ void WifiSetupDisplay_HidePlanes(int screen, int planes) {
 
 void WifiSetupDisplay_SetWindowRect(int screen, int window, WifiSetupRect *rect) {
     if (screen == WIFI_SETUP_SCREEN_SUB) {
-        if (window == 0) {
+        if (window == WIFI_SETUP_WINDOW_0) {
             G2S_SetWnd0Position(rect->left, rect->top, rect->right, rect->bottom);
         } else {
             G2S_SetWnd1Position(rect->left, rect->top, rect->right, rect->bottom);
         }
     } else {
-        if (window == 0) {
+        if (window == WIFI_SETUP_WINDOW_0) {
             G2_SetWnd0Position(rect->left, rect->top, rect->right, rect->bottom);
         } else {
             G2_SetWnd1Position(rect->left, rect->top, rect->right, rect->bottom);
@@ -782,39 +782,38 @@ void WifiSetupDisplay_SetWindowRect(int screen, int window, WifiSetupRect *rect)
     }
 }
 
-// window: 0/1 inside window 0/1, 2 inside the OBJ window, 3 outside all windows.
 void WifiSetupDisplay_SetWindowPlanes(int screen, int window, int planes, BOOL effect) {
     switch (window) {
-    case 0:
+    case WIFI_SETUP_WINDOW_0:
         if (screen == WIFI_SETUP_SCREEN_SUB) {
             G2S_SetWnd0InsidePlane(planes, effect);
         } else {
             G2_SetWnd0InsidePlane(planes, effect);
         }
         break;
-    case 1:
+    case WIFI_SETUP_WINDOW_1:
         if (screen == WIFI_SETUP_SCREEN_SUB) {
             G2S_SetWnd1InsidePlane(planes, effect);
         } else {
             G2_SetWnd1InsidePlane(planes, effect);
         }
         break;
-    case 2:
+    case WIFI_SETUP_WINDOW_OBJ:
         if (screen == WIFI_SETUP_SCREEN_SUB) {
-            u32 tmp = (reg_G2S_DB_WINOUT & ~0x3F00) | (planes << 8);
+            u32 tmp = (reg_G2S_DB_WINOUT & ~REG_G2S_DB_WINOUT_OBJWININ_MASK) | (planes << REG_G2S_DB_WINOUT_OBJWININ_SHIFT);
             if (effect) {
-                tmp |= 0x2000;
+                tmp |= (0x20 << REG_G2S_DB_WINOUT_OBJWININ_SHIFT);
             }
             reg_G2S_DB_WINOUT = tmp;
         } else {
-            u32 tmp = (reg_G2_WINOUT & ~0x3F00) | (planes << 8);
+            u32 tmp = (reg_G2_WINOUT & ~REG_G2_WINOUT_OBJWININ_MASK) | (planes << REG_G2_WINOUT_OBJWININ_SHIFT);
             if (effect) {
-                tmp |= 0x2000;
+                tmp |= (0x20 << REG_G2_WINOUT_OBJWININ_SHIFT);
             }
             reg_G2_WINOUT = tmp;
         }
         break;
-    case 3:
+    case WIFI_SETUP_WINDOW_OUTSIDE:
         if (screen == WIFI_SETUP_SCREEN_SUB) {
             G2S_SetWndOutsidePlane(planes, effect);
         } else {
@@ -1359,7 +1358,7 @@ void WifiSetup_RestoreVramBanks(void) {
 }
 
 static void WifiSetup_ClearVram(void) {
-    GX_SetBankForLCDC((GXVRamLCDC)0x1F3);
+    GX_SetBankForLCDC((GXVRamLCDC)(GX_VRAM_LCDC_A | GX_VRAM_LCDC_B | GX_VRAM_LCDC_E | GX_VRAM_LCDC_F | GX_VRAM_LCDC_G | GX_VRAM_LCDC_H | GX_VRAM_LCDC_I));
     MIi_CpuClearFast(0, (void *)HW_LCDC_VRAM, 0x40000);
     MIi_CpuClearFast(0, (void *)(HW_LCDC_VRAM + 0x80000), 0x24000);
     GX_DisableBankForLCDC();

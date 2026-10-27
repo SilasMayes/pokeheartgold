@@ -221,7 +221,7 @@ static void WifiSetupErrorScreen_CloseButtonBar(void) {
 }
 
 static void WifiSetupErrorScreen_Exit(void) {
-    int x;
+    int mode;
     if (WifiSetupFade_IsActive(WIFI_SETUP_SCREEN_SUB)) {
         return;
     }
@@ -235,14 +235,14 @@ static void WifiSetupErrorScreen_Exit(void) {
     WifiSetupMessage_Hide();
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
-    WifiSetupApp_GetScreenArgs(0, &x);
-    if (x) {
+    WifiSetupApp_GetScreenArgs(0, &mode);
+    if (mode != WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_CREATE);
         WifiSetupApp_SetStateFunc(WifiSetupConnectionList_Init);
     } else {
         WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_KEEP);
         WifiSetupApp_SetScreenArgs(0, 0);
-        WifiSetupSettings_SetFromMenu(0);
+        WifiSetupSettings_SetFromMenu(FALSE);
         WifiSetupApp_SetStateFunc(WifiSetupSettings_Init);
     }
 }

@@ -80,8 +80,8 @@ extern const u8 gWifiSetupKeyboardButtonPalettes[4]; // normal, highlighted
 void WifiSetupKeyboard_Create(void);
 void WifiSetupKeyboard_Close(void);
 int WifiSetupKeyboard_GetInput(void);
-void WifiSetupKeyboard_SetCanDelete(int canDelete);
-void WifiSetupKeyboard_SetCanType(int canType);
+void WifiSetupKeyboard_SetCanDelete(BOOL canDelete);
+void WifiSetupKeyboard_SetCanType(BOOL canType);
 BOOL WifiSetupKeyboard_Exists(void);
 
 void WifiSetupKeyboard_SlideInRow0Task(WifiSetupTask *task, void *arg);

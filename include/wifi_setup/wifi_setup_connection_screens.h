@@ -30,6 +30,11 @@
 #define WIFI_SETUP_METHOD_MENU_AUTO    2 // WifiSetupAutoSearch_Init
 #define WIFI_SETUP_METHOD_MENU_MANUAL  3
 
+// Second screen argument of the connection test screens (WifiSetupTestPrompt_Init, WifiSetupConnectionTest_Init)
+#define WIFI_SETUP_TEST_FROM_SETTINGS 0 // the settings screen of a slot
+#define WIFI_SETUP_TEST_NEW_SETTINGS  1 // settings just found or typed, saved to the slot first
+#define WIFI_SETUP_TEST_USB_CONNECTOR 2
+
 typedef struct WifiSetupApScanScreen {
     u8 result; // WIFI_SETUP_AP_SCAN_*
     u16 timer;

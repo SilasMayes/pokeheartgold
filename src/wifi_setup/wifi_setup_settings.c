@@ -483,7 +483,7 @@ static void WifiSetupSettings_Exit(void) {
             MI_CpuFill8(record->settings.dns1, 0, 8);
         }
         WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_KEEP);
-        WifiSetupApp_SetScreenArgs(0, 0);
+        WifiSetupApp_SetScreenArgs(0, WIFI_SETUP_TEST_FROM_SETTINGS);
         WifiSetupApp_SetStateFunc(WifiSetupConnectionTest_Init);
         break;
     }

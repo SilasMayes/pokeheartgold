@@ -90,15 +90,15 @@ int WifiSetupKeypad_GetInput(void) {
     return gWifiSetupKeypad->input;
 }
 
-void WifiSetupKeypad_SetCanDelete(int canDelete) {
+void WifiSetupKeypad_SetCanDelete(BOOL canDelete) {
     gWifiSetupKeypad->canDelete = canDelete;
 }
 
-void WifiSetupKeypad_SetCanType(int canType) {
+void WifiSetupKeypad_SetCanType(BOOL canType) {
     gWifiSetupKeypad->canType = canType;
 }
 
-void WifiSetupKeypad_SetCanAdvance(int canAdvance) {
+void WifiSetupKeypad_SetCanAdvance(BOOL canAdvance) {
     gWifiSetupKeypad->canAdvance = canAdvance;
 }
 

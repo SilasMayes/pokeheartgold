@@ -246,7 +246,7 @@ static void WifiSetupWh_StartParentCallback(void *arg) {
         return;
     }
     switch (frame.arg->state) {
-    case 7: // child connected
+    case WM_EVENT_CONNECTED:
         if (gWifiSetupWh.log) {
             gWifiSetupWh.log(WH_LOG_LEVEL, gWifiSetupWhStr_ChildConnected, frame.aid);
         }
@@ -261,7 +261,7 @@ static void WifiSetupWh_StartParentCallback(void *arg) {
         }
         gWifiSetupWh.work->connectedMask |= frame.mask;
         return;
-    case 9: // child disconnected
+    case WM_EVENT_DISCONNECTED:
         if (gWifiSetupWh.log) {
             gWifiSetupWh.log(WH_LOG_LEVEL, gWifiSetupWhStr_ChildDisconnected, frame.aid);
         }

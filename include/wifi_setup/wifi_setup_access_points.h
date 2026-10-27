@@ -16,12 +16,17 @@ struct WifiSetupAossResult;
 #define WIFI_SETUP_NUM_SCAN_ENTRIES 20
 #define WIFI_SETUP_NUM_CONNECTIONS  4
 
+// WifiSetupScanEntry.security
+#define WIFI_SETUP_SECURITY_OPEN 0
+#define WIFI_SETUP_SECURITY_WEP  1
+#define WIFI_SETUP_SECURITY_WPA  2
+
 // One access point found by the scan.
 typedef struct WifiSetupScanEntry {
     u8 ssid[0x20];
     u8 bssid[6];
     u16 linkLevel;
-    u8 security; // 0 open, 1 WEP, 2 WPA
+    u8 security; // WIFI_SETUP_SECURITY_*
     u8 pad29;
 } WifiSetupScanEntry;
 

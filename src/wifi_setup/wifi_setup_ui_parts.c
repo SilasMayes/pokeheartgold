@@ -514,11 +514,11 @@ int WifiSetupKeyboard_GetInput(void) {
     return gWifiSetupKeyboard->input;
 }
 
-void WifiSetupKeyboard_SetCanDelete(int canDelete) {
+void WifiSetupKeyboard_SetCanDelete(BOOL canDelete) {
     gWifiSetupKeyboard->canDelete = canDelete;
 }
 
-void WifiSetupKeyboard_SetCanType(int canType) {
+void WifiSetupKeyboard_SetCanType(BOOL canType) {
     gWifiSetupKeyboard->canType = canType;
 }
 

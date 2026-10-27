@@ -861,7 +861,7 @@ static void WifiSetupAutoDone_End(void) {
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_KEEP, WIFI_SETUP_BUTTON_BAR_KEEP);
-    WifiSetupApp_SetScreenArgs(0, 1);
+    WifiSetupApp_SetScreenArgs(0, WIFI_SETUP_TEST_NEW_SETTINGS);
     WifiSetupApp_SetStateFunc(WifiSetupTestPrompt_Init);
 }
 
@@ -1119,7 +1119,7 @@ static void WifiSetupApScanScreen_UpdateScan(void) {
         return;
     }
     for (i = 0; i < count; i++) {
-        if (list[i].security != 2) {
+        if (list[i].security != WIFI_SETUP_SECURITY_WPA) {
             break;
         }
     }

@@ -30,7 +30,7 @@ int WifiSetupApScan_Start(void) {
     do {
         WM_ReadStatus(&gWifiSetupApScan->status);
         scan = gWifiSetupApScan;
-    } while (scan->status.state != 2);
+    } while (scan->status.state != WM_STATE_POWER_ON);
     scan->param = gWifiSetupApScanParam;
     scan->param.buffer = scan->scanBuf;
     gWifiSetupApScan->param.dwell = WM_GetDispersionScanPeriod();
@@ -44,13 +44,13 @@ static int WifiSetupApScan_Continue(void) {
 BOOL WifiSetupApScan_End(void) {
     gWifiSetupApScan->ending = 1;
     WM_ReadStatus(&gWifiSetupApScan->status);
-    if (gWifiSetupApScan->status.state != 2) {
+    if (gWifiSetupApScan->status.state != WM_STATE_POWER_ON) {
         if (WM_Reset(WifiSetupApScan_Callback) != WM_ERRCODE_OPERATING) {
             return FALSE;
         }
         do {
             WM_ReadStatus(&gWifiSetupApScan->status);
-        } while (gWifiSetupApScan->status.state != 2);
+        } while (gWifiSetupApScan->status.state != WM_STATE_POWER_ON);
     }
     if (WM_End(WifiSetupApScan_Callback) != WM_ERRCODE_OPERATING) {
         return FALSE;
@@ -76,7 +76,7 @@ static void WifiSetupApScan_Callback(void *arg) {
     if (cb->errcode != WM_ERRCODE_SUCCESS) {
         return;
     }
-    if (gWifiSetupApScan->ending != 0 || cb->apiid != 0x26) {
+    if (gWifiSetupApScan->ending != 0 || cb->apiid != WM_API_START_SCAN_EX) {
         return;
     }
     switch (cb->state) {
@@ -128,20 +128,20 @@ static void WifiSetupApScan_StoreResults(WMStartScanExCallback *cb) {
         MI_CpuCopy8(desc->ssid, entries[j].ssid, sizeof(entries[j].ssid));
         entries[j].linkLevel = cb->linkLevel[i];
         if (!(desc->capaInfo & 0x10)) {
-            entries[j].security = 0;
+            entries[j].security = WIFI_SETUP_SECURITY_OPEN;
             continue;
         }
-        entries[j].security = 1;
+        entries[j].security = WIFI_SETUP_SECURITY_WEP;
         elems = WM_GetOtherElements(desc);
         count = elems.count;
         for (k = 0; k < count; k++) {
             if (elems.element[k].id == 0x30) {
-                entries[j].security = 2;
+                entries[j].security = WIFI_SETUP_SECURITY_WPA;
                 break;
             }
             if (elems.element[k].id == 0xdd && elems.element[k].length >= 4) {
                 if (memcmp(elems.element[k].body, gWifiSetupWpaVendorPrefix, 4) == 0) {
-                    entries[j].security = 2;
+                    entries[j].security = WIFI_SETUP_SECURITY_WPA;
                     break;
                 }
             }

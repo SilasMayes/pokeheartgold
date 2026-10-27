@@ -219,7 +219,7 @@ static void WifiSetupConnectionList_CheckButtons(void) {
             idx = sel - WIFI_SETUP_CONNECTION_LIST_FIRST_ERASE;
             if (WifiSetupConnections_GetSetupMethod(idx) == WIFI_SETUP_METHOD_ERASED) {
                 WifiSetupSound_Play(9);
-                WifiSetupButtonBar_SetSelected(-1);
+                WifiSetupButtonBar_SetSelected(WIFI_SETUP_SELECTED_NONE);
                 return;
             }
             WifiSetupSound_Play(6);
@@ -308,11 +308,11 @@ static void WifiSetupConnectionList_End(void) {
                 WifiSetupApp_SetStateFunc(WifiSetupMethodMenu_Init);
             } else {
                 WifiSetupApp_SetScreenArgs(0, 0);
-                WifiSetupSettings_SetFromMenu(0);
+                WifiSetupSettings_SetFromMenu(FALSE);
                 WifiSetupApp_SetStateFunc(WifiSetupSettings_Init);
             }
             break;
-        case 3:
+        case WIFI_SETUP_CONNECTION_LIST_USB:
             WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_CREATE);
             WifiSetupApp_SetStateFunc(WifiSetupUsbConnectorIntro_Init);
             break;
@@ -323,7 +323,7 @@ static void WifiSetupConnectionList_End(void) {
 
 void WifiSetupConnectionList_ShowCursor(void) {
     u8 sel = gWifiSetupConnectionList.selected;
-    if (sel < 4) {
+    if (sel < WIFI_SETUP_CONNECTION_LIST_FIRST_ERASE) {
         WifiSetupCursor_ShowCorners(gWifiSetupConnectionListCursorRects[sel].left, gWifiSetupConnectionListCursorRects[sel].right, gWifiSetupConnectionListCursorRects[sel].top, gWifiSetupConnectionListCursorRects[sel].bottom);
     } else {
         WifiSetupCursor_ShowPair(0, gWifiSetupConnectionListCursorRects[sel].left, gWifiSetupConnectionListCursorRects[sel].right, gWifiSetupConnectionListCursorRects[sel].top);
@@ -342,7 +342,7 @@ static void WifiSetupConnectionList_MoveCursor(int dir) {
         } else if (dir == WIFI_SETUP_CURSOR_RIGHT) {
             gWifiSetupConnectionList.selected = 1;
         } else if (dir == WIFI_SETUP_CURSOR_UP) {
-            gWifiSetupConnectionList.selected = 3;
+            gWifiSetupConnectionList.selected = WIFI_SETUP_CONNECTION_LIST_USB;
         } else {
             gWifiSetupConnectionList.selected = 4;
         }
@@ -354,7 +354,7 @@ static void WifiSetupConnectionList_MoveCursor(int dir) {
         } else if (dir == WIFI_SETUP_CURSOR_RIGHT) {
             gWifiSetupConnectionList.selected = 2;
         } else if (dir == WIFI_SETUP_CURSOR_UP) {
-            gWifiSetupConnectionList.selected = 3;
+            gWifiSetupConnectionList.selected = WIFI_SETUP_CONNECTION_LIST_USB;
         } else {
             gWifiSetupConnectionList.selected = 5;
         }
@@ -366,14 +366,14 @@ static void WifiSetupConnectionList_MoveCursor(int dir) {
         } else if (dir == WIFI_SETUP_CURSOR_RIGHT) {
             gWifiSetupConnectionList.selected = 0;
         } else if (dir == WIFI_SETUP_CURSOR_UP) {
-            gWifiSetupConnectionList.selected = 3;
+            gWifiSetupConnectionList.selected = WIFI_SETUP_CONNECTION_LIST_USB;
         } else {
             gWifiSetupConnectionList.selected = 6;
         }
         break;
-    case 3:
+    case WIFI_SETUP_CONNECTION_LIST_USB:
         column = gWifiSetupConnectionList.work->column;
-        columnBelow = column + 4;
+        columnBelow = column + WIFI_SETUP_CONNECTION_LIST_FIRST_ERASE;
         if (dir == WIFI_SETUP_CURSOR_UP) {
             gWifiSetupConnectionList.selected = columnBelow;
         } else if (dir == WIFI_SETUP_CURSOR_DOWN) {
@@ -391,7 +391,7 @@ static void WifiSetupConnectionList_MoveCursor(int dir) {
         } else if (dir == WIFI_SETUP_CURSOR_UP) {
             gWifiSetupConnectionList.selected = 0;
         } else {
-            gWifiSetupConnectionList.selected = 3;
+            gWifiSetupConnectionList.selected = WIFI_SETUP_CONNECTION_LIST_USB;
         }
         break;
     case 5:
@@ -403,7 +403,7 @@ static void WifiSetupConnectionList_MoveCursor(int dir) {
         } else if (dir == WIFI_SETUP_CURSOR_UP) {
             gWifiSetupConnectionList.selected = 1;
         } else {
-            gWifiSetupConnectionList.selected = 3;
+            gWifiSetupConnectionList.selected = WIFI_SETUP_CONNECTION_LIST_USB;
         }
         break;
     case 6:
@@ -415,7 +415,7 @@ static void WifiSetupConnectionList_MoveCursor(int dir) {
         } else if (dir == WIFI_SETUP_CURSOR_UP) {
             gWifiSetupConnectionList.selected = 2;
         } else {
-            gWifiSetupConnectionList.selected = 3;
+            gWifiSetupConnectionList.selected = WIFI_SETUP_CONNECTION_LIST_USB;
         }
         break;
     }
@@ -469,11 +469,11 @@ static void WifiSetupConnectionList_HighlightSelection(void) {
     WifiSetupPaletteRows rows = gWifiSetupConnectionListPaletteRows[0];
     WifiSetupPaletteRows palettes = gWifiSetupConnectionListPaletteRows[1];
     int k;
-    if (gWifiSetupConnectionList.selected > 3) {
+    if (gWifiSetupConnectionList.selected > WIFI_SETUP_CONNECTION_LIST_USB) {
         return;
     }
     WifiSetupPalette_LoadRow(gWifiSetupConnectionList.work->graphics, rows.rows[gWifiSetupConnectionList.selected], rows.rows[gWifiSetupConnectionList.selected]);
-    if (gWifiSetupConnectionList.selected == 3) {
+    if (gWifiSetupConnectionList.selected == WIFI_SETUP_CONNECTION_LIST_USB) {
         return;
     }
     k = WifiSetupConnections_GetSetupMethod(gWifiSetupConnectionList.selected);
@@ -660,7 +660,7 @@ static void WifiSetupMethodMenu_End(void) {
     case WIFI_SETUP_METHOD_MENU_MANUAL:
         WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_KEEP);
         WifiSetupApp_SetScreenArgs(0, 0);
-        WifiSetupSettings_SetFromMenu(1);
+        WifiSetupSettings_SetFromMenu(TRUE);
         WifiSetupApp_SetStateFunc(WifiSetupSettings_Init);
         break;
     }
@@ -694,11 +694,11 @@ void WifiSetupConnectionTest_Init(void) {
     gWifiSetupConnectionTestPassed = FALSE;
     WifiSetupConnectionTest_LoadGraphics();
     WifiSetupApp_GetScreenArgs(0, &mode);
-    if (mode == 0) {
+    if (mode == WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupMessage_Show(0x31, -1, 0);
     }
     WifiSetupBanner_Show(2);
-    if (mode == 0) {
+    if (mode == WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupBackground_LoadSlotHeader();
     }
     WifiSetup_PrintMessage(0x2C);
@@ -726,7 +726,7 @@ static void WifiSetupConnectionTest_Start(void) {
     WifiSetupConnection *connection = WifiSetupConnections_GetEdit();
     MI_CpuCopy32(&gWifiSetupConnectionTestParams, &param, sizeof(param));
     WifiSetupApp_GetScreenArgs(0, &mode);
-    if (mode == 2) {
+    if (mode == WIFI_SETUP_TEST_USB_CONNECTOR) {
         param.slot = 4;
     } else {
         param.slot = connection->index + 1;
@@ -734,7 +734,7 @@ static void WifiSetupConnectionTest_Start(void) {
     if (!DWC_AC_Create(&param)) {
         OS_Terminate();
     }
-    if (mode == 0) {
+    if (mode == WIFI_SETUP_TEST_FROM_SETTINGS) {
         DWCi_AC_SetUserProfile(connection->index, connection);
     }
     WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupConnectionTest_PollTask, NULL, 120);
@@ -745,7 +745,7 @@ static void WifiSetupConnectionTest_FadeIn(void) {
     WifiSetupFade_Start(WIFI_SETUP_FADE_IN_FROM_WHITE, WIFI_SETUP_SCREEN_MAIN, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_OBJ, 8);
     WifiSetupDisplay_ShowPlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     WifiSetupApp_GetScreenArgs(0, &mode);
-    if (mode == 0) {
+    if (mode == WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupFade_Start(WIFI_SETUP_FADE_IN_FROM_WHITE, WIFI_SETUP_SCREEN_SUB, GX_BLEND_PLANEMASK_BG0, 8);
         WifiSetupDisplay_ShowPlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
     }
@@ -877,7 +877,7 @@ static void WifiSetupConnectionOk_Update(void) {
 static void WifiSetupConnectionOk_FadeOut(void) {
     int mode;
     WifiSetupApp_GetScreenArgs(0, &mode);
-    if (mode != 0) {
+    if (mode != WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupBanner_Close();
     }
     WifiSetupFade_Start(WIFI_SETUP_FADE_OUT_TO_WHITE, WIFI_SETUP_SCREEN_SUB, GX_BLEND_PLANEMASK_BG0, 8);
@@ -902,7 +902,7 @@ static void WifiSetupConnectionOk_End(void) {
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_CREATE);
     WifiSetupApp_GetScreenArgs(0, &mode);
-    if (mode == 0) {
+    if (mode == WIFI_SETUP_TEST_FROM_SETTINGS) {
         WifiSetupApp_SetScreenArgs(0, 0);
         WifiSetupApp_SetStateFunc(WifiSetupSettings_Init);
         return;
@@ -935,10 +935,10 @@ void WifiSetupTestPrompt_Init(void) {
     WifiSetupApp_GetScreenArgs(0, &mode);
     WifiSetupTestPrompt_LoadGraphics();
     WifiSetupMessage_Show(0x31, -1, 0);
-    if (mode != 2) {
+    if (mode != WIFI_SETUP_TEST_USB_CONNECTOR) {
         WifiSetupBackground_LoadSlotHeader();
     }
-    if (mode == 1) {
+    if (mode == WIFI_SETUP_TEST_NEW_SETTINGS) {
         WifiSetupConnections_SaveEdit();
     }
     WifiSetupApp_SetStateFunc(WifiSetupTestPrompt_FadeIn);
@@ -1066,7 +1066,7 @@ static void WifiSetupUsbConnectorDone_End(void) {
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_SUB, GX_PLANEMASK_BG0);
     WifiSetupDisplay_HidePlanes(WIFI_SETUP_SCREEN_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_KEEP, WIFI_SETUP_BUTTON_BAR_KEEP);
-    WifiSetupApp_SetScreenArgs(0, 2);
+    WifiSetupApp_SetScreenArgs(0, WIFI_SETUP_TEST_USB_CONNECTOR);
     WifiSetupApp_SetStateFunc(WifiSetupTestPrompt_Init);
 }
 

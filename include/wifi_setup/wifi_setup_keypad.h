@@ -70,9 +70,9 @@ extern const u8 gWifiSetupKeypadButtonPalettes[4]; // normal, highlighted
 void WifiSetupKeypad_Create(void);
 void WifiSetupKeypad_Close(void);
 int WifiSetupKeypad_GetInput(void);
-void WifiSetupKeypad_SetCanDelete(int canDelete);
-void WifiSetupKeypad_SetCanType(int canType);
-void WifiSetupKeypad_SetCanAdvance(int canAdvance);
+void WifiSetupKeypad_SetCanDelete(BOOL canDelete);
+void WifiSetupKeypad_SetCanType(BOOL canType);
+void WifiSetupKeypad_SetCanAdvance(BOOL canAdvance);
 BOOL WifiSetupKeypad_Exists(void);
 
 // Moves row `row` (4: the buttons) to height y.

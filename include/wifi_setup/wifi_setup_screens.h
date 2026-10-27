@@ -50,8 +50,13 @@ typedef struct WifiSetupTextEntry {
     GXOamAttr *cursor;
     u8 text[WIFI_SETUP_TEXT_ENTRY_MAX_LENGTH + 1];
     u8 length;
-    u8 flag;
+    u8 result; // WIFI_SETUP_TEXT_ENTRY_*, then the confirmation dialog's answer
 } WifiSetupTextEntry;
+
+// WifiSetupTextEntry.result
+#define WIFI_SETUP_TEXT_ENTRY_CANCELLED 0
+#define WIFI_SETUP_TEXT_ENTRY_ACCEPTED  1
+#define WIFI_SETUP_TEXT_ENTRY_INVALID   2
 
 // Status copied from the setup client's status callback.
 typedef struct WifiSetupClientStatus {
@@ -78,7 +83,7 @@ typedef struct WifiSetupMenu3 {
 } WifiSetupMenu3;
 
 typedef struct WifiSetupWaitScreen {
-    u8 flag;
+    u8 done; // the setup client finished
     u16 counter;
     WifiSetupTask *task;
 } WifiSetupWaitScreen;

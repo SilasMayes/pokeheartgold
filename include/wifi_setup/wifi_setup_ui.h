@@ -30,6 +30,14 @@ enum WifiSetupCursorDirection {
     WIFI_SETUP_CURSOR_DOWN,
 };
 
+// Display windows (WifiSetupDisplay_SetWindowRect / _SetWindowPlanes)
+enum WifiSetupWindow {
+    WIFI_SETUP_WINDOW_0,
+    WIFI_SETUP_WINDOW_1,
+    WIFI_SETUP_WINDOW_OBJ,
+    WIFI_SETUP_WINDOW_OUTSIDE, // outside all windows
+};
+
 // Selection of the button bar and of the dialog besides a button index
 #define WIFI_SETUP_SELECTED_NONE      (-1)
 #define WIFI_SETUP_SELECTED_NOT_SHOWN (-2) // still sliding in
