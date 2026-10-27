@@ -31,7 +31,7 @@ extern long atol(const char *);
 static void WifiSetupAddressEntry_WaitKeypad(void);
 static void WifiSetupAddressEntry_Main(void);
 static void WifiSetupAddressEntry_HandleInput(void);
-static int WifiSetupAddressEntry_IsFieldAtLeast(int limit);
+static BOOL WifiSetupAddressEntry_IsFieldAtLeast(int limit);
 static void WifiSetupAddressEntry_Update(void);
 static void WifiSetupAddressEntry_StartClose(void);
 static void WifiSetupAddressEntry_CloseKeypad(void);
@@ -42,7 +42,7 @@ static inline void SetOamPos(u32 *attr01, int x, int y);
 static void WifiSetupAddressEntry_WaitConfirm(void);
 static void WifiSetupAddressEntry_FinishConfirm(void);
 static void WifiSetupAddressEntry_PadFields(void);
-static int WifiSetupAddressEntry_IsValid(void);
+static BOOL WifiSetupAddressEntry_IsValid(void);
 
 void WifiSetupAddressEntry_LoadGraphics(void) {
     WifiSetup_LoadGraphics(gWifiSetupAddressEntryYbObjKbNclPath, GX_LoadOBJPltt);
@@ -74,13 +74,13 @@ void WifiSetupAddressEntry_OpenKeypad(void) {
     WifiSetupKeypad_Create();
     WifiSetupSound_Play(20);
     if (gWifiSetupAddressEntry->field == 0) {
-        WifiSetupKeypad_SetCanDelete(0);
-        WifiSetupKeypad_SetCanAdvance(0);
+        WifiSetupKeypad_SetCanDelete(FALSE);
+        WifiSetupKeypad_SetCanAdvance(FALSE);
     } else {
         if (WifiSetupAddressEntry_IsFieldAtLeast(26)) {
-            WifiSetupKeypad_SetCanType(0);
+            WifiSetupKeypad_SetCanType(FALSE);
         }
-        WifiSetupKeypad_SetCanAdvance(0);
+        WifiSetupKeypad_SetCanAdvance(FALSE);
     }
     WifiSetupApp_SetStateFunc(WifiSetupAddressEntry_WaitKeypad);
 }
@@ -108,19 +108,19 @@ static void WifiSetupAddressEntry_HandleInput(void) {
             if (gWifiSetupAddressEntry->digits[gWifiSetupAddressEntry->field * WIFI_SETUP_ADDRESS_FIELD_LEN + 2] == 0) {
                 gWifiSetupAddressEntry->field--;
             }
-            MI_CpuFill8(gWifiSetupAddressEntry->digits + gWifiSetupAddressEntry->field * WIFI_SETUP_ADDRESS_FIELD_LEN, 0, 3);
+            MI_CpuFill8(gWifiSetupAddressEntry->digits + gWifiSetupAddressEntry->field * WIFI_SETUP_ADDRESS_FIELD_LEN, 0, WIFI_SETUP_ADDRESS_FIELD_LEN);
             if (gWifiSetupAddressEntry->field == 0 && gWifiSetupAddressEntry->digits[2] == 0) {
-                WifiSetupKeypad_SetCanDelete(0);
+                WifiSetupKeypad_SetCanDelete(FALSE);
             }
-            WifiSetupKeypad_SetCanType(1);
-            WifiSetupKeypad_SetCanAdvance(0);
+            WifiSetupKeypad_SetCanType(TRUE);
+            WifiSetupKeypad_SetCanAdvance(FALSE);
         }
         break;
     case WIFI_SETUP_KEYPAD_INPUT_NEXT:
         if (gWifiSetupAddressEntry->field < (WIFI_SETUP_ADDRESS_NUM_FIELDS - 1) && gWifiSetupAddressEntry->digits[gWifiSetupAddressEntry->field * WIFI_SETUP_ADDRESS_FIELD_LEN + 2] != 0) {
             WifiSetupSound_Play(1);
             gWifiSetupAddressEntry->field++;
-            WifiSetupKeypad_SetCanAdvance(0);
+            WifiSetupKeypad_SetCanAdvance(FALSE);
         }
         break;
     case WIFI_SETUP_KEYPAD_INPUT_BACK:
@@ -168,14 +168,14 @@ static void WifiSetupAddressEntry_HandleInput(void) {
                 }
             }
         }
-        WifiSetupKeypad_SetCanDelete(1);
+        WifiSetupKeypad_SetCanDelete(TRUE);
         if (gWifiSetupAddressEntry->field < (WIFI_SETUP_ADDRESS_NUM_FIELDS - 1)) {
-            WifiSetupKeypad_SetCanAdvance(1);
+            WifiSetupKeypad_SetCanAdvance(TRUE);
         } else {
-            WifiSetupKeypad_SetCanAdvance(0);
+            WifiSetupKeypad_SetCanAdvance(FALSE);
         }
         if (gWifiSetupAddressEntry->field == (WIFI_SETUP_ADDRESS_NUM_FIELDS - 1) && WifiSetupAddressEntry_IsFieldAtLeast(26)) {
-            WifiSetupKeypad_SetCanType(0);
+            WifiSetupKeypad_SetCanType(FALSE);
         }
         break;
     }
@@ -185,12 +185,12 @@ static void WifiSetupAddressEntry_HandleInput(void) {
 
 // Whether the current field is full (three digits) or its value is at least limit, so that no
 // further digit can be typed into it.
-static int WifiSetupAddressEntry_IsFieldAtLeast(int limit) {
+static BOOL WifiSetupAddressEntry_IsFieldAtLeast(int limit) {
     u8 buf[WIFI_SETUP_ADDRESS_FIELD_LEN + 1], *p;
     int i;
     u8 *text = gWifiSetupAddressEntry->digits + gWifiSetupAddressEntry->field * WIFI_SETUP_ADDRESS_FIELD_LEN;
     if (text[0] != 0 && text[0] != ' ') {
-        return 1;
+        return TRUE;
     }
     MI_CpuCopy8(text, buf, WIFI_SETUP_ADDRESS_FIELD_LEN);
     buf[WIFI_SETUP_ADDRESS_FIELD_LEN] = 0;
@@ -351,7 +351,7 @@ static void WifiSetupAddressEntry_PadFields(void) {
 
 // Every field must be at most 255. A subnet mask (kind 1) must be contiguous ones followed by
 // zeros; other addresses are checked by DWC_BACKUPlCheckAddress.
-static int WifiSetupAddressEntry_IsValid(void) {
+static BOOL WifiSetupAddressEntry_IsValid(void) {
     WifiSetupFieldLimit limit = gWifiSetupAddressLayout;
     int i;
     int kind;
@@ -366,7 +366,7 @@ static int WifiSetupAddressEntry_IsValid(void) {
         }
         for (j = 0; j < WIFI_SETUP_ADDRESS_FIELD_LEN; j++) {
             if (field[j] > limit.digits[j]) {
-                return 0;
+                return FALSE;
             }
             if (field[j] < limit.digits[j]) {
                 break;
@@ -381,14 +381,14 @@ static int WifiSetupAddressEntry_IsValid(void) {
             for (j = 0; j < 8; j++) {
                 if (zero) {
                     if (address[i] & (1 << (7 - j))) {
-                        return 0;
+                        return FALSE;
                     }
                 } else if (!(address[i] & (1 << (7 - j)))) {
                     zero = 1;
                 }
             }
         }
-        return 1;
+        return TRUE;
     }
     return DWC_BACKUPlCheckAddress(address) != 0;
 }

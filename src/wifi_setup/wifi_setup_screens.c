@@ -255,7 +255,7 @@ static void WifiSetupTextEntry_DrawText(void);
 static void WifiSetupTextEntry_UpdateCursor(void);
 static void WifiSetupTextEntry_WaitConfirmDialog(void);
 static void WifiSetupTextEntry_WaitConfirmDialogClosed(void);
-static int WifiSetupTextEntry_IsTextValid(void);
+static BOOL WifiSetupTextEntry_IsTextValid(void);
 static void WifiSetupTextEntry_WaitErrorDialog(void);
 static void WifiSetupTextEntry_WaitErrorDialogClosed(void);
 
@@ -3159,7 +3159,7 @@ static void WifiSetupTextEntry_WaitConfirmDialogClosed(void) {
     WifiSetupApp_SetStateFunc(WifiSetupTextEntry_End);
 }
 
-static int WifiSetupTextEntry_IsTextValid(void) {
+static BOOL WifiSetupTextEntry_IsTextValid(void) {
     int field, fromList, len;
     WifiSetupApp_GetScreenArgs(&field, &fromList);
     if (fromList == 1) {
@@ -3170,7 +3170,7 @@ static int WifiSetupTextEntry_IsTextValid(void) {
         return gWifiSetupTextEntry->text[0] != 0;
     }
     if (fromList == 1 && gWifiSetupTextEntry->text[0] == 0) {
-        return 0;
+        return FALSE;
     }
     len = WifiSetup_StrNLen(gWifiSetupTextEntry->text, WIFI_SETUP_TEXT_ENTRY_MAX_LENGTH);
     switch (len) {
@@ -3178,7 +3178,7 @@ static int WifiSetupTextEntry_IsTextValid(void) {
     case 5:
     case 13:
     case 16:
-        return 1;
+        return TRUE;
     case 10:
     case 26:
     case 32: {
@@ -3194,12 +3194,12 @@ static int WifiSetupTextEntry_IsTextValid(void) {
             if (ch >= 'a' && ch <= 'f') {
                 continue;
             }
-            return 0;
+            return FALSE;
         }
     }
-        return 1;
+        return TRUE;
     default:
-        return 0;
+        return FALSE;
     }
 }
 

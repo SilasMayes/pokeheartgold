@@ -326,8 +326,8 @@ void WifiSetupTransfer_Start(WifiSetupSessionCallback callback) {
     WifiSetupSessionParams params;
     gWifiSetupSession = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupSession), 32);
     gWifiSetupSession->callback = callback;
-    gWifiSetupSession->missedEvent = 0;
-    gWifiSetupSession->cancelled = 0;
+    gWifiSetupSession->missedEvent = FALSE;
+    gWifiSetupSession->cancelled = FALSE;
     params = gWifiSetupTransferSessionParams;
     params.title = WifiSetupText_GetString(gWifiSetupTextBank, 0);
     params.description = WifiSetupText_GetString(gWifiSetupTextBank, 1);
@@ -347,7 +347,7 @@ static void WifiSetupTransfer_CancelTask(WifiSetupTask *task, void *arg) {
     if (!WifiSetupShare_Cancel()) {
         return;
     }
-    gWifiSetupSession->cancelled = 1;
+    gWifiSetupSession->cancelled = TRUE;
     WifiSetupTask_DestroyLater(WIFI_SETUP_TASK_QUEUE_MAIN, task);
 }
 
@@ -392,7 +392,7 @@ static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg) {
             MI_CpuCopy16(src, dst, sizeof(WifiSetupMbParentUser));
         }
         if (gWifiSetupSession->callback == NULL) {
-            gWifiSetupSession->missedEvent = 1;
+            gWifiSetupSession->missedEvent = TRUE;
             return;
         }
         gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_CHILD_ENTERED);
@@ -402,7 +402,7 @@ static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg) {
             return;
         }
         if (gWifiSetupSession->callback == NULL) {
-            gWifiSetupSession->missedEvent = 1;
+            gWifiSetupSession->missedEvent = TRUE;
             return;
         }
         gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_ENTRY_CANCELLED);
@@ -413,7 +413,7 @@ static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg) {
             return;
         }
         if (gWifiSetupSession->callback == NULL) {
-            gWifiSetupSession->missedEvent = 1;
+            gWifiSetupSession->missedEvent = TRUE;
             return;
         }
         gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_STOPPED);
@@ -424,7 +424,7 @@ static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg) {
             return;
         }
         if (gWifiSetupSession->callback == NULL) {
-            gWifiSetupSession->missedEvent = 1;
+            gWifiSetupSession->missedEvent = TRUE;
             return;
         }
         gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_FAILED);
@@ -434,7 +434,7 @@ static void WifiSetupTransfer_Task(WifiSetupTask *task, void *arg) {
             return;
         }
         if (gWifiSetupSession->callback == NULL) {
-            gWifiSetupSession->missedEvent = 1;
+            gWifiSetupSession->missedEvent = TRUE;
             return;
         }
         gWifiSetupSession->callback(WIFI_SETUP_TRANSFER_EVENT_DONE);

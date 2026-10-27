@@ -920,7 +920,7 @@ static void WifiSetupConnectionOk_UpdateTimer(void) {
     case WIFI_SETUP_KIND_TOP_MENU:
         break;
     case WIFI_SETUP_KIND_CONNECTION_LIST:
-        if (mode != 0) {
+        if (mode != WIFI_SETUP_TEST_FROM_SETTINGS) {
             WifiSetupApp_SetStateFunc(WifiSetupScreens_StartQuit);
             return;
         }

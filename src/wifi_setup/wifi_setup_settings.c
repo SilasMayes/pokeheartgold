@@ -42,7 +42,7 @@ static void WifiSetupSettings_FadeOut(void);
 static void WifiSetupSettings_Exit(void);
 static void WifiSetupSettings_DrawValue(u32 item, int row);
 static void WifiSetupSettings_DrawButtons(u32 item, int row);
-static int WifiSetupSettings_IsItemEnabled(int item);
+static BOOL WifiSetupSettings_IsItemEnabled(int item);
 static void WifiSetupSettings_SetButtonOam(unsigned type, int option, int row);
 static void WifiSetupSettings_DrawText(u8 *text, int row);
 static void WifiSetupSettings_DrawAddress(u8 *address, int row);
@@ -660,32 +660,32 @@ static void WifiSetupSettings_DrawButtons(u32 item, int row) {
     WifiSetupSettings_SetButtonOam(type, option, row);
 }
 
-static int WifiSetupSettings_IsItemEnabled(int item) {
+static BOOL WifiSetupSettings_IsItemEnabled(int item) {
     WifiSetupConnection *record = WifiSetupConnections_GetEdit();
-    int enabled = 1;
+    BOOL enabled = TRUE;
     switch (item) {
     case WIFI_SETUP_SETTINGS_ITEM_AUTO_DNS_ON:
         if (!record->autoAddress) {
-            enabled = 0;
+            enabled = FALSE;
         }
         break;
     case 0:
     case 1:
         if ((u8)(record->settings.setupMethod + 255) <= 1) {
-            enabled = 0;
+            enabled = FALSE;
         }
         break;
     case 4:
     case 5:
     case 6:
         if (record->autoAddress) {
-            enabled = 0;
+            enabled = FALSE;
         }
         break;
     case 9:
     case 10:
         if (record->autoDns) {
-            enabled = 0;
+            enabled = FALSE;
         }
         break;
     }
