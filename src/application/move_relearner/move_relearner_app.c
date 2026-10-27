@@ -120,7 +120,7 @@ typedef struct MoveRelearnerButtonFlash {
     u8 height;
     u16 timer;
     u16 state;
-    int nextState;
+    enum MoveRelearnerState nextState;
 } MoveRelearnerButtonFlash;
 
 typedef struct MoveRelearner {
@@ -142,7 +142,7 @@ typedef struct MoveRelearner {
     MoveRelearnerMonPic monPic;
     PokemonSummaryArgs summary;
     OverlayManager *summaryManager;
-    int nextState; // state after the current message
+    enum MoveRelearnerState nextState; // state after the current message
     MenuInputState menuInputState;
     u8 numMoves; // entries of moveList
     u8 textPrinterId;
@@ -226,8 +226,8 @@ static void MoveRelearner_SetLearnButtonActive(MoveRelearner *relearner, u32 act
 static void MoveRelearner_UpdateScrollButtons(MoveRelearner *relearner);
 static void MoveRelearner_AnimateScrollArrows(MoveRelearner *relearner, s32 direction);
 static void MoveRelearner_DrawListRows(MoveRelearner *relearner, u32 selected);
-static enum MoveRelearnerState MoveRelearner_StartReturnButtonFlash(MoveRelearner *relearner, int nextState);
-static enum MoveRelearnerState MoveRelearner_StartLearnButtonFlash(MoveRelearner *relearner, int nextState);
+static enum MoveRelearnerState MoveRelearner_StartReturnButtonFlash(MoveRelearner *relearner, enum MoveRelearnerState nextState);
+static enum MoveRelearnerState MoveRelearner_StartLearnButtonFlash(MoveRelearner *relearner, enum MoveRelearnerState nextState);
 static int MoveRelearner_UpdateButtonFlash(MoveRelearner *relearner);
 static enum MoveRelearnerState MoveRelearner_AskGiveUp(MoveRelearner *relearner);
 static enum MoveRelearnerState MoveRelearner_AskTeachAfterFlash(MoveRelearner *relearner);
@@ -1835,7 +1835,7 @@ static void MoveRelearner_DrawListRows(MoveRelearner *relearner, u32 selected) {
     } while (i < MOVE_RELEARNER_VISIBLE_ROWS);
 }
 
-static enum MoveRelearnerState MoveRelearner_StartReturnButtonFlash(MoveRelearner *relearner, int nextState) {
+static enum MoveRelearnerState MoveRelearner_StartReturnButtonFlash(MoveRelearner *relearner, enum MoveRelearnerState nextState) {
     MoveRelearnerButtonFlash *flash = &relearner->buttonFlash;
 
     flash->x = 24;
@@ -1848,7 +1848,7 @@ static enum MoveRelearnerState MoveRelearner_StartReturnButtonFlash(MoveRelearne
     return MOVE_RELEARNER_STATE_BUTTON_FLASH;
 }
 
-static enum MoveRelearnerState MoveRelearner_StartLearnButtonFlash(MoveRelearner *relearner, int nextState) {
+static enum MoveRelearnerState MoveRelearner_StartLearnButtonFlash(MoveRelearner *relearner, enum MoveRelearnerState nextState) {
     MoveRelearnerButtonFlash *flash = &relearner->buttonFlash;
 
     flash->x = 15;

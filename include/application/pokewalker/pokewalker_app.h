@@ -292,7 +292,7 @@ BOOL PokewalkerApp_Main(OverlayManager *manager, int *state);
 BOOL PokewalkerApp_Exit(OverlayManager *manager, int *state);
 void PokewalkerApp_Setup(PokewalkerApp *app);
 void PokewalkerApp_Teardown(PokewalkerApp *app);
-void PokewalkerApp_LoadTilemap(PokewalkerApp *app, int bgId, int member);
+void PokewalkerApp_LoadTilemap(PokewalkerApp *app, GFBgLayer bgId, int member);
 void PokewalkerApp_StartLink(PokewalkerApp *app);
 void PokewalkerApp_BuildUploadData(PokewalkerApp *app);
 void PokewalkerApp_BuildSendStrollData(PokewalkerApp *app);

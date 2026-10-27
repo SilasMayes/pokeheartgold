@@ -495,7 +495,7 @@ BOOL VsRecorder_RankingsEnter(VsRecorderWork *work) {
         SetBgPriority(GF_BG_LYR_SUB_1, 3);
         SetBgPriority(GF_BG_LYR_SUB_2, 0);
         SetBgPriority(GF_BG_LYR_SUB_3, 2);
-        VsRecorder_StartFlipScreens(work, 0);
+        VsRecorder_StartFlipScreens(work, FALSE);
         OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
         work->step++;
         break;
@@ -602,7 +602,7 @@ BOOL VsRecorder_RankingsDownload(VsRecorderWork *work) {
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_3);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     case RANKINGS_DOWNLOAD_STEP_FADE_IN_MENU:
@@ -740,7 +740,7 @@ BOOL VsRecorder_RankingsExit(VsRecorderWork *work) {
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_3);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     default:

@@ -239,7 +239,7 @@ static BOOL VsRecorder_SavedVideoEnter(VsRecorderWork *work) {
         work->step++;
         break;
     default:
-        VsRecorder_StartFlipScreens(work, 0);
+        VsRecorder_StartFlipScreens(work, FALSE);
         if (VsRecorder_HasResumeScreen(work) == TRUE) {
             // back from playback: the video still needs saving unless it is the player's own (slot 0), already saved
             // (header field 5) or the battle was not won
@@ -590,7 +590,7 @@ static BOOL VsRecorder_SavedVideoExit(VsRecorderWork *work) {
         PaletteData_BlendPalettes(work->plttData, PLTTBUF_SUB_OBJ, 0xC, savedVideo->fade, work->blendColor);
         break;
     case SAVED_VIDEO_EXIT_STEP_REBUILD_MENU:
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         VsRecorder_SetVBlankPaused(work, TRUE);
         VsRecorder_RebuildMenuRowsParent(work);
         VsRecorder_SetVBlankPaused(work, FALSE);

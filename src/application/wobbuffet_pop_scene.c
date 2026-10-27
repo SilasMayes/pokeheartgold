@@ -116,7 +116,7 @@ static WobbuffetPopPump *WobbuffetPop_DequeuePump(WobbuffetPop *game);
 static BOOL WobbuffetPop_SetPumpBonus(WobbuffetPop *game, int bonus);
 static u8 WobbuffetPop_FindBonusTargetAtFront(WobbuffetPop *game, WobbuffetPopBonusTarget **outTarget);
 static void WobbuffetPopBonusTarget_SetState(WobbuffetPopBonusTarget *target, u8 state);
-static u32 WobbuffetPopBonusTarget_Run(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
+static BOOL WobbuffetPopBonusTarget_Run(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
 static inline void WobbuffetPopBonusTarget_StartHop(WobbuffetPopBonusTarget *target, fx32 sine, fx32 cosine, s16 x, s16 y, int duration);
 static void WobbuffetPop_ShowBonusPopup(WobbuffetPop *game, WobbuffetPopBonusPopup *popups, int bonus, int netId, int delay);
 static BOOL WobbuffetPopBonusPopup_Update(WobbuffetPopBonusPopup *popups, WobbuffetPopBonusPopup *popup);
@@ -130,10 +130,10 @@ static void WobbuffetPopDust_Start(WobbuffetPop *game, WobbuffetPopBonusTarget *
 static void WobbuffetPopDust_Update(WobbuffetPop *game, WobbuffetPopBonusTarget *target, WobbuffetPopDust *dust);
 static void WobbuffetPop_QueuePumpEvent(WobbuffetPop *game, const WobbuffetPopPump *pump);
 
-static u32 WobbuffetPopBonusTarget_Idle(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
-static u32 WobbuffetPopBonusTarget_Enter(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
-static u32 WobbuffetPopBonusTarget_Walk(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
-static u32 WobbuffetPopBonusTarget_Hit(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
+static BOOL WobbuffetPopBonusTarget_Idle(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
+static BOOL WobbuffetPopBonusTarget_Enter(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
+static BOOL WobbuffetPopBonusTarget_Walk(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
+static BOOL WobbuffetPopBonusTarget_Hit(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target);
 u32 WobbuffetPop_GetEventCommandSize(void);
 u32 WobbuffetPop_GetPlayerValueCommandSize(void);
 void WobbuffetPop_RecvEvent(int netId, int size, void *data, void *arg);
@@ -166,7 +166,7 @@ static const s16 sWobbuffetPopSeatPositions[4][2] = {
     { 204, 96  },
 };
 
-static u32 (*const sWobbuffetPopBonusTargetStateFuncs[4])(WobbuffetPop *, WobbuffetPopBonusRing *, WobbuffetPopBonusTarget *) = {
+static BOOL (*const sWobbuffetPopBonusTargetStateFuncs[4])(WobbuffetPop *, WobbuffetPopBonusRing *, WobbuffetPopBonusTarget *) = {
     WobbuffetPopBonusTarget_Idle,
     WobbuffetPopBonusTarget_Enter,
     WobbuffetPopBonusTarget_Walk,
@@ -1398,16 +1398,16 @@ static void WobbuffetPopBonusTarget_SetState(WobbuffetPopBonusTarget *target, u8
     target->atFront = FALSE;
 }
 
-static u32 WobbuffetPopBonusTarget_Run(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target) {
+static BOOL WobbuffetPopBonusTarget_Run(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target) {
     return sWobbuffetPopBonusTargetStateFuncs[target->state](game, ring, target);
 }
 
-static u32 WobbuffetPopBonusTarget_Idle(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target) {
+static BOOL WobbuffetPopBonusTarget_Idle(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target) {
     target->atFront = FALSE;
     return TRUE;
 }
 
-static u32 WobbuffetPopBonusTarget_Enter(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target) {
+static BOOL WobbuffetPopBonusTarget_Enter(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target) {
     struct {
         s16 y;
         s16 x;
@@ -1480,7 +1480,7 @@ static u32 WobbuffetPopBonusTarget_Enter(WobbuffetPop *game, WobbuffetPopBonusRi
     return TRUE;
 }
 
-static u32 WobbuffetPopBonusTarget_Walk(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target) {
+static BOOL WobbuffetPopBonusTarget_Walk(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target) {
     s32 bob;
     s32 x;
     s32 y;
@@ -1515,7 +1515,7 @@ static inline void WobbuffetPopBonusTarget_StartHop(WobbuffetPopBonusTarget *tar
     target->step = (u8)(target->step + 1);
 }
 
-static u32 WobbuffetPopBonusTarget_Hit(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target) {
+static BOOL WobbuffetPopBonusTarget_Hit(WobbuffetPop *game, WobbuffetPopBonusRing *ring, WobbuffetPopBonusTarget *target) {
     s16 originX;
     s16 originY;
     s16 x;

@@ -34,7 +34,7 @@
 
 static enum PCBoxState PCBox_StartFadeIn(PCBoxWork *work, enum PCBoxState nextState);
 static enum PCBoxState PCBox_StartFadeOut(PCBoxWork *work, enum PCBoxState nextState);
-static enum PCBoxState PCBox_WaitForUpdateFunc(PCBoxWork *work, void *cb, enum PCBoxState next);
+static enum PCBoxState PCBox_WaitForUpdateFunc(PCBoxWork *work, PCBoxUpdateFunc cb, enum PCBoxState next);
 static enum PCBoxState PCBox_WaitForPendingUpdateFunc(PCBoxWork *work, enum PCBoxState next);
 static enum PCBoxState PCBox_ShowYesNo(PCBoxWork *work, int state);
 static enum PCBoxState PCBox_StartSubApp(PCBoxWork *work, u32 value);
@@ -230,7 +230,7 @@ enum PCBoxState PCBox_State_HandleYesNo(PCBoxWork *work) {
 }
 
 enum PCBoxState PCBox_State_WaitPaletteFlash(PCBoxWork *work) {
-    if (PCBox_AnimatePaletteFlash(work) == 0) {
+    if (PCBox_AnimatePaletteFlash(work) == FALSE) {
         return work->nextState;
     }
     return PC_BOX_STATE_WAIT_PALETTE_FLASH;
@@ -523,7 +523,7 @@ void PCBox_State_ReturnFromSummary(PCBoxWork *work) {
         PCBox_UpdateTrayCursor(work);
         PCBox_DrawTrayBoxNameAndCount(work);
         PCBox_SlideInBoxTray(work->view->panels);
-        while (PCBox_UpdateBoxTraySlideIn(work) != 0) {
+        while (PCBox_UpdateBoxTraySlideIn(work)) {
         }
         if (work->summaryFromHolding == 0) {
             PCBox_CreateGridInput(work, 4, work->selectedSlot);
@@ -612,7 +612,7 @@ void PCBox_State_GiveItemFromBag(PCBoxWork *work) {
         } else {
             entry = PCBox_GetSlotBoxMon(work, work->activeBox, work->selectedSlot);
             PCBox_SetSlotMonData(work, work->selectedSlot, MON_DATA_HELD_ITEM, &work->itemId);
-            if (PCBox_UpdateArceusGiratinaForm(entry) == 1) {
+            if (PCBox_UpdateArceusGiratinaForm(entry) == TRUE) {
                 PCBox_RefreshSlotIcon(work, work->activeBox, work->selectedSlot, work->view->slotIcons[work->selectedSlot]);
             }
             Bag_TakeItem(work->bag, work->itemId, 1, HEAP_ID_10);
@@ -757,7 +757,7 @@ enum PCBoxState PCBox_State_TryRelease(PCBoxWork *work) {
         PCBox_SetIconsTranslucent(work, 2, 1);
         PCBox_SetSlotIconTranslucent(work->view, work->selectedSlot, 0);
         slot = work->selectedSlot - PC_BOX_SLOT_PARTY_START;
-        if (PCBox_PartyHasOtherUsableMon(work, slot) == 0) {
+        if (!PCBox_PartyHasOtherUsableMon(work, slot)) {
             PlaySE(SEQ_SE_DP_BOX03);
             PCBox_PrintReleaseMessage(work, PC_BOX_RELEASE_MSG_LAST_MON, 0x25);
             work->view->restoreIconsOnMenu = 1;
@@ -824,7 +824,7 @@ enum PCBoxState PCBox_State_PrintByeBye(PCBoxWork *work) {
 }
 
 enum PCBoxState PCBox_State_RemoveReleasedMon(PCBoxWork *work) {
-    void *next;
+    PCBoxUpdateFunc next;
     PCBox_DeleteSlotMon(work, work->activeBox, work->selectedSlot);
     PCBox_CloseMessageWindow(work->view, 0x25);
     PCBox_ClearMonInfo(work);
@@ -1295,7 +1295,7 @@ enum PCBoxState PCBox_State_EndBoxTrayDrag(PCBoxWork *work) {
                     work->nextState = PC_BOX_STATE_RESUME_BOX_TRAY_INPUT;
                     return PC_BOX_STATE_WAIT_BUTTON;
                 }
-                if (PCBox_PartyHasOtherUsableMon(work, selected) == 0) {
+                if (!PCBox_PartyHasOtherUsableMon(work, selected)) {
                     PlaySE(SEQ_SE_DP_BOX03);
                     PCBox_PrintReleaseMessage(work, PC_BOX_RELEASE_MSG_LAST_MON, 0x25);
                     work->nextState = PC_BOX_STATE_RESUME_BOX_TRAY_INPUT;
@@ -1309,7 +1309,7 @@ enum PCBoxState PCBox_State_EndBoxTrayDrag(PCBoxWork *work) {
                 s32 index = work->selectedSlot;
                 if ((u32)index < PC_BOX_SLOT_PARTY_START) {
                     PCBox_PrintMonActionMessage(work, 0, PC_BOX_MON_MSG_BOX_FULL, 0x25);
-                } else if (PCBox_PartyHasOtherUsableMon(work, index - PC_BOX_SLOT_PARTY_START) == 1) {
+                } else if (PCBox_PartyHasOtherUsableMon(work, index - PC_BOX_SLOT_PARTY_START) == TRUE) {
                     PCBox_PrintMonActionMessage(work, 0, PC_BOX_MON_MSG_BOX_FULL, 0x25);
                 } else {
                     PCBox_PrintReleaseMessage(work, PC_BOX_RELEASE_MSG_LAST_MON, 0x25);
@@ -1364,7 +1364,7 @@ enum PCBoxState PCBox_State_EndTrayHoldingDrop(PCBoxWork *work) {
                     work->nextState = PC_BOX_STATE_RESUME_BOX_TRAY_INPUT;
                     return PC_BOX_STATE_WAIT_BUTTON;
                 }
-                if (PCBox_PartyHasOtherUsableMon(work, index) == 0) {
+                if (!PCBox_PartyHasOtherUsableMon(work, index)) {
                     PlaySE(SEQ_SE_DP_BOX03);
                     GridInputHandler_SetNextInput(work->view->gridInput, work->selectedSlot);
                     GridInputHandler_SetButtonInputMode(work->view->gridInput, FALSE);
@@ -1380,7 +1380,7 @@ enum PCBoxState PCBox_State_EndTrayHoldingDrop(PCBoxWork *work) {
                     index = work->selectedSlot;
                     if ((u32)index < PC_BOX_SLOT_PARTY_START) {
                         PCBox_PrintMonActionMessage(work, 0, PC_BOX_MON_MSG_BOX_FULL, 0x25);
-                    } else if (PCBox_PartyHasOtherUsableMon(work, index - PC_BOX_SLOT_PARTY_START) == 1) {
+                    } else if (PCBox_PartyHasOtherUsableMon(work, index - PC_BOX_SLOT_PARTY_START) == TRUE) {
                         PCBox_PrintMonActionMessage(work, 0, PC_BOX_MON_MSG_BOX_FULL, 0x25);
                     } else {
                         PCBox_PrintReleaseMessage(work, PC_BOX_RELEASE_MSG_LAST_MON, 0x25);
@@ -2070,7 +2070,7 @@ enum PCBoxState PCBox_State_DepositInput(PCBoxWork *work) {
 enum PCBoxState PCBox_State_TryDeposit(PCBoxWork *work) {
     int slot = work->selectedSlot - PC_BOX_SLOT_PARTY_START;
     Pokemon *mon;
-    if (PCBox_PartyHasOtherUsableMon(work, slot) == 0) {
+    if (!PCBox_PartyHasOtherUsableMon(work, slot)) {
         PlaySE(SEQ_SE_DP_BOX03);
         PCBox_PrintReleaseMessage(work, PC_BOX_RELEASE_MSG_LAST_MON, 37);
         work->nextState = PC_BOX_STATE_RETURN_FROM_DEPOSIT_ERROR;
@@ -2214,7 +2214,7 @@ enum PCBoxState PCBox_State_ShiftPartyForDeposit(PCBoxWork *work) {
 }
 
 enum PCBoxState PCBox_State_SwitchBox(PCBoxWork *work) {
-    void *cb;
+    PCBoxUpdateFunc cb;
     u8 old = work->activeBox;
     work->activeBox = work->trayBox;
     if (old == work->trayBox) {
@@ -3223,7 +3223,7 @@ static enum PCBoxState PCBox_StartFadeOut(PCBoxWork *work, enum PCBoxState nextS
     return PC_BOX_STATE_WAIT_FADE;
 }
 
-static enum PCBoxState PCBox_WaitForUpdateFunc(PCBoxWork *work, void *cb, enum PCBoxState next) {
+static enum PCBoxState PCBox_WaitForUpdateFunc(PCBoxWork *work, PCBoxUpdateFunc cb, enum PCBoxState next) {
     work->nextState = next;
     PCBox_SetUpdateFunc(work->view, cb);
     return PC_BOX_STATE_WAIT_UPDATE_FUNC;
@@ -3348,7 +3348,7 @@ static enum PCBoxState PCBox_StartMoveModePartyDrag(PCBoxWork *work, u32 idx) {
     PCBox_SetIconLayer(work->view, work->selectedSlot, FALSE);
     PCBox_CreateSelectedIconOutline(work);
     mon = Party_GetMonByIndex(work->party, idx - PC_BOX_SLOT_PARTY_START);
-    if (PCBox_PartyHasOtherUsableMon(work, idx - PC_BOX_SLOT_PARTY_START) == 0 && PCStorage_CountMonsInBox(work->storage, work->activeBox) == 0) {
+    if (!PCBox_PartyHasOtherUsableMon(work, idx - PC_BOX_SLOT_PARTY_START) && PCStorage_CountMonsInBox(work->storage, work->activeBox) == 0) {
         PCBox_PrintPanelHint(work, 0x28, 8);
     } else if (ItemIdIsMail(GetMonData(mon, MON_DATA_HELD_ITEM, NULL)) == TRUE) {
         PCBox_PrintPanelHint(work, 0x28, 6);
@@ -3380,7 +3380,7 @@ static enum PCBoxState PCBox_StartDepositDrag(PCBoxWork *work, u32 idx) {
     PCBox_SetSlotIconTranslucent(work->view, work->selectedSlot, 0);
     PCBox_PrintMonActionMessage(work, work->selectedSlot, PC_BOX_MON_MSG_SELECTED, 0x27);
     mon = Party_GetMonByIndex(work->party, idx - PC_BOX_SLOT_PARTY_START);
-    if (PCBox_PartyHasOtherUsableMon(work, idx - PC_BOX_SLOT_PARTY_START) == 0) {
+    if (!PCBox_PartyHasOtherUsableMon(work, idx - PC_BOX_SLOT_PARTY_START)) {
         PCBox_PrintPanelHint(work, 0x28, 8);
     } else if (ItemIdIsMail(GetMonData(mon, MON_DATA_HELD_ITEM, NULL)) == TRUE) {
         PCBox_PrintPanelHint(work, 0x28, 6);
@@ -3674,7 +3674,7 @@ static enum PCBoxState PCBox_HideChangeBoxButtonAndWait(PCBoxWork *work, enum PC
 }
 
 static enum PCBoxState PCBox_JumpToTrayBox(PCBoxWork *work, u32 which) {
-    void *cb;
+    PCBoxUpdateFunc cb;
     u32 prev;
     prev = work->activeBox;
     work->activeBox = work->trayBox;
@@ -4292,7 +4292,7 @@ enum PCBoxState PCBox_TakeHeldItemToBag(PCBoxWork *work) {
         PCBox_PrintTookItem(work, item, 0x25);
         item = 0;
         PCBox_SetSlotMonData(work, work->selectedSlot, MON_DATA_HELD_ITEM, &item);
-        if (PCBox_UpdateArceusGiratinaForm(boxmon) == 1) {
+        if (PCBox_UpdateArceusGiratinaForm(boxmon) == TRUE) {
             PCBox_RefreshSlotIcon(work, work->activeBox, work->selectedSlot, work->view->slotIcons[work->selectedSlot]);
         }
         PCBox_RedrawSlotMonInfo(work, work->selectedSlot);

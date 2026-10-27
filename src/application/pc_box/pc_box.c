@@ -120,14 +120,14 @@ static void PCBox_UpdateDetailPanel(PCBoxWork *work) {
     PCBox_UpdateInfoItemIconPosition(work->view);
 }
 
-void PCBox_SetUpdateFunc(PCBoxView *view, void *func) {
+void PCBox_SetUpdateFunc(PCBoxView *view, PCBoxUpdateFunc func) {
     view->subState = 0;
     view->counter = 0;
     view->updateFunc = func;
     view->pendingUpdateFunc = NULL;
 }
 
-void PCBox_SetPendingUpdateFunc(PCBoxView *view, void *func) {
+void PCBox_SetPendingUpdateFunc(PCBoxView *view, PCBoxUpdateFunc func) {
     view->pendingUpdateFunc = func;
 }
 
@@ -273,7 +273,7 @@ void PCBox_ShowYesNoPrompt(PCBoxWork *work, u32 cursorPos) {
     YesNoPrompt_InitFromTemplate(work->view->yesNoPrompt, &tmpl);
 }
 
-u32 PCBox_AnimatePaletteFlash(PCBoxWork *work) {
+BOOL PCBox_AnimatePaletteFlash(PCBoxWork *work) {
     PCBoxView *view = work->view;
     PCBoxPaletteFlash *flash = &view->paletteFlash;
     switch (flash->state) {
@@ -302,11 +302,11 @@ u32 PCBox_AnimatePaletteFlash(PCBoxWork *work) {
     case 2:
         flash->timer++;
         if (flash->timer == 2) {
-            return 0;
+            return FALSE;
         }
         break;
     }
-    return 1;
+    return TRUE;
 }
 
 void PCBox_SaveMenuInputState(PCBoxWork *work) {
@@ -485,7 +485,7 @@ static u32 PCBox_GetTargetBoxId(PCBoxWork *work, u32 target) {
     return (target & (PC_BOX_TARGET_TRAY_BOX - 1)) + work->trayBox / PC_BOX_TRAY_BOX_COUNT * PC_BOX_TRAY_BOX_COUNT;
 }
 
-u32 PCBox_PartyHasOtherUsableMon(PCBoxWork *work, u32 skip) {
+BOOL PCBox_PartyHasOtherUsableMon(PCBoxWork *work, u32 skip) {
     u32 i;
     Pokemon *mon;
     for (i = 0; i < Party_GetCount(work->party); i++) {
@@ -499,28 +499,28 @@ u32 PCBox_PartyHasOtherUsableMon(PCBoxWork *work, u32 skip) {
         if (GetMonData(mon, MON_DATA_HP, NULL) == 0) {
             continue;
         }
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
-u32 PCBox_UpdateArceusGiratinaForm(BoxPokemon *boxmon) {
+BOOL PCBox_UpdateArceusGiratinaForm(BoxPokemon *boxmon) {
     u16 species = GetBoxMonData(boxmon, MON_DATA_SPECIES, NULL);
     u16 form;
     if (species == SPECIES_ARCEUS) {
         form = GetBoxMonData(boxmon, MON_DATA_FORM, NULL);
         BoxMon_UpdateArceusForm(boxmon);
         if (form != (u16)GetBoxMonData(boxmon, MON_DATA_FORM, NULL)) {
-            return 1;
+            return TRUE;
         }
     } else if (species == SPECIES_GIRATINA) {
         form = GetBoxMonData(boxmon, MON_DATA_FORM, NULL);
         BoxMon_UpdateGiratinaForm(boxmon);
         if (form != (u16)GetBoxMonData(boxmon, MON_DATA_FORM, NULL)) {
-            return 1;
+            return TRUE;
         }
     }
-    return 0;
+    return FALSE;
 }
 
 void PCBox_RevertShayminFormOnMove(PCBoxWork *work, u32 from, u32 to) {
@@ -548,7 +548,7 @@ void PCBox_RevertShayminFormOnMove(PCBoxWork *work, u32 from, u32 to) {
     }
 }
 
-u32 PCBox_AnimateMonMove(PCBoxWork *work) {
+BOOL PCBox_AnimateMonMove(PCBoxWork *work) {
     s16 pos[2];
     u32 j;
     u32 i;
@@ -571,7 +571,7 @@ u32 PCBox_AnimateMonMove(PCBoxWork *work) {
                 ManagedSprite_SetPositionXY(work->view->sprites[icon], pos[1], pos[0]);
             }
         }
-        return 0;
+        return FALSE;
     }
     moveWork->timer++;
     for (j = 0; j < 7; j++) {
@@ -583,10 +583,10 @@ u32 PCBox_AnimateMonMove(PCBoxWork *work) {
             PCBox_SetIconLayer(work->view, moveWork->entries[j].from, FALSE);
         }
     }
-    return 1;
+    return TRUE;
 }
 
-u32 PCBox_AnimateSelectedSlotMoveEntry(PCBoxWork *work) {
+BOOL PCBox_AnimateSelectedSlotMoveEntry(PCBoxWork *work) {
     s16 pos[2];
     u32 i;
     u32 icon;
@@ -602,7 +602,7 @@ u32 PCBox_AnimateSelectedSlotMoveEntry(PCBoxWork *work) {
                 ManagedSprite_SetPositionXY(work->view->sprites[icon], pos[1], pos[0]);
             }
         }
-        return 0;
+        return FALSE;
     }
     moveWork->timer++;
     for (i = 0; i < NELEMS(moveWork->entries); i++) {
@@ -615,10 +615,10 @@ u32 PCBox_AnimateSelectedSlotMoveEntry(PCBoxWork *work) {
             break;
         }
     }
-    return 1;
+    return TRUE;
 }
 
-u32 PCBox_AnimateMoveEntries(PCBoxWork *work) {
+BOOL PCBox_AnimateMoveEntries(PCBoxWork *work) {
     s16 pos[2];
     u32 j;
     u32 i;
@@ -632,7 +632,7 @@ u32 PCBox_AnimateMoveEntries(PCBoxWork *work) {
                 ManagedSprite_SetPositionXY(work->view->sprites[icon], pos[1], pos[0]);
             }
         }
-        return 0;
+        return FALSE;
     }
     moveWork->timer++;
     for (j = 0; j < 7; j++) {
@@ -644,7 +644,7 @@ u32 PCBox_AnimateMoveEntries(PCBoxWork *work) {
             PCBox_SetMovingIconPriority(work->view, moveWork->entries[j].from, moveWork->entries[j].to);
         }
     }
-    return 1;
+    return TRUE;
 }
 
 static BOOL PCBox_CanMoveMon(PCBoxWork *work, u32 from, u32 to) {
@@ -664,7 +664,7 @@ static BOOL PCBox_CanMoveMon(PCBoxWork *work, u32 from, u32 to) {
         targetExists = PCBox_GetSlotMonData(work, to, MON_DATA_SPECIES_EXISTS, NULL);
     }
     if (from >= PC_BOX_SLOT_PARTY_START) {
-        if (PCBox_PartyHasOtherUsableMon(work, from - PC_BOX_SLOT_PARTY_START) == 0) {
+        if (!PCBox_PartyHasOtherUsableMon(work, from - PC_BOX_SLOT_PARTY_START)) {
             if (targetExists == 0) {
                 if (to < PC_BOX_SLOT_PARTY_START || box != work->activeBox) {
                     return FALSE;
@@ -690,7 +690,7 @@ static BOOL PCBox_CanMoveMon(PCBoxWork *work, u32 from, u32 to) {
         if (GetMonData(mon, MON_DATA_BALL_CAPSULE_ID, NULL) != 0) {
             return FALSE;
         }
-        if (PCBox_GetSlotMonData(work, from, MON_DATA_IS_EGG, NULL) != 0 && PCBox_PartyHasOtherUsableMon(work, to - PC_BOX_SLOT_PARTY_START) == 0) {
+        if (PCBox_GetSlotMonData(work, from, MON_DATA_IS_EGG, NULL) != 0 && !PCBox_PartyHasOtherUsableMon(work, to - PC_BOX_SLOT_PARTY_START)) {
             return FALSE;
         }
     }
@@ -702,7 +702,7 @@ static BOOL PCBox_CanMovePartyMonToEmptySlot(PCBoxWork *work, u32 from, u32 to) 
     if (PCBox_GetSlotMonData(work, to, MON_DATA_SPECIES_EXISTS, NULL) != 0) {
         return FALSE;
     }
-    if (PCBox_PartyHasOtherUsableMon(work, from - PC_BOX_SLOT_PARTY_START) == 0) {
+    if (!PCBox_PartyHasOtherUsableMon(work, from - PC_BOX_SLOT_PARTY_START)) {
         return FALSE;
     }
     mon = Party_GetMonByIndex(work->party, from - PC_BOX_SLOT_PARTY_START);
@@ -1059,7 +1059,7 @@ void PCBox_FreeReleaseMoveCheck(PCBoxWork *work) {
     Heap_Free(work->view->releaseWork);
 }
 
-u32 PCBox_RunReleaseMoveCheck(PCBoxWork *work) {
+BOOL PCBox_RunReleaseMoveCheck(PCBoxWork *work) {
     PCBoxReleaseWork *releaseWork;
     u16 idx;
     u32 count;
@@ -1072,7 +1072,7 @@ u32 PCBox_RunReleaseMoveCheck(PCBoxWork *work) {
     releaseWork = work->view->releaseWork;
     idx = releaseWork->scanIndex;
     if (idx == NUM_BOXES * MONS_PER_BOX + PARTY_SIZE) {
-        return 0;
+        return FALSE;
     }
     for (count = 0; count < 15; count++) {
         if (idx < NUM_BOXES * MONS_PER_BOX) {
@@ -1102,10 +1102,10 @@ u32 PCBox_RunReleaseMoveCheck(PCBoxWork *work) {
         releaseWork->scanIndex++;
         idx = releaseWork->scanIndex;
         if (idx == NUM_BOXES * MONS_PER_BOX + PARTY_SIZE) {
-            return 0;
+            return FALSE;
         }
     }
-    return 1;
+    return TRUE;
 }
 
 static PCBoxMonInfo *PCBox_CreateMonInfo(BoxPokemon *boxMon) {

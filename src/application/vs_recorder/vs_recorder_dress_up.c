@@ -386,7 +386,7 @@ static BOOL VsRecorder_DressUpEnter(VsRecorderWork *work) {
         work->step++;
         break;
     case DRESS_UP_ENTER_STEP_FLIP_SCREENS:
-        VsRecorder_StartFlipScreens(work, 0);
+        VsRecorder_StartFlipScreens(work, FALSE);
         VsRecorder_SetVBlankPaused(work, TRUE);
         work->step++;
         break;
@@ -556,7 +556,7 @@ static BOOL VsRecorder_DressUpSendUpload(VsRecorderWork *work) {
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_3);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     default:
@@ -628,7 +628,7 @@ static BOOL VsRecorder_DressUpSendExit(VsRecorderWork *work) {
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_3);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     default:
@@ -840,7 +840,7 @@ static BOOL VsRecorder_DressUpViewExit(VsRecorderWork *work) {
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_3);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     default:

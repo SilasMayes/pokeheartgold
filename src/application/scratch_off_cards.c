@@ -291,7 +291,7 @@ static void ScratchOffCards_ShuffleCells(ScratchOffCardsWork *work, int unused);
 static void ScratchOffCards_ClearCells(ScratchOffCardsWork *work);
 static void ScratchOffCards_ChoosePrizes(ScratchOffCardsWork *work, int unused);
 static BOOL ScratchOffCards_BounceCardChoice(ScratchOffCardsWork *work, int cardNo);
-static void ScratchOffCards_SetBgPalette(ScratchOffCardsWork *work, int bgId, u8 palette, u8 width, u8 height);
+static void ScratchOffCards_SetBgPalette(ScratchOffCardsWork *work, GFBgLayer bgId, u8 palette, u8 width, u8 height);
 static u8 ScratchOffCards_CountTouchedCells(ScratchOffCardsWork *work);
 static void ScratchOffCards_ClearTouchedCells(ScratchOffCardsWork *work);
 static void ScratchOffCards_ClearRevealedCells(ScratchOffCardsWork *work);
@@ -1432,7 +1432,7 @@ static BOOL ScratchOffCards_BounceCardChoice(ScratchOffCardsWork *work, int card
     return FALSE;
 }
 
-static void ScratchOffCards_SetBgPalette(ScratchOffCardsWork *work, int bgId, u8 palette, u8 width, u8 height) {
+static void ScratchOffCards_SetBgPalette(ScratchOffCardsWork *work, GFBgLayer bgId, u8 palette, u8 width, u8 height) {
     BgTilemapRectChangePalette(work->bgConfig, bgId, 0, 0, width, height, palette);
     ScheduleBgTilemapBufferTransfer(work->bgConfig, bgId);
 }

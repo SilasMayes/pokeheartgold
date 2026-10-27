@@ -168,7 +168,7 @@ void *MainMenuUtil_CreateAppData(OverlayManager *manager, enum HeapID heapID, u3
     return data;
 }
 
-void MainMenuUtil_InitBg(BgConfig *bgConfig, int bgId, u32 screenSize, u32 screenBase, u32 charBase) {
+void MainMenuUtil_InitBg(BgConfig *bgConfig, GFBgLayer bgId, u32 screenSize, u32 screenBase, u32 charBase) {
     BgTemplate template = gMainMenuUtilBgTemplate;
     template.size = screenSize;
     switch (screenSize) {

@@ -352,7 +352,7 @@ static void BallCapsuleEditor_CreateArrows(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_TickArrows(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_SetArrowsDrawFlag(BallCapsuleEditor *editor, BOOL draw);
 static void BallCapsuleEditor_DeleteArrows(BallCapsuleEditor *editor);
-static void BallCapsuleEditor_LoadSpriteResources(SpriteSystem *spriteSystem, SpriteManager *spriteManager, PaletteData *paletteData, int charFile, int paletteFile, int cellFile, int animFile, int vram, int paletteBuffer, int paletteNum, NARC *narc);
+static void BallCapsuleEditor_LoadSpriteResources(SpriteSystem *spriteSystem, SpriteManager *spriteManager, PaletteData *paletteData, int charFile, int paletteFile, int cellFile, int animFile, int vram, enum PaletteBufferId paletteBuffer, int paletteNum, NARC *narc);
 static void BallCapsuleEditor_CreateCapsuleIcons(BallCapsuleEditor *editor, NARC *narc);
 static void BallCapsuleEditor_RefreshCapsuleIcons(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_SwitchCapsules(BallCapsuleEditor *editor, int a, int b);
@@ -361,9 +361,9 @@ static void BallCapsuleEditor_DeleteCapsuleIcons(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_LoadMainBgGraphics(BgConfig *bgConfig, PaletteData *paletteData, int frame);
 static void BallCapsuleEditor_LoadSubBgGraphics(BgConfig *bgConfig, PaletteData *paletteData, int frame);
 static void BallCapsuleEditor_PrintMessage(Window *window, int frameType, u32 msgId, BOOL drawFrame);
-static void BallCapsuleEditor_AddFramedWindow(BgConfig *bgConfig, Window *window, int bgId, int left, int top, int width, int height, int baseTile);
-static void BallCapsuleEditor_AddWindow(BgConfig *bgConfig, Window *window, int bgId, int left, int top, int width, int height, int baseTile);
-static void BallCapsuleEditor_AddWindowWithPalette(BgConfig *bgConfig, Window *window, int bgId, int left, int top, int width, int height, int baseTile, int palette);
+static void BallCapsuleEditor_AddFramedWindow(BgConfig *bgConfig, Window *window, GFBgLayer bgId, int left, int top, int width, int height, int baseTile);
+static void BallCapsuleEditor_AddWindow(BgConfig *bgConfig, Window *window, GFBgLayer bgId, int left, int top, int width, int height, int baseTile);
+static void BallCapsuleEditor_AddWindowWithPalette(BgConfig *bgConfig, Window *window, GFBgLayer bgId, int left, int top, int width, int height, int baseTile, int palette);
 static void BallCapsuleEditor_AddSealCountWindows(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_PrintSealCounts(BallCapsuleEditor *editor);
 static void BallCapsuleEditor_PrintSealCount(BallCapsuleEditor *editor, int index);
@@ -1628,7 +1628,7 @@ static void BallCapsuleEditor_DeleteArrows(BallCapsuleEditor *editor) {
     }
 }
 
-static void BallCapsuleEditor_LoadSpriteResources(SpriteSystem *spriteSystem, SpriteManager *spriteManager, PaletteData *paletteData, int charFile, int paletteFile, int cellFile, int animFile, int vram, int paletteBuffer, int paletteNum, NARC *narc) {
+static void BallCapsuleEditor_LoadSpriteResources(SpriteSystem *spriteSystem, SpriteManager *spriteManager, PaletteData *paletteData, int charFile, int paletteFile, int cellFile, int animFile, int vram, enum PaletteBufferId paletteBuffer, int paletteNum, NARC *narc) {
     SpriteSystem_LoadCharResObjFromOpenNarc(spriteSystem, spriteManager, narc, charFile, TRUE, vram, charFile + 11000);
     SpriteSystem_LoadPaletteBufferFromOpenNarc(paletteData, (PaletteBufferId)paletteBuffer, spriteSystem, spriteManager, narc, paletteFile, FALSE, paletteNum, vram, paletteFile + 11000);
     SpriteSystem_LoadCellResObjFromOpenNarc(spriteSystem, spriteManager, narc, cellFile, TRUE, cellFile + 11000);
@@ -1802,7 +1802,7 @@ static void BallCapsuleEditor_PrintMessage(Window *window, int frameType, u32 ms
     DestroyMsgData(msgData);
 }
 
-static void BallCapsuleEditor_AddFramedWindow(BgConfig *bgConfig, Window *window, int bgId, int left, int top, int width, int height, int baseTile) {
+static void BallCapsuleEditor_AddFramedWindow(BgConfig *bgConfig, Window *window, GFBgLayer bgId, int left, int top, int width, int height, int baseTile) {
     InitWindow(window);
     AddWindowParameterized(bgConfig, window, bgId, left, top, width, height, 14, baseTile);
     DrawFrameAndWindow2(window, TRUE, 1, 12);
@@ -1810,13 +1810,13 @@ static void BallCapsuleEditor_AddFramedWindow(BgConfig *bgConfig, Window *window
     ScheduleWindowCopyToVram(window);
 }
 
-static void BallCapsuleEditor_AddWindow(BgConfig *bgConfig, Window *window, int bgId, int left, int top, int width, int height, int baseTile) {
+static void BallCapsuleEditor_AddWindow(BgConfig *bgConfig, Window *window, GFBgLayer bgId, int left, int top, int width, int height, int baseTile) {
     InitWindow(window);
     AddWindowParameterized(bgConfig, window, bgId, left, top, width, height, 14, baseTile);
     FillWindowPixelBuffer(window, 15);
 }
 
-static void BallCapsuleEditor_AddWindowWithPalette(BgConfig *bgConfig, Window *window, int bgId, int left, int top, int width, int height, int baseTile, int palette) {
+static void BallCapsuleEditor_AddWindowWithPalette(BgConfig *bgConfig, Window *window, GFBgLayer bgId, int left, int top, int width, int height, int baseTile, int palette) {
     InitWindow(window);
     AddWindowParameterized(bgConfig, window, bgId, left, top, width, height, palette, baseTile);
     FillWindowPixelBuffer(window, 15);

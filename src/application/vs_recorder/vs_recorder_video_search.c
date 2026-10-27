@@ -700,7 +700,7 @@ BOOL VsRecorder_VideoSearchExit(VsRecorderWork *work) {
         VsRecorder_FreeSearchButtons(work);
         VsRecorder_RebuildMenuRowsParent(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     default:

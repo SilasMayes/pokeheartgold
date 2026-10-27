@@ -118,7 +118,7 @@ static void LockCapsuleCard_DestroyListMenu(LockCapsuleCardView *view);
 static void LockCapsuleCard_StartFade(LockCapsuleCardView *view, enum FadeType fadeType, int nextState, int *state);
 static void LockCapsuleCard_DrawCard(LockCapsuleCardView *view, int unused, int page);
 static int LockCapsuleCard_PrintTextBox(LockCapsuleCardView *view, Window *window, int boxId, int baseTile);
-static void LockCapsuleCard_LoadScreenData(LockCapsuleCardView *view, int fileId, int bgId, int offset);
+static void LockCapsuleCard_LoadScreenData(LockCapsuleCardView *view, int fileId, GFBgLayer bgId, int offset);
 static void LockCapsuleCard_LoadCardBg(LockCapsuleCardView *view, int page);
 static void LockCapsuleCard_HandleListMenuInput(OverlayManager *manager, int *state, MysteryGiftMenuFunc cancelFunc);
 static void LockCapsuleCard_CreateMonIconSprites(LockCapsuleCardView *view);
@@ -446,7 +446,7 @@ static int LockCapsuleCard_PrintTextBox(LockCapsuleCardView *view, Window *windo
     return baseTile + box->width * box->height;
 }
 
-static void LockCapsuleCard_LoadScreenData(LockCapsuleCardView *view, int fileId, int bgId, int offset) {
+static void LockCapsuleCard_LoadScreenData(LockCapsuleCardView *view, int fileId, GFBgLayer bgId, int offset) {
     NNSG2dScreenData *screenData;
     void *data = GfGfxLoader_LoadFromNarc(NARC_a_1_1_3, fileId, TRUE, view->heapId, TRUE);
 

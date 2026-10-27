@@ -180,7 +180,7 @@ static void SwapMonPanels_StartScroll(SwapMonPanels *panels, int slot, BOOL scro
 static void SwapMonPanels_Scroll(SwapMonPanels *panels);
 static BOOL SwapMonPanels_IsScrollDone(SwapMonPanels *panels);
 static SwapMonText *SwapMonText_New(enum HeapID heapID);
-static void SwapMonText_Init(SwapMonText *text, BgConfig *bgConfig, int bgLayer, Options *options);
+static void SwapMonText_Init(SwapMonText *text, BgConfig *bgConfig, GFBgLayer bgLayer, Options *options);
 static void SwapMonText_Delete(SwapMonText *text);
 static BOOL SwapMonText_IsPrinting(SwapMonText *text);
 static void SwapMonText_PrintMessage(SwapMonText *text, int msgId);
@@ -1016,7 +1016,7 @@ static SwapMonText *SwapMonText_New(enum HeapID heapID) {
     return text;
 }
 
-static void SwapMonText_Init(SwapMonText *text, BgConfig *bgConfig, int bgLayer, Options *options) {
+static void SwapMonText_Init(SwapMonText *text, BgConfig *bgConfig, GFBgLayer bgLayer, Options *options) {
     text->bgConfig = bgConfig;
     text->printerId = -1;
     text->bgLayer = bgLayer;

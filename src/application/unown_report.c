@@ -165,7 +165,7 @@ static enum UnownReportMainState UnownReport_HandleTouch(UnownReportApp *app, BO
 static void UnownReport_DrawCoverPage(UnownReportApp *app);
 static void UnownReport_DrawFormSpread(UnownReportApp *app, u8 spread);
 static void UnownReport_DrawInfoPage(UnownReportApp *app, u8 infoPage);
-static void UnownReport_ShowScreen(UnownReportApp *app, UnownReportScreen *screen, u32 bgId);
+static void UnownReport_ShowScreen(UnownReportApp *app, UnownReportScreen *screen, GFBgLayer bgId);
 static void UnownReport_PrintText(Window *window, String *string, FontID fontId, int x, u16 y);
 static void UnownReport_PrintTextFont0(Window *window, String *string, int x, u16 y);
 static void UnownReport_VBlankCallback(void *data);
@@ -856,7 +856,7 @@ static void UnownReport_DrawInfoPage(UnownReportApp *app, u8 infoPage) {
     }
 }
 
-static void UnownReport_ShowScreen(UnownReportApp *app, UnownReportScreen *screen, u32 bgId) {
+static void UnownReport_ShowScreen(UnownReportApp *app, UnownReportScreen *screen, GFBgLayer bgId) {
     CopyToBgTilemapRect(app->bgConfig, bgId, 0, 0, 32, 24, screen->rawData, 0, 0, screen->width, screen->height);
     ScheduleBgTilemapBufferTransfer(app->bgConfig, bgId);
 }

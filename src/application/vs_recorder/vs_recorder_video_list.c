@@ -526,7 +526,7 @@ BOOL VsRecorder_VideoListSave(VsRecorderWork *work) {
         VsRecorder_RebuildMenuRowsParent(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
         WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_109);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     default:
@@ -959,7 +959,7 @@ BOOL VsRecorder_VideoListEnter(VsRecorderWork *work) {
         SetBgPriority(GF_BG_LYR_SUB_1, 3);
         SetBgPriority(GF_BG_LYR_SUB_2, 0);
         SetBgPriority(GF_BG_LYR_SUB_3, 2);
-        VsRecorder_StartFlipScreens(work, 0);
+        VsRecorder_StartFlipScreens(work, FALSE);
         OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
         work->step++;
         break;
@@ -1067,7 +1067,7 @@ BOOL VsRecorder_VideoListDownloadList(VsRecorderWork *work) {
         VsRecorder_RebuildMenuRowsParent(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
         WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_109);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     case VIDEO_LIST_DOWNLOAD_LIST_STEP_FADE_IN_MENU:
@@ -1276,7 +1276,7 @@ BOOL VsRecorder_VideoListExit(VsRecorderWork *work) {
         VsRecorder_ResetFade(&listWork->fade);
         VsRecorder_RebuildMenuRowsParent(work);
         WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_109);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     default:

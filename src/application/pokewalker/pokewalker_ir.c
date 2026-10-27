@@ -211,7 +211,7 @@ static BOOL PokewalkerIr_VerifyPacket(u32 size) {
 #pragma opt_rotateloops reset
 #pragma opt_common_subs off
 
-static int PokewalkerIr_Poll(void) {
+static BOOL PokewalkerIr_Poll(void) {
     PokewalkerIrPacket *packet;
     u32 length = CARD_SpiWaitReadRange(&gPokewalkerIrPacket);
     if (PokewalkerIr_ShouldDropShortPacket(length)) {
@@ -219,21 +219,21 @@ static int PokewalkerIr_Poll(void) {
     }
     if (length == 0) {
         if (PokewalkerIr_CheckTimeout()) {
-            return 1;
+            return TRUE;
         }
-        return 0;
+        return FALSE;
     }
     if (!PokewalkerIr_VerifyPacket(length)) {
-        return 0;
+        return FALSE;
     }
     gPokewalkerIrLink.lastReceiveTick = OS_GetTick();
     packet = &gPokewalkerIrPacket;
     if (packet->command < 0xF0) {
         if (!gPokewalkerIrLink.active) {
-            return 0;
+            return FALSE;
         }
         if (packet->sessionId != gPokewalkerIrLink.sessionId) {
-            return 0;
+            return FALSE;
         }
     }
     switch (packet->command) {
@@ -306,7 +306,7 @@ static int PokewalkerIr_Poll(void) {
         }
         break;
     }
-    return 0;
+    return FALSE;
 }
 
 #pragma opt_common_subs reset
@@ -1078,7 +1078,7 @@ static void PokewalkerIr_OnReceive(void *data, u32 size, int command) {
 static void PokewalkerIr_ThreadMain(void *arg) {
     for (;;) {
         OS_LockMutex(&gPokewalkerIrSync);
-        if (PokewalkerIr_Poll() == 1) {
+        if (PokewalkerIr_Poll() == TRUE) {
             PokewalkerIr_SetError(2);
         }
         OS_UnlockMutex(&gPokewalkerIrSync);

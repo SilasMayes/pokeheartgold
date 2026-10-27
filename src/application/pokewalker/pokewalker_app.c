@@ -223,7 +223,7 @@ static void PokewalkerApp_FreeMessages(PokewalkerApp *app) {
     MessageFormat_Delete(app->msgFormat);
 }
 
-void PokewalkerApp_LoadTilemap(PokewalkerApp *app, int bgId, int member) {
+void PokewalkerApp_LoadTilemap(PokewalkerApp *app, GFBgLayer bgId, int member) {
     GfGfxLoader_LoadScrnData(NARC_a_2_4_7, member, app->bgConfig, (GFBgLayer)bgId, 0, 0, TRUE, HEAP_ID_154);
 }
 

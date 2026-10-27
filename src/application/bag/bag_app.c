@@ -190,8 +190,8 @@ static int BagApp_State_CompleteSale(BagApp *app);
 static int BagApp_State_WaitSaleMessage(BagApp *app);
 static int BagApp_State_DebugSubScreenLayout(BagApp *app);
 static void BagApp_LoadPocketSubBgPalette(BagApp *app, int slot, int pocket);
-static void BagApp_ApplyTilemapCommands(BgConfig *bgConfig, int bgId, int layout);
-static void BagApp_DrawItemSlotFrames(BgConfig *bgConfig, int bgId, u32 count, u32 selection);
+static void BagApp_ApplyTilemapCommands(BgConfig *bgConfig, GFBgLayer bgId, int layout);
+static void BagApp_DrawItemSlotFrames(BgConfig *bgConfig, GFBgLayer bgId, u32 count, u32 selection);
 static void BagApp_LoadSubScreenLayout(BagApp *app, u32 layout, int count, int selection);
 static void BagApp_SetMenuInputState(BagApp *app, MenuInputState state);
 static void BagApp_ShowCancelButton(BagApp *app, BOOL show);
@@ -2680,7 +2680,7 @@ static void BagApp_LoadPocketSubBgPalette(BagApp *app, int slot, int pocket) {
     }
 }
 
-static void BagApp_ApplyTilemapCommands(BgConfig *bgConfig, int bgId, int layout) {
+static void BagApp_ApplyTilemapCommands(BgConfig *bgConfig, GFBgLayer bgId, int layout) {
     void *buffer = GetBgTilemapBuffer(bgConfig, bgId);
     const BagAppTilemapCommand *command;
     s32 i;
@@ -2698,7 +2698,7 @@ static void BagApp_ApplyTilemapCommands(BgConfig *bgConfig, int bgId, int layout
     }
 }
 
-static void BagApp_DrawItemSlotFrames(BgConfig *bgConfig, int bgId, u32 count, u32 selection) {
+static void BagApp_DrawItemSlotFrames(BgConfig *bgConfig, GFBgLayer bgId, u32 count, u32 selection) {
     s32 i;
     void *buffer = GetBgTilemapBuffer(bgConfig, bgId);
     const BagAppTileRect *rect;

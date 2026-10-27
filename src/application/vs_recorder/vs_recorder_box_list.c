@@ -592,7 +592,7 @@ BOOL VsRecorder_BoxDataViewExit(VsRecorderWork *work) {
         OrbitCursor_SetActive(work->orbitCursors[0], TRUE);
         OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
         VsRecorder_SetVBlankPaused(work, FALSE);
-        VsRecorder_StartFlipScreens(work, 1);
+        VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
     case BOX_DATA_VIEW_EXIT_STEP_REBUILD_MENU:

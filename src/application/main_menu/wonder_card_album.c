@@ -161,7 +161,7 @@ static void WonderCardAlbum_StartFade(WonderCardAlbum *album, enum FadeType fade
 static void WonderCardAlbum_DrawCard(WonderCardAlbum *album, int unused, int page);
 static int WonderCardAlbum_PrintTextBox(WonderCardAlbum *album, Window *window, int boxId, int baseTile);
 static int WonderCardAlbum_FindNextCard(WonderCardAlbum *album, int index, int step);
-static void WonderCardAlbum_LoadScreenData(WonderCardAlbum *album, int fileId, int bgId, int offset);
+static void WonderCardAlbum_LoadScreenData(WonderCardAlbum *album, int fileId, GFBgLayer bgId, int offset);
 static void WonderCardAlbum_LoadCardBg(WonderCardAlbum *album, int page);
 static void WonderCardAlbum_HandleListMenuInput(OverlayManager *manager, int *state, MysteryGiftMenuFunc cancelFunc);
 static void WonderCardAlbum_CreateMonIconSprites(WonderCardAlbum *album);
@@ -885,7 +885,7 @@ static int WonderCardAlbum_FindNextCard(WonderCardAlbum *album, int index, int s
     return index;
 }
 
-static void WonderCardAlbum_LoadScreenData(WonderCardAlbum *album, int fileId, int bgId, int offset) {
+static void WonderCardAlbum_LoadScreenData(WonderCardAlbum *album, int fileId, GFBgLayer bgId, int offset) {
     NNSG2dScreenData *screenData;
     void *data = GfGfxLoader_LoadFromNarc(NARC_a_1_1_3, fileId, TRUE, album->heapId, TRUE);
 
