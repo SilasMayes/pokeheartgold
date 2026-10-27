@@ -36,13 +36,13 @@ typedef struct EngageParams {
     int z;
     int scriptId;
     int trainerNum;
-    int isDouble;
+    BOOL isDouble;
     LocalMapObject *object;
 } EngageParams;
 
 typedef struct TrainerApproachWork {
     int state;
-    int done;
+    BOOL done;
     int direction;
     int distance;
     int unk10;

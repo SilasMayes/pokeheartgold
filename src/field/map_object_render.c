@@ -69,7 +69,7 @@ typedef struct TextureLoadRequest {
 
 // A texture to transfer to (loaded = 0) or release from (loaded = 1) VRAM during the vblank
 typedef struct TextureTransfer {
-    u32 loaded;
+    BOOL loaded;
     u32 spriteId;
     GF_3DGfxRawResMan *textures;
 } TextureTransfer;

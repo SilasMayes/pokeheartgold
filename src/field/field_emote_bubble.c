@@ -72,8 +72,8 @@ typedef struct EmoteBubbleEffect {
     int timer;
     u32 objectId;
     u32 mapId;
-    int hidden;
-    int done;
+    BOOL hidden;
+    BOOL done;
     VecFx32 offset;
     u8 unk_24[4];
     fx32 velocity;
@@ -291,7 +291,7 @@ static void EmoteBubbleEffect_Update(FieldEffect *effect, void *state) {
         if (++work->timer >= 2) {
             work->state++;
             work->timer = 0;
-            work->done = 1;
+            work->done = TRUE;
         }
         break;
     case EMOTE_BUBBLE_STATE_END:
@@ -306,7 +306,7 @@ static void EmoteBubbleEffect_Draw(FieldEffect *effect, void *state) {
     EmoteBubbleEffect *work = state;
     VecFx32 position;
 
-    if (work->hidden != 1) {
+    if (work->hidden != TRUE) {
         FieldEffect_GetPosition(effect, &position);
         position.x += work->offset.x;
         position.y += work->offset.y;

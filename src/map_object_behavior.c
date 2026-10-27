@@ -479,7 +479,7 @@ BOOL TryGetSeenByNpcTrainers(FieldSystem *fieldSystem, BOOL doublesEligible) {
     if (!CheckSeenByNpcTrainers(fieldSystem, manager, avatar, NULL, &first)) {
         return FALSE;
     }
-    if (first.isDouble == 0) {
+    if (first.isDouble == FALSE) {
         StartMapSceneScript(fieldSystem, std_trainer_approach, first.object);
         if (!doublesEligible || !CheckSeenByNpcTrainers(fieldSystem, manager, avatar, first.object, &second)) {
             FieldSystem_SetEngagedTrainer(fieldSystem, first.object, first.x, first.z, first.scriptId, first.trainerNum, 0, 0);
@@ -489,7 +489,7 @@ BOOL TryGetSeenByNpcTrainers(FieldSystem *fieldSystem, BOOL doublesEligible) {
         FieldSystem_SetEngagedTrainer(fieldSystem, second.object, second.x, second.z, second.scriptId, second.trainerNum, 2, 1);
         return TRUE;
     }
-    if (first.isDouble == 1) {
+    if (first.isDouble == TRUE) {
         if (!doublesEligible) {
             return FALSE;
         }

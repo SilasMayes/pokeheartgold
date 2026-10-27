@@ -6,7 +6,7 @@
 
 // Arrow tiles (Viridian Gym) that send the player sliding and spinning across the floor.
 typedef struct SpinSlideTask {
-    int direction;
+    u32 direction;
     int countdown;
     int state;
     FieldSystem *fieldSystem;

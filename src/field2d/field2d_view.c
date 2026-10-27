@@ -159,7 +159,7 @@ void Field2DObjectSpriteManager_UnloadChar(Field2DObjectSpriteManager *objectSpr
     CharSpriteManager_UnloadChar(objectSpriteManager->charSprites, spriteId);
 }
 
-s32 Field2DObjectSpriteManager_IsCharLoaded(Field2DObjectSpriteManager *objectSpriteManager, s32 spriteId) {
+BOOL Field2DObjectSpriteManager_IsCharLoaded(Field2DObjectSpriteManager *objectSpriteManager, s32 spriteId) {
     return CharSpriteManager_IsCharLoaded(objectSpriteManager->charSprites, spriteId);
 }
 
@@ -245,7 +245,7 @@ void Field2DObjectSprite_SetPosition(Field2DObjectSprite *objectSprite, Field2DP
     CharSprite_SetPosition(objectSprite->charSprite, pos.x, pos.y);
 }
 
-s32 Field2DObjectSprite_IsVisible(Field2DObjectSprite *objectSprite) {
+BOOL Field2DObjectSprite_IsVisible(Field2DObjectSprite *objectSprite) {
     return CharSprite_IsVisible(objectSprite->charSprite);
 }
 

@@ -38,7 +38,7 @@ static Sprite *FlyLanding_CreateFlyerSprite(SpriteGfxManager *gfxManager) {
     return sprite;
 }
 
-Sprite *FlyLanding_CreateTrainerSprite(SpriteGfxManager *gfxManager, int gender) {
+Sprite *FlyLanding_CreateTrainerSprite(SpriteGfxManager *gfxManager, u32 gender) {
     VecFx32 pos = { 0, 0, 0 };
     Sprite *sprite;
     int plttId;

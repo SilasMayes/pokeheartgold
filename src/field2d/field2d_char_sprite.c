@@ -66,7 +66,7 @@ void CharSpriteManager_UnloadChar(CharSpriteManager *charSpriteManager, s32 spri
     CharSpriteManager_UnloadCharResources(charSpriteManager, CharSprite_GetCharIndex(spriteId));
 }
 
-s32 CharSpriteManager_IsCharLoaded(CharSpriteManager *charSpriteManager, s32 spriteId) {
+BOOL CharSpriteManager_IsCharLoaded(CharSpriteManager *charSpriteManager, s32 spriteId) {
     return CharSpriteManager_IsCharIndexLoaded(charSpriteManager, CharSprite_GetCharIndex(spriteId));
 }
 

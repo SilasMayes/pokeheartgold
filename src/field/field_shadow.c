@@ -51,7 +51,7 @@ typedef struct FieldShadowEffect {
     u32 spriteId;
     u32 objectId;
     u32 mapId;
-    int hidden;
+    BOOL hidden;
     int parameter;
     FieldShadowEffectArgs args;
 } FieldShadowEffect;
@@ -284,9 +284,9 @@ static void FieldShadowEffect_Update(FieldEffect *effect, void *state) {
         FieldEffectManager_DestroyEffect((int)effect);
         return;
     }
-    work->hidden = 0;
+    work->hidden = FALSE;
     if (MapObject_TestFlagsBits(object, (MapObjectFlagBits)(MAPOBJECTFLAG_UNK20 | MAPOBJECTFLAG_VISIBLE)) == TRUE) {
-        work->hidden = 1;
+        work->hidden = TRUE;
         return;
     }
     MapObject_CopyPositionVector(object, &pos);
@@ -383,9 +383,9 @@ static void FieldShadowEffect_UpdateFriendShadow(FieldEffect *effect, void *stat
         FieldEffectManager_DestroyEffect((int)effect);
         return;
     }
-    work->hidden = 0;
+    work->hidden = FALSE;
     if (MapObject_TestFlagsBits(object, (MapObjectFlagBits)(MAPOBJECTFLAG_UNK20 | MAPOBJECTFLAG_VISIBLE)) == TRUE) {
-        work->hidden = 1;
+        work->hidden = TRUE;
         return;
     }
     MapObject_CopyPositionVector(object, &pos);
@@ -396,7 +396,7 @@ static void FieldShadowEffect_DrawFriendShadow(FieldEffect *effect, void *state)
     FieldShadowEffect *work = state;
     VecFx32 pos;
 
-    if (work->hidden == 1) {
+    if (work->hidden == TRUE) {
         return;
     }
     {

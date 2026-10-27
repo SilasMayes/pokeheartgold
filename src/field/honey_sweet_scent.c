@@ -29,7 +29,7 @@ typedef struct HoneySweetScentFade {
     int delta;
     int counter;
     int max;
-    int done;
+    BOOL done;
 } HoneySweetScentFade;
 
 typedef struct HoneySweetScentEnv {
@@ -79,7 +79,7 @@ static void HoneySweetScentFade_InitIn(Field3dObjectTask *task, FieldSystem *fie
     HoneySweetScentFade *anim = data;
     HoneySweetScent_LoadBg2Tint(fieldSystem->bgConfig);
     HoneySweetScentFade_Set(anim, 0, 10, 19);
-    anim->done = 0;
+    anim->done = FALSE;
     G2_SetBlendAlpha(GX_BLEND_PLANEMASK_BG2, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_BD, 0, 16);
     SetBgPriority(GF_BG_LYR_MAIN_2, 0);
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
@@ -90,7 +90,7 @@ static void HoneySweetScentFade_InitOut(Field3dObjectTask *task, FieldSystem *fi
     HoneySweetScentFade *anim = data;
     HoneySweetScent_LoadBg2Tint(fieldSystem->bgConfig);
     HoneySweetScentFade_Set(anim, 10, 0, 15);
-    anim->done = 0;
+    anim->done = FALSE;
     G2_SetBlendAlpha(GX_BLEND_PLANEMASK_BG2, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BD, 10, 6);
 }
 

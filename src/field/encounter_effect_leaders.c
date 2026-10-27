@@ -68,7 +68,7 @@ typedef struct EliteFourIntroWork {
     VecFx32 opponentPos;
     ScaleSprites scaleSprites;
     Window window;
-    int playerGender;
+    u32 playerGender;
     int playerMember;
     u8 unused[8];
 } EliteFourIntroWork;
@@ -600,11 +600,11 @@ static BOOL LeadersEffect_RunEliteFourIntro(EncounterEffectTask *effect, enum He
         EncounterEffect_InitSprites(&work->spriteManager, 10, 4);
         if (!LeadersEffect_GetPlayerGender(effect->fieldSystem)) {
             EncounterEffect_LoadSpriteResources(effect->narc, &work->spriteManager, &work->resources[0], 207, 1, 208, 209, 210, 600000);
-            work->playerGender = 0;
+            work->playerGender = PLAYER_GENDER_MALE;
             work->playerMember = 207;
         } else {
             EncounterEffect_LoadSpriteResources(effect->narc, &work->spriteManager, &work->resources[0], 211, 1, 212, 213, 214, 600000);
-            work->playerGender = 1;
+            work->playerGender = PLAYER_GENDER_FEMALE;
             work->playerMember = 211;
         }
         EncounterEffect_LoadSpriteResources(effect->narc, &work->spriteManager, &work->resources[1], params->opponentMember, 1, params->opponentMember + 1, params->opponentMember + 2, params->opponentMember + 3, 600001);

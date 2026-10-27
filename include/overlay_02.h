@@ -39,7 +39,7 @@ typedef struct SafariDecorationArgs {
     u8 *cursorPos; // points to fieldSystem->safariDecorationCursorPos
 } SafariDecorationArgs;
 
-SysTask *FlyLanding_Start(FieldSystem *fieldSystem, int gender);
+SysTask *FlyLanding_Start(FieldSystem *fieldSystem, u32 gender);
 BOOL FlyLanding_IsDone(SysTask *task);
 void FlyLanding_Delete(SysTask *task);
 struct FieldMoveTaskEnvironment *CreateFieldEscapeRopeTaskEnv(FieldSystem *fieldSystem, enum HeapID heapID);
@@ -54,7 +54,7 @@ Field3dObjectTask *RockDebris_Create(FieldSystem *fieldSystem);
 Field3dObjectTask *RockDebris_CreateWithFollower(FieldSystem *fieldSystem);
 void RockDebris_Delete(Field3dObjectTask *task);
 
-SysTask *FieldMoveCutIn_Start(FieldSystem *fieldSystem, int kind, Pokemon *mon, int gender);
+SysTask *FieldMoveCutIn_Start(FieldSystem *fieldSystem, int kind, Pokemon *mon, u32 gender);
 BOOL FieldMoveCutIn_IsFinished(SysTask *work);
 void FieldMoveCutIn_Delete(SysTask *work);
 SysTask *FieldMoveCutIn_StartFlyWithObject(FieldSystem *fieldSystem, Pokemon *mon, LocalMapObject *object, LocalMapObject *otherObject);

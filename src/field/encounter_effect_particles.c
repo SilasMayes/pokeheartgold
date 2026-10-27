@@ -246,7 +246,7 @@ static void Task_EncounterEffectHBlankWave(SysTask *task, void *data) {
 }
 
 void EncounterEffectHBlankWave_Init(EncounterEffectHBlankWave *wave, enum HeapID heapID) {
-    wave->effect = ScanlineEffect_New((enum HeapID)heapID);
+    wave->effect = ScanlineEffect_New(heapID);
     wave->frames = 0;
     wave->task = EncounterEffectHBlankWave_StartTask(wave);
 }

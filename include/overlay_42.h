@@ -182,7 +182,7 @@ CharSpriteManager *CharSpriteManager_New(SpriteList *spriteList, PaletteData *pa
 void CharSpriteManager_Free(CharSpriteManager *charSpriteManager);
 void CharSpriteManager_LoadChar(CharSpriteManager *charSpriteManager, s32 spriteId, u8 vramType, s32 animSet, enum HeapID heapID);
 void CharSpriteManager_UnloadChar(CharSpriteManager *charSpriteManager, s32 spriteId);
-s32 CharSpriteManager_IsCharLoaded(CharSpriteManager *charSpriteManager, s32 spriteId);
+BOOL CharSpriteManager_IsCharLoaded(CharSpriteManager *charSpriteManager, s32 spriteId);
 void CharSpriteManager_UnloadAllChars(CharSpriteManager *charSpriteManager);
 void CharSpriteManager_LoadAvatarChars(CharSpriteManager *charSpriteManager, u8 vramType, s32 animSet, enum HeapID heapID);
 void CharSpriteManager_UnloadAvatarChars(CharSpriteManager *charSpriteManager);
@@ -318,7 +318,7 @@ Field2DObjectSpriteManager *Field2DObjectSpriteManager_NewWithShadow(SpriteList 
 void Field2DObjectSpriteManager_Free(Field2DObjectSpriteManager *objectSpriteManager);
 void Field2DObjectSpriteManager_LoadChar(Field2DObjectSpriteManager *objectSpriteManager, s32 spriteId, s32 animSet, enum HeapID heapID);
 void Field2DObjectSpriteManager_UnloadChar(Field2DObjectSpriteManager *objectSpriteManager, s32 spriteId);
-s32 Field2DObjectSpriteManager_IsCharLoaded(Field2DObjectSpriteManager *objectSpriteManager, s32 spriteId);
+BOOL Field2DObjectSpriteManager_IsCharLoaded(Field2DObjectSpriteManager *objectSpriteManager, s32 spriteId);
 void Field2DObjectSpriteManager_UnloadAllChars(Field2DObjectSpriteManager *objectSpriteManager);
 void Field2DObjectSpriteManager_LoadAvatarChars(Field2DObjectSpriteManager *objectSpriteManager, s32 animSet, enum HeapID heapID);
 Field2DObjectSprite *Field2DObjectSpriteManager_CreateSprite(Field2DObjectSpriteManager *objectSpriteManager, Field2DObject *object, u32 priorityMode, enum HeapID heapID);
@@ -330,7 +330,7 @@ void Field2DObjectSprite_StartLoopAnim(Field2DObjectSprite *objectSprite);
 void Field2DObjectSprite_UpdateAnim(Field2DObjectSprite *objectSprite);
 void Field2DObjectSprite_SyncAnim(Field2DObjectSprite *objectSprite);
 void Field2DObjectSprite_SetPosition(Field2DObjectSprite *objectSprite, Field2DPoint pos);
-s32 Field2DObjectSprite_IsVisible(Field2DObjectSprite *objectSprite);
+BOOL Field2DObjectSprite_IsVisible(Field2DObjectSprite *objectSprite);
 void Field2DObjectSprite_SetVisible(Field2DObjectSprite *objectSprite, u16 visible);
 u16 Field2DObjectSprite_GetDrawPriority(Field2DObjectSprite *objectSprite);
 void Field2DObjectSprite_FaceDirection(Field2DObjectSprite *objectSprite, s32 direction);

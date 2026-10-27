@@ -707,7 +707,7 @@ void BillboardDraw_UpdateTwoSequences(LocalMapObject *object) {
     if (MapObject_IsBillboardPending(object) != TRUE && billboard != NULL) {
         facing = MapObject_GetFacingDirection(object);
         if (MapObject_GetAnimation(object) == 0) {
-            sequence = (u32)facing > 1 ? 1 : 0;
+            sequence = facing > 1 ? 1 : 0;
             if (sequence != BillboardObject_GetSequence(billboard) || work->movement == 0) {
                 BillboardObject_SetSequence(billboard, sequence);
                 BillboardObject_SetSequenceFrame(billboard, 0);
@@ -715,7 +715,7 @@ void BillboardDraw_UpdateTwoSequences(LocalMapObject *object) {
             }
             BillboardObject_AdvanceFrame(billboard, 0);
         } else {
-            int other = (u32)facing > 1 ? 1 : 0;
+            int other = facing > 1 ? 1 : 0;
             if (other != BillboardObject_GetSequence(billboard)) {
                 BillboardObject_SetSequence(billboard, other);
                 BillboardObject_SetSequenceFrame(billboard, 0);

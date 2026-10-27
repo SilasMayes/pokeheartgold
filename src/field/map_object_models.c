@@ -43,7 +43,7 @@ static const MapObjectEffectFlags *SpriteId_GetEffectFlags(u32 spriteId);
 
 void FollowMonBillboard_Update(LocalMapObject *object, BillboardObject *billboard, FollowMonBillboardWork *billboardWork, u32 direction, BOOL addFacingOffset) {
     BOOL flag4;
-    int hasFollowMonSprite;
+    BOOL hasFollowMonSprite;
     BOOL paused;
     VecFx32 offset;
 

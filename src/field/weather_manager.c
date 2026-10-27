@@ -791,7 +791,7 @@ static void WeatherSystem_LoadSpriteResources(WeatherSystem *weatherSystem, s32 
 static SpriteResource *Weather_AddResObjFromOpenNarc(GF_2DGfxResHeader *headerList, s32 resourceType, s32 headerIndex, GF_2DGfxResMan *resMan, NARC *narc, BOOL atEnd) {
     GF_2DGfxResHeader *header = GF2DGfxResHeader_GetByIndex(headerList, resourceType);
     u32 member = GF2DGfxResHeader_GetNarcMemberIdByIndex(header, headerIndex);
-    u32 compressFlag = GF2DGfxResHeader_GetCompressFlagByIndex(header, headerIndex);
+    BOOL compressFlag = GF2DGfxResHeader_GetCompressFlagByIndex(header, headerIndex);
     u32 exDat0 = GF2DGfxResHeader_GetExDat0ByIndex(header, headerIndex);
     u32 exDat1 = GF2DGfxResHeader_GetExDat1ByIndex(header, headerIndex);
     u32 objID = GF2dGfxResHeader_GetObjIdByIndex(header, headerIndex);

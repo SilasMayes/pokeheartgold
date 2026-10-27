@@ -784,7 +784,7 @@ void TrainerJumpEffect_Update(FieldEffect *effect, TrainerJump *jump) {
     }
 }
 
-SysTask *FlyLanding_Start(FieldSystem *fieldSystem, int gender) {
+SysTask *FlyLanding_Start(FieldSystem *fieldSystem, u32 gender) {
     FlyLanding *landing = FlyLanding_AllocZeroed(HEAP_ID_FIELD1, sizeof(FlyLanding));
     landing->gender = gender;
     landing->fieldSystem = fieldSystem;
@@ -834,7 +834,7 @@ BOOL FlyLanding_LoadGraphics(FlyLanding *landing) {
     SpriteGfxManager_TransferPltt(&landing->gfx, 0);
     SpriteGfxManager_ReleaseCharData(&landing->gfx, 0);
     SpriteGfxManager_ReleasePlttData(&landing->gfx, 0);
-    if (landing->gender == 0) {
+    if (landing->gender == PLAYER_GENDER_MALE) {
         SpriteGfxManager_LoadChar(&landing->gfx, narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000017_NCGR, 2);
         SpriteGfxManager_LoadCell(&landing->gfx, narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000018_NCER, 2);
         SpriteGfxManager_LoadAnim(&landing->gfx, narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000019_NANR, 1);

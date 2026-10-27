@@ -10,7 +10,7 @@ typedef struct WarpSpinTask {
     int *done; // set to 1 when the spin has ended
     int state;
     int counter;
-    int facing;
+    u32 facing;
 } WarpSpinTask;
 
 void FieldSystem_StartWarpSpin(FieldSystem *fieldSystem, BOOL departing, int *done);
