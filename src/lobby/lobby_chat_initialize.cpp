@@ -209,7 +209,7 @@ extern "C" enum PPWLobbyResult LobbyChat_Initialize(const char *gameName, const 
         LobbyChatManager_GetRealName(&realNameArg, gLobbyChatManager);
         LobbyChatManager_GetGameName(&gameNameArg, gLobbyChatManager);
         LobbyChatManager_GetGameKey(&gameKeyArg, gLobbyChatManager);
-        u32 connection = chatConnectSpecialA(host.c_str(), 0x1a0b, nickArg.c_str(), realNameArg.c_str(), gameNameArg.c_str(), gameKeyArg.c_str(), &callbacks, LobbyChat_OnNickError, LobbyChat_OnFillInUser, LobbyChat_OnConnected, config->param, 0);
+        u32 connection = chatConnectSpecialA(host.c_str(), 0x1a0b, nickArg.c_str(), realNameArg.c_str(), gameNameArg.c_str(), gameKeyArg.c_str(), &callbacks, LobbyChat_OnNickError, LobbyChat_OnFillInUser, LobbyChat_OnConnected, config->param, FALSE);
         gameKeyArg.destroy();
         gameNameArg.destroy();
         realNameArg.destroy();

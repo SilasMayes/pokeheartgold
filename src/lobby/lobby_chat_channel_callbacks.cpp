@@ -152,7 +152,7 @@ extern "C" void LobbyChat_OnEnterChannel(struct ChatConnection *chat, int ok, in
         LobbyChat_AddChannelUser(gLobbyChatManager, &nick, &channelName);
         LobbyString_Destroy(&channelName);
         LobbyString_Destroy(&nick);
-        chatEnumUsersA(chat, name, (void *)LobbyChat_OnEnterChannelEnumUsers, id, 0);
+        chatEnumUsersA(chat, name, (void *)LobbyChat_OnEnterChannelEnumUsers, id, FALSE);
         return;
     }
     {

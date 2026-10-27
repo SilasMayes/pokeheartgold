@@ -12,7 +12,7 @@ int LobbyString_ToLowerChar(int c) {
     return __lower_mapC[c];
 }
 
-BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32 len, Str *out) {
+BOOL PPWLobby_EncodeMessage(enum PPWLobbyMessageFormat type, enum PPWLobbyMessageKind mode, u32 value, const void *data, u32 len, Str *out) {
     char buf[PPW_LOBBY_MESSAGE_MAX_LENGTH + 1];
     Str field0;
     Str field1;

@@ -94,11 +94,11 @@ void LobbyUserIdSet_Assign(LobbyUserIdSet *set, LobbyUserIdSet *other) {
         LobbyUserIdSetNode *root = other->root;
         frame.cleanup = NULL;
         if (root->right) {
-            LobbyUserIdSet_CopyNodes(&frame.tree, node, root, 0);
+            LobbyUserIdSet_CopyNodes(&frame.tree, node, root, FALSE);
         }
     }
     if (other->root->left) {
-        LobbyUserIdSet_CopyNodes(&frame.tree, frame.tree.root, other->root, 1);
+        LobbyUserIdSet_CopyNodes(&frame.tree, frame.tree.root, other->root, TRUE);
     }
     LobbyUserIdSet_Swap(set, &frame.tree);
     LobbyUserIdSet_Destroy2(&frame.tree);

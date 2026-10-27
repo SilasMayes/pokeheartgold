@@ -98,21 +98,21 @@ extern "C" Vec LobbyChat_AddChannelUsers(Map *map, int count, const char **names
 
 extern "C" Vec LobbyChat_AddChannelUsers(Map *map, int count, const char **names, const String &key) {
     Vec out;
-    int constructed;
+    BOOL constructed;
     out.reserve(count);
     for (int i = 0; i < count; i++) {
         bool skip;
         {
             String s(names[i]);
             String name;
-            constructed = 0;
+            constructed = FALSE;
             int self = map->id;
             skip = false;
             int id = LobbyChat_GetUserIdFromNick(&s);
             if (id == self) {
                 const char *n = names[i];
                 LobbyChatManager_GetNick(&name, map);
-                constructed = 1;
+                constructed = TRUE;
                 if (name.ne(n)) {
                     skip = true;
                 }

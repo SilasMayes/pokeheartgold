@@ -67,16 +67,16 @@ struct Info : InfoHead {
 
 struct Entry {
     Info info;
-    int valid;
+    BOOL valid;
 
     Entry(const Info &i)
         : info(i)
-        , valid(1) {
+        , valid(TRUE) {
     }
 
     void Assign(const Info &i) {
         info = i;
-        valid = 1;
+        valid = TRUE;
     }
 };
 
@@ -111,7 +111,7 @@ struct Work {
     u8 pade8[0xfc - 0xe8];
     Entry entry;
     u8 pad110[0x128 - 0x110];
-    int dirty;
+    BOOL dirty;
 };
 
 extern "C" Work *gPPWLobbyWork;
@@ -129,7 +129,7 @@ inline bool IsError(Work *w) {
 
 inline void Refresh(Work *w, Info &info) {
     Work *ww = w;
-    ww->entry.valid = 0;
+    ww->entry.valid = FALSE;
     info = ww->entry.info;
     info.id = PPW_LOBBY_CHANNEL_KIND_INVALID;
     Entry e(info);
@@ -137,7 +137,7 @@ inline void Refresh(Work *w, Info &info) {
     if (!(ww->entry.info == ni)) {
         ww->entry.Assign(ni);
     }
-    ww->dirty = 1;
+    ww->dirty = TRUE;
 }
 
 #pragma opt_common_subs off

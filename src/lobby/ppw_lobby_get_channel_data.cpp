@@ -15,7 +15,7 @@ inline bool IsEmptyChannelName(const Str &name) {
 
 #pragma opt_common_subs off
 
-enum PPWLobbyResult PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 param) {
+enum PPWLobbyResult PPW_LobbyGetChannelDataAsync(int userId, enum PPWLobbyChannelKind channel, const char *key, u32 param) {
     PPWLobbyWork *w = gPPWLobbyWork;
     if (w == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;

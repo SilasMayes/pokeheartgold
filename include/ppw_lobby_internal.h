@@ -74,7 +74,7 @@ PPWLobbyPlayer *PPWLobbyPlayers_Find(PPWLobbyPlayers *players, int id);
 void LobbyCharVector_PushBackSlow(LobbyCharVector *s, const char *c);
 int LobbyString_ToLowerChar(int c);
 BOOL PPWLobbyPlayer_HasProfiles(PPWLobbyPlayer *player);
-BOOL PPWLobby_EncodeMessage(int type, int mode, u32 value, const void *data, u32 len, Str *out);
+BOOL PPWLobby_EncodeMessage(enum PPWLobbyMessageFormat type, enum PPWLobbyMessageKind mode, u32 value, const void *data, u32 len, Str *out);
 
 // The state of the lobby library (PPWLobbyState), read from the current work.
 static inline int PPWLobby_GetState(void) {

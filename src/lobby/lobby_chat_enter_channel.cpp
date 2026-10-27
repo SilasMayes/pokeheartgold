@@ -124,7 +124,7 @@ extern "C" enum PPWLobbyResult LobbyChat_EnterChannelAsync(const char *name, u32
     Str s2;
     LobbyString_InitFromCStr(&s2, name);
     Str t2 = LobbyChat_GetFullChannelName(GetMgr(), s2);
-    chatEnterChannelA(GetMgr()->connection, t2.c_str(), password, &cb, LobbyChat_OnEnterChannel, id, 0);
+    chatEnterChannelA(GetMgr()->connection, t2.c_str(), password, &cb, LobbyChat_OnEnterChannel, id, FALSE);
     LobbyString_Destroy(&t2);
     LobbyString_Destroy(&s2);
     return PPW_LOBBY_RESULT_SUCCESS;

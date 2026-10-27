@@ -111,7 +111,7 @@ inline bool Same(const Vec &a, const Vec &b) {
 
 struct Field {
     Vec v;
-    int dirty;
+    BOOL dirty;
 
     Field() {
     }
@@ -120,14 +120,14 @@ struct Field {
         v.ptr = NULL;
         v.size = 0;
         v.cap = 0;
-        dirty = 1;
+        dirty = TRUE;
     }
 
     Field(char *first, char *last, Alloc a)
         : v(0) {
         Field *const fs = this;
         fs->v.Assign(first, last, a);
-        fs->dirty = 1;
+        fs->dirty = TRUE;
     }
 
     Field(int)
@@ -136,7 +136,7 @@ struct Field {
 
     void Assign(char *first, char *last, Alloc a) {
         v.Assign(first, last, a);
-        dirty = 1;
+        dirty = TRUE;
     }
 
     Field &operator=(const Field &o) {
@@ -149,14 +149,14 @@ struct Field {
     void Set(const Field &o) {
         if (!(v == o.v)) {
             *this = o;
-            dirty = 1;
+            dirty = TRUE;
         }
     }
 
     void SetFrom(const Field &o) {
         if (!Same(v, o.v)) {
             *this = o;
-            dirty = 1;
+            dirty = TRUE;
         }
     }
 };
@@ -198,7 +198,7 @@ struct Info {
 
 struct Entry {
     Info info;
-    int valid;
+    BOOL valid;
 
     Entry() {
     }
@@ -206,24 +206,24 @@ struct Entry {
     Entry(int k)
         : info(k) {
         Entry *e = this;
-        e->valid = 1;
+        e->valid = TRUE;
     }
 
     void Init(int k) {
         info.Init(k);
         Entry *e = this;
-        e->valid = 1;
+        e->valid = TRUE;
     }
 
     Entry(const Info &i)
         : info(i)
-        , valid(1) {
+        , valid(TRUE) {
     }
 
     void Set(const Entry &e) {
         if (!(info == e.info)) {
             info = e.info;
-            valid = 1;
+            valid = TRUE;
         }
     }
 };

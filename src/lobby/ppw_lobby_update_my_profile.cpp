@@ -95,7 +95,7 @@ inline bool operator==(const Vec &a, const Vec &b) {
 // A user profile and whether it changed since it was last uploaded.
 struct Field {
     Vec v;
-    int dirty;
+    BOOL dirty;
 
     Field() {
     }
@@ -106,7 +106,7 @@ struct Field {
         v.cap = 0;
         Field *self = (Field *)(void *)this;
         LobbyCharVector_InitRange(&self->v, b, e, a);
-        self->dirty = 1;
+        self->dirty = TRUE;
         return *self;
     }
 };
@@ -141,13 +141,13 @@ extern "C" enum PPWLobbyResult PPW_LobbyUpdateMyProfile(const void *profile, u32
     f.Init(raw.begin(), raw.end(), Alloc());
     const Field &nf = f;
     if (flag) {
-        w->userProfile.dirty = 1;
+        w->userProfile.dirty = TRUE;
     }
     if (!(w->userProfile.v == nf.v)) {
         if (&w->userProfile != &nf) {
             LobbyCharVector_AssignRange(&w->userProfile.v, nf.v.begin(), nf.v.end(), Tag());
         }
-        w->userProfile.dirty = 1;
+        w->userProfile.dirty = TRUE;
     }
     f.v.Destroy();
     w->userProfileReceived = TRUE;

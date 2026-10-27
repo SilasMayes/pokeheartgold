@@ -280,12 +280,12 @@ inline void SendWebRequest(WebRequest *request) {
         u32 size = request->body.size;
         ret = StatsUpload_Upload(request->page.CStr(), request->pid, LobbyByteVector_Data(&request->body), size, 0);
     }
-    int ok;
+    BOOL ok;
     if (ret == 0) {
-        ok = 1;
+        ok = TRUE;
     } else {
         StatsUpload_Stop();
-        ok = 0;
+        ok = FALSE;
     }
     if (ok) {
         return;
@@ -406,7 +406,7 @@ enum PPWLobbyError PPW_LobbyInitResultToLastError(int result) {
 }
 
 extern "C" char gLobbyStr_Empty_15[];
-extern "C" int PPWLobby_EncodeMessage(int, int, int, const void *, u32, Str *);
+extern "C" BOOL PPWLobby_EncodeMessage(enum PPWLobbyMessageFormat, enum PPWLobbyMessageKind, int, const void *, u32, Str *);
 
 inline bool IsEmptyChannelName(const Str &name) {
     return LobbyString_CompareCStr(&name, gLobbyStr_Empty_15) == 0;
@@ -422,7 +422,7 @@ inline void SetError(PPWLobbyResult result) {
     }
 }
 
-extern "C" enum PPWLobbyResult PPWLobby_SendMessage(int id, int channel, int type, int mode, int arg, const void *data, u32 size) {
+extern "C" enum PPWLobbyResult PPWLobby_SendMessage(int id, int channel, enum PPWLobbyMessageFormat type, enum PPWLobbyMessageKind mode, int arg, const void *data, u32 size) {
     PPWLobbyResult result;
     if (id == -1 && channel == PPW_LOBBY_CHANNEL_KIND_INVALID) {
         return PPW_LOBBY_RESULT_ERROR_PARAM;
@@ -456,7 +456,7 @@ extern "C" {
 extern char gLobbyStr_Empty_15[];
 extern int DWC_Base64Encode(const void *, u32, char *, u32);
 
-enum PPWLobbyResult PPWLobby_SetChannelData(int userId, int kind, const char *key, const void *data, u32 size) {
+enum PPWLobbyResult PPWLobby_SetChannelData(int userId, enum PPWLobbyChannelKind kind, const char *key, const void *data, u32 size) {
     Str channelName;
     LobbyCharVector encoded;
     PPWLobbyResult result;
@@ -985,11 +985,11 @@ struct Triple {
 
 struct VecBox {
     Vec v;
-    int changed;
+    BOOL changed;
 
     void Init(const Vec &x, AllocatorTag al) {
         v.InitCopy(x, al);
-        changed = 1;
+        changed = TRUE;
     }
 
     void InitM(const Vec &x, AllocatorTag al) {
@@ -999,14 +999,14 @@ struct VecBox {
 
     void Mark() {
         if (this) {
-            changed = 1;
+            changed = TRUE;
         }
     }
 
     void Update(const VecBox &o) {
         if (!(v == o.v)) {
             v.AssignVec(o.v);
-            changed = 1;
+            changed = TRUE;
         }
     }
 };
@@ -1017,17 +1017,17 @@ inline bool operator==(const Quad &a, const Quad &b) {
 
 struct QuadBox {
     Quad q;
-    int changed;
+    BOOL changed;
 
     void Init(const Quad &x) {
         q = x;
-        changed = 1;
+        changed = TRUE;
     }
 
     void Update(const QuadBox &o) {
         if (!(q == o.q)) {
             q = o.q;
-            changed = 1;
+            changed = TRUE;
         }
     }
 };
@@ -1037,9 +1037,9 @@ struct Rec {
     QuadBox q;
     VecBox vec;
     u32 x28, x2c;
-    int qRecv;
-    int vecRecv;
-    int valid;
+    BOOL qRecv;
+    BOOL vecRecv;
+    BOOL valid;
     void SetVec(const u8 *d, u32 n, AllocatorTag al);
     void SetQuad(const u8 *d);
 
@@ -1074,7 +1074,7 @@ inline void Rec::SetVec(const u8 *d, u32 n, AllocatorTag al) {
     VecBox *pc = &box;
     vec.Update(*pc);
     LobbyCharVector_Destroy(&box.v);
-    vecRecv = 1;
+    vecRecv = TRUE;
     LobbyCharVector_Destroy(&v);
 }
 
@@ -1083,7 +1083,7 @@ inline void Rec::SetQuad(const u8 *d) {
     QuadBox *pq = &qbox;
     pq->Init(*(const Quad *)d);
     q.Update(*pq);
-    qRecv = 1;
+    qRecv = TRUE;
 }
 
 static inline void SetChannelTime(PPWLobbyWork *work, Val time) {
@@ -1537,14 +1537,14 @@ extern "C" void PPWLobby_OnGetSchedule(BOOL success, u8 *response, u32 responseS
     if (r == PPW_LOBBY_WEB_RESULT_SUCCESS && !PPWLobbySchedule_IsSizeValid(&gPPWLobbyWork->schedule, buf, len)) {
         r = PPW_LOBBY_WEB_RESULT_INVALID;
     }
-    int ok2 = gPPWLobbyWork->callbacks.onScheduleReceived(r, buf);
+    BOOL accepted = gPPWLobbyWork->callbacks.onScheduleReceived(r, buf);
     if (r != PPW_LOBBY_WEB_RESULT_SUCCESS) {
         PPWLobbyWork *g = gPPWLobbyWork;
         g->error = PPW_LOBBY_ERROR_SCHEDULE;
         g->state = PPW_LOBBY_STATE_ERROR;
         return;
     }
-    if (ok2) {
+    if (accepted) {
         PPWLobbySchedule_Load(&gPPWLobbyWork->schedule, buf, len);
     }
     const PPWLobbyUserProfile *p = GetUserProfile(gPPWLobbyWork);
@@ -1576,12 +1576,12 @@ extern "C" void PPWLobby_OnGetSchedule(BOOL success, u8 *response, u32 responseS
         u32 n = o->body.size;
         ret = StatsUpload_Upload(o->page.CStr(), o->pid, LobbyByteVector_Data(&o->body), n, 0);
     }
-    int ok;
+    BOOL ok;
     if (ret == 0) {
-        ok = 1;
+        ok = TRUE;
     } else {
         StatsUpload_Stop();
-        ok = 0;
+        ok = FALSE;
     }
     if (ok) {
         return;
@@ -1795,12 +1795,12 @@ struct Task {
     s64 time;
     s64 period;
     void *arg;
-    int (*func)(void);
+    BOOL (*func)(void);
 
     Task() {
     }
 
-    Task(s64 t, u32 p, int (*f)(void)) {
+    Task(s64 t, u32 p, BOOL (*f)(void)) {
         time = t;
         period = p;
         arg = NULL;
@@ -1913,7 +1913,7 @@ static inline void Lobby_ResetStamp(void) {
     sub->SetFlag(1);
 }
 
-static inline void Lobby_AddTimer(int kind, u32 delay, int (*cb)(void)) {
+static inline void Lobby_AddTimer(int kind, u32 delay, BOOL (*cb)(void)) {
     Map *m = &gPPWLobbyWork->timers;
     Task task(GetNow(), delay, cb);
     KV<int, Task> d = LobbyTimerMap_MakeEntry(kind, task);
@@ -2351,11 +2351,11 @@ void PPWLobby_OnExcessFlood(int a) {
 }
 
 void PPWLobby_OnChannelDataChanged(const char *channel, int userId, const char *key, const char *value) {
-    PPWLobby_HandleReceivedData(1, 1, channel, userId, key, value, 0);
+    PPWLobby_HandleReceivedData(TRUE, TRUE, channel, userId, key, value, 0);
 }
 
 void PPWLobby_OnGetChannelKeys(BOOL success, const char *channel, int userId, const char *key, const char *value, u32 param) {
-    PPWLobby_HandleReceivedData(success, 0, channel, userId, key, value, param);
+    PPWLobby_HandleReceivedData(success, FALSE, channel, userId, key, value, param);
 }
 }
 

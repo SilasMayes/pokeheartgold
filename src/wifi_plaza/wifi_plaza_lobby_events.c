@@ -177,7 +177,7 @@ void WiFiPlazaLobbyClient_OnEvent3Dummy(int id, int libChannel, int type, const 
 // A message of the given type from a player: calls the receive callback of the lobby (sent to the lobby or to the
 // player) or channel table.
 void WiFiPlazaLobbyClient_OnMessage(int id, u32 libChannel, u32 type, const void *data, u32 size) {
-    int table;
+    enum WiFiPlazaLobbyScope table;
 
     if (WiFiPlazaLobbyClient_FindInIdList(gWiFiPlazaLobbyClient, id, WIFI_PLAZA_LOBBY_SCOPE_LOBBY) == -1) {
         return;
@@ -437,7 +437,7 @@ void WiFiPlazaLobbyClient_OnMatchDisconnect(int result, void *arg) {
     }
 }
 
-u32 WiFiPlazaLobbySchedule_FindValue(const volatile WiFiPlazaLobbySchedule *schedule, int event) {
+u32 WiFiPlazaLobbySchedule_FindValue(const volatile WiFiPlazaLobbySchedule *schedule, enum WiFiPlazaLobbyEvent event) {
     u32 time = 0;
     int i;
     for (i = 0; i < schedule->record.eventCount; i++) {

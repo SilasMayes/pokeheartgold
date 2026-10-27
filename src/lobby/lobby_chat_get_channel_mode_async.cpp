@@ -71,7 +71,7 @@ extern "C" enum PPWLobbyResult LobbyChat_GetChannelModeAsync(const char *name, u
     Str channelName;
     LobbyString_InitFromCStr(&channelName, name);
     Str fullName = LobbyChat_GetFullChannelName(GetMgr(), channelName);
-    chatGetChannelModeA(GetMgr()->connection, fullName.c_str(), LobbyChat_OnGetChannelMode, id, 0);
+    chatGetChannelModeA(GetMgr()->connection, fullName.c_str(), LobbyChat_OnGetChannelMode, id, FALSE);
     LobbyString_Destroy(&fullName);
     LobbyString_Destroy(&channelName);
     return PPW_LOBBY_RESULT_SUCCESS;

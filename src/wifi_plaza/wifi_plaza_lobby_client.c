@@ -354,7 +354,7 @@ void WiFiPlazaLobbyClient_GetTime(s64 *time) {
     *time = gWiFiPlazaLobbyClient->time.currentTime;
 }
 
-u32 WiFiPlazaLobbyClient_GetScheduleValue(int field) {
+u32 WiFiPlazaLobbyClient_GetScheduleValue(enum WiFiPlazaScheduleField field) {
     WiFiPlazaLobbySchedule *schedule;
     u32 result;
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
@@ -940,7 +940,7 @@ static void WiFiPlazaLobbyClient_ClearIdList(WiFiPlazaLobbyClient *client, int s
     }
 }
 
-void WiFiPlazaLobbyClient_AddToIdList(WiFiPlazaLobbyClient *client, int id, int scope) {
+void WiFiPlazaLobbyClient_AddToIdList(WiFiPlazaLobbyClient *client, int id, enum WiFiPlazaLobbyScope scope) {
     int i;
     int freeSlot;
     if (WiFiPlazaLobbyClient_FindInIdList(client, id, scope) == -1) {
@@ -958,7 +958,7 @@ void WiFiPlazaLobbyClient_AddToIdList(WiFiPlazaLobbyClient *client, int id, int 
     }
 }
 
-void WiFiPlazaLobbyClient_RemoveFromIdList(WiFiPlazaLobbyClient *client, int id, int scope) {
+void WiFiPlazaLobbyClient_RemoveFromIdList(WiFiPlazaLobbyClient *client, int id, enum WiFiPlazaLobbyScope scope) {
     int i = WiFiPlazaLobbyClient_FindInIdList(client, id, scope);
     if (i != -1) {
         client->idLists[scope].ids[i] = -1;
@@ -967,7 +967,7 @@ void WiFiPlazaLobbyClient_RemoveFromIdList(WiFiPlazaLobbyClient *client, int id,
 }
 
 // Lobby slot of a player id, -1 if not in the list.
-int WiFiPlazaLobbyClient_FindInIdList(WiFiPlazaLobbyClient *client, int id, int scope) {
+int WiFiPlazaLobbyClient_FindInIdList(WiFiPlazaLobbyClient *client, int id, enum WiFiPlazaLobbyScope scope) {
     int i;
     for (i = 0; i < client->idLists[scope].capacity; i++) {
         if (client->idLists[scope].ids[i] == id) {
@@ -977,7 +977,7 @@ int WiFiPlazaLobbyClient_FindInIdList(WiFiPlazaLobbyClient *client, int id, int 
     return -1;
 }
 
-int WiFiPlazaLobbyClient_GetIdListEntry(WiFiPlazaLobbyClient *client, int slot, int scope) {
+int WiFiPlazaLobbyClient_GetIdListEntry(WiFiPlazaLobbyClient *client, int slot, enum WiFiPlazaLobbyScope scope) {
     GF_ASSERT(slot < client->idLists[scope].capacity);
     return client->idLists[scope].ids[slot];
 }

@@ -100,7 +100,7 @@ enum PPWLobbyResult LobbyChat_GetChannelKeysAsync(const char *name, int userId, 
     Str channelName;
     LobbyString_InitFromCStr(&channelName, name);
     Str fullName = LobbyChat_GetFullChannelName(GetMgr(), channelName);
-    chatGetChannelKeysA(GetMgr()->connection, fullName.c_str(), nick.c_str(), 1, &key, LobbyChat_OnGetChannelKeys, id, 0);
+    chatGetChannelKeysA(GetMgr()->connection, fullName.c_str(), nick.c_str(), 1, &key, LobbyChat_OnGetChannelKeys, id, FALSE);
     LobbyString_Destroy(&fullName);
     LobbyString_Destroy(&channelName);
     LobbyString_Destroy(&nick);
@@ -125,7 +125,7 @@ extern "C" enum PPWLobbyResult LobbyChat_EnumChannelsAsync(const char *name, u32
     Str channelName;
     LobbyString_InitFromCStr(&channelName, name);
     Str fullName = LobbyChat_GetFullChannelName(GetMgr(), channelName);
-    chatEnumChannelsA(GetMgr()->connection, fullName.c_str(), LobbyChat_OnEnumChannelsEach, LobbyChat_OnEnumChannels, id, 0);
+    chatEnumChannelsA(GetMgr()->connection, fullName.c_str(), LobbyChat_OnEnumChannelsEach, LobbyChat_OnEnumChannels, id, FALSE);
     LobbyString_Destroy(&fullName);
     LobbyString_Destroy(&channelName);
     return PPW_LOBBY_RESULT_SUCCESS;
@@ -161,7 +161,7 @@ extern "C" enum PPWLobbyResult LobbyChat_EnumUsersAsync(const char *name, u32 ca
     Str channelName;
     LobbyString_InitFromCStr(&channelName, name);
     Str fullName = LobbyChat_GetFullChannelName(GetMgr(), channelName);
-    chatEnumUsersA(GetMgr()->connection, fullName.c_str(), LobbyChat_OnEnumUsers, id, 0);
+    chatEnumUsersA(GetMgr()->connection, fullName.c_str(), LobbyChat_OnEnumUsers, id, FALSE);
     LobbyString_Destroy(&fullName);
     LobbyString_Destroy(&channelName);
     return PPW_LOBBY_RESULT_SUCCESS;

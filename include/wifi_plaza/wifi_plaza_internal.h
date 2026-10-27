@@ -863,7 +863,7 @@ int WiFiPlazaLobbyClient_IdToChannelSlot(int id);
 int WiFiPlazaLobbyClient_SlotToId(int slot);
 int WiFiPlazaLobbyClient_ChannelSlotToId(int slot);
 void WiFiPlazaLobbyClient_GetTime(s64 *time);
-u32 WiFiPlazaLobbyClient_GetScheduleValue(int field);
+u32 WiFiPlazaLobbyClient_GetScheduleValue(enum WiFiPlazaScheduleField field);
 BOOL WiFiPlazaLobbyClient_StartAddOwnLocation(void);
 BOOL WiFiPlazaLobbyClient_IsOwnLocationAdded(void);
 u32 WiFiPlazaLobbyClient_GetLocationCountry(u8 slot);
@@ -907,10 +907,10 @@ void WiFiPlazaLobbyClient_ClearPlayerData(WiFiPlazaLobbyClient *client, int id);
 void WiFiPlazaLobbyClient_SetPlayerRecord(WiFiPlazaLobbyClient *client, int id, const WiFiPlazaLobbyPlayerRecord *record);
 WiFiPlazaLobbyPlayerRecord *WiFiPlazaLobbyClient_GetPlayerRecord(WiFiPlazaLobbyClient *client, int id);
 void WiFiPlazaLobbyClient_ClearPlayerRecord(WiFiPlazaLobbyClient *client, int id);
-void WiFiPlazaLobbyClient_AddToIdList(WiFiPlazaLobbyClient *client, int id, int scope);
-void WiFiPlazaLobbyClient_RemoveFromIdList(WiFiPlazaLobbyClient *client, int id, int scope);
-int WiFiPlazaLobbyClient_FindInIdList(WiFiPlazaLobbyClient *client, int id, int scope);
-int WiFiPlazaLobbyClient_GetIdListEntry(WiFiPlazaLobbyClient *client, int slot, int scope);
+void WiFiPlazaLobbyClient_AddToIdList(WiFiPlazaLobbyClient *client, int id, enum WiFiPlazaLobbyScope scope);
+void WiFiPlazaLobbyClient_RemoveFromIdList(WiFiPlazaLobbyClient *client, int id, enum WiFiPlazaLobbyScope scope);
+int WiFiPlazaLobbyClient_FindInIdList(WiFiPlazaLobbyClient *client, int id, enum WiFiPlazaLobbyScope scope);
+int WiFiPlazaLobbyClient_GetIdListEntry(WiFiPlazaLobbyClient *client, int slot, enum WiFiPlazaLobbyScope scope);
 void WiFiPlazaLobbyClient_RebuildChannelList(WiFiPlazaLobbyClient *client, u32 channel);
 
 BOOL WiFiPlazaLobbyClient_HasChannelRoom(WiFiPlazaLobbyClient *client, int channel);
@@ -941,7 +941,7 @@ void WiFiPlazaLobbyMatchInfo_SetStartTime(WiFiPlazaLobbyMatchInfo *info, const s
 void WiFiPlazaLobbyClient_OnMatchClientDummy(int result, void *arg);
 
 void WiFiPlazaLobbyClient_OnMatchDisconnect(int result, void *arg);
-u32 WiFiPlazaLobbySchedule_FindValue(const volatile WiFiPlazaLobbySchedule *schedule, int key);
+u32 WiFiPlazaLobbySchedule_FindValue(const volatile WiFiPlazaLobbySchedule *schedule, enum WiFiPlazaLobbyEvent event);
 void WiFiPlazaLobbyIdValueList_Init(WiFiPlazaLobbyIdValueList *list, int count, enum HeapID heapID);
 void WiFiPlazaLobbyIdValueList_Free(WiFiPlazaLobbyIdValueList *list);
 BOOL WiFiPlazaLobbyIdValueList_Contains(WiFiPlazaLobbyIdValueList *list, int id);

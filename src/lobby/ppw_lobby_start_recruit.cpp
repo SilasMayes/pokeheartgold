@@ -158,7 +158,7 @@ extern "C" enum PPWLobbyResult PPW_LobbyStartRecruit(RecruitInfo *info) {
     for (u32 i = 0; i < 3; i++) {
         p[i] = 0;
     }
-    int ok = 0;
+    BOOL ok = FALSE;
     Work *g = gPPWLobbyWork;
     if (!g->recruiting) {
         g->recruiting = TRUE;
@@ -167,7 +167,7 @@ extern "C" enum PPWLobbyResult PPW_LobbyStartRecruit(RecruitInfo *info) {
         value = tmp;
         LobbyString_Destroy(&tmp);
         strncpy(g->recruitInfo.name, value.CStr(), sizeof(g->recruitInfo.name) - 1);
-        ok = 1;
+        ok = TRUE;
     }
     if (!ok) {
         LobbyString_Destroy(&value);
