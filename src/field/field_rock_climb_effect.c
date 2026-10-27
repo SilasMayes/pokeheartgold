@@ -31,7 +31,7 @@ struct RockClimb {
 };
 
 typedef struct RockClimbEffectArgs {
-    int direction;
+    u32 direction;
     FieldEffectManager *manager;
     FieldSystem *fieldSystem;
     RockClimb *rockClimb;
@@ -40,7 +40,7 @@ typedef struct RockClimbEffectArgs {
 
 typedef struct RockClimbEffect {
     BOOL hidden;
-    int direction;
+    u32 direction;
     int timer;
     BOOL follow;
     RockClimbEffectArgs args;

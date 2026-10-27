@@ -270,7 +270,7 @@ static void ReflectionEffect_CalcPosition(ReflectionEffect *work, LocalMapObject
     xOffset = facing.x;
     if (MapObject_GetID(mapObject) == obj_player && MapObject_GetSpriteID(mapObject) == SPRITE_FISHINGHERO) {
         fx32 base;
-        int direction;
+        u32 direction;
         direction = MapObject_GetFacingDirection(mapObject);
         base = 2;
         base <<= 10;

@@ -7,7 +7,6 @@
 #include "field/field_texture_manager.h"
 
 #include "sprite.h"
-#include "task.h"
 
 enum WeatherSystemProcess {
     WEATHER_SYS_PROC_INIT = 0,

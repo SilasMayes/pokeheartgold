@@ -299,7 +299,7 @@ u32 MapObject_GetAdjacentTileBehavior(LocalMapObject *object, u32 direction) {
 }
 
 // Puts object one tile from anchor in direction, facing facing.
-void MapObject_SetPositionNextTo(LocalMapObject *anchor, LocalMapObject *object, int direction, int facing) {
+void MapObject_SetPositionNextTo(LocalMapObject *anchor, LocalMapObject *object, u32 direction, u32 facing) {
     VecFx32 position;
     MapObject_CopyPositionVector(anchor, &position);
     switch (direction) {

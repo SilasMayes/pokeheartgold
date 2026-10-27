@@ -59,7 +59,7 @@ static void MapObject_CreateReflection(LocalMapObject *object, u8 behavior, u8 p
 static void MapObject_UpdateReflection(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags);
 static void MapObject_UpdateOnBridgeFlag(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags);
 static void MapObject_TileEffectDummy3(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags);
-static u32 MapObject_CheckCollision(LocalMapObject *object, VecFx32 *position, int x, int y, int z, int direction);
+static u32 MapObject_CheckCollision(LocalMapObject *object, VecFx32 *position, int x, int y, int z, u32 direction);
 
 void MapObject_CallMovementAndBehaviorInit(LocalMapObject *object) {
     MapObject_CallMovementInit(object);
@@ -661,7 +661,7 @@ static void MapObject_UpdateOnBridgeFlag(LocalMapObject *object, u8 behavior, u8
 static void MapObject_TileEffectDummy3(LocalMapObject *object, u8 behavior, u8 prevBehavior, const MapObjectEffectFlags *flags) {
 }
 
-static u32 MapObject_CheckCollision(LocalMapObject *object, VecFx32 *position, int x, int y, int z, int direction) {
+static u32 MapObject_CheckCollision(LocalMapObject *object, VecFx32 *position, int x, int y, int z, u32 direction) {
     u32 result = 0;
     s8 slope;
 
@@ -689,13 +689,13 @@ static u32 MapObject_CheckCollision(LocalMapObject *object, VecFx32 *position, i
     return result;
 }
 
-u32 MapObject_CheckCollisionAt(LocalMapObject *object, int x, int y, int z, int direction) {
+u32 MapObject_CheckCollisionAt(LocalMapObject *object, int x, int y, int z, u32 direction) {
     VecFx32 position;
     MapObject_CopyPositionVector(object, &position);
     return MapObject_CheckCollision(object, &position, x, y, z, direction);
 }
 
-u32 MapObject_CheckCollisionInDirection(LocalMapObject *object, int direction) {
+u32 MapObject_CheckCollisionInDirection(LocalMapObject *object, u32 direction) {
     int x = MapObject_GetXCoord(object) + GetDeltaXByFacingDirection(direction);
     int y = MapObject_GetYCoord(object);
     int z = MapObject_GetZCoord(object) + GetDeltaYByFacingDirection(direction);

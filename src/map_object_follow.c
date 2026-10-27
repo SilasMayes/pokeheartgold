@@ -488,12 +488,10 @@ LocalMapObject *MapObject_FindTrainerPartner(LocalMapObject *object) {
     case 6:
     case 7:
     case 8:
-        if (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &other, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
-            do {
-                if (object != other && mapId == MapObject_GetMapID(other) && trainerNum == MapObjectBehavior_GetTrainerNum(other)) {
-                    return other;
-                }
-            } while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &other, &index, MAPOBJECTFLAG_ACTIVE) == TRUE);
+        while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &other, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
+            if (object != other && mapId == MapObject_GetMapID(other) && trainerNum == MapObjectBehavior_GetTrainerNum(other)) {
+                return other;
+            }
         }
         break;
     }
@@ -512,15 +510,13 @@ static BOOL FollowPartnerMovement_FindPartner(LocalMapObject *object, FollowPart
     mapId = MapObject_GetMapID(object);
     trainerNum = MapObjectBehavior_GetTrainerNum(object);
 
-    if (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &other, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
-        do {
-            if (object != other && mapId == MapObject_GetMapID(other) && trainerNum == MapObjectBehavior_GetTrainerNum(other)) {
-                if (!state->partnerKnown) {
-                    FollowPartnerMovement_SetPartner(object, state, other);
-                }
-                return TRUE;
+    while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &other, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
+        if (object != other && mapId == MapObject_GetMapID(other) && trainerNum == MapObjectBehavior_GetTrainerNum(other)) {
+            if (!state->partnerKnown) {
+                FollowPartnerMovement_SetPartner(object, state, other);
             }
-        } while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &other, &index, MAPOBJECTFLAG_ACTIVE) == TRUE);
+            return TRUE;
+        }
     }
     state->partnerKnown = FALSE;
     return FALSE;
@@ -553,7 +549,7 @@ static BOOL FollowPartnerMovement_StartStep(LocalMapObject *object, FollowPartne
     int partnerZ = MapObject_GetZCoord(state->partner);
     int partnerPreviousX = MapObject_GetPreviousXCoord(state->partner);
     int partnerPreviousZ = MapObject_GetPreviousZCoord(state->partner);
-    int direction;
+    u32 direction;
     if (x == partnerX && z == partnerZ) {
         return FALSE;
     }

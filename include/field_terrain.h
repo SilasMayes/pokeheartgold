@@ -3,8 +3,6 @@
 
 #include "field/field_control.h"
 
-#include "script.h"
-
 struct MapProp;
 
 // Width of one map tile in world units

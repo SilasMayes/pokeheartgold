@@ -886,15 +886,13 @@ void MapObjectRender_ReleaseUnused(MapObjectManager *manager, MapObjectRender *r
 static BOOL MapObjectManager_IsSpriteInUse(MapObjectManager *manager, u32 spriteId, LocalMapObject *skip) {
     s32 index = 0;
     LocalMapObject *object = NULL;
-    if (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
-        do {
-            if (skip == NULL || skip != object) {
-                u32 objectSpriteId = MapObject_GetSpriteID(object);
-                if (objectSpriteId == spriteId) {
-                    return TRUE;
-                }
+    while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
+        if (skip == NULL || skip != object) {
+            u32 objectSpriteId = MapObject_GetSpriteID(object);
+            if (objectSpriteId == spriteId) {
+                return TRUE;
             }
-        } while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE) == TRUE);
+        }
     }
     return FALSE;
 }
@@ -903,12 +901,10 @@ static BOOL MapObjectManager_IsModelInUse(MapObjectManager *manager, u32 modelId
     s32 index = 0;
     LocalMapObject *object = NULL;
     u32 spriteId;
-    if (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
-        do {
-            if ((skip == NULL || skip != object) && (spriteId = MapObject_GetSpriteID(object)) != MAP_OBJECT_GFX_ID_INVALID && MapObject_GetEffectFlags(object)->drawType == 1 && spriteId != MAP_OBJECT_GFX_ID_INVALID && SpriteId_GetBillboardModelId(spriteId) == modelId) {
-                return TRUE;
-            }
-        } while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE) == TRUE);
+    while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
+        if ((skip == NULL || skip != object) && (spriteId = MapObject_GetSpriteID(object)) != MAP_OBJECT_GFX_ID_INVALID && MapObject_GetEffectFlags(object)->drawType == 1 && spriteId != MAP_OBJECT_GFX_ID_INVALID && SpriteId_GetBillboardModelId(spriteId) == modelId) {
+            return TRUE;
+        }
     }
     return FALSE;
 }
@@ -918,12 +914,10 @@ static BOOL MapObjectManager_IsSequenceInUse(MapObjectManager *manager, u32 sequ
     s32 index = 0;
     LocalMapObject *object = NULL;
     u32 spriteId;
-    if (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
-        do {
-            if ((skip == NULL || object != skip) && spriteId != MAP_OBJECT_GFX_ID_INVALID && MapObject_GetEffectFlags(object)->drawType == 1 && (spriteId = MapObject_GetSpriteID(object)) != MAP_OBJECT_GFX_ID_INVALID && SpriteId_GetBillboardSequenceId(spriteId) == sequenceId) {
-                return TRUE;
-            }
-        } while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE) == TRUE);
+    while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE) == TRUE) {
+        if ((skip == NULL || object != skip) && spriteId != MAP_OBJECT_GFX_ID_INVALID && MapObject_GetEffectFlags(object)->drawType == 1 && (spriteId = MapObject_GetSpriteID(object)) != MAP_OBJECT_GFX_ID_INVALID && SpriteId_GetBillboardSequenceId(spriteId) == sequenceId) {
+            return TRUE;
+        }
     }
     return FALSE;
 }

@@ -34,12 +34,12 @@ static BOOL CheckSeenByNpcTrainers(FieldSystem *fieldSystem, MapObjectManager *m
 static void GetEngagingTrainerParams(EngageParams *out, LocalMapObject *object, int x, int z);
 static int MapObject_GetTrainerSightType(LocalMapObject *object);
 static int TrainerSight_FindPlayer(LocalMapObject *object, PlayerAvatar *player, int *outDir);
-static int TrainerSight_GetDistanceInDirection(LocalMapObject *object, int direction, int range, int targetX, int targetZ, int unused);
+static int TrainerSight_GetDistanceInDirection(LocalMapObject *object, u32 direction, int range, int targetX, int targetZ, int unused);
 static int TrainerSight_GetDistanceNorth(LocalMapObject *object, int range, int targetX, int targetZ, int unused);
 static int TrainerSight_GetDistanceSouth(LocalMapObject *object, int range, int targetX, int targetZ, int unused);
 static int TrainerSight_GetDistanceWest(LocalMapObject *object, int range, int targetX, int targetZ, int unused);
 static int TrainerSight_GetDistanceEast(LocalMapObject *object, int range, int targetX, int targetZ, int unused);
-static BOOL TrainerSight_IsPathBlocked(LocalMapObject *object, int direction, int distance);
+static BOOL TrainerSight_IsPathBlocked(LocalMapObject *object, u32 direction, int distance);
 static u32 MapObject_GetTrainerNum(LocalMapObject *object);
 static LocalMapObject *MapObjectManager_FindTrainerPartner(FieldSystem *unused, MapObjectManager *manager, LocalMapObject *exclude, u32 trainerNum);
 static SysTask *TrainerApproach_CreateTask(FieldSystem *fieldSystem, LocalMapObject *trainer, PlayerAvatar *player, int movement, int remaining, int unk10, int encounterType, int trainerIndex);
@@ -306,7 +306,7 @@ BOOL TypeBehavior_SpinUpdate(LocalMapObject *object) {
     DirectionMovementTable spinOrders = gTypeBehaviorSpinOrders;
     TrainerBehaviorState *state = (TrainerBehaviorState *)MapObject_GetBehaviorData(object);
     int i;
-    int dir;
+    u32 dir;
     switch (state->turnState) {
     case TRAINER_TURN_STATE_INIT:
         dir = MapObject_GetFacingDirection(object);
@@ -506,21 +506,19 @@ BOOL TryGetSeenByNpcTrainers(FieldSystem *fieldSystem, BOOL doublesEligible) {
 static BOOL CheckSeenByNpcTrainers(FieldSystem *fieldSystem, MapObjectManager *manager, PlayerAvatar *avatar, LocalMapObject *exclude, EngageParams *out) {
     int x;
     int index = 0;
-    int direction;
+    u32 direction;
     LocalMapObject *object = NULL;
 
-    if (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE)) {
-        do {
-            if (exclude == NULL || exclude != object) {
-                x = TrainerSight_FindPlayer(object, avatar, &direction);
-                if (x != -1) {
-                    if (!TrainerFlagCheck(fieldSystem->saveData, (u16)MapObject_GetTrainerNum(object))) {
-                        GetEngagingTrainerParams(out, object, x, direction);
-                        return TRUE;
-                    }
+    while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE)) {
+        if (exclude == NULL || exclude != object) {
+            x = TrainerSight_FindPlayer(object, avatar, &direction);
+            if (x != -1) {
+                if (!TrainerFlagCheck(fieldSystem->saveData, (u16)MapObject_GetTrainerNum(object))) {
+                    GetEngagingTrainerParams(out, object, x, direction);
+                    return TRUE;
                 }
             }
-        } while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE));
+        }
     }
     return FALSE;
 }
@@ -585,7 +583,7 @@ static int TrainerSight_FindPlayer(LocalMapObject *object, PlayerAvatar *player,
     return -1;
 }
 
-static int TrainerSight_GetDistanceInDirection(LocalMapObject *object, int direction, int range, int targetX, int targetZ, int unused) {
+static int TrainerSight_GetDistanceInDirection(LocalMapObject *object, u32 direction, int range, int targetX, int targetZ, int unused) {
     return sTrainerSightDistanceFuncs[direction](object, range, targetX, targetZ, unused);
 }
 
@@ -633,7 +631,7 @@ static int TrainerSight_GetDistanceEast(LocalMapObject *object, int range, int t
     return -1;
 }
 
-static BOOL TrainerSight_IsPathBlocked(LocalMapObject *object, int direction, int distance) {
+static BOOL TrainerSight_IsPathBlocked(LocalMapObject *object, u32 direction, int distance) {
     int x;
     int y;
     int z;
@@ -671,12 +669,10 @@ u32 MapObjectBehavior_GetTrainerNum(LocalMapObject *object) {
 static LocalMapObject *MapObjectManager_FindTrainerPartner(FieldSystem *unused, MapObjectManager *manager, LocalMapObject *exclude, u32 trainerNum) {
     s32 index = 0;
     LocalMapObject *object;
-    if (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE)) {
-        do {
-            if (object != exclude && (u32)(MapObject_GetTrainerSightType(object) - 1) <= 1 && MapObject_GetTrainerNum(object) == trainerNum) {
-                return object;
-            }
-        } while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE));
+    while (MapObjectManager_GetNextObjectWithFlagFromIndex(manager, &object, &index, MAPOBJECTFLAG_ACTIVE)) {
+        if (object != exclude && (u32)(MapObject_GetTrainerSightType(object) - 1) <= 1 && MapObject_GetTrainerNum(object) == trainerNum) {
+            return object;
+        }
     }
     GF_ASSERT(FALSE);
     return NULL;

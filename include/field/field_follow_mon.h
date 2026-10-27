@@ -15,7 +15,7 @@ u8 FollowMonObject_IsLarge(LocalMapObject *object);
 void MapObject_GetCoordsBehind(LocalMapObject *object, int *x, int *z);
 void MapObject_GetPreviousCoordsBehind(LocalMapObject *object, int *x, int *z);
 u32 MapObject_GetAdjacentTileBehavior(LocalMapObject *object, u32 direction);
-void MapObject_SetPositionNextTo(LocalMapObject *anchor, LocalMapObject *object, int direction, int facing);
+void MapObject_SetPositionNextTo(LocalMapObject *anchor, LocalMapObject *object, u32 direction, u32 facing);
 void FollowMon_SpawnReleaseBall(LocalMapObject *object);
 void FollowMon_MoveToPlayer(FieldSystem *fieldSystem, u8 direction);
 BOOL FollowMon_CheckVisibleFlag(FieldSystem *fieldSystem);

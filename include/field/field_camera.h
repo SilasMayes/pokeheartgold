@@ -1,9 +1,7 @@
 #ifndef POKEHEARTGOLD_FIELD_FIELD_CAMERA_H
 #define POKEHEARTGOLD_FIELD_FIELD_CAMERA_H
 
-#include "camera.h"
 #include "field_system.h"
-#include "heap.h"
 
 typedef struct FieldCameraShift FieldCameraShift;
 

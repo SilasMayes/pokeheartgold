@@ -278,7 +278,7 @@ static const MovementListEntry sMovementDirectionTables[] = {
 static void RandomLookMovement_Init(LocalMapObject *object, u32 value);
 static void RandomWalkMovement_Init(LocalMapObject *object, u32 heldMovement, u32 directionTable, u32 restrictToRange);
 static void MapObject_GetMovementBounds(LocalMapObject *object, LocalMovementBounds *bounds);
-static BOOL MapObject_IsWithinMovementBounds(LocalMapObject *object, int direction);
+static BOOL MapObject_IsWithinMovementBounds(LocalMapObject *object, u32 direction);
 static void FaceDirectionMovement_Init(LocalMapObject *object, u32 direction);
 static void SpinMovement_Init(LocalMapObject *object, u32 order);
 static void PathMovement_Init(LocalMapObject *object, u32 limit, u32 axis, u32 tableId);
@@ -387,7 +387,7 @@ static void RandomWalkMovement_Init(LocalMapObject *object, u32 heldMovement, u3
 
 void RandomWalkMovement_Update(LocalMapObject *object) {
     LocalMovementState *state = (LocalMovementState *)MapObject_GetMovementData(object);
-    int direction;
+    u32 direction;
     switch (state->state) {
     case RANDOM_WALK_FACE:
         MapObject_ClearSingleMovement(object);
@@ -491,7 +491,7 @@ static void MapObject_GetMovementBounds(LocalMapObject *object, LocalMovementBou
     }
 }
 
-static BOOL MapObject_IsWithinMovementBounds(LocalMapObject *object, int direction) {
+static BOOL MapObject_IsWithinMovementBounds(LocalMapObject *object, u32 direction) {
     LocalMovementBounds bounds;
     s32 x;
     s32 z;
@@ -603,7 +603,7 @@ static BOOL SpinMovement_Turn(LocalMapObject *object, SpinMovementState *state) 
     DirectionCycle listB = sSpinClockwiseOrder;
     int i;
     DirectionCycle *list = &listA;
-    int direction;
+    u32 direction;
 
     if (state->order != DIR_WEST) {
         list = &listB;
@@ -668,7 +668,7 @@ static BOOL AlternatingSpinMovement_Turn(LocalMapObject *object, SpinMovementSta
     DirectionCycle orderA = sAlternatingSpinCounterclockwiseOrder;
     DirectionCycle orderB = sAlternatingSpinClockwiseOrder;
     int i;
-    int direction;
+    u32 direction;
     int *order;
     int *alternate;
 
@@ -680,13 +680,11 @@ static BOOL AlternatingSpinMovement_Turn(LocalMapObject *object, SpinMovementSta
 
     direction = MapObject_GetFacingDirection(object);
     i = 0;
-    if (order[i] != -1) {
-        do {
-            if (direction == order[i]) {
-                break;
-            }
-            i++;
-        } while (order[i] != -1);
+    while (order[i] != -1) {
+        if (direction == order[i]) {
+            break;
+        }
+        i++;
     }
     GF_ASSERT(order[i] != -1);
     i++;
@@ -729,7 +727,7 @@ static BOOL BackAndForthMovement_FaceStart(LocalMapObject *object, BackAndForthM
 }
 
 static BOOL BackAndForthMovement_Step(LocalMapObject *mapObject, BackAndForthMovementState *state) {
-    int direction;
+    u32 direction;
     int result;
     int kind;
 
@@ -861,7 +859,7 @@ void PathMovement_Update(LocalMapObject *object) {
 
 static BOOL PathMovement_Step(LocalMapObject *object, MovementPathState *state) {
     const int *list;
-    int direction;
+    u32 direction;
     u32 collision;
     int movementKind;
 
@@ -1044,7 +1042,7 @@ static int MapObject_GetAllowedDirectionToNearbyPlayer(LocalMapObject *object, i
     PlayerAvatar *avatar;
     int playerX;
     int playerZ;
-    int direction;
+    u32 direction;
 
     list = GetDirectionTable(tableId);
     count = DirectionList_Count(list, value);

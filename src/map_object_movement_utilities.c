@@ -180,15 +180,15 @@ BOOL MapObject_IsOnBridge(LocalMapObject *object, int behavior) {
     return FALSE;
 }
 
-int GetDeltaXByFacingDirection(int direction) {
+int GetDeltaXByFacingDirection(u32 direction) {
     return gDirectionDeltaX[direction];
 }
 
-int GetDeltaYByFacingDirection(int direction) {
+int GetDeltaYByFacingDirection(u32 direction) {
     return gDirectionDeltaY[direction];
 }
 
-void MapObject_MoveCoordsInDirection(LocalMapObject *object, int direction) {
+void MapObject_MoveCoordsInDirection(LocalMapObject *object, u32 direction) {
     MapObject_SetPreviousX(object, MapObject_GetXCoord(object));
     MapObject_SetPreviousY(object, MapObject_GetYCoord(object));
     MapObject_SetPreviousZ(object, MapObject_GetZCoord(object));
@@ -216,7 +216,7 @@ u8 MapObject_GetTileAttrBits8To14InDirection(LocalMapObject *object, int directi
     return attr;
 }
 
-void MapObject_OffsetPositionInDirection(LocalMapObject *object, int direction, int distance) {
+void MapObject_OffsetPositionInDirection(LocalMapObject *object, u32 direction, int distance) {
     VecFx32 position;
     MapObject_CopyPositionVector(object, &position);
     switch (direction) {

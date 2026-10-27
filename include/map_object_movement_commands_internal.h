@@ -3,7 +3,6 @@
 
 #include "map_object.h"
 #include "map_object_movement_commands.h"
-#include "sys_task_api.h"
 
 // The map object animations (MapObject_SetAnimation) the movement commands start; the draw callbacks pick the
 // billboard motion by them.

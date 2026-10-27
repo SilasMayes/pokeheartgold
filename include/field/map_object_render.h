@@ -3,8 +3,6 @@
 
 #include "billboard_internal.h"
 #include "map_object.h"
-#include "player_avatar.h"
-#include "sprite.h"
 
 // The billboard renderer of the map objects: the resource caches behind every map object's billboard and the
 // queue that loads them over several frames. It lives inside MapObjectManager (MapObjectManager_GetRender).

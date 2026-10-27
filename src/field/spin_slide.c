@@ -14,15 +14,15 @@
 #include "player_avatar_movement.h"
 #include "sound_playback.h"
 
-static void SpinSlide_Start(FieldSystem *fieldSystem, PlayerAvatar *avatar, int direction);
-static int SpinSlide_RotateDirection(int direction);
+static void SpinSlide_Start(FieldSystem *fieldSystem, PlayerAvatar *avatar, u32 direction);
+static u32 SpinSlide_RotateDirection(u32 direction);
 static BOOL Task_SpinSlide(TaskManager *taskManager);
 static void *SpinSlide_AllocZeroed(u32 size);
 static void SpinSlide_Free(void *ptr);
 
-BOOL PlayerAvatar_TryStartSpinSlide(FieldSystem *fieldSystem, PlayerAvatar *avatar, int facingDirection) {
+BOOL PlayerAvatar_TryStartSpinSlide(FieldSystem *fieldSystem, PlayerAvatar *avatar, u32 facingDirection) {
     u8 behavior = MapObject_GetCurrentMetatileBehavior(PlayerAvatar_GetMapObject(avatar));
-    int direction;
+    u32 direction;
 
     if (MetatileBehavior_IsSlideEast(behavior) == TRUE) {
         direction = DIR_EAST;
@@ -39,7 +39,7 @@ BOOL PlayerAvatar_TryStartSpinSlide(FieldSystem *fieldSystem, PlayerAvatar *avat
     return TRUE;
 }
 
-static void SpinSlide_Start(FieldSystem *fieldSystem, PlayerAvatar *avatar, int direction) {
+static void SpinSlide_Start(FieldSystem *fieldSystem, PlayerAvatar *avatar, u32 direction) {
     SpinSlideTask *task = SpinSlide_AllocZeroed(sizeof(SpinSlideTask));
 
     task->fieldSystem = fieldSystem;
@@ -56,7 +56,7 @@ enum SpinSlideState {
 };
 
 // A quarter turn counterclockwise.
-static int SpinSlide_RotateDirection(int direction) {
+static u32 SpinSlide_RotateDirection(u32 direction) {
     switch (direction) {
     case DIR_NORTH:
         return DIR_WEST;

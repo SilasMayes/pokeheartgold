@@ -234,7 +234,7 @@ static void TouchscreenMenu_ShowNewIcons(TouchscreenMenuData *data);
 static void TouchscreenMenu_LoadBgAndWindows(BgConfig *bgConfig, int variant, Window *actionWindow, Window *menuWindow, Window *iconWindows);
 static void TouchscreenMenu_LoadSpriteResources(TouchscreenMenuData *data);
 static u32 TouchscreenMenu_GetBallItem(u32 layout);
-static void TouchscreenMenu_LoadIconResources(FieldSystem *fieldSystem, GF_2DGfxResMan **resMans, SpriteResource **resObjs, int index, int resId, int gender, Bag *bag, int layout);
+static void TouchscreenMenu_LoadIconResources(FieldSystem *fieldSystem, GF_2DGfxResMan **resMans, SpriteResource **resObjs, int index, int resId, u32 gender, Bag *bag, int layout);
 static inline s32 TouchscreenMenu_RoundToFx32(int x);
 static inline s32 TouchscreenMenu_PosToFx32(u16 x);
 static inline s32 TouchscreenMenu_PosToFx32Half(u16 x, float half);
@@ -817,7 +817,7 @@ static u32 TouchscreenMenu_GetBallItem(u32 layout) {
     return ITEM_SPORT_BALL;
 }
 
-static void TouchscreenMenu_LoadIconResources(FieldSystem *fieldSystem, GF_2DGfxResMan **resMans, SpriteResource **resObjs, int index, int resId, int gender, Bag *bag, int layout) {
+static void TouchscreenMenu_LoadIconResources(FieldSystem *fieldSystem, GF_2DGfxResMan **resMans, SpriteResource **resObjs, int index, int resId, u32 gender, Bag *bag, int layout) {
     u8 icon = gTouchscreenMenuLayouts[layout][index];
     NarcId narcId = NARC_a_0_1_4;
     int charFileId = 18;

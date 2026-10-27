@@ -6,7 +6,6 @@
 #include "field_system.h"
 #include "map_object.h"
 #include "player_avatar.h"
-#include "sys_task_api.h"
 
 typedef struct TrainerBehaviorState {
     u8 state;

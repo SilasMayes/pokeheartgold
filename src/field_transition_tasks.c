@@ -105,7 +105,7 @@ BOOL FieldTransition_EnterFromWarpStairs(TaskManager *taskMan) {
     switch (env->transitionState) {
     case WARP_STAIRS_ENTER_START: {
         LocalMapObject *object;
-        int direction;
+        u32 direction;
         FieldMap_FadeScreen(1);
         object = PlayerAvatar_GetMapObject(fieldSystem->playerAvatar);
         direction = PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar);
@@ -282,7 +282,7 @@ void FieldTransition_PlaceInsideSideDoor(FieldSystem *fieldSystem) {
     VecFx32 delta;
     VecFx32 oldLookAt;
     VecFx32 lookAt;
-    int direction;
+    u32 direction;
 
     cameraTarget = Camera_GetCurrentTarget(fieldSystem->camera);
     lookAt = Camera_GetLookAtCamTarget(fieldSystem->camera);
@@ -310,7 +310,7 @@ void FieldTransition_PlaceOffWarpStairs(FieldSystem *fieldSystem) {
     VecFx32 delta;
     VecFx32 oldLookAt;
     VecFx32 lookAt;
-    int direction;
+    u32 direction;
     int x;
     u8 behavior;
 

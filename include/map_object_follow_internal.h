@@ -1,7 +1,6 @@
 #ifndef POKEHEARTGOLD_MAP_OBJECT_FOLLOW_INTERNAL_H
 #define POKEHEARTGOLD_MAP_OBJECT_FOLLOW_INTERNAL_H
 
-#include "field_system.h"
 #include "map_object.h"
 #include "map_object_follow.h"
 #include "map_object_movement_commands_internal.h"

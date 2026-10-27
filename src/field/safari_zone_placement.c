@@ -61,7 +61,7 @@ int FieldSystem_GetSafariAreaIndex(FieldSystem *fieldSystem) {
 BOOL FieldSystem_CanPlaceSafariObject(FieldSystem *fieldSystem) {
     SaveVarsFlags *varsFlags = Save_VarsFlags_Get(fieldSystem->saveData);
     SafariZone *safariZone;
-    int facing;
+    u32 facing;
     int x;
     int z;
     int newX;

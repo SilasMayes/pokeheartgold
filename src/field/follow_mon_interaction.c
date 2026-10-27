@@ -281,7 +281,7 @@ static void FollowMonSituation_SetTerrain(FieldSystem *fieldSystem, FollowMonSit
 static void FollowMonSituation_SetMapId(FieldSystem *fieldSystem, FollowMonSituation *situation);
 static void FollowMonSituation_SetTimeOfDay(FieldSystem *fieldSystem, FollowMonSituation *situation);
 static void FollowMonSituation_SetMood(FieldSystem *fieldSystem, FollowMonSituation *situation);
-static void FollowMonSituation_SetBestPokeathlonStat(FieldSystem *fieldSystem, int species, int form, FollowMonSituation *situation);
+static void FollowMonSituation_SetBestPokeathlonStat(FieldSystem *fieldSystem, u16 species, u8 form, FollowMonSituation *situation);
 static void FollowMonSituation_SetFacing(FieldSystem *fieldSystem, FollowMonSituation *situation);
 static void FollowMonSituation_SetSpeciesAttr(int species, FollowMonSituation *situation);
 static int FollowMonSituation_ConvertType(int type);
@@ -299,7 +299,7 @@ static void FollowMonMovement_ApplyOffset(const FollowMonMovementStep *move, Loc
 static void FollowMonMovement_PlaySound(const FollowMonMovementStep *move, u16 sound, u16 species, u8 form);
 static void FollowMonMovement_ApplyFacing(FollowMonInteraction *interaction, const FollowMonMovementStep *move, LocalMapObject *object);
 static void FollowMon_TryShakeGrass(FollowMonInteraction *interaction, LocalMapObject *object, u8 oldDirection);
-static void FollowMon_GetCoordsInDirection(LocalMapObject *object, int direction, int *x, int *z);
+static void FollowMon_GetCoordsInDirection(LocalMapObject *object, u32 direction, int *x, int *z);
 static BOOL FollowMonMovement_Step(FollowMonInteraction *interaction, LocalMapObject *object);
 static BOOL FollowMonMovement_HasNextStep(FollowMonInteraction *interaction);
 static BOOL FollowMonInteraction_RunMovement(FieldSystem *fieldSystem, FollowMonInteraction *interaction, int movement);
@@ -339,31 +339,21 @@ static int FollowMon_SelectInteraction(FieldSystem *fieldSystem) {
         *cursor++ = i + 30;
         count++;
     }
-    i = 0;
-    cursor = &order[count];
-    do {
+    for (i = 0, cursor = &order[count]; i < 30; i++) {
         *cursor++ = i;
         count++;
-        i++;
-    } while (i < 30);
-    i = 42;
-    cursor = &order[count];
-    do {
+    }
+    for (i = 42, cursor = &order[count]; i < 100; i++) {
         *cursor++ = i;
         count++;
-        i++;
-    } while (i < 100);
+    }
 
-    j = 0;
-    scan = order;
-    do {
+    for (j = 0, scan = order; j < 100; j++, scan++) {
         FollowMonRule *rule = &rules[*scan];
         if (rule->script != 0 && FollowMonRule_Matches(fieldSystem, rule, &situation)) {
             return rule->script;
         }
-        j++;
-        scan++;
-    } while (j < 100);
+    }
     GF_ASSERT(FALSE);
     return 0;
 }
@@ -686,7 +676,7 @@ static void FollowMonSituation_SetMood(FieldSystem *fieldSystem, FollowMonSituat
     situation->mood = FollowMonMood_Get(fieldSystem->followMonMood);
 }
 
-static void FollowMonSituation_SetBestPokeathlonStat(FieldSystem *fieldSystem, int species, int form, FollowMonSituation *situation) {
+static void FollowMonSituation_SetBestPokeathlonStat(FieldSystem *fieldSystem, u16 species, u8 form, FollowMonSituation *situation) {
     PartyExtraSub aprijuice;
     struct PokeathlonPerformanceStars stars;
     int stat;
@@ -1029,7 +1019,7 @@ static void FollowMon_ExpandGiftMessage(FieldSystem *fieldSystem, String *dest, 
 
 static void FollowMonMovement_ApplyOffset(const FollowMonMovementStep *move, LocalMapObject *object) {
     VecFx32 pos;
-    int species;
+    u32 species;
     MapObject_CopyPositionVector(object, &pos);
     if (move->dx != 0) {
         pos.x += move->dx << FX32_SHIFT;
@@ -1087,7 +1077,7 @@ static void FollowMon_TryShakeGrass(FollowMonInteraction *interaction, LocalMapO
     }
 }
 
-static void FollowMon_GetCoordsInDirection(LocalMapObject *object, int direction, int *x, int *z) {
+static void FollowMon_GetCoordsInDirection(LocalMapObject *object, u32 direction, int *x, int *z) {
     *x = MapObject_GetXCoord(object);
     *z = MapObject_GetZCoord(object);
     switch (direction) {

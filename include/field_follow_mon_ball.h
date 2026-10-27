@@ -3,8 +3,6 @@
 
 #include "field/field_effect_manager.h"
 
-#include "field_warp_reset.h"
-
 typedef struct FollowMonBall FollowMonBall;
 
 // FollowMonBall_Spawn kinds

@@ -2,7 +2,6 @@
 #define POKEHEARTGOLD_FIELD_WARP_SPIN_H
 
 #include "field_system.h"
-#include "sys_task.h"
 
 // The player spinning up out of the map (departing: rise and fade out) or down into it (arriving: fade in and
 // descend), used by the warp tasks.

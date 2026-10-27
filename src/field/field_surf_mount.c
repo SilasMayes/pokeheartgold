@@ -31,7 +31,7 @@ typedef struct SurfMountEffectArgs {
 
 typedef struct SurfMountEffect {
     BOOL hidden;
-    int facing;
+    u32 facing;
     u32 direction;
     u32 objectId;
     u32 mapId;
@@ -135,7 +135,7 @@ static void SurfMountEffect_Update(FieldEffect *effect, void *state) {
     VecFx32 offset;
     VecFx32 position;
     LocalMapObject *mapObject = work->args.mapObject;
-    int facing;
+    u32 facing;
     fx32 height;
 
     if (!MapObject_CheckIDAndMap(mapObject, work->objectId, work->mapId)) {

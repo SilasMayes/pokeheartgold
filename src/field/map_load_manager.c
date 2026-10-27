@@ -460,7 +460,7 @@ static void MapLoadManager_LoadSafariZoneProps(MapLoadManager *mapLoadManager, L
         SafariZone *safariZone = Save_SafariZone_Get(mapLoadManager->saveData);
         u8 linkLeader = SafariZone_GetActiveAreaSet(safariZone);
         areaSet = SafariZone_GetAreaSet(safariZone, linkLeader);
-        int gender;
+        u32 gender;
         if (linkLeader == 0) {
             gender = (u8)PlayerProfile_GetTrainerGender(Save_PlayerData_GetProfile(mapLoadManager->saveData));
         } else {

@@ -14,8 +14,7 @@ MapLoadBuffers *MapLoadBuffers_New(BOOL withSecondary) {
     u8 i;
     MapLoadBuffers *buffers = Heap_Alloc(HEAP_ID_FIELD1, sizeof(MapLoadBuffers));
     u32 secondarySize;
-    i = 0;
-    do {
+    for (i = 0; i < MAP_LOAD_BUFFER_COUNT; i++) {
         buffers->primary[i] = gMapLoadPrimaryBuffers[i];
         if (buffers->primary[i] == NULL) {
             return NULL;
@@ -31,8 +30,7 @@ MapLoadBuffers *MapLoadBuffers_New(BOOL withSecondary) {
             secondarySize = 0;
         }
         MapLoadBuffers_Clear(i, MAP_LOAD_PRIMARY_BUFFER_SIZE, secondarySize, buffers);
-        i++;
-    } while (i < MAP_LOAD_BUFFER_COUNT);
+    }
     return buffers;
 }
 

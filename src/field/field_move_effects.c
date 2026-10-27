@@ -625,7 +625,7 @@ void WhirlpoolEffect_Init(Field3dObjectTask *task, FieldSystem *fieldSystem, Whi
         u8 modelFileId;
         u16 angles[4];
     } files;
-    int direction;
+    u32 direction;
 
     files.modelFileId = gRideEffectFileIds.whirlpool.ids[0];
     files.animFileId = gRideEffectFileIds.whirlpool.ids[1];

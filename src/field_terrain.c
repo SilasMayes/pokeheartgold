@@ -223,7 +223,7 @@ int FieldSystem_GetTerrainHeight(FieldSystem *fieldSystem, int objectHeight, fx3
 }
 
 static int FieldSystem_GetHeightStep(FieldSystem *fieldSystem, VecFx32 *playerPos, int x, int z, u8 *outKind) {
-    int dir;
+    u32 dir;
     fx32 hi, lo;
     fx32 height = FieldSystem_GetTerrainHeight(fieldSystem, playerPos->y, (x << 16) + FX32_CONST(8), (z << 16) + FX32_CONST(8), outKind);
     if (height < playerPos->y) {

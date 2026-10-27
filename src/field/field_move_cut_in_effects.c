@@ -140,7 +140,7 @@ typedef struct FlyLanding {
     int state;
     BOOL done;
     int unk_08;
-    int gender;
+    u32 gender;
     BOOL drawSprites;
     FieldSystem *fieldSystem;
     SpriteGfxManager gfx;

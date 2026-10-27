@@ -98,7 +98,7 @@ enum MovementScriptMachineState {
 extern const MovementScriptStateFunc gMovementScriptMachineStateFuncs[];
 
 static void MapObject_StartWalkMovement(LocalMapObject *object, u32 direction, u32 distance, s32 duration, u16 animation);
-static void MapObject_StartWalkInPlaceMovement(LocalMapObject *object, int direction, int duration, int animation);
+static void MapObject_StartWalkInPlaceMovement(LocalMapObject *object, u32 direction, int duration, int animation);
 static void MapObject_StartJumpMovement(LocalMapObject *object, s8 direction, int distance, s8 duration, u16 animation, s16 heightTable, u16 heightStep);
 static void MapObject_StartDelayMovement(LocalMapObject *object, s32 duration);
 static void MapObject_StartEmoteMovement(LocalMapObject *object, u32 type);
@@ -268,20 +268,14 @@ u32 GetMovementForDirection(s32 direction, u32 movement) {
     GF_ASSERT(direction < DIR_MAX);
     table = gMovementsByDirection;
     entry = *table;
-    if (entry != NULL) {
-        do {
-            i = 0;
-            scan = entry;
-            do {
-                if (movement == *scan) {
-                    return entry[direction];
-                }
-                i++;
-                scan++;
-            } while (i < DIR_MAX);
-            table++;
-            entry = *table;
-        } while (entry != NULL);
+    while (entry != NULL) {
+        for (i = 0, scan = entry; i < DIR_MAX; i++, scan++) {
+            if (movement == *scan) {
+                return entry[direction];
+            }
+        }
+        table++;
+        entry = *table;
     }
     GF_ASSERT(FALSE);
     return movement;
@@ -292,16 +286,14 @@ s32 GetMovementDirection(u32 movement) {
     const u32 *const *table = gMovementsByDirection;
     const u32 *entry = *table;
 
-    if (entry != NULL) {
-        do {
-            for (i = 0; i < DIR_MAX; i++) {
-                if (entry[i] == movement) {
-                    return i;
-                }
+    while (entry != NULL) {
+        for (i = 0; i < DIR_MAX; i++) {
+            if (entry[i] == movement) {
+                return i;
             }
-            table++;
-            entry = *table;
-        } while (entry != NULL);
+        }
+        table++;
+        entry = *table;
     }
     return DIR_NONE;
 }
@@ -549,7 +541,7 @@ BOOL MapObjectMovementCmd091_Step0(LocalMapObject *object) {
     return TRUE;
 }
 
-static void MapObject_StartWalkInPlaceMovement(LocalMapObject *object, int direction, int duration, int animation) {
+static void MapObject_StartWalkInPlaceMovement(LocalMapObject *object, u32 direction, int duration, int animation) {
     WalkInPlaceMovementWork *work = (WalkInPlaceMovementWork *)MapObject_InitMovementCmdData(object, sizeof(WalkInPlaceMovementWork));
 
     work->animation = animation;

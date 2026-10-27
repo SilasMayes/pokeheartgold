@@ -3,7 +3,6 @@
 
 #include "bg_window.h"
 #include "field_system.h"
-#include "list_menu.h"
 #include "message_format.h"
 #include "msgdata.h"
 

@@ -2,7 +2,6 @@
 #define POKEHEARTGOLD_FIELD_MAP_OBJECT_BILLBOARD_MOTION_H
 
 #include "map_object.h"
-#include "sprite.h"
 
 struct BillboardObject;
 

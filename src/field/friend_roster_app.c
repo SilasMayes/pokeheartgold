@@ -355,13 +355,11 @@ static void FriendRosterApp_InitWindows(FriendRosterAppData *data) {
 }
 
 static void FriendRosterApp_RemoveWindows(FriendRosterAppData *data) {
-    u32 i = 0;
-    Window *window = &data->windows[0];
-    do {
+    u32 i;
+    Window *window;
+    for (i = 0, window = &data->windows[0]; i < FRIEND_ROSTER_APP_NUM_WINDOWS; i++, window++) {
         RemoveWindow(window);
-        i++;
-        window++;
-    } while (i < FRIEND_ROSTER_APP_NUM_WINDOWS);
+    }
 }
 
 static void FriendRosterApp_PrintPageNumber(FriendRosterAppData *data) {

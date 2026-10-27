@@ -4,7 +4,6 @@
 #include "field/map_object_render.h"
 
 #include "billboard_internal.h"
-#include "field_system.h"
 #include "map_object.h"
 
 // Map object models: the map model NARC and the billboard renderer's lifetime, the graphics info of each sprite id,
