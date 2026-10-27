@@ -112,6 +112,14 @@ typedef struct ArcadeChallenge {
     u16 setIds[15];
 } ArcadeChallenge;
 
+// FrontierSave_GetStat / SetStat ids: the stats below FRONTIER_STAT_FRIEND_FLAGS hold one value (index
+// FRONTIER_STAT_NO_FRIEND), the ones up to FRONTIER_STAT_PER_FRIEND one bit per friend (two words per flag) and the
+// ones from FRONTIER_STAT_PER_FRIEND on one value per friend roster entry.
+#define FRONTIER_STAT_FRIEND_FLAGS 100
+#define FRONTIER_STAT_PER_FRIEND   112
+#define FRONTIER_STAT_NO_FRIEND    255
+#define FRONTIER_STAT_MAX          9999
+
 u32 Save_Frontier_sizeof(void);
 void Save_Frontier_Init(void *data);
 FrontierSave *Save_Frontier_GetStatic(SaveData *saveData);

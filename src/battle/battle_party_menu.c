@@ -81,6 +81,28 @@ enum BattlePartySlotType {
     BATTLE_PARTY_SLOT_OTHER,  // a mon of the partner trainer (multi battle) or a second battler slot
 };
 
+// BattlePartyMenu_DrawButton / StartButtonAnim
+enum BattlePartyButton {
+    BATTLE_PARTY_BUTTON_MON_0,
+    BATTLE_PARTY_BUTTON_MON_5 = BATTLE_PARTY_BUTTON_MON_0 + PARTY_SIZE - 1,
+    BATTLE_PARTY_BUTTON_CANCEL,
+    BATTLE_PARTY_BUTTON_SHIFT,
+    BATTLE_PARTY_BUTTON_SUMMARY,
+    BATTLE_PARTY_BUTTON_MOVES_TO_SUMMARY,
+    BATTLE_PARTY_BUTTON_CHECK_MOVES,
+    BATTLE_PARTY_BUTTON_SUMMARY_TO_MOVES,
+    BATTLE_PARTY_BUTTON_PREV_MON,
+    BATTLE_PARTY_BUTTON_NEXT_MON,
+    BATTLE_PARTY_BUTTON_MOVE_0,
+    BATTLE_PARTY_BUTTON_VIEW_TOGGLE = BATTLE_PARTY_BUTTON_MOVE_0 + MAX_MON_MOVES,
+    BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0,
+    BATTLE_PARTY_BUTTON_LEARN_MOVE_0 = BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0 + MAX_MON_MOVES,
+    BATTLE_PARTY_BUTTON_NEW_MOVE = BATTLE_PARTY_BUTTON_LEARN_MOVE_0 + MAX_MON_MOVES,
+    BATTLE_PARTY_BUTTON_FORGET,
+    BATTLE_PARTY_BUTTON_FORGET_CONTEST,
+    BATTLE_PARTY_BUTTON_MOVE_TAB_0,
+};
+
 typedef struct BattlePartyMenuMove {
     u16 move;
     u8 pp;
@@ -693,7 +715,7 @@ static int BattlePartyMenu_HandlePartyListInput(BattlePartyMenu *menu) {
         if (menu->context->selectedMon == PARTY_SIZE) {
             if (menu->context->mode != BATTLE_PARTY_MODE_SWITCH_NO_CANCEL) {
                 PlaySE(SEQ_SE_DP_DECIDE);
-                BattlePartyMenu_StartButtonAnim(menu, 6);
+                BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_CANCEL);
                 return BATTLE_PARTY_STATE_FADE_OUT;
             }
         } else {
@@ -715,7 +737,7 @@ static int BattlePartyMenu_TryUseItemOnMon(BattlePartyMenu *menu) {
     if ((context->selectedMon == 0 && context->embargo[0]) || (context->selectedMon == 1 && context->embargo[1])) {
         BattlePartyMenu_BufferEmbargoMessage(menu);
         BattlePartyMenu_ShowMessage(menu);
-        menu->context->selectedMon = 6;
+        menu->context->selectedMon = PARTY_SIZE;
         menu->nextState = BATTLE_PARTY_STATE_FADE_OUT;
         return BATTLE_PARTY_STATE_WAIT_MESSAGE;
     }
@@ -740,7 +762,7 @@ static int BattlePartyMenu_TryUseItemOnMon(BattlePartyMenu *menu) {
     }
     ReadMsgDataIntoString(menu->msgData, msg_0006_00081, menu->string);
     BattlePartyMenu_ShowMessage(menu);
-    menu->context->selectedMon = 6;
+    menu->context->selectedMon = PARTY_SIZE;
     menu->nextState = BATTLE_PARTY_STATE_FADE_OUT;
     return BATTLE_PARTY_STATE_WAIT_MESSAGE;
 }
@@ -749,7 +771,7 @@ static int BattlePartyMenu_HandleMonMenuInput(BattlePartyMenu *menu) {
     switch (BattlePartyMenu_GetMonMenuInput(menu)) {
     case 0:
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 7);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_SHIFT);
         if (BattlePartyMenu_CanSwitchToSelectedMon(menu) == 1) {
             return BATTLE_PARTY_STATE_FADE_OUT;
         }
@@ -760,7 +782,7 @@ static int BattlePartyMenu_HandleMonMenuInput(BattlePartyMenu *menu) {
             break;
         }
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 8);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_SUMMARY);
         menu->nextState = BATTLE_PARTY_STATE_SHOW_SUMMARY;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 2:
@@ -768,12 +790,12 @@ static int BattlePartyMenu_HandleMonMenuInput(BattlePartyMenu *menu) {
             break;
         }
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 10);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_CHECK_MOVES);
         menu->nextState = BATTLE_PARTY_STATE_SHOW_CHECK_MOVES;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 3:
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 6);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_CANCEL);
         menu->nextState = BATTLE_PARTY_STATE_SHOW_PARTY_LIST;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     }
@@ -791,7 +813,7 @@ static int BattlePartyMenu_HandleSummaryInput(BattlePartyMenu *menu) {
         }
         menu->context->selectedMon = slot;
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 12);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_PREV_MON);
         menu->nextState = BATTLE_PARTY_STATE_REFRESH_MON_PAGE;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 1:
@@ -801,17 +823,17 @@ static int BattlePartyMenu_HandleSummaryInput(BattlePartyMenu *menu) {
         }
         menu->context->selectedMon = slot;
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 13);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_NEXT_MON);
         menu->nextState = BATTLE_PARTY_STATE_REFRESH_MON_PAGE;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 2:
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 11);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_SUMMARY_TO_MOVES);
         menu->nextState = BATTLE_PARTY_STATE_SHOW_CHECK_MOVES;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 3:
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 6);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_CANCEL);
         menu->monMenuPosition = 1;
         menu->nextState = BATTLE_PARTY_STATE_SHOW_MON_MENU;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
@@ -832,7 +854,7 @@ static int BattlePartyMenu_HandleCheckMovesInput(BattlePartyMenu *menu) {
             break;
         }
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, (u8)(input + 14));
+        BattlePartyMenu_StartButtonAnim(menu, (u8)(input + BATTLE_PARTY_BUTTON_MOVE_0));
         menu->context->selectedMove = input;
         menu->nextState = BATTLE_PARTY_STATE_SHOW_MOVE_DETAIL;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
@@ -843,7 +865,7 @@ static int BattlePartyMenu_HandleCheckMovesInput(BattlePartyMenu *menu) {
         }
         menu->context->selectedMon = slot;
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 12);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_PREV_MON);
         menu->nextState = BATTLE_PARTY_STATE_REFRESH_MON_PAGE;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 5:
@@ -853,17 +875,17 @@ static int BattlePartyMenu_HandleCheckMovesInput(BattlePartyMenu *menu) {
         }
         menu->context->selectedMon = slot;
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 13);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_NEXT_MON);
         menu->nextState = BATTLE_PARTY_STATE_REFRESH_MON_PAGE;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 6:
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 9);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_MOVES_TO_SUMMARY);
         menu->nextState = BATTLE_PARTY_STATE_SHOW_SUMMARY;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 7:
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 6);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_CANCEL);
         menu->monMenuPosition = 2;
         menu->nextState = BATTLE_PARTY_STATE_SHOW_MON_MENU;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
@@ -889,7 +911,7 @@ static int BattlePartyMenu_HandleMoveDetailInput(BattlePartyMenu *menu) {
         return BATTLE_PARTY_STATE_SHOW_MOVE_DETAIL;
     case 4:
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 6);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_CANCEL);
         menu->nextState = BATTLE_PARTY_STATE_SHOW_CHECK_MOVES;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     }
@@ -916,7 +938,7 @@ static int BattlePartyMenu_HandleLearnMoveInput(BattlePartyMenu *menu) {
         menu->context->selectedMove = input;
         menu->learnMovePosition = input;
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, (u8)(input + 23));
+        BattlePartyMenu_StartButtonAnim(menu, (u8)(input + BATTLE_PARTY_BUTTON_LEARN_MOVE_0));
         menu->nextState = BATTLE_PARTY_STATE_SHOW_FORGET_MOVE;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 5:
@@ -926,13 +948,13 @@ static int BattlePartyMenu_HandleLearnMoveInput(BattlePartyMenu *menu) {
         menu->viewMode ^= 1;
         menu->learnMovePosition = input;
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 18);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_VIEW_TOGGLE);
         menu->nextState = BATTLE_PARTY_STATE_SHOW_LEARN_MOVE;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 6:
-        menu->context->selectedMove = 4;
+        menu->context->selectedMove = MAX_MON_MOVES;
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 6);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_CANCEL);
         menu->nextState = BATTLE_PARTY_STATE_FADE_OUT;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     }
@@ -954,9 +976,9 @@ static int BattlePartyMenu_HandleForgetMoveInput(BattlePartyMenu *menu) {
     case 0:
         PlaySE(SEQ_SE_DP_DECIDE);
         if (menu->viewMode == BATTLE_PARTY_VIEW_BATTLE) {
-            BattlePartyMenu_StartButtonAnim(menu, 28);
+            BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_FORGET);
         } else {
-            BattlePartyMenu_StartButtonAnim(menu, 29);
+            BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_FORGET_CONTEST);
         }
         if (BattlePartyMenu_IsSelectedMoveHM(menu) == 1) {
             BattlePartyMenu_PrintHMCantBeForgotten(menu);
@@ -975,14 +997,14 @@ static int BattlePartyMenu_HandleForgetMoveInput(BattlePartyMenu *menu) {
             break;
         }
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 18);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_VIEW_TOGGLE);
         menu->viewMode ^= 1;
         menu->forgetMovePosition = input;
         menu->nextState = BATTLE_PARTY_STATE_SHOW_FORGET_MOVE;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     case 2:
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 6);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_CANCEL);
         menu->forgetMovePosition = 0;
         menu->nextState = BATTLE_PARTY_STATE_SHOW_LEARN_MOVE;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
@@ -1012,7 +1034,7 @@ static int BattlePartyMenu_HandleRestorePPInput(BattlePartyMenu *menu) {
         }
         menu->context->selectedMove = input;
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, (u8)(input + 19));
+        BattlePartyMenu_StartButtonAnim(menu, (u8)(input + BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0));
         if (BattleSystem_RecoverStatus(context->battleSystem, context->battlerId, context->partyOrder[context->selectedMon], input, context->item) == TRUE) {
             menu->effectState = 0;
             menu->nextState = BATTLE_PARTY_STATE_ITEM_EFFECT;
@@ -1020,12 +1042,12 @@ static int BattlePartyMenu_HandleRestorePPInput(BattlePartyMenu *menu) {
         }
         ReadMsgDataIntoString(menu->msgData, msg_0006_00081, menu->string);
         BattlePartyMenu_ShowMessage(menu);
-        menu->context->selectedMon = 6;
+        menu->context->selectedMon = PARTY_SIZE;
         menu->nextState = BATTLE_PARTY_STATE_FADE_OUT;
         return BATTLE_PARTY_STATE_WAIT_MESSAGE;
     case 4:
         PlaySE(SEQ_SE_DP_DECIDE);
-        BattlePartyMenu_StartButtonAnim(menu, 6);
+        BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_CANCEL);
         menu->nextState = BATTLE_PARTY_STATE_SHOW_PARTY_LIST;
         return BATTLE_PARTY_STATE_WAIT_BUTTON_ANIM;
     }
@@ -1624,14 +1646,14 @@ static int BattlePartyMenu_CanSwitchToSelectedMon(BattlePartyMenu *menu) {
         return 0;
     }
     if (mon->hp == 0) {
-        BattlePartyMenu_BufferSlotMonMessage(menu, mon, 77);
+        BattlePartyMenu_BufferSlotMonMessage(menu, mon, msg_0006_00077);
         return 0;
     }
     context = menu->context;
     {
         u8 index = context->partyOrder[context->selectedMon];
         if (context->battlingMons[0] == index || context->battlingMons[1] == index) {
-            BattlePartyMenu_BufferSlotMonMessage(menu, mon, 76);
+            BattlePartyMenu_BufferSlotMonMessage(menu, mon, msg_0006_00076);
             return 0;
         }
     }
@@ -3385,52 +3407,52 @@ static void BattlePartyMenu_CopyTilemapRect(u16 *dst, const u16 *src, int x, int
 
 static u16 *BattlePartyMenu_GetButtonTilemap(BattlePartyMenu *menu, int button, int frame, int partner) {
     switch (button) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
+    case BATTLE_PARTY_BUTTON_MON_0:
+    case BATTLE_PARTY_BUTTON_MON_0 + 1:
+    case BATTLE_PARTY_BUTTON_MON_0 + 2:
+    case BATTLE_PARTY_BUTTON_MON_0 + 3:
+    case BATTLE_PARTY_BUTTON_MON_0 + 4:
+    case BATTLE_PARTY_BUTTON_MON_5:
         if (partner == 0) {
             return menu->monButtonTiles[frame];
         }
         return menu->partnerMonButtonTiles[frame];
-    case 6:
+    case BATTLE_PARTY_BUTTON_CANCEL:
         return menu->cancelButtonTiles[frame];
-    case 7:
+    case BATTLE_PARTY_BUTTON_SHIFT:
         return menu->shiftButtonTiles[frame];
-    case 8:
-    case 9:
-    case 10:
-    case 11:
+    case BATTLE_PARTY_BUTTON_SUMMARY:
+    case BATTLE_PARTY_BUTTON_MOVES_TO_SUMMARY:
+    case BATTLE_PARTY_BUTTON_CHECK_MOVES:
+    case BATTLE_PARTY_BUTTON_SUMMARY_TO_MOVES:
         return menu->menuButtonTiles[frame];
-    case 12:
+    case BATTLE_PARTY_BUTTON_PREV_MON:
         return menu->prevMonButtonTiles[frame];
-    case 13:
+    case BATTLE_PARTY_BUTTON_NEXT_MON:
         return menu->nextMonButtonTiles[frame];
-    case 14:
-    case 15:
-    case 16:
-    case 17:
-    case 19:
-    case 20:
-    case 21:
-    case 22:
-    case 23:
-    case 24:
-    case 25:
-    case 26:
-    case 27:
+    case BATTLE_PARTY_BUTTON_MOVE_0:
+    case BATTLE_PARTY_BUTTON_MOVE_0 + 1:
+    case BATTLE_PARTY_BUTTON_MOVE_0 + 2:
+    case BATTLE_PARTY_BUTTON_MOVE_0 + 3:
+    case BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0:
+    case BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0 + 1:
+    case BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0 + 2:
+    case BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0 + 3:
+    case BATTLE_PARTY_BUTTON_LEARN_MOVE_0:
+    case BATTLE_PARTY_BUTTON_LEARN_MOVE_0 + 1:
+    case BATTLE_PARTY_BUTTON_LEARN_MOVE_0 + 2:
+    case BATTLE_PARTY_BUTTON_LEARN_MOVE_0 + 3:
+    case BATTLE_PARTY_BUTTON_NEW_MOVE:
         return menu->moveButtonTiles[frame];
-    case 28:
-    case 29:
+    case BATTLE_PARTY_BUTTON_FORGET:
+    case BATTLE_PARTY_BUTTON_FORGET_CONTEST:
         return menu->forgetButtonTiles[frame];
-    case 18:
+    case BATTLE_PARTY_BUTTON_VIEW_TOGGLE:
         return menu->viewToggleButtonTiles[frame];
-    case 30:
-    case 31:
-    case 32:
-    case 33:
+    case BATTLE_PARTY_BUTTON_MOVE_TAB_0:
+    case BATTLE_PARTY_BUTTON_MOVE_TAB_0 + 1:
+    case BATTLE_PARTY_BUTTON_MOVE_TAB_0 + 2:
+    case BATTLE_PARTY_BUTTON_MOVE_TAB_0 + 3:
         return menu->moveTabButtonTiles[frame];
     default:
         return NULL;
@@ -3438,7 +3460,7 @@ static u16 *BattlePartyMenu_GetButtonTilemap(BattlePartyMenu *menu, int button, 
 }
 
 // Frame 3 is the disabled look. Mon buttons are greyed for an Egg's HP bar, shown red for a fainted mon and
-// blue for a partner's mon; button 27 (the move to learn) uses palette 10.
+// blue for a partner's mon; the new move's button uses palette 10.
 static void BattlePartyMenu_BuildButtonTilemap(BattlePartyMenu *menu, u16 *dst, int button, int frame, u8 palette) {
     const u16 *src = BattlePartyMenu_GetButtonTilemap(menu, button, frame, palette);
     u8 width = gBattlePartyButtonRects[button][2];
@@ -3449,12 +3471,12 @@ static void BattlePartyMenu_BuildButtonTilemap(BattlePartyMenu *menu, u16 *dst, 
 
     memcpy(dst, src, size * 2);
     switch (button) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
+    case BATTLE_PARTY_BUTTON_MON_0:
+    case BATTLE_PARTY_BUTTON_MON_0 + 1:
+    case BATTLE_PARTY_BUTTON_MON_0 + 2:
+    case BATTLE_PARTY_BUTTON_MON_0 + 3:
+    case BATTLE_PARTY_BUTTON_MON_0 + 4:
+    case BATTLE_PARTY_BUTTON_MON_5:
         if (menu->mons[button].species == SPECIES_NONE) {
             break;
         }
@@ -3476,7 +3498,7 @@ static void BattlePartyMenu_BuildButtonTilemap(BattlePartyMenu *menu, u16 *dst, 
             }
         }
         break;
-    case 27:
+    case BATTLE_PARTY_BUTTON_NEW_MOVE:
         for (i = 0; i < size; i++) {
             dst[i] = (dst[i] & 0xFFF) | 0xA000;
         }
@@ -3505,24 +3527,24 @@ static void BattlePartyMenu_ScrollButtonWindows(BattlePartyMenu *menu, u32 butto
     int direction;
 
     if (windowList != NULL) {
-        if (button <= 5) {
+        if (button <= BATTLE_PARTY_BUTTON_MON_5) {
             pixels = gBattlePartySlotButtonScrollAmounts[frame];
         } else {
             pixels = gBattlePartyButtonScrollAmounts[frame];
         }
         switch (frame) {
-        case 0:
+        case BATTLE_BUTTON_FRAME_NORMAL:
             direction = 1;
             break;
-        case 1:
+        case BATTLE_BUTTON_FRAME_PRESSED:
             direction = 0;
             break;
-        case 2:
+        case BATTLE_BUTTON_FRAME_SELECTED:
             direction = 1;
             break;
         }
         // the move list page's move buttons sit in the current window set
-        if (button >= 14 && button <= 17) {
+        if (button >= BATTLE_PARTY_BUTTON_MOVE_0 && button <= BATTLE_PARTY_BUTTON_MOVE_0 + 3) {
             ((ScrollWindowFunc)ScrollWindow)(&menu->pageWindows[windowList[menu->windowSet]], direction, pixels, 0);
             ScheduleWindowCopyToVram(&menu->pageWindows[windowList[menu->windowSet]]);
             return;
@@ -3541,39 +3563,39 @@ static void BattlePartyMenu_OffsetButtonSprites(BattlePartyMenu *menu, u32 butto
     int dy;
 
     switch (button) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
+    case BATTLE_PARTY_BUTTON_MON_0:
+    case BATTLE_PARTY_BUTTON_MON_0 + 1:
+    case BATTLE_PARTY_BUTTON_MON_0 + 2:
+    case BATTLE_PARTY_BUTTON_MON_0 + 3:
+    case BATTLE_PARTY_BUTTON_MON_0 + 4:
+    case BATTLE_PARTY_BUTTON_MON_5:
         dy = gBattlePartySlotButtonSpriteOffsets[frame];
         ((OffsetSpriteFunc)ManagedSprite_OffsetPositionXY)(menu->sprites[(int)(button + 13)], 0, dy);
         ((OffsetSpriteFunc)ManagedSprite_OffsetPositionXY)(menu->sprites[button], 0, dy);
         ((OffsetSpriteFunc)ManagedSprite_OffsetPositionXY)(menu->sprites[(int)(button + 7)], 0, dy);
         break;
-    case 7:
+    case BATTLE_PARTY_BUTTON_SHIFT:
         dy = gBattlePartyButtonSpriteOffsets[frame];
         ((OffsetSpriteFunc)ManagedSprite_OffsetPositionXY)(menu->sprites[menu->context->selectedMon], 0, dy);
         ((OffsetSpriteFunc)ManagedSprite_OffsetPositionXY)(menu->sprites[menu->context->selectedMon + 7], 0, dy);
         break;
-    case 14:
-    case 15:
-    case 16:
-    case 17:
+    case BATTLE_PARTY_BUTTON_MOVE_0:
+    case BATTLE_PARTY_BUTTON_MOVE_0 + 1:
+    case BATTLE_PARTY_BUTTON_MOVE_0 + 2:
+    case BATTLE_PARTY_BUTTON_MOVE_0 + 3:
         ((OffsetSpriteFunc)ManagedSprite_OffsetPositionXY)(menu->sprites[(int)(button + 7)], 0, gBattlePartyButtonSpriteOffsets[frame]);
         break;
-    case 19:
-    case 20:
-    case 21:
-    case 22:
+    case BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0:
+    case BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0 + 1:
+    case BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0 + 2:
+    case BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0 + 3:
         ((OffsetSpriteFunc)ManagedSprite_OffsetPositionXY)(menu->sprites[(int)(button + 2)], 0, gBattlePartyButtonSpriteOffsets[frame]);
         break;
-    case 23:
-    case 24:
-    case 25:
-    case 26:
-    case 27:
+    case BATTLE_PARTY_BUTTON_LEARN_MOVE_0:
+    case BATTLE_PARTY_BUTTON_LEARN_MOVE_0 + 1:
+    case BATTLE_PARTY_BUTTON_LEARN_MOVE_0 + 2:
+    case BATTLE_PARTY_BUTTON_LEARN_MOVE_0 + 3:
+    case BATTLE_PARTY_BUTTON_NEW_MOVE:
         ((OffsetSpriteFunc)ManagedSprite_OffsetPositionXY)(menu->sprites[(int)(button - 2)], 0, gBattlePartyButtonSpriteOffsets[frame]);
         break;
     }
@@ -3581,42 +3603,36 @@ static void BattlePartyMenu_OffsetButtonSprites(BattlePartyMenu *menu, u32 butto
 
 static void BattlePartyMenu_StartButtonAnim(BattlePartyMenu *menu, u32 button) {
     menu->buttonAnimPalette = 0;
-    if (button <= 5 && BattlePartyMenu_GetSlotType(menu, button) == BATTLE_PARTY_SLOT_OTHER) {
+    if (button <= BATTLE_PARTY_BUTTON_MON_5 && BattlePartyMenu_GetSlotType(menu, button) == BATTLE_PARTY_SLOT_OTHER) {
         menu->buttonAnimPalette = 1;
     }
-    menu->buttonAnimState = 0;
+    menu->buttonAnimState = BUTTON_ANIM_STATE_PRESS;
     menu->buttonAnimTimer = 0;
     menu->buttonAnimButton = button;
     menu->buttonAnimActive = TRUE;
 }
 
-enum {
-    BUTTON_ANIM_STATE_PRESS,
-    BUTTON_ANIM_STATE_HOLD,
-    BUTTON_ANIM_STATE_RELEASE,
-};
-
 static void BattlePartyMenu_UpdateButtonAnim(BattlePartyMenu *menu) {
     if (menu->buttonAnimActive) {
         switch (menu->buttonAnimState) {
         case BUTTON_ANIM_STATE_PRESS:
-            BattlePartyMenu_DrawButton(menu, menu->buttonAnimButton, 1, menu->buttonAnimPalette);
-            BattlePartyMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, 1);
-            BattlePartyMenu_OffsetButtonSprites(menu, menu->buttonAnimButton, 1);
+            BattlePartyMenu_DrawButton(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_PRESSED, menu->buttonAnimPalette);
+            BattlePartyMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_PRESSED);
+            BattlePartyMenu_OffsetButtonSprites(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_PRESSED);
             menu->buttonAnimTimer = 0;
             menu->buttonAnimState = BUTTON_ANIM_STATE_HOLD;
             break;
         case BUTTON_ANIM_STATE_HOLD:
-            BattlePartyMenu_DrawButton(menu, menu->buttonAnimButton, 2, menu->buttonAnimPalette);
-            BattlePartyMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, 2);
-            BattlePartyMenu_OffsetButtonSprites(menu, menu->buttonAnimButton, 2);
+            BattlePartyMenu_DrawButton(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_SELECTED, menu->buttonAnimPalette);
+            BattlePartyMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_SELECTED);
+            BattlePartyMenu_OffsetButtonSprites(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_SELECTED);
             menu->buttonAnimTimer = 0;
             menu->buttonAnimState = BUTTON_ANIM_STATE_RELEASE;
             break;
         case BUTTON_ANIM_STATE_RELEASE:
-            BattlePartyMenu_DrawButton(menu, menu->buttonAnimButton, 0, menu->buttonAnimPalette);
-            BattlePartyMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, 0);
-            BattlePartyMenu_OffsetButtonSprites(menu, menu->buttonAnimButton, 0);
+            BattlePartyMenu_DrawButton(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_NORMAL, menu->buttonAnimPalette);
+            BattlePartyMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_NORMAL);
+            BattlePartyMenu_OffsetButtonSprites(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_NORMAL);
             menu->buttonAnimTimer = 0;
             menu->buttonAnimActive = FALSE;
             break;
@@ -3632,103 +3648,103 @@ static void BattlePartyMenu_DrawPageButtons(BattlePartyMenu *menu, u32 page) {
         for (i = 0; i < PARTY_SIZE; i++) {
             int slotType = BattlePartyMenu_GetSlotType(menu, i);
             if (slotType == BATTLE_PARTY_SLOT_EMPTY) {
-                BattlePartyMenu_DrawButton(menu, i, 3, 1);
+                BattlePartyMenu_DrawButton(menu, i, BATTLE_BUTTON_FRAME_DISABLED, 1);
             } else if (slotType == BATTLE_PARTY_SLOT_ACTIVE) {
-                BattlePartyMenu_DrawButton(menu, i, 0, 0);
+                BattlePartyMenu_DrawButton(menu, i, BATTLE_BUTTON_FRAME_NORMAL, 0);
             } else if (slotType == BATTLE_PARTY_SLOT_OTHER) {
-                BattlePartyMenu_DrawButton(menu, i, 0, 1);
+                BattlePartyMenu_DrawButton(menu, i, BATTLE_BUTTON_FRAME_NORMAL, 1);
             }
         }
         if (menu->context->mode == BATTLE_PARTY_MODE_SWITCH_NO_CANCEL) {
-            BattlePartyMenu_DrawButton(menu, 6, 3, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_DISABLED, 0);
         } else {
-            BattlePartyMenu_DrawButton(menu, 6, 0, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_NORMAL, 0);
         }
         break;
     case BATTLE_PARTY_PAGE_MON_MENU:
-        BattlePartyMenu_DrawButton(menu, 6, 0, 0);
-        BattlePartyMenu_DrawButton(menu, 7, 0, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_NORMAL, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_SHIFT, BATTLE_BUTTON_FRAME_NORMAL, 0);
         if (menu->mons[menu->context->selectedMon].isEgg) {
-            BattlePartyMenu_DrawButton(menu, 8, 3, 0);
-            BattlePartyMenu_DrawButton(menu, 10, 3, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_SUMMARY, BATTLE_BUTTON_FRAME_DISABLED, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CHECK_MOVES, BATTLE_BUTTON_FRAME_DISABLED, 0);
         } else {
-            BattlePartyMenu_DrawButton(menu, 8, 0, 0);
-            BattlePartyMenu_DrawButton(menu, 10, 0, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_SUMMARY, BATTLE_BUTTON_FRAME_NORMAL, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CHECK_MOVES, BATTLE_BUTTON_FRAME_NORMAL, 0);
         }
         break;
     case BATTLE_PARTY_PAGE_SUMMARY:
         if (BattlePartyMenu_HasMultipleNonEggMons(menu) == 1) {
-            BattlePartyMenu_DrawButton(menu, 12, 0, 0);
-            BattlePartyMenu_DrawButton(menu, 13, 0, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_PREV_MON, BATTLE_BUTTON_FRAME_NORMAL, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_NEXT_MON, BATTLE_BUTTON_FRAME_NORMAL, 0);
         } else {
-            BattlePartyMenu_DrawButton(menu, 12, 3, 0);
-            BattlePartyMenu_DrawButton(menu, 13, 3, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_PREV_MON, BATTLE_BUTTON_FRAME_DISABLED, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_NEXT_MON, BATTLE_BUTTON_FRAME_DISABLED, 0);
         }
-        BattlePartyMenu_DrawButton(menu, 11, 0, 0);
-        BattlePartyMenu_DrawButton(menu, 6, 0, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_SUMMARY_TO_MOVES, BATTLE_BUTTON_FRAME_NORMAL, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_NORMAL, 0);
         break;
     case BATTLE_PARTY_PAGE_CHECK_MOVES:
         if (BattlePartyMenu_HasMultipleNonEggMons(menu) == 1) {
-            BattlePartyMenu_DrawButton(menu, 12, 0, 0);
-            BattlePartyMenu_DrawButton(menu, 13, 0, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_PREV_MON, BATTLE_BUTTON_FRAME_NORMAL, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_NEXT_MON, BATTLE_BUTTON_FRAME_NORMAL, 0);
         } else {
-            BattlePartyMenu_DrawButton(menu, 12, 3, 0);
-            BattlePartyMenu_DrawButton(menu, 13, 3, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_PREV_MON, BATTLE_BUTTON_FRAME_DISABLED, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_NEXT_MON, BATTLE_BUTTON_FRAME_DISABLED, 0);
         }
         for (i = 0; i < MAX_MON_MOVES; i++) {
             if (menu->mons[menu->context->selectedMon].moves[i].move != MOVE_NONE) {
-                BattlePartyMenu_DrawButton(menu, i + 14, 0, 0);
+                BattlePartyMenu_DrawButton(menu, i + BATTLE_PARTY_BUTTON_MOVE_0, BATTLE_BUTTON_FRAME_NORMAL, 0);
             } else {
-                BattlePartyMenu_DrawButton(menu, i + 14, 3, 0);
+                BattlePartyMenu_DrawButton(menu, i + BATTLE_PARTY_BUTTON_MOVE_0, BATTLE_BUTTON_FRAME_DISABLED, 0);
             }
         }
-        BattlePartyMenu_DrawButton(menu, 9, 0, 0);
-        BattlePartyMenu_DrawButton(menu, 6, 0, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_MOVES_TO_SUMMARY, BATTLE_BUTTON_FRAME_NORMAL, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_NORMAL, 0);
         break;
     case BATTLE_PARTY_PAGE_MOVE_DETAIL:
-        BattlePartyMenu_DrawButton(menu, 6, 0, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_NORMAL, 0);
         for (i = 0; i < MAX_MON_MOVES; i++) {
             if (menu->context->selectedMove == i) {
-                BattlePartyMenu_DrawButton(menu, i + 30, 2, 0);
+                BattlePartyMenu_DrawButton(menu, i + BATTLE_PARTY_BUTTON_MOVE_TAB_0, BATTLE_BUTTON_FRAME_SELECTED, 0);
             } else {
-                BattlePartyMenu_DrawButton(menu, i + 30, 0, 0);
+                BattlePartyMenu_DrawButton(menu, i + BATTLE_PARTY_BUTTON_MOVE_TAB_0, BATTLE_BUTTON_FRAME_NORMAL, 0);
             }
         }
         break;
     case BATTLE_PARTY_PAGE_RESTORE_PP:
         for (i = 0; i < MAX_MON_MOVES; i++) {
             if (menu->mons[menu->context->selectedMon].moves[i].move != MOVE_NONE) {
-                BattlePartyMenu_DrawButton(menu, i + 19, 0, 0);
+                BattlePartyMenu_DrawButton(menu, i + BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0, BATTLE_BUTTON_FRAME_NORMAL, 0);
             } else {
-                BattlePartyMenu_DrawButton(menu, i + 19, 3, 0);
+                BattlePartyMenu_DrawButton(menu, i + BATTLE_PARTY_BUTTON_RESTORE_PP_MOVE_0, BATTLE_BUTTON_FRAME_DISABLED, 0);
             }
         }
-        BattlePartyMenu_DrawButton(menu, 6, 0, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_NORMAL, 0);
         break;
     case BATTLE_PARTY_PAGE_LEARN_MOVE:
     case BATTLE_PARTY_PAGE_LEARN_MOVE_CONTEST:
-        BattlePartyMenu_DrawButton(menu, 23, 0, 0);
-        BattlePartyMenu_DrawButton(menu, 24, 0, 0);
-        BattlePartyMenu_DrawButton(menu, 25, 0, 0);
-        BattlePartyMenu_DrawButton(menu, 26, 0, 0);
-        BattlePartyMenu_DrawButton(menu, 27, 0, 0);
-        BattlePartyMenu_DrawButton(menu, 6, 0, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_LEARN_MOVE_0, BATTLE_BUTTON_FRAME_NORMAL, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_LEARN_MOVE_0 + 1, BATTLE_BUTTON_FRAME_NORMAL, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_LEARN_MOVE_0 + 2, BATTLE_BUTTON_FRAME_NORMAL, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_LEARN_MOVE_0 + 3, BATTLE_BUTTON_FRAME_NORMAL, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_NEW_MOVE, BATTLE_BUTTON_FRAME_NORMAL, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_NORMAL, 0);
         if (menu->canToggleView == 1) {
-            BattlePartyMenu_DrawButton(menu, 18, 0, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_VIEW_TOGGLE, BATTLE_BUTTON_FRAME_NORMAL, 0);
         }
         break;
     case BATTLE_PARTY_PAGE_FORGET_MOVE:
-        BattlePartyMenu_DrawButton(menu, 28, 0, 0);
-        BattlePartyMenu_DrawButton(menu, 6, 0, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_FORGET, BATTLE_BUTTON_FRAME_NORMAL, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_NORMAL, 0);
         if (menu->canToggleView == 1) {
-            BattlePartyMenu_DrawButton(menu, 18, 0, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_VIEW_TOGGLE, BATTLE_BUTTON_FRAME_NORMAL, 0);
         }
         break;
     case BATTLE_PARTY_PAGE_FORGET_MOVE_CONTEST:
-        BattlePartyMenu_DrawButton(menu, 29, 0, 0);
-        BattlePartyMenu_DrawButton(menu, 6, 0, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_FORGET_CONTEST, BATTLE_BUTTON_FRAME_NORMAL, 0);
+        BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_NORMAL, 0);
         if (menu->canToggleView == 1) {
-            BattlePartyMenu_DrawButton(menu, 18, 0, 0);
+            BattlePartyMenu_DrawButton(menu, BATTLE_PARTY_BUTTON_VIEW_TOGGLE, BATTLE_BUTTON_FRAME_NORMAL, 0);
         }
         break;
     }
@@ -3760,8 +3776,8 @@ static u8 BattlePartyMenu_HasMultipleNonEggMons(BattlePartyMenu *menu) {
 
 static void BattlePartyMenu_RedrawSelectedMonButton(BattlePartyMenu *menu) {
     if (BattlePartyMenu_GetSlotType(menu, menu->context->selectedMon) == BATTLE_PARTY_SLOT_OTHER) {
-        BattlePartyMenu_DrawButton(menu, menu->context->selectedMon, 0, 1);
+        BattlePartyMenu_DrawButton(menu, menu->context->selectedMon, BATTLE_BUTTON_FRAME_NORMAL, 1);
     } else {
-        BattlePartyMenu_DrawButton(menu, menu->context->selectedMon, 0, 0);
+        BattlePartyMenu_DrawButton(menu, menu->context->selectedMon, BATTLE_BUTTON_FRAME_NORMAL, 0);
     }
 }

@@ -284,35 +284,35 @@ u32 BattleTower_ClaimRecordMilestone(SaveData *saveData) {
     u8 flag0;
     u8 flag1;
 
-    stat = FrontierSave_GetStat(Save_Frontier_GetStatic(saveData), 0, 0xFF);
+    stat = FrontierSave_GetStat(Save_Frontier_GetStatic(saveData), 0, FRONTIER_STAT_NO_FRIEND);
     if (stat < 20) {
         return 0;
     }
     frontierData = Save_FrontierData_Get(saveData);
-    flag13 = FrontierData_FlagAction(frontierData, 13, 0);
-    flag0 = FrontierData_FlagAction(frontierData, 0, 0);
-    flag1 = FrontierData_FlagAction(frontierData, 1, 0);
-    FrontierData_FlagAction(frontierData, 14, 0);
-    FrontierData_FlagAction(frontierData, 2, 0);
-    FrontierData_FlagAction(frontierData, 3, 0);
+    flag13 = FrontierData_FlagAction(frontierData, 13, FRONTIER_DATA_GET);
+    flag0 = FrontierData_FlagAction(frontierData, 0, FRONTIER_DATA_GET);
+    flag1 = FrontierData_FlagAction(frontierData, 1, FRONTIER_DATA_GET);
+    FrontierData_FlagAction(frontierData, 14, FRONTIER_DATA_GET);
+    FrontierData_FlagAction(frontierData, 2, FRONTIER_DATA_GET);
+    FrontierData_FlagAction(frontierData, 3, FRONTIER_DATA_GET);
     if (flag13 != 0 && flag0 != 0 && flag1 != 0) {
         return 0;
     }
     if (flag13 == 0) {
-        FrontierData_FlagAction(frontierData, 13, 1);
+        FrontierData_FlagAction(frontierData, 13, FRONTIER_DATA_SET);
         return 1;
     }
     if (stat < 50) {
         return 0;
     }
     if (flag0 == 0) {
-        FrontierData_FlagAction(frontierData, 0, 1);
+        FrontierData_FlagAction(frontierData, 0, FRONTIER_DATA_SET);
         return 2;
     }
     if (stat < 100 || flag1 != 0) {
         return 0;
     }
-    FrontierData_FlagAction(frontierData, 1, 1);
+    FrontierData_FlagAction(frontierData, 1, FRONTIER_DATA_SET);
     return 3;
 }
 
@@ -326,17 +326,17 @@ u32 BattleTower_GetRecordMilestone(SaveData *saveData) {
     u8 flag2;
     u8 flag3;
 
-    stat = FrontierSave_GetStat(Save_Frontier_GetStatic(saveData), 0, 0xFF);
+    stat = FrontierSave_GetStat(Save_Frontier_GetStatic(saveData), 0, FRONTIER_STAT_NO_FRIEND);
     if (stat < 20) {
         return 0;
     }
     frontierData = Save_FrontierData_Get(saveData);
-    flag13 = FrontierData_FlagAction(frontierData, 13, 0);
-    flag0 = FrontierData_FlagAction(frontierData, 0, 0);
-    flag1 = FrontierData_FlagAction(frontierData, 1, 0);
-    flag14 = FrontierData_FlagAction(frontierData, 14, 0);
-    flag2 = FrontierData_FlagAction(frontierData, 2, 0);
-    flag3 = FrontierData_FlagAction(frontierData, 3, 0);
+    flag13 = FrontierData_FlagAction(frontierData, 13, FRONTIER_DATA_GET);
+    flag0 = FrontierData_FlagAction(frontierData, 0, FRONTIER_DATA_GET);
+    flag1 = FrontierData_FlagAction(frontierData, 1, FRONTIER_DATA_GET);
+    flag14 = FrontierData_FlagAction(frontierData, 14, FRONTIER_DATA_GET);
+    flag2 = FrontierData_FlagAction(frontierData, 2, FRONTIER_DATA_GET);
+    flag3 = FrontierData_FlagAction(frontierData, 3, FRONTIER_DATA_GET);
     if (flag13 != 0 && flag0 != 0 && flag1 != 0) {
         return 0;
     }

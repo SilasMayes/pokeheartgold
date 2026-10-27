@@ -77,6 +77,10 @@ enum HallCellState {
 #define HALL_STATE_FADE_OUT     5
 #define HALL_STATE_CLOSE_PROMPT 6
 
+// LinkSync_StartSync / LinkSync_IsSynced link sync ids
+#define HALL_SYNC_ID_START  0x70
+#define HALL_SYNC_ID_DECIDE 0x68
+
 typedef struct BattleHallApp {
     OverlayManager *manager;
     OverlayManager *summaryApp;
@@ -415,13 +419,13 @@ static BOOL BattleHallApp_FadeIn(BattleHallApp *app) {
     case HALL_FADE_IN_START_SYNC:
         if (app->linkReady == 0 && BattleHall_IsMultiType(app->mode) == TRUE) {
             LinkSync_ClearPackets();
-            LinkSync_StartSync(0x70);
+            LinkSync_StartSync(HALL_SYNC_ID_START);
         }
         app->subState++;
         break;
     case HALL_FADE_IN_WAIT_SYNC:
         if (app->linkReady == 0 && BattleHall_IsMultiType(app->mode) == TRUE) {
-            if (LinkSync_IsSynced(0x70) == TRUE) {
+            if (LinkSync_IsSynced(HALL_SYNC_ID_START) == TRUE) {
                 LinkSync_ClearPackets();
                 app->linkReady = 1;
                 app->subState++;
@@ -751,11 +755,11 @@ static BOOL BattleHallApp_LinkDecide(BattleHallApp *app) {
         break;
     case HALL_LINK_DECIDE_START_SYNC:
         LinkSync_ClearPackets();
-        LinkSync_StartSync(0x68);
+        LinkSync_StartSync(HALL_SYNC_ID_DECIDE);
         app->subState = HALL_LINK_DECIDE_WAIT_SYNC;
         break;
     case HALL_LINK_DECIDE_WAIT_SYNC:
-        if (LinkSync_IsSynced(0x68) == TRUE) {
+        if (LinkSync_IsSynced(HALL_SYNC_ID_DECIDE) == TRUE) {
             LinkSync_ClearPackets();
             LinkSync_Init(HEAP_ID_105);
             app->linkChoice = NO_LINK_CHOICE;
@@ -775,11 +779,11 @@ static BOOL BattleHallApp_LinkSync(BattleHallApp *app) {
     switch (app->subState) {
     case HALL_LINK_SYNC_START:
         LinkSync_ClearPackets();
-        LinkSync_StartSync(0x68);
+        LinkSync_StartSync(HALL_SYNC_ID_DECIDE);
         app->subState++;
         break;
     case HALL_LINK_SYNC_WAIT:
-        if (LinkSync_IsSynced(0x68) == 1) {
+        if (LinkSync_IsSynced(HALL_SYNC_ID_DECIDE) == 1) {
             LinkSync_ClearPackets();
             return TRUE;
         }
@@ -1176,8 +1180,8 @@ static void BattleHallApp_HandleDpad(BattleHallApp *app, int unused) {
         if (BattleHall_GetCellType(app->cursor) != TYPE_CELL_EMPTY) {
             app->prevCursor = app->cursor;
         }
-        if (app->cursor % 4 == 0) {
-            app->cursor += 3;
+        if (app->cursor % TYPE_GRID_COLUMNS == 0) {
+            app->cursor += TYPE_GRID_COLUMNS - 1;
         } else if (BattleHall_GetCellType(app->cursor) == TYPE_CELL_EMPTY) {
             app->cursor = 16;
         } else {
@@ -1189,10 +1193,10 @@ static void BattleHallApp_HandleDpad(BattleHallApp *app, int unused) {
         if (BattleHall_GetCellType(app->cursor) != TYPE_CELL_EMPTY) {
             app->prevCursor = app->cursor;
         }
-        if (app->cursor % 4 == 3) {
-            app->cursor -= 3;
+        if (app->cursor % TYPE_GRID_COLUMNS == TYPE_GRID_COLUMNS - 1) {
+            app->cursor -= TYPE_GRID_COLUMNS - 1;
         } else if (BattleHall_GetCellType(app->cursor) == TYPE_CELL_EMPTY) {
-            app->cursor = 19;
+            app->cursor = TYPE_CELL_MATRON;
         } else {
             app->cursor++;
         }
@@ -1202,12 +1206,12 @@ static void BattleHallApp_HandleDpad(BattleHallApp *app, int unused) {
         if (BattleHall_GetCellType(app->cursor) != TYPE_CELL_EMPTY) {
             app->prevCursor = app->cursor;
         }
-        if (app->cursor < 4) {
-            app->cursor += 16;
+        if (app->cursor < TYPE_GRID_COLUMNS) {
+            app->cursor += TYPE_GRID_COLUMNS * (TYPE_GRID_ROWS - 1);
         } else if (BattleHall_GetCellType(app->cursor) == TYPE_CELL_EMPTY) {
             if (app->prevCursor == 16) {
                 app->cursor = 13;
-            } else if (app->prevCursor == 19) {
+            } else if (app->prevCursor == TYPE_CELL_MATRON) {
                 app->cursor = 14;
             } else if (app->prevCursor == 13 || app->prevCursor == 1) {
                 app->cursor = 13;
@@ -1217,7 +1221,7 @@ static void BattleHallApp_HandleDpad(BattleHallApp *app, int unused) {
                 app->cursor = 13;
             }
         } else {
-            app->cursor -= 4;
+            app->cursor -= TYPE_GRID_COLUMNS;
         }
         moved = TRUE;
     }
@@ -1225,10 +1229,10 @@ static void BattleHallApp_HandleDpad(BattleHallApp *app, int unused) {
         if (BattleHall_GetCellType(app->cursor) != TYPE_CELL_EMPTY) {
             app->prevCursor = app->cursor;
         }
-        if (app->cursor >= 16) {
-            app->cursor -= 16;
+        if (app->cursor >= TYPE_GRID_COLUMNS * (TYPE_GRID_ROWS - 1)) {
+            app->cursor -= TYPE_GRID_COLUMNS * (TYPE_GRID_ROWS - 1);
         } else {
-            app->cursor += 4;
+            app->cursor += TYPE_GRID_COLUMNS;
         }
         moved = TRUE;
     }
@@ -1383,7 +1387,7 @@ static u8 BattleHallApp_GetRecordIndex(u8 index) {
 
 // The Hall Matron appears in the 50th and 170th single battles
 static BOOL BattleHallApp_IsMatronBattle(BattleHallApp *app) {
-    if (app->mode == 0) {
+    if (app->mode == FRONTIER_CHALLENGE_SINGLE) {
         if (app->battleNo == HALL_MATRON_BATTLE_SILVER || app->battleNo == HALL_MATRON_BATTLE_GOLD) {
             return TRUE;
         }

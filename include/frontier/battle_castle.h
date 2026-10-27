@@ -21,6 +21,9 @@ enum BattleCastleRankKind {
 // Highest rank of each kind
 #define CASTLE_RANK_MAX 3
 
+// linkSlot of the Castle party / opponent screens while no linked action is pending
+#define CASTLE_NO_LINK_SLOT 0xFF
+
 typedef struct BattleCastleSprite {
     s16 x;
     s16 y;
@@ -349,7 +352,7 @@ void BattleCastleOpponentApp_SetCursorPos(BattleCastleOpponentApp *app, u32 curs
 GridInputHandler *BattleCastleOpponentApp_CreatePartyGrid(BattleCastleOpponentApp *app, int initialPos, int numMons);
 
 BOOL BattleCastlePartyApp_Init(OverlayManager *manager, int *state);
-int BattleCastlePartyApp_Main(OverlayManager *manager, int *state);
+BOOL BattleCastlePartyApp_Main(OverlayManager *manager, int *state);
 BOOL BattleCastlePartyApp_Exit(OverlayManager *manager, int *state);
 
 BOOL BattleCastleOpponentApp_Init(OverlayManager *manager, int *state);

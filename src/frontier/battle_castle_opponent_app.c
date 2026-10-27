@@ -339,7 +339,7 @@ BOOL BattleCastleOpponentApp_Init(OverlayManager *manager, int *state) {
     app->levelChanges = args->levelChanges;
     app->statsBought = args->statsBought;
     app->movesBought = args->movesBought;
-    app->linkSlot = 0xFF;
+    app->linkSlot = CASTLE_NO_LINK_SLOT;
     app->partnerPoints = args->partnerPoints;
     app->frontierSave = Save_Frontier_GetStatic(app->saveData);
     for (i = 0; i < CASTLE_RANK_KIND_COUNT; i++) {
@@ -373,7 +373,7 @@ BOOL BattleCastleOpponentApp_Main(OverlayManager *manager, int *state) {
             app->printerId = BattleCastleOpponentApp_ShowMessage(app, msg_0033_00007, 1);
             BattleCastleOpponentApp_SetMainState(app, state, CASTLE_OPP_MAIN_LINK_EXIT);
         }
-    } else if (app->linkSlot != 0xFF && (*state == CASTLE_OPP_MAIN_MENU || *state == CASTLE_OPP_MAIN_LINK_EXIT)) {
+    } else if (app->linkSlot != CASTLE_NO_LINK_SLOT && (*state == CASTLE_OPP_MAIN_MENU || *state == CASTLE_OPP_MAIN_LINK_EXIT)) {
         app->partnerExited = FALSE;
         BattleCastleOpponentApp_CloseAll(app);
         BattleCastleOpponentApp_HideSummaryBg(app);
@@ -893,7 +893,7 @@ static BOOL BattleCastleOpponentApp_LinkAction(BattleCastleOpponentApp *app) {
         }
         break;
     case CASTLE_OPP_LINK_ACTION_APPLY:
-        if (app->linkSlot != 0xFF) {
+        if (app->linkSlot != CASTLE_NO_LINK_SLOT) {
             u8 action;
             u8 slot;
 
@@ -934,7 +934,7 @@ static BOOL BattleCastleOpponentApp_LinkAction(BattleCastleOpponentApp *app) {
         if (BattleCastleOpponentApp_FinishLinkAction(app, slot, app->action) == TRUE) {
             LinkSync_ClearPackets();
             LinkSync_Init(HEAP_ID_107);
-            app->linkSlot = 0xFF;
+            app->linkSlot = CASTLE_NO_LINK_SLOT;
             app->partnerExited = FALSE;
             return TRUE;
         }
@@ -1714,7 +1714,7 @@ void BattleCastleOpponentApp_ReceiveRanks(int netId, void *unused, u16 *data, Ba
 static void BattleCastleOpponentApp_PrepareLinkAction(BattleCastleOpponentApp *app, int command, int slot) {
     app->linkSendBuf[0] = command;
     app->linkSendBuf[1] = slot;
-    if (Comm_GetLocalNetId() == 0 && app->linkSlot == 0xFF) {
+    if (Comm_GetLocalNetId() == 0 && app->linkSlot == CASTLE_NO_LINK_SLOT) {
         app->linkSlot = slot;
     }
     app->linkSendBuf[2] = app->linkSlot;
@@ -1728,7 +1728,7 @@ void BattleCastleOpponentApp_ReceiveAction(int netId, int unused, u16 *data, Bat
     if (netId != Comm_GetLocalNetId()) {
         app->partnerSlot = data[1];
         if (Comm_GetLocalNetId() == 0) {
-            if (app->linkSlot != 0xFF) {
+            if (app->linkSlot != CASTLE_NO_LINK_SLOT) {
                 app->partnerSlot = 0;
                 return;
             }

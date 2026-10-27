@@ -39,8 +39,8 @@ void Save_Frontier_Load(SaveData *save) {
 }
 
 u16 FrontierSave_GetStat(FrontierSave *frontier, int stat, int index) {
-    if (stat < 112) {
-        if (stat >= 100) {
+    if (stat < FRONTIER_STAT_PER_FRIEND) {
+        if (stat >= FRONTIER_STAT_FRIEND_FLAGS) {
             if (index >= 16) {
                 stat++;
                 index -= 16;
@@ -53,16 +53,16 @@ u16 FrontierSave_GetStat(FrontierSave *frontier, int stat, int index) {
         GF_ASSERT(FALSE);
         return 0;
     }
-    return frontier->rowStats[index][stat - 112];
+    return frontier->rowStats[index][stat - FRONTIER_STAT_PER_FRIEND];
 }
 
 u32 FrontierSave_SetStat(FrontierSave *frontier, int stat, int index, u16 value) {
-    if (value > 9999) {
-        value = 9999;
+    if (value > FRONTIER_STAT_MAX) {
+        value = FRONTIER_STAT_MAX;
     }
-    if (stat < 112) {
-        if (stat >= 100) {
-            GF_ASSERT(index != 255);
+    if (stat < FRONTIER_STAT_PER_FRIEND) {
+        if (stat >= FRONTIER_STAT_FRIEND_FLAGS) {
+            GF_ASSERT(index != FRONTIER_STAT_NO_FRIEND);
             if (index >= 16) {
                 stat++;
                 index -= 16;
@@ -73,28 +73,28 @@ u32 FrontierSave_SetStat(FrontierSave *frontier, int stat, int index, u16 value)
                 frontier->stats[stat] |= 1 << index;
             }
         } else {
-            GF_ASSERT(index == 255);
+            GF_ASSERT(index == FRONTIER_STAT_NO_FRIEND);
             frontier->stats[stat] = value;
         }
     } else {
-        GF_ASSERT(index != 255);
-        frontier->rowStats[index][stat - 112] = value;
+        GF_ASSERT(index != FRONTIER_STAT_NO_FRIEND);
+        frontier->rowStats[index][stat - FRONTIER_STAT_PER_FRIEND] = value;
     }
     return value;
 }
 
 void FrontierSave_ClearRows(FrontierSave *frontier) {
     MI_CpuFill8(frontier->rowStats, 0, sizeof(frontier->rowStats));
-    for (int i = 100; i <= 111; i++) {
+    for (int i = FRONTIER_STAT_FRIEND_FLAGS; i <= FRONTIER_STAT_PER_FRIEND - 1; i++) {
         frontier->stats[i] = 0;
     }
 }
 
 void FrontierSave_DeleteRow(FrontierSave *frontier, int row) {
-    GF_ASSERT(row != 255);
+    GF_ASSERT(row != FRONTIER_STAT_NO_FRIEND);
     for (; row < 31; row++) {
         MI_CpuCopy8(frontier->rowStats[row + 1], frontier->rowStats[row], sizeof(frontier->rowStats[0]));
-        for (int i = 100; i < 111; i += 2) {
+        for (int i = FRONTIER_STAT_FRIEND_FLAGS; i < FRONTIER_STAT_PER_FRIEND - 1; i += 2) {
             FrontierSave_SetStat(frontier, i, row, FrontierSave_GetStat(frontier, i, row + 1));
         }
     }
@@ -123,8 +123,8 @@ void FrontierSave_RaiseStat(FrontierSave *frontier, u32 stat, u32 index, u16 val
     u32 current = FrontierSave_GetStat(frontier, stat, index);
     if (current < value) {
         FrontierSave_SetStat(frontier, stat, index, value);
-    } else if (current > 9999) {
-        FrontierSave_SetStat(frontier, stat, index, 9999);
+    } else if (current > FRONTIER_STAT_MAX) {
+        FrontierSave_SetStat(frontier, stat, index, FRONTIER_STAT_MAX);
     }
 }
 
@@ -168,8 +168,8 @@ u32 FrontierSpeciesRecords_Get(SaveData *save, u32 *buffer, u32 type, u32 index)
 }
 
 static u32 FrontierSpeciesRecords_Set(ExtraFrontier *data, int type, int index, u16 value) {
-    if (value > 9999) {
-        value = 9999;
+    if (value > FRONTIER_STAT_MAX) {
+        value = FRONTIER_STAT_MAX;
     }
     switch (type) {
     case 0:
@@ -196,8 +196,8 @@ static u32 FrontierSpeciesRecords_Raise(SaveData *save, u32 *data, u32 type, u32
     if (current < value) {
         return FrontierSpeciesRecords_Set((ExtraFrontier *)data, type, index, value);
     }
-    if (current > 9999) {
-        return FrontierSpeciesRecords_Set((ExtraFrontier *)data, type, index, 9999);
+    if (current > FRONTIER_STAT_MAX) {
+        return FrontierSpeciesRecords_Set((ExtraFrontier *)data, type, index, FRONTIER_STAT_MAX);
     }
     return current;
 }
@@ -210,7 +210,7 @@ BOOL FrontierSpeciesRecords_UpdateFromStat(SaveData *save, int stat, int indexSt
     GF_ASSERT(indexStat == 36 || indexStat == 48 || indexStat == 60);
     *loadResult = 1;
     *saveResult = 2;
-    if (slot != 255) {
+    if (slot != FRONTIER_STAT_NO_FRIEND) {
         return FALSE;
     }
     if (!Save_CheckExtraChunksExist(save)) {

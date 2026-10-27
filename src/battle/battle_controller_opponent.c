@@ -3028,7 +3028,7 @@ static void Task_PokemonEncounter(SysTask *task, void *data) {
     case ENCOUNTER_STATE_WAIT_MON_ANIM:
         if (PokepicAnimManager_GetAnimState(BattleSystem_GetPokepicAnimManager(work->battleSystem), work->battlerId) == 1 && !Pokepic_IsAnimFinished(work->pokepic)) {
             if (work->shiny) {
-                BattleController_InitMoveAnimData(work->battleSystem, NULL, &animData, 1, 11, work->battlerId, work->battlerId, MOVE_NONE);
+                BattleController_InitMoveAnimData(work->battleSystem, NULL, &animData, 1, BATTLE_ANIMATION_SHINY, work->battlerId, work->battlerId, MOVE_NONE);
                 OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, anim, &animData);
                 work->state = ENCOUNTER_STATE_SHINY_ANIM;
             } else {
@@ -3097,7 +3097,7 @@ static void Task_GiratinaEncounter(SysTask *task, void *data) {
             break;
         }
         if (work->shiny) {
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &animData, 1, 11, work->battlerId, work->battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &animData, 1, BATTLE_ANIMATION_SHINY, work->battlerId, work->battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &animData);
             work->state = ENCOUNTER_STATE_SHINY_ANIM;
         } else {
@@ -3230,7 +3230,7 @@ static void Task_PokemonSlideIn(SysTask *task, void *data) {
         BallSealEffect_Free(work->ballOpenEffect);
         if (work->shiny) {
             work->animSystem = BattleAnimSystem_New(HEAP_ID_BATTLE);
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &animData, 1, 11, work->battlerId, work->battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &animData, 1, BATTLE_ANIMATION_SHINY, work->battlerId, work->battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, work->animSystem, &animData);
             work->state = SLIDE_IN_STATE_SHINY_ANIM;
         } else {
@@ -3331,7 +3331,7 @@ static void Task_FollowMonSlideIn(SysTask *task, void *data) {
         work->opponentData->ballData = NULL;
         if (work->shiny) {
             work->animSystem = BattleAnimSystem_New(HEAP_ID_BATTLE);
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &shinyAnimData, 1, 11, work->battlerId, work->battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &shinyAnimData, 1, BATTLE_ANIMATION_SHINY, work->battlerId, work->battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, work->animSystem, &shinyAnimData);
             work->state = FOLLOW_SLIDE_IN_STATE_SHINY_ANIM;
         } else {
@@ -3461,7 +3461,7 @@ static void Task_PokemonSendOut(SysTask *task, void *data) {
             BallThrow_Delete(work->ballData);
             BallSealEffect_Free(work->ballOpenEffect);
             if (work->shiny) {
-                BattleController_InitMoveAnimData(work->battleSystem, NULL, &shinyAnimData, 1, 11, work->battlerId, work->battlerId, MOVE_NONE);
+                BattleController_InitMoveAnimData(work->battleSystem, NULL, &shinyAnimData, 1, BATTLE_ANIMATION_SHINY, work->battlerId, work->battlerId, MOVE_NONE);
                 OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &shinyAnimData);
                 work->state = SEND_OUT_STATE_SHINY_ANIM;
             } else {
@@ -3480,7 +3480,7 @@ static void Task_PokemonSendOut(SysTask *task, void *data) {
         break;
     case SEND_OUT_STATE_SUBSTITUTE_HIDE:
         if (work->isSubstitute) {
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, 15, work->battlerId, work->battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, BATTLE_ANIMATION_SUB_OUT, work->battlerId, work->battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &substituteAnimData);
             work->state++;
         } else {
@@ -3490,7 +3490,7 @@ static void Task_PokemonSendOut(SysTask *task, void *data) {
     case SEND_OUT_STATE_SUBSTITUTE_SHOW:
         BattleController_InitBattlerPicParams(work->battleSystem, &work->animData, &params, work->battlerId);
         BattleAnimUtil_LoadSubstituteIntoPic(&params, HEAP_ID_BATTLE);
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, 16, work->battlerId, work->battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, BATTLE_ANIMATION_SUB_IN, work->battlerId, work->battlerId, MOVE_NONE);
         OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &unsubstituteAnimData);
         work->opponentData->substituteShown = 1;
         work->state++;
@@ -3542,7 +3542,7 @@ static void Task_FollowMonSendOut(SysTask *task, void *data) {
     case FOLLOW_SEND_OUT_STATE_WAIT_MON_ANIM:
         if (PokepicAnimManager_GetAnimState(BattleSystem_GetPokepicAnimManager(work->battleSystem), work->battlerId) == 1 && !Pokepic_IsAnimFinished(work->opponentData->pokepic)) {
             if (work->shiny) {
-                BattleController_InitMoveAnimData(work->battleSystem, NULL, &shinyAnimData, 1, 11, work->battlerId, work->battlerId, MOVE_NONE);
+                BattleController_InitMoveAnimData(work->battleSystem, NULL, &shinyAnimData, 1, BATTLE_ANIMATION_SHINY, work->battlerId, work->battlerId, MOVE_NONE);
                 OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &shinyAnimData);
                 work->state = FOLLOW_SEND_OUT_STATE_SHINY_ANIM;
             } else {
@@ -3562,7 +3562,7 @@ static void Task_FollowMonSendOut(SysTask *task, void *data) {
         break;
     case FOLLOW_SEND_OUT_STATE_SUBSTITUTE_HIDE:
         if (work->isSubstitute) {
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, 15, work->battlerId, work->battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, BATTLE_ANIMATION_SUB_OUT, work->battlerId, work->battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &substituteAnimData);
             work->state++;
         } else {
@@ -3572,7 +3572,7 @@ static void Task_FollowMonSendOut(SysTask *task, void *data) {
     case FOLLOW_SEND_OUT_STATE_SUBSTITUTE_SHOW:
         BattleController_InitBattlerPicParams(work->battleSystem, &work->animData, &params, work->battlerId);
         BattleAnimUtil_LoadSubstituteIntoPic(&params, HEAP_ID_BATTLE);
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, 16, work->battlerId, work->battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, BATTLE_ANIMATION_SUB_IN, work->battlerId, work->battlerId, MOVE_NONE);
         OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &unsubstituteAnimData);
         work->opponentData->substituteShown = 1;
         work->state++;
@@ -3601,7 +3601,7 @@ static void Task_RecallPokemon(SysTask *task, void *data) {
     switch (state) {
     case RECALL_STATE_SUBSTITUTE_HIDE:
         if (work->isSubstitute) {
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, 15, work->battlerId, work->battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, BATTLE_ANIMATION_SUB_OUT, work->battlerId, work->battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &substituteAnimData);
             work->state++;
         } else {
@@ -3611,7 +3611,7 @@ static void Task_RecallPokemon(SysTask *task, void *data) {
     case RECALL_STATE_SUBSTITUTE_SHOW:
         BattleController_InitBattlerPicParams(work->battleSystem, &work->animData, &params, work->battlerId);
         BattleAnimUtil_RestorePic(&params, HEAP_ID_BATTLE);
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, 16, work->battlerId, work->battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, BATTLE_ANIMATION_SUB_IN, work->battlerId, work->battlerId, MOVE_NONE);
         OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &unsubstituteAnimData);
         work->opponentData->substituteShown = 0;
         work->state++;
@@ -3704,7 +3704,7 @@ static void Task_RecallFollowMon(SysTask *task, void *data) {
     switch (work->state) {
     case RECALL_FOLLOW_STATE_SUBSTITUTE_HIDE:
         if (work->isSubstitute) {
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, 15, work->battlerId, work->battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, BATTLE_ANIMATION_SUB_OUT, work->battlerId, work->battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &substituteAnimData);
             work->state++;
         } else {
@@ -3714,7 +3714,7 @@ static void Task_RecallFollowMon(SysTask *task, void *data) {
     case RECALL_FOLLOW_STATE_SUBSTITUTE_SHOW:
         BattleController_InitBattlerPicParams(work->battleSystem, &work->animData, &params, work->battlerId);
         BattleAnimUtil_RestorePic(&params, HEAP_ID_BATTLE);
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, 16, work->battlerId, work->battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, BATTLE_ANIMATION_SUB_IN, work->battlerId, work->battlerId, MOVE_NONE);
         OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &unsubstituteAnimData);
         work->opponentData->substituteShown = 0;
         work->state++;
@@ -4989,7 +4989,7 @@ static void Task_PlayerSelectItem(SysTask *task, void *data) {
         break;
     case SELECT_ITEM_STATE_SELF_ANIM: {
         OpponentData *opponentData;
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &selfAnimData, 1, 9, work->battlerId, work->battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &selfAnimData, 1, BATTLE_ANIMATION_BAG_ITEM, work->battlerId, work->battlerId, MOVE_NONE);
         opponentData = BattleSystem_GetOpponentData(work->battleSystem, work->battlerId);
         OpponentData_StartMoveAnimation(work->battleSystem, opponentData, (BattleAnimSystem *)BattleSystem_GetBattleAnimSystem(work->battleSystem), &selfAnimData);
         work->state++;
@@ -4998,7 +4998,7 @@ static void Task_PlayerSelectItem(SysTask *task, void *data) {
     case SELECT_ITEM_STATE_STATUS_MON_ANIM: {
         int battlerId = work->partyMenu->args->selectedMon * 2;
         OpponentData *opponentData;
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &monAnimData, 1, 9, battlerId, battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &monAnimData, 1, BATTLE_ANIMATION_BAG_ITEM, battlerId, battlerId, MOVE_NONE);
         opponentData = BattleSystem_GetOpponentData(work->battleSystem, battlerId);
         OpponentData_StartMoveAnimation(work->battleSystem, opponentData, (BattleAnimSystem *)BattleSystem_GetBattleAnimSystem(work->battleSystem), &monAnimData);
         work->state++;
@@ -5014,7 +5014,7 @@ static void Task_PlayerSelectItem(SysTask *task, void *data) {
             opponentData = BattleSystem_GetOpponentData(work->battleSystem, work->battlerId);
             OpponentData_StartMoveAnimation(work->battleSystem, opponentData, (BattleAnimSystem *)BattleSystem_GetBattleAnimSystem(work->battleSystem), &battleItemAnimData);
         } else {
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &battleItemAnimData, 1, 12, work->battlerId, work->battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &battleItemAnimData, 1, BATTLE_ANIMATION_STAT_BOOST, work->battlerId, work->battlerId, MOVE_NONE);
             opponentData = BattleSystem_GetOpponentData(work->battleSystem, work->battlerId);
             OpponentData_StartMoveAnimation(work->battleSystem, opponentData, (BattleAnimSystem *)BattleSystem_GetBattleAnimSystem(work->battleSystem), &battleItemAnimData);
         }
@@ -5062,7 +5062,7 @@ static void Task_PlayerSelectItem(SysTask *task, void *data) {
     case SELECT_ITEM_STATE_STATUS_RESTORE_ANIM: {
         int battlerId = work->partyMenu->args->selectedMon * 2;
         OpponentData *opponentData;
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &restoreAnimData, 1, 14, battlerId, battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &restoreAnimData, 1, BATTLE_ANIMATION_RESTORE_HP, battlerId, battlerId, MOVE_NONE);
         opponentData = BattleSystem_GetOpponentData(work->battleSystem, battlerId);
         OpponentData_StartMoveAnimation(work->battleSystem, opponentData, (BattleAnimSystem *)BattleSystem_GetBattleAnimSystem(work->battleSystem), &restoreAnimData);
         work->state++;
@@ -5487,7 +5487,7 @@ static void Task_PlayerDrawYesNoBox(SysTask *task, void *data) {
         if (BattleInput_CheckFeedbackDone(battleInput)) {
             if (work->msgId) {
                 msgData = BattleSystem_GetMessageLoader(work->battleSystem);
-                if (work->mode == 5) {
+                if (work->mode == YES_NO_GIVE_NICKNAME) {
                     menu.msg.tag = 130;
                     menu.msg.param[0] = work->param;
                 } else {
@@ -5508,20 +5508,20 @@ static void Task_PlayerDrawYesNoBox(SysTask *task, void *data) {
         BattleInput_DisableBallGauge(battleInput);
         menu.twoOption.moveNo = work->value;
         switch (work->mode) {
-        case 0:
-        case 5:
+        case YES_NO_BASIC:
+        case YES_NO_GIVE_NICKNAME:
             BattleInput_ChangeMenu(narc0, narc1, battleInput, BATTLE_MENU_YES_NO, 0, (int *)&menu.twoOption);
             break;
-        case 1:
+        case YES_NO_FORGET_MOVE:
             BattleInput_ChangeMenu(narc0, narc1, battleInput, BATTLE_MENU_KEEP_FORGET_MOVE, 0, (int *)&menu.twoOption);
             break;
-        case 2:
+        case YES_NO_GIVE_UP_ON_MOVE:
             BattleInput_ChangeMenu(narc0, narc1, battleInput, BATTLE_MENU_GIVE_UP_ON_MOVE, 0, (int *)&menu.twoOption);
             break;
-        case 3:
+        case YES_NO_NEXT_MON:
             BattleInput_ChangeMenu(narc0, narc1, battleInput, BATTLE_MENU_SWITCH_OR_FLEE, 0, (int *)&menu.twoOption);
             break;
-        case 4:
+        case YES_NO_CHANGE_MON:
             BattleInput_ChangeMenu(narc0, narc1, battleInput, BATTLE_MENU_SWITCH_OR_KEEP, 0, (int *)&menu.twoOption);
             break;
         default:
@@ -5610,7 +5610,7 @@ static void Task_PlayMoveAnimation(SysTask *task, void *data) {
     case MOVE_ANIM_STATE_SUBSTITUTE_HIDE:
         if (work->animData.isSubstitute && work->animData.isEffectAnim == 0 && Pokepic_GetAttr(work->pokepic, POKEPIC_VANISHED) == 0) {
             battlerId = work->battlerId;
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, 15, battlerId, battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, BATTLE_ANIMATION_SUB_OUT, battlerId, battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, work->animSystem, &substituteAnimData);
             work->state = MOVE_ANIM_STATE_SUBSTITUTE_HIDE_ANIM;
         } else {
@@ -5621,7 +5621,7 @@ static void Task_PlayMoveAnimation(SysTask *task, void *data) {
         BattleController_InitBattlerPicParams(work->battleSystem, &work->animData, &substituteParams, work->battlerId);
         BattleAnimUtil_RestorePic(&substituteParams, HEAP_ID_BATTLE);
         battlerId = work->battlerId;
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, 16, battlerId, battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, BATTLE_ANIMATION_SUB_IN, battlerId, battlerId, MOVE_NONE);
         OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, work->animSystem, &unsubstituteAnimData);
         work->opponentData->substituteShown = 0;
         work->state++;
@@ -5647,7 +5647,7 @@ static void Task_PlayMoveAnimation(SysTask *task, void *data) {
         }
         if (work->animData.isSubstitute && work->animData.isEffectAnim == 0 && Pokepic_GetAttr(work->pokepic, POKEPIC_VANISHED) == 0) {
             battlerId = work->battlerId;
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &resubstituteAnimData, 1, 15, battlerId, battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &resubstituteAnimData, 1, BATTLE_ANIMATION_SUB_OUT, battlerId, battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, work->animSystem, &resubstituteAnimData);
             work->state = MOVE_ANIM_STATE_RESUBSTITUTE_HIDE_ANIM;
         } else {
@@ -5658,7 +5658,7 @@ static void Task_PlayMoveAnimation(SysTask *task, void *data) {
         BattleController_InitBattlerPicParams(work->battleSystem, &work->animData, &resubstituteParams, work->battlerId);
         BattleAnimUtil_LoadSubstituteIntoPic(&resubstituteParams, HEAP_ID_BATTLE);
         battlerId = work->battlerId;
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &restoreAnimData, 1, 16, battlerId, battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &restoreAnimData, 1, BATTLE_ANIMATION_SUB_IN, battlerId, battlerId, MOVE_NONE);
         OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, work->animSystem, &restoreAnimData);
         work->opponentData->substituteShown = 1;
         work->state++;
@@ -5766,7 +5766,7 @@ static void Task_PlayFaintAnimation(SysTask *task, void *data) {
     switch (work->state) {
     case FAINT_STATE_SUBSTITUTE_HIDE:
         if (work->isSubstitute) {
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, 15, work->battlerId, work->battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, BATTLE_ANIMATION_SUB_OUT, work->battlerId, work->battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &substituteAnimData);
             work->state++;
         } else {
@@ -5776,7 +5776,7 @@ static void Task_PlayFaintAnimation(SysTask *task, void *data) {
     case FAINT_STATE_SUBSTITUTE_SHOW:
         BattleController_InitBattlerPicParams(work->battleSystem, &work->animData, &params, work->battlerId);
         BattleAnimUtil_RestorePic(&params, HEAP_ID_BATTLE);
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, 16, work->battlerId, work->battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &unsubstituteAnimData, 1, BATTLE_ANIMATION_SUB_IN, work->battlerId, work->battlerId, MOVE_NONE);
         OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &unsubstituteAnimData);
         work->opponentData->substituteShown = 0;
         work->state++;
@@ -5896,7 +5896,7 @@ static void Task_ToggleVanish(SysTask *task, void *data) {
         break;
     case TOGGLE_VANISH_STATE_SUBSTITUTE_HIDE:
         if (work->isSubstitute && work->opponentData->substituteShown == 0) {
-            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, 15, work->battlerId, work->battlerId, MOVE_NONE);
+            BattleController_InitMoveAnimData(work->battleSystem, NULL, &substituteAnimData, 1, BATTLE_ANIMATION_SUB_OUT, work->battlerId, work->battlerId, MOVE_NONE);
             OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &substituteAnimData);
             work->state++;
         } else {
@@ -5906,7 +5906,7 @@ static void Task_ToggleVanish(SysTask *task, void *data) {
     case TOGGLE_VANISH_STATE_SUBSTITUTE_SHOW:
         BattleController_InitBattlerPicParams(work->battleSystem, &work->animData, &params, work->battlerId);
         BattleAnimUtil_LoadSubstituteIntoPic(&params, HEAP_ID_BATTLE);
-        BattleController_InitMoveAnimData(work->battleSystem, NULL, &restoreAnimData, 1, 16, work->battlerId, work->battlerId, MOVE_NONE);
+        BattleController_InitMoveAnimData(work->battleSystem, NULL, &restoreAnimData, 1, BATTLE_ANIMATION_SUB_IN, work->battlerId, work->battlerId, MOVE_NONE);
         OpponentData_StartMoveAnimation(work->battleSystem, work->opponentData, animSystem, &restoreAnimData);
         work->opponentData->substituteShown = 1;
         work->state++;

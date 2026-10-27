@@ -41,6 +41,21 @@ typedef struct BattleLinkCommand {
     void *(*getBuffer)();
 } BattleLinkCommand;
 
+// LinkSync_StartSync / LinkSync_IsSynced ids of the link data exchange: each send waits for its sync
+enum BattleLinkSync {
+    BATTLE_LINK_SYNC_START = 50,
+    BATTLE_LINK_SYNC_AI_FLAGS,
+    BATTLE_LINK_SYNC_PROFILE,
+    BATTLE_LINK_SYNC_TRAINER,
+    BATTLE_LINK_SYNC_PARTY,
+    BATTLE_LINK_SYNC_CHATOT,
+    BATTLE_LINK_SYNC_PAL_PAD,
+    BATTLE_LINK_SYNC_PARTNER_TRAINER_1,
+    BATTLE_LINK_SYNC_PARTNER_TRAINER_3,
+    BATTLE_LINK_SYNC_PARTNER_PARTY_1,
+    BATTLE_LINK_SYNC_PARTNER_PARTY_3,
+};
+
 extern const BattleLinkCommand gBattleLinkCommands[];
 int Comm_GetSendBufferFreeSpace(void);
 BOOL Comm_SendCommandNoCopy(int command, void *data, int size);
@@ -60,8 +75,8 @@ BOOL BattleLink_SendChatot(BattleLinkWork *work);
 BOOL BattleLink_PreparePalPad(BattleLinkWork *work);
 BOOL BattleLink_SendPalPad(BattleLinkWork *work);
 BOOL BattleLink_PreparePartnerTrainer(BattleLinkWork *work, int index);
-BOOL BattleLink_SendPartnerTrainer(BattleLinkWork *work, int index, int command);
+BOOL BattleLink_SendPartnerTrainer(BattleLinkWork *work, int index, int syncId);
 BOOL BattleLink_PreparePartnerParty(BattleLinkWork *work, int index);
-BOOL BattleLink_SendPartnerParty(BattleLinkWork *work, int index, int command);
+BOOL BattleLink_SendPartnerParty(BattleLinkWork *work, int index, int syncId);
 
 #endif

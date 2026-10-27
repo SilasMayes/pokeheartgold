@@ -223,7 +223,7 @@ static void VsRecorder_CreateFrontierSprites(VsRecorderWork *work) {
     int progress[5];
     ManagedSpriteTemplate template;
     VsRecorderIntSet5 printAnims;
-    int started;
+    BOOL started;
     int i;
     int div;
     int value;

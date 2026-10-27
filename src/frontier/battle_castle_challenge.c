@@ -402,7 +402,7 @@ void BattleCastleData_SetPartyBeforeBattle(BattleCastleData *data) {
 
 void BattleCastleData_GenerateOpponents(BattleCastleData *data) {
     int monCount;
-    int isLink;
+    BOOL isLink;
     int battleNo = data->battleNo;
     monCount = BattleCastle_GetOpponentMonCount(data->type, 1);
     isLink = BattleCastle_IsMultiType(data->type);

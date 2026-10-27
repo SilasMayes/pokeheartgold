@@ -200,16 +200,6 @@ void BattleTowerChallenge_SetSaved(u32 challenge, u32 value) {
     ((BattleTowerChallenge *)challenge)->saved = value;
 }
 
-enum {
-    FRONTIER_DATA_GET,
-    FRONTIER_DATA_SET,
-    FRONTIER_DATA_RESET,
-    FRONTIER_DATA_INC,
-    FRONTIER_DATA_DEC,
-    FRONTIER_DATA_ADD,
-    FRONTIER_DATA_SUB,
-};
-
 // Capped at 9999. Returns the new amount.
 u32 FrontierData_BattlePointAction(FrontierData *data, u32 param, u32 action) {
     switch (action) {
@@ -330,13 +320,13 @@ u8 FrontierData_GetWifiWinCount(FrontierData *data) {
     return data->wifiScore / 1000;
 }
 
-// Counts up to 65534. Mode 5 has no counter, mode 6 uses the slot of mode 5.
+// Counts up to 65534. The Wi-Fi practice mode has no counter, mode 6 uses its slot.
 u32 FrontierData_TowerRoundAction(FrontierData *data, u32 towerMode, u32 action) {
-    if (towerMode == 5) {
+    if (towerMode == TOWER_MODE_WIFI_PRACTICE) {
         return 0;
     }
-    if (towerMode == 6) {
-        towerMode = 5;
+    if (towerMode == TOWER_MODE_6) {
+        towerMode = TOWER_MODE_WIFI_PRACTICE;
     }
     switch (action) {
     case FRONTIER_DATA_RESET:
@@ -352,11 +342,11 @@ u32 FrontierData_TowerRoundAction(FrontierData *data, u32 towerMode, u32 action)
 }
 
 u32 FrontierData_SetTowerRound(FrontierData *data, u32 towerMode, u16 round) {
-    if (towerMode == 5) {
+    if (towerMode == TOWER_MODE_WIFI_PRACTICE) {
         return 0;
     }
-    if (towerMode == 6) {
-        towerMode = 5;
+    if (towerMode == TOWER_MODE_6) {
+        towerMode = TOWER_MODE_WIFI_PRACTICE;
     }
     data->towerRounds[towerMode] = round;
     return data->towerRounds[towerMode];

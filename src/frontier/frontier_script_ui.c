@@ -820,7 +820,7 @@ void FrontierMap_DeleteItemIcon(FrontierMap *map, ManagedSprite *sprite) {
 }
 
 void FrontierScript_PrintMessageEntry(FrontierScriptContext *ctx, const u16 *entry) {
-    FrontierScript_PrintMessageEntryFromBank(ctx, entry, 724);
+    FrontierScript_PrintMessageEntryFromBank(ctx, entry, NARC_msg_msg_0724_bin);
 }
 
 // entry: (0xFFFF, msgId) prints message msgId of the bank; otherwise (mail bank, number, field 0, field 1) prints

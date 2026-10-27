@@ -29,6 +29,20 @@ enum BattleDpadDirection {
     BATTLE_DPAD_DIR_RIGHT,
 };
 
+// Tilemap frames of the party and bag screen buttons
+enum BattleButtonFrame {
+    BATTLE_BUTTON_FRAME_NORMAL,
+    BATTLE_BUTTON_FRAME_PRESSED,
+    BATTLE_BUTTON_FRAME_SELECTED,
+    BATTLE_BUTTON_FRAME_DISABLED,
+};
+
+enum BattleButtonAnimState {
+    BUTTON_ANIM_STATE_PRESS,
+    BUTTON_ANIM_STATE_HOLD,
+    BUTTON_ANIM_STATE_RELEASE,
+};
+
 BattleDpadCursor *BattleDpadCursor_New(enum HeapID heapID);
 void BattleDpadCursor_Free(BattleDpadCursor *cursor);
 struct BattleCursor *BattleDpadCursor_GetBattleCursor(const BattleDpadCursor *cursor);

@@ -1016,7 +1016,7 @@ static void Battle_LinkVBlankCallback(void *data) {
 static void Task_DrawBattleGraphics(SysTask *task, void *data) {
     BattleSystem *battleSystem = data;
 
-    CommState_FrameDummy(5, battleSystem->bgConfig);
+    CommState_FrameDummy(HEAP_ID_BATTLE, battleSystem->bgConfig);
     if (battleSystem->graphicsMode == 0 || battleSystem->graphicsMode == 3) {
         if (battleSystem->graphicsMode == 0) {
             BattleParticleSystem_DrawAll();
@@ -1196,7 +1196,7 @@ BOOL Battle_LinkMain(OverlayManager *man) {
     BOOL done;
     int i;
 
-    CommState_FrameDummy(5, work->bgConfig);
+    CommState_FrameDummy(HEAP_ID_BATTLE, work->bgConfig);
     done = FALSE;
     switch (work->state) {
     case LINK_STATE_INIT:
@@ -1210,12 +1210,12 @@ BOOL Battle_LinkMain(OverlayManager *man) {
         }
         break;
     case LINK_STATE_START_SYNC:
-        LinkSync_StartSync(0x32);
+        LinkSync_StartSync(BATTLE_LINK_SYNC_START);
         work->state++;
         break;
     case LINK_STATE_WAIT_SYNC:
-        if (LinkSync_IsSynced(0x32)) {
-            LinkSync_StartSync(0x33);
+        if (LinkSync_IsSynced(BATTLE_LINK_SYNC_START)) {
+            LinkSync_StartSync(BATTLE_LINK_SYNC_AI_FLAGS);
             work->timer = 0;
             work->state++;
         } else {
@@ -1232,7 +1232,7 @@ BOOL Battle_LinkMain(OverlayManager *man) {
         break;
     case LINK_STATE_PREPARE_PROFILE:
         if (BattleLink_PrepareProfile(work) == TRUE) {
-            LinkSync_StartSync(0x34);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PROFILE);
             work->state++;
         }
         break;
@@ -1243,7 +1243,7 @@ BOOL Battle_LinkMain(OverlayManager *man) {
         break;
     case LINK_STATE_PREPARE_TRAINER:
         if (BattleLink_PrepareTrainer(work) == TRUE) {
-            LinkSync_StartSync(0x35);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_TRAINER);
             work->state++;
         }
         break;
@@ -1254,7 +1254,7 @@ BOOL Battle_LinkMain(OverlayManager *man) {
         break;
     case LINK_STATE_PREPARE_PARTY:
         if (BattleLink_PrepareParty(work) == TRUE) {
-            LinkSync_StartSync(0x36);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PARTY);
             work->state++;
         }
         break;
@@ -1265,7 +1265,7 @@ BOOL Battle_LinkMain(OverlayManager *man) {
         break;
     case LINK_STATE_PREPARE_CHATOT:
         if (BattleLink_PrepareChatot(work) == TRUE) {
-            LinkSync_StartSync(0x37);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_CHATOT);
             work->state++;
         }
         break;
@@ -1276,7 +1276,7 @@ BOOL Battle_LinkMain(OverlayManager *man) {
         break;
     case LINK_STATE_PREPARE_PAL_PAD:
         if (BattleLink_PreparePalPad(work) == TRUE) {
-            LinkSync_StartSync(0x38);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PAL_PAD);
             work->state++;
         }
         break;
@@ -1289,77 +1289,77 @@ BOOL Battle_LinkMain(OverlayManager *man) {
         if (!(work->setup->battleType & BATTLE_TYPE_FRONTIER)) {
             work->state = LINK_STATE_FINISH;
         } else if (Comm_GetLocalNetId() != 0) {
-            LinkSync_StartSync(0x39);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PARTNER_TRAINER_1);
             work->state++;
         } else if (BattleLink_PreparePartnerTrainer(work, 1) == TRUE) {
-            LinkSync_StartSync(0x39);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PARTNER_TRAINER_1);
             work->state++;
         }
         break;
     case LINK_STATE_SEND_PARTNER_TRAINER_1:
         work->received = 1;
         if (Comm_GetLocalNetId() != 0) {
-            if (LinkSync_IsSynced(0x39) == TRUE) {
+            if (LinkSync_IsSynced(BATTLE_LINK_SYNC_PARTNER_TRAINER_1) == TRUE) {
                 work->state++;
             }
-        } else if (BattleLink_SendPartnerTrainer(work, 1, 0x39) == TRUE) {
+        } else if (BattleLink_SendPartnerTrainer(work, 1, BATTLE_LINK_SYNC_PARTNER_TRAINER_1) == TRUE) {
             work->state++;
         }
         break;
     case LINK_STATE_PREPARE_PARTNER_TRAINER_3:
         if (Comm_GetLocalNetId() != 0) {
-            LinkSync_StartSync(0x3A);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PARTNER_TRAINER_3);
             work->state++;
         } else if (BattleLink_PreparePartnerTrainer(work, 3) == TRUE) {
-            LinkSync_StartSync(0x3A);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PARTNER_TRAINER_3);
             work->state++;
         }
         break;
     case LINK_STATE_SEND_PARTNER_TRAINER_3:
         work->received = 1;
         if (Comm_GetLocalNetId() != 0) {
-            if (LinkSync_IsSynced(0x3A) == TRUE) {
+            if (LinkSync_IsSynced(BATTLE_LINK_SYNC_PARTNER_TRAINER_3) == TRUE) {
                 work->state++;
             }
-        } else if (BattleLink_SendPartnerTrainer(work, 3, 0x3A) == TRUE) {
+        } else if (BattleLink_SendPartnerTrainer(work, 3, BATTLE_LINK_SYNC_PARTNER_TRAINER_3) == TRUE) {
             work->state++;
         }
         break;
     case LINK_STATE_PREPARE_PARTNER_PARTY_1:
         if (Comm_GetLocalNetId() != 0) {
-            LinkSync_StartSync(0x3B);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PARTNER_PARTY_1);
             work->state++;
         } else if (BattleLink_PreparePartnerParty(work, 1) == TRUE) {
-            LinkSync_StartSync(0x3B);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PARTNER_PARTY_1);
             work->state++;
         }
         break;
     case LINK_STATE_SEND_PARTNER_PARTY_1:
         work->received = 1;
         if (Comm_GetLocalNetId() != 0) {
-            if (LinkSync_IsSynced(0x3B) == TRUE) {
+            if (LinkSync_IsSynced(BATTLE_LINK_SYNC_PARTNER_PARTY_1) == TRUE) {
                 work->state++;
             }
-        } else if (BattleLink_SendPartnerParty(work, 1, 0x3B) == TRUE) {
+        } else if (BattleLink_SendPartnerParty(work, 1, BATTLE_LINK_SYNC_PARTNER_PARTY_1) == TRUE) {
             work->state++;
         }
         break;
     case LINK_STATE_PREPARE_PARTNER_PARTY_3:
         if (Comm_GetLocalNetId() != 0) {
-            LinkSync_StartSync(0x3C);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PARTNER_PARTY_3);
             work->state++;
         } else if (BattleLink_PreparePartnerParty(work, 3) == TRUE) {
-            LinkSync_StartSync(0x3C);
+            LinkSync_StartSync(BATTLE_LINK_SYNC_PARTNER_PARTY_3);
             work->state++;
         }
         break;
     case LINK_STATE_SEND_PARTNER_PARTY_3:
         work->received = 1;
         if (Comm_GetLocalNetId() != 0) {
-            if (LinkSync_IsSynced(0x3C) == TRUE) {
+            if (LinkSync_IsSynced(BATTLE_LINK_SYNC_PARTNER_PARTY_3) == TRUE) {
                 work->state++;
             }
-        } else if (BattleLink_SendPartnerParty(work, 3, 0x3C) == TRUE) {
+        } else if (BattleLink_SendPartnerParty(work, 3, BATTLE_LINK_SYNC_PARTNER_PARTY_3) == TRUE) {
             work->state++;
         }
         break;

@@ -52,6 +52,17 @@ enum BattleTowerChallengeField {
 
 u32 BattleRoomTrainer_sizeof(void);
 void BattleTowerChallenge_Clear(u32 challenge);
+// The action argument of the FrontierData_*Action functions
+enum FrontierDataAction {
+    FRONTIER_DATA_GET,
+    FRONTIER_DATA_SET,
+    FRONTIER_DATA_RESET,
+    FRONTIER_DATA_INC,
+    FRONTIER_DATA_DEC,
+    FRONTIER_DATA_ADD,
+    FRONTIER_DATA_SUB,
+};
+
 void FrontierData_Reset(void *data);
 void TowerMessages_Init(void *data);
 void BattleRoomDownload_Init(void *data);

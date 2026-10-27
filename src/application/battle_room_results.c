@@ -778,18 +778,18 @@ static void BattleRoomResults_PrintResults(BattleRoomResults *results) {
     BattleRoomResults_PrintMessage(results, 2, msg_0028_00005, 0, 0, 0, MAKE_TEXT_COLOR(1, 2, 0), 0);
     BattleRoomResults_PrintMessage(results, 3, msg_0028_00008, 0, 0, 0, MAKE_TEXT_COLOR(1, 2, 0), 0);
     BattleRoomResults_PrintMessage(results, 4, msg_0028_00012, 0, 0, 0, MAKE_TEXT_COLOR(1, 2, 0), 0);
-    if (FrontierData_FlagAction(results->frontierData, 12, 0) == 0) {
+    if (FrontierData_FlagAction(results->frontierData, 12, FRONTIER_DATA_GET) == 0) {
         BattleRoomResults_PrintMessage(results, 6, msg_0028_00009, 0, 0, 0, MAKE_TEXT_COLOR(1, 2, 0), 0);
     } else {
         BattleRoomResults_PrintMessage(results, 6, msg_0028_00010, 0, 0, 0, MAKE_TEXT_COLOR(1, 2, 0), 0);
     }
     BattleRoomResults_PrintMessage(results, 8, msg_0028_00011, 0, 0, 0, MAKE_TEXT_COLOR(1, 2, 0), 0);
-    BufferIntegerAsString(results->msgFormat, 0, FrontierData_WifiRankAction(results->frontierData, 0), 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
+    BufferIntegerAsString(results->msgFormat, 0, FrontierData_WifiRankAction(results->frontierData, FRONTIER_DATA_GET), 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
     BattleRoomResults_PrintFormattedMessage(results, 5, msg_0028_00014, GetWindowWidth(&results->windows[5]) * 8, 0, 0, MAKE_TEXT_COLOR(1, 2, 0), 1);
-    BufferIntegerAsString(results->msgFormat, 0, FrontierSave_GetStat(results->frontierSave, 9, 255), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
+    BufferIntegerAsString(results->msgFormat, 0, FrontierSave_GetStat(results->frontierSave, 9, FRONTIER_STAT_NO_FRIEND), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     width = GetWindowWidth(&results->windows[7]);
     BattleRoomResults_PrintFormattedMessage(results, 7, msg_0028_00015, (width * 8) / 2, 0, 0, MAKE_TEXT_COLOR(1, 2, 0), 2);
-    BufferIntegerAsString(results->msgFormat, 0, FrontierSave_GetStat(results->frontierSave, 8, 255), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
+    BufferIntegerAsString(results->msgFormat, 0, FrontierSave_GetStat(results->frontierSave, 8, FRONTIER_STAT_NO_FRIEND), 4, PRINTING_MODE_RIGHT_ALIGN, TRUE);
     width = GetWindowWidth(&results->windows[9]);
     BattleRoomResults_PrintFormattedMessage(results, 9, msg_0028_00015, (width * 8) / 2, 0, 0, MAKE_TEXT_COLOR(1, 2, 0), 2);
     for (j = 0; j < BATTLE_ROOM_RESULTS_NUM_RESULT_WINDOWS; j++) {

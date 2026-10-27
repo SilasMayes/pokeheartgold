@@ -589,12 +589,6 @@ static int BattleBagMenu_WaitMessageInput(const BattleBagMenu *menu) {
     return BATTLE_BAG_STATE_WAIT_MESSAGE_INPUT;
 }
 
-enum {
-    BUTTON_ANIM_STATE_PRESS,
-    BUTTON_ANIM_STATE_HOLD,
-    BUTTON_ANIM_STATE_RELEASE,
-};
-
 static int BattleBagMenu_WaitButtonAnim(const BattleBagMenu *menu) {
     if (menu->buttonAnimState == BUTTON_ANIM_STATE_RELEASE) {
         return menu->nextState;
@@ -1375,29 +1369,29 @@ static void BattleBagMenu_CopyTilemapRect(u16 *dst, const u16 *src, u16 x, u16 y
 
 static u16 *BattleBagMenu_GetButtonTilemap(BattleBagMenu *menu, u32 button, u32 frame) {
     switch (button) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
+    case BTLPOCKETLIST_HP_PP_RESTORE:
+    case BTLPOCKETLIST_STATUS_RESTORE:
+    case BTLPOCKETLIST_BALLS:
+    case BTLPOCKETLIST_BATTLE_ITEMS:
         return menu->pocketButtonTiles[frame];
-    case 4:
+    case BATTLE_BAG_BUTTON_LAST_USED:
         return menu->lastUsedButtonTiles[frame];
-    case 5:
-    case 14:
-    case 16:
+    case BATTLE_BAG_BUTTON_CANCEL:
+    case BATTLE_BAG_BUTTON_BACK:
+    case BATTLE_BAG_BUTTON_USE_BACK:
         return menu->cancelButtonTiles[frame];
-    case 6:
-    case 7:
-    case 8:
-    case 9:
-    case 10:
-    case 11:
+    case BATTLE_BAG_BUTTON_ITEM_0:
+    case BATTLE_BAG_BUTTON_ITEM_0 + 1:
+    case BATTLE_BAG_BUTTON_ITEM_0 + 2:
+    case BATTLE_BAG_BUTTON_ITEM_0 + 3:
+    case BATTLE_BAG_BUTTON_ITEM_0 + 4:
+    case BATTLE_BAG_BUTTON_ITEM_5:
         return menu->itemButtonTiles[frame];
-    case 12:
+    case BATTLE_BAG_BUTTON_PREV_PAGE:
         return menu->prevPageButtonTiles[frame];
-    case 13:
+    case BATTLE_BAG_BUTTON_NEXT_PAGE:
         return menu->nextPageButtonTiles[frame];
-    case 15:
+    case BATTLE_BAG_BUTTON_USE:
         return menu->lastUsedButtonTiles[frame];
     default:
         return NULL;
@@ -1405,31 +1399,31 @@ static u16 *BattleBagMenu_GetButtonTilemap(BattleBagMenu *menu, u32 button, u32 
 }
 
 static u16 BattleBagMenu_GetButtonPalette(BattleBagMenu *menu, u32 button, u32 frame, u32 page) {
-    if (frame == 3) {
+    if (frame == BATTLE_BUTTON_FRAME_DISABLED) {
         return 5;
     }
     switch (button) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
+    case BTLPOCKETLIST_HP_PP_RESTORE:
+    case BTLPOCKETLIST_STATUS_RESTORE:
+    case BTLPOCKETLIST_BALLS:
+    case BTLPOCKETLIST_BATTLE_ITEMS:
         return 0;
-    case 4:
+    case BATTLE_BAG_BUTTON_LAST_USED:
         return 3;
-    case 5:
-    case 12:
-    case 13:
-    case 14:
-    case 16:
+    case BATTLE_BAG_BUTTON_CANCEL:
+    case BATTLE_BAG_BUTTON_PREV_PAGE:
+    case BATTLE_BAG_BUTTON_NEXT_PAGE:
+    case BATTLE_BAG_BUTTON_BACK:
+    case BATTLE_BAG_BUTTON_USE_BACK:
         return 2;
-    case 6:
-    case 7:
-    case 8:
-    case 9:
-    case 10:
-    case 11:
+    case BATTLE_BAG_BUTTON_ITEM_0:
+    case BATTLE_BAG_BUTTON_ITEM_0 + 1:
+    case BATTLE_BAG_BUTTON_ITEM_0 + 2:
+    case BATTLE_BAG_BUTTON_ITEM_0 + 3:
+    case BATTLE_BAG_BUTTON_ITEM_0 + 4:
+    case BATTLE_BAG_BUTTON_ITEM_5:
         return menu->pocket + 8;
-    case 15:
+    case BATTLE_BAG_BUTTON_USE:
         if (page == BATTLE_BAG_PAGE_USE_ITEM) {
             return menu->pocket + 8;
         }
@@ -1444,14 +1438,14 @@ static void BattleBagMenu_CopyPocketIconTiles(BattleBagMenu *menu, u16 *dst, u32
     u16(*rows)[16] = (u16(*)[16])dst;
     u16 i, j;
 
-    if (button == 0) {
-        src = menu->pocketIconTiles[0][frame];
-    } else if (button == 1) {
-        src = menu->pocketIconTiles[1][frame];
-    } else if (button == 2) {
-        src = menu->pocketIconTiles[2][frame];
-    } else if (button == 3) {
-        src = menu->pocketIconTiles[3][frame];
+    if (button == BTLPOCKETLIST_HP_PP_RESTORE) {
+        src = menu->pocketIconTiles[BTLPOCKETLIST_HP_PP_RESTORE][frame];
+    } else if (button == BTLPOCKETLIST_STATUS_RESTORE) {
+        src = menu->pocketIconTiles[BTLPOCKETLIST_STATUS_RESTORE][frame];
+    } else if (button == BTLPOCKETLIST_BALLS) {
+        src = menu->pocketIconTiles[BTLPOCKETLIST_BALLS][frame];
+    } else if (button == BTLPOCKETLIST_BATTLE_ITEMS) {
+        src = menu->pocketIconTiles[BTLPOCKETLIST_BATTLE_ITEMS][frame];
     } else {
         return;
     }
@@ -1497,12 +1491,12 @@ static void BattleBagMenu_ScrollButtonWindows(BattleBagMenu *menu, u8 button, in
         return;
     }
     switch (frame) {
-    case 0:
-    case 2:
+    case BATTLE_BUTTON_FRAME_NORMAL:
+    case BATTLE_BUTTON_FRAME_SELECTED:
         direction = 1;
         pixels = 2;
         break;
-    case 1:
+    case BATTLE_BUTTON_FRAME_PRESSED:
         direction = 0;
         pixels = 4;
         break;
@@ -1533,18 +1527,18 @@ static void BattleBagMenu_OffsetButtonSprite(BattleBagMenu *menu, u32 button, u3
         return;
     }
     switch (frame) {
-    case 0:
-    case 2:
+    case BATTLE_BUTTON_FRAME_NORMAL:
+    case BATTLE_BUTTON_FRAME_SELECTED:
         ManagedSprite_OffsetPositionXY(sprite, 0, 2);
         break;
-    case 1:
+    case BATTLE_BUTTON_FRAME_PRESSED:
         ManagedSprite_OffsetPositionXY(sprite, 0, -4);
         break;
     }
 }
 
 static void BattleBagMenu_StartButtonAnim(BattleBagMenu *menu, u8 button, u8 mode) {
-    menu->buttonAnimState = 0;
+    menu->buttonAnimState = BUTTON_ANIM_STATE_PRESS;
     menu->buttonAnimTimer = 0;
     menu->buttonAnimButton = button;
     menu->buttonAnimMode = mode;
@@ -1555,23 +1549,23 @@ static void BattleBagMenu_UpdateButtonAnim(BattleBagMenu *menu) {
     if (menu->buttonAnimActive) {
         switch (menu->buttonAnimState) {
         case BUTTON_ANIM_STATE_PRESS:
-            BattleBagMenu_DrawButton(menu, menu->buttonAnimButton, 1, menu->page);
-            BattleBagMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, 1);
-            BattleBagMenu_OffsetButtonSprite(menu, menu->buttonAnimButton, 1);
+            BattleBagMenu_DrawButton(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_PRESSED, menu->page);
+            BattleBagMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_PRESSED);
+            BattleBagMenu_OffsetButtonSprite(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_PRESSED);
             menu->buttonAnimTimer = 0;
             menu->buttonAnimState = BUTTON_ANIM_STATE_HOLD;
             break;
         case BUTTON_ANIM_STATE_HOLD:
-            BattleBagMenu_DrawButton(menu, menu->buttonAnimButton, 2, menu->page);
-            BattleBagMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, 2);
-            BattleBagMenu_OffsetButtonSprite(menu, menu->buttonAnimButton, 2);
+            BattleBagMenu_DrawButton(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_SELECTED, menu->page);
+            BattleBagMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_SELECTED);
+            BattleBagMenu_OffsetButtonSprite(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_SELECTED);
             menu->buttonAnimTimer = 0;
             menu->buttonAnimState = BUTTON_ANIM_STATE_RELEASE;
             break;
         case BUTTON_ANIM_STATE_RELEASE:
-            BattleBagMenu_DrawButton(menu, menu->buttonAnimButton, 0, menu->page);
-            BattleBagMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, 0);
-            BattleBagMenu_OffsetButtonSprite(menu, menu->buttonAnimButton, 0);
+            BattleBagMenu_DrawButton(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_NORMAL, menu->page);
+            BattleBagMenu_ScrollButtonWindows(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_NORMAL);
+            BattleBagMenu_OffsetButtonSprite(menu, menu->buttonAnimButton, BATTLE_BUTTON_FRAME_NORMAL);
             menu->buttonAnimTimer = 0;
             menu->buttonAnimState = BUTTON_ANIM_STATE_PRESS;
             menu->buttonAnimActive = FALSE;
@@ -1585,37 +1579,37 @@ static void BattleBagMenu_DrawPageButtons(BattleBagMenu *menu, u8 page) {
 
     switch (page) {
     case BATTLE_BAG_PAGE_POCKET_MENU:
-        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_HP_PP_RESTORE, 0, page);
-        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_STATUS_RESTORE, 0, page);
-        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_BALLS, 0, page);
-        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_BATTLE_ITEMS, 0, page);
+        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_HP_PP_RESTORE, BATTLE_BUTTON_FRAME_NORMAL, page);
+        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_STATUS_RESTORE, BATTLE_BUTTON_FRAME_NORMAL, page);
+        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_BALLS, BATTLE_BUTTON_FRAME_NORMAL, page);
+        BattleBagMenu_DrawButton(menu, BTLPOCKETLIST_BATTLE_ITEMS, BATTLE_BUTTON_FRAME_NORMAL, page);
         if (menu->context->lastUsedItem == ITEM_NONE) {
-            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_LAST_USED, 3, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_LAST_USED, BATTLE_BUTTON_FRAME_DISABLED, page);
         } else {
-            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_LAST_USED, 0, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_LAST_USED, BATTLE_BUTTON_FRAME_NORMAL, page);
         }
-        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_CANCEL, 0, page);
+        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_CANCEL, BATTLE_BUTTON_FRAME_NORMAL, page);
         break;
     case BATTLE_BAG_PAGE_ITEM_LIST:
         for (i = 0; i < 6; i++) {
             if (BattleBagMenu_GetItemOnPage(menu, i) == ITEM_NONE) {
-                BattleBagMenu_DrawButton(menu, i + BATTLE_BAG_BUTTON_ITEM_0, 3, page);
+                BattleBagMenu_DrawButton(menu, i + BATTLE_BAG_BUTTON_ITEM_0, BATTLE_BUTTON_FRAME_DISABLED, page);
             } else {
-                BattleBagMenu_DrawButton(menu, i + BATTLE_BAG_BUTTON_ITEM_0, 0, page);
+                BattleBagMenu_DrawButton(menu, i + BATTLE_BAG_BUTTON_ITEM_0, BATTLE_BUTTON_FRAME_NORMAL, page);
             }
         }
         if (menu->lastPages[menu->pocket] == 0) {
-            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_PREV_PAGE, 3, page);
-            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_NEXT_PAGE, 3, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_PREV_PAGE, BATTLE_BUTTON_FRAME_DISABLED, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_NEXT_PAGE, BATTLE_BUTTON_FRAME_DISABLED, page);
         } else {
-            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_PREV_PAGE, 0, page);
-            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_NEXT_PAGE, 0, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_PREV_PAGE, BATTLE_BUTTON_FRAME_NORMAL, page);
+            BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_NEXT_PAGE, BATTLE_BUTTON_FRAME_NORMAL, page);
         }
-        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_BACK, 0, page);
+        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_BACK, BATTLE_BUTTON_FRAME_NORMAL, page);
         break;
     case BATTLE_BAG_PAGE_USE_ITEM:
-        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_USE, 0, page);
-        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_USE_BACK, 0, page);
+        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_USE, BATTLE_BUTTON_FRAME_NORMAL, page);
+        BattleBagMenu_DrawButton(menu, BATTLE_BAG_BUTTON_USE_BACK, BATTLE_BUTTON_FRAME_NORMAL, page);
         break;
     }
 }

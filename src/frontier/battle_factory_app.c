@@ -73,6 +73,11 @@ FS_EXTERN_OVERLAY(OVY_80);
 #define FACTORY_LINK_RENTALS 8
 #define FACTORY_LINK_SWAP    10
 
+// LinkSync_StartSync / LinkSync_IsSynced link sync ids
+#define FACTORY_SYNC_ID_START   237
+#define FACTORY_SYNC_ID_RENTALS 164
+#define FACTORY_SYNC_ID_EXIT    165
+
 static BOOL BattleFactoryApp_SlideIn(BattleFactoryApp *app);
 static BOOL BattleFactoryApp_ShowScreen(BattleFactoryApp *app);
 static void BattleFactoryApp_SetupRentalScreen(BattleFactoryApp *app);
@@ -612,13 +617,13 @@ static BOOL BattleFactoryApp_SlideIn(BattleFactoryApp *app) {
     case FACTORY_SLIDE_IN_START_SYNC:
         if (BattleFactory_IsMultiType(app->frontierType) == TRUE) {
             LinkSync_ClearPackets();
-            LinkSync_StartSync(237);
+            LinkSync_StartSync(FACTORY_SYNC_ID_START);
         }
         app->subState++;
         break;
     case FACTORY_SLIDE_IN_WAIT_SYNC:
         if (BattleFactory_IsMultiType(app->frontierType) == TRUE) {
-            if (LinkSync_IsSynced(237) == TRUE) {
+            if (LinkSync_IsSynced(FACTORY_SYNC_ID_START) == TRUE) {
                 LinkSync_ClearPackets();
                 app->subState++;
             }
@@ -1151,12 +1156,12 @@ static BOOL BattleFactoryApp_ConfirmRentals(BattleFactoryApp *app) {
         if (BattleFactoryApp_SendLinkCommand(app, FACTORY_LINK_RENTALS, 0) == TRUE) {
             app->printerId = BattleFactoryApp_ShowMessage(app, msg_0194_00002);
             LinkSync_ClearPackets();
-            LinkSync_StartSync(164);
+            LinkSync_StartSync(FACTORY_SYNC_ID_RENTALS);
             app->subState++;
         }
         break;
     case FACTORY_CONFIRM_WAIT_SYNC:
-        if (LinkSync_IsSynced(164) == TRUE) {
+        if (LinkSync_IsSynced(FACTORY_SYNC_ID_RENTALS) == TRUE) {
             LinkSync_ClearPackets();
             return TRUE;
         }
@@ -1783,11 +1788,11 @@ static BOOL BattleFactoryApp_LinkSync(BattleFactoryApp *app) {
     case FACTORY_SYNC_START:
         app->printerId = BattleFactoryApp_ShowMessage(app, msg_0194_00015);
         LinkSync_ClearPackets();
-        LinkSync_StartSync(165);
+        LinkSync_StartSync(FACTORY_SYNC_ID_EXIT);
         app->subState++;
         break;
     case FACTORY_SYNC_WAIT:
-        if (LinkSync_IsSynced(165) == TRUE) {
+        if (LinkSync_IsSynced(FACTORY_SYNC_ID_EXIT) == TRUE) {
             LinkSync_ClearPackets();
             return TRUE;
         }
@@ -1960,7 +1965,7 @@ static void BattleFactoryApp_SetMainState(BattleFactoryApp *app, int *state, int
 }
 
 static BOOL BattleFactoryApp_ScrollBallsIn(BattleFactoryApp *app) {
-    int done = FALSE;
+    BOOL done = FALSE;
     int i;
     VecFx32 pos;
 

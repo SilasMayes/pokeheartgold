@@ -198,7 +198,7 @@ BOOL BattleLink_SendAiFlags(BattleLinkWork *work, u32 value, ...) {
     if (Comm_GetSendBufferFreeSpace() != 264) {
         return FALSE;
     }
-    if (LinkSync_IsSynced(51) == 0) {
+    if (LinkSync_IsSynced(BATTLE_LINK_SYNC_AI_FLAGS) == 0) {
         return FALSE;
     }
     return Comm_SendCommand(BATTLE_LINK_CMD_AI_FLAGS, &value, sizeof(value));
@@ -222,7 +222,7 @@ BOOL BattleLink_SendProfile(BattleLinkWork *work) {
     if (Comm_GetSendBufferFreeSpace() != 264) {
         return FALSE;
     }
-    if (LinkSync_IsSynced(52) == 0) {
+    if (LinkSync_IsSynced(BATTLE_LINK_SYNC_PROFILE) == 0) {
         return FALSE;
     }
     return Comm_SendCommandNoCopy(BATTLE_LINK_CMD_PROFILE, &work->buffer, PlayerProfile_sizeof());
@@ -244,7 +244,7 @@ BOOL BattleLink_SendTrainer(BattleLinkWork *work) {
     if (Comm_GetSendBufferFreeSpace() != 264) {
         return FALSE;
     }
-    if (LinkSync_IsSynced(53) == 0) {
+    if (LinkSync_IsSynced(BATTLE_LINK_SYNC_TRAINER) == 0) {
         return FALSE;
     }
     return Comm_SendCommandNoCopy(BATTLE_LINK_CMD_TRAINER, &work->buffer, sizeof(Trainer));
@@ -266,7 +266,7 @@ BOOL BattleLink_SendParty(BattleLinkWork *work) {
     if (Comm_GetSendBufferFreeSpace() != 264) {
         return FALSE;
     }
-    if (LinkSync_IsSynced(54) == 0) {
+    if (LinkSync_IsSynced(BATTLE_LINK_SYNC_PARTY) == 0) {
         return FALSE;
     }
     return Comm_SendCommandNoCopy(BATTLE_LINK_CMD_PARTY, &work->buffer, PartyCore_sizeof());
@@ -288,7 +288,7 @@ BOOL BattleLink_SendChatot(BattleLinkWork *work) {
     if (Comm_GetSendBufferFreeSpace() != 264) {
         return FALSE;
     }
-    if (LinkSync_IsSynced(55) == 0) {
+    if (LinkSync_IsSynced(BATTLE_LINK_SYNC_CHATOT) == 0) {
         return FALSE;
     }
     return Comm_SendCommandNoCopy(BATTLE_LINK_CMD_CHATOT, &work->buffer, 1000);
@@ -318,7 +318,7 @@ BOOL BattleLink_SendPalPad(BattleLinkWork *work) {
     if (Comm_GetSendBufferFreeSpace() != 264) {
         return FALSE;
     }
-    if (LinkSync_IsSynced(56) == 0) {
+    if (LinkSync_IsSynced(BATTLE_LINK_SYNC_PAL_PAD) == 0) {
         return FALSE;
     }
     return Comm_SendCommandNoCopy(BATTLE_LINK_CMD_PAL_PAD, &work->buffer, 1000);
@@ -336,11 +336,11 @@ BOOL BattleLink_PreparePartnerTrainer(BattleLinkWork *work, int index) {
     return TRUE;
 }
 
-BOOL BattleLink_SendPartnerTrainer(BattleLinkWork *work, int index, int command) {
+BOOL BattleLink_SendPartnerTrainer(BattleLinkWork *work, int index, int syncId) {
     if (Comm_GetSendBufferFreeSpace() != 264) {
         return FALSE;
     }
-    if (!LinkSync_IsSynced(command)) {
+    if (!LinkSync_IsSynced(syncId)) {
         return FALSE;
     }
     if (index == 1) {
@@ -361,11 +361,11 @@ BOOL BattleLink_PreparePartnerParty(BattleLinkWork *work, int index) {
     return TRUE;
 }
 
-BOOL BattleLink_SendPartnerParty(BattleLinkWork *work, int index, int command) {
+BOOL BattleLink_SendPartnerParty(BattleLinkWork *work, int index, int syncId) {
     if (Comm_GetSendBufferFreeSpace() != 264) {
         return FALSE;
     }
-    if (!LinkSync_IsSynced(command)) {
+    if (!LinkSync_IsSynced(syncId)) {
         return FALSE;
     }
     if (index == 1) {
