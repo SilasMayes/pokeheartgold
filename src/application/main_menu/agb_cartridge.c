@@ -135,8 +135,8 @@ static u16 PmAgbCartridge_CalcSectorChecksum(u32 *data, u16 size);
 static void PmAgbCartridge_ReadSector(int sector, void *dest);
 static u16 PmAgbCartridge_GetSectorDataSize(int id);
 static void *PmAgbCartridge_GetSectorData(int id);
-static int PmAgbCartridge_CheckSaveSlot(int slot, AgbSaveSector *sector, u32 *counter);
-static int PmAgbCartridge_FindLatestSaveSlot(AgbSaveSector *sector, u32 *slot, u32 *counter);
+static enum AgbSaveSlotStatus PmAgbCartridge_CheckSaveSlot(int slot, AgbSaveSector *sector, u32 *counter);
+static enum AgbSaveSlotStatus PmAgbCartridge_FindLatestSaveSlot(AgbSaveSector *sector, u32 *slot, u32 *counter);
 static void PmAgbCartridge_WriteSectorAsync(int id);
 static u32 PmAgbCartridge_WriteSectorCallback(CTRDGTaskInfo *task);
 static AgbTrainerInfo *PmAgbCartridge_GetTrainerInfo(void);
@@ -280,7 +280,7 @@ static void *PmAgbCartridge_GetSectorData(int id) {
     return NULL;
 }
 
-static int PmAgbCartridge_CheckSaveSlot(int slot, AgbSaveSector *sector, u32 *counter) {
+static enum AgbSaveSlotStatus PmAgbCartridge_CheckSaveSlot(int slot, AgbSaveSector *sector, u32 *counter) {
     u32 validSectors = 0;
     u8 found = FALSE;
     int i;
@@ -307,10 +307,10 @@ static int PmAgbCartridge_CheckSaveSlot(int slot, AgbSaveSector *sector, u32 *co
 }
 
 // Picks the newer of the two save slots
-static int PmAgbCartridge_FindLatestSaveSlot(AgbSaveSector *sector, u32 *slot, u32 *counter) {
+static enum AgbSaveSlotStatus PmAgbCartridge_FindLatestSaveSlot(AgbSaveSector *sector, u32 *slot, u32 *counter) {
     u32 counter0, counter1;
-    int status0 = PmAgbCartridge_CheckSaveSlot(0, sector, &counter0);
-    int status1 = PmAgbCartridge_CheckSaveSlot(1, sector, &counter1);
+    enum AgbSaveSlotStatus status0 = PmAgbCartridge_CheckSaveSlot(0, sector, &counter0);
+    enum AgbSaveSlotStatus status1 = PmAgbCartridge_CheckSaveSlot(1, sector, &counter1);
     if (status0 == AGB_SAVE_SLOT_VALID && status1 == AGB_SAVE_SLOT_VALID) {
         if ((counter0 == 0xFFFFFFFF && counter1 == 0) || (counter0 == 0 && counter1 == 0xFFFFFFFF)) {
             // the counter wrapped around
@@ -360,7 +360,7 @@ static int PmAgbCartridge_FindLatestSaveSlot(AgbSaveSector *sector, u32 *slot, u
 
 // Reads the latest save into the buffer
 int PmAgbCartridge_LoadSave(void) {
-    int result = PmAgbCartridge_FindLatestSaveSlot((AgbSaveSector *)gPmAgbSave.buffer, (u32 *)(&gMigrateFromAgbIcons + 1), &gPmAgbSaveCounter);
+    enum AgbSaveSlotStatus result = PmAgbCartridge_FindLatestSaveSlot((AgbSaveSector *)gPmAgbSave.buffer, (u32 *)(&gMigrateFromAgbIcons + 1), &gPmAgbSaveCounter);
     PmAgbSave *save;
 
     if (result != AGB_SAVE_SLOT_VALID) {

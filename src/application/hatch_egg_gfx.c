@@ -479,16 +479,16 @@ static BOOL HatchEggApp_StepEggShake(HatchEggApp *app, int pattern) {
 // Returns 2 when the shake has ended, 1 on its sixth frame (the hit) and 0 otherwise.
 int HatchEggApp_UpdateEggShake(HatchEggApp *app, int pattern) {
     if (!HatchEggApp_StepEggShake(app, pattern)) {
-        return 2;
+        return HATCH_EGG_SHAKE_ENDED;
     }
     if (pattern == 4) {
         if (app->shakeFrame == 6) {
-            return 1;
+            return HATCH_EGG_SHAKE_HIT;
         }
     } else if (app->shakeFrame == 6) {
-        return 1;
+        return HATCH_EGG_SHAKE_HIT;
     }
-    return 0;
+    return HATCH_EGG_SHAKE_RUNNING;
 }
 
 void HatchEggApp_DeleteSprites(HatchEggApp *app) {

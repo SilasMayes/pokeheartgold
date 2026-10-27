@@ -137,7 +137,7 @@ typedef struct PokewalkerIrStatus {
     PokewalkerIrRecord records[24];
 } PokewalkerIrStatus;
 
-u32 PokewalkerIr_IsConnected(void);
+BOOL PokewalkerIr_IsConnected(void);
 void PokewalkerIr_SetCompressBuffer(void *buffer);
 void PokewalkerIr_CompressBlocks(u8 *src, u8 *dst, u16 size, u8 *sizes);
 void PokewalkerIr_SetIdentities(PokewalkerIrIdentity *identity, PokewalkerIrIdentity *peerIdentity);

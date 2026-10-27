@@ -458,7 +458,7 @@ static BOOL HatchEggApp_ShakeEggOnce(HatchEggApp *app) {
         }
         break;
     case 1:
-        if (HatchEggApp_UpdateEggShake(app, 0) == 2) {
+        if (HatchEggApp_UpdateEggShake(app, 0) == HATCH_EGG_SHAKE_ENDED) {
             PlaySE(SEQ_SE_DP_EGG01);
             ManagedSprite_SetAnimationFrame(app->eggSprite, 2);
             app->subState++;
@@ -466,7 +466,7 @@ static BOOL HatchEggApp_ShakeEggOnce(HatchEggApp *app) {
         }
         break;
     default:
-        if (HatchEggApp_UpdateEggShake(app, 0) == 2) {
+        if (HatchEggApp_UpdateEggShake(app, 0) == HATCH_EGG_SHAKE_ENDED) {
             ManagedSprite_SetAnimationFrame(app->eggSprite, 2);
             app->subState = 0;
             app->timer = 0;
@@ -484,12 +484,12 @@ static BOOL HatchEggApp_ShakeEggTwice(HatchEggApp *app) {
         break;
     case 1: {
         u32 status = HatchEggApp_UpdateEggShake(app, 1);
-        if (status == 1) {
+        if (status == HATCH_EGG_SHAKE_HIT) {
             PlaySE(SEQ_SE_DP_EGG01);
             ManagedSprite_SetAnimationFrame(app->eggSprite, 3);
             HatchEggParticles_Emit(app->gfx.particles, 0);
         }
-        if (status == 2) {
+        if (status == HATCH_EGG_SHAKE_ENDED) {
             app->timer = 0;
             app->subState++;
         }
@@ -512,12 +512,12 @@ static BOOL HatchEggApp_ShakeEggCrack(HatchEggApp *app) {
         break;
     case 1: {
         u32 status = HatchEggApp_UpdateEggShake(app, 2);
-        if (status == 1) {
+        if (status == HATCH_EGG_SHAKE_HIT) {
             PlaySE(SEQ_SE_DP_EGG01);
             ManagedSprite_SetAnimationFrame(app->eggSprite, 4);
             HatchEggParticles_Emit(app->gfx.particles, 1);
         }
-        if (status == 2) {
+        if (status == HATCH_EGG_SHAKE_ENDED) {
             app->timer = 0;
             app->subState++;
         }
@@ -551,13 +551,13 @@ static BOOL HatchEggApp_HatchEgg(HatchEggApp *app) {
         break;
     case 1:
         status = HatchEggApp_UpdateEggShake(app, 3);
-        if (status == 1) {
+        if (status == HATCH_EGG_SHAKE_HIT) {
             ManagedSprite_SetAnimationFrame(app->eggSprite, 5);
             PlaySE(SEQ_SE_DP_BOWA3);
             HatchEggParticles_Emit(app->gfx.particles, 2);
             HatchEggParticles_Emit(app->gfx.particles, 3);
         }
-        if (status == 2) {
+        if (status == HATCH_EGG_SHAKE_ENDED) {
             ManagedSprite_SetDrawFlag(app->eggSprite, FALSE);
             app->timer = 0;
             app->subState++;

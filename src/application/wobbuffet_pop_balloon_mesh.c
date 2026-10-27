@@ -24,7 +24,7 @@ enum WobbuffetPopPushSide {
 
 static void WobbuffetPopBalloon_ToVtx16(s32 x, s32 y, s16 *outX, s16 *outY);
 static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode, fx32 amount);
-static s32 WobbuffetPopBalloon_GetPushSide(WobbuffetPopBalloon *balloon, s32 mode);
+static enum WobbuffetPopPushSide WobbuffetPopBalloon_GetPushSide(WobbuffetPopBalloon *balloon, s32 mode);
 static s32 WobbuffetPopBalloon_CalcSidePush(WobbuffetPopBalloon *balloon, s32 amount, s32 pushed, s32 other, s32 *outPushed, s32 *outOther);
 static s32 WobbuffetPopBalloon_CalcMeshArea(WobbuffetPopBalloon *balloon);
 
@@ -322,7 +322,7 @@ static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode
     return flag == TRUE ? 2 : 0;
 }
 
-static s32 WobbuffetPopBalloon_GetPushSide(WobbuffetPopBalloon *balloon, s32 mode) {
+static enum WobbuffetPopPushSide WobbuffetPopBalloon_GetPushSide(WobbuffetPopBalloon *balloon, s32 mode) {
     s32 base;
     s32 cur;
 

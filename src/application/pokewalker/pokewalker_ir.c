@@ -74,7 +74,7 @@ static void PokewalkerIr_InitLink(void) {
     gPokewalkerIrLink.onReceive = NULL;
 }
 
-u32 PokewalkerIr_IsConnected(void) {
+BOOL PokewalkerIr_IsConnected(void) {
     return gPokewalkerIrLink.active;
 }
 
