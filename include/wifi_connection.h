@@ -4,7 +4,6 @@
 #include "global.h"
 
 #include "save.h"
-#include "wifi_connection_result.h"
 
 // Connection states (WifiConnection.state)
 #define WIFI_CONNECTION_STATE_INIT              0

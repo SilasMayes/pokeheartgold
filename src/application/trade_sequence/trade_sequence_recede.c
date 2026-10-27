@@ -255,7 +255,7 @@ static void TradeSequenceRecede_InitBgs(TradeSequenceRecede *recede) {
     int scrnFile;
     int charFile;
     int palFile;
-    int palOffset;
+    u32 palOffset;
 
     GfGfx_SetBanks(&sTradeSequenceRecedeGraphicsBanks);
     GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);

@@ -1108,8 +1108,8 @@ static BOOL GeonetGlobe_FindNearestLocation(GeonetGlobe *globe, int *index) {
     BOOL found = FALSE;
     int posX = globe->rotation.x;
     int posY = globe->rotation.y;
-    int minX = (s16)((s32)((u32)posX - 128));
-    int maxX = (s16)((s32)((u32)posX + 128));
+    s16 minX = (s16)((s32)((u32)posX - 128));
+    s16 maxX = (s16)((s32)((u32)posX + 128));
     int minY = (s16)((s32)((u32)posY - 128));
     int maxY = (s16)((s32)((u32)posY + 128));
     int minY2;

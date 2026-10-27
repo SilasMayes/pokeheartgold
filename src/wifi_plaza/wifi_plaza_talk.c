@@ -519,7 +519,7 @@ BOOL WiFiPlazaTalk_Start(WiFiPlazaPlayerState *state, WiFiPlazaRoomWork *room, u
     String *text;
     int option;
     int response;
-    int myToy;
+    u8 myToy;
     BOOL result;
     int direction;
     int partnerIndex;

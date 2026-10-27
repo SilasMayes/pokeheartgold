@@ -693,7 +693,7 @@ int WiFiPlazaWork_GetGroupMarkerCount(WiFiPlazaWork *work, int place);
 void WiFiPlazaWork_SendJoinGroup(WiFiPlazaWork *work);
 void WiFiPlazaWork_SendGroupAction(WiFiPlazaWork *work);
 void WiFiPlazaWork_ResetTalk(WiFiPlazaWork *work);
-int WiFiPlazaWork_StartTalk(WiFiPlazaWork *work, int slot);
+BOOL WiFiPlazaWork_StartTalk(WiFiPlazaWork *work, int slot);
 void WiFiPlazaWork_AdvanceTalk(WiFiPlazaWork *work, int value);
 void WiFiPlazaWork_CancelTalkRequest(WiFiPlazaWork *work);
 void WiFiPlazaWork_EndTalk(WiFiPlazaWork *work);

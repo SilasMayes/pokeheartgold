@@ -43,11 +43,6 @@ void DrawingSessionLink_RegisterCommands(int context);
 void CommRandom_Init(void *random);
 SaveData *FieldSystem_GetSaveData(FieldSystem *fieldSystem);
 BOOL FieldSystem_TaskIsRunning(FieldSystem *fieldSystem);
-void UnionRoom_SetBeaconActivity(int command);
-void UnionRoom_SetOwnChatMessage(struct UnionRoom *unionRoom, MailMessage *message);
-void UnionRoom_BroadcastChatMessage(MailMessage *message);
-void UnionRoom_ResetTalkReplies(struct UnionRoom *unionRoom);
-void UnionRoom_ResetTalk(struct UnionRoom *unionRoom);
 
 struct UnionRoom *UnionRoom_Start(FieldSystem *fieldSystem) {
     struct UnionRoom *unionRoom;

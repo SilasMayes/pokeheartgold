@@ -1544,7 +1544,7 @@ static int VisitorProfiles_GetVisitorMarker(WiFiPlazaPlace *visitors, int countr
     int i;
     for (i = 0; i < VISITOR_PROFILES_NUM_VISITORS; i++) {
         if (WiFiPlazaPlaces_IsOccupied(visitors, i)) {
-            int flag = WiFiPlazaPlaces_GetValue(visitors, i);
+            u32 flag = WiFiPlazaPlaces_GetValue(visitors, i);
             u8 visitorCountry = WiFiPlazaPlaces_GetCountry(visitors, i);
             int visitorRegion = WiFiPlazaPlaces_GetRegion(visitors, i);
             if (visitorCountry == country && visitorRegion == region) {
@@ -1681,7 +1681,7 @@ static u16 VisitorProfilesCamera_GetZoomMode(VisitorProfilesCamera *camera) {
 
 static void VisitorProfilesTouch_Init(VisitorProfilesTouch *touch, VisitorProfilesGraphics *gfx, VisitorProfilesMsg *msg, enum HeapID heapID) {
     String *string;
-    int x;
+    u32 x;
 
     memset(touch, 0, sizeof(VisitorProfilesTouch));
     AddWindowParameterized(gfx->bgConfig, &touch->exitButton, GF_BG_LYR_MAIN_1, 25, 21, 6, 2, 1, 40);

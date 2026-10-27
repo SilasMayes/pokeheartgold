@@ -826,7 +826,7 @@ static BOOL UnionChatLog_GetThumbFollowsScroll(UnionChatLogData *data) {
 }
 
 static void UnionChatLog_PressArrow(UnionChatLogData *data, int arrow) {
-    int frame = Sprite_GetAnimationFrame(data->sprites[arrow]);
+    u16 frame = Sprite_GetAnimationFrame(data->sprites[arrow]);
     u16 anim = (int)Sprite_GetAnimationNumber(data->sprites[arrow]);
     if (frame != 0 || anim != arrow + 4) {
         Sprite_SetAnimCtrlSeq(data->sprites[arrow], arrow + 4);

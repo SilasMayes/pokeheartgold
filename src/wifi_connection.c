@@ -17,6 +17,7 @@
 #include "frontier_save_access.h"
 #include "heap.h"
 #include "voice_chat.h"
+#include "wifi_connection_result.h"
 
 enum WifiMatchType {
     WIFI_MATCH_TYPE_ANYBODY,

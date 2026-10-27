@@ -1,7 +1,6 @@
 #ifndef POKEHEARTGOLD_NETWORK_OVERLAY_LOADER_H
 #define POKEHEARTGOLD_NETWORK_OVERLAY_LOADER_H
 
-#include "heap.h"
 #include "overlay_manager.h"
 
 extern const OverlayManagerTemplate gApp_MainMenu_SelectOption_NintendoWFCSetup;

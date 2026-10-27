@@ -152,8 +152,8 @@ static void CommPlayerManager_SendHostPosition(int netId, const CommPlayerPositi
 }
 
 static void CommPlayerManager_SendPositionWhenStopped(FieldSystem *unused) {
-    int moveState = PlayerAvatar_GetMoveState(gCommPlayerManager->fieldSystem->playerAvatar);
-    int playerMoveState = PlayerAvatar_GetPlayerMoveState(gCommPlayerManager->fieldSystem->playerAvatar);
+    u32 moveState = PlayerAvatar_GetMoveState(gCommPlayerManager->fieldSystem->playerAvatar);
+    u32 playerMoveState = PlayerAvatar_GetPlayerMoveState(gCommPlayerManager->fieldSystem->playerAvatar);
     if (moveState == 0 && Comm_IsNetIdConnected(Comm_GetLocalNetId()) && gCommPlayerManager->localPositionSent == 0) {
         CommPlayerManager_SendLocalPosition(1);
         gCommPlayerManager->localPositionSent = 1;
@@ -190,8 +190,8 @@ static void CommPlayerManager_CreateAvatar(int netId) {
     PlayerProfile *profile;
     PlayerAvatar *avatar;
     LocalMapObject *object;
-    int version;
-    int game;
+    u32 version;
+    u8 game;
 
     if (gCommPlayerManager->avatars[netId] || gCommPlayerManager->unk_EE) {
         return;
@@ -762,7 +762,7 @@ BOOL CommPlayerManager_AssignBattleSlots(void) {
 }
 
 void CommPlayerManager_RecvLockOnSpot(int netId, int size, const u8 *data) {
-    int value = *data;
+    u8 value = *data;
     if (value == 3) {
         gCommPlayerManager->inputLocked[netId] = 0;
     } else {

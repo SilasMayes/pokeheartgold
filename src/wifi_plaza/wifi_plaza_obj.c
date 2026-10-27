@@ -421,7 +421,7 @@ BOOL WiFiPlazaObj_FindFreeNeighbor(WiFiPlazaObjManager *manager, WiFiPlazaObj *o
         int x = next.x / 16;
 
         if (WiFiPlazaMap_GetCollision(manager->map, x, y) != 1) {
-            int attr = WiFiPlazaMap_GetTileAttr(manager->map, x, y);
+            u32 attr = WiFiPlazaMap_GetTileAttr(manager->map, x, y);
 
             if ((attr == 0 || attr == 0x2A) && Field2DObjectManager_FindObjectAt(manager->gridObjs, next) == NULL) {
                 *direction = sWiFiPlazaObjNeighborDirections[i];

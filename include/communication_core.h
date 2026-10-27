@@ -3,7 +3,6 @@
 
 #include "global.h"
 
-#include "safari_zone.h"
 
 BOOL Comm_Update(void);
 BOOL Comm_IsNetIdConnected(u16 slot);

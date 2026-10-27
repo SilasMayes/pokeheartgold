@@ -1407,7 +1407,7 @@ static int GtsSelectMon_GetFormRestriction(BoxPokemon *boxMon) {
 
 static BOOL GtsSelectMon_HoldsGriseousOrb(BoxPokemon *boxMon) {
     BOOL decrypted = AcquireBoxMonLock(boxMon);
-    int item = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM, NULL);
+    u32 item = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM, NULL);
     ReleaseBoxMonLock(boxMon, decrypted);
     return item == ITEM_GRISEOUS_ORB;
 }

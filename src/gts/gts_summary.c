@@ -517,7 +517,7 @@ void Gts_DrawTrainerInfo(MsgData *msgData, Window *trainerWindows, const u16 *tr
 void Gts_LoadMonPicture(Pokemon *mon) {
     PokepicTemplate pokepic;
     void *buf = Heap_Alloc(HEAP_ID_61, 0xC80);
-    int personality;
+    u32 personality;
     int species;
 
     GetPokemonSpriteCharAndPlttNarcIds(&pokepic, mon, 2);

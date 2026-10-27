@@ -1075,7 +1075,7 @@ void WiFiPlazaWork_ResetTalk(WiFiPlazaWork *work) {
     WiFiPlazaTalkSession_Reset(&work->talk);
 }
 
-int WiFiPlazaWork_StartTalk(WiFiPlazaWork *work, int slot) {
+BOOL WiFiPlazaWork_StartTalk(WiFiPlazaWork *work, int slot) {
     if (work->talk.role) {
         return 0;
     }

@@ -1006,7 +1006,7 @@ static void Wireless_OnLifeTimeSet(void *arg) {
 
 // Starts a parent (mode 0, 2 or 4).
 BOOL Wireless_StartParent(int mode, u16 tgid, u16 channel, u16 maxEntry, u16 beaconPeriod, u32 entryFlag) {
-    int value;
+    u16 value;
     if (Comm_IsCommClubLinkMode(CommState_GetLinkMode())) {
         WM_SetLifeTime(Wireless_OnLifeTimeSet, 0xFFFF, 100, 5, 100);
     }
@@ -1095,7 +1095,7 @@ static void Wireless_ForceReset(void) {
 
 // Ends MP communication and the parent / the connection.
 void Wireless_Stop(void) {
-    int state = sWirelessManager.work->state;
+    u32 state = sWirelessManager.work->state;
     if (state == WIRELESS_STATE_IDLE) {
         return;
     }

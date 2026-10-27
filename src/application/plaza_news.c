@@ -633,7 +633,7 @@ static void PlazaNewsClock_DrawGauge(PlazaNewsClock *clock, PlazaNewsTileset *ti
                 int col = 9 - j;
                 u32 index = col + row * 10;
                 if (index >= cell) {
-                    int tile;
+                    u32 tile;
                     if (index == cell) {
                         tile = 1;
                     } else if (row == 3) {

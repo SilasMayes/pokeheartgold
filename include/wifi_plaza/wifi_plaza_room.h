@@ -435,7 +435,7 @@ PlayerProfile *WiFiPlazaWork_GetOwnPlayerProfile(WiFiPlazaWork *lobby);
 void WiFiPlaza_SendChatNews(WiFiPlazaWork *work, u32 slot0, u32 slot1);
 void WiFiPlaza_SendTapToyTradeNews(WiFiPlazaWork *work, u32 slot0, u32 slot1, u8 value);
 void WiFiPlazaWork_ResetTalk(WiFiPlazaWork *lobby);
-int WiFiPlazaWork_StartTalk(WiFiPlazaWork *lobby, int slot);
+BOOL WiFiPlazaWork_StartTalk(WiFiPlazaWork *lobby, int slot);
 void WiFiPlazaWork_AdvanceTalk(WiFiPlazaWork *lobby, int value);
 void WiFiPlazaWork_CancelTalkRequest(WiFiPlazaWork *lobby);
 void WiFiPlazaWork_EndTalk(WiFiPlazaWork *lobby);

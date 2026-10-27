@@ -3,6 +3,7 @@
 #include "global.h"
 
 #include "constants/comm_type.h"
+#include "link_synchronization_internal.h"
 
 #include "assert.h"
 #include "communication_packet_pool.h"
@@ -26,7 +27,6 @@ void Comm_SetLinkError(void);
 int Comm_GetLocalNetId(void);
 int Comm_IsNetIdConnected(u16 netId);
 void Comm_SendParentCommand(int command, int a1, int a2);
-BOOL Comm_SendFixedCommand(int command, void *data);
 
 static int ByteRing_Peek(ByteRing *ring, u8 *dst, int count);
 static s32 ByteRing_GetWritableSize(const ByteRing *ring);
@@ -50,12 +50,6 @@ u32 CommState_GetJoinMessageSize(void);
 void Comm_RecvTransferModeRequest(int netId, int size, void *data, void *context);
 void Comm_RecvTransferModeChange(int netId, int size, void *data, void *context);
 void Comm_RecvTransferModeAck(int netId, int size, void *data, void *context);
-void LinkSync_RecvRequest(int sender, int size, void *data, void *context);
-void LinkSync_RecvDone(int sender, int size, void *data, void *context);
-void LinkSync_RecvState(int sender, int size, void *data, void *context);
-void LinkSync_RecvValue(int sender, int size, void *data, void *context);
-u32 LinkSync_GetValueSize(void);
-void LinkSync_RecvPacket(int sender, int size, void *data, void *context);
 u32 CommState_GetSyncPacketSize(void);
 void CommState_RecvWifiDisconnect(int netId, int size, void *data, void *context);
 

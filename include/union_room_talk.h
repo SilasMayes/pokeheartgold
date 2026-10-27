@@ -56,6 +56,7 @@ void UnionRoom_SetBeaconActivity(int activity);
 int UnionRoom_GetOwnChatMessageMsg(struct UnionRoom *unionRoom, MessageFormat *msgFmt);
 void UnionRoom_BufferPartnerLanguage(MessageFormat *msgFmt, u16 mode, u16 objId, PlayerProfile *profile, SaveEasyChat *easyChat);
 void UnionRoom_ResetTalkReplies(struct UnionRoom *unionRoom);
+void UnionRoom_ResetTalk(struct UnionRoom *unionRoom);
 void UnionRoom_SendBattleChoice(int choice);
 
 // the player's own chat message

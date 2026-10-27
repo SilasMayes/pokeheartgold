@@ -1417,7 +1417,7 @@ void RangerLink_StartChild(void) {
 }
 
 static int RangerLink_CountFoundParents(void) {
-    int mode = RangerLink_GetMode();
+    u8 mode = RangerLink_GetMode();
     int count = 0;
     if (mode == RANGER_LINK_MODE_CHILD) {
         RangerLinkChildPeers *peers = RangerLink_GetFoundParents();
@@ -1456,7 +1456,7 @@ void RangerLink_SelectParent(int index) {
 }
 
 static int RangerLink_CountActiveChildren(void) {
-    int mode = RangerLink_GetMode();
+    u8 mode = RangerLink_GetMode();
     int count = 0;
     if (mode == RANGER_LINK_MODE_PARENT) {
         RangerLinkParentPeers *peers = RangerLink_GetChildren();

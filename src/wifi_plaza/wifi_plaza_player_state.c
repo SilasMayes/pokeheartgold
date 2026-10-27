@@ -1421,7 +1421,7 @@ static BOOL WiFiPlazaPlayerState_OwnWalk(WiFiPlazaPlayerState *state, WiFiPlazaR
                 int facingMoveState = WiFiPlazaObj_GetParam(facing, 5);
                 int id = WiFiPlazaObj_GetParam(facing, 4);
                 if (id != 254) {
-                    int busy = WiFiPlazaRoom_IsPlayerBusy(room, (u8)id);
+                    u8 busy = WiFiPlazaRoom_IsPlayerBusy(room, (u8)id);
                     if (!facingMoveState && !busy) {
                         WiFiPlazaPlayerState_Push(manager, index, &sWiFiPlazaPlayerStateTalkStart, NULL);
                         WiFiPlazaObj_SetHandler(objManager, ownPlayer, WIFI_PLAZA_OBJ_HANDLER_IDLE);
@@ -1470,7 +1470,7 @@ static BOOL WiFiPlazaPlayerState_OwnWalk(WiFiPlazaPlayerState *state, WiFiPlazaR
                 WiFiPlazaRoom_ShowPlayerCard(room, WiFiPlazaWork_GetOwnSlot(lobby), 0);
                 PlaySE(SEQ_SE_DP_SELECT);
             } else {
-                int current = WiFiPlazaRoom_GetPlayerCardPlayer(room);
+                u32 current = WiFiPlazaRoom_GetPlayerCardPlayer(room);
                 if (current == index) {
                     WiFiPlazaRoom_ShowOwnCard(room);
                     PlaySE(SEQ_SE_DP_SELECT);

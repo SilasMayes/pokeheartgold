@@ -1,7 +1,6 @@
 #ifndef POKEHEARTGOLD_RECORD_MIXING_EXCHANGE_H
 #define POKEHEARTGOLD_RECORD_MIXING_EXCHANGE_H
 
-#include "heap.h"
 #include "save.h"
 
 // The record types record mixing exchanges (one part builds what is sent, the other merges what was

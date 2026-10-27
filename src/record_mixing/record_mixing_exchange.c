@@ -12,6 +12,7 @@
 #include "save.h"
 #include "save_arrays.h"
 #include "save_block_23.h"
+#include "save_fashion.h"
 #include "save_rankings.h"
 
 // The records exchanged by record mixing: per record type, its size, how it is loaded into the send buffer and how
@@ -26,8 +27,6 @@ void RecordMixing_MergeBlock23(void *saveBlock23, int numPlayers, int localId, v
 void SaveBlock23_ClearArraysAndReset(SaveBlock23 *data);
 void SaveBlock23_Reset(SaveBlock23 *data);
 
-u32 FashionEntry_sizeof(void);
-void Save_FashionData_InsertEntries(u8 count, int skip, SaveFashionData *fashionData, SaveFashionDataSub **entries);
 
 u32 RecordMixing_FriendGroup_GetSize(SaveData *saveData);
 void *RecordMixing_FriendGroup_Load(SaveData *saveData, enum HeapID heapID, u32 size);

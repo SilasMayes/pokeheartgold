@@ -2220,8 +2220,8 @@ static void WiFiPlazaPlayerCard_BufferName(WiFiPlazaPlayerCard *card, WiFiPlazaR
 }
 
 static void WiFiPlazaPlayerCard_BufferLocation(WiFiPlazaPlayerCard *card, WiFiPlazaRoomMsg *msg, struct WiFiPlazaPlayer *player) {
-    int country = WiFiPlazaPlayer_GetCountry(player);
-    int region = WiFiPlazaPlayer_GetRegion(player);
+    u32 country = WiFiPlazaPlayer_GetCountry(player);
+    u32 region = WiFiPlazaPlayer_GetRegion(player);
     WiFiPlazaRoomMsg_BufferCountryName(msg, country, 0);
     WiFiPlazaRoomMsg_BufferCityName(msg, country, region, 1);
 }

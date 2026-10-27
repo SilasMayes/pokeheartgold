@@ -1,6 +1,7 @@
 #include "global.h"
 
 #include "constants/dwc_status.h"
+#include "save_fashion.h"
 
 #include "global_terminal/global_terminal_app_internal.h"
 #include "global_terminal/global_terminal_net.h"
@@ -146,7 +147,6 @@ void GF_TouchpadStopSampling(void);
 void CommState_InitWfcSession(SaveData *saveData);
 void CommState_FreeWfcSession(void);
 void CommState_ShowRestartErrorAndHalt(void);
-u32 FashionEntry_sizeof(void);
 
 // What GlobalTerminalConnect_StateWaitConnect reads back from the connection.
 typedef struct GlobalTerminalConnectInetResult {

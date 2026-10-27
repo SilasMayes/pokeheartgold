@@ -726,7 +726,7 @@ static void WiFiPlazaConnect_FreeMessageBox(WiFiPlazaConnectMessageBox *box) {
 }
 
 static void WiFiPlazaConnect_PrintCenteredTitle(WiFiPlazaConnectMessageBox *box, int msgId) {
-    int x;
+    u32 x;
     FillWindowPixelBuffer(&box->window, 0);
     ReadMsgDataIntoString(box->msgData, msgId, box->raw);
     StringExpandPlaceholders(box->format, box->expanded, box->raw);

@@ -271,7 +271,7 @@ static void Comm_UpdateTransferMode(void) {
 }
 
 static void Comm_RequestTransferMode(int connected) {
-    int state = sCommCore.work->transferMode;
+    u8 state = sCommCore.work->transferMode;
     if (state == 0 && connected == 1) {
         sCommCore.work->transferMode = 3;
         return;
@@ -1193,7 +1193,7 @@ int Comm_CountConnected(void) {
     return count;
 }
 
-int Comm_IsActive(void) {
+BOOL Comm_IsActive(void) {
     if (sCommCore.work != NULL && Comm_IsWifiLinkMode(CommState_GetLinkMode())) {
         return 1;
     }
@@ -1324,7 +1324,7 @@ int Comm_GetConnectedChildren(void) {
     return CommWireless_GetConnectedChildren();
 }
 
-int Comm_HasLinkError(void) {
+BOOL Comm_HasLinkError(void) {
     if (sCommCore.work != NULL && sCommCore.work->linkError != 0) {
         CommState_SetErrorWatch(1, 1);
         return 1;
@@ -1368,15 +1368,15 @@ void CommRandom_Init(CommRandom *seed) {
     seed->increment = 0x269EC3;
 }
 
-int Comm_ParentQueueHasCommand(int value) {
+BOOL Comm_ParentQueueHasCommand(int value) {
     return PacketPool_HasCommand(&sCommCore.work->parentQueue, value);
 }
 
-int Comm_IsParentQueueEmpty(void) {
+BOOL Comm_IsParentQueueEmpty(void) {
     return PacketPool_AllNodesFree(&sCommCore.work->parentQueue);
 }
 
-int Comm_IsChildQueueEmpty(void) {
+BOOL Comm_IsChildQueueEmpty(void) {
     return PacketPool_AllNodesFree(&sCommCore.work->childQueue);
 }
 

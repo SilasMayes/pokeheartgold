@@ -34,7 +34,6 @@ static int UnionRoom_GetPlayerActivityMsg(struct UnionRoom *unionRoom, int slot)
 static int UnionRoom_GetSentTalkReplyMsg(int reply, int gender, MessageFormat *msgFmt);
 static void UnionRoom_FillStatusMembers(UnionRoomStatus *status, int unused);
 static void UnionRoomStatus_Init(UnionRoomStatus *status);
-void UnionRoom_ResetTalk(struct UnionRoom *unionRoom);
 
 // gender-indexed message ids
 

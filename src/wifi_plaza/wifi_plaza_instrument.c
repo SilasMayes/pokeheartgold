@@ -1386,7 +1386,7 @@ static BOOL WiFiPlazaInstrument_UpdateBalloonDrop(WiFiPlazaInstrumentManager *ma
 // Places the models (up to 3) next to the object while it rises.
 static void WiFiPlazaInstrument_PlaceBalloons(WiFiPlazaInstrumentEffect *effect) {
     VecFx32 pos;
-    int count;
+    s8 count;
     u32 y;
     u32 x;
 
@@ -1424,7 +1424,7 @@ static void WiFiPlazaInstrument_PlaceBalloons(WiFiPlazaInstrumentEffect *effect)
 // Same for the slight lift on map attribute 42.
 static void WiFiPlazaInstrument_PlaceBalloonsLifted(WiFiPlazaInstrumentEffect *effect) {
     VecFx32 pos;
-    int count;
+    s8 count;
     u32 y;
     u32 x;
 
