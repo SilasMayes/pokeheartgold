@@ -32,7 +32,7 @@ static void WifiSetupConnectionList_CheckButtons(void);
 static void WifiSetupConnectionList_Exit(void);
 static void WifiSetupConnectionList_WaitFadeOut(void);
 static void WifiSetupConnectionList_End(void);
-static void WifiSetupConnectionList_MoveCursor(int dir);
+static void WifiSetupConnectionList_MoveCursor(enum WifiSetupCursorDirection dir);
 static void WifiSetupConnectionList_PressEraseButton(void);
 static void WifiSetupConnectionList_WaitEraseDialog(void);
 static void WifiSetupConnectionList_WaitEraseDialogClosed(void);
@@ -48,7 +48,7 @@ static void WifiSetupMethodMenu_CheckButtons(void);
 static void WifiSetupMethodMenu_Exit(void);
 static void WifiSetupMethodMenu_WaitFadeOut(void);
 static void WifiSetupMethodMenu_End(void);
-static void WifiSetupMethodMenu_MoveCursor(int dir);
+static void WifiSetupMethodMenu_MoveCursor(enum WifiSetupCursorDirection dir);
 static void WifiSetupMethodMenu_HighlightSelection(void);
 static void WifiSetupConnectionTest_LoadGraphics(void);
 static void WifiSetupConnectionTest_Start(void);
@@ -110,12 +110,12 @@ void WifiSetupConnectionList_CreateIcons(void) {
         if (k == WIFI_SETUP_METHOD_ERASED) {
             k = 3;
         } else {
-            gWifiSetupConnectionList.work->eraseButtons[i] = WifiSetupOamTemplate_AllocBlock(0, 0x11, 1);
+            gWifiSetupConnectionList.work->eraseButtons[i] = WifiSetupOamTemplate_AllocBlock(WIFI_SETUP_SCREEN_MAIN, 0x11, TRUE);
             j = i + 3;
             WifiSetupOamBlock_SetPosition(gWifiSetupConnectionList.work->eraseButtons[i], -1, gWifiSetupConnectionListIconPositions[j].x, gWifiSetupConnectionListIconPositions[j].y);
             WifiSetupOamBlock_SetPriority(gWifiSetupConnectionList.work->eraseButtons[i], -1, 3);
         }
-        gWifiSetupConnectionList.work->slotIcons[i] = WifiSetupOamTemplate_AllocBlock(0, gWifiSetupConnectionListSlotIconTemplates[k], 1);
+        gWifiSetupConnectionList.work->slotIcons[i] = WifiSetupOamTemplate_AllocBlock(WIFI_SETUP_SCREEN_MAIN, gWifiSetupConnectionListSlotIconTemplates[k], TRUE);
         WifiSetupOamBlock_SetPosition(gWifiSetupConnectionList.work->slotIcons[i], -1, gWifiSetupConnectionListIconPositions[i].x, gWifiSetupConnectionListIconPositions[i].y);
         WifiSetupOamBlock_SetPriority(gWifiSetupConnectionList.work->slotIcons[i], -1, 3);
     }
@@ -330,7 +330,7 @@ void WifiSetupConnectionList_ShowCursor(void) {
     }
 }
 
-static void WifiSetupConnectionList_MoveCursor(int dir) {
+static void WifiSetupConnectionList_MoveCursor(enum WifiSetupCursorDirection dir) {
     BOOL changed = TRUE;
     u8 column;
     int columnBelow;
@@ -427,7 +427,7 @@ static void WifiSetupConnectionList_MoveCursor(int dir) {
 
 static void WifiSetupConnectionList_PressEraseButton(void) {
     int idx = gWifiSetupConnectionList.selected - WIFI_SETUP_CONNECTION_LIST_FIRST_ERASE;
-    WifiSetupOamTemplate_Copy(0, 0x32, WifiSetupOamBlock_GetOam(gWifiSetupConnectionList.work->eraseButtons[idx], 0));
+    WifiSetupOamTemplate_Copy(WIFI_SETUP_SCREEN_MAIN, 0x32, WifiSetupOamBlock_GetOam(gWifiSetupConnectionList.work->eraseButtons[idx], 0));
     WifiSetupOamBlock_SetPosition(gWifiSetupConnectionList.work->eraseButtons[idx], -1, gWifiSetupConnectionListIconPositions[idx + 3].x, gWifiSetupConnectionListIconPositions[idx + 3].y);
     WifiSetupOamBlock_SetPriority(gWifiSetupConnectionList.work->eraseButtons[idx], -1, 3);
 }
@@ -438,7 +438,7 @@ static void WifiSetupConnectionList_WaitEraseDialog(void) {
     case 1:
         WifiSetupSound_Play(0xE);
         WifiSetupConnections_Erase(idx);
-        WifiSetupOamTemplate_Copy(0, 0x56, WifiSetupOamBlock_GetOam(gWifiSetupConnectionList.work->slotIcons[idx], 0));
+        WifiSetupOamTemplate_Copy(WIFI_SETUP_SCREEN_MAIN, 0x56, WifiSetupOamBlock_GetOam(gWifiSetupConnectionList.work->slotIcons[idx], 0));
         WifiSetupOamBlock_SetPosition(gWifiSetupConnectionList.work->slotIcons[idx], -1, gWifiSetupConnectionListIconPositions[idx].x, gWifiSetupConnectionListIconPositions[idx].y);
         WifiSetupOamBlock_SetPriority(gWifiSetupConnectionList.work->slotIcons[idx], -1, 3);
         WifiSetupOamBlock_Free(gWifiSetupConnectionList.work->eraseButtons[idx]);
@@ -446,7 +446,7 @@ static void WifiSetupConnectionList_WaitEraseDialog(void) {
         break;
     case 0:
         WifiSetupSound_Play(7);
-        WifiSetupOamTemplate_Copy(0, 0x11, WifiSetupOamBlock_GetOam(gWifiSetupConnectionList.work->eraseButtons[idx], 0));
+        WifiSetupOamTemplate_Copy(WIFI_SETUP_SCREEN_MAIN, 0x11, WifiSetupOamBlock_GetOam(gWifiSetupConnectionList.work->eraseButtons[idx], 0));
         WifiSetupOamBlock_SetPosition(gWifiSetupConnectionList.work->eraseButtons[idx], -1, gWifiSetupConnectionListIconPositions[idx + 3].x, gWifiSetupConnectionListIconPositions[idx + 3].y);
         WifiSetupOamBlock_SetPriority(gWifiSetupConnectionList.work->eraseButtons[idx], -1, 3);
         break;
@@ -666,7 +666,7 @@ static void WifiSetupMethodMenu_End(void) {
     }
 }
 
-static void WifiSetupMethodMenu_MoveCursor(int dir) {
+static void WifiSetupMethodMenu_MoveCursor(enum WifiSetupCursorDirection dir) {
     s8 cur = gWifiSetupMethodMenu.selected;
     s8 next = gWifiSetupMethodMenuCursorMoves[WifiSetupApp_HasOption(1)][cur][dir];
     if (next == -1) {

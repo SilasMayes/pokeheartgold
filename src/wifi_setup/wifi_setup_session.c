@@ -37,9 +37,9 @@ static inline int GetTimeout(WifiSetupRequest *request) {
     return request->receiveTimeout;
 }
 
-static inline void ClearRetry(WifiSetupAossRetry *pair, int *mode) {
+static inline void ClearRetry(WifiSetupAossRetry *pair, enum WifiSetupAossStep *mode) {
     *(s16 *)((u32)pair) = 0;
-    *mode = 0;
+    *mode = WIFI_SETUP_AOSS_STEP_JOIN;
     *(s16 *)((u32)pair + 2) = 0;
 }
 
@@ -48,8 +48,8 @@ static inline void ClearRetry(WifiSetupAossRetry *pair, int *mode) {
 int WifiSetup_RunAossSession(WifiSetupRequest *request) {
     AossSession session;
     int connected;
-    int mode;
-    int nextMode;
+    enum WifiSetupAossStep mode;
+    enum WifiSetupAossStep nextMode;
     u32 ip;
     WifiSetupAossReceived *data;
     int seconds;

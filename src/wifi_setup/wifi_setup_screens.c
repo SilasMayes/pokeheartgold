@@ -39,7 +39,7 @@ static void WifiSetupTopMenu_CheckButtons(void);
 static void WifiSetupTopMenu_Exit(void);
 static void WifiSetupTopMenu_WaitFadeOut(void);
 static void WifiSetupTopMenu_End(void);
-static void WifiSetupTopMenu_MoveCursor(int dir);
+static void WifiSetupTopMenu_MoveCursor(enum WifiSetupCursorDirection dir);
 static void WifiSetupTopMenu_HighlightSelection(void);
 static void WifiSetupEraseConfirm_Init(void);
 static void WifiSetupEraseConfirm_LoadGraphics(void);
@@ -92,7 +92,7 @@ static void WifiSetupOptions_CheckButtons(void);
 static void WifiSetupOptions_Exit(void);
 static void WifiSetupOptions_WaitFadeOut(void);
 static void WifiSetupOptions_End(void);
-static void WifiSetupOptions_MoveCursor(int dir);
+static void WifiSetupOptions_MoveCursor(enum WifiSetupCursorDirection dir);
 static void WifiSetupOptions_HighlightSelection(void);
 static void WifiSetupTransferring_Init(void);
 static void WifiSetupTransferring_LoadGraphics(void);
@@ -234,7 +234,7 @@ static void WifiSetupListScreen_ScrollUpTask(WifiSetupTask *task, void *arg);
 static void WifiSetupListScreen_ScrollDownTask(WifiSetupTask *task, void *arg);
 static void WifiSetupListScreen_ScrollBgTask(WifiSetupTask *task, void *arg);
 static void WifiSetupListScreen_ShowCursor(void);
-static void WifiSetupListScreen_MoveCursor(int input);
+static void WifiSetupListScreen_MoveCursor(enum WifiSetupCursorDirection dir);
 static void WifiSetupListScreen_StartScrollUp(void);
 static void WifiSetupListScreen_StartScrollDown(void);
 static void WifiSetupListScreen_HighlightRescanButton(void);
@@ -334,8 +334,8 @@ static void WifiSetupScreens_Quit(void) {
     }
     WifiSetupTask_SetQueueEnabled(WIFI_SETUP_TASK_QUEUE_MAIN, FALSE);
     WifiSetupTask_SetQueueEnabled(WIFI_SETUP_TASK_QUEUE_VBLANK, FALSE);
-    WifiSetupOamTemplate_Free(1);
-    WifiSetupOamTemplate_Free(0);
+    WifiSetupOamTemplate_Free(WIFI_SETUP_SCREEN_SUB);
+    WifiSetupOamTemplate_Free(WIFI_SETUP_SCREEN_MAIN);
     WifiSetupBackground_Free();
     WifiSetupCursor_Free();
     WifiSetupText_UnloadBank(gWifiSetupTextBank);
@@ -355,8 +355,8 @@ void WifiSetupScreens_Init(void) {
     } else {
         gWifiSetupTextBank = WifiSetupText_LoadBank(gWifiSetupMessageBankPaths[WifiSetupApp_GetLanguage()]);
     }
-    WifiSetupOamTemplate_Load(1, WifiSetup_LocalizePath(sStr_CharJtMainNceL));
-    WifiSetupOamTemplate_Load(0, WifiSetup_LocalizePath(sStr_CharJbMainNceL));
+    WifiSetupOamTemplate_Load(WIFI_SETUP_SCREEN_SUB, WifiSetup_LocalizePath(sStr_CharJtMainNceL));
+    WifiSetupOamTemplate_Load(WIFI_SETUP_SCREEN_MAIN, WifiSetup_LocalizePath(sStr_CharJbMainNceL));
     WifiSetup_LoadGraphics(sStr_CharJtBgMainNcgL, GXS_LoadBG1Char);
     WifiSetup_LoadGraphics(sStr_CharJtBgMainNclL, GXS_LoadBGPltt);
     WifiSetup_LoadGraphics(sStr_CharJtObjMainNcgL, GXS_LoadOBJ);
@@ -557,7 +557,7 @@ static void WifiSetupTopMenu_End(void) {
     }
 }
 
-static void WifiSetupTopMenu_MoveCursor(int dir) {
+static void WifiSetupTopMenu_MoveCursor(enum WifiSetupCursorDirection dir) {
     int idx;
     if (dir == WIFI_SETUP_CURSOR_UP || dir == WIFI_SETUP_CURSOR_DOWN) {
         return;
@@ -941,7 +941,7 @@ static void WifiSetupOptions_Init(void) {
     WifiSetupBackground_LoadHeader(0x10);
     WifiSetupBanner_LoadScreen(3);
     WifiSetupMessage_Show(0x39, -1, 0);
-    gWifiSetupOptions.oam = WifiSetupOamTemplate_AllocOam(0, 0x5b);
+    gWifiSetupOptions.oam = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, 0x5b);
     gWifiSetupOptions.oam->attr01 = (gWifiSetupOptions.oam->attr01 & 0xFE00FF00) | 0x84 | 0xE00000;
     gWifiSetupOptions.oam->attr2 = (gWifiSetupOptions.oam->attr2 & ~0xc00) | 0xc00;
     idx = gWifiSetupOptions.selected * 4;
@@ -1126,7 +1126,7 @@ static void WifiSetupOptions_End(void) {
     }
 }
 
-static void WifiSetupOptions_MoveCursor(int dir) {
+static void WifiSetupOptions_MoveCursor(enum WifiSetupCursorDirection dir) {
     int idx;
     if (dir == WIFI_SETUP_CURSOR_UP) {
         gWifiSetupOptions.selected = FX_ModS32(gWifiSetupOptions.selected + 2, 3);
@@ -2329,15 +2329,15 @@ static void WifiSetupListScreen_CreateRowObjects(void) {
     }
     int i = 0;
     for (; i < count; i++) {
-        gWifiSetupListScreen.work->rowOams[i] = WifiSetupOamTemplate_AllocOam(0, 46);
-        gWifiSetupListScreen.work->iconOams[i] = WifiSetupOamTemplate_AllocOam(0, 24);
+        gWifiSetupListScreen.work->rowOams[i] = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, 46);
+        gWifiSetupListScreen.work->iconOams[i] = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, 24);
     }
     for (i = 0; (u32)i < 3; i++) {
-        WifiSetupOamTemplate_Copy(0, gWifiSetupListScreenRowTemplates[i], gWifiSetupListScreen.work->rowOams[0]);
+        WifiSetupOamTemplate_Copy(WIFI_SETUP_SCREEN_MAIN, gWifiSetupListScreenRowTemplates[i], gWifiSetupListScreen.work->rowOams[0]);
         gWifiSetupListScreen.work->rowKindChars[i] = gWifiSetupListScreen.work->rowOams[0]->attr2 & 1023;
     }
     for (i = 0; (u32)i < 4; i++) {
-        WifiSetupOamTemplate_Copy(0, gWifiSetupListScreenIconTemplates[i], gWifiSetupListScreen.work->iconOams[0]);
+        WifiSetupOamTemplate_Copy(WIFI_SETUP_SCREEN_MAIN, gWifiSetupListScreenIconTemplates[i], gWifiSetupListScreen.work->iconOams[0]);
         gWifiSetupListScreen.work->iconChars[i] = gWifiSetupListScreen.work->iconOams[0]->attr2 & 1023;
     }
     for (i = 0; i < count; i++) {
@@ -2445,7 +2445,7 @@ static void WifiSetupListScreen_HandleInput(void) {
         return;
     }
     if (WifiSetupInput_IsKeyRepeated(PAD_KEY_UP)) {
-        WifiSetupListScreen_MoveCursor(1);
+        WifiSetupListScreen_MoveCursor(WIFI_SETUP_CURSOR_UP);
         return;
     }
     if (WifiSetupInput_IsKeyReleased(PAD_KEY_UP)) {
@@ -2453,7 +2453,7 @@ static void WifiSetupListScreen_HandleInput(void) {
         return;
     }
     if (WifiSetupInput_IsKeyRepeated(PAD_KEY_DOWN)) {
-        WifiSetupListScreen_MoveCursor(3);
+        WifiSetupListScreen_MoveCursor(WIFI_SETUP_CURSOR_DOWN);
         return;
     }
     if (WifiSetupInput_IsKeyReleased(PAD_KEY_DOWN)) {
@@ -2779,12 +2779,12 @@ static void WifiSetupListScreen_ShowCursor(void) {
     WifiSetupCursor_ShowPair(x < 4 ? 2 : 3, gWifiSetupListScreenCursorLeft[x * 4], gWifiSetupListScreenCursorRight[x * 4], gWifiSetupListScreenCursorTop[x * 4]);
 }
 
-static void WifiSetupListScreen_MoveCursor(int input) {
-    int changed = 1;
+static void WifiSetupListScreen_MoveCursor(enum WifiSetupCursorDirection dir) {
+    BOOL changed = TRUE;
     int state = gWifiSetupListScreen.selected;
     switch (state) {
     case 0:
-        if (input == 1) {
+        if (dir == WIFI_SETUP_CURSOR_UP) {
             if (gWifiSetupListScreen.position == 0) {
                 gWifiSetupListScreen.selected = 4;
             } else {
@@ -2796,24 +2796,24 @@ static void WifiSetupListScreen_MoveCursor(int input) {
             if (gWifiSetupListScreen.work->count > 1) {
                 gWifiSetupListScreen.selected = state + 1;
             } else {
-                changed = 0;
+                changed = FALSE;
             }
         }
         break;
     case 1:
     case 2:
-        if (input == 1) {
+        if (dir == WIFI_SETUP_CURSOR_UP) {
             gWifiSetupListScreen.selected = state - 1;
         } else {
             if (gWifiSetupListScreen.work->count > state + 1) {
                 gWifiSetupListScreen.selected = state + 1;
             } else {
-                changed = 0;
+                changed = FALSE;
             }
         }
         break;
     case 3:
-        if (input == 1) {
+        if (dir == WIFI_SETUP_CURSOR_UP) {
             gWifiSetupListScreen.selected = state - 1;
         } else {
             WifiSetupListScreen_StartScrollDown();
@@ -2821,8 +2821,8 @@ static void WifiSetupListScreen_MoveCursor(int input) {
         }
         break;
     case 4:
-        if (input == 1) {
-            changed = 0;
+        if (dir == WIFI_SETUP_CURSOR_UP) {
+            changed = FALSE;
         } else {
             gWifiSetupListScreen.position = 0;
             gWifiSetupListScreen.selected = 0;
@@ -2910,7 +2910,7 @@ void WifiSetupTextEntry_Init(void) {
     }
     WifiSetupBanner_Show(2);
     gWifiSetupTextEntry->canvas = WifiSetupText_InitBgCanvas(WIFI_SETUP_SCREEN_MAIN, 0);
-    gWifiSetupTextEntry->cursor = WifiSetupOamTemplate_AllocOam(0, 62);
+    gWifiSetupTextEntry->cursor = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, 62);
     {
         GXOamAttr *cursor = gWifiSetupTextEntry->cursor;
         cursor->attr2 = (cursor->attr2 & ~0xc00) | 0xc00;

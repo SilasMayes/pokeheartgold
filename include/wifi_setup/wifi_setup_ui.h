@@ -306,7 +306,7 @@ void WifiSetupFile_Free(void *data);
 
 void WifiSetupOamBlock_InitManager(void);
 void WifiSetupOamBlock_FreeManager(void);
-WifiSetupOamBlock *WifiSetupOamBlock_Alloc(int screen, int count, int fromFront);
+WifiSetupOamBlock *WifiSetupOamBlock_Alloc(enum WifiSetupScreen screen, int count, BOOL fromFront);
 void WifiSetupOamBlock_Free(WifiSetupOamBlock *block);
 GXOamAttr *WifiSetupOamBlock_GetOam(WifiSetupOamBlock *block, int index);
 u8 WifiSetupOamBlock_GetCount(WifiSetupOamBlock *block);
@@ -316,11 +316,11 @@ void WifiSetupOamBlock_SetPosition(WifiSetupOamBlock *block, int index, int x, i
 void WifiSetupOamBlock_SetPriority(WifiSetupOamBlock *block, int index, u32 priority);
 void WifiSetupOamBlock_GetPosition(WifiSetupOamBlock *block, int index, int *x, int *y);
 
-void WifiSetupOamTemplate_Load(int slot, const char *path);
-void WifiSetupOamTemplate_Free(int slot);
-void WifiSetupOamTemplate_Copy(int slot, int index, GXOamAttr *dst);
-GXOamAttr *WifiSetupOamTemplate_AllocOam(int slot, int index);
-WifiSetupOamBlock *WifiSetupOamTemplate_AllocBlock(int slot, int index, int fromFront);
+void WifiSetupOamTemplate_Load(enum WifiSetupScreen screen, const char *path);
+void WifiSetupOamTemplate_Free(enum WifiSetupScreen screen);
+void WifiSetupOamTemplate_Copy(enum WifiSetupScreen screen, int index, GXOamAttr *dst);
+GXOamAttr *WifiSetupOamTemplate_AllocOam(enum WifiSetupScreen screen, int index);
+WifiSetupOamBlock *WifiSetupOamTemplate_AllocBlock(enum WifiSetupScreen screen, int index, BOOL fromFront);
 
 WifiSetupPool *WifiSetupPool_NewWithItems(int count, void *items, int stride);
 void *WifiSetupPool_Push(WifiSetupPool *pool, void *item);
@@ -328,17 +328,17 @@ void *WifiSetupPool_Pop(WifiSetupPool *pool);
 
 void WifiSetupFade_Init(void);
 void WifiSetupFade_Free(void);
-u8 WifiSetupFade_IsActive(int screen);
-BOOL WifiSetupFade_Start(int kind, int screen, int planes, int duration);
+u8 WifiSetupFade_IsActive(enum WifiSetupScreen screen);
+BOOL WifiSetupFade_Start(enum WifiSetupFadeKind kind, enum WifiSetupScreen screen, int planes, int duration);
 BOOL WifiSetupFade_StartDelay(int duration);
 
 void WifiSetupText_Init(void);
 void WifiSetupText_Free(void);
-WifiSetupCanvas *WifiSetupText_AllocObjCanvas(int screen, int width, int height, int fromFront, u32 *numObjs, int font);
+WifiSetupCanvas *WifiSetupText_AllocObjCanvas(enum WifiSetupScreen screen, int width, int height, BOOL fromFront, u32 *numObjs, int font);
 void WifiSetupText_FreeObjCanvas(WifiSetupCanvas *canvas);
 void WifiSetupText_FreeCanvas(WifiSetupCanvas *canvas);
-WifiSetupCanvas *WifiSetupText_InitBgCanvas(int screen, int font);
-void WifiSetupText_FreeBgCanvas(int screen);
+WifiSetupCanvas *WifiSetupText_InitBgCanvas(enum WifiSetupScreen screen, int font);
+void WifiSetupText_FreeBgCanvas(enum WifiSetupScreen screen);
 void WifiSetupText_Draw(WifiSetupCanvas *canvas, int x, int y, int color, u32 flags, const u16 *text);
 void WifiSetupText_DrawMonospace(WifiSetupCanvas *canvas, int x, int y, int color, int advance, const u16 *text, int font);
 void WifiSetupText_DrawInRect(WifiSetupCanvas *canvas, int x, int y, int width, int height, int color, u32 flags, const u16 *text);
@@ -349,10 +349,10 @@ void WifiSetupText_MarkDirty(WifiSetupCanvas *canvas);
 void WifiSetup_SetPoint(u16 x, u16 y, WifiSetupPoint *point);
 void WifiSetup_SetRect(int left, int top, int right, int bottom, WifiSetupRect *rect);
 void WifiSetup_RectFromPosSize(const WifiSetupPoint *pos, const WifiSetupPoint *size, WifiSetupRect *rect);
-void WifiSetupDisplay_ShowPlanes(int screen, int planes);
-void WifiSetupDisplay_HidePlanes(int screen, int planes);
-void WifiSetupDisplay_SetWindowRect(int screen, int window, WifiSetupRect *rect);
-void WifiSetupDisplay_SetWindowPlanes(int screen, int window, int planes, BOOL effect);
+void WifiSetupDisplay_ShowPlanes(enum WifiSetupScreen screen, int planes);
+void WifiSetupDisplay_HidePlanes(enum WifiSetupScreen screen, int planes);
+void WifiSetupDisplay_SetWindowRect(enum WifiSetupScreen screen, enum WifiSetupWindow window, WifiSetupRect *rect);
+void WifiSetupDisplay_SetWindowPlanes(enum WifiSetupScreen screen, enum WifiSetupWindow window, int planes, BOOL effect);
 
 void WifiSetupHeap_Init(void *mem);
 void WifiSetupHeap_Destroy(void);
@@ -391,11 +391,11 @@ void WifiSetupLed_SetOn(void);
 
 void WifiSetupTask_InitScheduler(void);
 void WifiSetupTask_FreeScheduler(void);
-void WifiSetupTask_RunQueue(int queue);
-WifiSetupTask *WifiSetupTask_Create(int queue, WifiSetupTaskFunc func, void *arg, u32 priority);
+void WifiSetupTask_RunQueue(enum WifiSetupTaskQueueId queue);
+WifiSetupTask *WifiSetupTask_Create(enum WifiSetupTaskQueueId queue, WifiSetupTaskFunc func, void *arg, u32 priority);
 void WifiSetupTask_SetFunc(WifiSetupTask *task, WifiSetupTaskFunc func);
-void WifiSetupTask_DestroyLater(int queue, WifiSetupTask *task);
-void WifiSetupTask_Destroy(int queue, WifiSetupTask *task);
-void WifiSetupTask_SetQueueEnabled(int queue, u8 enabled);
+void WifiSetupTask_DestroyLater(enum WifiSetupTaskQueueId queue, WifiSetupTask *task);
+void WifiSetupTask_Destroy(enum WifiSetupTaskQueueId queue, WifiSetupTask *task);
+void WifiSetupTask_SetQueueEnabled(enum WifiSetupTaskQueueId queue, u8 enabled);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_UI_H

@@ -43,17 +43,17 @@ void WifiSetupKeypad_Create(void) {
     gWifiSetupKeypad->canType = TRUE;
     gWifiSetupKeypad->canAdvance = TRUE;
     for (i = 0; i < WIFI_SETUP_KEYPAD_NUM_DIGIT_KEYS; i++) {
-        gWifiSetupKeypad->keys[i] = WifiSetupOamTemplate_AllocOam(0, 54);
+        gWifiSetupKeypad->keys[i] = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, 54);
         gWifiSetupKeypad->keys[i]->attr01 = (gWifiSetupKeypad->keys[i]->attr01 & 0xc1fffcff) | 0x200;
         gWifiSetupKeypad->keys[i]->attr2 = (gWifiSetupKeypad->keys[i]->attr2 & ~0xc00) | 0xc00;
     }
     for (i = 0; i < WIFI_SETUP_KEYPAD_NUM_EXTRA_KEYS; i++) {
-        gWifiSetupKeypad->extraKeys[i] = WifiSetupOamTemplate_AllocOam(0, gWifiSetupKeypadExtraKeyTemplates[i]);
+        gWifiSetupKeypad->extraKeys[i] = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, gWifiSetupKeypadExtraKeyTemplates[i]);
         gWifiSetupKeypad->extraKeys[i]->attr01 = (gWifiSetupKeypad->extraKeys[i]->attr01 & 0xc1fffcff) | 0x200;
         gWifiSetupKeypad->extraKeys[i]->attr2 = (gWifiSetupKeypad->extraKeys[i]->attr2 & ~0xc00) | 0xc00;
     }
     for (i = 0; i < WIFI_SETUP_KEYPAD_NUM_BUTTONS; i++) {
-        gWifiSetupKeypad->buttons[i] = WifiSetupOamTemplate_AllocBlock(0, gWifiSetupKeypadButtonTemplates[i], 1);
+        gWifiSetupKeypad->buttons[i] = WifiSetupOamTemplate_AllocBlock(WIFI_SETUP_SCREEN_MAIN, gWifiSetupKeypadButtonTemplates[i], TRUE);
         WifiSetupOamBlock_SetAffineMode(gWifiSetupKeypad->buttons[i], -1, 512, 0);
         WifiSetupOamBlock_SetPriority(gWifiSetupKeypad->buttons[i], -1, 3);
     }
@@ -62,7 +62,7 @@ void WifiSetupKeypad_Create(void) {
     label[1] = i;
     for (; i < 4; i++) {
         int j;
-        gWifiSetupKeypad->rows[i] = WifiSetupText_AllocObjCanvas(WIFI_SETUP_SCREEN_MAIN, 12, 4, 0, &numObjs, 0);
+        gWifiSetupKeypad->rows[i] = WifiSetupText_AllocObjCanvas(WIFI_SETUP_SCREEN_MAIN, 12, 4, FALSE, &numObjs, 0);
         labelIndex = firstLabel;
         box.x = 0;
         for (j = 0; j < 3; j++) {
@@ -71,10 +71,10 @@ void WifiSetupKeypad_Create(void) {
             box.x += 32;
             labelIndex++;
         }
-        gWifiSetupKeypad->rowBlocks[i] = WifiSetupOamBlock_Alloc(WIFI_SETUP_SCREEN_MAIN, numObjs, 0);
+        gWifiSetupKeypad->rowBlocks[i] = WifiSetupOamBlock_Alloc(WIFI_SETUP_SCREEN_MAIN, numObjs, FALSE);
         firstLabel += 3;
     }
-    gWifiSetupKeypad->cursor = WifiSetupOamTemplate_AllocBlock(0, 68, 1);
+    gWifiSetupKeypad->cursor = WifiSetupOamTemplate_AllocBlock(WIFI_SETUP_SCREEN_MAIN, 68, TRUE);
     WifiSetupOamBlock_SetAffineMode(gWifiSetupKeypad->cursor, -1, 512, 0);
     WifiSetupOamBlock_SetPriority(gWifiSetupKeypad->cursor, -1, 2);
     gWifiSetupKeypad->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupKeypad_SlideInRow0Task, NULL, 120);
@@ -359,16 +359,16 @@ static void WifiSetupKeypad_SetHoveredKey(int key) {
 static void WifiSetupKeypad_HandleButtons(void) {
     WifiSetupKeypad *keypad;
     if (WifiSetupInput_IsKeyRepeated(PAD_KEY_LEFT)) {
-        WifiSetupKeypad_MoveCursor(0);
+        WifiSetupKeypad_MoveCursor(WIFI_SETUP_CURSOR_LEFT);
     }
     if (WifiSetupInput_IsKeyRepeated(PAD_KEY_UP)) {
-        WifiSetupKeypad_MoveCursor(1);
+        WifiSetupKeypad_MoveCursor(WIFI_SETUP_CURSOR_UP);
     }
     if (WifiSetupInput_IsKeyRepeated(PAD_KEY_RIGHT)) {
-        WifiSetupKeypad_MoveCursor(2);
+        WifiSetupKeypad_MoveCursor(WIFI_SETUP_CURSOR_RIGHT);
     }
     if (WifiSetupInput_IsKeyRepeated(PAD_KEY_DOWN)) {
-        WifiSetupKeypad_MoveCursor(3);
+        WifiSetupKeypad_MoveCursor(WIFI_SETUP_CURSOR_DOWN);
     }
     if (WifiSetupInput_IsKeyPressed(PAD_BUTTON_A)) {
         keypad = gWifiSetupKeypad;

@@ -286,7 +286,7 @@ typedef struct WifiSetupPollTime {
 // The UDP socket of the AOSS exchange and the socket library configuration it is started with
 typedef struct WifiSetupSocketState {
     int socket;     // -1 while closed
-    int lastStatus; // last status reported by WifiSetup_SetStatus, -1 for none
+    enum WifiSetupAossStatus lastStatus; // last status reported by WifiSetup_SetStatus, WIFI_SETUP_AOSS_STATUS_RESET for none
     SocConfig config;
 } WifiSetupSocketState;
 
@@ -337,7 +337,7 @@ void WifiSetup_FreeWorkBuffers(void);
 void WifiSetup_InitState(WifiSetupRequest *request);
 void WifiSetup_SetError(int error);
 int WifiSetup_GetError(void);
-int WifiSetup_SetStatus(int value);
+int WifiSetup_SetStatus(enum WifiSetupAossStatus status);
 void *WifiSetup_SocketAlloc(s32 unused, s32 size);
 void *WifiSetup_SocketFree(s32 unused, s32 ptr);
 int WifiSetup_StartupSocket(u32 address, u32 netmask, u32 gateway);
@@ -368,10 +368,10 @@ int WifiSetup_Cleanup(void);
 int WifiSetup_SearchAccessPoints(WifiSetupAossApList **output);
 int WifiSetup_ConnectAccessPoint(WifiSetupAossConnectInfo *param, WifiSetupAossConnectResult *out);
 int WifiSetup_CheckPrintable(const u8 *data, int length);
-int WifiSetup_FindAossAccessPoint(WifiSetupAossApList *list);
+enum WifiSetupAossScanResult WifiSetup_FindAossAccessPoint(WifiSetupAossApList *list);
 int WifiSetup_InitAossConnectInfo(WifiSetupAossConnectInfo *info);
 void WifiSetup_InitPacketAddresses(int count, WifiSetupAossPacketParams *params, const u8 *mac);
-int WifiSetup_HandlePacket(int state, WifiSetupAossReceived *received, int *counter, WifiSetupAossPacketParams *params, int socket);
-int WifiSetup_SendRequest(int which, const WifiSetupAossAddresses *addresses, WifiSetupAossPacketParams *params, int socket);
+enum WifiSetupAossStep WifiSetup_HandlePacket(enum WifiSetupAossStep state, WifiSetupAossReceived *received, int *counter, WifiSetupAossPacketParams *params, int socket);
+int WifiSetup_SendRequest(enum WifiSetupAossStep step, const WifiSetupAossAddresses *addresses, WifiSetupAossPacketParams *params, int socket);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_H

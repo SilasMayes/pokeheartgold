@@ -228,7 +228,7 @@ void WifiSetupSettings_SetCursorItem(int item) {
     WifiSetupSettings_ShowCursor();
 }
 
-void WifiSetupSettings_MoveCursor(int dir) {
+void WifiSetupSettings_MoveCursor(enum WifiSetupCursorDirection dir) {
     WifiSetupConnection *save = WifiSetupConnections_GetEdit();
     int ret = 0;
     u8 item = gWifiSetupSettings.cursorItem;

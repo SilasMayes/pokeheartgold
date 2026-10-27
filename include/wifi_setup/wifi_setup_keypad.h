@@ -77,9 +77,9 @@ BOOL WifiSetupKeypad_Exists(void);
 
 // Moves row `row` (4: the buttons) to height y.
 void WifiSetupKeypad_SetRowY();
-void WifiSetupKeypad_SetKeyHighlight(int key, int highlighted);
+void WifiSetupKeypad_SetKeyHighlight(int key, BOOL highlighted);
 void WifiSetupKeypad_UpdateCursor(void);
-void WifiSetupKeypad_MoveCursor(int direction);
+void WifiSetupKeypad_MoveCursor(enum WifiSetupCursorDirection direction);
 void WifiSetupKeypad_SlideOutButtonsTask(WifiSetupTask *task, void *arg);
 
 #endif // POKEHEARTGOLD_WIFI_SETUP_KEYPAD_H

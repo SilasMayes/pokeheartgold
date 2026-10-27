@@ -47,8 +47,8 @@ typedef struct WifiSetupApp {
     void *heap; // work memory handed in by the caller
     WifiSetupAppFlags flags;
     WifiSetupAppStateFunc stateFunc; // called once per frame
-    int bannerMode;
-    int buttonBarMode;
+    enum WifiSetupBannerMode bannerMode;
+    enum WifiSetupButtonBarMode buttonBarMode;
     int screenArg0;
     int screenArg1;
 } WifiSetupApp;
@@ -119,8 +119,8 @@ void WifiSetupApp_StartAossClient(void);
 void WifiSetupApp_StopAossClient(BOOL apply);
 int WifiSetupApp_PollAossClient(void);
 void WifiSetupApp_SetStateFunc(WifiSetupAppStateFunc func);
-void WifiSetupApp_SetTransition(int bannerMode, int buttonBarMode);
-void WifiSetupApp_GetTransition(int *bannerMode, int *buttonBarMode);
+void WifiSetupApp_SetTransition(enum WifiSetupBannerMode bannerMode, enum WifiSetupButtonBarMode buttonBarMode);
+void WifiSetupApp_GetTransition(enum WifiSetupBannerMode *bannerMode, enum WifiSetupButtonBarMode *buttonBarMode);
 void WifiSetupApp_SetScreenArgs(int arg0, int arg1);
 void WifiSetupApp_GetScreenArgs(int *arg0, int *arg1);
 u8 WifiSetupApp_GetLanguage(void);

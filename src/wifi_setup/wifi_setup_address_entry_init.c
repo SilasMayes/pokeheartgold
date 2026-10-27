@@ -45,7 +45,7 @@ void WifiSetupAddressEntry_Init(void) {
     WifiSetupMessage_Show(messages.messages[kind], -1, 0);
     WifiSetupBanner_Show(2);
     gWifiSetupAddressEntry->canvas = WifiSetupText_InitBgCanvas(WIFI_SETUP_SCREEN_MAIN, 0);
-    gWifiSetupAddressEntry->cursor = WifiSetupOamTemplate_AllocOam(0, 0x3f);
+    gWifiSetupAddressEntry->cursor = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, 0x3f);
     gWifiSetupAddressEntry->cursor->attr2 = (gWifiSetupAddressEntry->cursor->attr2 & ~0xc00) | 0xc00;
     WifiSetupAddressEntry_UpdateCursor();
     WifiSetupAddressEntry_DrawDigits();

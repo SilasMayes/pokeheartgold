@@ -260,8 +260,8 @@ static void WifiSetupKeyboard_SetHoveredKey(int key) {
     if (key == gWifiSetupKeyboard->hoveredKey) {
         return;
     }
-    WifiSetupKeyboard_SetKeyHighlight(key, 1);
-    WifiSetupKeyboard_SetKeyHighlight(gWifiSetupKeyboard->hoveredKey, 0);
+    WifiSetupKeyboard_SetKeyHighlight(key, TRUE);
+    WifiSetupKeyboard_SetKeyHighlight(gWifiSetupKeyboard->hoveredKey, FALSE);
     gWifiSetupKeyboard->hoveredKey = key;
 }
 

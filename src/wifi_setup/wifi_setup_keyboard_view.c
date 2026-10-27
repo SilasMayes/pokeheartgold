@@ -21,7 +21,7 @@ static inline void SetKeyPalette(GXOamAttr *oam, u32 palette) {
 
 void WifiSetupKeyboard_SetPage(int page) {
     int i;
-    int altPage = FALSE, shift = FALSE;
+    BOOL altPage = FALSE, shift = FALSE;
     u32 key;
     gWifiSetupKeyboard->page = page;
     for (i = 0, key = 0; i < 4; i++, key += 12) {
@@ -36,7 +36,7 @@ void WifiSetupKeyboard_SetPage(int page) {
     WifiSetupKeyboard_SetKeyHighlight(WIFI_SETUP_KEY_SHIFT, shift);
 }
 
-void WifiSetupKeyboard_SetKeyHighlight(int key, int highlighted) {
+void WifiSetupKeyboard_SetKeyHighlight(int key, BOOL highlighted) {
     if (key < 0) {
         return;
     }
@@ -78,14 +78,14 @@ void WifiSetupKeyboard_UpdateCursor(void) {
         break;
     }
     oam = WifiSetupOamBlock_GetOam(gWifiSetupKeyboard->cursor, 0);
-    WifiSetupOamTemplate_Copy(0, templ, oam);
+    WifiSetupOamTemplate_Copy(WIFI_SETUP_SCREEN_MAIN, templ, oam);
     WifiSetupOamBlock_SetPriority(gWifiSetupKeyboard->cursor, -1, 2);
     WifiSetupOamBlock_SetPosition(gWifiSetupKeyboard->cursor, -1, gWifiSetupKeyboardCursorX[gWifiSetupKeyboard->cursorKey * 2], gWifiSetupKeyboardCursorY[gWifiSetupKeyboard->cursorKey * 2]);
 }
 
-// direction: 0 left, 1 up, 2 right, 3 down. Negative entries of the move table pick the target
-// from the key the cursor came from, so that moving through a wide key returns to the same column.
-void WifiSetupKeyboard_MoveCursor(int direction) {
+// Negative entries of the move table pick the target from the key the cursor came from, so that
+// moving through a wide key returns to the same column.
+void WifiSetupKeyboard_MoveCursor(enum WifiSetupCursorDirection direction) {
     int old = gWifiSetupKeyboard->cursorKey;
     gWifiSetupKeyboard->cursorKey = gWifiSetupKeyboardCursorMoves[old][direction];
     if (gWifiSetupKeyboard->cursorKey == 46 && direction == WIFI_SETUP_CURSOR_DOWN) {

@@ -70,7 +70,7 @@ void WifiSetupScrollBar_Create(int kind, int length, int x, int y, int value) {
     gWifiSetupScrollBar->value = value;
     // called without the u16 conversions of the prototype
     ((void (*)(int, int, WifiSetupPoint *))WifiSetup_SetPoint)(x, y, &gWifiSetupScrollBar->pos);
-    gWifiSetupScrollBar->thumb = WifiSetupOamTemplate_AllocBlock(0, gWifiSetupScrollBarThumbTemplates[kind], 1);
+    gWifiSetupScrollBar->thumb = WifiSetupOamTemplate_AllocBlock(WIFI_SETUP_SCREEN_MAIN, gWifiSetupScrollBarThumbTemplates[kind], TRUE);
     WifiSetupOamBlock_SetPosition(gWifiSetupScrollBar->thumb, -1, x, y + value);
     WifiSetupOamBlock_SetPriority(gWifiSetupScrollBar->thumb, -1, 1);
     gWifiSetupScrollBar->task = WifiSetupTask_Create(WIFI_SETUP_TASK_QUEUE_MAIN, WifiSetupScrollBar_Task, NULL, 0x80);

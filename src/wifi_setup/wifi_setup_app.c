@@ -226,12 +226,12 @@ void WifiSetupApp_SetStateFunc(WifiSetupAppStateFunc func) {
     gWifiSetupApp.stateFunc = func;
 }
 
-void WifiSetupApp_SetTransition(int bannerMode, int buttonBarMode) {
+void WifiSetupApp_SetTransition(enum WifiSetupBannerMode bannerMode, enum WifiSetupButtonBarMode buttonBarMode) {
     gWifiSetupApp.bannerMode = bannerMode;
     gWifiSetupApp.buttonBarMode = buttonBarMode;
 }
 
-void WifiSetupApp_GetTransition(int *bannerMode, int *buttonBarMode) {
+void WifiSetupApp_GetTransition(enum WifiSetupBannerMode *bannerMode, enum WifiSetupButtonBarMode *buttonBarMode) {
     if (bannerMode != NULL) {
         *bannerMode = gWifiSetupApp.bannerMode;
     }

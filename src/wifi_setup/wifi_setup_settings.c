@@ -67,15 +67,15 @@ void WifiSetupSettings_Init(void) {
     WifiSetupScrollBar_Create(2, 85, 241, 65, (gWifiSetupSettings.scroll * 55) / WIFI_SETUP_SETTINGS_MAX_SCROLL);
     gWifiSetupSettings.work->canvas = WifiSetupText_InitBgCanvas(WIFI_SETUP_SCREEN_MAIN, 1);
     for (i = 0; i < 7; i++) { // rows and the two switches
-        gWifiSetupSettings.work->rows[i] = WifiSetupOamTemplate_AllocOam(0, 41);
+        gWifiSetupSettings.work->rows[i] = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, 41);
     }
     switch (record->settings.setupMethod) {
     case WIFI_SETUP_METHOD_COPIED:
-        gWifiSetupSettings.work->ssidIcon = WifiSetupOamTemplate_AllocOam(0, 80);
+        gWifiSetupSettings.work->ssidIcon = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, 80);
         gWifiSetupSettings.work->ssidIcon->attr2 = (gWifiSetupSettings.work->ssidIcon->attr2 & ~0xc00) | 0xc00;
         break;
     case WIFI_SETUP_METHOD_AUTO:
-        gWifiSetupSettings.work->ssidIcon = WifiSetupOamTemplate_AllocOam(0, 81);
+        gWifiSetupSettings.work->ssidIcon = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, 81);
         gWifiSetupSettings.work->ssidIcon->attr2 = (gWifiSetupSettings.work->ssidIcon->attr2 & ~0xc00) | 0xc00;
         break;
     }
@@ -710,7 +710,7 @@ static void WifiSetupSettings_SetButtonOam(unsigned type, int option, int row) {
         }
     }
     if (gWifiSetupSettingsButtonTemplates[type][option]) {
-        WifiSetupOamTemplate_Copy(0, gWifiSetupSettingsButtonTemplates[type][option], *oam);
+        WifiSetupOamTemplate_Copy(WIFI_SETUP_SCREEN_MAIN, gWifiSetupSettingsButtonTemplates[type][option], *oam);
         {
             u32 value = x[type];
             GXOamAttr *obj = *oam;

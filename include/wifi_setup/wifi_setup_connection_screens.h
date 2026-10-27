@@ -150,7 +150,7 @@ void WifiSetupSettings_ScrollTask(WifiSetupTask *task, void *arg);
 void WifiSetupSettings_ShowCursor(void);
 void WifiSetupSettings_UpdateCursorItem(void);
 void WifiSetupSettings_SetCursorItem(int item);
-void WifiSetupSettings_MoveCursor(int dir);
+void WifiSetupSettings_MoveCursor(enum WifiSetupCursorDirection dir);
 void WifiSetupSettings_HighlightButton(void);
 void WifiSetupSettings_ButtonTask(WifiSetupTask *task, void *arg);
 void WifiSetupSettings_PressButton(void);

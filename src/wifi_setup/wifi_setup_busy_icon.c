@@ -21,7 +21,7 @@ static inline void SetOamPosition(GXOamAttr *oam, int x, int y) {
 void WifiSetupBusyIcon_Create(u8 style) {
     gWifiSetupBusyIcon = WifiSetupHeap_AllocZeroed(sizeof(WifiSetupBusyIcon), 4);
     gWifiSetupBusyIcon->style = style;
-    gWifiSetupBusyIcon->oam = WifiSetupOamTemplate_AllocOam(0, 0x47);
+    gWifiSetupBusyIcon->oam = WifiSetupOamTemplate_AllocOam(WIFI_SETUP_SCREEN_MAIN, 0x47);
     SetOamPriority(gWifiSetupBusyIcon->oam, 1);
     SetOamModeAndPalette(gWifiSetupBusyIcon->oam, 0, gWifiSetupBusyIconPalettes[style]);
     SetOamPosition(gWifiSetupBusyIcon->oam, 230, 139);

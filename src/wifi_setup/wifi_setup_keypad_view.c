@@ -19,7 +19,7 @@ static inline void SetKeyPalette(GXOamAttr *oam, u32 palette) {
     oam->attr2 = (oam->attr2 & ~0xf000u) | (palette << 12);
 }
 
-void WifiSetupKeypad_SetKeyHighlight(int key, int highlighted) {
+void WifiSetupKeypad_SetKeyHighlight(int key, BOOL highlighted) {
     if (key < 0) {
         return;
     }
@@ -39,18 +39,17 @@ void WifiSetupKeypad_SetKeyHighlight(int key, int highlighted) {
 void WifiSetupKeypad_UpdateCursor(void) {
     int templ = gWifiSetupKeypad->cursorKey <= WIFI_SETUP_KEYPAD_KEY_NEXT ? 0x44 : 0x45;
     GXOamAttr *oam = WifiSetupOamBlock_GetOam(gWifiSetupKeypad->cursor, 0);
-    WifiSetupOamTemplate_Copy(0, templ, oam);
+    WifiSetupOamTemplate_Copy(WIFI_SETUP_SCREEN_MAIN, templ, oam);
     WifiSetupOamBlock_SetPriority(gWifiSetupKeypad->cursor, -1, 2);
     WifiSetupOamBlock_SetPosition(gWifiSetupKeypad->cursor, -1, gWifiSetupKeypadCursorX[gWifiSetupKeypad->cursorKey * 2], gWifiSetupKeypadCursorY[gWifiSetupKeypad->cursorKey * 2]);
 }
 
-// direction: 0 left, 1 up, 2 right, 3 down. Negative entries of the move table pick the target
-// from the key the cursor came from, so that moving through the wide button returns to the same
-// column.
-void WifiSetupKeypad_MoveCursor(int direction) {
+// Negative entries of the move table pick the target from the key the cursor came from, so that
+// moving through the wide button returns to the same column.
+void WifiSetupKeypad_MoveCursor(enum WifiSetupCursorDirection direction) {
     s8 old = gWifiSetupKeypad->cursorKey;
     gWifiSetupKeypad->cursorKey = gWifiSetupKeypadCursorMoves[old][direction];
-    if (gWifiSetupKeypad->cursorKey == WIFI_SETUP_KEYPAD_KEY_BUTTON_1 && (direction == 1 || direction == 3)) {
+    if (gWifiSetupKeypad->cursorKey == WIFI_SETUP_KEYPAD_KEY_BUTTON_1 && (direction == WIFI_SETUP_CURSOR_UP || direction == WIFI_SETUP_CURSOR_DOWN)) {
         gWifiSetupKeypad->returnKey = old;
     } else if (gWifiSetupKeypad->cursorKey == -1) {
         if (gWifiSetupKeypad->returnKey == 1 || gWifiSetupKeypad->returnKey == WIFI_SETUP_KEYPAD_KEY_DELETE) {

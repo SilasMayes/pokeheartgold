@@ -2226,7 +2226,7 @@ void WifiSetupBanner_Open(int kind) {
     res = gWifiSetupBannerLetterTemplates[kind];
     anim = gWifiSetupBannerLetterPalettes[kind];
     for (i = 0; i < WIFI_SETUP_BANNER_NUM_LETTERS; i++) {
-        gWifiSetupBanner.banner->letters[i] = WifiSetupOamTemplate_AllocBlock(1, *res++, 1);
+        gWifiSetupBanner.banner->letters[i] = WifiSetupOamTemplate_AllocBlock(WIFI_SETUP_SCREEN_SUB, *res++, TRUE);
         WifiSetupOamBlock_SetPriority(gWifiSetupBanner.banner->letters[i], -1, 0);
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, -0x2a, gWifiSetupBannerLetterPositions[i].y);
         WifiSetupOamBlock_SetModeAndPalette(gWifiSetupBanner.banner->letters[i], -1, 0, *anim++);
@@ -2347,7 +2347,7 @@ void WifiSetupBanner_Close(void) {
 void WifiSetupBanner_SetKind(int kind) {
     int i;
     for (i = 0; i < WIFI_SETUP_BANNER_NUM_LETTERS; i += 2) {
-        WifiSetupOamTemplate_Copy(1, gWifiSetupBannerLetterTemplates[kind][i], WifiSetupOamBlock_GetOam(gWifiSetupBanner.banner->letters[i], 0));
+        WifiSetupOamTemplate_Copy(WIFI_SETUP_SCREEN_SUB, gWifiSetupBannerLetterTemplates[kind][i], WifiSetupOamBlock_GetOam(gWifiSetupBanner.banner->letters[i], 0));
         WifiSetupOamBlock_SetPriority(gWifiSetupBanner.banner->letters[i], -1, 0);
         WifiSetupOamBlock_SetPosition(gWifiSetupBanner.banner->letters[i], -1, gWifiSetupBannerLetterPositions[i].x, gWifiSetupBannerLetterPositions[i].y);
         WifiSetupOamBlock_SetModeAndPalette(gWifiSetupBanner.banner->letters[i], -1, 0, gWifiSetupBannerLetterPalettes[kind][i]);
@@ -2694,16 +2694,16 @@ void WifiSetupDialog_Open(int message, int kind, u8 fade, int digitPos, int digi
     gWifiSetupDialog->selected = WIFI_SETUP_SELECTED_NOT_SHOWN;
     gWifiSetupDialog->fade = fade;
     G2_SetBlendBrightness(GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ, 0);
-    gWifiSetupDialog->frame = WifiSetupOamTemplate_AllocBlock(0, gWifiSetupDialogFrameTemplates[kind], 0);
+    gWifiSetupDialog->frame = WifiSetupOamTemplate_AllocBlock(WIFI_SETUP_SCREEN_MAIN, gWifiSetupDialogFrameTemplates[kind], FALSE);
     WifiSetupOamBlock_SetPosition(gWifiSetupDialog->frame, -1, 0x100, 0);
     WifiSetupOamBlock_SetPriority(gWifiSetupDialog->frame, -1, 0);
     for (i = 0; i < gWifiSetupDialogButtonCounts[kind]; i++) {
-        gWifiSetupDialog->buttons[i] = WifiSetupOamTemplate_AllocBlock(0, gWifiSetupDialogButtonTemplates[kind][i], 0);
+        gWifiSetupDialog->buttons[i] = WifiSetupOamTemplate_AllocBlock(WIFI_SETUP_SCREEN_MAIN, gWifiSetupDialogButtonTemplates[kind][i], FALSE);
         WifiSetupOamBlock_SetPosition(gWifiSetupDialog->buttons[i], -1, 0x100, 0);
         WifiSetupOamBlock_SetPriority(gWifiSetupDialog->buttons[i], -1, 0);
     }
-    gWifiSetupDialog->canvas = WifiSetupText_AllocObjCanvas(WIFI_SETUP_SCREEN_MAIN, 0x20, 0xC, 1, &numObjs, 0);
-    gWifiSetupDialog->textBlock = WifiSetupOamBlock_Alloc(WIFI_SETUP_SCREEN_MAIN, numObjs, 0);
+    gWifiSetupDialog->canvas = WifiSetupText_AllocObjCanvas(WIFI_SETUP_SCREEN_MAIN, 0x20, 0xC, TRUE, &numObjs, 0);
+    gWifiSetupDialog->textBlock = WifiSetupOamBlock_Alloc(WIFI_SETUP_SCREEN_MAIN, numObjs, FALSE);
     WifiSetupText_DrawInRect(gWifiSetupDialog->canvas, 0, 0, gWifiSetupDialogTextSizes[kind].x, gWifiSetupDialogTextSizes[kind].y, 2, WifiSetup_GetTextFlags(), text);
     WifiSetupText_ShowObjCanvas(gWifiSetupDialog->canvas, 0x100, 0, gWifiSetupDialog->textBlock, 0);
     WifiSetupDisplay_SetWindowPlanes(WIFI_SETUP_SCREEN_MAIN, WIFI_SETUP_WINDOW_0, GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_BG3 | GX_WND_PLANEMASK_OBJ, 0);
@@ -2847,7 +2847,7 @@ static void WifiSetupDialog_ClipBlock(WifiSetupOamBlock *obj, int y) {
 
 static void WifiSetupDialog_PressButton(int i) {
     int k;
-    WifiSetupOamTemplate_Copy(0, gWifiSetupDialogButtonTemplates[gWifiSetupDialog->kind][i] + 1, WifiSetupOamBlock_GetOam(gWifiSetupDialog->buttons[i], 0));
+    WifiSetupOamTemplate_Copy(WIFI_SETUP_SCREEN_MAIN, gWifiSetupDialogButtonTemplates[gWifiSetupDialog->kind][i] + 1, WifiSetupOamBlock_GetOam(gWifiSetupDialog->buttons[i], 0));
     k = gWifiSetupDialogButtonPositions[gWifiSetupDialog->kind][i];
     WifiSetupOamBlock_SetPosition(gWifiSetupDialog->buttons[i], -1, gWifiSetupDialogButtonPos[gWifiSetupDialog->kind][k].x, gWifiSetupDialogButtonPos[gWifiSetupDialog->kind][k].y);
     WifiSetupOamBlock_SetPriority(gWifiSetupDialog->buttons[i], -1, 0);
