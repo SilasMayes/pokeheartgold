@@ -29,7 +29,7 @@ typedef struct LegendaryCinematicModel {
 typedef struct LegendaryCinematicModelSpec {
     u32 model;
     u8 anims[LEGENDARY_CINEMATIC_MODEL_ANIMS];
-    u32 noMaterialColors;
+    BOOL noMaterialColors;
 } LegendaryCinematicModelSpec;
 
 typedef struct LegendaryCinematicCamera {

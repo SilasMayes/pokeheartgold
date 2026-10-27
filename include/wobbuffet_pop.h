@@ -132,7 +132,7 @@ typedef struct WobbuffetPopSequence {
 
 // One animated model of the upper screen, started by WobbuffetPop_AddModelSlot.
 typedef struct WobbuffetPopModelSlot {
-    u32 active;
+    BOOL active;
     ModelInstance instance;
     ModelAnimation animation;
 } WobbuffetPopModelSlot;
@@ -204,7 +204,7 @@ typedef struct WobbuffetPopBalloon {
 
 // The balloon being inflated on the upper screen (BG 7, affine-scaled with its air).
 typedef struct WobbuffetPopInflation {
-    u32 active;
+    BOOL active;
     u32 size; // balloon size (0 small .. 2 large)
     s32 air;
     s32 capacity;     // pops at this much air
@@ -324,7 +324,7 @@ typedef struct WobbuffetPopDemo {
 
 // A puff of air flying from a player's side of the lower screen to the ring.
 typedef struct WobbuffetPopPuff {
-    u32 active;
+    BOOL active;
     u16 netId;
     u16 balloonIndex;
     s32 amount;
@@ -347,7 +347,7 @@ typedef struct WobbuffetPopConfettiPiece {
 } WobbuffetPopConfettiPiece;
 
 typedef struct WobbuffetPopConfetti {
-    u32 active;
+    BOOL active;
     WobbuffetPopConfettiPiece playerPieces[36]; // in the players' colours, by share of the air
     WobbuffetPopConfettiPiece pieces[8];
     WobbuffetPopConfettiPiece balloonPieces[3]; // in the balloon's colour
@@ -372,7 +372,7 @@ typedef struct WobbuffetPop {
     u32 readyCount;
     u32 playerValues[4];
     PlazaGameSign *sign;
-    u32 gameState;
+    enum WobbuffetPopGameState gameState;
     SpriteSystem *spriteSystem;
     SpriteManager *spriteManager;
     BgConfig *bgConfig;
@@ -399,7 +399,7 @@ typedef struct WobbuffetPop {
     WobbuffetPopBonusPopup bonusPopups[3];
     WobbuffetPopScoreDisplay scoreDisplay;
     WobbuffetPopDemo demo;
-    u32 demoDone;
+    BOOL demoDone;
     WobbuffetPopEvent events[WOBBUFFET_POP_EVENT_QUEUE_SIZE];
     WobbuffetPopEvent playerEvents[4][WOBBUFFET_POP_EVENT_QUEUE_SIZE];
     WobbuffetPopEvent currentEvent;
@@ -412,12 +412,12 @@ typedef struct WobbuffetPop {
     s32 pumpQueueRead;
     s32 pumpQueueWrite;
     u32 timer;
-    u32 started;
-    u32 gameOver; // no more pumping
-    u32 finished;
+    BOOL started;
+    BOOL gameOver; // no more pumping
+    BOOL finished;
     s32 eventDelay;
     u32 balloonIndex;
-    u32 balloonInPlay;
+    BOOL balloonInPlay;
     u32 total;
     u32 syncKind;
     u32 syncId;

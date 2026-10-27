@@ -2262,19 +2262,19 @@ static int NintendoWfc_StartNumberInput(NintendoWfcConnect *wfc, int a1, int max
 }
 
 static int NintendoWfc_RunNumberInput(NintendoWfcConnect *wfc) {
-    if (gNintendoWfcNumberInputStates[wfc->numberInput.state](wfc) == 1) {
+    if (gNintendoWfcNumberInputStates[wfc->numberInput.state](wfc) == TRUE) {
         return wfc->numberInput.value;
     }
     return 0;
 }
 
-int NintendoWfc_NumberInput_FadeOut(NintendoWfcConnect *wfc) {
+BOOL NintendoWfc_NumberInput_FadeOut(NintendoWfcConnect *wfc) {
     BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 4, 1, HEAP_ID_67);
     wfc->numberInput.state = NINTENDO_WFC_NUMBER_INPUT_SETUP;
-    return 0;
+    return FALSE;
 }
 
-int NintendoWfc_NumberInput_Setup(NintendoWfcConnect *wfc) {
+BOOL NintendoWfc_NumberInput_Setup(NintendoWfcConnect *wfc) {
     if (IsPaletteFadeFinished() == TRUE) {
         NintendoWfc_ShowNumberInputSprites(wfc);
         NintendoWfc_MoveDigitCursor(wfc->sprites[NINTENDO_WFC_SPRITE_DIGIT_CURSOR], wfc->numberInput.digitPos, wfc->twoDigits);
@@ -2287,7 +2287,7 @@ int NintendoWfc_NumberInput_Setup(NintendoWfcConnect *wfc) {
         BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 4, 1, HEAP_ID_67);
         wfc->numberInput.state = NINTENDO_WFC_NUMBER_INPUT_WAIT_FADE_IN;
     }
-    return 0;
+    return FALSE;
 }
 
 static void NintendoWfc_ShowNumberInputSprites(NintendoWfcConnect *wfc) {
@@ -2308,11 +2308,11 @@ static void NintendoWfc_ShowNumberInputSprites(NintendoWfcConnect *wfc) {
     Sprite_SetDrawFlag(wfc->sprites[NINTENDO_WFC_SPRITE_BUTTON_0 + 2], TRUE);
 }
 
-int NintendoWfc_NumberInput_WaitFadeIn(NintendoWfcConnect *wfc) {
+BOOL NintendoWfc_NumberInput_WaitFadeIn(NintendoWfcConnect *wfc) {
     if (IsPaletteFadeFinished() == TRUE) {
         wfc->numberInput.state = NINTENDO_WFC_NUMBER_INPUT_MAIN;
     }
-    return 0;
+    return FALSE;
 }
 
 static int NintendoWfc_GetTouchedPadKey(NintendoWfcConnect *wfc) {
@@ -2524,50 +2524,50 @@ static void NintendoWfc_UpdateDigitSprites(NintendoWfcConnect *wfc) {
     }
 }
 
-int NintendoWfc_NumberInput_UnusedState4(void) {
-    return 0;
+BOOL NintendoWfc_NumberInput_UnusedState4(void) {
+    return FALSE;
 }
 
-int NintendoWfc_NumberInput_UnusedState5(void) {
-    return 0;
+BOOL NintendoWfc_NumberInput_UnusedState5(void) {
+    return FALSE;
 }
 
-int NintendoWfc_NumberInput_UnusedState6(void) {
-    return 0;
+BOOL NintendoWfc_NumberInput_UnusedState6(void) {
+    return FALSE;
 }
 
-int NintendoWfc_NumberInput_StartFadeOut(NintendoWfcConnect *wfc) {
+BOOL NintendoWfc_NumberInput_StartFadeOut(NintendoWfcConnect *wfc) {
     BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_BLACK, 4, 1, HEAP_ID_67);
     wfc->numberInput.state = NINTENDO_WFC_NUMBER_INPUT_TEARDOWN;
-    return 0;
+    return FALSE;
 }
 
-int NintendoWfc_NumberInput_Teardown(NintendoWfcConnect *wfc) {
+BOOL NintendoWfc_NumberInput_Teardown(NintendoWfcConnect *wfc) {
     if (IsPaletteFadeFinished() == TRUE) {
         NintendoWfc_HideNumberInput(wfc);
         NintendoWfc_LoadSubScreenBg(wfc, 0);
         BeginNormalPaletteFade(FADE_SUB_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 4, 1, HEAP_ID_67);
         wfc->numberInput.state = NINTENDO_WFC_NUMBER_INPUT_WAIT_FADE_OUT;
     }
-    return 0;
+    return FALSE;
 }
 
-int NintendoWfc_NumberInput_WaitButtonFlash(NintendoWfcConnect *wfc) {
+BOOL NintendoWfc_NumberInput_WaitButtonFlash(NintendoWfcConnect *wfc) {
     if (!NintendoWfc_UpdateButtonFlash(wfc)) {
         wfc->numberInput.state = wfc->numberInput.nextState;
     }
-    return 0;
+    return FALSE;
 }
 
-int NintendoWfc_NumberInput_WaitFadeOut(NintendoWfcConnect *wfc) {
+BOOL NintendoWfc_NumberInput_WaitFadeOut(NintendoWfcConnect *wfc) {
     if (IsPaletteFadeFinished() == TRUE) {
         wfc->numberInput.state = NINTENDO_WFC_NUMBER_INPUT_FINISH;
     }
-    return 0;
+    return FALSE;
 }
 
-int NintendoWfc_NumberInput_Finish(void) {
-    return 1;
+BOOL NintendoWfc_NumberInput_Finish(void) {
+    return TRUE;
 }
 
 static void NintendoWfc_AddNumberInputWindows(NintendoWfcConnect *wfc) {
@@ -2678,19 +2678,19 @@ static void NintendoWfcYesNo_Init(NintendoWfcYesNoMenu *menu) {
 }
 
 static int NintendoWfcYesNo_Run(NintendoWfcYesNoMenu *menu) {
-    int result = gNintendoWfcYesNoStates[menu->state](menu);
-    if (result == 1) {
+    BOOL result = gNintendoWfcYesNoStates[menu->state](menu);
+    if (result == TRUE) {
         return menu->choice + YESNORESPONSE_YES;
     }
     return YESNORESPONSE_WAIT;
 }
 
-int NintendoWfcYesNo_Start(NintendoWfcYesNoMenu *menu) {
+BOOL NintendoWfcYesNo_Start(NintendoWfcYesNoMenu *menu) {
     menu->state = NINTENDO_WFC_YES_NO_HANDLE_INPUT;
-    return 0;
+    return FALSE;
 }
 
-int NintendoWfcYesNo_HandleInput(NintendoWfcYesNoMenu *menu) {
+BOOL NintendoWfcYesNo_HandleInput(NintendoWfcYesNoMenu *menu) {
     int hit = TouchscreenHitbox_FindRectAtTouchNew(gNintendoWfcYesNoHitboxes);
     if (hit != -1) {
         PlaySE(SEQ_SE_DP_SELECT);
@@ -2726,11 +2726,11 @@ int NintendoWfcYesNo_HandleInput(NintendoWfcYesNoMenu *menu) {
             PlaySE(SEQ_SE_DP_SELECT);
         }
     }
-    return 0;
+    return FALSE;
 }
 
-int NintendoWfcYesNo_UnusedState2(void) {
-    return 0;
+BOOL NintendoWfcYesNo_UnusedState2(void) {
+    return FALSE;
 }
 
 BOOL NintendoWfcYesNo_WaitClose(NintendoWfcYesNoMenu *menu) {

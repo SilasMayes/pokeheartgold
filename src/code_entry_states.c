@@ -16,20 +16,6 @@
 #define CODE_ENTRY_KEY_BACK 10
 #define CODE_ENTRY_KEY_OK   11
 
-enum CodeEntryState {
-    CODE_ENTRY_STATE_SETUP,
-    CODE_ENTRY_STATE_INPUT,
-    CODE_ENTRY_STATE_SWITCH_GROUP,
-    CODE_ENTRY_STATE_FADE_OUT,
-};
-
-enum CodeEntryAction {
-    CODE_ENTRY_ACTION_NONE = 0,
-    CODE_ENTRY_ACTION_SELECT_GROUP = 1, // arg: group (1-based)
-    CODE_ENTRY_ACTION_MOVE_CURSOR = 2,  // arg: digit index
-    CODE_ENTRY_ACTION_BUSY = 0xFF,
-};
-
 typedef struct CodeEntryKeyRect {
     s16 x;
     s16 y;
@@ -37,7 +23,7 @@ typedef struct CodeEntryKeyRect {
     s16 halfHeight;
 } CodeEntryKeyRect;
 
-static void CodeEntry_SetState(CodeEntryApp *app, int state);
+static void CodeEntry_SetState(CodeEntryApp *app, enum CodeEntryState state);
 static BOOL CodeEntry_State_Setup(CodeEntryApp *app);
 static BOOL CodeEntry_State_FadeOut(CodeEntryApp *app);
 static BOOL CodeEntry_State_Input(CodeEntryApp *app);
@@ -86,7 +72,7 @@ static f32 sCodeEntryShrinkScales[] = { 0.8f, 0.6f, 0.4f, 0.2f, 0.8f, 1.0f, 1.0f
 
 static f32 sCodeEntryGrowScales[] = { 0.5f, 0.2f, 0.5f, 1.0f, 1.2f, 1.0f, 1.0f };
 
-static void CodeEntry_SetState(CodeEntryApp *app, int state) {
+static void CodeEntry_SetState(CodeEntryApp *app, enum CodeEntryState state) {
     app->state = state;
     app->unk2C4 = 0;
     app->subState = 0;

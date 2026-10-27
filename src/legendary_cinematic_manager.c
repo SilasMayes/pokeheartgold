@@ -7,7 +7,7 @@
 #include "legendary_cinematic_internal.h"
 #include "overlay_manager.h"
 
-static int (*const sLegendaryCinematicScripts[])(LegendaryCinematic *cinematic) = {
+static BOOL (*const sLegendaryCinematicScripts[])(LegendaryCinematic *cinematic) = {
     ScriptCinematic_HoOh,
     ScriptCinematic_Lugia,
     ScriptCinematic_Arceus,

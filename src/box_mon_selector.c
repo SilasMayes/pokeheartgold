@@ -45,12 +45,14 @@
 #define DRAG_FROM_PICKS 2
 
 // Results of BoxMonSelector_HandleDrop (BoxMonSelector_EndDrag)
-#define DROP_NONE        0 // nothing happened: the Pokemon in hand goes back
-#define DROP_ADD_PICK    1 // placed in a free pick slot
-#define DROP_REMOVE_PICK 2 // dropped back on the box, the pick removed
-#define DROP_MOVE_PICK   3 // a pick moved to another pick slot
+enum BoxMonSelectorDropResult {
+    DROP_NONE,        // nothing happened: the Pokemon in hand goes back
+    DROP_ADD_PICK,    // placed in a free pick slot
+    DROP_REMOVE_PICK, // dropped back on the box, the pick removed
+    DROP_MOVE_PICK,   // a pick moved to another pick slot
+};
 
-static int BoxMonSelector_HandleInput(BoxMonSelector *selector);
+static enum BoxMonSelectorRunResult BoxMonSelector_HandleInput(BoxMonSelector *selector);
 static void BoxMonSelector_ShowConfirmPrompt(BoxMonSelector *selector);
 static void BoxMonSelector_HandleConfirmPrompt(BoxMonSelector *selector);
 static void BoxMonSelector_ShowRemovePrompt(BoxMonSelector *selector);
@@ -58,7 +60,7 @@ static void BoxMonSelector_HandleRemovePrompt(BoxMonSelector *selector);
 static void BoxMonSelector_InitSpriteResources(BoxMonSelector *selector);
 static void BoxMonSelector_InitSpriteHeader(BoxMonSelector *selector);
 static void BoxMonSelector_CreatePickSlots(BoxMonSelector *selector);
-static int BoxMonSelector_HandleDrop(BoxMonSelector *selector);
+static enum BoxMonSelectorDropResult BoxMonSelector_HandleDrop(BoxMonSelector *selector);
 static void BoxMonSelector_AddPick(BoxMonSelector *selector, u8 pick);
 static void BoxMonSelector_MovePick(BoxMonSelector *selector, u8 from, u8 to);
 static void BoxMonSelector_CreateButtons(BoxMonSelector *selector);
@@ -79,7 +81,7 @@ static int BoxMonSelector_GetPickState(BoxMonSelector *selector, int pick);
 static void BoxMonSelector_StartDrag(BoxMonSelector *selector, int source, int index);
 static void BoxMonSelector_UpdateTouchDrag(BoxMonSelector *selector);
 static void BoxMonSelector_Drop(BoxMonSelector *selector);
-static void BoxMonSelector_EndDrag(BoxMonSelector *selector, int result);
+static void BoxMonSelector_EndDrag(BoxMonSelector *selector, enum BoxMonSelectorDropResult result);
 static void BoxMonSelector_LoadIconChars(BoxMonSelectorMon *mon, BoxMonSelectorIconChars *chars, int index, Sprite *sprite, void *buf, NARC *narc, int baseTile);
 static void BoxMonSelector_ReadIconChars(u32 fileId, NNSG2dCharacterData **ppCharData, void *dest, NARC *narc);
 static void BoxMonSelector_PrintPageName(BoxMonSelector *selector, int page);
@@ -270,7 +272,7 @@ void BoxMonSelector_VBlank(BoxMonSelector *selector) {
     OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
 
-int BoxMonSelector_Run(BoxMonSelector *selector) {
+enum BoxMonSelectorRunResult BoxMonSelector_Run(BoxMonSelector *selector) {
     switch (selector->state) {
     case BOX_MON_SELECTOR_STATE_SELECT:
         return BoxMonSelector_HandleInput(selector);
@@ -295,8 +297,8 @@ int BoxMonSelector_Run(BoxMonSelector *selector) {
     }
 }
 
-static int BoxMonSelector_HandleInput(BoxMonSelector *selector) {
-    int result = BOX_MON_SELECTOR_RUNNING;
+static enum BoxMonSelectorRunResult BoxMonSelector_HandleInput(BoxMonSelector *selector) {
+    enum BoxMonSelectorRunResult result = BOX_MON_SELECTOR_RUNNING;
     int keys = 0;
     int hit;
     s8 dx, dy;
@@ -342,7 +344,7 @@ static int BoxMonSelector_HandleInput(BoxMonSelector *selector) {
             break;
         }
         if (dx || dy) {
-            int moved = GridCursor_Move(selector->cursor, dx, dy);
+            BOOL moved = GridCursor_Move(selector->cursor, dx, dy);
             BoxMonSelector_UpdateCursorSprite(selector);
             if (moved) {
                 PlaySE(SEQ_SE_DP_SELECT);
@@ -553,7 +555,7 @@ static void BoxMonSelector_CreatePickSlots(BoxMonSelector *selector) {
     selector->boxDropArea.occupied = FALSE;
 }
 
-static int BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
+static enum BoxMonSelectorDropResult BoxMonSelector_HandleDrop(BoxMonSelector *selector) {
     if (selector->dragSource == DRAG_FROM_BOX) {
         int i = 0, count;
         count = selector->maxPicks;
@@ -985,7 +987,7 @@ static void BoxMonSelector_Drop(BoxMonSelector *selector) {
 }
 
 // result: a BoxMonSelector_HandleDrop result; DROP_NONE puts the Pokemon in hand back.
-static void BoxMonSelector_EndDrag(BoxMonSelector *selector, int result) {
+static void BoxMonSelector_EndDrag(BoxMonSelector *selector, enum BoxMonSelectorDropResult result) {
     VecFx32 position;
 
     if (result) {

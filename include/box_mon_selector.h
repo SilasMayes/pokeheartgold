@@ -173,7 +173,7 @@ BoxMonSelector *BoxMonSelector_New(enum HeapID heapId, int maxPicks, int numPage
 void BoxMonSelector_Delete(BoxMonSelector *selector);
 void BoxMonSelector_Init(BoxMonSelector *selector, BgConfig *bgConfig, PCStorage *storage, Party *party, int unused11, int unused12, BOOL canCancel, int initialPage, BoxMonSelectorGetMon getMon, BoxMonSelectorGetPageName getPageName, BoxMonSelectorResult *results, BoxMonSelectorCursorCallback onCursorMove, void *onCursorMoveArg);
 void BoxMonSelector_VBlank(BoxMonSelector *selector);
-int BoxMonSelector_Run(BoxMonSelector *selector);
+enum BoxMonSelectorRunResult BoxMonSelector_Run(BoxMonSelector *selector);
 void BoxMonSelector_RenderSprites(BoxMonSelector *selector);
 
 #endif // POKEHEARTGOLD_BOX_MON_SELECTOR_H

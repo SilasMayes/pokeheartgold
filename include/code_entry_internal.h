@@ -34,6 +34,20 @@ enum CodeEntryKeyCursorAnim {
     CODE_ENTRY_KEY_CURSOR_PRESS,
 };
 
+enum CodeEntryState {
+    CODE_ENTRY_STATE_SETUP,
+    CODE_ENTRY_STATE_INPUT,
+    CODE_ENTRY_STATE_SWITCH_GROUP,
+    CODE_ENTRY_STATE_FADE_OUT,
+};
+
+enum CodeEntryAction {
+    CODE_ENTRY_ACTION_NONE = 0,
+    CODE_ENTRY_ACTION_SELECT_GROUP = 1, // arg: group (1-based)
+    CODE_ENTRY_ACTION_MOVE_CURSOR = 2,  // arg: digit index
+    CODE_ENTRY_ACTION_BUSY = 0xFF,
+};
+
 // A digit slot, a group separator, one of the three cursors or a BACK/OK button.
 typedef struct CodeEntryCell {
     int value;  // digit + 1 (0: empty); separator: index of the digit before it; cursor: current anim
@@ -73,7 +87,7 @@ typedef struct CodeEntryApp {
     s16 groupX[5];
     CodeEntryRange groupRanges[5];
     u8 padding2BE[2];
-    int state;
+    enum CodeEntryState state;
     int unk2C4;
     int subState;
     int frame;
@@ -96,7 +110,7 @@ typedef struct CodeEntryApp {
     TextOBJ *buttonLabels[2];
     CodeEntryButtonLabelAlloc buttonLabelAllocs[2];
     Window promptWindow;
-    int pendingAction;
+    enum CodeEntryAction pendingAction;
     int pendingArg;
     BOOL pendingToLast;
     CodeEntryArgs args;
@@ -118,15 +132,15 @@ void CodeEntry_FreeGraphics(CodeEntryApp *app);
 void CodeEntry_CreateDigitSprites(CodeEntryApp *app);
 void CodeEntry_CreateCursorSprites(CodeEntryApp *app);
 void CodeEntry_CreateButtonSprites(CodeEntryApp *app);
-void CodeEntry_SetCursorVisible(CodeEntryApp *app, int cursor, int visible);
+void CodeEntry_SetCursorVisible(CodeEntryApp *app, enum CodeEntryCursor cursor, BOOL visible);
 void CodeEntry_MoveDigitCursor(CodeEntryApp *app, int digit);
 void CodeEntry_MoveKeyCursor(CodeEntryApp *app, int key);
-void CodeEntry_MoveCursorToKey(CodeEntryApp *app, int key, int cursor);
+void CodeEntry_MoveCursorToKey(CodeEntryApp *app, int key, enum CodeEntryCursor cursor);
 void CodeEntry_UpdateCursors(CodeEntryApp *app);
 void CodeEntry_UpdateButtons(CodeEntryApp *app);
-int CodeEntry_GetDigitAnim(int value, int active);
+int CodeEntry_GetDigitAnim(int value, BOOL active);
 void CodeEntry_MarkSelectedDigits(CodeEntryApp *app);
-void CodeEntry_LayoutDigits(CodeEntryApp *app, int animate);
+void CodeEntry_LayoutDigits(CodeEntryApp *app, BOOL animate);
 void CodeEntry_UpdateDigitHitboxes(CodeEntryApp *app);
 void CodeEntry_InitFont(CodeEntryApp *app);
 void CodeEntry_CreateButtonLabels(CodeEntryApp *app);

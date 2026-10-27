@@ -105,7 +105,7 @@ BOOL HatchEggParticles_IsRunning(HatchEggParticles *particles);
 void HatchEggParticles_Free(HatchEggParticles *particles);
 void HatchEggApp_LoadSpriteResources(HatchEggApp *app);
 void HatchEggApp_CreateSprites(HatchEggApp *app);
-int HatchEggApp_UpdateEggShake(HatchEggApp *app, int pattern);
+enum HatchEggShakeResult HatchEggApp_UpdateEggShake(HatchEggApp *app, int pattern);
 void HatchEggApp_DeleteSprites(HatchEggApp *app);
 void HatchEggApp_InitSpriteSystem(HatchEggAppGraphics *gfx);
 void HatchEggApp_FreeSpriteSystem(HatchEggAppGraphics *gfx);

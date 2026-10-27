@@ -217,7 +217,7 @@ BOOL OrbitCursor_Start(OrbitCursor *cursor, int palette) {
     return TRUE;
 }
 
-BOOL OrbitCursor_SetActive(OrbitCursor *cursor, int active) {
+BOOL OrbitCursor_SetActive(OrbitCursor *cursor, BOOL active) {
     cursor->active = active;
     return TRUE;
 }
@@ -287,10 +287,10 @@ BOOL OrbitCursor_Delete(OrbitCursor *cursor) {
     return TRUE;
 }
 
-BOOL OrbitCursor_SetVisible(OrbitCursor *cursor, int flag) {
+BOOL OrbitCursor_SetVisible(OrbitCursor *cursor, BOOL visible) {
     int i;
     for (i = 0; i < cursor->count; i++) {
-        ManagedSprite_SetDrawFlag(cursor->sprites[i].sprite, flag);
+        ManagedSprite_SetDrawFlag(cursor->sprites[i].sprite, visible);
     }
     return TRUE;
 }

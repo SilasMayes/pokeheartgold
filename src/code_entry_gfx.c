@@ -272,7 +272,7 @@ void CodeEntry_CreateButtonSprites(CodeEntryApp *app) {
     ManagedSprite_TickFrame(app->buttons[1].sprite);
 }
 
-void CodeEntry_SetCursorVisible(CodeEntryApp *app, int cursor, int visible) {
+void CodeEntry_SetCursorVisible(CodeEntryApp *app, enum CodeEntryCursor cursor, BOOL visible) {
     if (visible == TRUE) {
         ManagedSprite_SetDrawFlag(app->cursors[cursor].sprite, TRUE);
     } else {
@@ -294,7 +294,7 @@ void CodeEntry_MoveKeyCursor(CodeEntryApp *app, int key) {
     ManagedSprite_SetPositionXY(app->cursors[CODE_ENTRY_CURSOR_KEY].sprite, (app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.left + app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.right) / 2, (app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.top + app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.bottom) / 2);
 }
 
-void CodeEntry_MoveCursorToKey(CodeEntryApp *app, int key, int cursor) {
+void CodeEntry_MoveCursorToKey(CodeEntryApp *app, int key, enum CodeEntryCursor cursor) {
     ManagedSprite_SetPositionXY(app->cursors[cursor].sprite, (app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.left + app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.right) / 2, (app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.top + app->hitboxes[key + CODE_ENTRY_HITBOX_KEYS].rect.bottom) / 2);
 }
 
@@ -371,7 +371,7 @@ void CodeEntry_UpdateButtons(CodeEntryApp *app) {
     }
 }
 
-int CodeEntry_GetDigitAnim(int value, int active) {
+int CodeEntry_GetDigitAnim(int value, BOOL active) {
     int add = 0;
     if (!active) {
         add = 11;
@@ -397,7 +397,7 @@ void CodeEntry_MarkSelectedDigits(CodeEntryApp *app) {
 
 // Places the digits and separators: the selected group is spread out (32 px per digit), the others are packed
 // (8 px). With animate, sets the sprites moving there over 2 frames instead.
-void CodeEntry_LayoutDigits(CodeEntryApp *app, int animate) {
+void CodeEntry_LayoutDigits(CodeEntryApp *app, BOOL animate) {
     s16 x, y;
     int i;
     int separator;
