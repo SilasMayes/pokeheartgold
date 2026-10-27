@@ -64,7 +64,7 @@ extern u8 gWifiSetupZeroAddress[]; // address 0.0.0.0
 extern char gWifiSetupConnectionsAddressFormat[];
 extern char gWifiSetupSoundArchivePath[];
 
-int WifiSetupApScan_Start(void);
+BOOL WifiSetupApScan_Start(void);
 BOOL WifiSetupApScan_End(void);
 int WifiSetupApScan_GetEntries(WifiSetupScanEntry **out);
 void WifiSetupConnections_Load(void);

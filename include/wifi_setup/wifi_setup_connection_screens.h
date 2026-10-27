@@ -156,7 +156,7 @@ void WifiSetupSettings_ButtonTask(WifiSetupTask *task, void *arg);
 void WifiSetupSettings_PressButton(void);
 BOOL WifiSetupSettings_IsComplete(void);
 void WifiSetupSettings_WaitIncompleteDialog(void);
-void WifiSetupSettings_SetFromMenu(u8 fromMenu);
+void WifiSetupSettings_SetFromMenu(BOOL fromMenu);
 
 void WifiSetupSaveScreen_Init(void);
 

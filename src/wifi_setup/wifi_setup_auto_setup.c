@@ -410,7 +410,7 @@ static void WifiSetupSettings_WaitIncompleteDialogClosed(void) {
     WifiSetupApp_SetStateFunc(WifiSetupSettings_Main);
 }
 
-void WifiSetupSettings_SetFromMenu(u8 fromMenu) {
+void WifiSetupSettings_SetFromMenu(BOOL fromMenu) {
     gWifiSetupSettings.fromMenu = fromMenu;
 }
 

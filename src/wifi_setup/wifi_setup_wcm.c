@@ -269,7 +269,7 @@ BOOL WifiSetupWcm_StartSearch(const u8 *bssid, const u8 *ssid, int len, int opti
             OS_RestoreInterrupts(irq);
             return TRUE;
         }
-    } else if (WifiSetupWcm_ReturnToIdle() == 1) {
+    } else if (WifiSetupWcm_ReturnToIdle() == TRUE) {
         gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_SEARCH_STARTING;
         OS_RestoreInterrupts(irq);
         return TRUE;
@@ -311,7 +311,7 @@ BOOL WifiSetupWcm_StartCleanup(void) {
         OS_RestoreInterrupts(irq);
         return TRUE;
     }
-    if (WifiSetupWcm_ReturnToIdle() == 1) {
+    if (WifiSetupWcm_ReturnToIdle() == TRUE) {
         gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_CLEANUP;
         OS_RestoreInterrupts(irq);
         return TRUE;
@@ -330,7 +330,7 @@ BOOL WifiSetupWcm_StartConnect(void *ap, void *key, int option) {
         MI_CpuFill8(gWifiSetupWcm.connectKey, 0, 0x50);
     }
     MIi_CpuCopy32(ap, gWifiSetupWcm.connectAp, 0xC0);
-    if (WifiSetupWcm_ReturnToIdle() == 1) {
+    if (WifiSetupWcm_ReturnToIdle() == TRUE) {
         gWifiSetupWcm.state = WIFI_SETUP_WCM_STATE_CONNECTING;
         OS_RestoreInterrupts(irq);
         return TRUE;

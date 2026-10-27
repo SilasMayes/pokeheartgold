@@ -306,7 +306,7 @@ restart:
         }
         if (WifiSetup_SendRequest(mode, &session.config, &session.params, gWifiSetupSocket.socket) == -1) {
             {
-                int current = mode;
+                enum WifiSetupAossStep current = mode;
                 WifiSetup_SetError(WIFI_SETUP_AOSS_ERROR_SEND + current);
             }
             request->error = WIFI_SETUP_AOSS_REQUEST_FAILED;
@@ -321,7 +321,7 @@ restart:
         if (WifiSetup_Poll(gWifiSetupSocket.socket + 1, &session.set, NULL, NULL, &session.time) <= 0) {
             session.attempts++;
             if (session.attempts > session.retry.max) {
-                int current = mode;
+                enum WifiSetupAossStep current = mode;
                 if (current == WIFI_SETUP_AOSS_STEP_JOIN) {
                     WifiSetup_SetError(WIFI_SETUP_AOSS_ERROR_JOIN_TIMEOUT);
                 } else if (current == WIFI_SETUP_AOSS_STEP_SETTINGS) {
@@ -450,7 +450,7 @@ restart:
         }
         mode = nextMode;
         if (session.attempts > session.retry.max) {
-            int current = nextMode;
+            enum WifiSetupAossStep current = nextMode;
             if (current == WIFI_SETUP_AOSS_STEP_JOIN) {
                 WifiSetup_SetError(WIFI_SETUP_AOSS_ERROR_JOIN_TIMEOUT);
             } else if (current == WIFI_SETUP_AOSS_STEP_SETTINGS) {

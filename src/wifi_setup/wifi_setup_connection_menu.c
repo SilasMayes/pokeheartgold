@@ -144,7 +144,7 @@ static void WifiSetupConnectionList_WaitButtonBar(void) {
     if (WifiSetupButtonBar_GetSelected() == WIFI_SETUP_SELECTED_NOT_SHOWN) {
         return;
     }
-    if (WifiSetupBanner_IsMoving() == 1) {
+    if (WifiSetupBanner_IsMoving() == TRUE) {
         return;
     }
     WifiSetupButtonBar_Unlock();

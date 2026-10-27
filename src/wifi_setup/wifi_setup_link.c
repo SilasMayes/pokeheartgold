@@ -14,7 +14,7 @@ static BOOL WifiSetupLink_ReturnToIdle(void);
 static BOOL WifiSetupLink_StartDisconnect(void);
 static BOOL WifiSetupLink_StartCleanup(void);
 static BOOL WifiSetupLink_StartConnect(const WifiSetupApInfo *ap, const void *key, int option);
-static int WifiSetupLink_Init(void (*eventCallback)(u32 event, int arg), u8 *buffer, int size);
+static BOOL WifiSetupLink_Init(void (*eventCallback)(u32 event, int arg), u8 *buffer, int size);
 static void WifiSetupLink_ClearEvents(void);
 static void WifiSetupLink_PushEvent(u32 event, int unused);
 static inline u32 AlignDown32(u32 value);
@@ -281,7 +281,7 @@ BOOL WifiSetupLink_StartSearch(const u8 *bssid, const u8 *ssid, int len, int opt
             OS_RestoreInterrupts(irq);
             return TRUE;
         }
-    } else if (WifiSetupLink_ReturnToIdle() == 1) {
+    } else if (WifiSetupLink_ReturnToIdle() == TRUE) {
         gWifiSetupWork.wcmState = WIFI_SETUP_WCM_STATE_SEARCH_STARTING;
         OS_RestoreInterrupts(irq);
         return TRUE;
@@ -312,7 +312,7 @@ static BOOL WifiSetupLink_StartCleanup(void) {
         OS_RestoreInterrupts(irq);
         return TRUE;
     }
-    if (WifiSetupLink_ReturnToIdle() == 1) {
+    if (WifiSetupLink_ReturnToIdle() == TRUE) {
         gWifiSetupWork.wcmState = WIFI_SETUP_WCM_STATE_CLEANUP;
         OS_RestoreInterrupts(irq);
         return TRUE;
@@ -330,7 +330,7 @@ static BOOL WifiSetupLink_StartConnect(const WifiSetupApInfo *ap, const void *ke
         MI_CpuFill8(gWifiSetupWork.connectKey, 0, 0x60);
     }
     MI_CpuCopy32(ap, gWifiSetupWork.connectAp, sizeof(WifiSetupApInfo));
-    if (WifiSetupLink_ReturnToIdle() == 1) {
+    if (WifiSetupLink_ReturnToIdle() == TRUE) {
         gWifiSetupWork.wcmState = WIFI_SETUP_WCM_STATE_CONNECTING;
         OS_RestoreInterrupts(irq);
         return TRUE;
@@ -348,7 +348,7 @@ static BOOL WifiSetupLink_StartConnect(const WifiSetupApInfo *ap, const void *ke
 
 // Carves the key, start-up config, WCM work area and connect buffer out of buffer, then initialises
 // WCM and starts it up; WCM events go to eventCallback.
-static int WifiSetupLink_Init(void (*eventCallback)(u32 event, int arg), u8 *buffer, int size) {
+static BOOL WifiSetupLink_Init(void (*eventCallback)(u32 event, int arg), u8 *buffer, int size) {
     OSIntrMode irq = OS_DisableInterrupts();
     u32 cursor = ((u32)buffer + 99) & ~3;
     gWifiSetupWork.connectKey = buffer;
@@ -366,18 +366,18 @@ static int WifiSetupLink_Init(void (*eventCallback)(u32 event, int arg), u8 *buf
     if (gWifiSetupWork.wcmState == WIFI_SETUP_WCM_STATE_NONE) {
         if (WCM_Init(gWifiSetupWork.wcmWork, 8960) != 0) {
             OS_RestoreInterrupts(irq);
-            return 0;
+            return FALSE;
         }
         gWifiSetupWork.wcmState = WIFI_SETUP_WCM_STATE_READY;
     }
     if (gWifiSetupWork.wcmState == WIFI_SETUP_WCM_STATE_READY) {
         if (WCM_StartupAsync(gWifiSetupWork.wcmConfig, WifiSetupLink_HandleEvent) != 3) {
             OS_RestoreInterrupts(irq);
-            return 0;
+            return FALSE;
         }
         gWifiSetupWork.wcmState = WIFI_SETUP_WCM_STATE_BUSY;
         OS_RestoreInterrupts(irq);
-        return 1;
+        return TRUE;
     }
     OS_RestoreInterrupts(irq);
     return 0;

@@ -492,7 +492,7 @@ static void WifiSetupSettings_Exit(void) {
         WifiSetupApp_SetStateFunc(WifiSetupSaveScreen_Init);
         break;
     case WIFI_SETUP_SETTINGS_ITEM_BACK:
-        if (gWifiSetupSettings.fromMenu == 0) {
+        if (!gWifiSetupSettings.fromMenu) {
             WifiSetupApp_SetTransition(WIFI_SETUP_BANNER_CHANGE, WIFI_SETUP_BUTTON_BAR_CREATE);
             WifiSetupApp_SetStateFunc(WifiSetupConnectionList_Init);
         } else {

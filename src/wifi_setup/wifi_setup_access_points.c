@@ -16,17 +16,17 @@
 
 extern long atol(const char *);
 
-static int WifiSetupApScan_Continue(void);
+static BOOL WifiSetupApScan_Continue(void);
 static void WifiSetupApScan_Callback(void *arg);
 static void WifiSetupApScan_StoreResults(WMStartScanExCallback *cb);
 static void WifiSetupConnections_WritePage(int index);
 static int WifiSetup_HexDigitValue(u8 ch);
 
-int WifiSetupApScan_Start(void) {
+BOOL WifiSetupApScan_Start(void) {
     WifiSetupApScan *scan;
     MI_CpuClear16(gWifiSetupApScan->entries, sizeof(gWifiSetupApScan->entries));
     if (WM_Initialize(gWifiSetupApScan, WifiSetupApScan_Callback, 3) != WM_ERRCODE_OPERATING) {
-        return 0;
+        return FALSE;
     }
     do {
         WM_ReadStatus(&gWifiSetupApScan->status);
@@ -35,11 +35,11 @@ int WifiSetupApScan_Start(void) {
     scan->param = gWifiSetupApScanParam;
     scan->param.buffer = scan->scanBuf;
     gWifiSetupApScan->param.dwell = WM_GetDispersionScanPeriod();
-    return WifiSetupApScan_Continue() ? 1 : 0;
+    return WifiSetupApScan_Continue() ? TRUE : FALSE;
 }
 
-static int WifiSetupApScan_Continue(void) {
-    return WM_StartScanEx(WifiSetupApScan_Callback, &gWifiSetupApScan->param) == WM_ERRCODE_OPERATING ? 1 : 0;
+static BOOL WifiSetupApScan_Continue(void) {
+    return WM_StartScanEx(WifiSetupApScan_Callback, &gWifiSetupApScan->param) == WM_ERRCODE_OPERATING;
 }
 
 BOOL WifiSetupApScan_End(void) {
