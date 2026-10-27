@@ -17,7 +17,7 @@ typedef struct BattleFactoryMonSet {
 } BattleFactoryMonSet;
 
 typedef struct BattleFactoryData {
-    u32 heapId;
+    enum HeapID heapId;
     u8 type;      // single / double / multi / link multi
     u8 levelMode; // level 50 / open level
     u8 battleNo;  // battle in the current round (0-6)

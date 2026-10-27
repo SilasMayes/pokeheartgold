@@ -4,7 +4,7 @@
 // Poke Ball throw / capture animation (BallThrow), the ball capsule seal and ball burst
 // particles, a generic particle emitter manager and the battler pic graphic swap helpers.
 
-#include "overlay_07.h"
+#include "battle/battle.h"
 
 // Input of BallSealEffect_New: the particles shown when a Pokemon comes out of its ball
 typedef struct BallSealEffectTemplate {
@@ -154,7 +154,7 @@ BOOL BallThrow_TrackPosition(BallThrow *data);
 BOOL BallThrow_IsActive(BallThrow *data);
 BOOL BallThrow_HasOpened(BallThrow *data);
 void BallThrow_SetMode(BallThrow *data, int mode);
-void BallThrow_SetDrawFlag(BallThrow *data, int flag);
+void BallThrow_SetDrawFlag(BallThrow *data, BOOL flag);
 void BallThrow_SetPosition(BallThrow *data, s16 x, s16 y);
 void BallThrow_SetAnimateSprite(BallThrow *data, BOOL animate);
 void BallThrow_SetDrawPriority(BallThrow *data, u16 priority);

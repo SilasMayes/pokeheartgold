@@ -160,7 +160,7 @@ GridInputHandler *BattleFactoryApp_CreateRentalGrid(BattleFactoryApp *app, int c
     return GridInputHandler_Create(sBattleFactoryRentalGridHitboxes, sBattleFactoryRentalGridBoxes, &sBattleFactoryRentalGridCallbacks, app, TRUE, cursor, HEAP_ID_100);
 }
 
-void BattleFactory_SetRentalGridMenu(GridInputHandler *grid, int menuOpen) {
+void BattleFactory_SetRentalGridMenu(GridInputHandler *grid, BOOL menuOpen) {
     if (menuOpen == TRUE) {
         GridInputHandler_SetAllEnabled(grid);
     } else {
@@ -190,7 +190,7 @@ GridInputHandler *BattleFactoryApp_CreateLinkSwapOutGrid(BattleFactoryApp *app, 
     return grid;
 }
 
-void BattleFactory_SetSwapOutGridMenu(GridInputHandler *grid, int menuOpen, int frontierType) {
+void BattleFactory_SetSwapOutGridMenu(GridInputHandler *grid, BOOL menuOpen, int frontierType) {
     if (menuOpen == TRUE) {
         GridInputHandler_SetAllEnabled(grid);
         GridInputHandler_ClearEnabledFlag(grid, 3);
@@ -232,7 +232,7 @@ GridInputHandler *BattleFactoryApp_CreateSwapInGrid(BattleFactoryApp *app, GridI
     return GridInputHandler_Create(sBattleFactorySwapInGridHitboxesB, sBattleFactorySwapInGridBoxesB, &sBattleFactorySwapInGridCallbacks, app, TRUE, 0, HEAP_ID_100);
 }
 
-void BattleFactory_SetSwapInGridMenu(GridInputHandler *grid, int menuOpen, int frontierType) {
+void BattleFactory_SetSwapInGridMenu(GridInputHandler *grid, BOOL menuOpen, int frontierType) {
     if (menuOpen == TRUE) {
         GridInputHandler_SetAllEnabled(grid);
         GridInputHandler_ClearEnabledFlag(grid, 4);

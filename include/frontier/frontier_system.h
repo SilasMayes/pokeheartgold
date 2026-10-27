@@ -3,7 +3,6 @@
 
 #include "frontier/frontier_map.h"
 
-#include "list_menu_2d.h"
 #include "message_format.h"
 #include "msgdata.h"
 #include "pm_string.h"

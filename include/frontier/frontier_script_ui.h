@@ -4,6 +4,7 @@
 #include "frontier/frontier_script_context.h"
 
 #include "list_menu.h"
+#include "list_menu_2d.h"
 
 #define FRONTIER_MENU_ITEMS_MAX      28
 #define FRONTIER_MENU_NO_DESCRIPTION 0xFF

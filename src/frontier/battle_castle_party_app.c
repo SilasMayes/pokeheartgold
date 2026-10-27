@@ -266,7 +266,7 @@ static void BattleCastlePartyApp_PrintPartnerName(BattleCastlePartyApp *app, Win
 static void BattleCastlePartyApp_PrintGenderSymbol(BattleCastlePartyApp *app, Window *window, u32 x, u32 y, u8 fontId, u8 gender);
 static void BattleCastlePartyApp_SetMainState(BattleCastlePartyApp *app, int *state, u32 newState);
 static void BattleCastlePartyApp_MoveCursor(BattleCastlePartyApp *app);
-static void BattleCastlePartyApp_DrawCursor(BattleCastlePartyApp *app, u32 index, int isPartner);
+static void BattleCastlePartyApp_DrawCursor(BattleCastlePartyApp *app, u32 index, BOOL isPartner);
 static void BattleCastlePartyApp_GetCursorPos(BattleCastlePartyApp *app, int *x, int *y, u32 index);
 static u16 BattleCastlePartyApp_GetRentalCost(BattleCastlePartyApp *app, int index, int kind);
 static u16 BattleCastlePartyApp_GetRentalCostByItemId(u16 itemId);
@@ -303,7 +303,7 @@ static void BattleCastlePartyApp_LoadMonSummary(BattleCastlePartyApp *app);
 static void BattleCastlePartyApp_PrintSummaryLabels(BattleCastlePartyApp *app);
 static void BattleCastlePartyApp_PrintMonSummary(BattleCastlePartyApp *app, int scheduleCopy);
 static void BattleCastlePartyApp_RefreshMonSummary(BattleCastlePartyApp *app, int scheduleCopy);
-static void BattleCastlePartyApp_ShowMonSummary(BattleCastlePartyApp *app, int show);
+static void BattleCastlePartyApp_ShowMonSummary(BattleCastlePartyApp *app, BOOL show);
 static void BattleCastlePartyApp_GetItemButtonPos(u32 slot, s16 *x, s16 *y);
 static void BattleCastlePartyApp_ShowSelectedItem(BattleCastlePartyApp *app, u32 selected);
 static void BattleCastlePartyApp_ShowItemGrid(BattleCastlePartyApp *app);
@@ -2003,7 +2003,7 @@ static void BattleCastlePartyApp_MoveCursor(BattleCastlePartyApp *app) {
 }
 
 // Moves the player's (or the partner's) cursor to a party slot, or onto EXIT
-static void BattleCastlePartyApp_DrawCursor(BattleCastlePartyApp *app, u32 index, int isPartner) {
+static void BattleCastlePartyApp_DrawCursor(BattleCastlePartyApp *app, u32 index, BOOL isPartner) {
     BattleCastleSprite *cursor;
     int x;
     int y;
@@ -2923,7 +2923,7 @@ static void BattleCastlePartyApp_RefreshMonSummary(BattleCastlePartyApp *app, in
     BattleCastleSprite_LoadMonPic(app->monPic, app->summary.boxMon, app->summary.species, app->summary.personality);
 }
 
-static void BattleCastlePartyApp_ShowMonSummary(BattleCastlePartyApp *app, int show) {
+static void BattleCastlePartyApp_ShowMonSummary(BattleCastlePartyApp *app, BOOL show) {
     if (show == TRUE) {
         u32 i;
         Window *window;

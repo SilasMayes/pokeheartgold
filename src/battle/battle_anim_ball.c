@@ -553,8 +553,8 @@ static void BallSealEffect_SetEmitterPositionFromSeal(SPLEmitter *emitter) {
 
 static void BallBurstEffect_SetEmitterPosition(SPLEmitter *emitter) {
     BallBurstEffect *effect = ParticleSystem_GetEmitterParam();
-    s32 y = (s16)(100 - effect->template.y) * 172;
-    s32 x = (s16)(effect->template.x - 129) * 172;
+    fx32 y = (s16)(100 - effect->template.y) * 172;
+    fx32 x = (s16)(effect->template.x - 129) * 172;
     emitter->emtr_pos.x = x + emitter->p_res->p_base->pos.x;
     emitter->emtr_pos.y = y + emitter->p_res->p_base->pos.y;
     emitter->emtr_pos.z = emitter->p_res->p_base->pos.z;
@@ -1621,7 +1621,7 @@ static void BallThrow_CreateSprite(BallThrow *data) {
     BattleAnimSystem_InitBlend();
 }
 
-void BallThrow_SetDrawFlag(BallThrow *data, int flag) {
+void BallThrow_SetDrawFlag(BallThrow *data, BOOL flag) {
     ManagedSprite_SetDrawFlag(data->managedSprite, flag);
 }
 

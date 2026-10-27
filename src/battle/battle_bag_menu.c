@@ -186,8 +186,8 @@ static u16 BattleBagMenu_GetButtonPalette(BattleBagMenu *menu, u32 button, u32 f
 static void BattleBagMenu_CopyPocketIconTiles(BattleBagMenu *menu, u16 *dst, u32 button, u32 frame);
 static void BattleBagMenu_BuildButtonTilemap(BattleBagMenu *menu, u16 *dst, u8 button, u8 frame, u8 page);
 static void BattleBagMenu_DrawButton(BattleBagMenu *menu, u8 button, u8 frame, u8 page);
-static void BattleBagMenu_ScrollButtonWindows(BattleBagMenu *menu, u8 button, int frame);
-static void BattleBagMenu_OffsetButtonSprite(BattleBagMenu *menu, u32 button, u32 frame);
+static void BattleBagMenu_ScrollButtonWindows(BattleBagMenu *menu, u8 button, enum BattleButtonFrame frame);
+static void BattleBagMenu_OffsetButtonSprite(BattleBagMenu *menu, u32 button, enum BattleButtonFrame frame);
 static void BattleBagMenu_StartButtonAnim(BattleBagMenu *menu, u8 button, u8 mode);
 static void BattleBagMenu_UpdateButtonAnim(BattleBagMenu *menu);
 static void BattleBagMenu_DrawPageButtons(BattleBagMenu *menu, u8 page);
@@ -211,7 +211,7 @@ void BattleBagMenu_Create(BattleBagContext *context) {
     menu->context->lastUsedPocket = BagCursor_Battle_GetLastUsedPocket(bagCursor);
     BattleBagMenu_ValidateLastUsedItem(menu);
     if (BattleSystem_GetBattleType(menu->context->battleSystem) & BATTLE_TYPE_TUTORIAL) {
-        menu->context->isTutorial = 1;
+        menu->context->isTutorial = TRUE;
     }
 }
 
@@ -310,7 +310,7 @@ static int BattleBagMenu_Setup(BattleBagMenu *menu) {
     BattleBagMenu_SetPageCursor(menu, menu->page);
     BattleBagMenu_UpdateTutorialFinger(menu, menu->page);
     PaletteData_BeginPaletteFade(menu->paletteData, PLTTBUF_SUB_BG_F | PLTTBUF_SUB_OBJ_F, 0xFFFF, -8, 16, 0, 0);
-    if (menu->context->isTutorial == 1) {
+    if (menu->context->isTutorial == TRUE) {
         return BATTLE_BAG_STATE_TUTORIAL;
     }
     return BATTLE_BAG_STATE_POCKET_MENU;
@@ -1312,7 +1312,7 @@ static void BattleBagMenu_FreeFinger(BattleBagMenu *menu) {
 }
 
 static void BattleBagMenu_UpdateTutorialFinger(BattleBagMenu *menu, int page) {
-    if (menu->context->isTutorial == 1) {
+    if (menu->context->isTutorial == TRUE) {
         BattleFinger_Enable(menu->finger, gBattleBagTutorialFingerPos[page][0], gBattleBagTutorialFingerPos[page][1]);
         BattleFinger_SetTouchDelay(menu->finger, 60);
     } else {
@@ -1477,7 +1477,7 @@ static void BattleBagMenu_DrawButton(BattleBagMenu *menu, u8 button, u8 frame, u
     Heap_Free(buffer);
 }
 
-static void BattleBagMenu_ScrollButtonWindows(BattleBagMenu *menu, u8 button, int frame) {
+static void BattleBagMenu_ScrollButtonWindows(BattleBagMenu *menu, u8 button, enum BattleButtonFrame frame) {
     const u8 *windowList;
     u8 direction, pixels;
     u16 i;
@@ -1510,7 +1510,7 @@ static void BattleBagMenu_ScrollButtonWindows(BattleBagMenu *menu, u8 button, in
     }
 }
 
-static void BattleBagMenu_OffsetButtonSprite(BattleBagMenu *menu, u32 button, u32 frame) {
+static void BattleBagMenu_OffsetButtonSprite(BattleBagMenu *menu, u32 button, enum BattleButtonFrame frame) {
     ManagedSprite *sprite;
     u8 i;
 

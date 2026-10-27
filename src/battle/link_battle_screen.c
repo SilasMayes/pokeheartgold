@@ -89,7 +89,7 @@ enum LinkBattleScreenStepResult {
     LINK_SCREEN_STEP_NEXT_NOW, // advance and run the next step right away
 };
 
-typedef int (*LinkBattleScreenStepFunc)(LinkBattleScreen *screen);
+typedef enum LinkBattleScreenStepResult (*LinkBattleScreenStepFunc)(LinkBattleScreen *screen);
 
 struct LinkBattleScreen {
     LinkBattleScreenArgs *args;
@@ -140,7 +140,7 @@ struct LinkBattleScreen {
     WaitingIcon *waitingIcon;
     BOOL canSaveVideo;
     int savedVideoCheck;
-    u32 hasVersionZeroPlayer;
+    BOOL hasVersionZeroPlayer;
 };
 
 // The 7 words a sprite of this screen is made from (see LinkBattleScreen_CreateSprite).
@@ -162,27 +162,27 @@ static void LinkBattleScreen_RunTask(SysTask *task, void *data);
 static void LinkBattleScreen_SetVramBanks(void);
 static void LinkBattleScreen_UpdateBattleVideoPrompt(LinkBattleScreen *screen);
 static int LinkBattleScreen_Init(LinkBattleScreen *screen);
-static int LinkBattleScreen_InitPartyScreen(LinkBattleScreen *screen);
-static int LinkBattleScreen_InitVsScreen(LinkBattleScreen *screen);
-static int LinkBattleScreen_InitResultScreen(LinkBattleScreen *screen);
-static int LinkBattleScreen_WaitFadeAndDelay(LinkBattleScreen *screen);
-static int LinkBattleScreen_SlidePanelsIn(LinkBattleScreen *screen);
-static int LinkBattleScreen_ShakePanels(LinkBattleScreen *screen);
-static int LinkBattleScreen_SlidePanelsOut(LinkBattleScreen *screen);
-static int LinkBattleScreen_DelayBeforeNudge(LinkBattleScreen *screen);
-static int LinkBattleScreen_DetermineNudgeDirection(LinkBattleScreen *screen);
-static int LinkBattleScreen_NudgePanels(LinkBattleScreen *screen);
-static int LinkBattleScreen_NudgePanelsRight(LinkBattleScreen *screen);
-static int LinkBattleScreen_NudgePanelsLeft(LinkBattleScreen *screen);
-static int LinkBattleScreen_DelayBeforeReveal(LinkBattleScreen *screen);
-static int LinkBattleScreen_RevealCenterBand(LinkBattleScreen *screen);
-static int LinkBattleScreen_ShowWinLoseSprites(LinkBattleScreen *screen);
-static int LinkBattleScreen_ShowDrawSprite(LinkBattleScreen *screen);
-static int LinkBattleScreen_SaveBattleVideo(LinkBattleScreen *screen);
-static int LinkBattleScreen_WaitForPartner(LinkBattleScreen *screen);
-static int LinkBattleScreen_ApplyOutcomePalette(LinkBattleScreen *screen);
-static int LinkBattleScreen_SlidePartyPanelsIn(LinkBattleScreen *screen);
-static int LinkBattleScreen_StartExit(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_InitPartyScreen(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_InitVsScreen(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_InitResultScreen(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_WaitFadeAndDelay(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_SlidePanelsIn(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_ShakePanels(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_SlidePanelsOut(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_DelayBeforeNudge(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_DetermineNudgeDirection(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_NudgePanels(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_NudgePanelsRight(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_NudgePanelsLeft(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_DelayBeforeReveal(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_RevealCenterBand(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_ShowWinLoseSprites(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_ShowDrawSprite(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_SaveBattleVideo(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_WaitForPartner(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_ApplyOutcomePalette(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_SlidePartyPanelsIn(LinkBattleScreen *screen);
+static enum LinkBattleScreenStepResult LinkBattleScreen_StartExit(LinkBattleScreen *screen);
 static int LinkBattleScreen_Finish(SysTask *task, LinkBattleScreen *screen);
 static BOOL LinkBattleScreen_IsLocalPlayerOnLeft(void);
 static void LinkBattleScreen_InitSpriteSystem(LinkBattleScreen *screen, SpriteResourceCountsListUnion *resourceCounts, u32 count);
@@ -620,7 +620,7 @@ enum {
 
 static void LinkBattleScreen_RunTask(SysTask *task, void *data) {
     LinkBattleScreen *screen = data;
-    int result;
+    enum LinkBattleScreenStepResult result;
     switch (screen->taskState) {
     case LINK_SCREEN_STATE_INIT:
         screen->taskState = LinkBattleScreen_Init(screen);
@@ -773,7 +773,7 @@ static int LinkBattleScreen_Init(LinkBattleScreen *screen) {
     return LINK_SCREEN_STATE_RUN;
 }
 
-static int LinkBattleScreen_InitPartyScreen(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_InitPartyScreen(LinkBattleScreen *screen) {
     switch (screen->frame) {
     case 0:
         LinkBattleScreen_InitPartyBgLayers(screen);
@@ -799,7 +799,7 @@ static int LinkBattleScreen_InitPartyScreen(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_InitVsScreen(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_InitVsScreen(LinkBattleScreen *screen) {
     switch (screen->frame) {
     case 0:
         LinkBattleScreen_InitVsBgLayers(screen, TRUE, FALSE);
@@ -825,7 +825,7 @@ static int LinkBattleScreen_InitVsScreen(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_InitResultScreen(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_InitResultScreen(LinkBattleScreen *screen) {
     int value;
     int i;
 
@@ -837,11 +837,11 @@ static int LinkBattleScreen_InitResultScreen(LinkBattleScreen *screen) {
         LinkBattleScreen_SetBg1AlphaBlend();
         BattleRecord_IsSlotValid(screen->args->setup->saveData, screen->args->heapId, &value, 0);
         screen->savedVideoCheck = value;
-        screen->hasVersionZeroPlayer = 0;
+        screen->hasVersionZeroPlayer = FALSE;
         for (i = 0; i < 8; i++) {
             PlayerProfile *profile = CommPlayerInfo_GetProfile(i);
             if (profile != NULL && PlayerProfile_GetVersion(profile) == 0) {
-                screen->hasVersionZeroPlayer = 1;
+                screen->hasVersionZeroPlayer = TRUE;
                 break;
             }
         }
@@ -868,7 +868,7 @@ static int LinkBattleScreen_InitResultScreen(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_WaitFadeAndDelay(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_WaitFadeAndDelay(LinkBattleScreen *screen) {
     if (!IsPaletteFadeFinished()) {
         return LINK_SCREEN_STEP_WAIT;
     }
@@ -880,7 +880,7 @@ static int LinkBattleScreen_WaitFadeAndDelay(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_SlidePanelsIn(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_SlidePanelsIn(LinkBattleScreen *screen) {
     if (Bg_GetXpos(screen->bgConfig, GF_BG_LYR_MAIN_3) <= 24) {
         screen->frame = 0;
         screen->shakeX = 0;
@@ -912,7 +912,7 @@ static int LinkBattleScreen_SlidePanelsIn(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_ShakePanels(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_ShakePanels(LinkBattleScreen *screen) {
     s16 dx;
     s16 dy;
 
@@ -968,7 +968,7 @@ static int LinkBattleScreen_ShakePanels(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_SlidePanelsOut(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_SlidePanelsOut(LinkBattleScreen *screen) {
     if (screen->frame == 8) {
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, RGB_WHITE, 6, 1, screen->args->heapId);
     }
@@ -993,12 +993,12 @@ static int LinkBattleScreen_SlidePanelsOut(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_DelayBeforeNudge(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_DelayBeforeNudge(LinkBattleScreen *screen) {
     screen->delayFrames = 16;
     return LINK_SCREEN_STEP_NEXT_NOW;
 }
 
-static int LinkBattleScreen_DetermineNudgeDirection(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_DetermineNudgeDirection(LinkBattleScreen *screen) {
     if (LinkBattleScreen_IsLocalPlayerOnLeft() == TRUE) {
         if (screen->args->outcome == BATTLE_OUTCOME_WIN) {
             screen->nudgeDirection = 0;
@@ -1015,14 +1015,14 @@ static int LinkBattleScreen_DetermineNudgeDirection(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_NEXT_NOW;
 }
 
-static int LinkBattleScreen_NudgePanels(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_NudgePanels(LinkBattleScreen *screen) {
     if (screen->nudgeDirection == 0) {
         return LinkBattleScreen_NudgePanelsRight(screen);
     }
     return LinkBattleScreen_NudgePanelsLeft(screen);
 }
 
-static int LinkBattleScreen_NudgePanelsRight(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_NudgePanelsRight(LinkBattleScreen *screen) {
     ScheduleSetBgPosText(screen->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_SUB_X, sPanelNudgeSteps[screen->frame][0]);
     ScheduleSetBgPosText(screen->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_SUB_X, sPanelNudgeSteps[screen->frame][0]);
     LinkBattleScreen_SetBallRowPosition(screen, 0, sPanelNudgeSteps[screen->frame][1], 0);
@@ -1044,7 +1044,7 @@ static int LinkBattleScreen_NudgePanelsRight(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_NudgePanelsLeft(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_NudgePanelsLeft(LinkBattleScreen *screen) {
     ScheduleSetBgPosText(screen->bgConfig, GF_BG_LYR_MAIN_2, BG_POS_OP_ADD_X, sPanelNudgeSteps[screen->frame][0]);
     ScheduleSetBgPosText(screen->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_ADD_X, sPanelNudgeSteps[screen->frame][0]);
     LinkBattleScreen_SetBallRowPosition(screen, 0, -sPanelNudgeSteps[screen->frame][1], 0);
@@ -1066,12 +1066,12 @@ static int LinkBattleScreen_NudgePanelsLeft(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_DelayBeforeReveal(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_DelayBeforeReveal(LinkBattleScreen *screen) {
     screen->delayFrames = 16;
     return LINK_SCREEN_STEP_NEXT_NOW;
 }
 
-static int LinkBattleScreen_RevealCenterBand(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_RevealCenterBand(LinkBattleScreen *screen) {
     if (screen->frame == 0) {
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, TRUE);
         reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xFFFF1FFF) | 0x2000;
@@ -1094,7 +1094,7 @@ static int LinkBattleScreen_RevealCenterBand(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_ShowWinLoseSprites(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_ShowWinLoseSprites(LinkBattleScreen *screen) {
     PlaySE(SEQ_SE_DP_VSDEMO06);
     ManagedSprite_SetDrawFlag(screen->sprites[12], TRUE);
     ManagedSprite_SetDrawFlag(screen->sprites[13], TRUE);
@@ -1103,20 +1103,20 @@ static int LinkBattleScreen_ShowWinLoseSprites(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_NEXT;
 }
 
-static int LinkBattleScreen_ShowDrawSprite(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_ShowDrawSprite(LinkBattleScreen *screen) {
     PlaySE(SEQ_SE_DP_VSDEMO06);
     ManagedSprite_SetDrawFlag(screen->sprites[12], TRUE);
     screen->delayFrames = 64;
     return LINK_SCREEN_STEP_NEXT;
 }
 
-static int LinkBattleScreen_SaveBattleVideo(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_SaveBattleVideo(LinkBattleScreen *screen) {
     u32 result;
     if (!LinkBattleScreen_IsBattleRecordActive(screen)) {
         screen->delayFrames = 1;
         return LINK_SCREEN_STEP_NEXT;
     }
-    if (screen->hasVersionZeroPlayer == 0 && screen->yesNoMenu != NULL) {
+    if (!screen->hasVersionZeroPlayer && screen->yesNoMenu != NULL) {
         return LINK_SCREEN_STEP_WAIT;
     }
     if (screen->videoPromptState == VIDEO_PROMPT_STATE_START_SAVE) {
@@ -1168,7 +1168,7 @@ static int LinkBattleScreen_SaveBattleVideo(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_WaitForPartner(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_WaitForPartner(LinkBattleScreen *screen) {
     switch (screen->frame) {
     case 0:
         if (!LinkBattleScreen_IsBattleRecordActive(screen)) {
@@ -1197,7 +1197,7 @@ static int LinkBattleScreen_WaitForPartner(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_ApplyOutcomePalette(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_ApplyOutcomePalette(LinkBattleScreen *screen) {
     if (LinkBattleScreen_IsLocalPlayerOnLeft() == TRUE) {
         if (screen->args->outcome == BATTLE_OUTCOME_WIN) {
             PaletteData_CopyPalette(screen->paletteData, PLTTBUF_MAIN_BG, 0x40, PLTTBUF_MAIN_BG, 0x30, 0x20);
@@ -1217,7 +1217,7 @@ static int LinkBattleScreen_ApplyOutcomePalette(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_NEXT;
 }
 
-static int LinkBattleScreen_SlidePartyPanelsIn(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_SlidePartyPanelsIn(LinkBattleScreen *screen) {
     if (screen->frame == 0) {
         PlaySE(SEQ_SE_DP_VSDEMO05);
     }
@@ -1232,7 +1232,7 @@ static int LinkBattleScreen_SlidePartyPanelsIn(LinkBattleScreen *screen) {
     return LINK_SCREEN_STEP_WAIT;
 }
 
-static int LinkBattleScreen_StartExit(LinkBattleScreen *screen) {
+static enum LinkBattleScreenStepResult LinkBattleScreen_StartExit(LinkBattleScreen *screen) {
     BeginAppScreenFade(1, screen->args->heapId);
     screen->taskState = LINK_SCREEN_STATE_FINISH;
     return LINK_SCREEN_STEP_NEXT;

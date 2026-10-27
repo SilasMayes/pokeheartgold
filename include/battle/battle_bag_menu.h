@@ -14,8 +14,8 @@ typedef struct BattleBagContext {
     Bag *bag;
     enum HeapID heapID;
     int battlerId;
-    int isTutorial;            // the bag is played back by the tutorial finger
-    int embargo;               // the battler is under Embargo (msg 46)
+    BOOL isTutorial;           // the bag is played back by the tutorial finger
+    BOOL embargo;              // the battler is under Embargo (msg 46)
     u16 selectedItem;          // item chosen to use, 0 if the screen was cancelled
     u8 selectedPocket;         // battle pocket of selectedItem
     u8 lastUsedPocket;         // pocket of lastUsedItem

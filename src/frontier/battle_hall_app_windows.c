@@ -58,6 +58,6 @@ void BattleHallApp_InitYesNo(YesNoPrompt *prompt, BgConfig *bgConfig, u8 ignoreT
     YesNoPrompt_InitFromTemplate(prompt, &template);
 }
 
-u32 BattleHallApp_HandleYesNo(YesNoPrompt *prompt) {
+YesNoResponse BattleHallApp_HandleYesNo(YesNoPrompt *prompt) {
     return YesNoPrompt_HandleInput(prompt);
 }

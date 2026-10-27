@@ -184,7 +184,7 @@ static void BattleFactoryApp_ReplacePokepicFromOther(BattleFactoryApp *app, int 
 static void BattleFactoryApp_CreateSlotMarkers(BattleFactoryApp *app);
 static void BattleFactoryApp_DeleteSlotMarkers(BattleFactoryApp *app);
 static void BattleFactoryApp_UpdateSlotMarkers(BattleFactoryApp *app);
-static void BattleFactoryApp_SetSlotMarkers(BattleFactoryApp *app, int highlightCursor);
+static void BattleFactoryApp_SetSlotMarkers(BattleFactoryApp *app, BOOL highlightCursor);
 static void BattleFactoryApp_CreateOrderSprites(BattleFactoryApp *app);
 static void BattleFactoryApp_DeleteOrderSprites(BattleFactoryApp *app);
 static void BattleFactoryApp_UpdateOrderSprites(BattleFactoryApp *app);
@@ -199,7 +199,7 @@ static void BattleFactoryApp_StartButtonFlash(BattleFactoryApp *app, u8 x, u8 y,
 static void BattleFactoryApp_FlashWideButton(BattleFactoryApp *app, u8 x, u8 y, u8 nextState);
 static void BattleFactoryApp_FlashNarrowButton(BattleFactoryApp *app, u8 x, u8 y, u8 nextState);
 static BOOL BattleFactoryApp_UpdateButtonFlash(BattleFactoryApp *app);
-static void BattleFactoryApp_SetBallsTranslucent(BattleFactoryApp *app, int enable);
+static void BattleFactoryApp_SetBallsTranslucent(BattleFactoryApp *app, BOOL enable);
 
 static const u8 sBattleFactoryAppSummaryPages[4] = { 0, 1, 3, 4 };
 
@@ -2947,7 +2947,7 @@ static void BattleFactoryApp_UpdateSlotMarkers(BattleFactoryApp *app) {
     }
 }
 
-static void BattleFactoryApp_SetSlotMarkers(BattleFactoryApp *app, int highlightCursor) {
+static void BattleFactoryApp_SetSlotMarkers(BattleFactoryApp *app, BOOL highlightCursor) {
     u32 i;
 
     for (i = 0; i < app->numPokepics; i++) {
@@ -3169,7 +3169,7 @@ static BOOL BattleFactoryApp_UpdateButtonFlash(BattleFactoryApp *app) {
     return TRUE;
 }
 
-static void BattleFactoryApp_SetBallsTranslucent(BattleFactoryApp *app, int enable) {
+static void BattleFactoryApp_SetBallsTranslucent(BattleFactoryApp *app, BOOL enable) {
     u32 i;
 
     if (enable == TRUE) {

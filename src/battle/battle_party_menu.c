@@ -239,7 +239,7 @@ static u8 BattlePartyMenu_GetSummaryInput(BattlePartyMenu *menu);
 static u8 BattlePartyMenu_GetCheckMovesInput(BattlePartyMenu *menu);
 static u8 BattlePartyMenu_GetMoveDetailInput(BattlePartyMenu *menu);
 static int BattlePartyMenu_CheckTouchHitbox(BattlePartyMenu *menu, const TouchscreenHitbox *hitboxes);
-static int BattlePartyMenu_GetSlotType(BattlePartyMenu *menu, int slot);
+static enum BattlePartySlotType BattlePartyMenu_GetSlotType(BattlePartyMenu *menu, int slot);
 static u8 BattlePartyMenu_FindNextMon(BattlePartyMenu *menu, int slot, int direction);
 static void BattlePartyMenu_DrawExpBar(BattlePartyMenu *menu, int page);
 static void BattlePartyMenu_SetExpBarTile(BattlePartyMenu *menu, u16 tile, u16 x, int y);
@@ -1473,7 +1473,7 @@ static int BattlePartyMenu_CheckTouchHitbox(BattlePartyMenu *menu, const Touchsc
     return TouchscreenHitbox_FindRectAtTouchNew(hitboxes);
 }
 
-static int BattlePartyMenu_GetSlotType(BattlePartyMenu *menu, int slot) {
+static enum BattlePartySlotType BattlePartyMenu_GetSlotType(BattlePartyMenu *menu, int slot) {
     if (menu->mons[slot].species == SPECIES_NONE) {
         return BATTLE_PARTY_SLOT_EMPTY;
     }
@@ -3646,7 +3646,7 @@ static void BattlePartyMenu_DrawPageButtons(BattlePartyMenu *menu, u32 page) {
     switch (page) {
     case BATTLE_PARTY_PAGE_PARTY_LIST:
         for (i = 0; i < PARTY_SIZE; i++) {
-            int slotType = BattlePartyMenu_GetSlotType(menu, i);
+            enum BattlePartySlotType slotType = BattlePartyMenu_GetSlotType(menu, i);
             if (slotType == BATTLE_PARTY_SLOT_EMPTY) {
                 BattlePartyMenu_DrawButton(menu, i, BATTLE_BUTTON_FRAME_DISABLED, 1);
             } else if (slotType == BATTLE_PARTY_SLOT_ACTIVE) {

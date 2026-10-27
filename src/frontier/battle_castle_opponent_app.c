@@ -238,7 +238,7 @@ static void BattleCastleOpponentApp_OpenSummaryMenu(BattleCastleOpponentApp *app
 static void BattleCastleOpponentApp_CloseSummaryMenu(BattleCastleOpponentApp *app);
 static void BattleCastleOpponentApp_SetMainState(BattleCastleOpponentApp *app, int *state, int newState);
 static void BattleCastleOpponentApp_MoveCursor(BattleCastleOpponentApp *app);
-static void BattleCastleOpponentApp_DrawCursor(BattleCastleOpponentApp *app, u32 index, int isPartner);
+static void BattleCastleOpponentApp_DrawCursor(BattleCastleOpponentApp *app, u32 index, BOOL isPartner);
 static void BattleCastleOpponentApp_GetCursorPos(BattleCastleOpponentApp *app, u32 *x, u32 *y, u32 index);
 static void BattleCastleOpponentApp_GetTrainerNamePositions(BattleCastleOpponentApp *app, u16 *x1, u16 *y1, u16 *x2, u16 *y2);
 static int BattleCastleOpponentApp_PlayActionEffect(BattleCastleOpponentApp *app, int slot, u32 action);
@@ -276,7 +276,7 @@ static void BattleCastleOpponentApp_LoadMonSummary(BattleCastleOpponentApp *app)
 static void BattleCastleOpponentApp_PrintSummaryLabels(BattleCastleOpponentApp *app);
 static void BattleCastleOpponentApp_PrintMonSummary(BattleCastleOpponentApp *app, int copyMode);
 static void BattleCastleOpponentApp_ShowMonSummary(BattleCastleOpponentApp *app, int copyMode);
-static void BattleCastleOpponentApp_ShowSummaryPanel(BattleCastleOpponentApp *app, int show);
+static void BattleCastleOpponentApp_ShowSummaryPanel(BattleCastleOpponentApp *app, BOOL show);
 static void BattleCastleOpponentApp_LoadMonPic(BattleCastleOpponentApp *app);
 static void BattleCastleOpponentApp_CreateListMenu(BattleCastleOpponentApp *app, u8 count, u8 x, u8 y, u8 width);
 static void BattleCastleOpponentApp_CreateMainMenuList(BattleCastleOpponentApp *app);
@@ -1462,7 +1462,7 @@ static void BattleCastleOpponentApp_MoveCursor(BattleCastleOpponentApp *app) {
     BattleCastleOpponentApp_DrawCursor(app, app->cursorPos, FALSE);
 }
 
-static void BattleCastleOpponentApp_DrawCursor(BattleCastleOpponentApp *app, u32 index, int isPartner) {
+static void BattleCastleOpponentApp_DrawCursor(BattleCastleOpponentApp *app, u32 index, BOOL isPartner) {
     BattleCastleSprite *cursor;
     int seq;
     int exitSeq;
@@ -2379,7 +2379,7 @@ static void BattleCastleOpponentApp_ShowMonSummary(BattleCastleOpponentApp *app,
     BattleCastleOpponentApp_LoadMonPic(app);
 }
 
-static void BattleCastleOpponentApp_ShowSummaryPanel(BattleCastleOpponentApp *app, int show) {
+static void BattleCastleOpponentApp_ShowSummaryPanel(BattleCastleOpponentApp *app, BOOL show) {
     u32 i;
 
     if (show == TRUE) {

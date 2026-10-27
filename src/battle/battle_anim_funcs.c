@@ -108,7 +108,7 @@ struct BattleAnimSpritePopWork {
     ManagedSprite *sprite;
     BattleAnimLinearMotion scale;
     int side;
-    int shrinking;
+    BOOL shrinking;
     int delay;
     int sequenceState;
     s16 x;
@@ -2671,8 +2671,8 @@ static void BattleAnimTask_EmitterSinMotion(SysTask *task, void *data) {
         return;
     }
     {
-        s32 y = work->base.y + work->motion.y * BATTLE_ANIM_EMITTER_PIXEL;
-        s32 x = work->base.x + work->motion.x * BATTLE_ANIM_EMITTER_PIXEL;
+        fx32 y = work->base.y + work->motion.y * BATTLE_ANIM_EMITTER_PIXEL;
+        fx32 x = work->base.x + work->motion.x * BATTLE_ANIM_EMITTER_PIXEL;
         SPL_SetEmitterPositionX(work->emitter, x);
         SPL_SetEmitterPositionY(work->emitter, y);
     }
@@ -2711,8 +2711,8 @@ void BattleAnimFunc_EmitterSinMotion(BattleAnimSystem *system) {
     BattleAnimUtil_InitSinMotion(&work->motion, (u16)startAngleX, (u16)endAngleX, (u16)startAngleY, endAngleY, work->ampX << FX32_SHIFT, work->ampY << FX32_SHIFT, work->duration);
     BattleAnimUtil_UpdateSinMotion(&work->motion);
     {
-        s32 y = work->base.y + work->motion.y * BATTLE_ANIM_EMITTER_PIXEL;
-        s32 x = work->base.x + work->motion.x * BATTLE_ANIM_EMITTER_PIXEL;
+        fx32 y = work->base.y + work->motion.y * BATTLE_ANIM_EMITTER_PIXEL;
+        fx32 x = work->base.x + work->motion.x * BATTLE_ANIM_EMITTER_PIXEL;
         SPL_SetEmitterPositionX(work->emitter, x);
         SPL_SetEmitterPositionY(work->emitter, y);
     }

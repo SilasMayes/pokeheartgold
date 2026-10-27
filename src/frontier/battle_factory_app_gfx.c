@@ -240,7 +240,7 @@ BattleFactorySprite *BattleFactorySprite_Delete(BattleFactorySprite *sprite) {
     return NULL;
 }
 
-void BattleFactorySprite_SetVisible(BattleFactorySprite *sprite, int visible) {
+void BattleFactorySprite_SetVisible(BattleFactorySprite *sprite, BOOL visible) {
     Sprite_SetDrawFlag(sprite->sprite, visible);
 }
 
@@ -311,7 +311,7 @@ BattleFactoryBall *BattleFactoryBall_Delete(BattleFactoryBall *ball) {
     return NULL;
 }
 
-void BattleFactoryBall_SetVisible(BattleFactoryBall *ball, int visible) {
+void BattleFactoryBall_SetVisible(BattleFactoryBall *ball, BOOL visible) {
     Sprite_SetDrawFlag(ball->sprite, visible);
 }
 

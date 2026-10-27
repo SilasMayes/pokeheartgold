@@ -1,7 +1,7 @@
 #ifndef POKEHEARTGOLD_BATTLE_BATTLE_MAIN_H
 #define POKEHEARTGOLD_BATTLE_BATTLE_MAIN_H
 
-#include "battle/battle_controller_opponent.h"
+#include "battle/battle.h"
 
 // The battle overlay's main module.
 

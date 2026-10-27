@@ -144,7 +144,7 @@ BOOL BattleAnimEmitterCameraCb_LookAtBattlerA(SPLEmitter *emitter, BattleAnimEmi
 BOOL BattleAnimEmitterCameraCb_LookAtBattlerB(SPLEmitter *emitter, BattleAnimEmitterConfig *config);
 void BattleAnimUtil_LookupScreenPos(int set, int index, s16 *x, s16 *y);
 void BattleAnimSystem_GetBattlerScreenPos(BattleAnimSystem *system, int index, s16 *x, s16 *y);
-s16 BattleAnimSystem_GetBattlerScreenCoord(BattleAnimSystem *system, int battler, u32 coord);
+s16 BattleAnimSystem_GetBattlerScreenCoord(BattleAnimSystem *system, int battler, enum BattleAnimCoord coord);
 u8 BattleAnimUtil_GetSpritePaletteSlot(ManagedSprite *sprite);
 int BattleAnimUtil_GetBattlerSideSignByMode(BattleAnimSystem *system, int battler);
 int BattleAnimUtil_GetBattlerSideSign(BattleAnimSystem *system, int battler);

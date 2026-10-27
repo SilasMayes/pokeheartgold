@@ -1354,7 +1354,7 @@ void OpponentData_CreateBallData(BattleSystem *battleSystem, OpponentData *oppon
             opponentData->ballData = BallThrow_New(&ballParams);
             BallThrow_SetDrawPriority(opponentData->ballData, 100);
             BallThrow_SetPriority(opponentData->ballData, 2);
-            BallThrow_SetDrawFlag(opponentData->ballData, 0);
+            BallThrow_SetDrawFlag(opponentData->ballData, FALSE);
             BallThrow_SetAnimateSprite(opponentData->ballData, 0);
         }
     }
@@ -3936,11 +3936,11 @@ static void Task_ThrowPokeball(SysTask *task, void *data) {
             ManagedSprite_OffsetPositionXY(work->opponentData->managedSprite, 5, 0);
             ManagedSprite_GetPositionXY(work->opponentData->managedSprite, &x, &y);
             if (x >= 160 && BallThrow_GetMode(work->opponentData->ballData) != 0) {
-                BallThrow_SetDrawFlag(work->opponentData->ballData, 1);
+                BallThrow_SetDrawFlag(work->opponentData->ballData, TRUE);
                 BallThrow_SetMode(work->opponentData->ballData, 0);
                 if ((battleType & BATTLE_TYPE_DOUBLES) && !(battleType & BATTLE_TYPE_MULTI)) {
                     OpponentData *partner = BattleSystem_GetOpponentData(work->battleSystem, BattleSystem_GetBattlerIdPartner(work->battleSystem, work->battlerId));
-                    BallThrow_SetDrawFlag(partner->ballData, 1);
+                    BallThrow_SetDrawFlag(partner->ballData, TRUE);
                     BallThrow_SetMode(partner->ballData, 0);
                     BallThrow_SetDelay(partner->ballData, 12);
                 }
@@ -3967,7 +3967,7 @@ static void Task_ThrowPokeball(SysTask *task, void *data) {
         if (work->opponentData->ballData) {
             animFrame = ManagedSprite_GetAnimationFrame(work->opponentData->managedSprite);
             if (gBallThrowOffsets[work->backpic][animFrame][0] != 0x7FFF) {
-                BallThrow_SetDrawFlag(work->opponentData->ballData, 1);
+                BallThrow_SetDrawFlag(work->opponentData->ballData, TRUE);
                 BallThrow_SetPosition(work->opponentData->ballData, x + gBallThrowOffsets[work->backpic][animFrame][0], y + gBallThrowOffsets[work->backpic][animFrame][1]);
                 if (animFrame == 3 && BallThrow_GetMode(work->opponentData->ballData) != 0) {
                     BallThrow_SetMode(work->opponentData->ballData, 0);
@@ -3975,7 +3975,7 @@ static void Task_ThrowPokeball(SysTask *task, void *data) {
                     if ((battleType & BATTLE_TYPE_DOUBLES) && !(battleType & BATTLE_TYPE_MULTI)) {
                         OpponentData *partner = BattleSystem_GetOpponentData(work->battleSystem, BattleSystem_GetBattlerIdPartner(work->battleSystem, work->battlerId));
                         BallThrow_SetPosition(partner->ballData, x + gBallThrowOffsets[work->backpic][animFrame][0], y + gBallThrowOffsets[work->backpic][animFrame][1]);
-                        BallThrow_SetDrawFlag(partner->ballData, 1);
+                        BallThrow_SetDrawFlag(partner->ballData, TRUE);
                         BallThrow_SetMode(partner->ballData, 0);
                         BallThrow_SetAnimateSprite(partner->ballData, 1);
                     }
@@ -4071,7 +4071,7 @@ static void Task_ThrowPokeballWithFollowMon(SysTask *task, void *data) {
                 OpponentData *partner = BattleSystem_GetOpponentData(work->battleSystem, BattleSystem_GetBattlerIdPartner(work->battleSystem, work->battlerId));
                 if (frame == 3 && BallThrow_GetMode(partner->ballData) != 0) {
                     BallThrow_SetPosition(partner->ballData, x + gBallThrowOffsets[work->backpic][frame][0], y + gBallThrowOffsets[work->backpic][frame][1]);
-                    BallThrow_SetDrawFlag(partner->ballData, 1);
+                    BallThrow_SetDrawFlag(partner->ballData, TRUE);
                     BallThrow_SetMode(partner->ballData, 0);
                     BallThrow_SetAnimateSprite(partner->ballData, 1);
                     BallThrow_SetPriority(partner->ballData, 1);

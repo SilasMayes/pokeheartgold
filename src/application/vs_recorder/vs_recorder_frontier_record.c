@@ -390,7 +390,7 @@ static BOOL VsRecorder_SpinInFrontierSprites(VsRecorderWork *work) {
         record->angles[i] += 20;
         record->angles[i] %= 360;
     }
-    VsRecorder_StepBlend(&record->eva, &record->evb, FALSE, 0);
+    VsRecorder_StepBlend(&record->eva, &record->evb, FALSE, VS_RECORDER_BLEND_BOTH);
     for (i = 0; i < 5; i++) {
         if (record->angles[0] != 0) {
             record->scales[i] += 0.05f;
@@ -434,7 +434,7 @@ BOOL VsRecorder_SpinOutFrontierSprites(VsRecorderWork *work) {
             ManagedSprite_SetAffineOverwriteMode(record->prints[i], 2);
         }
     }
-    VsRecorder_StepBlend(&record->eva, &record->evb, TRUE, 0);
+    VsRecorder_StepBlend(&record->eva, &record->evb, TRUE, VS_RECORDER_BLEND_BOTH);
     for (i = 0; i < 5; i++) {
         if (record->angles[0] != 0) {
             record->scales[i] -= 0.05f;
@@ -498,8 +498,8 @@ static BOOL VsRecorder_FrontierEnter(VsRecorderWork *work) {
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_MAIN_2);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_3);
         BgClearTilemapBufferAndCommit(work->bgConfig, GF_BG_LYR_SUB_2);
-        VsRecorder_InitBgBlend(&record->eva, &record->evb, 0);
-        VsRecorder_ApplyBlend(&record->eva, &record->evb, 0, 0, 4, 2, 0);
+        VsRecorder_InitBgBlend(&record->eva, &record->evb, VS_RECORDER_BLEND_BOTH);
+        VsRecorder_ApplyBlend(&record->eva, &record->evb, GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG2, GX_BLEND_PLANEMASK_BG1, VS_RECORDER_BLEND_BOTH);
         PlaySE(SEQ_SE_PL_BREC20);
         work->step++;
     } else {
@@ -541,7 +541,7 @@ static BOOL VsRecorder_FrontierEnter(VsRecorderWork *work) {
         break;
     case FRONTIER_ENTER_STEP_SPIN_IN: {
         BOOL spinning = VsRecorder_SpinInFrontierSprites(work);
-        VsRecorder_StepBlend(&record->eva, &record->evb, FALSE, 0);
+        VsRecorder_StepBlend(&record->eva, &record->evb, FALSE, VS_RECORDER_BLEND_BOTH);
         VsRecorder_StepFade(&record->fade, 0);
         if (!spinning) {
             work->step++;

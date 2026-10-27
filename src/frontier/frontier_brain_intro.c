@@ -136,7 +136,7 @@ static BOOL FrontierBrainIntroLerp_Step(FrontierBrainIntroLerp *lerp);
 static void FrontierBrainIntro_SetVec(VecFx32 *vec, fx32 x, fx32 y, fx32 z);
 static void FrontierBrainIntro_LoadBackground(FrontierBrainIntro *intro, const FrontierBrainIntroArgs *args);
 static void FrontierBrainIntro_CyclePaletteTask(SysTask *task, void *data);
-static void FrontierBrainIntro_StartWindowAnim(FrontierBrainIntro *intro, int close);
+static void FrontierBrainIntro_StartWindowAnim(FrontierBrainIntro *intro, BOOL close);
 static void FrontierBrainIntro_OpenWindowTask(SysTask *task, void *data);
 static void FrontierBrainIntro_CloseWindowTask(SysTask *task, void *data);
 static BOOL FrontierBrainIntro_SlideInBrain(FrontierBrainIntro *intro, FrontierBrainIntroSprites *sprites, FrontierBrainIntroSlide *slide);
@@ -590,7 +590,7 @@ static void FrontierBrainIntro_CyclePaletteTask(SysTask *task, void *data) {
     }
 }
 
-static void FrontierBrainIntro_StartWindowAnim(FrontierBrainIntro *intro, int close) {
+static void FrontierBrainIntro_StartWindowAnim(FrontierBrainIntro *intro, BOOL close) {
     FrontierBrainIntroWindowAnim *anim = &intro->windowAnim;
     MI_CpuFill8(anim, 0, sizeof(FrontierBrainIntroWindowAnim));
     if (!close) {

@@ -225,7 +225,7 @@ void BattleCastle_LoadItemIconPalette(BattleCastleSpriteGfx *gfx, int resId, u16
 BattleCastleSprite *BattleCastleSprite_New(BattleCastleSpriteGfx *gfx, int charId, int plttId, int cellId, int animSeq, s16 x, s16 y, int priority, int unused);
 BattleCastleSprite *BattleCastleSprite_NewSubScreen(BattleCastleSpriteGfx *gfx, int charId, int plttId, int cellId, int animSeq, s16 x, s16 y, int priority, int unused);
 int BattleCastleSprite_Delete(BattleCastleSprite *sprite);
-void BattleCastleSprite_SetDrawFlag(BattleCastleSprite *sprite, int draw);
+void BattleCastleSprite_SetDrawFlag(BattleCastleSprite *sprite, BOOL draw);
 void BattleCastleSprite_SetPosition(BattleCastleSprite *sprite, int x, int y);
 void BattleCastleSprite_SetPositionSubScreen(BattleCastleSprite *sprite, int x, int y);
 void BattleCastleSprite_SetAnim(BattleCastleSprite *sprite, int seq);

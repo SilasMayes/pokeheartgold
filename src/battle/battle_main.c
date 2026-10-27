@@ -97,7 +97,7 @@ typedef struct BattlerInitData {
 #define LINK_SCREEN_ARGS(battleSystem) ((LinkBattleScreenArgs *)(battleSystem)->linkScreenArgs)
 
 void Comm_SetWifiContinuousSendAndMuteVoice(int value);
-void CommState_FrameDummy(int heapId, BgConfig *bgConfig);
+void CommState_FrameDummy(enum HeapID heapID, BgConfig *bgConfig);
 
 const BattleBgTemplateSet gBattleReinitBgTemplates = {
     .templates = {

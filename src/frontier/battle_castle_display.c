@@ -383,7 +383,7 @@ int BattleCastleSprite_Delete(BattleCastleSprite *sprite) {
     return 0;
 }
 
-void BattleCastleSprite_SetDrawFlag(BattleCastleSprite *sprite, int draw) {
+void BattleCastleSprite_SetDrawFlag(BattleCastleSprite *sprite, BOOL draw) {
     Sprite_SetDrawFlag(sprite->sprite, draw);
 }
 
@@ -442,14 +442,14 @@ void BattleCastleSprite_LoadMonPic(BattleCastleSprite *sprite, BoxPokemon *boxMo
     void *buffer;
     u32 imageLocation;
     u32 paletteLocation;
-    int narcId;
+    NarcId narcId;
     int plttId;
 
     buffer = Heap_AllocAtEnd(HEAP_ID_107, 0xC80);
     if (species != SPECIES_NONE) {
         GetBoxmonSpriteCharAndPlttNarcIds(&pokepic, boxMon, 2, FALSE);
         CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_107, &rect, buffer, personality, FALSE, 2, species);
-        narcId = pokepic.narcID;
+        narcId = (NarcId)pokepic.narcID;
         plttId = pokepic.palDataID;
     } else {
         file = GfGfxLoader_GetCharData(NARC_a_1_8_4, 0x27, TRUE, &charData, HEAP_ID_107);
@@ -462,7 +462,7 @@ void BattleCastleSprite_LoadMonPic(BattleCastleSprite *sprite, BoxPokemon *boxMo
     DC_FlushRange(buffer, 0xC80);
     GXS_LoadOBJ(buffer, imageLocation, 0xC80);
     paletteLocation = NNS_G2dGetImagePaletteLocation(Sprite_GetPaletteProxy(sprite->sprite), NNS_G2D_VRAM_TYPE_2DSUB);
-    GfGfxLoader_GXLoadPal((NarcId)narcId, plttId, GF_PAL_LOCATION_SUB_OBJ, (enum GFPalSlotOffset)paletteLocation, 0x20, HEAP_ID_107);
+    GfGfxLoader_GXLoadPal(narcId, plttId, GF_PAL_LOCATION_SUB_OBJ, (enum GFPalSlotOffset)paletteLocation, 0x20, HEAP_ID_107);
     Heap_Free(buffer);
 }
 

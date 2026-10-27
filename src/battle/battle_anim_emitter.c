@@ -1496,7 +1496,7 @@ void BattleAnimSystem_GetBattlerScreenPos(BattleAnimSystem *system, int index, s
 }
 
 // coord: 0 / 2 x, 1 / 3 y
-s16 BattleAnimSystem_GetBattlerScreenCoord(BattleAnimSystem *system, int battler, u32 coord) {
+s16 BattleAnimSystem_GetBattlerScreenCoord(BattleAnimSystem *system, int battler, enum BattleAnimCoord coord) {
     int index = BattleAnimUtil_GetBattlerType(system, battler);
     int set = BattleAnimSystem_IsDoubleBattle(system) == TRUE;
 

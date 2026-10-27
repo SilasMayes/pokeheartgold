@@ -37,6 +37,6 @@ void BattleHallApp_DrawMessageFrame(Window *window, u32 frame);
 YesNoPrompt *BattleHallApp_CreateYesNo(enum HeapID heapId);
 void BattleHallApp_DestroyYesNo(YesNoPrompt *prompt);
 void BattleHallApp_InitYesNo(YesNoPrompt *prompt, BgConfig *bgConfig, u8 ignoreTouch);
-u32 BattleHallApp_HandleYesNo(YesNoPrompt *prompt);
+YesNoResponse BattleHallApp_HandleYesNo(YesNoPrompt *prompt);
 
 #endif // POKEHEARTGOLD_FRONTIER_BATTLE_HALL_APP_H

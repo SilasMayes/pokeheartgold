@@ -56,7 +56,7 @@ static void FrontierListMenu_InitTemplate(FrontierMenu *menu);
 static void FrontierListMenu_PrintItem(ListMenu *list, s32 value, u8 onInit);
 static u32 FrontierListMenu_MoveCursorCallback(ListMenu *list);
 static void FrontierListMenu_Task(SysTask *task, FrontierMenu *menu);
-static void FrontierListMenu_Close(FrontierMenu *menu, int playSound);
+static void FrontierListMenu_Close(FrontierMenu *menu, BOOL playSound);
 static void FrontierMenu_PrintMessage(FrontierMenu *menu, u16 msgId, u32 speed);
 static void FrontierListMenu_PrintDescription(FrontierMenu *menu);
 static BOOL FrontierScriptNative_WaitMessageEntry(FrontierScriptContext *ctx);
@@ -549,7 +549,7 @@ static void FrontierListMenu_Task(SysTask *task, FrontierMenu *menu) {
     }
 }
 
-static void FrontierListMenu_Close(FrontierMenu *menu, int playSound) {
+static void FrontierListMenu_Close(FrontierMenu *menu, BOOL playSound) {
     int i;
     FrontierSystem *system = menu->system;
 

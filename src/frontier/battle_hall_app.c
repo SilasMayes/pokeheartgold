@@ -185,7 +185,7 @@ static BOOL BattleHallApp_HandleConfirm(BattleHallApp *app);
 static u16 BattleHallApp_GetCursorX(BattleHallApp *app);
 static u16 BattleHallApp_GetCursorY(BattleHallApp *app);
 static void BattleHallApp_GrayOutTypes(BattleHallApp *app, BgConfig *bgConfig);
-static void BattleHallApp_SetCellPalette(BgConfig *bgConfig, int index, int state);
+static void BattleHallApp_SetCellPalette(BgConfig *bgConfig, int index, enum HallCellState state);
 static u8 BattleHallApp_GetRecordIndex(u8 index);
 static BOOL BattleHallApp_IsMatronBattle(BattleHallApp *app);
 static u8 BattleHallApp_IsMatronMode(BattleHallApp *app);
@@ -1315,7 +1315,7 @@ static void BattleHallApp_GrayOutTypes(BattleHallApp *app, BgConfig *bgConfig) {
     ScheduleBgTilemapBufferTransfer(bgConfig, GF_BG_LYR_MAIN_3);
 }
 
-static void BattleHallApp_SetCellPalette(BgConfig *bgConfig, int index, int state) {
+static void BattleHallApp_SetCellPalette(BgConfig *bgConfig, int index, enum HallCellState state) {
     u8 palette;
     int x;
     u8 cellX;

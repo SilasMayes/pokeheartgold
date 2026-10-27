@@ -2041,7 +2041,7 @@ static BOOL BattleAnimBackground_ShouldFlip(BattleAnimBgSwitchWork *work, Battle
 
 static void BattleAnimBackground_LoadGraphics(BattleAnimBgSwitchWork *work, BattleAnimSystem *system, GFBgLayer layer, u32 bgId) {
     int member;
-    int screen;
+    enum BattleAnimBgFile screen;
 
     member = BattleAnimSystem_GetBackgroundFile(bgId, BATTLE_ANIM_BG_FILE_CHAR);
     GfGfxLoader_LoadCharData(NARC_a_0_0_7, member, system->bgConfig, layer, 0, 0, TRUE, system->heapId);
@@ -2609,9 +2609,10 @@ static BOOL BattleAnimBackground_StartPaletteCycle(BattleAnimBgSwitchWork *work)
     }
     cycle->data->count = i;
     {
-        u16 duration = *(u16 *)(file + 0x80);
+        u16 duration;
         u16 j = 0;
         durations = (u16 *)(file + 0x80);
+        duration = *durations;
         while (duration != 0xFF98) {
             cycle->data->durations[j] = duration;
             durations++;
