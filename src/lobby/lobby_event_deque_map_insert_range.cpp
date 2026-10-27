@@ -200,16 +200,14 @@ extern "C" void LobbyEventDequeMap_InsertRange(Map *map, MapIterator pos, Source
     LobbyEventDequeMapBuffer_Allocate(&buffer, newCapacity, Alloc(Alloc()));
     buffer.start = k;
     Block *p = buffer.ptr + k;
-    if (n != 0) {
-        do {
-            const Block &v = *first.it;
-            Alloc a = Alloc();
-            --n;
-            a.construct(p, v);
-            ++p;
-            buffer.size++;
-            ++first.it;
-        } while (n != 0);
+    while (n != 0) {
+        const Block &v = *first.it;
+        Alloc a = Alloc();
+        --n;
+        a.construct(p, v);
+        ++p;
+        buffer.size++;
+        ++first.it;
     }
     LobbyEventDequeMapBuffer_AppendRange(&buffer, pos, map->end(), Alloc());
     LobbyEventDequeMapBuffer_PrependRange(&buffer, map->begin(), pos, Alloc());

@@ -2,7 +2,7 @@
 
 #include "dwc/net_common_internal.h"
 
-#include "ppw_lobby_work.h"
+#include "ppw_lobby_internal.h"
 
 #include <nitro/code32.h>
 #include <stdarg.h>
@@ -27,7 +27,6 @@ typedef struct Vec {
     u32 len, cap, z, extra;
 } Vec;
 
-extern void _ZNSt15__vector_commonILb1EE18throw_length_errorEv(void);
 #include "overlay45_string_search.h"
 u32 LobbyStringVector_RecommendSize(Vec *p, u32 n, ...);
 

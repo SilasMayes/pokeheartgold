@@ -3,7 +3,7 @@
 
 #include "lobby_event_deque.h"
 #include "lobby_timer.h"
-#include "overlay45_format_buffer_private.h"
+#include "ppw_lobby_state.h"
 
 #include "../lib/NitroDWC/src/tree-iterator4.h"
 
@@ -29,7 +29,7 @@ typedef struct PPWLobbyCallbacks {
 } PPWLobbyCallbacks;
 
 typedef struct PPWLobbyChannel {
-    int kind;
+    enum PPWLobbyChannelKind kind;
     Str name;
     BOOL usersEnumerated;
     BOOL modeReady;
@@ -42,7 +42,7 @@ typedef struct PPWLobbyTime {
 
 // Uploaded as the "b_lib_u_system" channel key.
 typedef struct PPWLobbySystemProfile {
-    int channel;
+    enum PPWLobbyChannelKind channel;
     PPWLobbyTime time;
     u32 unk_0C;
 } PPWLobbySystemProfile;
@@ -63,7 +63,7 @@ struct PPWLobbyPlayer {
     BOOL systemProfileChanged;
     LobbyCharVector userProfile;
     BOOL userProfileChanged;
-    int state;
+    enum PPWLobbyPlayerState state;
     int id;
     BOOL systemProfileReceived;
     BOOL userProfileReceived;
@@ -120,7 +120,7 @@ typedef struct PPWLobbyScheduleRecord {
 
 // The event schedule the server sends for the lobby, and the questionnaire.
 typedef struct PPWLobbySchedule {
-    int state;
+    enum PPWLobbyScheduleState state;
     BOOL hasTime;
     PPWLobbyTime time;
     s64 startTime;
@@ -153,8 +153,8 @@ typedef struct PPWLobbyRecruitInfo {
 } PPWLobbyRecruitInfo;
 
 typedef struct PPWLobbyWork {
-    int state;
-    int error;
+    enum PPWLobbyState state;
+    enum PPWLobbyError error;
     PPWLobbyCallbacks callbacks;
     u32 userId;
     u32 prefix;
@@ -222,7 +222,7 @@ extern const struct ChatChannelMode gPPWLobbyClockChannelMode;
 extern const struct ChatChannelMode gPPWLobbyNewsChannelMode;
 
 PPWLobbyWork *PPWLobby_GetWork(void);
-int PPWLobby_Initialize(const char *, const char *, int, const PPWLobbyCallbacks *, u32, const void *, u32, u32);
+enum PPWLobbyResult PPWLobby_Initialize(const char *, const char *, int, const PPWLobbyCallbacks *, u32, const void *, u32, u32);
 Str *PPWLobby_GetChannelBaseName(Str *out, PPWLobbyWork *work);
 void PPWLobbyChannel_GetName(Str *out, PPWLobbyChannel *channel);
 void PPWLobby_GetChannelName(Str *out, PPWLobbyChannel *channels, int subChannel);
@@ -236,7 +236,7 @@ void *PPWLobbyPlayerSet_Destroy(PPWLobbyPlayerSet *set);
 void PPWLobbyPlayerSet_DestroyNodes(PPWLobbyPlayerSet *set, PPWLobbyPlayerSetNode *node);
 void PPWLobbyPlayerSet_Erase(Iterator *out, PPWLobbyPlayerSet *set, Iterator position);
 void PPWLobby_GenerateChannelBaseName(Str *out);
-int PPWLobby_GetWebResultError(u32 type);
+enum PPWLobbyWebResult PPWLobby_GetWebResultError(u32 type);
 BOOL PPWLobby_HandleLibraryData(BOOL success, BOOL broadcast, int kind, int userId, const char *key, const u8 *data, u32 len, u32 param);
 void PPWLobby_HandleReceivedData(BOOL success, BOOL broadcast, const char *channel, int userId, const char *key, const char *value, u32 param);
 void PPWLobby_OnCheckProfile(BOOL success, u8 *response, u32 responseSize, void *param);
@@ -252,34 +252,34 @@ void PPWLobby_OnGetVip(BOOL success, u8 *response, u32 responseSize, void *param
 void PPWLobby_OnPlayerMessage(int, int, int);
 void PPWLobby_OnSubmitQuestionnaire(BOOL status, u8 *data, u32 size, void *param);
 void PPWLobby_OnTopicChanged(void);
-int PPWLobby_ParseWebResponse(BOOL valid, u8 *data, u32 size, void **output, u32 *length);
-int PPWLobby_SetChannelData(int userId, int kind, const char *key, const void *data, u32 size);
+enum PPWLobbyWebResult PPWLobby_ParseWebResponse(BOOL valid, u8 *data, u32 size, void **output, u32 *length);
+enum PPWLobbyResult PPWLobby_SetChannelData(int userId, int kind, const char *key, const void *data, u32 size);
 void PPWLobby_StartCheckProfile(void);
-int PPWLobby_TimerPollChannelMode(void);
-int PPWLobby_TimerRequestChannelTime(void);
-int PPWLobby_TimerRequestLobbyData(void);
-int PPWLobby_TimerSendRecruitInfo(void);
-int PPWLobby_TimerUploadSystemProfile(void);
-int PPWLobby_TimerUploadUserProfile(void);
-int PPW_LobbyInitializeAsync(const char *gameName, const char *secretKey, int prefix, const PPWLobbyCallbacks *callbacks, const struct DwcUserData *userData, const void *playerData, u32 playerDataSize);
-int PPW_LobbyShutdownAsync(void);
-int PPW_LobbyProcess(void);
-int PPW_LobbyJoinSubChannelAsync(int channel);
-int PPW_LobbyLeaveSubChannel(void);
-int PPW_LobbyGetSubChannelState(void);
+BOOL PPWLobby_TimerPollChannelMode(void);
+BOOL PPWLobby_TimerRequestChannelTime(void);
+BOOL PPWLobby_TimerRequestLobbyData(void);
+BOOL PPWLobby_TimerSendRecruitInfo(void);
+BOOL PPWLobby_TimerUploadSystemProfile(void);
+BOOL PPWLobby_TimerUploadUserProfile(void);
+enum PPWLobbyResult PPW_LobbyInitializeAsync(const char *gameName, const char *secretKey, int prefix, const PPWLobbyCallbacks *callbacks, const struct DwcUserData *userData, const void *playerData, u32 playerDataSize);
+enum PPWLobbyResult PPW_LobbyShutdownAsync(void);
+enum PPWLobbyState PPW_LobbyProcess(void);
+enum PPWLobbyResult PPW_LobbyJoinSubChannelAsync(int channel);
+enum PPWLobbyResult PPW_LobbyLeaveSubChannel(void);
+enum PPWLobbyChannelState PPW_LobbyGetSubChannelState(void);
 int PPW_LobbyGetMyUserId(void);
-int PPW_LobbySendChannelBinaryMessage(int channel, int type, const void *data, int size);
-int PPW_LobbySendPlayerBinaryMessage(int userId, int type, const void *data, int size);
-int PPW_LobbySetChannelData(int userId, int channel, const char *key, const void *data, u32 size);
-int PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 param);
-int PPW_LobbyUpdateMyProfile(const void *data, u32 size, int force);
-int PPW_LobbyGetTimeInfo(PPWLobbyTimeInfo *timeInfo);
-int PPW_LobbyGetSchedule(PPWLobbyScheduleRecord *records, u32 *size);
-int PPW_LobbySubmitQuestionnaire(int mode);
-int PPW_LobbyGetLastError(void);
-int PPW_LobbyInitResultToLastError(int result);
+enum PPWLobbyResult PPW_LobbySendChannelBinaryMessage(int channel, int type, const void *data, int size);
+enum PPWLobbyResult PPW_LobbySendPlayerBinaryMessage(int userId, int type, const void *data, int size);
+enum PPWLobbyResult PPW_LobbySetChannelData(int userId, int channel, const char *key, const void *data, u32 size);
+enum PPWLobbyResult PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 param);
+enum PPWLobbyResult PPW_LobbyUpdateMyProfile(const void *data, u32 size, int force);
+enum PPWLobbyResult PPW_LobbyGetTimeInfo(PPWLobbyTimeInfo *timeInfo);
+enum PPWLobbyResult PPW_LobbyGetSchedule(PPWLobbyScheduleRecord *records, u32 *size);
+enum PPWLobbyResult PPW_LobbySubmitQuestionnaire(int mode);
+enum PPWLobbyError PPW_LobbyGetLastError(void);
+enum PPWLobbyError PPW_LobbyInitResultToLastError(int result);
 int PPW_LobbyToErrorCode(int error);
-int PPWLobby_SendMessage(int id, int channel, int type, int mode, int arg, const void *data, u32 size);
+enum PPWLobbyResult PPWLobby_SendMessage(int id, int channel, int type, int mode, int arg, const void *data, u32 size);
 BOOL PPWLobbySchedule_GetQuestionnaire(PPWLobbySchedule *schedule, void *out);
 BOOL PPWLobbySchedule_SetQuestionnaire(PPWLobbySchedule *schedule, const void *in);
 void PPWLobbySchedule_Process(PPWLobbySchedule *schedule);
@@ -305,7 +305,7 @@ void PPWLobbyPlayer_UpdateState(PPWLobbyPlayer *player);
 BOOL PPWLobbyPlayers_AllHaveProfiles(PPWLobbyPlayers *players);
 BOOL PPWLobbyPlayers_IsFull(PPWLobbyPlayers *players);
 void PPWLobby_MakeChannelName(Str *out, u32 kind, Str *baseName);
-int PPWLobby_EnterMainChannel(void);
+enum PPWLobbyResult PPWLobby_EnterMainChannel(void);
 BOOL PPWLobby_IsMainChannelReady(void);
 
 #ifdef __cplusplus

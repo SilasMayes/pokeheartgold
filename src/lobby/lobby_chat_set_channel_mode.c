@@ -6,7 +6,7 @@
 
 #include "lobby_chat_internal.h"
 
-int LobbyChat_SetChannelMode(const char *channel, const struct ChatChannelMode *mode) {
+enum PPWLobbyResult LobbyChat_SetChannelMode(const char *channel, const struct ChatChannelMode *mode) {
     Str channelName;
     Str fullName;
     LobbyChatManager *manager = gLobbyChatManager;

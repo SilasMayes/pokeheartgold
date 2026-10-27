@@ -15,7 +15,7 @@ inline bool IsEmptyChannelName(const Str &name) {
 
 #pragma opt_common_subs off
 
-int PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 param) {
+enum PPWLobbyResult PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 param) {
     PPWLobbyWork *w = gPPWLobbyWork;
     if (w == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
@@ -33,10 +33,10 @@ int PPW_LobbyGetChannelDataAsync(int userId, int channel, const char *key, u32 p
             LobbyString_Destroy(&name);
             return PPW_LOBBY_RESULT_ERROR_CHANNEL;
         }
-        int result = LobbyChat_GetChannelKeysAsync(name.c_str(), userId, key, PPWLobby_OnGetChannelKeys, param);
+        PPWLobbyResult result = LobbyChat_GetChannelKeysAsync(name.c_str(), userId, key, PPWLobby_OnGetChannelKeys, param);
         {
             PPWLobbyWork *g = gPPWLobbyWork;
-            int error = PPWLobbyErrorMap().Map(result);
+            PPWLobbyError error = PPWLobbyErrorMap().Map(result);
             if (error != PPW_LOBBY_ERROR_NONE) {
                 g->error = error;
                 g->state = PPW_LOBBY_STATE_ERROR;

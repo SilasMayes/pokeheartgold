@@ -24,11 +24,11 @@ using std::memcmp;
 
 // A system profile value with the flag that it must be uploaded.
 struct ProfileValue {
-    u32 channel;
+    PPWLobbyChannelKind channel;
     PPWLobbyTime time;
     u32 unk_0C;
 
-    ProfileValue(u32 c, const PPWLobbyTime &t, u32 e)
+    ProfileValue(PPWLobbyChannelKind c, const PPWLobbyTime &t, u32 e)
         : channel(c) {
         PPWLobbyTime *d = &time;
         *d = t;
@@ -47,7 +47,7 @@ struct TrackedProfile {
     ProfileValue value;
     BOOL changed;
 
-    TrackedProfile(u32 c, const PPWLobbyTime &t, u32 e, BOOL ch)
+    TrackedProfile(PPWLobbyChannelKind c, const PPWLobbyTime &t, u32 e, BOOL ch)
         : value(ProfileValue(c, t, e))
         , changed(ch) {
     }
@@ -210,7 +210,7 @@ static inline void Lobby_Delete(PPWLobbyWork *w) {
     }
 }
 
-static inline void Lobby_SetError(int code) {
+static inline void Lobby_SetError(PPWLobbyError code) {
     PPWLobbyWork *w = gPPWLobbyWork;
     if (code != PPW_LOBBY_ERROR_NONE) {
         w->error = code;
@@ -280,9 +280,9 @@ static inline void Lobby_EnumChannels(void) {
     LobbyString_Destroy(&name);
 }
 
-static inline void Lobby_SetEnterChannelError(int r) {
+static inline void Lobby_SetEnterChannelError(PPWLobbyResult r) {
     PPWLobbyWork *w = gPPWLobbyWork;
-    int code;
+    PPWLobbyError code;
     switch (r) {
     case PPW_LOBBY_RESULT_ERROR_ALLOC:
         code = PPW_LOBBY_ERROR_ALLOC;
@@ -300,7 +300,7 @@ static inline void Lobby_SetEnterChannelError(int r) {
     }
 }
 
-static inline int Lobby_Process(void) {
+static inline PPWLobbyState Lobby_Process(void) {
     switch (LobbyChat_Process()) {
     case LOBBY_CHAT_STATE_INIT:
         PPW_LobbyShutdownAsync();
@@ -340,7 +340,7 @@ static inline int Lobby_Process(void) {
         break;
     }
     case PPW_LOBBY_STATE_ENTER_MAIN_CHANNEL: {
-        int r = PPWLobby_EnterMainChannel();
+        PPWLobbyResult r = PPWLobby_EnterMainChannel();
         if (r != 0) {
             Lobby_SetEnterChannelError(r);
         } else {
@@ -369,7 +369,7 @@ static inline int Lobby_Process(void) {
     return gPPWLobbyWork->state;
 }
 
-int PPW_LobbyProcess(void) {
+enum PPWLobbyState PPW_LobbyProcess(void) {
     int polled = Request_Update();
     if (polled) {
         if (gPPWLobbyWork == NULL) {

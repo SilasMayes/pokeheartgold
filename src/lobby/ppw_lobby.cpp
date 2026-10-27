@@ -317,9 +317,9 @@ struct Out {
     u8 rest[0x2d0];
 };
 
-extern "C" int PPW_LobbySubmitQuestionnaire(int mode);
+extern "C" enum PPWLobbyResult PPW_LobbySubmitQuestionnaire(int mode);
 
-extern "C" int PPW_LobbySubmitQuestionnaire(int mode) {
+extern "C" enum PPWLobbyResult PPW_LobbySubmitQuestionnaire(int mode) {
     const char *key;
     const char *page;
     WebRequest *request;
@@ -374,7 +374,7 @@ extern "C" int PPW_LobbySubmitQuestionnaire(int mode) {
 
 extern "C" {
 
-int PPW_LobbyGetLastError(void) {
+enum PPWLobbyError PPW_LobbyGetLastError(void) {
     PPWLobbyWork *work = gPPWLobbyWork;
     if (work) {
         return work->error;
@@ -391,7 +391,7 @@ int PPW_LobbyToErrorCode(int error) {
     return LobbyChat_ToErrorCode(error);
 }
 
-int PPW_LobbyInitResultToLastError(int result) {
+enum PPWLobbyError PPW_LobbyInitResultToLastError(int result) {
     switch (result) {
     case PPW_LOBBY_RESULT_SUCCESS:
         return PPW_LOBBY_ERROR_NONE;
@@ -413,17 +413,17 @@ inline bool IsEmptyChannelName(const Str &name) {
 }
 
 // A failed chat call that leaves the session unusable puts the library into the error state.
-inline void SetError(int result) {
+inline void SetError(PPWLobbyResult result) {
     PPWLobbyWork *work = gPPWLobbyWork;
-    int error = PPWLobbyErrorMap().Map(result);
+    PPWLobbyError error = PPWLobbyErrorMap().Map(result);
     if (error != PPW_LOBBY_ERROR_NONE) {
         work->error = error;
         work->state = PPW_LOBBY_STATE_ERROR;
     }
 }
 
-extern "C" int PPWLobby_SendMessage(int id, int channel, int type, int mode, int arg, const void *data, u32 size) {
-    int result;
+extern "C" enum PPWLobbyResult PPWLobby_SendMessage(int id, int channel, int type, int mode, int arg, const void *data, u32 size) {
+    PPWLobbyResult result;
     if (id == -1 && channel == PPW_LOBBY_CHANNEL_KIND_INVALID) {
         return PPW_LOBBY_RESULT_ERROR_PARAM;
     }
@@ -456,10 +456,10 @@ extern "C" {
 extern char gLobbyStr_Empty_15[];
 extern int DWC_Base64Encode(const void *, u32, char *, u32);
 
-int PPWLobby_SetChannelData(int userId, int kind, const char *key, const void *data, u32 size) {
+enum PPWLobbyResult PPWLobby_SetChannelData(int userId, int kind, const char *key, const void *data, u32 size) {
     Str channelName;
     LobbyCharVector encoded;
-    int result;
+    PPWLobbyResult result;
     const char *text;
     PPWLobby_GetChannelName(&channelName, &gPPWLobbyWork->mainChannel, kind);
     if (IsEmptyChannelName(channelName)) {
@@ -707,8 +707,8 @@ struct Callbacks {
 extern "C" void PPWLobby_OnPlayerJoined(), PPWLobby_OnPlayerLeft(), PPWLobby_OnMessage(), PPWLobby_OnChannelDataChanged(), PPWLobby_OnEnterMainChannel();
 extern "C" PPWString PPWLobby_GetChannelBaseName(PPWLobbyWork *, int);
 extern "C" PPWString PPWLobby_MakeChannelName(int, const PPWString &);
-extern "C" int LobbyChat_EnterChannelAsync(const char *, int, int, Callbacks *, void (*)(), int);
-extern "C" int PPWLobby_EnterMainChannel(void);
+extern "C" enum PPWLobbyResult LobbyChat_EnterChannelAsync(const char *, int, int, Callbacks *, void (*)(), int);
+extern "C" enum PPWLobbyResult PPWLobby_EnterMainChannel(void);
 
 
 inline PPWString MakeMainChannelName(PPWString t) {
@@ -718,7 +718,7 @@ inline PPWString MakeMainChannelName(PPWString t) {
 }
 
 struct Channel {
-    int kind;
+    PPWLobbyChannelKind kind;
     u32 nm[3];
     BOOL usersEnumerated;
     BOOL modeReady;
@@ -751,13 +751,13 @@ inline void SetSelfChannel(const PPWString &n) {
 #pragma push
 #pragma opt_propagation off
 
-extern "C" int PPWLobby_EnterMainChannel(void) {
+extern "C" enum PPWLobbyResult PPWLobby_EnterMainChannel(void) {
     Callbacks cb(PPWLobby_OnPlayerJoined, PPWLobby_OnPlayerLeft, PPWLobby_OnMessage, PPWLobby_OnChannelDataChanged, PPWLobby_OnTopicChanged);
     PPWString name = MakeMainChannelName(PPWLobby_GetChannelBaseName(gPPWLobbyWork, 0));
-    int result = LobbyChat_EnterChannelAsync(name.CStr(), 0, PPW_LOBBY_MAX_PLAYERS, &cb, PPWLobby_OnEnterMainChannel, 0);
+    PPWLobbyResult result = LobbyChat_EnterChannelAsync(name.CStr(), 0, PPW_LOBBY_MAX_PLAYERS, &cb, PPWLobby_OnEnterMainChannel, 0);
     {
         PPWLobbyWork *w = gPPWLobbyWork;
-        int error = PPWLobbyErrorMap().Map(result);
+        PPWLobbyError error = PPWLobbyErrorMap().Map(result);
         if (error != PPW_LOBBY_ERROR_NONE) {
             w->error = error;
             w->state = PPW_LOBBY_STATE_ERROR;
@@ -1257,20 +1257,20 @@ BOOL PPWLobby_IsMainChannelReady(void) {
 extern "C" {
 #pragma opt_common_subs off
 
-static inline int flush(PPWLobbyWork *work) {
+static inline BOOL flush(PPWLobbyWork *work) {
     u32 userId;
     void *buf;
     if (!work->players.self.userProfileChanged) {
-        return 1;
+        return TRUE;
     }
     work->players.self.userProfileChanged = FALSE;
     userId = gPPWLobbyWork->userId;
     buf = LobbyByteVector_Data(&work->players.self.userProfile);
     PPWLobby_SetChannelData(userId, PPW_LOBBY_CHANNEL_KIND_MAIN, gLobbyStr_b_lib_u_user, buf, work->players.self.userProfile.size);
-    return 1;
+    return TRUE;
 }
 
-int PPWLobby_TimerUploadUserProfile(void) {
+BOOL PPWLobby_TimerUploadUserProfile(void) {
     return flush(gPPWLobbyWork);
 }
 }
@@ -1281,47 +1281,47 @@ namespace ChannelTimers {
 extern "C" {
 extern void LobbyChat_GetChannelModeAsync(const char *, void (*)(void), s32);
 extern void PPWLobby_OnGetChannelMode(void);
-int PPWLobby_TimerUploadSystemProfile(void);
-int PPWLobby_TimerSendRecruitInfo(void);
-int PPWLobby_TimerPollChannelMode(void);
-int PPWLobby_TimerRequestChannelTime(void);
+BOOL PPWLobby_TimerUploadSystemProfile(void);
+BOOL PPWLobby_TimerSendRecruitInfo(void);
+BOOL PPWLobby_TimerPollChannelMode(void);
+BOOL PPWLobby_TimerRequestChannelTime(void);
 
-int PPWLobby_TimerUploadSystemProfile(void) {
+BOOL PPWLobby_TimerUploadSystemProfile(void) {
     PPWLobbyWork *work = gPPWLobbyWork;
     if (!work->players.self.systemProfileChanged) {
-        return 1;
+        return TRUE;
     }
     work->players.self.systemProfileChanged = FALSE;
     PPWLobby_SetChannelData(gPPWLobbyWork->userId, PPW_LOBBY_CHANNEL_KIND_MAIN, gLobbyStr_b_lib_u_system, &work->players.self.systemProfile, sizeof(PPWLobbySystemProfile));
-    return 1;
+    return TRUE;
 }
 
-int PPWLobby_TimerSendRecruitInfo(void) {
+BOOL PPWLobby_TimerSendRecruitInfo(void) {
     PPWLobbyWork *work = gPPWLobbyWork;
     if (!work->recruiting) {
-        return 0;
+        return FALSE;
     }
     PPWLobby_SendMessage(work->userId, PPW_LOBBY_CHANNEL_KIND_MAIN, PPW_LOBBY_MESSAGE_FORMAT_BINARY, PPW_LOBBY_MESSAGE_KIND_SYSTEM, PPW_LOBBY_SYSTEM_MESSAGE_RECRUIT, &work->recruitInfo, sizeof(PPWLobbyRecruitInfo));
-    return 1;
+    return TRUE;
 }
 
-int PPWLobby_TimerPollChannelMode(void) {
+BOOL PPWLobby_TimerPollChannelMode(void) {
     Str s;
     PPWLobbyChannel_GetName(&s, &gPPWLobbyWork->mainChannel);
     LobbyChat_GetChannelModeAsync(!s.l.isLong ? s.s.buf : s.l.ptr, PPWLobby_OnGetChannelMode, 0);
     LobbyString_Destroy(&s);
-    return 1;
+    return TRUE;
 }
 
-int PPWLobby_TimerRequestChannelTime(void) {
+BOOL PPWLobby_TimerRequestChannelTime(void) {
     Str s;
     if (gPPWLobbyWork->schedule.hasTime) {
-        return 0;
+        return FALSE;
     }
     PPWLobbyChannel_GetName(&s, &gPPWLobbyWork->mainChannel);
     LobbyChat_GetChannelKeysAsync(!s.l.isLong ? s.s.buf : s.l.ptr, -1, gLobbyStr_b_lib_c_time, PPWLobby_OnGetChannelTime, 0);
     LobbyString_Destroy(&s);
-    return 1;
+    return TRUE;
 }
 }
 }
@@ -1331,23 +1331,23 @@ static inline BOOL limit(int value) {
     return value >= PPW_LOBBY_SCHEDULE_STATE_LOADED;
 }
 
-int PPWLobby_TimerRequestLobbyData(void) {
+BOOL PPWLobby_TimerRequestLobbyData(void) {
     Str s;
     switch (limit(gPPWLobbyWork->schedule.state)) {
-    case 0:
+    case FALSE:
         break;
     default:
-        return 0;
+        return FALSE;
     }
     PPWLobbyChannel_GetName(&s, &gPPWLobbyWork->mainChannel);
     LobbyChat_GetChannelKeysAsync(!s.l.isLong ? s.s.buf : s.l.ptr, -1, gLobbyStr_b_lib_c_lobby, PPWLobby_OnGetLobbyData, 0);
     LobbyString_Destroy(&s);
-    return 1;
+    return TRUE;
 }
 }
 
 extern "C" {
-int PPWLobby_GetWebResultError(u32 type) {
+enum PPWLobbyWebResult PPWLobby_GetWebResultError(u32 type) {
     switch (type) {
     case 0:
         return PPW_LOBBY_WEB_RESULT_SUCCESS;
@@ -1363,8 +1363,8 @@ int PPWLobby_GetWebResultError(u32 type) {
     }
 }
 
-int PPWLobby_ParseWebResponse(BOOL valid, u8 *data, u32 size, void **output, u32 *length) {
-    int e;
+enum PPWLobbyWebResult PPWLobby_ParseWebResponse(BOOL valid, u8 *data, u32 size, void **output, u32 *length) {
+    PPWLobbyWebResult e;
     *output = NULL;
     *length = 0;
     if (!valid) {
@@ -1406,7 +1406,7 @@ extern "C" void PPWLobby_OnCheckProfile(BOOL success, u8 *response, u32 response
     }
     buf = NULL;
     len = 0;
-    int r = PPWLobby_ParseWebResponse(success, response, responseSize, &buf, &len);
+    PPWLobbyWebResult r = PPWLobby_ParseWebResponse(success, response, responseSize, &buf, &len);
     if (r == PPW_LOBBY_WEB_RESULT_SUCCESS && len != sizeof(StartCheckProfile::UserProfileRecord)) {
         r = PPW_LOBBY_WEB_RESULT_INVALID;
     }
@@ -1533,7 +1533,7 @@ extern "C" void PPWLobby_OnGetSchedule(BOOL success, u8 *response, u32 responseS
     }
     buf = NULL;
     len = 0;
-    int r = PPWLobby_ParseWebResponse(success, response, responseSize, &buf, &len);
+    PPWLobbyWebResult r = PPWLobby_ParseWebResponse(success, response, responseSize, &buf, &len);
     if (r == PPW_LOBBY_WEB_RESULT_SUCCESS && !PPWLobbySchedule_IsSizeValid(&gPPWLobbyWork->schedule, buf, len)) {
         r = PPW_LOBBY_WEB_RESULT_INVALID;
     }
@@ -1618,7 +1618,7 @@ extern "C" void PPWLobby_OnGetVip(BOOL success, u8 *response, u32 responseSize, 
     }
     buf = NULL;
     len = 0;
-    int r = PPWLobby_ParseWebResponse(success, response, responseSize, &buf, &len);
+    PPWLobbyWebResult r = PPWLobby_ParseWebResponse(success, response, responseSize, &buf, &len);
     if (!PPWLobbySchedule_ValidateVipRecords(&gPPWLobbyWork->schedule, buf, len)) {
         r = PPW_LOBBY_WEB_RESULT_INVALID;
     }
@@ -1654,7 +1654,7 @@ extern "C" {
 void PPWLobby_OnGetQuestionnaire(BOOL success, u8 *response, u32 responseSize, void *param) {
     void *data;
     u32 size;
-    int result;
+    PPWLobbyWebResult result;
     PPWLobbyWork *w = gPPWLobbyWork;
     if (!w || w->state == PPW_LOBBY_STATE_CLOSED) {
         return;
@@ -1943,9 +1943,9 @@ static inline BOOL Lobby_Retry(Lobby *w) {
     return TRUE;
 }
 
-static inline void Lobby_SetError(int code) {
+static inline void Lobby_SetError(PPWLobbyError code) {
     Lobby *w = gPPWLobbyWork;
-    if (code != 0) {
+    if (code != PPW_LOBBY_ERROR_NONE) {
         w->err = code;
         w->state = PPW_LOBBY_STATE_ERROR;
     }

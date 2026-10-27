@@ -4,16 +4,10 @@
 // Lobby chat: the chat manager, its string, map and request types, and the functions shared
 // between the chat source files.
 
-#include "global.h"
-
 #include "dwc/net_common_internal.h"
 
 #include "lobby_chat_manager.h"
-#include "lobby_mem.h"
 #include "lobby_vector.h"
-#include "ppw_lobby_state.h"
-
-#include "../lib/NitroDWC/src/tree-iterator4.h"
 
 
 static inline void StrInit(Str *s) {
@@ -83,7 +77,7 @@ static inline LobbyChatManager *CurrentManager(void) {
     return *(LobbyChatManager *volatile *)&gLobbyChatManager;
 }
 
-static inline int CtxState(void) {
+static inline enum LobbyChatState CtxState(void) {
     return CurrentManager()->state;
 }
 
@@ -180,6 +174,6 @@ void LobbyChat_OnUserJoined(struct ChatConnection *chat, const char *channel, co
 void LobbyChat_OnUserModeChanged(struct ChatConnection *chat, const char *channel, const char *nick, int mode);
 void LobbyChat_OnUserParted(struct ChatConnection *chat, char *channel, char *nick);
 int LobbyChat_RenameUser(LobbyChatManager *manager, const Str *oldNick, const Str *newNick);
-int LobbyChat_TimerConnectTimeout(void);
+BOOL LobbyChat_TimerConnectTimeout(void);
 
 #endif // POKEHEARTGOLD_LOBBY_CHAT_INTERNAL_H

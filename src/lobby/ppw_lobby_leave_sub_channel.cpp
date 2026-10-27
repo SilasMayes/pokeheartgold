@@ -116,8 +116,8 @@ struct Work {
 
 extern "C" Work *gPPWLobbyWork;
 extern "C" Str PPWLobbyChannel_GetName(Peer *);
-extern "C" int LobbyChat_LeaveChannel(const char *);
-extern "C" int PPW_LobbyLeaveSubChannel(void);
+extern "C" enum PPWLobbyResult LobbyChat_LeaveChannel(const char *);
+extern "C" enum PPWLobbyResult PPW_LobbyLeaveSubChannel(void);
 
 inline Work *GetWork() {
     return gPPWLobbyWork;
@@ -142,7 +142,7 @@ inline void Refresh(Work *w, Info &info) {
 
 #pragma opt_common_subs off
 
-extern "C" int PPW_LobbyLeaveSubChannel(void) {
+extern "C" enum PPWLobbyResult PPW_LobbyLeaveSubChannel(void) {
     Info info;
     Work *w = GetWork();
     if (w == NULL) {
@@ -159,8 +159,8 @@ extern "C" int PPW_LobbyLeaveSubChannel(void) {
     }
     {
         Str t(PPWLobbyChannel_GetName(&w->peer));
-        int parsed;
-        int error;
+        PPWLobbyResult parsed;
+        PPWLobbyError error;
         parsed = LobbyChat_LeaveChannel(t.text());
         w = GetWork();
         error = PPWLobbyErrorMap().Map(parsed);

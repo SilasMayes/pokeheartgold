@@ -10,7 +10,7 @@ u32 LobbyRequest_GetId(LobbyRequest *request) {
     return request->id;
 }
 
-int LobbyChat_LeaveChannel(const char *channel) {
+enum PPWLobbyResult LobbyChat_LeaveChannel(const char *channel) {
     Str channelName;
     Str fullName;
     Str removedName;
@@ -30,7 +30,7 @@ int LobbyChat_LeaveChannel(const char *channel) {
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 
-int LobbyChat_SendChannelMessage(const char *channel, const char *message) {
+enum PPWLobbyResult LobbyChat_SendChannelMessage(const char *channel, const char *message) {
     Str channelName;
     Str fullName;
     LobbyChatManager *manager = gLobbyChatManager;
@@ -46,7 +46,7 @@ int LobbyChat_SendChannelMessage(const char *channel, const char *message) {
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 
-int LobbyChat_SendUserMessage(int userId, const char *message) {
+enum PPWLobbyResult LobbyChat_SendUserMessage(int userId, const char *message) {
     Str nick;
     LobbyChatManager *manager = gLobbyChatManager;
     CTX_CHECK(manager);
@@ -64,7 +64,7 @@ int LobbyChat_SendUserMessage(int userId, const char *message) {
 }
 
 // userId -1 sets a channel key instead of a key of one user in the channel.
-int LobbyChat_SetChannelKey(const char *channel, int userId, const char *key, const char *value) {
+enum PPWLobbyResult LobbyChat_SetChannelKey(const char *channel, int userId, const char *key, const char *value) {
     Str nick;
     Str userNick;
     Str channelName;

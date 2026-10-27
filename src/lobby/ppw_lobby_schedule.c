@@ -11,13 +11,10 @@ void LobbyStringVectorBuffer_EraseAtEnd(LobbyStringVectorBuffer *buffer, u32 cou
 void LobbyStringVectorBuffer_EraseAtEnd(LobbyStringVectorBuffer *buffer, u32 count, LobbyTag tag) {
     Str *end = buffer->data + buffer->size;
     buffer->size -= count;
-    if (!count) {
-        return;
-    }
-    do {
+    for (; count != 0; count--) {
         end--;
         LobbyString_Destroy(end);
-    } while (--count);
+    }
 }
 
 PPWLobbySchedule *PPWLobbySchedule_Init(PPWLobbySchedule *schedule) {

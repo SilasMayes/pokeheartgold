@@ -130,7 +130,7 @@ struct ConnectCallbacks {
 extern "C" Root *LobbyChatManager_Init(Root *, String *, String *, int, void *, String *, String *, String *, const ConnectCallbacks *);
 extern "C" int LobbyMem_InstallOutOfMemoryHandler(void);
 extern "C" void LobbyChat_OnRaw(void), LobbyChat_OnDisconnected(void), LobbyChat_OnInvited(void), LobbyChat_OnPrivateMessage(void), LobbyChat_OnNickError(void), LobbyChat_OnFillInUser(void), LobbyChat_OnConnected(void);
-extern "C" int LobbyChat_TimerConnectTimeout(void);
+extern "C" BOOL LobbyChat_TimerConnectTimeout(void);
 extern "C" u32 chatConnectSpecialA(const char *, int, const char *, const char *, const char *, const char *, Callbacks *, void (*)(void), void (*)(void), void (*)(void), void *, int);
 extern "C" void DWC_GetDateTime(RTCDate *, RTCTime *);
 extern "C" void LobbyChatManager_Destroy(Root *), DWC_Free(int, void *, int);
@@ -149,9 +149,9 @@ inline void DeleteRoot(Root *r) {
 }
 
 extern "C" void MI_CpuFill8(void *, u8, u32);
-extern "C" int LobbyChat_Initialize(const char *gameName, const char *gameKey, int prefix, const ConnectCallbacks *config, void *userId);
+extern "C" enum PPWLobbyResult LobbyChat_Initialize(const char *gameName, const char *gameKey, int prefix, const ConnectCallbacks *config, void *userId);
 
-extern "C" int LobbyChat_Initialize(const char *gameName, const char *gameKey, int prefix, const ConnectCallbacks *config, void *userId) {
+extern "C" enum PPWLobbyResult LobbyChat_Initialize(const char *gameName, const char *gameKey, int prefix, const ConnectCallbacks *config, void *userId) {
     String nick, userName, realName;
     Callbacks callbacks;
     String gameKeyStr, gameNameStr;
@@ -159,7 +159,7 @@ extern "C" int LobbyChat_Initialize(const char *gameName, const char *gameKey, i
     RTCDate date;
     RTCTime time;
     Root *root;
-    int error;
+    PPWLobbyResult error;
     OSi_ReferSymbol(_version_NINTENDO_DWC_LOBBY);
     if (gLobbyChatManager) {
         return PPW_LOBBY_RESULT_ERROR_STATE;

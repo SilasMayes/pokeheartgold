@@ -21,8 +21,8 @@ static inline BOOL release(PPWLobbyWork *work) {
 }
 
 void LobbyTimerMap_Erase(Iterator *, LobbyTimerMap *, Iterator);
-int PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info);
-int PPW_LobbyStopRecruit(void);
+enum PPWLobbyResult PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info);
+enum PPWLobbyResult PPW_LobbyStopRecruit(void);
 
 char *LobbyCharVector_Data(LobbyCharVector *vector) {
     if (vector->size == 0) {
@@ -31,9 +31,9 @@ char *LobbyCharVector_Data(LobbyCharVector *vector) {
     return vector->data;
 }
 
-int PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info) {
+enum PPWLobbyResult PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info) {
     PPWLobbyWork *work = CurrentWork();
-    int result;
+    BOOL result;
     if (!work) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
@@ -45,7 +45,7 @@ int PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info) {
     }
     work = CurrentWork();
     if (!work->recruiting) {
-        result = 0;
+        result = FALSE;
     } else {
         work->recruitInfo.index = info->index;
         work->recruitInfo.maxPlayers = info->maxPlayers;
@@ -53,7 +53,7 @@ int PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info) {
         work->recruitInfo.state = info->state;
         work->recruitInfo.params = info->params;
         work->recruitInfo.name = info->name;
-        result = 1;
+        result = TRUE;
     }
     if (!result) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
@@ -61,10 +61,10 @@ int PPW_LobbyUpdateRecruitInfo(const PPWLobbyRecruitInfo *info) {
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 
-int PPW_LobbyStopRecruit(void) {
+enum PPWLobbyResult PPW_LobbyStopRecruit(void) {
     u32 timerId;
     PPWLobbyWork *work = CurrentWork();
-    int result;
+    BOOL result;
     if (!work) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }

@@ -5,6 +5,7 @@
 #include <nitro/code32.h>
 
 #include "lobby_chat_internal.h"
+#include "lobby_mem.h"
 
 int LobbyString_FindFirstOfChars(Str *s, const char *chars, u32 pos, u32 n) {
     const char *data;

@@ -668,9 +668,9 @@ int WiFiPlazaLobbyClient_GetSpecialVisitorCode(int id) {
 void WiFiPlazaLobbyClient_SubmitSurveyAnswer(int index) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
-    GF_ASSERT(gWiFiPlazaLobbyClient->surveySubmitState != 1);
+    GF_ASSERT(gWiFiPlazaLobbyClient->surveySubmitState != WIFI_PLAZA_SURVEY_SUBMIT_SENT);
     GF_ASSERT(WiFiPlazaLobbyClient_CheckResult(PPW_LobbySubmitQuestionnaire(index)) == TRUE);
-    gWiFiPlazaLobbyClient->surveySubmitState = 1;
+    gWiFiPlazaLobbyClient->surveySubmitState = WIFI_PLAZA_SURVEY_SUBMIT_SENT;
 }
 
 u32 WiFiPlazaLobbyClient_GetSurveySubmitState(void) {

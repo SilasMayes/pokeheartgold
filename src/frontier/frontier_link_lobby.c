@@ -25,8 +25,6 @@ typedef struct FrontierLinkLobbyGlobals {
     u8 padding_04[0xC];
 } FrontierLinkLobbyGlobals;
 
-extern const u8 gFrontierLinkLobbySummaryPages[];
-
 static void FrontierLinkLobby_LaunchPartyMenu(void *frontierWork, FrontierLinkLobby *lobby, FieldSystem *fieldSystem, enum HeapID heapId);
 static void FrontierLinkLobby_ReadPartyMenuResult(void *frontierWork, FrontierLinkLobby *lobby, FieldSystem *fieldSystem, enum HeapID heapId);
 static void FrontierLinkLobby_LaunchSummary(void *frontierWork, FrontierLinkLobby *lobby, FieldSystem *fieldSystem, enum HeapID heapId);

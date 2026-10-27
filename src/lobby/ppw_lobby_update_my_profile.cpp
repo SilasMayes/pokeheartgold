@@ -113,8 +113,8 @@ struct Field {
 
 // The PPWLobbyWork fields of the own player's user profile.
 struct Work {
-    int state;
-    int error;
+    PPWLobbyState state;
+    PPWLobbyError error;
     u8 pad[0x110 - 8];
     Field userProfile;
     u8 pad2[0x12c - 0x120];
@@ -122,9 +122,9 @@ struct Work {
 };
 
 extern "C" Work *gPPWLobbyWork;
-extern "C" int PPW_LobbyUpdateMyProfile(const void *profile, u32 len, int flag);
+extern "C" enum PPWLobbyResult PPW_LobbyUpdateMyProfile(const void *profile, u32 len, int flag);
 
-extern "C" int PPW_LobbyUpdateMyProfile(const void *profile, u32 len, int flag) {
+extern "C" enum PPWLobbyResult PPW_LobbyUpdateMyProfile(const void *profile, u32 len, int flag) {
     const u8 *data = (const u8 *)profile;
     Work *w = gPPWLobbyWork;
     if (w == NULL) {

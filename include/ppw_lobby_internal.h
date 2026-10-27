@@ -4,15 +4,6 @@
 // PPW lobby (overlay 45): the lobby player sessions, the event deques and vectors behind them, and the
 // functions shared between the PPW lobby source files.
 
-#include "global.h"
-
-#include "dwc/net_common_internal.h"
-
-#include "lobby_mem.h"
-#include "lobby_string.h"
-
-#include "../lib/NitroDWC/src/tree-iterator4.h"
-
 #include "ppw_lobby_work.h"
 
 extern unsigned char __lower_mapC[];

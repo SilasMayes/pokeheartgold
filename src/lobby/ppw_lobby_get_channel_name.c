@@ -18,7 +18,7 @@ void PPWLobby_GetChannelName(Str *out, PPWLobbyChannel *channels, int subChannel
     copy = *out;
 }
 
-int PPW_LobbySendChannelBinaryMessage(int channel, int type, const void *data, int size) {
+enum PPWLobbyResult PPW_LobbySendChannelBinaryMessage(int channel, int type, const void *data, int size) {
     PPWLobbyWork *work = gPPWLobbyWork;
     if (!work) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
@@ -36,7 +36,7 @@ int PPW_LobbySendChannelBinaryMessage(int channel, int type, const void *data, i
     return PPWLobby_SendMessage(-1, channel, PPW_LOBBY_MESSAGE_FORMAT_BINARY, PPW_LOBBY_MESSAGE_KIND_USER, type, data, size);
 }
 
-int PPW_LobbySendPlayerBinaryMessage(int userId, int type, const void *data, int size) {
+enum PPWLobbyResult PPW_LobbySendPlayerBinaryMessage(int userId, int type, const void *data, int size) {
     PPWLobbyWork *work = gPPWLobbyWork;
     if (!work) {
         return PPW_LOBBY_RESULT_ERROR_STATE;

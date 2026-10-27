@@ -105,7 +105,7 @@ struct Container {
 };
 
 struct Work {
-    int state;
+    PPWLobbyState state;
     u8 pad04[0x4c - 4];
     u32 userId;
     u8 pad50[0x68 - 0x50];
@@ -124,7 +124,7 @@ extern "C" Str LobbyString_FormatN(int, const char *, ...);
 extern "C" void DWC_GetDateTime(RTCDate *, RTCTime *);
 extern "C" RawEntry LobbyTimerMap_MakeEntry(int, const Info &);
 extern "C" Result LobbyTimerMap_Insert(Container *, const Entry &);
-extern "C" int PPW_LobbyStartRecruit(RecruitInfo *info);
+extern "C" enum PPWLobbyResult PPW_LobbyStartRecruit(RecruitInfo *info);
 
 struct Tag {};
 
@@ -142,7 +142,7 @@ inline Result InsertEntry(Container *c, const Entry &e) {
 
 #pragma opt_common_subs off
 
-extern "C" int PPW_LobbyStartRecruit(RecruitInfo *info) {
+extern "C" enum PPWLobbyResult PPW_LobbyStartRecruit(RecruitInfo *info) {
     Work *w = gPPWLobbyWork;
     if (w == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;

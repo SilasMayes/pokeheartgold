@@ -13,7 +13,7 @@ static inline BOOL active(PPWLobbyWork *w) {
 
 #pragma opt_propagation off
 
-int PPW_LobbyGetSubChannelState(void) {
+enum PPWLobbyChannelState PPW_LobbyGetSubChannelState(void) {
     Str text;
     PPWLobbyWork *w = gPPWLobbyWork;
     BOOL inChannel;

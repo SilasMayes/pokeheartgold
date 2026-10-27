@@ -78,10 +78,10 @@ inline u32 GetId(LobbyCallbackRequest *h, IdTag, IdTag) {
     return h->vtable->getId(h);
 }
 
-extern "C" int LobbyChat_EnterChannelAsync(const char *name, u32 password, u32 limit, LobbyChannelCallbacks *channelCallbacks, u32 callback, u32 param);
+extern "C" enum PPWLobbyResult LobbyChat_EnterChannelAsync(const char *name, u32 password, u32 limit, LobbyChannelCallbacks *channelCallbacks, u32 callback, u32 param);
 #pragma opt_common_subs off
 
-extern "C" int LobbyChat_EnterChannelAsync(const char *name, u32 password, u32 limit, LobbyChannelCallbacks *channelCallbacks, u32 callback, u32 param) {
+extern "C" enum PPWLobbyResult LobbyChat_EnterChannelAsync(const char *name, u32 password, u32 limit, LobbyChannelCallbacks *channelCallbacks, u32 callback, u32 param) {
     Callbacks cb;
     LobbyChatManager *m = gLobbyChatManager;
     if (m == NULL) {

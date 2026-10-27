@@ -51,7 +51,7 @@ static inline bool IsFatal() {
     return gLobbyChatManager != NULL && gLobbyChatManager->state == LOBBY_CHAT_STATE_ERROR;
 }
 
-static inline int GetState() {
+static inline LobbyChatState GetState() {
     return gLobbyChatManager->state;
 }
 
@@ -65,7 +65,7 @@ static inline bool Tick(LobbyTimerMapNode *n, const s64 &now) {
     return true;
 }
 
-static inline void SetError(LobbyChatManager *m, u32 code) {
+static inline void SetError(LobbyChatManager *m, PPWLobbyError code) {
     m->lastError = code;
     m->state = LOBBY_CHAT_STATE_ERROR;
 }
@@ -107,7 +107,7 @@ static inline It Iterator_Make(LobbyTimerMapNode *p) {
 #pragma push
 #pragma opt_common_subs off
 
-extern "C" int LobbyChat_Process(void) {
+extern "C" enum LobbyChatState LobbyChat_Process(void) {
     LobbyChatManager *g = gLobbyChatManager;
     if (g == NULL) {
         return LOBBY_CHAT_STATE_INIT;

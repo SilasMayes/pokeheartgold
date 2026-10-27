@@ -18,6 +18,7 @@
 #include "heap.h"
 #include "link_synchronization_internal.h"
 #include "party.h"
+#include "party_menu.h"
 #include "player_avatar.h"
 #include "scrcmd_9.h"
 #include "scrcmd_battle_hall.h"

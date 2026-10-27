@@ -12,7 +12,7 @@ void PPWLobbyChannel_GetName(Str *out, PPWLobbyChannel *channel) {
     LobbyString_InitCopy(out, &channel->name);
 }
 
-int PPW_LobbyGetTimeInfo(PPWLobbyTimeInfo *out) {
+enum PPWLobbyResult PPW_LobbyGetTimeInfo(PPWLobbyTimeInfo *out) {
     PPWLobbyWork *work = gPPWLobbyWork;
     if (!work) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
@@ -37,7 +37,7 @@ int PPW_LobbyGetTimeInfo(PPWLobbyTimeInfo *out) {
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 
-int PPW_LobbyGetSchedule(PPWLobbyScheduleRecord *records, u32 *size) {
+enum PPWLobbyResult PPW_LobbyGetSchedule(PPWLobbyScheduleRecord *records, u32 *size) {
     PPWLobbyWork *work = gPPWLobbyWork;
     if (!work) {
         return PPW_LOBBY_RESULT_ERROR_STATE;

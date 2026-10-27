@@ -1,10 +1,11 @@
 #ifndef POKEHEARTGOLD_FRONTIER_LINK_LOBBY_H
 #define POKEHEARTGOLD_FRONTIER_LINK_LOBBY_H
 
-#include "field_system.h"
-#include "party_menu.h"
+#include "field_types_def.h"
 #include "save.h"
-#include "pokemon_summary.h"
+
+struct PartyMenuArgs;
+struct PokemonSummaryArgs;
 
 #define LINK_LOBBY_PARTY_SIZE 4
 
@@ -37,8 +38,8 @@ typedef struct FrontierLinkLobby {
     u8 facility;
     u8 selectedOrder[2];
     u8 padding_A3[5];
-    PartyMenuArgs *partyMenuArgs;
-    PokemonSummaryArgs *summaryArgs;
+    struct PartyMenuArgs *partyMenuArgs;
+    struct PokemonSummaryArgs *summaryArgs;
     u16 *resultVar; // script variable that receives the app result
 } FrontierLinkLobby;
 
@@ -66,6 +67,9 @@ typedef struct FrontierLinkLobby {
 void FrontierLinkLobby_Free(FrontierLinkLobby *lobby);
 BOOL FrontierLinkLobby_Send(FrontierLinkLobby *lobby, int kind, u16 value, u16 secondValue);
 void FrontierLinkLobby_RunPartyApp(void *frontierWork, FrontierLinkLobby *lobby, u32 kind);
+
+// The summary pages shown for the chosen party
+extern const u8 gFrontierLinkLobbySummaryPages[];
 
 extern const u8 gBattleHallCellTypes[20];
 FrontierLinkLobby *FrontierLinkLobby_New(SaveData *);

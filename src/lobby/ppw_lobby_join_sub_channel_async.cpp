@@ -77,7 +77,7 @@ struct Callbacks {
     int mode;
 };
 
-extern "C" int LobbyChat_EnterChannelAsync(const char *, int, void *, Callbacks *, void (*)(void), int);
+extern "C" enum PPWLobbyResult LobbyChat_EnterChannelAsync(const char *, int, void *, Callbacks *, void (*)(void), int);
 
 inline void SetResult(const Result &r) {
     Work *g = gPPWLobbyWork;
@@ -94,10 +94,10 @@ inline Str Build(int mode, const Str &t) {
     return n;
 }
 
-extern "C" int PPW_LobbyJoinSubChannelAsync(int mode);
+extern "C" enum PPWLobbyResult PPW_LobbyJoinSubChannelAsync(int mode);
 #pragma opt_common_subs off
 
-extern "C" int PPW_LobbyJoinSubChannelAsync(int mode) {
+extern "C" enum PPWLobbyResult PPW_LobbyJoinSubChannelAsync(int mode) {
     Work *w = gPPWLobbyWork;
     if (w == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
@@ -135,10 +135,10 @@ extern "C" int PPW_LobbyJoinSubChannelAsync(int mode) {
         t = NULL;
         break;
     }
-    int result = LobbyChat_EnterChannelAsync(name.c_str(), 0, t->ctx, &cb, PPWLobby_OnEnterSubChannel, mode);
+    PPWLobbyResult result = LobbyChat_EnterChannelAsync(name.c_str(), 0, t->ctx, &cb, PPWLobby_OnEnterSubChannel, mode);
     {
         Work *g = gPPWLobbyWork;
-        int error = PPWLobbyErrorMap().Map(result);
+        PPWLobbyError error = PPWLobbyErrorMap().Map(result);
         if (error != PPW_LOBBY_ERROR_NONE) {
             g->error = error;
             g->state = PPW_LOBBY_STATE_ERROR;

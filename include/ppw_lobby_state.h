@@ -130,11 +130,11 @@ enum PPWLobbyError {
 // The last error (PPW_LobbyGetLastError) a failed lobby chat call leaves behind; PPW_LOBBY_ERROR_NONE when it is not fatal
 class PPWLobbyErrorMap {
 public:
-    int Map(int result) const;
+    PPWLobbyError Map(PPWLobbyResult result) const;
 };
 
-inline int PPWLobbyErrorMap::Map(int result) const {
-    int error = PPW_LOBBY_ERROR_NONE;
+inline PPWLobbyError PPWLobbyErrorMap::Map(PPWLobbyResult result) const {
+    PPWLobbyError error = PPW_LOBBY_ERROR_NONE;
     switch (result) {
     case PPW_LOBBY_RESULT_ERROR_ALLOC:
         error = PPW_LOBBY_ERROR_ALLOC;

@@ -54,8 +54,8 @@ inline LobbyCallbackRequest *NewHandler(LobbyRequestVtable *vtable, u32 callback
     return request;
 }
 
-extern "C" int LobbyChat_EnumChannelsAsync(const char *name, u32 callback, u32 param);
-extern "C" int LobbyChat_EnumUsersAsync(const char *name, u32 callback, u32 param);
+extern "C" enum PPWLobbyResult LobbyChat_EnumChannelsAsync(const char *name, u32 callback, u32 param);
+extern "C" enum PPWLobbyResult LobbyChat_EnumUsersAsync(const char *name, u32 callback, u32 param);
 
 struct IdTag {};
 
@@ -65,7 +65,7 @@ inline u32 GetId(LobbyCallbackRequest *request, IdTag, IdTag) {
 
 #pragma opt_common_subs off
 
-int LobbyChat_GetChannelKeysAsync(const char *name, int userId, const char *key, LobbyGetChannelKeysCallback callback, u32 param) {
+enum PPWLobbyResult LobbyChat_GetChannelKeysAsync(const char *name, int userId, const char *key, LobbyGetChannelKeysCallback callback, u32 param) {
     LobbyChatManager *manager = gLobbyChatManager;
     if (manager == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
@@ -107,7 +107,7 @@ int LobbyChat_GetChannelKeysAsync(const char *name, int userId, const char *key,
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 
-extern "C" int LobbyChat_EnumChannelsAsync(const char *name, u32 callback, u32 param) {
+extern "C" enum PPWLobbyResult LobbyChat_EnumChannelsAsync(const char *name, u32 callback, u32 param) {
     LobbyChatManager *manager = gLobbyChatManager;
     if (manager == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
@@ -131,7 +131,7 @@ extern "C" int LobbyChat_EnumChannelsAsync(const char *name, u32 callback, u32 p
     return PPW_LOBBY_RESULT_SUCCESS;
 }
 
-extern "C" int LobbyChat_EnumUsersAsync(const char *name, u32 callback, u32 param) {
+extern "C" enum PPWLobbyResult LobbyChat_EnumUsersAsync(const char *name, u32 callback, u32 param) {
     LobbyChatManager *manager = gLobbyChatManager;
     if (manager == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;

@@ -1,7 +1,8 @@
 #include "global.h"
 
-#include "ppw_lobby_internal.h"
 #include "lobby_event_deque.h"
+#include "lobby_mem.h"
+#include "ppw_lobby_internal.h"
 
 #include <nitro/code32.h>
 

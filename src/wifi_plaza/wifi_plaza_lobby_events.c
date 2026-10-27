@@ -319,8 +319,8 @@ void WiFiPlazaLobbyClient_OnSurveyReceived(int result, const void *data) {
 }
 
 void WiFiPlazaLobbyClient_OnSurveySubmitted(s32 result) {
-    GF_ASSERT(gWiFiPlazaLobbyClient->surveySubmitState == 1);
-    gWiFiPlazaLobbyClient->surveySubmitState = 2;
+    GF_ASSERT(gWiFiPlazaLobbyClient->surveySubmitState == WIFI_PLAZA_SURVEY_SUBMIT_SENT);
+    gWiFiPlazaLobbyClient->surveySubmitState = WIFI_PLAZA_SURVEY_SUBMIT_DONE;
 }
 
 void WiFiPlazaLobbyClient_OnExcessFlood(int id) {
@@ -383,14 +383,14 @@ static u16 WiFiPlazaLobbyMatches_CalcTimer(WiFiPlazaLobbyClient *client, int ind
 
 WiFiPlazaLobbyMatch *WiFiPlazaLobbyMatches_Get(WiFiPlazaLobbyClient *client, int index) {
     GF_ASSERT(index < WIFI_PLAZA_LOBBY_MATCH_COUNT);
-    GF_ASSERT(client->matches[index].active == 1);
+    GF_ASSERT(client->matches[index].active == TRUE);
     return &client->matches[index];
 }
 
 // Once per frame: the player count of the own session, the countdowns.
 void WiFiPlazaLobbyMatches_Update(WiFiPlazaLobbyClient *client) {
     int i;
-    if (gWiFiPlazaLobbyClient->isMatchHost == 1) {
+    if (gWiFiPlazaLobbyClient->isMatchHost == TRUE) {
         u32 count = WifiConnection_GetNumConnectionHost();
         WiFiPlazaLobbyMatch *match;
         GF_ASSERT(count <= 4);
@@ -401,7 +401,7 @@ void WiFiPlazaLobbyMatches_Update(WiFiPlazaLobbyClient *client) {
         }
     }
     for (i = 0; i < WIFI_PLAZA_LOBBY_MATCH_COUNT; i++) {
-        if (gWiFiPlazaLobbyClient->matches[i].active == 1) {
+        if (gWiFiPlazaLobbyClient->matches[i].active == TRUE) {
             u32 frames;
             if (gWiFiPlazaLobbyClient->matches[i].timer) {
                 gWiFiPlazaLobbyClient->matches[i].timer--;
@@ -430,7 +430,7 @@ void WiFiPlazaLobbyClient_OnMatchClientDummy(int result, void *arg) {
 
 void WiFiPlazaLobbyClient_OnMatchDisconnect(int result, void *arg) {
     WiFiPlazaLobbyClient *client = arg;
-    if (client->isMatchHost == 1) {
+    if (client->isMatchHost == TRUE) {
         WiFiPlazaLobbyClient_StopMatch();
     } else if (result == 0) {
         gWiFiPlazaLobbyClient->matchCancelled = TRUE;
@@ -537,10 +537,10 @@ WiFiPlazaPlayerObjects *WiFiPlazaPlayerObjects_New(u32 count, BOOL mode, enum He
     }
     {
         const WiFiPlazaSpriteConfig *config = sWiFiPlazaSpriteConfigs;
-        int index = 0;
-        do {
+        int index;
+        for (index = 0; index < 20; index++) {
             if (skipped != index) {
-                BOOL loadTexture = config->ownTexture == 0;
+                BOOL loadTexture = config->ownTexture == FALSE;
                 file = GfGfxLoader_LoadFromOpenNarc(modelNarc, config->fileId, FALSE, loadHeapID, FALSE);
                 texture = GF3dGfxRawResMan_AllocObj(objects->textures, file, config->fileId, loadTexture, loadHeapID);
                 if (loadTexture == TRUE) {
@@ -550,8 +550,7 @@ WiFiPlazaPlayerObjects *WiFiPlazaPlayerObjects_New(u32 count, BOOL mode, enum He
                 }
             }
             config++;
-            index++;
-        } while (index < 20);
+        }
     }
 
     WiFiPlazaObjectModel_Load(&objects->model, narc, 0x80, loadHeapID);
@@ -623,13 +622,13 @@ WiFiPlazaPlayerObject *WiFiPlazaPlayerObjects_Add(WiFiPlazaPlayerObjects *object
     modelFile = GF2dGfxRawResObj_GetData(GF2dGfxRawResMan_GetObjById(objects->models, 0x7F));
     texture = GF3dGfxRawResMan_GetObjById(objects->textures, config->fileId);
     tex = GF3dGfxRawResObj_GetTex(texture);
-    if (config->ownTexture == 1) {
+    if (config->ownTexture == TRUE) {
         texKey = NARC_mmodel_mmodel_00000281_bin;
     } else {
         texKey = NARC_mmodel_mmodel_00000280_bin;
     }
     BillboardGfxSequence_Init(GF2dGfxRawResObj_GetData(GF2dGfxRawResMan_GetObjById(objects->sequences, texKey)), &sequence);
-    if (config->ownTexture == 1) {
+    if (config->ownTexture == TRUE) {
         BillboardResource_Init(&resource, modelFile, tex, sWiFiPlazaBillboardRanges, &sequence);
     } else {
         texKey = GF3dGfxRawResObj_GetTexKey(texture);
@@ -864,7 +863,7 @@ void WiFiPlazaPlayerObject_PlayWalkingSequence(WiFiPlazaPlayerObject *object) {
 }
 
 static void WiFiPlazaPlayerObject_UpdateEffect(WiFiPlazaPlayerObject *object) {
-    if (object->mode == 0 && object->effectActive == 1) {
+    if (object->mode == 0 && object->effectActive == TRUE) {
         sWiFiPlazaPlayerObjectEffects[object->effect](object);
     }
 }
@@ -928,7 +927,7 @@ static void WiFiPlazaPlayerObject_UpdateCulling(WiFiPlazaPlayerObject *object) {
 }
 
 static void WiFiPlazaPlayerObject_ApplyVisibility(WiFiPlazaPlayerObject *object) {
-    if (object->culled == 0 && object->visible == 1) {
+    if (!object->culled && object->visible == TRUE) {
         BillboardObject_SetVisible(object->billboard, TRUE);
         ModelInstance_SetVisible(&object->model, TRUE);
     } else {

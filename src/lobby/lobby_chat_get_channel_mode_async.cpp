@@ -42,7 +42,7 @@ inline LobbyCallbackRequest *NewHandler(u32 callback, u32 param) {
     return request;
 }
 
-extern "C" int LobbyChat_GetChannelModeAsync(const char *name, u32 callback, u32 param);
+extern "C" enum PPWLobbyResult LobbyChat_GetChannelModeAsync(const char *name, u32 callback, u32 param);
 
 struct IdTag {};
 
@@ -52,7 +52,7 @@ inline u32 GetId(LobbyCallbackRequest *request, IdTag, IdTag) {
 
 #pragma opt_common_subs off
 
-extern "C" int LobbyChat_GetChannelModeAsync(const char *name, u32 callback, u32 param) {
+extern "C" enum PPWLobbyResult LobbyChat_GetChannelModeAsync(const char *name, u32 callback, u32 param) {
     LobbyChatManager *manager = gLobbyChatManager;
     if (manager == NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;

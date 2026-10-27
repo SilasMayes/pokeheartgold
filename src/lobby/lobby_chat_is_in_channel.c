@@ -4,8 +4,8 @@
 
 #include "lobby_chat_internal.h"
 
-int LobbyChat_GetLastError(void) {
-    return gLobbyChatManager ? gLobbyChatManager->lastError : 0;
+enum PPWLobbyError LobbyChat_GetLastError(void) {
+    return gLobbyChatManager ? gLobbyChatManager->lastError : PPW_LOBBY_ERROR_NONE;
 }
 
 // The error code shown to the player for a lobby chat error

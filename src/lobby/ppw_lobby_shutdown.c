@@ -8,8 +8,9 @@
 #include "ppw_lobby_work.h"
 
 
-int PPW_LobbyShutdownAsync(void) {
-    int result, error;
+enum PPWLobbyResult PPW_LobbyShutdownAsync(void) {
+    enum PPWLobbyResult result;
+    enum PPWLobbyError error;
     volatile u8 unused;
     PPWLobbyWork *work;
     if (!gPPWLobbyWork) {

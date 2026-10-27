@@ -93,17 +93,14 @@ void LobbyEventDeque_EraseAtEnd(LobbyEventDeque *d, u32 n, LobbyTag) {
     d->size -= n;
     u32 cap = d->map.size == 0 ? 0 : (d->map.size - 1) * LOBBY_EVENT_BLOCK_SIZE;
     u32 extra = cap - (d->start + d->size);
-    if (extra < 2 * LOBBY_EVENT_BLOCK_SIZE) {
-        return;
-    }
-    do {
+    while (extra >= 2 * LOBBY_EVENT_BLOCK_SIZE) {
         BlockAlloc a = BlockAlloc();
         --d->map.size;
         LobbyEvent *&slot = d->map.blocks[(d->map.start + d->map.size - 1) % d->map.capacity];
         a.deallocate(slot);
         extra -= LOBBY_EVENT_BLOCK_SIZE;
         slot = NULL;
-    } while (extra >= 2 * LOBBY_EVENT_BLOCK_SIZE);
+    }
 }
 
 void LobbyEventDeque_EraseAtBegin(LobbyEventDeque *d, u32 n, LobbyTag) {

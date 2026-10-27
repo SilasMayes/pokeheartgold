@@ -9,6 +9,7 @@
 #include "lobby_string.h"
 #include "lobby_timer.h"
 #include "lobby_tree.h"
+#include "ppw_lobby_state.h"
 
 // The longest channel key and key value SetChannelKey and GetChannelKeysAsync accept, terminator included.
 #define LOBBY_CHAT_KEY_SIZE   20
@@ -69,7 +70,7 @@ struct ChatConnection;
 // The chat session: the chat connection, the strings it logged in with and the user, channel, request and timer maps.
 typedef struct LobbyChatManager {
     struct ChatConnection *connection;
-    int state;
+    enum LobbyChatState state;
     int userId;
     Str nick;
     Str user;
@@ -78,7 +79,7 @@ typedef struct LobbyChatManager {
     Str gameKey;
     Str channelPrefix;
     u32 unk54;
-    int lastError;
+    enum PPWLobbyError lastError;
     int connectedFrames;
     BOOL disconnected;
     LobbyChatCallbacks callbacks;
@@ -113,17 +114,17 @@ BOOL LobbyChat_SetChannelUsersEnumerated(LobbyChatManager *manager, Str *channel
 int LobbyChat_GetChannelUserLimit(LobbyChatManager *manager, Str *channel);
 int LobbyChat_AddChannelUser(LobbyChatManager *manager, Str *nick, Str *channel);
 BOOL LobbyChat_RemoveUserIfUnused(LobbyChatManager *manager, int userId);
-int LobbyChat_LeaveChannel(const char *channel);
-int LobbyChat_Process(void);
-int LobbyChat_Shutdown(void);
-int LobbyChat_GetLastError(void);
+enum PPWLobbyResult LobbyChat_LeaveChannel(const char *channel);
+enum LobbyChatState LobbyChat_Process(void);
+enum PPWLobbyResult LobbyChat_Shutdown(void);
+enum PPWLobbyError LobbyChat_GetLastError(void);
 int LobbyChat_ToErrorCode(int error);
 BOOL LobbyChat_IsInChannel(char *channel);
-int LobbyChat_SetChannelMode(const char *channel, const struct ChatChannelMode *mode);
-int LobbyChat_SendChannelMessage(const char *channel, const char *message);
-int LobbyChat_SendUserMessage(int userId, const char *message);
-int LobbyChat_SetChannelKey(const char *channel, int userId, const char *key, const char *value);
-int LobbyChat_GetChannelKeysAsync(const char *channel, int userId, const char *key, LobbyGetChannelKeysCallback callback, u32 param);
+enum PPWLobbyResult LobbyChat_SetChannelMode(const char *channel, const struct ChatChannelMode *mode);
+enum PPWLobbyResult LobbyChat_SendChannelMessage(const char *channel, const char *message);
+enum PPWLobbyResult LobbyChat_SendUserMessage(int userId, const char *message);
+enum PPWLobbyResult LobbyChat_SetChannelKey(const char *channel, int userId, const char *key, const char *value);
+enum PPWLobbyResult LobbyChat_GetChannelKeysAsync(const char *channel, int userId, const char *key, LobbyGetChannelKeysCallback callback, u32 param);
 
 // The C++ code takes the strings these return by value.
 #ifdef __cplusplus

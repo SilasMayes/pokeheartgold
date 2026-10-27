@@ -159,13 +159,10 @@ extern "C" void LobbyStringVector_AppendCopiesSlow(LobbyStringVector *v, u32 n, 
 extern "C" void LobbyStringVector_EraseAtEnd(LobbyStringVector *p, u32 n, LobbyTag tag) {
     Str *end = p->data + p->size;
     p->size -= n;
-    if (!n) {
-        return;
-    }
-    do {
+    for (; n != 0; n--) {
         end--;
         LobbyString_Destroy(end);
-    } while (--n);
+    }
 }
 
 extern "C" void LobbyCharVector_AppendZerosSlow(LobbyCharVector *v, u32 n) {

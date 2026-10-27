@@ -1,7 +1,10 @@
 #include "global.h"
 
+#include "dwc/net_common_internal.h"
+
 #include <nitro/code32.h>
 
+#include "lobby_mem.h"
 #include "ppw_lobby_internal.h"
 #include "ppw_lobby_state.h"
 

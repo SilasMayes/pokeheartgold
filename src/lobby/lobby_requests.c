@@ -5,6 +5,7 @@
 #include <nitro/code32.h>
 
 #include "lobby_chat_internal.h"
+#include "lobby_mem.h"
 
 typedef struct {
     u8 active;

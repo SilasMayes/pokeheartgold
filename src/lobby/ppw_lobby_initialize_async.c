@@ -9,7 +9,7 @@
 #include "ppw_lobby_work.h"
 
 
-int PPW_LobbyInitializeAsync(const char *gameName, const char *secretKey, int prefix, const PPWLobbyCallbacks *callbacks, const DwcUserData *userData, const void *playerData, u32 playerDataSize) {
+enum PPWLobbyResult PPW_LobbyInitializeAsync(const char *gameName, const char *secretKey, int prefix, const PPWLobbyCallbacks *callbacks, const DwcUserData *userData, const void *playerData, u32 playerDataSize) {
     if (!DWC_CheckUserData(userData) || !DWC_CheckHasProfile(userData)) {
         return PPW_LOBBY_RESULT_ERROR_PARAM;
     }

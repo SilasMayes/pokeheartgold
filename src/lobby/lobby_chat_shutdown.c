@@ -5,13 +5,14 @@
 #include <nitro/code32.h>
 
 #include "lobby_chat_internal.h"
+#include "lobby_mem.h"
 
 void LobbyChatManager_GetGameKey(Str *out, LobbyChatManager *manager) {
     LobbyString_InitCopy(out, &manager->gameKey);
 }
 
 // After a lost connection the session is freed at once; otherwise LobbyChat_OnDisconnected frees it.
-int LobbyChat_Shutdown(void) {
+enum PPWLobbyResult LobbyChat_Shutdown(void) {
     if (gLobbyChatManager == NULL) {
         return PPW_LOBBY_RESULT_SUCCESS;
     }

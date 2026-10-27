@@ -42,7 +42,7 @@ struct Callbacks {
     }
 };
 
-extern "C" int LobbyChat_Initialize(u32, u32, u32, Callbacks *, u32);
+extern "C" enum PPWLobbyResult LobbyChat_Initialize(u32, u32, u32, Callbacks *, u32);
 
 inline void *operator new(std::size_t, void *p) {
     return p;
@@ -70,7 +70,7 @@ struct Str {
 
 // The C++ view of PPWLobbyChannel.
 struct Channel {
-    int kind;
+    PPWLobbyChannelKind kind;
     Str name;
     BOOL usersEnumerated;
     BOOL modeReady;
@@ -165,8 +165,8 @@ struct Channels {
 };
 
 struct Work {
-    int state;
-    int error;
+    PPWLobbyState state;
+    PPWLobbyError error;
     Config cfg;
     u32 userId;
     u32 prefix;
@@ -187,8 +187,8 @@ struct Work {
     u8 vips[0x47c - 0x194];
 
     Work(u32 prefix, const Config &c, u32 userId, u32 a7)
-        : state(0)
-        , error(0)
+        : state(PPW_LOBBY_STATE_NOT_INITIALIZED)
+        , error(PPW_LOBBY_ERROR_NONE)
         , cfg(c)
         , userId(userId)
         , prefix(prefix)
@@ -229,9 +229,9 @@ inline void Delete(Work *w) {
 }
 
 
-extern "C" int PPWLobby_Initialize(u32 gameName, u32 secretKey, u32 prefix, const Config *cfg, u32 userId, u32 playerData, u32 playerDataSize, u32 a7);
+extern "C" enum PPWLobbyResult PPWLobby_Initialize(u32 gameName, u32 secretKey, u32 prefix, const Config *cfg, u32 userId, u32 playerData, u32 playerDataSize, u32 a7);
 
-extern "C" int PPWLobby_Initialize(u32 gameName, u32 secretKey, u32 prefix, const Config *cfg, u32 userId, u32 playerData, u32 playerDataSize, u32 a7) {
+extern "C" enum PPWLobbyResult PPWLobby_Initialize(u32 gameName, u32 secretKey, u32 prefix, const Config *cfg, u32 userId, u32 playerData, u32 playerDataSize, u32 a7) {
     if (gPPWLobbyWork != NULL) {
         return PPW_LOBBY_RESULT_ERROR_STATE;
     }
@@ -240,10 +240,10 @@ extern "C" int PPWLobby_Initialize(u32 gameName, u32 secretKey, u32 prefix, cons
     if (gPPWLobbyWork == NULL) {
         return PPW_LOBBY_RESULT_ERROR_ALLOC;
     }
-    int result = LobbyChat_Initialize(gameName, secretKey, prefix, &cbs, userId);
+    PPWLobbyResult result = LobbyChat_Initialize(gameName, secretKey, prefix, &cbs, userId);
     {
         Work *g = gPPWLobbyWork;
-        int error = PPWLobbyErrorMap().Map(result);
+        PPWLobbyError error = PPWLobbyErrorMap().Map(result);
         if (error != PPW_LOBBY_ERROR_NONE) {
             g->error = error;
             g->state = PPW_LOBBY_STATE_ERROR;
