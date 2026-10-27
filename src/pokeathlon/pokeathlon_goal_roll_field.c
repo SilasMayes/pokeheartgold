@@ -382,7 +382,7 @@ void PokeathlonGoalRoll_MoveBalls(PokeathlonCourseData *course) {
                 if (chance > 100) {
                     chance = 100;
                 }
-                if ((int)LCRandom() % 100 < chance) {
+                if (LCRandom() % 100 < chance) {
                     ball->kind = GOAL_ROLL_BALL_BIG;
                     goalRoll->bigBallMisses = 0;
                 } else {
@@ -554,7 +554,7 @@ static void PokeathlonGoalRoll_BounceBallOff(PokeathlonGoalRollBall *ball, const
         }
     }
     VEC_Normalize(&ball->direction, &ball->direction);
-    VEC_MultAdd(ball->speed << FX32_SHIFT, &ball->direction, (const VecFx32 *)&frame.zero, &ball->velocity);
+    VEC_MultAdd(ball->speed << FX32_SHIFT, &ball->direction, &frame.zero, &ball->velocity);
     if (other->lastKicker < POKEATHLON_NO_MON) {
         ball->lastKicker = other->lastKicker;
     }
@@ -653,8 +653,8 @@ void PokeathlonGoalRoll_SetTouchTarget(int x, int y, VecFx32 *out) {
 
 // The member of `participant`'s team nearest to the touch point within reach, POKEATHLON_NO_MON if none.
 int PokeathlonGoalRoll_GetTouchedMon(PokeathlonGoalRoll *goalRoll, u8 participant, u8 touchX, u8 touchY) {
-    int distances[3];
-    u8 inReach[3];
+    int distances[POKEATHLON_TEAM_SIZE];
+    u8 inReach[POKEATHLON_TEAM_SIZE];
     int distance;
     int reach;
     int nearest;
@@ -884,8 +884,8 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
         }
     }
     if (position->y < 0x70000) {
-        s32 edge = (u32)radius + 16;
-        if (position->y < TO_FX32(edge) && previous->y == TO_FX32((s32)(16U - (u32)radius))) {
+        s32 edge = radius + 16;
+        if (position->y < TO_FX32(edge) && previous->y == TO_FX32(16U - radius)) {
             *out = *previous;
             return GOAL_ROLL_WALL_TOP;
         }
@@ -907,7 +907,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
             return GOAL_ROLL_WALL_TOP;
         }
         if (position->x < 0x80000) {
-            radius = (u32)radius + 8;
+            radius = radius + 8;
             if (position->x < TO_FX32(radius) && previous->x == TO_FX32(radius)) {
                 *out = *previous;
                 return GOAL_ROLL_WALL_LEFT;
@@ -930,7 +930,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
                 return GOAL_ROLL_WALL_LEFT;
             }
         } else {
-            s32 edge = 247U - (u32)radius;
+            s32 edge = 247U - radius;
             if (position->x > TO_FX32(edge) && previous->x == TO_FX32(edge)) {
                 *out = *previous;
                 return GOAL_ROLL_WALL_RIGHT;
@@ -954,7 +954,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
             }
         }
     } else {
-        s32 edge = 183U - (u32)radius;
+        s32 edge = 183U - radius;
         if (position->y > TO_FX32(edge) && previous->y == TO_FX32(edge)) {
             *out = *previous;
             return GOAL_ROLL_WALL_BOTTOM;
@@ -977,7 +977,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
             return GOAL_ROLL_WALL_BOTTOM;
         }
         if (position->x < 0x80000) {
-            radius = (u32)radius + 8;
+            radius = radius + 8;
             if (position->x < TO_FX32(radius) && previous->x == TO_FX32(radius)) {
                 *out = *previous;
                 return GOAL_ROLL_WALL_LEFT;
@@ -1000,7 +1000,7 @@ static int PokeathlonGoalRoll_CollideWithWalls(VecFx32 *position, VecFx32 *previ
                 return GOAL_ROLL_WALL_LEFT;
             }
         } else {
-            s32 edge = 247U - (u32)radius;
+            s32 edge = 247U - radius;
             if (position->x > TO_FX32(edge) && previous->x == TO_FX32(edge)) {
                 *out = *previous;
                 return GOAL_ROLL_WALL_RIGHT;
@@ -1055,17 +1055,17 @@ static BOOL PokeathlonGoalRoll_IntersectWall(const VecFx32 *a, const VecFx32 *b,
     VEC_Subtract(b, a, &direction);
     VEC_Normalize(&direction, &direction);
     if (a->y == b->y) {
-        distC = (u32)a->y - (u32)c->y;
+        distC = a->y - c->y;
         if (distC < 0) {
             u32 minusOne = 0;
             minusOne = ~minusOne;
-            distC = (u32)distC * minusOne;
+            distC = distC * minusOne;
         };
-        distD = (u32)a->y - (u32)d->y;
+        distD = a->y - d->y;
         if (distD < 0) {
             u32 minusOne = 0;
             minusOne = ~minusOne;
-            distD = (u32)distD * minusOne;
+            distD = distD * minusOne;
         };
         if (!distD) {
             return FALSE;
@@ -1073,28 +1073,28 @@ static BOOL PokeathlonGoalRoll_IntersectWall(const VecFx32 *a, const VecFx32 *b,
         fx32 x = c->x;
         point.y = a->y;
         point.x = x;
-        VEC_MultAdd(FX_Div(distC, (u32)distC + (u32)distD), &direction, &point, out);
+        VEC_MultAdd(FX_Div(distC, distC + distD), &direction, &point, out);
         return TRUE;
     }
     if (a->x == b->x) {
-        distC = (u32)a->x - (u32)c->x;
+        distC = a->x - c->x;
         if (distC < 0) {
             u32 minusOne = 0;
             minusOne = ~minusOne;
-            distC = (u32)distC * minusOne;
+            distC = distC * minusOne;
         };
-        distD = (u32)a->x - (u32)d->x;
+        distD = a->x - d->x;
         if (distD < 0) {
             u32 minusOne = 0;
             minusOne = ~minusOne;
-            distD = (u32)distD * minusOne;
+            distD = distD * minusOne;
         };
         if (!distD) {
             return FALSE;
         }
         point.x = a->x;
         point.y = c->y;
-        VEC_MultAdd(FX_Div(distC, (u32)distC + (u32)distD), &direction, &point, out);
+        VEC_MultAdd(FX_Div(distC, distC + distD), &direction, &point, out);
         return TRUE;
     }
     GF_ASSERT(FALSE);

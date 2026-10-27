@@ -2,6 +2,7 @@
 
 #include "constants/species.h"
 
+#include "pokeathlon/pokeathlon_course_types_def.h"
 #include "pokeathlon/pokeathlon_util.h"
 
 #include "MATH_pop.h"
@@ -108,7 +109,7 @@ u32 PokeathlonUtil_CountSpeciesWithAllMedals(const u8 *data) {
     u16 count = 0;
     GF_ASSERT(data != NULL);
     for (i = 0; i < NATIONAL_DEX_COUNT; i++) {
-        if (MATH_CountPopulation(data[i]) == 5) {
+        if (MATH_CountPopulation(data[i]) == POKEATHLON_MEDALS) {
             count++;
         }
     }
@@ -118,7 +119,7 @@ u32 PokeathlonUtil_CountSpeciesWithAllMedals(const u8 *data) {
 u8 PokeathlonUtil_CountEventTrophies(const Pokeathlon_RecordsSolo *records) {
     u8 i;
     u8 count = 0;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < POKEATHLON_EVENT_COUNT; i++) {
         u16 value = PokeathlonUtil_GetRecordScore(records[i].entries, 0);
         if (PokeathlonUtil_ReachesEventThreshold(i, 1, value)) {
             count++;

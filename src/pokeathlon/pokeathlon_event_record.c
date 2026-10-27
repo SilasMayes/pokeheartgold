@@ -715,7 +715,7 @@ static void PokeathlonEventRecord_GetRecordMon(PokeathlonEventRecordData *data, 
 
 static u16 PokeathlonEventRecord_GetRecordScore(PokeathlonEventRecordData *data, int event, u8 rank, BOOL link) {
     GF_ASSERT(data != NULL);
-    GF_ASSERT((u32)rank < 5);
+    GF_ASSERT(rank < 5);
     return PokeathlonUtil_GetRecordScore(PokeathlonEventRecord_GetRecords(data, (u8)event, link), rank);
 }
 

@@ -66,7 +66,7 @@ BOOL PokeathlonPennantCapture_Init(PokeathlonCourseData *course) {
     PokeathlonPennantCaptureMoveTables moveTables;
     ObjCharTransferTemplate charTransfer;
     PokeathlonCourseSpritePoolTemplate poolTemplate;
-    PokeathlonPennantCaptureIconMon icons[12];
+    PokeathlonPennantCaptureIconMon icons[POKEATHLON_MONS];
     PokeathlonCourseCollision collisions[POKEATHLON_SIZE_CLASSES];
     PokeathlonCoursePoint ownPosition;
     int centerX, centerY;

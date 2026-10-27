@@ -317,7 +317,7 @@ u32 PokeathlonBlockSmashMon_CanHit(PokeathlonBlockSmashMon *mon) {
 
 PokeathlonBlockSmashRivals *PokeathlonBlockSmashRivals_New(enum HeapID heapId, SpriteSystem *spriteSystem, SpriteManager *spriteManager, PokeathlonCourseData *course, PokeathlonCourseMonObjects *monPics) {
     PokeathlonBlockSmashRatingTable table;
-    u32 maxStamina[3];
+    u32 maxStamina[POKEATHLON_TEAM_SIZE];
     PokeathlonBlockSmashRivals *rivals;
     PokeathlonBlockSmashRival *row;
     u32 self;

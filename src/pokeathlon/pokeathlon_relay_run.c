@@ -825,7 +825,7 @@ static void PokeathlonRelayRun_UpdateHost(PokeathlonCourseData *course) {
             }
             {
                 fx32 magnitude = VEC_Mag(&runner->velocity);
-                if (magnitude >= ((int)runner->members[runner->current].speedLimit - 3) * FX32_ONE) {
+                if (magnitude >= (runner->members[runner->current].speedLimit - 3) * FX32_ONE) {
                     PokeathlonCourse_AddMonCounter(course, runner->owner, runner->current, POKEATHLON_COUNTER_DASHES, 1);
                 }
             }

@@ -827,7 +827,7 @@ static void PokeathlonCirclePush_MakePacket(PokeathlonCirclePush *circlePush, Po
     i = 0;
     mons = circlePush->mons;
     for (; i < POKEATHLON_MONS; i++) {
-        PokeathlonCirclePushMon *mon = &mons[(int)i / POKEATHLON_TEAM_SIZE][(int)i % POKEATHLON_TEAM_SIZE];
+        PokeathlonCirclePushMon *mon = &mons[i / POKEATHLON_TEAM_SIZE][i % POKEATHLON_TEAM_SIZE];
 
         x = mon->position.x / FX32_ONE;
         y = mon->position.y / FX32_ONE;
@@ -847,18 +847,18 @@ static void PokeathlonCirclePush_MakePacket(PokeathlonCirclePush *circlePush, Po
 
             packet->x[i] = x;
             packet->y[i] = y;
-            shapeBits += ((u32)direction - 1) << (2 * i);
-            stateBits += (u32)state << (2 * i);
+            shapeBits += (direction - 1) << (2 * i);
+            stateBits += state << (2 * i);
         }
         heldBits += mon->exhausted << i;
     }
 
     packet->shapeBits = shapeBits;
-    packet->shapeBits += (u32)circlePush->timer << 24;
+    packet->shapeBits += circlePush->timer << 24;
     packet->stateBits = 0;
     packet->stateBits += stateBits;
-    packet->stateBits += (u32)circlePush->nextLayout << 24;
-    packet->stateBits += (u32)circlePush->scoringMon << 28;
+    packet->stateBits += circlePush->nextLayout << 24;
+    packet->stateBits += circlePush->scoringMon << 28;
 
     team = circlePush->packetTeam;
     points = circlePush->scores[team];
@@ -866,13 +866,13 @@ static void PokeathlonCirclePush_MakePacket(PokeathlonCirclePush *circlePush, Po
 
     packet->flagBits = 0;
     packet->flagBits += heldBits;
-    packet->flagBits += (u32)circlePush->over << 12;
-    packet->flagBits += (u32)circlePush->roundStart << 13;
-    packet->flagBits += (u32)circlePush->scoring << 14;
-    packet->flagBits += (u32)circlePush->scoringEffect << 15;
+    packet->flagBits += circlePush->over << 12;
+    packet->flagBits += circlePush->roundStart << 13;
+    packet->flagBits += circlePush->scoring << 14;
+    packet->flagBits += circlePush->scoringEffect << 15;
     packet->flagBits += (u8)points << 18;
-    packet->flagBits += (u32)team << 26;
-    packet->flagBits += (u32)circlePush->round << 28;
+    packet->flagBits += team << 26;
+    packet->flagBits += circlePush->round << 28;
 
     circlePush->roundStart = 0;
     circlePush->scoringMon = POKEATHLON_NO_MON;
@@ -1493,8 +1493,8 @@ static u8 PokeathlonCirclePush_FindTouchedMon(PokeathlonCirclePush *circlePush, 
     u8 i;
     u8 count = 0;
     u8 found;
-    s32 distances[3];
-    u8 inReach[3];
+    s32 distances[POKEATHLON_TEAM_SIZE];
+    u8 inReach[POKEATHLON_TEAM_SIZE];
     int distance;
     for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonCirclePushMon *mon = &circlePush->mons[team][i];

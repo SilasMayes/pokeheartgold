@@ -230,8 +230,8 @@ static void PokeathlonCourseSprites_LoadResources(PokeathlonCourseSpriteResource
         SpriteTransfer_CreateCharTransferTask_AllocAtEnd(resources->chars[11]);
     }
     vram = resources->charVram;
-    if (vram == 2) {
-        vram = 3;
+    if (vram == NNS_G2D_VRAM_TYPE_2DSUB) {
+        vram = NNS_G2D_VRAM_TYPE_2DBOTH;
     }
     resources->palette = AddPlttResObjFromNarc(resources->resMans[GF_GFX_RES_TYPE_PLTT], NARC_a_1_5_3, 0, FALSE, 0x17, vram, 1, resources->heapId);
     SpriteTransfer_CreateExtPlttTransferTask(resources->palette);

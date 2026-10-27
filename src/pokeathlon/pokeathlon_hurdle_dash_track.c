@@ -388,17 +388,17 @@ static void PokeathlonHurdleDashStandings_InitSpriteTemplate(SpriteTemplate *tem
 }
 
 PokeathlonHurdleDashDustLane *PokeathlonHurdleDashDust_New(enum HeapID heapId) {
-    PokeathlonHurdleDashDustLane *lanes = Heap_Alloc(heapId, 3 * sizeof(PokeathlonHurdleDashDustLane));
-    MI_CpuFill8(lanes, 0, 3 * sizeof(PokeathlonHurdleDashDustLane));
+    PokeathlonHurdleDashDustLane *lanes = Heap_Alloc(heapId, POKEATHLON_TEAM_SIZE * sizeof(PokeathlonHurdleDashDustLane));
+    MI_CpuFill8(lanes, 0, POKEATHLON_TEAM_SIZE * sizeof(PokeathlonHurdleDashDustLane));
     return lanes;
 }
 
 void PokeathlonHurdleDashDust_CreateSprites(PokeathlonHurdleDashDustLane *lanes, PokeathlonCourseSpritePool *spritePool, u16 priority) {
     u8 i;
     u8 j;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonHurdleDashDustLane *lane = &lanes[i];
-        for (j = 0; j < 5; j++) {
+        for (j = 0; j < HURDLE_DASH_LANE_DUST; j++) {
             PokeathlonHurdleDashDust *dust = &lane->dust[j];
             dust->sprite = PokeathlonCourseSpritePool_CreateAndTake(spritePool, priority, NNS_G2D_VRAM_TYPE_2DMAIN, 106, 10);
             PokeathlonCourseSpritePoolSprite_Show(dust->sprite, TRUE, FALSE);
@@ -414,7 +414,7 @@ void PokeathlonHurdleDashDust_Free(PokeathlonHurdleDashDustLane *lanes) {
 void PokeathlonHurdleDashDust_Spawn(PokeathlonHurdleDashDustLane *lanes, u32 lane, VecFx32 *position) {
     PokeathlonHurdleDashDustLane *selected;
     PokeathlonHurdleDashDust *dust;
-    GF_ASSERT(lane < 3);
+    GF_ASSERT(lane < POKEATHLON_TEAM_SIZE);
     selected = &lanes[lane];
     dust = &selected->dust[selected->next];
     if (!dust->active) {
@@ -422,7 +422,7 @@ void PokeathlonHurdleDashDust_Spawn(PokeathlonHurdleDashDustLane *lanes, u32 lan
         PokeathlonCourseSpritePoolSprite_SetAnim(dust->sprite, 1);
         PokeathlonCourseSpritePoolSprite_SetPosition(dust->sprite, position);
         dust->active = TRUE;
-        selected->next = (selected->next + 1) % 5;
+        selected->next = (selected->next + 1) % HURDLE_DASH_LANE_DUST;
     } else {
         GF_ASSERT(FALSE);
     }
@@ -432,9 +432,9 @@ void PokeathlonHurdleDashDust_Scroll(PokeathlonHurdleDashDustLane *lanes, u32 la
     PokeathlonHurdleDashDustLane *selected;
     u8 i;
     VecFx32 position;
-    GF_ASSERT(lane < 3);
+    GF_ASSERT(lane < POKEATHLON_TEAM_SIZE);
     selected = &lanes[lane];
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < HURDLE_DASH_LANE_DUST; i++) {
         PokeathlonHurdleDashDust *dust = &selected->dust[i];
         if (dust->active) {
             position = *PokeathlonCourseSpritePoolSprite_GetPosition(dust->sprite);

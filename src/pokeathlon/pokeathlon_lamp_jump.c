@@ -314,9 +314,9 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
     PokeathlonCourseMonGfxTemplate info;
     ObjCharTransferTemplate spriteConfig;
     PokeathlonCourseSpritePoolTemplate sceneConfig;
-    PokeathlonCourseMonInfo views[3];
+    PokeathlonCourseMonInfo views[POKEATHLON_TEAM_SIZE];
     PokeathlonCourseCollision collisions[POKEATHLON_SIZE_CLASSES];
-    PokeathlonCoursePoint screenPos[3];
+    PokeathlonCoursePoint screenPos[POKEATHLON_TEAM_SIZE];
     PokeathlonLampJumpMonParams params;
     int screenX, screenY;
     PokeathlonLampJump *lampJump = PokeathlonCourse_GetWork(course);
@@ -410,9 +410,9 @@ BOOL PokeathlonLampJump_Init(PokeathlonCourseData *course) {
             PokeathlonCourseMonObject_SetAnimState(sprite, 2);
             PokeathlonCourseObject_SetGroundPosition(sprite, x, 288);
             PokeathlonCourseObject_SetTouchRadius(sprite, PokeathlonCourse_GetTouchRadius());
-            mon->drawX = (u32)x << FX32_SHIFT;
+            mon->drawX = x << FX32_SHIFT;
             mon->drawY = 288 << FX32_SHIFT;
-            mon->x = (u32)x << FX32_SHIFT;
+            mon->x = x << FX32_SHIFT;
             PokeathlonCourseObject_GroundToCenter(sprite, x, 288, &screenX, &screenY);
             screenPos[monIndex].x = screenX;
             screenPos[monIndex].y = screenY;
@@ -859,8 +859,8 @@ static u8 PokeathlonLampJump_FindTouchedMon(PokeathlonLampJump *lampJump, u16 to
     u8 i;
     u8 count = 0;
     u8 nearest;
-    s32 distances[3];
-    u8 inRange[3];
+    s32 distances[POKEATHLON_TEAM_SIZE];
+    u8 inRange[POKEATHLON_TEAM_SIZE];
     int distance;
     s32 x;
     s32 y;
@@ -943,7 +943,7 @@ static void PokeathlonLampJump_Init3D(PokeathlonLampJump *lampJump) {
     NNS_G3dInit();
     G3X_InitMtxStack();
     reg_G3_SWAP_BUFFERS = 2;
-    reg_G2_BG0CNT = (u16)((reg_G2_BG0CNT & ~3) | 2);
+    reg_G2_BG0CNT = (reg_G2_BG0CNT & ~3) | 2;
     G3X_SetShading(GX_SHADING_TOON);
     G3X_AntiAlias(FALSE);
     G3X_AlphaTest(FALSE, 0);
@@ -991,7 +991,7 @@ static void PokeathlonLampJump_DrawTrampoline(PokeathlonLampJump *lampJump) {
     for (i = 1; i <= LAMP_JUMP_COLUMNS; i++) {
         float x = ((float)i - 64.0) * 4.0 / 128.0;
 
-        PokeathlonLampJump_GeVtx16((u16)(int)(x * 4096.0f) | ((u32)(u16)(s16)lampJump->trampoline.surface[i - 1] << 16), 0);
+        PokeathlonLampJump_GeVtx16((u16)(int)(x * 4096.0f) | ((u16)(s16)lampJump->trampoline.surface[i - 1] << 16), 0);
         PokeathlonLampJump_GeVtx16((u16)(int)(x * 4096.0f) | 0xE8000000, 0);
         PokeathlonLampJump_GeColor((u16)(gPokeathlonLampJumpTrampolineRed | (sTrampolineGreen << 5) | (sTrampolineBlue << 10)));
         gPokeathlonLampJumpTrampolineRed = (gPokeathlonLampJumpTrampolineRed + 1) % 31;
@@ -1248,7 +1248,7 @@ static void PokeathlonLampJump_UpdateJump(PokeathlonCourseData *course, Pokeathl
             PokeathlonLampJump_MoveSideways(&lampJump->mons[mon], jump);
         }
         if (jump->height > heights[column]) {
-            jump->velocity = (int)(jump->velocity - 128.0);
+            jump->velocity = jump->velocity - 128.0;
             if (-jump->velocity > jump->launchVelocity) {
                 jump->velocity = -jump->launchVelocity;
             }
@@ -1468,7 +1468,7 @@ void PokeathlonLampJump_PlaceSprites(PokeathlonLampJump *lampJump, u8 self) {
     for (i = 0; i < 4; i++) {
         otherPos = firstOtherPos;
         if (i != self) {
-            otherPos.y += (u32)otherCount << 16;
+            otherPos.y += otherCount << 16;
             PokeathlonCourseSpritePoolSprite_SetPosition(lampJump->playerSprites[i], &otherPos);
             otherCount++;
         }

@@ -76,7 +76,7 @@ typedef struct PokeathlonTrophiesSummary {
     u16 totalPoints;
     u16 medalTotal;
     u16 courseScores[POKEATHLON_SOLO_COURSES];
-    u8 medalistCount; // species that won all five medals
+    u8 medalistCount; // species that won all the medals
     u8 potentialTrophies;
     u8 gender;
 } PokeathlonTrophiesSummary;
@@ -204,7 +204,7 @@ extern const int gPokeathlonMedalsMonPicResIds[];
 extern const GraphicsModes gPokeathlonMedalsGraphicsModes;
 extern const int gPokeathlonMedalsMonIconResIds[];
 extern const GridCallbacks gPokeathlonMedalsGridCallbacks;
-extern const int gPokeathlonMedalsMedalColumns[5];
+extern const int gPokeathlonMedalsMedalColumns[POKEATHLON_MEDALS];
 extern const SpriteResourceCountsListUnion gPokeathlonMedalsSpriteResourceCounts;
 extern const WindowTemplate gPokeathlonMedalsWindowTemplates[12];
 extern const TouchscreenHitbox gPokeathlonMedalsGridHitboxes[];

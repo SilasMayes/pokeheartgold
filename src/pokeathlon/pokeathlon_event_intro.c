@@ -744,19 +744,17 @@ static void PokeathlonEventIntro_CreateSprites(PokeathlonEventIntro *intro) {
     const s16(*position)[2] = sPokeathlonEventIntroSpritePositions;
     int i = 0;
     s16 *coords = &sPokeathlonEventIntroSpriteTemplates[0].x;
-    PokeathlonEventIntro *cursor = intro;
     ManagedSpriteTemplate *template = sPokeathlonEventIntroSpriteTemplates;
     for (; i < 4; i++) {
         SpriteSystem *spriteSystem = intro->spriteSystem;
         SpriteManager *spriteManager = intro->spriteManager;
         coords[0] = (*position)[0];
         coords[1] = (*position)[1];
-        cursor->sprites[0] = SpriteSystem_NewSpriteWithYOffset(spriteSystem, spriteManager, template, FX32_CONST(512));
-        ManagedSprite_SetAnimateFlag(cursor->sprites[0], TRUE);
+        intro->sprites[i] = SpriteSystem_NewSpriteWithYOffset(spriteSystem, spriteManager, template, FX32_CONST(512));
+        ManagedSprite_SetAnimateFlag(intro->sprites[i], TRUE);
         position++;
         coords += sizeof(ManagedSpriteTemplate) / sizeof(s16);
-        template ++;
-        cursor = (PokeathlonEventIntro *)((u8 *)cursor + sizeof(ManagedSprite *));
+        template++;
     }
     ManagedSprite_SetAnimateFlag(intro->sprites[2], FALSE);
     PokeathlonEventIntro_SetMascotAnim(intro);

@@ -485,7 +485,7 @@ static void PokeathlonCirclePushAi_ChooseTarget(PokeathlonCirclePushAi *ai, u8 i
         GF_ASSERT(FALSE);
         return;
     }
-    if (work->skipped[work->member] < 3 && (int)LCRandom() % 100 < 30) {
+    if (work->skipped[work->member] < 3 && LCRandom() % 100 < 30) {
         work->skipped[work->member]++;
         return;
     }
@@ -543,20 +543,20 @@ static void PokeathlonCirclePushAi_ChooseTarget(PokeathlonCirclePushAi *ai, u8 i
     PokeathlonCirclePushAi_ScoreCells(work, CIRCLE_PUSH_AI_NEAR_CELLS, zones, mon, near);
     count = PokeathlonCirclePushAi_SortCells(CIRCLE_PUSH_AI_NEAR_CELLS, near, choices);
     if (choices[0]->score >= 3) {
-        choice = choices[(u8)((int)LCRandom() % count)];
+        choice = choices[(u8)(LCRandom() % count)];
         PokeathlonCourseObject_GroundToCenter(mon->object, choice->pixelX, choice->pixelY, &nearX, &nearY);
-        mon->target->x = (u32)nearX << FX32_SHIFT;
-        mon->target->y = (u32)nearY << FX32_SHIFT;
+        mon->target->x = nearX << FX32_SHIFT;
+        mon->target->y = nearY << FX32_SHIFT;
         mon->target->z = 0;
         return;
     }
     PokeathlonCirclePushAi_PlaceInCells(CIRCLE_PUSH_AI_FAR_CELLS, far);
     PokeathlonCirclePushAi_ScoreCells(work, CIRCLE_PUSH_AI_AREA_CELLS, zones, mon, all);
     count = PokeathlonCirclePushAi_SortCells(CIRCLE_PUSH_AI_AREA_CELLS, all, choices);
-    choice = choices[(u8)((int)LCRandom() % count)];
+    choice = choices[(u8)(LCRandom() % count)];
     PokeathlonCourseObject_GroundToCenter(mon->object, choice->pixelX, choice->pixelY, &farX, &farY);
-    mon->target->x = (u32)farX << FX32_SHIFT;
-    mon->target->y = (u32)farY << FX32_SHIFT;
+    mon->target->x = farX << FX32_SHIFT;
+    mon->target->y = farY << FX32_SHIFT;
     mon->target->z = 0;
 }
 

@@ -443,7 +443,7 @@ BOOL PokeathlonResults_Run(PokeathlonCourseData *course, u8 *state) {
     PokeathlonResultsAnnouncement *announcement = PokeathlonCourse_GetWork(course);
     MessageFormat *messageFormat;
     int msgId;
-    PokeathlonCourseScore *ranked[4];
+    PokeathlonCourseScore *ranked[POKEATHLON_PARTICIPANTS];
     int i;
 
     done = FALSE;

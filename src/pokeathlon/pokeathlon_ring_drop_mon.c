@@ -144,7 +144,7 @@ void PokeathlonRingDropMon_Update(PokeathlonRingDropMon *mon, PokeathlonCourseDa
         }
         break;
     case RING_DROP_MON_JUMP_RISE:
-        mon->height = (u32)(s32)gPokeathlonRingDropJumpHeights[mon->member->params->jumpType][mon->jumpFrames] << FX32_SHIFT;
+        mon->height = gPokeathlonRingDropJumpHeights[mon->member->params->jumpType][mon->jumpFrames] << FX32_SHIFT;
         mon->jumpFrames++;
         if (mon->jumpFrames >= 10) {
             mon->jumpFrames = 10;
@@ -165,7 +165,7 @@ void PokeathlonRingDropMon_Update(PokeathlonRingDropMon *mon, PokeathlonCourseDa
                 PokeathlonRingDropMon_FallOut(mon);
             }
         } else {
-            mon->height = (u32)mon->height - ((u32)gPokeathlonRingDropFallSpeeds[mon->member->params->jumpType] << FX32_SHIFT);
+            mon->height = mon->height - (gPokeathlonRingDropFallSpeeds[mon->member->params->jumpType] << FX32_SHIFT);
             if (mon->height <= 0) {
                 mon->height = 0;
             }
@@ -360,7 +360,7 @@ void PokeathlonRingDrop_InitMemberParams(PokeathlonCourseData *course) {
             GF_ASSERT(stats[2] < 5);
             params->dashPower = (int)PokeathlonRingDrop_ToFx32(table[0][stats[0]], half) / 10;
             params->dashDamage = (int)PokeathlonRingDrop_ToFx32(table[1][stats[0]], half) / 10;
-            params->stamina = (int)PokeathlonRingDrop_ToFx32(table[2][stats[3]], half);
+            params->stamina = PokeathlonRingDrop_ToFx32(table[2][stats[3]], half);
             params->speed = (int)PokeathlonRingDrop_ToFx32(table[3][stats[1]], half) / 10;
             // BUG: the press power and the press damage both come from row 5; row 4 is never used.
             params->pressPower = (int)PokeathlonRingDrop_ToFx32(table[5][stats[2]], half) / 10;

@@ -771,7 +771,7 @@ u32 PokeathlonCourse_State_SendEventResult(PokeathlonCourseData *course) {
             int size = PokeathlonCourse_GetEventResultSize(course);
             int i = PokeathlonCourse_GetParticipantCount(course);
             for (; i < POKEATHLON_PARTICIPANTS; i++) {
-                memcpy((u8 *)PokeathlonCourse_ToBytes(&layout->packets[1]) + i * size, &layout->eventResults[i], size);
+                memcpy(PokeathlonCourse_ToBytes(&layout->packets[1]) + i * size, &layout->eventResults[i], size);
             }
         }
     } else if (!PokeathlonCourse_GetNetId(course)) {
@@ -1503,7 +1503,7 @@ static BOOL PokeathlonCourse_HasAllMedalsOfAMon(PokeathlonCourseData *course) {
 // Whether the solo record of every event beats the event's target.
 static BOOL PokeathlonCourse_BeatsAllEventTargets(PokeathlonCourseData *course) {
     u8 i;
-    Pokeathlon_RecordsSolo *records = PokeathlonSave_GetRecordsSolo2(Save_Pokeathlon_Get(((PokeathlonCourseLayout *)course)->args->saveData));
+    Pokeathlon_RecordsSolo *records = PokeathlonSave_GetRecordsSolo2(Save_Pokeathlon_Get(course->args->saveData));
     for (i = 0; i < POKEATHLON_EVENT_COUNT; i++) {
         u16 record = records[i].entries[0].score;
         if (record == POKEATHLON_NO_RECORD) {
@@ -1553,7 +1553,7 @@ static void PokeathlonCourse_ChooseEvents(PokeathlonCourseArgsLayout *args, u32 
     if (valid) {
         u8 i;
         if (courseId == POKEATHLON_COURSE_LINK_RANDOM) {
-            u8 set = (u8)((s32)LCRandom() % POKEATHLON_RANDOM_EVENT_SETS);
+            u8 set = LCRandom() % POKEATHLON_RANDOM_EVENT_SETS;
             for (i = 0; i < rounds; i++) {
                 eventIds[i] = gPokeathlonCourse10EventSets[set][i];
             }
@@ -1789,7 +1789,7 @@ static void PokeathlonCourse_ChooseNpcTeams(u32 count, u8 courseId, u32 hard, u8
             linkPool[i] = i;
         }
         for (i = 0; i < count; i++) {
-            u8 at = (s32)LCRandom() % remaining;
+            u8 at = LCRandom() % remaining;
             npcTeams[i] = linkPool[at];
             npcTeams[i] += POKEATHLON_NPC_TEAMS_LINK_START;
             remaining--;
@@ -1801,7 +1801,7 @@ static void PokeathlonCourse_ChooseNpcTeams(u32 count, u8 courseId, u32 hard, u8
             coursePool[i] = i;
         }
         for (i = 0; i < count; i++) {
-            u8 at = (s32)LCRandom() % remaining;
+            u8 at = LCRandom() % remaining;
             npcTeams[i] = coursePool[at];
             npcTeams[i] += courseId * POKEATHLON_NPC_TEAMS_PER_COURSE;
             remaining--;

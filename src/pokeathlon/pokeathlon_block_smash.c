@@ -656,7 +656,7 @@ static void PokeathlonBlockSmash_CreateHudSprites(PokeathlonBlockSmash *work) {
     for (i = 0; i < 2; i++) {
         VecFx32 digitPosition = { 0, 0, 0 };
         work->timerDigits[i] = PokeathlonCourse_CreateTimerDigitSprite(work->iconResources, SpriteManager_GetSpriteList(work->spriteManager), 2, work->heapId);
-        digitPosition.x = (u32)(212 + i * 16) << FX32_SHIFT;
+        digitPosition.x = (212 + i * 16) << FX32_SHIFT;
         digitPosition.y = 184 << FX32_SHIFT;
         digitPosition.z = 0;
         Sprite_SetMatrix(work->timerDigits[i], &digitPosition);
@@ -1079,7 +1079,7 @@ static void PokeathlonBlockSmash_ShakeTask(SysTask *task, void *data) {
     ScheduleSetBgPosText(work->bgConfig, GF_BG_LYR_MAIN_0, BG_POS_OP_SET_Y, offset);
     ScheduleSetBgPosText(work->bgConfig, GF_BG_LYR_MAIN_1, BG_POS_OP_SET_Y, offset);
     G2dRenderer_SetMainSurfaceCoords(SpriteSystem_GetRenderer(work->spriteSystem), 0, -offset << FX32_SHIFT);
-    work->shakeOffset = (u8)(work->shakeOffset - work->shakeDecay);
+    work->shakeOffset = work->shakeOffset - work->shakeDecay;
     work->shakeSide = work->shakeSide ^ 1;
     if (work->shakeOffset <= 0) {
         ScheduleSetBgPosText(work->bgConfig, GF_BG_LYR_MAIN_0, BG_POS_OP_SET_Y, 16);
@@ -1095,7 +1095,7 @@ static void PokeathlonBlockSmash_StartShake(PokeathlonBlockSmash *work, int offs
         SysTask_Destroy(work->shakeTask);
     }
     work->shakeSide = 0;
-    work->shakeOffset = (u8)offset;
+    work->shakeOffset = offset;
     work->shakeDecay = decay;
     work->shakeTask = SysTask_CreateOnMainQueue(PokeathlonBlockSmash_ShakeTask, work, 2);
 }

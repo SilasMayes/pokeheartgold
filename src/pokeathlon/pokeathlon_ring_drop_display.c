@@ -497,7 +497,7 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
                 mon->jumpFrames = 6;
                 mon->jumpScale = FX32_ONE;
                 PlaySE(SEQ_SE_GS_PUSH02);
-                PokeathlonRingDropUi_SetMemberSwitching(display->ui, (u8)participant, team, 1);
+                PokeathlonRingDropUi_SetMemberSwitching(display->ui, participant, team, 1);
                 if (participant == PokeathlonCourse_GetNetId(course) || hostCpu) {
                     mon->recordJump = TRUE;
                 }
@@ -506,7 +506,7 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
                 ManagedSprite_SetDrawFlag(mon->sprites[RING_DROP_MON_SPRITE_DUST], TRUE);
                 ManagedSprite_ResetSpriteAnimCtrlState(mon->sprites[RING_DROP_MON_SPRITE_DUST]);
                 PokeathlonRingDrop_PlaySE(SEQ_SE_GS_BOWA2, participant == PokeathlonCourse_GetNetId(course));
-                PokeathlonRingDropUi_SetMemberSwitching(display->ui, (u8)participant, team, 0);
+                PokeathlonRingDropUi_SetMemberSwitching(display->ui, participant, team, 0);
                 PokeathlonCourseMonObject_SetDrawFlag(monObject, 1);
                 mon->jumping = FALSE;
             }
@@ -531,8 +531,8 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
             } else {
                 int x = packet->x, y = packet->y;
                 f32 scale;
-                mon->jumpScale = (u32)mon->jumpScale - 410;
-                scale = (f32)mon->jumpScale / 4096.0f;
+                mon->jumpScale = mon->jumpScale - 410;
+                scale = mon->jumpScale / 4096.0f;
                 PokeathlonCourseObject_SetScale(monObject, scale, scale);
                 PokeathlonCourseObject_CenterToGround(monObject, x, y, &x, &y);
                 if (y >= 160) {
@@ -542,7 +542,7 @@ static void PokeathlonRingDropDisplay_ApplyFramePacket(PokeathlonRingDropDisplay
                 }
             }
         } else {
-            scaleX = 1.2f - (f32)((160 - packet->y) * 12) / 4096.0f;
+            scaleX = 1.2f - ((160 - packet->y) * 12) / 4096.0f;
             scaleY = scaleX;
             if (packet->state == RING_DROP_MON_DASH_START) {
                 u32 frames = mon->squashFrames;

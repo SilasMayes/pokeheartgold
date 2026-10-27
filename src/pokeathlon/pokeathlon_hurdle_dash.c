@@ -178,10 +178,10 @@ BOOL PokeathlonHurdleDash_Init(PokeathlonCourseData *course) {
     PokeathlonCourseSpritePoolTemplate sceneConfig;
     VecFx32 mainPos;
     VecFx32 spritePos;
-    PokeathlonHurdleDashStandingsMonId mons[12];
-    PokeathlonCourseMonInfo views[3];
+    PokeathlonHurdleDashStandingsMonId mons[POKEATHLON_MONS];
+    PokeathlonCourseMonInfo views[POKEATHLON_TEAM_SIZE];
     PokeathlonHurdleDashNumberX numberX;
-    PokeathlonCoursePoint numberPos[3];
+    PokeathlonCoursePoint numberPos[POKEATHLON_TEAM_SIZE];
     PokeathlonHurdleDashParams params;
     PokeathlonHurdleDash *hurdleDash = PokeathlonCourse_GetWork(course);
     int i, j;

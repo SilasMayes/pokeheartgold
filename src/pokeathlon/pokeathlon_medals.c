@@ -69,7 +69,7 @@ static u32 PokeathlonMedals_CountMedalists(PokeathlonMedals *work) {
 }
 
 static BOOL PokeathlonMedals_HasAllMedals(PokeathlonMedals *work, int species) {
-    if (MATH_CountPopulation(PokeathlonMedals_GetSpeciesMedals(work, species)) == 5) {
+    if (MATH_CountPopulation(PokeathlonMedals_GetSpeciesMedals(work, species)) == POKEATHLON_MEDALS) {
         return TRUE;
     }
     return FALSE;
@@ -121,7 +121,7 @@ static void PokeathlonMedals_ShowSpeciesMedals(PokeathlonMedals *work, u16 speci
     u8 i;
     u8 medals = PokeathlonMedals_GetSpeciesMedals(work, species);
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < POKEATHLON_MEDALS; i++) {
         ManagedSprite_SetDrawFlag(work->sprites[15 + i], medals & 1);
         medals = medals >> 1;
     }
@@ -307,7 +307,7 @@ static void PokeathlonMedals_HideSelectedSpecies(PokeathlonMedals *work) {
 
     ManagedSprite_SetDrawFlag(work->sprites[3], FALSE);
     PokeathlonMedals_PrintSpeciesName(work, SPECIES_NONE);
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < POKEATHLON_MEDALS; i++) {
         ManagedSprite_SetDrawFlag(work->sprites[15 + i], FALSE);
     }
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
@@ -631,7 +631,7 @@ static void PokeathlonMedals_CreateMedalSprites(PokeathlonMedals *work) {
     int y = 48;
     int i;
 
-    for (i = 0; i < 5; i++, columns++, y += 32) {
+    for (i = 0; i < POKEATHLON_MEDALS; i++, columns++, y += 32) {
         spriteTemplate.animation = i;
         spriteTemplate.resIdList[GF_GFX_RES_TYPE_CHAR] = 32;
         spriteTemplate.resIdList[GF_GFX_RES_TYPE_PLTT] = 3;
@@ -684,7 +684,7 @@ static void PokeathlonMedals_PrintStaticText(PokeathlonMedals *work) {
     PokeathlonUtil_PrintMessageCentered(work->textContext, 11, msg_0314_00126, 3);
     PokeathlonUtil_PrintMessageAtXY(work->textContext, 0, msg_0314_00127, 1, 0);
     PokeathlonUtil_PrintAlignedMessageAtY(work->textContext, 4, msg_0314_00000, TRUE, 0, 4);
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < POKEATHLON_MEDALS; i++) {
         BufferPokeathlonMedalName(msgFormat, 0, (u8)i);
         PokeathlonUtil_PrintAlignedMessage(work->textContext, i + 6, msg_0314_00004, FALSE);
     }

@@ -37,6 +37,7 @@ enum PokeathlonCourseId {
 };
 
 #define POKEATHLON_SOLO_COURSES POKEATHLON_COURSE_LINK_SPEED_JUMP // courses 0..4
+#define POKEATHLON_MEDALS       POKEATHLON_SOLO_COURSES           // one per solo course
 
 // The events (gPokeathlonCourseEvents), POKEATHLON_EVENT_COUNT of them.
 enum PokeathlonEventId {

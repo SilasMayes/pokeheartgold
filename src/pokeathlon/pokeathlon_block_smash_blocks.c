@@ -286,7 +286,7 @@ u16 PokeathlonBlockSmashBlocks_Hit(PokeathlonBlockSmashBlocks *blocks, u8 member
         } else if (block->health <= 60) {
             ManagedSprite_SetAnim(block->sprite, 2);
             PlaySE(SEQ_SE_GS_W260);
-            GF_SndSetTrackPitchBySeqNo(SEQ_SE_GS_W260, 0xFFFF, 64 - ((int)LCRandom() % 128));
+            GF_SndSetTrackPitchBySeqNo(SEQ_SE_GS_W260, 0xFFFF, 64 - (LCRandom() % 128));
         }
     }
     *cleared = broken > 0 && blocks->count == 0;
@@ -390,7 +390,7 @@ static void PokeathlonBlockSmashBlock_Update(PokeathlonBlockSmashBlock *block) {
         ManagedSprite_OffsetPositionXY(block->spot, 0, block->fallSpeed);
         ManagedSprite_GetPositionXY(block->spot, &x, &y);
         ManagedSprite_GetPositionXY(block->sprite, &x, &y);
-        if ((u32)y >= bottom) {
+        if (y >= bottom) {
             y = bottom;
             ManagedSprite_SetPositionXY(block->sprite, x, y);
             PokeathlonBlockSmashBlock_UpdateSpot(block);

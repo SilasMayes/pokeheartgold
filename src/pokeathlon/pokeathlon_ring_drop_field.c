@@ -32,7 +32,7 @@ static BOOL PokeathlonRingDropMon_Push(PokeathlonRingDropMon *target, Pokeathlon
             int score;
             power = 3.0f * (float)power;
             damage = 2.0f * (float)damage;
-            score = (int)source->flags.bits.score + 1;
+            score = source->flags.bits.score + 1;
             if (score > 200) {
                 score = 200;
             }
@@ -43,7 +43,7 @@ static BOOL PokeathlonRingDropMon_Push(PokeathlonRingDropMon *target, Pokeathlon
             int score;
             power = source->member->params->pressPower;
             damage = source->member->params->pressDamage;
-            score = (int)source->flags.bits.score + 2;
+            score = source->flags.bits.score + 2;
             if (score > 200) {
                 score = 200;
             }
@@ -340,7 +340,7 @@ static void PokeathlonRingDrop_UpdateStamina(PokeathlonRingDropPlayer *players, 
             } else {
                 refill = 819.0f;
             }
-            teamMember->stamina = (int)((float)teamMember->stamina + refill);
+            teamMember->stamina = (float)teamMember->stamina + refill;
             if (teamMember->stamina > max) {
                 teamMember->stamina = max;
             }
@@ -376,10 +376,10 @@ void PokeathlonRingDrop_UpdateMons(PokeathlonRingDropPlayer *players, Pokeathlon
         VecFx32 touch = { 0, 0, 0 }, touchStart = { 0, 0, 0 };
         PokeathlonRingDropTouch *record = &player->touch;
         PokeathlonRingDropMon *mon = &player->mon;
-        touch.x = (int)PokeathlonRingDrop_ToFx32Rounded(player->touchX);
-        touch.y = (int)PokeathlonRingDrop_ToFx32Rounded(player->touchY);
-        touchStart.x = (int)PokeathlonRingDrop_ToFx32Rounded(player->touchStartX);
-        touchStart.y = (int)PokeathlonRingDrop_ToFx32Rounded(player->touchStartY);
+        touch.x = PokeathlonRingDrop_ToFx32Rounded(player->touchX);
+        touch.y = PokeathlonRingDrop_ToFx32Rounded(player->touchY);
+        touchStart.x = PokeathlonRingDrop_ToFx32Rounded(player->touchStartX);
+        touchStart.y = PokeathlonRingDrop_ToFx32Rounded(player->touchStartY);
         if (record->started) {
             if (PokeathlonRingDrop_IsOnSwitchButton(player->touchX, player->touchY)) {
                 if (PokeathlonRingDropMon_CanSwitch(mon)) {
@@ -676,8 +676,8 @@ static inline void PokeathlonRingDrop_LoadRingEdge(VecFx32 *points) {
     int i = 0;
     cursor = points;
     for (; i < 4; i++) {
-        cursor->x = (u32)(s32)(*source)[0] << FX32_SHIFT;
-        cursor->y = (u32)(s32)(*source)[1] << FX32_SHIFT;
+        cursor->x = (*source)[0] << FX32_SHIFT;
+        cursor->y = (*source)[1] << FX32_SHIFT;
         source++;
         cursor++;
     }

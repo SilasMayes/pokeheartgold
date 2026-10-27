@@ -114,8 +114,8 @@ void PokeathlonGoalRollCpu_ChooseAllRoles(PokeathlonGoalRollCpuTeam *teams) {
 
 // The member best at kicking and with most power moves first; the others follow by kick strength.
 static void PokeathlonGoalRollCpu_ChooseRoles(PokeathlonGoalRollCpuTeam *team) {
-    u8 first[3];
-    u8 second[3];
+    u8 first[POKEATHLON_TEAM_SIZE];
+    u8 second[POKEATHLON_TEAM_SIZE];
     u8 selected;
     u8 i;
     u8 next;
@@ -235,7 +235,7 @@ static int PokeathlonGoalRollCpu_ThinkChaser(PokeathlonCourseData *course, u8 pa
             } else {
                 GF_ASSERT(FALSE);
             }
-            if (PokeathlonGoalRollCpu_CirclesTouch(position, (u32)PokeathlonCourseObject_GetCollisionRadius(mon->object) << FX32_SHIFT, &ball->position, radius << FX32_SHIFT)) {
+            if (PokeathlonGoalRollCpu_CirclesTouch(position, PokeathlonCourseObject_GetCollisionRadius(mon->object) << FX32_SHIFT, &ball->position, radius << FX32_SHIFT)) {
                 decisions[i] = GOAL_ROLL_CPU_CHASER_AT_BALL;
             } else if (quadrant == ballQuadrant) {
                 if (PokeathlonGoalRollCpu_IsMonInTargetQuadrantOfBall(ball->position.x / FX32_ONE, ball->position.y / FX32_ONE, mon->position.x / FX32_ONE, mon->position.y / FX32_ONE, quadrant, participant)) {
@@ -263,7 +263,7 @@ static int PokeathlonGoalRollCpu_ThinkChaser(PokeathlonCourseData *course, u8 pa
 }
 
 static int PokeathlonGoalRollCpu_ApplyChaserDecision(PokeathlonGoalRollMon *mon, const PokeathlonGoalRollBall *ball, u8 decision, int quadrant) {
-    u8 random = (s32)LCRandom() % 100;
+    u8 random = LCRandom() % 100;
 
     switch (decision) {
     case GOAL_ROLL_CPU_CHASER_FAR_BALL:
@@ -384,10 +384,10 @@ static int PokeathlonGoalRollCpu_ApplyGuardDecision(PokeathlonGoalRollMon *mon, 
         if (PokeathlonGoalRollCpu_IsNearPoint(mon->position.x / FX32_ONE, mon->position.y / FX32_ONE, points)) {
             return 0;
         }
-        if ((s32)LCRandom() % 2 == 0) {
+        if (LCRandom() % 2 == 0) {
             point[0] = points[0][0];
             point[1] = points[0][1];
-        } else if ((s32)LCRandom() % 2 == 0) {
+        } else if (LCRandom() % 2 == 0) {
             const u16 *other = gPokeathlonGoalRollCpuGuardPoints1[participant - 1][0];
             point[0] = other[0];
             point[1] = other[1];
@@ -396,8 +396,8 @@ static int PokeathlonGoalRollCpu_ApplyGuardDecision(PokeathlonGoalRollMon *mon, 
             point[0] = other[0];
             point[1] = other[1];
         }
-        point[0] += 8 - (s32)LCRandom() % 17;
-        point[1] += 8 - (s32)LCRandom() % 17;
+        point[0] += 8 - LCRandom() % 17;
+        point[1] += 8 - LCRandom() % 17;
         mon->target.x = point[0] << FX32_SHIFT;
         mon->target.y = point[1] << FX32_SHIFT;
         return 6;
@@ -405,7 +405,7 @@ static int PokeathlonGoalRollCpu_ApplyGuardDecision(PokeathlonGoalRollMon *mon, 
     case GOAL_ROLL_CPU_GUARD_CHASE:
     case GOAL_ROLL_CPU_FLEX_CHASE:
         mon->target = ball->position;
-        if ((s32)LCRandom() % 100 < 80) {
+        if (LCRandom() % 100 < 80) {
             mon->mode = GOAL_ROLL_MODE_DASH;
         }
         return 10;
@@ -552,8 +552,8 @@ static int PokeathlonGoalRollCpu_MoveToEmptierQuadrant(PokeathlonGoalRollMon *mo
             chosen = i;
         }
     }
-    x = (int)LCRandom() % 64;
-    y = (int)LCRandom() % 32;
+    x = LCRandom() % 64;
+    y = LCRandom() % 32;
     switch (chosen) {
     case 0:
         mon->target.x = (128 - x) << FX32_SHIFT;

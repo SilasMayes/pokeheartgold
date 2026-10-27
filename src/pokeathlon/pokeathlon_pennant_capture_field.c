@@ -935,10 +935,10 @@ static int PokeathlonPennantCapture_CollidePlayers(PokeathlonCourseData *course,
             aX = frame.aX;
             objectB = other->monObjects[other->member];
             PokeathlonCourseObject_GroundToCenter(objectB, other->position.x / FX32_ONE, other->position.y / FX32_ONE, &frame.bX, &frame.bY);
-            PokeathlonCourseObject_GetCollisionCircle(objectB, (s32)((u32)frame.bX << FX32_SHIFT), (s32)((u32)frame.bY << FX32_SHIFT), &frame.pointB.x, &frame.pointB.y, &frame.radiusB);
-            PokeathlonCourseObject_GetCollisionCircle(objectA, (s32)((u32)aX << FX32_SHIFT), (s32)((u32)frame.aY << FX32_SHIFT), &frame.pointA.x, &frame.pointA.y, &frame.radiusA);
+            PokeathlonCourseObject_GetCollisionCircle(objectB, frame.bX << FX32_SHIFT, frame.bY << FX32_SHIFT, &frame.pointB.x, &frame.pointB.y, &frame.radiusB);
+            PokeathlonCourseObject_GetCollisionCircle(objectA, aX << FX32_SHIFT, frame.aY << FX32_SHIFT, &frame.pointA.x, &frame.pointA.y, &frame.radiusA);
             VEC_Subtract(&frame.pointA, &frame.pointB, &frame.diff);
-            if (VEC_Mag(&frame.diff) < (s32)(((u32)frame.radiusB + (u32)frame.radiusA) << FX32_SHIFT)) {
+            if (VEC_Mag(&frame.diff) < (s32)((frame.radiusB + frame.radiusA) << FX32_SHIFT)) {
                 if (CONTACT(player, j)) {
                     continue;
                 }
@@ -965,7 +965,7 @@ static int PokeathlonPennantCapture_CollidePlayers(PokeathlonCourseData *course,
                     applied = 1;
                     VEC_Subtract(&frame.pointB, &frame.pointA, &frame.resolved);
                     VEC_Normalize(&frame.resolved, &frame.resolved);
-                    VEC_MultAdd((u32)frame.radiusA << FX32_SHIFT, &frame.resolved, &frame.pointA, &frame.resolved);
+                    VEC_MultAdd(frame.radiusA << FX32_SHIFT, &frame.resolved, &frame.pointA, &frame.resolved);
                     *out = frame.resolved;
                 }
                 PokeathlonCourse_AddMonCounter(course, player->participant, player->member, POKEATHLON_COUNTER_TACKLES, 1);
@@ -973,7 +973,7 @@ static int PokeathlonPennantCapture_CollidePlayers(PokeathlonCourseData *course,
                 break;
             } else {
                 CONTACT(player, j) = 0;
-                *((u8 *)((u32)i + (u32)other) + offsetof(PokeathlonPennantCapturePlayer, contacts)) = 0;
+                *((u8 *)(i + (u32)other) + offsetof(PokeathlonPennantCapturePlayer, contacts)) = 0;
             }
         }
     }

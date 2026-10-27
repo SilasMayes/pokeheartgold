@@ -16,6 +16,7 @@
 
 #define HURDLE_DASH_LANE_HURDLES 4
 #define HURDLE_DASH_LAYOUT_FLAGS 512 // one per 8 pixels of a lane
+#define HURDLE_DASH_LANE_DUST    5   // dust clouds of a lane, used in turn
 
 // A hurdle on a lane: a standing sprite and a knocked-over one.
 typedef struct PokeathlonHurdle {
@@ -47,7 +48,7 @@ typedef struct PokeathlonHurdleDashDust {
 } PokeathlonHurdleDashDust;
 
 typedef struct PokeathlonHurdleDashDustLane {
-    PokeathlonHurdleDashDust dust[5];
+    PokeathlonHurdleDashDust dust[HURDLE_DASH_LANE_DUST];
     u32 next;
 } PokeathlonHurdleDashDustLane;
 

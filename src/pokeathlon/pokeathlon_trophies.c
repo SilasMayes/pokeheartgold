@@ -440,7 +440,7 @@ static void PokeathlonTrophies_PrintTitle(PokeathlonTrophies *work, u32 trophyCo
 }
 
 static void PokeathlonTrophies_PrintNextFriendshipTrophy(PokeathlonTrophies *work, u32 friendshipTrophies) {
-    GF_ASSERT(friendshipTrophies <= 10);
+    GF_ASSERT(friendshipTrophies <= NELEMS(sPokeathlonTrophiesFriendshipThresholds));
     PokeathlonUtil_PrintAlignedMessage(work->textContext, 9, friendshipTrophies + msg_0314_00017, FALSE);
 }
 
@@ -607,7 +607,7 @@ static u8 PokeathlonTrophies_CountFriendshipTrophies(int totalPoints) {
     const int *thresholds = sPokeathlonTrophiesFriendshipThresholds;
     u8 i;
 
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < NELEMS(sPokeathlonTrophiesFriendshipThresholds); i++) {
         if (thresholds[i] <= totalPoints) {
             break;
         }

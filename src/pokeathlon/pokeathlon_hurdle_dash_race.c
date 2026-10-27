@@ -109,16 +109,16 @@ static void PokeathlonHurdleDash_UpdateRunner(PokeathlonCourseData *course, Poke
     }
     pixels = runner->speed + runner->speedFraction;
     distance = pixels;
-    runner->speedFraction = pixels - (f32)distance;
+    runner->speedFraction = pixels - distance;
     runner->distance = runner->distance + distance;
     PokeathlonHurdleDash_RevealHurdles(hurdleDash, runner->distance, runner->lane);
     PokeathlonHurdleDashRunner_UpdateDust(hurdleDash, runner);
     runner->subScrollY = runner->subScrollY - distance;
-    if ((s32)(runner->subScrollY + 0x200) <= 0) {
+    if (runner->subScrollY + 0x200 <= 0) {
         runner->subScrollY = runner->subScrollY + 0x200;
     }
     runner->mainScrollY = runner->subScrollY + 0x110;
-    if ((s32)(runner->mainScrollY + 0x200) <= 0) {
+    if (runner->mainScrollY + 0x200 <= 0) {
         runner->mainScrollY = runner->mainScrollY + 0x200;
     }
     for (i = 0; i < HURDLE_DASH_LANE_HURDLES; i++) {
@@ -445,7 +445,7 @@ static void PokeathlonHurdleDashRunner_DrawFinishLine(BgConfig *bgConfig, Pokeat
         break;
     }
     case 1: {
-        int scrolled = (int)runner->distance - 16;
+        int scrolled = runner->distance - 16;
         int y;
         if (scrolled < 3656) {
             return;
@@ -467,7 +467,7 @@ static void PokeathlonHurdleDashRunner_DrawFinishLine(BgConfig *bgConfig, Pokeat
         break;
     }
     case 2: {
-        int scrolled = (int)runner->distance - 16;
+        int scrolled = runner->distance - 16;
         int y;
         u16 edge;
         if (scrolled < 4168) {
@@ -619,9 +619,9 @@ static void PokeathlonHurdleDash_UpdateRanks(PokeathlonCourseData *course) {
                 rank = (status->ranks[byte] >> (rank * 4)) & 0xF;
                 GF_ASSERT(rank > 0 && rank <= POKEATHLON_MONS);
                 hurdleDash->runners[i].rankScale = 1.5f;
-                scale.x = (int)(4096.0f * hurdleDash->runners[i].rankScale);
-                scale.y = (int)(4096.0f * hurdleDash->runners[i].rankScale);
-                scale.z = (int)(4096.0f * hurdleDash->runners[i].rankScale);
+                scale.x = 4096.0f * hurdleDash->runners[i].rankScale;
+                scale.y = 4096.0f * hurdleDash->runners[i].rankScale;
+                scale.z = 4096.0f * hurdleDash->runners[i].rankScale;
                 hurdleDash->runners[i].rank = rank;
                 Sprite_SetAffineScale(sprite, &scale);
                 Sprite_SetAnimCtrlSeq(sprite, rank - 1);
@@ -650,9 +650,9 @@ static void PokeathlonHurdleDash_UpdateRanks(PokeathlonCourseData *course) {
                 if (!hurdleDash->runners[i].finished) {
                     VecFx32 scale;
                     hurdleDash->runners[i].rankScale = 1.5f;
-                    scale.x = (int)(4096.0f * hurdleDash->runners[i].rankScale);
-                    scale.y = (int)(4096.0f * hurdleDash->runners[i].rankScale);
-                    scale.z = (int)(4096.0f * hurdleDash->runners[i].rankScale);
+                    scale.x = 4096.0f * hurdleDash->runners[i].rankScale;
+                    scale.y = 4096.0f * hurdleDash->runners[i].rankScale;
+                    scale.z = 4096.0f * hurdleDash->runners[i].rankScale;
                     Sprite_SetAffineScale(sprite, &scale);
                     Sprite_SetAnimCtrlSeq(sprite, rank - 1);
                 }
@@ -672,9 +672,9 @@ static void PokeathlonHurdleDash_UpdateRanks(PokeathlonCourseData *course) {
             } else {
                 shifted->runners[0].rankScale = 1.0f;
             }
-            scale.x = (int)(4096.0f * shifted->runners[0].rankScale);
-            scale.y = (int)(4096.0f * shifted->runners[0].rankScale);
-            scale.z = (int)(4096.0f * shifted->runners[0].rankScale);
+            scale.x = 4096.0f * shifted->runners[0].rankScale;
+            scale.y = 4096.0f * shifted->runners[0].rankScale;
+            scale.z = 4096.0f * shifted->runners[0].rankScale;
             Sprite_SetAffineScale(sprite, &scale);
         }
     }
@@ -690,7 +690,7 @@ static void PokeathlonHurdleDash_CalcRanks(PokeathlonCourseData *course) {
     s32 base;
     PokeathlonHurdleDashPacket *packet;
     PokeathlonHurdleDashRankNode head;
-    PokeathlonHurdleDashRankNode nodes[12];
+    PokeathlonHurdleDashRankNode nodes[POKEATHLON_MONS];
     block = PokeathlonCourse_GetDataCopyArea(course);
     status = (PokeathlonHurdleDashStatus *)PokeathlonCourse_ToBytes(block + POKEATHLON_COURSE_DATA_FRAME_OUT);
     participant = 0;

@@ -90,7 +90,7 @@ BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
     PokeathlonCourseMonGfx *image;
     int member;
     int i;
-    u16 goalPalettes[4];
+    u16 goalPalettes[POKEATHLON_PARTICIPANTS];
 
     struct {
         int y;
@@ -297,12 +297,12 @@ BOOL PokeathlonGoalRoll_Init(PokeathlonCourseData *course) {
             PokeathlonCourseObject_SetGroundPosition(object, x, y);
             PokeathlonCourseObject_SetTouchRadius(object, PokeathlonCourse_GetTouchRadius());
             PokeathlonCourseObject_GroundToCenter(object, x, y, &screen.x, &screen.y);
-            mon->startX = (u32)screen.x << FX32_SHIFT;
-            mon->startY = (u32)screen.y << FX32_SHIFT;
-            mon->position.x = (u32)screen.x << FX32_SHIFT;
-            mon->position.y = (u32)screen.y << FX32_SHIFT;
-            mon->target.x = (u32)screen.x << FX32_SHIFT;
-            mon->target.y = (u32)screen.y << FX32_SHIFT;
+            mon->startX = screen.x << FX32_SHIFT;
+            mon->startY = screen.y << FX32_SHIFT;
+            mon->position.x = screen.x << FX32_SHIFT;
+            mon->position.y = screen.y << FX32_SHIFT;
+            mon->target.x = screen.x << FX32_SHIFT;
+            mon->target.y = screen.y << FX32_SHIFT;
             if (row == PokeathlonCourse_GetNetId(course)) {
                 PokeathlonCourseMonObject_SetDrawPriority(object, 8);
             } else {

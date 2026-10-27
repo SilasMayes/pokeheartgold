@@ -549,7 +549,7 @@ BOOL PokeathlonCourseClosing_Awards(PokeathlonCourseData *course, u8 *state) {
     int msgId;
     int i;
     MessageFormat *msgFormat;
-    u8 drawingLots[4];
+    u8 drawingLots[POKEATHLON_PARTICIPANTS];
     int rounds;
     PokeathlonCourseCeremony_UpdateScores(ceremony->scores);
     PokeathlonCourseConfetti_Update(ceremony->confetti);
@@ -661,7 +661,7 @@ BOOL PokeathlonCourseClosing_Awards(PokeathlonCourseData *course, u8 *state) {
             break;
         case CLOSING_STATE_COUNT_EVENT_POINTS:
             if (PokeathlonCourseCeremony_AreScoresCounted(ceremony->scores)) {
-                if ((s32)ceremony->timer++ > 30) {
+                if (ceremony->timer++ > 30) {
                     rounds = PokeathlonCourse_GetMode(course);
                     if (rounds == POKEATHLON_COURSE_MODE_SOLO) {
                         rounds = POKEATHLON_SOLO_ROUNDS;
@@ -746,32 +746,22 @@ BOOL PokeathlonCourseClosing_Awards(PokeathlonCourseData *course, u8 *state) {
             break;
         case CLOSING_STATE_RECORD: {
             u32 courseId = ceremony->course;
-            u32 winner;
-            int own;
             int points;
             PokeathlonSave *pokeathlonSave;
-            if (PokeathlonCourse_GetMode(course) != POKEATHLON_COURSE_MODE_SOLO) {
-                goto noRecord;
+            if (PokeathlonCourse_GetMode(course) == POKEATHLON_COURSE_MODE_SOLO && ceremony->ranks[0].team == PokeathlonCourse_GetNetId(course)) {
+                GF_ASSERT(ceremony->ranks[0].team == 0);
+                pokeathlonSave = PokeathlonSave_dummy2(Save_Pokeathlon_Get(PokeathlonCourse_GetSaveData(course)));
+                points = PokeathlonCourseCeremony_GetPoints(ceremony->scores, ceremony->ranks[0].team);
+                // The best total of the course.
+                if (((PokeathlonCourseBestRecord *)pokeathlonSave)[courseId].totalPoints < (u32)points) {
+                    msgId = msg_0309_00029;
+                    BufferPlayersName(msgFormat, 0, PokeathlonCourse_GetPlayerProfileFromData(course, ceremony->ranks[0].team));
+                    BufferPokeathlonCourseName(msgFormat, 1, courseId);
+                }
+            } else {
+                msgId = msg_0309_00030;
+                BufferPokeathlonCourseName(msgFormat, 0, courseId);
             }
-            winner = ceremony->ranks[0].team;
-            own = PokeathlonCourse_GetNetId(course);
-            if (winner != (u32)own) {
-                goto noRecord;
-            }
-            GF_ASSERT(winner == 0);
-            pokeathlonSave = PokeathlonSave_dummy2(Save_Pokeathlon_Get(PokeathlonCourse_GetSaveData(course)));
-            points = (s32)PokeathlonCourseCeremony_GetPoints(ceremony->scores, ceremony->ranks[0].team);
-            // The best total of the course.
-            if (((PokeathlonCourseBestRecord *)pokeathlonSave)[courseId].totalPoints < (u32)points) {
-                msgId = msg_0309_00029;
-                BufferPlayersName(msgFormat, 0, PokeathlonCourse_GetPlayerProfileFromData(course, ceremony->ranks[0].team));
-                BufferPokeathlonCourseName(msgFormat, 1, courseId);
-            }
-            goto next;
-noRecord:
-            msgId = msg_0309_00030;
-            BufferPokeathlonCourseName(msgFormat, 0, courseId);
-next:
             ceremony->state = CLOSING_STATE_FAREWELL;
             break;
         }
@@ -2042,7 +2032,7 @@ static void PokeathlonCourseCeremony_SaveResult(PokeathlonCourseData *course, Po
     result->points = PokeathlonCourseCeremony_GetPoints(ceremony->scores, own);
     place = PokeathlonCourseCeremony_FindPlace(ceremony->ranks, own);
     GF_ASSERT(place != -1);
-    result->place = (u16)place;
+    result->place = place;
 }
 
 static void PokeathlonCourseCeremony_BufferNumber(MessageFormat *msgFormat, s32 value, u32 digits, u32 field) {

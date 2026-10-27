@@ -217,8 +217,8 @@ typedef struct PokeathlonGoalRollDrawOrder {
 
 // Draws the own team's Pokemon lower on the screen in front.
 void PokeathlonGoalRoll_SortOwnTeamOrder(PokeathlonGoalRollMon *team, u8 *monY) {
-    PokeathlonGoalRollDrawOrder mons[3];
-    PokeathlonGoalRollDrawOrder *order[3];
+    PokeathlonGoalRollDrawOrder mons[POKEATHLON_TEAM_SIZE];
+    PokeathlonGoalRollDrawOrder *order[POKEATHLON_TEAM_SIZE];
     PokeathlonGoalRollDrawOrder *high, *low;
     u8 i;
     for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {

@@ -381,7 +381,7 @@ static void PokeathlonBox_ShowMonInfo(int boxno, int slot, void *arg) {
             monInfo.isShiny = MonIsShiny(partyMon);
             monInfo.gender = GetMonData(partyMon, MON_DATA_GENDER, NULL);
             BoxPokemon *boxMon = Mon_GetBoxMon(Party_GetMonByIndex(party, slot));
-            PokeathlonBox_GetPartyMonStats(party, (u32)slot, &partyMonStats);
+            PokeathlonBox_GetPartyMonStats(party, slot, &partyMonStats);
             PokeathlonBox_GetLightBoxMonStats(boxMon, &partyLightMonStats);
             Party_GetMonAprijuiceModifiers(party, &aprijuiceModifier, slot);
             PokeathlonBox_CalcStatChanges(&partyLightMonStats, &partyMonStats, &aprijuiceModifier, &monInfo);

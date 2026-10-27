@@ -600,7 +600,7 @@ static void PokeathlonCirclePushDisplay_UpdateZoom(PokeathlonCirclePushDisplay *
     }
     frame = anim->frame;
     if (frame <= 40) {
-        matrix._00 = (f32)frame / 40.0f * 4096.0f;
+        matrix._00 = frame / 40.0f * 4096.0f;
         matrix._01 = 0;
         matrix._10 = 0;
         matrix._11 = matrix._00;
@@ -628,9 +628,9 @@ static void PokeathlonCirclePushDisplayAnim_SetupMatchup(PokeathlonCirclePushDis
     Sprite *sprite;
 
     // two Pokemon of different teams
-    first = (s32)LCRandom() % 4;
+    first = LCRandom() % 4;
     for (tries = 0; tries < 10; tries++) {
-        second = (s32)LCRandom() % 4;
+        second = LCRandom() % 4;
         if (first != second) {
             break;
         }
@@ -638,8 +638,8 @@ static void PokeathlonCirclePushDisplayAnim_SetupMatchup(PokeathlonCirclePushDis
     if (tries == 10) {
         second = (first + 1) % 4;
     }
-    first = first * 3 + (s32)LCRandom() % 3;
-    second = second * 3 + (s32)LCRandom() % 3;
+    first = first * 3 + LCRandom() % 3;
+    second = second * 3 + LCRandom() % 3;
     PokeathlonCirclePushDisplayAnim_LoadMonPic(anim, 0, (u8)first);
     PokeathlonCirclePushDisplayAnim_LoadMonPic(anim, 1, (u8)second);
 

@@ -538,7 +538,7 @@ void PokeathlonDiscCatch_UpdateDiscSprites(PokeathlonDiscCatchSprites *sprites, 
                 ManagedSprite_SetAnimNoRestart(disc->shadow[screen], 1);
             }
             {
-                f32 scale = 1.2f + (f32)(GF_SinDeg(disc->angle) / 18) / 4096.0f;
+                f32 scale = 1.2f + (GF_SinDeg(disc->angle) / 18) / 4096.0f;
                 disc->angle += 10;
                 PokeathlonDiscCatch_ScaleDisc(disc, scale);
             }
@@ -618,7 +618,7 @@ void PokeathlonDiscCatch_UpdateMonSprites(PokeathlonDiscCatchSprites *sprites, P
             } else {
                 f32 fallScale;
                 mon->fallScale -= FX32_CONST(0.1);
-                fallScale = (f32)mon->fallScale / 4096.0f;
+                fallScale = mon->fallScale / 4096.0f;
                 PokeathlonCourseObject_SetScale(monPic, fallScale, fallScale);
                 PokeathlonCourseObject_CenterToGround(monPic, frame->monX[i], frame->monY[i], &fieldX, &fieldY);
                 if (fieldY >= 180) {
@@ -936,7 +936,7 @@ u8 PokeathlonDiscCatch_CountTeamsAhead(PokeathlonCourseData *course, u32 partici
     score = work->field.teams[participant].result.score;
     for (; i < POKEATHLON_PARTICIPANTS; i++) {
         u16 other = work->field.teams[i].result.score;
-        if (i != (int)participant && score < other) {
+        if (i != participant && score < other) {
             count++;
         }
     }
@@ -988,9 +988,9 @@ static int PokeathlonDiscCatch_GetJumpOffset(PokeathlonDiscCatchStats *stats, in
     curve = PokeathlonDiscCatch_Square(frame - half) - PokeathlonDiscCatch_Square(half);
     if (curve != 0) {
         if (stats->jumpHeight != 0) {
-            height = 0.5f + (f32)(stats->jumpHeight << FX32_SHIFT);
+            height = 0.5f + (stats->jumpHeight << FX32_SHIFT);
         } else {
-            height = (f32)(stats->jumpHeight << FX32_SHIFT) - 0.5f;
+            height = (stats->jumpHeight << FX32_SHIFT) - 0.5f;
         }
         fxHeight = height;
         if (fxHeight != 0) {
@@ -998,7 +998,7 @@ static int PokeathlonDiscCatch_GetJumpOffset(PokeathlonDiscCatchStats *stats, in
             if (offset <= FX32_CONST(-24)) {
                 offset = FX32_CONST(-24);
             }
-            result = result - (f32)((offset - FX32_CONST(4)) / 100) / 4096.0f;
+            result = result - ((offset - FX32_CONST(4)) / 100) / 4096.0f;
         }
     }
     *scale = result;

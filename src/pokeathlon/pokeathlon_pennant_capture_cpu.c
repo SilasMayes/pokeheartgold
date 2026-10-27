@@ -65,7 +65,7 @@ PokeathlonPennantCaptureCpu *PokeathlonPennantCaptureCpu_New(enum HeapID heapId,
     PokeathlonPennantCaptureCpu *cpu = Heap_Alloc(heapId, sizeof(PokeathlonPennantCaptureCpu));
     MI_CpuFill8(cpu, 0, sizeof(PokeathlonPennantCaptureCpu));
     cpu->cpuCount = cpuCount;
-    cpu->humanCount = 4 - cpuCount;
+    cpu->humanCount = POKEATHLON_PARTICIPANTS - cpuCount;
     cpu->firstCpu = cpu->humanCount;
     cpu->interval = 6;
     cpu->timer = cpu->interval;
@@ -106,7 +106,7 @@ int PokeathlonPennantCaptureCpu_Update(PokeathlonPennantCaptureCpu *cpu) {
     s32 participant;
     int result = 4;
 
-    if (cpu->humanCount == 4) {
+    if (cpu->humanCount == POKEATHLON_PARTICIPANTS) {
         return 0;
     }
 
@@ -134,7 +134,7 @@ int PokeathlonPennantCaptureCpu_Update(PokeathlonPennantCaptureCpu *cpu) {
 // off the field -100; towards the goal rows when carrying pennants) and heads for one of the best.
 static void PokeathlonPennantCaptureCpu_ChooseTarget(PokeathlonPennantCaptureCpu *cpu, u8 who) {
     PokeathlonPennantCaptureCpuObject obstacles[PENNANT_CAPTURE_OBSTACLES], fieldItems[PENNANT_CAPTURE_FIELD_ITEMS];
-    PokeathlonPennantCaptureCpuPlayer players[4];
+    PokeathlonPennantCaptureCpuPlayer players[POKEATHLON_PARTICIPANTS];
     PokeathlonPennantCaptureCpuPlayer *self;
     PokeathlonPennantCapturePennant *pennants;
     PokeathlonPennantCapturePlayer *player;

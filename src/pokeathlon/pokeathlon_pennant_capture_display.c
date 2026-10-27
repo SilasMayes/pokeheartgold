@@ -64,7 +64,7 @@ void PokeathlonPennantCaptureDisplay_Delete(PokeathlonPennantCaptureDisplay *dis
     {
         PokeathlonPennantCaptureDisplay *cursor = display;
         int j = 0;
-        for (; j < 12; j++, cursor = DISPLAY_CURSOR_STEP(cursor, sizeof(void *))) {
+        for (; j < POKEATHLON_MONS; j++, cursor = DISPLAY_CURSOR_STEP(cursor, sizeof(void *))) {
             Heap_Free(cursor->u.raw.iconFiles[0]);
         }
     }
@@ -185,7 +185,7 @@ void PokeathlonPennantCaptureDisplay_LoadIcons(PokeathlonPennantCaptureDisplay *
     fileRow = display;
     i = 0;
     chars = display->iconChars;
-    for (; i < 12; i++) {
+    for (; i < POKEATHLON_MONS; i++) {
         fileRow->u.raw.iconFiles[0] = Heap_AllocAtEnd(display->heapId, 0x1000);
         current.form = (u8)mons->form;
         current.species = mons->species;

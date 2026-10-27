@@ -894,7 +894,7 @@ static void PokeathlonSnowThrow_PackPacket(PokeathlonSnowThrow *work, Pokeathlon
 #define BALL ((PokeathlonSnowThrowBall *)(ballBytes + offsetof(PokeathlonSnowThrow, balls)))
 #define MON  ((PokeathlonSnowThrowMon *)(monBytes + offsetof(PokeathlonSnowThrow, mons)))
     for (i = 0, shift = 0, ballBytes = (u8 *)work, monBytes = (u8 *)work, packetBytes = (u8 *)packet; i < POKEATHLON_MONS; shift += 2, ballBytes += sizeof(PokeathlonSnowThrowBall), packetBytes += sizeof(u16), monBytes += sizeof(PokeathlonSnowThrowMon), i++) {
-        states |= (u32)BALL->state << shift;
+        states |= BALL->state << shift;
         wasHit = MON->wasHit;
         hit = BALL->hit != 0 ? 1 : 0;
         BALL->hit = FALSE;
@@ -928,8 +928,8 @@ static void PokeathlonSnowThrow_PackPacket(PokeathlonSnowThrow *work, Pokeathlon
         packet->teams[i] = (sizes[i] << 10) + hits[i];
     }
     packet->flags = states;
-    packet->flags = states + ((u32)work->finished << 24);
-    packet->flags += ((u32)((work->timer + 30) / 30)) << 25;
+    packet->flags = states + (work->finished << 24);
+    packet->flags += ((work->timer + 30) / 30) << 25;
 }
 
 // Sends the own stylus to the host. TRUE when the host says the event is over.
@@ -1352,8 +1352,6 @@ static void PokeathlonSnowThrow_MoveBalls(PokeathlonCourseData *course) {
     }
 }
 
-typedef void (*PokeathlonSnowThrowAddMonCounterFunc)(PokeathlonCourseData *course, u8 participant, u8 member, int counter, int amount);
-
 // Host: a flying snowball within 3 units of another team's Pokemon hits it: a hit for the thrower, energy off the
 // Pokemon hit (by speed, size, the thrower's power and the target's damage factor), and a stun if that was a lot.
 
@@ -1381,7 +1379,7 @@ static void PokeathlonSnowThrow_HitMons(PokeathlonCourseData *course, Pokeathlon
                 continue;
             }
             work->balls[i].state = SNOW_THROW_BALL_SPLASHED;
-            ((PokeathlonSnowThrowAddMonCounterFunc)PokeathlonCourse_AddMonCounter)(course, team, i % POKEATHLON_TEAM_SIZE, 3, 1);
+            PokeathlonCourse_AddMonCounter(course, team, i % POKEATHLON_TEAM_SIZE, 3, 1);
             work->mons[i].hits++;
             if (work->mons[i].hits > POKEATHLON_SCORE_MAX) {
                 work->mons[i].hits = POKEATHLON_SCORE_MAX;
@@ -1409,7 +1407,7 @@ static void PokeathlonSnowThrow_HitMons(PokeathlonCourseData *course, Pokeathlon
             work->balls[i].size = 0;
             work->balls[i].taps = 0;
             speed = VEC_Mag(&work->balls[i].velocity) / FX32_ONE;
-            damage = (f32)speed * sizeFactor * work->mons[i].throwPower * work->mons[j].hitDamage;
+            damage = speed * sizeFactor * work->mons[i].throwPower * work->mons[j].hitDamage;
             GF_ASSERT(damage >= 0);
             work->mons[j].energy = work->mons[j].energy - damage - 30;
             if (work->mons[j].energy < 0) {
@@ -1419,11 +1417,11 @@ static void PokeathlonSnowThrow_HitMons(PokeathlonCourseData *course, Pokeathlon
             if (work->mons[j].stunTimer == 0) {
                 if (lost > 40) {
                     work->mons[j].stunTimer = lost;
-                    ((PokeathlonSnowThrowAddMonCounterFunc)PokeathlonCourse_AddMonCounter)(course, j / POKEATHLON_TEAM_SIZE, j % POKEATHLON_TEAM_SIZE, 1, 1);
+                    PokeathlonCourse_AddMonCounter(course, j / POKEATHLON_TEAM_SIZE, j % POKEATHLON_TEAM_SIZE, 1, 1);
                 }
             } else {
                 work->mons[j].stunTimer += lost;
-                ((PokeathlonSnowThrowAddMonCounterFunc)PokeathlonCourse_AddMonCounter)(course, j / POKEATHLON_TEAM_SIZE, j % POKEATHLON_TEAM_SIZE, 1, 1);
+                PokeathlonCourse_AddMonCounter(course, j / POKEATHLON_TEAM_SIZE, j % POKEATHLON_TEAM_SIZE, 1, 1);
             }
         }
     }
