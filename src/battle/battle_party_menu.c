@@ -711,7 +711,7 @@ static int BattlePartyMenu_HandlePartyListInput(BattlePartyMenu *menu) {
     if (PaletteData_GetSelectedBuffersBitmask(menu->paletteData) != 0) {
         return BATTLE_PARTY_STATE_PARTY_LIST;
     }
-    if (BattlePartyMenu_HandlePartyListSelection(menu) == 1) {
+    if (BattlePartyMenu_HandlePartyListSelection(menu) == TRUE) {
         if (menu->context->selectedMon == PARTY_SIZE) {
             if (menu->context->mode != BATTLE_PARTY_MODE_SWITCH_NO_CANCEL) {
                 PlaySE(SEQ_SE_DP_DECIDE);
@@ -980,7 +980,7 @@ static int BattlePartyMenu_HandleForgetMoveInput(BattlePartyMenu *menu) {
         } else {
             BattlePartyMenu_StartButtonAnim(menu, BATTLE_PARTY_BUTTON_FORGET_CONTEST);
         }
-        if (BattlePartyMenu_IsSelectedMoveHM(menu) == 1) {
+        if (BattlePartyMenu_IsSelectedMoveHM(menu) == TRUE) {
             BattlePartyMenu_PrintHMCantBeForgotten(menu);
             if (menu->viewMode == BATTLE_PARTY_VIEW_BATTLE) {
                 BattlePartyMenu_ClearBattleMoveInfo(menu);
@@ -1136,7 +1136,7 @@ static int BattlePartyMenu_WaitMessage(const BattlePartyMenu *menu) {
 }
 
 static int BattlePartyMenu_WaitMessageInput(const BattlePartyMenu *menu) {
-    if ((gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || System_GetTouchNew() == 1) {
+    if ((gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || System_GetTouchNew() == TRUE) {
         return menu->nextState;
     }
     return BATTLE_PARTY_STATE_WAIT_MESSAGE_INPUT;

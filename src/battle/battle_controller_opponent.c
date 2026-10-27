@@ -1355,7 +1355,7 @@ void OpponentData_CreateBallData(BattleSystem *battleSystem, OpponentData *oppon
             BallThrow_SetDrawPriority(opponentData->ballData, 100);
             BallThrow_SetPriority(opponentData->ballData, 2);
             BallThrow_SetDrawFlag(opponentData->ballData, FALSE);
-            BallThrow_SetAnimateSprite(opponentData->ballData, 0);
+            BallThrow_SetAnimateSprite(opponentData->ballData, FALSE);
         }
     }
 }
@@ -2200,7 +2200,7 @@ static void OpponentData_ThrowPokeball(BattleSystem *battleSystem, OpponentData 
     } else {
         Trainer *trainer = BattleSystem_GetTrainer(battleSystem, opponentData->battlerId);
         work->facing = 0;
-        backpic = TrainerClassToBackpicID(BattleControllerOpponent_GetVersionTrainerClass(battleSystem, opponentData->battlerId, trainer->data.trainerClass), 0);
+        backpic = TrainerClassToBackpicID(BattleControllerOpponent_GetVersionTrainerClass(battleSystem, opponentData->battlerId, trainer->data.trainerClass), FALSE);
     }
     work->backpic = backpic;
     BattleSystem_GetBattleType(battleSystem);
@@ -3154,7 +3154,7 @@ static void Task_PokemonSlideIn(SysTask *task, void *data) {
         return;
     case SLIDE_IN_STATE_WAIT_BALL_OPEN: {
         PokepicManager *pokepicManager;
-        if (BallThrow_GetMode(work->opponentData->ballData) || BallSealEffect_IsLoaded(work->ballOpenEffect) != 1 || BallThrow_HasOpened(work->opponentData->ballData) != 1) {
+        if (BallThrow_GetMode(work->opponentData->ballData) || BallSealEffect_IsLoaded(work->ballOpenEffect) != TRUE || BallThrow_HasOpened(work->opponentData->ballData) != TRUE) {
             break;
         }
         if (work->battlerType == BATTLER_TYPE_PLAYER_SIDE_SLOT_2) {
@@ -3187,7 +3187,7 @@ static void Task_PokemonSlideIn(SysTask *task, void *data) {
         return;
     }
     case SLIDE_IN_STATE_WAIT_BALL_THROW:
-        if (BallThrow_IsActive(work->opponentData->ballData) != 1) {
+        if (BallThrow_IsActive(work->opponentData->ballData) != TRUE) {
             work->state++;
         }
     case SLIDE_IN_STATE_GROW:
@@ -3409,7 +3409,7 @@ static void Task_PokemonSendOut(SysTask *task, void *data) {
         work->state++;
         break;
     case SEND_OUT_STATE_WAIT_BALL_OPEN:
-        if ((BallThrow_GetMode(work->ballData) == 0 || work->breakOut != 0) && BallSealEffect_IsLoaded(work->ballOpenEffect) == 1 && BallThrow_HasOpened(work->ballData) == 1) {
+        if ((BallThrow_GetMode(work->ballData) == 0 || work->breakOut != 0) && BallSealEffect_IsLoaded(work->ballOpenEffect) == TRUE && BallThrow_HasOpened(work->ballData) == TRUE) {
             if (work->battlerSprites) {
                 BattleAnimBattlerSprites_Free(work->battlerSprites);
             }
@@ -3425,7 +3425,7 @@ static void Task_PokemonSendOut(SysTask *task, void *data) {
         }
         break;
     case SEND_OUT_STATE_WAIT_BALL_THROW:
-        if (BallThrow_IsActive(work->ballData) != 1) {
+        if (BallThrow_IsActive(work->ballData) != TRUE) {
             work->state++;
         }
     case SEND_OUT_STATE_GROW:
@@ -3865,7 +3865,7 @@ static void Task_TrainerEncounter(SysTask *task, void *data) {
         }
         break;
     case TRAINER_ENCOUNTER_STATE_ANIMATE:
-        if (ManagedSprite_IsAnimated(work->managedSprite) == 1) {
+        if (ManagedSprite_IsAnimated(work->managedSprite) == TRUE) {
             if (!OpponentTrainerEncounter_HandleAnimFrame(work, work->managedSprite)) {
                 break;
             }
@@ -3925,7 +3925,7 @@ static void Task_ThrowPokeball(SysTask *task, void *data) {
         work->opponentData->ballData = BallThrow_New(&ball);
         BallThrow_SetDrawPriority(work->opponentData->ballData, 100);
         BallThrow_SetPriority(work->opponentData->ballData, 2);
-        BallThrow_SetAnimateSprite(work->opponentData->ballData, 0);
+        BallThrow_SetAnimateSprite(work->opponentData->ballData, FALSE);
         ManagedSprite_SetAnimationFrame(work->opponentData->managedSprite, 0);
         ManagedSprite_SetAnim(work->opponentData->managedSprite, 1);
         ManagedSprite_SetAnimateFlag(work->opponentData->managedSprite, TRUE);
@@ -3971,13 +3971,13 @@ static void Task_ThrowPokeball(SysTask *task, void *data) {
                 BallThrow_SetPosition(work->opponentData->ballData, x + gBallThrowOffsets[work->backpic][animFrame][0], y + gBallThrowOffsets[work->backpic][animFrame][1]);
                 if (animFrame == 3 && BallThrow_GetMode(work->opponentData->ballData) != 0) {
                     BallThrow_SetMode(work->opponentData->ballData, 0);
-                    BallThrow_SetAnimateSprite(work->opponentData->ballData, 1);
+                    BallThrow_SetAnimateSprite(work->opponentData->ballData, TRUE);
                     if ((battleType & BATTLE_TYPE_DOUBLES) && !(battleType & BATTLE_TYPE_MULTI)) {
                         OpponentData *partner = BattleSystem_GetOpponentData(work->battleSystem, BattleSystem_GetBattlerIdPartner(work->battleSystem, work->battlerId));
                         BallThrow_SetPosition(partner->ballData, x + gBallThrowOffsets[work->backpic][animFrame][0], y + gBallThrowOffsets[work->backpic][animFrame][1]);
                         BallThrow_SetDrawFlag(partner->ballData, TRUE);
                         BallThrow_SetMode(partner->ballData, 0);
-                        BallThrow_SetAnimateSprite(partner->ballData, 1);
+                        BallThrow_SetAnimateSprite(partner->ballData, TRUE);
                     }
                 }
             }
@@ -4004,7 +4004,7 @@ static void Task_ThrowPokeball(SysTask *task, void *data) {
             if (animFrame == 3 && BallThrow_GetMode(work->opponentData->ballData) != work->ballTargetState) {
                 BallThrow_SetMode(work->opponentData->ballData, work->ballTargetState);
                 BallThrow_SetPriority(work->opponentData->ballData, 1);
-                BallThrow_SetAnimateSprite(work->opponentData->ballData, 1);
+                BallThrow_SetAnimateSprite(work->opponentData->ballData, TRUE);
                 if (work->ballTargetState != 3) {
                     PlaySE(SEQ_SE_DP_THROW);
                 }
@@ -4021,7 +4021,7 @@ static void Task_ThrowPokeball(SysTask *task, void *data) {
         }
         break;
     case THROW_BALL_STATE_WAIT_BALL:
-        if (BallThrow_IsActive(work->opponentData->ballData) != 1) {
+        if (BallThrow_IsActive(work->opponentData->ballData) != TRUE) {
             BallThrow_Delete(work->opponentData->ballData);
             work->opponentData->ballData = NULL;
             work->state = THROW_BALL_STATE_END;
@@ -4073,7 +4073,7 @@ static void Task_ThrowPokeballWithFollowMon(SysTask *task, void *data) {
                     BallThrow_SetPosition(partner->ballData, x + gBallThrowOffsets[work->backpic][frame][0], y + gBallThrowOffsets[work->backpic][frame][1]);
                     BallThrow_SetDrawFlag(partner->ballData, TRUE);
                     BallThrow_SetMode(partner->ballData, 0);
-                    BallThrow_SetAnimateSprite(partner->ballData, 1);
+                    BallThrow_SetAnimateSprite(partner->ballData, TRUE);
                     BallThrow_SetPriority(partner->ballData, 1);
                 }
             }
@@ -4347,7 +4347,7 @@ static void Task_PlayerSelectCommand(SysTask *task, void *data) {
         }
         break;
     case SELECT_COMMAND_STATE_HANDLE_INPUT:
-        if (BattleInput_CheckFeedbackDone(battleInput) == 1 || work->input == 1) {
+        if (BattleInput_CheckFeedbackDone(battleInput) == TRUE || work->input == 1) {
             switch (work->input) {
             case 1:
                 if (BattleSystem_GetBattleType(work->battleSystem) & (BATTLE_TYPE_SAFARI | BATTLE_TYPE_PAL_PARK)) {
@@ -4398,7 +4398,7 @@ static void Task_PlayerSelectCommand(SysTask *task, void *data) {
         }
         break;
     case SELECT_COMMAND_STATE_CLOSE_MENU:
-        if (BattleInput_CheckFeedbackDone(battleInput) == 1) {
+        if (BattleInput_CheckFeedbackDone(battleInput) == TRUE) {
             NARC *narc0 = NARC_New(NARC_a_0_0_7, HEAP_ID_BATTLE);
             NARC *narc1 = NARC_New(NARC_a_0_0_8, HEAP_ID_BATTLE);
             BattleInput_ChangeMenu(narc0, narc1, battleInput, BATTLE_MENU_0, 0, NULL);

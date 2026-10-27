@@ -100,7 +100,7 @@ void BattleAnimEmitterCb_SetPositionAtFirstOpponent(SPLEmitter *emitter) {
         BattleAnimUtil_GetEmitterPositionKind0(type, &unusedPos, isContest, perspective);
     }
     SPL_SetEmitterPosition(emitter, &pos);
-    BattleAnimUtil_GetCameraUp(1, &up);
+    BattleAnimUtil_GetCameraUp(TRUE, &up);
     camera = ParticleSystem_GetCamera(particleSystem);
     angle = Camera_GetAngle(camera);
     Camera_SetAnglePos(&angle, camera);

@@ -519,7 +519,7 @@ static BOOL VsRecorder_FrontierEnter(VsRecorderWork *work) {
         VsRecorder_SetVBlankPaused(work, TRUE);
         VsRecorder_FreeMenuRows(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
-        VsRecorder_StartFlipScreens(work, 0);
+        VsRecorder_StartFlipScreens(work, FALSE);
         OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
         VsRecorder_ResetBgPriorities();
         SetBgPriority(GF_BG_LYR_SUB_2, 2);

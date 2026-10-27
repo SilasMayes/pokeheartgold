@@ -570,7 +570,7 @@ static BOOL BattleHallApp_SelectType(BattleHallApp *app) {
             break;
         case YESNORESPONSE_YES:
             BattleHallApp_ResetYesNo(app);
-            if (BattleHallApp_IsMatronBattle(app) == 1 && BattleHallApp_IsMatronMode(app) == 0) {
+            if (BattleHallApp_IsMatronBattle(app) == TRUE && BattleHallApp_IsMatronMode(app) == 0) {
                 app->savedCursor = app->cursor;
                 app->subState = HALL_SELECT_MATRON_MESSAGE;
                 break;
@@ -783,7 +783,7 @@ static BOOL BattleHallApp_LinkSync(BattleHallApp *app) {
         app->subState++;
         break;
     case HALL_LINK_SYNC_WAIT:
-        if (LinkSync_IsSynced(HALL_SYNC_ID_DECIDE) == 1) {
+        if (LinkSync_IsSynced(HALL_SYNC_ID_DECIDE) == TRUE) {
             LinkSync_ClearPackets();
             return TRUE;
         }
@@ -1161,7 +1161,7 @@ static void BattleHallApp_CreateSummaryArgs(BattleHallApp *app) {
     app->summaryArgs->natDexEnabled = SaveArray_IsNatDexEnabled(app->saveData);
     app->summaryArgs->unk2C = PokemonSummary_GetDefaultUnk2C(app->saveData);
     app->summaryArgs->ribbons = Save_SpecialRibbons_Get(app->saveData);
-    app->summaryArgs->isFlag982Set = 0;
+    app->summaryArgs->isFlag982Set = FALSE;
     PokemonSummary_SetPages(app->summaryArgs, sBattleHallAppSummaryPages);
     PokemonSummaryArgs_SetPlayer(app->summaryArgs, Save_PlayerData_GetProfile(app->saveData));
 }

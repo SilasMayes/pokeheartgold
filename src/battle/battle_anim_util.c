@@ -506,7 +506,7 @@ static void BattleAnimScanline_Deactivate(BattleAnimScanlineTasks *tasks) {
 static void BattleAnimScanline_StartHBlankDma(BattleAnimScanline *scanline) {
     void *buffer = DoubleBuffer_GetOther(scanline->doubleBuffer);
     HBlankDma_Stop();
-    HBlankDma_Start(buffer, scanline->destination, 4, 1);
+    HBlankDma_Start(buffer, scanline->destination, 4, TRUE);
 }
 
 static void BattleAnimScanline_SwapAndStartDma(BattleAnimScanline *scanline) {

@@ -57,7 +57,7 @@ static BOOL Frontier_Init(OverlayManager *manager, int *state) {
     work->system = FrontierSystem_Create(work, HEAP_ID_FIELD2, work->launchArgs->frontierMapId);
     FrontierSystem_AddTask(work->system, work->launchArgs->frontierMapId, 0);
     Frontier_CreateMap(work);
-    return 1;
+    return TRUE;
 }
 
 enum {
@@ -77,14 +77,14 @@ static BOOL Frontier_Main(OverlayManager *manager, int *state) {
         *state = FRONTIER_MAIN_RUN;
         break;
     case FRONTIER_MAIN_RUN:
-        if (work->exitRequested == 1) {
+        if (work->exitRequested == TRUE) {
             *state = FRONTIER_MAIN_EXIT;
             break;
         }
-        if (work->mapActive == 0) {
+        if (!work->mapActive) {
             break;
         }
-        if (work->rebuildPending == 1) {
+        if (work->rebuildPending == TRUE) {
             *state = FRONTIER_MAIN_FREE_MAP;
             break;
         }
@@ -94,7 +94,7 @@ static BOOL Frontier_Main(OverlayManager *manager, int *state) {
         }
         break;
     case FRONTIER_MAIN_EXIT:
-        return 1;
+        return TRUE;
     case FRONTIER_MAIN_START_CHILD_APP:
         FrontierMap_SaveObjects(work->map);
         Frontier_FreeMap(work);
@@ -102,13 +102,13 @@ static BOOL Frontier_Main(OverlayManager *manager, int *state) {
         *state = FRONTIER_MAIN_RUN_CHILD_APP;
         break;
     case FRONTIER_MAIN_RUN_CHILD_APP:
-        if (OverlayManager_Run(work->childManager) == 1) {
+        if (OverlayManager_Run(work->childManager) == TRUE) {
             OverlayManager_Delete(work->childManager);
             Frontier_LoadOverlays();
             if (work->childExit != NULL) {
                 work->childExit(work->childArgs);
             }
-            if (work->childArgs != NULL && work->freeChildArgs == 1) {
+            if (work->childArgs != NULL && work->freeChildArgs == TRUE) {
                 Heap_Free(work->childArgs);
             }
             work->childManager = NULL;
@@ -135,11 +135,11 @@ static BOOL Frontier_Main(OverlayManager *manager, int *state) {
             FrontierSystem_AddTask(work->system, work->launchArgs->frontierMapId, work->taskId);
             FrontierSystem_RestoreVars(work->system, saved);
         }
-        work->rebuildPending = 0;
+        work->rebuildPending = FALSE;
         *state = FRONTIER_MAIN_RUN;
         break;
     }
-    return 0;
+    return FALSE;
 }
 
 static BOOL Frontier_Exit(OverlayManager *manager, int *state) {
@@ -148,17 +148,17 @@ static BOOL Frontier_Exit(OverlayManager *manager, int *state) {
     Frontier_FreeMap(work);
     OverlayManager_FreeData(manager);
     Frontier_UnloadOverlays();
-    return 1;
+    return TRUE;
 }
 
 static void Frontier_CreateMap(FrontierWork *work) {
     work->map = FrontierMap_Init(work);
-    work->mapActive = 1;
+    work->mapActive = TRUE;
 }
 
 static void Frontier_FreeMap(FrontierWork *work) {
     FrontierMap_Free(work->map);
-    work->mapActive = 0;
+    work->mapActive = FALSE;
 }
 
 static void Frontier_ResetMapObjects(FrontierWork *work) {
@@ -213,12 +213,12 @@ void Frontier_LaunchApplication(void *frontierWork, const OverlayManagerTemplate
 }
 
 void Frontier_RequestExit(FrontierWork *work) {
-    work->exitRequested = 1;
+    work->exitRequested = TRUE;
 }
 
 void Frontier_ChangeMode(FrontierWork *work, u16 mode, u16 taskId) {
     work->launchArgs->frontierMapId = mode;
-    work->rebuildPending = 1;
+    work->rebuildPending = TRUE;
     work->taskId = taskId;
 }
 

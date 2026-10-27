@@ -2805,7 +2805,8 @@ static void BattleAnimScriptCmd_WaitForBackgroundSwitch(BattleAnimSystem *system
 
 static void BattleAnimScriptCmd_SetBackground(BattleAnimSystem *system) {
     BattleAnimBgSwitchWork *work = BattleAnimBackground_NewSwitchWork(system);
-    int bgId, member, screen;
+    int bgId, member;
+    enum BattleAnimBgFile screen;
 
     system->scriptPtr++;
     bgId = *system->scriptPtr;

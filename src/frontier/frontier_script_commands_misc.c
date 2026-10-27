@@ -213,7 +213,7 @@ BOOL FrtCmd_TowerWaitLink(FrontierScriptContext *ctx) {
 static BOOL FrontierScriptNative_WaitPartnerPacket(FrontierScriptContext *ctx) {
     FrontierLaunchArgs *args = Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork);
     FrontierFieldSystem *tower = Frontier_GetData(ctx->frontierSystem->frontierWork);
-    return FrontierScript_ReadPartnerPacket(ctx, tower, args->saveData, ctx->data[0], ctx->data[1]) == 1;
+    return FrontierScript_ReadPartnerPacket(ctx, tower, args->saveData, ctx->data[0], ctx->data[1]) == TRUE;
 }
 
 static BOOL FrontierScript_ReadPartnerPacket(FrontierScriptContext *ctx, FrontierFieldSystem *tower, SaveData *saveData, u32 mode, u16 value) {
