@@ -58,10 +58,10 @@ typedef struct BerryPotsOverlayData {
 static BOOL BerryPots_RunSubApp(OverlayManager **manager);
 static void BerryPots_AllocBagCursors(BerryPotsOverlayData *data);
 static void BerryPots_FreeBagCursors(BerryPotsOverlayData *data);
-static u32 BerryPots_MainSeq_StartApp(BerryPotsOverlayData *data);
-static u32 BerryPots_MainSeq_RunApp(BerryPotsOverlayData *data);
-static u32 BerryPots_MainSeq_StartBag(BerryPotsOverlayData *data);
-static u32 BerryPots_MainSeq_RunBag(BerryPotsOverlayData *data);
+static enum BerryPotsMainState BerryPots_MainSeq_StartApp(BerryPotsOverlayData *data);
+static enum BerryPotsMainState BerryPots_MainSeq_RunApp(BerryPotsOverlayData *data);
+static enum BerryPotsMainState BerryPots_MainSeq_StartBag(BerryPotsOverlayData *data);
+static enum BerryPotsMainState BerryPots_MainSeq_RunBag(BerryPotsOverlayData *data);
 
 static BOOL BerryPots_RunSubApp(OverlayManager **manager) {
     if (*manager != NULL && OverlayManager_Run(*manager)) {
@@ -134,12 +134,12 @@ static void BerryPots_FreeBagCursors(BerryPotsOverlayData *data) {
     Heap_Free(data->cursor1);
 }
 
-static u32 BerryPots_MainSeq_StartApp(BerryPotsOverlayData *data) {
+static enum BerryPotsMainState BerryPots_MainSeq_StartApp(BerryPotsOverlayData *data) {
     data->ovyManager = OverlayManager_New(&sBerryPotsAppTemplate, data, data->heapID);
     return BERRY_POTS_MAIN_RUN_APP;
 }
 
-static u32 BerryPots_MainSeq_RunApp(BerryPotsOverlayData *data) {
+static enum BerryPotsMainState BerryPots_MainSeq_RunApp(BerryPotsOverlayData *data) {
     if (!BerryPots_RunSubApp(&data->ovyManager)) {
         return BERRY_POTS_MAIN_RUN_APP;
     }
@@ -151,7 +151,7 @@ static u32 BerryPots_MainSeq_RunApp(BerryPotsOverlayData *data) {
     return BERRY_POTS_MAIN_EXIT;
 }
 
-static u32 BerryPots_MainSeq_StartBag(BerryPotsOverlayData *data) {
+static enum BerryPotsMainState BerryPots_MainSeq_StartBag(BerryPotsOverlayData *data) {
     Bag *bag = Save_Bag_Get(data->args->saveData);
 
     switch (data->itemAction) {
@@ -176,7 +176,7 @@ static u32 BerryPots_MainSeq_StartBag(BerryPotsOverlayData *data) {
     return BERRY_POTS_MAIN_RUN_BAG;
 }
 
-static u32 BerryPots_MainSeq_RunBag(BerryPotsOverlayData *data) {
+static enum BerryPotsMainState BerryPots_MainSeq_RunBag(BerryPotsOverlayData *data) {
     if (!BerryPots_RunSubApp(&data->ovyManager)) {
         return BERRY_POTS_MAIN_RUN_BAG;
     }

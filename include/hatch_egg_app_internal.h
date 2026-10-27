@@ -77,6 +77,13 @@ typedef struct HatchEggBgTemplates {
     BgTemplate templates[3];
 } HatchEggBgTemplates;
 
+// HatchEggApp_UpdateEggShake results
+enum HatchEggShakeResult {
+    HATCH_EGG_SHAKE_RUNNING,
+    HATCH_EGG_SHAKE_HIT, // the sixth frame of the shake
+    HATCH_EGG_SHAKE_ENDED,
+};
+
 void HatchEggApp_HideLayers(void);
 void HatchEggApp_InitBlend(void);
 GF3DVramMan *HatchEggApp_Create3DVramMan(void);

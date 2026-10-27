@@ -86,8 +86,8 @@ enum BoxDisplayWindow {
 };
 
 static void PokewalkerApp_InitSpriteTemplate(SpriteTemplate *template, SpriteList *spriteList, const SpriteResourcesHeader *header, NNS_G2D_VRAM_TYPE whichScreen, enum HeapID heapId);
-static BOOL PokewalkerApp_SelectMon_GetBoxMonIcon(void *storage, u32 box, int slot, BoxMonSelectorMon *selectorMon);
-static void PokewalkerApp_SelectMon_GetBoxName(String *dest, void *storage, int box);
+static BOOL PokewalkerApp_SelectMon_GetBoxMonIcon(PCStorage *storage, u32 box, int slot, BoxMonSelectorMon *selectorMon);
+static void PokewalkerApp_SelectMon_GetBoxName(String *dest, PCStorage *storage, int box);
 static void PokewalkerApp_SelectMon_InitOam(PokewalkerSelectMonWork *work);
 static void PokewalkerApp_SelectMon_InitObjTransfer(void);
 static void PokewalkerApp_SelectMon_SetGraphicsModes(BgConfig *bgConfig);
@@ -387,7 +387,7 @@ static BOOL PokewalkerApp_SelectMon_GetBoxMon(PCStorage *storage, u32 box, u32 s
 }
 
 // Only what the box icons need.
-static BOOL PokewalkerApp_SelectMon_GetBoxMonIcon(void *storage, u32 box, int slot, BoxMonSelectorMon *selectorMon) {
+static BOOL PokewalkerApp_SelectMon_GetBoxMonIcon(PCStorage *storage, u32 box, int slot, BoxMonSelectorMon *selectorMon) {
     PokewalkerBoxMon *mon = (PokewalkerBoxMon *)selectorMon;
     BoxPokemon *boxMon = PCStorage_GetMonByIndexPair(storage, box, slot);
     if (GetBoxMonData(boxMon, MON_DATA_SPECIES_EXISTS, NULL)) {
@@ -416,7 +416,7 @@ static BOOL PokewalkerApp_SelectMon_GetBoxMonIcon(void *storage, u32 box, int sl
     return FALSE;
 }
 
-static void PokewalkerApp_SelectMon_GetBoxName(String *dest, void *storage, int box) {
+static void PokewalkerApp_SelectMon_GetBoxName(String *dest, PCStorage *storage, int box) {
     PCStorage_GetBoxName(storage, box, dest);
 }
 

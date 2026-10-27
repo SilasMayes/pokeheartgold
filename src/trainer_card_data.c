@@ -25,7 +25,7 @@ enum LinkTrainerCardState {
 };
 
 typedef struct LinkTrainerCardTaskEnv {
-    int state;
+    enum LinkTrainerCardState state;
     TrainerCardData *partnerCard;
     TrainerCardAppArgs args;
 } LinkTrainerCardTaskEnv;
@@ -121,11 +121,11 @@ u8 FieldSystem_GetTrainerCardStars(FieldSystem *fieldSystem) {
     if (Pokedex_NationalDexIsComplete(Save_Pokedex_Get(saveData))) {
         stars++;
     }
-    if (FrontierSave_GetStat(frontier, 0, 0xFF) >= 100
-        || FrontierSave_GetStat(frontier, 2, 0xFF) >= 100
-        || FrontierSave_GetStat(frontier, 4, 0xFF) >= 100
-        || FrontierSave_GetStat(frontier, 6, 0xFF) >= 100
-        || FrontierSave_GetStat(frontier, 8, 0xFF) >= 100) {
+    if (FrontierSave_GetStat(frontier, 0, FRONTIER_STAT_NO_FRIEND) >= 100
+        || FrontierSave_GetStat(frontier, 2, FRONTIER_STAT_NO_FRIEND) >= 100
+        || FrontierSave_GetStat(frontier, 4, FRONTIER_STAT_NO_FRIEND) >= 100
+        || FrontierSave_GetStat(frontier, 6, FRONTIER_STAT_NO_FRIEND) >= 100
+        || FrontierSave_GetStat(frontier, 8, FRONTIER_STAT_NO_FRIEND) >= 100) {
         stars++;
     }
     if (Save_VarsFlags_CheckFlagInArray(varsFlags, FLAG_UNK_0F1)) {

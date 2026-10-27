@@ -28,11 +28,6 @@
 // Player avatar movement control: turns the d-pad input into the player's map object movement each frame, on foot
 // and on the bike, with collision checks, forced movement (ice, Cycling Road slopes) and step sounds.
 
-typedef struct ForcedMovementEntry {
-    BOOL (*matches)(u8 behavior);
-    int kind;
-} ForcedMovementEntry;
-
 typedef struct FootstepSound {
     u16 sequence;
     u16 fieldBank; // 1: played from the field sound bank
@@ -56,6 +51,11 @@ enum ForcedMovementKind {
     FORCED_MOVEMENT_CYCLING_ROAD_SLOPE,
     FORCED_MOVEMENT_END, // end of sPlayerForcedMovementBehaviors
 };
+
+typedef struct ForcedMovementEntry {
+    BOOL (*matches)(u8 behavior);
+    enum ForcedMovementKind kind;
+} ForcedMovementEntry;
 
 enum FootStepKind {
     FOOT_STEP_STAND,
@@ -90,18 +90,18 @@ static void PlayerAvatar_ClearFlag1IfFlag6Moving(PlayerAvatar *avatar);
 static void PlayerAvatar_PlayTerrainSounds(PlayerAvatar *avatar);
 static void PlayerAvatar_PlayFootstepSound(LocalMapObject *object, PlayerAvatar *avatar);
 static BOOL PlayerAvatar_TryForcedMovement(PlayerAvatar *avatar, int value);
-static int PlayerAvatar_GetForcedMovementKind(PlayerAvatar *avatar, int value);
-static BOOL PlayerAvatar_RunForcedMovement(PlayerAvatar *avatar, int kind, int value);
+static enum ForcedMovementKind PlayerAvatar_GetForcedMovementKind(PlayerAvatar *avatar, int value);
+static BOOL PlayerAvatar_RunForcedMovement(PlayerAvatar *avatar, enum ForcedMovementKind kind, int value);
 static void PlayerAvatar_EndForcedMovement(PlayerAvatar *avatar);
-static int PlayerAvatar_GetSlopeInDirection(PlayerAvatar *avatar, int direction);
-static BOOL PlayerAvatar_AdjustSpeedForSlope(PlayerAvatar *avatar, int slope);
+static enum PlayerAvatarSlope PlayerAvatar_GetSlopeInDirection(PlayerAvatar *avatar, int direction);
+static BOOL PlayerAvatar_AdjustSpeedForSlope(PlayerAvatar *avatar, enum PlayerAvatarSlope slope);
 static void PlayerAvatar_SlideInDirection(PlayerAvatar *avatar, int direction);
 static void PlayerAvatar_MoveByState(PlayerAvatar *avatar, MapLoadManager *mapLoadManager, int direction, u16 keys, u16 heldKeys);
 static void PlayerAvatar_MoveOnFoot(PlayerAvatar *avatar, LocalMapObject *mapObject, MapLoadManager *mapLoadManager, int direction, u16 keys, u16 heldKeys);
-static int PlayerAvatar_UpdateFootStepKind(PlayerAvatar *avatar, int direction);
-static int FootStepKindToMoveState(int stepKind);
+static enum FootStepKind PlayerAvatar_UpdateFootStepKind(PlayerAvatar *avatar, int direction);
+static enum AvatarMoveState FootStepKindToMoveState(enum FootStepKind stepKind);
 static int PlayerAvatar_AdjustMovementDummy(LocalMapObject *mapObject, u8 behavior, int movement);
-static int PlayerAvatar_GetFootStepKind(PlayerAvatar *avatar, int direction);
+static enum FootStepKind PlayerAvatar_GetFootStepKind(PlayerAvatar *avatar, int direction);
 static void PlayerAvatar_FootStand(PlayerAvatar *avatar, LocalMapObject *mapObject, int direction, u16 keys, u16 heldKeys);
 static void PlayerAvatar_FootStep(PlayerAvatar *avatar, LocalMapObject *mapObject, int direction, u16 keys, u16 heldKeys);
 static void PlayerAvatar_FootTurn(PlayerAvatar *avatar, LocalMapObject *mapObject, int direction, u16 keys, u16 heldKeys);
@@ -110,9 +110,9 @@ static int PlayerAvatar_GetBikeMovement(PlayerAvatar *avatar, int direction);
 static BOOL PlayerAvatar_AccelerateBike(PlayerAvatar *avatar);
 static BOOL PlayerAvatar_DecelerateBike(PlayerAvatar *avatar);
 static void PlayerAvatar_DispatchBikeStep(PlayerAvatar *avatar, LocalMapObject *mapObject, MapLoadManager *mapLoadManager, int direction, u16 keys, u16 heldKeys);
-static int PlayerAvatar_UpdateBikeStepKind(PlayerAvatar *avatar, int direction);
-static int BikeStepKindToMoveState(int stepKind);
-static int PlayerAvatar_GetBikeStepKind(PlayerAvatar *avatar, int direction);
+static enum BikeStepKind PlayerAvatar_UpdateBikeStepKind(PlayerAvatar *avatar, int direction);
+static enum AvatarMoveState BikeStepKindToMoveState(enum BikeStepKind stepKind);
+static enum BikeStepKind PlayerAvatar_GetBikeStepKind(PlayerAvatar *avatar, int direction);
 static void PlayerAvatar_BikeStop(PlayerAvatar *avatar, LocalMapObject *mapObject, int direction, u16 keys, u16 heldKeys);
 static void PlayerAvatar_BikeRide(PlayerAvatar *avatar, LocalMapObject *mapObject, int direction, u16 keys, u16 heldKeys);
 static void PlayerAvatar_BikeTurn(PlayerAvatar *avatar, LocalMapObject *mapObject, int direction, u16 keys, u16 heldKeys);
@@ -430,11 +430,11 @@ void PlayerAvatar_StopAndFace(PlayerAvatar *avatar, int direction) {
 }
 
 static BOOL PlayerAvatar_TryForcedMovement(PlayerAvatar *avatar, int value) {
-    int kind = PlayerAvatar_GetForcedMovementKind(avatar, value);
+    enum ForcedMovementKind kind = PlayerAvatar_GetForcedMovementKind(avatar, value);
     return PlayerAvatar_RunForcedMovement(avatar, kind, value);
 }
 
-static int PlayerAvatar_GetForcedMovementKind(PlayerAvatar *avatar, int value) {
+static enum ForcedMovementKind PlayerAvatar_GetForcedMovementKind(PlayerAvatar *avatar, int value) {
     int i = 0;
     int behavior = MapObject_GetCurrentMetatileBehavior(PlayerAvatar_GetMapObject(avatar));
     if (PlayerAvatar_IsOnCyclingRoadSlope(avatar, behavior, value) == TRUE) {
@@ -452,7 +452,7 @@ static int PlayerAvatar_GetForcedMovementKind(PlayerAvatar *avatar, int value) {
     return FORCED_MOVEMENT_NONE;
 }
 
-static BOOL PlayerAvatar_RunForcedMovement(PlayerAvatar *avatar, int kind, int value) {
+static BOOL PlayerAvatar_RunForcedMovement(PlayerAvatar *avatar, enum ForcedMovementKind kind, int value) {
     if (sPlayerForcedMovementFuncs[kind](avatar, value) == TRUE) {
         return TRUE;
     }
@@ -467,7 +467,7 @@ static BOOL ForcedMovement_None(PlayerAvatar *avatar, int value) {
 static BOOL ForcedMovement_Ice(PlayerAvatar *avatar, int value) {
     LocalMapObject *mapObject = PlayerAvatar_GetMapObject(avatar);
     int direction = MapObject_GetNextFacingDirection(mapObject);
-    int slope = PlayerAvatar_GetSlopeInDirection(avatar, direction);
+    enum PlayerAvatarSlope slope = PlayerAvatar_GetSlopeInDirection(avatar, direction);
     u32 collision = PlayerAvatar_CheckCollision(avatar, mapObject, direction);
 
     PlayerAvatar_SetForcedMovement(avatar, TRUE);
@@ -527,7 +527,7 @@ static void PlayerAvatar_EndForcedMovement(PlayerAvatar *avatar) {
     }
 }
 
-static int PlayerAvatar_GetSlopeInDirection(PlayerAvatar *avatar, int direction) {
+static enum PlayerAvatarSlope PlayerAvatar_GetSlopeInDirection(PlayerAvatar *avatar, int direction) {
     LocalMapObject *mapObject = PlayerAvatar_GetMapObject(avatar);
     FieldSystem *fieldSystem = MapObject_GetFieldSystem(mapObject);
     VecFx32 original;
@@ -544,7 +544,7 @@ static int PlayerAvatar_GetSlopeInDirection(PlayerAvatar *avatar, int direction)
     return PLAYER_AVATAR_SLOPE_UP;
 }
 
-static BOOL PlayerAvatar_AdjustSpeedForSlope(PlayerAvatar *avatar, int slope) {
+static BOOL PlayerAvatar_AdjustSpeedForSlope(PlayerAvatar *avatar, enum PlayerAvatarSlope slope) {
     int speed = PlayerAvatar_GetSpeed(avatar);
     if (slope == PLAYER_AVATAR_SLOPE_UP) {
         speed--;
@@ -620,13 +620,13 @@ static void PlayerAvatar_MoveOnFoot(PlayerAvatar *avatar, LocalMapObject *mapObj
     }
 }
 
-static int PlayerAvatar_UpdateFootStepKind(PlayerAvatar *avatar, int direction) {
-    int stepKind = PlayerAvatar_GetFootStepKind(avatar, direction);
+static enum FootStepKind PlayerAvatar_UpdateFootStepKind(PlayerAvatar *avatar, int direction) {
+    enum FootStepKind stepKind = PlayerAvatar_GetFootStepKind(avatar, direction);
     PlayerAvatar_SetMoveState(avatar, FootStepKindToMoveState(stepKind));
     return stepKind;
 }
 
-static int FootStepKindToMoveState(int stepKind) {
+static enum AvatarMoveState FootStepKindToMoveState(enum FootStepKind stepKind) {
     switch (stepKind) {
     case FOOT_STEP_STAND:
         return AVATAR_MOVE_STATE_NONE;
@@ -644,7 +644,7 @@ static int PlayerAvatar_AdjustMovementDummy(LocalMapObject *mapObject, u8 behavi
     return movement;
 }
 
-static int PlayerAvatar_GetFootStepKind(PlayerAvatar *avatar, int direction) {
+static enum FootStepKind PlayerAvatar_GetFootStepKind(PlayerAvatar *avatar, int direction) {
     int facing;
     if (direction == DIR_NONE) {
         PlayerAvatar_SetMoveState(avatar, AVATAR_MOVE_STATE_NONE);
@@ -787,13 +787,13 @@ static void PlayerAvatar_DispatchBikeStep(PlayerAvatar *avatar, LocalMapObject *
     }
 }
 
-static int PlayerAvatar_UpdateBikeStepKind(PlayerAvatar *avatar, int direction) {
-    int stepKind = PlayerAvatar_GetBikeStepKind(avatar, direction);
+static enum BikeStepKind PlayerAvatar_UpdateBikeStepKind(PlayerAvatar *avatar, int direction) {
+    enum BikeStepKind stepKind = PlayerAvatar_GetBikeStepKind(avatar, direction);
     PlayerAvatar_SetMoveState(avatar, BikeStepKindToMoveState(stepKind));
     return stepKind;
 }
 
-static int BikeStepKindToMoveState(int stepKind) {
+static enum AvatarMoveState BikeStepKindToMoveState(enum BikeStepKind stepKind) {
     switch (stepKind) {
     case BIKE_STEP_STOP:
         return AVATAR_MOVE_STATE_NONE;
@@ -809,28 +809,28 @@ static int BikeStepKindToMoveState(int stepKind) {
     }
 }
 
-static int PlayerAvatar_GetBikeStepKind(PlayerAvatar *avatar, int direction) {
+static enum BikeStepKind PlayerAvatar_GetBikeStepKind(PlayerAvatar *avatar, int direction) {
     int speed = PlayerAvatar_GetSpeed(avatar);
     int facing;
     if (direction == DIR_NONE) {
         if (speed < 2) {
             PlayerAvatar_SetMoveState(avatar, AVATAR_MOVE_STATE_NONE);
-            return 0;
+            return BIKE_STEP_STOP;
         }
         PlayerAvatar_SetMoveState(avatar, AVATAR_MOVE_STATE_MOVING);
-        return 3;
+        return BIKE_STEP_COAST;
     }
     facing = PlayerAvatar_GetFacingDirection(avatar);
     if (facing != direction && PlayerAvatar_GetMoveState(avatar) != AVATAR_MOVE_STATE_MOVING) {
         if (speed < 2) {
             PlayerAvatar_SetMoveState(avatar, AVATAR_MOVE_STATE_TURNING);
-            return 2;
+            return BIKE_STEP_TURN;
         }
         PlayerAvatar_SetMoveState(avatar, AVATAR_MOVE_STATE_MOVING);
-        return 3;
+        return BIKE_STEP_COAST;
     }
     PlayerAvatar_SetMoveState(avatar, AVATAR_MOVE_STATE_MOVING);
-    return 1;
+    return BIKE_STEP_RIDE;
 }
 
 static void PlayerAvatar_BikeStop(PlayerAvatar *avatar, LocalMapObject *mapObject, int direction, u16 keys, u16 heldKeys) {
@@ -1200,7 +1200,7 @@ BOOL PlayerAvatar_IsRunning(PlayerAvatar *avatar) {
 }
 
 int PlayerAvatar_GetMoveStateForDirection(PlayerAvatar *avatar, int direction) {
-    int moveState;
+    enum AvatarMoveState moveState;
     switch (PlayerAvatar_GetState(avatar)) {
     case PLAYER_STATE_WALKING:
     case PLAYER_STATE_SURFING:

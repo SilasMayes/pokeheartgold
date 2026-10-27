@@ -35,7 +35,7 @@ enum GameStatsError {
 };
 
 typedef struct GameStatsRequest {
-    int state;     // GameStatsRequestState
+    GameStatsRequestState state;
     int requestId; // HTTP library request handle, -1 when none
     int error;
     int responseLength;
@@ -54,7 +54,7 @@ extern GameStatsRequest gGameStatsRequest;
 extern u32 gGameStatsRandState;
 
 void GameStats_Start(void);
-int GameStats_PrepareRequest(const char *url, int pid, void *payload, int payloadSize, void *response, int responseCapacity);
+enum GameStatsPrepareResult GameStats_PrepareRequest(const char *url, int pid, void *payload, int payloadSize, void *response, int responseCapacity);
 int GameStats_Update(void);
 void GameStats_Shutdown(void);
 int GameStats_GetError(void);

@@ -37,7 +37,7 @@ static ParticleSystem *sParticleSystems[PARTICLE_SYSTEM_MAX];
 
 static void ParticleSystem_LoadResource(ParticleSystem *system);
 static void ParticleSystem_LoadResourceTask(SysTask *task, void *data);
-static void *ParticleEmitter_FindField(SPLEmitter *emitter, int type);
+static void *ParticleEmitter_FindField(SPLEmitter *emitter, enum ParticleFieldType type);
 
 static void *ParticleSystem_AllocSlot0(u32 size);
 static void *ParticleSystem_AllocSlot1(u32 size);
@@ -419,7 +419,7 @@ void ParticleEmitter_GetAxis(SPLEmitter *emitter, VecFx16 *axis) {
     axis->z = *(const u16 *)&emitter->axis.z;
 }
 
-static void *ParticleEmitter_FindField(SPLEmitter *emitter, int type) {
+static void *ParticleEmitter_FindField(SPLEmitter *emitter, enum ParticleFieldType type) {
     SPLResource *resource = emitter->p_res;
     int j;
     int count = resource->fld_num;

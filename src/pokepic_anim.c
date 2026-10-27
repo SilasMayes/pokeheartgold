@@ -132,7 +132,7 @@ struct PokepicScriptAnim {
     u32 scriptId; // NARC member
     BOOL yield;   // set by a command that ends the frame
     BOOL done;    // the script ended
-    u32 state;
+    enum PokepicScriptAnimState state;
     s32 vars[8];
     s32 commandCount; // commands run this frame
     s32 loopCount;
@@ -184,7 +184,7 @@ static void PokepicScriptAnim_ReadVarIndexPair(PokepicScriptAnim *anim, u8 *firs
 static void PokepicScriptAnim_ReadDestVarAndOperands(PokepicScriptAnim *anim, u8 *dest, s32 *left, s32 *right);
 static void PokepicScriptAnim_ReadDestAndOperands(PokepicScriptAnim *anim, u8 *dest, s32 *left, s32 *right);
 static void PokepicScriptAnim_ReadDestAngleAndAmplitude(PokepicScriptAnim *anim, u8 *dest, s32 *angle, s32 *amplitude);
-static u32 PokepicScriptAnim_Compare(const s32 *left, const s32 *right);
+static enum PokepicAnimCompareResult PokepicScriptAnim_Compare(const s32 *left, const s32 *right);
 static void PokepicScriptAnim_AdjustYForScale(PokepicScriptAnim *anim);
 static void PokepicMotion_ApplyValue(int op, int *base, int *value, int *dest);
 static void PokepicMotion_SetTarget(u8 target, PokepicMotion *motion, PokepicScriptAnim *anim);
@@ -539,7 +539,7 @@ static void PokepicScriptAnim_ReadDestAngleAndAmplitude(PokepicScriptAnim *anim,
     *angle %= 0x10000;
 }
 
-static u32 PokepicScriptAnim_Compare(const s32 *left, const s32 *right) {
+static enum PokepicAnimCompareResult PokepicScriptAnim_Compare(const s32 *left, const s32 *right) {
     s32 difference = *left - *right;
     if (difference < 0) {
         return POKEPIC_ANIM_COMPARE_LESS;

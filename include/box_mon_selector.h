@@ -40,6 +40,16 @@ enum BoxMonSelectorPanel {
     BOX_MON_SELECTOR_PANEL_PARTY,
 };
 
+enum BoxMonSelectorState {
+    BOX_MON_SELECTOR_STATE_SELECT,
+    BOX_MON_SELECTOR_STATE_CONFIRM_INIT,
+    BOX_MON_SELECTOR_STATE_CONFIRM,
+    BOX_MON_SELECTOR_STATE_IDLE,
+    BOX_MON_SELECTOR_STATE_REMOVE_INIT,
+    BOX_MON_SELECTOR_STATE_REMOVE,
+    BOX_MON_SELECTOR_STATE_FINISH,
+};
+
 // A Pokemon as the getMon callback describes it; the caller's own data follows the common part.
 typedef struct BoxMonSelectorMon {
     u32 species;
@@ -92,8 +102,8 @@ typedef struct BoxMonSelectorResult {
     u32 slot;
 } BoxMonSelectorResult;
 
-typedef BOOL (*BoxMonSelectorGetMon)(void *storage, u32 page, int slot, BoxMonSelectorMon *mon);
-typedef void (*BoxMonSelectorGetPageName)(String *dest, void *storage, int page);
+typedef BOOL (*BoxMonSelectorGetMon)(PCStorage *storage, u32 page, int slot, BoxMonSelectorMon *mon);
+typedef void (*BoxMonSelectorGetPageName)(String *dest, PCStorage *storage, int page);
 typedef void (*BoxMonSelectorCursorCallback)(int page, int slot, void *arg); // -1, -1: no Pokemon
 typedef void (*BoxMonSelectorCallback)(BoxMonSelectorIconChars *);
 
@@ -109,7 +119,7 @@ typedef struct BoxMonSelector {
     u8 unused_11;
     u8 unused_12;
     u8 canCancel;
-    u32 state;
+    enum BoxMonSelectorState state;
     SpriteList *spriteList;
     G2dRenderer renderer;
     GF_2DGfxResMan *resManagers[GF_GFX_RES_TYPE_MAX];

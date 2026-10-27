@@ -34,8 +34,8 @@ static void PokeathlonBox_SetObjCharTransferTemplate(void);
 static void PokeathlonBox_CreateOamManager(PokeathlonBox *data);
 static void PokeathlonBox_VBlankCallback(void *data);
 
-static BOOL PokeathlonBox_GetLightBoxMon(void *storage, u32 boxno, int slotno, BoxMonSelectorMon *mon);
-static void PokeathlonBox_GetBoxName(String *dest, void *storage, int boxno);
+static BOOL PokeathlonBox_GetLightBoxMon(PCStorage *storage, u32 boxno, int slotno, BoxMonSelectorMon *mon);
+static void PokeathlonBox_GetBoxName(String *dest, PCStorage *storage, int boxno);
 static void PokeathlonBox_CopySelectedMons(PokeathlonBox *data, PokeathlonBoxArgs *args);
 static void PokeathlonBox_GetPartyMonStats(Party *party, u8 slot, PokeathlonBox_MonStats *stats);
 static void PokeathlonBox_GetBoxMonStats(BoxPokemon *boxMon, PokeathlonBox_MonStats *stats);
@@ -251,7 +251,7 @@ static BOOL PokeathlonBox_GetBoxMon(PCStorage *storage, u32 boxno, u32 slotno, P
     return FALSE;
 }
 
-static BOOL PokeathlonBox_GetLightBoxMon(void *storage, u32 boxno, int slotno, BoxMonSelectorMon *mon) {
+static BOOL PokeathlonBox_GetLightBoxMon(PCStorage *storage, u32 boxno, int slotno, BoxMonSelectorMon *mon) {
     PokeathlonBox_BoxMon *out = (PokeathlonBox_BoxMon *)mon;
     BoxPokemon *boxMon = PCStorage_GetMonByIndexPair(storage, boxno, slotno);
     if (GetBoxMonData(boxMon, MON_DATA_SPECIES_EXISTS, NULL)) {
@@ -276,7 +276,7 @@ static BOOL PokeathlonBox_GetLightBoxMon(void *storage, u32 boxno, int slotno, B
     return FALSE;
 }
 
-static void PokeathlonBox_GetBoxName(String *dest, void *storage, int boxno) {
+static void PokeathlonBox_GetBoxName(String *dest, PCStorage *storage, int boxno) {
     PCStorage_GetBoxName(storage, boxno, dest);
 }
 

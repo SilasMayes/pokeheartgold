@@ -23,7 +23,7 @@ enum GridExit {
 };
 
 typedef struct GridMove {
-    u32 type;
+    enum GridExit type;
     u8 value;
 } GridMove;
 
@@ -46,7 +46,7 @@ struct GridCursor {
     GridPosition *positions;
 };
 
-int GridCursor_StepPosition(GridCursor *cursor, GridPosition *position, const u8 *dimensions, s8 dx, s8 dy);
+enum GridExit GridCursor_StepPosition(GridCursor *cursor, GridPosition *position, const u8 *dimensions, s8 dx, s8 dy);
 void GridCursor_SelectPanel(GridCursor *cursor, u8 type);
 void GridCursor_EnterPanel(GridCursor *cursor, u8 type, const GridMove *move);
 GridCursor *GridCursor_New(enum HeapID heapId, u8 *page);

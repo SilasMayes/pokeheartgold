@@ -116,7 +116,7 @@ static void GridPanel1_Enter(GridCursor *cursor, GridPosition *position, const u
 
 static void GridPanel3_Move(GridCursor *cursor, GridPosition *position, const u8 *dimensions, s8 dx, s8 dy) {
     GridMove move;
-    int type;
+    enum GridExit type;
 
     type = GridCursor_StepPosition(cursor, position, dimensions, dx, dy);
     move.type = type;
@@ -279,10 +279,10 @@ static void GridPanel6_Enter(GridCursor *cursor, GridPosition *position, const u
     }
 }
 
-int GridCursor_StepPosition(GridCursor *cursor, GridPosition *position, const u8 *dimensions, s8 dx, s8 dy) {
+enum GridExit GridCursor_StepPosition(GridCursor *cursor, GridPosition *position, const u8 *dimensions, s8 dx, s8 dy) {
     s8 x;
     s8 y;
-    int result = GRID_EXIT_NONE;
+    enum GridExit result = GRID_EXIT_NONE;
     u8 width = dimensions[0];
     u8 height = dimensions[1];
 

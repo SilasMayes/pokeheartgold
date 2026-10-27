@@ -259,7 +259,7 @@ void GameStats_Start(void) {
     }
 }
 
-int GameStats_PrepareRequest(const char *url, int pid, void *payload, int payloadSize, void *response, int responseCapacity) {
+enum GameStatsPrepareResult GameStats_PrepareRequest(const char *url, int pid, void *payload, int payloadSize, void *response, int responseCapacity) {
     int total;
     int len;
     int textLength;

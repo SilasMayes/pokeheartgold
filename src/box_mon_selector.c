@@ -29,16 +29,6 @@
 #include "touchscreen.h"
 #include "vram_transfer_manager.h"
 
-enum BoxMonSelectorState {
-    BOX_MON_SELECTOR_STATE_SELECT,
-    BOX_MON_SELECTOR_STATE_CONFIRM_INIT,
-    BOX_MON_SELECTOR_STATE_CONFIRM,
-    BOX_MON_SELECTOR_STATE_IDLE,
-    BOX_MON_SELECTOR_STATE_REMOVE_INIT,
-    BOX_MON_SELECTOR_STATE_REMOVE,
-    BOX_MON_SELECTOR_STATE_FINISH,
-};
-
 // Touch hitboxes: the 30 box slots, the CANCEL button, the page arrows, the pick slots.
 #define HITBOX_CANCEL    30
 #define HITBOX_PREV_PAGE 31
@@ -106,8 +96,8 @@ static void BoxMonSelector_ClearMessageWindow(Window *window, BOOL hidePlane);
 static void BoxMonSelector_WriteResults(BoxMonSelector *selector);
 static void BoxMonSelector_DeleteSprites(BoxMonSelector *selector);
 static void BoxMonSelector_UpdateCursorSprite(BoxMonSelector *selector);
-static int BoxMonSelector_HandleAButton(BoxMonSelector *selector);
-static int BoxMonSelector_HandleBButton(BoxMonSelector *selector);
+static enum BoxMonSelectorRunResult BoxMonSelector_HandleAButton(BoxMonSelector *selector);
+static enum BoxMonSelectorRunResult BoxMonSelector_HandleBButton(BoxMonSelector *selector);
 static void BoxMonSelector_PrevPage(BoxMonSelector *selector);
 static void BoxMonSelector_NextPage(BoxMonSelector *selector);
 static void BoxMonSelector_PressCancelButton(BoxMonSelector *selector);
@@ -1305,8 +1295,8 @@ static void BoxMonSelector_UpdateCursorSprite(BoxMonSelector *selector) {
     }
 }
 
-static int BoxMonSelector_HandleAButton(BoxMonSelector *selector) {
-    int result = BOX_MON_SELECTOR_RUNNING;
+static enum BoxMonSelectorRunResult BoxMonSelector_HandleAButton(BoxMonSelector *selector) {
+    enum BoxMonSelectorRunResult result = BOX_MON_SELECTOR_RUNNING;
     u32 panel = GridCursor_GetPanel(selector->cursor), index = GridCursor_GetIndex(selector->cursor);
     switch (panel) {
     case BOX_MON_SELECTOR_PANEL_BOX:
@@ -1359,9 +1349,9 @@ static int BoxMonSelector_HandleAButton(BoxMonSelector *selector) {
     return result;
 }
 
-static int BoxMonSelector_HandleBButton(BoxMonSelector *selector) {
+static enum BoxMonSelectorRunResult BoxMonSelector_HandleBButton(BoxMonSelector *selector) {
     VecFx32 pos;
-    int result = BOX_MON_SELECTOR_RUNNING;
+    enum BoxMonSelectorRunResult result = BOX_MON_SELECTOR_RUNNING;
     switch (GridCursor_GetPanel(selector->cursor)) {
     case BOX_MON_SELECTOR_PANEL_PLACE:
         PlaySE(SEQ_SE_DP_SELECT);

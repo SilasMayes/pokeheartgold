@@ -292,7 +292,7 @@ int NintendoWfcUnused_HandleYesNoPrompt(YesNoPrompt *prompt) {
     return response;
 }
 
-void NintendoWfcUnused_SetState(NintendoWfcUnused *wfc, int state, int nextState) {
+void NintendoWfcUnused_SetState(NintendoWfcUnused *wfc, enum NintendoWfcUnusedState state, enum NintendoWfcUnusedState nextState) {
     wfc->state = state;
     wfc->nextState = nextState;
 }
