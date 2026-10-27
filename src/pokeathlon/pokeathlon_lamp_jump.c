@@ -913,7 +913,7 @@ BOOL PokeathlonLampJump_CheckCollision(const VecFx32 *a, fx32 radiusA, const Vec
 static void PokeathlonLampJump_LaunchMon(PokeathlonLampJump *lampJump, s32 mon, VecFx32 *flick) {
     PokeathlonLampJumpJump *jump;
     s32 velocity;
-    s32 velocityX;
+    fx32 velocityX;
     s32 *monVelocityX;
 
     if (flick->y > 0) {

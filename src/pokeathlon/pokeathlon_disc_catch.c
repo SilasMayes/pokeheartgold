@@ -182,7 +182,8 @@ void PokeathlonDiscCatch_SetMonScaleCenter(PokeathlonCourseMonObject *monPic, in
 
 BOOL PokeathlonDiscCatchMon_IsTouching(PokeathlonDiscCatchMon *mon, PokeathlonDiscCatchMon *other) {
     VecFx32 distance, center, otherCenter;
-    int radius, otherRadius, sum;
+    int radius, otherRadius;
+    fx32 sum;
     PokeathlonCourseObject_GetCollisionCircle(mon->monPic, mon->position.x, mon->position.y, &center.x, &center.y, &radius);
     PokeathlonCourseObject_GetCollisionCircle(other->monPic, other->position.x, other->position.y, &otherCenter.x, &otherCenter.y, &otherRadius);
     sum = (radius + otherRadius) << FX32_SHIFT;
@@ -248,7 +249,7 @@ int PokeathlonDiscCatch_GetFacing(const VecFx32 *direction) {
 
 static void PokeathlonDiscCatchMon_Move(PokeathlonDiscCatchMon *mon, PokeathlonCourseData *course) {
     VecFx32 delta, normal, step, zero2, zero1, deceleration, push, zero3;
-    int distance;
+    fx32 distance;
     if (!mon->state) {
         return;
     }
@@ -967,7 +968,7 @@ static int PokeathlonDiscCatch_Square(int value) {
 // Moves the value towards 0 by step.
 static void PokeathlonDiscCatch_Approach0(fx32 *value, fx32 step) {
     if (*value != 0) {
-        int magnitude = *value < 0 ? -*value : *value;
+        fx32 magnitude = *value < 0 ? -*value : *value;
         if (magnitude < step) {
             *value = 0;
             return;
@@ -978,7 +979,7 @@ static void PokeathlonDiscCatch_Approach0(fx32 *value, fx32 step) {
 
 // The height of a jumping Pokemon at the frame and its scale.
 static int PokeathlonDiscCatch_GetJumpOffset(PokeathlonDiscCatchStats *stats, int frame, f32 *scale) {
-    int offset = 0;
+    fx32 offset = 0;
     f32 result = 1.0f;
     int half, curve;
     f32 height;

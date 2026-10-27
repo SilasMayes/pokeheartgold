@@ -712,7 +712,7 @@ static void PokeathlonCirclePushDisplayAnim_SetupMonPic(PokeathlonCirclePushDisp
 // Slides a picture in (frames 0-15), holds it (15-60) and slides it out (60-70).
 
 static void PokeathlonCirclePushDisplayAnim_MovePicVertically(u8 frame, const PokeathlonCirclePushPicKeys *keys, PokeathlonCourseSpritePoolSprite *picSprite) {
-    s32 y;
+    fx32 y;
     VecFx32 pos;
     Sprite *sprite;
 

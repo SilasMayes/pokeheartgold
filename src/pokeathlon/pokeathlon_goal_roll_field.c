@@ -1040,7 +1040,7 @@ static BOOL PokeathlonGoalRoll_IntersectWall(const VecFx32 *a, const VecFx32 *b,
     VecFx32 point = { 0, 0, 0 };
     VecFx32 direction;
     Point2D pointA, pointB, pointC, pointD;
-    s32 distC, distD;
+    fx32 distC, distD;
     pointA.x = a->x / FX32_ONE;
     pointA.y = a->y / FX32_ONE;
     pointB.x = b->x / FX32_ONE;
@@ -1122,7 +1122,7 @@ static void PokeathlonGoalRoll_PickBallSpawn(PokeathlonGoalRoll *goalRoll, Pokea
 // The y of a ball in the frame packet: whole pixels; 0xC0.. a ball waiting to appear at one of
 // the three spawn rows (+ its wait timer); 0xD8 + 4 * goal + team a ball in a goal.
 u8 PokeathlonGoalRoll_EncodeBallY(PokeathlonGoalRollBall *ball) {
-    s32 y;
+    fx32 y;
     s32 result;
     if (ball->state == GOAL_ROLL_BALL_WAITING) {
         if (ball->position.y == FX32_CONST(88)) {
@@ -1151,7 +1151,7 @@ u8 PokeathlonGoalRoll_EncodeBallY(PokeathlonGoalRollBall *ball) {
     return result;
 }
 
-s32 PokeathlonGoalRoll_DecodeBallY(s32 code) {
+fx32 PokeathlonGoalRoll_DecodeBallY(s32 code) {
     u8 frame;
     s32 result;
     if (code < 0xC0) {

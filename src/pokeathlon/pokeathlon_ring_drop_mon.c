@@ -276,7 +276,7 @@ static void PokeathlonRingDropMon_Land(PokeathlonRingDropMon *mon) {
 
 // The less stamina is left, the longer the Pokemon staggers.
 void PokeathlonRingDropMon_Stagger(PokeathlonRingDropMon *mon) {
-    s32 frames = FX_Div(mon->member->stamina, mon->member->params->stamina);
+    fx32 frames = FX_Div(mon->member->stamina, mon->member->params->stamina);
     frames = (10 * (FX32_ONE - frames)) - 3;
     if (frames < 0) {
         frames = 0;

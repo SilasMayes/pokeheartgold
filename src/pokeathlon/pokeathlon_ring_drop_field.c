@@ -691,12 +691,12 @@ BOOL PokeathlonRingDropMon_IsOutOfRing(PokeathlonRingDropMon *mon) {
     }
     PokeathlonCourseObject_CenterToGround(mon->member->object, mon->position.x >> FX32_SHIFT, mon->position.y >> FX32_SHIFT, &x, &y);
     if (y >= 64 && y <= 160) {
-        int groundX = FX32_CONST(x);
-        int groundY = FX32_CONST(y);
+        fx32 groundX = FX32_CONST(x);
+        fx32 groundY = FX32_CONST(y);
         PokeathlonRingDrop_LoadRingEdge(points);
-        int left = FX_Div(FX_Mul(points[1].y - points[0].y, groundX - points[0].x), points[1].x - points[0].x);
+        fx32 left = FX_Div(FX_Mul(points[1].y - points[0].y, groundX - points[0].x), points[1].x - points[0].x);
         left += points[0].y;
-        int right = FX_Div(FX_Mul(points[3].y - points[2].y, groundX - points[2].x), points[3].x - points[2].x);
+        fx32 right = FX_Div(FX_Mul(points[3].y - points[2].y, groundX - points[2].x), points[3].x - points[2].x);
         right += points[2].y;
         if (groundY >= left && groundY >= right) {
             return FALSE;

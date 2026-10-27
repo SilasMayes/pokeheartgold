@@ -635,7 +635,7 @@ static void PokeathlonBlockSmash_FreeSpriteSystem(PokeathlonBlockSmash *work) {
 static void PokeathlonBlockSmash_CreateHudSprites(PokeathlonBlockSmash *work) {
     VecFx32 position = { 0, 0, 0 };
     int i;
-    int x = FX32_CONST(8);
+    fx32 x = FX32_CONST(8);
     for (i = 0; i < 3; i++) {
         position.x = x;
         position.y = FX32_CONST(176);

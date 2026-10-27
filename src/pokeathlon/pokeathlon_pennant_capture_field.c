@@ -230,7 +230,7 @@ void PokeathlonPennantCapture_UpdatePlayers(PokeathlonCourseData *course) {
             VEC_Normalize(&friction, &friction);
             friction.x = ((s64)friction.x * amount + 2048) >> FX32_SHIFT;
             friction.y = ((s64)friction.y * amount + 2048) >> FX32_SHIFT;
-            int magnitude = VEC_Mag(&friction);
+            fx32 magnitude = VEC_Mag(&friction);
             if (VEC_Mag(&player->velocity) >= magnitude) {
                 VEC_Subtract(&player->velocity, &friction, &player->velocity);
             } else {

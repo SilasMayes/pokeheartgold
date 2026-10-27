@@ -349,7 +349,7 @@ static int PokeathlonGoalRollCpu_ThinkGuard(PokeathlonCourseData *course, u8 par
     }
     ballQuadrant = decisions[1];
     if ((decisions[0] == GOAL_ROLL_CPU_GUARD_CHASE) == (ballQuadrant == GOAL_ROLL_CPU_GUARD_CHASE)) {
-        int distance;
+        fx32 distance;
         VEC_Subtract(&mon->position, &balls[0].position, &delta);
         distance = VEC_Mag(&delta);
         VEC_Subtract(&mon->position, &balls[1].position, &delta);

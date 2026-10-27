@@ -1863,8 +1863,8 @@ static int PokeathlonRelayRun_CollideWithObstacle(VecFx32 *start, VecFx32 *end, 
 
 // Whether position is on a slow patch (the 64x64 square at its shape's first corner).
 static BOOL PokeathlonRelayRun_IsOnSlowPatch(const VecFx32 *position, const PokeathlonRelayRunObstacleShape *shape) {
-    s32 px = position->x;
-    s32 py = position->y;
+    fx32 px = position->x;
+    fx32 py = position->y;
     s32 x = shape->corners[0].x << FX32_SHIFT;
     s32 y = shape->corners[0].y << FX32_SHIFT;
     if (x < px && px < x + FX32_CONST(64) && y < py && py < y + FX32_CONST(64)) {
@@ -1967,7 +1967,7 @@ BOOL PokeathlonRelayRun_CollideRunners(PokeathlonCourseData *course, PokeathlonR
     PokeathlonCourseMonObject *objectP, *objectQ;
     BOOL result;
     u8 pushMember;
-    int pX;
+    fx32 pX;
     int wrappedPx;
     s32 i;
     u8 memberP;

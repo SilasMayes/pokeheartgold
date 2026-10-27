@@ -970,7 +970,7 @@ static void PokeathlonBlockSmashRivals_InitMonPics(PokeathlonCourseMonObjects *m
 
 // From a gauge of 50 on, faster with a fuller gauge.
 static void PokeathlonBlockSmash_ShowGaugeEffect(ManagedSprite *sprite, u16 gauge, BOOL playSE) {
-    s32 speed = 0;
+    fx32 speed = 0;
     s32 over = gauge - 50;
     if (over) {
         speed = (over << FX32_SHIFT) / 10;

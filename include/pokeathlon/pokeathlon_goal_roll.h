@@ -281,7 +281,7 @@ void PokeathlonGoalRoll_InitMonStats(PokeathlonCourseData *course, PokeathlonGoa
 void PokeathlonGoalRoll_InitWindows(PokeathlonGoalRoll *goalRoll);
 void PokeathlonGoalRoll_PrintTotalPoints(PokeathlonGoalRoll *goalRoll, u32 score);
 u8 PokeathlonGoalRoll_EncodeBallY(PokeathlonGoalRollBall *ball);
-s32 PokeathlonGoalRoll_DecodeBallY(s32 code);
+fx32 PokeathlonGoalRoll_DecodeBallY(s32 code);
 void PokeathlonGoalRoll_PlayGoalAreaSE(PokeathlonGoalRoll *goalRoll, u32 ballIndex, BOOL bigBall, s32 code);
 void PokeathlonGoalRoll_PrintPlate(PokeathlonGoalRoll *goalRoll, u8 participant, int mode);
 void PokeathlonGoalRoll_LoadStrings(PokeathlonCourseData *course);

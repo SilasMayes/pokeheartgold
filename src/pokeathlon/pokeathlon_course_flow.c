@@ -1839,7 +1839,7 @@ BOOL PokeathlonCourse_IsInRange(int x, int y, int targetX, int targetY, int rang
     VecFx32 delta;
     VEC_Subtract(&position, &target, &delta);
     {
-        int magnitude = VEC_Mag(&delta);
+        fx32 magnitude = VEC_Mag(&delta);
         *distance = magnitude;
         if (magnitude < (range << FX32_SHIFT)) {
             return TRUE;
