@@ -1147,8 +1147,8 @@ static void SwalotPlopGame_SetOptions(SwalotPlopGame *game, const u8 *options) {
 }
 
 static void SwalotPlopCurve_Init(SwalotPlopCurve *curve, s32 start, s32 end, s32 slope, s32 duration) {
-    s32 delta = end - start - (s32)(((s64)slope * (duration << 12) + 0x800) >> 12);
-    s32 curvature = FX_Div((s32)((((s64)delta << 13) + 0x800) >> 12), (duration * duration) << 12);
+    s32 delta = end - start - FX_Mul(slope, duration << FX32_SHIFT);
+    s32 curvature = FX_Div(FX_Mul(delta, FX32_CONST(2)), (duration * duration) << FX32_SHIFT);
     curve->value = start;
     curve->start = start;
     curve->slope = slope;
@@ -1159,8 +1159,8 @@ static void SwalotPlopCurve_Init(SwalotPlopCurve *curve, s32 start, s32 end, s32
 
 static BOOL SwalotPlopCurve_Update(SwalotPlopCurve *curve) {
     s32 step = curve->step;
-    s32 slopePart = (s32)(((s64)curve->slope * (step << 12) + 0x800) >> 12);
-    s32 curvePart = (s32)(((s64)curve->curvature * ((step * step) << 12) + 0x800) >> 12);
+    s32 slopePart = FX_Mul(curve->slope, step << FX32_SHIFT);
+    s32 curvePart = FX_Mul(curve->curvature, (step * step) << FX32_SHIFT);
     curve->value = curve->start + (slopePart + FX_Div(curvePart, FX32_CONST(2)));
     s32 current = curve->step;
     s32 duration = curve->duration;
@@ -1187,12 +1187,12 @@ static void SwalotPlopGame_ThrowDemoShot(SwalotPlopGame *game, s32 x, s32 y, s32
     params.direction.y = 0;
     if (VEC_Mag(&params.direction) > 0x1E200) {
         VEC_Normalize(&params.direction, &params.direction);
-        params.direction.x = ((s64)params.direction.x * 0x1E200 + 2048) >> 12;
-        params.direction.z = ((s64)params.direction.z * 0x1E200 + 2048) >> 12;
+        params.direction.x = FX_Mul(params.direction.x, FX32_CONST(30.125));
+        params.direction.z = FX_Mul(params.direction.z, FX32_CONST(30.125));
     }
     params.direction.y = 38 << 12;
     params.speed = VEC_Mag(&params.direction);
-    params.speed = ((s64)params.speed * 0x99A + 2048) >> 12;
+    params.speed = FX_Mul(params.speed, FX32_CONST(0.6));
     VEC_Normalize(&params.direction, &params.direction);
     SwalotPlop_TouchToWorld((s16)endX, (s16)endY, &params.start);
     params.start.y = 0;
@@ -1362,7 +1362,7 @@ static void SwalotPlopPopups_UpdateSeat(SwalotPlopPopups *popups) {
 
 static void SwalotPlopPopups_SetPos(SwalotPlopPopups *popups, int i) {
     VecFx32 pos;
-    fx32 y = FX_Div((fx32)(((s64)(popups->timers[i] << 12) * -65536 + 2048) >> 12), 65536);
+    fx32 y = FX_Div(FX_Mul(popups->timers[i] << FX32_SHIFT, FX32_CONST(-16)), FX32_CONST(16));
     pos = popups->pos[i];
     pos.y += y;
     Sprite_SetMatrix(popups->sprites[i], &pos);
@@ -1692,7 +1692,7 @@ static void SwalotPlopShot_ToRecord(const SwalotPlopShotParams *params, SwalotPl
     record->dir[0] = params->direction.x;
     record->dir[1] = params->direction.y;
     record->dir[2] = params->direction.z;
-    record->speed = (s64)((s64)params->speed * 0x28F + 0x800) >> 12;
+    record->speed = FX_Mul(params->speed, FX32_CONST(0.16));
     record->start[0] = params->start.x >> FX32_SHIFT;
     record->start[1] = params->start.y >> FX32_SHIFT;
     record->start[2] = params->start.z >> FX32_SHIFT;
@@ -1909,7 +1909,7 @@ static BOOL SwalotPlopGame_HasActiveShots(SwalotPlopGame *game) {
 }
 
 static fx32 SwalotPlopShot_GetSpeed(SwalotPlopShot *shot) {
-    fx32 speed = shot->params.speed - (int)(((s64)(shot->frames << 12) * 0x670 + 0x800) >> 12);
+    fx32 speed = shot->params.speed - FX_Mul(shot->frames << FX32_SHIFT, 0x670);
     if (speed < 0) {
         speed = 0;
     }
@@ -1918,10 +1918,10 @@ static fx32 SwalotPlopShot_GetSpeed(SwalotPlopShot *shot) {
 
 static void SwalotPlopShot_GetMove(SwalotPlopShot *shot, VecFx32 *move) {
     fx32 speed = SwalotPlopShot_GetSpeed(shot);
-    move->x = (int)(((s64)shot->params.direction.x * speed + 0x800) >> 12);
-    move->y = (int)(((s64)shot->params.direction.y * speed + 0x800) >> 12);
-    move->y += (int)(((s64)(shot->frames << 12) * -0x1334 + 0x800) >> 12);
-    move->z = (int)(((s64)shot->params.direction.z * speed + 0x800) >> 12);
+    move->x = FX_Mul(shot->params.direction.x, speed);
+    move->y = FX_Mul(shot->params.direction.y, speed);
+    move->y += FX_Mul(shot->frames << FX32_SHIFT, -0x1334);
+    move->z = FX_Mul(shot->params.direction.z, speed);
 }
 
 static void SwalotPlopShot_Bounce(SwalotPlopShot *shot, SwalotPlopGame *game, BOOL bounce) {
@@ -1946,14 +1946,14 @@ static void SwalotPlopShot_BounceEx(SwalotPlopShot *shot, SwalotPlopGame *game, 
             int x = shot->params.direction.x;
             int absX = x < 0 ? -x : x;
             if (absX <= absZ) {
-                int value = (fx32)(((s64)z * FX32_ONE + 2048) >> 12);
+                int value = FX_Mul(z, FX32_ONE);
                 if ((random & 1) == 1) {
                     shot->params.direction.x = -value;
                 } else {
                     shot->params.direction.x = value;
                 }
             } else {
-                int value = (fx32)(((s64)x * FX32_ONE + 2048) >> 12);
+                int value = FX_Mul(x, FX32_ONE);
                 if ((random & 1) == 1) {
                     shot->params.direction.z = -value;
                 } else {
@@ -1962,7 +1962,7 @@ static void SwalotPlopShot_BounceEx(SwalotPlopShot *shot, SwalotPlopGame *game, 
             }
         }
     }
-    shot->params.speed = (fx32)(((s64)shot->params.speed * damping + 2048) >> 12);
+    shot->params.speed = FX_Mul(shot->params.speed, damping);
     shot->frames = 0;
     shot->state = SHOT_STATE_BOUNCED;
     SwalotPlopShot_GetMove(shot, &move);
@@ -2105,13 +2105,13 @@ static void SwalotPlopGame_Throw(SwalotPlopGame *game) {
             }
         } else if (speed > 0x1E200) {
             VEC_Normalize(&params.direction, &params.direction);
-            params.direction.x = ((s64)params.direction.x * 0x1E200 + 0x800) >> 12;
-            params.direction.z = ((s64)params.direction.z * 0x1E200 + 0x800) >> 12;
+            params.direction.x = FX_Mul(params.direction.x, FX32_CONST(30.125));
+            params.direction.z = FX_Mul(params.direction.z, FX32_CONST(30.125));
         }
         if (!tooSlow) {
             params.direction.y = FX32_CONST(38);
             params.speed = VEC_Mag(&params.direction);
-            params.speed = ((s64)params.speed * 0x99A + 0x800) >> 12;
+            params.speed = FX_Mul(params.speed, FX32_CONST(0.6));
             VEC_Normalize(&params.direction, &params.direction);
             SwalotPlop_TouchToWorld(first.x, first.y, &params.start);
             params.start.y = 0;
@@ -2539,8 +2539,8 @@ static void SwalotPlopGame_FreeGfx(SwalotPlopGame *game) {
     SwalotPlopGfx_FreeSprites(&game->gfx);
     SwalotPlopGfx_FreeText(&game->gfx);
     SwalotPlopGfx_Free3D(&game->gfx);
-    reg_G2_BLDCNT = 0;
-    reg_G2S_DB_BLDCNT = 0;
+    G2_BlendNone();
+    G2S_BlendNone();
 }
 
 static void SwalotPlopGame_UpdateGfx(SwalotPlopGame *game, SwalotPlopGfx *gfx) {
@@ -3374,7 +3374,7 @@ static void SwalotPlopParticles_Spawn(SwalotPlopParticle *particles, s32 x, s32 
 }
 
 static inline int FxMul(int a, int b) {
-    return (int)(((s64)a * b + 2048) >> 12);
+    return FX_Mul(a, b);
 }
 
 static void SwalotPlop_CalcArcStep(int step, int steps, int radius, int startAngle, int endAngle, int *x, int *y) {
@@ -3570,7 +3570,7 @@ static void SwalotPlopBgFade_Update(SwalotPlopBgFade *fade, SwalotPlopGfx *gfx) 
     case SWALOT_PLOP_BG_FADE_IN:
         if (fade->timer >= 8) {
             fade->state = SWALOT_PLOP_BG_FADE_IDLE;
-            reg_G2S_DB_BLDCNT = 0;
+            G2S_BlendNone();
             return;
         }
         fade->timer++;

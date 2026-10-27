@@ -271,7 +271,7 @@ static BOOL TradeSequenceReceive_SetupScreens(TradeSequenceReceive *receive, u32
     TradeSequenceRotation rotation;
 
     GfGfx_SetBanks(&sTradeSequenceReceiveGraphicsBanks);
-    reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
     SetBothScreensModesAndDisable(&sTradeSequenceReceiveGraphicsModes);
     InitBgFromTemplate(receive->bgConfig, GF_BG_LYR_MAIN_1, &sTradeSequenceReceiveBgTemplate_Text, GF_BG_TYPE_TEXT);
     InitBgFromTemplate(receive->bgConfig, GF_BG_LYR_MAIN_2, &sTradeSequenceReceiveBgTemplate_Background, GF_BG_TYPE_TEXT);

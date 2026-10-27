@@ -119,7 +119,7 @@ static BOOL PaletteBlink_UpdateColors(PaletteBlink *blink) {
     u32 i;
 
     if (blink->timer == 0) {
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < NELEMS(blink->current); i++) {
             if ((1 << i) & 0x7800) {
                 blink->current[i] = blink->source[i];
             }
@@ -127,7 +127,7 @@ static BOOL PaletteBlink_UpdateColors(PaletteBlink *blink) {
         return TRUE;
     }
     if (blink->timer == 24) {
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < NELEMS(blink->current); i++) {
             if ((1 << i) & 0x7800) {
                 blink->current[i] = blink->source[15];
             }

@@ -140,7 +140,7 @@ int GtsConnection_Init(GtsApp *app, int state) {
     GtsArgs *args;
 
     GtsConnection_CreateStrings(app);
-    reg_GX_POWCNT &= ~REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
     BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, HEAP_ID_61);
     GtsConnection_InitBgs(app->bgConfig);
     GtsConnection_LoadGraphics(app);

@@ -23,21 +23,6 @@
 #include "sys_task_api.h"
 #include "task.h"
 
-enum UnionRoomSlotState {
-    UNION_ROOM_SLOT_HIDDEN,
-    UNION_ROOM_SLOT_APPEARING,
-    UNION_ROOM_SLOT_SHOWN,
-    UNION_ROOM_SLOT_LEAVING,
-    UNION_ROOM_SLOT_LEFT,
-};
-
-enum UnionRoomSlotRequest {
-    UNION_ROOM_SLOT_REQUEST_NONE,
-    UNION_ROOM_SLOT_REQUEST_APPEAR_ALONE,
-    UNION_ROOM_SLOT_REQUEST_APPEAR_IN_GROUP,
-    UNION_ROOM_SLOT_REQUEST_LEAVE,
-};
-
 // The 10 players' records of the union room link state.
 typedef struct UnionRoomGroup {
     u32 trainerIds[4];

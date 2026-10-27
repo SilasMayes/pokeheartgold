@@ -604,7 +604,7 @@ static void PalPadRoster_OpenFriendMenu(PalPadRoster *roster, PalPadShared *shar
     PalPadGfx_BufferFriendName(gfx, shared->saveData, slots[index], heapId);
     PalPadRoster_PrintMessage(roster, gfx, msg_0779_00012, heapId);
     PalPadGfx_SetArrowsVisible(gfx, FALSE);
-    StartBrightnessTransition(4, 8, 0, (GXBlendPlaneMask)61, SCREEN_MASK_MAIN);
+    StartBrightnessTransition(4, 8, 0, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), SCREEN_MASK_MAIN);
 }
 
 static int PalPadRoster_HandleFriendMenu(PalPadRoster *roster, u32 *inputState, PalPadGfx *gfx) {
@@ -629,7 +629,7 @@ static int PalPadRoster_HandleFriendMenu(PalPadRoster *roster, u32 *inputState, 
         PalPadGfx_SetArrowsVisible(gfx, TRUE);
         PalPadRosterPage_HighlightSlot(&roster->pages[0], gfx, roster->cursor, FALSE);
     }
-    SetBlendBrightness(0, (GXBlendPlaneMask)61, SCREEN_MASK_MAIN);
+    SetBlendBrightness(0, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), SCREEN_MASK_MAIN);
     return result;
 }
 
@@ -804,7 +804,7 @@ static BOOL PalPadRoster_UpdateDeleteEffect(PalPadRoster *roster, PalPadGfx *gfx
 }
 
 static void PalPadRoster_EndDeleteEffect(PalPadRoster *roster, PalPadGfx *gfx) {
-    reg_GX_DISPCNT &= 0xFFFF1FFF;
+    GX_SetVisibleWnd(GX_WNDMASK_NONE);
     Sprite_SetDrawFlag(roster->deleteEffect, FALSE);
     Sprite_SetAnimActiveFlag(roster->deleteEffect, FALSE);
     PalPadGfx_SetCursor(gfx, TRUE, 0xFF);

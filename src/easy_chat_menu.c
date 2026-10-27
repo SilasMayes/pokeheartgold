@@ -3353,7 +3353,7 @@ static void ECMenu_BuildInitialLists(ECMenu *menu) {
     u32 total = 0;
     u32 i;
 
-    for (i = 0; i < 27; i++) {
+    for (i = 0; i < NELEMS(menu->initialOffsets); i++) {
         menu->initialOffsets[i] = total;
         menu->initialCounts[i] = ECMenu_CollectKnownWords(menu, sECMenuInitialLists[i], menu->initialWords, total);
         total += menu->initialCounts[i];

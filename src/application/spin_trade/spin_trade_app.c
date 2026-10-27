@@ -1501,7 +1501,7 @@ static void SpinTrade_Init3D(SpinTradeApp *app) {
 
 static void SpinTrade_InitBgLayers(SpinTradeApp *app) {
     app->bgConfig = BgConfig_Alloc(HEAP_ID_102);
-    reg_GX_POWCNT |= 0x8000; // main engine on the bottom screen
+    GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
     {
         GraphicsModes modes = gSpinTradeGraphicsModes;
         SetBothScreensModesAndDisable(&modes);

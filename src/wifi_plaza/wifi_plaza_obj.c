@@ -575,7 +575,7 @@ static BOOL WiFiPlazaObj_UpdateTween(WiFiPlazaObjTween *tween, u32 frame) {
     } else {
         frameFx = (float)(frame << 12) - 0.5f;
     }
-    scaled = (s32)(((s64)delta * (s64)(s32)frameFx + 0x800) >> 12);
+    scaled = FX_Mul(delta, (s32)frameFx);
     if (tween->duration != 0) {
         durationFx = (float)(tween->duration << 12) + 0.5f;
     } else {

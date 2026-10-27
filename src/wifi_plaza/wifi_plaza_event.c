@@ -747,9 +747,9 @@ static void WiFiPlazaEventMovers_UpdateX(WiFiPlazaEventMovers *work, int index) 
     } else {
         valueF = (float)(value << 12) - 0.5f;
     }
-    scaled = (fx32)(((s64)(int)valueF * ratio + 2048) >> 12);
+    scaled = FX_Mul((int)valueF, ratio);
     x = FX_Div(scaled, (int)maxF);
-    x = (fx32)((((s64)x << 13) + 2048) >> 12);
+    x = FX_Mul(x, FX32_CONST(2));
     x += work->baseX;
     WiFiPlazaModels_SetMoverX(work->models, index, x);
 }

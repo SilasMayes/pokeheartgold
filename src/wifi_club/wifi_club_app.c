@@ -851,8 +851,8 @@ void WifiClub_SetupGraphics(WifiClubApp *app) {
     HBlankInterruptDisable();
     GfGfx_DisableEngineAPlanes();
     GfGfx_DisableEngineBPlanes();
-    reg_GX_DISPCNT &= 0xFFFFE0FF;
-    reg_GXS_DB_DISPCNT &= 0xFFFFE0FF;
+    GX_SetVisiblePlane(GX_PLANEMASK_NONE);
+    GXS_SetVisiblePlane(GX_PLANEMASK_NONE);
     SetKeyRepeatTimers(4, 8);
     NARC *narc = NARC_New(NARC_a_0_8_8, HEAP_ID_53);
     app->bgConfig = BgConfig_Alloc(HEAP_ID_53);
@@ -1158,8 +1158,8 @@ void WifiClub_InitBgs(BgConfig *bgConfig) {
     SetBgPriority(GF_BG_LYR_MAIN_1, 1);
     SetBgPriority(GF_BG_LYR_MAIN_3, 0);
     SetBgPriority(GF_BG_LYR_MAIN_2, 0);
-    reg_G2_BLDCNT = 0;
-    reg_G2S_DB_BLDCNT = 0;
+    G2_BlendNone();
+    G2S_BlendNone();
 }
 
 void WifiClub_AddPlayerObject(WifiClubApp *app, WifiClubRoomPerson *person) {

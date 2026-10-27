@@ -324,7 +324,7 @@ static void TradeSequenceArrive_InitBgs(TradeSequenceArrive *arrive) {
     u16 srcOffset;
 
     GfGfx_SetBanks(&sTradeSequenceArriveGraphicsBanks);
-    reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
     SetBothScreensModesAndDisable(&sTradeSequenceArriveGraphicsModes);
     InitBgFromTemplate(arrive->bgConfig, GF_BG_LYR_MAIN_2, &sTradeSequenceArriveBgTemplate_Layer2, GF_BG_TYPE_AFFINE);
     InitBgFromTemplate(arrive->bgConfig, GF_BG_LYR_SUB_2, &sTradeSequenceArriveBgTemplate_Layer2, GF_BG_TYPE_AFFINE);

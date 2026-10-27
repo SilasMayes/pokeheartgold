@@ -575,7 +575,7 @@ void WiFiPlazaWork_SetActivity(WiFiPlazaWork *work, int value) {
     if (work->profile.player.activity == value) {
         return;
     }
-    if (value != 9 && WiFiPlazaWork_IsTalking(work) == 1) {
+    if (value != WIFI_PLAZA_ACTIVITY_TALK && WiFiPlazaWork_IsTalking(work) == 1) {
         if (!WiFiPlazaWork_WasAskedToTalk(work)) {
             WiFiPlazaLobbyClient_SlotToId(work->talk.partnerSlot);
             WiFiPlazaWork_SendTalkEnd(work, work->talk.partnerSlot);
@@ -583,25 +583,25 @@ void WiFiPlazaWork_SetActivity(WiFiPlazaWork *work, int value) {
         WiFiPlazaTalkSession_Abort(&work->talk);
     }
     switch (work->profile.player.activity) {
-    case 2:
+    case WIFI_PLAZA_ACTIVITY_SWALOT_PLOP:
         WiFiPlazaHistory_Add(&work->history, 0x10, -1);
         break;
-    case 3:
+    case WIFI_PLAZA_ACTIVITY_MIME_JR_TOP:
         WiFiPlazaHistory_Add(&work->history, 0x11, -1);
         break;
-    case 4:
+    case WIFI_PLAZA_ACTIVITY_WOBBUFFET_POP:
         WiFiPlazaHistory_Add(&work->history, 0x12, -1);
         break;
-    case 5:
+    case WIFI_PLAZA_ACTIVITY_FOOTPRINT_STAMP_BOARD_0:
         WiFiPlazaHistory_Add(&work->history, 0x13, -1);
         break;
-    case 6:
+    case WIFI_PLAZA_ACTIVITY_FOOTPRINT_STAMP_BOARD_1:
         WiFiPlazaHistory_Add(&work->history, 0x14, -1);
         break;
-    case 7:
+    case WIFI_PLAZA_ACTIVITY_VISITOR_PROFILES:
         WiFiPlazaHistory_Add(&work->history, 0x15, -1);
         break;
-    case 8:
+    case WIFI_PLAZA_ACTIVITY_PLAZA_NEWS:
         WiFiPlazaHistory_Add(&work->history, 0x16, -1);
         break;
     }
@@ -767,7 +767,7 @@ u32 WiFiPlazaPlayer_GetGender(WiFiPlazaPlayer *player) {
 
     if (player->gender >= 2) {
         if (WiFiPlaza_IndexToAvatar(player->avatarIndex) != 0xFFFF) {
-            for (i = 0; i < 16; i++) {
+            for (i = 0; i < NELEMS(gWiFiPlazaAvatars); i++) {
                 if (gWiFiPlazaAvatars[i].avatar == player->avatarIndex) {
                     result = gWiFiPlazaAvatars[i].avatar;
                 }
@@ -1079,7 +1079,7 @@ int WiFiPlazaWork_StartTalk(WiFiPlazaWork *work, int slot) {
     if (work->talk.role) {
         return 0;
     }
-    if (WiFiPlazaPlayer_GetActivity(WiFiPlazaWork_GetPlayer(work, slot)) != 1) {
+    if (WiFiPlazaPlayer_GetActivity(WiFiPlazaWork_GetPlayer(work, slot)) != WIFI_PLAZA_ACTIVITY_FREE) {
         return 0;
     }
     work->talk.partnerSlot = slot;
@@ -1408,13 +1408,13 @@ static void WiFiPlaza_OnPlayerUpdate(int id, WiFiPlazaPlayer *player, WiFiPlazaW
     int slot = WiFiPlazaLobbyClient_IdToSlot(id);
     work->changeFlags[3] |= 1 << slot;
     switch (WiFiPlazaPlayer_GetActivity(player)) {
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
+    case WIFI_PLAZA_ACTIVITY_SWALOT_PLOP:
+    case WIFI_PLAZA_ACTIVITY_MIME_JR_TOP:
+    case WIFI_PLAZA_ACTIVITY_WOBBUFFET_POP:
+    case WIFI_PLAZA_ACTIVITY_FOOTPRINT_STAMP_BOARD_0:
+    case WIFI_PLAZA_ACTIVITY_FOOTPRINT_STAMP_BOARD_1:
+    case WIFI_PLAZA_ACTIVITY_VISITOR_PROFILES:
+    case WIFI_PLAZA_ACTIVITY_PLAZA_NEWS:
         WiFiPlazaTalkSession_ResetTalkCount(&work->talk, slot);
         break;
     }
@@ -2528,7 +2528,7 @@ static void WiFiPlazaTimer_Update(WiFiPlazaTimer *timer) {
             timer->elapsed++;
             value = (timer->elapsed << 8) / timer->duration;
             accum = 0;
-            for (i = 0; i < 5; i++) {
+            for (i = 0; i < NELEMS(sWiFiPlazaTimerPhases); i++) {
                 accum += sWiFiPlazaTimerPhases[i].length;
                 if ((u32)accum >= value) {
                     if (timer->phase != sWiFiPlazaTimerPhases[i].phase) {

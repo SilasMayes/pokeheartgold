@@ -250,7 +250,7 @@ static BOOL TradeSequenceSend_SetupScreens(TradeSequenceSend *send, u32 *state) 
     TradeSequenceRotation rotation;
 
     GfGfx_SetBanks(&sTradeSequenceSendGraphicsBanks);
-    reg_GX_POWCNT &= ~REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
     SetBothScreensModesAndDisable(&sTradeSequenceSendGraphicsModes);
     InitBgFromTemplate(send->bgConfig, GF_BG_LYR_MAIN_1, &sTradeSequenceSendBgTemplate_Text, GF_BG_TYPE_TEXT);
     InitBgFromTemplate(send->bgConfig, GF_BG_LYR_MAIN_2, &sTradeSequenceSendBgTemplate_Background, GF_BG_TYPE_TEXT);

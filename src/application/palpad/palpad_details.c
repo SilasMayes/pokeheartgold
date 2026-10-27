@@ -409,7 +409,7 @@ static void PalPadDetails_DrawProfile(PalPadDetails *details, PalPadShared *shar
     u32 color;
     void *bitmap;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < NELEMS(details->profileWindows); i++) {
         FillWindowPixelBuffer(&details->profileWindows[i], 0);
     }
     BufferIntegerAsString(gfx->msgFormat, 0, shared->friends.numbers[shared->selectedFriend] + 1, 2, PRINTING_MODE_LEFT_ALIGN, TRUE);
@@ -438,7 +438,7 @@ static void PalPadDetails_DrawProfile(PalPadDetails *details, PalPadShared *shar
     Heap_Free(bitmap);
     GfGfxLoader_GXLoadPal(avatar.narcId, avatar.nclr_id, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_15_OFFSET, 32, heapId);
     BgTilemapRectChangePalette(gfx->bgConfig, GF_BG_LYR_SUB_0, 4, 4, 10, 10, 15);
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < NELEMS(details->profileWindows); i++) {
         ScheduleWindowCopyToVram(&details->profileWindows[i]);
     }
 }

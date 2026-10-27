@@ -551,7 +551,7 @@ BOOL SpinTradeGroupApp_Exit(OverlayManager *man, int *state) {
     SpinTradeGroup_FreeBgLayers(app->bgConfig);
     DestroyMsgData(app->msgData);
     MessageFormat_Delete(app->msgFormat);
-    reg_GX_POWCNT |= 0x8000;
+    GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
     Main_SetVBlankIntrCB(NULL, NULL);
     app->args->result = app->result;
     app->args->playerCount = SpinTradeGroup_CountMembers();

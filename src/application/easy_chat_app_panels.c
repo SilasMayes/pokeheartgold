@@ -353,7 +353,7 @@ static void EasyChatSentenceView_ToggleScrollWindows(EasyChatSentenceView *sente
         reg_G2_WIN0V = 0;
         reg_G2_WIN1H = 0;
         reg_G2_WIN1V = 0;
-        reg_GX_DISPCNT &= 0xFFFF1FFF;
+        GX_SetVisibleWnd(GX_WNDMASK_NONE);
     }
 }
 
@@ -932,7 +932,7 @@ static void EasyChatMenuView_AddWindows(EasyChatMenuView *menuView, BgConfig *bg
     Window *window;
 
     template = gEasyChatMenuViewWindowTemplates;
-    for (i = 0, window = menuView->windows; i < 3; i++) {
+    for (i = 0, window = menuView->windows; i < NELEMS(menuView->labels); i++) {
         AddWindow(bgConfig, window, template);
         menuView->labels[i] = NewString_ReadMsgData(menuView->msgData, i);
         template ++;

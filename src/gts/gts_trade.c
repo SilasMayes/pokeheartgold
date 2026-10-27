@@ -119,7 +119,7 @@ int GtsTrade_Main(GtsApp *app, int state) {
         if (EvolutionScene_IsDone(app->evolutionTask)) {
             EvolutionScene_Delete(app->evolutionTask);
             GtsTrade_StoreReceivedMon(app);
-            reg_GX_DISPCNT &= 0xFFFF1FFF;
+            GX_SetVisibleWnd(GX_WNDMASK_NONE);
             Gts_SetNextScreen(app, GTS_SCREEN_TRANSACTION, 12);
             ret = 4;
         }

@@ -331,8 +331,8 @@ static u8 PlazaGameRoster_GetNetId(const PlazaGameRoster *roster, u32 index) {
 
 BOOL PlazaGameRoster_IsSpecialVisitor(const PlazaGameRoster *roster, u32 netId) {
     int index;
-    if (netId >= 4) {
-        GF_ASSERT(netId < 4);
+    if (netId >= PLAZA_GAME_MAX_PLAYERS) {
+        GF_ASSERT(netId < PLAZA_GAME_MAX_PLAYERS);
         return 0;
     }
     index = roster->args->slots[netId];
@@ -343,8 +343,8 @@ BOOL PlazaGameRoster_IsSpecialVisitor(const PlazaGameRoster *roster, u32 netId) 
 }
 
 PlayerProfile *PlazaGameRoster_GetProfile(const PlazaGameRoster *roster, u32 netId) {
-    if (netId >= 4) {
-        GF_ASSERT(netId < 4);
+    if (netId >= PLAZA_GAME_MAX_PLAYERS) {
+        GF_ASSERT(netId < PLAZA_GAME_MAX_PLAYERS);
         return NULL;
     }
     if (roster->launchedFromField == 1) {
@@ -422,8 +422,8 @@ void PlazaGameResults_Free(PlazaGameResults *results) {
     PlazaGameGfx_Free(&results->gfx);
     PlazaGameSprites_Free(&results->sprites);
     PlazaGameBg_Free(&results->bg);
-    reg_G2_BLDCNT = 0;
-    reg_G2S_DB_BLDCNT = 0;
+    G2_BlendNone();
+    G2S_BlendNone();
     GF_DestroyVramTransferManager();
     Heap_Free(results);
 }
@@ -557,8 +557,8 @@ BOOL PlazaGameSign_IsDone(const PlazaGameSign *sign) {
 }
 
 static void PlazaGameMotion_Init(PlazaGameMotion *motion, fx32 start, fx32 end, fx32 velocity, int duration) {
-    fx32 distance = end - start - (fx32)(((s64)velocity * (duration << FX32_SHIFT) + 0x800) >> FX32_SHIFT);
-    fx32 accel = FX_Div((fx32)(((s64)distance * (2 * FX32_ONE) + 0x800) >> FX32_SHIFT), (duration * duration) << FX32_SHIFT);
+    fx32 distance = end - start - FX_Mul(velocity, duration << FX32_SHIFT);
+    fx32 accel = FX_Div(FX_Mul(distance, 2 * FX32_ONE), (duration * duration) << FX32_SHIFT);
     motion->current = start;
     motion->start = start;
     motion->velocity = velocity;
@@ -576,8 +576,8 @@ static int PlazaGameMotion_Update(PlazaGameMotion *motion, int frame) {
     } else {
         done = 0;
     }
-    linear = (fx32)(((s64)motion->velocity * (frame << FX32_SHIFT) + 0x800) >> FX32_SHIFT);
-    quadratic = (fx32)(((s64)motion->accel * ((frame * frame) << FX32_SHIFT) + 0x800) >> FX32_SHIFT);
+    linear = FX_Mul(motion->velocity, frame << FX32_SHIFT);
+    quadratic = FX_Mul(motion->accel, (frame * frame) << FX32_SHIFT);
     quadratic = FX_Div(quadratic, 2 * FX32_ONE);
     motion->current = motion->start + (linear + quadratic);
     return done;
@@ -869,7 +869,7 @@ static void PlazaGameMessageBox_Show(PlazaGameMessageBox *messageBox, PlazaGameT
     Window *window;
 
     if (messageBox->colorVariant == 1) {
-        for (i = 0; i < 20; i++) {
+        for (i = 0; i < NELEMS(gPlazaGameAltMessages); i++) {
             if (msgNo == gPlazaGameAltMessages[i][0]) {
                 msgNo = gPlazaGameAltMessages[i][1];
             }
@@ -924,8 +924,8 @@ static PlazaGameEntry *PlazaGameEntry_New(const PlazaGameRoster *roster, u16 gam
     memset(entry, 0, sizeof(PlazaGameEntry));
     memcpy(&entry->roster, roster, sizeof(PlazaGameRoster));
     entry->game = game;
-    reg_G2_BLDCNT = 0;
-    reg_G2S_DB_BLDCNT = 0;
+    G2_BlendNone();
+    G2S_BlendNone();
     reg_GX_DISPCNT &= ~(REG_GX_DISPCNT_W0_MASK | REG_GX_DISPCNT_W1_MASK | REG_GX_DISPCNT_OW_MASK);
     reg_GXS_DB_DISPCNT &= ~(REG_GXS_DB_DISPCNT_W0_MASK | REG_GXS_DB_DISPCNT_W1_MASK | REG_GXS_DB_DISPCNT_OW_MASK);
     GfGfx_SetBanks(&gPlazaGameEntryBanks);
@@ -1613,8 +1613,8 @@ static PlazaGameResults *PlazaGameResults_New(const PlazaGameRoster *roster, con
     *(PlazaGameRosterBytes *)&results->roster = *(const PlazaGameRosterBytes *)roster;
     results->game = game;
     PlazaGameResults_InitCommands(results);
-    reg_G2_BLDCNT = 0;
-    reg_G2S_DB_BLDCNT = 0;
+    G2_BlendNone();
+    G2S_BlendNone();
     reg_GX_DISPCNT &= ~(REG_GX_DISPCNT_W0_MASK | REG_GX_DISPCNT_W1_MASK | REG_GX_DISPCNT_OW_MASK);
     reg_GXS_DB_DISPCNT &= ~(REG_GXS_DB_DISPCNT_W0_MASK | REG_GXS_DB_DISPCNT_W1_MASK | REG_GXS_DB_DISPCNT_OW_MASK);
     GfGfx_SetBanks(&gPlazaGameResultsBanks);
@@ -2559,13 +2559,13 @@ static void PlazaGameSignWindow_Init(PlazaGameSignWindow *window, PlazaGameGfxRe
         Sprite_SetAnimCtrlSeq(window->sprites[i], 5);
         Sprite_SetPriority(window->sprites[i], 0);
     }
-    windows = (reg_GX_DISPCNT & 0xE000) >> 13;
-    reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xFFFF1FFF) | ((windows & ~1) << 13);
+    windows = (reg_GX_DISPCNT & (REG_GX_DISPCNT_W0_MASK | REG_GX_DISPCNT_W1_MASK | REG_GX_DISPCNT_OW_MASK)) >> REG_GX_DISPCNT_W0_SHIFT;
+    GX_SetVisibleWnd(windows & ~GX_WNDMASK_W0);
     PlazaGameSignWindow_SetInsidePlanes(31, TRUE);
     reg_G2_WIN0H = 0;
     reg_G2_WIN0V = 0;
     *(u8 *)&window->savedOutside = *(vu8 *)&reg_G2_WINOUT;
-    window->savedWindows = ((reg_GX_DISPCNT & 0xE000) >> 13) & 2;
+    window->savedWindows = ((reg_GX_DISPCNT & (REG_GX_DISPCNT_W0_MASK | REG_GX_DISPCNT_W1_MASK | REG_GX_DISPCNT_OW_MASK)) >> REG_GX_DISPCNT_W0_SHIFT) & GX_WNDMASK_W1;
     window->signOutside.planes = 15;
     window->signOutside.effect = 1;
     Main_SetHBlankIntrCB(PlazaGameSignWindow_HBlank, window);
@@ -2644,7 +2644,7 @@ static void PlazaGameSignWindow_Free(PlazaGameSignWindow *window) {
         }
     }
     HBlankInterruptDisable();
-    reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xFFFF1FFF) | (window->savedWindows << 13);
+    GX_SetVisibleWnd(window->savedWindows);
     {
         u32 value = (reg_G2_WINOUT & ~0x3F) | window->savedOutside.planes;
         if (window->savedOutside.effect) {
@@ -2679,7 +2679,7 @@ static void PlazaGameSignWindow_HBlank(void *data) {
     u32 windows;
     line = ((int)reg_GX_VCOUNT + 1) % 256;
     if (line < 192) {
-        windows = (reg_GX_DISPCNT & 0xE000) >> 13;
+        windows = (reg_GX_DISPCNT & (REG_GX_DISPCNT_W0_MASK | REG_GX_DISPCNT_W1_MASK | REG_GX_DISPCNT_OW_MASK)) >> REG_GX_DISPCNT_W0_SHIFT;
         if ((reg_GX_DISPSTAT & REG_GX_DISPSTAT_HBLK_MASK) != 0) {
             if (line < 73 || line > 121) {
                 u32 value = (reg_G2_WINOUT & ~0x3F) | window->savedOutside.planes;
@@ -2694,12 +2694,12 @@ static void PlazaGameSignWindow_HBlank(void *data) {
                     value |= 0x20;
                 }
                 reg_G2_WINOUT = value;
-                windows &= ~(window->savedWindows | 2);
+                windows &= ~(window->savedWindows | GX_WNDMASK_W1);
             }
             if (window->lines[line] == 1) {
-                reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xFFFF1FFF) | ((windows | 1) << 13);
+                GX_SetVisibleWnd(windows | GX_WNDMASK_W0);
             } else {
-                reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xFFFF1FFF) | ((windows & ~1) << 13);
+                GX_SetVisibleWnd(windows & ~GX_WNDMASK_W0);
             }
         }
     }

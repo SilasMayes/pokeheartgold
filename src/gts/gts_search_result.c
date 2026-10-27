@@ -173,7 +173,7 @@ int GtsSearchResult_Init(GtsApp *app, int state) {
     GtsSearchResult_DrawDetails(app);
     Gts_SetAvatarMarker(app, app->selectedResult, -app->scrollY);
     app->vblankFunc = GtsSearchResult_ScrollBgs;
-    reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
     if (app->nextScreenArg == 17) {
         if (GX_GetMasterBrightness() == -16 && GXS_GetMasterBrightness() != -16) {
             BeginNormalPaletteFade(FADE_MAIN_ONLY, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, HEAP_ID_61);
@@ -463,7 +463,7 @@ static int GtsSearchResult_ScrollIn(GtsApp *app) {
 static int GtsSearchResult_ScrollOut(GtsApp *app) {
     app->scrollY--;
     if (IsPaletteFadeFinished()) {
-        reg_GX_POWCNT &= ~REG_GX_POWCNT_DSEL_MASK;
+        GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
         app->state = GTS_SEARCH_RESULT_STATE_FADE_OUT;
         Gts_SetNextScreen(app, GTS_SCREEN_SEARCH, 15);
         app->scrollY = 16;

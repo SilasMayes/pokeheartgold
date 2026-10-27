@@ -33,8 +33,8 @@ static void VoiceChat_InitAudio(void) {
 
     MIC_Init();
     PM_Init();
-    PM_SetAmp((PMAmpSwitch)1);
-    PM_SetAmpGain((PMAmpGain)3);
+    PM_SetAmp(PM_AMP_ON);
+    PM_SetAmpGain(PM_AMPGAIN_160);
     gVoiceChat.work->unk_1A78 = 0;
     gVoiceChat.work->unk_1A84 = 0;
     gVoiceChat.work->ampGain = 0;
@@ -269,7 +269,7 @@ void VoiceChat_Init(int heapId, int codec, int count) {
         gVoiceChat.work->endCallback = NULL;
         VoiceChat_InitAudio();
     }
-    gVoiceChat.work->micParam.type = (MICSamplingType)3;
+    gVoiceChat.work->micParam.type = MIC_SAMPLING_TYPE_SIGNED_12BIT;
     gVoiceChat.work->micParam.buffer = gVoiceChat.work;
     gVoiceChat.work->micParam.size = 0x880;
     gVoiceChat.work->micParam.rate = 0x1040;

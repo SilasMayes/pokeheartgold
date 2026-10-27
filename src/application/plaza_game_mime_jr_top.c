@@ -2655,7 +2655,7 @@ static int MimeJrTop_GetPlayerIndex(MimeJrTopApp *app, u32 netId) {
 }
 
 static void MimeJrTopTween_InitAccel(MimeJrTopTween *tween, fx32 start, fx32 end, fx32 velocity, int frames) {
-    fx32 accel = FX_Div((fx32)(((s64)(end - start - (fx32)(((s64)velocity * (frames << 12) + 2048) >> 12)) * 8192 + 2048) >> 12), (frames * frames) << 12);
+    fx32 accel = FX_Div(FX_Mul(end - start - FX_Mul(velocity, frames << FX32_SHIFT), FX32_CONST(2)), (frames * frames) << FX32_SHIFT);
     tween->value = start;
     tween->start = start;
     tween->velocity = velocity;
@@ -2666,8 +2666,8 @@ static void MimeJrTopTween_InitAccel(MimeJrTopTween *tween, fx32 start, fx32 end
 
 static BOOL MimeJrTopTween_UpdateAccel(MimeJrTopTween *tween) {
     int t = tween->frame;
-    fx32 a = (fx32)(((s64)tween->velocity * (t << 12) + 2048) >> 12);
-    fx32 b = (fx32)(((s64)tween->delta * ((t * t) << 12) + 2048) >> 12);
+    fx32 a = FX_Mul(tween->velocity, t << FX32_SHIFT);
+    fx32 b = FX_Mul(tween->delta, (t * t) << FX32_SHIFT);
     tween->value = tween->start + (a + FX_Div(b, FX32_CONST(2)));
     t = tween->frame;
     b = tween->duration;
@@ -2701,7 +2701,7 @@ static BOOL MimeJrTopTween_Update(MimeJrTopTween *tween) {
         tween->frame++;
         finished = FALSE;
     }
-    value = FX_Div((s32)(((s64)tween->delta * (frame << FX32_SHIFT) + 0x800) >> FX32_SHIFT), tween->duration << FX32_SHIFT);
+    value = FX_Div(FX_Mul(tween->delta, frame << FX32_SHIFT), tween->duration << FX32_SHIFT);
     value += tween->start;
     tween->value = value;
     return finished;

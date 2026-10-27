@@ -833,8 +833,8 @@ static void WiFiPlazaRoom_InitGraphics(WiFiPlazaRoomGraphics *graphics, SaveData
     s32 j;
     u8 frame;
 
-    reg_G2_BLDCNT = 0;
-    reg_G2S_DB_BLDCNT = 0;
+    G2_BlendNone();
+    G2S_BlendNone();
     GF_CreateVramTransferManager(32, heapID);
     GfGfx_SetBanks(&sWiFiPlazaRoomBanks);
     gSystem.screensFlipped = FALSE;

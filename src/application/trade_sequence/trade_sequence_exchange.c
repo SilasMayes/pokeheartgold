@@ -200,7 +200,7 @@ static void TradeSequenceExchange_SlideTask(SysTask *task, void *data) {
 
 static void TradeSequenceExchange_InitBgs(TradeSequenceExchange *exchange) {
     GfGfx_SetBanks(&sTradeSequenceExchangeGraphicsBanks);
-    reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
     SetBothScreensModesAndDisable(&sTradeSequenceExchangeGraphicsModes);
     InitBgFromTemplate(exchange->bgConfig, GF_BG_LYR_MAIN_1, &sTradeSequenceExchangeBgTemplate_SentMon, GF_BG_TYPE_TEXT);
     InitBgFromTemplate(exchange->bgConfig, GF_BG_LYR_SUB_1, &sTradeSequenceExchangeBgTemplate_SentMon, GF_BG_TYPE_TEXT);

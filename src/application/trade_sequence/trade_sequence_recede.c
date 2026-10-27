@@ -258,7 +258,7 @@ static void TradeSequenceRecede_InitBgs(TradeSequenceRecede *recede) {
     int palOffset;
 
     GfGfx_SetBanks(&sTradeSequenceRecedeGraphicsBanks);
-    reg_GX_POWCNT &= ~REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
     SetBothScreensModesAndDisable(&sTradeSequenceRecedeGraphicsModes);
     InitBgFromTemplate(recede->bgConfig, GF_BG_LYR_MAIN_3, &sTradeSequenceRecedeBgTemplate, GF_BG_TYPE_TEXT);
     InitBgFromTemplate(recede->bgConfig, GF_BG_LYR_SUB_3, &sTradeSequenceRecedeBgTemplate, GF_BG_TYPE_TEXT);
@@ -517,7 +517,7 @@ static void TradeSequenceRecede_ScreenSwapTask(SysTask *task, void *data) {
         BgSetPosTextAndCommit(recede->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_SET_Y, 0);
         BgSetPosTextAndCommit(recede->bgConfig, GF_BG_LYR_SUB_3, BG_POS_OP_SET_Y, 256);
         TradeSequence_AdjustCameraAngle(recede->models, &delta);
-        reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;
+        GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
         SysTask_Destroy(task);
     }
 }

@@ -244,7 +244,7 @@ static void TradeSequenceApproach_InitBgs(TradeSequenceApproach *approach) {
     int scrnFile, charFile, palFile, palOffset;
 
     GfGfx_SetBanks(&sTradeSequenceApproachGraphicsBanks);
-    reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
     SetBothScreensModesAndDisable(&sTradeSequenceApproachGraphicsModes);
     InitBgFromTemplate(approach->bgConfig, GF_BG_LYR_MAIN_3, &sTradeSequenceApproachBgTemplate, GF_BG_TYPE_TEXT);
     InitBgFromTemplate(approach->bgConfig, GF_BG_LYR_SUB_3, &sTradeSequenceApproachBgTemplate, GF_BG_TYPE_TEXT);
@@ -528,7 +528,7 @@ static void TradeSequenceApproach_VBlankCallback(void *data) {
         BgSetPosTextAndCommit(approach->bgConfig, GF_BG_LYR_MAIN_3, BG_POS_OP_SET_Y, 256);
         BgSetPosTextAndCommit(approach->bgConfig, GF_BG_LYR_SUB_3, BG_POS_OP_SET_Y, 0);
         TradeSequence_AdjustCameraAngle(approach->models, &delta);
-        reg_GX_POWCNT &= ~REG_GX_POWCNT_DSEL_MASK;
+        GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
         approach->swapScreens = FALSE;
     }
 }

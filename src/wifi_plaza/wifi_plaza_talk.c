@@ -1769,7 +1769,7 @@ static String *WiFiPlazaTalk_GetMsg(WiFiPlazaRoomWork *room, u32 playerIndex, u3
     u32 i;
 
     if (WiFiPlazaWork_IsSpecialVisitor(WiFiPlazaRoom_GetLobby(room), playerIndex) == 1) {
-        for (i = 0; i < 0x163; i++) {
+        for (i = 0; i < NELEMS(sWiFiPlazaTalkMsgPairs); i++) {
             if (msgId == sWiFiPlazaTalkMsgPairs[i][0]) {
                 msgId = sWiFiPlazaTalkMsgPairs[i][1];
                 break;

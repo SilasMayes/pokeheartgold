@@ -25,6 +25,14 @@ enum WiFiPlazaTalkRole {
     WIFI_PLAZA_TALK_ROLE_ANSWERER,
 };
 
+// WiFiPlazaLobbyClient.surveySubmitState: the own survey answer is not sent, sent and waiting for the server, or
+// taken by the server
+enum WiFiPlazaSurveySubmitState {
+    WIFI_PLAZA_SURVEY_SUBMIT_NONE,
+    WIFI_PLAZA_SURVEY_SUBMIT_SENT,
+    WIFI_PLAZA_SURVEY_SUBMIT_DONE,
+};
+
 // Lobby schedule events (WiFiPlaza_OnLobbyEvent): the room locks, the steps of the three lighting sequences, the
 // mini-games close, the fireworks, the parade and the closing
 enum WiFiPlazaLobbyEvent {
@@ -59,6 +67,24 @@ enum WiFiPlazaScheduleField {
     WIFI_PLAZA_SCHEDULE_CLOSE_TIME,
     WIFI_PLAZA_SCHEDULE_FIREWORKS_START_TIME,
     WIFI_PLAZA_SCHEDULE_FIREWORKS_END_TIME,
+};
+
+// What a player is doing in the plaza
+enum WiFiPlazaActivity {
+    WIFI_PLAZA_ACTIVITY_NONE,
+    WIFI_PLAZA_ACTIVITY_FREE,
+    WIFI_PLAZA_ACTIVITY_SWALOT_PLOP,
+    WIFI_PLAZA_ACTIVITY_MIME_JR_TOP,
+    WIFI_PLAZA_ACTIVITY_WOBBUFFET_POP,
+    WIFI_PLAZA_ACTIVITY_FOOTPRINT_STAMP_BOARD_0,
+    WIFI_PLAZA_ACTIVITY_FOOTPRINT_STAMP_BOARD_1,
+    WIFI_PLAZA_ACTIVITY_VISITOR_PROFILES,
+    WIFI_PLAZA_ACTIVITY_PLAZA_NEWS,
+    WIFI_PLAZA_ACTIVITY_TALK,
+    WIFI_PLAZA_ACTIVITY_PARADE_FLOAT,
+    WIFI_PLAZA_ACTIVITY_EXIT,
+    WIFI_PLAZA_ACTIVITY_GAME_ENTRY,
+    WIFI_PLAZA_ACTIVITY_SURVEY,
 };
 
 #endif // POKEHEARTGOLD_CONSTANTS_WIFI_PLAZA_H

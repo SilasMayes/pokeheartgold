@@ -422,7 +422,7 @@ static void TradeSequenceDepart_InitBgs(TradeSequenceDepart *depart) {
     void *buf;
 
     GfGfx_SetBanks(&sTradeSequenceDepartGraphicsBanks);
-    reg_GX_POWCNT &= ~REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
     SetBothScreensModesAndDisable(&sTradeSequenceDepartGraphicsModes);
     InitBgFromTemplate(depart->bgConfig, GF_BG_LYR_MAIN_2, &sTradeSequenceDepartBgTemplate_Layer2, GF_BG_TYPE_AFFINE);
     InitBgFromTemplate(depart->bgConfig, GF_BG_LYR_SUB_2, &sTradeSequenceDepartBgTemplate_Layer2, GF_BG_TYPE_AFFINE);
@@ -563,7 +563,7 @@ static void TradeSequenceDepart_ScreenSwapTask(SysTask *task, void *data) {
         BgSetPosTextAndCommit(depart->bgConfig, GF_BG_LYR_SUB_2, BG_POS_OP_SET_Y, 0);
         ToggleBgLayer(GF_BG_LYR_MAIN_3, GF_PLANE_TOGGLE_OFF);
         ToggleBgLayer(GF_BG_LYR_SUB_3, GF_PLANE_TOGGLE_ON);
-        reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;
+        GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
         SysTask_Destroy(task);
     }
 }

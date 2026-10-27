@@ -377,7 +377,7 @@ BOOL RecordMixing_Init(OverlayManager *man, int *state) {
         RecordMixing_AddWindows(app, man);
         RecordMixing_PrintButtons(app);
         Sound_SetSceneAndPlayBGM(0x34, 0, 0);
-        reg_GX_POWCNT &= ~REG_GX_POWCNT_DSEL_MASK;
+        GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
         RecordMixingLink_RegisterCommands(app);
         CommState_SetRecordMixingLinkMode();
         CommState_SetMaxEntries(3);
@@ -470,7 +470,7 @@ BOOL RecordMixing_Exit(OverlayManager *man, int *state) {
     MenuInputStateMgr_SetState(app->args->menuInputStatePtr, app->menuInputState);
     RecordMixing_FreeResources(app);
     OverlayManager_FreeData(man);
-    reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
     UnionRoom_SetBeaconActivity(UNION_ACTIVITY_NONE);
     Main_SetVBlankIntrCB(NULL, NULL);
     Heap_Destroy(HEAP_ID_50);

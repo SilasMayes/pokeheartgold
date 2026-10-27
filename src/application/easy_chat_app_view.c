@@ -299,10 +299,10 @@ void EasyChatAppView_Cmd_Load(SysTask *task, EasyChatViewCommand *command) {
 
     GfGfx_DisableEngineAPlanes();
     GfGfx_DisableEngineBPlanes();
-    reg_GX_DISPCNT &= ~0x1F00;
-    reg_GXS_DB_DISPCNT &= ~0x1F00;
-    reg_GX_DISPCNT = (reg_GX_DISPCNT & ~0x300010) | 0x100010;
-    reg_GXS_DB_DISPCNT = (reg_GXS_DB_DISPCNT & ~0x300010) | 0x10;
+    GX_SetVisiblePlane(GX_PLANEMASK_NONE);
+    GXS_SetVisiblePlane(GX_PLANEMASK_NONE);
+    GX_SetOBJVRamModeChar(GX_OBJVRAMMODE_CHAR_1D_64K);
+    GXS_SetOBJVRamModeChar(GX_OBJVRAMMODE_CHAR_1D_32K);
     narc = NARC_New(NARC_a_0_7_6, HEAP_ID_35);
     EasyChatAppView_InitBgs(command);
     EasyChatAppView_LoadSpriteGraphics(command, narc);
@@ -383,7 +383,7 @@ static void EasyChatAppView_InitBgs(EasyChatViewCommand *command) {
     int i;
     EasyChatAppView *view = command->view;
 
-    reg_GX_POWCNT &= ~0x8000;
+    GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
     GX_SetGraphicsMode(GX_DISPMODE_GRAPHICS, GX_BGMODE_0, GX_BG0_AS_3D);
     GfGfx_SetBanks(&gEasyChatAppViewGraphicsBanks);
     SetBothScreensModesAndDisable(&gEasyChatAppViewGraphicsModes);

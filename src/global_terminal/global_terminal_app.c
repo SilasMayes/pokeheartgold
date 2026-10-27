@@ -35,12 +35,12 @@ BOOL GlobalTerminalApp_Init(OverlayManager *man, int *state) {
     HBlankInterruptDisable();
     GfGfx_DisableEngineAPlanes();
     GfGfx_DisableEngineBPlanes();
-    reg_GX_DISPCNT &= 0xFFFFE0FF;
-    reg_GXS_DB_DISPCNT &= 0xFFFFE0FF;
-    reg_GX_DISPCNT &= 0xFFFF1FFF;
-    reg_GXS_DB_DISPCNT &= 0xFFFF1FFF;
-    reg_G2_BLDCNT = 0;
-    reg_G2S_DB_BLDCNT = 0;
+    GX_SetVisiblePlane(GX_PLANEMASK_NONE);
+    GXS_SetVisiblePlane(GX_PLANEMASK_NONE);
+    GX_SetVisibleWnd(GX_WNDMASK_NONE);
+    GXS_SetVisibleWnd(GX_WNDMASK_NONE);
+    G2_BlendNone();
+    G2S_BlendNone();
     Heap_Create(HEAP_ID_3, HEAP_ID_123, 0x28000);
     data = OverlayManager_CreateAndGetData(man, sizeof(GlobalTerminalApp), HEAP_ID_123);
     MI_CpuFill8(data, 0, sizeof(GlobalTerminalApp));

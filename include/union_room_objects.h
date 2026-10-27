@@ -6,11 +6,26 @@
 #include "save_palpad.h"
 #include "field_warp_reset.h"
 
+enum UnionRoomSlotState {
+    UNION_ROOM_SLOT_HIDDEN,
+    UNION_ROOM_SLOT_APPEARING,
+    UNION_ROOM_SLOT_SHOWN,
+    UNION_ROOM_SLOT_LEAVING,
+    UNION_ROOM_SLOT_LEFT,
+};
+
+enum UnionRoomSlotRequest {
+    UNION_ROOM_SLOT_REQUEST_NONE,
+    UNION_ROOM_SLOT_REQUEST_APPEAR_ALONE,
+    UNION_ROOM_SLOT_REQUEST_APPEAR_IN_GROUP,
+    UNION_ROOM_SLOT_REQUEST_LEAVE,
+};
+
 // One union room map object: slots 0-9 are the other players (object ids 1-10), slots 10-49 the members of their
 // groups (4 per player, first slot from a table), slot 50 is the player's own avatar.
 typedef struct UnionRoomSlot {
-    u8 request;    // 1 = appear alone, 2 = appear in a group, 3 = leave
-    u8 state;      // 0 hidden, 1 appearing, 2 shown, 3 leaving, 4 left
+    u8 request;    // enum UnionRoomSlotRequest
+    u8 state;      // enum UnionRoomSlotState
     u8 friendship; // Pal Pad friend level, shown as an effect when the object appears
     u8 emoteRequest;
     u8 emoteActive;

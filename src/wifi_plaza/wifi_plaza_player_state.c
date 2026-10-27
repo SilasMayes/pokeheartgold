@@ -870,7 +870,7 @@ static fx32 WiFiPlazaPlayerBounce_Update(WiFiPlazaPlayerBounce *bounce) {
         int angle;
         bounce->frame++;
         angle = bounce->frame * 0x7FFF / 4;
-        bounce->offset = (fx32)(((s64)FX_SinCosTable_[((u16)angle >> 4) * 2] * FX32_CONST(6) + 0x800) >> 12);
+        bounce->offset = FX_Mul(FX_SinCosTable_[((u16)angle >> 4) * 2], FX32_CONST(6));
         if (bounce->frame >= 4) {
             if (bounce->repeat == TRUE) {
                 bounce->frame = 0;
@@ -2336,17 +2336,17 @@ static BOOL WiFiPlazaPlayerRide_JumpOn(WiFiPlazaPlayerRide *ride, WiFiPlazaModel
     pos.x = 0;
     difference = end.y - start.y;
     frame = (int)(ride->timer > 0 ? (float)(ride->timer << 12) + 0.5f : (float)(ride->timer << 12) - 0.5f);
-    pos.y = FX_Div((fx32)(((s64)frame * difference + 2048) >> 12), 24 << 12);
+    pos.y = FX_Div(FX_Mul(frame, difference), 24 << FX32_SHIFT);
     if (ride->timer >= 4) {
         difference = end.z - start.z;
         frame = (int)(ride->timer - 4 > 0 ? (float)((ride->timer - 4) << 12) + 0.5f : (float)((ride->timer - 4) << 12) - 0.5f);
-        pos.z = FX_Div((fx32)(((s64)frame * difference + 2048) >> 12), 20 << 12);
+        pos.z = FX_Div(FX_Mul(frame, difference), 20 << FX32_SHIFT);
     } else {
         pos.z = 0;
     }
     VEC_Add(&pos, &start, &pos);
     WiFiPlazaCamera_SetTarget(camera, pos.x, pos.y, pos.z);
-    pos.y += (fx32)(((s64)FX_SinCosTable_[((u16)(0x7FFF * ride->timer / 24) >> 4) * 2] * FX32_CONST(16) + 2048) >> 12);
+    pos.y += FX_Mul(FX_SinCosTable_[((u16)(0x7FFF * ride->timer / 24) >> 4) * 2], FX32_CONST(16));
     WiFiPlazaObj_SetPosition(ride->obj, &pos);
     return done;
 }

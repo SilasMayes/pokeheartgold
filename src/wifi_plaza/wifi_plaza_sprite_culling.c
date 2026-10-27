@@ -23,10 +23,10 @@ BOOL WiFiPlaza_IsBillboardInView(BillboardObject *billboard) {
     bounds.scaleX = info->boxPosScale >> FX32_SHIFT;
     bounds.scaleY = info->boxPosScale >> FX32_SHIFT;
     bounds.scaleZ = info->boxPosScale >> FX32_SHIFT;
-    position.x += (s32)(((s64)info->boxX * info->boxPosScale + 0x800) >> FX32_SHIFT);
-    position.y += (s32)(((s64)info->boxY * info->boxPosScale + 0x800) >> FX32_SHIFT);
-    position.z += (s32)(((s64)info->boxZ * info->boxPosScale + 0x800) >> FX32_SHIFT);
-    position.z -= (s32)(((s64)info->boxH * info->boxPosScale + 0x800) >> FX32_SHIFT);
+    position.x += FX_Mul(info->boxX, info->boxPosScale);
+    position.y += FX_Mul(info->boxY, info->boxPosScale);
+    position.z += FX_Mul(info->boxZ, info->boxPosScale);
+    position.z -= FX_Mul(info->boxH, info->boxPosScale);
     MTX_Identity33_(&rotation);
     MI_Copy36B(&rotation, &NNS_G3dGlb.prmBaseRot);
     NNS_G3dGlb.flag &= ~0xA4;

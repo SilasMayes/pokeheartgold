@@ -92,7 +92,7 @@ SysTask *CommClubButtons_Init(BgConfig *bgConfig, u16 *lastTouchMenuInput, Field
     CommClubButtonsData *data;
 
     Heap_Create(HEAP_ID_3, HEAP_ID_8, 0x18000);
-    reg_G2S_DB_BLDCNT = 0;
+    G2S_BlendNone();
     task = CreateSysTaskAndEnvironment(CommClubButtons_Task, sizeof(CommClubButtonsData), 10, HEAP_ID_8);
     data = SysTask_GetData(task);
     data->bgConfig = bgConfig;
@@ -181,7 +181,7 @@ static void CommClubButtons_Task(SysTask *task, void *taskData) {
 static void CommClubButtons_SetVramBanks(void) {
     GX_SetBankForSubBG(GX_VRAM_SUB_BG_32_H);
     GX_SetBankForSubOBJ(GX_VRAM_SUB_OBJ_16_I);
-    reg_GXS_DB_DISPCNT = (reg_GXS_DB_DISPCNT & 0xFFCFFFEF) | 0x10;
+    GXS_SetOBJVRamModeChar(GX_OBJVRAMMODE_CHAR_1D_32K);
 }
 
 static void CommClubButtons_InitBgs(BgConfig *bgConfig) {

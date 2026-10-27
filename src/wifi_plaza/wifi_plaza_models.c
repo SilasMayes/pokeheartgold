@@ -1559,12 +1559,12 @@ static BOOL WiFiPlazaPropShow_UpdateFade(WiFiPlazaPropShow *show) {
     s32 alpha;
     if (show->fadeTimer < 10) {
         show->fadeTimer++;
-        value = FX_Div((s32)(((s64)(show->fadeTimer << FX32_SHIFT) * show->animSpeed + 2048) >> 12), 10 << FX32_SHIFT);
+        value = FX_Div(FX_Mul(show->fadeTimer << FX32_SHIFT, show->animSpeed), 10 << FX32_SHIFT);
         WiFiPlazaProp_SetAnimSpeed(show->prop, value + show->animSpeed);
         alpha = show->fadeTimer * 31 / 10;
         alpha = 31 - alpha;
         WiFiPlazaProp_SetAlpha(show->prop, alpha, 31);
-        value = FX_Div((s32)(((s64)(show->fadeTimer << FX32_SHIFT) * 737 + 2048) >> 12), 10 << FX32_SHIFT);
+        value = FX_Div(FX_Mul(show->fadeTimer << FX32_SHIFT, FX32_CONST(0.18)), 10 << FX32_SHIFT);
         WiFiPlazaProp_SetScale(show->prop, value + FX32_ONE, value + FX32_ONE, value + FX32_ONE);
         return FALSE;
     }

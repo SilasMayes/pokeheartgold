@@ -840,7 +840,7 @@ void CommState_RecvJoinRequest(int netId, int size, void *data, void *context) {
     u32 i;
     if (!Comm_GetLocalNetId()) {
         BOOL matches = TRUE;
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < NELEMS(sJoinRequest); i++) {
             if (sJoinRequest[i] != request[i]) {
                 matches = FALSE;
                 break;
@@ -860,7 +860,7 @@ void CommState_RecvJoinReply(int netId, int size, void *data, void *context) {
     const u8 *reply = data;
     u32 i;
     BOOL matches = TRUE;
-    for (i = 1; i < 6; i++) {
+    for (i = 1; i < NELEMS(sJoinAccepted); i++) {
         if (sJoinAccepted[i] != reply[i]) {
             matches = FALSE;
             break;
@@ -873,7 +873,7 @@ void CommState_RecvJoinReply(int netId, int size, void *data, void *context) {
         }
     } else {
         matches = TRUE;
-        for (i = 1; i < 6; i++) {
+        for (i = 1; i < NELEMS(sJoinRefused); i++) {
             if (sJoinRefused[i] != reply[i]) {
                 matches = FALSE;
                 break;

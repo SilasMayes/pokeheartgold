@@ -136,8 +136,8 @@ BOOL Gts_Init(OverlayManager *man, int *state) {
         HBlankInterruptDisable();
         GfGfx_DisableEngineAPlanes();
         GfGfx_DisableEngineBPlanes();
-        reg_GX_DISPCNT &= 0xFFFFE0FF;
-        reg_GXS_DB_DISPCNT &= 0xFFFFE0FF;
+        GX_SetVisiblePlane(GX_PLANEMASK_NONE);
+        GXS_SetVisiblePlane(GX_PLANEMASK_NONE);
         Gts_SetupWindow0();
         Heap_Create(HEAP_ID_3, HEAP_ID_61, 0x70000);
         LoadDwcOverlay();
@@ -245,8 +245,8 @@ BOOL Gts_Exit(OverlayManager *man, int *state) {
     Heap_Free(app->args);
     OverlayManager_FreeData(man);
     FontID_Release(4);
-    reg_GX_DISPCNT &= 0xFFFF1FFF;
-    reg_GXS_DB_DISPCNT &= 0xFFFF1FFF;
+    GX_SetVisibleWnd(GX_WNDMASK_NONE);
+    GXS_SetVisibleWnd(GX_WNDMASK_NONE);
     Main_SetVBlankIntrCB(NULL, NULL);
     Heap_Destroy(HEAP_ID_61);
     return TRUE;
@@ -596,6 +596,6 @@ void Gts_DimScreen(BOOL mainScreen) {
 }
 
 static void Gts_ClearDim(void) {
-    reg_G2_BLDCNT = 0;
-    reg_G2S_DB_BLDCNT = 0;
+    G2_BlendNone();
+    G2S_BlendNone();
 }

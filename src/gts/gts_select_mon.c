@@ -409,7 +409,7 @@ int GtsSearch_WaitTextAndPause(GtsApp *app) {
 int GtsSearch_ScrollOut(GtsApp *app) {
     app->scrollY++;
     if (IsPaletteFadeFinished()) {
-        reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;
+        GX_SetDispSelect(GX_DISP_SELECT_MAIN_SUB);
         app->scrollY = -16;
         if (app->hasSearchResults) {
             Sprite_SetAnimCtrlSeq(app->avatarSprites[1], 16);
@@ -522,7 +522,7 @@ void GtsSearch_SetBlendBrightness(int brightness) {
     if (brightness != 0) {
         G2_SetBlendBrightness(GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG3, brightness);
     } else {
-        reg_G2_BLDCNT = 0;
+        G2_BlendNone();
     }
 }
 
@@ -530,7 +530,7 @@ void GtsSearch_SetBlendBrightness(int brightness) {
 
 int GtsSelectMon_Init(GtsApp *app, int state) {
     GtsSelectMon_CreateData(app);
-    reg_GX_POWCNT &= ~REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
     GtsSelectMon_InitBgs(app->bgConfig);
     GtsSelectMon_LoadGraphics(app);
     GtsSelectMon_CreateWindows(app);

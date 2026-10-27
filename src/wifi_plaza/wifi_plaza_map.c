@@ -140,7 +140,7 @@ BOOL WiFiPlazaMap_FindTileTag(WiFiPlazaMap *map, int tag, u16 *outX, u16 *outY, 
 BOOL WiFiPlazaMap_IsStandActionTile(u32 attr) {
     u32 i;
 
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < NELEMS(sWiFiPlazaStandActionTiles); i++) {
         if (attr == sWiFiPlazaStandActionTiles[i]) {
             return TRUE;
         }
@@ -173,7 +173,7 @@ BOOL WiFiPlazaMap_IsCheckActionTile(u32 attr) {
 BOOL WiFiPlazaMap_IsPropTile(u32 attr) {
     u32 i;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NELEMS(sWiFiPlazaPropTiles); i++) {
         if (attr == sWiFiPlazaPropTiles[i]) {
             return TRUE;
         }

@@ -355,7 +355,7 @@ static void PalPadGfx_InitSpriteSystem(PalPadGfx *gfx, enum HeapID heapId) {
     OamManager_Create(0, 0x7E, 0, 0x1E, 0, 0x7E, 0, 0x1E, heapId);
     template = gPalPadObjCharTransferTemplate;
     template.heapID = heapId;
-    ObjCharTransfer_InitEx(&template, (GXOBJVRamModeChar)0x10, (GXOBJVRamModeChar)0x10);
+    ObjCharTransfer_InitEx(&template, GX_OBJVRAMMODE_CHAR_1D_32K, GX_OBJVRAMMODE_CHAR_1D_32K);
     ObjPlttTransfer_Init(0x40, heapId);
     ObjCharTransfer_ClearBuffers();
     ObjPlttTransfer_Reset();
@@ -611,7 +611,7 @@ void PalPadGfx_StartYesNo(u32 *inputState, PalPadGfx *gfx, int initialCursorPos)
     template.initialCursorPos = initialCursorPos;
     template.shapeParam = 0;
     YesNoPrompt_InitFromTemplate(gfx->yesNoPrompt, &template);
-    StartBrightnessTransition(4, 8, 0, (GXBlendPlaneMask)61, SCREEN_MASK_MAIN);
+    StartBrightnessTransition(4, 8, 0, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), SCREEN_MASK_MAIN);
 }
 
 int PalPadGfx_HandleYesNo(u32 *inputState, PalPadGfx *gfx) {
@@ -620,7 +620,7 @@ int PalPadGfx_HandleYesNo(u32 *inputState, PalPadGfx *gfx) {
     if (result == YESNORESPONSE_YES || result == YESNORESPONSE_NO) {
         *inputState = YesNoPrompt_IsInTouchMode(gfx->yesNoPrompt);
         YesNoPrompt_Reset(gfx->yesNoPrompt);
-        SetBlendBrightness(0, (GXBlendPlaneMask)61, SCREEN_MASK_MAIN);
+        SetBlendBrightness(0, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), SCREEN_MASK_MAIN);
     }
     return result;
 }

@@ -588,7 +588,7 @@ static BOOL WiFiPlazaSurveyAnswer_Run(WiFiPlazaSurveyAnswer *answer, WiFiPlazaSu
         answer->state = WIFI_PLAZA_SURVEY_ANSWER_WAIT_SUBMIT;
         break;
     case WIFI_PLAZA_SURVEY_ANSWER_WAIT_SUBMIT:
-        if (WiFiPlazaLobbyClient_GetSurveySubmitState() == 1) {
+        if (WiFiPlazaLobbyClient_GetSurveySubmitState() == WIFI_PLAZA_SURVEY_SUBMIT_SENT) {
             break;
         }
         PlaySE(SEQ_SE_DP_BUTTON9);

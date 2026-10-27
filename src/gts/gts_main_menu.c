@@ -228,7 +228,7 @@ static int (*sGtsMainMenuStates[])(GtsApp *app) = {
 
 int GtsMainMenu_Init(GtsApp *app, int state) {
     GtsMainMenu_CreateStrings(app);
-    reg_GX_POWCNT &= ~REG_GX_POWCNT_DSEL_MASK;
+    GX_SetDispSelect(GX_DISP_SELECT_SUB_MAIN);
     GtsMainMenu_InitBgs(app->bgConfig);
     GtsMainMenu_LoadGraphics(app);
     GtsMainMenu_CreateWindows(app);

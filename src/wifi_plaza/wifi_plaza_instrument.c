@@ -233,7 +233,7 @@ static void WiFiPlazaInstrumentWave_Init(WiFiPlazaInstrumentWave *wave, int angl
     sin = FX_SinCosTable_[(angle >> 4) * 2];
     wave->step = step;
     wave->amplitude = amplitude;
-    wave->value = (s32)(((s64)sin * wave->amplitude + 0x800) >> 12);
+    wave->value = FX_Mul(sin, wave->amplitude);
 }
 
 static void WiFiPlazaInstrumentWave_Update(WiFiPlazaInstrumentWave *wave) {
@@ -241,7 +241,7 @@ static void WiFiPlazaInstrumentWave_Update(WiFiPlazaInstrumentWave *wave) {
 
     wave->angle += wave->step;
     sin = FX_SinCosTable_[(wave->angle >> 4) * 2];
-    wave->value = (s32)(((s64)sin * wave->amplitude + 0x800) >> 12);
+    wave->value = FX_Mul(sin, wave->amplitude);
 }
 
 static void WiFiPlazaInstrumentWave_GetValue(WiFiPlazaInstrumentWave *wave, fx32 *value) {
