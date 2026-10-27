@@ -265,7 +265,7 @@ void BlockWipe_Start(BlockWipe *wipe, u8 duration, u8 delay, Window *window, u8 
 
 BOOL BlockWipe_Update(BlockWipe *wipe) {
     int i;
-    int result;
+    BOOL result;
     if (!wipe->active) {
         return TRUE;
     }

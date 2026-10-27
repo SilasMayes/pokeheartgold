@@ -61,7 +61,7 @@ typedef struct Field3dRenderObjManager {
 } Field3dRenderObjManager;
 
 typedef struct TimeOfDayPropAnimSet {
-    u32 active;
+    BOOL active;
     int numAnims;
     MapPropAnimation *animations[4];
     NNSG3dRenderObj *renderObj;

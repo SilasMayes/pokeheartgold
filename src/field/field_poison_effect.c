@@ -30,7 +30,7 @@ enum PoisonEffectSeq {
 // Screen shake shown when a poisoned party loses HP while walking: every HBlank shifts the 3D layer
 // horizontally by an offset that alternates sign every 10 lines; the amplitude ramps up and down over 6 frames.
 struct PoisonEffect {
-    u32 state;
+    enum PoisonEffectState state;
     s32 counter;
     u32 seqNo;
     u16 buffers[2][192];

@@ -445,7 +445,7 @@ void TimeOfDayPropAnimManager_AddProp(TimeOfDayPropAnimManager *manager, NNSG3dR
         GF_ASSERT(!manager->sets[manager->numSets].active);
         GF_ASSERT(count <= 4);
         TimeOfDayPropAnimSet *set = &manager->sets[manager->numSets];
-        set->active = 1;
+        set->active = TRUE;
         set->numAnims = count;
         if (count > 4) {
             set->numAnims = 4;
@@ -474,7 +474,7 @@ void TimeOfDayPropAnimManager_Update(TimeOfDayPropAnimManager *manager) {
         u8 previousTimeOfDay = manager->timeOfDay;
         manager->timeOfDay = (TIMEOFDAY)currentTimeOfDay;
         for (int i = 0; i < 4; i++) {
-            if (manager->sets[i].active != 0) {
+            if (manager->sets[i].active) {
                 TimeOfDayPropAnimSet *sub = &manager->sets[i];
                 MapPropAnimation_RemoveFromRenderObj(sub->renderObj, sub->animations[sTimeOfDayVisualState[previousTimeOfDay]]);
                 MapPropAnimation_AddToRenderObj(sub->renderObj, sub->animations[sTimeOfDayVisualState[currentTimeOfDay]]);

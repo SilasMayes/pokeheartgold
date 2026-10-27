@@ -251,7 +251,7 @@ static void TouchscreenMenu_FreeStrings(TouchscreenMenuData *data);
 static void TouchscreenMenu_CopyIconLabelsToVram(TouchscreenMenuData *data);
 static void TouchscreenMenu_PrintIconLabels(TouchscreenMenuData *data);
 static u32 TouchscreenMenu_IsTextboxOpen(FieldSystem *fieldSystem);
-static int TouchscreenMenu_GetLayout(FieldSystem *fieldSystem);
+static enum TouchscreenMenuLayout TouchscreenMenu_GetLayout(FieldSystem *fieldSystem);
 static BOOL TouchscreenMenu_LayoutHasRegisteredItems(TouchscreenMenuData *data);
 static BOOL TouchscreenMenu_HasRunningShoes(TouchscreenMenuData *data);
 static void TouchscreenMenu_InitPhoneRing(TouchscreenMenuPhoneRing *phoneRing, TouchscreenMenuData *data);
@@ -822,7 +822,7 @@ static void TouchscreenMenu_LoadIconResources(FieldSystem *fieldSystem, GF_2DGfx
     NarcId narcId = NARC_a_0_1_4;
     int charFileId = 18;
     int plttFileId = 14;
-    int compressed = TRUE;
+    BOOL compressed = TRUE;
     int plttNum = 1;
 
     if (icon != TOUCHSCREEN_MENU_ICON_NONE) {
@@ -1259,7 +1259,7 @@ static u32 TouchscreenMenu_IsTextboxOpen(FieldSystem *fieldSystem) {
     return fieldSystem->textbox_open;
 }
 
-static int TouchscreenMenu_GetLayout(FieldSystem *fieldSystem) {
+static enum TouchscreenMenuLayout TouchscreenMenu_GetLayout(FieldSystem *fieldSystem) {
     SaveVarsFlags *varsFlags = Save_VarsFlags_Get(fieldSystem->saveData);
     if (FieldSystem_MapIsBattleTowerMultiPartnerSelectRoom(fieldSystem)) {
         return TOUCHSCREEN_MENU_LAYOUT_BATTLE_TOWER_PARTNER_ROOM;

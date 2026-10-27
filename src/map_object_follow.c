@@ -682,9 +682,9 @@ static void FollowMon_SpawnGrassEffects(LocalMapObject *object) {
     u32 behavior = GetMetatileBehavior(fieldSystem, x, z);
 
     if (MetatileBehavior_IsTallGrass(behavior) == TRUE) {
-        TallGrass_Spawn(object, 0);
+        TallGrass_Spawn(object, FALSE);
     } else if (MetatileBehavior_IsVeryTallGrass(behavior) == TRUE) {
-        VeryTallGrass_Spawn(object, 0);
+        VeryTallGrass_Spawn(object, FALSE);
     }
 
     if (FollowMonObject_IsLarge(object)) {
@@ -693,11 +693,11 @@ static void FollowMon_SpawnGrassEffects(LocalMapObject *object) {
             MapObject_GetCoordsBehind(object, &x, &z);
             behavior = GetMetatileBehavior(fieldSystem, x, z);
             if (MetatileBehavior_IsTallGrass(behavior) == TRUE) {
-                TallGrass_SpawnAt(object, 1, x, z, 1);
+                TallGrass_SpawnAt(object, TRUE, x, z, TRUE);
                 return;
             }
             if (MetatileBehavior_IsVeryTallGrass(behavior) == TRUE) {
-                VeryTallGrass_SpawnAt(object, 1, x, z, 1);
+                VeryTallGrass_SpawnAt(object, TRUE, x, z, TRUE);
             }
         }
     }

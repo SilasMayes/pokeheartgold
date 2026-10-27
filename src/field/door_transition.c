@@ -153,7 +153,7 @@ BOOL DoorTransition_WalkIntoDoor(FieldSystem *fieldSystem, FieldTransitionWork *
     fx32 rect[4];
     DoorAnimListEntry entry;
     MapProp *prop;
-    int found;
+    BOOL found;
     int modelId0;
     NARC *narc;
     int *props;
@@ -278,7 +278,7 @@ BOOL DoorTransition_WalkOutOfDoor(FieldSystem *fieldSystem, FieldTransitionWork 
     fx32 rect[4];
     DoorAnimListEntry entry;
     MapProp *prop;
-    int found;
+    BOOL found;
     int modelId0;
     NARC *narc;
     int *props;
@@ -648,7 +648,7 @@ void DoorAnimation_Load(FieldSystem *fieldSystem, int x, int z, u8 tag) {
     } door;
 
     NARC *narc;
-    int found;
+    BOOL found;
     int modelId;
     int *props;
     int i;

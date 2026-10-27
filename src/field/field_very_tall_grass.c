@@ -45,7 +45,7 @@ typedef struct VeryTallGrassEffectArgs {
 } VeryTallGrassEffectArgs;
 
 typedef struct VeryTallGrassEffect {
-    int state;
+    enum VeryTallGrassEffectState state;
     u32 spriteId;
     u32 objectId;
     u32 mapId;

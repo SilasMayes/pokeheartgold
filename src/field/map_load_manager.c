@@ -137,7 +137,7 @@ struct MapLoadManager {
     u8 currentMapSlot;
     u8 quadrant;
     BOOL ended;
-    int state;
+    enum MapLoadState state;
     AreaDataManager *areaDataManager;
     Field3dRenderObjManager *renderObjManager;
     MapMatrix *mapMatrix;
@@ -214,7 +214,7 @@ static int Quadrant_ToMapSlot(int quadrant);
 static int TileIndex_Step(int direction, int height, int stride, int tile);
 static u32 MapSlot_Step(u32 direction, int mapSlot);
 static void MapLoadManager_UpdateCurrentMapSlot(int direction, int target, u8 *mapSlot);
-static int Direction_GetOpposite(u32 direction);
+static enum MapLoadDirection Direction_GetOpposite(u32 direction);
 static BOOL MapLoadManager_FindOppositeSlot(u8 direction, MapLoadManager *mapLoadManager, u8 *slot);
 static BOOL MapLoadManager_StartQueuedSlot(MapLoadManager *mapLoadManager);
 static void MapLoadManager_StartQueuedLoad(MapLoadManager *mapLoadManager);
@@ -1066,7 +1066,7 @@ static void MapLoadManager_UpdateCurrentMapSlot(int direction, int target, u8 *m
     *mapSlot = result;
 }
 
-static int Direction_GetOpposite(u32 direction) {
+static enum MapLoadDirection Direction_GetOpposite(u32 direction) {
     switch (direction) {
     case MAP_LOAD_DIR_NORTH:
         return MAP_LOAD_DIR_SOUTH;

@@ -112,7 +112,7 @@ enum CutInModelEffectStep {
 };
 
 typedef struct TrainerJump {
-    int mode;
+    enum TrainerJumpMode mode;
     int step;
     BOOL done;
     int frame;
@@ -131,7 +131,7 @@ typedef struct TrainerClip {
 
 typedef struct CutInModelEffect {
     FieldMoveCutIn *cutIn;
-    int step;
+    enum CutInModelEffectStep step;
     BOOL done;
 } CutInModelEffect;
 
@@ -372,7 +372,7 @@ void CutInScrollSprite_Update(FieldEffect *effect, CutInScrollSprite *work) {
     if (work->args.mode == 1) {
         FieldMoveCutIn *cutIn = work->args.cutIn;
         if (cutIn->scrollSpriteMode == 2) {
-            int visible = FALSE;
+            BOOL visible = FALSE;
             int top = cutIn->windowTop, bottom = cutIn->windowBottom;
             int spriteTop = pos.y - FX32_CONST(2);
             if (spriteTop >= top && spriteTop <= bottom && pos.y + FX32_CONST(2) >= top && pos.y + FX32_CONST(2) <= bottom) {

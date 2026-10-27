@@ -373,7 +373,7 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
         effect->state++;
         // fallthrough
     case ROCKET_EXECUTIVE_STATE_SLIDE_IN: {
-        int blendDone = FALSE;
+        BOOL blendDone = FALSE;
 
         if (work->timer <= 16) {
             work->timer += 4;

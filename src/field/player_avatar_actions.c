@@ -165,8 +165,8 @@ enum FieldMoveTaskStepResult {
     FIELD_MOVE_TASK_STEP_NEXT, // run the (new) current step now
 };
 
-typedef int (*RockClimbStepFunc)(RockClimbWork *work, TaskManager *taskManager);
-typedef int (*WaterfallStepFunc)(WaterfallWork *work);
+typedef enum FieldMoveTaskStepResult (*RockClimbStepFunc)(RockClimbWork *work, TaskManager *taskManager);
+typedef enum FieldMoveTaskStepResult (*WaterfallStepFunc)(WaterfallWork *work);
 
 void SurfMountEffect_SetBobbing(u32 effect, int bobbing);
 
@@ -200,37 +200,37 @@ static BOOL Field_PlayerAvatar_TryWaterfallUp(FieldSystem *fieldSystem, PlayerAv
 static BOOL Field_PlayerAvatar_HandleForcedMovement(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, int playerEvents);
 static void Field_StartRockClimbTask(FieldSystem *fieldSystem, u32 direction, FieldMoveAnim *anim);
 static BOOL Task_RockClimb(TaskManager *taskManager);
-static int RockClimb_StartCutIn(RockClimbWork *work, TaskManager *taskManager);
-static int RockClimb_WaitCutIn(RockClimbWork *work, TaskManager *taskManager);
-static int RockClimb_FollowMonReact(RockClimbWork *work, TaskManager *taskManager);
-static int RockClimb_PlayFollowMonCry(RockClimbWork *work, TaskManager *taskManager);
-static int RockClimb_WaitFollowMonCry(RockClimbWork *work, TaskManager *taskManager);
-static int RockClimb_CreateEffect(RockClimbWork *work, TaskManager *taskManager);
-static int RockClimb_StartJump(RockClimbWork *work, TaskManager *taskManager);
-static int RockClimb_WaitJump(RockClimbWork *work, TaskManager *taskManager);
-static int RockClimb_StartStep(RockClimbWork *work, TaskManager *taskManager);
-static int RockClimb_CheckNextTile(RockClimbWork *work, TaskManager *taskManager);
-static int RockClimb_Finish(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_StartCutIn(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_WaitCutIn(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_FollowMonReact(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_PlayFollowMonCry(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_WaitFollowMonCry(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_CreateEffect(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_StartJump(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_WaitJump(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_StartStep(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_CheckNextTile(RockClimbWork *work, TaskManager *taskManager);
+static enum FieldMoveTaskStepResult RockClimb_Finish(RockClimbWork *work, TaskManager *taskManager);
 static WaterfallWork *Waterfall_NewWork(FieldSystem *fieldSystem, int direction, FieldMoveAnim *anim);
 static void Field_StartWaterfallTask(FieldSystem *fieldSystem, u32 direction);
 static BOOL Task_Waterfall(TaskManager *taskManager);
-static int WaterfallUp_StartCutIn(WaterfallWork *work);
-static int WaterfallUp_WaitCutIn(WaterfallWork *work);
-static int WaterfallUp_Init(WaterfallWork *work);
-static int WaterfallUp_Rise(WaterfallWork *work);
-static int WaterfallUp_Climb(WaterfallWork *work);
-static int WaterfallDown_StartCutIn(WaterfallWork *work);
-static int WaterfallDown_WaitCutIn(WaterfallWork *work);
-static int WaterfallDown_Init(WaterfallWork *work);
-static int WaterfallDown_Advance(WaterfallWork *work);
-static int WaterfallDown_Descend(WaterfallWork *work);
+static enum FieldMoveTaskStepResult WaterfallUp_StartCutIn(WaterfallWork *work);
+static enum FieldMoveTaskStepResult WaterfallUp_WaitCutIn(WaterfallWork *work);
+static enum FieldMoveTaskStepResult WaterfallUp_Init(WaterfallWork *work);
+static enum FieldMoveTaskStepResult WaterfallUp_Rise(WaterfallWork *work);
+static enum FieldMoveTaskStepResult WaterfallUp_Climb(WaterfallWork *work);
+static enum FieldMoveTaskStepResult WaterfallDown_StartCutIn(WaterfallWork *work);
+static enum FieldMoveTaskStepResult WaterfallDown_WaitCutIn(WaterfallWork *work);
+static enum FieldMoveTaskStepResult WaterfallDown_Init(WaterfallWork *work);
+static enum FieldMoveTaskStepResult WaterfallDown_Advance(WaterfallWork *work);
+static enum FieldMoveTaskStepResult WaterfallDown_Descend(WaterfallWork *work);
 static void Field_StartWhirlpoolTask(FieldSystem *fieldSystem, u32 direction, FieldMoveAnim *anim);
 static BOOL Task_Whirlpool(TaskManager *taskManager);
-static int Whirlpool_StartCutIn(WaterfallWork *work);
-static int Whirlpool_WaitCutIn(WaterfallWork *work);
-static int Whirlpool_CreateEffect(WaterfallWork *work);
-static int Whirlpool_StartStep(WaterfallWork *work);
-static int Whirlpool_CheckNextTile(WaterfallWork *work);
+static enum FieldMoveTaskStepResult Whirlpool_StartCutIn(WaterfallWork *work);
+static enum FieldMoveTaskStepResult Whirlpool_WaitCutIn(WaterfallWork *work);
+static enum FieldMoveTaskStepResult Whirlpool_CreateEffect(WaterfallWork *work);
+static enum FieldMoveTaskStepResult Whirlpool_StartStep(WaterfallWork *work);
+static enum FieldMoveTaskStepResult Whirlpool_CheckNextTile(WaterfallWork *work);
 static void PlayerMovementSaving_Update(SysTask *task, void *data);
 static void FieldMoveAnim_Init(FieldSystem *fieldSystem, Pokemon *mon, FieldMoveAnim *anim);
 static void FieldMoveAnim_Start(FieldSystem *fieldSystem, FieldMoveAnim *anim);
@@ -842,7 +842,7 @@ BOOL MetatileBehavior_IsRockClimbInDirection(int facingTile, int facingDirection
 
 static BOOL Task_RockClimb(TaskManager *taskManager) {
     RockClimbWork *work = TaskManager_GetEnvironment(taskManager);
-    int result;
+    enum FieldMoveTaskStepResult result;
     do {
         if (work->anim.useCutIn == TRUE) {
             result = sRockClimbCutInSteps[work->state](work, taskManager);
@@ -859,13 +859,13 @@ static BOOL Task_RockClimb(TaskManager *taskManager) {
     return result;
 }
 
-static int RockClimb_StartCutIn(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_StartCutIn(RockClimbWork *work, TaskManager *taskManager) {
     FieldMoveAnim_Start(work->fieldSystem, &work->anim);
     work->state++;
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int RockClimb_WaitCutIn(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_WaitCutIn(RockClimbWork *work, TaskManager *taskManager) {
     if (FieldMoveAnim_CheckFinished(&work->anim) == TRUE) {
         FollowMon_StartRecall(work->fieldSystem);
         work->state++;
@@ -873,7 +873,7 @@ static int RockClimb_WaitCutIn(RockClimbWork *work, TaskManager *taskManager) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int RockClimb_FollowMonReact(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_FollowMonReact(RockClimbWork *work, TaskManager *taskManager) {
     u8 count;
     if (FieldSystem_FirstAliveMonHasType(work->fieldSystem, TYPE_NORMAL)) {
         FollowMonMood_Add(work->fieldSystem->followMonMood, 1);
@@ -886,7 +886,7 @@ static int RockClimb_FollowMonReact(RockClimbWork *work, TaskManager *taskManage
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int RockClimb_PlayFollowMonCry(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_PlayFollowMonCry(RockClimbWork *work, TaskManager *taskManager) {
     u32 species = GetMonData(work->anim.mon, MON_DATA_SPECIES, NULL);
     u32 form = GetMonData(work->anim.mon, MON_DATA_FORM, NULL);
     PlayCry(species, form);
@@ -894,7 +894,7 @@ static int RockClimb_PlayFollowMonCry(RockClimbWork *work, TaskManager *taskMana
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int RockClimb_WaitFollowMonCry(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_WaitFollowMonCry(RockClimbWork *work, TaskManager *taskManager) {
     if (IsCryFinished()) {
         return FIELD_MOVE_TASK_STEP_WAIT;
     }
@@ -903,7 +903,7 @@ static int RockClimb_WaitFollowMonCry(RockClimbWork *work, TaskManager *taskMana
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int RockClimb_CreateEffect(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_CreateEffect(RockClimbWork *work, TaskManager *taskManager) {
     int x = PlayerAvatar_GetXCoord(work->playerAvatar);
     int dx = GetDeltaXByFacingDirection(work->direction);
     int z = PlayerAvatar_GetZCoord(work->playerAvatar);
@@ -918,7 +918,7 @@ static int RockClimb_CreateEffect(RockClimbWork *work, TaskManager *taskManager)
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int RockClimb_StartJump(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_StartJump(RockClimbWork *work, TaskManager *taskManager) {
     if (MapObject_AreBitsSetForMovementScriptInit(work->mapObject) == TRUE) {
         MapObject_SetHeldMovement(work->mapObject, GetMovementForDirection(work->direction, 0x34));
         work->state++;
@@ -926,7 +926,7 @@ static int RockClimb_StartJump(RockClimbWork *work, TaskManager *taskManager) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int RockClimb_WaitJump(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_WaitJump(RockClimbWork *work, TaskManager *taskManager) {
     if (MapObject_IsMovementPaused(work->mapObject) == TRUE) {
         work->state++;
         RockClimbEffect_SetFollow(work->effect, TRUE);
@@ -934,7 +934,7 @@ static int RockClimb_WaitJump(RockClimbWork *work, TaskManager *taskManager) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int RockClimb_StartStep(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_StartStep(RockClimbWork *work, TaskManager *taskManager) {
     if (MapObject_AreBitsSetForMovementScriptInit(work->mapObject) == TRUE) {
         MapObject_SetHeldMovement(work->mapObject, GetMovementForDirection(work->direction, MOVEMENT_RUN_UP));
         work->state++;
@@ -942,7 +942,7 @@ static int RockClimb_StartStep(RockClimbWork *work, TaskManager *taskManager) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int RockClimb_CheckNextTile(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_CheckNextTile(RockClimbWork *work, TaskManager *taskManager) {
     u32 direction;
     if (!MapObject_IsMovementPaused(work->mapObject)) {
         return FIELD_MOVE_TASK_STEP_WAIT;
@@ -961,7 +961,7 @@ static int RockClimb_CheckNextTile(RockClimbWork *work, TaskManager *taskManager
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int RockClimb_Finish(RockClimbWork *work, TaskManager *taskManager) {
+static enum FieldMoveTaskStepResult RockClimb_Finish(RockClimbWork *work, TaskManager *taskManager) {
     if (!MapObject_IsMovementPaused(work->mapObject)) {
         return FIELD_MOVE_TASK_STEP_WAIT;
     }
@@ -995,7 +995,7 @@ void CallFieldTask_Waterfall(TaskManager *taskManager, int direction, int partyS
 
 static BOOL Task_Waterfall(TaskManager *taskManager) {
     WaterfallWork *work = TaskManager_GetEnvironment(taskManager);
-    int result;
+    enum FieldMoveTaskStepResult result;
     do {
         if (work->direction == 0) {
             result = sWaterfallUpSteps[work->state](work);
@@ -1011,7 +1011,7 @@ static BOOL Task_Waterfall(TaskManager *taskManager) {
     return FALSE;
 }
 
-static int WaterfallUp_StartCutIn(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult WaterfallUp_StartCutIn(WaterfallWork *work) {
     if (work->anim.useCutIn == TRUE) {
         FieldMoveAnim_Start(work->fieldSystem, &work->anim);
         work->state++;
@@ -1021,7 +1021,7 @@ static int WaterfallUp_StartCutIn(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_DONE;
 }
 
-static int WaterfallUp_WaitCutIn(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult WaterfallUp_WaitCutIn(WaterfallWork *work) {
     if (FieldMoveAnim_CheckFinished(&work->anim) == TRUE) {
         PlaySE(SEQ_SE_DP_FW463);
         work->state++;
@@ -1029,7 +1029,7 @@ static int WaterfallUp_WaitCutIn(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int WaterfallUp_Init(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult WaterfallUp_Init(WaterfallWork *work) {
     VecFx32 position;
     VecFx32 step;
     u8 kind;
@@ -1055,7 +1055,7 @@ static int WaterfallUp_Init(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int WaterfallUp_Rise(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult WaterfallUp_Rise(WaterfallWork *work) {
     VecFx32 position;
     MapObject_CopyPositionVector(work->mapObject, &position);
     position.y += work->step.y;
@@ -1071,7 +1071,7 @@ static int WaterfallUp_Rise(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int WaterfallUp_Climb(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult WaterfallUp_Climb(WaterfallWork *work) {
     VecFx32 position;
     MapObject_CopyPositionVector(work->mapObject, &position);
     position.y += work->step.y;
@@ -1097,7 +1097,7 @@ static int WaterfallUp_Climb(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_DONE;
 }
 
-static int WaterfallDown_StartCutIn(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult WaterfallDown_StartCutIn(WaterfallWork *work) {
     if (work->anim.useCutIn == TRUE) {
         FieldMoveAnim_Start(work->fieldSystem, &work->anim);
         work->state++;
@@ -1107,7 +1107,7 @@ static int WaterfallDown_StartCutIn(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_NEXT;
 }
 
-static int WaterfallDown_WaitCutIn(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult WaterfallDown_WaitCutIn(WaterfallWork *work) {
     if (FieldMoveAnim_CheckFinished(&work->anim) == TRUE) {
         PlaySE(SEQ_SE_DP_FW463);
         work->state++;
@@ -1115,7 +1115,7 @@ static int WaterfallDown_WaitCutIn(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int WaterfallDown_Init(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult WaterfallDown_Init(WaterfallWork *work) {
     VecFx32 position;
     VecFx32 step;
     int x = MapObject_GetXCoord(work->mapObject) + (GetDeltaXByFacingDirection(DIR_SOUTH) << 1);
@@ -1140,7 +1140,7 @@ static int WaterfallDown_Init(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int WaterfallDown_Advance(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult WaterfallDown_Advance(WaterfallWork *work) {
     VecFx32 position;
     MapObject_CopyPositionVector(work->mapObject, &position);
     position.z += work->step.z;
@@ -1158,7 +1158,7 @@ static int WaterfallDown_Advance(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int WaterfallDown_Descend(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult WaterfallDown_Descend(WaterfallWork *work) {
     VecFx32 position;
     MapObject_CopyPositionVector(work->mapObject, &position);
     position.y += work->step.y;
@@ -1204,7 +1204,7 @@ void CallFieldTask_Whirlpool(TaskManager *taskManager, int direction, int partyS
 }
 
 static BOOL Task_Whirlpool(TaskManager *taskManager) {
-    int result;
+    enum FieldMoveTaskStepResult result;
     WaterfallWork *work = TaskManager_GetEnvironment(taskManager);
     do {
         result = sWhirlpoolSteps[work->state](work);
@@ -1216,20 +1216,20 @@ static BOOL Task_Whirlpool(TaskManager *taskManager) {
     return result;
 }
 
-static int Whirlpool_StartCutIn(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult Whirlpool_StartCutIn(WaterfallWork *work) {
     FieldMoveAnim_Start(work->fieldSystem, &work->anim);
     work->state++;
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int Whirlpool_WaitCutIn(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult Whirlpool_WaitCutIn(WaterfallWork *work) {
     if (FieldMoveAnim_CheckFinished(&work->anim) == TRUE) {
         work->state++;
     }
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int Whirlpool_CreateEffect(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult Whirlpool_CreateEffect(WaterfallWork *work) {
     if (FollowMon_IsActive(work->fieldSystem)) {
         MapObject_UnpauseMovement(FollowMon_GetMapObject(work->fieldSystem));
     }
@@ -1239,7 +1239,7 @@ static int Whirlpool_CreateEffect(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int Whirlpool_StartStep(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult Whirlpool_StartStep(WaterfallWork *work) {
     if (MapObject_AreBitsSetForMovementScriptInit(work->mapObject) == TRUE) {
         MapObject_SetHeldMovement(work->mapObject, GetMovementForDirection(work->direction, 4));
         work->state++;
@@ -1247,7 +1247,7 @@ static int Whirlpool_StartStep(WaterfallWork *work) {
     return FIELD_MOVE_TASK_STEP_WAIT;
 }
 
-static int Whirlpool_CheckNextTile(WaterfallWork *work) {
+static enum FieldMoveTaskStepResult Whirlpool_CheckNextTile(WaterfallWork *work) {
     if (!MapObject_IsMovementPaused(work->mapObject)) {
         return FIELD_MOVE_TASK_STEP_WAIT;
     }

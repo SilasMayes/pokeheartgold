@@ -75,7 +75,7 @@ void CharSpriteManager_UnloadAllChars(CharSpriteManager *charSpriteManager) {
         CharSpriteManager_UnloadAvatarChars(charSpriteManager);
     }
     for (int i = 0; i < 153; i++) {
-        if (CharSpriteManager_IsCharIndexLoaded(charSpriteManager, i) == 1) {
+        if (CharSpriteManager_IsCharIndexLoaded(charSpriteManager, i) == TRUE) {
             CharSpriteManager_UnloadCharResources(charSpriteManager, i);
         }
     }
@@ -110,7 +110,7 @@ void CharSpriteManager_UnloadShadow(CharSpriteManager *charSpriteManager) {
 CharSprite *CharSpriteManager_CreateSprite(CharSpriteManager *charSpriteManager, s16 *spriteParams, s32 spriteId, enum HeapID heapID) {
     CharSprite *charSprite = CharSpriteManager_GetFreeSprite(charSpriteManager);
     u16 charIndex = CharSprite_GetCharIndex(spriteId);
-    GF_ASSERT(CharSpriteManager_IsCharIndexLoaded(charSpriteManager, charIndex) == 1);
+    GF_ASSERT(CharSpriteManager_IsCharIndexLoaded(charSpriteManager, charIndex) == TRUE);
 
     SpriteTemplate spriteTemplate = { NULL };
     spriteTemplate.spriteList = charSpriteManager->spriteList;
@@ -325,8 +325,8 @@ void CharSpriteManager_LoadCharResources(CharSpriteManager *charSpriteManager, s
 }
 
 void CharSpriteManager_LoadCharWithPalette(CharSpriteManager *charSpriteManager, s32 charIndex, s32 vramType, s32 animSet, enum HeapID heapID) {
-    charSpriteManager->chars[charIndex].charResource = AddCharResObjFromOpenNarc(charSpriteManager->resManagers[0], charSpriteManager->charNarc, charIndex * 2 + 14, 0, charIndex + 512, vramType, (enum HeapID)heapID);
-    charSpriteManager->chars[charIndex].plttResource = AddPlttResObjFromOpenNarc(charSpriteManager->resManagers[1], charSpriteManager->charNarc, charIndex * 2 + 13, 0, charIndex + 512, vramType, 1, (enum HeapID)heapID);
+    charSpriteManager->chars[charIndex].charResource = AddCharResObjFromOpenNarc(charSpriteManager->resManagers[0], charSpriteManager->charNarc, charIndex * 2 + 14, FALSE, charIndex + 512, vramType, (enum HeapID)heapID);
+    charSpriteManager->chars[charIndex].plttResource = AddPlttResObjFromOpenNarc(charSpriteManager->resManagers[1], charSpriteManager->charNarc, charIndex * 2 + 13, FALSE, charIndex + 512, vramType, 1, (enum HeapID)heapID);
     NNSG2dCharacterData *charData = GF2DGfxResObj_GetCharDataPtr(charSpriteManager->chars[charIndex].charResource);
 
     s32 nonStandardSize;
@@ -364,7 +364,7 @@ void CharSpriteManager_LoadCharWithPalette(CharSpriteManager *charSpriteManager,
 
 void CharSpriteManager_LoadSharedPaletteChar(CharSpriteManager *charSpriteManager, s32 charIndex, s32 vramType, s32 animSet, enum HeapID heapID) {
     s32 avatarIndex = charIndex - 2;
-    charSpriteManager->chars[charIndex].charResource = AddCharResObjFromOpenNarc(charSpriteManager->resManagers[0], charSpriteManager->avatarNarc, charIndex - 1, 0, charIndex + 512, vramType, heapID);
+    charSpriteManager->chars[charIndex].charResource = AddCharResObjFromOpenNarc(charSpriteManager->resManagers[0], charSpriteManager->avatarNarc, charIndex - 1, FALSE, charIndex + 512, vramType, heapID);
     if (animSet == 2) {
         GF2DGfxResObj_GetCharDataPtr(charSpriteManager->chars[charIndex].charResource)->szByte = 2048;
     } else if (animSet == 1) {
@@ -416,7 +416,7 @@ void CharSpriteManager_LoadShadowResources(CharSpriteManager *charSpriteManager,
     s32 found = 0;
     s32 playerCharIndex;
     for (i = 0; i < 6; i++) {
-        if (CharSpriteManager_IsCharIndexLoaded(charSpriteManager, sPlayerCharIndices[i]) == 1) {
+        if (CharSpriteManager_IsCharIndexLoaded(charSpriteManager, sPlayerCharIndices[i]) == TRUE) {
             playerCharIndex = sPlayerCharIndices[i];
             found = 1;
             break;
@@ -424,9 +424,9 @@ void CharSpriteManager_LoadShadowResources(CharSpriteManager *charSpriteManager,
     }
     GF_ASSERT(found == 1);
     for (i = 0; i < 2; i++) {
-        charSpriteManager->shadowResources[i + 2] = AddCellOrAnimResObjFromOpenNarc(charSpriteManager->resManagers[i + 2], charSpriteManager->charNarc, i, 0, 288, (GfGfxResType)(i + 2), heapID);
+        charSpriteManager->shadowResources[i + 2] = AddCellOrAnimResObjFromOpenNarc(charSpriteManager->resManagers[i + 2], charSpriteManager->charNarc, i, FALSE, 288, (GfGfxResType)(i + 2), heapID);
     }
-    charSpriteManager->shadowResources[0] = AddCharResObjFromOpenNarc(charSpriteManager->resManagers[0], charSpriteManager->charNarc, 2, 0, 288, vramType, heapID);
+    charSpriteManager->shadowResources[0] = AddCharResObjFromOpenNarc(charSpriteManager->resManagers[0], charSpriteManager->charNarc, 2, FALSE, 288, vramType, heapID);
     if (!SpriteTransfer_CreateCharTransferTask_UpdateMappingTypeFromHW_AllocAtEnd(charSpriteManager->shadowResources[0])) {
         GF_ASSERT(FALSE);
     }
@@ -435,7 +435,7 @@ void CharSpriteManager_LoadShadowResources(CharSpriteManager *charSpriteManager,
 }
 
 void CharSpriteManager_UnloadShadowResources(CharSpriteManager *charSpriteManager) {
-    if (CharSprite_HasShadowResources(charSpriteManager->shadowResources) == 1) {
+    if (CharSprite_HasShadowResources(charSpriteManager->shadowResources) == TRUE) {
         SpriteTransfer_DeleteCharTransferTask(charSpriteManager->shadowResources[0]);
         DestroySingle2DGfxResObj(charSpriteManager->resManagers[0], charSpriteManager->shadowResources[0]);
         charSpriteManager->shadowResources[0] = NULL;
@@ -452,7 +452,7 @@ BOOL CharSprite_HasShadowResources(SpriteResource **spriteResources) {
 
 void CharSpriteManager_LoadAvatarPalette(CharSpriteManager *charSpriteManager, s32 vramType, enum HeapID heapID) {
     GF_ASSERT(!charSpriteManager->avatarPalette);
-    charSpriteManager->avatarPalette = AddPlttResObjFromOpenNarc(charSpriteManager->resManagers[1], charSpriteManager->avatarNarc, 0, 0, 1026, vramType, 8, heapID);
+    charSpriteManager->avatarPalette = AddPlttResObjFromOpenNarc(charSpriteManager->resManagers[1], charSpriteManager->avatarNarc, 0, FALSE, 1026, vramType, 8, heapID);
     GF_ASSERT(SpriteTransfer_CreatePlttTransferTask(charSpriteManager->avatarPalette));
     if (charSpriteManager->paletteData != 0) {
         CharSpriteManager_LoadPaletteToBuffer(charSpriteManager, charSpriteManager->avatarPalette, 8);
@@ -470,8 +470,8 @@ void CharSpriteManager_UnloadAvatarPalette(CharSpriteManager *charSpriteManager)
 void CharSpriteManager_LoadAvatarCellAnims(CharSpriteManager *charSpriteManager, enum HeapID heapID) {
     GF_ASSERT(!charSpriteManager->avatarCellAnims[0].cell);
     for (int i = 0; i < 16; i++) {
-        charSpriteManager->avatarCellAnims[i].cell = AddCellOrAnimResObjFromOpenNarc(charSpriteManager->resManagers[2], charSpriteManager->avatarNarc, 17 + (i * 2), 0, i + 384, GF_GFX_RES_TYPE_CELL, heapID);
-        charSpriteManager->avatarCellAnims[i].anim = AddCellOrAnimResObjFromOpenNarc(charSpriteManager->resManagers[3], charSpriteManager->avatarNarc, 18 + (i * 2), 0, i + 384, GF_GFX_RES_TYPE_ANIM, heapID);
+        charSpriteManager->avatarCellAnims[i].cell = AddCellOrAnimResObjFromOpenNarc(charSpriteManager->resManagers[2], charSpriteManager->avatarNarc, 17 + (i * 2), FALSE, i + 384, GF_GFX_RES_TYPE_CELL, heapID);
+        charSpriteManager->avatarCellAnims[i].anim = AddCellOrAnimResObjFromOpenNarc(charSpriteManager->resManagers[3], charSpriteManager->avatarNarc, 18 + (i * 2), FALSE, i + 384, GF_GFX_RES_TYPE_ANIM, heapID);
     }
 }
 

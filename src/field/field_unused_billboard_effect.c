@@ -41,7 +41,7 @@ typedef struct UnusedBillboardEffectArgs {
 } UnusedBillboardEffectArgs;
 
 typedef struct UnusedBillboardEffect {
-    int state;
+    enum UnusedBillboardEffectState state;
     u32 spriteId;
     u32 objectId;
     u32 mapId;

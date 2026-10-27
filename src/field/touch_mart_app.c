@@ -94,7 +94,7 @@ typedef struct TouchMartAppData {
     u32 unk_00;
     BgConfig *bgConfig;
     SysTask *task;
-    u32 state;
+    enum TouchMartAppState state;
     u32 unk_10;
     MartData *martData;
     u16 *lastTouchMenuInput;
@@ -141,12 +141,12 @@ typedef struct TouchMartBgOp {
 
 static void TouchMartApp_SetupText(TouchMartAppData *data);
 static void TouchMartApp_FreeText(TouchMartAppData *data);
-static void TouchMartApp_PrintCancel(TouchMartAppData *data, int leftAligned);
+static void TouchMartApp_PrintCancel(TouchMartAppData *data, BOOL leftAligned);
 static BOOL TouchMartApp_IsSelectionValid(TouchMartAppData *data, u32 selection);
 static void TouchMartApp_RunTask(SysTask *task, void *env);
 static void TouchMartApp_HandleAction(TouchMartAppData *data, int action);
-static void TouchMartApp_LoadMainTilemap(TouchMartAppData *data, int screen);
-static int TouchMartApp_GetTouchedButton(TouchMartAppData *data, int buttonSet);
+static void TouchMartApp_LoadMainTilemap(TouchMartAppData *data, enum TouchMartScreen screen);
+static int TouchMartApp_GetTouchedButton(TouchMartAppData *data, enum TouchMartButtonSet buttonSet);
 static void TouchMartApp_SetupBgs(TouchMartAppData *data);
 static void TouchMartApp_LoadGraphics(TouchMartAppData *data);
 static void TouchMartApp_FreeWindows(TouchMartAppData *data);
@@ -359,7 +359,7 @@ static void TouchMartApp_FreeText(TouchMartAppData *data) {
     MessageFormat_Delete(data->messageFormat);
 }
 
-static void TouchMartApp_PrintCancel(TouchMartAppData *data, int leftAligned) {
+static void TouchMartApp_PrintCancel(TouchMartAppData *data, BOOL leftAligned) {
     String *string = NewString_ReadMsgData(data->msgData, msg_0435_00017);
     ClearWindowTilemapAndCopyToVram(&data->cancelWindow);
     FillWindowPixelBuffer(&data->cancelWindow, 0);
@@ -526,7 +526,7 @@ static void TouchMartApp_HandleAction(TouchMartAppData *data, int action) {
     }
 }
 
-static void TouchMartApp_LoadMainTilemap(TouchMartAppData *data, int screen) {
+static void TouchMartApp_LoadMainTilemap(TouchMartAppData *data, enum TouchMartScreen screen) {
     void *raw;
     NNSG2dScreenData *screenData;
     switch (screen) {
@@ -554,7 +554,7 @@ static void TouchMartApp_LoadMainTilemap(TouchMartAppData *data, int screen) {
     }
 }
 
-static int TouchMartApp_GetTouchedButton(TouchMartAppData *data, int buttonSet) {
+static int TouchMartApp_GetTouchedButton(TouchMartAppData *data, enum TouchMartButtonSet buttonSet) {
     GF_ASSERT(buttonSet == TOUCH_MART_BUTTONS_ITEM_LIST || buttonSet == TOUCH_MART_BUTTONS_QUANTITY);
     return TouchscreenHitbox_FindRectAtTouchNew(sTouchMartButtonSets[buttonSet]);
 }
@@ -969,7 +969,7 @@ static void TouchMartApp_CreateYesNoPrompt(TouchMartAppData *data) {
 }
 
 static BOOL TouchMartApp_HandleYesNoPrompt(TouchMartAppData *data) {
-    int result;
+    YesNoResponse result;
     if (data->yesNoPrompt == NULL) {
         return FALSE;
     }

@@ -174,7 +174,7 @@ static BOOL Terrain_GetAttributes_Simple(FieldSystem *fieldSystem, int x, int z,
 SoundplateStruct *FieldSystem_GetSoundplateAt(FieldSystem *fieldSystem, int x, int z) {
     MapLoadManager *mapLoadManager = fieldSystem->mapLoadManager;
     u8 idx;
-    if (MapLoadManager_GetMapSlotAt(mapLoadManager, x, z, &idx) == 0) {
+    if (MapLoadManager_GetMapSlotAt(mapLoadManager, x, z, &idx) == FALSE) {
         return NULL;
     }
     return MapLoadManager_GetSoundplates(mapLoadManager, idx);

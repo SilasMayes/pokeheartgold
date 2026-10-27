@@ -174,7 +174,7 @@ BOOL MapObject_CheckSnowFootprintBehavior(LocalMapObject *object, int behavior) 
 }
 
 BOOL MapObject_IsOnBridge(LocalMapObject *object, int behavior) {
-    if (MapObject_CheckFlag28(object) == 1 && MetatileBehavior_IsBridge(behavior) == 1) {
+    if (MapObject_CheckFlag28(object) == TRUE && MetatileBehavior_IsBridge(behavior) == TRUE) {
         return TRUE;
     }
     return FALSE;
@@ -278,7 +278,7 @@ BOOL MapObject_UpdateMetatileBehaviors(LocalMapObject *object) {
     }
     MapObject_SetPreviousMetatileBehavior(object, previous);
     MapObject_SetCurrentMetatileBehavior(object, current);
-    if (MetatileBehavior_IsNone(current) == 1) {
+    if (MetatileBehavior_IsNone(current) == TRUE) {
         MapObject_SetFlagsBits(object, MAPOBJECTFLAG_UNK11);
         return FALSE;
     }

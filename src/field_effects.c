@@ -180,7 +180,7 @@ static void FieldEffectPool_DestroyAll(FieldEffectPool *pool) {
     int count = FieldEffectPool_GetCount(pool);
     FieldEffect *effect = FieldEffectPool_GetEffects(pool);
     do {
-        if (FieldEffect_IsActive(effect) == 1) {
+        if (FieldEffect_IsActive(effect) == TRUE) {
             FieldEffect_Destroy((int)effect);
         }
         effect++;

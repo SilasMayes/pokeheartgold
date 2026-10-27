@@ -61,7 +61,7 @@ typedef struct AzaleaGymmickLocalData {
     u8 spinarakDirection;
     u8 curNodeIndex;
     s8 playerZOffset;
-    int mustResetTargetTrack;
+    BOOL mustResetTargetTrack;
     BOOL moveVectorComponentSigns[2];
     const AzaleaGymmickSpinarakRouteNode *node;
     VecFx32 spinarakPos;
@@ -75,7 +75,7 @@ typedef struct AzaleaGymmickLocalData {
 static BOOL Task_SpinarakRide(TaskManager *taskman);
 static VecFx32 AzaleaGymmick_GetVectorBetweenRouteNodes(const AzaleaGymmickSpinarakRouteNode *prev, const AzaleaGymmickSpinarakRouteNode *next);
 static void AzaleaGymmick_GetVectorSignsXZ(const VecFx32 *deltaVec, BOOL *xzSigns);
-static int AzaleaGymmick_GetMovementDoneParams(BOOL sign, fx32 cur, fx32 delta, u16 nodeComponent);
+static enum AzaleaRouteNodeProgress AzaleaGymmick_GetMovementDoneParams(BOOL sign, fx32 cur, fx32 delta, u16 nodeComponent);
 static void SysTask_DoSpinarakRide(SysTask *sysTask, void *taskData);
 static BOOL Task_WaitSwitchFlipSFX(TaskManager *taskman);
 
@@ -443,8 +443,8 @@ static void AzaleaGymmick_GetVectorSignsXZ(const VecFx32 *deltaVec, BOOL *xzSign
     }
 }
 
-static int AzaleaGymmick_GetMovementDoneParams(BOOL sign, fx32 cur, fx32 delta, u16 nodeComponent) {
-    int ret = ROUTE_NODE_NOT_REACHED;
+static enum AzaleaRouteNodeProgress AzaleaGymmick_GetMovementDoneParams(BOOL sign, fx32 cur, fx32 delta, u16 nodeComponent) {
+    enum AzaleaRouteNodeProgress ret = ROUTE_NODE_NOT_REACHED;
     fx32 nodeComponentFx = nodeComponent * FX32_ONE * 16;
     if (cur + delta == nodeComponentFx) {
         ret = ROUTE_NODE_REACHED;
@@ -528,8 +528,8 @@ static void SysTask_DoSpinarakRide(SysTask *sysTask, void *taskData) {
         int length;
         int switchState;
         const AzaleaGymmickSpinarakRouteNode *prevNode;
-        int xDoneState;
-        int zDoneState;
+        enum AzaleaRouteNodeProgress xDoneState;
+        enum AzaleaRouteNodeProgress zDoneState;
 
         spinarakPair = localData->spinarakPair;
         switchState = localData->switchState;

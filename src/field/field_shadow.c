@@ -28,7 +28,7 @@ enum FieldShadowState {
 // Renderer data of the field effect manager.
 struct FieldShadow {
     int state;
-    int timeOfDay;
+    TIMEOFDAY timeOfDay;
     u32 unk_08;
     u32 unk_0C;
     fx32 alpha;
@@ -60,7 +60,7 @@ static void FieldShadow_StartTask(FieldShadow *shadow);
 static void FieldShadow_StopTask(FieldShadow *shadow);
 static void FieldShadow_GetScale(FieldShadow *shadow, VecFx32 *dest);
 static int FieldShadow_FxToAlpha(fx32 value);
-static void FieldShadow_SetTimeOfDayParams(FieldShadow *shadow, int timeOfDay);
+static void FieldShadow_SetTimeOfDayParams(FieldShadow *shadow, TIMEOFDAY timeOfDay);
 static void FieldShadow_StepTowards(fx32 *value, fx32 target, fx32 step);
 static void FieldShadow_UpdateTask(SysTask *task, void *data);
 static void FieldShadow_LoadModels(FieldShadow *shadow);
@@ -147,7 +147,7 @@ static int FieldShadow_FxToAlpha(fx32 value) {
     return value / FX32_ONE;
 }
 
-static void FieldShadow_SetTimeOfDayParams(FieldShadow *shadow, int timeOfDay) {
+static void FieldShadow_SetTimeOfDayParams(FieldShadow *shadow, TIMEOFDAY timeOfDay) {
     shadow->alpha = sShadowAlphaByTimeOfDay[shadow->timeOfDay];
     shadow->scale = sShadowScaleByTimeOfDay[shadow->timeOfDay];
 }
@@ -315,7 +315,7 @@ static void FieldShadowEffect_Draw(FieldEffect *effect, void *state) {
     VecFx32 scale;
     MtxFx33 mtx;
     FieldShadow *shadow;
-    if (work->hidden != 0) {
+    if (work->hidden) {
         return;
     }
     mtx = sShadowDrawRotation;
@@ -338,7 +338,7 @@ static void FieldShadowEffect_DrawFollowMon(FieldEffect *effect, void *state) {
     FieldShadow *shadow;
     NNSG3dRenderObj *renderObj;
 
-    if (work->hidden != 0) {
+    if (work->hidden) {
         return;
     }
     mtx = sFollowMonShadowDrawRotation;

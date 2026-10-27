@@ -42,7 +42,7 @@ typedef struct TallGrassEffectArgs {
 } TallGrassEffectArgs;
 
 typedef struct TallGrassEffect {
-    int state;
+    enum TallGrassEffectState state;
     u32 spriteId;
     u32 objectId;
     u32 mapId;

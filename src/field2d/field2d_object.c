@@ -11,11 +11,11 @@ static const Field2DObjectUpdateFunc sField2DObjectUpdateFuncs[] = { Field2DObje
 
 static const Field2DCommandCheckFunc sField2DCommandCheckFuncs[] = { Field2DCommand_CheckStand, Field2DCommand_CheckTurn, Field2DCommand_CheckWalk, Field2DCommand_CheckRun, Field2DCommand_CheckPause, Field2DCommand_CheckBump, Field2DCommand_CheckWalkSlow, Field2DCommand_CheckWalk, Field2DCommand_CheckWalkInPlace, Field2DCommand_CheckWalkInPlace, Field2DCommand_CheckWalkInPlace, Field2DCommand_CheckWalkInPlace };
 
-s32 Field2DMap_IsBlocked(Field2DMap *map, u16 x, u16 y) {
+BOOL Field2DMap_IsBlocked(Field2DMap *map, u16 x, u16 y) {
     GF_ASSERT(map);
     Field2DMapCell cell = Field2DMap_GetCell(map, x, y);
     if (cell.value == -1) {
-        return 1;
+        return TRUE;
     }
     return (u32)((s32)cell.value << 31) >> 31;
 }

@@ -26,7 +26,7 @@ static void WeatherDraw_Delete(WeatherDraw *weatherDraw);
 static void WeatherDraw_SetSpriteMatrix(Sprite *sprite, VecFx32 *matrix);
 static WeatherSystem *WeatherSystem_New(FieldSystem *fieldSystem);
 static void WeatherSystem_Delete(WeatherSystem **pWeatherSystem);
-static BOOL WeatherSystem_Process(WeatherSystem *weatherSystem, int state, int weather);
+static BOOL WeatherSystem_Process(WeatherSystem *weatherSystem, enum WeatherSystemProcess state, int weather);
 static u16 WeatherSystem_GetState(WeatherSystem *weatherSystem, int weather);
 static void Weather_SetBlendAlpha(u32 ev1, u32 ev2);
 static void WeatherLerp_Init(WeatherLerp *lerp, s32 start, s32 end, s32 duration);
@@ -688,7 +688,7 @@ static void WeatherSystem_Delete(WeatherSystem **pWeatherSystem) {
     }
 }
 
-static BOOL WeatherSystem_Process(WeatherSystem *weatherSystem, int state, int weather) {
+static BOOL WeatherSystem_Process(WeatherSystem *weatherSystem, enum WeatherSystemProcess state, int weather) {
     BOOL ret = TRUE;
 
     if (weather > WEATHER_MAX) {
@@ -2189,14 +2189,14 @@ static void WeatherTask_RunFogOnly(WeatherWork *work, WeatherFogTaskData *taskDa
         }
         break;
     case WEATHER_STATE_FADE_OUT:
-        int ret;
+        BOOL ret;
         if (work->fogMode != WEATHER_FOG_NONE) {
             ret = WeatherFogTableFade_Update(&taskData->fogTableFade);
         } else {
-            ret = 1;
+            ret = TRUE;
         }
 
-        if (ret == 1) {
+        if (ret == TRUE) {
             work->state = WEATHER_STATE_END;
         }
         break;
@@ -2258,7 +2258,7 @@ static void WeatherTask_Mist(SysTask *task, void *data) {
 
         BOOL blendOutDone = WeatherLerp_Step(&taskData->blendLerp);
         Weather_SetBlendAlpha(taskData->blendLerp.value, 16 - taskData->blendLerp.value);
-        if (fogOutDone == 1 && blendOutDone == 1) {
+        if (fogOutDone == TRUE && blendOutDone == TRUE) {
             work->state = WEATHER_STATE_END;
         }
         break;

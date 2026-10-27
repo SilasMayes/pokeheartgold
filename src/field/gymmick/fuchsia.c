@@ -559,7 +559,7 @@ void GymmickFree_Fuchsia(FieldSystem *fieldSystem) {
 
     FuchsiaGymmick_Unload3DGraphics(localData);
     for (i = 0; i < FUCHSIA_NUM_WALL_ANIM_TASKS; ++i) {
-        if (localData->wallAnimTasks[i].active != 0) {
+        if (localData->wallAnimTasks[i].active) {
             SysTask_Destroy(localData->wallAnimTasks[i].sysTask);
         }
     }

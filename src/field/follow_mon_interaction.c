@@ -284,10 +284,10 @@ static void FollowMonSituation_SetMood(FieldSystem *fieldSystem, FollowMonSituat
 static void FollowMonSituation_SetBestPokeathlonStat(FieldSystem *fieldSystem, u16 species, u8 form, FollowMonSituation *situation);
 static void FollowMonSituation_SetFacing(FieldSystem *fieldSystem, FollowMonSituation *situation);
 static void FollowMonSituation_SetSpeciesAttr(int species, FollowMonSituation *situation);
-static int FollowMonSituation_ConvertType(int type);
-static int FollowMonSituation_ConvertItemPocket(int pocket);
+static enum FollowMonType FollowMonSituation_ConvertType(int type);
+static enum FollowMonPocket FollowMonSituation_ConvertItemPocket(int pocket);
 static void FollowMonInteraction_LoadScript(FollowMonInteraction *interaction, int script);
-static int FollowMonInteraction_Run(FieldSystem *fieldSystem, FollowMonInteraction *interaction);
+static enum FollowMonInteractionResult FollowMonInteraction_Run(FieldSystem *fieldSystem, FollowMonInteraction *interaction);
 static BOOL FollowMonInteraction_StepHasMovement(FollowMonInteraction *interaction, FollowMonInteractionStep *step);
 static BOOL FollowMonInteraction_TryShowEmote(FieldSystem *fieldSystem, FollowMonInteraction *interaction, FollowMonInteractionStep *step);
 static BOOL FollowMon_TryPrintInteractionMessage(FieldSystem *fieldSystem, FollowMonInteraction *interaction, FollowMonInteractionStep *step);
@@ -679,7 +679,7 @@ static void FollowMonSituation_SetMood(FieldSystem *fieldSystem, FollowMonSituat
 static void FollowMonSituation_SetBestPokeathlonStat(FieldSystem *fieldSystem, u16 species, u8 form, FollowMonSituation *situation) {
     PartyExtraSub aprijuice;
     struct PokeathlonPerformanceStars stars;
-    int stat;
+    enum FollowMonPokeathlonStat stat;
     u32 best;
     Party *party = SaveArray_Party_Get(fieldSystem->saveData);
     u8 slot = GetIdxOfFirstAliveMonInParty_CrashIfNone(party);
@@ -737,7 +737,7 @@ static void FollowMonSituation_SetSpeciesAttr(int species, FollowMonSituation *s
     Heap_Free(attrs);
 }
 
-static int FollowMonSituation_ConvertType(int type) {
+static enum FollowMonType FollowMonSituation_ConvertType(int type) {
     switch (type) {
     case TYPE_NORMAL:
         return FOLLOW_MON_TYPE_NORMAL;
@@ -778,7 +778,7 @@ static int FollowMonSituation_ConvertType(int type) {
     return FOLLOW_MON_TYPE_NONE;
 }
 
-static int FollowMonSituation_ConvertItemPocket(int pocket) {
+static enum FollowMonPocket FollowMonSituation_ConvertItemPocket(int pocket) {
     switch (pocket) {
     case POCKET_ITEMS:
         return FOLLOW_MON_POCKET_ITEMS;
@@ -829,7 +829,7 @@ void FollowMonInteraction_Delete(FollowMonInteraction *interaction) {
     Heap_Free(interaction);
 }
 
-static inline int FollowMonInteraction_Finish(FieldSystem *fieldSystem, FollowMonInteraction *interaction) {
+static inline enum FollowMonInteractionResult FollowMonInteraction_Finish(FieldSystem *fieldSystem, FollowMonInteraction *interaction) {
     FollowMon_ApplyInteractionEffects(fieldSystem, interaction);
     if (interaction->askQuestion) {
         return FOLLOW_MON_INTERACTION_QUESTION;
@@ -851,7 +851,7 @@ static inline void FollowMonInteraction_CloseMessage(FieldSystem *fieldSystem, F
     interaction->state = INTERACTION_STATE_START_WAIT;
 }
 
-static int FollowMonInteraction_Run(FieldSystem *fieldSystem, FollowMonInteraction *interaction) {
+static enum FollowMonInteractionResult FollowMonInteraction_Run(FieldSystem *fieldSystem, FollowMonInteraction *interaction) {
     FollowMonInteractionStep *step;
     u16 movement;
     u32 index = interaction->stepIndex;
@@ -1182,7 +1182,7 @@ static BOOL Task_FollowMonInteract(TaskManager *taskManager) {
         (*state)++;
         break;
     case FOLLOW_MON_TASK_STATE_RUN: {
-        int result = FollowMonInteraction_Run(fieldSystem, fieldSystem->followMonInteraction);
+        enum FollowMonInteractionResult result = FollowMonInteraction_Run(fieldSystem, fieldSystem->followMonInteraction);
         if (result == FOLLOW_MON_INTERACTION_DONE) {
             MapObject_PauseMovement(fieldSystem->followMon.mapObject);
             return TRUE;

@@ -54,7 +54,7 @@ void FollowMonBillboard_Update(LocalMapObject *object, BillboardObject *billboar
         MapObject_CopyFacingVector(object, &offset);
         offset.y = billboardWork->height << 12;
     } else {
-        if (paused || flag4 || hasFollowMonSprite != 0) {
+        if (paused || flag4 || hasFollowMonSprite) {
             MapObject_CopyFacingVector(object, &offset);
             offset.x = 0;
             offset.z = 0;

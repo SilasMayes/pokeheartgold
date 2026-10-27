@@ -122,8 +122,8 @@ static int FriendRosterApp_UpdateBlink(FriendRosterAppData *data);
 static int FriendRosterApp_ChangePage(FriendRosterAppData *data, int delta);
 static void FriendRosterApp_SetBlinkPalette(FriendRosterAppData *data, u8 palette);
 static BOOL FriendRosterApp_StepBlink(FriendRosterAppData *data);
-static int FriendRosterApp_StartSpriteBlink(FriendRosterAppData *data, u8 target, u8 seqA, u8 seqB, u8 nextState);
-static int FriendRosterApp_StartNameBlink(FriendRosterAppData *data, u8 x, u8 y, u8 nextState);
+static enum FriendRosterAppState FriendRosterApp_StartSpriteBlink(FriendRosterAppData *data, u8 target, u8 seqA, u8 seqB, u8 nextState);
+static enum FriendRosterAppState FriendRosterApp_StartNameBlink(FriendRosterAppData *data, u8 x, u8 y, u8 nextState);
 static void FriendRosterApp_GridNoop(void *data, int newTarget, int prevTarget);
 static void FriendRosterApp_OnCursorMove(void *data, int newTarget, int prevTarget);
 
@@ -690,7 +690,7 @@ static BOOL FriendRosterApp_StepBlink(FriendRosterAppData *data) {
     return TRUE;
 }
 
-static int FriendRosterApp_StartSpriteBlink(FriendRosterAppData *data, u8 target, u8 seqA, u8 seqB, u8 nextState) {
+static enum FriendRosterAppState FriendRosterApp_StartSpriteBlink(FriendRosterAppData *data, u8 target, u8 seqA, u8 seqB, u8 nextState) {
     data->blink.isBg = FALSE;
     data->blink.timer = 0;
     data->blink.phase = FRIEND_ROSTER_APP_BLINK_START;
@@ -701,7 +701,7 @@ static int FriendRosterApp_StartSpriteBlink(FriendRosterAppData *data, u8 target
     return FRIEND_ROSTER_APP_STATE_BLINK;
 }
 
-static int FriendRosterApp_StartNameBlink(FriendRosterAppData *data, u8 x, u8 y, u8 nextState) {
+static enum FriendRosterAppState FriendRosterApp_StartNameBlink(FriendRosterAppData *data, u8 x, u8 y, u8 nextState) {
     int flags = *(u8 *)&data->blink;
     flags &= ~1;
     flags |= 1; // isBg = TRUE

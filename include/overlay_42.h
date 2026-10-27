@@ -251,7 +251,7 @@ u16 Field2DMap_GetHeight(Field2DMap *map);
 void Field2DMap_Load(Field2DMap *map, const void *cells);
 
 Field2DMapCell Field2DMap_GetCell(Field2DMap *map, u32 x, u32 y);
-s32 Field2DMap_IsBlocked(Field2DMap *map, u16 x, u16 y);
+BOOL Field2DMap_IsBlocked(Field2DMap *map, u16 x, u16 y);
 u32 Field2DMap_GetTag(Field2DMap *map, u16 x, u16 y);
 Field2DObjectManager *Field2DObjectManager_New(u32 capacity, enum HeapID heapID);
 void Field2DObjectManager_Free(Field2DObjectManager *objectManager);
@@ -310,7 +310,7 @@ s32 Field2DCommand_CheckPause(Field2DObject *object, Field2DMap *map, Field2DObj
 s32 Field2DCommand_CheckBump(Field2DObject *object, Field2DMap *map, Field2DObjectManager *objectManager, Field2DCommand *command, Field2DMove *move);
 s32 Field2DCommand_CheckWalkSlow(Field2DObject *object, Field2DMap *map, Field2DObjectManager *objectManager, Field2DCommand *command, Field2DMove *move);
 s32 Field2DCommand_CheckWalkInPlace(Field2DObject *object, Field2DMap *map, Field2DObjectManager *objectManager, Field2DCommand *command, Field2DMove *move);
-s32 Field2DObject_IsMapBlockedInDirection(Field2DObject *object, Field2DMap *map, u8 direction);
+BOOL Field2DObject_IsMapBlockedInDirection(Field2DObject *object, Field2DMap *map, u8 direction);
 BOOL Field2DObject_IsObjectInDirection(Field2DObject *object, Field2DObjectManager *objectManager, u8 direction);
 void Field2DMove_Init(Field2DMove *move, Field2DObject *object, u16 action, u8 objectId, s32 direction);
 Field2DObjectSpriteManager *Field2DObjectSpriteManager_New(SpriteList *spriteList, PaletteData *paletteData, u16 maxSprites, s8 vramType, enum HeapID heapID);

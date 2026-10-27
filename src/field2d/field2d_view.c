@@ -50,7 +50,7 @@ s32 Field2DCommand_CheckTurn(Field2DObject *object, Field2DMap *map, Field2DObje
 
 s32 Field2DCommand_CheckWalk(Field2DObject *object, Field2DMap *map, Field2DObjectManager *objectManager, Field2DCommand *command, Field2DMove *move) {
     int action = Field2DObject_GetParam(object, FIELD2D_OBJECT_PARAM_ACTION);
-    if ((action == FIELD2D_ACTION_STAND) && (Field2DObject_IsMapBlockedInDirection(object, map, command->direction) != 1) && (Field2DObject_IsObjectInDirection(object, objectManager, command->direction) != 1)) {
+    if ((action == FIELD2D_ACTION_STAND) && (Field2DObject_IsMapBlockedInDirection(object, map, command->direction) != TRUE) && (Field2DObject_IsObjectInDirection(object, objectManager, command->direction) != TRUE)) {
         Field2DMove_Init(move, object, command->action, command->objectId, command->direction);
         return 1;
     }
@@ -90,7 +90,7 @@ s32 Field2DCommand_CheckWalkInPlace(Field2DObject *object, Field2DMap *map, Fiel
     return FALSE;
 }
 
-s32 Field2DObject_IsMapBlockedInDirection(Field2DObject *object, Field2DMap *map, u8 direction) {
+BOOL Field2DObject_IsMapBlockedInDirection(Field2DObject *object, Field2DMap *map, u8 direction) {
     Field2DPoint targetPos = Field2DObject_GetPos(object);
     targetPos = Field2D_StepInDirection(targetPos, direction);
     return Field2DMap_IsBlocked(map, targetPos.x / 16, targetPos.y / 16);
@@ -150,7 +150,7 @@ void Field2DObjectSpriteManager_Free(Field2DObjectSpriteManager *objectSpriteMan
 }
 
 void Field2DObjectSpriteManager_LoadChar(Field2DObjectSpriteManager *objectSpriteManager, s32 spriteId, s32 animSet, enum HeapID heapID) {
-    if (CharSpriteManager_IsCharLoaded(objectSpriteManager->charSprites, spriteId) == 0) {
+    if (CharSpriteManager_IsCharLoaded(objectSpriteManager->charSprites, spriteId) == FALSE) {
         CharSpriteManager_LoadChar(objectSpriteManager->charSprites, spriteId, objectSpriteManager->vramType, animSet, heapID);
     }
 }

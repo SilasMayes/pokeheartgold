@@ -59,7 +59,7 @@ static void HoneySweetScentFade_Update(Field3dObjectTask *task, FieldSystem *fie
 static void HoneySweetScentFade_Render(Field3dObjectTask *task, FieldSystem *fieldSystem, void *data);
 static Field3dObjectTask *HoneySweetScent_StartFadeIn(FieldSystem *fieldSystem);
 static void HoneySweetScent_DeleteFade(Field3dObjectTask *task);
-static int HoneySweetScent_IsFadeDone(Field3dObjectTask *task);
+static BOOL HoneySweetScent_IsFadeDone(Field3dObjectTask *task);
 static Field3dObjectTask *HoneySweetScent_StartFadeOut(FieldSystem *fieldSystem);
 static void HoneySweetScent_LoadBg2Tint(BgConfig *bgConfig);
 static void HoneySweetScentFade_Set(HoneySweetScentFade *anim, int start, int end, int frames);
@@ -136,7 +136,7 @@ static void HoneySweetScent_DeleteFade(Field3dObjectTask *task) {
     Field3dObjectTask_Delete(task);
 }
 
-static int HoneySweetScent_IsFadeDone(Field3dObjectTask *task) {
+static BOOL HoneySweetScent_IsFadeDone(Field3dObjectTask *task) {
     HoneySweetScentFade *anim = Field3dObjectTask_GetData(task);
     return anim->done;
 }
@@ -260,7 +260,7 @@ BOOL Task_HoneyOrSweetScent(TaskManager *taskManager) {
         GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
         break;
     case HONEY_SWEET_SCENT_STATE_WAIT_FADE_IN:
-        if (HoneySweetScent_IsFadeDone(env->task) != 0) {
+        if (HoneySweetScent_IsFadeDone(env->task)) {
             env->timer = 22;
             env->state = HONEY_SWEET_SCENT_STATE_WAIT_ENCOUNTER;
         }
@@ -288,7 +288,7 @@ BOOL Task_HoneyOrSweetScent(TaskManager *taskManager) {
         env->state = HONEY_SWEET_SCENT_STATE_WAIT_FADE_OUT;
         break;
     case HONEY_SWEET_SCENT_STATE_WAIT_FADE_OUT:
-        if (HoneySweetScent_IsFadeDone(env->task) != 0) {
+        if (HoneySweetScent_IsFadeDone(env->task)) {
             GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
             G2_BlendNone();
             SetBgPriority(GF_BG_LYR_MAIN_2, 3);

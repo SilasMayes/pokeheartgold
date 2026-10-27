@@ -759,7 +759,7 @@ static BOOL BackAndForthMovement_Step(LocalMapObject *mapObject, BackAndForthMov
     }
     result = GetMovementForDirection(direction, kind);
     MapObject_ForceSetHeldMovement(mapObject, result);
-    if (MapObject_SpinsWhileWalking(mapObject) == 1) {
+    if (MapObject_SpinsWhileWalking(mapObject) == TRUE) {
         WalkingSpin_TurnBeforeStep(mapObject, &state->spin);
     }
     MapObject_SetSingleMovement(mapObject);

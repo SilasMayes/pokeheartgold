@@ -81,7 +81,7 @@ void EncounterEffect_Legendary(SysTask *sysTask, EncounterEffectTask *task) {
         task->state++;
         break;
     case LEGENDARY_STATE_WAIT_FLASH:
-        if (task->fadeDone != 0) {
+        if (task->fadeDone) {
             task->state++;
         }
         break;
@@ -108,7 +108,7 @@ void EncounterEffect_Legendary(SysTask *sysTask, EncounterEffectTask *task) {
         break;
     case LEGENDARY_STATE_WAIT_FADE:
         if (IsPaletteFadeFinished()) {
-            task->fadeDone = 0;
+            task->fadeDone = FALSE;
             task->state++;
         }
         break;
@@ -117,7 +117,7 @@ void EncounterEffect_Legendary(SysTask *sysTask, EncounterEffectTask *task) {
         FieldMotionBlur_Stop(&work->motionBlur);
         reg_G2_BLDCNT = 0;
         if (task->done != NULL) {
-            *task->done = 1;
+            *task->done = TRUE;
         }
         EncounterEffect_Finish(task, sysTask);
         SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_WHITE);
@@ -127,7 +127,7 @@ void EncounterEffect_Legendary(SysTask *sysTask, EncounterEffectTask *task) {
 
 static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTask *task, const Ov116Sequence *seq) {
     Ov116MoveWork *work = task->work;
-    int done;
+    BOOL done;
     switch (task->state) {
     case LEGENDARY_BIRD_STATE_HIDE_BGS:
         task->work = Heap_Alloc(HEAP_ID_FIELD1, sizeof(Ov116MoveWork));
@@ -142,7 +142,7 @@ static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTas
         task->state++;
         break;
     case LEGENDARY_BIRD_STATE_WAIT_FLASH:
-        if (task->fadeDone != 0) {
+        if (task->fadeDone) {
             task->state++;
         }
         break;
@@ -157,7 +157,7 @@ static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTas
     case LEGENDARY_BIRD_STATE_PERSPECTIVE:
         done = EncounterEffectInterp_Update(&work->perspective);
         Camera_SetPerspectiveAngle((u16)work->perspective.value, task->fieldSystem->camera);
-        if (done == 1) {
+        if (done == TRUE) {
             task->state++;
             work->delay = seq->delay;
         }
@@ -174,7 +174,7 @@ static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTas
     case LEGENDARY_BIRD_STATE_ZOOM:
         done = EncounterEffectQuadInterp_Update(&work->distance);
         Camera_SetDistance(work->distance.value, task->fieldSystem->camera);
-        if (done == 1) {
+        if (done == TRUE) {
             task->state++;
         }
         break;
@@ -184,7 +184,7 @@ static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTas
         break;
     case LEGENDARY_BIRD_STATE_WAIT_FADE:
         if (IsPaletteFadeFinished()) {
-            task->fadeDone = 0;
+            task->fadeDone = FALSE;
             task->state++;
         }
         break;
@@ -193,7 +193,7 @@ static void LegendaryEffect_RunBirdSequence(SysTask *sysTask, EncounterEffectTas
         FieldMotionBlur_Stop(&work->motionBlur);
         reg_G2_BLDCNT = 0;
         if (task->done != NULL) {
-            *task->done = 1;
+            *task->done = TRUE;
         }
         EncounterEffect_Finish(task, sysTask);
         SetMasterBrightnessByColor(PM_LCD_BOTTOM, RGB_WHITE);

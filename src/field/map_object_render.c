@@ -63,7 +63,7 @@ enum TextureLoadResult {
 typedef struct TextureLoadRequest {
     u32 modelId;
     u32 spriteId;
-    u32 dynamic;
+    BOOL dynamic;
     GF_3DGfxRawResMan *textures;
 } TextureLoadRequest;
 
@@ -139,9 +139,9 @@ static void MapObjectRender_CreateResourceBanks(MapObjectRender *render, u32 mod
 static void MapObjectRender_DestroyResourceBanks(MapObjectRender *render);
 static const BillboardModelEntry *BillboardModelEntries_Find(int id, int terminator, const BillboardModelEntry *entries);
 static BOOL MapObjectRender_LoadIntoBank(MapObjectRender *render, ResourceBank *bank, int id, int terminator, const BillboardModelEntry *entries);
-static int MapObjectRender_LoadSpriteTexture(MapObjectRender *render, u32 dynamic, u32 spriteId);
+static enum TextureLoadResult MapObjectRender_LoadSpriteTexture(MapObjectRender *render, BOOL dynamic, u32 spriteId);
 static void MapObjectRender_LoadResidentSpriteTexture(MapObjectRender *render, u32 spriteId);
-static int MapObjectRender_LoadDynamicSpriteTexture(MapObjectRender *render, u32 spriteId);
+static enum TextureLoadResult MapObjectRender_LoadDynamicSpriteTexture(MapObjectRender *render, u32 spriteId);
 static void MapObjectRender_LoadResidentSpriteTextures(MapObjectRender *render, const u32 *spriteIds);
 static void MapObjectRender_LoadResidentModel(MapObjectRender *render, u32 id);
 static void MapObjectRender_LoadDynamicModel(MapObjectRender *render, u32 id);
@@ -171,14 +171,14 @@ static void MapObjectRender_FreeUnusedSequences(MapObjectManager *manager, MapOb
 static void MapObjectRender_ClearTextureIds(MapObjectRender *render);
 static void MapObjectRender_AddResidentTextureId(MapObjectRender *render, u32 id);
 static BOOL MapObjectRender_IsResidentTexture(MapObjectRender *render, u32 id);
-static int MapObjectRender_GetTextureState(MapObjectRender *render, u32 id);
+static enum TextureState MapObjectRender_GetTextureState(MapObjectRender *render, u32 id);
 static void MapObjectRender_AddDynamicTextureId(MapObjectRender *render, u32 id);
 static BOOL MapObjectRender_RemoveDynamicTextureId(MapObjectRender *render, u32 id);
 static void MapObjectRender_FreeUnusedTextures(MapObjectManager *manager, MapObjectRender *render);
 static BOOL MapObjectRender_IsDynamicTexture(MapObjectRender *render, u32 id);
-static int MapObjectRender_GetTextureKind(MapObjectRender *render, u32 id);
-static int MapObjectRender_GetModelKind(MapObjectRender *render, u32 id);
-static int MapObjectRender_GetSequenceKind(MapObjectRender *render, u32 id);
+static enum ResourceKind MapObjectRender_GetTextureKind(MapObjectRender *render, u32 id);
+static enum ResourceKind MapObjectRender_GetModelKind(MapObjectRender *render, u32 id);
+static enum ResourceKind MapObjectRender_GetSequenceKind(MapObjectRender *render, u32 id);
 static void MapObjectRender_EnsureSpriteTexture(MapObjectRender *render, u32 spriteId);
 static void MapObjectRender_EnsureModel(MapObjectRender *render, u32 modelId);
 static void MapObjectRender_EnsureSequence(MapObjectRender *render, u32 sequenceId);
@@ -217,11 +217,11 @@ static void MapObjectBillboards_Delete(Billboard *billboards);
 static BillboardObject *MapObjectBillboards_CreateBillboard(Billboard *billboards, BillboardResource *resource, VecFx32 *position);
 static void MapObjectRender_InitBillboardResource(MapObjectRender *render, u32 spriteId, BillboardResource *resource);
 static MapObjectRender *MapObject_GetRender(LocalMapObject *object);
-static BOOL MapObjectRender_LoadOrQueueTexture(MapObjectRender *render, u32 spriteId, u32 modelId, u32 dynamic);
+static BOOL MapObjectRender_LoadOrQueueTexture(MapObjectRender *render, u32 spriteId, u32 modelId, BOOL dynamic);
 static void MapObjectRender_CancelTextureLoad(MapObjectRender *render, u32 spriteId);
-static int MapObjectRender_GetTextureLoadState(MapObjectRender *render, u32 spriteId);
+static enum TextureState MapObjectRender_GetTextureLoadState(MapObjectRender *render, u32 spriteId);
 static void MapObjectRender_TextureLoadTask(SysTask *task, void *data);
-static void MapObjectRender_AddTexture(MapObjectRender *render, u32 spriteId, void *textureFile, u32 dynamic);
+static void MapObjectRender_AddTexture(MapObjectRender *render, u32 spriteId, void *textureFile, BOOL dynamic);
 static void MapObjectRender_QueueTextureTransfer(MapObjectRender *render, u32 spriteId);
 static void MapObjectRender_CancelTextureTransfer(MapObjectRender *render, u32 spriteId);
 static void MapObjectRender_TextureTransferTask(SysTask *task, void *data);
@@ -522,7 +522,7 @@ static BOOL MapObjectRender_LoadIntoBank(MapObjectRender *render, ResourceBank *
     return TRUE;
 }
 
-static int MapObjectRender_LoadSpriteTexture(MapObjectRender *render, u32 dynamic, u32 spriteId) {
+static enum TextureLoadResult MapObjectRender_LoadSpriteTexture(MapObjectRender *render, BOOL dynamic, u32 spriteId) {
     int modelId;
     if (!GF3dGfxRawResMan_DoesNotHaveObjWithId(render->textures, spriteId)) {
         return TEXTURE_LOAD_DONE;
@@ -546,7 +546,7 @@ static void MapObjectRender_LoadResidentSpriteTexture(MapObjectRender *render, u
     MapObjectRender_LoadSpriteTexture(render, FALSE, spriteId);
 }
 
-static int MapObjectRender_LoadDynamicSpriteTexture(MapObjectRender *render, u32 spriteId) {
+static enum TextureLoadResult MapObjectRender_LoadDynamicSpriteTexture(MapObjectRender *render, u32 spriteId) {
     return MapObjectRender_LoadSpriteTexture(render, TRUE, spriteId);
 }
 
@@ -772,7 +772,7 @@ static BOOL MapObjectRender_IsResidentTexture(MapObjectRender *render, u32 id) {
     return IdList_Contains(ids, id, count);
 }
 
-static int MapObjectRender_GetTextureState(MapObjectRender *render, u32 id) {
+static enum TextureState MapObjectRender_GetTextureState(MapObjectRender *render, u32 id) {
     if (MapObjectRender_IsResidentTexture(render, id) == TRUE) {
         return TEXTURE_STATE_RESIDENT;
     }
@@ -821,7 +821,7 @@ static BOOL MapObjectRender_IsDynamicTexture(MapObjectRender *render, u32 id) {
     return IdList_Contains(ids, id, count);
 }
 
-static int MapObjectRender_GetTextureKind(MapObjectRender *render, u32 id) {
+static enum ResourceKind MapObjectRender_GetTextureKind(MapObjectRender *render, u32 id) {
     if (MapObjectRender_IsResidentTexture(render, id) == TRUE) {
         return RESOURCE_KIND_RESIDENT;
     }
@@ -831,7 +831,7 @@ static int MapObjectRender_GetTextureKind(MapObjectRender *render, u32 id) {
     return RESOURCE_KIND_NOT_LOADED;
 }
 
-static int MapObjectRender_GetModelKind(MapObjectRender *render, u32 id) {
+static enum ResourceKind MapObjectRender_GetModelKind(MapObjectRender *render, u32 id) {
     if (MapObjectRender_IsResidentModel(render, id) == TRUE) {
         return RESOURCE_KIND_RESIDENT;
     }
@@ -841,7 +841,7 @@ static int MapObjectRender_GetModelKind(MapObjectRender *render, u32 id) {
     return RESOURCE_KIND_NOT_LOADED;
 }
 
-static int MapObjectRender_GetSequenceKind(MapObjectRender *render, u32 id) {
+static enum ResourceKind MapObjectRender_GetSequenceKind(MapObjectRender *render, u32 id) {
     if (MapObjectRender_IsResidentSequence(render, id) == TRUE) {
         return RESOURCE_KIND_RESIDENT;
     }
@@ -1161,7 +1161,7 @@ u32 MapObjectRender_GetFacingSequence(u32 facing) {
 
 // Returns FALSE when the texture is queued for a later frame (the queue is full for this frame, or the
 // billboards are busy)
-static BOOL MapObjectRender_LoadOrQueueTexture(MapObjectRender *render, u32 spriteId, u32 modelId, u32 dynamic) {
+static BOOL MapObjectRender_LoadOrQueueTexture(MapObjectRender *render, u32 spriteId, u32 modelId, BOOL dynamic) {
     MapObjectRenderQueue *queue = render->queue;
     if (queue->loadsThisFrame >= queue->loadsPerFrame || Billboard_HasPendingFree(render->billboards) == TRUE) {
         int i;
@@ -1198,14 +1198,14 @@ static void MapObjectRender_CancelTextureLoad(MapObjectRender *render, u32 sprit
     }
 }
 
-static int MapObjectRender_GetTextureLoadState(MapObjectRender *render, u32 spriteId) {
+static enum TextureState MapObjectRender_GetTextureLoadState(MapObjectRender *render, u32 spriteId) {
     MapObjectRenderQueue *queue = render->queue;
     s16 count = queue->count;
     TextureLoadRequest *request = queue->loads;
     int i;
     for (i = 0; i < count; i++, request++) {
         if (request->spriteId == spriteId && request->textures != NULL) {
-            if (request->dynamic == 0) {
+            if (request->dynamic == FALSE) {
                 return TEXTURE_STATE_QUEUED_RESIDENT;
             }
             return TEXTURE_STATE_QUEUED_DYNAMIC;
@@ -1250,7 +1250,7 @@ static void MapObjectRender_TextureLoadTask(SysTask *task, void *data) {
     queue->loadsThisFrame = 0;
 }
 
-static void MapObjectRender_AddTexture(MapObjectRender *render, u32 spriteId, void *textureFile, u32 dynamic) {
+static void MapObjectRender_AddTexture(MapObjectRender *render, u32 spriteId, void *textureFile, BOOL dynamic) {
     if (GF3dGfxRawResMan_AllocObjAndKeys(render->textures, textureFile, spriteId, TRUE, HEAP_ID_FIELD1) == NULL) {
         GF_ASSERT(FALSE);
     }
@@ -1464,7 +1464,7 @@ static void MapObject_ChangeBillboardSpriteKeepingCopy(LocalMapObject *object, u
     VecFx32 reflectionPosition;
     SysTask *task;
     int id;
-    int reflectionKind;
+    enum ReflectionKind reflectionKind;
     const BillboardModelEntry *entry;
     NNSG3dResTex *texture;
     u8 behavior;
