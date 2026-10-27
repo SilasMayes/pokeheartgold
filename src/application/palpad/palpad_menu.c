@@ -79,7 +79,7 @@ BOOL PalPadMenu_Main(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx, enu
                     shared->subState = PALPAD_MENU_STATE_FADE_OUT;
                 } else {
                     PalPadMenu_Hide(menu, gfx);
-                    return 1;
+                    return TRUE;
                 }
             } else if (menu->selection == PALPAD_MENU_REGISTER) {
                 PalPadMenu_PrintMessage(menu, gfx, msg_0779_00058, heapId); // roster is full
@@ -93,7 +93,7 @@ BOOL PalPadMenu_Main(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx, enu
         break;
     case PALPAD_MENU_STATE_WAIT_FADE_OUT:
         if (IsPaletteFadeFinished() == TRUE) {
-            return 1;
+            return TRUE;
         }
         break;
     case PALPAD_MENU_STATE_RETURN_FROM_NAMING: // back from the name / code entry
@@ -153,7 +153,7 @@ BOOL PalPadMenu_Main(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx, enu
         }
         break;
     }
-    return 0;
+    return FALSE;
 }
 
 void PalPadMenu_Exit(PalPadMenu *menu, PalPadShared *shared, PalPadGfx *gfx) {

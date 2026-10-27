@@ -987,9 +987,9 @@ BOOL WifiClub_Init(OverlayManager *man, int *state) {
     case 1:
         OverlayManager_GetData(man);
         *state = 0;
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 BOOL WifiClub_Main(OverlayManager *man, int *state) {
@@ -1011,7 +1011,7 @@ BOOL WifiClub_Main(OverlayManager *man, int *state) {
         break;
     case WIFI_CLUB_MAIN_FADE_OUT:
         if (IsPaletteFadeFinished()) {
-            return 1;
+            return TRUE;
         }
     }
     SpriteList *spriteList = data->spriteList;
@@ -1021,7 +1021,7 @@ BOOL WifiClub_Main(OverlayManager *man, int *state) {
     if (WifiClubRoom_IsInitialized(&data->room) == 1) {
         WifiClubRoom_Draw(&data->room);
     }
-    return 0;
+    return FALSE;
 }
 
 void WifiClub_TeardownGraphics(WifiClubApp *app) {
@@ -1088,7 +1088,7 @@ BOOL WifiClub_Exit(OverlayManager *man, int *state) {
     if (WifiClub_IsRoomBgmPlaying() == 1) {
         GF_SndHandleSetInitialVolume(SND_HANDLE_FIELD, 120);
     }
-    return 1;
+    return TRUE;
 }
 
 void WifiClub_VBlankCB(WifiClubApp *app) {
@@ -4155,7 +4155,7 @@ void WifiClub_InitRosterScreen(WifiClubApp *app, NARC *narc, enum HeapID heapID)
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_BG3, GF_PLANE_TOGGLE_OFF);
-    app->roster.slotHitboxes = TouchHitboxController_Create(sRosterSlotHitboxes, 8, (TouchHitboxControllerCallback)WifiClub_RosterHitboxCallback, app, heapID);
+    app->roster.slotHitboxes = TouchHitboxController_Create(sRosterSlotHitboxes, 8, WifiClub_RosterHitboxCallback, app, heapID);
     app->roster.msgFormat = MessageFormat_New(heapID);
     WifiClub_LoadRosterGraphics(app, narc, heapID);
     app->roster.redrawAll = 1;
@@ -4276,7 +4276,8 @@ void WifiClub_ChangeProfilePage(WifiClubApp *app, s32 pressedButton) {
     }
 }
 
-void WifiClub_RosterHitboxCallback(s32 index, enum HeapID event, WifiClubApp *app) {
+void WifiClub_RosterHitboxCallback(u32 index, u32 event, void *arg) {
+    WifiClubApp *app = arg;
     s32 rosterIndex = app->roster.page * 8 + index;
     if ((app->roster.slotStates[rosterIndex] == 2) && (app->roster.selectedFriend == 0) && (event == 0)) {
         app->roster.selectedFriend = rosterIndex + 1;

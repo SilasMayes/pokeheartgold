@@ -61,6 +61,57 @@
 #define VISITOR_PROFILES_NUM_BG_LAYERS     5
 #define VISITOR_PROFILES_NUM_HOURS         24
 
+enum VisitorProfilesState {
+    VISITOR_PROFILES_STATE_FADE_IN,
+    VISITOR_PROFILES_STATE_WAIT_FADE_IN,
+    VISITOR_PROFILES_STATE_UPDATE,
+    VISITOR_PROFILES_STATE_FADE_OUT = 5,
+    VISITOR_PROFILES_STATE_WAIT_FADE_OUT,
+};
+
+enum VisitorProfilesInput {
+    VISITOR_PROFILES_INPUT_NONE,
+    VISITOR_PROFILES_INPUT_ZOOM,
+    VISITOR_PROFILES_INPUT_EXIT,
+};
+
+enum VisitorProfilesTouchValue {
+    VISITOR_PROFILES_TOUCH_RESULT,
+    VISITOR_PROFILES_TOUCH_DRAG_X,
+    VISITOR_PROFILES_TOUCH_DRAG_Y,
+};
+
+enum VisitorProfilesTouchState {
+    VISITOR_PROFILES_TOUCH_STATE_WAIT_HOLD,
+    VISITOR_PROFILES_TOUCH_STATE_DRAG,
+};
+
+enum VisitorProfilesExitPromptState {
+    VISITOR_PROFILES_EXIT_PROMPT_WAIT_PRINT,
+    VISITOR_PROFILES_EXIT_PROMPT_HANDLE_YES_NO,
+};
+
+enum VisitorProfilesPanelState {
+    VISITOR_PROFILES_PANEL_IDLE,
+    VISITOR_PROFILES_PANEL_START_REVEAL,
+    VISITOR_PROFILES_PANEL_REVEAL,
+    VISITOR_PROFILES_PANEL_START_FAST_REVEAL,
+    VISITOR_PROFILES_PANEL_FAST_REVEAL,
+};
+
+enum VisitorProfilesRowState {
+    VISITOR_PROFILES_ROW_SHOW_BLANK,
+    VISITOR_PROFILES_ROW_SHOW_PLACE,
+    VISITOR_PROFILES_ROW_DONE,
+};
+
+enum VisitorProfilesMode {
+    VISITOR_PROFILES_MODE_BROWSE,
+    VISITOR_PROFILES_MODE_ZOOM,
+    VISITOR_PROFILES_MODE_OPEN_EXIT_PROMPT,
+    VISITOR_PROFILES_MODE_EXIT_PROMPT,
+};
+
 // Entry of the lobby's visitor table.
 typedef struct VisitorProfilesVisitor {
     u16 country;
@@ -136,7 +187,7 @@ typedef struct VisitorProfilesCamera {
 // Touch input; the result uses the key bit layout (PAD_BUTTON_A = tap, PAD_BUTTON_B = EXIT box, PAD_KEY_* = drag).
 typedef struct VisitorProfilesTouch {
     u32 result;
-    int state;
+    enum VisitorProfilesTouchState state;
     int x;
     int y;
     u32 dragX;
@@ -212,7 +263,7 @@ typedef struct VisitorProfilesWindowMask {
 
 // Bottom screen: the place history and its row-by-row reveal.
 typedef struct VisitorProfilesPanel {
-    int state;
+    enum VisitorProfilesPanelState state;
     VisitorProfilesPlaceInfo history[VISITOR_PROFILES_HISTORY_SIZE];
     u16 head;
     u16 tail;
@@ -233,7 +284,7 @@ typedef struct VisitorProfilesPanel {
 } VisitorProfilesPanel;
 
 typedef struct VisitorProfilesExitPrompt {
-    u32 state;
+    enum VisitorProfilesExitPromptState state;
     u32 printerId;
     u32 textSpeed;
     String *string;
@@ -259,58 +310,6 @@ typedef struct VisitorProfilesWork {
     VisitorProfilesPanel panel;
     VisitorProfilesExitPrompt exitPrompt;
 } VisitorProfilesWork;
-
-enum VisitorProfilesState {
-    VISITOR_PROFILES_STATE_FADE_IN,
-    VISITOR_PROFILES_STATE_WAIT_FADE_IN,
-    VISITOR_PROFILES_STATE_UPDATE,
-    VISITOR_PROFILES_STATE_FADE_OUT = 5,
-    VISITOR_PROFILES_STATE_WAIT_FADE_OUT,
-};
-
-enum VisitorProfilesInput {
-    VISITOR_PROFILES_INPUT_NONE,
-    VISITOR_PROFILES_INPUT_ZOOM,
-    VISITOR_PROFILES_INPUT_EXIT,
-};
-
-enum VisitorProfilesTouchValue {
-    VISITOR_PROFILES_TOUCH_RESULT,
-    VISITOR_PROFILES_TOUCH_DRAG_X,
-    VISITOR_PROFILES_TOUCH_DRAG_Y,
-};
-
-enum VisitorProfilesTouchState {
-    VISITOR_PROFILES_TOUCH_STATE_WAIT_HOLD,
-    VISITOR_PROFILES_TOUCH_STATE_DRAG,
-};
-
-enum VisitorProfilesExitPromptState {
-    VISITOR_PROFILES_EXIT_PROMPT_WAIT_PRINT,
-    VISITOR_PROFILES_EXIT_PROMPT_HANDLE_YES_NO,
-};
-
-enum VisitorProfilesPanelState {
-    VISITOR_PROFILES_PANEL_IDLE,
-    VISITOR_PROFILES_PANEL_START_REVEAL,
-    VISITOR_PROFILES_PANEL_REVEAL,
-    VISITOR_PROFILES_PANEL_START_FAST_REVEAL,
-    VISITOR_PROFILES_PANEL_FAST_REVEAL,
-};
-
-enum VisitorProfilesRowState {
-    VISITOR_PROFILES_ROW_SHOW_BLANK,
-    VISITOR_PROFILES_ROW_SHOW_PLACE,
-    VISITOR_PROFILES_ROW_DONE,
-};
-
-enum VisitorProfilesMode {
-    VISITOR_PROFILES_MODE_BROWSE,
-    VISITOR_PROFILES_MODE_ZOOM,
-    VISITOR_PROFILES_MODE_OPEN_EXIT_PROMPT,
-    VISITOR_PROFILES_MODE_EXIT_PROMPT,
-};
-
 
 static void VisitorProfilesPlaces_Load(VisitorProfilesPlaces *places, WiFiPlazaPlace *visitors, enum HeapID heapID);
 static void VisitorProfilesPlaces_Set(VisitorProfilesPlaces *places, u32 index, s32 latitude, s32 longitude, u16 country, u16 region, WiFiPlazaPlace *visitors);

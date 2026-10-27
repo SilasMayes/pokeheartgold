@@ -110,16 +110,16 @@ BOOL PalPadDetails_Main(PalPadDetails *details, PalPadShared *shared, PalPadGfx 
             PalPadDetails_HideForFriendChange(details, gfx);
             PalPadShared_SetNextScreen(shared, PALPAD_SCREEN_DETAILS, PALPAD_DETAILS_STATE_SHOW);
             details->friendChangeHeld = TRUE;
-            return 1;
+            return TRUE;
         }
         shared->subState = PALPAD_DETAILS_STATE_INPUT;
         break;
     case PALPAD_DETAILS_STATE_EXIT:
         PalPadDetails_Hide(details, gfx);
         PalPadShared_SetNextScreen(shared, PALPAD_SCREEN_ROSTER, PALPAD_ROSTER_STATE_RETURN_FROM_DETAILS);
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 void PalPadDetails_Exit(PalPadDetails *details, PalPadShared *shared, PalPadGfx *gfx) {

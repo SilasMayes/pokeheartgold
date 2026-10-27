@@ -160,7 +160,7 @@ BOOL PalPadRoster_Main(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gf
         if (roster->timer <= 0) {
             PalPadRoster_Hide(roster, shared, gfx);
             PalPadShared_SetNextScreen(shared, PALPAD_SCREEN_DETAILS, PALPAD_DETAILS_STATE_INIT);
-            return 1;
+            return TRUE;
         }
         break;
     case PALPAD_ROSTER_STATE_RETURN_FROM_DETAILS: // back from the details
@@ -179,7 +179,7 @@ BOOL PalPadRoster_Main(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gf
         if (IsPaletteFadeFinished()) {
             PalPadRoster_Hide(roster, shared, gfx);
             PalPadShared_SetNextScreen(shared, PALPAD_SCREEN_NAMING, PALPAD_NAMING_STATE_RENAME);
-            return 1;
+            return TRUE;
         }
         break;
     case PALPAD_ROSTER_STATE_SET_NEW_NAME: // back from the naming screen with a new name
@@ -259,9 +259,9 @@ BOOL PalPadRoster_Main(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gf
     case PALPAD_ROSTER_STATE_EXIT:
         PalPadRoster_Hide(roster, shared, gfx);
         PalPadShared_SetNextScreen(shared, PALPAD_SCREEN_MENU, PALPAD_MENU_STATE_SHOW);
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 void PalPadRoster_Exit(PalPadRoster *roster, PalPadShared *shared, PalPadGfx *gfx) {

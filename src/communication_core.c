@@ -183,7 +183,7 @@ static void Comm_ResetBuffers(void) {
 static void Comm_Reset(void) {
     sCommCore.work->childFrameIndex = 0;
     sCommCore.work->parentFrameIndex = 0;
-    sCommCore.work->continuousSend = 1;
+    sCommCore.work->continuousSend = TRUE;
     Comm_ResetBuffers();
     sCommSendStages.stage[0] = 4;
     sCommSendStages.stage[1] = 4;
@@ -1195,7 +1195,7 @@ int Comm_CountConnected(void) {
 
 BOOL Comm_IsActive(void) {
     if (sCommCore.work != NULL && Comm_IsWifiLinkMode(CommState_GetLinkMode())) {
-        return 1;
+        return TRUE;
     }
     return CommWireless_Exists();
 }
@@ -1234,7 +1234,7 @@ static BOOL Comm_IsKeySyncEnabled(void) {
     if (sCommCore.work != NULL) {
         return sCommCore.work->heldKeys & 0x8000;
     }
-    return 1;
+    return TRUE;
 }
 
 int Comm_SendParentCommandNoCopyUnchecked(int command, void *data, int size) {
@@ -1327,7 +1327,7 @@ int Comm_GetConnectedChildren(void) {
 BOOL Comm_HasLinkError(void) {
     if (sCommCore.work != NULL && sCommCore.work->linkError != 0) {
         CommState_SetErrorWatch(1, 1);
-        return 1;
+        return TRUE;
     }
     return CommWireless_IsLinkLost();
 }

@@ -56,19 +56,19 @@ typedef struct EasyChatWordSlotPos {
     s16 y;
 } EasyChatWordSlotPos;
 
-// Splits the message string of the "message" mode into text runs, word slots and line breaks.
-typedef struct EasyChatMessageParser {
-    String *string;
-    const u16 *cursor;
-    int state;
-} EasyChatMessageParser;
-
-enum {
+enum EasyChatParseResult {
     EC_PARSE_TEXT,
     EC_PARSE_WORD,
     EC_PARSE_NEWLINE,
     EC_PARSE_END,
 };
+
+// Splits the message string of the "message" mode into text runs, word slots and line breaks.
+typedef struct EasyChatMessageParser {
+    String *string;
+    const u16 *cursor;
+    enum EasyChatParseResult state;
+} EasyChatMessageParser;
 
 // The sentence panel: the word slots (or the message with its slots), the cursor on them, the
 // message window and the yes/no prompt.
@@ -195,7 +195,7 @@ static int EasyChatSentenceView_DrawMessage(EasyChatSentenceView *sentence, Wind
 static void EasyChatSentenceView_UpdateSliderThumb(EasyChatSentenceView *sentence);
 static void EasyChatMessageParser_Init(EasyChatMessageParser *parser, EasyChatSentenceView *sentence);
 static void EasyChatMessageParser_Free(EasyChatMessageParser *parser);
-static int EasyChatMessageParser_Next(EasyChatMessageParser *parser, String *dest);
+static enum EasyChatParseResult EasyChatMessageParser_Next(EasyChatMessageParser *parser, String *dest);
 static void EasyChatSentenceView_GetSlotTextPos(const EasyChatWordSlotPos *slot, EasyChatWordSlotPos *textPos);
 static void EasyChatSentenceView_GetSlotCursorPos(const EasyChatWordSlotPos *slot, EasyChatWordSlotPos *cursorPos);
 static void EasyChatSentenceView_ClearSlot(Window *window, const EasyChatWordSlotPos *slot);
@@ -582,9 +582,9 @@ static void EasyChatMessageParser_Free(EasyChatMessageParser *parser) {
     String_Delete(parser->string);
 }
 
-static int EasyChatMessageParser_Next(EasyChatMessageParser *parser, String *dest) {
+static enum EasyChatParseResult EasyChatMessageParser_Next(EasyChatMessageParser *parser, String *dest) {
     const u16 *start = parser->cursor;
-    int result;
+    enum EasyChatParseResult result;
 
     switch (parser->state) {
     case EC_PARSE_TEXT:

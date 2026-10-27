@@ -22,7 +22,9 @@ typedef struct UnionRoomStatus {
 
 // A player's beacon record as seen by the Union Room (communication layer).
 typedef struct UnionRoomRecordInfo {
-    u8 unk00[0x30]; // chat message, profile
+    u32 id; // changes when the player is replaced
+    u8 unk04[0xC];
+    PlayerProfile profile;
     UnionRoomStatus status;
 } UnionRoomRecordInfo;
 

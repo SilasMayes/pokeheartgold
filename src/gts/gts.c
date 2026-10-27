@@ -206,7 +206,7 @@ BOOL Gts_Main(OverlayManager *man, int *state) {
             if (app->reloadGraphics) {
                 Gts_InitGraphics(app);
                 Gts_CreateAvatars(app, PlayerProfile_GetTrainerGender(app->args->profile));
-                Gts_ShowResultAvatars(app, app->searchResultCount, 0);
+                Gts_ShowResultAvatars(app, app->searchResultCount, FALSE);
                 Gts_LoadSubScreenBg(app);
                 Gts_ShowSubScreenPanel(app);
                 app->reloadGraphics = FALSE;

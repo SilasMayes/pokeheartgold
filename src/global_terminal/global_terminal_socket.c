@@ -211,7 +211,7 @@ static BOOL GlobalTerminalSocket_Start(char *host, int port, GlobalTerminalNetLo
         sGlobalTerminalSocket.hasToken = FALSE;
     }
     if (!GlobalTerminalSocket_InitTick()) {
-        return 0;
+        return FALSE;
     }
     GlobalTerminalSocket_InitMutex();
     strcpy(sGlobalTerminalSocketHost, host);
@@ -219,7 +219,7 @@ static BOOL GlobalTerminalSocket_Start(char *host, int port, GlobalTerminalNetLo
     sGlobalTerminalSocket.request = NULL;
     sGlobalTerminalSocket.socket = -1;
     GlobalTerminalSocket_ClearRequest();
-    return 1;
+    return TRUE;
 }
 
 static void GlobalTerminalSocket_ClearRequest(void) {
@@ -345,7 +345,7 @@ static BOOL GlobalTerminalSocket_SendRequest(int command, void *payload, void *r
         // BUG: the state and error are written after the lock is released, while the socket thread may run
         sGlobalTerminalSocket.state = GTS_SOCKET_STATE_ERROR;
         sGlobalTerminalSocket.error = GTS_SOCKET_ERROR_BUSY;
-        return 0;
+        return FALSE;
     case GTS_SOCKET_STATE_CANCELLED:
     case GTS_SOCKET_STATE_DONE:
     case GTS_SOCKET_STATE_ERROR:
@@ -357,7 +357,7 @@ static BOOL GlobalTerminalSocket_SendRequest(int command, void *payload, void *r
     if (sGlobalTerminalSocket.responseSize == -1) {
         sGlobalTerminalSocket.state = GTS_SOCKET_STATE_ERROR;
         sGlobalTerminalSocket.error = GTS_SOCKET_ERROR_UNKNOWN_COMMAND;
-        return 0;
+        return FALSE;
     }
     sGlobalTerminalSocket.response = response;
     if (payloadSize != -1) {
@@ -367,12 +367,12 @@ static BOOL GlobalTerminalSocket_SendRequest(int command, void *payload, void *r
         if (size == (u32)-1) {
             sGlobalTerminalSocket.state = GTS_SOCKET_STATE_ERROR;
             sGlobalTerminalSocket.error = GTS_SOCKET_ERROR_UNKNOWN_COMMAND;
-            return 0;
+            return FALSE;
         }
     }
     sGlobalTerminalSocket.request = GlobalTerminalSocket_Alloc(size);
     if (!sGlobalTerminalSocket.request) {
-        return 0;
+        return FALSE;
     }
     sGlobalTerminalSocket.requestSize = size;
     {
@@ -392,10 +392,10 @@ static BOOL GlobalTerminalSocket_SendRequest(int command, void *payload, void *r
         sGlobalTerminalSocket.state = GTS_SOCKET_STATE_ERROR;
         sGlobalTerminalSocket.error = GTS_SOCKET_ERROR_THREAD;
         GlobalTerminalSocket_Unlock();
-        return 0;
+        return FALSE;
     }
     GlobalTerminalSocket_Unlock();
-    return 1;
+    return TRUE;
 }
 
 static int GlobalTerminalSocket_GetStateUnlocked(void) {
@@ -486,25 +486,25 @@ static BOOL GlobalTerminalSocket_IsIPv4Address(signed char *str) {
     while ((c = *str) != 0) {
         if (c >= '0' && c <= '9') {
             if (++digits >= 4) {
-                return 0;
+                return FALSE;
             }
         } else if (c == '.') {
             if (!digits) {
-                return 0;
+                return FALSE;
             }
             digits = 0;
             if (++dots >= 4) {
-                return 0;
+                return FALSE;
             }
         } else {
-            return 0;
+            return FALSE;
         }
         str++;
     }
     if (dots == 3 && digits) {
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 static int GlobalTerminalSocket_ResolveHost(char *host, char *out) {

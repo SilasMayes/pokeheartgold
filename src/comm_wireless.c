@@ -214,12 +214,12 @@ static BOOL CommWireless_BytesEqual(const u8 *a, const u8 *b, int size) {
     int i;
     for (i = 0; i < size; i++) {
         if (*a != *b) {
-            return 0;
+            return FALSE;
         }
         a++;
         b++;
     }
-    return 1;
+    return TRUE;
 }
 
 // Scan callback: keeps a parent of our link kind (and id), stored by CommWireless_StoreFoundParent.
@@ -421,9 +421,9 @@ BOOL CommWireless_RequestStopAndFree(void) {
     if (sCommWireless.work != NULL && sCommWireless.work->shutdown == COMM_WIRELESS_SHUTDOWN_NONE) {
         sCommWireless.work->shutdown = COMM_WIRELESS_SHUTDOWN_STOP_AND_FREE;
         Wireless_Stop();
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 void CommWireless_SetManagerEnded(BOOL end) {
@@ -795,7 +795,7 @@ BOOL CommWireless_IsShutdownRequested(void) {
     if (sCommWireless.work != NULL) {
         return sCommWireless.work->shutdownRequested;
     }
-    return 0;
+    return FALSE;
 }
 
 void CommWireless_RequestShutdown(void) {

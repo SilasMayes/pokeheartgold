@@ -74,7 +74,7 @@ BOOL PalPadNaming_Main(PalPadNaming *naming, PalPadWork *work, PalPadShared *sha
         NamingScreen_DeleteArgs(naming->namingArgs);
         CodeEntryArgs_Delete(naming->codeEntryArgs);
         PalPad_SetupScreens(work, heapId);
-        return 1;
+        return TRUE;
     case PALPAD_NAMING_STATE_RENAME: // rewrite a friend's name
         naming->namingArgs = PalPadNaming_CreateNamingArgs(naming, shared, heapId);
         PalPad_TeardownScreens(work);
@@ -97,9 +97,9 @@ BOOL PalPadNaming_Main(PalPadNaming *naming, PalPadWork *work, PalPadShared *sha
     case PALPAD_NAMING_STATE_EXIT_RENAME:
         NamingScreen_DeleteArgs(naming->namingArgs);
         PalPad_SetupScreens(work, heapId);
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 void PalPadNaming_Exit(PalPadNaming *naming, PalPadShared *shared, PalPadGfx *gfx) {

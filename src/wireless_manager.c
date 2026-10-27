@@ -972,7 +972,7 @@ static BOOL Wireless_Initialize(int mode) {
     if (mode == 1) {
         result = WM_Initialize(sWirelessManager.work->systemBuffer, Wireless_OnInitialized, 2);
     } else {
-        result = WM_InitializeForListening(sWirelessManager.work->systemBuffer, Wireless_OnInitialized, 2, 0);
+        result = WM_InitializeForListening(sWirelessManager.work->systemBuffer, Wireless_OnInitialized, 2, FALSE);
     }
     if (result != WM_ERRCODE_OPERATING) {
         Wireless_SetError(result);

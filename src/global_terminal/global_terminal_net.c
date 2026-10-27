@@ -235,14 +235,14 @@ BOOL GlobalTerminalNet_Init(GlobalTerminalNet *net, GlobalTerminalNetArgs *args)
     net->login.gameVersion = GAME_VERSION;
     net->login.unk_05 = 2;
     GF_ASSERT(GlobalTerminalServer_Init(&net->login) == TRUE);
-    net->isRunning = 1;
+    net->isRunning = TRUE;
     net->initialized = 1;
     return TRUE;
 }
 
 void GlobalTerminalNet_Free(GlobalTerminalNet *net) {
     GlobalTerminalServer_Stop();
-    net->isRunning = 0;
+    net->isRunning = FALSE;
     String_Delete(net->string);
     MessageFormat_Delete(net->msgFormat);
     DestroyMsgData(net->msgData);
@@ -253,7 +253,7 @@ void GlobalTerminalNet_Free(GlobalTerminalNet *net) {
 
 static int GlobalTerminalNet_SeqStopClient(GlobalTerminalNet *net, void *stepWork) {
     GlobalTerminalServer_Stop();
-    net->isRunning = 0;
+    net->isRunning = FALSE;
     return GLOBAL_TERMINAL_NET_STEP_NEXT;
 }
 
@@ -577,7 +577,7 @@ static BOOL GlobalTerminalNet_PollStatus(GlobalTerminalNet *net) {
             net->error.type = 1;
             net->error.command = 0;
             net->error.code = 7;
-            net->error.isError = 1;
+            net->error.isError = TRUE;
             net->pendingResponse.completeFunc = GlobalTerminalNet_CompleteError;
             break;
         case GTS_SOCKET_STATE_DONE:
@@ -588,7 +588,7 @@ static BOOL GlobalTerminalNet_PollStatus(GlobalTerminalNet *net) {
             net->error.type = 0;
             net->error.command = 0;
             net->error.code = GlobalTerminalServer_GetError();
-            net->error.isError = 1;
+            net->error.isError = TRUE;
             net->pendingResponse.completeFunc = GlobalTerminalNet_CompleteError;
             break;
         }
@@ -690,9 +690,9 @@ static BOOL GlobalTerminalNet_HandleResponse(GlobalTerminalNet *net) {
         net->error.type = 2;
         net->error.command = response->command;
         net->error.code = response->result;
-        net->error.isError = 1;
+        net->error.isError = TRUE;
     } else {
-        net->error.isError = 0;
+        net->error.isError = FALSE;
     }
     return result;
 }

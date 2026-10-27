@@ -320,7 +320,7 @@ static void WiFiPlazaWork_Update(WiFiPlazaWork *work) {
     WiFiPlazaGroups_Update(&work->groups);
     WiFiPlazaTimer_Update(&work->timer);
     if (WiFiPlazaHistory_IsCorrupt(&work->history) == 1) {
-        work->hasError = 1;
+        work->hasError = TRUE;
     }
 }
 
@@ -561,7 +561,7 @@ WiFiPlazaPlayer *WiFiPlazaWork_GetPlayer(WiFiPlazaWork *work, u32 index) {
 
 WiFiPlazaPlayer *WiFiPlazaWork_GetMyPlayer(WiFiPlazaWork *work) {
     if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
-        work->hasError = 1;
+        work->hasError = TRUE;
     }
     return &work->profile.player;
 }
@@ -569,7 +569,7 @@ WiFiPlazaPlayer *WiFiPlazaWork_GetMyPlayer(WiFiPlazaWork *work) {
 void WiFiPlazaWork_SetActivity(WiFiPlazaWork *work, int value) {
     GF_ASSERT(value < 15);
     if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
-        work->hasError = 1;
+        work->hasError = TRUE;
         return;
     }
     if (work->profile.player.activity == value) {
@@ -619,7 +619,7 @@ void WiFiPlazaWork_AddHistory(WiFiPlazaWork *work, int index, int value) {
 void WiFiPlazaWork_SetTapToy(WiFiPlazaWork *work, u32 value) {
     GF_ASSERT(value < 27);
     if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
-        work->hasError = 1;
+        work->hasError = TRUE;
         return;
     }
     work->profile.player.tapToy = value;
@@ -631,7 +631,7 @@ void WiFiPlazaWork_SetFavoriteTypes(WiFiPlazaWork *work, int a, int b) {
     GF_ASSERT(a < 18);
     GF_ASSERT(b < 18);
     if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
-        work->hasError = 1;
+        work->hasError = TRUE;
         return;
     }
     if (a < 18 && b < 18) {
@@ -650,7 +650,7 @@ void WiFiPlazaWork_SetFavoriteTypes(WiFiPlazaWork *work, int a, int b) {
 void WiFiPlazaWork_SetSurveyAnswer(WiFiPlazaWork *work, u32 a, u32 b) {
     GF_ASSERT(b < 3);
     if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
-        work->hasError = 1;
+        work->hasError = TRUE;
         return;
     }
     if (b < 3) {
@@ -1077,10 +1077,10 @@ void WiFiPlazaWork_ResetTalk(WiFiPlazaWork *work) {
 
 BOOL WiFiPlazaWork_StartTalk(WiFiPlazaWork *work, int slot) {
     if (work->talk.role) {
-        return 0;
+        return FALSE;
     }
     if (WiFiPlazaPlayer_GetActivity(WiFiPlazaWork_GetPlayer(work, slot)) != WIFI_PLAZA_ACTIVITY_FREE) {
-        return 0;
+        return FALSE;
     }
     work->talk.partnerSlot = slot;
     work->talk.state = WIFI_PLAZA_TALK_STATE_REQUESTED;
@@ -1088,7 +1088,7 @@ BOOL WiFiPlazaWork_StartTalk(WiFiPlazaWork *work, int slot) {
     WiFiPlazaTalkSession_SetMessage(&work->talk, 0);
     WiFiPlazaLobbyClient_SendToPlayer(0, WiFiPlazaLobbyClient_SlotToId(slot), &work->talk.sendMessage, 4);
     WiFiPlazaTalkSession_StartTimeout(&work->talk);
-    return 1;
+    return TRUE;
 }
 
 void WiFiPlazaWork_AdvanceTalk(WiFiPlazaWork *work, int value) {
@@ -1333,7 +1333,7 @@ static void WiFiPlaza_OnPlayerEnter(int id, WiFiPlazaPlayer *player, WiFiPlazaWo
     if (isOwn) {
         WiFiPlazaProfile_CopyToPlayerProfile(&work->ownProfileData.profile, &work->profile, work->heapID);
         if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
-            work->hasError = 1;
+            work->hasError = TRUE;
         }
         WiFiPlazaNews_AddPlayer(work->news, WiFiPlazaLobbyClient_IdToSlot(id), work->profile.player.gender, 3);
         work->profile.player.lobbyId = id;
@@ -1517,7 +1517,7 @@ static void WiFiPlaza_OnLobbyEvent(u32 event, WiFiPlazaWork *work) {
 // Lobby callback: the own record as the lobby stores it.
 static void WiFiPlaza_OnOwnRecord(const WiFiPlazaPlayer *data, u32 size, WiFiPlazaWork *work) {
     if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
-        work->hasError = 1;
+        work->hasError = TRUE;
         return;
     }
     WiFiPlazaProfile_SetFromLobbyRecord(&work->profile, data, size);
@@ -1621,7 +1621,7 @@ static void WiFiPlazaProfile_InitFromSave(WiFiPlazaProfile *profile, SaveData *s
 static void WiFiPlazaWork_SendOwnRecord(WiFiPlazaWork *work) {
     int i;
     if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
-        work->hasError = 1;
+        work->hasError = TRUE;
         return;
     }
     for (i = 0; i < 12; i++) {
@@ -2270,7 +2270,7 @@ static void WiFiPlaza_OnTalkRequest(int id, const void *data, u32 size, void *ar
     BOOL busy;
 
     if (!WiFiPlazaProfile_IsChecksumValid(&work->profile, work->save)) {
-        work->hasError = 1;
+        work->hasError = TRUE;
     }
     ready = WiFiPlazaPlayer_GetActivity(&work->profile.player);
     busy = WiFiPlazaWork_IsTalking(work);
@@ -2463,7 +2463,7 @@ static BOOL WiFiPlazaWordSet_HasWords(WiFiPlazaWordSet *wordSet, u32 slot) {
     if (slot < WIFI_PLAZA_MAX_PLAYERS) {
         return wordSet->flags[slot];
     }
-    return 0;
+    return FALSE;
 }
 
 static u16 *WiFiPlazaWordSet_GetWords(WiFiPlazaWordSet *wordSet, u32 slot) {

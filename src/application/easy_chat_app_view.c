@@ -429,12 +429,12 @@ void EasyChatAppView_Cmd_Nop(SysTask *task, EasyChatViewCommand *command) {
 }
 
 void EasyChatAppView_Cmd_ShowCategoryCursor(SysTask *task, EasyChatViewCommand *command) {
-    EasyChatCategoryView_SetCursorVisible(command->view->categories, 1);
+    EasyChatCategoryView_SetCursorVisible(command->view->categories, TRUE);
     EasyChatAppView_EndCommand(command);
 }
 
 void EasyChatAppView_Cmd_ShowWordListCursor(SysTask *task, EasyChatViewCommand *command) {
-    EasyChatWordListView_SetCursorVisible(command->view->wordList, 1);
+    EasyChatWordListView_SetCursorVisible(command->view->wordList, TRUE);
     EasyChatAppView_EndCommand(command);
 }
 
@@ -442,9 +442,9 @@ void EasyChatAppView_Cmd_FocusMenu(SysTask *task, EasyChatViewCommand *command) 
     EasyChatAppView *view = command->view;
 
     view->onMenu = TRUE;
-    EasyChatSentenceView_SetCursorVisible(view->sentence, 0);
+    EasyChatSentenceView_SetCursorVisible(view->sentence, FALSE);
     EasyChatSentenceView_HideSlider(view->sentence);
-    EasyChatMenuView_SetCursorVisible(view->menuView, 1);
+    EasyChatMenuView_SetCursorVisible(view->menuView, TRUE);
     EasyChatMenuView_MoveCursor(view->menuView, EasyChatApp_GetMenuCursor(view->app));
     EasyChatAppView_EndCommand(command);
 }
@@ -453,9 +453,9 @@ void EasyChatAppView_Cmd_FocusSentence(SysTask *task, EasyChatViewCommand *comma
     EasyChatAppView *view = command->view;
 
     view->onMenu = FALSE;
-    EasyChatMenuView_SetCursorVisible(view->menuView, 0);
+    EasyChatMenuView_SetCursorVisible(view->menuView, FALSE);
     EasyChatSentenceView_ShowSlider(view->sentence);
-    EasyChatSentenceView_SetCursorVisible(view->sentence, 1);
+    EasyChatSentenceView_SetCursorVisible(view->sentence, TRUE);
     EasyChatAppView_EndCommand(command);
 }
 
@@ -479,7 +479,7 @@ void EasyChatAppView_Cmd_OpenCategories(SysTask *task, EasyChatViewCommand *comm
 
         if (categoriesDone && sentenceDone) {
             EasyChatCategoryView_MoveCursor(view->categories, EasyChatApp_GetCategory(view->app));
-            EasyChatCategoryView_SetCursorVisible(view->categories, 1);
+            EasyChatCategoryView_SetCursorVisible(view->categories, TRUE);
             EasyChatAppView_EndCommand(command);
         }
         break;
@@ -517,7 +517,7 @@ void EasyChatAppView_Cmd_SwitchListMode(SysTask *task, EasyChatViewCommand *comm
         command->state++;
         break;
     case 1:
-        EasyChatCategoryView_SetCursorVisible(view->categories, 0);
+        EasyChatCategoryView_SetCursorVisible(view->categories, FALSE);
         EasyChatCategoryView_StartModeScroll(view->categories);
         command->state++;
         break;
@@ -530,7 +530,7 @@ void EasyChatAppView_Cmd_SwitchListMode(SysTask *task, EasyChatViewCommand *comm
     case 3:
         if (EasyChatMenuView_IsModeSwitchDone(view->menuView)) {
             EasyChatCategoryView_MoveCursor(view->categories, EasyChatApp_GetCategory(view->app));
-            EasyChatCategoryView_SetCursorVisible(view->categories, 1);
+            EasyChatCategoryView_SetCursorVisible(view->categories, TRUE);
             EasyChatAppView_EndCommand(command);
         }
         break;
@@ -543,7 +543,7 @@ void EasyChatAppView_Cmd_CloseCategories(SysTask *task, EasyChatViewCommand *com
     switch (command->state) {
     case 0:
         EasyChatMenuView_ShowMainButtons(view->menuView);
-        EasyChatCategoryView_SetCursorVisible(view->categories, 0);
+        EasyChatCategoryView_SetCursorVisible(view->categories, FALSE);
         EasyChatCategoryView_StartClose(view->categories);
         EasyChatSentenceView_SelectMessageWindow(view->sentence, 0);
         EasyChatSentenceView_PrintMessage(view->sentence, 0);
@@ -571,7 +571,7 @@ void EasyChatAppView_Cmd_OpenWordList(SysTask *task, EasyChatViewCommand *comman
     switch (command->state) {
     case 0:
         EasyChatWordListView_DrawWords(view->wordList);
-        EasyChatCategoryView_SetCursorVisible(view->categories, 0);
+        EasyChatCategoryView_SetCursorVisible(view->categories, FALSE);
         EasyChatCategoryView_StartFadeOut(view->categories);
         command->state++;
         break;
@@ -584,8 +584,8 @@ void EasyChatAppView_Cmd_OpenWordList(SysTask *task, EasyChatViewCommand *comman
     case 2:
         if (EasyChatWordListView_UpdateFadeIn(view->wordList)) {
             EasyChatWordListView_MoveCursor(view->wordList, EasyChatApp_GetWordListCursor(view->app));
-            EasyChatWordListView_SetCursorVisible(view->wordList, 1);
-            EasyChatPageButtonsView_SetEnabled(view->pageButtons, 1);
+            EasyChatWordListView_SetCursorVisible(view->wordList, TRUE);
+            EasyChatPageButtonsView_SetEnabled(view->pageButtons, TRUE);
             EasyChatAppView_EndCommand(command);
         }
         break;
@@ -601,8 +601,8 @@ void EasyChatAppView_Cmd_WordListToCategories(SysTask *task, EasyChatViewCommand
         command->state++;
         break;
     case 1:
-        EasyChatWordListView_SetCursorVisible(view->wordList, 0);
-        EasyChatPageButtonsView_SetEnabled(view->pageButtons, 0);
+        EasyChatWordListView_SetCursorVisible(view->wordList, FALSE);
+        EasyChatPageButtonsView_SetEnabled(view->pageButtons, FALSE);
         EasyChatWordListView_StartFadeOut(view->wordList);
         command->state++;
         break;
@@ -619,7 +619,7 @@ void EasyChatAppView_Cmd_WordListToCategories(SysTask *task, EasyChatViewCommand
     case 4:
         if (EasyChatCategoryView_UpdateFadeIn(view->categories) && EasyChatMenuView_IsModeSwitchDone(view->menuView)) {
             EasyChatCategoryView_MoveCursor(view->categories, EasyChatApp_GetCategory(view->app));
-            EasyChatCategoryView_SetCursorVisible(view->categories, 1);
+            EasyChatCategoryView_SetCursorVisible(view->categories, TRUE);
             EasyChatAppView_EndCommand(command);
         }
         break;
@@ -632,8 +632,8 @@ void EasyChatAppView_Cmd_CloseWordList(SysTask *task, EasyChatViewCommand *comma
     switch (command->state) {
     case 0:
         EasyChatMenuView_ShowMainButtons(view->menuView);
-        EasyChatWordListView_SetCursorVisible(view->wordList, 0);
-        EasyChatPageButtonsView_SetEnabled(view->pageButtons, 0);
+        EasyChatWordListView_SetCursorVisible(view->wordList, FALSE);
+        EasyChatPageButtonsView_SetEnabled(view->pageButtons, FALSE);
         EasyChatWordListView_StartFadeOut(view->wordList);
         EasyChatSentenceView_SelectMessageWindow(view->sentence, 0);
         EasyChatSentenceView_PrintMessage(view->sentence, 0);
@@ -660,7 +660,7 @@ void EasyChatAppView_Cmd_CloseWordList(SysTask *task, EasyChatViewCommand *comma
     case 3:
         if (EasyChatCategoryView_UpdateDim(view->categories)) {
             EasyChatSentenceView_DrawSentence(view->sentence);
-            EasyChatSentenceView_SetCursorVisible(view->sentence, 1);
+            EasyChatSentenceView_SetCursorVisible(view->sentence, TRUE);
             EasyChatSentenceView_ShowSlider(view->sentence);
             EasyChatSentenceView_ActivateCursor(view->sentence);
             view->onMenu = FALSE;
@@ -676,8 +676,8 @@ void EasyChatAppView_Cmd_WordListToMenu(SysTask *task, EasyChatViewCommand *comm
     switch (command->state) {
     case 0:
         EasyChatMenuView_ShowMainButtons(view->menuView);
-        EasyChatWordListView_SetCursorVisible(view->wordList, 0);
-        EasyChatPageButtonsView_SetEnabled(view->pageButtons, 0);
+        EasyChatWordListView_SetCursorVisible(view->wordList, FALSE);
+        EasyChatPageButtonsView_SetEnabled(view->pageButtons, FALSE);
         EasyChatWordListView_StartFadeOut(view->wordList);
         command->state++;
         break;
@@ -697,8 +697,8 @@ void EasyChatAppView_Cmd_WordListToMenu(SysTask *task, EasyChatViewCommand *comm
     case 3:
         if (EasyChatCategoryView_UpdateDim(view->categories)) {
             EasyChatSentenceView_DrawSentence(view->sentence);
-            EasyChatSentenceView_SetCursorVisible(view->sentence, 0);
-            EasyChatMenuView_SetCursorVisible(view->menuView, 1);
+            EasyChatSentenceView_SetCursorVisible(view->sentence, FALSE);
+            EasyChatMenuView_SetCursorVisible(view->menuView, TRUE);
             EasyChatAppView_EndCommand(command);
         }
         break;
@@ -712,12 +712,12 @@ void EasyChatAppView_Cmd_MoveMenuCursor(SysTask *task, EasyChatViewCommand *comm
     if (cursor == 0) {
         view->onMenu = FALSE;
         EasyChatMenuView_SetCursorVisible(view->menuView, FALSE);
-        EasyChatSentenceView_SetCursorVisible(view->sentence, 1);
+        EasyChatSentenceView_SetCursorVisible(view->sentence, TRUE);
         EasyChatSentenceView_MoveCursorToSlot(view->sentence, EasyChatApp_GetWordSlot(view->app));
     } else {
         view->onMenu = TRUE;
-        EasyChatSentenceView_SetCursorVisible(view->sentence, 0);
-        EasyChatMenuView_SetCursorVisible(view->menuView, 1);
+        EasyChatSentenceView_SetCursorVisible(view->sentence, FALSE);
+        EasyChatMenuView_SetCursorVisible(view->menuView, TRUE);
         EasyChatMenuView_MoveCursor(view->menuView, cursor);
     }
     EasyChatAppView_EndCommand(command);
@@ -754,7 +754,7 @@ void EasyChatAppView_Cmd_ScrollWordList(SysTask *task, EasyChatViewCommand *comm
         break;
     case 1:
         if (EasyChatWordListView_UpdateScroll(view->wordList)) {
-            EasyChatPageButtonsView_SetEnabled(view->pageButtons, 1);
+            EasyChatPageButtonsView_SetEnabled(view->pageButtons, TRUE);
             EasyChatAppView_EndCommand(command);
         }
         break;
@@ -770,7 +770,7 @@ void EasyChatAppView_Cmd_ConfirmFinish(SysTask *task, EasyChatViewCommand *comma
     EasyChatAppView *view = command->view;
 
     EasyChatSentenceView_PrintMessage(view->sentence, 2);
-    EasyChatMenuView_DrawMainButtons(command->view->menuView, 0, 0);
+    EasyChatMenuView_DrawMainButtons(command->view->menuView, FALSE, FALSE);
     if (view->onMenu == TRUE) {
         EasyChatMenuView_DeactivateCursor(view->menuView);
     } else {
@@ -784,7 +784,7 @@ void EasyChatAppView_Cmd_ConfirmQuit(SysTask *task, EasyChatViewCommand *command
     EasyChatAppView *view = command->view;
 
     EasyChatSentenceView_PrintMessage(view->sentence, 3);
-    EasyChatMenuView_DrawMainButtons(command->view->menuView, 0, 0);
+    EasyChatMenuView_DrawMainButtons(command->view->menuView, FALSE, FALSE);
     if (view->onMenu == TRUE) {
         EasyChatMenuView_DeactivateCursor(view->menuView);
     } else {
@@ -811,10 +811,10 @@ void EasyChatAppView_Cmd_CloseYesNo(SysTask *task, EasyChatViewCommand *command)
 
     EasyChatSentenceView_PrintMessage(view->sentence, 0);
     if (view->onMenu == TRUE) {
-        EasyChatMenuView_DrawMainButtons(view->menuView, 1, 1);
+        EasyChatMenuView_DrawMainButtons(view->menuView, TRUE, TRUE);
         EasyChatMenuView_ActivateCursor(view->menuView);
     } else {
-        EasyChatMenuView_DrawMainButtons(view->menuView, 1, 0);
+        EasyChatMenuView_DrawMainButtons(view->menuView, TRUE, FALSE);
         EasyChatSentenceView_ActivateCursor(view->sentence);
     }
     EasyChatAppView_EndCommand(command);

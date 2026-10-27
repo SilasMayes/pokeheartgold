@@ -591,8 +591,8 @@ typedef struct WiFiPlazaLobbyClient {
     u8 matchCancelled;
     WiFiPlazaLobbyIdValueList specialVisitors;
     WiFiPlazaLobbySurveyData surveyData;
-    u32 surveySubmitState;
-    int initResult; // PPW_LobbyInitializeAsync
+    enum WiFiPlazaSurveySubmitState surveySubmitState;
+    enum PPWLobbyResult initResult;
 } WiFiPlazaLobbyClient;
 
 BOOL WiFiPlazaWork_HasError(WiFiPlazaWork *work);
@@ -982,9 +982,9 @@ extern const char *gWiFiPlazaLocationListKey;                                   
 extern void (*const gWiFiPlazaPlayerObjectActions[])(WiFiPlazaPlayerObject *object);       // per player action
 
 // lobby library (the rest of its interface is in ppw_lobby_work.h)
-int PPW_LobbyStartRecruit(WiFiPlazaLobbyMatch *match);
-int PPW_LobbyUpdateRecruitInfo(WiFiPlazaLobbyMatch *match);
-int PPW_LobbyStopRecruit(void);
+enum PPWLobbyResult PPW_LobbyStartRecruit(WiFiPlazaLobbyMatch *match);
+enum PPWLobbyResult PPW_LobbyUpdateRecruitInfo(WiFiPlazaLobbyMatch *match);
+enum PPWLobbyResult PPW_LobbyStopRecruit(void);
 
 BOOL WiFiPlazaRoom_Init(OverlayManager *manager, int *state);
 BOOL WiFiPlazaRoom_Main(OverlayManager *manager, int *state);

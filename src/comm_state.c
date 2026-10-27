@@ -399,7 +399,7 @@ static void CommState_EndWireless(void) {
             return;
         } else {
             Comm_EnableKeySync();
-            CommWireless_SetManagerEnded(1);
+            CommWireless_SetManagerEnded(TRUE);
         }
     }
     CommState_SetState(CommState_Idle, 0);

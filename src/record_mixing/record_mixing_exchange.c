@@ -2,6 +2,8 @@
 
 #include "global.h"
 
+#include "record_mixing/record_mixing_records.h"
+
 #include "assert.h"
 #include "communication_core.h"
 #include "communication_player_state.h"
@@ -20,25 +22,8 @@
 
 #define RECORD_MIXING_MAX_MEMBERS 5
 
-u32 RecordMixing_GetGroupRecordSize(SAV_FRIEND_GRP *friendGroup);
-FRIEND_GROUP *RecordMixing_GetGroupRecord(SAV_FRIEND_GRP *friendGroup);
-void RecordMixing_MergeGroups(int count, int localId, FRIEND_GROUP *groups, FRIEND_GROUP **received);
-void RecordMixing_MergeBlock23(void *saveBlock23, int numPlayers, int localId, void **received, void **received2);
 void SaveBlock23_ClearArraysAndReset(SaveBlock23 *data);
 void SaveBlock23_Reset(SaveBlock23 *data);
-
-
-u32 RecordMixing_FriendGroup_GetSize(SaveData *saveData);
-void *RecordMixing_FriendGroup_Load(SaveData *saveData, enum HeapID heapID, u32 size);
-void RecordMixing_FriendGroup_Merge(RecordMixingMergeArgs *args);
-u32 RecordMixing_Fashion_GetSize(SaveData *saveData);
-void *RecordMixing_Fashion_Load(SaveData *saveData, enum HeapID heapID, u32 size);
-void RecordMixing_Fashion_Merge(RecordMixingMergeArgs *args);
-void RecordMixing_Block23_Merge(RecordMixingMergeArgs *args);
-SaveRankingsEntry *RecordMixing_Rankings_Load(SaveData *saveData, enum HeapID heapID);
-void RecordMixing_Rankings_Merge(RecordMixingMergeArgs *args);
-void *RecordMixing_BattleRoomTrainer_Load(SaveData *saveData, enum HeapID heapID, u32 size);
-void RecordMixing_BattleRoomTrainer_Merge(RecordMixingMergeArgs *args);
 
 u32 RecordMixing_FriendGroup_GetSize(SaveData *saveData) {
     return RecordMixing_GetGroupRecordSize(Save_FriendGroup_Get(saveData));
@@ -77,7 +62,7 @@ void RecordMixing_Fashion_Merge(RecordMixingMergeArgs *args) {
 
 void RecordMixing_Block23_Merge(RecordMixingMergeArgs *args) {
     SaveBlock23 *data = Save_Block23_Get(args->saveData);
-    RecordMixing_MergeBlock23(data, args->numPlayers, args->localId, args->records, args->records2);
+    RecordMixing_MergeBlock23(data, args->numPlayers, args->localId, (RecordMixingEntry **)args->records, (RecordMixingEntry **)args->records2);
 }
 
 SaveRankingsEntry *RecordMixing_Rankings_Load(SaveData *saveData, enum HeapID heapID) {

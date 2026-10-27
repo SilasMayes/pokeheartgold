@@ -333,11 +333,11 @@ BOOL PlazaGameRoster_IsSpecialVisitor(const PlazaGameRoster *roster, u32 netId) 
     int index;
     if (netId >= PLAZA_GAME_MAX_PLAYERS) {
         GF_ASSERT(netId < PLAZA_GAME_MAX_PLAYERS);
-        return 0;
+        return FALSE;
     }
     index = roster->args->slots[netId];
     if (index == -1) {
-        return 0;
+        return FALSE;
     }
     return roster->args->specialVisitors[index];
 }
@@ -572,9 +572,9 @@ static BOOL PlazaGameMotion_Update(PlazaGameMotion *motion, int frame) {
     fx32 quadratic;
     if (frame >= motion->duration) {
         frame = motion->duration;
-        done = 1;
+        done = TRUE;
     } else {
-        done = 0;
+        done = FALSE;
     }
     linear = FX_Mul(motion->velocity, frame << FX32_SHIFT);
     quadratic = FX_Mul(motion->accel, (frame * frame) << FX32_SHIFT);
@@ -1300,7 +1300,7 @@ static BOOL PlazaGamePlayer_UpdateSlide(PlazaGamePlayer *player) {
         return done;
     } else {
         player->delay--;
-        return 0;
+        return FALSE;
     }
 }
 

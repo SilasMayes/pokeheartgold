@@ -4,6 +4,7 @@
 #include "heap.h"
 #include "mail_message.h"
 #include "sys_task_api.h"
+#include "task.h"
 #include "union_room_internal.h"
 #include "comm_wireless.h"
 #include "communication_core.h"
@@ -24,8 +25,7 @@ enum UnionRoomConnectRequest {
     UNION_ROOM_CONNECT_DRAWING,
 };
 
-// Communication core and Union Room message functions, declared with the types their call sites were matched
-// against.
+// Communication functions as this file calls them (the communication headers declare some of them with other types).
 BOOL Comm_SendParentCommand(int command, void *data, int size);
 void CommState_StartAlternateSearch(void);
 BOOL CommState_IsAlternateLinked(void);
@@ -41,8 +41,6 @@ BOOL Comm_GetConnectedChildren(void);
 BOOL CommState_ReportsErrors(void);
 void DrawingSessionLink_RegisterCommands(int context);
 void CommRandom_Init(void *random);
-SaveData *FieldSystem_GetSaveData(FieldSystem *fieldSystem);
-BOOL FieldSystem_TaskIsRunning(FieldSystem *fieldSystem);
 
 struct UnionRoom *UnionRoom_Start(FieldSystem *fieldSystem) {
     struct UnionRoom *unionRoom;

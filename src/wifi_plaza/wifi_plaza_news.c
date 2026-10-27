@@ -96,7 +96,7 @@ static BOOL (*const sWiFiPlazaNewsEventFormatters[])(WiFiPlazaNewsEvent *event, 
 
 void WiFiPlazaNews_SetOpenTime(WiFiPlazaNews *news, u32 *openTime) {
     news->openTime = *openTime;
-    news->isOpen = 1;
+    news->isOpen = TRUE;
 }
 
 void WiFiPlazaNews_AddPlayer(WiFiPlazaNews *news, int slot, int state, int flags) {

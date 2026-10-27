@@ -409,10 +409,10 @@ void WiFiPlazaEventEffect_UpdatePhase3(WiFiPlazaEventEffect *effect, u32 tick) {
             int active = 0;
 
             if ((i & 3) == gWiFiPlazaEventPhase3PropGroups[effect->step][0]) {
-                show = 1;
+                show = TRUE;
                 active = 1;
             } else if ((i & 3) == gWiFiPlazaEventPhase3PropGroups[effect->step][1]) {
-                show = 0;
+                show = FALSE;
                 active = 1;
             }
             if (active == 1) {

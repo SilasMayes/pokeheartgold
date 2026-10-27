@@ -27,9 +27,22 @@ typedef struct RecordMixingHandler {
     void (*merge)(RecordMixingMergeArgs *args);
 } RecordMixingHandler;
 
+struct SaveRankingsEntry;
+
 extern const RecordMixingHandler sRecordMixingHandlers[RECORD_MIXING_NUM_HANDLERS];
 
-void RecordMixing_BuildSendBuffer(SaveData *, void *);
-void RecordMixing_MergeReceivedRecords(SaveData *, u8 (*)[RECORD_MIXING_BUFFER_SIZE]);
+u32 RecordMixing_FriendGroup_GetSize(SaveData *saveData);
+void *RecordMixing_FriendGroup_Load(SaveData *saveData, enum HeapID heapID, u32 size);
+void RecordMixing_FriendGroup_Merge(RecordMixingMergeArgs *args);
+u32 RecordMixing_Fashion_GetSize(SaveData *saveData);
+void *RecordMixing_Fashion_Load(SaveData *saveData, enum HeapID heapID, u32 size);
+void RecordMixing_Fashion_Merge(RecordMixingMergeArgs *args);
+void RecordMixing_Block23_Merge(RecordMixingMergeArgs *args);
+struct SaveRankingsEntry *RecordMixing_Rankings_Load(SaveData *saveData, enum HeapID heapID);
+void RecordMixing_Rankings_Merge(RecordMixingMergeArgs *args);
+void *RecordMixing_BattleRoomTrainer_Load(SaveData *saveData, enum HeapID heapID, u32 size);
+void RecordMixing_BattleRoomTrainer_Merge(RecordMixingMergeArgs *args);
+void RecordMixing_BuildSendBuffer(SaveData *saveData, void *dest);
+void RecordMixing_MergeReceivedRecords(SaveData *saveData, u8 (*buffers)[RECORD_MIXING_BUFFER_SIZE]);
 
 #endif // POKEHEARTGOLD_RECORD_MIXING_EXCHANGE_H

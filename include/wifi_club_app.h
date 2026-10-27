@@ -433,7 +433,7 @@ s32 WifiClub_ShouldCloseProfile(WifiClubApp *app, s32 pressedButton);
 u8 WifiClub_GetSelectedRosterFriend(WifiClubApp *app);
 void WifiClub_DeselectRosterFriend(WifiClubApp *app);
 void WifiClub_ChangeProfilePage(WifiClubApp *app, s32 pressedButton);
-void WifiClub_RosterHitboxCallback(s32 index, enum HeapID event, WifiClubApp *app);
+void WifiClub_RosterHitboxCallback(u32 index, u32 event, void *arg);
 void WifiClub_LoadRosterGraphics(WifiClubApp *app, NARC *narc, enum HeapID heapID);
 void WifiClub_FreeRosterGraphics(WifiClubApp *app);
 void WifiClub_OffsetScreenTiles(NNSG2dScreenData *screenData, s32 tileOffset);

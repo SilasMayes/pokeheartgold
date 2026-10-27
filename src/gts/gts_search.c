@@ -634,7 +634,7 @@ static enum GtsAppState GtsSearch_WaitSearch(GtsApp *app) {
         case 7:
             app->searchResultCount = result;
             StopSE(SEQ_SE_DP_Z_SEARCH, 0);
-            Gts_ShowResultAvatars(app, result, 1);
+            Gts_ShowResultAvatars(app, result, TRUE);
             if (result == 0) {
                 GtsSearch_DrawResultsButton(app->bgConfig, &app->infoWindows[8], app->gtsMsgData, FALSE);
             } else {

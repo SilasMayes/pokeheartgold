@@ -22,36 +22,14 @@
 #include "sound_playback.h"
 #include "sys_task_api.h"
 #include "task.h"
+#include "union_room_internal.h"
+#include "union_room_talk.h"
 
-// The 10 players' records of the union room link state.
-typedef struct UnionRoomGroup {
-    u32 trainerIds[4];
-    u8 unk_10[8];
-    u8 members[4]; // 0 = empty, else 0x80 | sprite
-} UnionRoomGroup;
-
-typedef struct UnionRoomPlayer {
-    u32 id; // changes when the player is replaced
-    u8 unk_04[0xC];
-    PlayerProfile profile;
-    UnionRoomGroup group;
-} UnionRoomPlayer;
-
-typedef struct UnionRoomPlayerRecord {
-    u8 unk_00[0x50];
-    UnionRoomPlayer player;
-} UnionRoomPlayerRecord;
-
-FieldSystem *UnionRoom_GetFieldSystem(struct UnionRoom *unionRoom);
-UnionRoomPlayerRecord *UnionRoom_GetRecord(struct UnionRoom *unionRoom, int index);
 s32 CommState_GetJoinResult(void);
 s32 CommState_IsAlternateLinked(void);
 
-extern const u16 gUnionRoomGroupFirstSlot[];
-
-void UnionRoomObjects_ResetSlots(UnionRoomObjects *objects);
 static void UnionRoomObjects_Task(SysTask *task, void *data);
-static BOOL UnionRoomObjects_UpdateGroup(UnionRoomObjects *objects, int index, UnionRoomPlayerRecord *record, SavePalPad *palPad);
+static BOOL UnionRoomObjects_UpdateGroup(UnionRoomObjects *objects, int index, UnionRoomRecord *record, SavePalPad *palPad);
 static void UnionRoomSlots_SetRequest(UnionRoomSlot *slots, int index, u8 request);
 static void UnionRoomObjects_UpdatePlayers(UnionRoomObjects *objects, struct UnionRoom *unionRoom, MapObjectManager *mapObjectManager, SavePalPad *palPad);
 static void UnionRoomObjects_UpdateMapObjects(UnionRoomObjects *objects, MapObjectManager *mapObjectManager);
@@ -122,13 +100,13 @@ static void UnionRoomObjects_Task(SysTask *task, void *data) {
 
 #pragma opt_strength_reduction off
 
-static BOOL UnionRoomObjects_UpdateGroup(UnionRoomObjects *objects, int index, UnionRoomPlayerRecord *record, SavePalPad *palPad) {
+static BOOL UnionRoomObjects_UpdateGroup(UnionRoomObjects *objects, int index, UnionRoomRecord *record, SavePalPad *palPad) {
     BOOL ret = FALSE;
     int i;
     int k;
-    UnionRoomPlayer *player;
-    UnionRoomGroup *group;
-    u32 *trainerIds;
+    UnionRoomRecordInfo *info;
+    UnionRoomStatus *status;
+    u32 *memberIds;
 
     if (record == NULL) {
         k = gUnionRoomGroupFirstSlot[index];
@@ -138,9 +116,9 @@ static BOOL UnionRoomObjects_UpdateGroup(UnionRoomObjects *objects, int index, U
         }
         return FALSE;
     }
-    player = &record->player;
-    group = &player->group;
-    if (player->id != objects->slots[index].id) {
+    info = &record->info;
+    status = &info->status;
+    if (info->id != objects->slots[index].id) {
         k = gUnionRoomGroupFirstSlot[index];
         for (i = 0; i < 4; i++) {
             UnionRoomSlots_SetRequest(objects->slots, k, 3);
@@ -149,19 +127,19 @@ static BOOL UnionRoomObjects_UpdateGroup(UnionRoomObjects *objects, int index, U
         return FALSE;
     }
     k = gUnionRoomGroupFirstSlot[index];
-    trainerIds = group->trainerIds;
+    memberIds = status->memberIds;
     for (i = 0; i < 4; i++) {
         switch (objects->slots[k].state) {
         case UNION_ROOM_SLOT_HIDDEN:
-            if (group->members[i] != 0) {
+            if (status->memberAvatars[i] != 0) {
                 objects->slots[k].request = UNION_ROOM_SLOT_REQUEST_APPEAR_IN_GROUP;
-                objects->slots[k].sprite = group->members[i] & 0x7F;
-                objects->slots[k].friendship = PalPad_PlayerIdIsFriendOrMutual(palPad, *trainerIds);
+                objects->slots[k].sprite = status->memberAvatars[i] & 0x7F;
+                objects->slots[k].friendship = PalPad_PlayerIdIsFriendOrMutual(palPad, *memberIds);
                 ret = TRUE;
             }
             break;
         case UNION_ROOM_SLOT_SHOWN:
-            if (group->members[i] == 0) {
+            if (status->memberAvatars[i] == 0) {
                 UnionRoomSlots_SetRequest(objects->slots, k, 3);
             } else {
                 ret = TRUE;
@@ -172,7 +150,7 @@ static BOOL UnionRoomObjects_UpdateGroup(UnionRoomObjects *objects, int index, U
             break;
         }
         k++;
-        trainerIds++;
+        memberIds++;
     }
     return ret;
 }
@@ -187,14 +165,14 @@ static void UnionRoomObjects_UpdatePlayers(UnionRoomObjects *objects, struct Uni
     int i;
 
     for (i = 0; i < 10; i++) {
-        UnionRoomPlayerRecord *record = UnionRoom_GetRecord(unionRoom, i);
-        UnionRoomPlayer *player;
+        UnionRoomRecord *record = UnionRoom_GetRecord(unionRoom, i);
+        UnionRoomRecordInfo *info;
         PlayerProfile *profile;
         if (record != NULL) {
-            player = &record->player;
-            profile = &player->profile;
+            info = &record->info;
+            profile = &info->profile;
         } else {
-            player = NULL;
+            info = NULL;
             profile = NULL;
         }
 
@@ -203,7 +181,7 @@ static void UnionRoomObjects_UpdatePlayers(UnionRoomObjects *objects, struct Uni
             if (record != NULL) {
                 objects->slots[i].sprite = PlayerProfile_GetAvatar(profile);
                 objects->slots[i].friendship = PalPad_PlayerIdIsFriendOrMutual(palPad, PlayerProfile_GetTrainerID(profile));
-                objects->slots[i].id = player->id;
+                objects->slots[i].id = info->id;
                 if (UnionRoomObjects_UpdateGroup(objects, i, record, palPad)) {
                     objects->slots[i].request = UNION_ROOM_SLOT_REQUEST_APPEAR_IN_GROUP;
                 } else {
@@ -214,7 +192,7 @@ static void UnionRoomObjects_UpdatePlayers(UnionRoomObjects *objects, struct Uni
         case UNION_ROOM_SLOT_SHOWN:
             if (record == NULL) {
                 UnionRoomSlots_SetRequest(objects->slots, i, 3);
-            } else if (player->id != objects->slots[i].id) {
+            } else if (info->id != objects->slots[i].id) {
                 UnionRoomSlots_SetRequest(objects->slots, i, 3);
             }
             if (UnionRoomObjects_UpdateGroup(objects, i, record, palPad) && objects->slots[i].isWandering == 1) {
