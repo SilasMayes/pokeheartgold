@@ -150,7 +150,7 @@ void Comm_SetBattleSlot(int value, int slot);
 int Comm_GetBattleSlot(int slot);
 int Comm_IsWifiVoiceChatEnabled(void);
 void Comm_SetWifiContinuousSend(int value);
-void Comm_SetWifiContinuousSendAndMuteVoice(int value);
+void Comm_SetWifiContinuousSendAndMuteVoice(BOOL enabled);
 BOOL Comm_IsSendingMoveKeys(void);
 void Comm_SetLinkError(void);
 void Comm_StopFrameUpdate(void);

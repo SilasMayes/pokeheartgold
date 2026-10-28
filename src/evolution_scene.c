@@ -608,7 +608,7 @@ EvolutionTaskData *EvolutionScene_New(Party *party, Pokemon *mon, int species, O
     AddWindowParameterized(data->bgConfig, &data->menuWindows[1], GF_BG_LYR_SUB_2, 3, 14, 26, 2, 15, 132);
 
     data->pokepicManager = PokepicManager_Create(heapID);
-    data->pokepicAnimManager = PokepicAnimManager_New(heapID, 1, 0);
+    data->pokepicAnimManager = PokepicAnimManager_New(heapID, 1, FALSE);
     data->done = FALSE;
     data->timer = 2;
     data->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0197_bin, heapID);

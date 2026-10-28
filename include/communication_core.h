@@ -34,7 +34,7 @@ void CommState_SetUnionAppLinkMode(void);
 void CommState_SetUnionRoomLinkMode(void);
 BOOL Comm_ParentQueueHasCommand(int value);
 BOOL Comm_IsWifiConnected(void);
-void Comm_SetWifiContinuousSendAndMuteVoice(int value);
+void Comm_SetWifiContinuousSendAndMuteVoice(BOOL enabled);
 BOOL Comm_IsSendingMoveKeys(void);
 
 #endif // POKEHEARTGOLD_COMMUNICATION_CORE_H

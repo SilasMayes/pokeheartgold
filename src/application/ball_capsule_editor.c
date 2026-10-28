@@ -507,7 +507,7 @@ BOOL BallCapsuleEditor_Init(OverlayManager *manager, int *state) {
     BallCapsuleEditor_InitBgs(editor->display.bgConfig);
     BallCapsuleEditor_Alloc3DVram();
     editor->display.pokepicManager = PokepicManager_Create(HEAP_ID_52);
-    editor->pokepicAnim = PokepicAnimManager_New(HEAP_ID_52, 1, 0);
+    editor->pokepicAnim = PokepicAnimManager_New(HEAP_ID_52, 1, FALSE);
     i = Options_GetFrame(editor->args->options);
     BallCapsuleEditor_LoadMainBgGraphics(editor->display.bgConfig, editor->display.paletteData, i);
     BallCapsuleEditor_LoadSubBgGraphics(editor->display.bgConfig, editor->display.paletteData, i);

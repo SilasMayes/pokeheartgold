@@ -730,7 +730,7 @@ BOOL HatchEggApp_Init(OverlayManager *man, int *state) {
     app->gfx.narc = NARC_New(NARC_a_1_8_0, HEAP_ID_70);
     app->gfx.bgConfig = BgConfig_Alloc(HEAP_ID_70);
     GF_CreateVramTransferManager(64, HEAP_ID_70);
-    app->picManager = PokepicAnimManager_New(HEAP_ID_70, 1, 0);
+    app->picManager = PokepicAnimManager_New(HEAP_ID_70, 1, FALSE);
     PaletteData_SetAutoTransparent(app->gfx.paletteData = PaletteData_Init(HEAP_ID_70), TRUE);
     PaletteData_AllocBuffers(app->gfx.paletteData, PLTTBUF_MAIN_BG, 0x200, HEAP_ID_70);
     PaletteData_AllocBuffers(app->gfx.paletteData, PLTTBUF_MAIN_OBJ, 0x200, HEAP_ID_70);

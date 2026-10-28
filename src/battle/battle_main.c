@@ -344,7 +344,7 @@ void Battle_BattleInit(OverlayManager *manager) {
     battleSystem->bgScrollY = -51;
     BattleSystem_SetupTextFlags(battleSystem);
     BagCursor_Battle_Init(BattleSystem_GetBagCursor(battleSystem));
-    battleSystem->pokepicAnimManager = PokepicAnimManager_New(HEAP_ID_BATTLE, 4, 0);
+    battleSystem->pokepicAnimManager = PokepicAnimManager_New(HEAP_ID_BATTLE, 4, FALSE);
     battleSystem->cellTransferState = (void *)CreateCellTransferStateManager(4, HEAP_ID_BATTLE);
     if (battleSystem->battleSpecial & BATTLE_SPECIAL_RECORDING) {
         for (i = 0; i < BATTLER_MAX; i++) {
@@ -1200,7 +1200,7 @@ BOOL Battle_LinkMain(OverlayManager *man) {
     switch (work->state) {
     case LINK_STATE_INIT:
         SetMasterBrightnessNeutral(PM_LCD_TOP);
-        Comm_SetWifiContinuousSendAndMuteVoice(1);
+        Comm_SetWifiContinuousSendAndMuteVoice(TRUE);
         work->state++;
         break;
     case LINK_STATE_WAIT_FADE:
@@ -1395,7 +1395,7 @@ BOOL Battle_LinkMain(OverlayManager *man) {
         if (PaletteData_GetSelectedBuffersBitmask(work->palette) == 0) {
             done = TRUE;
             WaitingIcon_Delete(work->waitingIcon);
-            Comm_SetWifiContinuousSendAndMuteVoice(0);
+            Comm_SetWifiContinuousSendAndMuteVoice(FALSE);
         }
         break;
     default:

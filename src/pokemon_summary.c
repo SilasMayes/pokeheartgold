@@ -385,7 +385,7 @@ BOOL PokemonSummary_Init(OverlayManager *manager, int *state) {
     summary->args = OverlayManager_GetArgs(manager);
     summary->bgConfig = BgConfig_Alloc(HEAP_ID_19);
     *(u32 *)summary->args->monModified = 0;
-    summary->pokepicAnimManager = PokepicAnimManager_New(HEAP_ID_19, 1, 1);
+    summary->pokepicAnimManager = PokepicAnimManager_New(HEAP_ID_19, 1, TRUE);
     summary->pokepicAnimNarc = NARC_New(NARC_a_1_8_0, HEAP_ID_19);
     FontID_SetAccessDirect(0, HEAP_ID_19);
     GF_TouchpadResetSampling();

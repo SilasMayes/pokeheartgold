@@ -1423,10 +1423,10 @@ void Comm_SetWifiContinuousSend(int value) {
     }
 }
 
-void Comm_SetWifiContinuousSendAndMuteVoice(int value) {
-    Comm_SetWifiContinuousSend(value);
+void Comm_SetWifiContinuousSendAndMuteVoice(BOOL enabled) {
+    Comm_SetWifiContinuousSend(enabled);
     if (Comm_IsWifiLinkMode(CommState_GetLinkMode())) {
-        if (value != 0) {
+        if (enabled) {
             WifiConnection_SetVoiceUnmuted(0);
         } else {
             WifiConnection_SetVoiceUnmuted(1);

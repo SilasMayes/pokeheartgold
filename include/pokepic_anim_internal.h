@@ -8,7 +8,7 @@
 
 typedef struct PokepicAnimManager PokepicAnimManager;
 
-PokepicAnimManager *PokepicAnimManager_New(enum HeapID heapId, int count, int flag);
+PokepicAnimManager *PokepicAnimManager_New(enum HeapID heapId, int count, BOOL allowReverse);
 void PokepicAnimManager_Delete(PokepicAnimManager *mgr);
 u32 PokepicAnimManager_GetAnimState(PokepicAnimManager *mgr, u32 index);
 void PokepicAnimManager_StopAnim(PokepicAnimManager *mgr, u32 index);

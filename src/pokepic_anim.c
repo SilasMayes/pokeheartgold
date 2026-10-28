@@ -275,10 +275,10 @@ static const PokepicScriptAnimCmd sPokepicAnimCommands[] = {
     PokepicScriptAnimCmd_WaitPaletteFade,
 };
 
-PokepicAnimManager *PokepicAnimManager_New(enum HeapID heapId, int count, int flag) {
+PokepicAnimManager *PokepicAnimManager_New(enum HeapID heapId, int count, BOOL allowReverse) {
     PokepicAnimManager *mgr = Heap_Alloc(heapId, sizeof(PokepicAnimManager));
     int i;
-    mgr->allowReverse = flag;
+    mgr->allowReverse = allowReverse;
     mgr->count = count;
     mgr->heapId = heapId;
     mgr->anims = Heap_Alloc(heapId, count * sizeof(PokepicScriptAnim));
