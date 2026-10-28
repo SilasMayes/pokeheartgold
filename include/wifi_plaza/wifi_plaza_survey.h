@@ -1,6 +1,8 @@
 #ifndef POKEHEARTGOLD_WIFI_PLAZA_SURVEY_H
 #define POKEHEARTGOLD_WIFI_PLAZA_SURVEY_H
 
+#include "constants/wifi_plaza.h"
+
 #include "bg_window.h"
 #include "filesystem.h"
 #include "list_menu_2d.h"
@@ -128,7 +130,7 @@ extern void WiFiPlazaWork_SetSurveyTally(struct WiFiPlazaWork *lobby, const WiFi
 extern BOOL WiFiPlazaWork_GetSurveyTally(struct WiFiPlazaWork *lobby, WiFiPlazaSurveyTally *tally);
 extern BOOL WiFiPlaza_HasConnectionFailed(void);
 extern void WiFiPlazaLobbyClient_SubmitSurveyAnswer(int answer);
-extern int WiFiPlazaLobbyClient_GetSurveySubmitState(void);
+extern enum WiFiPlazaSurveySubmitState WiFiPlazaLobbyClient_GetSurveySubmitState(void);
 extern u32 WiFiPlazaLobbyClient_GetSurveyValue(int field);
 extern const u16 *WiFiPlazaLobbyClient_GetSurveyText(int field);
 extern u8 WiFiPlazaLobbyClient_GetSurveyFlag(int which, int index);

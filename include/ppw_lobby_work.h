@@ -20,10 +20,10 @@ typedef struct PPWLobbyCallbacks {
     void (*onMatchInfo)(int userId, void *info);
     void (*onMatchClosed)(int userId, const void *info);
     void (*onLobbyEvent)(u32 event);
-    void (*onOwnRecord)(int result, const void *record, u32 size);
-    BOOL (*onScheduleReceived)(int result, const void *schedule);
-    void (*onSpecialVisitorsReceived)(int result, const void *records, u32 count);
-    void (*onSurveyReceived)(int result, const void *questionnaire);
+    void (*onOwnRecord)(enum PPWLobbyWebResult result, const void *record, u32 size);
+    BOOL (*onScheduleReceived)(enum PPWLobbyWebResult result, const void *schedule);
+    void (*onSpecialVisitorsReceived)(enum PPWLobbyWebResult result, const void *records, u32 count);
+    void (*onSurveyReceived)(enum PPWLobbyWebResult result, const void *questionnaire);
     void (*onSurveySubmitted)(s32 result);
     void (*onExcessFlood)(int userId);
 } PPWLobbyCallbacks;

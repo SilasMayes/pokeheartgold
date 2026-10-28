@@ -286,7 +286,7 @@ void WiFiPlazaLobbyClient_OnLobbyEvent(u32 event) {
     gWiFiPlazaLobbyClient->callbacks.onLobbyEvent(event, gWiFiPlazaLobbyClient->callbackArg);
 }
 
-void WiFiPlazaLobbyClient_OnOwnRecord(int result, const void *data, u32 size) {
+void WiFiPlazaLobbyClient_OnOwnRecord(enum PPWLobbyWebResult result, const void *data, u32 size) {
     if (result != PPW_LOBBY_WEB_RESULT_SUCCESS) {
         gWiFiPlazaLobbyClient->ownRecordError = TRUE;
     } else {
@@ -294,7 +294,7 @@ void WiFiPlazaLobbyClient_OnOwnRecord(int result, const void *data, u32 size) {
     }
 }
 
-BOOL WiFiPlazaLobbyClient_OnScheduleReceived(int result, const void *schedule) {
+BOOL WiFiPlazaLobbyClient_OnScheduleReceived(enum PPWLobbyWebResult result, const void *schedule) {
     if (result == PPW_LOBBY_WEB_RESULT_SUCCESS) {
         return TRUE;
     }
@@ -302,7 +302,7 @@ BOOL WiFiPlazaLobbyClient_OnScheduleReceived(int result, const void *schedule) {
     return FALSE;
 }
 
-void WiFiPlazaLobbyClient_OnSpecialVisitorsReceived(int result, const void *data, u32 size) {
+void WiFiPlazaLobbyClient_OnSpecialVisitorsReceived(enum PPWLobbyWebResult result, const void *data, u32 size) {
     if (result == PPW_LOBBY_WEB_RESULT_SUCCESS) {
         WiFiPlazaLobbyIdValueList_Set(&gWiFiPlazaLobbyClient->specialVisitors, data, size);
     } else {
@@ -310,7 +310,7 @@ void WiFiPlazaLobbyClient_OnSpecialVisitorsReceived(int result, const void *data
     }
 }
 
-void WiFiPlazaLobbyClient_OnSurveyReceived(int result, const void *data) {
+void WiFiPlazaLobbyClient_OnSurveyReceived(enum PPWLobbyWebResult result, const void *data) {
     if (result == PPW_LOBBY_WEB_RESULT_SUCCESS) {
         WiFiPlazaLobbyClient_CopySurveyData(&gWiFiPlazaLobbyClient->surveyData, data);
     } else {

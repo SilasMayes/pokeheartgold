@@ -673,7 +673,7 @@ void WiFiPlazaLobbyClient_SubmitSurveyAnswer(int index) {
     gWiFiPlazaLobbyClient->surveySubmitState = WIFI_PLAZA_SURVEY_SUBMIT_SENT;
 }
 
-u32 WiFiPlazaLobbyClient_GetSurveySubmitState(void) {
+enum WiFiPlazaSurveySubmitState WiFiPlazaLobbyClient_GetSurveySubmitState(void) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     return gWiFiPlazaLobbyClient->surveySubmitState;
 }
@@ -757,7 +757,7 @@ void WiFiPlazaLobbyClient_EndMatch(void) {
 }
 
 // TRUE when a lobby library call succeeded (PPW_LOBBY_RESULT_SUCCESS).
-BOOL WiFiPlazaLobbyClient_CheckResult(int result) {
+BOOL WiFiPlazaLobbyClient_CheckResult(enum PPWLobbyResult result) {
     BOOL ret = TRUE;
     switch (result) {
     case PPW_LOBBY_RESULT_SUCCESS:
