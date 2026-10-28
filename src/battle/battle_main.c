@@ -96,7 +96,6 @@ typedef struct BattlerInitData {
 // The overlay 5 link battle screen arguments, held by the battle system while that screen runs.
 #define LINK_SCREEN_ARGS(battleSystem) ((LinkBattleScreenArgs *)(battleSystem)->linkScreenArgs)
 
-void Comm_SetWifiContinuousSendAndMuteVoice(int value);
 void CommState_FrameDummy(enum HeapID heapID, BgConfig *bgConfig);
 
 const BattleBgTemplateSet gBattleReinitBgTemplates = {

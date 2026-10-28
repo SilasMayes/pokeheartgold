@@ -6,6 +6,7 @@
 #include "link_synchronization_internal.h"
 
 #include "assert.h"
+#include "communication_core.h"
 #include "communication_packet_pool.h"
 #include "communication_player_state.h"
 #include "heap.h"
@@ -22,11 +23,6 @@ typedef struct CommCommandTable {
 } CommCommandTable;
 
 static CommCommandTable *sCommCommandTable;
-
-void Comm_SetLinkError(void);
-int Comm_GetLocalNetId(void);
-int Comm_IsNetIdConnected(u16 netId);
-void Comm_SendParentCommand(int command, int a1, int a2);
 
 static int ByteRing_Peek(ByteRing *ring, u8 *dst, int count);
 static s32 ByteRing_GetWritableSize(const ByteRing *ring);
@@ -587,7 +583,7 @@ static void CommCmd_RecvReady(int netId, int size, void *data, void *context) {
                 return;
             }
         }
-        Comm_SendParentCommand(14, 0, 0);
+        Comm_SendParentCommand(14, NULL, 0);
     }
 }
 

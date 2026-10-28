@@ -1,5 +1,6 @@
 #include "drawing_session_link_internal.h"
 
+#include "communication_core.h"
 #include "drawing_session.h"
 
 static void DrawingSessionLink_ReceivePictureChunk(int netId, int size, void *data, void *context);

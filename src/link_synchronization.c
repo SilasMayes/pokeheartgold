@@ -1,5 +1,7 @@
 #include "link_synchronization_internal.h"
 
+#include "communication_core.h"
+
 static LinkSync *sLinkSync;
 
 void LinkSync_Init(enum HeapID heap) {

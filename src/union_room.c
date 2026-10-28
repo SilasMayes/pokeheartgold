@@ -26,7 +26,6 @@ enum UnionRoomConnectRequest {
 };
 
 // Communication functions as this file calls them (the communication headers declare some of them with other types).
-BOOL Comm_SendParentCommand(int command, void *data, int size);
 void CommState_StartAlternateSearch(void);
 BOOL CommState_IsAlternateLinked(void);
 BOOL CommState_GetJoinResult(void);
@@ -37,7 +36,6 @@ void CommState_ReconnectToParent(int netId);
 void CommState_JoinRecordMixing(int netId);
 void CommState_JoinSpinTrade(int netId);
 void CommState_SetMaxEntries(int mode);
-BOOL Comm_GetConnectedChildren(void);
 BOOL CommState_ReportsErrors(void);
 void DrawingSessionLink_RegisterCommands(int context);
 void CommRandom_Init(void *random);

@@ -2,7 +2,6 @@
 #define POKEHEARTGOLD_RECORD_MIXING_LINK_INTERNAL_H
 #include "global.h"
 
-
 #include "communication_command.h"
 #include "field_comm_cmds.h"
 #include "wireless_manager.h"
@@ -12,6 +11,5 @@ typedef struct RecordMixingJoinRequest {
 int RecordMixing_GetMemberCount(void);
 u32 MATH_CountPopulation(u32);
 void CommState_SetMaxEntries(int);
-BOOL Comm_SendCommandNoCopy(int, void *, int);
 
 #endif

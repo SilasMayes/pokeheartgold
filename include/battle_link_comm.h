@@ -57,8 +57,6 @@ enum BattleLinkSync {
 };
 
 extern const BattleLinkCommand gBattleLinkCommands[];
-int Comm_GetSendBufferFreeSpace(void);
-BOOL Comm_SendCommandNoCopy(int command, void *data, int size);
 BOOL BattleController_RecvLinkData(BattleSystem *battle, u8 *data);
 void BattleLink_Start(BattleSystem *battle);
 void BattleLink_RegisterSetupCommands(BattleLinkWork *work);

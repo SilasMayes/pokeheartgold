@@ -506,8 +506,6 @@ extern const PokeathlonCourseCmd gPokeathlonCourseCmds[POKEATHLON_COURSE_CMD_JUI
 
 BOOL PokeathlonCourseObject_IsDrawn(PokeathlonCourseMonObject *object);
 
-BOOL Comm_SendCommandNoCopy(int command, void *data, int size);
-
 // Course flow, results, link commands
 void PokeathlonCourse_LoadPerformanceData(PokeathlonCourseData *course);
 PokeathlonCoursePerformance *PokeathlonCourse_GetPerformance(PokeathlonCourseData *course, int participant, int mon);

@@ -3,10 +3,22 @@
 
 #include "global.h"
 
-
 BOOL Comm_Update(void);
 BOOL Comm_IsNetIdConnected(u16 slot);
 BOOL Comm_SendCommand(int command, void *data, int size);
+BOOL Comm_SendCommandNoCopy(int command, void *data, int size);
+BOOL Comm_SendParentCommand(int command, void *data, int size);
+BOOL Comm_SendParentCommandNoCopy(int command, void *data, int size);
+BOOL Comm_SendFixedCommand(int command, void *data);
+BOOL Comm_SendFixedParentCommand(int command, void *data);
+BOOL Comm_IsParentQueueEmpty(void);
+BOOL Comm_IsChildQueueEmpty(void);
+int Comm_GetSendBufferFreeSpace(void);
+int Comm_GetConnectedChildren(void);
+void Comm_SetLinkError(void);
+BOOL Comm_IsTransferMode1(void);
+void Comm_RequestTransferMode0(void);
+void Comm_RequestTransferMode1(void);
 int Comm_CountConnected(void);
 BOOL Comm_IsActive(void);
 void Comm_EnableKeySync(void);

@@ -260,8 +260,6 @@ BOOL Comm_SyncedSave(SaveData *saveData, int unused, s32 *state);
 BOOL SpinTradeGroupApp_Init(OverlayManager *manager, int *state);
 BOOL SpinTradeGroupApp_Main(OverlayManager *man, int *state);
 BOOL SpinTradeGroupApp_Exit(OverlayManager *man, int *state);
-void SpinTradeGroup_HandleLinkEvent(SpinTradeGroupApp *app, int msg, int value);
-void SpinTradeGroup_HandleMemberEvent(SpinTradeGroupApp *app, int event, int netId);
 
 static const WindowTemplate sSpinTradeGroupYesNoWindowTemplate = {
     .bgId = GF_BG_LYR_MAIN_0,

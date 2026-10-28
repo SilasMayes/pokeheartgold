@@ -15,8 +15,6 @@ typedef struct LinkSync {
     u8 received[8];
     u8 resend, completed, requested, pending;
 } LinkSync;
-BOOL Comm_SendFixedParentCommand(int, void *);
-BOOL Comm_SendFixedCommand(int, void *);
 void LinkSync_Init(enum HeapID heap);
 void LinkSync_Free(void);
 BOOL LinkSync_Exists(void);

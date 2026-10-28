@@ -5,7 +5,7 @@
 // The frontier stat ids of each facility record, by challenge type (and level mode).
 // BUG: the switches have no default: an unknown challenge type returns an undefined stat id.
 
-u32 BattleFactory_GetWinStreakStat(u32 levelMode, u32 type) {
+u32 BattleFactory_GetWinStreakStat(u8 levelMode, u8 type) {
     u32 base;
 
     switch (type) {
@@ -26,7 +26,7 @@ u32 BattleFactory_GetWinStreakStat(u32 levelMode, u32 type) {
     return base + levelMode * 4;
 }
 
-u32 BattleFactory_GetBestStreakStat(u32 levelMode, u32 type) {
+u32 BattleFactory_GetBestStreakStat(u8 levelMode, u8 type) {
     u32 base;
 
     switch (type) {
@@ -47,7 +47,7 @@ u32 BattleFactory_GetBestStreakStat(u32 levelMode, u32 type) {
     return base + levelMode * 4;
 }
 
-u32 BattleFactory_GetTradeCountStat(u32 levelMode, u32 type) {
+u32 BattleFactory_GetTradeCountStat(u8 levelMode, u8 type) {
     u32 base;
 
     switch (type) {
@@ -68,7 +68,7 @@ u32 BattleFactory_GetTradeCountStat(u32 levelMode, u32 type) {
     return base + levelMode * 4;
 }
 
-u32 BattleFactory_GetBestTradeCountStat(u32 levelMode, u32 type) {
+u32 BattleFactory_GetBestTradeCountStat(u8 levelMode, u8 type) {
     u32 base;
 
     switch (type) {
@@ -110,7 +110,7 @@ u32 BattleHall_GetTypeRankStat(u32 type, u32 cell) {
     return base + cell / 2;
 }
 
-u32 BattleHall_GetWinStreakStat(u32 type) {
+u32 BattleHall_GetWinStreakStat(u8 type) {
     u32 ret;
 
     switch (type) {
@@ -152,7 +152,7 @@ u32 BattleHall_GetBestStreakStat(u32 type) {
     return ret;
 }
 
-u32 BattleHall_GetSpeciesStat(u32 type) {
+u32 BattleHall_GetSpeciesStat(u8 type) {
     u32 ret;
 
     switch (type) {
@@ -173,7 +173,7 @@ u32 BattleHall_GetSpeciesStat(u32 type) {
     return ret;
 }
 
-u32 BattleHall_GetSpeciesRecordsType(u32 type) {
+u32 BattleHall_GetSpeciesRecordsType(u8 type) {
     u32 ret;
 
     switch (type) {
@@ -195,7 +195,7 @@ u32 BattleHall_GetSpeciesRecordsType(u32 type) {
     return ret;
 }
 
-u32 BattleCastle_GetRankStat(u32 type, u32 index) {
+u32 BattleCastle_GetRankStat(u8 type, u8 index) {
     u32 base;
 
     switch (type) {
@@ -216,7 +216,7 @@ u32 BattleCastle_GetRankStat(u32 type, u32 index) {
     return base + index;
 }
 
-u32 BattleCastle_GetWinStreakStat(u32 type) {
+u32 BattleCastle_GetWinStreakStat(u8 type) {
     u32 ret;
 
     switch (type) {
@@ -237,7 +237,7 @@ u32 BattleCastle_GetWinStreakStat(u32 type) {
     return ret;
 }
 
-u32 BattleCastle_GetBestStreakStat(u32 type) {
+u32 BattleCastle_GetBestStreakStat(u8 type) {
     u32 ret;
 
     switch (type) {
@@ -300,7 +300,7 @@ u32 BattleCastle_GetSpentPointsStat(u32 type) {
     return ret;
 }
 
-u32 BattleCastle_GetBestStreakPointsStat(u32 type) {
+u32 BattleCastle_GetBestStreakPointsStat(u8 type) {
     u32 ret;
 
     switch (type) {

@@ -19,15 +19,6 @@ typedef struct SpinTradeJoinRequest {
 
 u32 MATH_CountPopulation(u32 value);
 void CommState_SetMaxEntries(int count);
-void SpinTradeGroup_HandleLinkEvent(struct SpinTradeGroupApp *app, int event, int value);
-void SpinTradeGroup_HandleMemberEvent(struct SpinTradeGroupApp *app, int event, int value);
-struct SpinTradeMember;
-void SpinTrade_ReceiveMemberSlot(struct SpinTradeApp *app, struct SpinTradeMember *member);
-void SpinTrade_ReceivePlayerCount(struct SpinTradeApp *app, u32 data);
-void SpinTrade_ReceiveJump(struct SpinTradeApp *app, u8 data);
-void SpinTrade_ReceiveSpinData(struct SpinTradeApp *app, const u16 *data);
-void SpinTrade_ReceiveTradeSlot(struct SpinTradeApp *app, int sender, u32 data);
-void SpinTrade_ReceiveResult(struct SpinTradeApp *app, const u16 *data);
 typedef void (*SpinTradeLinkPacketHandler)(int, int, void *, SpinTradeLink *);
 static BOOL SpinTradeLink_SendPacket(SpinTradeLink *link, u32 command, void *data, u32 size);
 static void SpinTradeLink_ReceivePacket(int sender, int size, void *data, void *context);

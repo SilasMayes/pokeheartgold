@@ -80,9 +80,6 @@ typedef struct DrawingSessionButtonSprite {
     u16 anim;
 } DrawingSessionButtonSprite;
 
-extern BOOL Comm_SendParentCommand(int command, const void *data, int size);
-extern int Comm_IsParentQueueEmpty(void);
-extern int Comm_IsChildQueueEmpty(void);
 extern void CommState_SetMaxEntries(int count);
 extern void DrawingSessionLink_RegisterCommands(DrawingSessionWork *work);
 

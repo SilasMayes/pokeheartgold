@@ -19,6 +19,7 @@
 #include "communication_player_state.h"
 #include "filesystem_files_def.h"
 #include "frontier_save_access.h"
+#include "frontier_stat_ids.h"
 #include "heap.h"
 #include "message_format.h"
 #include "msgdata.h"
@@ -33,13 +34,6 @@
 
 // The Battle Castle's script data: the challenge (party, opponents, saved records),
 // the castle points and their windows.
-
-u32 BattleCastle_GetRankStat(u8 type, u8 slot);
-u32 BattleCastle_GetWinStreakStat(u32 type);
-u32 BattleCastle_GetBestStreakStat(u32 type);
-u32 BattleCastle_GetPointsStat(u32 type);
-u32 BattleCastle_GetSpentPointsStat(u32 type);
-u32 BattleCastle_GetBestStreakPointsStat(u32 type);
 
 void FrontierTrainer_GenerateMons(int count, u16 trainerId, u16 partnerTrainerId, u16 *setIds, FrontierMon *mons, u8 *ivs, u32 *personalities, u8 hasPartner);
 

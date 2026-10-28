@@ -26,7 +26,6 @@
 // and chat message broadcast in the player's beacon, and the language greeting learned from a foreign player.
 
 void CommState_SetLinkMode13RequestMode0(void);
-BOOL Comm_SendCommandNoCopy(int command, void *data, int size);
 
 int UnionRoom_TrySendTalkCancel(struct UnionRoom *unionRoom, int ret);
 static int UnionRoom_GetGroupOfMemberSlot(int slot);

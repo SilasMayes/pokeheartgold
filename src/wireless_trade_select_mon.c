@@ -91,7 +91,6 @@
 void WirelessTrade_RegisterCommands(FieldSystem *fieldSystem);
 void WirelessTrade_SetWork(FieldSystem *fieldSystem, WirelessTradeSelectMon *work);
 
-int Comm_SendCommandNoCopy(int command, void *data, int size);
 void CommState_FrameDummy(enum HeapID heapID, BgConfig *bgConfig);
 void Comm_InitSyncedSave(s32 *state);
 s32 Comm_SyncedSave(SaveData *saveData, s32 unused, s32 *state);

@@ -41,9 +41,6 @@ enum ColosseumTrainerCardState {
     COLOSSEUM_CARD_STATE_FINISH,
 };
 
-BOOL Comm_SendParentCommand(int command, void *data, int size);
-BOOL Comm_SendParentCommandNoCopy(int command, void *data, u32 size);
-BOOL Comm_SendCommandNoCopy(int command, void *data, u32 size);
 void CommState_SetSelectedOrder(u8 *selectedOrder);
 void CommPlayerManager_ResyncLocalPlayer(void);
 void CommPlayerManager_FaceRoomCenter(void);

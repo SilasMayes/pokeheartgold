@@ -52,6 +52,8 @@ typedef struct SpinTradeArgs {
     struct SpinTradeGroupApp *groupApp;
 } SpinTradeArgs;
 
+struct SpinTradeMember;
+
 typedef struct SpinTradeLinkPacket {
     u32 command;
     u8 data[20];
@@ -78,5 +80,15 @@ BOOL SpinTradeLink_SendCommand(SpinTradeLink *link, u32 command, void *data, u32
 void *SpinTradeLink_GetReceivedParty(SpinTradeLink *link, int sender);
 void SpinTradeLink_Close(SpinTradeLink *link);
 void SpinTradeLink_Free(SpinTradeLink *link);
+
+// The trade apps' handlers of the received link commands
+void SpinTrade_ReceiveJump(struct SpinTradeApp *app, u8 jump);
+void SpinTrade_ReceiveSpinData(struct SpinTradeApp *app, const u16 *data);
+void SpinTrade_ReceiveMemberSlot(struct SpinTradeApp *app, struct SpinTradeMember *member);
+void SpinTrade_ReceivePlayerCount(struct SpinTradeApp *app, u32 count);
+void SpinTrade_ReceiveTradeSlot(struct SpinTradeApp *app, int netId, u32 slot);
+void SpinTrade_ReceiveResult(struct SpinTradeApp *app, const u16 *src);
+void SpinTradeGroup_HandleLinkEvent(struct SpinTradeGroupApp *app, int msg, int value);
+void SpinTradeGroup_HandleMemberEvent(struct SpinTradeGroupApp *app, int event, int netId);
 
 #endif
