@@ -160,18 +160,18 @@ static void WobbuffetPopBalloon_ToVtx16(s32 x, s32 y, s16 *outX, s16 *outY) {
     *outY = ty + 0x800;
 }
 
-int WobbuffetPopBalloon_TryGrabHandle(WobbuffetPopBalloon *balloon) {
+BOOL WobbuffetPopBalloon_TryGrabHandle(WobbuffetPopBalloon *balloon) {
     s32 idx;
     s32 y;
     s32 mid;
 
     if (balloon->grabbing == 1 || balloon->touch[3] == 0) {
-        return 0;
+        return FALSE;
     }
     idx = balloon->selection;
     y = gWobbuffetPopBalloonTouchAreas[idx].top + (balloon->pushDepth >> 12);
     if (balloon->touch[0] < gWobbuffetPopBalloonTouchAreas[idx].left || balloon->touch[0] > gWobbuffetPopBalloonTouchAreas[idx].right || balloon->touch[1] < y || balloon->touch[1] > gWobbuffetPopBalloonTouchAreas[idx].bottom) {
-        return 0;
+        return FALSE;
     }
     balloon->grabbing = 1;
     balloon->grabX = balloon->touch[0];
@@ -180,10 +180,10 @@ int WobbuffetPopBalloon_TryGrabHandle(WobbuffetPopBalloon *balloon) {
     mid = balloon->vertices[0].topRightY + (balloon->vertices[0].topLeftY - balloon->vertices[0].topRightY) / 2;
     balloon->pushDepth = -mid;
     balloon->grabAreaPercent = WobbuffetPopBalloon_CalcMeshAreaPercent(balloon);
-    return 1;
+    return TRUE;
 }
 
-int WobbuffetPopBalloon_UpdateDrag(WobbuffetPopBalloon *balloon) {
+BOOL WobbuffetPopBalloon_UpdateDrag(WobbuffetPopBalloon *balloon) {
     s32 mode = 0;
     s32 amount;
     s32 result;
@@ -194,11 +194,11 @@ int WobbuffetPopBalloon_UpdateDrag(WobbuffetPopBalloon *balloon) {
 
         if (current < previous) {
             balloon->playingPumpSe = 0;
-            return 0;
+            return FALSE;
         }
         if (current == previous) {
             balloon->playingPumpSe = 0;
-            return 1;
+            return TRUE;
         }
         if (previous != -1 && current > previous && !IsSEPlaying(SEQ_SE_PL_BALLOON02)) {
             PlaySE(SEQ_SE_PL_BALLOON02);
@@ -219,7 +219,7 @@ int WobbuffetPopBalloon_UpdateDrag(WobbuffetPopBalloon *balloon) {
         }
     }
     balloon->pushDepth = -(balloon->vertices[0].topRightY + (balloon->vertices[0].topLeftY - balloon->vertices[0].topRightY) / 2);
-    return 1;
+    return TRUE;
 }
 
 static s32 WobbuffetPopBalloon_DeformMesh(WobbuffetPopBalloon *balloon, s32 mode, fx32 amount) {

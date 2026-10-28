@@ -267,7 +267,7 @@ void HatchEggApp_LoadWindowGfx(BgConfig *bgConfig, PaletteData *paletteData, u32
     PaletteData_LoadNarc(paletteData, NARC_graphic_font, 8, HEAP_ID_70, PLTTBUF_MAIN_BG, 0x20, 0xE0);
 }
 
-void HatchEggApp_CreateMessageWindow(BgConfig *bgConfig, Window *window, int bgId, int x, int y, int width, int height, int baseTile, int paletteNum) {
+void HatchEggApp_CreateMessageWindow(BgConfig *bgConfig, Window *window, enum GFBgLayer bgId, int x, int y, int width, int height, int baseTile, int paletteNum) {
     InitWindow(window);
     AddWindowParameterized(bgConfig, window, bgId, x, y, width, height, paletteNum, baseTile);
     DrawFrameAndWindow2(window, TRUE, 0x14, 0xC);
@@ -476,7 +476,8 @@ static BOOL HatchEggApp_StepEggShake(HatchEggApp *app, int pattern) {
     return TRUE;
 }
 
-// Returns 2 when the shake has ended, 1 on its sixth frame (the hit) and 0 otherwise.
+// Returns HATCH_EGG_SHAKE_ENDED when the shake has ended, HATCH_EGG_SHAKE_HIT on its sixth frame and
+// HATCH_EGG_SHAKE_RUNNING otherwise.
 enum HatchEggShakeResult HatchEggApp_UpdateEggShake(HatchEggApp *app, int pattern) {
     if (!HatchEggApp_StepEggShake(app, pattern)) {
         return HATCH_EGG_SHAKE_ENDED;

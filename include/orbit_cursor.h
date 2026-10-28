@@ -12,7 +12,7 @@
 typedef struct OrbitCursorArgs {
     int count;
     enum HeapID heapId;
-    int resBase;
+    NNS_G2D_VRAM_TYPE vram;
     int fixedPalette;
     fx32 yOffset;
 } OrbitCursorArgs;
@@ -34,7 +34,7 @@ typedef struct OrbitCursor {
     PaletteData *plttData;
     int count;
     enum HeapID heapId;
-    int resBase;
+    NNS_G2D_VRAM_TYPE vram;
     int fixedPalette;
     fx32 yOffset;
     OrbitCursorSprite sprites[12];

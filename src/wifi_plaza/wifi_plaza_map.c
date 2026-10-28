@@ -100,7 +100,7 @@ u32 WiFiPlazaMap_GetWidth(void) {
     return 0x23;
 }
 
-s32 WiFiPlazaMap_GetCollision(WiFiPlazaMap *map, u16 x, u16 y) {
+BOOL WiFiPlazaMap_GetCollision(WiFiPlazaMap *map, u16 x, u16 y) {
     return Field2DMap_IsBlocked(map->grid, x, y);
 }
 

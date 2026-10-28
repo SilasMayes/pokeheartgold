@@ -94,7 +94,7 @@ void HatchEggApp_Draw3D(void);
 void HatchEggApp_FadeIn(void);
 void HatchEggApp_FadeOut(void);
 void HatchEggApp_LoadWindowGfx(BgConfig *bgConfig, PaletteData *paletteData, u32 frame);
-void HatchEggApp_CreateMessageWindow(BgConfig *bgConfig, Window *window, int bgId, int x, int y, int width, int height, int baseTile, int paletteNum);
+void HatchEggApp_CreateMessageWindow(BgConfig *bgConfig, Window *window, enum GFBgLayer bgId, int x, int y, int width, int height, int baseTile, int paletteNum);
 int HatchEggApp_PrintMessage(Window *window, int msgId, Pokemon *mon, int textSpeed);
 void HatchEggApp_RemoveMessageWindow(Window *window);
 void HatchEggApp_LoadBackground(BgConfig *bgConfig, PaletteData *paletteData);

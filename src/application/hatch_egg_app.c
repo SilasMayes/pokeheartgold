@@ -483,7 +483,7 @@ static BOOL HatchEggApp_ShakeEggTwice(HatchEggApp *app) {
         app->subState++;
         break;
     case 1: {
-        u32 status = HatchEggApp_UpdateEggShake(app, 1);
+        enum HatchEggShakeResult status = HatchEggApp_UpdateEggShake(app, 1);
         if (status == HATCH_EGG_SHAKE_HIT) {
             PlaySE(SEQ_SE_DP_EGG01);
             ManagedSprite_SetAnimationFrame(app->eggSprite, 3);
@@ -511,7 +511,7 @@ static BOOL HatchEggApp_ShakeEggCrack(HatchEggApp *app) {
         }
         break;
     case 1: {
-        u32 status = HatchEggApp_UpdateEggShake(app, 2);
+        enum HatchEggShakeResult status = HatchEggApp_UpdateEggShake(app, 2);
         if (status == HATCH_EGG_SHAKE_HIT) {
             PlaySE(SEQ_SE_DP_EGG01);
             ManagedSprite_SetAnimationFrame(app->eggSprite, 4);
@@ -538,7 +538,7 @@ static BOOL HatchEggApp_HatchEgg(HatchEggApp *app) {
         s16 x;
     } pos;
     int done;
-    u32 status;
+    enum HatchEggShakeResult status;
     u32 plttOffset;
     switch (app->subState) {
     case 0:

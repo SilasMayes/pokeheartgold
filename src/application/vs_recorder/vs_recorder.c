@@ -235,19 +235,19 @@ void VsRecorder_InitResources(VsRecorderWork *work) {
     }
     args.count = 12;
     args.heapId = HEAP_ID_109;
-    args.resBase = 1;
+    args.vram = NNS_G2D_VRAM_TYPE_2DMAIN;
     args.fixedPalette = work->mode;
     args.yOffset = FX32_CONST(256);
     work->orbitCursors[0] = OrbitCursor_New(args, work->spriteSystem, work->spriteManager, work->plttData);
     OrbitCursor_Start(work->orbitCursors[0], work->colorScheme);
-    OrbitCursor_SetActive(work->orbitCursors[0], 0);
-    OrbitCursor_SetVisible(work->orbitCursors[0], 0);
-    args.resBase = 2;
+    OrbitCursor_SetActive(work->orbitCursors[0], FALSE);
+    OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
+    args.vram = NNS_G2D_VRAM_TYPE_2DSUB;
     args.yOffset = FX32_CONST(256);
     work->orbitCursors[1] = OrbitCursor_New(args, work->spriteSystem, work->spriteManager, work->plttData);
     OrbitCursor_Start(work->orbitCursors[1], work->colorScheme);
-    OrbitCursor_SetActive(work->orbitCursors[1], 0);
-    OrbitCursor_SetVisible(work->orbitCursors[1], 0);
+    OrbitCursor_SetActive(work->orbitCursors[1], FALSE);
+    OrbitCursor_SetVisible(work->orbitCursors[1], FALSE);
     work->fontSystem = FontSystem_NewInit(20, HEAP_ID_109);
     work->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0013_bin, HEAP_ID_109);
     work->recordMsgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0026_bin, HEAP_ID_109);

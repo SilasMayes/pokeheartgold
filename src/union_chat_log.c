@@ -9,6 +9,7 @@
 
 #include "comm_wireless.h"
 #include "dialog_box.h"
+#include "field/bottom_screen_app.h"
 #include "filesystem_files_def.h"
 #include "font.h"
 #include "gf_gfx_loader.h"
@@ -166,7 +167,7 @@ static void UnionChatLog_PrintMenuButton(UnionChatLogData *data) {
 }
 
 static void UnionChatLog_Update(UnionChatLogData *data, BgConfig *bgConfig) {
-    if ((gSystem.newKeys & PAD_BUTTON_X) && FieldSystem_GetBottomScreenAppState(data->fieldSystem) == TRUE) {
+    if ((gSystem.newKeys & PAD_BUTTON_X) && FieldSystem_GetBottomScreenAppState(data->fieldSystem) == BOTTOM_SCREEN_APP_STATE_RUNNING) {
         data->state = UNION_CHAT_LOG_STATE_CLOSE;
     }
     UnionChatLog_UpdateTouchRepeat(data);
@@ -195,7 +196,7 @@ static void UnionChatLog_Task(SysTask *task, void *taskData) {
         SpriteList_RenderAndAnimateSprites(data->spriteList);
         break;
     case UNION_CHAT_LOG_STATE_CLOSE:
-        FieldSystem_SwitchBottomScreenApp(fieldSystem, 0, NULL);
+        FieldSystem_SwitchBottomScreenApp(fieldSystem, BOTTOM_SCREEN_APP_TOUCHSCREEN_MENU, NULL);
         data->state = UNION_CHAT_LOG_STATE_CLOSING;
         break;
     case UNION_CHAT_LOG_STATE_CLOSING:
@@ -518,7 +519,7 @@ static int UnionChatLog_HandleTouchButtons(UnionChatLogData *data) {
             data->touchedButton = hit - 2;
             break;
         case 6:
-            if (gSystem.touchNew && FieldSystem_GetBottomScreenAppState(data->fieldSystem) == TRUE) {
+            if (gSystem.touchNew && FieldSystem_GetBottomScreenAppState(data->fieldSystem) == BOTTOM_SCREEN_APP_STATE_RUNNING) {
                 PlaySE(SEQ_SE_DP_WIN_OPEN);
                 data->state = UNION_CHAT_LOG_STATE_CLOSE;
             }

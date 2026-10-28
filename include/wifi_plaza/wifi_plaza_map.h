@@ -20,7 +20,7 @@ BOOL WiFiPlazaMap_IsModelInstanceInView(ModelResource *model, ModelInstance *ins
 WiFiPlazaMap *WiFiPlazaMap_Create(enum HeapID heapID);
 void WiFiPlazaMap_Delete(WiFiPlazaMap *map);
 u32 WiFiPlazaMap_GetWidth(void);
-s32 WiFiPlazaMap_GetCollision(WiFiPlazaMap *map, u16 x, u16 y);
+BOOL WiFiPlazaMap_GetCollision(WiFiPlazaMap *map, u16 x, u16 y);
 u32 WiFiPlazaMap_GetTileTag(WiFiPlazaMap *map, u16 x, u16 y);
 u32 WiFiPlazaMap_GetTileAttr(WiFiPlazaMap *map, u16 x, u16 y);
 BOOL WiFiPlazaMap_FindTileTag(WiFiPlazaMap *map, int tag, u16 *outX, u16 *outY, u32 ordinal);

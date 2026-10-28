@@ -62,7 +62,7 @@ static const LegendaryCinematicCamera sLugiaCinematicCamera = {
     .farClip = FX32_CONST(1700),
 };
 
-int ScriptCinematic_Lugia(LegendaryCinematic *cinematic) {
+BOOL ScriptCinematic_Lugia(LegendaryCinematic *cinematic) {
     cinematic->state = sScriptCinematicSubs_Lugia[cinematic->state](cinematic);
     if (cinematic->state == LUGIA_CINEMATIC_DONE) {
         return FALSE;

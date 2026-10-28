@@ -21,7 +21,7 @@ OrbitCursor *OrbitCursor_New(OrbitCursorArgs args, SpriteSystem *spriteSys, Spri
 
     motion->count = args.count;
     motion->heapId = args.heapId;
-    motion->resBase = args.resBase;
+    motion->vram = args.vram;
     motion->fixedPalette = args.fixedPalette;
     motion->yOffset = args.yOffset;
     motion->spriteSys = spriteSys;
@@ -143,7 +143,7 @@ void OrbitCursor_ReloadPalette(OrbitCursor *cursor, int palette) {
 }
 
 void OrbitCursor_LoadResources(OrbitCursor *cursor, int palette) {
-    int vram = cursor->resBase;
+    NNS_G2D_VRAM_TYPE vram = cursor->vram;
     NARC *narc;
     SpriteSystem *spriteSys = cursor->spriteSys;
     int resId = vram + 0x56CE;
@@ -181,14 +181,14 @@ void OrbitCursor_CreateSprites(OrbitCursor *cursor) {
     tmpl.z = 0;
     tmpl.animation = 0;
     tmpl.drawPriority = 0;
-    tmpl.vram = (NNS_G2D_VRAM_TYPE)cursor->resBase;
+    tmpl.vram = cursor->vram;
     tmpl.bgPriority = 0;
     tmpl.vramTransfer = 0;
     tmpl.pal = 0;
-    tmpl.resIdList[GF_GFX_RES_TYPE_CHAR] = cursor->resBase + 0x56CE;
-    tmpl.resIdList[GF_GFX_RES_TYPE_PLTT] = cursor->resBase + 0x56CE;
-    tmpl.resIdList[GF_GFX_RES_TYPE_CELL] = cursor->resBase + 0x56CE;
-    tmpl.resIdList[GF_GFX_RES_TYPE_ANIM] = cursor->resBase + 0x56CE;
+    tmpl.resIdList[GF_GFX_RES_TYPE_CHAR] = cursor->vram + 0x56CE;
+    tmpl.resIdList[GF_GFX_RES_TYPE_PLTT] = cursor->vram + 0x56CE;
+    tmpl.resIdList[GF_GFX_RES_TYPE_CELL] = cursor->vram + 0x56CE;
+    tmpl.resIdList[GF_GFX_RES_TYPE_ANIM] = cursor->vram + 0x56CE;
     tmpl.resIdList[GF_GFX_RES_TYPE_MCEL] = -1;
     tmpl.resIdList[GF_GFX_RES_TYPE_MANM] = -1;
 
@@ -202,9 +202,9 @@ void OrbitCursor_CreateSprites(OrbitCursor *cursor) {
 void OrbitCursor_DeleteSprites(OrbitCursor *cursor) {
     int i;
     for (i = 0; i < cursor->count; i++) {
-        SpriteManager_UnloadCharObjById(cursor->spriteMan, cursor->resBase + 0x56CE);
-        SpriteManager_UnloadCellObjById(cursor->spriteMan, cursor->resBase + 0x56CE);
-        SpriteManager_UnloadAnimObjById(cursor->spriteMan, cursor->resBase + 0x56CE);
+        SpriteManager_UnloadCharObjById(cursor->spriteMan, cursor->vram + 0x56CE);
+        SpriteManager_UnloadCellObjById(cursor->spriteMan, cursor->vram + 0x56CE);
+        SpriteManager_UnloadAnimObjById(cursor->spriteMan, cursor->vram + 0x56CE);
         Sprite_DeleteAndFreeResources(cursor->sprites[i].sprite);
     }
 }
