@@ -209,7 +209,7 @@ typedef struct PokewalkerApp {
     int courseId;
     PokepicTemplate monPicTemplate;
     u8 monSpriteBuffer[0xC80]; // 80x80 4bpp
-    void *strollPartyMon;
+    Pokemon *strollPartyMon;
     BoxPokemon *strollMon;
     Bag *bag;
     PlayerProfile *profile;

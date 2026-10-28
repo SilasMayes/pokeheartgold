@@ -31,7 +31,7 @@ void CommState_FreeWfcSession(void);
 // 20001 response: list of dress-up photos
 typedef struct GlobalTerminalNetDressUpEntry {
     u8 unk_00[12];
-    u8 photo[0xEC - 12];
+    GlobalTerminalNetDressUpUpload photo;
 } GlobalTerminalNetDressUpEntry;
 
 typedef struct GlobalTerminalNetDressUpList {
@@ -47,7 +47,7 @@ typedef struct GlobalTerminalNetDressUpListResponse {
 // 21001 response: list of boxes
 typedef struct GlobalTerminalNetBoxEntry {
     u8 unk_00[16];
-    u8 box[0x21C];
+    GlobalTerminalNetBoxUpload box;
 } GlobalTerminalNetBoxEntry;
 
 typedef struct GlobalTerminalNetBoxListResponse {
@@ -56,12 +56,22 @@ typedef struct GlobalTerminalNetBoxListResponse {
     GlobalTerminalNetBoxEntry entries[1];
 } GlobalTerminalNetBoxListResponse;
 
-// 22000 / 22001 responses
-typedef struct GlobalTerminalNetBlockResponse {
+// 22000 response: the records of this week's rankings
+typedef struct GlobalTerminalNetRankingsHeaderResponse {
     u32 unk_00;
-    u32 data;
-    u32 unk_08;
-} GlobalTerminalNetBlockResponse;
+    u8 recordIds[4];
+} GlobalTerminalNetRankingsHeaderResponse;
+
+// 22001 response: last week's results, then this week's standings
+typedef struct GlobalTerminalNetRankings {
+    GlobalTerminalNetRankingResults results[3];
+    GlobalTerminalNetRankingStandings standings[3];
+} GlobalTerminalNetRankings;
+
+typedef struct GlobalTerminalNetRankingsResponse {
+    u32 unk_00;
+    GlobalTerminalNetRankings rankings;
+} GlobalTerminalNetRankingsResponse;
 
 // 23000 response
 typedef struct GlobalTerminalNetVideoNumberResponse {
@@ -108,7 +118,7 @@ enum GlobalTerminalNetStepResult {
 
 static void GlobalTerminalNet_PackDressUpPhoto(SaveData *saveData, const GlobalTerminalNetDressUpRecord *record, GlobalTerminalNetDressUpForm *form);
 static void GlobalTerminalNet_SealBoxData(SaveData *saveData, GlobalTerminalNetBoxForm *form, int value);
-static void GlobalTerminalNet_SetRequestHeader(SaveData *saveData, const void *src, void *dst);
+static void GlobalTerminalNet_SetRequestHeader(SaveData *saveData, const FrontierCard *src, void *dst);
 static int GlobalTerminalNet_SeqStopClient(GlobalTerminalNet *net, void *stepWork);
 static int GlobalTerminalNet_SeqDisconnect(GlobalTerminalNet *net, void *stepWork);
 static int GlobalTerminalNet_SeqShowError(GlobalTerminalNet *net, void *stepWork);
@@ -196,12 +206,12 @@ static void GlobalTerminalNet_SealBoxData(SaveData *saveData, GlobalTerminalNetB
     form->crc = SaveArray_CalcCRC16(saveData, form, offsetof(GlobalTerminalNetBoxForm, crc));
 }
 
-static void GlobalTerminalNet_SetRequestHeader(SaveData *saveData, const void *src, void *dst) {
+static void GlobalTerminalNet_SetRequestHeader(SaveData *saveData, const FrontierCard *src, void *dst) {
     MI_CpuFill8(dst, 0, 0x80);
     MI_CpuCopy8(src, dst, 0x80);
 }
 
-void GlobalTerminalNet_CopyRequestHeader(const void *src, void *dst) {
+void GlobalTerminalNet_CopyRequestHeader(const void *src, FrontierCard *dst) {
     MI_CpuCopy8(src, dst, 0x80);
 }
 
@@ -280,7 +290,7 @@ static int GlobalTerminalNet_SeqWaitButton(GlobalTerminalNet *net, void *stepWor
     return GLOBAL_TERMINAL_NET_STEP_WAIT;
 }
 
-BOOL GlobalTerminalNet_RequestDressUpUpload(GlobalTerminalNet *net, const void *header, const GlobalTerminalNetDressUpRecord *record) {
+BOOL GlobalTerminalNet_RequestDressUpUpload(GlobalTerminalNet *net, const FrontierCard *header, const GlobalTerminalNetDressUpRecord *record) {
     if (!GlobalTerminalNet_IsIdle(net)) {
         return FALSE;
     }
@@ -300,7 +310,7 @@ BOOL GlobalTerminalNet_RequestDressUpDownload(GlobalTerminalNet *net, int arg) {
     return TRUE;
 }
 
-BOOL GlobalTerminalNet_RequestBoxUpload(GlobalTerminalNet *net, int value, const void *header, PCStorage *storage, int box) {
+BOOL GlobalTerminalNet_RequestBoxUpload(GlobalTerminalNet *net, int value, const FrontierCard *header, PCStorage *storage, int box) {
     if (!GlobalTerminalNet_IsIdle(net)) {
         return FALSE;
     }
@@ -346,7 +356,7 @@ BOOL GlobalTerminalNet_RequestRankings(GlobalTerminalNet *net, const GlobalTermi
     return TRUE;
 }
 
-BOOL GlobalTerminalNet_RequestVideoUpload(GlobalTerminalNet *net, const void *header) {
+BOOL GlobalTerminalNet_RequestVideoUpload(GlobalTerminalNet *net, const FrontierCard *header) {
     if (!GlobalTerminalNet_IsIdle(net)) {
         return FALSE;
     }
@@ -778,7 +788,7 @@ static BOOL GlobalTerminalNet_CheckDressUpDownloadResult(GlobalTerminalNet *net,
     return ret;
 }
 
-int GlobalTerminalNet_GetDressUpList(GlobalTerminalNet *net, void **out, int max) {
+int GlobalTerminalNet_GetDressUpList(GlobalTerminalNet *net, GlobalTerminalNetDressUpUpload **out, int max) {
     GlobalTerminalNetDressUpList *list = &((GlobalTerminalNetDressUpListResponse *)GlobalTerminalServer_GetResponse())->list;
     int count = list->count;
     int i;
@@ -791,7 +801,7 @@ int GlobalTerminalNet_GetDressUpList(GlobalTerminalNet *net, void **out, int max
     i = 0;
     if (count > 0) {
         do {
-            out[i] = entry->photo;
+            out[i] = &entry->photo;
             i++;
             entry++;
         } while (i < count);
@@ -833,7 +843,7 @@ static BOOL GlobalTerminalNet_CheckBoxDownloadResult(GlobalTerminalNet *net, Glo
     return ret;
 }
 
-int GlobalTerminalNet_GetBoxList(GlobalTerminalNet *net, void **out, int max) {
+int GlobalTerminalNet_GetBoxList(GlobalTerminalNet *net, GlobalTerminalNetBoxUpload **out, int max) {
     int count;
     int *base = &((GlobalTerminalNetBoxListResponse *)GlobalTerminalServer_GetResponse())->count;
     int i;
@@ -847,15 +857,15 @@ int GlobalTerminalNet_GetBoxList(GlobalTerminalNet *net, void **out, int max) {
     entry = (GlobalTerminalNetBoxEntry *)(base + 1);
     i = 0;
     if (i < count) {
-        void **dst = out;
+        GlobalTerminalNetBoxUpload **dst = out;
         do {
-            *dst++ = entry->box;
+            *dst++ = &entry->box;
             i++;
             entry++;
         } while (i < count);
     }
     if (i < max) {
-        void **dst = out + i;
+        GlobalTerminalNetBoxUpload **dst = out + i;
         do {
             *dst++ = NULL;
             i++;
@@ -877,9 +887,9 @@ static BOOL GlobalTerminalNet_Check22000Result(GlobalTerminalNet *net, GlobalTer
     return ret;
 }
 
-void GlobalTerminalNet_GetRankingsHeader(GlobalTerminalNet *net, void **out) {
-    GlobalTerminalNetBlockResponse *response = GlobalTerminalServer_GetResponse();
-    *out = &response->data;
+void GlobalTerminalNet_GetRankingsHeader(GlobalTerminalNet *net, u8 **recordIds) {
+    GlobalTerminalNetRankingsHeaderResponse *response = GlobalTerminalServer_GetResponse();
+    *recordIds = response->recordIds;
 }
 
 static BOOL GlobalTerminalNet_CheckRankingsResult(GlobalTerminalNet *net, GlobalTerminalNetResponse *response) {
@@ -898,10 +908,10 @@ static BOOL GlobalTerminalNet_CheckRankingsResult(GlobalTerminalNet *net, Global
     return ret;
 }
 
-void GlobalTerminalNet_GetRankings(GlobalTerminalNet *net, void **out1, void **out2) {
-    u8 *data = (u8 *)&((GlobalTerminalNetBlockResponse *)GlobalTerminalServer_GetResponse())->data;
-    *out1 = data;
-    *out2 = data + 0x558;
+void GlobalTerminalNet_GetRankings(GlobalTerminalNet *net, GlobalTerminalNetRankingResults **results, GlobalTerminalNetRankingStandings **standings) {
+    GlobalTerminalNetRankings *rankings = &((GlobalTerminalNetRankingsResponse *)GlobalTerminalServer_GetResponse())->rankings;
+    *results = rankings->results;
+    *standings = rankings->standings;
 }
 
 static BOOL GlobalTerminalNet_CheckVideoUploadResult(GlobalTerminalNet *net, GlobalTerminalNetResponse *response) {

@@ -122,7 +122,7 @@ void VsRecorder_OnBoxListReceived(void *arg, GlobalTerminalNetError *error) {
         boxData->downloadCount = 0;
         return;
     }
-    boxData->downloadCount = GlobalTerminalNet_GetBoxList(VsRecorder_GetNet(work), (void **)boxData->downloads, 20);
+    boxData->downloadCount = GlobalTerminalNet_GetBoxList(VsRecorder_GetNet(work), boxData->downloads, 20);
     MI_CpuCopy8(boxData->downloads, boxData->unk_3DC, sizeof(boxData->unk_3DC));
 }
 
@@ -569,12 +569,12 @@ BOOL VsRecorder_RankingsDownload(VsRecorderWork *work) {
         {
             BOOL missing = FALSE;
             if (!rankings->lastWeek) {
-                VsRecorderRankingStandings *standings = rankings->standings;
+                GlobalTerminalNetRankingStandings *standings = rankings->standings;
                 if (!standings[0].recordId || !standings[1].recordId || !standings[2].recordId) {
                     missing = TRUE;
                 }
             } else {
-                VsRecorderRankingResults *results = rankings->results;
+                GlobalTerminalNetRankingResults *results = rankings->results;
                 if (!results[0].recordId || !results[1].recordId || !results[2].recordId) {
                     missing = TRUE;
                 }

@@ -2,6 +2,7 @@
 
 #include "global.h"
 
+#include "constants/comm_type.h"
 #include "constants/save_arrays.h"
 #include "constants/sndseq.h"
 #include "constants/species.h"
@@ -1323,7 +1324,7 @@ BOOL WonderCardAlbum_Main(OverlayManager *manager, int *state) {
         album->timer--;
         if (album->timer == 0) {
             MainMenuUtil_EncryptWonderCard(&album->shareHeader, album->encryptedCard, album->heapId);
-            MysteryGiftWireless_SendCard(album->encryptedCard, (void *)sizeof(WonderCard));
+            MysteryGiftWireless_SendCard(album->encryptedCard, sizeof(WonderCard));
             WonderCardAlbum_CountShare(album);
             *state = ALBUM_STATE_WAIT_SAVE;
         }
@@ -1390,7 +1391,7 @@ static int WonderCardAlbum_StartSharing(WonderCardAlbum *album) {
     album->shareCard.shareMax = 0;
     album->shareHeader.unk8E_4 = 0;
     album->shareHeader.unk8E_5 = 1;
-    MysteryGiftComm_StartParent(album->commOwner, album->saveData, (void *)15);
+    MysteryGiftComm_StartParent(album->commOwner, album->saveData, COMM_TYPE_MYSTERY_GIFT);
     return 0;
 }
 

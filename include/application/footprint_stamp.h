@@ -16,6 +16,7 @@
 #include "palette.h"
 #include "save.h"
 #include "sprite_system.h"
+#include "wifi_plaza/wifi_plaza_internal.h"
 #include "yes_no_prompt.h"
 
 #define FOOTPRINT_STAMP_PARTY_SLOTS   6
@@ -430,7 +431,7 @@ extern const u8 gFootprintStampNatureEffects[];       // enum FootprintStampEffe
 extern const u16 gFootprintStampInkColors[][2];       // ink colors by OT id % 9, two columns
 extern const TouchscreenHitbox gFootprintStampPartyHitboxes[];
 extern const FootprintStampSpeciesFootprint gFootprintStampSpeciesFootprints[];
-extern const u8 gFootprintStampLinkCommands[]; // link command table: player joined, player left, stamp received
+extern const WiFiPlazaLobbyCommand gFootprintStampLinkCommands[]; // link command table: player joined, player left, stamp received
 
 extern const FootprintStampEffectFuncs gFootprintStampEffectFuncs[];
 extern BOOL (*const gFootprintStampCameraEffectFuncs[])(FootprintStampBoard *unused, FootprintStampBoard *board, Camera *camera);

@@ -3,6 +3,7 @@
 
 #include "global.h"
 
+#include "frontier_card.h"
 #include "message_format.h"
 #include "msgdata.h"
 #include "save.h"
@@ -162,6 +163,27 @@ typedef struct GlobalTerminalNetRankingsSource {
     u16 species;
 } GlobalTerminalNetRankingsSource;
 
+// one ranking of this week: the record and the current order of its teams (no scores yet)
+typedef struct GlobalTerminalNetRankingStandings {
+    u8 recordId; // msg_0026 message + 1
+    u8 unk_01[3];
+    u8 trainerTypes[16];
+    u8 birthMonths[12];
+    u16 species[20];
+} GlobalTerminalNetRankingStandings;
+
+// last week's result of a ranking: the teams in rank order with their scores
+typedef struct GlobalTerminalNetRankingResults {
+    u8 recordId; // msg_0026 message + 1
+    u8 unk_01[3];
+    u8 trainerTypes[16];
+    u64 trainerTypeScores[16];
+    u8 birthMonths[12];
+    u64 birthMonthScores[12];
+    u16 species[20];
+    u64 speciesScores[20];
+} GlobalTerminalNetRankingResults;
+
 typedef struct GlobalTerminalNetVideoSearch {
     u16 species;
     u8 facility;
@@ -272,17 +294,17 @@ typedef struct GlobalTerminalNetResponse {
 
 void GlobalTerminalNet_UnpackDressUpPhoto(const GlobalTerminalNetDressUpForm *form, GlobalTerminalNetDressUpRecord *record);
 void GlobalTerminalNet_PackBoxData(SaveData *saveData, PCStorage *storage, int box, GlobalTerminalNetBoxForm *form, enum HeapID heapID);
-void GlobalTerminalNet_CopyRequestHeader(const void *src, void *dst);
+void GlobalTerminalNet_CopyRequestHeader(const void *src, FrontierCard *dst);
 void GlobalTerminalNet_SetRankingsHeader(SaveData *saveData, const GlobalTerminalNetRankingsSource *src, GlobalTerminalNetRankingsHeader *dst);
 BOOL GlobalTerminalNet_Init(GlobalTerminalNet *net, GlobalTerminalNetArgs *args);
 void GlobalTerminalNet_Free(GlobalTerminalNet *net);
-BOOL GlobalTerminalNet_RequestDressUpUpload(GlobalTerminalNet *net, const void *header, const GlobalTerminalNetDressUpRecord *record);
+BOOL GlobalTerminalNet_RequestDressUpUpload(GlobalTerminalNet *net, const FrontierCard *header, const GlobalTerminalNetDressUpRecord *record);
 BOOL GlobalTerminalNet_RequestDressUpDownload(GlobalTerminalNet *net, int arg);
-BOOL GlobalTerminalNet_RequestBoxUpload(GlobalTerminalNet *net, int value, const void *header, PCStorage *storage, int box);
+BOOL GlobalTerminalNet_RequestBoxUpload(GlobalTerminalNet *net, int value, const FrontierCard *header, PCStorage *storage, int box);
 BOOL GlobalTerminalNet_RequestBoxDownload(GlobalTerminalNet *net, int arg);
 BOOL GlobalTerminalNet_RequestRankingsHeader(GlobalTerminalNet *net);
 BOOL GlobalTerminalNet_RequestRankings(GlobalTerminalNet *net, const GlobalTerminalNetRankingsSource *src, const GlobalTerminalNetPair *pairs);
-BOOL GlobalTerminalNet_RequestVideoUpload(GlobalTerminalNet *net, const void *header);
+BOOL GlobalTerminalNet_RequestVideoUpload(GlobalTerminalNet *net, const FrontierCard *header);
 BOOL GlobalTerminalNet_RequestVideoSearch(GlobalTerminalNet *net, u16 species, u8 facility, u8 country, u8 region);
 BOOL GlobalTerminalNet_RequestDefaultVideoSearchNoFrontier(GlobalTerminalNet *net);
 BOOL GlobalTerminalNet_RequestDefaultVideoSearch(GlobalTerminalNet *net);
@@ -294,10 +316,10 @@ BOOL GlobalTerminalNet_Update(GlobalTerminalNet *net);
 BOOL GlobalTerminalNet_IsIdle(GlobalTerminalNet *net);
 u32 GlobalTerminalNet_GetError(GlobalTerminalNet *net, GlobalTerminalNetError **error);
 u64 GlobalTerminalNet_GetUploadedVideoNumber(GlobalTerminalNet *net);
-int GlobalTerminalNet_GetDressUpList(GlobalTerminalNet *net, void **out, int max);
-int GlobalTerminalNet_GetBoxList(GlobalTerminalNet *net, void **out, int max);
-void GlobalTerminalNet_GetRankingsHeader(GlobalTerminalNet *net, void **out);
-void GlobalTerminalNet_GetRankings(GlobalTerminalNet *net, void **out1, void **out2);
+int GlobalTerminalNet_GetDressUpList(GlobalTerminalNet *net, GlobalTerminalNetDressUpUpload **out, int max);
+int GlobalTerminalNet_GetBoxList(GlobalTerminalNet *net, GlobalTerminalNetBoxUpload **out, int max);
+void GlobalTerminalNet_GetRankingsHeader(GlobalTerminalNet *net, u8 **recordIds);
+void GlobalTerminalNet_GetRankings(GlobalTerminalNet *net, GlobalTerminalNetRankingResults **results, GlobalTerminalNetRankingStandings **standings);
 u32 GlobalTerminalNet_GetDownloadedVideo(GlobalTerminalNet *net, u8 **out);
 int GlobalTerminalNet_GetVideoList(GlobalTerminalNet *net, GlobalTerminalNetVideoHeader **out, int max);
 

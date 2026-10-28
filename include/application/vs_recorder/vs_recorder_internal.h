@@ -417,27 +417,6 @@ typedef struct VsRecorderBoxData {
     int cursorY;
 } VsRecorderBoxData;
 
-// one ranking of this week: the record and the current order of its teams (no scores yet)
-typedef struct VsRecorderRankingStandings {
-    u8 recordId; // msg_0026 message + 1
-    u8 unk_01[3];
-    u8 trainerTypes[16];
-    u8 birthMonths[12];
-    u16 species[20];
-} VsRecorderRankingStandings;
-
-// last week's result of a ranking: the teams in rank order with their scores
-typedef struct VsRecorderRankingResults {
-    u8 recordId; // msg_0026 message + 1
-    u8 unk_01[3];
-    u8 trainerTypes[16];
-    u64 trainerTypeScores[16];
-    u8 birthMonths[12];
-    u64 birthMonthScores[12];
-    u16 species[20];
-    u64 speciesScores[20];
-} VsRecorderRankingResults;
-
 // the player's value of a ranked record, sent with the rankings request (GlobalTerminalNetPair layout)
 typedef struct VsRecorderRankingScore {
     u8 recordId;
@@ -466,11 +445,11 @@ typedef struct VsRecorderRankings {
     VsRecorderTextSprite sendButton; // hidden
     VsRecorderTextSprite exitButton;
     TouchHitboxController *hitboxController;
-    VsRecorderRankingResults resultsBuf[3]; // copy of the response (onResponse[5])
-    VsRecorderRankingStandings standingsBuf[3];
+    GlobalTerminalNetRankingResults resultsBuf[3]; // copy of the response (onResponse[5])
+    GlobalTerminalNetRankingStandings standingsBuf[3];
     u8 recordIdsBuf[4];                    // copy of the response (onResponse[4])
-    VsRecorderRankingResults *results;     // the response or resultsBuf
-    VsRecorderRankingStandings *standings; // the response or standingsBuf
+    GlobalTerminalNetRankingResults *results;     // the response or resultsBuf
+    GlobalTerminalNetRankingStandings *standings; // the response or standingsBuf
     u8 *recordIds;                         // records of this week's rankings
     u8 unk_720[8];
     u16 playHours;

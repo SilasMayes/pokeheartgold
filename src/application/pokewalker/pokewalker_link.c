@@ -895,7 +895,7 @@ int PokewalkerApp_Link_StartSendStroll(PokewalkerApp *app) {
     PokewalkerIr_RequestSendStroll((u8 *)&app->strollData, (u8 *)&app->unk_F1D0, (u8 *)&app->irStatus, (u8 *)&app->irBlocks);
     PokewalkerApp_StartLink(app);
     if (app->strollPartyMon) {
-        PokewalkerApp_LoadMonPicture(app->strollPartyMon, app->monSpriteBuffer, &app->monPicTemplate, 0);
+        PokewalkerApp_LoadMonPicture(&app->strollPartyMon->box, app->monSpriteBuffer, &app->monPicTemplate, 0);
     } else {
         PokewalkerApp_LoadMonPicture(app->strollMon, app->monSpriteBuffer, &app->monPicTemplate, 0);
     }
@@ -1085,7 +1085,7 @@ int PokewalkerApp_Link_PrintWentToWalker(PokewalkerApp *app) {
         MIi_CpuClearFast(0, (u32 *)&app->irBlocks.giftMon, sizeof(PokewalkerIrGiftMon));
         app->irBlocks.flags.hasGiftMon = FALSE;
     }
-    boxMon = app->strollPartyMon;
+    boxMon = &app->strollPartyMon->box;
     if (boxMon) {
         BufferBoxMonNickname(app->msgFormat, 1, boxMon);
     } else {

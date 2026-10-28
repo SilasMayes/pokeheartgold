@@ -212,7 +212,7 @@ void VsRecorder_OnRankingsHeaderReceived(void *arg, GlobalTerminalNetError *erro
     if (error->isError == TRUE) {
         rankings->recordIds = rankings->recordIdsBuf;
     } else {
-        GlobalTerminalNet_GetRankingsHeader(VsRecorder_GetNet(work), (void **)&rankings->recordIds);
+        GlobalTerminalNet_GetRankingsHeader(VsRecorder_GetNet(work), &rankings->recordIds);
         MI_CpuCopy8(rankings->recordIds, rankings->recordIdsBuf, sizeof(rankings->recordIdsBuf));
     }
 }
@@ -225,7 +225,7 @@ void VsRecorder_OnRankingsReceived(void *arg, GlobalTerminalNetError *error) {
         rankings->results = rankings->resultsBuf;
         rankings->standings = rankings->standingsBuf;
     } else {
-        GlobalTerminalNet_GetRankings(VsRecorder_GetNet(work), (void **)&rankings->results, (void **)&rankings->standings);
+        GlobalTerminalNet_GetRankings(VsRecorder_GetNet(work), &rankings->results, &rankings->standings);
         MI_CpuCopy8(rankings->results, rankings->resultsBuf, sizeof(rankings->resultsBuf));
         MI_CpuCopy8(rankings->standings, rankings->standingsBuf, sizeof(rankings->standingsBuf));
     }

@@ -42,9 +42,9 @@ extern void CommRandom_Init(void *seed);
 extern void CommState_ConnectToSlot(int slot);
 extern int CommState_IsLinked(void);
 extern void CommState_RequestShutdown(void);
-extern int Comm_SendParentCommandNoCopy(int command, void *data, void *size);
-extern void CommState_StartMysteryGiftParent(void *saveData, void *linkMode);
-extern void CommState_StartMysteryGiftChild(void *saveData, int linkMode);
+extern int Comm_SendParentCommandNoCopy(int command, void *data, int size);
+extern void CommState_StartMysteryGiftParent(SaveData *saveData, s8 linkMode);
+extern void CommState_StartMysteryGiftChild(SaveData *saveData, s8 linkMode);
 
 static const CommCommand sMysteryGiftCommCommands[2] = {
     {
@@ -134,7 +134,7 @@ void MysteryGiftComm_Task(SysTask *task, void *data) {
     }
 }
 
-void MysteryGiftComm_StartParent(void *owner, void *saveData, void *linkMode) {
+void MysteryGiftComm_StartParent(void *owner, SaveData *saveData, s8 linkMode) {
     if (!Comm_IsActive()) {
         CommState_StartMysteryGiftParent(saveData, linkMode);
         MysteryGiftComm_Start(owner);
@@ -142,11 +142,11 @@ void MysteryGiftComm_StartParent(void *owner, void *saveData, void *linkMode) {
     }
 }
 
-int MysteryGiftWireless_SendCard(void *data, void *size) {
+int MysteryGiftWireless_SendCard(void *data, int size) {
     return Comm_SendParentCommandNoCopy(0x16, data, size);
 }
 
-void MysteryGiftComm_StartChild(void *owner, int linkMode) {
+void MysteryGiftComm_StartChild(void *owner, s8 linkMode) {
     if (!Comm_IsActive()) {
         MainOverlayArgs *args = OverlayManager_GetArgs(MysteryGiftApp_GetOverlayManager());
         CommState_StartMysteryGiftChild(args->saveData, linkMode);

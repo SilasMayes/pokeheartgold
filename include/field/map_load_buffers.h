@@ -16,7 +16,7 @@ typedef struct MapLoadBuffers {
 
 MapLoadBuffers *MapLoadBuffers_New(BOOL withSecondary);
 void MapLoadBuffers_Free(MapLoadBuffers *buffers);
-void MapLoadBuffers_GetPrimary(u32 index, MapLoadBuffers *buffers, void **out);
-void MapLoadBuffers_GetSecondary(u32 index, MapLoadBuffers *buffers, void **out);
+void MapLoadBuffers_GetPrimary(u32 index, MapLoadBuffers *buffers, NNSG3dResFileHeader **out);
+void MapLoadBuffers_GetSecondary(u32 index, MapLoadBuffers *buffers, u8 **out);
 
 #endif // POKEHEARTGOLD_FIELD_MAP_LOAD_BUFFERS_H

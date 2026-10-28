@@ -326,10 +326,10 @@ void WiFiPlazaLobbyClient_GetPlayerList(WiFiPlazaPlayerList *list) {
     list->ids = gWiFiPlazaLobbyClient->idLists[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].ids;
 }
 
-void WiFiPlazaLobbyClient_GetChannelPlayerList(u32 *out) {
+void WiFiPlazaLobbyClient_GetChannelPlayerList(WiFiPlazaPlayerList *list) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
-    out[0] = gWiFiPlazaLobbyClient->idLists[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].count;
-    out[1] = (u32)gWiFiPlazaLobbyClient->idLists[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].ids;
+    list->count = gWiFiPlazaLobbyClient->idLists[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].count;
+    list->ids = gWiFiPlazaLobbyClient->idLists[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].ids;
 }
 
 // Lobby player id <-> lobby slot.
@@ -426,7 +426,7 @@ u8 WiFiPlazaLobbyClient_GetLocationRegion(u8 slot) {
 }
 
 // The message types sent with WiFiPlazaLobbyClient_SendToLobby / SendToPlayer (each with the size of its data).
-void WiFiPlazaLobbyClient_SetLobbyCommands(const void *commands, u32 count, void *arg) {
+void WiFiPlazaLobbyClient_SetLobbyCommands(const WiFiPlazaLobbyCommand *commands, u32 count, void *arg) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].commands = commands;
     gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_LOBBY].count = count;
@@ -434,7 +434,7 @@ void WiFiPlazaLobbyClient_SetLobbyCommands(const void *commands, u32 count, void
 }
 
 // The message types sent with WiFiPlazaLobbyClient_SendToChannel.
-void WiFiPlazaLobbyClient_SetChannelCommands(const void *commands, u32 count, void *arg) {
+void WiFiPlazaLobbyClient_SetChannelCommands(const WiFiPlazaLobbyCommand *commands, u32 count, void *arg) {
     GF_ASSERT(gWiFiPlazaLobbyClient != NULL);
     gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].commands = commands;
     gWiFiPlazaLobbyClient->commandTables[WIFI_PLAZA_LOBBY_SCOPE_CHANNEL].count = count;

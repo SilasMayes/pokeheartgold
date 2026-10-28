@@ -1,6 +1,7 @@
 #ifndef POKEHEARTGOLD_APPLICATION_MAIN_MENU_MYSTERY_GIFT_WIRELESS_H
 #define POKEHEARTGOLD_APPLICATION_MAIN_MENU_MYSTERY_GIFT_WIRELESS_H
 
+#include "save.h"
 #include "sys_task.h"
 
 struct MysteryGiftAppData;
@@ -17,9 +18,9 @@ void MysteryGiftComm_ChildConnect(void);
 void MysteryGiftComm_ChildWaitLinked(void);
 void MysteryGiftComm_ChildStateLinked(void);
 void MysteryGiftComm_Task(SysTask *task, void *data);
-void MysteryGiftComm_StartParent(void *owner, void *saveData, void *linkMode);
-int MysteryGiftWireless_SendCard(void *data, void *size);
-void MysteryGiftComm_StartChild(void *owner, int linkMode);
+void MysteryGiftComm_StartParent(void *owner, SaveData *saveData, s8 linkMode);
+int MysteryGiftWireless_SendCard(void *data, int size);
+void MysteryGiftComm_StartChild(void *owner, s8 linkMode);
 void MysteryGiftComm_ConnectToChannel(int channel);
 int MysteryGiftComm_GetFirstParentInfo(struct MysteryGiftAppData *data);
 void MysteryGiftComm_HandleReceived(int netId, int size, void *data, void *context);

@@ -363,8 +363,8 @@ static void MapLoadManager_AllocMaps(MapLoadManager *mapLoadManager, BOOL withPe
         MI_CpuFill8(map, 0, sizeof(LoadedMap));
         mapLoadManager->maps[i] = map;
         mapLoadManager->maps[i]->modelLoaded = FALSE;
-        MapLoadBuffers_GetPrimary(i, mapLoadManager->buffers, (void **)&mapLoadManager->maps[i]->modelFile);
-        MapLoadBuffers_GetSecondary(i, mapLoadManager->buffers, (void **)&mapLoadManager->maps[i]->bdhcBuffer);
+        MapLoadBuffers_GetPrimary(i, mapLoadManager->buffers, &mapLoadManager->maps[i]->modelFile);
+        MapLoadBuffers_GetSecondary(i, mapLoadManager->buffers, &mapLoadManager->maps[i]->bdhcBuffer);
         mapLoadManager->maps[i]->propManager = MapPropManager_New(HEAP_ID_FIELD1, mapLoadManager->renderObjManager);
         mapLoadManager->maps[i]->matrixIndex = -1;
         MI_CpuFillFast(mapLoadManager->maps[i], -1, sizeof(mapLoadManager->maps[i]->permissions));
@@ -385,7 +385,7 @@ static void MapLoadManager_AllocMapsNoCollision(MapLoadManager *mapLoadManager) 
         MI_CpuFill8(map, 0, sizeof(LoadedMap));
         mapLoadManager->maps[i] = map;
         mapLoadManager->maps[i]->modelLoaded = FALSE;
-        MapLoadBuffers_GetPrimary(i, mapLoadManager->buffers, (void **)&mapLoadManager->maps[i]->modelFile);
+        MapLoadBuffers_GetPrimary(i, mapLoadManager->buffers, &mapLoadManager->maps[i]->modelFile);
         mapLoadManager->maps[i]->propManager = MapPropManager_New(HEAP_ID_FIELD1, mapLoadManager->renderObjManager);
         mapLoadManager->maps[i]->matrixIndex = -1;
     }

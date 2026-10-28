@@ -151,7 +151,7 @@ void VsRecorder_OnDressUpListReceived(void *arg, GlobalTerminalNetError *error) 
     VsRecorderDressUp *dressUp = work->screenWork;
 
     if (error->isError != TRUE) {
-        dressUp->downloadCount = GlobalTerminalNet_GetDressUpList(VsRecorder_GetNet(work), (void **)dressUp->downloads, 5);
+        dressUp->downloadCount = GlobalTerminalNet_GetDressUpList(VsRecorder_GetNet(work), dressUp->downloads, 5);
     }
 }
 

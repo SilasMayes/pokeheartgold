@@ -1165,7 +1165,7 @@ static enum FootprintStampPlayersChange FootprintStamp_UpdatePlayers(FootprintSt
 
     joined = 0;
     left = 0;
-    WiFiPlazaLobbyClient_GetChannelPlayerList((u32 *)&list);
+    WiFiPlazaLobbyClient_GetChannelPlayerList(&list);
     rows = sFootprintStampPlayerRows;
     for (i = 0; i < FOOTPRINT_STAMP_PLAYERS_MAX; i++) {
         if (work->playerIds[i] != list.ids[i]) {

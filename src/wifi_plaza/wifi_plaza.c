@@ -884,9 +884,9 @@ u16 *WiFiPlazaWork_GetWordSet(WiFiPlazaWork *work, int slot) {
 }
 
 u32 WiFiPlaza_GetChannelPlayerCount(WiFiPlazaWork *work) {
-    u32 pair[2];
-    WiFiPlazaLobbyClient_GetChannelPlayerList(pair);
-    return pair[0];
+    WiFiPlazaPlayerList list;
+    WiFiPlazaLobbyClient_GetChannelPlayerList(&list);
+    return list.count;
 }
 
 int WiFiPlaza_ChannelSlotToSlot(WiFiPlazaWork *work, int channelSlot) {

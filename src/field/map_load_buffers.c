@@ -46,11 +46,11 @@ void MapLoadBuffers_Free(MapLoadBuffers *buffers) {
     Heap_Free(buffers);
 }
 
-void MapLoadBuffers_GetPrimary(u32 index, MapLoadBuffers *buffers, void **out) {
+void MapLoadBuffers_GetPrimary(u32 index, MapLoadBuffers *buffers, NNSG3dResFileHeader **out) {
     *out = buffers->primary[index];
 }
 
-void MapLoadBuffers_GetSecondary(u32 index, MapLoadBuffers *buffers, void **out) {
+void MapLoadBuffers_GetSecondary(u32 index, MapLoadBuffers *buffers, u8 **out) {
     *out = buffers->secondary[index];
 }
 

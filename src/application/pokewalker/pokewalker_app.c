@@ -45,7 +45,7 @@ BOOL PokewalkerApp_Init(OverlayManager *manager, int *state) {
     Heap_Create(HEAP_ID_3, HEAP_ID_154, 0x70000);
     app = OverlayManager_CreateAndGetData(manager, sizeof(PokewalkerApp), HEAP_ID_154);
     memset(app, 0, sizeof(PokewalkerApp));
-    app->saveData = ((void **)OverlayManager_GetArgs(manager))[2];
+    app->saveData = ((MainOverlayArgs *)OverlayManager_GetArgs(manager))->saveData;
     PokewalkerApp_GetSaveData(app);
     SetKeyRepeatTimers(3, 8);
     GF_TouchpadResetSampling();

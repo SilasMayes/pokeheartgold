@@ -4,6 +4,7 @@
 
 #include "global.h"
 
+#include "constants/comm_type.h"
 #include "constants/gx.h"
 #include "constants/items.h"
 #include "constants/pokemon.h"
@@ -410,7 +411,7 @@ static int MysteryGiftApp_StartSearch(OverlayManager *manager) {
     }
     MysteryGiftApp_EraseWindowIfInUse(&data->windows[2], FALSE);
     if (data->receiveMode != MYSTERY_GIFT_RECEIVE_CARTRIDGE) {
-        MysteryGiftComm_StartChild(data, 15);
+        MysteryGiftComm_StartChild(data, COMM_TYPE_MYSTERY_GIFT);
         data->timeout = 7200;
         WirelessStatusIcon_Create();
         MysteryGiftApp_SetWaitingIconVisible(data, TRUE);
