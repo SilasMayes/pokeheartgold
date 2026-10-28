@@ -7,7 +7,7 @@ void WirelessStatusIcon_Create(void);
 void WirelessStatusIcon_Destroy(void);
 void WirelessStatusIcon_CreateIfConnected(void);
 void WirelessStatusIcon_CreateOnScreenIfConnected(int screen);
-void WirelessStatusIcon_ShowOnBothScreens(int topFirst, enum HeapID heapID);
+void WirelessStatusIcon_ShowOnBothScreens(BOOL topFirst, enum HeapID heapID);
 void *WirelessStatusIcon_LoadPaletteFile(enum HeapID heapId);
 
 void WirelessStatusIcon_Refresh(void);

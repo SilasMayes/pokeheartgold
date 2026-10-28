@@ -89,14 +89,14 @@ void BgCellManager_SetCellTilemap(BgCellManager *manager, int index, u16 *src) {
     MIi_CpuCopy16(src, cell->tilemap, cell->width * cell->height * 2);
 }
 
-void BgCellManager_LoadCellTilemap(BgCellManager *manager, int index, int narcId, int fileId, int compressed) {
+void BgCellManager_LoadCellTilemap(BgCellManager *manager, int index, NarcId narcId, int fileId, BOOL compressed) {
     NNSG2dScreenData *screen;
-    void *file = GfGfxLoader_GetScrnData((NarcId)narcId, fileId, compressed, &screen, manager->heapId);
+    void *file = GfGfxLoader_GetScrnData(narcId, fileId, compressed, &screen, manager->heapId);
     BgCellManager_SetCellTilemap(manager, index, (u16 *)screen->rawData);
     Heap_Free(file);
 }
 
-void BgCellManager_LoadCellTilemapFromOpenNarc(BgCellManager *manager, int index, NARC *narc, int fileId, int compressed) {
+void BgCellManager_LoadCellTilemapFromOpenNarc(BgCellManager *manager, int index, NARC *narc, int fileId, BOOL compressed) {
     NNSG2dScreenData *screen;
     void *file = GfGfxLoader_GetScrnDataFromOpenNarc(narc, fileId, compressed, &screen, manager->heapId);
     BgCellManager_SetCellTilemap(manager, index, (u16 *)screen->rawData);

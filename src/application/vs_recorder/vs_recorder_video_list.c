@@ -525,7 +525,7 @@ BOOL VsRecorder_VideoListSave(VsRecorderWork *work) {
         VsRecorder_SetVBlankPaused(work, TRUE);
         VsRecorder_RebuildMenuRowsParent(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
-        WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_109);
+        WirelessStatusIcon_ShowOnBothScreens(TRUE, HEAP_ID_109);
         VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
@@ -1066,7 +1066,7 @@ BOOL VsRecorder_VideoListDownloadList(VsRecorderWork *work) {
         VsRecorder_FreeVideoListButtons(work);
         VsRecorder_RebuildMenuRowsParent(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
-        WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_109);
+        WirelessStatusIcon_ShowOnBothScreens(TRUE, HEAP_ID_109);
         VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;
@@ -1275,7 +1275,7 @@ BOOL VsRecorder_VideoListExit(VsRecorderWork *work) {
     case VIDEO_LIST_EXIT_STEP_REBUILD_MENU:
         VsRecorder_ResetFade(&listWork->fade);
         VsRecorder_RebuildMenuRowsParent(work);
-        WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_109);
+        WirelessStatusIcon_ShowOnBothScreens(TRUE, HEAP_ID_109);
         VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;

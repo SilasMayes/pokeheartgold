@@ -763,7 +763,7 @@ void PokedexApp_CreateListSprites(PokedexAppData *pokedexApp) {
     pokedexApp->sprites[10] = SpriteSystem_NewSpriteWithYOffset(pokedexApp->spriteSystem, pokedexApp->spriteManager, &gPokedexListSprite10Template, FX32_CONST(512));
 }
 
-void PokedexApp_SetIntlSpritePairVisible(PokedexAppData *pokedexApp, int index, int visible) {
+void PokedexApp_SetIntlSpritePairVisible(PokedexAppData *pokedexApp, int index, BOOL visible) {
     if (visible == TRUE && Pokedex_GetInternationalViewFlag(pokedexApp->args->pokedex) == TRUE) {
         ManagedSprite_SetDrawFlag(pokedexApp->sprites[index], TRUE);
         ManagedSprite_SetDrawFlag((pokedexApp->sprites + 1)[index], TRUE);
@@ -773,7 +773,7 @@ void PokedexApp_SetIntlSpritePairVisible(PokedexAppData *pokedexApp, int index, 
     }
 }
 
-void PokedexApp_SetIntlSpriteVisible(PokedexAppData *pokedexApp, int index, int visible) {
+void PokedexApp_SetIntlSpriteVisible(PokedexAppData *pokedexApp, int index, BOOL visible) {
     if (visible == TRUE && Pokedex_GetInternationalViewFlag(pokedexApp->args->pokedex) == TRUE) {
         ManagedSprite_SetDrawFlag(pokedexApp->sprites[index], TRUE);
     } else {
@@ -1399,7 +1399,7 @@ void PokedexApp_MoveReturningDexModeSwitch(PokedexAppData *pokedexApp, int dx) {
 }
 
 // 44-58: the search result entry's sprites; 43: the body type icon on the sub screen
-void PokedexApp_SetSearchEntrySpritesVisible(PokedexAppData *pokedexApp, int visible) {
+void PokedexApp_SetSearchEntrySpritesVisible(PokedexAppData *pokedexApp, BOOL visible) {
     u32 i;
 
     if (visible == TRUE) {

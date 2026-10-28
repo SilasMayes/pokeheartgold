@@ -502,10 +502,10 @@ static void ConnectToRanger_SetupGraphics(ConnectToRangerApp *app) {
 
     GfGfx_SetBanks(&banks);
     SetBothScreensModesAndDisable(&modes);
-    MainMenuUtil_InitBg(app->bgConfig, GF_BG_LYR_MAIN_0, 1, 0xF000, 0);
-    MainMenuUtil_InitBg(app->bgConfig, GF_BG_LYR_MAIN_1, 1, 0xF800, 0x4000);
-    MainMenuUtil_InitBg(app->bgConfig, GF_BG_LYR_SUB_0, 1, 0x7800, 0);
-    MainMenuUtil_InitBg(app->bgConfig, GF_BG_LYR_SUB_1, 1, 0x7000, 0x4000);
+    MainMenuUtil_InitBg(app->bgConfig, GF_BG_LYR_MAIN_0, GF_BG_SCR_SIZE_256x256, 0xF000, 0);
+    MainMenuUtil_InitBg(app->bgConfig, GF_BG_LYR_MAIN_1, GF_BG_SCR_SIZE_256x256, 0xF800, 0x4000);
+    MainMenuUtil_InitBg(app->bgConfig, GF_BG_LYR_SUB_0, GF_BG_SCR_SIZE_256x256, 0x7800, 0);
+    MainMenuUtil_InitBg(app->bgConfig, GF_BG_LYR_SUB_1, GF_BG_SCR_SIZE_256x256, 0x7000, 0x4000);
     ResetAllTextPrinters();
     LoadFontPal0(GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_0_OFFSET, app->heapID);
     LoadUserFrameGfx1(app->bgConfig, GF_BG_LYR_MAIN_0, 1, 1, 0, app->heapID);

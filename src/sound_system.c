@@ -439,7 +439,7 @@ static void Sound_ResumeFieldBGM(u16 seqNo, u16 previousSeqNo) {
     }
     GF_Snd_SaveState(GF_SdatGetAttrPtr(SOUND_ATTR_SAVED_HEAP_LEVEL_4));
     Sound_SetPlayerPause(PLAYER_FIELD, 0);
-    GF_SndStartFadeInBGM(127, 40, 0);
+    GF_SndStartFadeInBGM(127, 40, FALSE);
     Sound_SetReloadFieldSeqFlag(0);
 }
 

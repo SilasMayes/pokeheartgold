@@ -85,7 +85,7 @@ BOOL FrtCmd_HallLaunchApp(FrontierScriptContext *ctx) {
         // Multi battles (modes 2 and 3) also bring the partner's Pokemon
         Party_AddMon(args->party, data->partnerMon);
     }
-    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &sOverlayTemplate_BattleHallApp, args, 0, BattleHall_OnAppExit);
+    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &sOverlayTemplate_BattleHallApp, args, FALSE, BattleHall_OnAppExit);
     return TRUE;
 }
 
@@ -103,7 +103,7 @@ BOOL FrtCmd_HallStartBattle(FrontierScriptContext *ctx) {
     BattleSetup *setup = BattleHall_NewBattleSetup(data, args);
     data->battleSetup = setup;
     Sound_SetSceneAndPlayBGM(5, SEQ_GS_VS_TRAINER, 1);
-    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_Battle, setup, 0, NULL);
+    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_Battle, setup, FALSE, NULL);
     return TRUE;
 }
 

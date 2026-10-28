@@ -18,7 +18,7 @@ typedef struct CodeEntryArgs {
     int fixedGroups;   // leading groups that are pre-filled with fixedValue and cannot be edited
     u32 fixedValue;
     int promptMsg;
-    u32 showWirelessIcon;
+    BOOL showWirelessIcon;
 } CodeEntryArgs;
 
 extern const OverlayManagerTemplate gOverlayTemplate_CodeEntry;
@@ -26,8 +26,8 @@ extern const OverlayManagerTemplate gOverlayTemplate_CodeEntry;
 BOOL CodeEntry_Init(OverlayManager *manager, int *state);
 BOOL CodeEntry_Main(OverlayManager *manager, int *state);
 BOOL CodeEntry_Exit(OverlayManager *manager, int *state);
-CodeEntryArgs *CodeEntryArgs_New(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, u32 showWirelessIcon);
-CodeEntryArgs *CodeEntryArgs_NewWithFixedDigits(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, u32 showWirelessIcon, int fixedGroups, u32 fixedValue);
+CodeEntryArgs *CodeEntryArgs_New(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, BOOL showWirelessIcon);
+CodeEntryArgs *CodeEntryArgs_NewWithFixedDigits(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, BOOL showWirelessIcon, int fixedGroups, u32 fixedValue);
 void CodeEntryArgs_Delete(CodeEntryArgs *args);
 
 #endif // POKEHEARTGOLD_CODE_ENTRY_H

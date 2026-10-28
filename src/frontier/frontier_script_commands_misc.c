@@ -163,7 +163,7 @@ BOOL FrtCmd_TowerStartBattle(FrontierScriptContext *ctx) {
     BattleSetup *setup = BattleTower_NewBattleSetup(tower, args);
     tower->battleSetup = setup;
     Sound_SetSceneAndPlayBGM(5, SEQ_GS_VS_TRAINER, 1);
-    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_Battle, setup, 0, 0);
+    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_Battle, setup, FALSE, NULL);
     return TRUE;
 }
 

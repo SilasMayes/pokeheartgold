@@ -26,7 +26,7 @@ typedef struct CodeEntrySubBgTemplates {
 } CodeEntrySubBgTemplates;
 
 
-static CodeEntryArgs *CodeEntryArgs_Alloc(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, u32 showWirelessIcon);
+static CodeEntryArgs *CodeEntryArgs_Alloc(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, BOOL showWirelessIcon);
 static void CodeEntry_SetupBgs(BgConfig *bgConfig);
 static void CodeEntry_VBlank(void *data);
 static void CodeEntry_InitLayout(CodeEntryApp *app);
@@ -190,7 +190,7 @@ BOOL CodeEntry_Init(OverlayManager *manager, int *state) {
     CodeEntry_InitTouch(app);
     if (app->args.showWirelessIcon) {
         WirelessStatusIcon_Create();
-        WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_108);
+        WirelessStatusIcon_ShowOnBothScreens(TRUE, HEAP_ID_108);
     }
     G2x_SetBlendAlpha_(REG_BLDCNT_ADDR, GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2, 0xF, 7);
     G2x_SetBlendAlpha_(REG_DB_BLDCNT_ADDR, GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, 7, 8);
@@ -249,7 +249,7 @@ BOOL CodeEntry_Exit(OverlayManager *manager, int *state) {
     return TRUE;
 }
 
-static CodeEntryArgs *CodeEntryArgs_Alloc(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, u32 showWirelessIcon) {
+static CodeEntryArgs *CodeEntryArgs_Alloc(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, BOOL showWirelessIcon) {
     CodeEntryArgs *args = Heap_Alloc(heapID, sizeof(CodeEntryArgs));
     int i;
 
@@ -265,14 +265,14 @@ static CodeEntryArgs *CodeEntryArgs_Alloc(enum HeapID heapID, u32 length, const 
     return args;
 }
 
-CodeEntryArgs *CodeEntryArgs_New(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, u32 showWirelessIcon) {
+CodeEntryArgs *CodeEntryArgs_New(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, BOOL showWirelessIcon) {
     CodeEntryArgs *args = CodeEntryArgs_Alloc(heapID, length, groupLengths, options, promptMsg, showWirelessIcon);
     args->fixedGroups = 0;
     args->fixedValue = 0;
     return args;
 }
 
-CodeEntryArgs *CodeEntryArgs_NewWithFixedDigits(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, u32 showWirelessIcon, int fixedGroups, u32 fixedValue) {
+CodeEntryArgs *CodeEntryArgs_NewWithFixedDigits(enum HeapID heapID, u32 length, const int *groupLengths, Options *options, int promptMsg, BOOL showWirelessIcon, int fixedGroups, u32 fixedValue) {
     CodeEntryArgs *args = CodeEntryArgs_Alloc(heapID, length, groupLengths, options, promptMsg, showWirelessIcon);
     args->fixedGroups = fixedGroups;
     args->fixedValue = fixedValue;

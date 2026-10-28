@@ -4091,7 +4091,7 @@ void WifiClub_SetStatus(WifiClubApp *app, u32 status) {
                 } else if (status == WIFI_CLUB_STATUS_IN_ROOM) {
                     WifiConnection_SetVoiceChatEnabled(0);
                     if (WifiClub_IsRoomBgmPlaying() == 1) {
-                        GF_SndStartFadeInBGM(120, 30, 1);
+                        GF_SndStartFadeInBGM(120, 30, TRUE);
                     }
                 }
             }

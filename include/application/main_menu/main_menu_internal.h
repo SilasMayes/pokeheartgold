@@ -36,7 +36,7 @@ typedef struct MainMenuTextPrinter {
 // Shared helpers of the main menu (screen setup, fades, text, sprites).
 void MainMenuUtil_InitWork(enum HeapID heapID);
 void *MainMenuUtil_CreateAppData(OverlayManager *manager, enum HeapID heapID, u32 size, u32 heapSize);
-void MainMenuUtil_InitBg(BgConfig *bgConfig, GFBgLayer bgId, u32 screenSize, u32 screenBase, u32 charBase);
+void MainMenuUtil_InitBg(BgConfig *bgConfig, GFBgLayer bgId, enum GFBgScreenSize screenSize, u32 screenBase, u32 charBase);
 void MainMenuUtil_SetFadeWhite(u32 fadeWhite);
 void MainMenuUtil_StartFade(u32 fadeType, u32 newState, int *state, u32 waitingState);
 void MainMenuUtil_WaitFade(int *state);

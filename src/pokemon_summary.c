@@ -636,19 +636,19 @@ static void PokemonSummary_FreeText(PokemonSummary *summary) {
 static void PokemonSummary_InitBgCells(PokemonSummary *summary, NARC *narc) {
     summary->cellManager = BgCellManager_New(summary->bgConfig, 2, 7, HEAP_ID_19);
     BgCellManager_InitCell(summary->cellManager, 0, 6, 17, 6);
-    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 0, narc, 69, 0);
+    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 0, narc, 69, FALSE);
     BgCellManager_InitCell(summary->cellManager, 1, 6, 17, 6);
-    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 1, narc, 70, 0);
+    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 1, narc, 70, FALSE);
     BgCellManager_InitCell(summary->cellManager, 2, 6, 10, 4);
-    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 2, narc, 71, 0);
+    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 2, narc, 71, FALSE);
     BgCellManager_InitCell(summary->cellManager, 3, 6, 10, 4);
-    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 3, narc, 72, 0);
+    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 3, narc, 72, FALSE);
     BgCellManager_InitCell(summary->cellManager, 4, 6, 11, 14);
-    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 4, narc, 73, 0);
+    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 4, narc, 73, FALSE);
     BgCellManager_InitCell(summary->cellManager, 5, 6, 6, 3);
-    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 5, narc, 74, 0);
+    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 5, narc, 74, FALSE);
     BgCellManager_InitCell(summary->cellManager, 6, 6, 6, 3);
-    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 6, narc, 75, 0);
+    BgCellManager_LoadCellTilemapFromOpenNarc(summary->cellManager, 6, narc, 75, FALSE);
 }
 
 static void PokemonSummary_FreeBgCells(PokemonSummary *summary) {

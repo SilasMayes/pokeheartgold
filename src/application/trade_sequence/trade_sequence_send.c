@@ -281,7 +281,7 @@ static BOOL TradeSequenceSend_SetupScreens(TradeSequenceSend *send, u32 *state) 
     TradeSequenceSend_CreateSprites(send);
     G2_BlendNone();
     WirelessStatusIcon_Create();
-    WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_56);
+    WirelessStatusIcon_ShowOnBothScreens(TRUE, HEAP_ID_56);
     BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 16, 1, HEAP_ID_57);
     return TRUE;
 }

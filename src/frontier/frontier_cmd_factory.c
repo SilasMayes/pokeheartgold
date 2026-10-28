@@ -76,7 +76,7 @@ BOOL FrtCmd_FactoryLaunchRentalApp(FrontierScriptContext *ctx) {
     args->playerParty = data->playerParty;
     args->opponentParty = data->opponentParty;
     args->data = data;
-    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &sOverlayTemplate_BattleFactoryRentalApp, args, 0, BattleFactory_OnAppExit);
+    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &sOverlayTemplate_BattleFactoryRentalApp, args, FALSE, BattleFactory_OnAppExit);
     return TRUE;
 }
 
@@ -93,7 +93,7 @@ BOOL FrtCmd_FactoryStartBattle(FrontierScriptContext *ctx) {
     BattleFactoryData *data = Frontier_GetData(ctx->frontierSystem->frontierWork);
     BattleSetup *setup = BattleFactory_NewBattleSetup(data, launchArgs);
     data->battleSetup = setup;
-    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_Battle, setup, 0, NULL);
+    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_Battle, setup, FALSE, NULL);
     return TRUE;
 }
 
@@ -114,7 +114,7 @@ BOOL FrtCmd_FactoryLaunchTradeApp(FrontierScriptContext *ctx) {
     args->playerParty = data->playerParty;
     args->opponentParty = data->opponentParty;
     args->data = data;
-    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &sOverlayTemplate_BattleFactoryTradeApp, args, 0, BattleFactory_OnAppExit);
+    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &sOverlayTemplate_BattleFactoryTradeApp, args, FALSE, BattleFactory_OnAppExit);
     return TRUE;
 }
 

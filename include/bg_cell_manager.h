@@ -10,8 +10,8 @@ BgCellManager *BgCellManager_New(BgConfig *bgConfig, int transferMode, int count
 void BgCellManager_Delete(BgCellManager *manager);
 void BgCellManager_InitCell(BgCellManager *manager, int index, int bgId, int width, int height);
 void BgCellManager_SetCellTilemap(BgCellManager *manager, int index, u16 *src);
-void BgCellManager_LoadCellTilemap(BgCellManager *manager, int index, int narcId, int fileId, int compressed);
-void BgCellManager_LoadCellTilemapFromOpenNarc(BgCellManager *manager, int index, NARC *narc, int fileId, int compressed);
+void BgCellManager_LoadCellTilemap(BgCellManager *manager, int index, NarcId narcId, int fileId, BOOL compressed);
+void BgCellManager_LoadCellTilemapFromOpenNarc(BgCellManager *manager, int index, NARC *narc, int fileId, BOOL compressed);
 void BgCellManager_DrawCell(BgCellManager *manager, int index);
 void BgCellManager_DrawCellAt(BgCellManager *manager, int index, int x, int y);
 void BgCellManager_EraseCell(BgCellManager *manager, int index);

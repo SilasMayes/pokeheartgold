@@ -24,7 +24,7 @@ int PlayerAvatar_GetInputDirection(PlayerAvatar *avatar, u16 newKeys, u16 heldKe
 BOOL PlayerAvatar_IsReadyOrBumpingWall(PlayerAvatar *avatar);
 BOOL PlayerAvatar_IsRunning(PlayerAvatar *playerAvatar);
 int PlayerAvatar_GetMoveStateForDirection(PlayerAvatar *avatar, int direction);
-u32 PlayerAvatar_GetMovementFromInput(PlayerAvatar *avatar, int keys, int heldKeys, u32 speed, int allowRun, int collision);
+u32 PlayerAvatar_GetMovementFromInput(PlayerAvatar *avatar, int keys, int heldKeys, u32 speed, BOOL allowRun, int collision);
 BOOL PlayerAvatar_IsReadyForMovement(PlayerAvatar *avatar);
 void PlayerAvatar_SetMovement(PlayerAvatar *avatar, int movement);
 int PlayerAvatar_GetMetatileBehaviorInDirection(PlayerAvatar *avatar, int direction);

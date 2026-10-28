@@ -131,7 +131,7 @@ static void FrontierLinkLobby_LaunchPartyMenu(void *frontierWork, FrontierLinkLo
         GF_ASSERT(FALSE);
     }
     lobby->partyMenuArgs->menuInputStatePtr = &fieldSystem->menuInputState;
-    Frontier_LaunchApplication(frontierWork, &gOverlayTemplate_PartyMenu, lobby->partyMenuArgs, 0, NULL);
+    Frontier_LaunchApplication(frontierWork, &gOverlayTemplate_PartyMenu, lobby->partyMenuArgs, FALSE, NULL);
 }
 
 static void FrontierLinkLobby_ReadPartyMenuResult(void *frontierWork, FrontierLinkLobby *lobby, FieldSystem *fieldSystem, enum HeapID heapId) {
@@ -171,7 +171,7 @@ static void FrontierLinkLobby_LaunchSummary(void *frontierWork, FrontierLinkLobb
     lobby->summaryArgs->isFlag982Set = PokemonSummary_IsPokeathlonUnlocked(lobby->saveData);
     PokemonSummary_SetPages(lobby->summaryArgs, gFrontierLinkLobbySummaryPages);
     PokemonSummaryArgs_SetPlayer(lobby->summaryArgs, Save_PlayerData_GetProfile(lobby->saveData));
-    Frontier_LaunchApplication(frontierWork, &gOverlayTemplate_PokemonSummary, lobby->summaryArgs, 0, NULL);
+    Frontier_LaunchApplication(frontierWork, &gOverlayTemplate_PokemonSummary, lobby->summaryArgs, FALSE, NULL);
 }
 
 static void FrontierLinkLobby_ReadSummaryResult(void *frontierWork, FrontierLinkLobby *lobby, FieldSystem *fieldSystem, enum HeapID heapId) {

@@ -583,7 +583,7 @@ static void CommPlayerManager_MoveAvatar(int netId) {
             } else if (!dirKeys && position->facing != direction) {
                 movement = GetMovementForDirection(position->facing, 36);
             } else {
-                movement = PlayerAvatar_GetMovementFromInput(avatar, keys, keys, moveSpeed, 1, 0);
+                movement = PlayerAvatar_GetMovementFromInput(avatar, keys, keys, moveSpeed, TRUE, 0);
             }
         }
         if (PlayerAvatar_IsReadyForMovement(avatar) || PlayerAvatar_IsReadyOrBumpingWall(avatar)) {

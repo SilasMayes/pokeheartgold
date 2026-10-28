@@ -1053,7 +1053,7 @@ static void GtsSelector_ShowGroups(GtsSelector *selector, GtsSelectorPage page, 
     } else {
         fileId = 34;
     }
-    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, fileId, 1);
+    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, fileId, TRUE);
     BgCellManager_GetCellTilemap(selector->cellManager, 0);
     GtsSelector_AddWindows(selector, page);
     MI_CpuFill8(selector->enabled, TRUE, sizeof(selector->enabled));
@@ -1095,7 +1095,7 @@ static void GtsSelector_ShowGroups(GtsSelector *selector, GtsSelectorPage page, 
 static void GtsSelector_ShowGenders(GtsSelector *selector) {
     int i;
     String *string;
-    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 31, 1);
+    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 31, TRUE);
     BgCellManager_GetCellTilemap(selector->cellManager, 0);
     GtsSelector_AddWindows(selector, GTS_SELECTOR_PAGE_GENDERS);
     for (i = 0; i < 3; i++) {
@@ -1111,7 +1111,7 @@ static void GtsSelector_ShowGenders(GtsSelector *selector) {
 
 static void GtsSelector_ShowLevels(GtsSelector *selector) {
     int cursor;
-    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 35, 1);
+    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 35, TRUE);
     BgCellManager_GetCellTilemap(selector->cellManager, 0);
     GtsSelector_AddWindows(selector, GTS_SELECTOR_PAGE_LEVELS);
     if (selector->levelRangeKind == 1) {
@@ -1227,7 +1227,7 @@ int GtsSelector_CloseSpeciesGroups(GtsSelector *selector) {
 
 int GtsSelector_ReopenSpeciesGroups(GtsSelector *selector) {
     int i;
-    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 34, 1);
+    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 34, TRUE);
     BgCellManager_GetCellTilemap(selector->cellManager, 0);
     GtsSelector_AddWindows(selector, GTS_SELECTOR_PAGE_SPECIES_GROUPS);
     MI_CpuFill8(selector->enabled, TRUE, sizeof(selector->enabled));
@@ -1261,7 +1261,7 @@ int GtsSelector_ReopenSpeciesGroups(GtsSelector *selector) {
 int GtsSelector_OpenSpeciesLetters(GtsSelector *selector) {
     int i;
     int color;
-    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 32, 1);
+    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 32, TRUE);
     BgCellManager_GetCellTilemap(selector->cellManager, 0);
     GtsSelector_AddWindows(selector, GTS_SELECTOR_PAGE_LETTERS);
     MI_CpuFill8(selector->enabled, TRUE, sizeof(selector->enabled));
@@ -1398,7 +1398,7 @@ static void GtsSelector_PrintCountryPage(GtsSelector *selector, int page, int co
 
 int GtsSelector_OpenSpeciesList(GtsSelector *selector) {
     int value;
-    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 35, 1);
+    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 35, TRUE);
     BgCellManager_GetCellTilemap(selector->cellManager, 0);
     GtsSelector_AddWindows(selector, GTS_SELECTOR_PAGE_SPECIES_LIST);
     value = selector->letter + gGtsSelectorGroupStarts[selector->group];
@@ -1555,7 +1555,7 @@ int GtsSelector_ReopenCountryGroups(GtsSelector *selector) {
 // The group's letters, greyed out without any country.
 int GtsSelector_OpenCountryLetters(GtsSelector *selector) {
     int i;
-    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 32, 1);
+    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 32, TRUE);
     BgCellManager_GetCellTilemap(selector->cellManager, 0);
     GtsSelector_AddWindows(selector, GTS_SELECTOR_PAGE_LETTERS);
     MI_CpuFill8(selector->enabled, TRUE, sizeof(selector->enabled));
@@ -1634,7 +1634,7 @@ int GtsSelector_BackToCountryLetters(GtsSelector *selector) {
 }
 
 int GtsSelector_OpenCountryList(GtsSelector *selector) {
-    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 30, 1);
+    BgCellManager_LoadCellTilemap(selector->cellManager, 0, NARC_a_1_0_0, 30, TRUE);
     BgCellManager_GetCellTilemap(selector->cellManager, 0);
     GtsSelector_AddWindows(selector, GTS_SELECTOR_PAGE_COUNTRY_LIST);
     selector->count = Gts_CreateCountryListItems(&selector->listItems, selector->countryNames, selector->letter + gGtsSelectorGroupStarts[selector->group]);

@@ -196,7 +196,7 @@ void PCBox_FreePanels(PCBoxView *view) {
 }
 
 static void PCBox_LoadPanelTilemap(BgCellManager *panels, u32 index, u32 fileId) {
-    BgCellManager_LoadCellTilemap(panels, index, 0x13, fileId, 1);
+    BgCellManager_LoadCellTilemap(panels, index, NARC_a_0_1_9, fileId, TRUE);
 }
 
 static void PCBox_DrawMarkingMenuEntry(PCBoxWork *work, u32 index) {

@@ -60,7 +60,7 @@ static inline BOOL BattleCastle_LaunchApp(FrontierScriptContext *ctx, const Over
     MI_CpuFill8(args, 0, sizeof(BattleCastleAppArgs));
     args->saveData = launchArgs->saveData;
     BattleCastle_FillAppArgs(args, data);
-    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, template, args, 0, BattleCastle_OnAppExit);
+    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, template, args, FALSE, BattleCastle_OnAppExit);
     return TRUE;
 }
 
@@ -117,7 +117,7 @@ BOOL FrtCmd_CastleStartBattle(FrontierScriptContext *ctx) {
     BattleCastleData *data = Frontier_GetData(ctx->frontierSystem->frontierWork);
     BattleSetup *setup = BattleCastle_NewBattleSetup(data, args);
     data->battleSetup = setup;
-    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_Battle, setup, 0, NULL);
+    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_Battle, setup, FALSE, NULL);
     return TRUE;
 }
 

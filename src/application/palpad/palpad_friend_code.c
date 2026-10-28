@@ -45,7 +45,7 @@ BOOL PalPadNaming_Main(PalPadNaming *naming, PalPadWork *work, PalPadShared *sha
         codeEntryParams[1] = 4;
         codeEntryParams[2] = 4;
         codeEntryParams[3] = 0;
-        naming->codeEntryArgs = CodeEntryArgs_New(heapId, 12, codeEntryParams, Save_PlayerData_GetOptionsAddr(shared->saveData), 0, 0);
+        naming->codeEntryArgs = CodeEntryArgs_New(heapId, 12, codeEntryParams, Save_PlayerData_GetOptionsAddr(shared->saveData), 0, FALSE);
         PalPad_TeardownScreens(work);
         naming->manager = OverlayManager_New(&gOverlayTemplate_NamingScreen, naming->namingArgs, heapId);
         shared->subState = PALPAD_NAMING_STATE_ENTER_NAME;

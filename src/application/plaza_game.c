@@ -2206,7 +2206,7 @@ static BOOL PlazaGameContinue_Run(PlazaGameContinue *prompt, PlazaGameMessageBox
     case PLAZA_GAME_CONTINUE_FADE: {
         enum HeapID heap = heapId;
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, heap);
-        WirelessStatusIcon_ShowOnBothScreens(0, heapId);
+        WirelessStatusIcon_ShowOnBothScreens(FALSE, heapId);
         if (prompt->voiceChat) {
             WifiConnection_StartVoiceChat(heap);
         }

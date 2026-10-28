@@ -143,11 +143,11 @@ static void ClearPlayingBGM(void) {
     GF_SndSetState(0);
 }
 
-void GF_SndStartFadeInBGM(u32 volume, u32 frames, u32 keepVolume) {
+void GF_SndStartFadeInBGM(u32 volume, u32 frames, BOOL keepVolume) {
     int playerNo = GF_GetPlayerNoBySeq(GF_GetCurrentPlayingBGM());
     if (playerNo != SOUND_PLAYER_NONE) {
         enum SoundHandleNo handleNo = GF_GetSndHandleByPlayerNo(playerNo);
-        if (keepVolume == 0) {
+        if (keepVolume == FALSE) {
             GF_SndHandleMoveVolume(handleNo, 0, 0);
         }
         GF_SndHandleMoveVolume(handleNo, volume, frames);

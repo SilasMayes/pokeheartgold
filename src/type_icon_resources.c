@@ -47,7 +47,7 @@ void TypeIcon_LoadChar(SpriteSystem *system, SpriteManager *manager, NNS_G2D_VRA
     SpriteSystem_LoadCharResObj(system, manager, narc, file, TRUE, vram, resource);
 }
 
-void TypeIcon_LoadPltt(SpriteSystem *system, SpriteManager *manager, int vram, int resource) {
+void TypeIcon_LoadPltt(SpriteSystem *system, SpriteManager *manager, NNS_G2D_VRAM_TYPE vram, int resource) {
     NarcId narc = TypeIcon_GetNarc();
     int file = TypeIcon_GetPlttFile();
     SpriteSystem_LoadPlttResObj(system, manager, narc, file, FALSE, 3, vram, resource);
@@ -105,7 +105,7 @@ NarcId MoveCategoryIcon_GetNarc(void) {
     return NARC_a_0_0_8;
 }
 
-void MoveCategoryIcon_LoadChar(SpriteSystem *system, SpriteManager *manager, int vram, int category, int resource) {
+void MoveCategoryIcon_LoadChar(SpriteSystem *system, SpriteManager *manager, NNS_G2D_VRAM_TYPE vram, int category, int resource) {
     NarcId narc = MoveCategoryIcon_GetNarc();
     int file = MoveCategoryIcon_GetCharFile(category);
     SpriteSystem_LoadCharResObj(system, manager, narc, file, TRUE, vram, resource);

@@ -286,7 +286,7 @@ static void TradeSequenceApproach_InitBgs(TradeSequenceApproach *approach) {
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
     WirelessStatusIcon_Create();
-    WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_56);
+    WirelessStatusIcon_ShowOnBothScreens(TRUE, HEAP_ID_56);
 }
 
 static void TradeSequenceApproach_FreeBgs(TradeSequenceApproach *approach) {

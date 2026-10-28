@@ -203,7 +203,7 @@ void Frontier_SetData(void *frontierWork, void *data) {
     work->launchArgs->frontierFsys = data;
 }
 
-void Frontier_LaunchApplication(void *frontierWork, const OverlayManagerTemplate *template, void *args, u32 freeArgs, FrontierAppExitFunc exit) {
+void Frontier_LaunchApplication(void *frontierWork, const OverlayManagerTemplate *template, void *args, BOOL freeArgs, FrontierAppExitFunc exit) {
     FrontierWork *work = frontierWork;
     GF_ASSERT(work->childManager == NULL);
     work->childManager = OverlayManager_New(template, args, HEAP_ID_FIELD2);

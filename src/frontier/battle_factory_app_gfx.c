@@ -73,7 +73,7 @@ BOOL BattleFactoryApp_IsLinkMode(BattleFactoryApp *app) {
 void BattleFactoryApp_InitBgCellManager(BattleFactoryApp *app) {
     app->bgCellManager = BgCellManager_New(app->bgConfig, 2, 1, HEAP_ID_100);
     BgCellManager_InitCell(app->bgCellManager, 0, 4, 18, 4);
-    BgCellManager_LoadCellTilemapFromOpenNarc(app->bgCellManager, 0, app->narc, 144, 1);
+    BgCellManager_LoadCellTilemapFromOpenNarc(app->bgCellManager, 0, app->narc, 144, TRUE);
 }
 
 void BattleFactoryApp_FreeBgCellManager(BattleFactoryApp *app) {

@@ -513,7 +513,7 @@ static BOOL FrtCmd_SetObjectLookAround(FrontierScriptContext *ctx) {
 static BOOL FrtCmd_LaunchNamingScreen(FrontierScriptContext *ctx) {
     FrontierLaunchArgs *args = Frontier_GetLaunchArgs(ctx->frontierSystem->frontierWork);
     NamingScreenArgs *namingArgs = NamingScreen_CreateArgs(HEAP_ID_FIELD2, NAME_SCREEN_PLAYER, 0, 8, args->options, NULL);
-    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_NamingScreen, namingArgs, 0, FrontierScript_FreeNamingScreenArgs);
+    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_NamingScreen, namingArgs, FALSE, FrontierScript_FreeNamingScreenArgs);
     return TRUE;
 }
 
@@ -684,7 +684,7 @@ static BOOL FrtCmd_PlayBattleRecord(FrontierScriptContext *ctx) {
     MI_CpuFill8(setup, 0, sizeof(BattleSetup));
     BattleRecord_Load(args->saveData, HEAP_ID_FIELD2, &result, setup, 0);
     Sound_SetSceneAndPlayBGM(5, SEQ_GS_VS_TRAINER, 1);
-    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_Battle, setup, 1, NULL);
+    Frontier_LaunchApplication(ctx->frontierSystem->frontierWork, &gOverlayTemplate_Battle, setup, TRUE, NULL);
     return TRUE;
 }
 

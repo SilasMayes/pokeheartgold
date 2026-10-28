@@ -1849,12 +1849,12 @@ BOOL PokeathlonCourse_IsInRange(int x, int y, int targetX, int targetY, int rang
 }
 
 // Creates the link of the course: the wireless command table (link mode) or a local command queue.
-void *PokeathlonCourseLink_New(const void *commands, int count, PokeathlonCourseData *data, int isLink, enum HeapID heapId) {
+void *PokeathlonCourseLink_New(const void *commands, int count, PokeathlonCourseData *data, BOOL isLink, enum HeapID heapId) {
     PokeathlonCourseLink *link = Heap_Alloc(heapId, sizeof(PokeathlonCourseLink));
     link->isLink = isLink;
     link->checkSize = FALSE;
     link->queue = NULL;
-    if (isLink == 1) {
+    if (isLink == TRUE) {
         Comm_RegisterCommandTable(commands, count, data);
     } else {
         link->queue = PokeathlonCourseCmdQueue_New(commands, count, data, heapId);

@@ -280,7 +280,7 @@ static void *WiiMessageSettings_CreateWiiNumberEntryArgs(WiiMessageSettings *app
     groups[1] = 4;
     groups[2] = 4;
     groups[3] = 4;
-    app->childArgs = CodeEntryArgs_New(HEAP_ID_115, 16, groups, Save_PlayerData_GetOptionsAddr(app->saveData), msg_0038_00004, 0);
+    app->childArgs = CodeEntryArgs_New(HEAP_ID_115, 16, groups, Save_PlayerData_GetOptionsAddr(app->saveData), msg_0038_00004, FALSE);
     return app->childArgs;
 }
 
@@ -309,7 +309,7 @@ static void *WiiMessageSettings_CreateRegistrationCodeEntryArgs(WiiMessageSettin
     groups[1] = 4;
     groups[2] = 0;
     groups[3] = 0;
-    app->childArgs = CodeEntryArgs_NewWithFixedDigits(HEAP_ID_115, 7, groups, Save_PlayerData_GetOptionsAddr(app->saveData), msg_0038_00005, 1, 1, app->registrationCodePrefix);
+    app->childArgs = CodeEntryArgs_NewWithFixedDigits(HEAP_ID_115, 7, groups, Save_PlayerData_GetOptionsAddr(app->saveData), msg_0038_00005, TRUE, 1, app->registrationCodePrefix);
     return app->childArgs;
 }
 
@@ -328,7 +328,7 @@ static void *WiiMessageSettings_CreatePasswordEntryArgs(WiiMessageSettings *app)
     groups[1] = 0;
     groups[2] = 0;
     groups[3] = 0;
-    app->childArgs = CodeEntryArgs_New(HEAP_ID_115, 4, groups, Save_PlayerData_GetOptionsAddr(app->saveData), msg_0038_00006, 0);
+    app->childArgs = CodeEntryArgs_New(HEAP_ID_115, 4, groups, Save_PlayerData_GetOptionsAddr(app->saveData), msg_0038_00006, FALSE);
     return app->childArgs;
 }
 

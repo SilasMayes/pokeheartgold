@@ -1962,7 +1962,7 @@ BOOL VsRecorder_FoundVideoSave(VsRecorderWork *work) {
         VsRecorder_FreeFoundVideoDetails(work);
         VsRecorder_RebuildMenuRowsParent(work);
         VsRecorder_SetVBlankPaused(work, FALSE);
-        WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_109);
+        WirelessStatusIcon_ShowOnBothScreens(TRUE, HEAP_ID_109);
         VsRecorder_StartFlipScreens(work, TRUE);
         work->step++;
         break;

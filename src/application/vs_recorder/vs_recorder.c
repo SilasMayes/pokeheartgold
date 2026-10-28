@@ -226,7 +226,7 @@ void VsRecorder_InitResources(VsRecorderWork *work) {
         G2dRenderer_SetObjCharTransferReservedRegion(NNS_G2D_VRAM_TYPE_2DSUB, GX_OBJVRAMMODE_CHAR_1D_128K);
         G2dRenderer_SetPlttTransferReservedRegion(NNS_G2D_VRAM_TYPE_2DSUB);
         WirelessStatusIcon_Create();
-        WirelessStatusIcon_ShowOnBothScreens(1, HEAP_ID_109);
+        WirelessStatusIcon_ShowOnBothScreens(TRUE, HEAP_ID_109);
         file = WirelessStatusIcon_LoadPaletteFile(HEAP_ID_109);
         NNS_G2dGetUnpackedPaletteData(file, &pltt);
         PaletteData_LoadPalette(work->plttData, pltt->pRawData, PLTTBUF_MAIN_OBJ, 0xE0, 0x20);
