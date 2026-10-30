@@ -9,9 +9,19 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
+#ifdef SDK_PORT
+// libntr backs the DS memory map with host memory: the same locations by name (as Platinum's
+// boot.c does)
+#define HW_ROM_HEADER_MIRROR   ((void *)HW_MAIN_MEM_SHARED)
+#define HW_ROM_HEADER_MIRROR_2 ((void *)HW_CARD_ROM_HEADER)
+#define HW_ROM_HEADER_VALID    ((u32 *)(HW_MAIN_MEM_SHARED + 0x0C))
+#define HW_ROM_BASE_OFFSET     ((u32 *)HW_ROM_BASE_OFFSET_BUF)
+#else
 #define HW_ROM_HEADER_MIRROR   ((void *)0x027FF000)
 #define HW_ROM_HEADER_MIRROR_2 ((void *)0x027FFA80)
 #define HW_ROM_HEADER_VALID    ((u32 *)0x027FF00C)
+#define HW_ROM_BASE_OFFSET     ((u32 *)0x027FFC2C)
+#endif
 #define ROM_GAME_CODE          0x4A414441
 #define ROM_MAKER_CODE         0x3130
 
@@ -59,7 +69,7 @@ void SystemCard_RebootIntoFile(const char *path) {
 
     FS_InitFile(&file);
     if (FS_OpenFile(&file, path)) {
-        *(u32 *)0x027FFC2C = file.prop.file.top;
+        *HW_ROM_BASE_OFFSET = file.prop.file.top;
         OS_ResetSystem(0);
     }
 }

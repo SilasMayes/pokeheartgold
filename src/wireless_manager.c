@@ -811,7 +811,11 @@ BOOL Wireless_StartMeasureChannels(void) {
     u16 ret;
 
     OS_GetMacAddress(macAddress);
+#ifdef SDK_PORT
+    seed = *(u32 *)HW_VBLANK_COUNT_BUF;
+#else
     seed = *(u32 *)0x027FFC3C;
+#endif
     seed = ((u16 *)macAddress)[2] + (((u16 *)macAddress)[1] + (((u16 *)macAddress)[0] + seed));
     sWirelessManager.work->random = seed;
     sWirelessManager.work->random = sWirelessManager.work->random * 0x10DCD + 0x3039;

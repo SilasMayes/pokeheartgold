@@ -1866,7 +1866,11 @@ static void BattleFactoryApp_VBlankCallback(BattleFactoryApp *app) {
         {
             // OS_SetIrqCheckFlag(OS_IE_V_BLANK)
             vu32 *dtcm = (vu32 *)0x027E0000;
+#ifdef SDK_PORT
+            OS_SetIrqCheckFlag(OS_IE_V_BLANK); // the DS writes the DTCM at its fixed address
+#else
             dtcm[0x3FF8 / 4] |= OS_IE_V_BLANK;
+#endif
         }
     }
 }

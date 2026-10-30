@@ -341,6 +341,9 @@ BOOL BattleHallData_SendLinkMessage(BattleHallData *data, u32 kind, u32 value) {
     case 7:
         return BattleHallLink_SendPartyMon(data);
     }
+#ifdef SDK_PORT
+    return TRUE; // nothing to send counts as sent
+#endif
 }
 
 u8 BattleHallData_GetWonBattlePoints(BattleHallData *data) {

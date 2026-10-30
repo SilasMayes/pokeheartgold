@@ -727,26 +727,32 @@ void BattleArcade_LoadBlendedBgExtPalette(u32 color, u32 mode) {
 }
 
 u16 BattleArcade_SendBuffer(ArcadeContext *ctx, u32 cmd, u32 value) {
+#ifdef SDK_PORT
+    BOOL result = FALSE;
+#endif
     switch (cmd) {
     case 0:
-        BattleArcadeLink_SendWinStreak(ctx);
+        PORT_RESULT(result, BattleArcadeLink_SendWinStreak(ctx));
         break;
     case 1:
-        BattleArcadeLink_SendTrainerIds(ctx);
+        PORT_RESULT(result, BattleArcadeLink_SendTrainerIds(ctx));
         break;
     case 2:
-        BattleArcadeLink_SendOpponentMons(ctx);
+        PORT_RESULT(result, BattleArcadeLink_SendOpponentMons(ctx));
         break;
     case 3:
-        BattleArcadeLink_SendValueA(ctx, value);
+        PORT_RESULT(result, BattleArcadeLink_SendValueA(ctx, value));
         break;
     case 4:
-        BattleArcadeLink_SendValueB(ctx, value);
+        PORT_RESULT(result, BattleArcadeLink_SendValueB(ctx, value));
         break;
     case 5:
-        BattleArcadeLink_SendPartyMons(ctx);
+        PORT_RESULT(result, BattleArcadeLink_SendPartyMons(ctx));
         break;
     }
+#ifdef SDK_PORT
+    return result;
+#endif
 }
 
 // Events 0-8 affect the opponent's party, 9-17 the player's party.

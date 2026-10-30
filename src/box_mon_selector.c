@@ -295,6 +295,9 @@ enum BoxMonSelectorRunResult BoxMonSelector_Run(BoxMonSelector *selector) {
         BoxMonSelector_WriteResults(selector);
         return BOX_MON_SELECTOR_DONE;
     }
+#ifdef SDK_PORT
+    return BOX_MON_SELECTOR_RUNNING; // idle: nothing to report
+#endif
 }
 
 static enum BoxMonSelectorRunResult BoxMonSelector_HandleInput(BoxMonSelector *selector) {

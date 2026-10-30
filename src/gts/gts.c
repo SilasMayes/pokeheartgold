@@ -267,7 +267,11 @@ static void Gts_VBlankCB(void *arg) {
     DoScheduledBgGpuUpdates(app->bgConfig);
     GF_RunVramTransferTasks();
     OamManager_ApplyAndResetBuffers();
+#ifdef SDK_PORT
+    OS_SetIrqCheckFlag(OS_IE_V_BLANK); // the DS writes the DTCM at its fixed address
+#else
     dtcm[0x3FF8 / 4] |= OS_IE_V_BLANK;
+#endif
 }
 
 static void Gts_SetGfxBanks(void) {

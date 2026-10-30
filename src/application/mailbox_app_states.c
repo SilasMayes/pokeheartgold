@@ -680,5 +680,9 @@ static int MailboxApp_PrintMailToBagResult(MailboxApp *app) {
     } else {
         MailboxApp_PrintMessage(app, 4);
     }
+#ifdef SDK_PORT
+    return MailboxApp_WaitForText(app, TRUE, MAILBOX_STATE_RETURN_TO_MAIL_LIST); // the DS returns the call's result, left in r0
+#else
     MailboxApp_WaitForText(app, TRUE, MAILBOX_STATE_RETURN_TO_MAIL_LIST);
+#endif
 }

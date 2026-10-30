@@ -45,7 +45,11 @@ void PokemonSummary_Init3D(PokemonSummary *summary) {
 void PokemonSummary_DrawPokepic(PokemonSummary *summary) {
     NNS_G2dSetupSoftwareSpriteCamera();
     PokepicManager_DrawAll(summary->pokepicManager);
+#ifdef SDK_PORT
+    G3_SwapBuffers(GX_SORTMODE_MANUAL, GX_BUFFERMODE_Z); // libntr renders on the swap command
+#else
     *(vu32 *)0x04000540 = 1;
+#endif
 }
 
 void PokemonSummary_FreePokepicAndCamera(PokemonSummary *summary) {

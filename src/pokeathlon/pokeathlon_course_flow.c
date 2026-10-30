@@ -1874,6 +1874,9 @@ BOOL PokeathlonCourseLink_SendCommand(int command, void *data, void *size, intpt
     } else {
         // BUG: nothing is returned here, although the callers use the result.
         PokeathlonCourseCmdQueue_Add(link->queue, command, data, (s32)size);
+#ifdef SDK_PORT
+        return TRUE; // queueing can't fail (the DS returns whatever r0 holds after the call)
+#endif
     }
 }
 
@@ -1883,6 +1886,9 @@ static BOOL PokeathlonCourseLink_SendLargeCommand(int cmd, void *data, int size,
     } else {
         // BUG: nothing is returned here, although the callers use the result.
         PokeathlonCourseCmdQueue_AddLarge(link->queue, cmd, data, size);
+#ifdef SDK_PORT
+        return TRUE; // as PokeathlonCourseLink_SendCommand
+#endif
     }
 }
 

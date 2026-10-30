@@ -393,7 +393,11 @@ static void GlobalTerminalConnect_VBlankCB(GlobalTerminalConnectWork *work) {
     GF_RunVramTransferTasks();
     OamManager_ApplyAndResetBuffers();
     DoScheduledBgGpuUpdates(work->bgConfig);
+#ifdef SDK_PORT
+    OS_SetIrqCheckFlag(OS_IE_V_BLANK); // the DS writes the DTCM at its fixed address
+#else
     dtcm[0x3FF8 / sizeof(u32)] |= OS_IE_V_BLANK;
+#endif
 }
 
 static void GlobalTerminalConnect_InitBgs(BgConfig *bgConfig) {

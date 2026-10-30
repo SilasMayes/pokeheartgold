@@ -30,6 +30,10 @@ static void Timer3_IrqHandler(void) {
 }
 
 u64 Timer3_GetTicks(void) {
+#ifdef SDK_PORT
+    // The OS tick runs at the same rate (system clock / 64), as in Platinum's port
+    return OS_GetTick();
+#else
     vu16 count_lo;
     vu64 count_hi;
     OSIntrMode bak_psr;

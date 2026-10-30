@@ -548,29 +548,35 @@ void BattleCastle_AddPoints(SaveData *saveData, u32 type, s32 amount) {
 }
 
 BOOL BattleCastleData_SendLinkMessage(BattleCastleData *data, u32 kind, u16 value) {
+#ifdef SDK_PORT
+    BOOL result = FALSE;
+#endif
     switch (kind) {
     case 0:
-        BattleCastleLink_SendRecord(data);
+        PORT_RESULT(result, BattleCastleLink_SendRecord(data));
         break;
     case 1:
-        BattleCastleLink_SendTrainerIds(data);
+        PORT_RESULT(result, BattleCastleLink_SendTrainerIds(data));
         break;
     case 2:
-        BattleCastleLink_SendChoice(data);
+        PORT_RESULT(result, BattleCastleLink_SendChoice(data));
         break;
     case 3:
-        BattleCastleLink_SendOpponentMons(data);
+        PORT_RESULT(result, BattleCastleLink_SendOpponentMons(data));
         break;
     case 4:
-        BattleCastleLink_SendValueA(data, value);
+        PORT_RESULT(result, BattleCastleLink_SendValueA(data, value));
         break;
     case 5:
-        BattleCastleLink_SendValueB(data, value);
+        PORT_RESULT(result, BattleCastleLink_SendValueB(data, value));
         break;
     case 6:
-        BattleCastleLink_SendPartyMons(data);
+        PORT_RESULT(result, BattleCastleLink_SendPartyMons(data));
         break;
     }
+#ifdef SDK_PORT
+    return result;
+#endif
 }
 
 void BattleCastle_ShowPointsWindows(FrontierSystem *system, BattleCastleData *data) {

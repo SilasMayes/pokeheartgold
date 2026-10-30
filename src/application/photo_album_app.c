@@ -768,10 +768,20 @@ static int PhotoAlbumApp_HandleGridInput(PhotoAlbumApp *app) {
     if (app->fadeRunning) {
         return PHOTO_ALBUM_STATE_GRID;
     }
+#ifdef SDK_PORT
+    // The next state is the touch handler's, or the key handler's when no touch was handled: what
+    // the DS returns through r0
+    int state = PhotoAlbumApp_HandleGridTouch(app, &done);
+    if (!done) {
+        state = PhotoAlbumApp_HandleGridKeys(app);
+    }
+    return state;
+#else
     PhotoAlbumApp_HandleGridTouch(app, &done);
     if (!done) {
         PhotoAlbumApp_HandleGridKeys(app);
     }
+#endif
 }
 
 // Handles a selection on the photo grid: 0-11 = photo, 12 = close, 13/14 = previous/next page.
@@ -827,7 +837,11 @@ static int PhotoAlbumApp_HandleGridTouch(PhotoAlbumApp *app, int *done) {
         PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         PlaySE(SEQ_SE_DP_SELECT);
     }
+#ifdef SDK_PORT
+    return PhotoAlbumApp_HandleGridSelection(app, (u8)hit); // the DS returns the call's result, left in r0
+#else
     PhotoAlbumApp_HandleGridSelection(app, (u8)hit);
+#endif
 }
 
 static int PhotoAlbumApp_HandleGridKeys(PhotoAlbumApp *app) {
@@ -1010,7 +1024,11 @@ static int PhotoAlbumApp_HandleMoveTouch(PhotoAlbumApp *app, int *done) {
         PhotoAlbumApp_SetCursorPos(app, app->cursorX, app->cursorY, TRUE);
         PlaySE(SEQ_SE_DP_SELECT);
     }
+#ifdef SDK_PORT
+    return PhotoAlbumApp_HandleMoveSelection(app, (u8)hit); // the DS returns the call's result, left in r0
+#else
     PhotoAlbumApp_HandleMoveSelection(app, (u8)hit);
+#endif
 }
 
 static int PhotoAlbumApp_HandleMoveKeys(PhotoAlbumApp *app) {

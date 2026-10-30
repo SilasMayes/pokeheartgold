@@ -515,7 +515,11 @@ void FrontierFieldSystem_GenerateStatTrainers(FrontierFieldSystem *frontierFsys)
 }
 
 u32 FrontierFieldSystem_GetTrainerOverworld(FrontierFieldSystem *frontierFsys, u32 index) {
+#ifdef SDK_PORT
+    return GetFrontierTrainerOverworld(frontierFsys->opponents[index].trainerClass); // the DS returns the call's result, left in r0
+#else
     GetFrontierTrainerOverworld(frontierFsys->opponents[index].trainerClass);
+#endif
 }
 
 u32 FrontierFieldSystem_GetBattleTowerMode(FrontierFieldSystem *frontierFsys) {

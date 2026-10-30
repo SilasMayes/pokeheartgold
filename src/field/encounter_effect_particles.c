@@ -58,7 +58,11 @@ void EncounterEffect_StartParticleMode(FieldSystem *fieldSystem) {
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG3, GF_PLANE_TOGGLE_OFF);
     GX_ResetBankForBG();
+#ifdef SDK_PORT
+    MI_CpuClearFast((void *)HW_LCDC_VRAM_C, 0x20000); // bank C, the capture target below
+#else
     MI_CpuClearFast((void *)0x06840000, 0x20000); // VRAM bank D (LCDC)
+#endif
     // capture the main screen into VRAM bank D
     reg_GX_DISPCAPCNT = 0xC0320C04;
     SysTask_CreateOnVWaitQueue(Task_ParticleSetup_VWait, gEncounterEffectState.particles, 1024);

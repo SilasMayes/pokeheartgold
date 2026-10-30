@@ -63,6 +63,9 @@ BOOL FrontierLinkLobby_Send(FrontierLinkLobby *lobby, int kind, u16 value, u16 s
     case LINK_LOBBY_SEND_VALUE71:
         return FrontierLinkLobby_SendValue71(lobby, value);
     }
+#ifdef SDK_PORT
+    return TRUE; // nothing to send counts as sent
+#endif
 }
 
 void FrontierLinkLobby_RunPartyApp(void *frontierWork, FrontierLinkLobby *lobby, u32 kind) {

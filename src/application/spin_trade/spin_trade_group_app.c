@@ -437,8 +437,13 @@ BOOL SpinTradeGroupApp_Init(OverlayManager *manager, int *state) {
         HBlankInterruptDisable();
         GfGfx_DisableEngineAPlanes();
         GfGfx_DisableEngineBPlanes();
+#ifdef SDK_PORT
+        reg_GX_DISPCNT &= 0xffffe0ff;
+        reg_GXS_DB_DISPCNT &= 0xffffe0ff;
+#else
         *(vu32 *)0x04000000 &= 0xffffe0ff;
         *(vu32 *)0x04001000 &= 0xffffe0ff;
+#endif
         Heap_Create(HEAP_ID_3, HEAP_ID_102, 0x80000);
         narc = NARC_New(NARC_a_2_1_5, HEAP_ID_102);
         GF_ASSERT(narc != NULL);

@@ -1338,7 +1338,11 @@ static void LinkBattleScreen_VBlankCallback(void *data) {
     SpriteSystem_TransferOam();
     // OS_SetIrqCheckFlag(OS_IE_V_BLANK)
     dtcm = (vu32 *)0x027E0000;
+#ifdef SDK_PORT
+    OS_SetIrqCheckFlag(OS_IE_V_BLANK); // the DS writes the DTCM at its fixed address
+#else
     dtcm[0x3FF8 / sizeof(u32)] |= OS_IE_V_BLANK;
+#endif
 }
 
 static void LinkBattleScreen_InitVsBgLayers(LinkBattleScreen *screen, BOOL use3D, BOOL shiftBg1) {

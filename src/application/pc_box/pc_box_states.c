@@ -1591,7 +1591,11 @@ enum PCBoxState PCBox_State_HideButtonsForBoxMenu(PCBoxWork *work) {
         PCBox_SlideOutTrayTab(work->view->panels);
         PCBox_SlideOutReturnButton(work->view->panels);
     }
+#ifdef SDK_PORT
+    return PCBox_WaitForUpdateFunc(work, PCBox_WaitBottomButtonsSlide, PC_BOX_STATE_OPEN_BOX_MENU_TRAY); // the DS returns the call's result, left in r0
+#else
     PCBox_WaitForUpdateFunc(work, PCBox_WaitBottomButtonsSlide, PC_BOX_STATE_OPEN_BOX_MENU_TRAY);
+#endif
 }
 
 enum PCBoxState PCBox_State_OpenBoxMenuTray(PCBoxWork *work) {

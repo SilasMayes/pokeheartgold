@@ -470,29 +470,35 @@ void BattleFactory_IncTradeCount(BattleFactoryData *data) {
 }
 
 u16 BattleFactory_SendBuffer(BattleFactoryData *data, u32 command, int value) {
+#ifdef SDK_PORT
+    BOOL result = FALSE;
+#endif
     switch (command) {
     case 0:
-        BattleFactoryLink_SendRecord(data);
+        PORT_RESULT(result, BattleFactoryLink_SendRecord(data));
         break;
     case 1:
-        BattleFactoryLink_SendTrainerIds(data);
+        PORT_RESULT(result, BattleFactoryLink_SendTrainerIds(data));
         break;
     case 2:
-        BattleFactoryLink_SendRentalMons(data);
+        PORT_RESULT(result, BattleFactoryLink_SendRentalMons(data));
         break;
     case 3:
-        BattleFactoryLink_SendOpponentMons(data);
+        PORT_RESULT(result, BattleFactoryLink_SendOpponentMons(data));
         break;
     case 4:
-        BattleFactoryLink_SendValueA(data, (u8)value);
+        PORT_RESULT(result, BattleFactoryLink_SendValueA(data, (u8)value));
         break;
     case 5:
-        BattleFactoryLink_SendValueB(data, (u8)value);
+        PORT_RESULT(result, BattleFactoryLink_SendValueB(data, (u8)value));
         break;
     case 6:
-        BattleFactoryLink_SendPartyMons(data);
+        PORT_RESULT(result, BattleFactoryLink_SendPartyMons(data));
         break;
     }
+#ifdef SDK_PORT
+    return result;
+#endif
 }
 
 int BattleFactory_GetWonBattlePoints(BattleFactoryData *data) {

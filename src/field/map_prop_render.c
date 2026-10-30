@@ -108,6 +108,9 @@ MapPropAnimationPoolList *MapPropAnimationPoolList_New(enum HeapID heapID) {
     poolList->unk0 = 0;
     poolList->head = 0;
     poolList->tail = 0;
+#ifdef SDK_PORT
+    return poolList; // the DS returns it through r0
+#endif
 }
 
 MapPropAnimationPool *MapPropAnimationPoolList_AddPool(MapPropAnimationPoolList *poolList, enum HeapID heapID, u16 count) {

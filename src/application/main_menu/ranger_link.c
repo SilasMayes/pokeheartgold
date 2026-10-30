@@ -471,6 +471,9 @@ static void RangerLink_Abort(void) {
 
 static u32 RangerLink_GetMacAddressTail(u8 *macAddress) {
     volatile u32 result = RangerLink_ReadMacAddressTail(macAddress);
+#ifdef SDK_PORT
+    return result; // the DS returns it through r0
+#endif
 }
 
 static int RangerLink_GetMacAddressHead(u8 *macAddress) {

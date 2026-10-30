@@ -207,7 +207,11 @@ static void HallOfFameShowcase_VBlankCB(void *data) {
 
     DoScheduledBgGpuUpdates(showcase->bgConfig);
     SpriteSystem_TransferOam();
+#ifdef SDK_PORT
+    OS_SetIrqCheckFlag(OS_IE_V_BLANK); // the DS writes the DTCM at its fixed address
+#else
     dtcm[(HW_INTR_CHECK_BUF - HW_DTCM) / 4] |= OS_IE_V_BLANK; // OS_SetIrqCheckFlag, through the DTCM base address
+#endif
 }
 
 static void HallOfFameShowcase_LoadMainObjChar(const void *src, u32 offset, u32 size) {

@@ -847,7 +847,11 @@ static void WirelessTradeSelectMon_VBlankCB(WirelessTradeSelectMon *work) {
     }
     GF_RunVramTransferTasks();
     OamManager_ApplyAndResetBuffers();
+#ifdef SDK_PORT
+    OS_SetIrqCheckFlag(OS_IE_V_BLANK); // the DS writes the DTCM at its fixed address
+#else
     dtcm[(HW_INTR_CHECK_BUF - HW_DTCM) / 4] |= OS_IE_V_BLANK; // OS_SetIrqCheckFlag, through the DTCM base address
+#endif
 }
 
 static void WirelessTradeSelectMon_SetGfxBanks(void) {

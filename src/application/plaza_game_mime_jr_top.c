@@ -1052,7 +1052,11 @@ static void MimeJrTop_VBlank(void *data) {
     SpriteSystem_TransferOam();
     PaletteData_PushTransparentBuffers(app->resources.palette);
     DoScheduledBgGpuUpdates(app->resources.bgConfig);
+#ifdef SDK_PORT
+    OS_SetIrqCheckFlag(OS_IE_V_BLANK); // the DS writes the DTCM at its fixed address
+#else
     irqCheck[0x3FF8 / 4] |= OS_IE_V_BLANK; // HW_INTR_CHECK_BUF
+#endif
 }
 
 static BOOL MimeJrTop_IsParent(MimeJrTopApp *app) {
