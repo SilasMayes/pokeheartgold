@@ -33,7 +33,12 @@ struct FieldEffect {
     FieldEffectPool *pool;
     u8 padding[12];
     VecFx32 position;
+#ifdef SDK_PORT
+    // The states hold pointers: the largest (MudSplashEffect, PuddleSplashEffect) are 216 bytes here
+    u8 state[256]; // per-effect work area handed to the callbacks
+#else
     u8 state[128]; // per-effect work area handed to the callbacks
+#endif
     FieldEffectInitFunc init;
     FieldEffectFunc update;
     FieldEffectFunc draw;
@@ -131,6 +136,7 @@ static FieldEffect *FieldEffectPool_AddEffect(FieldEffectPool *pool, const Field
     }
 #ifdef SDK_PORT
     // stateSize is the DS size of the effect's state struct, which holds pointers: clear all of it
+    GF_ASSERT(template->basic.stateSize <= sizeof(effect->state));
     FieldEffect_ClearState(effect, sizeof(effect->state));
 #else
     FieldEffect_ClearState(effect, template->basic.stateSize);
