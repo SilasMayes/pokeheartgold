@@ -94,3 +94,26 @@ enum PPWLobbyResult PPW_LobbyUpdateRecruitInfo(WiFiPlazaLobbyMatch *match) {
 enum PPWLobbyResult PPW_LobbyStopRecruit(void) {
     return PPW_LOBBY_RESULT_ERROR_STATE;
 }
+
+// Channel-name strings that src/data/dwc_lobby_data_{1,2}.c point at. With the lobby library they
+// come from lib/port/dwc_lobby_chat_data.c (desktop only, it also holds the library's vtables).
+#define LOBBY_STUB_STR(name, text) const u8 gLobbyStr_##name[] = text
+LOBBY_STUB_STR(M, "M");
+LOBBY_STUB_STR(F1, "F1");
+LOBBY_STUB_STR(F2, "F2");
+LOBBY_STUB_STR(C, "C");
+LOBBY_STUB_STR(N, "N");
+LOBBY_STUB_STR(Invalid, "Invalid");
+LOBBY_STUB_STR(R, "R");
+LOBBY_STUB_STR(T, "T");
+LOBBY_STUB_STR(D, "D");
+LOBBY_STUB_STR(D1, "D1");
+LOBBY_STUB_STR(D2, "D2");
+LOBBY_STUB_STR(D3, "D3");
+LOBBY_STUB_STR(D4, "D4");
+LOBBY_STUB_STR(D5, "D5");
+LOBBY_STUB_STR(D6, "D6");
+LOBBY_STUB_STR(D7, "D7");
+LOBBY_STUB_STR(D8, "D8");
+LOBBY_STUB_STR(D9, "D9");
+#undef LOBBY_STUB_STR

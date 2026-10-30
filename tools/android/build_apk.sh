@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# Builds the Android APK (arm64-v8a).
+#
+# Requirements: Android NDK r26+ (ANDROID_NDK_HOME), Android SDK (ANDROID_HOME) and
+# Gradle 8.9+ on PATH, plus the usual PC-port host tools (python3, gcc, ninja, nasm,
+# flex, bison, cmake, libpng) and meson >= 1.3 on PATH (or MESON=...).
+#
+# The APK contains code only. Game files are extracted from the player's own ROM on
+# first launch, exactly like the PC releases.
+set -euo pipefail
+
+ROOT=$(cd "$(dirname "$0")/../.." && pwd)
+BUILD=${BUILD_ANDROID:-$ROOT/build_android}
+API=29
+ABI=arm64-v8a
+SDL_VERSION=${SDL_VERSION:-2.30.11}
+ENET_VERSION=${ENET_VERSION:-v1.3.18}
+NDK=${ANDROID_NDK_HOME:?Set ANDROID_NDK_HOME to your Android NDK}
+TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/${NDK_HOST_TAG:-$(uname -s | tr A-Z a-z)-x86_64}
+DEPS=$BUILD/deps
+PREFIX=$DEPS/prefix
+# pret-style trees fetch meson into subprojects/ (make meson); the HGSS tree uses the one on PATH
+if [ -f "$ROOT/subprojects/meson-1.12.0/meson.py" ]; then
+    MESON="python3 $ROOT/subprojects/meson-1.12.0/meson.py"
+else
+    MESON=${MESON:-meson}
+fi
+
+mkdir -p "$DEPS" "$PREFIX/lib" "$PREFIX/include"
+
+cmake_android() {
+    cmake -G Ninja \
+        -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
+        -DANDROID_ABI=$ABI \
+        -DANDROID_PLATFORM=android-$API \
+        -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+        -DCMAKE_BUILD_TYPE=Release \
+        "$@"
+}
+
+# 1. SDL2 (shared library + matching Java sources)
+if [ ! -f "$PREFIX/lib/libSDL2.so" ]; then
+    rm -rf "$DEPS/SDL"
+    git clone --depth 1 -b "release-$SDL_VERSION" https://github.com/libsdl-org/SDL "$DEPS/SDL"
+    cmake_android -S "$DEPS/SDL" -B "$DEPS/SDL/build" \
+        -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST=OFF \
+        -DCMAKE_INSTALL_PREFIX="$PREFIX"
+    cmake --build "$DEPS/SDL/build"
+    cmake --install "$DEPS/SDL/build"
+fi
+
+# 2. enet (static, used by libntr's local multiplayer)
+if [ ! -f "$PREFIX/lib/libenet.a" ]; then
+    rm -rf "$DEPS/enet"
+    git clone --depth 1 -b "$ENET_VERSION" https://github.com/lsalzman/enet "$DEPS/enet"
+    cmake_android -S "$DEPS/enet" -B "$DEPS/enet/build" -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+    cmake --build "$DEPS/enet/build"
+    cp "$DEPS/enet/build/libenet.a" "$PREFIX/lib/"
+    cp -r "$DEPS/enet/include/enet" "$PREFIX/include/"
+fi
+
+# 3. Meson cross file for the NDK
+cat > "$BUILD/android.ini" <<INI
+[constants]
+toolchain = '$TOOLCHAIN/bin'
+prefix = '$PREFIX'
+
+[binaries]
+c = toolchain / 'aarch64-linux-android$API-clang'
+cpp = toolchain / 'aarch64-linux-android$API-clang++'
+ar = toolchain / 'llvm-ar'
+strip = toolchain / 'llvm-strip'
+
+[built-in options]
+# The decompiled game code type-puns and relies on wrapping signed arithmetic (as the
+# DS compiler allowed), so optimize without strict aliasing or signed-overflow UB
+# libntr also writes across neighbouring hardware-register variables in places (like the
+# DS register file), which FORTIFY would abort on.
+c_args = ['-I' + prefix / 'include', '-fno-strict-aliasing', '-fwrapv', '-U_FORTIFY_SOURCE']
+cpp_args = ['-I' + prefix / 'include', '-fno-strict-aliasing', '-fwrapv', '-U_FORTIFY_SOURCE']
+c_link_args = ['-L' + prefix / 'lib']
+cpp_link_args = ['-L' + prefix / 'lib']
+
+[host_machine]
+# Really android/aarch64; the NDK compiler targets that no matter what meson is told.
+# - system: meson forces -fPIE on every target for 'android', which breaks linking the
+#   static libraries into libmain.so. Everything is built with -fPIC instead.
+# - cpu: meson refuses NASM for non-x86 hosts, and the project declares NASM (only DS
+#   builds use it). Same workaround as the NX target.
+system = 'linux'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
+INI
+
+# 4. libmain.so
+if [ ! -f "$BUILD/meson/build.ninja" ]; then
+    # The PC builds compile without optimization; a handheld CPU can't absorb that
+    $MESON setup -Dbuild_target=android -Doptimization=2 \
+        --native-file="$ROOT/meson/native.ini" \
+        --cross-file="$BUILD/android.ini" \
+        -- "$BUILD/meson"
+fi
+# -k 0: report every failing file in one go instead of stopping at the first
+$MESON compile -C "$BUILD/meson" --ninja-args=-k,0 main
+
+# 5. Assemble the Gradle project
+APP=$ROOT/android/app/src/main
+JNI=$APP/jniLibs/$ABI
+mkdir -p "$JNI" "$APP/assets" "$APP/java/org/libsdl"
+"$TOOLCHAIN/bin/llvm-strip" --strip-unneeded -o "$JNI/libmain.so" "$BUILD/meson/main.so"
+cp "$PREFIX/lib/libSDL2.so" "$JNI/"
+rm -rf "$APP/java/org/libsdl/app"
+cp -r "$DEPS/SDL/android-project/app/src/main/java/org/libsdl/app" "$APP/java/org/libsdl/"
+# Wi-Fi settings placeholder written by the port itself (not DS firmware)
+cp "$ROOT/res/pc_port/dwc_nv.bin" "$APP/assets/firmware.bin"
+
+# 6. APK
+(cd "$ROOT/android" && gradle --no-daemon assembleRelease)
+echo "APK: $ROOT/android/app/build/outputs/apk/release/app-release.apk"
