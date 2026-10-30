@@ -53,6 +53,17 @@ typedef struct MainMenuUtilWork {
 } MainMenuUtilWork;
 
 extern enum HeapID gMainMenuUtilCryptoHeapId; // heap of the crypto library
+
+// On the DS gMainMenuUtilWork is 13 words of main_menu_shared.c's .bss right after
+// gMainMenuUtilCryptoHeapId (asm/main_menu_bss.s), followed by main_menu_data.s's labels
+// gMainMenuUtilSprites, gMainMenuUtilRenderer, gMainMenuUtilGiftSpriteWork and
+// gMainMenuUtilVBlankWork, which together make up MainMenuUtilWork. Some functions reach it as the
+// word after the heap ID. The port defines the whole struct in main_menu_shared.c.
+#ifdef SDK_PORT
+#define MAIN_MENU_UTIL_WORK() (&gMainMenuUtilWork)
+#else
+#define MAIN_MENU_UTIL_WORK() ((MainMenuUtilWork *)(&gMainMenuUtilCryptoHeapId + 1))
+#endif
 extern u32 gMainMenuUtilVBlankWork[];
 
 void MainMenuUtil_SetCryptoHeap(enum HeapID heapID);

@@ -131,6 +131,13 @@ static void *AGB_GetBoxMonSubstruct(AgbBoxMon *mon, u32 personality, u32 which);
 
 extern PmAgbSave gPmAgbSave;
 
+#ifdef SDK_PORT
+#define PM_AGB_SAVE_SLOT_PTR (&gPmAgbSave.slot)
+#else
+// gPmAgbSave.slot, reached as the word after gMigrateFromAgbIcons in .bss (asm/main_menu_bss.s)
+#define PM_AGB_SAVE_SLOT_PTR ((u32 *)(&gMigrateFromAgbIcons + 1))
+#endif
+
 static BOOL PmAgbCartridgeHasFlash(void);
 static int IdentifyPmAgbCartridge(PmAgbCartridgeSpec *specs, int count);
 static u16 PmAgbCartridge_CalcSectorChecksum(u32 *data, u16 size);
@@ -362,7 +369,7 @@ static enum AgbSaveSlotStatus PmAgbCartridge_FindLatestSaveSlot(AgbSaveSector *s
 
 // Reads the latest save into the buffer
 int PmAgbCartridge_LoadSave(void) {
-    enum AgbSaveSlotStatus result = PmAgbCartridge_FindLatestSaveSlot((AgbSaveSector *)gPmAgbSave.buffer, (u32 *)(&gMigrateFromAgbIcons + 1), &gPmAgbSaveCounter);
+    enum AgbSaveSlotStatus result = PmAgbCartridge_FindLatestSaveSlot((AgbSaveSector *)gPmAgbSave.buffer, PM_AGB_SAVE_SLOT_PTR, &gPmAgbSaveCounter);
     PmAgbSave *save;
 
     if (result != AGB_SAVE_SLOT_VALID) {

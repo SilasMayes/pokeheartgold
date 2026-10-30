@@ -22,9 +22,14 @@ u16 MATH_CalcCRC16(const MATHCRC16Table *table, const void *data, u32 dataLength
 BOOL CTRDG_IsAgbCartridge(void);
 void CTRDG_TerminateForPulledOut(void);
 
+#ifdef SDK_PORT
+MainMenuUtilWork gMainMenuUtilWork; // see main_menu_util.h
+#define sMainMenuUtilWork (&gMainMenuUtilWork)
+#else
 u32 gMainMenuUtilWork[13];
 
 #define sMainMenuUtilWork ((MainMenuUtilWork *)gMainMenuUtilWork)
+#endif
 
 static void MainMenuUtil_CartridgeIrqHandler(void);
 static void MainMenuUtil_IgnoreCartridgeIrqHandler(void);
@@ -44,7 +49,11 @@ void MainMenuUtil_ShowCardSubScreen(BgConfig *bgConfig, WonderCard *card) {
     Heap_Free(file);
     BgTilemapRectChangePalette(bgConfig, GF_BG_LYR_SUB_1, 0, 0, 32, 24, palette + 8);
     ScheduleBgTilemapBufferTransfer(bgConfig, GF_BG_LYR_SUB_1);
-    gMainMenuUtilVBlankWork[9] = (u32)MainMenuUtil_LoadCardSubScreenPalette;
+#ifdef SDK_PORT
+    sMainMenuUtilWork->vblankCallback = MainMenuUtil_LoadCardSubScreenPalette;
+#else
+    gMainMenuUtilVBlankWork[9] = (u32)MainMenuUtil_LoadCardSubScreenPalette; // vblankCallback
+#endif
     sMainMenuUtilWork->bgConfig = bgConfig;
     switch (tag) {
     case MG_TAG_BATTLE_RULES:
@@ -186,7 +195,7 @@ void MainMenuUtil_StartSave(SaveData *saveData) {
 }
 
 int MainMenuUtil_RunSave(void) {
-    MainMenuUtilWork *work = (MainMenuUtilWork *)(&gMainMenuUtilCryptoHeapId + 1);
+    MainMenuUtilWork *work = MAIN_MENU_UTIL_WORK();
     int result;
 
     switch (sMainMenuUtilWork->saveState) {
@@ -217,7 +226,7 @@ int MainMenuUtil_RunSave(void) {
 }
 
 void MainMenuUtil_ResumeSave(void) {
-    MainMenuUtilWork *work = (MainMenuUtilWork *)(&gMainMenuUtilCryptoHeapId + 1);
+    MainMenuUtilWork *work = MAIN_MENU_UTIL_WORK();
 
     if (sMainMenuUtilWork->saveState == SAVE_STATE_PAUSED) {
         work->saveState = SAVE_STATE_WRITING;
