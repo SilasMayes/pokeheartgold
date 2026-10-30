@@ -129,7 +129,12 @@ static FieldEffect *FieldEffectPool_AddEffect(FieldEffectPool *pool, const Field
         VecFx32 zero = { 0, 0, 0 };
         FieldEffect_SetPosition(effect, &zero);
     }
+#ifdef SDK_PORT
+    // stateSize is the DS size of the effect's state struct, which holds pointers: clear all of it
+    FieldEffect_ClearState(effect, sizeof(effect->state));
+#else
     FieldEffect_ClearState(effect, template->basic.stateSize);
+#endif
     FieldEffect_SetInitFunc(effect, template->basic.init);
     FieldEffect_SetDestroyFunc(effect, template->basic.destroy);
     FieldEffect_SetUpdateFunc(effect, template->basic.update);
