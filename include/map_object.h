@@ -37,8 +37,12 @@ struct MapObjectManager { // declared field_system.h
     u32 priority;
     u8 unk10[4];
     NARC *mapModelNarc;
-    u32 render;
+    u32 render; // the MapObjectRender starts here (MapObjectManager_GetRender)
+#ifdef SDK_PORT
+    u8 unk1C[0x108 + 0x28]; // MapObjectRender is larger with 64-bit pointers (checked in map_object_render.c)
+#else
     u8 unk1C[0x108];
+#endif
     LocalMapObject *objects;
     FieldSystem *fieldSystem;
 }; // size: 0x12c

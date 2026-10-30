@@ -337,8 +337,8 @@ static u32 WifiClub_FinishGameEntry(WifiClubTask *task) {
 }
 
 static PlazaGameArgs *WifiClub_LaunchSwalotPlop(FieldSystem *fieldSystem, enum HeapID heapID, u32 selection) {
-    PlazaGameArgs *args = Heap_Alloc(heapID, 0x3C);
-    memset(args, 0, 0x3C);
+    PlazaGameArgs *args = Heap_Alloc(heapID, PORT_SIZEOF(PlazaGameArgs, 0x3C));
+    memset(args, 0, PORT_SIZEOF(PlazaGameArgs, 0x3C));
     args->voiceChat = selection;
     args->fromLobby = FALSE;
     args->saveData = fieldSystem->saveData;
@@ -369,8 +369,8 @@ static void WifiClub_FinishMimeJrTop(PlazaGameArgs *args) {
 }
 
 static PlazaGameArgs *WifiClub_LaunchWobbuffetPop(FieldSystem *fieldSystem, enum HeapID heapID, u32 selection) {
-    PlazaGameArgs *args = Heap_Alloc(heapID, 0x3C);
-    MI_CpuFill8(args, 0, 0x3C);
+    PlazaGameArgs *args = Heap_Alloc(heapID, PORT_SIZEOF(PlazaGameArgs, 0x3C));
+    MI_CpuFill8(args, 0, PORT_SIZEOF(PlazaGameArgs, 0x3C));
     args->voiceChat = selection;
     args->fromLobby = FALSE;
     args->saveData = fieldSystem->saveData;

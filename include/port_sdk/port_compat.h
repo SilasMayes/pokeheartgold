@@ -16,6 +16,10 @@
 // still in r0): the port keeps it in a variable and returns it. The bare call on the DS.
 #define PORT_RESULT(var, call) ((var) = (call))
 
+// A size the DS code writes as a number (an allocation of a struct or an array of pointers):
+// the struct's real size here, where pointers are 8 bytes. The number itself on the DS.
+#define PORT_SIZEOF(type, dsSize) sizeof(type)
+
 // cw/function_target.h
 #ifndef ALIGN
 #define ALIGN(num) __attribute__((aligned(num)))

@@ -25,6 +25,12 @@
 #include "metatile_behavior.h"
 #include "sys_task_api.h"
 
+#ifdef SDK_PORT
+// MapObjectManager embeds the render at its render field (MapObjectManager_GetRender)
+_Static_assert(sizeof(MapObjectRender) <= offsetof(MapObjectManager, objects) - offsetof(MapObjectManager, render),
+               "MapObjectManager's room for the render");
+#endif
+
 // Sprite ID -> its cached resource; spriteId MAP_OBJECT_GFX_ID_INVALID marks a free slot
 typedef struct BillboardResourceSlot {
     u32 spriteId;

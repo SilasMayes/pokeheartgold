@@ -9,6 +9,11 @@
 #include "heap.h"
 #include "sys_task_api.h"
 
+#ifdef SDK_PORT
+_Static_assert(sizeof(RenderModelStorage) == sizeof(RenderModel) && offsetof(RenderModelStorage, model) == offsetof(RenderModel, model),
+               "RenderModelStorage is a RenderModel");
+#endif
+
 static void RenderModel_Clear(RenderModel *model);
 static void RenderModel_InitFromFile(RenderModel *model, NNSG3dResFileHeader *file, u32 index);
 static void RenderModel_BindTextures(RenderModel *model);

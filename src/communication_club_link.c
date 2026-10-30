@@ -100,7 +100,7 @@ void CommClubLink_StartCardExchange(FieldSystem *fieldSystem) {
         CommPlayerInfo_GetProfile(Comm_GetLocalNetId());
         for (i = 0; i < Comm_CountConnected(); i++) {
             if (gCommClubLink->cards[i] == NULL) {
-                gCommClubLink->cards[i] = Heap_Alloc(HEAP_ID_DEFAULT, 0x66C);
+                gCommClubLink->cards[i] = Heap_Alloc(HEAP_ID_DEFAULT, PORT_SIZEOF(TrainerCardData, 0x66C));
             }
         }
         TrainerCardData_Build(0, 0, 0, 0xFF, gCommClubLink->fieldSystem, gCommClubLink->cards[netId]);

@@ -36,10 +36,20 @@ typedef struct FieldEffectBasicTemplate {
     FieldEffectFunc draw;
 } FieldEffectBasicTemplate;
 
+// A RenderModel (render_model.h) as the effects embed it
 typedef struct {
+#ifdef SDK_PORT
+    // RenderModel's own fields: the DS offsets only hold with 32-bit pointers (checked in render_model.c)
+    BOOL loaded;
+    NNSG3dResFileHeader *file;
+    NNSG3dResMdlSet *set;
+    NNSG3dResMdl *model;
+    NNSG3dResTex *texture;
+#else
     u8 unk0[0xc];
     NNSG3dResMdl *model;
     u8 unk10[4];
+#endif
 } RenderModelStorage;
 
 FieldEffectManager *FieldEffectManager_New(FieldSystem *fieldSystem, u32 rendererCount, enum HeapID heapID);

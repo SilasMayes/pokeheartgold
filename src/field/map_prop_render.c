@@ -24,10 +24,10 @@ Field3dRenderObjManager *Field3dObjectList_New(enum HeapID heapID, int indexMax,
     for (i = 0; i < indexMax; i++) {
         renderObjManager->modelNumToLoadedSlot[i] = 0xFF;
     }
-    int size = objectMax * 0x5C;
+    int size = objectMax * PORT_SIZEOF(Field3dRenderObj, 0x5C);
     renderObjManager->objectHeap = Heap_Alloc(heapID, size);
     MIi_CpuClearFast(0, (u32 *)renderObjManager->objectHeap, size);
-    renderObjManager->objects = Heap_Alloc(heapID, objectMax * 4);
+    renderObjManager->objects = Heap_Alloc(heapID, objectMax * PORT_SIZEOF(Field3dRenderObj *, 4));
     for (i = 0; i < objectMax; i++) {
         renderObjManager->objects[i] = &renderObjManager->objectHeap[i];
     }
@@ -119,9 +119,15 @@ MapPropAnimationPool *MapPropAnimationPoolList_AddPool(MapPropAnimationPoolList 
     ret->capacity = count;
     ret->loadFunc = NULL;
     HeapExp_FndInitAllocator(&ret->allocator, heapID, 4);
+#ifdef SDK_PORT
+    ret->animations = Heap_Alloc(heapID, count * sizeof(MapPropAnimation));
+    MIi_CpuClearFast(0, (u32 *)(ret->animations), count * sizeof(MapPropAnimation));
+    ret->freeList = Heap_Alloc(heapID, count * sizeof(MapPropAnimation *));
+#else
     ret->animations = Heap_Alloc(heapID, count << 5);
     MIi_CpuClearFast(0, (u32 *)(ret->animations), count << 5);
     ret->freeList = Heap_Alloc(heapID, count << 2);
+#endif
 
     for (int i = 0; i < count; i++) {
         ret->animations[i].inUse = 0;

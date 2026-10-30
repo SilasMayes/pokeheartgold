@@ -44,8 +44,8 @@ void EncounterEffect_FrontierOrLinkSingle(SysTask *task, EncounterEffectTask *ct
 
     switch (ctx->state) {
     case FRONTIER_SINGLE_STATE_LOAD:
-        ctx->work = Heap_Alloc(HEAP_ID_FIELD1, 0x1a4);
-        memset(ctx->work, 0, 0x1a4);
+        ctx->work = Heap_Alloc(HEAP_ID_FIELD1, PORT_SIZEOF(FrontierOrLinkSingleEffectWork, 0x1a4));
+        memset(ctx->work, 0, PORT_SIZEOF(FrontierOrLinkSingleEffectWork, 0x1a4));
         work = ctx->work;
         EncounterEffect_InitSprites(&work->spriteManager, 1, 1);
         EncounterEffect_LoadSpriteResources(ctx->narc, &work->spriteManager, &work->spriteResources, 0, 1, 7, 9, 8, 0x927c0);
