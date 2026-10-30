@@ -3,6 +3,10 @@
 
 #include "application/pokewalker/pokewalker_ir.h"
 
+#ifdef SDK_PORT
+#include "application/pokewalker/pokewalker_ir_work.h"
+#endif
+
 // IR link layer state.
 typedef struct PokewalkerIrLink {
     u8 unk_00;
@@ -64,8 +68,8 @@ typedef struct PokewalkerIrTransfer {
     u8 unk_1E[2];
     u8 *data; // source data (send) or Pokewalker address (receive)
     u8 *dataStart;
-    u32 address; // Pokewalker address (send) or destination (receive)
-    u32 addressStart;
+    uintptr_t address; // Pokewalker address (send) or destination (receive)
+    uintptr_t addressStart;
     u16 remaining;
     u16 size;
     u16 numChunks;
@@ -79,10 +83,29 @@ extern u8 gPokewalkerIrLinkArgs[];
 extern PokewalkerIrLink gPokewalkerIrLink;
 extern PokewalkerIrPacket gPokewalkerIrPacket;
 extern u8 gPokewalkerIrPayload[];
+#ifdef SDK_PORT
+// On the DS these are labels inside pokewalker_ir_requests.c's .bss (pokewalker_ir_requests.alias-map.json,
+// added by tools/object_aliases.py), so the views overlap: gPokewalkerIrWork spans the header and the
+// buffers, gPokewalkerIrTransfer spans the sync and progress objects, and so on. The offsets only hold
+// with 32-bit pointers. The port keeps the header and buffers as one struct (PokewalkerIrWork views it
+// field for field, checked in pokewalker_ir_requests.c) and gives the rest their own objects; the
+// requests file writes the shared transfer fields through gPokewalkerIrTransfer.
+typedef struct PokewalkerIrWorkArea {
+    PokewalkerIrWorkHeader header;
+    PokewalkerIrWorkBuffers buffers;
+} PokewalkerIrWorkArea;
+
+extern PokewalkerIrWorkArea gPokewalkerIrWorkArea;
+#define gPokewalkerIrWork        (*(PokewalkerIrWork *)&gPokewalkerIrWorkArea)
+#define gPokewalkerIrBuffers     (gPokewalkerIrWorkArea.buffers.messages)
+#define gPokewalkerIrImageSizes  (&gPokewalkerIrWorkArea.buffers.compressedImageSizes)
+#define gPokewalkerIrStrollSizes (&gPokewalkerIrWorkArea.buffers.compressedStrollSizes)
+#else
 extern PokewalkerIrWork gPokewalkerIrWork;
 extern OSMessage gPokewalkerIrBuffers[];
 extern u8 *gPokewalkerIrImageSizes[];
 extern u8 *gPokewalkerIrStrollSizes[];
+#endif
 extern OSMutex gPokewalkerIrSync;
 extern OSMessageQueue gPokewalkerIrMessageQueue;
 extern PokewalkerIrTransfer gPokewalkerIrTransfer;

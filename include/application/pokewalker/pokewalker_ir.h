@@ -141,7 +141,7 @@ BOOL PokewalkerIr_IsConnected(void);
 void PokewalkerIr_SetCompressBuffer(void *buffer);
 void PokewalkerIr_CompressBlocks(u8 *src, u8 *dst, u16 size, u8 *sizes);
 void PokewalkerIr_SetIdentities(PokewalkerIrIdentity *identity, PokewalkerIrIdentity *peerIdentity);
-void PokewalkerIr_BeginTransfer(void *data, u32 address, int size);
+void PokewalkerIr_BeginTransfer(void *data, uintptr_t address, int size);
 void PokewalkerIr_Start(void *stack, u32 stackSize, u32 priority);
 void PokewalkerIr_Stop(void);
 void PokewalkerIr_RequestEraseRecords(BOOL active);

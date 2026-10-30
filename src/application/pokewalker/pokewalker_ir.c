@@ -14,12 +14,28 @@ extern void CARD_SetSpiWriteWaitCycles(u32 cycles);
 extern void CARD_SetSpiReadWaitCycles(u32 cycles);
 extern u32 CARD_SpiWaitReadRange(void *dst);
 extern void CARD_SpiWaitWriteRange(void *src, u32 len);
+#ifndef SDK_PORT // libntr declares these
 extern int MI_CompressLZImpl(const void *src, u32 size, void *dst, int unk);
+#endif // SDK_PORT
+#ifdef SDK_PORT // mwcc runtime helpers
+static inline float _f_ulltof(u64 value) {
+    return (float)value;
+}
+static inline float _fdiv(float a, float b) {
+    return a / b;
+}
+static inline u64 _ll_udiv(u64 a, u64 b) {
+    return a / b;
+}
+#else
 extern float _f_ulltof(u64 value);
 extern float _fdiv(float a, float b);
 extern u64 _ll_udiv(u64 a, u64 b);
+#endif // SDK_PORT
+#ifndef SDK_PORT // libntr declares these
 extern int RTC_GetTime(RTCTime *time);
 extern int RTC_GetDate(RTCDate *date);
+#endif // SDK_PORT
 
 #define TICKS_TO_MS(ticks) (((ticks) << 6) / 0x82EA)
 
@@ -328,7 +344,7 @@ static void PokewalkerIr_SetSendParam(u8 value) {
 }
 
 void PokewalkerIr_SetCompressBuffer(void *buffer) {
-    if ((u32)buffer & 3) {
+    if ((uintptr_t)buffer & 3) {
         OS_Halt();
     }
     gPokewalkerIrWork.compressBuffer = buffer;
@@ -400,7 +416,7 @@ void PokewalkerIr_SetIdentities(PokewalkerIrIdentity *identity, PokewalkerIrIden
     gPokewalkerIrWork.peerIdentity = peerIdentity;
 }
 
-void PokewalkerIr_BeginTransfer(void *data, u32 address, int size) {
+void PokewalkerIr_BeginTransfer(void *data, uintptr_t address, int size) {
     u16 stored;
     gPokewalkerIrTransfer.data = data;
     gPokewalkerIrTransfer.dataStart = data;
@@ -484,7 +500,7 @@ static void PokewalkerIr_OnSendComplete(void) {
     case 0x3E:
         if (gPokewalkerIrTransfer.command == 0x52) {
             gPokewalkerIrTransfer.step = 0x48;
-            PokewalkerIr_BeginTransfer((void *)0xCE80, (u32)gPokewalkerIrWork.status, 0xD4C);
+            PokewalkerIr_BeginTransfer((void *)0xCE80, (uintptr_t)gPokewalkerIrWork.status, 0xD4C);
             PokewalkerIr_RequestChunk();
         } else {
             PokewalkerIr_Send(NULL, 0, 0x24, 1);
@@ -514,7 +530,7 @@ static void PokewalkerIr_RequestChunk(void) {
     if (count > 0x80) {
         count = 0x80;
     }
-    addr = (u16)(u32)gPokewalkerIrTransfer.data;
+    addr = (u16)(uintptr_t)gPokewalkerIrTransfer.data;
     data[0] = addr >> 8;
     data[1] = addr;
     data[2] = count;
@@ -597,7 +613,7 @@ static void PokewalkerIr_OnReceiveComplete(void) {
     switch (gPokewalkerIrTransfer.step) {
     case 70:
         gPokewalkerIrTransfer.step = 72;
-        PokewalkerIr_BeginTransfer((void *)0xCE80, (u32)(gPokewalkerIrWork.status), 3404);
+        PokewalkerIr_BeginTransfer((void *)0xCE80, (uintptr_t)(gPokewalkerIrWork.status), 3404);
         PokewalkerIr_RequestChunk();
         return;
     case 72:
@@ -624,17 +640,17 @@ static void PokewalkerIr_OnReceiveComplete(void) {
         case 188:
         case 190:
             gPokewalkerIrTransfer.step = 74;
-            PokewalkerIr_BeginTransfer((void *)0xB800, (u32)(gPokewalkerIrWork.blocks), 4);
+            PokewalkerIr_BeginTransfer((void *)0xB800, (uintptr_t)(gPokewalkerIrWork.blocks), 4);
             PokewalkerIr_RequestChunk();
             return;
         case 96:
             gPokewalkerIrTransfer.step = 76;
-            PokewalkerIr_BeginTransfer((void *)0xDE24, (u32)(gPokewalkerIrWork.records + 548), 5480);
+            PokewalkerIr_BeginTransfer((void *)0xDE24, (uintptr_t)(gPokewalkerIrWork.records + 548), 5480);
             PokewalkerIr_RequestChunk();
             return;
         default:
             gPokewalkerIrTransfer.step = 74;
-            PokewalkerIr_BeginTransfer((void *)0xB800, (u32)(gPokewalkerIrWork.blocks), 1736);
+            PokewalkerIr_BeginTransfer((void *)0xB800, (uintptr_t)(gPokewalkerIrWork.blocks), 1736);
             PokewalkerIr_RequestChunk();
             return;
         }
@@ -645,7 +661,7 @@ static void PokewalkerIr_OnReceiveComplete(void) {
             return;
         case 64:
             gPokewalkerIrTransfer.step = 76;
-            PokewalkerIr_BeginTransfer((void *)0xDE24, (u32)(gPokewalkerIrWork.records + 548), 5480);
+            PokewalkerIr_BeginTransfer((void *)0xDE24, (uintptr_t)(gPokewalkerIrWork.records + 548), 5480);
             PokewalkerIr_RequestChunk();
             return;
         case 176:
@@ -978,7 +994,7 @@ static void PokewalkerIr_OnReceive(void *data, u32 size, int command) {
         break;
     case 66:
         gPokewalkerIrTransfer.step = 70;
-        PokewalkerIr_BeginTransfer((void *)0x8F00, (u32)gPokewalkerIrWork.walkerMon, 42);
+        PokewalkerIr_BeginTransfer((void *)0x8F00, (uintptr_t)gPokewalkerIrWork.walkerMon, 42);
         PokewalkerIr_RequestChunk();
         break;
     case 68:
@@ -1004,7 +1020,7 @@ static void PokewalkerIr_OnReceive(void *data, u32 size, int command) {
         break;
     case 98:
         gPokewalkerIrTransfer.step = 72;
-        PokewalkerIr_BeginTransfer((void *)0xCE80, (u32)gPokewalkerIrWork.status, 0xD4C);
+        PokewalkerIr_BeginTransfer((void *)0xCE80, (uintptr_t)gPokewalkerIrWork.status, 0xD4C);
         PokewalkerIr_RequestChunk();
         break;
     case 100:
@@ -1020,7 +1036,7 @@ static void PokewalkerIr_OnReceive(void *data, u32 size, int command) {
     case 172:
     case 174:
         gPokewalkerIrTransfer.step = 72;
-        PokewalkerIr_BeginTransfer((void *)0xCE80, (u32)gPokewalkerIrWork.status, 0xD4C);
+        PokewalkerIr_BeginTransfer((void *)0xCE80, (uintptr_t)gPokewalkerIrWork.status, 0xD4C);
         PokewalkerIr_RequestChunk();
         break;
     case 192:

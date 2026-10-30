@@ -4,60 +4,45 @@
 #include "global.h"
 
 #include "application/pokewalker/pokewalker_ir.h"
+#include "application/pokewalker/pokewalker_ir_work.h"
 
-typedef struct PokewalkerIrWorkHeader {
-    u16 unk_00;
-    u8 unk_02[6];
-    u8 *walkerMon;
-    u8 unk_0C[4];
-    u8 *uploadImage;
-    u32 error;
-    u32 unk_18;
-} PokewalkerIrWorkHeader;
+#ifdef SDK_PORT
+#include "application/pokewalker/pokewalker_ir_internal.h"
+#endif
 
-typedef struct PokewalkerIrWorkBuffers {
-    OSMessage messages[1];
-    PokewalkerIrIdentity *identity;
-    PokewalkerIrIdentity *peerIdentity;
-    void *unk_28;
-    u8 *strollData;
-    u8 *records;
-    u8 *blocks;
-    u8 *status;
-    u64 transferStartTick;
-    u8 *compressedSizes;
-    u8 *compressBuffer;
-    u8 *compressedImageSizes;
-    u8 *compressedImage;
-    u8 *compressedStrollSizes;
-    u8 *compressedStroll;
-    u8 *compressedRecordSizes;
-    u8 *compressedRecords;
-} PokewalkerIrWorkBuffers;
+#ifdef SDK_PORT
+// See pokewalker_ir_internal.h: one object per view, and this file's names for the fields the
+// views share on the DS
+PokewalkerIrWorkArea gPokewalkerIrWorkArea;
+OSMutex gPokewalkerIrSync;
+OSMessageQueue gPokewalkerIrMessageQueue;
+PokewalkerIrTransfer gPokewalkerIrTransfer;
+u8 gPokewalkerIrSendBuffer[0x74];
 
-typedef struct PokewalkerIrWorkSync {
-    OSMutex mutex;
-    OSMessageQueue queue;
-    u8 command;
-    u8 step;
-    u8 unk_1E[2];
-    u8 *data;
-    u8 unk_24[0x12];
-    u16 chunk;
-} PokewalkerIrWorkSync;
+// The PokewalkerIrWork view of the area (pokewalker_ir.c) must find the same fields
+#define PORT_IR_VIEW_CHECK(area, view) \
+    _Static_assert(offsetof(PokewalkerIrWorkArea, area) == offsetof(PokewalkerIrWork, view), #view)
+PORT_IR_VIEW_CHECK(header.walkerMon, walkerMon);
+PORT_IR_VIEW_CHECK(header.uploadImage, uploadImage);
+PORT_IR_VIEW_CHECK(header.error, error);
+PORT_IR_VIEW_CHECK(buffers.identity, identity);
+PORT_IR_VIEW_CHECK(buffers.records, records);
+PORT_IR_VIEW_CHECK(buffers.status, status);
+PORT_IR_VIEW_CHECK(buffers.transferStartTick, transferStartTick);
+PORT_IR_VIEW_CHECK(buffers.compressedStroll, compressedStroll);
 
-typedef struct PokewalkerIrWorkProgress {
-    u16 totalChunks;
-    u16 totalChunk;
-    u16 totalSize;
-    u16 unk_3E;
-    u8 buffer[0x74];
-} PokewalkerIrWorkProgress;
-
+#undef gPokewalkerIrWork
+#undef gPokewalkerIrBuffers
+#define gPokewalkerIrWork     (gPokewalkerIrWorkArea.header)
+#define gPokewalkerIrBuffers  (gPokewalkerIrWorkArea.buffers)
+#define gPokewalkerIrSync     gPokewalkerIrTransfer // .command, .step
+#define gPokewalkerIrProgress gPokewalkerIrTransfer // .totalSize, .totalChunk, .totalChunks
+#else
 PokewalkerIrWorkHeader gPokewalkerIrWork;
 PokewalkerIrWorkBuffers gPokewalkerIrBuffers;
 PokewalkerIrWorkSync gPokewalkerIrSync;
 PokewalkerIrWorkProgress gPokewalkerIrProgress;
+#endif
 
 void PokewalkerIr_RequestUpload(u8 *uploadImage, u8 *strollData, u8 *records) {
     gPokewalkerIrWork.uploadImage = uploadImage;
