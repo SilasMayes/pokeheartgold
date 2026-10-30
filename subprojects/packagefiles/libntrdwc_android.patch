@@ -28,6 +28,50 @@ index cfeb96a..c6e0322 100644
  typedef ushort wctype_t;
  
  typedef struct DWCWDSWork DWCWDSWork, *PDWCWDSWork;
+diff --git a/libraries/gs/nonport.c b/libraries/gs/nonport.c
+index 21a2031..ddb3c57 100644
+--- a/libraries/gs/nonport.c
++++ b/libraries/gs/nonport.c
+@@ -891,6 +891,39 @@ int GOAGetLastError(SOCKET sock)
+ 	return GSINitroErrno;
+ }
+ 
++#ifndef SDK_BUILD_ARM
++// The socket calls above under the names the HeartGold/SoulSilver decomp gives them
++// (gsSocket*): its GameSpy chat client and Global Terminal code call them directly.
++int gsSocketCreate(int pf, int type, int protocol) { return libdwcgs_socket(pf, type, protocol); }
++int gsSocketClose(SOCKET sock) { return libdwcgs_closesocket(sock); }
++int gsSocketShutdown(SOCKET sock, int how) { return libdwcgs_shutdown(sock, how); }
++int gsSocketBind(SOCKET sock, const SOCKADDR* addr, int len) { return libdwcgs_bind(sock, addr, len); }
++int gsSocketConnect(SOCKET sock, const SOCKADDR* addr, int len) { return libdwcgs_connect(sock, addr, len); }
++int gsSocketListen(SOCKET sock, int backlog) { return libdwcgs_listen(sock, backlog); }
++SOCKET gsSocketAccept(SOCKET sock, SOCKADDR* addr, int* len) { return libdwcgs_accept(sock, addr, len); }
++int gsSocketRecv(SOCKET sock, char* buf, int len, int flags) { return libdwcgs_recv(sock, buf, len, flags); }
++int gsSocketRecvFrom(SOCKET sock, char* buf, int len, int flags, SOCKADDR* addr, int* fromlen)
++{
++	return libdwcgs_recvfrom(sock, buf, len, flags, addr, fromlen);
++}
++int gsSocketSend(SOCKET sock, const char* buf, int len, int flags) { return libdwcgs_send(sock, buf, len, flags); }
++int gsSocketSendTo(SOCKET sock, const char* buf, int len, int flags, const SOCKADDR* addr, int tolen)
++{
++	return libdwcgs_sendto(sock, buf, len, flags, addr, tolen);
++}
++int gsSocketGetSockOpt(SOCKET sock, int level, int optname, char* optval, int* optlen)
++{
++	return libdwcgs_getsockopt(sock, level, optname, optval, optlen);
++}
++int gsSocketSetSockOpt(SOCKET sock, int level, int optname, const char* optval, int optlen)
++{
++	return libdwcgs_setsockopt(sock, level, optname, optval, optlen);
++}
++// INADDR_NONE (0xFFFFFFFF) when name isn't a dotted address
++u32 gsSocketInetAddr(const char* name) { return (u32)libdwcgs_inet_addr(name); }
++int gsSocketGetLastError(SOCKET sock) { return GOAGetLastError(sock); }
++#endif
++
+ // note that this doesn't return the standard time() value
+ // because the DS doesn't know what timezone it's in
+ #ifdef SDK_PORT
 diff --git a/meson.options b/meson.options
 index 5007e48..47a48be 100644
 --- a/meson.options
