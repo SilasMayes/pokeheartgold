@@ -260,8 +260,8 @@ typedef struct WmMPReceiveBuffer {
 
 // WM_SetParentParameter (0x40 bytes).
 typedef struct WmParentParam {
-    void *gameInfo;
-    u16 gameInfoLength; // at most 112 (WmCheckParentParameter)
+    void *userGameInfo;
+    u16 userGameInfoLength; // at most 112 (WmCheckParentParameter)
     u16 padding;
     u32 ggid;
     u16 tgid;
@@ -280,10 +280,10 @@ typedef struct WmParentParam {
 
 // WM_StartScan.
 typedef struct WmScanParam {
-    void *buffer;
+    void *scanBuf;
     u16 channel;
-    u16 time;
-    u8 address[6];
+    u16 maxChannelTime;
+    u8 bssid[6];
 } WmScanParam;
 
 // WM_StartScanEx.

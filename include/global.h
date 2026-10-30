@@ -8,6 +8,20 @@
 #include <stddef.h>
 #include <string.h>
 
+#ifdef SDK_PORT
+#include <stdint.h>
+
+#include "port_compat.h" // include/port_sdk: decomp SDK names libntr spells differently
+#else
+#define PORT_STATIC
+#define PORT_CB(type, func) func
+#define PORT_RESULT(var, call) call
+// Pointer-sized integers for address arithmetic: u32 on the DS (the same type, so the same
+// code), 64 bits on the port, where <stdint.h> provides them.
+typedef u32 uintptr_t;
+typedef s32 intptr_t;
+#endif
+
 #include "constants/global.h"
 
 #include "assert.h"

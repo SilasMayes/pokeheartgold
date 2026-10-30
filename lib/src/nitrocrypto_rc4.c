@@ -3,6 +3,32 @@
 // RC4 stream cipher: en-/decrypts `length` bytes with the key state in `context`
 // (bytes i and j at +0 and +1, the 256-byte permutation from +4).
 
+#ifdef SDK_PORT
+#include "nitrocrypto_rc4.h"
+
+// Port build: C version of the ARM routine below (same context layout and results).
+void CRYPTO_RC4Encrypt(void *context, const void *in, u32 length, void *out) {
+    u8 *ctx = context;
+    u8 *s = ctx + 4;
+    const u8 *src = in;
+    u8 *dst = out;
+    u8 i = ctx[0];
+    u8 j = ctx[1];
+
+    while (length-- != 0) {
+        u8 x, y;
+        i++;
+        x = s[i];
+        j += x;
+        y = s[j];
+        s[i] = y;
+        s[j] = x;
+        *dst++ = *src++ ^ s[(u8)(x + y)];
+    }
+    ctx[0] = i;
+    ctx[1] = j;
+}
+#else
 // clang-format off
 asm void CRYPTO_RC4Encrypt(void *context, const void *in, u32 length, void *out)
 {
@@ -40,3 +66,4 @@ asm void CRYPTO_RC4Encrypt(void *context, const void *in, u32 length, void *out)
     ldmia sp!, {r4, r5, r6, r7, r8, r9, pc}
 }
 // clang-format on
+#endif // SDK_PORT

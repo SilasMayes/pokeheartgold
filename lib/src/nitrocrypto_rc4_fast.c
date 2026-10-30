@@ -2,6 +2,31 @@
 
 // RC4 en-/decryption with the word-state context (8 bytes per loop iteration).
 
+#ifdef SDK_PORT
+// Port build: C version of the ARM routine below. i, j and the permutation are kept in the
+// top byte of each word, exactly as the ARM code leaves them.
+void CRYPTO_RC4FastEncrypt(void *context, const void *in, u32 length, void *out) {
+    CRYPTORC4FastContext *ctx = context;
+    u32 *s = ctx->s;
+    const u8 *src = in;
+    u8 *dst = out;
+    u32 i = ctx->i >> 24;
+    u32 j = ctx->j >> 24;
+
+    while (length-- != 0) {
+        u32 x, y;
+        i = (i + 1) & 0xFF;
+        x = s[i];
+        j = (j + (x >> 24)) & 0xFF;
+        y = s[j];
+        s[i] = y;
+        s[j] = x;
+        *dst++ = *src++ ^ (u8)(s[(x + y) >> 24] >> 24);
+    }
+    ctx->i = i << 24;
+    ctx->j = j << 24;
+}
+#else
 #pragma force_active on
 
 // clang-format off
@@ -131,3 +156,4 @@ asm void CRYPTO_RC4FastEncrypt(void *context, const void *in, u32 length, void *
     ldmia sp!, {r4, r5, r6, r7, r8, r9, pc}
 }
 // clang-format on
+#endif // SDK_PORT

@@ -197,7 +197,7 @@ WMErrCode WM_SetParentParameter(WmCallback callback, WmParentParam *param) {
     if (!param) {
         return WM_ERRCODE_INVALID_PARAM;
     }
-    if (param->gameInfoLength && !param->gameInfo) {
+    if (param->userGameInfoLength && !param->userGameInfo) {
         return WM_ERRCODE_INVALID_PARAM;
     }
     unk_14 = param->KS_Flag;
@@ -207,8 +207,8 @@ WMErrCode WM_SetParentParameter(WmCallback callback, WmParentParam *param) {
     WmCheckParentParameter(param);
     WMi_SetCallbackTable(WM_API_SET_PARENT_PARAM, callback);
     DC_StoreRange(param, sizeof(WmParentParam));
-    if (param->gameInfoLength) {
-        DC_StoreRange(param->gameInfo, param->gameInfoLength);
+    if (param->userGameInfoLength) {
+        DC_StoreRange(param->userGameInfo, param->userGameInfoLength);
     }
     result = WMi_SendCommand(WM_API_SET_PARENT_PARAM, 1, param);
     if (!result) {
@@ -218,7 +218,7 @@ WMErrCode WM_SetParentParameter(WmCallback callback, WmParentParam *param) {
 }
 
 BOOL WmCheckParentParameter(WmParentParam *param) {
-    if (param->gameInfoLength > 112) {
+    if (param->userGameInfoLength > 112) {
         return FALSE;
     }
     if (param->beaconPeriod < 10 || param->beaconPeriod > 1000) {
@@ -276,7 +276,7 @@ WMErrCode WM_StartScan(WmCallback callback, WmScanParam *param) {
     if (!param) {
         return WM_ERRCODE_INVALID_PARAM;
     }
-    if (!param->buffer) {
+    if (!param->scanBuf) {
         return WM_ERRCODE_INVALID_PARAM;
     }
     if (param->channel < 1 || param->channel > 14) {
@@ -285,14 +285,14 @@ WMErrCode WM_StartScan(WmCallback callback, WmScanParam *param) {
     WMi_SetCallbackTable(WM_API_START_SCAN, callback);
     request.apiid = WM_API_START_SCAN;
     request.channel = param->channel;
-    request.buffer = param->buffer;
-    request.time = param->time;
-    request.address[0] = param->address[0];
-    request.address[1] = param->address[1];
-    request.address[2] = param->address[2];
-    request.address[3] = param->address[3];
-    request.address[4] = param->address[4];
-    request.address[5] = param->address[5];
+    request.buffer = param->scanBuf;
+    request.time = param->maxChannelTime;
+    request.address[0] = param->bssid[0];
+    request.address[1] = param->bssid[1];
+    request.address[2] = param->bssid[2];
+    request.address[3] = param->bssid[3];
+    request.address[4] = param->bssid[4];
+    request.address[5] = param->bssid[5];
     result = WMi_SendCommandDirect(&request, sizeof(request));
     if (result) {
         return result;
