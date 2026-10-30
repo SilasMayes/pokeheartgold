@@ -15,6 +15,16 @@ build is `cmp`-identical to a retail dump.
 | ARM9 static + 129 overlays, each game | per `<game>.us/main.sha1` | 130/130 OK, both games |
 | NitroFS files, each game | per `<game>.us/filesystem.sha1` | 384/384 OK, both games |
 
+### Verified trees
+
+Each run below is the recipe from a fresh clone, with a fresh Wine prefix, ending with a clean
+`git status`.
+
+| Tree | HeartGold | SoulSilver |
+|---|---|---|
+| `ctrl-cheeb-del/pokeheartgold` master `2e0a4e0` | OK `4fcded0e…` | OK `f8dc38ea…` |
+| `SilasMayes/pokeheartgold` `thor-android` `6534a02` (port edits, asm data converted to C) | OK `4fcded0e…` | OK `f8dc38ea…` |
+
 ## Inputs (proprietary, not in the repo)
 
 | What | Where it goes | Identity |
