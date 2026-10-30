@@ -20,6 +20,15 @@
 // the struct's real size here, where pointers are 8 bytes. The number itself on the DS.
 #define PORT_SIZEOF(type, dsSize) sizeof(type)
 
+// Every heap the game creates (src/heap.c): what the DS sized to fit its structures holds more of
+// them here, where pointers are 8 bytes (the Bag ran out of its heap). Main memory is 8 MB on the port
+// and the code isn't in it, so doubling all of them fits.
+#define PORT_HEAP_SIZE(dsSize) ((dsSize) * 2)
+
+// The particle library's work area (ParticleSystem_New): its structures hold pointers, so the port
+// gives it twice the DS size, as Platinum's port does
+#define PORT_PARTICLE_HEAP(dsSize) ((dsSize) * 2)
+
 // cw/function_target.h
 #ifndef ALIGN
 #define ALIGN(num) __attribute__((aligned(num)))

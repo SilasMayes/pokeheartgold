@@ -1681,8 +1681,8 @@ static void LinkBattleScreen_InitParticles(LinkBattleScreen *screen) {
     screen->gfx3DVramMan = GF_3DVramMan_Create(screen->args->heapId, 0, 4, 0, 2, NULL);
     G3X_AlphaBlend(TRUE);
     ParticleSystem_ZeroAll();
-    screen->particleHeap = Heap_Alloc(screen->args->heapId, 0x4800);
-    screen->particleSystem = ParticleSystem_New(LinkBattleScreen_AllocParticleTexVram, LinkBattleScreen_AllocParticlePlttVram, screen->particleHeap, 0x4800, TRUE, screen->args->heapId);
+    screen->particleHeap = Heap_Alloc(screen->args->heapId, PORT_PARTICLE_HEAP(0x4800));
+    screen->particleSystem = ParticleSystem_New(LinkBattleScreen_AllocParticleTexVram, LinkBattleScreen_AllocParticlePlttVram, screen->particleHeap, PORT_PARTICLE_HEAP(0x4800), TRUE, screen->args->heapId);
     Camera_SetPerspectiveClippingPlane(FX32_ONE, 900 * FX32_ONE, ParticleSystem_GetCamera(screen->particleSystem));
     ParticleSystem_SetResource(screen->particleSystem, ParticleSystem_LoadResourceFile(NARC_a_0_5_9, 2, screen->args->heapId), 10, TRUE);
     ParticleSystem_CreateEmitterWithParam(screen->particleSystem, 0, NULL, NULL);

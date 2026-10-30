@@ -790,8 +790,8 @@ static void WobbuffetPop_CreateParticleSystem(WobbuffetPop *game) {
     void *heap;
 
     ParticleSystem_ZeroAll();
-    heap = Heap_Alloc(HEAP_ID_117, 0x4800);
-    game->particleSystem = ParticleSystem_New(WobbuffetPop_AllocParticleTexVram, WobbuffetPop_AllocParticlePlttVram, heap, 0x4800, TRUE, HEAP_ID_117);
+    heap = Heap_Alloc(HEAP_ID_117, PORT_PARTICLE_HEAP(0x4800));
+    game->particleSystem = ParticleSystem_New(WobbuffetPop_AllocParticleTexVram, WobbuffetPop_AllocParticlePlttVram, heap, PORT_PARTICLE_HEAP(0x4800), TRUE, HEAP_ID_117);
     Camera_SetPerspectiveClippingPlane(FX32_ONE, 900 * FX32_ONE, ParticleSystem_GetCamera(game->particleSystem));
     ParticleSystem_SetResource(game->particleSystem, ParticleSystem_LoadResourceFile(NARC_a_2_1_1, 0, HEAP_ID_117), 10, TRUE);
 }

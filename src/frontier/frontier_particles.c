@@ -35,8 +35,8 @@ SPLEmitter *FrontierParticles_CreateSystem(FrontierParticles *particles, u32 ind
     void *resource;
     Camera *camera;
     GF_ASSERT(particles->systems[index] == NULL);
-    buffer = Heap_Alloc((enum HeapID)particles->heapId, 0x4800);
-    system = ParticleSystem_New(FrontierParticles_AllocTexVram, FrontierParticles_AllocPlttVram, buffer, 0x4800, TRUE, (enum HeapID)particles->heapId);
+    buffer = Heap_Alloc((enum HeapID)particles->heapId, PORT_PARTICLE_HEAP(0x4800));
+    system = ParticleSystem_New(FrontierParticles_AllocTexVram, FrontierParticles_AllocPlttVram, buffer, PORT_PARTICLE_HEAP(0x4800), TRUE, (enum HeapID)particles->heapId);
     camera = ParticleSystem_GetCamera(system);
     Camera_SetPerspectiveClippingPlane(FX32_ONE, FX32_CONST(900), camera);
     ParticleSystem_SetPerspectiveType(system, perspectiveType);

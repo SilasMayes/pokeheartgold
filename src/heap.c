@@ -82,15 +82,15 @@ void Heap_InitSystem(const HeapParam *templates, u32 nTemplates, u32 totalNumHea
         switch (templates[i].arena) {
         case OS_ARENA_MAIN:
         default:
-            ptr = OS_AllocFromArenaLo(OS_ARENA_MAIN, templates[i].size, 4);
+            ptr = OS_AllocFromArenaLo(OS_ARENA_MAIN, PORT_HEAP_SIZE(templates[i].size), 4);
             break;
         case OS_ARENA_MAINEX:
-            ptr = OS_AllocFromArenaHi(OS_ARENA_MAINEX, templates[i].size, 4);
+            ptr = OS_AllocFromArenaHi(OS_ARENA_MAINEX, PORT_HEAP_SIZE(templates[i].size), 4);
             break;
         }
 
         if (ptr != NULL) {
-            sHeapInfo.heapHandles[i] = NNS_FndCreateExpHeap(ptr, templates[i].size);
+            sHeapInfo.heapHandles[i] = NNS_FndCreateExpHeap(ptr, PORT_HEAP_SIZE(templates[i].size));
             sHeapInfo.heapIdxs[i] = (u8)i;
         } else {
             GF_ASSERT(FALSE);
@@ -133,6 +133,9 @@ BOOL Heap_CreateAtEnd(enum HeapID parent, enum HeapID child, u32 size) {
 
 static BOOL CreateHeapInternal(enum HeapID parent, enum HeapID child, u32 size, s32 alignment) {
     GF_ASSERT(OS_GetProcMode() != OS_PROCMODE_IRQ);
+#ifdef SDK_PORT
+    size = PORT_HEAP_SIZE(size);
+#endif
 
     u8 *ptr = sHeapInfo.heapIdxs;
     if (sHeapInfo.unallocatedHeapID == ptr[child]) {

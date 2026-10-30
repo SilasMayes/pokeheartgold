@@ -17,7 +17,7 @@
 // Particle mode of the leader effects: the main screen switches to 3D over a captured image of the field so particle
 // emitters can be drawn over it. Also the HBlank BG offset wave used by several effects.
 
-#define PARTICLE_HEAP_SIZE 0x4800
+#define PARTICLE_HEAP_SIZE PORT_PARTICLE_HEAP(0x4800)
 
 enum EncounterEffectParticlesState {
     PARTICLES_STATE_WAIT_FRAME,

@@ -23,8 +23,8 @@ SPLEmitter *BattleParticleSystem_New(enum HeapID heapID) {
     SPLEmitter *pPVar1;
     Camera *pGVar2;
 
-    particleHeap = Heap_Alloc(heapID, 0x4800);
-    pPVar1 = ParticleSystem_New(BattleParticleSystem_AllocTexVram, BattleParticleSystem_AllocPlttVram, particleHeap, 0x4800, TRUE, heapID);
+    particleHeap = Heap_Alloc(heapID, PORT_PARTICLE_HEAP(0x4800));
+    pPVar1 = ParticleSystem_New(BattleParticleSystem_AllocTexVram, BattleParticleSystem_AllocPlttVram, particleHeap, PORT_PARTICLE_HEAP(0x4800), TRUE, heapID);
     pGVar2 = ParticleSystem_GetCamera(pPVar1);
     if (pGVar2 != NULL) {
         Camera_SetPerspectiveClippingPlane(1 * FX32_ONE, 900 * FX32_ONE, pGVar2);
@@ -37,11 +37,11 @@ SPLEmitter *BattleParticleSystem_NewSmallHeap(enum HeapID heapID) {
     SPLEmitter *pPVar1;
     Camera *pGVar2;
 
-    particleHeap = Heap_Alloc(heapID, 0x4200);
+    particleHeap = Heap_Alloc(heapID, PORT_PARTICLE_HEAP(0x4200));
     if (particleHeap == NULL) {
         return NULL;
     }
-    pPVar1 = ParticleSystem_New(BattleParticleSystem_AllocTexVram, BattleParticleSystem_AllocPlttVram, particleHeap, 0x4200, TRUE, heapID);
+    pPVar1 = ParticleSystem_New(BattleParticleSystem_AllocTexVram, BattleParticleSystem_AllocPlttVram, particleHeap, PORT_PARTICLE_HEAP(0x4200), TRUE, heapID);
     pGVar2 = ParticleSystem_GetCamera(pPVar1);
     if (pGVar2 != NULL) {
         Camera_SetPerspectiveClippingPlane(1 * FX32_ONE, 900 * FX32_ONE, pGVar2);

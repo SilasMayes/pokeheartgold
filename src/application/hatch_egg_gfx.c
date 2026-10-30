@@ -321,8 +321,8 @@ static u32 HatchEggApp_AllocParticlePlttVram(u32 size, BOOL is4pltt) {
 }
 
 static SPLEmitter *HatchEggApp_CreateParticleSystem(enum HeapID heapId) {
-    void *particleHeap = Heap_Alloc(heapId, 0x4800);
-    SPLEmitter *particleSystem = ParticleSystem_New(HatchEggApp_AllocParticleTexVram, HatchEggApp_AllocParticlePlttVram, particleHeap, 0x4800, TRUE, heapId);
+    void *particleHeap = Heap_Alloc(heapId, PORT_PARTICLE_HEAP(0x4800));
+    SPLEmitter *particleSystem = ParticleSystem_New(HatchEggApp_AllocParticleTexVram, HatchEggApp_AllocParticlePlttVram, particleHeap, PORT_PARTICLE_HEAP(0x4800), TRUE, heapId);
     Camera *camera = ParticleSystem_GetCamera(particleSystem);
     if (camera != NULL) {
         Camera_SetPerspectiveClippingPlane(FX32_CONST(1), FX32_CONST(900), camera);

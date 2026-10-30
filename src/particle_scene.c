@@ -81,8 +81,8 @@ static u32 ParticleScene_AllocPlttVram(u32 size, BOOL palette4) {
 }
 
 static SPLEmitter *ParticleScene_NewParticleSystem(enum HeapID heapID) {
-    void *heap = Heap_Alloc(heapID, 0x4800);
-    SPLEmitter *context = ParticleSystem_New(ParticleScene_AllocTexVram, ParticleScene_AllocPlttVram, heap, 0x4800, TRUE, heapID);
+    void *heap = Heap_Alloc(heapID, PORT_PARTICLE_HEAP(0x4800));
+    SPLEmitter *context = ParticleSystem_New(ParticleScene_AllocTexVram, ParticleScene_AllocPlttVram, heap, PORT_PARTICLE_HEAP(0x4800), TRUE, heapID);
     Camera *camera = ParticleSystem_GetCamera(context);
     if (camera) {
         Camera_SetPerspectiveClippingPlane(FX32_ONE, 0x384000, camera);
