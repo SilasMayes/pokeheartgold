@@ -11,6 +11,10 @@ Groups:
   hgss_lobby_cpp  the same, C++ part
 Left out entirely:
   src/to91_msl_*.cpp  MSL C++ runtime pieces; the host C++ runtime has operator new/delete
+  src/data/wifi_setup_data_*.c
+                      tables of the Wi-Fi setup utility (src/wifi_setup/, below)
+  src/data/middleware_*.c
+                      version strings of the SDK libraries that libntr provides
   src/wifi_setup/     the DWC Wi-Fi setup utility (DWC_StartUtility in the real SDK), which
                       the Platinum port also skips: Wi-Fi settings belong to the port itself
 """
@@ -23,7 +27,13 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SRC = ROOT / "src"
 
 LOBBY_DIRS = ("lobby", "chat")
-EXCLUDED_GLOBS = ("to91_msl_*.cpp",)
+EXCLUDED_GLOBS = (
+    "to91_msl_*.cpp",
+    # tools/s2c.py output for code the port leaves out: the Wi-Fi setup utility's tables (see
+    # src/wifi_setup/ below) and the version strings of the SDK libraries libntr replaces
+    "data/wifi_setup_data_*.c",
+    "data/middleware_*.c",
+)
 # Files under src/ that are not part of the build (port-specific files live in src/port/,
 # which has its own list once it exists)
 SKIP_DIRS = ("port", "wifi_setup")
