@@ -2,4 +2,5 @@ option('build_target', type: 'combo', choices: ['linux', 'android'], value: 'lin
 option('game_version', type: 'combo', choices: ['HEARTGOLD', 'SOULSILVER'], value: 'HEARTGOLD', description: 'Compile-time game version (until it is read from the ROM header at runtime)')
 option('logging_enabled', type: 'boolean', value: false)
 option('lobby', type: 'feature', value: 'auto', description: 'Wi-Fi Plaza lobby (desktop only by default, as in the Platinum port)')
+option('port_sanitize', type: 'string', value: '', description: 'Sanitizers for the game code only, e.g. address,undefined (the Thor rule\'s desktop gate). libntr stays uninstrumented: its emulated registers are separate globals that its own code reads across')
 option('lp64_warnings', type: 'boolean', value: true, description: 'Warn about pointer/integer casts and other 64-bit hazards in game code')

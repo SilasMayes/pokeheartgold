@@ -155,6 +155,15 @@ endforeach
 
 hgss_c_args = ['-std=gnu99'] + hgss_common_args + nitrosdk_defines + sdk_fallback_args + hgss_warning_args
 
+# The desktop gate's ASan/UBSan build: the game code (and the lobby) only. b_sanitize would
+# instrument libntr too, whose emulated hardware registers are separate globals that its DMA
+# and clear code read across (an ASan report in MI_Init before the game starts).
+sanitize_args = []
+if get_option('port_sanitize') != ''
+    sanitize_args = ['-fsanitize=' + get_option('port_sanitize'), '-fno-omit-frame-pointer']
+endif
+hgss_c_args += sanitize_args
+
 ############################################################
 ###                       SOURCES                        ###
 ############################################################
@@ -221,7 +230,7 @@ if build_lobby
             '-fno-exceptions',
             '-fno-rtti',
             '-w',
-        ],
+        ] + sanitize_args,
         include_directories: hgss_includes,
         dependencies: sdk_headers_deps,
         pic: true,
@@ -251,7 +260,7 @@ main = executable('main',
     link_whole: hgss_game,
     link_with: hgss_link_with,
     dependencies: sdk_deps,
-    link_args: link_args + ['-Wl,--no-undefined'],
+    link_args: link_args + ['-Wl,--no-undefined'] + sanitize_args,
     native: true,
 )
 elif build_target == 'android'
