@@ -68,7 +68,7 @@ Static main
     Object src/touchscreen_list_menu.o
     Object src/camera_translation.o
     Object src/global_terminal/global_terminal_app.o
-    Object asm/global_terminal_app_data.o
+    Object src/data/global_terminal_app_data.o
     Object src/bg_cell_manager.o
     Object src/grid_input_handler.o
     Object src/system.o
@@ -237,14 +237,14 @@ Static main
     Object src/player_avatar.o
     Object src/player_avatar_movement.o
     Object src/map_object.o
-    Object asm/map_object_movement_tables.o
+    Object src/data/map_object_movement_tables.o
     Object src/map_object_update.o
     Object src/map_object_movement_utilities.o
     Object src/map_object_movement.o
-    Object asm/unk_data_020FD978.o
-    Object asm/map_object_movement_commands_data.o
-    Object asm/map_object_movement_command_steps.o
-    Object asm/map_object_behavior_data.o
+    Object src/data/unk_data_020FD978.o
+    Object src/data/map_object_movement_commands_data.o
+    Object src/data/map_object_movement_command_steps.o
+    Object src/data/map_object_behavior_data.o
     Object src/map_object_movement_commands.o
     Object src/map_object_behavior.o
     Object src/gymmick_collision.o
@@ -301,9 +301,12 @@ Static main
     Object src/orbit_cursor.o
     Object src/vs_recorder_app.o
     Object src/vs_recorder_menu_app.o
-    Object asm/vs_recorder_screen_data.o
+    Object src/data/vs_recorder_screen_data_1.o
+    Object src/data/vs_recorder_screen_data_2.o
+    Object src/data/vs_recorder_screen_data_3.o
     Object src/ui_util.o
-    Object asm/pokemon_summary_data.o
+    Object src/data/pokemon_summary_data_1.o
+    Object src/data/pokemon_summary_data_2.o
     Object src/pokemon_summary.o
     Object src/pokemon_summary_text.o
     Object src/pokemon_summary_scene.o
@@ -346,7 +349,7 @@ Static main
     Object src/battle_frontier_communication.o
     Object src/spin_trade_link.o
     Object src/spin_trade_flow.o
-    Object asm/spin_trade_flow_data.o
+    Object src/data/spin_trade_flow_data.o
     Object src/wifi_club/wifi_club_comm.o
     Object src/safari_zone_encounters.o
     Object src/safari_decoration_task.o
@@ -359,8 +362,12 @@ Static main
     Object src/swarm.o
 
     ### Vendor libraries ###
-    Object asm/middleware.o
-    Object lib/asm/spl_data.o
+    Object src/data/middleware_1.o
+    Object src/data/middleware_2.o
+    Object src/data/middleware_3.o
+    Object src/data/middleware_4.o
+    Object src/data/spl_data_1.o
+    Object src/data/spl_data_2.o
     Object lib/src/spl_manager.o
     Object lib/src/spl_draw.o
     Object lib/src/spl_emitter.o
@@ -944,7 +951,9 @@ Overlay field
     Object src/field/encounter_effect_wipe.o
     Object src/field/encounter_effect_util.o
     Object src/field/encounter_effect_particles.o
-    Object asm/encounter_effect_data.o
+    Object src/data/encounter_effect_data_1.o
+    Object src/data/encounter_effect_data_2.o
+    Object src/data/encounter_effect_data_3.o
     Object src/field/encounter_effect_wave_direction.o
     Object src/field/field_effect_manager.o
     Object src/field/player_avatar_actions.o
@@ -957,7 +966,8 @@ Overlay field
     Object src/field/map_load_manager.o
     Object src/field/bottom_screen_app.o
     Object src/field/pal_pad_registration.o
-    Object asm/overlay_01_sprite_data.o
+    Object src/data/overlay_01_sprite_data_1.o
+    Object src/data/overlay_01_sprite_data_2.o
     Object src/field/map_object_billboard_motion.o
     Object src/field/map_object_models.o
     Object src/field/map_object_render.o
@@ -969,7 +979,7 @@ Overlay field
     Object src/field/area_data.o
     Object src/field/honey_sweet_scent.o
     Object src/field/resource_bank.o
-    Object asm/field_effect_renderers_data.o
+    Object src/data/field_effect_renderers_data.o
     Object src/field/fishing.o
     Object src/field/field_camera_zoom.o
     Object src/field/field_move_sweet_scent.o
@@ -982,17 +992,18 @@ Overlay field
     Object src/field/field_rock_climb_effect.o
     Object src/field/field_puddle_splash.o
     Object src/field/field_mud_splash.o
-    Object asm/field_tall_grass_data.o
+    Object src/data/field_tall_grass_data.o
     Object src/field/field_tall_grass.o
     Object src/field/field_shallow_water_ripple.o
     Object src/field/field_ground_dust.o
     Object src/field/field_very_tall_grass.o
-    Object asm/field_very_tall_grass_data.o
+    Object src/data/field_very_tall_grass_data_1.o
+    Object src/data/field_very_tall_grass_data_2.o
     Object src/field/field_unused_billboard_effect.o
     Object src/field/field_hidden_object_cover.o
     Object src/field/field_trainer_reveal.o
     Object src/field/field_emote_mark.o
-    Object asm/field_emote_mark_data.o
+    Object src/data/field_emote_mark_data.o
     Object src/field/field_union_chat_marker.o
     Object src/field/field_warp_arrow.o
     Object src/field/scrcmd_pokemon_misc.o
@@ -1007,7 +1018,7 @@ Overlay field
     Object src/field/headbutt.o
     Object src/field/field_shaymin_form_change.o
     Object src/field/field_follow_mon.o
-    Object asm/field_follow_mon_data.o
+    Object src/data/field_follow_mon_data.o
 }
 Overlay OVY_2
 {
@@ -1025,7 +1036,12 @@ Overlay OVY_2
     Object src/field/map_object_swap_positions.o
     Object src/field/safari_zone_placement.o
     Object src/field/follow_mon_interaction.o
-    Object asm/field_move_effects_data.o
+    Object src/data/field_move_effects_data_1.o
+    Object src/data/field_move_effects_data_2.o
+    Object src/data/field_move_effects_data_3.o
+    Object src/data/field_move_effects_data_4.o
+    Object src/data/field_move_effects_data_5.o
+    Object src/data/field_move_effects_data_6.o
     Object src/field/legend_cutscene_camera.o
     Object src/field/gear_phone_calls.o
     Object src/field/event_cutscene_shaymin.o
@@ -1077,7 +1093,23 @@ Object src/battle/battle_anim_util.o
     Object src/battle/battle_anim_effects.o
     Object src/battle/battle_anim_battler_util.o
     Object src/battle/battle_anim_ball.o
-    Object asm/battle_anim_data.o
+    Object src/data/battle_anim_data_1.o
+    Object src/data/battle_anim_data_2.o
+    Object src/data/battle_anim_data_3.o
+    Object src/data/battle_anim_data_4.o
+    Object src/data/battle_anim_data_5.o
+    Object src/data/battle_anim_data_6.o
+    Object src/data/battle_anim_data_7.o
+    Object src/data/battle_anim_data_8.o
+    Object src/data/battle_anim_data_9.o
+    Object src/data/battle_anim_data_10.o
+    Object src/data/battle_anim_data_11.o
+    Object src/data/battle_anim_data_12.o
+    Object src/data/battle_anim_data_13.o
+    Object src/data/battle_anim_data_14.o
+    Object src/data/battle_anim_data_15.o
+    Object src/data/battle_anim_data_16.o
+    Object src/data/battle_anim_data_17.o
 }
 Overlay OVY_8
 {
@@ -1085,7 +1117,13 @@ Overlay OVY_8
     Object src/battle/battle_party_menu.o
     Object src/battle/battle_bag_menu.o
     Object src/battle/battle_dpad_cursor.o
-    Object asm/battle_menu_data.o
+    Object src/data/battle_menu_data_1.o
+    Object src/data/battle_menu_data_2.o
+    Object src/data/battle_menu_data_3.o
+    Object src/data/battle_menu_data_4.o
+    Object src/data/battle_menu_data_5.o
+    Object src/data/battle_menu_data_6.o
+    Object src/data/battle_menu_data_7.o
     Object src/battle/battle_dpad_cursor_input.o
 }
 Overlay OVY_9
@@ -1096,7 +1134,8 @@ Overlay OVY_10
 {
     After OVY_6
     Object src/battle/trainer_ai.o
-    Object asm/trainer_ai_data.o
+    Object src/data/trainer_ai_data_1.o
+    Object src/data/trainer_ai_data_2.o
 }
 Overlay OVY_11
 {
@@ -1107,14 +1146,16 @@ Overlay OVY_12
     After OVY_7
     Object src/battle/battle_022378C0.o
     Object src/battle/battle_main.o
-    Object asm/battle_main_data.o
+    Object src/data/battle_main_data_1.o
+    Object src/data/battle_main_data_2.o
     Object src/battle/battle_system.o
     Object src/battle/battle_command.o
-    Object asm/overlay_12_battle_command.o
+    Object src/data/overlay_12_battle_command.o
     Object src/battle/battle_controller_player.o
     Object src/battle/battle_util.o
     Object src/battle/battle_controller_opponent.o
-    Object asm/battle_controller_opponent_data.o
+    Object src/data/battle_controller_opponent_data_1.o
+    Object src/data/battle_controller_opponent_data_2.o
     Object src/battle/battle_pokepic_bob.o
     Object src/battle/battle_controller.o
     Object src/battle/battle_hp_bar.o
@@ -1166,7 +1207,26 @@ Overlay OVY_13
     Object src/wifi_setup/wifi_setup_crypto.o
     Object src/wifi_setup/wifi_setup_md5.o
     Object src/wifi_setup/wifi_setup_api.o
-    Object asm/wifi_setup_data.o
+    Object src/data/wifi_setup_data_1.o
+    Object src/data/wifi_setup_data_2.o
+    Object src/data/wifi_setup_data_3.o
+    Object src/data/wifi_setup_data_4.o
+    Object src/data/wifi_setup_data_5.o
+    Object src/data/wifi_setup_data_6.o
+    Object src/data/wifi_setup_data_7.o
+    Object src/data/wifi_setup_data_8.o
+    Object src/data/wifi_setup_data_9.o
+    Object src/data/wifi_setup_data_10.o
+    Object src/data/wifi_setup_data_11.o
+    Object src/data/wifi_setup_data_12.o
+    Object src/data/wifi_setup_data_13.o
+    Object src/data/wifi_setup_data_14.o
+    Object src/data/wifi_setup_data_15.o
+    Object src/data/wifi_setup_data_16.o
+    Object src/data/wifi_setup_data_17.o
+    Object src/data/wifi_setup_data_18.o
+    Object src/data/wifi_setup_data_19.o
+    Object src/data/wifi_setup_data_20.o
     Object lib/NitroDWC/asm/wifi_setup_dwc_data.o
     Object src/wifi_setup/wifi_setup_busy_icon.o
     Object lib/NitroDWC/asm/wifi_setup_ui_parts_bss.o
@@ -1213,13 +1273,22 @@ Overlay OVY_14
     Object src/application/pc_box/pc_box_sprites.o
     Object src/application/pc_box/pc_box_text.o
     Object src/application/pc_box/pc_box_grid_input.o
-    Object asm/overlay_14_state_dispatch_rodata_67.o
+    Object src/data/overlay_14_state_dispatch_rodata_67_1.o
+    Object src/data/overlay_14_state_dispatch_rodata_67_2.o
+    Object src/data/overlay_14_state_dispatch_rodata_67_3.o
+    Object src/data/overlay_14_state_dispatch_rodata_67_4.o
+    Object src/data/overlay_14_state_dispatch_rodata_67_5.o
+    Object src/data/overlay_14_state_dispatch_rodata_67_6.o
 }
 Overlay OVY_15
 {
     After OVY_14
     Object src/application/bag/bag_app.o
-    Object asm/bag_app_data.o
+    Object src/data/bag_app_data_1.o
+    Object src/data/bag_app_data_2.o
+    Object src/data/bag_app_data_3.o
+    Object src/data/bag_app_data_4.o
+    Object src/data/bag_app_data_5.o
     Object src/application/bag/bag_app_display.o
 }
 Overlay OVY_16
@@ -1247,7 +1316,11 @@ Overlay OVY_18
     Object src/application/pokedex/pokedex_area_sprites.o
     Object src/application/pokedex/pokedex_size_check.o
     Object src/application/pokedex/pokedex_forms.o
-    Object asm/pokedex_rodata.o
+    Object src/data/pokedex_rodata_1.o
+    Object src/data/pokedex_rodata_2.o
+    Object src/data/pokedex_rodata_3.o
+    Object src/data/pokedex_rodata_4.o
+    Object src/data/pokedex_rodata_5.o
     Object src/application/pokedex/pokedex_input.o
     Object src/application/pokedex/pokedex_search.o
     Object src/application/pokedex/pokedex_entry_popup.o
@@ -1299,13 +1372,25 @@ Overlay OVY_27
     After bug_contest
     Object src/field/touchscreen_menu.o
     Object src/field/touchscreen_choice_menu.o
-    Object asm/touchscreen_menu_data.o
+    Object src/data/touchscreen_menu_data_1.o
+    Object src/data/touchscreen_menu_data_2.o
+    Object src/data/touchscreen_menu_data_3.o
+    Object src/data/touchscreen_menu_data_4.o
+    Object src/data/touchscreen_menu_data_5.o
+    Object src/data/touchscreen_menu_data_6.o
+    Object src/data/touchscreen_menu_data_7.o
+    Object src/data/touchscreen_menu_data_8.o
+    Object src/data/touchscreen_menu_data_9.o
+    Object src/data/touchscreen_menu_data_10.o
 }
 Overlay OVY_28
 {
     After OVY_27
     Object src/field/dowsing_mchn.o
-    Object asm/dowsing_mchn_data.o
+    Object src/data/dowsing_mchn_data_1.o
+    Object src/data/dowsing_mchn_data_2.o
+    Object src/data/dowsing_mchn_data_3.o
+    Object src/data/dowsing_mchn_data_4.o
 }
 Overlay OVY_29
 {
@@ -1371,8 +1456,11 @@ Overlay OVY_39
     After OVY_38
     Object src/global_terminal/global_terminal_net.o
     Object src/global_terminal/global_terminal_connect.o
-    Object asm/global_terminal_data.o
-    Object asm/global_terminal_socket_data.o
+    Object src/data/global_terminal_data_1.o
+    Object src/data/global_terminal_data_2.o
+    Object src/data/global_terminal_socket_data_1.o
+    Object src/data/global_terminal_socket_data_2.o
+    Object src/data/global_terminal_socket_data_3.o
     Object src/global_terminal/global_terminal_socket.o
 }
 Overlay OVY_40
@@ -1397,7 +1485,20 @@ Overlay OVY_40
     Object src/application/vs_recorder/vs_recorder_number_pad.o
     Object src/application/vs_recorder/vs_recorder_delete.o
     Object src/application/vs_recorder/vs_recorder_battle_names.o
-    Object asm/vs_recorder_data.o
+    Object src/data/vs_recorder_data_1.o
+    Object src/data/vs_recorder_data_2.o
+    Object src/data/vs_recorder_data_3.o
+    Object src/data/vs_recorder_data_4.o
+    Object src/data/vs_recorder_data_5.o
+    Object src/data/vs_recorder_data_6.o
+    Object src/data/vs_recorder_data_7.o
+    Object src/data/vs_recorder_data_8.o
+    Object src/data/vs_recorder_data_9.o
+    Object src/data/vs_recorder_data_10.o
+    Object src/data/vs_recorder_data_11.o
+    Object src/data/vs_recorder_data_12.o
+    Object src/data/vs_recorder_data_13.o
+    Object src/data/vs_recorder_data_14.o
     Object src/application/vs_recorder/vs_recorder_record.o
 }
 Overlay OVY_41
@@ -1405,7 +1506,7 @@ Overlay OVY_41
     After OVY_40
     Object src/application/dress_up/dress_up.o
     Object src/application/dress_up/accessory_portrait.o
-    Object asm/dress_up_rodata.o
+    Object src/data/dress_up_rodata.o
 }
 Overlay OVY_42
 {
@@ -1423,7 +1524,11 @@ Overlay OVY_43
     Object src/application/palpad/palpad_roster.o
     Object src/application/palpad/palpad_friend_code.o
     Object src/application/palpad/palpad_details.o
-    Object asm/palpad_data.o
+    Object src/data/palpad_data_1.o
+    Object src/data/palpad_data_2.o
+    Object src/data/palpad_data_3.o
+    Object src/data/palpad_data_4.o
+    Object src/data/palpad_data_5.o
     Object src/application/palpad/palpad_details_text.o
 }
 Overlay OVY_44
@@ -1443,10 +1548,14 @@ Overlay OVY_45
     Object src/wifi_plaza/wifi_plaza_news.o
     Object src/wifi_plaza/wifi_plaza_lobby_client.o
     Object src/wifi_plaza/wifi_plaza_lobby_events.o
-    Object asm/wifi_plaza_lobby_data.o
+    Object src/data/wifi_plaza_lobby_data.o
     Object src/wifi_plaza/wifi_plaza_sprite_culling.o
     Object src/wifi_plaza/wifi_plaza_time_zone.o
-    Object lib/NitroDWC/asm/dwc_lobby_data.o
+    Object src/data/dwc_lobby_data_1.o
+    Object src/data/dwc_lobby_data_2.o
+    Object src/data/dwc_lobby_data_3.o
+    Object src/data/dwc_lobby_data_4.o
+    Object src/data/dwc_lobby_data_5.o
     Object src/lobby/ppw_lobby_get_work.o
     Object src/lobby/ppw_lobby_initialize_async.o
     Object src/lobby/ppw_lobby_initialize.o
@@ -1599,7 +1708,18 @@ Overlay OVY_49
     Object src/wifi_plaza/wifi_plaza_talk.o
     Object src/wifi_plaza/wifi_plaza_instrument.o
     Object src/wifi_plaza/wifi_plaza_event.o
-    Object asm/wifi_plaza_map_rodata.o
+    Object src/data/wifi_plaza_map_rodata_1.o
+    Object src/data/wifi_plaza_map_rodata_2.o
+    Object src/data/wifi_plaza_map_rodata_3.o
+    Object src/data/wifi_plaza_map_rodata_4.o
+    Object src/data/wifi_plaza_map_rodata_5.o
+    Object src/data/wifi_plaza_map_rodata_6.o
+    Object src/data/wifi_plaza_map_rodata_7.o
+    Object src/data/wifi_plaza_map_rodata_8.o
+    Object src/data/wifi_plaza_map_rodata_9.o
+    Object src/data/wifi_plaza_map_rodata_10.o
+    Object src/data/wifi_plaza_map_rodata_11.o
+    Object src/data/wifi_plaza_map_rodata_12.o
 }
 Overlay trainer_card
 {
@@ -1643,7 +1763,8 @@ Overlay OVY_57
 {
     After OVY_7
     Object src/application/ball_capsule_editor.o
-    Object asm/ball_capsule_editor_data.o
+    Object src/data/ball_capsule_editor_data_1.o
+    Object src/data/ball_capsule_editor_data_2.o
 }
 Overlay OVY_58
 {
@@ -1654,7 +1775,9 @@ Overlay OVY_59
 {
     After OVY_58
     Object src/application/apricorn_box/apricorn_box_screens.o
-    Object asm/apricorn_box_screens_data.o
+    Object src/data/apricorn_box_screens_data_1.o
+    Object src/data/apricorn_box_screens_data_2.o
+    Object src/data/apricorn_box_screens_data_3.o
     Object src/application/apricorn_box/apricorn_box_input.o
     Object src/application/apricorn_box/aprijuice_screen.o
     Object src/application/apricorn_box/aprijuice_scene_camera.o
@@ -1690,13 +1813,18 @@ Overlay OVY_64
 {
     After main
     Object src/hall_of_fame_showcase.o
-    Object asm/hall_of_fame_showcase_data.o
+    Object src/data/hall_of_fame_showcase_data_1.o
+    Object src/data/hall_of_fame_showcase_data_2.o
+    Object src/data/hall_of_fame_showcase_data_3.o
 }
 Overlay OVY_65
 {
     After OVY_6
     Object src/wireless_trade_select_mon.o
-    Object asm/wireless_trade_select_mon_data.o
+    Object src/data/wireless_trade_select_mon_data_1.o
+    Object src/data/wireless_trade_select_mon_data_2.o
+    Object src/data/wireless_trade_select_mon_data_3.o
+    Object src/data/wireless_trade_select_mon_data_4.o
 }
 Overlay OVY_66
 {
@@ -1733,7 +1861,13 @@ Overlay OVY_70
     Object src/gts/gts_trade.o
     Object src/gts/gts_selector.o
     Object src/gts/gts_connection.o
-    Object asm/gts_data.o
+    Object src/data/gts_data_1.o
+    Object src/data/gts_data_2.o
+    Object src/data/gts_data_3.o
+    Object src/data/gts_data_4.o
+    Object src/data/gts_data_5.o
+    Object src/data/gts_data_6.o
+    Object src/data/gts_data_7.o
 }
 Overlay OVY_71
 {
@@ -1751,18 +1885,22 @@ Overlay OVY_72
 {
     After OVY_7
     Object src/nintendo_wfc_connect.o
-    Object asm/nintendo_wfc_connect_data.o
+    Object src/data/nintendo_wfc_connect_data_1.o
+    Object src/data/nintendo_wfc_connect_data_2.o
+    Object src/data/nintendo_wfc_connect_data_3.o
+    Object src/data/nintendo_wfc_connect_data_4.o
+    Object src/data/nintendo_wfc_connect_data_5.o
 }
 Overlay OVY_73
 {
     After main
     Object src/record_mixing/record_mixing.o
     Object src/record_mixing/record_mixing_records.o
-    Object asm/nintendo_wfc_connect_unused_data.o
+    Object src/data/nintendo_wfc_connect_unused_data.o
     Object src/nintendo_wfc_connect_unused.o
     Object src/nintendo_wfc_connect_unused_session.o
     Object src/record_mixing/record_mixing_exchange.o
-    Object asm/record_mixing_data.o
+    Object src/data/record_mixing_data.o
 }
 Overlay OVY_74
 {
@@ -1773,18 +1911,28 @@ Object src/application/main_menu/mystery_gift_wireless.o
     Object src/application/main_menu/mystery_gift_app.o
     Object src/application/main_menu/wonder_card_album.o
     Object src/application/main_menu/lock_capsule_card.o
-    Object asm/lock_capsule_card_data.o
+    Object src/data/lock_capsule_card_data_1.o
+    Object src/data/lock_capsule_card_data_2.o
     Object src/application/main_menu/ranger_link.o
     Object src/application/main_menu/migrate_from_agb.o
     Object src/application/main_menu/agb_cartridge.o
     Object src/application/main_menu/main_menu_util.o
-    Object asm/main_menu_bss.o
+    Object src/data/main_menu_bss_1.o
+    Object src/data/main_menu_bss_2.o
+    Object src/data/main_menu_bss_3.o
     Object src/application/main_menu/main_menu_shared.o
     Object src/application/main_menu/mystery_gift_beacon.o
     Object src/application/main_menu/mystery_gift_wfc.o
     Object src/application/main_menu/agb_string.o
-    Object asm/main_menu_data.o
-    Object asm/nitrocrypto_data.o
+    Object src/data/main_menu_data_1.o
+    Object src/data/main_menu_data_2.o
+    Object src/data/main_menu_data_3.o
+    Object src/data/main_menu_data_4.o
+    Object src/data/main_menu_data_5.o
+    Object src/data/main_menu_data_6.o
+    Object src/data/main_menu_data_7.o
+    Object src/data/main_menu_data_8.o
+    Object src/data/nitrocrypto_data.o
     Object lib/src/nitrocrypto_rc4.o
     Object lib/src/nitrocrypto_sign.o
     Object lib/src/nitrocrypto_bn_exp.o
@@ -1844,7 +1992,17 @@ Overlay OVY_80
     Object src/frontier/battle_hall_data.o
     Object src/frontier/frontier_cmd_castle.o
     Object src/frontier/battle_castle_challenge.o
-    Object asm/frontier_script_commands_data.o
+    Object src/data/frontier_script_commands_data_1.o
+    Object src/data/frontier_script_commands_data_2.o
+    Object src/data/frontier_script_commands_data_3.o
+    Object src/data/frontier_script_commands_data_4.o
+    Object src/data/frontier_script_commands_data_5.o
+    Object src/data/frontier_script_commands_data_6.o
+    Object src/data/frontier_script_commands_data_7.o
+    Object src/data/frontier_script_commands_data_8.o
+    Object src/data/frontier_script_commands_data_9.o
+    Object src/data/frontier_script_commands_data_10.o
+    Object src/data/frontier_script_commands_data_11.o
     Object src/frontier/frontier_cmd_arcade.o
     Object src/frontier/battle_arcade_data.o
     Object src/frontier/frontier_cmd_sound.o
@@ -1854,7 +2012,7 @@ Overlay OVY_80
     Object src/frontier/frontier_link_lobby.o
     Object src/frontier/battle_tower_setup.o
     Object src/frontier/battle_factory_setup.o
-    Object asm/battle_factory_setup_data.o
+    Object src/data/battle_factory_setup_data.o
     Object src/frontier/battle_hall_setup.o
     Object src/frontier/battle_castle_setup.o
     Object src/frontier/battle_arcade_setup.o
@@ -1885,7 +2043,13 @@ Overlay OVY_83
     After OVY_80
     Object src/frontier/battle_castle_party_app.o
     Object src/frontier/battle_castle_opponent_app.o
-    Object asm/battle_castle_data.o
+    Object src/data/battle_castle_data_1.o
+    Object src/data/battle_castle_data_2.o
+    Object src/data/battle_castle_data_3.o
+    Object src/data/battle_castle_data_4.o
+    Object src/data/battle_castle_data_5.o
+    Object src/data/battle_castle_data_6.o
+    Object src/data/battle_castle_data_7.o
     Object src/frontier/battle_castle_display.o
     Object src/frontier/battle_castle_input.o
 }
@@ -1893,13 +2057,20 @@ Overlay OVY_84
 {
     After OVY_80
     Object src/frontier/battle_arcade_game_board.o
-    Object asm/battle_arcade_game_board_data.o
+    Object src/data/battle_arcade_game_board_data_1.o
+    Object src/data/battle_arcade_game_board_data_2.o
+    Object src/data/battle_arcade_game_board_data_3.o
 }
 Overlay OVY_85
 {
     After main
     Object src/application/spin_trade/spin_trade_app.o
-    Object asm/spin_trade_data.o
+    Object src/data/spin_trade_data_1.o
+    Object src/data/spin_trade_data_2.o
+    Object src/data/spin_trade_data_3.o
+    Object src/data/spin_trade_data_4.o
+    Object src/data/spin_trade_data_5.o
+    Object src/data/spin_trade_data_6.o
     Object src/application/spin_trade/spin_trade_group_app.o
 }
 Overlay OVY_86
@@ -1912,7 +2083,15 @@ Overlay OVY_87
 {
     After main
     Object src/application/scratch_off_cards.o
-    Object asm/scratch_off_cards_data.o
+    Object src/data/scratch_off_cards_data_1.o
+    Object src/data/scratch_off_cards_data_2.o
+    Object src/data/scratch_off_cards_data_3.o
+    Object src/data/scratch_off_cards_data_4.o
+    Object src/data/scratch_off_cards_data_5.o
+    Object src/data/scratch_off_cards_data_6.o
+    Object src/data/scratch_off_cards_data_7.o
+    Object src/data/scratch_off_cards_data_8.o
+    Object src/data/scratch_off_cards_data_9.o
 }
 Overlay OVY_88
 {
@@ -1924,35 +2103,57 @@ Overlay OVY_89
     After OVY_45
     Object src/application/footprint_stamp.o
     Object src/application/footprint_stamp_effects.o
-    Object asm/footprint_stamp_data.o
+    Object src/data/footprint_stamp_data_1.o
+    Object src/data/footprint_stamp_data_2.o
+    Object src/data/footprint_stamp_data_3.o
 }
 Overlay OVY_90
 {
     After OVY_45
     Object src/application/plaza_game.o
-    Object asm/plaza_game_data.o
+    Object src/data/plaza_game_data_1.o
+    Object src/data/plaza_game_data_2.o
+    Object src/data/plaza_game_data_3.o
+    Object src/data/plaza_game_data_4.o
 }
 Overlay OVY_91
 {
     After OVY_90
     Object src/application/plaza_game_swalot_plop.o
-    Object asm/plaza_game_swalot_plop_data.o
+    Object src/data/plaza_game_swalot_plop_data_1.o
+    Object src/data/plaza_game_swalot_plop_data_2.o
+    Object src/data/plaza_game_swalot_plop_data_3.o
+    Object src/data/plaza_game_swalot_plop_data_4.o
+    Object src/data/plaza_game_swalot_plop_data_5.o
+    Object src/data/plaza_game_swalot_plop_data_6.o
 }
 Overlay OVY_92
 {
     After OVY_90
     Object src/application/plaza_game_mime_jr_top.o
-    Object asm/plaza_game_mime_jr_top_data.o
+    Object src/data/plaza_game_mime_jr_top_data_1.o
+    Object src/data/plaza_game_mime_jr_top_data_2.o
+    Object src/data/plaza_game_mime_jr_top_data_3.o
+    Object src/data/plaza_game_mime_jr_top_data_4.o
+    Object src/data/plaza_game_mime_jr_top_data_5.o
+    Object src/data/plaza_game_mime_jr_top_data_6.o
+    Object src/data/plaza_game_mime_jr_top_data_7.o
+    Object src/data/plaza_game_mime_jr_top_data_8.o
+    Object src/data/plaza_game_mime_jr_top_data_9.o
 }
 Overlay OVY_93
 {
     After OVY_90
     Object src/application/wobbuffet_pop.o
-    Object asm/wobbuffet_pop_data.o
+    Object src/data/wobbuffet_pop_data_1.o
+    Object src/data/wobbuffet_pop_data_2.o
+    Object src/data/wobbuffet_pop_data_3.o
+    Object src/data/wobbuffet_pop_data_4.o
     Object src/application/wobbuffet_pop_balloon_mesh.o
-    Object asm/wobbuffet_pop_balloon_mesh_data.o
+    Object src/data/wobbuffet_pop_balloon_mesh_data.o
     Object src/application/wobbuffet_pop_scene.o
-    Object asm/wobbuffet_pop_scene_data.o
+    Object src/data/wobbuffet_pop_scene_data_1.o
+    Object src/data/wobbuffet_pop_scene_data_2.o
 }
 Overlay OVY_94
 {
@@ -1970,7 +2171,8 @@ Overlay OVY_96
     After main
     Object src/pokeathlon/pokeathlon_course.o
     Object src/pokeathlon/pokeathlon_course_flow.o
-    Object asm/pokeathlon_course_data.o
+    Object src/data/pokeathlon_course_data_1.o
+    Object src/data/pokeathlon_course_data_2.o
     Object src/pokeathlon/pokeathlon_course_mon_gfx.o
     Object src/pokeathlon/pokeathlon_course_scores.o
     Object src/pokeathlon/pokeathlon_course_sprites.o
@@ -1988,7 +2190,7 @@ Overlay OVY_96
     Object src/pokeathlon/pokeathlon_lamp_jump.o
     Object src/pokeathlon/pokeathlon_results_announcement.o
     Object src/pokeathlon/pokeathlon_results_plates.o
-    Object asm/pokeathlon_hurdle_dash_rodata.o
+    Object src/data/pokeathlon_hurdle_dash_rodata.o
     Object src/pokeathlon/pokeathlon_hurdle_dash.o
     Object src/pokeathlon/pokeathlon_hurdle_dash_runner.o
     Object src/pokeathlon/pokeathlon_hurdle_dash_race.o
@@ -1996,11 +2198,12 @@ Overlay OVY_96
     Object src/pokeathlon/pokeathlon_relay_run.o
     Object src/pokeathlon/pokeathlon_relay_run_hud.o
     Object src/pokeathlon/pokeathlon_relay_run_pic_frames.o
-    Object asm/pokeathlon_relay_run_map_rodata.o
+    Object src/data/pokeathlon_relay_run_map_rodata.o
     Object src/pokeathlon/pokeathlon_relay_run_cpu.o
     Object src/pokeathlon/pokeathlon_snow_throw.o
     Object src/pokeathlon/pokeathlon_snow_throw_display.o
-    Object asm/pokeathlon_pennant_capture_rodata.o
+    Object src/data/pokeathlon_pennant_capture_rodata_1.o
+    Object src/data/pokeathlon_pennant_capture_rodata_2.o
     Object src/pokeathlon/pokeathlon_pennant_capture.o
     Object src/pokeathlon/pokeathlon_pennant_capture_play.o
     Object src/pokeathlon/pokeathlon_pennant_capture_field.o
@@ -2012,25 +2215,31 @@ Overlay OVY_96
     Object src/pokeathlon/pokeathlon_block_smash_teams.o
     Object src/pokeathlon/pokeathlon_disc_catch.o
     Object src/pokeathlon/pokeathlon_disc_catch_field.o
-    Object asm/pokeathlon_disc_catch_rodata.o
+    Object src/data/pokeathlon_disc_catch_rodata.o
     Object src/pokeathlon/pokeathlon_disc_catch_scoreboard.o
     Object src/pokeathlon/pokeathlon_disc_catch_cpu.o
-    Object asm/pokeathlon_disc_catch_cpu_rodata.o
+    Object src/data/pokeathlon_disc_catch_cpu_rodata.o
     Object src/pokeathlon/pokeathlon_goal_roll.o
     Object src/pokeathlon/pokeathlon_goal_roll_field.o
-    Object asm/pokeathlon_goal_roll_rodata.o
+    Object src/data/pokeathlon_goal_roll_rodata_1.o
+    Object src/data/pokeathlon_goal_roll_rodata_2.o
+    Object src/data/pokeathlon_goal_roll_rodata_3.o
     Object src/pokeathlon/pokeathlon_goal_roll_display.o
     Object src/pokeathlon/pokeathlon_goal_roll_cpu.o
-    Object asm/pokeathlon_goal_roll_cpu_rodata.o
+    Object src/data/pokeathlon_goal_roll_cpu_rodata.o
     Object src/pokeathlon/pokeathlon_ring_drop.o
     Object src/pokeathlon/pokeathlon_ring_drop_display.o
     Object src/pokeathlon/pokeathlon_ring_drop_field.o
     Object src/pokeathlon/pokeathlon_ring_drop_mon.o
-    Object asm/pokeathlon_ring_drop_rodata.o
+    Object src/data/pokeathlon_ring_drop_rodata_1.o
+    Object src/data/pokeathlon_ring_drop_rodata_2.o
     Object src/pokeathlon/pokeathlon_ring_drop_ui.o
     Object src/pokeathlon/pokeathlon_ring_drop_cpu.o
     Object src/pokeathlon/pokeathlon_event_points.o
-    Object asm/pokeathlon_event_data.o
+    Object src/data/pokeathlon_event_data_1.o
+    Object src/data/pokeathlon_event_data_2.o
+    Object src/data/pokeathlon_event_data_3.o
+    Object src/data/pokeathlon_event_data_4.o
     Object src/pokeathlon/pokeathlon_event_rank_points.o
     Object src/pokeathlon/pokeathlon_data.o
 }
@@ -2053,7 +2262,10 @@ Overlay OVY_99
     Object src/pokeathlon/pokeathlon_trophies.o
     Object src/pokeathlon/pokeathlon_medals.o
     Object src/pokeathlon/pokeathlon_event_record.o
-    Object asm/pokeathlon_record_data.o
+    Object src/data/pokeathlon_record_data_1.o
+    Object src/data/pokeathlon_record_data_2.o
+    Object src/data/pokeathlon_record_data_3.o
+    Object src/data/pokeathlon_record_data_4.o
 }
 Overlay pokegear
 {
@@ -2125,7 +2337,8 @@ Overlay OVY_102
     Object src/application/easy_chat_app.o
     Object src/application/easy_chat_app_view.o
     Object src/application/easy_chat_app_panels.o
-    Object asm/easy_chat_app_data.o
+    Object src/data/easy_chat_app_data_1.o
+    Object src/data/easy_chat_app_data_2.o
 }
 Overlay OVY_103
 {
@@ -2162,9 +2375,14 @@ Overlay OVY_108
 {
     After main
     Object src/application/safari_area_customizer.o
-    Object asm/safari_area_customizer_data.o
+    Object src/data/safari_area_customizer_data_1.o
+    Object src/data/safari_area_customizer_data_2.o
+    Object src/data/safari_area_customizer_data_3.o
     Object src/application/safari_decoration.o
-    Object asm/safari_decoration_data.o
+    Object src/data/safari_decoration_data_1.o
+    Object src/data/safari_decoration_data_2.o
+    Object src/data/safari_decoration_data_3.o
+    Object src/data/safari_decoration_data_4.o
 }
 Overlay OVY_109
 {
@@ -2185,7 +2403,8 @@ Overlay OVY_112
 {
     After main
     Object src/application/pokewalker/pokewalker_ir.o
-Object asm/pokewalker_ir_bss.o
+Object src/data/pokewalker_ir_bss_1.o
+Object src/data/pokewalker_ir_bss_2.o
 Object src/application/pokewalker/pokewalker_ir_requests.o
 Object src/application/pokewalker/pokewalker_ir_status.o
 Object src/application/pokewalker/pokewalker_app.o
@@ -2198,12 +2417,26 @@ Object src/application/pokewalker/pokewalker_stroll.o
 Object src/application/pokewalker/pokewalker_app_modes.o
 Object src/application/pokewalker/pokewalker_event_log.o
 Object src/application/pokewalker/pokewalker_trainer_house.o
-Object asm/pokewalker_data.o
+Object src/data/pokewalker_data_1.o
+Object src/data/pokewalker_data_2.o
+Object src/data/pokewalker_data_3.o
+Object src/data/pokewalker_data_4.o
+Object src/data/pokewalker_data_5.o
+Object src/data/pokewalker_data_6.o
+Object src/data/pokewalker_data_7.o
+Object src/data/pokewalker_data_8.o
+Object src/data/pokewalker_data_9.o
+Object src/data/pokewalker_data_10.o
+Object src/data/pokewalker_data_11.o
+Object src/data/pokewalker_data_12.o
+Object src/data/pokewalker_data_13.o
+Object src/data/pokewalker_data_14.o
+Object src/data/pokewalker_data_15.o
 }
 Overlay OVY_113
 {
     After main
-    Object asm/unown_report_data.o
+    Object src/data/unown_report_data.o
     Object src/application/unown_report.o
 }
 Overlay OVY_114
@@ -2241,7 +2474,9 @@ Overlay OVY_120
 {
     After OVY_31
     Object src/field/encounter_effect_wild.o
-    Object asm/encounter_effect_wild_data.o
+    Object src/data/encounter_effect_wild_data_1.o
+    Object src/data/encounter_effect_wild_data_2.o
+    Object src/data/encounter_effect_wild_data_3.o
 }
 Overlay view_rankings_app
 {

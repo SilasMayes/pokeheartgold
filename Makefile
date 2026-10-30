@@ -25,6 +25,12 @@ include filesystem.mk
 
 $(ASM_OBJS): private MWASFLAGS += -DPM_ASM
 
+# src/data/ holds the data tables tools/s2c.py converted from asm. MWCC sorts a
+# file's data by size; s2c orders (and splits) the definitions so that the sort
+# gives the asm layout back. It assumes everything but char arrays shares one
+# section per kind, which -ipa file would undo.
+$(BUILD_DIR)/src/data/%.o: private MWCFLAGS := $(filter-out -ipa file,$(MWCFLAGS))
+
 $(BUILD_DIR)/asm/nitrocrypto.o:  private MWCCVER := 1.2/sp2p3
 $(BUILD_DIR)/lib/src/nitrocrypto_sign.o: private MWCCVER := 1.2/sp2p3
 $(BUILD_DIR)/lib/src/nitrocrypto_bn_exp.o: private MWCCVER := 1.2/sp2p3

@@ -173,7 +173,9 @@ extern NintendoWfcHttp gNintendoWfcHttp;
 extern u8 gNintendoWfcHttpFriendKey[];
 extern u8 gNintendoWfcHttpRequestBuffer[];
 extern u8 ov72_0223B900[];
-extern u8 gNintendoWfcHttpUploadFriendKey[];
+// Inside ov72_0223B900 (src/data/nintendo_wfc_connect_data_3.c): MWCC cannot lay it out as an object of
+// its own where the ROM has it.
+#define gNintendoWfcHttpUploadFriendKey (ov72_0223B900 + 0x1B)
 extern NintendoWfcHttpResponse gNintendoWfcHttpResponse;
 extern u8 gNintendoWfcHttpShortResponse[];
 extern NintendoWfcGlobal gNintendoWfcGlobal;

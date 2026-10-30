@@ -180,7 +180,9 @@ extern const u16 gBattleCastlePartyAppHealCosts[];            // CP cost of REST
 extern const u16 gBattleCastlePartyAppMainMenuHelpMessages[]; // main menu help messages, by cursor position
 extern const u16 gBattleCastlePartyAppItemCounts[];           // number of rentable items, by rental rank - 1
 extern const u16 gBattleCastlePartyAppRankUpCosts[2][3];      // CP cost of the next rank, by rank kind (CASTLE_RANK_*) and rank
-extern const u16 gBattleCastlePartyAppRankUpMessages[2][3];   // "gained the ability to..." messages, by rank kind and rank
+// "gained the ability to..." messages, by rank kind and rank. They share one object with the costs
+// (src/data/battle_castle_data_2.c): MWCC cannot lay them out as two objects where the ROM has them.
+#define gBattleCastlePartyAppRankUpMessages (*(const u16(*)[2][3])((const u8 *)gBattleCastlePartyAppRankUpCosts + 0x12))
 extern const BattleCastleMenuItem gBattleCastlePartyAppMainMenuItems[];
 extern const BattleCastleMenuOption gBattleCastlePartyAppRentalMenuOptions[]; // BERRIES / ITEMS / RANK UP / CANCEL
 extern const u16 gBattleCastleRentalItems[];                                  // rentable items

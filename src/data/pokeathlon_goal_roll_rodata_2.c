@@ -1,0 +1,479 @@
+// Converted from asm/pokeathlon_goal_roll_rodata.s (part 2 of 3) by tools/s2c.py.
+//
+// MWCC sorts the data of a file by size before laying it out, so the definitions are in the order
+// that makes the sort reproduce the asm layout, and the data is split across files where one sort
+// cannot. Keep that when editing, or rerun tools/s2c.py.
+
+#include "global.h"
+
+#include "pokeathlon/pokeathlon_goal_roll.h"
+
+#pragma force_active on
+
+const u8 gPokeathlonGoalRollBallSpeedsA[5][30] = {
+    {
+     0x07,
+     0x07,
+     0x06,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x03,
+     0x03,
+     0x03,
+     0x02,
+     0x02,
+     0x01,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     },
+    {
+     0x07,
+     0x07,
+     0x06,
+     0x06,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x03,
+     0x03,
+     0x03,
+     0x02,
+     0x02,
+     0x01,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     },
+    {
+     0x07,
+     0x07,
+     0x06,
+     0x06,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x03,
+     0x03,
+     0x02,
+     0x02,
+     0x01,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     },
+    {
+     0x07,
+     0x07,
+     0x07,
+     0x07,
+     0x06,
+     0x06,
+     0x06,
+     0x06,
+     0x06,
+     0x06,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x03,
+     0x03,
+     0x03,
+     0x02,
+     0x02,
+     0x01,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     },
+    {
+     0x07,
+     0x07,
+     0x07,
+     0x07,
+     0x07,
+     0x07,
+     0x07,
+     0x06,
+     0x06,
+     0x06,
+     0x06,
+     0x06,
+     0x06,
+     0x06,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x05,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x03,
+     0x03,
+     0x03,
+     0x02,
+     0x02,
+     0x01,
+     },
+};
+
+const u8 gPokeathlonGoalRollBallSpeedsB[5][30] = {
+    {
+     0x05,
+     0x05,
+     0x05,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x03,
+     0x03,
+     0x03,
+     0x03,
+     0x02,
+     0x02,
+     0x01,
+     0x01,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     },
+    {
+     0x05,
+     0x05,
+     0x05,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x03,
+     0x03,
+     0x03,
+     0x03,
+     0x02,
+     0x02,
+     0x01,
+     0x01,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     },
+    {
+     0x05,
+     0x05,
+     0x05,
+     0x04,
+     0x04,
+     0x04,
+     0x04,
+     0x03,
+     0x03,
+     0x03,
+     0x03,
+     0x02,
+     0x02,
+     0x01,
+     0x01,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     },
+    {
+     0x04,
+     0x04,
+     0x04,
+     0x03,
+     0x03,
+     0x03,
+     0x02,
+     0x02,
+     0x01,
+     0x01,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     },
+    {
+     0x04,
+     0x04,
+     0x04,
+     0x03,
+     0x03,
+     0x03,
+     0x02,
+     0x02,
+     0x01,
+     0x01,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     0x00,
+     },
+};
+
+const VecFx32 gPokeathlonGoalRollGoalPosts[4][2] = {
+    { { 262144, 98304, 0 },  { 32768, 327680, 0 }   },
+    { { 786432, 98304, 0 },  { 1015808, 327680, 0 } },
+    { { 262144, 753664, 0 }, { 32768, 524288, 0 }   },
+    { { 786432, 753664, 0 }, { 1015808, 524288, 0 } },
+};
+
+const Point2D gPokeathlonGoalRollGoalLines[4][2] = {
+    { { 64, 16 },   { 0, 80 }    },
+    { { 256, 80 },  { 192, 16 }  },
+    { { 0, 128 },   { 64, 192 }  },
+    { { 192, 192 }, { 256, 128 } },
+};
+
+const PokeathlonGoalRollSpawnPoint gPokeathlonGoalRollBallSpawnPoints[15] = {
+    { 80,  88  },
+    { 104, 88  },
+    { 128, 88  },
+    { 152, 88  },
+    { 176, 88  },
+    { 80,  104 },
+    { 104, 104 },
+    { 128, 104 },
+    { 152, 104 },
+    { 176, 104 },
+    { 80,  120 },
+    { 104, 120 },
+    { 128, 120 },
+    { 152, 120 },
+    { 176, 120 },
+};
+
+const VecFx32 gPokeathlonGoalRollLabelPositions[4] = {
+    { 0,       163840, 0 },
+    { 1044480, 163840, 0 },
+    { 0,       622592, 0 },
+    { 1044480, 622592, 0 },
+};
+
+const VecFx32 gPokeathlonGoalRollGoalPositions[4] = {
+    { 131072, 196608, 0 },
+    { 917504, 196608, 0 },
+    { 131072, 655360, 0 },
+    { 917504, 655360, 0 },
+};
+
+const u16 gPokeathlonGoalRollMonStartPositions[POKEATHLON_PARTICIPANTS][POKEATHLON_TEAM_SIZE][2] = {
+    { { 0x0058, 0x0050 }, { 0x0030, 0x0050 }, { 0x0048, 0x0038 } },
+    { { 0x00A8, 0x0050 }, { 0x00D0, 0x0050 }, { 0x00B8, 0x0038 } },
+    { { 0x0058, 0x0080 }, { 0x0030, 0x0080 }, { 0x0048, 0x0098 } },
+    { { 0x00A8, 0x0080 }, { 0x00D0, 0x0080 }, { 0x00B8, 0x0098 } },
+};
+
+// clang-format off
+const GraphicsBanks gPokeathlonGoalRollGraphicsBanks = {
+    GX_VRAM_BG_64_E, GX_VRAM_BGEXTPLTT_NONE, GX_VRAM_SUB_BG_128_C, GX_VRAM_SUB_BGEXTPLTT_NONE,
+    GX_VRAM_OBJ_256_AB, GX_VRAM_OBJEXTPLTT_NONE, GX_VRAM_SUB_OBJ_16_I, GX_VRAM_SUB_OBJEXTPLTT_NONE,
+    GX_VRAM_TEX_NONE, GX_VRAM_TEXPLTT_NONE,
+};
+// clang-format on
+
+const WindowTemplate gPokeathlonGoalRollNameWindowTemplates[4] = {
+    { 0x00, 0x00, 0x00, 0x08, 0x02, 0x0E, 1      },
+    { 0x00, 0x08, 0x00, 0x08, 0x02, 0x0E, 0x0011 },
+    { 0x00, 0x10, 0x00, 0x08, 0x02, 0x0E, 0x0021 },
+    { 0x00, 0x18, 0x00, 0x08, 0x02, 0x0E, 0x0031 },
+};
+
+// clang-format off
+const BgTemplate gPokeathlonGoalRollBgTemplate_Sub2 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x1D, 0x02, 0x00, 0x01, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gPokeathlonGoalRollBgTemplate_Main0 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x1D, 0x00, 0x00, 0x01, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gPokeathlonGoalRollBgTemplate_Main1 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x1C, 0x01, 0x00, 0x02, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gPokeathlonGoalRollBgTemplate_Main2 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x1B, 0x02, 0x00, 0x03, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gPokeathlonGoalRollBgTemplate_Main3 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x1A, 0x03, 0x00, 0x00, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gPokeathlonGoalRollBgTemplate_Sub0 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gPokeathlonGoalRollBgTemplate_Sub1 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x1E, 0x01, 0x00, 0x01, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const GraphicsModes gPokeathlonGoalRollGraphicsModes = {
+    GX_DISPMODE_GRAPHICS, GX_BGMODE_0, GX_BGMODE_1, GX_BG0_AS_2D,
+};
+// clang-format on
+
+const VecFx32 gPokeathlonGoalRollNormalBottomRight = { -4096, -4096, 0 };
+
+const VecFx32 gPokeathlonGoalRollWallCorner = { 4096, 0, 0 };
+
+const VecFx32 gPokeathlonGoalRollWallNormal = { 4096, 4096, 0 };
+
+const VecFx32 gPokeathlonGoalRollNormalBottomLeft = { 4096, -4096, 0 };
+
+const VecFx32 gPokeathlonGoalRollUp = { 0, 0, 4096 };
+
+const VecFx32 gPokeathlonGoalRollNormalTopLeft = { 4096, 4096, 0 };
+
+const VecFx32 gPokeathlonGoalRollFrameRight = { 0, 4096, 0 };
+
+const VecFx32 gPokeathlonGoalRollWallPost = { 0, 4096, 0 };
+
+const VecFx32 gPokeathlonGoalRollFrameLeft = { 0, -4096, 0 };
+
+const VecFx32 gPokeathlonGoalRollNormalTopRight = { -4096, 4096, 0 };
+
+const PokeathlonCourseSpritePoolTemplate gPokeathlonGoalRollSpritePoolConfig = {
+    121,
+    2,
+    { 0x02, 0x02, 0x02, 0x02 },
+};

@@ -4,7 +4,7 @@
 
 #pragma dollar_identifiers on
 
-// asm/nitrocrypto_data.s: bit length of each value 0-15
+// src/data/nitrocrypto_data.c: bit length of each value 0-15
 extern const s8 bits$7808[];
 
 // MWCC 1.2 emits a file's functions in reverse order: the functions are defined last-to-first here

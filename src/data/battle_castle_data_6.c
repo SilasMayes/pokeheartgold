@@ -1,0 +1,72 @@
+// Converted from asm/battle_castle_data.s (part 6 of 7) by tools/s2c.py.
+//
+// MWCC sorts the data of a file by size before laying it out, so the definitions are in the order
+// that makes the sort reproduce the asm layout, and the data is split across files where one sort
+// cannot. Keep that when editing, or rerun tools/s2c.py.
+
+// The C declarations of these do not match the data (see the notes at each
+// definition): keep them out of the way of the definitions below.
+#define gBattleCastleOpponentAppBgTemplate_Sub1 gBattleCastleOpponentAppBgTemplate_Sub1_header_decl
+
+#include "global.h"
+
+#include "frontier/battle_castle.h"
+
+#pragma force_active on
+
+#undef gBattleCastleOpponentAppBgTemplate_Sub1
+
+// C declares this as `const BgTemplate gBattleCastleOpponentAppBgTemplate_Sub1`, but the label holds
+// 64 more bytes of data after it.
+// clang-format off
+const u8 gBattleCastleOpponentAppBgTemplate_Sub1[92] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x1E, 0x04, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x00, 0x00, 0xFE, 0xFF, 0xFF, 0xFF, 0x21, 0x00, 0x00, 0x00,
+    0x03, 0x00, 0x00, 0x00, 0x22, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x23, 0x00, 0x00, 0x00,
+    0x05, 0x00, 0x00, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFE, 0xFF, 0xFF, 0xFF,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gBattleCastleOpponentAppBgTemplate_Main3 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x04, 0x02, 0x00, 0x03, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gBattleCastleOpponentAppBgTemplate_Main2 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x02, 0x05, 0x00, 0x01, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gBattleCastleOpponentAppBgTemplate_Main0 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gBattleCastleOpponentAppBgTemplate_Sub0 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x1F, 0x00, 0x00, 0x03, 0x00, 0x00, 0,
+};
+// clang-format on
+
+// clang-format off
+const BgTemplate gBattleCastleOpponentAppBgTemplate_Main1 = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x00, 0,
+};
+// clang-format on
+
+const u16 gBattleCastleOpponentAppRankUpMessages[3][3] = {
+    { 0, 0,      0      },
+    { 0, 0,      0      },
+    { 0, 0x005F, 0x005F }
+};
+
+// clang-format off
+const GraphicsModes gBattleCastleOpponentAppGraphicsModes = {
+    GX_DISPMODE_GRAPHICS, GX_BGMODE_0, GX_BGMODE_0, GX_BG0_AS_2D,
+};
+// clang-format on

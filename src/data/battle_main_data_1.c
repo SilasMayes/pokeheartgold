@@ -1,0 +1,45 @@
+// Converted from asm/battle_main_data.s (part 1 of 2) by tools/s2c.py.
+//
+// MWCC sorts the data of a file by size before laying it out, so the definitions are in the order
+// that makes the sort reproduce the asm layout, and the data is split across files where one sort
+// cannot. Keep that when editing, or rerun tools/s2c.py.
+
+#include "global.h"
+
+#include "battle/battle_main.h"
+
+#pragma force_active on
+
+const u32 gBattleBgFillColors[23][3] = {
+    { 0x7B51, 0x023E, 0x5E00 },
+    { 0x7B51, 0x023E, 0x5E00 },
+    { 0x7B51, 0x023E, 0x5E00 },
+    { 0x16AB, 0x16AB, 0x16AB },
+    { 0x7B51, 0x023E, 0x5E00 },
+    { 0x7F5F, 0x5B5F, 0x5AD8 },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x1CA5, 0x1CA5, 0x1CA5 },
+    { 0x1CA5, 0x1CA5, 0x1CA5 },
+    { 0x1CA5, 0x1CA5, 0x1CA5 },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+    { 0x7FFF, 0x7FFF, 0x7FFF },
+};
+
+const BattleBgTemplateSet gBattleBgTemplates = {
+    {
+     { 0, 0, 0x800, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 },
+     { 0, 0, 0x2000, 0, 4, 0, 2, 3, 0, 1, 0, 0, 0 },
+     { 0, 0, 0x1000, 0, 3, 1, 6, 4, 0, 3, 0, 0, 0 },
+     },
+};

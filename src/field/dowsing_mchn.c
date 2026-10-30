@@ -110,10 +110,14 @@ typedef struct DowsingMchnLevelParams {
 } DowsingMchnLevelParams;
 
 extern const DowsingMchnLevelParams gDowsingMchnLevelParams[];
-extern const DowsingMchnSpriteParams gDowsingMchnActionSpriteParams;
-extern const DowsingMchnSpriteParams gDowsingMchnRunningShoesSpriteParams;
-extern const DowsingMchnSpriteParams gDowsingMchnRunningShoesSprite2Params;
-extern const DowsingMchnSpriteParams gDowsingMchnExitSpriteParams;
+// The sprite parameters follow the five levels inside one object (src/data/dowsing_mchn_data_1.c):
+// MWCC cannot lay them out as objects of their own where the ROM has them. Indexing the level table
+// keeps each address a constant of its own, as separate objects were.
+#define DOWSING_MCHN_SPRITE_PARAMS(index)     (*(const DowsingMchnSpriteParams *)&gDowsingMchnLevelParams[index])
+#define gDowsingMchnActionSpriteParams        DOWSING_MCHN_SPRITE_PARAMS(5)
+#define gDowsingMchnRunningShoesSpriteParams  DOWSING_MCHN_SPRITE_PARAMS(7)
+#define gDowsingMchnRunningShoesSprite2Params DOWSING_MCHN_SPRITE_PARAMS(9)
+#define gDowsingMchnExitSpriteParams          DOWSING_MCHN_SPRITE_PARAMS(11)
 extern void (*const gDowsingMchnStepAngleFuncs[])(DowsingMchnAngle *angle);
 extern const BgTemplate gDowsingMchnBgTemplateSub0;
 extern const BgTemplate gDowsingMchnBgTemplateSub1;

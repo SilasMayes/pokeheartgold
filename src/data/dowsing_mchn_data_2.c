@@ -1,0 +1,44 @@
+// Converted from asm/dowsing_mchn_data.s (part 2 of 4) by tools/s2c.py.
+//
+// MWCC sorts the data of a file by size before laying it out, so the definitions are in the order
+// that makes the sort reproduce the asm layout, and the data is split across files where one sort
+// cannot. Keep that when editing, or rerun tools/s2c.py.
+
+#include "global.h"
+
+#pragma force_active on
+
+extern void DowsingMchn_StepAngleLevel0(void);
+extern void DowsingMchn_StepAngleLevel1(void);
+extern void DowsingMchn_StepAngleLevel2(void);
+extern void DowsingMchn_StepAngleLevel3(void);
+extern void DowsingMchn_StepAngleLevel4(void);
+
+// clang-format off
+const u8 gDowsingMchnBgTemplateSub1[28] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x0E, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+// clang-format on
+
+// clang-format off
+const u8 gDowsingMchnBgTemplateSub0[28] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x0F, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+// clang-format on
+
+// clang-format off
+const u8 gDowsingMchnBgTemplateSub2[28] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x0D, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+// clang-format on
+
+void (*const gDowsingMchnStepAngleFuncs[5])(void) = {
+    DowsingMchn_StepAngleLevel0,
+    DowsingMchn_StepAngleLevel1,
+    DowsingMchn_StepAngleLevel2,
+    DowsingMchn_StepAngleLevel3,
+    DowsingMchn_StepAngleLevel4,
+};
