@@ -18,12 +18,14 @@ build is `cmp`-identical to a retail dump.
 ### Verified trees
 
 Each run below is the recipe from a fresh clone, with a fresh Wine prefix, ending with a clean
-`git status`.
+`git status`, unless the row says incremental (same tree checked out at a newer commit; make's
+dependency files rebuild what changed).
 
 | Tree | HeartGold | SoulSilver |
 |---|---|---|
 | `ctrl-cheeb-del/pokeheartgold` master `2e0a4e0` | OK `4fcded0e…` | OK `f8dc38ea…` |
 | `SilasMayes/pokeheartgold` `thor-android` `6534a02` (port edits, asm data converted to C) | OK `4fcded0e…` | OK `f8dc38ea…` |
+| `SilasMayes/pokeheartgold` `thor-android` `00ef1f5`, then `0a57bbe` (incremental rebuilds of the `6534a02` tree) | OK `4fcded0e…` | OK `f8dc38ea…` |
 
 ## Inputs (proprietary, not in the repo)
 
