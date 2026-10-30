@@ -57,6 +57,11 @@ typedef struct SpriteMultiAnimationData {
 #ifdef BUGFIX_SPRITE_ANIM_SIZE
 #define max(a, b)                        ((a) > (b) ? (a) : (b))
 #define SPRITE_ANIMATION_DATA_WORD_COUNT (max(sizeof(SpriteAnimationData), sizeof(SpriteMultiAnimationData)) / 4)
+#elif defined(SDK_PORT)
+// The port holds the largest of the three: with 8-byte pointers the cell animation alone runs past
+// 29 words, into imageProxy (sprites then drew with the wrong characters)
+#define SPRITE_ANIM_DATA_LARGER_(a, b)   (sizeof(a) > (b) ? sizeof(a) : (b))
+#define SPRITE_ANIMATION_DATA_WORD_COUNT (SPRITE_ANIM_DATA_LARGER_(SpriteAnimationDataWithTransfer, SPRITE_ANIM_DATA_LARGER_(SpriteMultiAnimationData, sizeof(SpriteAnimationData))) / 4)
 #else
 #define SPRITE_ANIMATION_DATA_WORD_COUNT 29
 #endif // BUGFIX_SPRITE_ANIM_SIZE
