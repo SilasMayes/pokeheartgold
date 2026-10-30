@@ -122,3 +122,4 @@ __pycache__
 /subprojects/libvct/
 /subprojects/packagecache
 /subprojects/.wraplock
+/build_android/
