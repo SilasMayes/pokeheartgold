@@ -27,7 +27,7 @@ typedef struct PokemonSummaryArgs {
     BOOL natDexEnabled;
     SaveSpecialRibbons *ribbons;
     u8 unk24[0x4];
-    int chatot;
+    intptr_t chatot; // SOUND_CHATOT *, 0 for the player's own Chatot
     int unk2C;
     MenuInputStateMgr *menuInputStatePtr;
     BOOL isFlag982Set;

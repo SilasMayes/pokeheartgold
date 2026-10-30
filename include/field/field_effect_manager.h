@@ -60,7 +60,7 @@ void FieldEffectManager_ReadNarcMember(FieldEffectManager *manager, u32 fileId, 
 void *FieldEffectManager_LoadNarcMember(FieldEffectManager *manager, u32 fileId, BOOL atEnd);
 FieldEffect *FieldEffectManager_CreateEffect(FieldEffectManager *manager, const FieldEffectBasicTemplate *template, const VecFx32 *position, int parameter, void *userData, u32 priority);
 // Callers keep the FieldEffect * from FieldEffectManager_CreateEffect as an int handle.
-void FieldEffectManager_DestroyEffect(int effect);
+void FieldEffectManager_DestroyEffect(intptr_t effect); // a FieldEffect *
 struct BillboardObject *FieldEffectManager_CreateBillboard(FieldEffectManager *manager, struct BillboardResource *record, const VecFx32 *position);
 struct BillboardObject *FieldEffectManager_CreateBillboardFromRecord(FieldEffectManager *manager, u32 id, const VecFx32 *position);
 struct BillboardResource *FieldEffectManager_AddRecord(FieldEffectManager *manager, u32 id, int resourceId, int sequenceId, int resId, int noTexKeys, const struct BillboardSequenceRange *ranges);

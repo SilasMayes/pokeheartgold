@@ -128,7 +128,7 @@ static void WarpArrowEffect_Update(FieldEffect *effect, void *state) {
     PlayerAvatar *playerAvatar = work->args.playerAvatar;
     LocalMapObject *mapObject = PlayerAvatar_GetMapObject(playerAvatar);
     if (!MapObject_CheckIDAndMap(mapObject, work->objectId, work->mapId)) {
-        FieldEffectManager_DestroyEffect((int)effect);
+        FieldEffectManager_DestroyEffect((intptr_t)effect);
         return;
     }
     int prevDirection = work->direction;

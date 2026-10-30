@@ -680,8 +680,8 @@ static void CertificatesApp_LoadSpriteChars(Sprite *sprite, void *unkBuffer, u32
     DC_FlushRange(unkBuffer, unkBufferSize);
 
     NNSG2dImageProxy *proxy = Sprite_GetImageProxy(sprite);
-    GX_LoadOBJ(unkBuffer, (u32)((void *)NNS_G2dGetImageLocation(proxy, NNS_G2D_VRAM_TYPE_2DMAIN) + srcOffset), unkBufferSize);
-    GXS_LoadOBJ(unkBuffer, (u32)((void *)NNS_G2dGetImageLocation(proxy, NNS_G2D_VRAM_TYPE_2DSUB) + srcOffset), unkBufferSize);
+    GX_LoadOBJ(unkBuffer, (uintptr_t)((void *)NNS_G2dGetImageLocation(proxy, NNS_G2D_VRAM_TYPE_2DMAIN) + srcOffset), unkBufferSize);
+    GXS_LoadOBJ(unkBuffer, (uintptr_t)((void *)NNS_G2dGetImageLocation(proxy, NNS_G2D_VRAM_TYPE_2DSUB) + srcOffset), unkBufferSize);
 }
 
 void CertificatesApp_LoadMmodelSprite(Sprite *sprite, s32 narcMemberNum, u8 frameIndex, enum HeapID heapID) {

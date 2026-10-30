@@ -776,7 +776,7 @@ static void CopyOrUncompressTilemapData(const void *src, void *dest, u32 size) {
         return;
     }
 
-    if ((((u32)src) % 4) == 0 && (((u32)dest) % 4) == 0 && (((u16)size) % 4) == 0) {
+    if ((((uintptr_t)src) % 4) == 0 && (((uintptr_t)dest) % 4) == 0 && (((u16)size) % 4) == 0) {
         MI_CpuCopy32(src, dest, size);
         return;
     }

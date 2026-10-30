@@ -164,7 +164,7 @@ BOOL PokeathlonCourse_Main(OverlayManager *manager, int *state) {
 
                 src = PokeathlonCourseCmd_PacketSize();
                 dest1 = data->dataCopyBuffer1; // Destination buffer 1
-                PokeathlonCourseLink_SendCommand(0x1B, dest1, src, (int)data->system);
+                PokeathlonCourseLink_SendCommand(0x1B, dest1, src, (intptr_t)data->system);
 
                 dest1 = PokeathlonCourse_ToBytes(data->dataCopyBuffer2); // Destination buffer 2
                 dest2 = PokeathlonCourse_ToBytes(data->dataCopySource);  // Source buffer

@@ -167,7 +167,7 @@ static void WiiMessageSettings_LoadNetworkOverlays(WiiMessageSettings *app) {
         LoadOVY38();
         Comm_InitDwc(HEAP_ID_115);
         app->expHeapMemory = Heap_Alloc(HEAP_ID_115, 0x20020);
-        app->expHeap = NNS_FndCreateExpHeapEx((void *)(((u32)app->expHeapMemory + 0x1F) & ~0x1F), 0x20000, 0);
+        app->expHeap = NNS_FndCreateExpHeapEx((void *)(((uintptr_t)app->expHeapMemory + 0x1F) & ~0x1F), 0x20000, 0);
         CommWireless_StartUp();
         Sys_ClearSleepDisableFlag(4);
     }

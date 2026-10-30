@@ -130,7 +130,7 @@ static void GlobalTerminalApp_LoadWifi(GlobalTerminalApp *data) {
         LoadOVY38();
         Comm_InitDwc(HEAP_ID_123);
         data->heapBuffer = Heap_Alloc(HEAP_ID_123, 0x20020);
-        data->dwcHeap = NNS_FndCreateExpHeapEx((void *)(((u32)data->heapBuffer + 0x1F) & ~0x1F), 0x20000, 0);
+        data->dwcHeap = NNS_FndCreateExpHeapEx((void *)(((uintptr_t)data->heapBuffer + 0x1F) & ~0x1F), 0x20000, 0);
         CommWireless_StartUp();
         Sys_ClearSleepDisableFlag(4);
     }

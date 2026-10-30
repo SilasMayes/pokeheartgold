@@ -326,7 +326,7 @@ typedef struct PartyMenuContextButtonAnimData {
     u8 autoAnimTimer : 4;
     u8 buttonAnimState : 4;
     u8 state;
-    int followUpState;
+    intptr_t followUpState; // a list menu value: may be a PartyMonContextMenuActionFunc
     BOOL active;
 } PartyMenuContextButtonAnimData;
 

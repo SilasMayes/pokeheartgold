@@ -787,7 +787,7 @@ static void MysteryGiftApp_CreateListMenu(OverlayManager *manager, const Mystery
     data->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0247_bin, HEAP_ID_84);
     int i;
     for (i = 0; i < count; i++) {
-        ListMenuItems_AppendFromMsgData(data->listMenuItems, data->msgData, items[i].msgId, (int)items[i].func);
+        ListMenuItems_AppendFromMsgData(data->listMenuItems, data->msgData, items[i].msgId, (intptr_t)items[i].func);
     }
     DestroyMsgData(data->msgData);
     ListMenuTemplate template = sMysteryGiftListMenuTemplate;
@@ -860,7 +860,7 @@ static void MysteryGiftApp_PrintGiftTitle(OverlayManager *manager, Window *windo
 
 static void MysteryGiftApp_HandleListMenuInput(OverlayManager *manager, int *state, MysteryGiftMenuFunc cancelFunc) {
     MysteryGiftAppData *data = OverlayManager_GetData(manager);
-    u32 input = ListMenu_ProcessInput(data->listMenu);
+    uintptr_t input = ListMenu_ProcessInput(data->listMenu);
     int nextState;
 
     switch (input) {
@@ -1201,7 +1201,7 @@ static void MysteryGiftAnim_DeleteRibbons(MysteryGiftAnimData *anim) {
 
 static void MysteryGiftAnim_InitSparkles(MysteryGiftAnimData *anim) {
     MysteryGiftDelayTable delaysCopy;
-    u32 delayPtr;
+    uintptr_t delayPtr;
     MysteryGiftDelayTable delays;
     VecFx32 pos;
     int i;
@@ -1209,7 +1209,7 @@ static void MysteryGiftAnim_InitSparkles(MysteryGiftAnimData *anim) {
     MysteryGiftParticle *taskData;
 
     i = 0;
-    delayPtr = (u32)delaysCopy.values;
+    delayPtr = (uintptr_t)delaysCopy.values;
     taskData = &anim->sparkles[0];
     delays = sMysteryGiftSparkleDelays;
     do {

@@ -118,7 +118,7 @@ typedef struct BattleCastlePartyApp {
     Options *options;
     SaveData *saveData;
     CastleChallenge *castleChallenge;
-    u32 castleFlags;
+    uintptr_t castleFlags; // Save_Frontier_GetCastleFlags
     BattleCastleSpriteGfx spriteGfx;
     BattleCastleSprite *unk_734;
     BattleCastleSprite *unk_738;
@@ -311,7 +311,7 @@ typedef struct BattleCastleOpponentApp {
     Options *options;
     SaveData *saveData;
     CastleChallenge *castleChallenge;
-    u32 castleFlags;
+    uintptr_t castleFlags; // Save_Frontier_GetCastleFlags
     BattleCastleSpriteGfx spriteGfx;
     BattleCastleSprite *monIcons[4];
     BattleCastleSprite *hiddenMonIcons[4]; // shown until the mon is checked

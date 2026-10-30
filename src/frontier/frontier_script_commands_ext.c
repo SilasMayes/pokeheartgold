@@ -1163,7 +1163,7 @@ static void FrontierTransition_RowScrollTask(SysTask *task, FrontierTransitionWo
                             }
                             x %= 256;
                         }
-                        G2x_SetBGyAffine_((u32)dest, &matrix, 0, 0, x, y);
+                        G2x_SetBGyAffine_((uintptr_t)dest, &matrix, 0, 0, x, y);
                     }
                     {
                         s16 x = bg3X + line->x;
@@ -1180,7 +1180,7 @@ static void FrontierTransition_RowScrollTask(SysTask *task, FrontierTransitionWo
                             }
                             x %= 256;
                         }
-                        G2x_SetBGyAffine_((u32)dest + 16, &matrix, 0, 0, x, y);
+                        G2x_SetBGyAffine_((uintptr_t)dest + 16, &matrix, 0, 0, x, y);
                     }
                     j++;
                     dest += 32;
@@ -1219,7 +1219,7 @@ static void FrontierTransition_RowScrollTask(SysTask *task, FrontierTransitionWo
                             }
                             x %= 256;
                         }
-                        G2x_SetBGyAffine_((u32)dest, &matrix, 0, 0, x, y);
+                        G2x_SetBGyAffine_((uintptr_t)dest, &matrix, 0, 0, x, y);
                     }
                     {
                         s16 x = bg3X + line->x;
@@ -1236,7 +1236,7 @@ static void FrontierTransition_RowScrollTask(SysTask *task, FrontierTransitionWo
                             }
                             x %= 256;
                         }
-                        G2x_SetBGyAffine_((u32)dest + 16, &matrix, 0, 0, x, y);
+                        G2x_SetBGyAffine_((uintptr_t)dest + 16, &matrix, 0, 0, x, y);
                     }
                     j++;
                     dest += 32;

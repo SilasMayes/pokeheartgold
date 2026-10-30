@@ -3,7 +3,7 @@
 
 #include "party_menu.h"
 
-u32 GetPartyMenuContextMenuActionFunc(int index);
+uintptr_t GetPartyMenuContextMenuActionFunc(int index);
 int PartyMenu_Subtask_PrintTakeItemMessage(PartyMenu *partyMenu);
 int PartyMenu_Subtask_PrintTakeGriseousOrbMessage(PartyMenu *partyMenu);
 int PartyMenu_Subtask_WaitTakeGriseousOrbAnim(PartyMenu *partyMenu);

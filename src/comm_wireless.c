@@ -199,9 +199,9 @@ void CommWireless_Init(PlayerProfile *profile, int mode) {
         sCommWireless.work->beaconBuffer = allocation;
         work = sCommWireless.work;
         raw = work->beaconBuffer;
-        remainder = (u32)raw & 0x1F;
+        remainder = (uintptr_t)raw & 0x1F;
         adjustment = 0x20 - remainder;
-        work->beacon = (CommBeacon *)(adjustment + (u32)raw);
+        work->beacon = (CommBeacon *)(adjustment + (uintptr_t)raw);
         sCommWireless.work->ggid = 0x333;
         sCommWireless.work->profile = profile;
         MailMsg_Init(&sCommWireless.work->mail);
@@ -324,7 +324,7 @@ static void CommWireless_InitManager(int mode) {
 
     sCommWireless.work->unk_D70 = 0;
     buffer = sCommWireless.work->managerBuffer;
-    misalignment = (u32)buffer & 0x1F;
+    misalignment = (uintptr_t)buffer & 0x1F;
     Wireless_Init(buffer + (0x20 - misalignment), mode);
     Wireless_SetGgid((void *)sCommWireless.work->ggid);
 }

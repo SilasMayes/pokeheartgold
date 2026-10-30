@@ -85,7 +85,7 @@ extern u8 AddTextPrinterParameterizedWithColor(Window *window, u32 fontId, Strin
 
 extern void RTC_ConvertDayToDate(RTCDate *date, s32 day);
 
-static u32 sLockCapsuleCardMenuInput;
+static uintptr_t sLockCapsuleCardMenuInput; // the selected menu function
 
 enum {
     LOCK_CAPSULE_STATE_LOAD_SAVE,
@@ -287,7 +287,7 @@ static void LockCapsuleCard_CreateListMenu(LockCapsuleCardView *view, const Myst
     view->listMenuItems = ListMenuItems_New(count, HEAP_ID_85);
     view->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0247_bin, HEAP_ID_85);
     for (i = 0; i < count; i++) {
-        ListMenuItems_AppendFromMsgData(view->listMenuItems, view->msgData, items[i].msgId, (int)items[i].func);
+        ListMenuItems_AppendFromMsgData(view->listMenuItems, view->msgData, items[i].msgId, (intptr_t)items[i].func);
     }
     DestroyMsgData(view->msgData);
     template = sLockCapsuleCardListMenuTemplate;
@@ -475,7 +475,7 @@ static void LockCapsuleCard_LoadCardBg(LockCapsuleCardView *view, int page) {
 
 static void LockCapsuleCard_HandleListMenuInput(OverlayManager *manager, int *state, MysteryGiftMenuFunc cancelFunc) {
     LockCapsuleCardView *view = OverlayManager_GetData(manager);
-    u32 input = ListMenu_ProcessInput(view->listMenu);
+    uintptr_t input = ListMenu_ProcessInput(view->listMenu);
     u32 nextState;
 
     switch (input) {

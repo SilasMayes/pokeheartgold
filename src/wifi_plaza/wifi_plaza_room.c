@@ -1616,7 +1616,12 @@ static void WiFiPlazaInfoPanel_Update(WiFiPlazaInfoPanel *panel, WiFiPlazaRoomWo
     WiFiPlazaWork *lobby;
     int offset;
     WiFiPlazaRoomGraphics *graphics;
+#ifdef SDK_PORT
+    int special, hasMessage, isOwn, token;
+    intptr_t message; // u16 *
+#else
     int special, hasMessage, isOwn, message, token;
+#endif
     struct WiFiPlazaPlayer *myPlayer;
     int playerIndex;
     struct WiFiPlazaPlayer *player;
@@ -1734,7 +1739,7 @@ static void WiFiPlazaInfoPanel_Update(WiFiPlazaInfoPanel *panel, WiFiPlazaRoomWo
             special = WiFiPlazaWork_IsSpecialVisitor(lobby, panel->requestPlayer);
             if (panel->requestArg == TRUE) {
                 hasMessage = WiFiPlazaWork_HasWordSet(lobby, panel->requestPlayer);
-                message = (int)WiFiPlazaWork_GetWordSet(lobby, panel->requestPlayer);
+                message = (intptr_t)WiFiPlazaWork_GetWordSet(lobby, panel->requestPlayer);
                 if (message == 0) {
                     hasMessage = FALSE;
                 }

@@ -681,7 +681,7 @@ BOOL NintendoWfc_Init(OverlayManager *man, int *state) {
         NintendoWfc_InitGraphics(wfc);
         Sound_SetSceneAndPlayBGM(52, SEQ_NONE, 0);
         wfc->heapMem = Heap_Alloc(HEAP_ID_67, 0x20020);
-        wfc->expHeap = NNS_FndCreateExpHeapEx((void *)(((u32)wfc->heapMem + 31) & ~31), 0x20000, 0);
+        wfc->expHeap = NNS_FndCreateExpHeapEx((void *)(((uintptr_t)wfc->heapMem + 31) & ~31), 0x20000, 0);
         Sound_SetSceneAndPlayBGM(11, SEQ_GS_WIFI_ACCESS, 1);
         TextFlags_SetCanTouchSpeedUpPrint(TRUE);
         reg_GX_POWCNT |= REG_GX_POWCNT_DSEL_MASK;

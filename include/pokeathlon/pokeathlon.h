@@ -186,7 +186,7 @@ void PokeathlonCourse_DrawEvent(PokeathlonCourseData *data);
 void PokeathlonCourse_VBlankCallback(void *);
 void PokeathlonCourse_AddCapped(s32 frameCount, u32 maxValue, PokeathlonStatistics *result);
 void *PokeathlonCourseLink_New(const void *commands, int count, PokeathlonCourseData *data, BOOL isLink, enum HeapID heapId);
-BOOL PokeathlonCourseLink_SendCommand(int command, void *data, void *size, int linkArg);
+BOOL PokeathlonCourseLink_SendCommand(int command, void *data, void *size, intptr_t linkArg);
 void PokeathlonCourseLink_Free(void *ptr);
 BOOL PokeathlonCourseLink_GetNetId(void *);
 u8 *PokeathlonCourse_ToBytes(void *ptr);

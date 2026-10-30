@@ -154,11 +154,11 @@ void ResetSystem(void) {
     OS_ResetSystem(0);
 }
 
-void FrontierFieldSystem_ClearSavedChallenge(u32 record) {
+void FrontierFieldSystem_ClearSavedChallenge(uintptr_t record) {
     BattleTowerChallenge_Clear(record);
 }
 
-u32 FrontierFieldSystem_GetSavedChallenge(u32 record) {
+u32 FrontierFieldSystem_GetSavedChallenge(uintptr_t record) {
     return BattleTowerChallenge_GetSaved(record);
 }
 
@@ -202,7 +202,7 @@ u16 FrontierFieldSystem_GetFrontierFlag5(SaveData *saveData) {
 }
 
 u32 FrontierFieldSystem_ForfeitSavedChallenge(SaveData *saveData) {
-    u32 challenge = Save_BattleTowerChallenge_Get(saveData);
+    uintptr_t challenge = Save_BattleTowerChallenge_Get(saveData);
     FrontierData *frontierData = Save_FrontierData_Get(saveData);
     u8 towerMode = BattleTowerChallenge_GetField(challenge, 0, 0);
     if (towerMode == TOWER_MODE_WIFI_PRACTICE) {

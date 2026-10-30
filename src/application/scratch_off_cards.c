@@ -596,7 +596,7 @@ static BOOL ScratchOffCards_ShowCard(ScratchOffCardsWork *work) {
         work->slideX = -256;
         work->unk_019[work->cardNo] = 0;
         for (i = 0; i < 0x9600; i++) {
-            ((u8 *)((u32)work + i))[offsetof(ScratchOffCardsWork, scratchMask)] = 0;
+            ((u8 *)((uintptr_t)work + i))[offsetof(ScratchOffCardsWork, scratchMask)] = 0;
         }
         work->revealedCount = 0;
         ScratchOffCards_ClearCells(work);

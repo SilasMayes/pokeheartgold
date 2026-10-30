@@ -125,7 +125,7 @@ void PCBox_DrawBoxThumbnailMons(PCBoxWork *work, u32 box, void *dst) {
                 tile = (u16)(gPCBoxThumbnailTiles[type] + 0x20);
                 tile = (u16)((tile << 8) | tile);
                 for (yy = y; (s32)yy < (s32)(y + 2); yy = (u8)(yy + 1)) {
-                    MIi_CpuClear16(tile, (u16 *)((u8 *)dst + ((x & 7) + ((yy & 7) * 8 + (u32)((u8 *)(((s32)yy >> 3) * 4) + (x >> 3)) * 64))), 2);
+                    MIi_CpuClear16(tile, (u16 *)((u8 *)dst + ((x & 7) + ((yy & 7) * 8 + (uintptr_t)((u8 *)(((s32)yy >> 3) * 4) + (x >> 3)) * 64))), 2);
                 }
             }
             ReleaseBoxMonLock((void *)mon.raw, lock);

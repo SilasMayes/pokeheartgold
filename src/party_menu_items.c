@@ -952,7 +952,7 @@ void PartyMenu_SelectMoveForPpRestoreOrPpUp(PartyMenu *partyMenu, BOOL isPpResto
 }
 
 int PartyMenu_Subtask_SelectMove(PartyMenu *partyMenu) {
-    u32 input = PartyMenu_HandleSubcontextMenuInput_TopLevel(partyMenu, partyMenu->contextMenuCursor);
+    uintptr_t input = PartyMenu_HandleSubcontextMenuInput_TopLevel(partyMenu, partyMenu->contextMenuCursor);
     switch (input) {
     case LIST_CANCEL:
         ClearFrameAndWindow2(&partyMenu->windows[PARTY_MENU_WINDOW_ID_33], TRUE);

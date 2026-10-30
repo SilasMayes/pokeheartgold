@@ -946,7 +946,7 @@ static void BattleBagMenu_PrintItemList(BattleBagMenu *menu) {
     menu->itemListWindowBank ^= 1;
 }
 
-#define PAGE_NUMBER_WINDOW(windows) ((Window *)((u32)(windows) + 25 * sizeof(Window)))
+#define PAGE_NUMBER_WINDOW(windows) ((Window *)((uintptr_t)(windows) + 25 * sizeof(Window)))
 
 static void BattleBagMenu_PrintPageNumber(BattleBagMenu *menu) {
     Window *windows;

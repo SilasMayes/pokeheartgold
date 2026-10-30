@@ -1011,8 +1011,8 @@ static void MimeJrTop_InitBgs(BgConfig *bgConfig) {
     GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
     gSystem.screensFlipped = TRUE;
     GfGfx_SwapDisplay();
-    G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, 0, 30, 7, 10);
-    G2x_SetBlendAlpha_((u32)&reg_G2S_DB_BLDCNT, 0, 17, 7, 10);
+    G2x_SetBlendAlpha_((uintptr_t)&reg_G2_BLDCNT, 0, 30, 7, 10);
+    G2x_SetBlendAlpha_((uintptr_t)&reg_G2S_DB_BLDCNT, 0, 17, 7, 10);
 }
 
 static void MimeJrTop_InitSprites(MimeJrTopApp *app) {
@@ -1417,7 +1417,7 @@ static void MimeJrTop_LoadPlayerPalettes(MimeJrTopApp *app, int index) {
     int i;
     MimeJrTopPlayerPalettes *entry = &gMimeJrTopPlayerPalettes[index];
     for (i = 0; i < 4; i++) {
-        PaletteData_LoadFromNarc(palette, NARC_a_1_9_3, 73, HEAP_ID_113, PLTTBUF_SUB_BG, 32, (i + 1) << 4, (*(int *)((u32)entry + app->game->playerCount * 80 + i * 4 - 76)) << 4);
+        PaletteData_LoadFromNarc(palette, NARC_a_1_9_3, 73, HEAP_ID_113, PLTTBUF_SUB_BG, 32, (i + 1) << 4, (*(int *)((uintptr_t)entry + app->game->playerCount * 80 + i * 4 - 76)) << 4);
     }
 }
 

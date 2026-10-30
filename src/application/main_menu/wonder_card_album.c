@@ -105,7 +105,7 @@ extern u8 AddTextPrinterParameterizedWithColor(Window *window, u32 fontId, Strin
 
 extern void RTC_ConvertDayToDate(RTCDate *date, s32 day);
 
-static u32 sWonderCardAlbumMenuInput;
+static uintptr_t sWonderCardAlbumMenuInput; // the selected menu function
 
 enum {
     ALBUM_STATE_LOAD_SAVE,
@@ -568,7 +568,7 @@ static void WonderCardAlbum_CreateListMenu(WonderCardAlbum *album, const Mystery
     album->listMenuItems = ListMenuItems_New(count, HEAP_ID_85);
     album->msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0247_bin, HEAP_ID_85);
     for (i = 0; i < count; i++) {
-        ListMenuItems_AppendFromMsgData(album->listMenuItems, album->msgData, items[i].msgId, (int)items[i].func);
+        ListMenuItems_AppendFromMsgData(album->listMenuItems, album->msgData, items[i].msgId, (intptr_t)items[i].func);
     }
     DestroyMsgData(album->msgData);
     template = sWonderCardAlbumListMenuTemplate;
@@ -915,7 +915,7 @@ static void WonderCardAlbum_LoadCardBg(WonderCardAlbum *album, int page) {
 
 static void WonderCardAlbum_HandleListMenuInput(OverlayManager *manager, int *state, MysteryGiftMenuFunc cancelFunc) {
     WonderCardAlbum *album = OverlayManager_GetData(manager);
-    u32 input = ListMenu_ProcessInput(album->listMenu);
+    uintptr_t input = ListMenu_ProcessInput(album->listMenu);
     int nextState;
 
     switch (input) {

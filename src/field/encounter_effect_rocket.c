@@ -301,7 +301,7 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
         work->position.x = FX32_CONST(320);
         work->position.y = FX32_CONST(128);
         work->position.z = 0;
-        G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_BG1, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD, 12, 4);
+        G2x_SetBlendAlpha_((uintptr_t)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_BG1, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD, 12, 4);
         SetBgPriority(GF_BG_LYR_MAIN_2, 0);
         SetBgPriority(GF_BG_LYR_MAIN_3, 1);
         SetBgPriority(GF_BG_LYR_MAIN_1, 2);
@@ -367,7 +367,7 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
         RocketEffect_LoadBgScreen(effect, GF_BG_LYR_MAIN_1, 221);
         SetBgPriority(GF_BG_LYR_MAIN_1, 1);
         SetBgPriority(GF_BG_LYR_MAIN_3, 2);
-        G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_BG1, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD, 0, 16);
+        G2x_SetBlendAlpha_((uintptr_t)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_BG1, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD, 0, 16);
         Sprite_SetDrawFlag(work->sprite, TRUE);
         work->timer = 0;
         effect->state++;
@@ -381,7 +381,7 @@ static void RocketEffect_RunExecutiveIntro(SysTask *task, EncounterEffectTask *e
                 work->timer = 16;
                 blendDone = TRUE;
             }
-            G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_BG1, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD, work->timer, 16 - work->timer);
+            G2x_SetBlendAlpha_((uintptr_t)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_BG1, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD, work->timer, 16 - work->timer);
         }
         work->position.x += (FX32_CONST(128) - work->position.x) * 2 / 3;
         if ((work->position.x >> FX32_SHIFT) <= 130) {

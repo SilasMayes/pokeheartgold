@@ -9,7 +9,7 @@
 
 typedef struct NintendoWifiConnectArgs {
     FrontierData *frontierData;
-    u32 battleRoomDownload; // BattleRoomDownload (Save_BattleRoomDownload_Get)
+    uintptr_t battleRoomDownload; // BattleRoomDownload (Save_BattleRoomDownload_Get)
     SysInfo *sysInfo;
     SaveData *saveData;
     Options *options;

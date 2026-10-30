@@ -15,13 +15,13 @@
 
 typedef struct ListMenuItem {
     String *text;
-    s32 value;
+    intptr_t value; // an id, or a function some menus dispatch to: pointer-sized
 } ListMenuItem;
 
 ListMenuItem *ListMenuItems_New(u32 n, enum HeapID heapID);
 void ListMenuItems_Delete(ListMenuItem *items);
-void ListMenuItems_AppendFromMsgData(ListMenuItem *items, MsgData *msgData, int msgId, int value);
-void ListMenuItems_AddItem(ListMenuItem *items, String *string, int value);
+void ListMenuItems_AppendFromMsgData(ListMenuItem *items, MsgData *msgData, int msgId, intptr_t value);
+void ListMenuItems_AddItem(ListMenuItem *items, String *string, intptr_t value);
 void ListMenuItems_DestroyMenuStrings(ListMenuItem *items);
 
 #endif // POKEHEARTGOLD_LIST_MENU_ITEMS_H

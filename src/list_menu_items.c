@@ -24,7 +24,7 @@ void ListMenuItems_Delete(ListMenuItem *items) {
     Heap_Free(items);
 }
 
-void ListMenuItems_AppendFromMsgData(ListMenuItem *items, MsgData *msgData, int msgId, int value) {
+void ListMenuItems_AppendFromMsgData(ListMenuItem *items, MsgData *msgData, int msgId, intptr_t value) {
     enum HeapID dummy;
 
     items = ListMenuItems_SeekEnd(items, &dummy);
@@ -34,7 +34,7 @@ void ListMenuItems_AppendFromMsgData(ListMenuItem *items, MsgData *msgData, int 
     }
 }
 
-void ListMenuItems_AddItem(ListMenuItem *items, String *string, int value) {
+void ListMenuItems_AddItem(ListMenuItem *items, String *string, intptr_t value) {
     enum HeapID heapID;
 
     items = ListMenuItems_SeekEnd(items, &heapID);

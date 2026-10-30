@@ -1109,8 +1109,8 @@ static BOOL SwalotPlopGame_TakeShotReport(SwalotPlopGame *game, SwalotPlopShotRe
     int i;
     for (i = 0; i < 0x60; i++) {
         if (game->shots[i].state == SHOT_STATE_REPORT) {
-            SwalotPlopShot_ToRecord((SwalotPlopShotParams *)((u32)&game->shots[0].params + i * sizeof(SwalotPlopShot)), record);
-            SwalotPlopShot_Clear((SwalotPlopShot *)((u32)game->shots + i * sizeof(SwalotPlopShot)));
+            SwalotPlopShot_ToRecord((SwalotPlopShotParams *)((uintptr_t)&game->shots[0].params + i * sizeof(SwalotPlopShot)), record);
+            SwalotPlopShot_Clear((SwalotPlopShot *)((uintptr_t)game->shots + i * sizeof(SwalotPlopShot)));
             return TRUE;
         }
     }
@@ -3548,7 +3548,7 @@ static void SwalotPlopBgFade_Update(SwalotPlopBgFade *fade, SwalotPlopGfx *gfx) 
             fade->state = SWALOT_PLOP_BG_FADE_IN;
             fade->timer = 0;
             SwalotPlopBgFade_SetLayers(gfx, fade->layer, fade->palette);
-            G2x_SetBlendAlpha_((u32)&reg_G2S_DB_BLDCNT, 1 << fade->layer, GX_BLEND_PLANEMASK_BG3, 0, 16);
+            G2x_SetBlendAlpha_((uintptr_t)&reg_G2S_DB_BLDCNT, 1 << fade->layer, GX_BLEND_PLANEMASK_BG3, 0, 16);
             return;
         }
         fade->timer++;
@@ -3565,7 +3565,7 @@ static void SwalotPlopBgFade_Update(SwalotPlopBgFade *fade, SwalotPlopGfx *gfx) 
             prev += 3;
         }
         alpha = 16 - (fade->timer * 16) / 16;
-        G2x_SetBlendAlpha_((u32)&reg_G2S_DB_BLDCNT, 1 << layer, GX_BLEND_PLANEMASK_BG3 | ((1 << older) | (1 << prev)), alpha, 16 - alpha);
+        G2x_SetBlendAlpha_((uintptr_t)&reg_G2S_DB_BLDCNT, 1 << layer, GX_BLEND_PLANEMASK_BG3 | ((1 << older) | (1 << prev)), alpha, 16 - alpha);
         return;
     case SWALOT_PLOP_BG_FADE_IN:
         if (fade->timer >= 8) {
@@ -3575,7 +3575,7 @@ static void SwalotPlopBgFade_Update(SwalotPlopBgFade *fade, SwalotPlopGfx *gfx) 
         }
         fade->timer++;
         alpha = (fade->timer * 16) / 8;
-        G2x_SetBlendAlpha_((u32)&reg_G2S_DB_BLDCNT, 1 << fade->layer, GX_BLEND_PLANEMASK_BG3, alpha, 16 - alpha);
+        G2x_SetBlendAlpha_((uintptr_t)&reg_G2S_DB_BLDCNT, 1 << fade->layer, GX_BLEND_PLANEMASK_BG3, alpha, 16 - alpha);
         break;
     case SWALOT_PLOP_BG_FADE_IDLE:
     default:

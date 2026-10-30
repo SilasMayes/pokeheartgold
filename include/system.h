@@ -9,7 +9,7 @@
 #define BUTTONMODE_SWAPXY       2
 #define BUTTONMODE_LEQUALSA     3
 
-#define OFFSET_OF(p_type, field) ((u32) & (((p_type)NULL)->field))
+#define OFFSET_OF(p_type, field) ((uintptr_t) & (((p_type)NULL)->field))
 
 typedef void (*GFIntrCB)(void *);
 

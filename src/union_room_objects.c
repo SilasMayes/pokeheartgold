@@ -283,13 +283,13 @@ static void UnionRoomObjects_UpdateMapObjects(UnionRoomObjects *objects, MapObje
 static void UnionRoomSlot_DestroyEffects(UnionRoomSlot *slot, BOOL both) {
     if (slot->emote != NULL) {
         if (FieldEffect_IsActive(slot->emote)) {
-            FieldEffect_Destroy((int)slot->emote);
+            FieldEffect_Destroy((intptr_t)slot->emote);
         }
         slot->emote = NULL;
     }
     if (both && slot->friendEffect != NULL) {
         if (FieldEffect_IsActive(slot->friendEffect)) {
-            FieldEffect_Destroy((int)slot->friendEffect);
+            FieldEffect_Destroy((intptr_t)slot->friendEffect);
         }
         slot->friendEffect = NULL;
     }

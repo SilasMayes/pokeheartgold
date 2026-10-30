@@ -1424,7 +1424,7 @@ static void BallCapsuleEditor_CreateMenu(BgConfig *bgConfig, Window *unusedWindo
     msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0011_bin, HEAP_ID_52);
     for (i = 0; i < count; i++) {
         string = NewString_ReadMsgData(msgData, gBallCapsuleEditorMenuItems[items[i]].msgId);
-        ListMenuItems_AddItem(editor->display.menuItems, string, (int)gBallCapsuleEditorMenuItems[items[i]].func);
+        ListMenuItems_AddItem(editor->display.menuItems, string, (intptr_t)gBallCapsuleEditorMenuItems[items[i]].func);
         String_Delete(string);
     }
     DestroyMsgData(msgData);
@@ -2086,7 +2086,7 @@ static BOOL BallCapsuleEditor_RunMode(BallCapsuleEditor *editor) {
 
 BOOL BallCapsuleEditor_ModeSelect(BallCapsuleEditor *editor) {
     NARC *narc;
-    int input;
+    intptr_t input; // a list value: the function to run
 
     switch (editor->state) {
     case BALL_CAPSULE_SELECT_SETUP:

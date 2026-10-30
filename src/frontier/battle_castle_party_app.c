@@ -1806,7 +1806,7 @@ static void BattleCastlePartyApp_DrawItemIcons(BattleCastlePartyApp *app) {
     pageOffset = index * sizeof(ListMenuItem);
     for (; i < CASTLE_ITEMS_PER_PAGE; i++, index++, itemOffset += sizeof(ListMenuItem), iconSlot = (BattleCastlePartyApp *)((u8 *)iconSlot + sizeof(BattleCastleSprite *))) {
         if (index < app->numItems) {
-            ListMenuItem *item = (ListMenuItem *)(itemOffset + (pageOffset + (u32)app->itemList));
+            ListMenuItem *item = (ListMenuItem *)(itemOffset + (pageOffset + (uintptr_t)app->itemList));
             u16 itemId = BattleCastlePartyApp_GetRentalItemId(app, (u16)item->value, app->action);
             struct {
                 u16 y;

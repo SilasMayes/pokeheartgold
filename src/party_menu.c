@@ -531,7 +531,7 @@ static int PartyMenu_Subtask_GiveItemSelectMon(PartyMenu *partyMenu) {
 }
 
 static int PartyMenu_Subtask_HandleSubcontextMenuInput(PartyMenu *partyMenu) {
-    u32 func = PartyMenu_HandleSubcontextMenuInput_TopLevel(partyMenu, partyMenu->contextMenuCursor);
+    uintptr_t func = PartyMenu_HandleSubcontextMenuInput_TopLevel(partyMenu, partyMenu->contextMenuCursor);
     switch (func) {
     case LIST_CANCEL:
         ClearFrameAndWindow2(&partyMenu->windows[PARTY_MENU_WINDOW_ID_33], TRUE);
@@ -2146,7 +2146,7 @@ static void PartyMenu_GetUnusedSlotEffectPos(u8 slot, s16 *px, s16 *py) {
 }
 
 static BOOL PartyMenu_Subtask_HandleContextMenuInput(PartyMenu *partyMenu, int *pState) {
-    u32 func = PartyMenu_HandleInput_ContextMenu(partyMenu, partyMenu->contextMenuCursor);
+    uintptr_t func = PartyMenu_HandleInput_ContextMenu(partyMenu, partyMenu->contextMenuCursor);
     switch (func) {
     case LIST_CANCEL:
         PartyMenu_SetTopScreenSelectionPanelVisibility(partyMenu, FALSE);

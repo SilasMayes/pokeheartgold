@@ -282,7 +282,7 @@ static void GfGfxLoader_GXLoadPalWithSrcOffsetInternal(void *data, enum GFPalLoa
     NNSG2dPaletteData *pPlttData;
     if (data != NULL) {
         if (NNS_G2dGetUnpackedPaletteData(data, &pPlttData)) {
-            pPlttData->pRawData = (void *)((u32)pPlttData->pRawData + srcOffset);
+            pPlttData->pRawData = (void *)((uintptr_t)pPlttData->pRawData + srcOffset);
             if (szByte == 0) {
                 szByte = pPlttData->szByte - srcOffset;
             }

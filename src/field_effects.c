@@ -161,7 +161,7 @@ FieldEffect *FieldEffectPool_AddBasicEffect(FieldEffectPool *pool, const FieldEf
 }
 
 // value is a FieldEffect *
-void FieldEffect_Destroy(int value) {
+void FieldEffect_Destroy(intptr_t value) {
     FieldEffect *effect = (FieldEffect *)value;
     SysTask *task;
     GF_ASSERT(effect != NULL);
@@ -181,7 +181,7 @@ static void FieldEffectPool_DestroyAll(FieldEffectPool *pool) {
     FieldEffect *effect = FieldEffectPool_GetEffects(pool);
     do {
         if (FieldEffect_IsActive(effect) == TRUE) {
-            FieldEffect_Destroy((int)effect);
+            FieldEffect_Destroy((intptr_t)effect);
         }
         effect++;
     } while (--count);

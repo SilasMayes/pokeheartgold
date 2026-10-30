@@ -338,9 +338,9 @@ void Battle_BattleInit(OverlayManager *manager) {
     PaletteData_FillPaletteInBuffer(battleSystem->palette, PLTTBUF_SUB_OBJ, PLTTSEL_TRANSPARENT, 65535, 0, 255);
     battleSystem->msgIcon = PaletteBlink_New(battleSystem->palette, PM_LCD_TOP, 11, HEAP_ID_BATTLE);
     PaletteBlink_SetState(battleSystem->msgIcon, 1);
-    battleSystem->drawGraphicsTask = (u32)SysTask_CreateOnMainQueue(Task_DrawBattleGraphics, battleSystem, 60000);
-    battleSystem->criticalHpMusicTask = (u32)SysTask_CreateOnMainQueue(Task_UpdateCriticalHpMusic, battleSystem, 50000);
-    battleSystem->scrollBgTask = (u32)SysTask_CreateOnVBlankQueue(VBlankTask_ScrollBattleBackground, battleSystem, 1200);
+    battleSystem->drawGraphicsTask = (uintptr_t)SysTask_CreateOnMainQueue(Task_DrawBattleGraphics, battleSystem, 60000);
+    battleSystem->criticalHpMusicTask = (uintptr_t)SysTask_CreateOnMainQueue(Task_UpdateCriticalHpMusic, battleSystem, 50000);
+    battleSystem->scrollBgTask = (uintptr_t)SysTask_CreateOnVBlankQueue(VBlankTask_ScrollBattleBackground, battleSystem, 1200);
     battleSystem->bgScrollY = -51;
     BattleSystem_SetupTextFlags(battleSystem);
     BagCursor_Battle_Init(BattleSystem_GetBagCursor(battleSystem));

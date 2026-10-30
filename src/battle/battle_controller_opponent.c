@@ -6332,12 +6332,12 @@ static void Task_OpponentScreenFade(SysTask *task, void *data) {
 
 // Selects the input tasks run for commands 14-19 (select command, move, target, item, party, yes/no) and the input mode.
 #define SET_INPUT_TASKS(opponentData, selectCommand, selectMove, selectTarget, selectItem, showMonList, drawYesNoBox) \
-    (opponentData)->inputTasks[0] = (u32)(selectCommand);                                                                   \
-    (opponentData)->inputTasks[1] = (u32)(selectMove);                                                                      \
-    (opponentData)->inputTasks[2] = (u32)(selectTarget);                                                                    \
-    (opponentData)->inputTasks[3] = (u32)(selectItem);                                                                      \
-    (opponentData)->inputTasks[4] = (u32)(showMonList);                                                                     \
-    (opponentData)->inputTasks[5] = (u32)(drawYesNoBox)
+    (opponentData)->inputTasks[0] = (uintptr_t)(selectCommand);                                                                   \
+    (opponentData)->inputTasks[1] = (uintptr_t)(selectMove);                                                                      \
+    (opponentData)->inputTasks[2] = (uintptr_t)(selectTarget);                                                                    \
+    (opponentData)->inputTasks[3] = (uintptr_t)(selectItem);                                                                      \
+    (opponentData)->inputTasks[4] = (uintptr_t)(showMonList);                                                                     \
+    (opponentData)->inputTasks[5] = (uintptr_t)(drawYesNoBox)
 #define SET_AI_INPUT_TASKS(opponentData)       SET_INPUT_TASKS(opponentData, Task_AISelectCommand, Task_AISelectMove, Task_AISelectTarget, Task_AISelectItem, Task_AIShowMonList, Task_AIDrawYesNoBox)
 #define SET_RECORDED_INPUT_TASKS(opponentData) SET_INPUT_TASKS(opponentData, Task_RecordedSelectCommand, Task_RecordedSelectMove, Task_RecordedSelectTarget, Task_RecordedSelectItem, Task_RecordedShowMonList, Task_RecordedDrawYesNoBox)
 #define SET_PLAYER_INPUT_TASKS(opponentData)   SET_INPUT_TASKS(opponentData, Task_PlayerSelectCommand, Task_PlayerSelectMove, Task_PlayerSelectTarget, Task_PlayerSelectItem, Task_PlayerShowMonList, Task_PlayerDrawYesNoBox)

@@ -42,7 +42,7 @@ void PartyMenu_PrintTopScreenMonNameAndItem(PartyMenu *partyMenu);
 void PartyMenu_DrawContextMenuButtonFrames(PartyMenu *partyMenu, int numItems, int selection, int state);
 PartyMenuContextMenuCursor *PartyMenu_CreateContextMenuCursor(PartyMenu *partyMenu, const PartyMenuContextMenu *template, int selection, enum HeapID heapID, int state);
 void PartyMenu_CloseContextMenu(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor);
-u32 PartyMenu_HandleInput_ContextMenu(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor);
-u32 PartyMenu_HandleSubcontextMenuInput_TopLevel(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor);
+uintptr_t PartyMenu_HandleInput_ContextMenu(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor);
+uintptr_t PartyMenu_HandleSubcontextMenuInput_TopLevel(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor);
 
 #endif // POKEHEARTGOLD_PARTY_CONTEXT_MENU_H

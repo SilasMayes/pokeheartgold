@@ -477,7 +477,7 @@ typedef struct BattleHpBar {
 typedef struct BallThrow BallThrow;
 
 typedef struct OpponentData {
-    u32 inputTasks[6];
+    uintptr_t inputTasks[6]; // SysTaskFunc
     ManagedSprite *managedSprite;
     u32 *unk1C;
     Pokepic *pokepic;
@@ -532,9 +532,9 @@ struct BattleSystem {
     u32 *attackMsgData;
     MessageFormat *msgFormat;
     String *msgBuffer;
-    u32 drawGraphicsTask;
-    u32 criticalHpMusicTask;
-    u32 scrollBgTask;
+    uintptr_t drawGraphicsTask; // SysTask *
+    uintptr_t criticalHpMusicTask;
+    uintptr_t scrollBgTask;
     PaletteData *palette;
     u32 battleType;
     BattleContext *ctx;
@@ -726,9 +726,9 @@ struct BallThrow { // TODO: Give a better name.
     int modeFrames;
     int arcHeight;
     SysTask *task;
-    int burstEffect;
-    int paletteFlash;
-    int battlerSprites;
+    intptr_t burstEffect;    // BallBurstEffect *
+    intptr_t paletteFlash;   // BattleAnimPaletteBlend *
+    intptr_t battlerSprites; // struct BattleAnimBattlerSprites *
     int startDelay;
 }; // Size: 0xe0
 

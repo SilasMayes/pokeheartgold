@@ -1547,7 +1547,7 @@ static BOOL WiFiPlazaInstrument_UpdateSparkleModel(WiFiPlazaInstrumentManager *m
     offset = index;
     offset *= sizeof(WiFiPlazaInstrumentTween);
     done = WiFiPlazaInstrumentTween_Update((WiFiPlazaInstrumentTween *)((u8 *)effect + 0x968 + offset), timers[index]);
-    WiFiPlazaInstrumentTween_GetPosition((WiFiPlazaInstrumentTween *)(0x968 + (u32)effect + offset), &pos.x, &pos.y, &pos.z);
+    WiFiPlazaInstrumentTween_GetPosition((WiFiPlazaInstrumentTween *)(0x968 + (uintptr_t)effect + offset), &pos.x, &pos.y, &pos.z);
     ModelInstance_SetPosition(&effect->models[index], pos.x, pos.y, pos.z);
     WiFiPlazaInstrument_LoopAnim(manager, effect, index, 0);
     return done;

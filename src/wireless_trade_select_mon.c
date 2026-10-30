@@ -1480,7 +1480,7 @@ static void WirelessTradeSelectMon_OpenSummary(WirelessTradeSelectMon *work, u32
         work->summaryArgs.party = work->partnerParty;
         work->summaryArgs.partyCount = Party_GetCount(work->partnerParty);
         // The partner's Chatot cry.
-        work->summaryArgs.chatot = (int)&work->chatot[Comm_GetLocalNetId() ^ 1];
+        work->summaryArgs.chatot = (intptr_t)&work->chatot[Comm_GetLocalNetId() ^ 1];
         PokemonSummaryArgs_SetPlayer(&work->summaryArgs, CommPlayerInfo_GetProfile(Comm_GetLocalNetId() ^ 1));
     }
 

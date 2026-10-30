@@ -64,6 +64,15 @@ static void MysteryGiftWfc_OnCleanupDone(void);
 static void MysteryGiftWfc_OnRequestDone(int unused, int error);
 
 static void *MysteryGiftWfc_Alloc(void *unused, u32 size) {
+#ifdef SDK_PORT
+    // Same layout with a pointer-sized slot for the raw block
+    void *raw;
+    uintptr_t result;
+    raw = Heap_Alloc(HEAP_ID_84, size + sizeof(void *) + 32);
+    result = ((uintptr_t)raw + sizeof(void *) + 31) & ~(uintptr_t)31;
+    ((void **)result)[-1] = raw;
+    return (void *)result;
+#else
     void *raw;
     u32 result;
     size = ((size + 36) & ~31u) + 32;

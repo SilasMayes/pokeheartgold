@@ -908,7 +908,7 @@ static inline void PokeathlonPennantCapture_ZeroVec(VecFx32 *v) {
     memset(v, 0, sizeof(*v));
 }
 
-#define CONTACT(player, i) (*((u8 *)((u32)(player) + (u32)(i)) + offsetof(PokeathlonPennantCapturePlayer, contacts)))
+#define CONTACT(player, i) (*((u8 *)((uintptr_t)(player) + (u32)(i)) + offsetof(PokeathlonPennantCapturePlayer, contacts)))
 
 static int PokeathlonPennantCapture_CollidePlayers(PokeathlonCourseData *course, PokeathlonPennantCapturePlayer *players, VecFx32 *out) {
     PokeathlonCourseMonObject *objectA;
@@ -973,7 +973,7 @@ static int PokeathlonPennantCapture_CollidePlayers(PokeathlonCourseData *course,
                 break;
             } else {
                 CONTACT(player, j) = 0;
-                *((u8 *)(i + (u32)other) + offsetof(PokeathlonPennantCapturePlayer, contacts)) = 0;
+                *((u8 *)(i + (uintptr_t)other) + offsetof(PokeathlonPennantCapturePlayer, contacts)) = 0;
             }
         }
     }

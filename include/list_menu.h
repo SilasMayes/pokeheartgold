@@ -77,13 +77,13 @@ typedef struct ListMenu {
 } ListMenu;
 
 struct ListMenu *ListMenuInit(const struct ListMenuTemplate *template, u16 cursorPos, u16 itemsAbove, enum HeapID heapID);
-s32 ListMenu_ProcessInput(struct ListMenu *list);
+intptr_t ListMenu_ProcessInput(struct ListMenu *list);
 void DestroyListMenu(struct ListMenu *list, u16 *cursorPos, u16 *itemsAbove);
 void RedrawListMenu(struct ListMenu *list);
 void ListMenuOverrideSetColors(struct ListMenu *list, u8 cursorPal, u8 fillValue, u8 cursorShadowPal);
 void ListMenuGetCurrentItemArrayId(struct ListMenu *list, u16 *index_p);
 void ListMenuGetScrollAndRow(struct ListMenu *list, u16 *cursorPos_p, u16 *itemsAbove_p);
-s32 ListMenuGetValueByArrayId(struct ListMenu *list, s32 index);
-s32 ListMenuGetTemplateField(struct ListMenu *list, enum ListMenuAttr attr);
+intptr_t ListMenuGetValueByArrayId(struct ListMenu *list, s32 index);
+intptr_t ListMenuGetTemplateField(struct ListMenu *list, enum ListMenuAttr attr); // pointer-sized: some fields are pointers
 
 #endif // POKEHEARTGOLD_LIST_MENU_H

@@ -53,7 +53,7 @@ typedef struct CommStateWork {
     u8 errorKind;
     u8 unk5E;
     u8 unkEF;
-    s32 plazaProfileId;
+    intptr_t plazaProfileId; // the player record (WiFiPlazaWork_GetMyPlayer)
     u8 plazaLobbyStarted;
 } CommStateWork;
 
@@ -1407,7 +1407,7 @@ WifiClubStatusData *CommState_StartWifiClub(SaveData *saveData, u32 dataSize) {
     return sCommState->wifiClubData;
 }
 
-void CommState_StartWifiPlaza(SaveData *saveData, s32 profileId) {
+void CommState_StartWifiPlaza(SaveData *saveData, intptr_t profileId) {
     Save_PlayerData_GetProfile(saveData);
     if (!Comm_IsActive()) {
         Sys_SetSoftResetDisableFlag(1);
@@ -1863,7 +1863,11 @@ void Comm_MarkLocationSeen(SaveWiFiHistory *history, s32 country, s32 region, u8
 
 s32 Comm_InitDwc(enum HeapID heapID) {
     void *work = Heap_Alloc(heapID, 1824);
+#ifdef SDK_PORT // libntrdwc takes the aligned work pointer
+    s32 result = DWC_Init((void *)(((uintptr_t)work + 31) & ~31));
+#else
     s32 result = DWC_Init(((u32)work + 31) & ~31);
+#endif
     Heap_Free(work);
     return result;
 }

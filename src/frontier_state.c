@@ -4,7 +4,7 @@ void FactoryFlags_Init(u8 *flags) {
     MI_CpuFill8(flags, 0, 4);
 }
 
-void FactoryFlags_SetField(u32 flags, u32 field, u8 index, u8 *value) {
+void FactoryFlags_SetField(uintptr_t flags, u32 field, u8 index, u8 *value) {
     if (field == FACTORY_FLAGS_HAS_STREAK) {
         if (*value >= 1) {
             *(u8 *)flags |= 1 << index;
@@ -14,15 +14,15 @@ void FactoryFlags_SetField(u32 flags, u32 field, u8 index, u8 *value) {
     }
 }
 
-u32 FactoryFlags_GetField(u32 flags, int field, u8 index, int unused) {
+u32 FactoryFlags_GetField(uintptr_t flags, int field, u8 index, int unused) {
     if (field == FACTORY_FLAGS_HAS_STREAK) {
         return (*(u8 *)flags >> index) & 1;
     }
     return 0;
 }
 
-u32 Save_Frontier_GetFactoryFlags(SaveData *save) {
-    return (u32)((u8 *)Save_Frontier_GetStatic(save) + 0x1618);
+uintptr_t Save_Frontier_GetFactoryFlags(SaveData *save) {
+    return (uintptr_t)((u8 *)Save_Frontier_GetStatic(save) + 0x1618);
 }
 
 void HallChallenge_Clear(HallChallenge *challenge) {
@@ -110,11 +110,11 @@ void HallFlags_Init(u8 *flags) {
     MI_CpuFill8(flags, 0, 4);
 }
 
-u32 Save_Frontier_GetHallFlags(SaveData *save) {
-    return (u32)((u8 *)Save_Frontier_GetStatic(save) + 0x161c);
+uintptr_t Save_Frontier_GetHallFlags(SaveData *save) {
+    return (uintptr_t)((u8 *)Save_Frontier_GetStatic(save) + 0x161c);
 }
 
-void HallFlags_SetField(u32 flags, u32 field, u32 index, u32 unused, void *input) {
+void HallFlags_SetField(uintptr_t flags, u32 field, u32 index, u32 unused, void *input) {
     u8 *value = input;
     switch (field) {
     case HALL_FLAGS_HAS_STREAK:
@@ -130,7 +130,7 @@ void HallFlags_SetField(u32 flags, u32 field, u32 index, u32 unused, void *input
     }
 }
 
-u32 HallFlags_GetField(u32 flags, int field, u8 index, int unused, int unused2) {
+u32 HallFlags_GetField(uintptr_t flags, int field, u8 index, int unused, int unused2) {
     if (field == HALL_FLAGS_HAS_STREAK) {
         return (*(u8 *)flags >> index) & 1;
     }
@@ -220,11 +220,11 @@ void CastleFlags_Init(u8 *flags) {
     MI_CpuFill8(flags, 0, 4);
 }
 
-u32 Save_Frontier_GetCastleFlags(SaveData *save) {
-    return (u32)((u8 *)Save_Frontier_GetStatic(save) + 0x1620);
+uintptr_t Save_Frontier_GetCastleFlags(SaveData *save) {
+    return (uintptr_t)((u8 *)Save_Frontier_GetStatic(save) + 0x1620);
 }
 
-void CastleFlags_SetField(u32 flags, u32 field, u32 index, u32 unused, void *input) {
+void CastleFlags_SetField(uintptr_t flags, u32 field, u32 index, u32 unused, void *input) {
     u8 *value = input;
     switch (field) {
     case CASTLE_FLAGS_HAS_STREAK:
@@ -243,7 +243,7 @@ void CastleFlags_SetField(u32 flags, u32 field, u32 index, u32 unused, void *inp
     }
 }
 
-u32 CastleFlags_GetField(u32 flags, u32 field, u8 index, u32 unused, u32 unused2) {
+u32 CastleFlags_GetField(uintptr_t flags, u32 field, u8 index, u32 unused, u32 unused2) {
     switch (field) {
     case CASTLE_FLAGS_HAS_STREAK:
         return (*(u8 *)flags >> index) & 1;

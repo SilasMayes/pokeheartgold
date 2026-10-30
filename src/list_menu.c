@@ -40,7 +40,7 @@ struct ListMenu *ListMenuInit(const struct ListMenuTemplate *template, u16 curso
     return list;
 }
 
-s32 ListMenu_ProcessInput(struct ListMenu *list) {
+intptr_t ListMenu_ProcessInput(struct ListMenu *list) {
     list->lastMoveDirection = 0;
 
     if (gSystem.newKeys & REG_PAD_KEYINPUT_A_MASK) {
@@ -128,16 +128,16 @@ void ListMenuGetScrollAndRow(struct ListMenu *list, u16 *cursorPos_p, u16 *items
     }
 }
 
-s32 ListMenuGetValueByArrayId(struct ListMenu *list, s32 index) {
+intptr_t ListMenuGetValueByArrayId(struct ListMenu *list, s32 index) {
     return list->template.items[index].value;
 }
 
-s32 ListMenuGetTemplateField(struct ListMenu *list, enum ListMenuAttr attr) {
+intptr_t ListMenuGetTemplateField(struct ListMenu *list, enum ListMenuAttr attr) {
     switch (attr) {
     case LISTMENUATTR_MOVECURSORFUNC:
-        return (s32)list->template.moveCursorFunc;
+        return (intptr_t)list->template.moveCursorFunc;
     case LISTMENUATTR_ITEMPRINTFUNC:
-        return (s32)list->template.itemPrintFunc;
+        return (intptr_t)list->template.itemPrintFunc;
     case LISTMENUATTR_TOTALITEMS:
         return (s32)list->template.totalItems;
     case LISTMENUATTR_MAXSHOWED:
@@ -171,9 +171,9 @@ s32 ListMenuGetTemplateField(struct ListMenu *list, enum ListMenuAttr attr) {
     case LISTMENUATTR_CURSORKIND:
         return (s32)list->template.cursorKind;
     case LISTMENUATTR_WINDOW:
-        return (s32)list->template.window;
+        return (intptr_t)list->template.window;
     case LISTMENUATTR_DATA:
-        return (s32)list->template.data;
+        return (intptr_t)list->template.data;
     }
 
     return -1;

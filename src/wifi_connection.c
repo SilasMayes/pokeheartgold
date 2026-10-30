@@ -176,7 +176,7 @@ int WifiConnection_Init(SaveData *saveData, int heapId, u32 heapSize, int maxPla
     GF_ASSERT(sWifiConnection == NULL);
     raw = Heap_Alloc((enum HeapID)heapId, sizeof(WifiConnection));
     MI_CpuFill8(raw, 0, sizeof(WifiConnection));
-    sWifiConnection = (WifiConnection *)(((u32)raw + 31) & ~31);
+    sWifiConnection = (WifiConnection *)(((uintptr_t)raw + 31) & ~31);
     sWifiConnection->rawAlloc = raw;
     sWifiConnection->saveData = saveData;
     sWifiConnection->recvLocalCallback = NULL;
@@ -188,7 +188,7 @@ int WifiConnection_Init(SaveData *saveData, int heapId, u32 heapSize, int maxPla
     sWifiConnection->heapSize = heapSize;
     sWifiConnection->heapMemory = Heap_Alloc((enum HeapID)heapId, heapSize + 0x3020);
     sWifiConnection->extraHeapMemory = NULL;
-    sWifiConnection->heap = NNS_FndCreateExpHeapEx((void *)(((u32)sWifiConnection->heapMemory + 31) & ~31), heapSize, 0);
+    sWifiConnection->heap = NNS_FndCreateExpHeapEx((void *)(((uintptr_t)sWifiConnection->heapMemory + 31) & ~31), heapSize, 0);
     sWifiConnection->extraHeap = NULL;
     sWifiConnection->voiceChatMode = 0;
     sWifiConnection->targetFriendIndex = -1;
@@ -1223,7 +1223,7 @@ void WifiConnection_SetExtraHeapEnabled(BOOL enable, int heapId) {
         sWifiConnection->heapId2 = 11;
         if (sWifiConnection->extraHeapMemory == NULL) {
             sWifiConnection->extraHeapMemory = Heap_Alloc((enum HeapID)heapId, 0xF020);
-            sWifiConnection->extraHeap = NNS_FndCreateExpHeapEx((void *)(((u32)sWifiConnection->extraHeapMemory + 31) & ~31), 0xF000, 0);
+            sWifiConnection->extraHeap = NNS_FndCreateExpHeapEx((void *)(((uintptr_t)sWifiConnection->extraHeapMemory + 31) & ~31), 0xF000, 0);
             NNS_FndSetGroupIDForExpHeap(sWifiConnection->extraHeap, 16);
             sWifiConnection->extraHeapFreeSize = NNS_FndGetTotalFreeSizeForExpHeap(sWifiConnection->extraHeap);
         }
@@ -1268,7 +1268,7 @@ static void WifiConnection_AllocRecvBuffer(int aid) {
             sWifiConnection->recvBuffers[aid] = WifiConnection_Alloc(0, 0x1000, 32);
             sWifiConnection->recvBufferFromGameHeap[aid] = 0;
         }
-        DWC_SetRecvBuffer(aid, (void *)(((u32)sWifiConnection->recvBuffers[aid] + 31) & ~31), 0x1000);
+        DWC_SetRecvBuffer(aid, (void *)(((uintptr_t)sWifiConnection->recvBuffers[aid] + 31) & ~31), 0x1000);
     }
 }
 

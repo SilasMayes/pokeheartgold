@@ -738,8 +738,8 @@ BOOL BallThrow_CaptureStateOpen(BallThrow *data) {
         template.emitter = 0xFF;
         template.generic = FALSE;
         ManagedSprite_GetPositionXY(data->managedSprite, &template.x, &template.y);
-        data->battlerSprites = (int)BattleAnimBattlerSprites_NewAll(data->params.battleSystem, data->params.heapID);
-        data->burstEffect = (int)BallBurstEffect_New(&template);
+        data->battlerSprites = (intptr_t)BattleAnimBattlerSprites_NewAll(data->params.battleSystem, data->params.heapID);
+        data->burstEffect = (intptr_t)BallBurstEffect_New(&template);
         data->step++;
         break;
     }
@@ -966,7 +966,7 @@ BOOL BallThrow_CaptureStateClick(BallThrow *data) {
             template.emitter = BallAnim_GetBurstSkippedEmitter(template.ball);
             template.generic = FALSE;
             ManagedSprite_GetPositionXY(data->managedSprite, &template.x, &template.y);
-            data->burstEffect = (int)BallBurstEffect_New(&template);
+            data->burstEffect = (intptr_t)BallBurstEffect_New(&template);
             data->step++;
         }
         break;
@@ -1075,7 +1075,7 @@ BOOL BallThrow_RunThrowArc(BallThrow *data) {
                 ManagedSprite_OffsetAffineZRotation(data->managedSprite, 2 << 12);
             }
             if (BallThrow_IsFlashingKind(data->params.kind) == TRUE && data->modeFrames == BALL_ARC_DURATION(data) / 2 + 10) {
-                data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
+                data->paletteFlash = (intptr_t)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
             }
         }
         data->modeFrames++;
@@ -1113,7 +1113,7 @@ BOOL BallThrow_RunThrowArc(BallThrow *data) {
     default:
         if (data->modeFrames == 5) {
             if (data->params.kind != 12 && data->params.kind != 13) {
-                data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
+                data->paletteFlash = (intptr_t)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
             }
             data->opened = TRUE;
         }
@@ -1150,7 +1150,7 @@ BOOL BallThrow_ThrowArcAndOpen(BallThrow *data) {
                 ManagedSprite_OffsetAffineZRotation(data->managedSprite, 2 << 12);
             }
             if (BallThrow_IsFlashingKind(data->params.kind) == TRUE && data->modeFrames == BALL_ARC_DURATION(data) / 2 + 10) {
-                data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
+                data->paletteFlash = (intptr_t)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
             }
         }
         data->modeFrames++;
@@ -1185,7 +1185,7 @@ BOOL BallThrow_ThrowArcAndOpen(BallThrow *data) {
     default:
         if (data->modeFrames == 5) {
             ManagedSprite_SetAnimationFrame(data->managedSprite, 2);
-            data->paletteFlash = (int)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
+            data->paletteFlash = (intptr_t)BattleAnimUtil_StartPaletteBlend(data->params.paletteData, data->params.heapID, PLTTBUF_MAIN_OBJ, ManagedSprite_GetPaletteOverrideOffset(data->managedSprite) << 4, 16, -2, 2, 0, 14, 0xFFFF, 1002);
             data->opened = TRUE;
         }
         data->modeFrames++;
@@ -1228,7 +1228,7 @@ BOOL BallThrow_OpenInPlace(BallThrow *data) {
         template.emitter = 0xFF;
         template.generic = TRUE;
         ManagedSprite_GetPositionXY(data->managedSprite, &template.x, &template.y);
-        data->burstEffect = (int)BallBurstEffect_New(&template);
+        data->burstEffect = (intptr_t)BallBurstEffect_New(&template);
         data->step++;
         break;
     case 3:

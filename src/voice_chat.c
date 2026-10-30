@@ -262,12 +262,16 @@ static void VoiceChat_AllocAligned(void **allocation, void **aligned, u32 size, 
     u32 allocSize = size + 0x20;
     *allocation = Heap_Alloc((enum HeapID)heapId, allocSize);
     MI_CpuFill8(*allocation, 0, allocSize);
-    *aligned = (void *)(((u32)*allocation + 0x1F) & ~0x1F);
+    *aligned = (void *)(((uintptr_t)*allocation + 0x1F) & ~0x1F);
 }
 
 void VoiceChat_Init(int heapId, int codec, int count) {
     u8 channels[3] = { 0, 0, 0 };
+#ifdef SDK_PORT // receives a pointer
+    void *allocation;
+#else
     u32 allocation;
+#endif
     InitArgs config;
 
     if (!gVoiceChat.work) {

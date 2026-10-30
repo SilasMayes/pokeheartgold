@@ -852,7 +852,7 @@ static void MapObject_SetFlag25FromObjectEvent(LocalMapObject *object, u32 mapNo
 }
 
 u32 MapObject_GetPriorityPlusValue(LocalMapObject *object, u32 value) {
-    return (u32)((void *)MapObject_GetPriority(object) + value); // MUST be cast to void * to match
+    return (uintptr_t)((void *)MapObject_GetPriority(object) + value); // MUST be cast to void * to match
 }
 
 BOOL MapObject_CheckIDAndMap(LocalMapObject *object, u32 objectId, u32 mapId) {

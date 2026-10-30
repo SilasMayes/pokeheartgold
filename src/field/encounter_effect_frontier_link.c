@@ -66,7 +66,7 @@ void EncounterEffect_FrontierOrLinkSingle(SysTask *task, EncounterEffectTask *ct
         break;
     case FRONTIER_SINGLE_STATE_START_FADE_IN:
         EncounterEffectInterp_Init(&work->fade, 0, 16, 12);
-        G2x_SetBlendAlpha_((u32)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, work->fade.value, 16 - work->fade.value);
+        G2x_SetBlendAlpha_((uintptr_t)&reg_G2_BLDCNT, GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, work->fade.value, 16 - work->fade.value);
         Sprite_SetDrawFlag(work->sprite, TRUE);
         ctx->state++;
         break;

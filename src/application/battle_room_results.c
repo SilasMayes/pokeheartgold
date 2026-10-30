@@ -89,7 +89,7 @@ typedef struct BattleRoomResults {
     Options *options;
     FrontierSave *frontierSave;
     FrontierData *frontierData;
-    u32 downloadData; // BattleRoomDownload
+    uintptr_t downloadData; // BattleRoomDownload
     MsgData *msgData;
     MessageFormat *msgFormat;
     String *string;

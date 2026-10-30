@@ -182,8 +182,8 @@ void ParticleSystem_FreeAll(void) {
         ParticleSystem *system = sParticleSystems[slot]; \
         u8 *ret = system->heapCurrent;                   \
         u8 *next = ret + size;                           \
-        if ((u32)next & 3) {                             \
-            next += 4 - ((u32)next & 3);                 \
+        if ((uintptr_t)next & 3) {                             \
+            next += 4 - ((uintptr_t)next & 3);                 \
         }                                                \
         system->heapCurrent = next;                      \
         GF_ASSERT(next < (u8 *)system->heapEnd);         \

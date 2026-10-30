@@ -161,7 +161,7 @@ BOOL Gts_Init(OverlayManager *man, int *state) {
         Gts_InitGraphics(app);
         Sound_SetSceneAndPlayBGM(11, SEQ_GS_WIFI_ACCESS, 1);
         app->heapMemory = Heap_Alloc(HEAP_ID_61, 0x20020);
-        app->heap = NNS_FndCreateExpHeapEx((void *)(((u32)app->heapMemory + 0x1F) & ~0x1F), 0x20000, 0);
+        app->heap = NNS_FndCreateExpHeapEx((void *)(((uintptr_t)app->heapMemory + 0x1F) & ~0x1F), 0x20000, 0);
         *state = GTS_INIT_START_WIRELESS;
         break;
     case GTS_INIT_START_WIRELESS:

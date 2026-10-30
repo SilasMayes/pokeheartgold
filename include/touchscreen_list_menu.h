@@ -74,6 +74,6 @@ TouchscreenListMenu *TouchscreenListMenu_CreateWithCallback(TouchscreenListMenuS
 u8 TouchscreenListMenu_WasLastInputTouch(TouchscreenListMenu *menu);
 void TouchscreenListMenu_Destroy(TouchscreenListMenu *menu);
 void TouchscreenListMenu_DestroyButtons(TouchscreenListMenu *menu);
-int TouchscreenListMenu_HandleInput(TouchscreenListMenu *menu);
+intptr_t TouchscreenListMenu_HandleInput(TouchscreenListMenu *menu); // the item value
 
 #endif // GUARD_POKEHEARTGOLD_TOUCHSCREEN_LIST_MENU_H

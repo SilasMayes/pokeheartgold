@@ -127,7 +127,7 @@ void TouchscreenListMenu_DestroyButtons(TouchscreenListMenu *menu) {
     TouchscreenListMenu_DeleteWindows(menu);
 }
 
-int TouchscreenListMenu_HandleInput(TouchscreenListMenu *menu) {
+intptr_t TouchscreenListMenu_HandleInput(TouchscreenListMenu *menu) {
     if (menu->animActive == 1) {
         if (menu->animTimer == 0) {
             TouchscreenListMenu_DestroyButtons(menu);

@@ -375,7 +375,7 @@ static void MysteryGiftBeacon_ResetCallback(void *arg) {
 }
 
 BOOL MysteryGiftBeacon_Init(void *dest, void (*callback)(int event), void *memory) {
-    gMysteryGiftBeacon.work = (MysteryGiftBeaconWork *)(((u32)memory + 31) & ~31);
+    gMysteryGiftBeacon.work = (MysteryGiftBeaconWork *)(((uintptr_t)memory + 31) & ~31);
     gMysteryGiftBeacon.work->state = MYSTERY_GIFT_BEACON_STATE_STOP;
     gMysteryGiftBeacon.work->mode = MYSTERY_GIFT_BEACON_MODE_INIT;
     gMysteryGiftBeacon.work->dest = dest;

@@ -14,7 +14,7 @@
 #include "message_printer_number.h"
 #include "ui_util.h"
 
-static void PartyMenu_StartContextMenuButtonPressAnim_FromCursorObj(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor, int followUpState);
+static void PartyMenu_StartContextMenuButtonPressAnim_FromCursorObj(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor, intptr_t followUpState);
 static void addFiveWindows(BgConfig *bgConfig, Window *window, const WindowTemplate *template);
 static void PartyMenu_DrawSlashOnMonHpTextWindow(PartyMenu *partyMenu, u8 partySlot);
 static void PartyMenu_PrintMonNicknameOnWindow(PartyMenu *partyMenu, u8 partySlot);
@@ -316,7 +316,7 @@ void PartyMenu_DisableMainScreenBlend_AfterYesNo(void) {
     G2_BlendNone();
 }
 
-static void PartyMenu_StartContextMenuButtonPressAnim_FromCursorObj(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor, int followUpState) {
+static void PartyMenu_StartContextMenuButtonPressAnim_FromCursorObj(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor, intptr_t followUpState) {
     PartyMenuContextButtonAnimData *animData = &partyMenu->contextMenuButtonAnim;
 
     animData->autoAnimTimer = 0;
@@ -1166,7 +1166,7 @@ static BOOL handlePartyContextMenuDpadInput(u8 *pSelection, int numItems, int di
     }
 }
 
-u32 PartyMenu_HandleInput_ContextMenu(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor) {
+uintptr_t PartyMenu_HandleInput_ContextMenu(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor) {
     PartyMenuContextButtonAnimData *animData = &partyMenu->contextMenuButtonAnim;
     BOOL dpadInputValid = FALSE;
 
@@ -1232,7 +1232,7 @@ u32 PartyMenu_HandleInput_ContextMenu(PartyMenu *partyMenu, PartyMenuContextMenu
     return LIST_NOTHING_CHOSEN;
 }
 
-u32 PartyMenu_HandleSubcontextMenuInput_TopLevel(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor) {
+uintptr_t PartyMenu_HandleSubcontextMenuInput_TopLevel(PartyMenu *partyMenu, PartyMenuContextMenuCursor *cursor) {
     PartyMenuContextButtonAnimData *animData = &partyMenu->contextMenuButtonAnim;
     BOOL dpadInputValid = FALSE;
 

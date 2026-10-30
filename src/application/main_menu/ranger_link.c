@@ -1244,7 +1244,7 @@ void RangerLink_Init(const RangerLinkConfig *config, void *buffer) {
     u16 *name1;
     u16 *name2;
     u32 i;
-    u32 addr = (u32)buffer;
+    uintptr_t addr = (uintptr_t)buffer;
     RangerLink_GetParentParam();
     work = RangerLink_GetWork();
     if (addr & 0x1F) {

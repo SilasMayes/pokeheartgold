@@ -930,7 +930,7 @@ static s16 Wireless_PickChannel(u16 channels) {
 
 // buffer: Wireless_GetWorkSize() bytes + 32 for the alignment. mode 1: WM_Initialize, else for listening only.
 BOOL Wireless_Init(void *buffer, int mode) {
-    u32 p = (u32)buffer;
+    uintptr_t p = (uintptr_t)buffer;
     u32 mod;
 
     mod = p << 27;
