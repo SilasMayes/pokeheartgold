@@ -387,7 +387,7 @@ BOOL ScrCmd_RestartCurrentScript(ScriptContext *ctx) {
 }
 
 BOOL ScrCmd_GoTo(ScriptContext *ctx) {
-    u32 offset_in_script = ScriptReadWord(ctx);
+    ScriptOffset offset_in_script = ScriptReadWord(ctx);
     ScriptJump(ctx, ctx->script_ptr + offset_in_script);
 
     return FALSE;
@@ -397,7 +397,7 @@ BOOL ScrCmd_ObjectGoTo(ScriptContext *ctx) {
     LocalMapObject **lmo = FieldSysGetAttrAddr(ctx->fieldSystem, SCRIPTENV_LAST_INTERACTED);
     u8 id = ScriptReadByte(ctx);
 
-    u32 offset_in_script = ScriptReadWord(ctx);
+    ScriptOffset offset_in_script = ScriptReadWord(ctx);
     if (id == MapObject_GetID(*lmo)) {
         ScriptJump(ctx, ctx->script_ptr + offset_in_script);
     }
@@ -409,7 +409,7 @@ BOOL ScrCmd_BGGoTo(ScriptContext *ctx) {
     u32 bg = TaskManager_GetBgGoToId(ctx->taskman);
     u8 required_bg = ScriptReadByte(ctx);
 
-    u32 offset_in_script = ScriptReadWord(ctx);
+    ScriptOffset offset_in_script = ScriptReadWord(ctx);
     if (bg == required_bg) {
         ScriptJump(ctx, ctx->script_ptr + offset_in_script);
     }
@@ -421,7 +421,7 @@ BOOL ScrCmd_DirectionGoTo(ScriptContext *ctx) {
     u32 *direction = FieldSysGetAttrAddr(ctx->fieldSystem, SCRIPTENV_FACING_DIRECTION);
     u8 required_direction = ScriptReadByte(ctx);
 
-    u32 offset_in_script = ScriptReadWord(ctx);
+    ScriptOffset offset_in_script = ScriptReadWord(ctx);
     if (*direction == required_direction) {
         ScriptJump(ctx, ctx->script_ptr + offset_in_script);
     }
@@ -430,7 +430,7 @@ BOOL ScrCmd_DirectionGoTo(ScriptContext *ctx) {
 }
 
 BOOL ScrCmd_Call(ScriptContext *ctx) {
-    u32 offset_in_script = ScriptReadWord(ctx);
+    ScriptOffset offset_in_script = ScriptReadWord(ctx);
     ScriptCall(ctx, ctx->script_ptr + offset_in_script);
 
     return FALSE;
@@ -443,7 +443,7 @@ BOOL ScrCmd_Return(ScriptContext *ctx) {
 
 BOOL ScrCmd_GoToIf(ScriptContext *ctx) {
     u8 condition = ScriptReadByte(ctx);
-    u32 offset_in_script = ScriptReadWord(ctx);
+    ScriptOffset offset_in_script = ScriptReadWord(ctx);
 
     if (sConditionTable[condition][ctx->comparisonResult] == 1) {
         ScriptJump(ctx, ctx->script_ptr + offset_in_script);
@@ -454,7 +454,7 @@ BOOL ScrCmd_GoToIf(ScriptContext *ctx) {
 
 BOOL ScrCmd_CallIf(ScriptContext *ctx) {
     u8 condition = ScriptReadByte(ctx);
-    u32 offset_in_script = ScriptReadWord(ctx);
+    ScriptOffset offset_in_script = ScriptReadWord(ctx);
 
     if (sConditionTable[condition][ctx->comparisonResult] == 1) {
         ScriptCall(ctx, ctx->script_ptr + offset_in_script);
@@ -1134,7 +1134,7 @@ BOOL ScrCmd_MultichoiceSetAnchorBottom(ScriptContext *ctx) {
 
 BOOL ScrCmd_ApplyMovement(ScriptContext *ctx) {
     u16 person = ScriptGetVar(ctx);
-    u32 offset = ScriptReadWord(ctx);
+    ScriptOffset offset = ScriptReadWord(ctx);
     LocalMapObject *object = Script_GetMapObjectByPerson(ctx->fieldSystem, person);
     EventObjectMovementMan *movementMan;
     u8 *movementCounter;

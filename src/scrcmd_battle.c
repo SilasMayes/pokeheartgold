@@ -253,7 +253,7 @@ BOOL ScrCmd_SetLastInteractedTrainerFlag(ScriptContext *ctx) {
 BOOL ScrCmd_GoToIfTrainerDefeated(ScriptContext *ctx) {
     FieldSystem *fieldSystem = ctx->fieldSystem;
     LocalMapObject **lastInteracted = FieldSysGetAttrAddr(ctx->fieldSystem, SCRIPTENV_LAST_INTERACTED);
-    u32 offset = ScriptReadWord(ctx);
+    ScriptOffset offset = ScriptReadWord(ctx);
     u32 mapObjectId = MapObject_GetID(*lastInteracted);
 
     if (TrainerFlagCheck(fieldSystem->saveData, (u16)mapObjectId) == TRUE) {

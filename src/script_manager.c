@@ -340,7 +340,7 @@ void Script_ReopenStartMenuOnEnd(FieldSystem *fieldSystem) {
 
 void ScriptRunByIndex(ScriptContext *ctx, int idx) {
     ctx->script_ptr += 4 * idx;
-    ctx->script_ptr += ScriptReadWord(ctx);
+    ctx->script_ptr += (ScriptOffset)ScriptReadWord(ctx);
 }
 
 u8 *LoadScriptsForCurrentMap(u32 mapno) {

@@ -193,4 +193,12 @@ void ScriptReturn(ScriptContext *ctx);
 u16 ScriptReadHalfword(ScriptContext *ctx);
 u32 ScriptReadWord(ScriptContext *ctx);
 
+// A relative jump read from a script. Backward jumps are negative: u32 on the DS, where adding it to
+// a pointer wraps around; on the port it has to be signed, or it lands 4 GB ahead.
+#ifdef SDK_PORT
+typedef s32 ScriptOffset;
+#else
+typedef u32 ScriptOffset;
+#endif
+
 #endif
