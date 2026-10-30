@@ -14,7 +14,13 @@
 #include "touchscreen.h"
 #include "wifi_plaza/wifi_plaza_internal.h"
 
+#ifdef SDK_PORT // mwcc runtime helper
+static inline s64 _ll_mul(s64 a, s64 b) {
+    return a * b;
+}
+#else
 s64 _ll_mul(s64 a, s64 b);
+#endif // SDK_PORT
 
 enum FootprintStampAnimState {
     FOOTPRINT_STAMP_ANIM_START,

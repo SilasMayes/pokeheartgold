@@ -138,7 +138,7 @@ BOOL NintendoWfcUnused_Main(OverlayManager *man, int *state) {
     case NINTENDO_WFC_MAIN_WAIT_STARTUP:
         if (CommWireless_IsStartedUp()) {
             sNintendoWfcUnusedGlobal.heap = wfc->expHeap;
-            DWC_SetMemFunc(NintendoWfcUnused_Alloc, NintendoWfcUnused_Free);
+            DWC_SetMemFunc(PORT_CB(DWCAllocEx, NintendoWfcUnused_Alloc), PORT_CB(DWCFreeEx, NintendoWfcUnused_Free));
             *state = NINTENDO_WFC_MAIN_SESSION_INIT;
         }
         break;

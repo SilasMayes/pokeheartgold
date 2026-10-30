@@ -644,8 +644,8 @@ static int WifiSetupWh_Start(void) {
     gWifiSetupWh.work->unk_50 = 0;
     gWifiSetupWh.work->connectedMask = 1;
     gWifiSetupWh.work->errorCode = 0;
-    gWifiSetupWh.work->parentParam.gameInfo = NULL;
-    gWifiSetupWh.work->parentParam.gameInfoLength = 0;
+    gWifiSetupWh.work->parentParam.userGameInfo = NULL;
+    gWifiSetupWh.work->parentParam.userGameInfoLength = 0;
     gWifiSetupWh.work->judgeChild = NULL;
     return !WifiSetupWh_InitializeWm() ? FALSE : TRUE;
 }

@@ -71,6 +71,7 @@ static void *MysteryGiftWfc_Alloc(void *unused, u32 size) {
     result = ((u32)raw + 32) & ~31u;
     *(void **)(result - 4) = raw;
     return (void *)result;
+#endif
 }
 
 static void MysteryGiftWfc_Free(void *unused, void *ptr) {

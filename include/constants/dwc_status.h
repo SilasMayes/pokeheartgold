@@ -1,6 +1,11 @@
 #ifndef POKEHEARTGOLD_CONSTANTS_DWC_STATUS_H
 #define POKEHEARTGOLD_CONSTANTS_DWC_STATUS_H
 
+#ifdef SDK_PORT
+// libntrdwc defines these enumerators itself
+#include <dwc.h>
+#else
+
 // DWC_GetInetStatus
 enum DWCInetResult {
     DWC_CONNECTINET_STATE_NOT_INITIALIZED,
@@ -45,5 +50,7 @@ enum DWCErrorType {
     DWC_ETYPE_DISCONNECT,
     DWC_ETYPE_FATAL,
 };
+
+#endif // SDK_PORT
 
 #endif // POKEHEARTGOLD_CONSTANTS_DWC_STATUS_H

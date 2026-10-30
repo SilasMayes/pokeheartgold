@@ -7,7 +7,9 @@ extern "C" {
 }
 
 #include <nitro/code32.h>
+#ifndef SDK_PORT // the C library declares it
 extern "C" char *strncpy(char *, const char *, unsigned);
+#endif
 struct Str;
 extern "C" Str *LobbyString_Destroy(Str *);
 extern "C" void LobbyString_Assign(Str *, const Str *);

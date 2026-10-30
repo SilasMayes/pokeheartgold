@@ -69,10 +69,12 @@ void OrbitCursor_Task(SysTask *task, void *data);
 
 extern const int gOrbitCursorPaletteMembers[];
 
+#ifndef SDK_PORT // 32-bit layout checks for the DS build; pointers are 8 bytes here
 typedef char AssertTouchSpriteSize[(sizeof(OrbitCursorSprite) == 0x10) ? 1 : -1];
 typedef char AssertTouchMotionSize[(sizeof(OrbitCursor) == 0x108) ? 1 : -1];
 typedef char AssertTouchSprites[(offsetof(OrbitCursor, sprites) == 0x24) ? 1 : -1];
 typedef char AssertTouchState[(offsetof(OrbitCursor, state) == 0xE4) ? 1 : -1];
 typedef char AssertTouchTask[(offsetof(OrbitCursor, task) == 0xF4) ? 1 : -1];
+#endif // SDK_PORT
 
 #endif

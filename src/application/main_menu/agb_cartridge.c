@@ -13,6 +13,7 @@
 #include "system.h"
 
 // GBA cartridge access (NitroSDK CTRDG)
+#ifndef SDK_PORT // libntr declares these
 BOOL CTRDG_IsAgbCartridge(void);
 u32 CTRDG_GetAgbGameCode(void);
 void CTRDG_Enable(BOOL enable);
@@ -20,6 +21,7 @@ void CTRDG_CpuCopy32(const void *src, void *dest, u32 size);
 int CTRDG_IdentifyAgbBackup(int type);
 void CTRDG_ReadAgbFlash(u16 sector, u32 offset, void *dest, u32 size);
 void CTRDG_WriteAndVerifyAgbFlashAsync(u8 sector, void *src, u32 verifySize, CTRDG_TASK_FUNC callback);
+#endif // SDK_PORT
 
 // Save sizes of the game (read from the ROM by FireRed/LeafGreen/Emerald, fixed for Ruby/Sapphire)
 typedef struct PmAgbSaveSizes {

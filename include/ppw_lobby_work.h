@@ -261,7 +261,12 @@ BOOL PPWLobby_TimerRequestLobbyData(void);
 BOOL PPWLobby_TimerSendRecruitInfo(void);
 BOOL PPWLobby_TimerUploadSystemProfile(void);
 BOOL PPWLobby_TimerUploadUserProfile(void);
+#ifdef SDK_PORT // libntrdwc's DWCUserData (struct tag DWCstAccUserData)
+#include <dwc.h>
+enum PPWLobbyResult PPW_LobbyInitializeAsync(const char *gameName, const char *secretKey, int prefix, const PPWLobbyCallbacks *callbacks, const DWCUserData *userData, const void *playerData, u32 playerDataSize);
+#else
 enum PPWLobbyResult PPW_LobbyInitializeAsync(const char *gameName, const char *secretKey, int prefix, const PPWLobbyCallbacks *callbacks, const struct DwcUserData *userData, const void *playerData, u32 playerDataSize);
+#endif
 enum PPWLobbyResult PPW_LobbyShutdownAsync(void);
 enum PPWLobbyState PPW_LobbyProcess(void);
 enum PPWLobbyResult PPW_LobbyJoinSubChannelAsync(int channel);

@@ -47,7 +47,9 @@ enum PokeathlonDiscCatchInitState {
 
 s32 _s32_div_f(s32 dividend, s32 divisor);
 
+#ifndef SDK_PORT // libntr declares it (port_compat.h casts the comparator)
 void MATH_QSort(void *head, u32 num, u32 size, s32 (*compare)(const void *, const void *), void *work);
+#endif // SDK_PORT
 
 // A Pokemon sprite and the y its draw order goes by.
 typedef struct PokeathlonDiscCatchDrawOrder {

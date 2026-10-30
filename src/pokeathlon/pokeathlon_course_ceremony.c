@@ -112,7 +112,9 @@ enum PokeathlonCeremonyInitState {
 
 FS_EXTERN_OVERLAY(OVY_98);
 
+#ifndef SDK_PORT // libntr declares it (port_compat.h casts the comparator)
 void MATH_QSort(void *head, u32 num, u32 width, int (*compare)(const void *, const void *), void *stackBuffer);
+#endif // SDK_PORT
 
 static BOOL PokeathlonCourseCeremony_IsCryActive(PokeathlonCourseCeremony *ceremony);
 static void PokeathlonCourseCeremony_LoadWinnerBg(BgConfig *bgConfig, enum HeapID heapId);

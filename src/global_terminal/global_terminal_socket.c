@@ -179,6 +179,15 @@ static int GlobalTerminalSocket_GetRequestSize(int command);
 static int GlobalTerminalSocket_GetResponseBufferSize(int command);
 static void GlobalTerminalSocket_PrepareUploadStub(void *request, void *arg);
 
+#ifdef SDK_PORT
+// libntrdwc and libntrwifi declare the DWC and socket functions. Their host entry holds real
+// pointers (the decomp's view above stores the name and aliases as ints); the address and
+// in-address structs have the same layout as SOCSockAddrIn and SOCInAddr.
+int gsSocketInetAddr(char *address);
+#define DWC_SVLGetTokenAsync(arg, request) DWC_SVLGetTokenAsync((char *)(arg), (DWCSvlResult *)(request))
+#define DWC_GetLastErrorEx(errorCode, errorType) DWC_GetLastErrorEx((errorCode), (DWCErrorType *)(errorType))
+#define SOC_InetNtoA(address) SOC_InetNtoA((SOCInAddr) { (address).address })
+#else
 void *DWC_Alloc(int category, int size);
 void DWC_Free(int category, void *ptr, int size);
 int gsSocketInetAddr(char *address);
@@ -194,6 +203,7 @@ int SOC_Send(int socket, void *buffer, int length, int flags);
 int SOC_Recv(int socket, void *buffer, int length, int flags);
 int SOC_Shutdown(int socket, int how);
 int SOC_Close(int socket);
+#endif // SDK_PORT
 
 static void GlobalTerminalSocket_Reset(void) {
     GlobalTerminalSocket_ClearRequest();
@@ -509,9 +519,15 @@ static BOOL GlobalTerminalSocket_IsIPv4Address(signed char *str) {
 
 static int GlobalTerminalSocket_ResolveHost(char *host, char *out) {
     if (!GlobalTerminalSocket_IsIPv4Address((signed char *)host)) {
+#ifdef SDK_PORT
+        SOCHostEnt *entry = SOC_GetHostByName(host);
+        if (entry) {
+            GlobalTerminalSocketInAddr address = { *(u32 *)entry->addrList[0] };
+#else
         GlobalTerminalSocketHostEntry *entry = SOC_GetHostByName(host);
         if (entry) {
             GlobalTerminalSocketInAddr address = { **entry->addresses };
+#endif
             strcpy(out, SOC_InetNtoA(address));
         } else {
             return 0;

@@ -117,16 +117,16 @@ void BerryPotsApp_StartHarvestBerryAnim(BerryPotsAppData *data);
 void BerryPotsApp_FormatMessage(BerryPotsAppData *data, enum BerryPotsAppMessage action, u8 potIndex);
 void BerryPotsApp_UpdateGrowthFromRTC(BerryPotsAppData *data, BOOL startAnims);
 void BerryPotsApp_RefreshPotData(BerryPotsAppData *data);
-void BerryPotsApp_StartGrowthAnims(BerryPotsAppData *data);
+PORT_STATIC void BerryPotsApp_StartGrowthAnims(BerryPotsAppData *data);
 u32 BerryPotsApp_HandleSelectPotInput(BerryPotsAppData *data);
 BOOL BerryPotsApp_HandleWateringInput(BerryPotsAppData *data);
-u32 BerryPotsApp_SelectPotAction(BerryPotsAppData *data, u32 selection);
-u32 BerryPotsApp_HandleSelectPotKeys(BerryPotsAppData *data);
-u32 BerryPotsApp_HandleSelectPotTouch(BerryPotsAppData *data, BOOL *touched);
-BOOL BerryPotsApp_HandleWateringKeys(BerryPotsAppData *data);
-BOOL BerryPotsApp_HandleWateringTouch(BerryPotsAppData *data, BOOL *touched);
-int BerryPotsApp_GetTouchedPot(BerryPotsAppData *data);
-int BerryPotsApp_GetSelectPotTouch(BerryPotsAppData *data);
-u32 BerryPotsApp_GetPotMenuState(BerryPotsAppData *data);
+PORT_STATIC u32 BerryPotsApp_SelectPotAction(BerryPotsAppData *data, u32 selection);
+PORT_STATIC u32 BerryPotsApp_HandleSelectPotKeys(BerryPotsAppData *data);
+PORT_STATIC u32 BerryPotsApp_HandleSelectPotTouch(BerryPotsAppData *data, BOOL *touched);
+PORT_STATIC BOOL BerryPotsApp_HandleWateringKeys(BerryPotsAppData *data);
+PORT_STATIC BOOL BerryPotsApp_HandleWateringTouch(BerryPotsAppData *data, BOOL *touched);
+PORT_STATIC int BerryPotsApp_GetTouchedPot(BerryPotsAppData *data);
+PORT_STATIC int BerryPotsApp_GetSelectPotTouch(BerryPotsAppData *data);
+PORT_STATIC u32 BerryPotsApp_GetPotMenuState(BerryPotsAppData *data);
 
 #endif // POKEHEARTGOLD_BERRY_POTS_APP_INTERNAL_H

@@ -76,7 +76,9 @@ enum PokeathlonCirclePushInitState {
     CIRCLE_PUSH_INIT_DONE,
 };
 
+#ifndef SDK_PORT // libntr declares it (port_compat.h casts the comparator)
 void MATH_QSort(void *head, u32 num, u32 width, int (*compare)(const void *, const void *), void *stackBuffer);
+#endif // SDK_PORT
 
 typedef struct CirclePushTimerTiles {
     u16 tiles[8];

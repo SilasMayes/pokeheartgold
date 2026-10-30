@@ -19,7 +19,9 @@ enum {
     PLATE_STATE_FLASH,
 };
 
+#ifndef SDK_PORT // libntr declares it (port_compat.h casts the comparator)
 void MATH_QSort(void *base, u32 count, u32 width, int (*compare)(const void *, const void *), void *context);
+#endif // SDK_PORT
 
 void PokeathlonCourse_SetRecordScore(PokeathlonCourseData *course, u32 score);
 Sprite *PokeathlonCourseSprites_CreateTimerDigit(PokeathlonCourseSpriteResources *resources, SpriteList *spriteList, int priority, enum HeapID heapId);

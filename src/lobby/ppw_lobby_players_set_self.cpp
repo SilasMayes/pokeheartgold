@@ -9,7 +9,9 @@ extern "C" {
 #include "lobby_cpp_types.h"
 #include "ppw_lobby_state.h"
 
+#ifndef SDK_PORT // the C library declares it
 extern "C" int memcmp(const void *, const void *, u32);
+#endif
 
 extern "C" void DWC_GetDateTime(RTCDate *, RTCTime *);
 

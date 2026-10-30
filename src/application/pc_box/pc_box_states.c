@@ -1095,6 +1095,9 @@ enum PCBoxState PCBox_State_SetupBoxTrayInput(PCBoxWork *work) {
         PCBox_ShowSlotMonInfo(work, work->moveFromSlot);
         return work->args->mode == PC_BOX_MODE_MOVE_ITEMS ? PC_BOX_STATE_ITEM_MODE_BOX_TRAY_INPUT : PC_BOX_STATE_BOX_TRAY_INPUT;
     }
+#ifdef SDK_PORT
+    return PC_BOX_STATE_WAIT_UPDATE_FUNC; // PCBox_PickUpTrayMon's result, which the DS leaves in r0
+#endif
 }
 
 enum PCBoxState PCBox_State_BoxTrayInput(PCBoxWork *work) {

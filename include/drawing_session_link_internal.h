@@ -11,7 +11,9 @@ typedef struct FourBytes {
 } FourBytes;
 
 int Wireless_GetConnectedBitmap(void);
+#ifndef SDK_PORT // libntr declares these
 int MATH_CountPopulation(u32);
+#endif // SDK_PORT
 void CommState_SetMaxEntries(int);
 void GF_AssertFail(void);
 void CommState_SetErrorWatch(int, int);

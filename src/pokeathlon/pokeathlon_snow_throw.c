@@ -63,7 +63,9 @@ typedef struct PokeathlonSnowThrowTeamMarkPositions {
     VecFx32 positions[POKEATHLON_PARTICIPANTS - 1];
 } PokeathlonSnowThrowTeamMarkPositions;
 
+#ifndef SDK_PORT // libntr declares it (port_compat.h casts the comparator)
 void MATH_QSort(void *base, u32 count, u32 width, int (*compare)(const void *, const void *), void *context);
+#endif // SDK_PORT
 
 // A snowball as sorted for drawing.
 typedef struct PokeathlonSnowThrowDrawOrder {

@@ -1508,8 +1508,12 @@ s32 WifiClub_State_Start(WifiClubApp *app, s32 mainState) {
     } else {
         Sound_SetSceneAndPlayBGM(11, SEQ_GS_WIFI_ACCESS, 1);
         WifiClub_PrintTitleBar(app);
+#ifdef SDK_PORT // on the DS the user data was still in r0 from the call the decomp kept above
+        if (!DWC_CheckHasProfile(FriendRoster_GetUserData(app->friendRoster))) {
+#else
         FriendRoster_GetUserData(app->friendRoster);
         if (!DWC_CheckHasProfile()) {
+#endif
             SetBgPriority(GF_BG_LYR_MAIN_0, 3);
             SetBgPriority(GF_BG_LYR_MAIN_1, 0);
             SetBgPriority(GF_BG_LYR_MAIN_3, 0);
@@ -1518,8 +1522,12 @@ s32 WifiClub_State_Start(WifiClubApp *app, s32 mainState) {
             app->yesNoPrompt = WifiClub_CreateYesNoPrompt(app->bgConfig, &sUserInfoPromptWindowTemplate, 0);
             app->state = WIFI_CLUB_STATE_SAVE_USER_INFO_PROMPT;
         } else {
+#ifdef SDK_PORT // as above
+            if (!DWC_CheckValidConsole(FriendRoster_GetUserData(app->friendRoster))) {
+#else
             FriendRoster_GetUserData(app->friendRoster);
             if (!DWC_CheckValidConsole()) {
+#endif
                 WifiClub_ShowConnectionNotice(app, msg_0800_00020);
                 app->state = WIFI_CLUB_STATE_ASK_UPDATE_USER_INFO;
             } else {

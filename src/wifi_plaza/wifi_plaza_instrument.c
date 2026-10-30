@@ -94,10 +94,26 @@ static void WiFiPlazaInstrumentBurst_Start(WiFiPlazaInstrumentBurst *burst, u32 
 static BOOL WiFiPlazaInstrumentBurst_Update(WiFiPlazaInstrumentBurst *burst);
 static void WiFiPlazaInstrumentBurst_StartHop(WiFiPlazaInstrumentBurst *burst, u32 index, VecFx32 *origin, fx32 dx01, fx32 dy01, fx32 dx23, fx32 dy23, s32 duration);
 
+#ifdef SDK_PORT // mwcc runtime helpers, floats as bit patterns (see mwcc_runtime.h)
+#include "mwcc_runtime.h"
+static inline s64 _ll_mul(s64 a, s64 b) {
+    return a * b;
+}
+static inline u32 _fflt(s32 value) {
+    return MwRt_F32ToBits((f32)value);
+}
+static inline u32 _fadd(u32 a, u32 b) {
+    return MwRt_F32ToBits(MwRt_BitsToF32(a) + MwRt_BitsToF32(b));
+}
+static inline s32 _ffix(u32 value) {
+    return (s32)MwRt_BitsToF32(value);
+}
+#else
 s64 _ll_mul(s64 a, s64 b);
 u32 _fflt(s32 value);
 u32 _fadd(u32 a, u32 b);
 s32 _ffix(u32 value);
+#endif // SDK_PORT
 
 WiFiPlazaInstrumentManager *WiFiPlazaInstrument_Create(struct WiFiPlazaWork *lobby, WiFiPlazaMap *map, WiFiPlazaCamera *camera, WiFiPlazaObjManager *objManager, enum HeapID heapID, enum HeapID gfxHeapID) {
     NARC *narc;

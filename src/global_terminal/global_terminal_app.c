@@ -60,7 +60,7 @@ BOOL GlobalTerminalApp_Main(OverlayManager *man, int *state) {
     case GLOBAL_TERMINAL_APP_WAIT_WIFI:
         if (CommWireless_IsStartedUp()) {
             sDwcHeap = data->dwcHeap;
-            DWC_SetMemFunc(GlobalTerminalApp_DwcAlloc, GlobalTerminalApp_DwcFree);
+            DWC_SetMemFunc(PORT_CB(DWCAllocEx, GlobalTerminalApp_DwcAlloc), PORT_CB(DWCFreeEx, GlobalTerminalApp_DwcFree));
             data->wifiLoaded = 1;
             ++*state;
         }

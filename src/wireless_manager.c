@@ -96,9 +96,11 @@ typedef struct WirelessWork {
     u8 unk_1346[0x3A];
 } WirelessWork;
 
+#ifndef SDK_PORT // 32-bit layout checks for the DS build; pointers are 8 bytes here
 typedef char WirelessWorkSizeCheck[sizeof(WirelessWork) == 0x1380 ? 1 : -1];
 typedef char WirelessWorkStateCheck[offsetof(WirelessWork, state) == 0x1310 ? 1 : -1];
 typedef char WirelessWorkBeaconCheck[offsetof(WirelessWork, beaconCount) == 0x1345 ? 1 : -1];
+#endif // SDK_PORT
 
 typedef struct WirelessManager {
     u32 unk_0;
@@ -349,7 +351,7 @@ BOOL Wireless_ScanAndConnect(int mode, const u16 *bssid, u16 channel) {
     sWirelessManager.work->sendBufferSize = 0x40;
     Wireless_SetState(WIRELESS_STATE_SCANNING);
     sWirelessManager.work->parentInfo.bssDesc.channel = 1;
-    WM_CopyBssid16(bssid, sWirelessManager.work->scanParam.address);
+    WM_CopyBssid16(bssid, sWirelessManager.work->scanParam.bssid);
     sWirelessManager.work->mode = mode;
     sWirelessManager.work->parentFoundCallback = NULL;
     sWirelessManager.work->scanChannel = channel;
@@ -369,7 +371,7 @@ BOOL Wireless_StartScan(void *callback, const u16 *bssid, u16 channel) {
     sWirelessManager.work->scanChannel = channel;
     sWirelessManager.work->scanParam.channel = 0;
     sWirelessManager.work->connectAfterScan = 0;
-    WM_CopyBssid16(bssid, sWirelessManager.work->scanParam.address);
+    WM_CopyBssid16(bssid, sWirelessManager.work->scanParam.bssid);
     if (!Wireless_ScanNextChannel()) {
         Wireless_SetState(WIRELESS_STATE_ERROR);
         return FALSE;
@@ -406,8 +408,8 @@ static BOOL Wireless_ScanNextChannel(void) {
     } else {
         sWirelessManager.work->scanParam.channel = sWirelessManager.work->scanChannel;
     }
-    sWirelessManager.work->scanParam.time = WM_GetDispersionScanPeriod() / 3;
-    sWirelessManager.work->scanParam.buffer = &sWirelessManager.work->parentInfo;
+    sWirelessManager.work->scanParam.maxChannelTime = WM_GetDispersionScanPeriod() / 3;
+    sWirelessManager.work->scanParam.scanBuf = &sWirelessManager.work->parentInfo;
     error = WM_StartScan(Wireless_OnScanEvent, &sWirelessManager.work->scanParam);
     if (error != WM_ERRCODE_OPERATING) {
         Wireless_SetError(error);
@@ -744,7 +746,9 @@ static void Wireless_OnPortEvent(void *arg) {
     }
 }
 
+#ifndef SDK_PORT // libntr declares these
 void WVR_TerminateAsync(void (*callback)(void *), void *arg);
+#endif // SDK_PORT
 
 static void Wireless_OnEnded(void *arg) {
     WirelessEvent *event = arg;
@@ -761,8 +765,8 @@ void Wireless_SetGgid(u32 ggid) {
 }
 
 void Wireless_SetParentGameInfo(void *gameInfo, u16 length) {
-    sWirelessManager.work->parentParam.gameInfo = gameInfo;
-    sWirelessManager.work->parentParam.gameInfoLength = length;
+    sWirelessManager.work->parentParam.userGameInfo = gameInfo;
+    sWirelessManager.work->parentParam.userGameInfoLength = length;
 }
 
 u16 Wireless_GetConnectedBitmap(void) {
@@ -942,8 +946,8 @@ BOOL Wireless_Init(void *buffer, int mode) {
     sWirelessManager.work->connectedBitmap = 1;
     sWirelessManager.work->error = 0;
     sWirelessManager.work->state = WIRELESS_STATE_STOPPED;
-    sWirelessManager.work->parentParam.gameInfo = NULL;
-    sWirelessManager.work->parentParam.gameInfoLength = 0;
+    sWirelessManager.work->parentParam.userGameInfo = NULL;
+    sWirelessManager.work->parentParam.userGameInfoLength = 0;
     sWirelessManager.work->unk_131C = 0;
     sWirelessManager.work->maxEntries = 8;
     sWirelessManager.work->connectBlocked = 0;

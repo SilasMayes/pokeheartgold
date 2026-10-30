@@ -36,12 +36,14 @@
 // GBA cartridge access (NitroSDK CTRDG) and the crypto library
 u32 CTRDG_GetAgbGameCode(void);
 u16 CTRDG_GetAgbMakerCode(void);
+#ifndef SDK_PORT // libntr declares these
 BOOL CTRDG_IsAgbCartridge(void);
 BOOL CTRDG_IsExisting(void);
 void CTRDG_Enable(BOOL enable);
 void CTRDG_Read32(const void *src, void *dest);
 BOOL CTRDG_CpuCopy8(const void *src, void *dest, u32 size);
 BOOL CTRDG_CpuCopy16(const void *src, void *dest, u32 size);
+#endif // SDK_PORT
 void CRYPTO_SetAllocator(void *(*alloc)(u32), void (*free)(void *));
 BOOL CRYPTO_VerifySignature(const void *data, u32 size, const void *signature, const void *publicKey);
 

@@ -14,7 +14,9 @@ typedef struct StringSearch {
     inline int Find(const StringSearch &other,u32 start) const;
 #endif
 } StringSearch;
+#ifndef SDK_PORT // 32-bit layout checks for the DS build; pointers are 8 bytes here
 typedef char StringSearchSize12[sizeof(StringSearch)==12?1:-1];
+#endif // SDK_PORT
 #ifdef __cplusplus
 extern "C" {
 #endif

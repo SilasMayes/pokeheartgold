@@ -3,7 +3,9 @@
 #include "lobby_vector.h"
 
 #include <nitro/code32.h>
+#ifndef SDK_PORT // the C library declares it
 extern "C" void *memmove(void *, const void *, unsigned);
+#endif // SDK_PORT
 
 class Alloc {};
 

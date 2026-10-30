@@ -191,7 +191,7 @@ const u8 sCardFaceUpTileIDs[5][2] = {
     { 0x6B, 0x0B },
 };
 
-const TouchscreenListMenuTemplate sListMenuTemplate = {
+PORT_STATIC const TouchscreenListMenuTemplate sListMenuTemplate = { // global on the DS, where overlays may reuse names
     .wrapAround = TRUE,
     .centered = TRUE,
     .xOffset = 0,

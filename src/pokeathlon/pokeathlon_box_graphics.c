@@ -295,7 +295,11 @@ static void PokeathlonBox_ShowMonSprites(PokeathlonBox_Graphics *graphics, Pokea
     PokeathlonBox_TransferMonPic(&graphics->sub);
     Sprite_SetDrawFlag(graphics->sub.monPicSprite, TRUE);
     PokeathlonBox_ShowStatStars(&graphics->sub, mon);
+#ifdef SDK_PORT // mwcc copies arrays on assignment; C doesn't
+    memcpy(medalSlots, sPokeathlonBoxMonSpriteRows, sizeof(medalSlots));
+#else
     medalSlots = sPokeathlonBoxMonSpriteRows;
+#endif
     for (i = 0; i < 5; i++) {
         if (mon->medals[medalSlots[i]] != 0) {
             Sprite_SetDrawFlag(sub->sprites[medalSlots[i]], TRUE);

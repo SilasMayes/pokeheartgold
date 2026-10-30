@@ -3,7 +3,9 @@
 #include "ppw_lobby_state.h"
 
 #include <nitro/code32.h>
+#ifndef SDK_PORT // the C library declares it
 extern "C" int memcmp(const void *, const void *, unsigned);
+#endif // SDK_PORT
 class Str;
 extern "C" Str *LobbyString_Destroy(Str *);
 extern "C" Str *LobbyString_Assign(Str *, const Str *);

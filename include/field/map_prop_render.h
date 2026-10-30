@@ -120,8 +120,13 @@ u8 TimeOfDayPropAnimManager_GetVisualState(TimeOfDayPropAnimManager *manager);
 
 void *NNS_FndAllocFromAllocator(NNSFndAllocator *pAllocator, u32 size);
 
+#ifdef SDK_PORT
+// libntr declares the types and the variable under the SDK's own name
+#define gAnmCalcFuncNsBta NNS_G3dFuncAnmMatNsBtaDefault
+#else
 typedef struct NNSG3dMatAnmResult NNSG3dMatAnmResult;
 typedef void (*NNSG3dFuncAnmMat)(NNSG3dMatAnmResult *, const NNSG3dAnmObj *, u32);
 extern NNSG3dFuncAnmMat gAnmCalcFuncNsBta; // NNS_G3dFuncAnmMatNsBtaDefault = &NNSi_G3dAnmCalcNsBta
+#endif // SDK_PORT
 
 #endif // POKEHEARTGOLD_FIELD_MAP_PROP_RENDER_H

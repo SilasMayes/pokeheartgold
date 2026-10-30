@@ -50,7 +50,13 @@
 void MTX_MultVec43(const VecFx32 *vec, const MtxFx43 *mtx, VecFx32 *dst);
 fx64c FX_SinFx64c(fx32 x);
 fx64c FX_CosFx64c(fx32 x);
+#ifdef SDK_PORT // mwcc runtime helper
+static inline f32 _f_lltof(s64 value) {
+    return (f32)value;
+}
+#else
 f32 _f_lltof(s64 value);
+#endif // SDK_PORT
 
 #define MIME_JR_TOP_GAME_FRAMES 1200
 #define MIME_JR_TOP_MAX_LEVEL   8

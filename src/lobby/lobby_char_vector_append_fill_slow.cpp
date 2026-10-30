@@ -3,8 +3,10 @@
 #include "lobby_vector.h"
 
 #include <nitro/code32.h>
+#ifndef SDK_PORT // the C library declares it
 extern "C" void *memset(void *p, int c, u32 n);
 extern "C" void *memcpy(void *d, const void *s, u32 n);
+#endif // SDK_PORT
 
 static inline void InitBuffer(LobbyCharVectorBuffer *b, u32 *allocator) {
     b->data = NULL;

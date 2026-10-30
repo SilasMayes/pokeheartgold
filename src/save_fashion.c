@@ -79,8 +79,10 @@ static BOOL FashionEntryLarge_IsSaved(SaveFashionDataSub3FC *entry_);
 static void FashionMon_GetSecondText(SaveFashionMon *mon, String *string);
 static BOOL Save_FashionData_IsNewEntry(SaveFashionData *fashionData, SaveFashionDataSub *candidate);
 
+#ifndef SDK_PORT // libntr declares these
 void MATHi_CRC32InitTableRev(u32 *table, u32 polynomial);
 u32 MATH_CalcCRC32(const u32 *table, const void *data, u32 size);
+#endif // SDK_PORT
 
 static BOOL IsValidFashionMagic(u32 value) {
     if (value == FASHION_ENTRY_MAGIC_EMPTY || value == FASHION_ENTRY_MAGIC_SAVED) {

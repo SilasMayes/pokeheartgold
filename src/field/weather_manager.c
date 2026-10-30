@@ -1937,14 +1937,22 @@ static void WeatherTask_Snow(SysTask *task, void *data) {
     }
 }
 
-static const sSnowFallSpeeds[] = { 2, 2, 2, 2 };
-static const sSnowSlowdownIntervals[] = { 16, 32, 16, 10 };
+static const int sSnowFallSpeeds[] = { 2, 2, 2, 2 };
+static const int sSnowSlowdownIntervals[] = { 16, 32, 16, 10 };
 
 static void Snow_AddFlakes(WeatherWork *work, int count) {
     int table0[4];
+#ifdef SDK_PORT // mwcc copies arrays on assignment; C doesn't
+    memcpy(table0, sSnowSlowdownIntervals, sizeof(table0));
+#else
     table0 = sSnowSlowdownIntervals;
+#endif
     int table1[4];
+#ifdef SDK_PORT
+    memcpy(table1, sSnowFallSpeeds, sizeof(table1));
+#else
     table1 = sSnowFallSpeeds;
+#endif
     WeatherParticleTaskData *taskData = work->taskData;
 
     for (int i = 0; i < count; i++) {

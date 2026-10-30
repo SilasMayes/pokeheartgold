@@ -11,9 +11,11 @@
 #include "heap.h"
 #include "wifi_connection.h"
 
+#ifndef SDK_PORT // libntr declares these
 extern void MIC_StartAutoSamplingAsync(MICAutoParam *param, void (*callback)(MICResult, void *), void *arg);
 extern u8 *MIC_GetLastSamplingAddress(void);
 extern void MIC_StopAutoSampling(void);
+#endif // SDK_PORT
 
 static void VoiceChat_InitAudio(void);
 static void VoiceChat_MicCallback(MICResult result, void *arg);
@@ -69,7 +71,11 @@ static void VoiceChat_StreamCallback(BOOL isAlarm, int numChannels, void **buffe
         MIC_StartAutoSamplingAsync(&gVoiceChat.work->micParam, VoiceChat_MicCallback, NULL);
         gVoiceChat.work->restartSampling = 0;
     }
+#ifdef SDK_PORT // libntr returns void *
+    if ((u32)((u8 *)MIC_GetLastSamplingAddress() - address) < size) {
+#else
     if ((u32)(MIC_GetLastSamplingAddress() - address) < size) {
+#endif
         address += size;
     }
     // lid closed: send silence
@@ -242,7 +248,11 @@ BOOL VoiceChat_ReceiveData(u32 aid, void *data, u32 size) {
     if (gVoiceChat.work == NULL) {
         return FALSE;
     }
+#ifdef SDK_PORT // libvct's VCT_HandleData takes no work pointer
+    if (VCT_HandleData((u8)aid, data, size)) {
+#else
     if (VCT_HandleData((u8)aid, data, size, gVoiceChat.work)) {
+#endif
         return TRUE;
     }
     return FALSE;
@@ -279,7 +289,7 @@ void VoiceChat_Init(int heapId, int codec, int count) {
     gVoiceChat.work->restartSampling = 1;
     NNS_SndStrmAllocChannel(&gVoiceChat.work->stream, 1, channels);
     NNS_SndStrmSetVolume(&gVoiceChat.work->stream, 0);
-    NNS_SndStrmSetup(&gVoiceChat.work->stream, 1, gVoiceChat.work->streamBuffer, 0x880, 65, 2, VoiceChat_StreamCallback, gVoiceChat.work);
+    NNS_SndStrmSetup(&gVoiceChat.work->stream, 1, gVoiceChat.work->streamBuffer, 0x880, 65, 2, PORT_CB(NNSSndStrmCallback, VoiceChat_StreamCallback), gVoiceChat.work);
     gVoiceChat.work->callState = VOICE_CHAT_CALL_IDLE;
     gVoiceChat.work->session = NULL;
     if (!Comm_IsWifiPeerLinkMode(CommState_GetLinkMode())) {

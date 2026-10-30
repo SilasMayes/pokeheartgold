@@ -60,8 +60,10 @@ extern char gLobbyFmt_Hex_3[];
 extern char gLobbyStr_A[];
 extern char gLobbyStr__[];
 extern char gLobbyFmt_Str_3[];
+#ifndef SDK_PORT // libntr declares these
 int DWC_Base64Encode(const void *src, u32 len, char *dst, u32 dstLen);
 void MI_CpuFill8(void *dst, u8 val, u32 size);
+#endif // SDK_PORT
 
 static inline void TouchTag(void) {
     volatile LobbyTag t = { 0 };

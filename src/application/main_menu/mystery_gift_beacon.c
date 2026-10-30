@@ -110,9 +110,9 @@ static BOOL MysteryGiftBeacon_StartScan(void) {
         OS_Terminate();
     }
     MysteryGiftBeacon_SetState(MYSTERY_GIFT_BEACON_STATE_SCANNING);
-    *(u16 *)&gMysteryGiftBeacon.work->scanParam.address[4] = 0xFFFF;
-    *(u16 *)&gMysteryGiftBeacon.work->scanParam.address[2] = 0xFFFF;
-    *(u16 *)&gMysteryGiftBeacon.work->scanParam.address[0] = 0xFFFF;
+    *(u16 *)&gMysteryGiftBeacon.work->scanParam.bssid[4] = 0xFFFF;
+    *(u16 *)&gMysteryGiftBeacon.work->scanParam.bssid[2] = 0xFFFF;
+    *(u16 *)&gMysteryGiftBeacon.work->scanParam.bssid[0] = 0xFFFF;
     if (!MysteryGiftBeacon_ScanChannel()) {
         MysteryGiftBeacon_SetState(MYSTERY_GIFT_BEACON_STATE_ERROR);
         void (*callback)(int) = gMysteryGiftBeacon.work->callback;
@@ -164,11 +164,11 @@ static BOOL MysteryGiftBeacon_ScanChannel(void) {
     } else {
         gMysteryGiftBeacon.work->scanParam.channel = index;
     }
-    gMysteryGiftBeacon.work->scanParam.time = 220;
-    gMysteryGiftBeacon.work->scanParam.buffer = gMysteryGiftBeacon.work->scanBuffer;
+    gMysteryGiftBeacon.work->scanParam.maxChannelTime = 220;
+    gMysteryGiftBeacon.work->scanParam.scanBuf = gMysteryGiftBeacon.work->scanBuffer;
     if (gMysteryGiftBeacon.work->mode == MYSTERY_GIFT_BEACON_MODE_RECEIVE) {
         for (i = 0; i < 6; i++) {
-            gMysteryGiftBeacon.work->scanParam.address[i] = gMysteryGiftBeacon.work->parentMac[i];
+            gMysteryGiftBeacon.work->scanParam.bssid[i] = gMysteryGiftBeacon.work->parentMac[i];
         }
     }
     int result = WM_StartScan(MysteryGiftBeacon_ScanCallback, &gMysteryGiftBeacon.work->scanParam);

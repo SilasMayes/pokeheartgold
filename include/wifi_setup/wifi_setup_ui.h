@@ -160,7 +160,9 @@ typedef struct WifiSetupArchiveState {
     u8 poolItems[0x80]; // items of filePool
     WifiSetupPool *filePool;
     FSArchive arc;
+#ifndef SDK_PORT // pads the DS layout to 0xE4; FSArchive is larger with 64-bit pointers
     u8 unk_88[0xE4 - 0x88 - sizeof(FSArchive)];
+#endif
     u16 lockId;
 } WifiSetupArchiveState;
 

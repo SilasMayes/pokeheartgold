@@ -8,7 +8,9 @@
 
 // Web stats upload client of the network library.
 
+#ifndef SDK_PORT // the C library declares it
 int snprintf(char *, u32, const char *, ...);
+#endif // SDK_PORT
 int sprintf(char *, const char *, ...);
 int strncmp(const char *, const char *, size_t);
 unsigned long strtoul(const char *, char **, int);
@@ -301,7 +303,7 @@ int StatsUpload_Process(void) {
         StatsUpload_SetFailed();
         break;
     case STATS_UPLOAD_GET_CHALLENGE:
-        request = DWC_GetGHTTPDataEx(gStatsUpload.url, 0, 0, StatsUpload_OnRequestProgress, StatsUpload_OnRequestCompleted, 0);
+        request = DWC_GetGHTTPDataEx(gStatsUpload.url, 0, 0, PORT_CB(DWCGHTTPProgressCallback, StatsUpload_OnRequestProgress), PORT_CB(DWCGHTTPCompletedCallback, StatsUpload_OnRequestCompleted), 0);
         gStatsUpload.request = request;
         if (request >= 0) {
             gStatsUpload.state = STATS_UPLOAD_WAIT_CHALLENGE;
@@ -315,7 +317,7 @@ int StatsUpload_Process(void) {
         }
         break;
     case STATS_UPLOAD_SEND:
-        request = DWC_GetGHTTPDataEx(gStatsUpload.url, 0, 0, StatsUpload_OnRequestProgress, StatsUpload_OnRequestCompleted, 0);
+        request = DWC_GetGHTTPDataEx(gStatsUpload.url, 0, 0, PORT_CB(DWCGHTTPProgressCallback, StatsUpload_OnRequestProgress), PORT_CB(DWCGHTTPCompletedCallback, StatsUpload_OnRequestCompleted), 0);
         gStatsUpload.request = request;
         if (request >= 0) {
             gStatsUpload.state = STATS_UPLOAD_WAIT_RESPONSE;

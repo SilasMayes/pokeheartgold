@@ -10,7 +10,9 @@ public:
 };
 
 extern "C" {
+#ifndef SDK_PORT // the C library declares it
 void *memmove(void *, const void *, u32);
+#endif // SDK_PORT
 void LobbyCharVector_Reallocate(LobbyCharVector *, u32, u32);
 void LobbyCharVector_AssignRange(LobbyCharVector *vector, const char *first, const char *last, int unused);
 }

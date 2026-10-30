@@ -20,7 +20,9 @@ void RunWifiSetupApp(enum HeapID HeapID) {
     OSIntrMode interrupts = OS_DisableInterrupts();
     DWC_SetAuthServer(2);
     void *buffer = Heap_Alloc(HeapID, 0x40000);
+#ifndef SDK_PORT // no DWC Wi-Fi setup utility on the port (Platinum skips DWC_StartUtility too)
     WifiSetupApp_Run(buffer, 1, 0);
+#endif
     Heap_Free(buffer);
     OS_RestoreInterrupts(interrupts);
 

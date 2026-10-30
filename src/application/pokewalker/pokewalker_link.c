@@ -43,7 +43,9 @@ extern const s32 gCourseMenuCursorPositions[];
 #include "system.h"
 #include "text.h"
 
+#ifndef SDK_PORT // libntr declares these
 void RTC_GetDateTime(RTCDate *date, RTCTime *time);
+#endif // SDK_PORT
 
 #define LINK_MOTION(app) ((PokewalkerAppMotion *)(app)->unk_1F2C0)
 

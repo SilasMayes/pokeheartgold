@@ -7144,6 +7144,7 @@ extern u8 sStandardBallCatchRates[4];
 extern u8 sSafariCatchRateStages[13][2];
 extern u16 sMoonBallPokemon[14];
 
+#ifndef SDK_PORT // libntr's CP sqrt API (emulated, not raw registers)
 #define CP_SQRT_32BIT_MODE (0UL << REG_CP_SQRTCNT_MODE_SHIFT)
 
 static inline void CP_SetSqrtImm32_NS_(u32 param) {
@@ -7176,6 +7177,7 @@ static inline u32 CP_GetSqrtResult32(void) {
     CP_WaitSqrt();
     return CP_GetSqrtResultImm32();
 }
+#endif // SDK_PORT
 
 static u32 BattleSystem_CalculateBallShakes(BattleSystem *bsys, BattleContext *ctx) {
     s32 catchRate;

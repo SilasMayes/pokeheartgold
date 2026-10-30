@@ -58,7 +58,13 @@ enum PokeathlonRelayRunInitState {
     RELAY_RUN_INIT_DONE,
 };
 
+#ifdef SDK_PORT // mwcc runtime helper
+static inline f32 _fflt(int value) {
+    return (f32)value;
+}
+#else
 f32 _fflt(int value);
+#endif // SDK_PORT
 
 static void PokeathlonRelayRun_SetGfxBanks(void);
 static void PokeathlonRelayRun_InitBgs(BgConfig *bgConfig);

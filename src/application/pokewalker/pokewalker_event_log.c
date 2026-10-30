@@ -38,7 +38,9 @@ typedef struct FollowMonModelParam {
     u8 unk_03;
 } FollowMonModelParam;
 
+#ifndef SDK_PORT // libntr declares these
 void MATH_QSort(void *base, u32 count, u32 width, int (*compare)(const void *, const void *, void *), void *context);
+#endif // SDK_PORT
 
 static void PokewalkerEventLog_CreateMonSprite(PokewalkerEventLogMonSprite *monSprite, SpriteSystem *spriteSystem, SpriteManager *spriteManager, s16 x, s16 y, u8 animation, int side);
 static void PokewalkerEventLog_CreateMonSprites(PokewalkerEventLog *eventLog);

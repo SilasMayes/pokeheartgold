@@ -900,10 +900,19 @@ static int PhotoAlbumApp_HandleGridKeys(PhotoAlbumApp *app) {
 
 static int PhotoAlbumApp_HandleMoveInput(PhotoAlbumApp *app) {
     int done = 0;
+#ifdef SDK_PORT
+    // As PhotoAlbumApp_HandleGridInput
+    int state = PhotoAlbumApp_HandleMoveTouch(app, &done);
+    if (!done) {
+        state = PhotoAlbumApp_HandleMoveKeys(app);
+    }
+    return state;
+#else
     PhotoAlbumApp_HandleMoveTouch(app, &done);
     if (!done) {
         PhotoAlbumApp_HandleMoveKeys(app);
     }
+#endif
 }
 
 static BOOL PhotoAlbumApp_RunMoveDone(PhotoAlbumApp *app) {

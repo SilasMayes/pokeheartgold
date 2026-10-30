@@ -182,7 +182,7 @@ BOOL Gts_Main(OverlayManager *man, int *state) {
     case GTS_APP_STATE_WAIT_WIRELESS:
         if (CommWireless_IsStartedUp()) {
             gGtsGlobals.heap = app->heap;
-            DWC_SetMemFunc(Gts_Alloc, Gts_Free);
+            DWC_SetMemFunc(PORT_CB(DWCAllocEx, Gts_Alloc), PORT_CB(DWCFreeEx, Gts_Free));
             *state = GTS_APP_STATE_INIT_SCREEN;
         }
         break;

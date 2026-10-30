@@ -13,5 +13,9 @@ enum PPWLobbyResult PPW_LobbyInitializeAsync(const char *gameName, const char *s
     if (!DWC_CheckUserData(userData) || !DWC_CheckHasProfile(userData)) {
         return PPW_LOBBY_RESULT_ERROR_PARAM;
     }
+#ifdef SDK_PORT // libntrdwc's field name
+    return PPWLobby_Initialize(gameName, secretKey, prefix, callbacks, userData->gs_profile_id, playerData, playerDataSize, TRUE);
+#else
     return PPWLobby_Initialize(gameName, secretKey, prefix, callbacks, userData->gsProfileId, playerData, playerDataSize, TRUE);
+#endif
 }

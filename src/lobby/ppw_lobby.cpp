@@ -47,7 +47,9 @@ extern "C" const char gLobbyStr_b_lib_u_user[], gLobbyStr_b_lib_u_system[], gLob
 extern "C" {
 int printf(const char *, ...);
 void abort(void);
+#ifndef SDK_PORT // libntrdwc declares it
 void DWC_Free(int, void *, u32);
+#endif // SDK_PORT
 
 void LobbyTreeIterator_Advance(Iterator *);
 }
@@ -454,7 +456,9 @@ extern "C" enum PPWLobbyResult PPWLobby_SendMessage(int id, int channel, enum PP
 
 extern "C" {
 extern char gLobbyStr_Empty_15[];
+#ifndef SDK_PORT // libntrdwc declares it
 extern int DWC_Base64Encode(const void *, u32, char *, u32);
+#endif // SDK_PORT
 
 enum PPWLobbyResult PPWLobby_SetChannelData(int userId, enum PPWLobbyChannelKind kind, const char *key, const void *data, u32 size) {
     Str channelName;
@@ -664,9 +668,11 @@ struct Vector {
     }
 };
 
+#ifndef SDK_PORT // 32-bit layout checks for the DS build; pointers are 8 bytes here
 typedef char StringSize[sizeof(Str) == 12 ? 1 : -1];
 typedef char VectorSize[sizeof(Vector) == 12 ? 1 : -1];
 typedef char DispatchSize[sizeof(ResizeDispatch) == 1 ? 1 : -1];
+#endif // SDK_PORT
 }
 
 using namespace StringFormat;
@@ -1692,7 +1698,9 @@ void PPWLobby_OnSubmitQuestionnaire(BOOL status, u8 *data, u32 size, void *param
 namespace OnEnterMainChannel {
 using std::memcmp;
 
+#ifndef SDK_PORT // libntrdwc declares it
 extern "C" void DWC_GetDateTime(RTCDate *date, RTCTime *time);
+#endif // SDK_PORT
 
 struct TrueType {};
 
@@ -2605,7 +2613,9 @@ struct DateTime {
 };
 
 extern "C" BOOL PPWLobby_DecodeMessageData(const char *, LobbyCharVector *);
+#ifndef SDK_PORT // libntrdwc declares it
 extern "C" void DWC_GetDateTime(RTCDate *, RTCTime *);
+#endif // SDK_PORT
 extern "C" void PPWLobby_OnGetChannelTime(BOOL, const char *, int, const char *, const char *, u32);
 
 extern "C" void PPWLobby_OnGetChannelTime(BOOL result, const char *channel, int userId, const char *key, const char *value, u32 param) {

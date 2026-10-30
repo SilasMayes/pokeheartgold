@@ -8,7 +8,9 @@
 
 #define FOG_TABLE_ENTRIES 32 // densities, one byte each
 
+#ifndef SDK_PORT // libntr declares these
 void G3X_SetFogTable(u32 *fogTable);
+#endif // SDK_PORT
 
 typedef struct FogData {
     BOOL enable;

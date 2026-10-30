@@ -1,7 +1,9 @@
 #include <nitro/types.h>
 
 #include <nitro/code32.h>
+#ifndef SDK_PORT // the C library declares it
 extern "C" void *memmove(void *, const void *, u32);
+#endif // SDK_PORT
 
 struct RIt {
     u32 *cur, *first, *mid, *last;

@@ -4,8 +4,10 @@
 
 #include "global.h"
 
+#ifndef SDK_PORT // the C library declares these
 extern int strncmp(const char *a, const char *b, u32 n);
 extern int sprintf(char *dest, const char *format, ...);
+#endif // SDK_PORT
 
 static void GameStats_SeedRandom(u32 seed);
 static u8 GameStats_NextRandom(void);

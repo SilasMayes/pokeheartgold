@@ -5,6 +5,9 @@
 
 #include "save_link_ruleset.h"
 
+#ifdef SDK_PORT
+#include <dwc.h>
+#else
 typedef struct DWCUserData DWCUserData;
 
 typedef struct DWCFriendData {
@@ -25,6 +28,7 @@ void DWC_ClearDirtyFlag(DWCUserData *userData);
 int DWC_CheckUserData(DWCUserData *userData);
 int DWC_Init(int);
 int DWC_IsEqualFriendData(DWCFriendData *friendData0, DWCFriendData *friendData1);
+#endif // SDK_PORT
 
 #endif // POKEHEARTGOLD_DWCACCOUNT_H
 
@@ -71,11 +75,13 @@ void Comm_EnableKeySync(void);
 u16 Comm_GetLocalNetId(void);
 BOOL Comm_HasLinkError(void);
 
+#ifndef SDK_PORT // libntr declares these
 typedef struct {
     u64 x;
     u64 mul;
     u64 add;
 } MATHRandContext32;
+#endif // SDK_PORT
 
 void CommRandom_Init(MATHRandContext32 *seed);
 void Comm_FreeCommandTable(void);
@@ -83,8 +89,12 @@ void CommWireless_Terminate(void);
 void Comm_ResetWorkAndParents(void);
 int CommWireless_Stop(void);
 void Comm_Shutdown(void);
+#ifndef SDK_PORT // libntrdwc declares it
 int DWC_GetLinkLevel(void);
+#endif // SDK_PORT
+#ifndef SDK_PORT // libntr declares these
 s32 WM_GetLinkLevel(void);
+#endif // SDK_PORT
 int CommWireless_IsIdle(void);
 void CommWireless_SetManagerEnded(int end);
 void Comm_ResetWork(void);
@@ -129,14 +139,14 @@ int WiFiPlazaLobbyClient_Update(void);
 int WiFiPlazaLobbyClient_IsDisconnected(void);
 
 u32 CommState_GetSyncPacketSize(void);
-void CommState_Init(SaveData *saveData, s8 linkMode);
-void CommState_Free(void);
+PORT_STATIC void CommState_Init(SaveData *saveData, s8 linkMode);
+PORT_STATIC void CommState_Free(void);
 BOOL CommState_Exists(void);
 void CommState_StartParentSession(SaveData *saveData, s8 linkMode, s8 beaconId, LinkBattleRuleset *rules);
 void CommState_StartChildSession(SaveData *saveData, s8 linkMode, s8 beaconId, LinkBattleRuleset *rules);
 void CommState_ConnectToSlot(s8 slot);
 void CommState_RestartScan(void);
-void CommState_ShutdownWait(void);
+PORT_STATIC void CommState_ShutdownWait(void);
 void CommState_RequestShutdown(void);
 s32 CommState_IsLinked(void);
 void CommState_StartAlternateSearch(SaveData *saveData);
@@ -154,85 +164,85 @@ void CommState_SetUnionRoomLinkMode(void);
 void CommState_StartMysteryGiftParent(SaveData *saveData, s8 linkMode);
 void CommState_StartMysteryGiftChild(SaveData *saveData, s8 linkMode);
 void CommState_Main(void);
-void CommState_SetState(void (*func)(), int timer);
-void CommState_EndWireless(void);
-void CommState_StopWireless(void);
-void CommState_ParentStart(void);
-void CommState_WaitLinked(void);
-void CommState_ParentLinked(void);
-void CommState_ChildStartScan(void);
-void CommState_ChildScanning(void);
-void CommState_ChildConnecting(void);
-void CommState_ChildWaitLinked(void);
-void CommState_ChildRescanStop(void);
-void CommState_ChildRescan(void);
-void CommState_ChildLinked(void);
-void CommState_RestartScanStop(void);
-void CommState_RestartScanStart(void);
-void CommState_Idle(void);
-void CommState_FreeWhenDone(void);
-void CommState_ResumeParentWaitAlone(void);
-void CommState_ResumeChildStop(void);
-void CommState_ShutdownWaitStopped(void);
-void CommState_AlternateInit(void);
-void CommState_AlternateScan(void);
-void CommState_AlternateWaitStopped(void);
-void CommState_AlternateStartParent(void);
-void CommState_AlternateParentWait(void);
-void CommState_AlternateStartScan(void);
-void CommState_JoinWaitStopped(void);
-void CommState_JoinStartScan(void);
-void CommState_JoinConnect(void);
-void CommState_JoinWaitLinked(void);
-void CommState_JoinWaitReply(void);
-void CommState_Joined(void);
-void CommState_JoinFailed(void);
-void CommState_JoinRetry(void);
-void CommState_AlternateLinked(void);
-void CommState_RestartIdle(void);
+PORT_STATIC void CommState_SetState(void (*func)(), int timer);
+PORT_STATIC void CommState_EndWireless(void);
+PORT_STATIC void CommState_StopWireless(void);
+PORT_STATIC void CommState_ParentStart(void);
+PORT_STATIC void CommState_WaitLinked(void);
+PORT_STATIC void CommState_ParentLinked(void);
+PORT_STATIC void CommState_ChildStartScan(void);
+PORT_STATIC void CommState_ChildScanning(void);
+PORT_STATIC void CommState_ChildConnecting(void);
+PORT_STATIC void CommState_ChildWaitLinked(void);
+PORT_STATIC void CommState_ChildRescanStop(void);
+PORT_STATIC void CommState_ChildRescan(void);
+PORT_STATIC void CommState_ChildLinked(void);
+PORT_STATIC void CommState_RestartScanStop(void);
+PORT_STATIC void CommState_RestartScanStart(void);
+PORT_STATIC void CommState_Idle(void);
+PORT_STATIC void CommState_FreeWhenDone(void);
+PORT_STATIC void CommState_ResumeParentWaitAlone(void);
+PORT_STATIC void CommState_ResumeChildStop(void);
+PORT_STATIC void CommState_ShutdownWaitStopped(void);
+PORT_STATIC void CommState_AlternateInit(void);
+PORT_STATIC void CommState_AlternateScan(void);
+PORT_STATIC void CommState_AlternateWaitStopped(void);
+PORT_STATIC void CommState_AlternateStartParent(void);
+PORT_STATIC void CommState_AlternateParentWait(void);
+PORT_STATIC void CommState_AlternateStartScan(void);
+PORT_STATIC void CommState_JoinWaitStopped(void);
+PORT_STATIC void CommState_JoinStartScan(void);
+PORT_STATIC void CommState_JoinConnect(void);
+PORT_STATIC void CommState_JoinWaitLinked(void);
+PORT_STATIC void CommState_JoinWaitReply(void);
+PORT_STATIC void CommState_Joined(void);
+PORT_STATIC void CommState_JoinFailed(void);
+PORT_STATIC void CommState_JoinRetry(void);
+PORT_STATIC void CommState_AlternateLinked(void);
+PORT_STATIC void CommState_RestartIdle(void);
 void CommState_SetLinkMode13RequestMode0(void);
 void CommState_ReconnectToParent(s8 slot);
 void CommState_SetRecordMixingLinkMode(void);
 void CommState_JoinRecordMixing(s8 slot);
 void CommState_SetSpinTradeLinkMode(void);
 void CommState_JoinSpinTrade(s8 slot);
-void CommState_ReconnectStop(void);
-void CommState_ReconnectScan(void);
-void CommState_ReconnectWaitParent(void);
-void CommState_ReconnectWaitLinked(void);
+PORT_STATIC void CommState_ReconnectStop(void);
+PORT_STATIC void CommState_ReconnectScan(void);
+PORT_STATIC void CommState_ReconnectWaitParent(void);
+PORT_STATIC void CommState_ReconnectWaitLinked(void);
 void CommState_RecvJoinRequest(int netId, int size, void *data, void *context);
 void CommState_RecvJoinReply(int netId, int size, void *data, void *context);
 u32 CommState_GetJoinMessageSize(void);
 void CommState_SetMaxEntries(s8 maxEntries);
-void CommState_BeaconWatch(void);
-void CommState_OnBeacon(u32 ggid, s32 info);
-void CommState_BeaconWatchScan(void);
-void CommState_BeaconWatchInit(void);
+PORT_STATIC void CommState_BeaconWatch(void);
+PORT_STATIC void CommState_OnBeacon(u32 ggid, s32 info);
+PORT_STATIC void CommState_BeaconWatchScan(void);
+PORT_STATIC void CommState_BeaconWatchInit(void);
 void CommState_StartBeaconWatch(SaveData *saveData);
 void CommState_StopBeaconWatch(void);
 u8 CommState_GetSeenGames(void);
 BOOL CommState_StopForReset(void);
-void CommState_MysteryGiftParentStart(void);
-void CommState_MysteryGiftChildStart(void);
-void CommState_WifiFailed(void);
-void CommState_WifiTimedOut(void);
-void CommState_WifiDisconnected(void);
-void CommState_WifiCancelled(void);
-void CommState_WifiConnected(void);
+PORT_STATIC void CommState_MysteryGiftParentStart(void);
+PORT_STATIC void CommState_MysteryGiftChildStart(void);
+PORT_STATIC void CommState_WifiFailed(void);
+PORT_STATIC void CommState_WifiTimedOut(void);
+PORT_STATIC void CommState_WifiDisconnected(void);
+PORT_STATIC void CommState_WifiCancelled(void);
+PORT_STATIC void CommState_WifiConnected(void);
 
 void CommState_SetWifiError(u32 error, s32 type, s32 status);
-void CommState_WifiLobby(void);
-void CommState_WifiStartMatch(void);
+PORT_STATIC void CommState_WifiLobby(void);
+PORT_STATIC void CommState_WifiStartMatch(void);
 s32 CommState_StartWifiMatch(s32 friendIndex);
 s32 CommState_GetWifiMatchStatus(void);
-void CommState_WifiJoinLobby(void);
-void CommState_WifiDisconnect(void);
+PORT_STATIC void CommState_WifiJoinLobby(void);
+PORT_STATIC void CommState_WifiDisconnect(void);
 void CommState_RecvWifiDisconnect(int netId, int size, void *data, void *context);
 u8 CommState_WasWifiDisconnected(void);
 BOOL CommState_IsWifiJoiningLobby(void);
 BOOL CommState_IsWifiInLobby(void);
 u32 *CommState_GetWifiError(void);
-void CommState_WifiShutdown(void);
+PORT_STATIC void CommState_WifiShutdown(void);
 void CommState_EndWifiSession(void);
 void CommState_LeaveWifiMatch(void);
 void CommState_EndWifiMatch(void);
@@ -264,7 +274,7 @@ void CommState_SetSelectedOrder(void *order);
 void CommState_GetSelectedOrder(void *order);
 int CommState_IsWifi(void);
 
-void CommState_SetErrorScreen(s8 errorScreen);
+PORT_STATIC void CommState_SetErrorScreen(s8 errorScreen);
 u8 CommState_GetErrorScreen(void);
 void CommState_ShowErrorAndHalt(u32 errorCode);
 void CommState_ShowRestartErrorAndHalt(void);
@@ -277,20 +287,20 @@ void CommState_SetClubWifiLinkMode(void);
 void CommState_SetPlazaLinkMode(void);
 void CommState_SetWifiClubLinkMode(void);
 void CommState_SetSingleBattleWifiLinkMode(void);
-void CommState_PlazaStart(void);
-void CommState_PlazaWaitLobby(void);
-void CommState_PlazaLobby(void);
-s32 CommState_PlazaCheckWifiResult(s32 result);
-s32 CommState_PlazaUpdateLobby(void);
-int CommState_PlazaUpdate(void);
-void CommState_PlazaUpdateMatch(s32 *matchResult);
-void CommState_PlazaLogout(void);
-void CommState_PlazaWaitLogout(void);
-void CommState_PlazaLobbyFailed(void);
-void CommState_PlazaMatchConnected(void);
-void CommState_PlazaMatching(void);
-void CommState_PlazaEndMatch(void);
-void CommState_PlazaTimedOut(void);
+PORT_STATIC void CommState_PlazaStart(void);
+PORT_STATIC void CommState_PlazaWaitLobby(void);
+PORT_STATIC void CommState_PlazaLobby(void);
+PORT_STATIC s32 CommState_PlazaCheckWifiResult(s32 result);
+PORT_STATIC s32 CommState_PlazaUpdateLobby(void);
+PORT_STATIC int CommState_PlazaUpdate(void);
+PORT_STATIC void CommState_PlazaUpdateMatch(s32 *matchResult);
+PORT_STATIC void CommState_PlazaLogout(void);
+PORT_STATIC void CommState_PlazaWaitLogout(void);
+PORT_STATIC void CommState_PlazaLobbyFailed(void);
+PORT_STATIC void CommState_PlazaMatchConnected(void);
+PORT_STATIC void CommState_PlazaMatching(void);
+PORT_STATIC void CommState_PlazaEndMatch(void);
+PORT_STATIC void CommState_PlazaTimedOut(void);
 void CommState_SetFrontierWifiLinkMode(void);
 void Comm_InitSyncedSave(s32 *state);
 s32 Comm_SyncedSave(SaveData *saveData, s32 arg1, u32 *state);

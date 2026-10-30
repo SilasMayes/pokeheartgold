@@ -17,8 +17,10 @@ struct ByteTag {
 };
 
 extern "C" {
+#ifndef SDK_PORT // the C library declares it
 void *memset(void *, int, unsigned);
 void *memcpy(void *, const void *, unsigned);
+#endif // SDK_PORT
 void DWC_Free(int, void *, u32);
 void _ZNSt15__vector_commonILb1EE18throw_length_errorEv(void);
 u32 LobbyStringVector_RecommendSize(LobbyStringVector *, u32);

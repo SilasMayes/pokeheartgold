@@ -78,9 +78,11 @@ typedef struct CommWirelessWork {
     u8 unk_D96[2];
 } CommWirelessWork;
 
+#ifndef SDK_PORT // 32-bit layout checks for the DS build; pointers are 8 bytes here
 typedef char CommWirelessWorkSizeCheck[sizeof(CommWirelessWork) == 0xD98 ? 1 : -1];
 typedef char CommWirelessTimerCheck[offsetof(CommWirelessWork, parentTimers) == 0xD44 ? 1 : -1];
 typedef char CommBeaconSizeCheck[sizeof(CommBeacon) == 0x5C ? 1 : -1];
+#endif // SDK_PORT
 
 enum CommWirelessPowerState {
     COMM_WIRELESS_OFF,
@@ -112,8 +114,10 @@ typedef struct CommBssid {
     u8 data[6];
 } CommBssid;
 
+#ifndef SDK_PORT // libntr declares these
 int WVR_StartUpAsync(int mode, void (*callback)(void *, int), void *arg);
 int WVR_TerminateAsync(void (*callback)(void *), void *arg);
+#endif // SDK_PORT
 
 int CommState_GetLinkMode(void);
 int CommState_GetBeaconId(void);
@@ -297,7 +301,7 @@ static void CommWireless_OnTerminated(void *unused) {
 void CommWireless_StartUp(void) {
     Sys_SetSleepDisableFlag(4);
     sCommWireless.state = COMM_WIRELESS_STARTING_UP;
-    if (WVR_StartUpAsync(8, CommWireless_OnStartedUp, NULL) != 1) {
+    if (WVR_StartUpAsync(8, PORT_CB(WVRCallbackFunc, CommWireless_OnStartedUp), NULL) != 1) {
         OS_Terminate();
     }
 }
@@ -311,7 +315,7 @@ BOOL CommWireless_IsOn(void) {
 }
 
 void CommWireless_Terminate(void) {
-    WVR_TerminateAsync(CommWireless_OnTerminated, NULL);
+    WVR_TerminateAsync(PORT_CB(WVRCallbackFunc, CommWireless_OnTerminated), NULL);
 }
 
 static void CommWireless_InitManager(int mode) {

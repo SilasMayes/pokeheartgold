@@ -91,6 +91,7 @@ extern int sprintf(char *dest, const char *format, ...);
 
 extern void CommState_SetWifiError(int, u32, int);
 
+#ifndef SDK_PORT // libntrdwc declares these
 extern int DWC_IsSendableReliable(u8);
 extern u32 DWC_SendReliableBitmap(u32, void *, u32);
 extern void DWC_SetRecvBuffer(u8, void *, int);
@@ -98,6 +99,7 @@ extern int DWC_SetRecvTimeoutTime(u8, int);
 extern void DWC_SetUserSendCallback(void (*)(u32, s32));
 extern void DWC_SetUserRecvCallback(void (*)(u16, const u8 *, int));
 extern void DWC_SetUserRecvTimeoutCallback(void (*)(void));
+#endif
 
 static void WifiConnection_Destroy(void);
 static void WifiConnection_FinishCancel(void);
@@ -128,6 +130,27 @@ static void WifiConnection_ConnectedToServerCallback(int result, BOOL cancelled,
 static void WifiConnection_NewClientCallback(int index);
 static void WifiConnection_CreateTokenAndScanFriends(void);
 static void WifiConnection_StopServerMatchingCallback(void *param);
+
+#ifdef SDK_PORT
+// libntrdwc passes the AID as a u8 where these handlers take wider integers: adapt instead of
+// casting, so the narrow argument arrives properly extended.
+
+static void WifiConnection_SendDoneCallback_Port(int size, u8 aid) {
+    WifiConnection_SendDoneCallback(size, aid);
+}
+
+static void WifiConnection_ReceiveCallback_Port(u8 aid, u8 *data, int size) {
+    WifiConnection_ReceiveCallback(aid, data, size);
+}
+
+static void WifiConnection_ConnectionClosedCallback_Port(DWCError error, BOOL isLocal, BOOL isServer, u8 aid, int index, void *param) {
+    WifiConnection_ConnectionClosedCallback(error, isLocal, isServer, aid, index, param);
+}
+
+#define PORT_DWC_CB(func) func##_Port
+#else
+#define PORT_DWC_CB(func) func
+#endif // SDK_PORT
 static void WifiConnection_FreeRecvBuffer(int aid);
 static void WifiConnection_AllocRecvBuffer(int aid);
 static void WifiConnection_FreeRecvBuffers(void);
@@ -135,8 +158,12 @@ static void WifiConnection_FreeRecvBuffers(void);
 static const DwcMatchOptMinComplete sWifiConnectionAnybodyMatchParams = {
     .valid = 1,
     .minEntry = 2,
+#ifdef SDK_PORT // libntrdwc's DWCMatchOptMinComplete has the two middle bytes as pad[2]
+    .pad = { 0, 0 },
+#else
     .retry = 0,
     .pad = 0,
+#endif
     .timeout = 0,
 };
 
@@ -219,7 +246,7 @@ int WifiConnection_UpdateLogin(void) {
 
     switch ((u32)sWifiConnection->state) {
     case WIFI_CONNECTION_STATE_INIT:
-        DWC_SetMemFunc(WifiConnection_Alloc, WifiConnection_Free);
+        DWC_SetMemFunc(PORT_CB(DWCAllocEx, WifiConnection_Alloc), PORT_CB(DWCFreeEx, WifiConnection_Free));
         DWC_InitInetEx(&sWifiConnection->libConfig, 2, 1, 20);
         DWC_SetAuthServer(2);
         DWC_ConnectInetAsync();
@@ -243,7 +270,7 @@ int WifiConnection_UpdateLogin(void) {
         }
         DWC_InitFriendsMatch(&sWifiConnection->loginControl, sWifiConnection->userData, 0x29E7, "pokemondpds", "1vTlwb", 0, 0, sWifiConnection->friendList, 32);
         OS_GetOwnerInfo(&owner);
-        DWC_LoginAsync(owner.nickName, 0, WifiConnection_LoginCallback, NULL);
+        DWC_LoginAsync(owner.nickName, 0, PORT_CB(DWCLoginCallback, WifiConnection_LoginCallback), NULL);
         sWifiConnection->state = WIFI_CONNECTION_STATE_LOGGING_IN;
     case WIFI_CONNECTION_STATE_LOGGING_IN:
         DWC_ProcessFriendsMatch();
@@ -294,12 +321,12 @@ int WifiConnection_StartAnybodyMatchmaking(const char *name, int maxPlayers, int
     }
     sWifiConnection->state = WIFI_CONNECTION_STATE_MATCHING;
     sWifiConnection->maxPlayers = maxPlayers;
-    DWC_ConnectToAnybodyAsync((u8)maxPlayers, sWifiConnection->matchFilter, WifiConnection_AnybodyMatchedCallback, 0, WifiConnection_EvalPlayerCallback, 0);
+    DWC_ConnectToAnybodyAsync((u8)maxPlayers, sWifiConnection->matchFilter, PORT_CB(DWCMatchedCallback, WifiConnection_AnybodyMatchedCallback), 0, PORT_CB(DWCEvalPlayerCallback, WifiConnection_EvalPlayerCallback), 0);
     sWifiConnection->matchType = WIFI_MATCH_TYPE_ANYBODY;
-    DWC_SetUserSendCallback(WifiConnection_SendDoneCallback);
-    DWC_SetUserRecvCallback(WifiConnection_ReceiveCallback);
-    DWC_SetConnectionClosedCallback(WifiConnection_ConnectionClosedCallback, NULL);
-    DWC_SetUserRecvTimeoutCallback(WifiConnection_TimeoutCallback);
+    DWC_SetUserSendCallback(PORT_DWC_CB(WifiConnection_SendDoneCallback));
+    DWC_SetUserRecvCallback(PORT_DWC_CB(WifiConnection_ReceiveCallback));
+    DWC_SetConnectionClosedCallback(PORT_DWC_CB(WifiConnection_ConnectionClosedCallback), NULL);
+    DWC_SetUserRecvTimeoutCallback(PORT_CB(DWCUserRecvTimeoutCallback, WifiConnection_TimeoutCallback));
     sWifiConnection->sendBusy = 0;
     sWifiConnection->disconnectWhenAlone = 1;
     return 1;
@@ -445,11 +472,11 @@ static void WifiConnection_LoginCallback(int result, int unused, void *param) {
         sWifiConnection->friendDataChanged = 1;
     }
     if (result == 0) {
-        if (DWC_UpdateServersAsync(0, WifiConnection_UpdateServersCallback, sWifiConnection->userData, WifiConnection_FriendStatusCallback, param, WifiConnection_DeleteFriendCallback, param) == 0) {
+        if (DWC_UpdateServersAsync(0, PORT_CB(DWCUpdateServersCallback, WifiConnection_UpdateServersCallback), sWifiConnection->userData, PORT_CB(DWCFriendStatusCallback, WifiConnection_FriendStatusCallback), param, PORT_CB(DWCDeleteFriendListCallback, WifiConnection_DeleteFriendCallback), param) == 0) {
             CommState_SetError(1);
             return;
         }
-        DWC_SetBuddyFriendCallback(WifiConnection_BuddyFriendCallback, 0);
+        DWC_SetBuddyFriendCallback(PORT_CB(DWCBuddyFriendCallback, WifiConnection_BuddyFriendCallback), 0);
         return;
     }
     sWifiConnection->state = WIFI_CONNECTION_STATE_ERROR;
@@ -1041,10 +1068,10 @@ int WifiConnection_StartMatchmaking(int friendIndex, int maxPlayers, BOOL altern
     }
     sWifiConnection->matchInProgress = 1;
     if (friendIndex < 0) {
-        result = DWC_SetupGameServer(maxPlayers, WifiConnection_GameServerMatchedCallback, NULL, WifiConnection_NewClientCallback, NULL);
+        result = DWC_SetupGameServer(maxPlayers, PORT_CB(DWCMatchedSCCallback, WifiConnection_GameServerMatchedCallback), NULL, PORT_CB(DWCNewClientCallback, WifiConnection_NewClientCallback), NULL);
         sWifiConnection->matchType = WIFI_MATCH_TYPE_HOST;
     } else {
-        result = DWC_ConnectToGameServerAsync(friendIndex, WifiConnection_ConnectedToServerCallback, NULL, WifiConnection_NewClientCallback, NULL);
+        result = DWC_ConnectToGameServerAsync(friendIndex, PORT_CB(DWCMatchedSCCallback, WifiConnection_ConnectedToServerCallback), NULL, PORT_CB(DWCNewClientCallback, WifiConnection_NewClientCallback), NULL);
         sWifiConnection->matchType = WIFI_MATCH_TYPE_CLIENT;
     }
     if (!result) {
@@ -1056,10 +1083,10 @@ int WifiConnection_StartMatchmaking(int friendIndex, int maxPlayers, BOOL altern
     }
     sWifiConnection->retryCount = 0;
     sWifiConnection->state = WIFI_CONNECTION_STATE_MATCHING;
-    DWC_SetUserSendCallback(WifiConnection_SendDoneCallback);
-    DWC_SetUserRecvCallback(WifiConnection_ReceiveCallback);
-    DWC_SetConnectionClosedCallback(WifiConnection_ConnectionClosedCallback, NULL);
-    DWC_SetUserRecvTimeoutCallback(WifiConnection_TimeoutCallback);
+    DWC_SetUserSendCallback(PORT_DWC_CB(WifiConnection_SendDoneCallback));
+    DWC_SetUserRecvCallback(PORT_DWC_CB(WifiConnection_ReceiveCallback));
+    DWC_SetConnectionClosedCallback(PORT_DWC_CB(WifiConnection_ConnectionClosedCallback), NULL);
+    DWC_SetUserRecvTimeoutCallback(PORT_CB(DWCUserRecvTimeoutCallback, WifiConnection_TimeoutCallback));
     sWifiConnection->sendBusy = 0;
     return WIFI_MATCHMAKING_STARTED;
 }

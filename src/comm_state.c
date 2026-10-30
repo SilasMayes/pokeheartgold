@@ -248,7 +248,11 @@ void CommState_SetEntry(u32 enabled) {
 }
 
 s32 CommState_IsLinked(void) {
+#ifdef SDK_PORT // ARRAY_ASSIGN into a const array is rejected by gcc and clang
+    void (*linkedStates[3])(void);
+#else
     void (*const linkedStates[3])(void);
+#endif
     ARRAY_ASSIGN(linkedStates, gCommLinkedStates);
     void (*func)(void) = sCommState->stateFunc;
     if (!sCommState) {

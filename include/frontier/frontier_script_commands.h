@@ -5,7 +5,11 @@
 
 #include "message_format.h"
 
+#ifdef SDK_PORT // C99 'inline' alone emits no out-of-line copy; mwcc's did
+static inline u8 FrontierScript_ReadByte(FrontierScriptContext *ctx) {
+#else
 u8 inline FrontierScript_ReadByte(FrontierScriptContext *ctx) {
+#endif
     return *(ctx->scriptPtr++);
 }
 

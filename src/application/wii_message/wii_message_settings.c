@@ -113,7 +113,7 @@ static BOOL WiiMessageSettings_Main(OverlayManager *man, int *state) {
     case WII_MESSAGE_SETTINGS_MAIN_WAIT_NETWORK:
         if (CommWireless_IsStartedUp()) {
             sWiiMessageSettingsHeap = app->expHeap;
-            DWC_SetMemFunc(WiiMessageSettings_Alloc, WiiMessageSettings_Free);
+            DWC_SetMemFunc(PORT_CB(DWCAllocEx, WiiMessageSettings_Alloc), PORT_CB(DWCFreeEx, WiiMessageSettings_Free));
             app->networkLoaded = TRUE;
             *state = WII_MESSAGE_SETTINGS_MAIN_START_APP;
         }

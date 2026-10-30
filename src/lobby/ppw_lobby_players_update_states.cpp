@@ -43,7 +43,13 @@ void PPWLobbyPlayers_UpdateStates(PPWLobbyPlayers *players) {
                 player->systemProfileChanged = notChanged;
                 profilePlayer = PlayerAt(it);
                 profilePlayer->userProfileChanged = notChanged;
-                const PlayerRecord &recordRef = (PlayerRecord) { .channel = player->systemProfile.channel, .timeLow = ((u32 *)&player->systemProfile.time)[0], .timeHigh = ((u32 *)&player->systemProfile.time)[1] };
+                const PlayerRecord &recordRef = (PlayerRecord) {
+#ifdef SDK_PORT // g++ wants designators in declaration order; same values
+                    .timeLow = ((u32 *)&player->systemProfile.time)[0], .timeHigh = ((u32 *)&player->systemProfile.time)[1], .channel = player->systemProfile.channel
+#else
+                    .channel = player->systemProfile.channel, .timeLow = ((u32 *)&player->systemProfile.time)[0], .timeHigh = ((u32 *)&player->systemProfile.time)[1]
+#endif
+                };
                 PlayerRecord record = recordRef;
                 userProfileSize = profilePlayer->userProfile.size;
                 id = PlayerAt(it)->id;

@@ -9,7 +9,9 @@ typedef struct RecordMixingJoinRequest {
     u8 sender, count, command, accepted;
 } RecordMixingJoinRequest;
 int RecordMixing_GetMemberCount(void);
+#ifndef SDK_PORT // libntr declares these
 u32 MATH_CountPopulation(u32);
+#endif // SDK_PORT
 void CommState_SetMaxEntries(int);
 
 #endif

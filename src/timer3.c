@@ -43,6 +43,7 @@ u64 Timer3_GetTicks(void) {
     OS_RestoreInterrupts(bak_psr);
 
     return (count_hi << 16) | count_lo;
+#endif
 }
 
 u64 GetTimer3Ticks(void) {

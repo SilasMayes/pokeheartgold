@@ -425,8 +425,8 @@ static BOOL RangerLink_WmReset(void);
 static BOOL RangerLink_WmEnd(void);
 
 static WmParentParam sRangerLinkParentParam = {
-    .gameInfo = NULL,
-    .gameInfoLength = 0,
+    .userGameInfo = NULL,
+    .userGameInfoLength = 0,
     .ggid = RANGER_LINK_GGID,
     .tgid = 0,
     .entryFlag = 1,
@@ -542,15 +542,15 @@ static void RangerLink_SetBeaconTiming(void) {
 
 static void RangerLink_InitScanParam(void) {
     WmScanParam *scanParam = RangerLink_GetScanParam();
-    scanParam->buffer = RangerLink_GetBssDesc();
+    scanParam->scanBuf = RangerLink_GetBssDesc();
     scanParam->channel = RangerLink_GetParentParam()->channel;
-    scanParam->time = WM_GetDispersionScanPeriod();
-    scanParam->address[0] = 0xFF;
-    scanParam->address[1] = 0xFF;
-    scanParam->address[2] = 0xFF;
-    scanParam->address[3] = 0xFF;
-    scanParam->address[4] = 0xFF;
-    scanParam->address[5] = 0xFF;
+    scanParam->maxChannelTime = WM_GetDispersionScanPeriod();
+    scanParam->bssid[0] = 0xFF;
+    scanParam->bssid[1] = 0xFF;
+    scanParam->bssid[2] = 0xFF;
+    scanParam->bssid[3] = 0xFF;
+    scanParam->bssid[4] = 0xFF;
+    scanParam->bssid[5] = 0xFF;
 }
 
 // next allowed channel after the current scan channel
@@ -1937,8 +1937,8 @@ static BOOL RangerLink_WmSetParentParameter(void) {
     RangerLinkGameInfo *gameInfo = RangerLink_GetGameInfo();
     RangerLinkParentPeers *peers = RangerLink_GetChildren();
     param->channel = peers->quietestChannel;
-    param->gameInfo = gameInfo;
-    param->gameInfoLength = RangerLink_GetGameInfoLength();
+    param->userGameInfo = gameInfo;
+    param->userGameInfoLength = RangerLink_GetGameInfoLength();
     if (WM_SetParentParameter(RangerLink_SetParentParameterCallback, param) != WM_ERRCODE_OPERATING) {
         RangerLink_DebugError();
         return FALSE;
@@ -1966,12 +1966,12 @@ static BOOL RangerLink_WmStartScan(void) {
 static BOOL RangerLink_WmStartScanSelected(void) {
     WmScanParam *scanParam = RangerLink_GetScanParam();
     volatile u8 *source = (volatile u8 *)RangerLink_GetFoundParents();
-    scanParam->address[0] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 0x34];
-    scanParam->address[1] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 0x35];
-    scanParam->address[2] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 0];
-    scanParam->address[3] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 1];
-    scanParam->address[4] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 2];
-    scanParam->address[5] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 3];
+    scanParam->bssid[0] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 0x34];
+    scanParam->bssid[1] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 0x35];
+    scanParam->bssid[2] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 0];
+    scanParam->bssid[3] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 1];
+    scanParam->bssid[4] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 2];
+    scanParam->bssid[5] = source[(((u32)source[0x1C3] << 28) >> 28) * FOUND_PARENT_SIZE + 3];
     if (WM_StartScan(RangerLink_ScanSelectedCallback, RangerLink_GetScanParam()) != WM_ERRCODE_OPERATING) {
         RangerLink_DebugError();
         return FALSE;

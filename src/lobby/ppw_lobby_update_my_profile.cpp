@@ -4,7 +4,9 @@
 #include "ppw_lobby_state.h"
 
 #include <nitro/code32.h>
+#ifndef SDK_PORT // the C library declares it
 extern "C" int memcmp(const void *, const void *, u32);
+#endif // SDK_PORT
 
 struct Tag {};
 
