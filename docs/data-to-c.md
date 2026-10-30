@@ -482,6 +482,27 @@ were not looked at.
 | `sWirelessTradeSelectMonSlotPosY` | `const WirelessTradeSlotPos sWirelessTradeSelectMonSlotPosY[]` | the label holds 4 more bytes of data after it |
 | `sWirelessTradeSelectMonSlotPos` | `const WirelessTradeSlotPos sWirelessTradeSelectMonSlotPos[]` | one element of that type is larger than the data under this label |
 
+## Struct sizes written as numbers
+
+Templates that hold the DS size of a struct the code then allocates or clears. On the port the struct
+is usually larger (pointers), so the number is too small.
+
+| Table | Field | Port |
+|---|---|---|
+| `gRockDebrisTemplate`, `gRockDebrisWithFollowerTemplate` | `dataSize` 0xE9C (`RockDebris`, 0x16F8 on x86-64) | port copies in `src/field/field_move_effects.c` use `sizeof` |
+| `gCutEffectAt{Player,Follower}Template`, `gRockSmashEffectAt{Player,Follower}Template` | `dataSize` 0xF0 (`FieldMoveEffect`, 0x180) | same |
+| `gHeadbuttEffectAt{Player,Follower}Template` | `dataSize` 0x114 (`HeadbuttEffect`, 0x1A0) | same |
+| `gWhirlpoolEffectTemplate` | `dataSize` 0xF0 (`WhirlpoolEffect`, 0x180) | same |
+| `gRockClimbDebrisTemplate` | `dataSize` 0xD10 (`RockClimbDebris`, 0x1480) | same |
+| `gWaterfallEffectTemplate` | `dataSize` 0x1CC (`WaterfallEffect`, 0x2E0) | same |
+| field effect templates (`FieldEffectBasicTemplate`) | `stateSize` 0x40/0x44 | the port clears the whole 128-byte state (stream 1) |
+
+`Field3dObjectTask_Create` allocates `dataSize` bytes for the task's work, so on the port Cut, Rock
+Smash, Headbutt, Whirlpool, Rock Climb and Waterfall wrote past their allocation. The work structs are
+private to `field_move_effects.c`, so the port's templates are defined there (`#ifdef SDK_PORT`) and the
+data file keeps the DS ones. Found by listing the data tables whose struct has a size member and the
+allocations sized from a table; nothing else in `src/data/` matched.
+
 ## Declarations s2c could not read
 
 Their headers include files the build generates (NARC indexes), so these stay untyped until s2c runs on a tree where those exist.

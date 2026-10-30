@@ -84,6 +84,7 @@ void (*const gScriptFieldMoveEffectDeleteFuncs[6])(Field3dObjectTask *task) = {
 };
 // clang-format on
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gRockDebrisWithFollowerTemplate = {
     1024, 0x0E9C, (Field3dObjectTaskFunc)RockDebris_InitWithFollower,
@@ -91,21 +92,27 @@ const Field3dObjectTaskTemplate gRockDebrisWithFollowerTemplate = {
     (Field3dObjectTaskFunc)RockDebris_Render,
 };
 // clang-format on
+#endif
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gRockDebrisTemplate = {
     1024, 0x0E9C, (Field3dObjectTaskFunc)RockDebris_Init, (Field3dObjectTaskFunc)RockDebris_Destroy,
     (Field3dObjectTaskFunc)RockDebris_Update, (Field3dObjectTaskFunc)RockDebris_Render,
 };
 // clang-format on
+#endif
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gCutEffectAtFollowerTemplate = {
     1024, 0x00F0, (Field3dObjectTaskFunc)CutEffect_InitAtFollower, (Field3dObjectTaskFunc)CutEffect_Destroy,
     (Field3dObjectTaskFunc)CutEffect_Update, (Field3dObjectTaskFunc)CutEffect_Render,
 };
 // clang-format on
+#endif
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gHeadbuttEffectAtPlayerTemplate = {
     1024, 0x0114, (Field3dObjectTaskFunc)HeadbuttEffect_InitAtPlayer,
@@ -113,7 +120,9 @@ const Field3dObjectTaskTemplate gHeadbuttEffectAtPlayerTemplate = {
     (Field3dObjectTaskFunc)HeadbuttEffect_Render,
 };
 // clang-format on
+#endif
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gRockSmashEffectAtFollowerTemplate = {
     1024, 0x00F0, (Field3dObjectTaskFunc)RockSmashEffect_InitAtFollower,
@@ -121,28 +130,36 @@ const Field3dObjectTaskTemplate gRockSmashEffectAtFollowerTemplate = {
     (Field3dObjectTaskFunc)RockSmashEffect_Render,
 };
 // clang-format on
+#endif
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gWhirlpoolEffectTemplate = {
     1024, 0x00F0, (Field3dObjectTaskFunc)WhirlpoolEffect_Init, (Field3dObjectTaskFunc)WhirlpoolEffect_Destroy,
     (Field3dObjectTaskFunc)WhirlpoolEffect_Update, (Field3dObjectTaskFunc)WhirlpoolEffect_Render,
 };
 // clang-format on
+#endif
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gRockClimbDebrisTemplate = {
     1024, 0x0D10, (Field3dObjectTaskFunc)RockClimbDebris_Init, (Field3dObjectTaskFunc)RockClimbDebris_Destroy,
     (Field3dObjectTaskFunc)RockClimbDebris_Update, (Field3dObjectTaskFunc)RockClimbDebris_Render,
 };
 // clang-format on
+#endif
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gWaterfallEffectTemplate = {
     1024, 0x01CC, (Field3dObjectTaskFunc)WaterfallEffect_Init, (Field3dObjectTaskFunc)WaterfallEffect_Destroy,
     (Field3dObjectTaskFunc)WaterfallEffect_Update, (Field3dObjectTaskFunc)WaterfallEffect_Render,
 };
 // clang-format on
+#endif
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gHeadbuttEffectAtFollowerTemplate = {
     1024, 0x0114, (Field3dObjectTaskFunc)HeadbuttEffect_InitAtFollower,
@@ -150,14 +167,18 @@ const Field3dObjectTaskTemplate gHeadbuttEffectAtFollowerTemplate = {
     (Field3dObjectTaskFunc)HeadbuttEffect_Render,
 };
 // clang-format on
+#endif
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gCutEffectAtPlayerTemplate = {
     1024, 0x00F0, (Field3dObjectTaskFunc)CutEffect_InitAtPlayer, (Field3dObjectTaskFunc)CutEffect_Destroy,
     (Field3dObjectTaskFunc)CutEffect_Update, (Field3dObjectTaskFunc)CutEffect_Render,
 };
 // clang-format on
+#endif
 
+#ifndef SDK_PORT // field_move_effects.c has the port's, sized with sizeof
 // clang-format off
 const Field3dObjectTaskTemplate gRockSmashEffectAtPlayerTemplate = {
     1024, 0x00F0, (Field3dObjectTaskFunc)RockSmashEffect_InitAtPlayer,
@@ -165,6 +186,7 @@ const Field3dObjectTaskTemplate gRockSmashEffectAtPlayerTemplate = {
     (Field3dObjectTaskFunc)RockSmashEffect_Render,
 };
 // clang-format on
+#endif
 
 // clang-format off
 BOOL (*const gScriptFieldMoveEffectIsFinishedFuncs[6])(Field3dObjectTask *task) = {

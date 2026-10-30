@@ -1116,3 +1116,73 @@ void ScriptFieldMoveEffect_Start(FieldSystem *fieldSystem, u16 *done, int kind, 
     *done = FALSE;
     SysTask_CreateOnMainQueue(Task_ScriptFieldMoveEffect, env, 0);
 }
+
+#ifdef SDK_PORT
+// The port's copies of the templates in src/data/field_move_effects_data_4.c, which hold the DS sizes
+// of these work structs as numbers; with 8-byte pointers each struct is larger here.
+const Field3dObjectTaskTemplate gRockDebrisWithFollowerTemplate = {
+    1024, sizeof(RockDebris), // 0x0E9C on the DS
+    (Field3dObjectTaskFunc)RockDebris_InitWithFollower, (Field3dObjectTaskFunc)RockDebris_Destroy,
+    (Field3dObjectTaskFunc)RockDebris_Update, (Field3dObjectTaskFunc)RockDebris_Render,
+};
+
+const Field3dObjectTaskTemplate gRockDebrisTemplate = {
+    1024, sizeof(RockDebris), // 0x0E9C on the DS
+    (Field3dObjectTaskFunc)RockDebris_Init, (Field3dObjectTaskFunc)RockDebris_Destroy,
+    (Field3dObjectTaskFunc)RockDebris_Update, (Field3dObjectTaskFunc)RockDebris_Render,
+};
+
+const Field3dObjectTaskTemplate gCutEffectAtFollowerTemplate = {
+    1024, sizeof(FieldMoveEffect), // 0x00F0 on the DS
+    (Field3dObjectTaskFunc)CutEffect_InitAtFollower, (Field3dObjectTaskFunc)CutEffect_Destroy,
+    (Field3dObjectTaskFunc)CutEffect_Update, (Field3dObjectTaskFunc)CutEffect_Render,
+};
+
+const Field3dObjectTaskTemplate gHeadbuttEffectAtPlayerTemplate = {
+    1024, sizeof(HeadbuttEffect), // 0x0114 on the DS
+    (Field3dObjectTaskFunc)HeadbuttEffect_InitAtPlayer, (Field3dObjectTaskFunc)HeadbuttEffect_Destroy,
+    (Field3dObjectTaskFunc)HeadbuttEffect_Update, (Field3dObjectTaskFunc)HeadbuttEffect_Render,
+};
+
+const Field3dObjectTaskTemplate gRockSmashEffectAtFollowerTemplate = {
+    1024, sizeof(FieldMoveEffect), // 0x00F0 on the DS
+    (Field3dObjectTaskFunc)RockSmashEffect_InitAtFollower, (Field3dObjectTaskFunc)RockSmashEffect_Destroy,
+    (Field3dObjectTaskFunc)RockSmashEffect_Update, (Field3dObjectTaskFunc)RockSmashEffect_Render,
+};
+
+const Field3dObjectTaskTemplate gWhirlpoolEffectTemplate = {
+    1024, sizeof(WhirlpoolEffect), // 0x00F0 on the DS
+    (Field3dObjectTaskFunc)WhirlpoolEffect_Init, (Field3dObjectTaskFunc)WhirlpoolEffect_Destroy,
+    (Field3dObjectTaskFunc)WhirlpoolEffect_Update, (Field3dObjectTaskFunc)WhirlpoolEffect_Render,
+};
+
+const Field3dObjectTaskTemplate gRockClimbDebrisTemplate = {
+    1024, sizeof(RockClimbDebris), // 0x0D10 on the DS
+    (Field3dObjectTaskFunc)RockClimbDebris_Init, (Field3dObjectTaskFunc)RockClimbDebris_Destroy,
+    (Field3dObjectTaskFunc)RockClimbDebris_Update, (Field3dObjectTaskFunc)RockClimbDebris_Render,
+};
+
+const Field3dObjectTaskTemplate gWaterfallEffectTemplate = {
+    1024, sizeof(WaterfallEffect), // 0x01CC on the DS
+    (Field3dObjectTaskFunc)WaterfallEffect_Init, (Field3dObjectTaskFunc)WaterfallEffect_Destroy,
+    (Field3dObjectTaskFunc)WaterfallEffect_Update, (Field3dObjectTaskFunc)WaterfallEffect_Render,
+};
+
+const Field3dObjectTaskTemplate gHeadbuttEffectAtFollowerTemplate = {
+    1024, sizeof(HeadbuttEffect), // 0x0114 on the DS
+    (Field3dObjectTaskFunc)HeadbuttEffect_InitAtFollower, (Field3dObjectTaskFunc)HeadbuttEffect_Destroy,
+    (Field3dObjectTaskFunc)HeadbuttEffect_Update, (Field3dObjectTaskFunc)HeadbuttEffect_Render,
+};
+
+const Field3dObjectTaskTemplate gCutEffectAtPlayerTemplate = {
+    1024, sizeof(FieldMoveEffect), // 0x00F0 on the DS
+    (Field3dObjectTaskFunc)CutEffect_InitAtPlayer, (Field3dObjectTaskFunc)CutEffect_Destroy,
+    (Field3dObjectTaskFunc)CutEffect_Update, (Field3dObjectTaskFunc)CutEffect_Render,
+};
+
+const Field3dObjectTaskTemplate gRockSmashEffectAtPlayerTemplate = {
+    1024, sizeof(FieldMoveEffect), // 0x00F0 on the DS
+    (Field3dObjectTaskFunc)RockSmashEffect_InitAtPlayer, (Field3dObjectTaskFunc)RockSmashEffect_Destroy,
+    (Field3dObjectTaskFunc)RockSmashEffect_Update, (Field3dObjectTaskFunc)RockSmashEffect_Render,
+};
+#endif
