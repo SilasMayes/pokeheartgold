@@ -56,7 +56,7 @@ typedef struct RiseMovementWork {
 
 typedef struct EmoteMovementWork {
     u32 type;
-    int effect;
+    intptr_t effect; // a FieldEffect *
 } EmoteMovementWork;
 
 typedef struct JumpOffsetData {
