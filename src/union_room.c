@@ -26,7 +26,7 @@ enum UnionRoomConnectRequest {
 };
 
 // Communication functions as this file calls them (the communication headers declare some of them with other types).
-void CommState_StartAlternateSearch(void);
+void CommState_StartAlternateSearch(PORT_R0_PARAM(SaveData *saveData));
 BOOL CommState_IsAlternateLinked(void);
 BOOL CommState_GetJoinResult(void);
 void CommState_JoinParent(int netId);
@@ -71,7 +71,7 @@ struct UnionRoom *UnionRoom_New(FieldSystem *fieldSystem) {
         return NULL;
     }
     saveData = FieldSystem_GetSaveData(fieldSystem);
-    CommState_StartAlternateSearch();
+    CommState_StartAlternateSearch(PORT_R0(saveData));
     unionRoom = Heap_Alloc(HEAP_ID_31, sizeof(struct UnionRoom));
     MI_CpuFill8(unionRoom, 0, sizeof(struct UnionRoom));
     unionRoom->state = NULL;

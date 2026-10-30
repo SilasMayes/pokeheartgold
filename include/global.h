@@ -19,6 +19,8 @@
 #define PORT_SIZEOF(type, dsSize) (dsSize)
 #define PORT_PARTICLE_HEAP(dsSize) dsSize
 #define PORT_HEAP_SIZE(dsSize) dsSize
+#define PORT_R0(arg)
+#define PORT_R0_PARAM(decl) void
 // Pointer-sized integers for address arithmetic: u32 on the DS (the same type, so the same
 // code), 64 bits on the port, where <stdint.h> provides them.
 typedef u32 uintptr_t;

@@ -37,7 +37,7 @@ struct PlayerAvatar {
     s32 lastHorizontalInput;
     s32 lastVerticalInput;
     LocalMapObject *mapObject;
-    u32 surfMountEffect;
+    uintptr_t surfMountEffect; // a FieldEffect *
     PlayerSaveData *playerSaveData;
     u32 unk3c;
 }; // size: 0x40
@@ -83,8 +83,8 @@ s32 PlayerAvatar_AddSpeedWithCeiling(PlayerAvatar *avatar, s32 delta, s32 ceilin
 s32 PlayerAvatar_GetLastHorizontalInput(PlayerAvatar *avatar);
 s32 PlayerAvatar_GetLastVerticalInput(PlayerAvatar *avatar);
 void PlayerAvatar_SetLastInputs(PlayerAvatar *avatar, s32 lastHorizontal, s32 lastVertical);
-void PlayerAvatar_SetSurfMountEffect(PlayerAvatar *avatar, u32 surfMountEffect);
-u32 PlayerAvatar_GetSurfMountEffect(PlayerAvatar *avatar);
+void PlayerAvatar_SetSurfMountEffect(PlayerAvatar *avatar, uintptr_t surfMountEffect);
+uintptr_t PlayerAvatar_GetSurfMountEffect(PlayerAvatar *avatar);
 PlayerSaveData *PlayerAvatar_GetPlayerSaveData(PlayerAvatar *avatar);
 void PlayerAvatar_SetHeldMovement(PlayerAvatar *avatar, u32 heldMovement);
 u32 PlayerAvatar_GetHeldMovement(PlayerAvatar *avatar);

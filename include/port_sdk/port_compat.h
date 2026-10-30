@@ -25,6 +25,12 @@
 // and the code isn't in it, so doubling all of them fits.
 #define PORT_HEAP_SIZE(dsSize) ((dsSize) * 2)
 
+// A call the decomp writes without an argument the DS code still passes: the value is left in r0 by
+// the previous call (or load), and the callee reads it. The port passes it explicitly; on the DS the
+// call and the prototype stay as they were. PORT_R0_PARAM is the parameter in the prototype.
+#define PORT_R0(arg)        arg
+#define PORT_R0_PARAM(decl) decl
+
 // The particle library's work area (ParticleSystem_New): its structures hold pointers, so the port
 // gives it twice the DS size, as Platinum's port does
 #define PORT_PARTICLE_HEAP(dsSize) ((dsSize) * 2)

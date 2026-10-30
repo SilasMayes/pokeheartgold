@@ -40,7 +40,7 @@ typedef struct EngagedTrainer {
     int trainerId;
     int encounterType; // 0: single trainer; 1: double-battle trainer; 2: two trainers
     LocalMapObject *overworldEvent;
-    int approachTask;
+    intptr_t approachTask; // a SysTask *
 } EngagedTrainer;
 
 typedef struct ScriptEnvironment {
@@ -53,12 +53,12 @@ typedef struct ScriptEnvironment {
     u8 activeScriptContextCount;
     u16 activeScriptNumber;
     u32 battleWinFlag;
-    u32 menu;
+    uintptr_t menu; // a struct ScriptMenu *
     Window window;
     struct ListMenu2D *listMenu2D;
     int facingDirection;
     LocalMapObject *lastInteracted;
-    u32 cameraTarget;
+    uintptr_t cameraTarget; // a LocalMapObject *
     LocalMapObject *resultPtr;
     ScriptContext *scriptContexts[3];
     MessageFormat *msgfmt;

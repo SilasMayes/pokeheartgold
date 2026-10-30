@@ -25,7 +25,7 @@
 
 FS_EXTERN_OVERLAY(OVY_82);
 
-void FrontierLink_RegisterCommands(void);
+void FrontierLink_RegisterCommands(PORT_R0_PARAM(void *data));
 
 static void BattleHall_OnAppExit(void *args);
 static BOOL FrontierScriptNative_WaitHallLink(FrontierScriptContext *ctx);
@@ -231,7 +231,8 @@ BOOL FrtCmd_HallAction(FrontierScriptContext *ctx) {
     }
     case HALL_ACTION_REGISTER_LINK_COMMANDS:
         // BUG: the link commands are registered without the Hall data as their context (the argument is missing).
-        FrontierLink_RegisterCommands();
+        // The DS passes whatever is in r0; the port passes the Hall data the other frontier facilities pass.
+        FrontierLink_RegisterCommands(PORT_R0(data));
         break;
     case HALL_ACTION_IS_MULTI:
         *result = BattleHall_IsMultiType(data->type);
