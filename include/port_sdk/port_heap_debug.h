@@ -1,0 +1,9 @@
+#ifndef PORT_SDK_PORT_HEAP_DEBUG_H
+#define PORT_SDK_PORT_HEAP_DEBUG_H
+
+// Port-only heap checking, see lib/port/heap_debug.c (HGSS_HEAP_CHECK=1)
+BOOL PortHeapDebug_Enabled(void);
+void PortHeapDebug_Check(NNSFndHeapHandle *handles, int count, const char *op, void *caller);
+void PortHeapDebug_Tag(void *gameHeader, u32 size, void *caller);
+
+#endif // PORT_SDK_PORT_HEAP_DEBUG_H

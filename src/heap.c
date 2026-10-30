@@ -26,6 +26,21 @@ typedef struct MemoryBlock {
 
 static HeapInfo sHeapInfo;
 
+#ifdef SDK_PORT
+#include "port_heap_debug.h"
+#define PORT_HEAP_CHECK(op)                                                                             \
+    if (PortHeapDebug_Enabled()) {                                                                      \
+        PortHeapDebug_Check(sHeapInfo.heapHandles, sHeapInfo.maxHeaps, op, __builtin_return_address(0)); \
+    }
+#define PORT_HEAP_TAG(ptr, size)                                                        \
+    if ((ptr) != NULL && PortHeapDebug_Enabled()) {                                     \
+        PortHeapDebug_Tag((u8 *)(ptr) - sizeof(MemoryBlock), size, __builtin_return_address(0)); \
+    }
+#else
+#define PORT_HEAP_CHECK(op)
+#define PORT_HEAP_TAG(ptr, size)
+#endif
+
 static BOOL CreateHeapInternal(enum HeapID parent, enum HeapID child, u32 size, s32 alignment);
 
 void Heap_InitSystem(const HeapParam *templates, u32 nTemplates, u32 totalNumHeaps, u32 preSize) {
@@ -204,10 +219,12 @@ static void AllocFail(void) {
 void *Heap_Alloc(enum HeapID heapID, u32 size) {
     void *ptr = NULL;
 
+    PORT_HEAP_CHECK("Heap_Alloc")
     if ((u32)heapID < sHeapInfo.totalNumHeaps) {
         u8 index = sHeapInfo.heapIdxs[heapID];
         ptr = AllocFromHeapInternal(sHeapInfo.heapHandles[index], size, 4, heapID);
     }
+    PORT_HEAP_TAG(ptr, size)
 
     if (ptr != NULL) {
         sHeapInfo.numMemBlocks[heapID]++;
@@ -221,10 +238,12 @@ void *Heap_Alloc(enum HeapID heapID, u32 size) {
 void *Heap_AllocAtEnd(enum HeapID heapID, u32 size) {
     void *ptr = NULL;
 
+    PORT_HEAP_CHECK("Heap_AllocAtEnd")
     if ((u32)heapID < sHeapInfo.totalNumHeaps) {
         u8 index = sHeapInfo.heapIdxs[heapID];
         ptr = AllocFromHeapInternal(sHeapInfo.heapHandles[index], size, -4, heapID);
     }
+    PORT_HEAP_TAG(ptr, size)
 
     if (ptr != NULL) {
         sHeapInfo.numMemBlocks[heapID]++;
@@ -236,6 +255,7 @@ void *Heap_AllocAtEnd(enum HeapID heapID, u32 size) {
 }
 
 void Heap_Free(void *ptr) {
+    PORT_HEAP_CHECK("Heap_Free")
     ptr -= sizeof(MemoryBlock);
     enum HeapID heapID = (enum HeapID)((MemoryBlock *)ptr)->heapID;
 

@@ -192,6 +192,7 @@ hgss_lib_c = files(
 # lib/dsprot (lib/port/ is not part of the make build)
 hgss_port_lib_c = files(
     'lib/port/dsprot_port.c',
+    'lib/port/heap_debug.c',
     'lib/port/msl_runtime.c',
     'lib/port/stats_upload_data.c',
 )
