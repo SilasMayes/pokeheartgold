@@ -16,7 +16,7 @@ struct SND_WORK {
     /* 0xBEB78 */ NNSSndHandle soundHandles[SND_HANDLE_MAX];
     /* 0xBEB9C */ u32 unk_BEB9C;
     /* 0xBEBA0 */ u32 unk_BEBA0;
-    /* 0xBEBA4 */ u32 unk_BEBA4;
+    /* 0xBEBA4 */ uintptr_t unk_BEBA4; // SOUND_ATTR_QUEUED_BANK_INFO: a const NNSSndArcBankInfo *
     /* 0xBEBA8 */ u8 unk_BEBA8[0x18];
     /* 0xBEBC0 */ u8 unk_BEBC0[16];
     /* 0xBEBD0 */ u8 unk_BEBD0[28];
@@ -45,7 +45,7 @@ struct SND_WORK {
     /* 0xBEC2A */ u16 fieldSeqNo;
     /* 0xBEC2C */ u32 unk_BEC2C;
     /* 0xBEC30 */ u8 unk_BEC30[8];
-    /* 0xBEC38 */ u32 cryStopTask;
+    /* 0xBEC38 */ uintptr_t cryStopTask; // a SysTask *
     /* 0xBEC3C */ SOUND_CHATOT *myChatot;
     /* 0xBEC40 */ SOUND_CHATOT *otherChatots[4];
     /* 0xBEC50 */ u32 cryPattern[2];
