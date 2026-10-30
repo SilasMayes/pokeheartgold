@@ -411,7 +411,12 @@ static void AreaMapAnimation_AllocAnimObj(MapPropAnimationPool *pool, MapPropAni
 }
 
 static int AreaMapAnimation_GetAnimObjSize(ResAnim_4004 *anim) {
+#ifdef SDK_PORT
+    // 0x1C is the DS's sizeof(NNSG3dAnmObj), which holds pointers
+    return ((anim->numMapData * 2) + sizeof(NNSG3dAnmObj) + 7) & ~7;
+#else
     return ((anim->numMapData * 2) + 0x1C) & ~3;
+#endif
 }
 
 static void *AreaMapAnimation_AllocAnimObjMem(NNSFndAllocator *pAllocator, ResAnim_4004 *anim) {
