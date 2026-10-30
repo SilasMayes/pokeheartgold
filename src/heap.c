@@ -43,6 +43,13 @@ static HeapInfo sHeapInfo;
 
 static BOOL CreateHeapInternal(enum HeapID parent, enum HeapID child, u32 size, s32 alignment);
 
+#ifdef SDK_PORT
+// HGSS_HEAP_CHECK=1: check every heap now (call it from wherever a corruption needs narrowing down)
+void Heap_PortCheck(const char *where) {
+    PORT_HEAP_CHECK(where)
+}
+#endif
+
 void Heap_InitSystem(const HeapParam *templates, u32 nTemplates, u32 totalNumHeaps, u32 preSize) {
     void *ptr;
     u32 i;
@@ -328,6 +335,7 @@ void HeapExp_FndInitAllocator(NNSFndAllocator *pAllocator, enum HeapID heapID, i
 
 void Heap_Realloc(void *ptr, u32 newSize) {
     GF_ASSERT(OS_GetProcMode() != OS_PROCMODE_IRQ);
+    PORT_HEAP_CHECK("Heap_Realloc")
 
     newSize += sizeof(MemoryBlock);
     ptr -= sizeof(MemoryBlock);
