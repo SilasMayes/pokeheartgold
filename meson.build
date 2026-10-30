@@ -101,11 +101,11 @@ endif
 ############################################################
 ###                     DEPENDENCIES                     ###
 ############################################################
-# The game code check in libntr's carts accepts IPKE (HG) and IPGE (SS); the one binary
-# runs either ROM once GAME_VERSION is read from the header at runtime.
+# libntr's carts accept both IPKE (HG) and IPGE (SS), game_version's first (the default); the
+# binary runs either ROM, GAME_VERSION being the loaded header's (src/pm_version.c).
 libntr_prj = subproject('libntr',
     default_options: [
-        'card_game_code=' + (get_option('game_version') == 'HEARTGOLD' ? 'IPKE' : 'IPGE'),
+        'card_game_code=' + (get_option('game_version') == 'HEARTGOLD' ? 'IPKE,IPGE' : 'IPGE,IPKE'),
         'card_maker_code=01',
     ])
 

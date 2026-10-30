@@ -32,7 +32,9 @@
 #include "geometry_math.h"
 #include "swap_3d_buffers.h"
 
-#ifdef HEARTGOLD
+#ifdef SDK_PORT
+#define TITLE_SCREEN_SPECIES HG_OR_SS(SPECIES_HO_OH, SPECIES_LUGIA) // one binary for both ROMs
+#elif defined(HEARTGOLD)
 #define TITLE_SCREEN_SPECIES SPECIES_HO_OH
 #else // SOULSILVER
 #define TITLE_SCREEN_SPECIES SPECIES_LUGIA

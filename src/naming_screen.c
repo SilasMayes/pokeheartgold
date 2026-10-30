@@ -642,7 +642,11 @@ static NamingScreenMainState NamingScreen_HandleInput(NamingScreenAppData *data,
     return ret;
 }
 
-#ifdef HEARTGOLD
+#ifdef SDK_PORT // one binary for both ROMs
+#define FIRST_DEFAULT_NAME_MALE   HG_OR_SS(msg_0254_00000, msg_0254_00042)
+#define FIRST_DEFAULT_NAME_FEMALE HG_OR_SS(msg_0254_00018, msg_0254_00060)
+#define FIRST_DEFAULT_NAME_RIVAL  HG_OR_SS(msg_0254_00084, msg_0254_00085)
+#elif defined(HEARTGOLD)
 #define FIRST_DEFAULT_NAME_MALE   msg_0254_00000
 #define FIRST_DEFAULT_NAME_FEMALE msg_0254_00018
 #define FIRST_DEFAULT_NAME_RIVAL  msg_0254_00084

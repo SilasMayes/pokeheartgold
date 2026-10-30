@@ -6,6 +6,7 @@
 #include "gf_rtc.h"
 #include "math_util.h"
 #include "player_data.h"
+#include "pm_version.h"
 #include "poke_overlay.h"
 #include "save_data_read_error.h"
 #include "screen_fade.h"
@@ -46,6 +47,9 @@ static void ShowCommunicationErrorAndReset(u32 resetParam, int errorScreen);
 static BOOL IsLinkModeWithSoftResetCancel(int linkMode);
 
 void NitroMain(void) {
+#ifdef SDK_PORT
+    PortGameVersion_Init(); // before anything reads GAME_VERSION
+#endif
     InitSystemForTheGame();
     InitGraphicMemory();
     InitKeypadAndTouchpad();

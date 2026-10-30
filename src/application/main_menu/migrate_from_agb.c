@@ -270,6 +270,26 @@ static const GraphicsBanks sMigrateFromAgbGraphicsBanks = {
 
 static u8 sMigrateFromAgbBoxBgPalettes[6] = { 0, 2, 1, 3, 4, 5 };
 
+#ifdef SDK_PORT
+// One binary for both ROMs
+static int sMigrateFromAgbMainMessages_HG[6] = {
+    msg_0301_00000,
+    msg_0301_00020,
+    msg_0301_00018,
+    msg_0301_00022,
+    msg_0301_00024,
+    msg_0301_00026,
+};
+static int sMigrateFromAgbMainMessages_SS[6] = {
+    msg_0301_00000,
+    msg_0301_00021,
+    msg_0301_00019,
+    msg_0301_00023,
+    msg_0301_00025,
+    msg_0301_00027,
+};
+#define sMigrateFromAgbMainMessages HG_OR_SS(sMigrateFromAgbMainMessages_HG, sMigrateFromAgbMainMessages_SS)
+#else
 static int sMigrateFromAgbMainMessages[6] = {
 #ifdef HEARTGOLD
     msg_0301_00000,
@@ -287,6 +307,7 @@ static int sMigrateFromAgbMainMessages[6] = {
     msg_0301_00027,
 #endif
 };
+#endif // SDK_PORT
 
 static int sMigrateFromAgbIntroMessages[6] = { msg_0301_00000, msg_0301_00001, msg_0301_00000, msg_0301_00002, msg_0301_00003, msg_0301_00004 };
 
@@ -1437,7 +1458,9 @@ static BOOL MigrateFromAgb_Main(OverlayManager *man, int *state) {
         switch (YesNoPrompt_HandleInput(app->yesNoPrompt)) {
         case YESNORESPONSE_YES:
             YesNoPrompt_Reset(app->yesNoPrompt);
-#ifdef HEARTGOLD
+#ifdef SDK_PORT
+            app->pendingMsgId = HG_OR_SS(msg_0301_00034, msg_0301_00035); // one binary for both ROMs
+#elif defined(HEARTGOLD)
             app->pendingMsgId = msg_0301_00034;
 #else
             app->pendingMsgId = msg_0301_00035;
@@ -1647,7 +1670,9 @@ static BOOL MigrateFromAgb_Main(OverlayManager *man, int *state) {
             WaitingIcon_Delete(app->waitingIcon);
             PlaySE(SEQ_SE_DP_SAVE);
             if (result == TRANSFER_SUCCESS) {
-#ifdef HEARTGOLD
+#ifdef SDK_PORT
+                app->msgBox.msgId = HG_OR_SS(msg_0301_00029, msg_0301_00030); // one binary for both ROMs
+#elif defined(HEARTGOLD)
                 app->msgBox.msgId = msg_0301_00029;
 #else
                 app->msgBox.msgId = msg_0301_00030;

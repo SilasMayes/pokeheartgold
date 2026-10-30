@@ -76,7 +76,9 @@ static void IntroMovie_Scene5_Init(IntroMovieOverlayData *data, IntroMovieScene5
     sceneData->needFreeGfx = TRUE;
 }
 
-#ifdef HEARTGOLD
+#ifdef SDK_PORT
+#define BG_SCROLL_SPEED HG_OR_SS(-0x40, 0x40) // one binary for both ROMs
+#elif defined(HEARTGOLD)
 #define BG_SCROLL_SPEED -0x40
 #else
 #define BG_SCROLL_SPEED 0x40

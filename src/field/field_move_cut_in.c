@@ -635,7 +635,17 @@ static void FieldMoveCutIn_InitBannerGraphics(FieldMoveCutIn *cutIn) {
     G2_SetBG1Priority(1);
     G2_SetBG3Priority(0);
     GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG3, GF_PLANE_TOGGLE_OFF);
-#ifdef HEARTGOLD
+#ifdef SDK_PORT
+    if (GAME_VERSION == VERSION_HEARTGOLD) { // one binary for both ROMs
+        CutInBanner_LoadPalette(narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000002_NCLR, &cutIn->bannerPltt);
+        CutInBanner_LoadChar(cutIn->fieldSystem->bgConfig, narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000000_NCGR, &cutIn->bannerChar);
+        CutInBanner_LoadScreen(cutIn->fieldSystem->bgConfig, narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000001_NSCR, &cutIn->bannerScreen);
+    } else {
+        CutInBanner_LoadPalette(narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000005_NCLR, &cutIn->bannerPltt);
+        CutInBanner_LoadChar(cutIn->fieldSystem->bgConfig, narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000003_NCGR, &cutIn->bannerChar);
+        CutInBanner_LoadScreen(cutIn->fieldSystem->bgConfig, narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000004_NSCR, &cutIn->bannerScreen);
+    }
+#elif defined(HEARTGOLD)
     CutInBanner_LoadPalette(narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000002_NCLR, &cutIn->bannerPltt);
     CutInBanner_LoadChar(cutIn->fieldSystem->bgConfig, narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000000_NCGR, &cutIn->bannerChar);
     CutInBanner_LoadScreen(cutIn->fieldSystem->bgConfig, narc, NARC_choose_starter_sub_res_choose_starter_sub_res_00000001_NSCR, &cutIn->bannerScreen);

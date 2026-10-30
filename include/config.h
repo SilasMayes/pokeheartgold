@@ -32,6 +32,16 @@
 #define GAME_VERSION VERSION_SOULSILVER
 #endif
 
+#ifdef SDK_PORT
+// One port binary runs either ROM. GAME_VERSION is the loaded ROM's, read from its header's game
+// code at boot (PortGameVersion_Init); HEARTGOLD/SOULSILVER only name the default. Code that picks
+// between the two versions at build time picks at runtime on the port, with HG_OR_SS.
+#undef GAME_VERSION
+extern unsigned char gGameVersion;
+#define GAME_VERSION     ((int)gGameVersion)
+#define HG_OR_SS(hg, ss) (GAME_VERSION == VERSION_HEARTGOLD ? (hg) : (ss))
+#endif
+
 // Sets English as default. Add here all supported ROM languages.
 #if !defined(ENGLISH)
 #define ENGLISH

@@ -15,6 +15,15 @@
 #define ENCDATA(suff) NARC_s_enc_data_s_enc_data##suff
 #endif // HEARTGOLD
 
+#ifdef SDK_PORT
+// One binary for both ROMs. g_enc_data and s_enc_data number their members the same, so the
+// ENCDATA_* ids hold for either; the NARC read is the loaded version's.
+#include "fielddata/encountdata/g_enc_data.naix"
+#include "fielddata/encountdata/s_enc_data.naix"
+#undef ENCDATA_NARC
+#define ENCDATA_NARC HG_OR_SS(NARC_fielddata_encountdata_g_enc_data, NARC_fielddata_encountdata_s_enc_data)
+#endif
+
 #define ENCDATA_T20        ENCDATA(_00000000)
 #define ENCDATA_R29        ENCDATA(_00000001)
 #define ENCDATA_T21        ENCDATA(_00000002)

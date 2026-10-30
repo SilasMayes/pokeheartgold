@@ -18,6 +18,10 @@ String *PokedexApp_GetFlavorTextString(u16 species, int language, int a2, enum H
 #else
 #error "Unable to determine game"
 #endif // HGSS
+#ifdef SDK_PORT
+#undef ZUKAN_FLAVOR_GMM
+#define ZUKAN_FLAVOR_GMM HG_OR_SS(NARC_msg_msg_0803_bin, NARC_msg_msg_0804_bin) // one binary for both ROMs
+#endif
 
 static int deadstrip_0(int a0);
 static String *PokedexApp_ReadMsgString(int msgBank, int msgNum, enum HeapID heapId);

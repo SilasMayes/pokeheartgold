@@ -76,7 +76,11 @@ static const TrainerHouseSet sTrainerHouseDefaultSet = {
                 .id = 0,
                 .sprite = SPRITE_MAN3,
                 .language = GAME_LANGUAGE,
+#ifdef SDK_PORT
+                .version = 0, // the loaded ROM's, set in TrainerHouse_SetNames (not a constant on the port)
+#else
                 .version = GAME_VERSION,
+#endif
                 .gender = PLAYER_GENDER_MALE,
                 .otName = {
             CHAR_JP_HIRA_HI,
@@ -214,6 +218,9 @@ void TrainerHouse_StartBattle(FieldSystem *fieldSystem, u32 trainerNum) {
 
 static void TrainerHouse_SetNames(TrainerHouseSet *set) {
     MI_CpuCopy16(&sTrainerHouseDefaultSet, set, sizeof(TrainerHouseSet));
+#ifdef SDK_PORT
+    set->trainer.version = GAME_VERSION;
+#endif
     MsgData *messageData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0726_bin, HEAP_ID_FIELD2);
     GF_ASSERT(messageData);
     if (messageData) {

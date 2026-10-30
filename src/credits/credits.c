@@ -23,7 +23,9 @@
 #include "sprite_resource.h"
 #include "oam_manager.h"
 
-#ifdef HEARTGOLD
+#ifdef SDK_PORT
+#define GAME_TITLE_MSG_NO HG_OR_SS(0, 1) // one binary for both ROMs
+#elif defined(HEARTGOLD)
 #define GAME_TITLE_MSG_NO 0
 #else
 #define GAME_TITLE_MSG_NO 1
