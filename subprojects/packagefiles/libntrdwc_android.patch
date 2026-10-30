@@ -1,0 +1,40 @@
+diff --git a/include/decomp/decomp_defs.h b/include/decomp/decomp_defs.h
+index df71a28..b569d05 100644
+--- a/include/decomp/decomp_defs.h
++++ b/include/decomp/decomp_defs.h
+@@ -45,6 +45,10 @@ typedef unsigned long long unsigned_long_long;
+ 
+ typedef int BOOL;
+ 
++#ifdef SDK_BUILD_ANDROID
++/* bionic already declares wctype_t (as long); keep this library's 16-bit one separate */
++#define wctype_t DWCi_wctype_t
++#endif
+ typedef ushort wctype_t;
+ 
+ typedef struct tagACHOLD tagACHOLD, *PtagACHOLD;
+diff --git a/libraries/ac/src/nintendospot.c b/libraries/ac/src/nintendospot.c
+index cfeb96a..c6e0322 100644
+--- a/libraries/ac/src/nintendospot.c
++++ b/libraries/ac/src/nintendospot.c
+@@ -6,6 +6,10 @@
+ 
+ #include "dwc_memfunc.h"
+ 
++#ifdef SDK_BUILD_ANDROID
++/* bionic already declares wctype_t (as long); keep this library's 16-bit one separate */
++#define wctype_t DWCi_wctype_t
++#endif
+ typedef ushort wctype_t;
+ 
+ typedef struct DWCWDSWork DWCWDSWork, *PDWCWDSWork;
+diff --git a/meson.options b/meson.options
+index 5007e48..47a48be 100644
+--- a/meson.options
++++ b/meson.options
+@@ -2,4 +2,4 @@ option('standalone', type: 'boolean', value: false, description: 'Build a standa
+ option('mwrap_ver', type: 'string', value: 'default', description: 'Version of Metrowerks toolchain to use')
+ option('mwrap_sdk', type: 'string', value: 'default', description: 'Version of Metrowerks libraries to use')
+ option('link_ppwlobby', type: 'boolean', value: false)
+-option('build_target', type: 'combo', choices: ['arm', 'win64', 'linux', 'nx', 'prospero'], value: 'arm', description: 'Target build platform', yield: true)
++option('build_target', type: 'combo', choices: ['arm', 'win64', 'linux', 'nx', 'prospero', 'android'], value: 'arm', description: 'Target build platform', yield: true)

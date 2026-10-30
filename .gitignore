@@ -108,3 +108,15 @@ __pycache__
 .local-tools/
 .venv/
 *.pyc
+
+# Port build (meson)
+/build_linux/
+/build_android/
+/build_*/
+/subprojects/libntr/
+/subprojects/libntrsystem/
+/subprojects/libntrwifi/
+/subprojects/libntrdwc/
+/subprojects/libvct/
+/subprojects/packagecache
+/subprojects/.wraplock

@@ -1,0 +1,5 @@
+option('build_target', type: 'combo', choices: ['linux', 'android'], value: 'linux', description: 'Target build platform (the DS ROM is built with make, not meson)')
+option('game_version', type: 'combo', choices: ['HEARTGOLD', 'SOULSILVER'], value: 'HEARTGOLD', description: 'Compile-time game version (until it is read from the ROM header at runtime)')
+option('logging_enabled', type: 'boolean', value: false)
+option('lobby', type: 'feature', value: 'auto', description: 'Wi-Fi Plaza lobby (desktop only by default, as in the Platinum port)')
+option('lp64_warnings', type: 'boolean', value: true, description: 'Warn about pointer/integer casts and other 64-bit hazards in game code')

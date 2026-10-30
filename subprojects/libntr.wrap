@@ -1,0 +1,11 @@
+[wrap-git]
+# Thor/Android fork: GLES renderer, android target, second-screen output
+url = https://github.com/SilasMayes/libntr.git
+revision = thor-android
+depth = 1
+directory = libntr
+
+[provide]
+dependency_names = NitroSDK
+program_names = makelcf
+
