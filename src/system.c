@@ -121,7 +121,13 @@ void InitSystemForTheGame(void) {
     OS_InitTick();
     InitHeapSystem();
     gSystem.mainTaskQueue = SysTaskQueue_PlacementNew(160, OS_AllocFromArenaLo(OS_ARENA_MAIN, SysTaskQueue_GetArenaSize(160), 4));
+#ifdef SDK_PORT
+    // The port's VBlank tasks run once per frame, not whenever the interrupt lands, so a frame that
+    // loads a map queues more of them before the next VBlank than the DS ever holds (Platinum's port: 64)
+    gSystem.vblankTaskQueue = SysTaskQueue_PlacementNew(64, OS_AllocFromArenaLo(OS_ARENA_MAIN, SysTaskQueue_GetArenaSize(64), 4));
+#else
     gSystem.vblankTaskQueue = SysTaskQueue_PlacementNew(32, OS_AllocFromArenaLo(OS_ARENA_MAIN, SysTaskQueue_GetArenaSize(32), 4));
+#endif
     gSystem.vwaitTaskQueue = SysTaskQueue_PlacementNew(32, OS_AllocFromArenaLo(OS_ARENA_MAIN, SysTaskQueue_GetArenaSize(32), 4));
     gSystem.printTaskQueue = SysTaskQueue_PlacementNew(4, OS_AllocFromArenaLo(OS_ARENA_MAIN, SysTaskQueue_GetArenaSize(4), 4));
     GX_DispOff();
