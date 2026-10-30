@@ -107,3 +107,21 @@ void PortHeapDebug_Check(NNSFndHeapHandle *handles, int count, const char *op, v
         CheckList(i, head, ExpHead(head)->mbFreeList.head, SIG_FREE);
     }
 }
+
+// GF_ASSERT is silent on the DS outside of communication (GF_AssertFail only resets when a link is
+// up); the port prints each failing call site once, so a bad state shows up where it starts.
+// Resolve an address with: gdb -batch -ex "info line *0x<addr minus the load base>" build_linux/main
+void PortDebug_AssertFail(void *caller) {
+    static void *seen[64];
+    static int numSeen;
+    for (int i = 0; i < numSeen; i++) {
+        if (seen[i] == caller) {
+            return;
+        }
+    }
+    if (numSeen < (int)(sizeof(seen) / sizeof(seen[0]))) {
+        seen[numSeen++] = caller;
+    }
+    printf("[assert] GF_ASSERT failed at %p\n", caller);
+    fflush(stdout);
+}
