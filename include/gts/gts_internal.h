@@ -88,16 +88,22 @@ typedef struct GtsSearchCriteriaEx {
     u8 unk_7;
 } GtsSearchCriteriaEx;
 
+// The server state, the friend key, the request payload and the answer buffers: one block of .bss.
+// The DS code reaches some fields of one part through another (for example gGtsServer.request is
+// gGtsServerRequest), so the port has to keep the parts together; see the macros below.
 typedef struct GtsServer {
     int state; // GtsServerState
     int result;
     int pid;
-    u32 friendKey[2];
+    u32 friendKey[2]; // gGtsServerFriendKey
 
     union {
         u8 bytes[GTS_RECORD_SIZE + 4];
         GtsSearchCriteriaEx search;
-    } request; // the payload of the request in flight
+    } request; // the payload of the request in flight (gGtsServerRequest)
+
+    u8 shortResponse[4]; // two-byte answers (post.asp, delete.asp, ...): [0] is the answer code
+    u8 *response;        // buffer of the request in flight
 } GtsServer;
 
 typedef struct GtsFriendKey {
@@ -118,11 +124,26 @@ typedef struct GtsServerAnswer {
 } GtsServerAnswer;
 
 extern volatile GtsServer gGtsServer; // polled every frame (GtsServer_Update)
+
+#ifdef SDK_PORT
+// One object: the other names are views into gGtsServer at their DS offsets.
+#define gGtsServerFriendKey     (*(GtsFriendKey *)gGtsServer.friendKey)
+#define gGtsServerRequest       ((u8 *)gGtsServer.request.bytes)
+#define gGtsServerPending       (*(GtsServerPending *)&gGtsServer.request.bytes[0xEC])
+#define gGtsServerAnswer        (*(volatile GtsServerAnswer *)&gGtsServer.request.bytes[0x10C])
+#define gGtsServerShortResponse ((u8 *)gGtsServer.shortResponse)
+_Static_assert(offsetof(GtsServer, request) + 0xEC + offsetof(GtsServerPending, exchangeId) == offsetof(GtsServer, request) + GTS_RECORD_SIZE, "gGtsServerPending.exchangeId");
+_Static_assert(offsetof(GtsServer, request) + 0xEC + offsetof(GtsServerPending, response) == offsetof(GtsServer, response), "gGtsServerPending.response");
+_Static_assert(offsetof(GtsServer, request) + 0x10C + offsetof(GtsServerAnswer, shortResponse) == offsetof(GtsServer, shortResponse), "gGtsServerAnswer.shortResponse");
+#else
+// On the DS these are separate labels laid out right after gGtsServer, in this order. One object
+// would compile to different code: MWCC addresses fields of one symbol from a shared base.
 extern GtsFriendKey gGtsServerFriendKey;
 extern u8 gGtsServerRequest[];
 extern GtsServerPending gGtsServerPending;
 extern volatile GtsServerAnswer gGtsServerAnswer; // written by the response callback
 extern u8 gGtsServerShortResponse[];
+#endif
 
 // {first letter, letter count} of the letter groups ABC .. YZ.
 typedef struct GtsLetterGroup {

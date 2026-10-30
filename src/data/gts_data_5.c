@@ -33,7 +33,9 @@ const u8 gGtsViewMonSummaryPages[8] __attribute__((aligned(4))) = {
 
 GtsGlobals gGtsGlobals;
 
+#ifndef SDK_PORT // part of gGtsServer on the port (gts_internal.h)
 u8 gGtsServerShortResponse[8];
+#endif
 
 // zero bytes after gGtsGlobals in the asm
 static u8 gGtsGlobals_pad[20];

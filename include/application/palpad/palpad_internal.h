@@ -280,7 +280,11 @@ extern const BgTemplate gPalPadBgTemplates[7];
 extern const u8 gPalPadScreenFileIds[2];
 extern SpriteTemplate gPalPadArrowSpriteTemplates[2];
 extern SpriteTemplate gPalPadCursorSpriteTemplate;
+#ifndef SDK_PORT
+// On the DS gPalPadArrowSpriteTemplates labels only the first 0x14 bytes and this the rest of the
+// two templates (from templates[0].scale on); the port has the two as one array.
 extern u8 gPalPadArrowTemplateScale[];
+#endif
 
 extern const TouchscreenHitbox gPalPadMenuHitboxes[];
 extern const u8 gPalPadMenuRegisterErrorMsgIds[];
@@ -332,7 +336,16 @@ typedef struct PalPadSlotRectFromY {
 } PalPadSlotRectFromY;
 
 extern const PalPadSlotRectFromY gPalPadRosterSlotY[9];
+// The text color of a friend's name by gender. On the DS the label covers only the first two: the
+// third is the first word of sPalPadRosterFriendMenuTemplate, which follows it.
 extern const u32 gPalPadRosterNameColors[3];
+
+// The friend menu (palpad_roster.c), with that third name color in front.
+typedef struct PalPadRosterFriendMenuTemplate {
+    u32 nameColor;
+    TouchscreenListMenuTemplate template;
+} PalPadRosterFriendMenuTemplate;
+
 extern const PalPadRosterScrollCallback gPalPadRosterScrollCallbacks[4];
 
 int FriendRoster_IsFriendValid(FriendRoster *wifiList, int slot);

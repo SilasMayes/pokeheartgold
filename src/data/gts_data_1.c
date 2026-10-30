@@ -203,6 +203,11 @@ const u32 gGtsGenderSymbolMsgs[4] = { 0x0000007C, 0x0000007D, 0x0000007E, 0x0000
 // C declares this non-const, but it lives in .rodata
 const int gGtsCountryCount[1] = { 130 };
 
-// C declares this as `volatile GtsServer gGtsServer`, but that type is 0x13c bytes and the label
-// covers only 0xc (later labels overlap it).
+#ifdef SDK_PORT
+// The port has the whole block as one object; the other labels are views into it (gts_internal.h).
+volatile GtsServer gGtsServer;
+#else
+// On the DS the block is gGtsServer (the first 0xc bytes of GtsServer) and the labels after it
+// (gGtsServerFriendKey, gGtsServerRequest, ... in gts_data_2.c to gts_data_5.c), laid out back to back.
 u8 gGtsServer[12] __attribute__((aligned(4)));
+#endif

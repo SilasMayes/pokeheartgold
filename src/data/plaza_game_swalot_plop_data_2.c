@@ -6,7 +6,9 @@
 
 // The C declarations of these do not match the data (see the notes at each
 // definition): keep them out of the way of the definitions below.
+#ifndef SDK_PORT
 #define gSwalotPlopSub3BgTemplate gSwalotPlopSub3BgTemplate_header_decl
+#endif
 
 #include "global.h"
 
@@ -14,7 +16,9 @@
 
 #pragma force_active on
 
+#ifndef SDK_PORT
 #undef gSwalotPlopSub3BgTemplate
+#endif
 
 // clang-format off
 const BgTemplate gSwalotPlopMain1BgTemplate = {
@@ -48,14 +52,22 @@ const BgTemplate gSwalotPlopSub2BgTemplate = {
 
 const s16 gSwalotPlopDemoCursorYs[12] = { 177, 167, 147, 137, 127, 117, 107, 97, 87, 77, 77, 77 };
 
+#ifdef SDK_PORT
+// clang-format off
+const BgTemplate gSwalotPlopSub3BgTemplate = {
+    0, 0, 0x00000800, 0, 0x01, 0x00, 0x1D, 0x00, 0x00, 0x03, 0x00, 0x00, 0,
+};
+// clang-format on
+#else
 // C declares this as `const BgTemplate gSwalotPlopSub3BgTemplate`, but that type is 0x1c bytes and the
-// label covers only 0x14 (later labels overlap it).
+// label covers only 0x14: its last 8 bytes are gSwalotPlopSeatAngles[0]. The port has the whole struct.
 // clang-format off
 const u8 gSwalotPlopSub3BgTemplate[20] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x01, 0x00, 0x1D, 0x00,
 };
 // clang-format on
+#endif
 
 const ObjCharTransferTemplate gSwalotPlopObjCharTransfer = { 16, 131072, 16384, HEAP_ID_DEFAULT };
 
