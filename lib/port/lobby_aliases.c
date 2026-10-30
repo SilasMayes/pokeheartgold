@@ -20,6 +20,10 @@ void _ZN5BytesD1Ev(void *self) {
     LobbyCharVector_Destroy(self);
 }
 
+// The lobby's version string, which the DS keeps in src/data/middleware_4.c (left out of the port's
+// source list with the other SDK version strings, whose headers clash with libntr's)
+const char _version_NINTENDO_DWC_LOBBY[25] = "[SDK+NINTENDO:DWC_LOBBY]";
+
 // std::__vector_common<true>::throw_length_error()
 void _ZNSt15__vector_commonILb1EE18throw_length_errorEv(void) {
     OS_Terminate();

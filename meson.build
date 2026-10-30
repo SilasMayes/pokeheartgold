@@ -193,6 +193,7 @@ hgss_lib_c = files(
 hgss_port_lib_c = files(
     'lib/port/dsprot_port.c',
     'lib/port/msl_runtime.c',
+    'lib/port/stats_upload_data.c',
 )
 
 ############################################################
@@ -210,7 +211,7 @@ if not build_lobby
 endif
 if build_lobby
     hgss_lobby = static_library('hgss_lobby',
-        sources: [hgss_lobby_c, hgss_lobby_cpp, files('lib/port/lobby_aliases.c')],
+        sources: [hgss_lobby_c, hgss_lobby_cpp, files('lib/port/lobby_aliases.c', 'lib/port/dwc_lobby_chat_data.c')],
         c_args: hgss_c_args,
         cpp_args: hgss_common_args + nitrosdk_defines + sdk_fallback_args + [
             '-std=gnu++03',

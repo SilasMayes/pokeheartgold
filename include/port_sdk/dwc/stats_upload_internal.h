@@ -46,8 +46,9 @@ typedef struct StatsUpload {
 } StatsUpload;
 
 extern StatsUpload gStatsUpload;
-extern char gStatsUploadGameName[]; // gStatsUpload.gameName
-extern u8 gStatsUploadSecretKey[];  // gStatsUpload.secretKey
+// The DS labels these inside gStatsUpload; here they are the fields themselves
+#define gStatsUploadGameName  (gStatsUpload.gameName)
+#define gStatsUploadSecretKey (gStatsUpload.secretKey)
 extern char *gStatsUploadServer;    // server address (one of the three below)
 extern char gStatsUploadLastHash[]; // hash of the last challenge, 40 hex digits
 extern u32 gStatsUploadRandomState; // random number generator state
