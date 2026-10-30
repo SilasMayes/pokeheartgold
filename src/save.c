@@ -759,7 +759,12 @@ static void SaveData_InitSubstructs(struct SaveArrayHeader *arr_hdr) {
         adrs += arr_hdr[i].size;
         if (i == gNumSaveChunkHeaders - 1 || hdr[i].block != hdr[i + 1].block) {
             adrs += sizeof(struct SaveChunkFooter);
+#ifdef SDK_PORT
+            // The DS reads hdr[i + 1] past the end for the last chunk before checking the index
+            if (i + 1 < gNumSaveChunkHeaders && hdr[i].block != hdr[i + 1].block && (adrs % 0x100) != 0) {
+#else
             if (hdr[i].block != hdr[i + 1].block && i + 1 < gNumSaveChunkHeaders && (adrs % 0x100) != 0) {
+#endif
                 adrs += 0x100 - (adrs % 0x100);
             }
         }

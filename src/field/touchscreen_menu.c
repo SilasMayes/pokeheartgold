@@ -818,7 +818,15 @@ static u32 TouchscreenMenu_GetBallItem(u32 layout) {
 }
 
 static void TouchscreenMenu_LoadIconResources(FieldSystem *fieldSystem, GF_2DGfxResMan **resMans, SpriteResource **resObjs, int index, int resId, u32 gender, Bag *bag, int layout) {
+#ifdef SDK_PORT
+    // The caller loads TOUCHSCREEN_MENU_NUM_RESOURCES (11) slots from a layout of 8 icons: the DS reads
+    // on into the next layout, and past the last one (7 layouts) into the zero bytes that follow the
+    // table in its data. The same values, without reading out of bounds.
+    u32 flatIndex = (u32)layout * 8 + (u32)index;
+    u8 icon = flatIndex < 7 * 8 ? (&gTouchscreenMenuLayouts[0][0])[flatIndex] : 0;
+#else
     u8 icon = gTouchscreenMenuLayouts[layout][index];
+#endif
     NarcId narcId = NARC_a_0_1_4;
     int charFileId = 18;
     int plttFileId = 14;
