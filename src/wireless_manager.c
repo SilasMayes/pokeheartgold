@@ -58,6 +58,18 @@ typedef struct WirelessSendEvent {
 // The work buffer (Wireless_Init aligns it to 32 bytes; Wireless_GetWorkSize).
 typedef struct WirelessWork {
     WmParentParam parentParam;
+#ifdef SDK_PORT
+    // WM wants these 32-byte aligned (the DS layout gets that from the work's alignment and its 32-bit
+    // pointers), and libntr's WM_Initialize a larger system buffer, as in Platinum's port
+    u8 systemBuffer[WM_SYSTEM_BUF_SIZE] ALIGN(32); // WM_Initialize
+    u8 sendBuffer[0xE0] ALIGN(32);                 // MP send buffer
+    u8 receiveBuffer[0x200] ALIGN(32);             // MP receive buffer
+    union {
+        WMBssDesc bssDesc;
+        u16 data[0x60];
+    } parentInfo ALIGN(32); // the parent found by the scan / connected to
+    WmScanParam scanParam ALIGN(32);
+#else
     u8 systemBuffer[0xF00];  // WM_Initialize
     u8 sendBuffer[0xE0];     // MP send buffer
     u8 receiveBuffer[0x200]; // MP receive buffer
@@ -66,6 +78,7 @@ typedef struct WirelessWork {
         u16 data[0x60];
     } parentInfo; // the parent found by the scan / connected to
     WmScanParam scanParam;
+#endif
     u8 unk_12F0[0x10];
     void (*parentFoundCallback)(void *parentInfo);
     u32 sendBufferSize;
@@ -963,7 +976,13 @@ BOOL Wireless_Init(void *buffer, int mode) {
 }
 
 u32 Wireless_GetWorkSize(void) {
+#ifdef SDK_PORT
+    // Callers allocate exactly this and Wireless_Init aligns it up to 32 bytes: the DS absorbs that
+    // in the work's unused tail, which the port's 32-byte aligned layout doesn't keep
+    return sizeof(WirelessWork) + 32;
+#else
     return sizeof(WirelessWork);
+#endif
 }
 
 static void Wireless_OnIndication(void *arg) {
