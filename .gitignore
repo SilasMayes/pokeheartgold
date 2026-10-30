@@ -110,6 +110,8 @@ __pycache__
 *.pyc
 
 # Port build (meson)
+# generated/ is checked in on purpose (tools/port/gen_headers.sh), including the .naix headers
+!/generated/**/*.naix
 /build_linux/
 /build_android/
 /build_*/
