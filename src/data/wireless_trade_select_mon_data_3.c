@@ -99,6 +99,25 @@ const u8 sWirelessTradeSelectMonCursorMoves[13][4][6] = {
      },
 };
 
+#ifdef SDK_PORT
+// clang-format off
+const WirelessTradeSlotPos sWirelessTradeSelectMonSlotPosY[13] = {
+    { 0x20, 0x40 },
+    { 0x20, 0 },
+    { 0x48, 0x40 },
+    { 0x48, 0 },
+    { 0x70, 0x40 },
+    { 0x70, 0x80 },
+    { 0x20, 0xC0 },
+    { 0x20, 0x80 },
+    { 0x48, 0xC0 },
+    { 0x48, 0x80 },
+    { 0x70, 0xC0 },
+    { 0x70, 0xC0 },
+    { 0xA0, 0xC0C0204 },
+};
+// clang-format on
+#else
 // C declares this as `const WirelessTradeSlotPos sWirelessTradeSelectMonSlotPosY[]`, but the label
 // holds 4 more bytes of data after it.
 // clang-format off
@@ -112,7 +131,30 @@ const u8 sWirelessTradeSelectMonSlotPosY[100] = {
     0xA0, 0x00, 0x00, 0x00,
 };
 // clang-format on
+#endif
 
+#ifdef SDK_PORT
+// On the DS sWirelessTradeSelectMonSlotPosY is the same table read from its y member; the port
+// has a complete copy for each label (12 slots and the quit button).
+// clang-format off
+const WirelessTradeSlotPos sWirelessTradeSelectMonSlotPos[13] = {
+    { 0, 0x20 },
+    { 0x40, 0x20 },
+    { 0, 0x48 },
+    { 0x40, 0x48 },
+    { 0, 0x70 },
+    { 0x40, 0x70 },
+    { 0x80, 0x20 },
+    { 0xC0, 0x20 },
+    { 0x80, 0x48 },
+    { 0xC0, 0x48 },
+    { 0x80, 0x70 },
+    { 0xC0, 0x70 },
+    { 0xC0, 0xA0 },
+};
+// clang-format on
+#else
 // C declares this as `const WirelessTradeSlotPos sWirelessTradeSelectMonSlotPos[]`, but one element of
 // that type is larger than the data under this label.
 const u8 sWirelessTradeSelectMonSlotPos[4] = { 0x00, 0x00, 0x00, 0x00 };
+#endif

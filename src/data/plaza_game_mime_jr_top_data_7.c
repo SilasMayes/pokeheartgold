@@ -18,6 +18,16 @@
 #undef gMimeJrTopWobbleChoices
 #undef gMimeJrTopWobbleWeights
 
+#ifdef SDK_PORT
+// clang-format off
+const s32 gMimeJrTopWobbleWeights[4][8] = {
+    { 0x2D, 0x13, 0x2D, 0x13, 5, 0x13, 5, 0x14 },
+    { 0x1E, 0x14, 0x32, 0x19, 0x14, 0x19, 0xA, 0x14 },
+    { 0x12, 0x1E, 0x28, 0x23, 0x1E, 0x28, 0xC, 0x14 },
+    { 0xF, 0x1E, 0x1E, 0x23, 0x28, 0x2D, 0xF, 0xBC00BC },
+};
+// clang-format on
+#else
 // C declares this as `const s32 gMimeJrTopWobbleWeights[][8]`, but the label holds 28 more bytes of
 // data after it.
 // clang-format off
@@ -32,7 +42,21 @@ const u8 gMimeJrTopWobbleWeights[124] = {
     0x28, 0x00, 0x00, 0x00, 0x2D, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00,
 };
 // clang-format on
+#endif
 
+#ifdef SDK_PORT
+// On the DS gMimeJrTopWobbleWeights is gMimeJrTopWobbleChoices read from its first weight (one
+// MimeJrTopWobbleChoice[4][4] table by tier); the port has a complete copy for each.
+// clang-format off
+const MimeJrTopWobbleChoice gMimeJrTopWobbleChoices[4][4] = {
+    { { 0x13, 0x2D }, { 0x13, 0x2D }, { 0x13, 5 }, { 0x13, 5 } },
+    { { 0x14, 0x1E }, { 0x14, 0x32 }, { 0x19, 0x14 }, { 0x19, 0xA } },
+    { { 0x14, 0x12 }, { 0x1E, 0x28 }, { 0x23, 0x1E }, { 0x28, 0xC } },
+    { { 0x14, 0xF }, { 0x1E, 0x1E }, { 0x23, 0x28 }, { 0x2D, 0xF } },
+};
+// clang-format on
+#else
 // C declares this as `const MimeJrTopWobbleChoice gMimeJrTopWobbleChoices[][4]`, but one element of
 // that type is larger than the data under this label.
 const u8 gMimeJrTopWobbleChoices[4] = { 0x13, 0x00, 0x00, 0x00 };
+#endif

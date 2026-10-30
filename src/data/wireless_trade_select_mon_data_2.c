@@ -26,6 +26,11 @@ const u32 sWirelessTradeSelectMonBallPalettes[24] = {
 };
 // clang-format on
 
+#ifdef SDK_PORT
+// clang-format off
+const WirelessTradeDetailSpritePos sWirelessTradeSelectMonDetailSpritePosY[2] = { { 0x58, 0, 0xC0 }, { 0x58, 1, 0x10 } };
+// clang-format on
+#else
 // C declares this as `const WirelessTradeDetailSpritePos sWirelessTradeSelectMonDetailSpritePosY[]`,
 // but the label holds 8 more bytes of data after it.
 // clang-format off
@@ -37,7 +42,23 @@ const u8 sWirelessTradeSelectMonDetailSpritePosY[68] = {
     0x06, 0x00, 0x00, 0x00,
 };
 // clang-format on
+#endif
 
+#ifdef SDK_PORT
+// On the DS sWirelessTradeSelectMonDetailSpritePosY is the same table read from its y member;
+// the port has a complete copy for each label.
+// clang-format off
+const WirelessTradeDetailSpritePos sWirelessTradeSelectMonDetailSpritePos[6] = {
+    { 0x3F, 0x58, 0 },
+    { 0xC0, 0x58, 1 },
+    { 0x10, 8, 8 },
+    { 0x90, 8, 8 },
+    { 0x63, 8, 6 },
+    { 0xE3, 8, 6 },
+};
+// clang-format on
+#else
 // C declares this as `const WirelessTradeDetailSpritePos sWirelessTradeSelectMonDetailSpritePos[]`,
 // but one element of that type is larger than the data under this label.
 const u8 sWirelessTradeSelectMonDetailSpritePos[4] = { 0x3F, 0x00, 0x00, 0x00 };
+#endif

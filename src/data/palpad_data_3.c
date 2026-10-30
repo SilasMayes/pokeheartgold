@@ -99,9 +99,27 @@ const u8 gPalPadScreenFileIds[2] = { 0x10, 0x11 };
 
 const u8 gPalPadDetailsTabSrcY[2] __attribute__((aligned(4))) = { 0x18, 0x10 };
 
+#ifdef SDK_PORT
+// On the DS this label is 2 bytes before gPalPadRosterSlotY, which reads the same table from its
+// y member; the port has the complete table here.
+// clang-format off
+const PalPadSlotRect gPalPadRosterSlotRects[9] = {
+    { 2, 4, 0xF, 4, 2, 2, 9 },
+    { 2, 8, 0xF, 4, 2, 2, 9 },
+    { 2, 0xC, 0xF, 4, 2, 2, 9 },
+    { 2, 0x10, 0xF, 4, 2, 2, 9 },
+    { 0x10, 4, 0xF, 4, 2, 2, 9 },
+    { 0x10, 8, 0xF, 4, 2, 2, 9 },
+    { 0x10, 0xC, 0xF, 4, 2, 2, 9 },
+    { 0x10, 0x10, 0xF, 4, 2, 2, 9 },
+    { 0x11, 0x14, 0xE, 4, 0, 1, 9 },
+};
+// clang-format on
+#else
 // C declares this as `const PalPadSlotRect gPalPadRosterSlotRects[9]`, but MWCC gives a char array a
 // section of its own, which the linker starts 4-aligned; to stay at offset 0x244 next to its
 // neighbours it is written as the only row of a 2-D array, which shares their section.
 const u8 gPalPadRosterSlotRects[1][2] = {
     { 0x02, 0x00 }
 };
+#endif

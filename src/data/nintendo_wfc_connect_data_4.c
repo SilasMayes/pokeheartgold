@@ -9,8 +9,12 @@
 #define gNintendoWfcNumberInputStates  gNintendoWfcNumberInputStates_header_decl
 #define gNintendoWfcPadHitboxes_Max100 gNintendoWfcPadHitboxes_Max100_header_decl
 #define gNintendoWfcPadHitboxes        gNintendoWfcPadHitboxes_header_decl
-#define gNintendoWfcHttpResponse       gNintendoWfcHttpResponse_header_decl
-#define gNintendoWfcHttpShortResponse  gNintendoWfcHttpShortResponse_header_decl
+#ifndef SDK_PORT
+#define gNintendoWfcHttpResponse gNintendoWfcHttpResponse_header_decl
+#endif
+#ifndef SDK_PORT
+#define gNintendoWfcHttpShortResponse gNintendoWfcHttpShortResponse_header_decl
+#endif
 
 #include "global.h"
 
@@ -21,8 +25,12 @@
 #undef gNintendoWfcNumberInputStates
 #undef gNintendoWfcPadHitboxes_Max100
 #undef gNintendoWfcPadHitboxes
+#ifndef SDK_PORT
 #undef gNintendoWfcHttpResponse
+#endif
+#ifndef SDK_PORT
 #undef gNintendoWfcHttpShortResponse
+#endif
 
 // C declares this const, but it lives in .data
 TouchscreenHitbox gNintendoWfcPadHitboxes[17] = {
@@ -95,6 +103,7 @@ const NintendoWfcCursorPos gNintendoWfcYesNoCursorPositions[2] = {
     { 0x0080, 0x0078 }
 };
 
+#ifndef SDK_PORT // parts of gNintendoWfcHttp on the port (nintendo_wfc_connect_internal.h)
 // C declares this as `NintendoWfcHttpResponse gNintendoWfcHttpResponse`, but MWCC gives a char array a
 // section of its own, which the linker starts 4-aligned; to stay at offset 0x100 next to its
 // neighbours it is written as the only row of a 2-D array, which shares their section.
@@ -104,5 +113,6 @@ u8 gNintendoWfcHttpResponse[1][3];
 // its own, which the linker starts 4-aligned; to stay at offset 0x103 next to its neighbours it is
 // written as the only row of a 2-D array, which shares their section.
 u8 gNintendoWfcHttpShortResponse[1][9];
+#endif
 
 NintendoWfcGlobal gNintendoWfcGlobal;

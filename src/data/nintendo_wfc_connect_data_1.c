@@ -80,6 +80,14 @@ static const u8 gNintendoWfcUnusedWindowTemplate[8] __attribute__((aligned(4))) 
 };
 // clang-format on
 
+#ifdef SDK_PORT
+// The port has the whole HTTP block as one object; the other labels are views into it
+// (nintendo_wfc_connect_internal.h).
+NintendoWfcHttp gNintendoWfcHttp;
+#else
 // C declares this as `NintendoWfcHttp gNintendoWfcHttp`, but it has 64-bit members, whose layout MWCC
-// and GCC may not agree on.
+// and GCC may not agree on. On the DS the block is this (the first 0xc bytes) and the labels
+// after it
+// (gNintendoWfcHttpFriendKey ... gNintendoWfcHttpShortResponse), laid out back to back.
 u8 gNintendoWfcHttp[12] __attribute__((aligned(4)));
+#endif

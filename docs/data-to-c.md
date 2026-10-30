@@ -251,6 +251,37 @@ pointers are 8 bytes), so the code would read or write past these: each now has 
 
 ## Other declarations that do not describe the data
 
+Many of these are a table that the code reads through a label holding only part of it: a column of a
+table of structs (`gPokewalkerAppCursorX[position * 4]`), or a decompiler base label before the table
+(`gSpinTradeBonusBerryRanges[playerCount]`, whose row 0 belongs to something else), or one element
+of a struct the code then indexes with the DS stride. The DS reads the right bytes through the
+neighbouring labels; on the port each label is an object of its own, so the port has a complete copy
+of what the code reads through each of these labels (`#ifdef SDK_PORT` in the data file, the bytes
+taken from the linked DS build), and for the two .bss blocks one object:
+
+- Mime Jr. Top: `gMimeJrTopRoutines` (+ the `RoutineCounts`/`Speeds`/`Tasks` columns: with the function
+  pointer the port's stride differs too), `gMimeJrTopTierModels`, `gMimeJrTopWobbleChoices`,
+  `gMimeJrTopWobbleWeights`; Plaza games and Swalot Plop: see the overlap section above.
+- Pokéathlon: `gPokeathlonGoalRollCpuGuardPoints` (+ `Y`, `1`, `2`; goal 3 reads past the table on the
+  DS too, and the copy keeps those bytes), `gPokeathlonDiscCatchCpuHomeRowStarts`.
+- Wobbuffet Pop: `gWobbuffetPopLocalModelFiles`, `gWobbuffetPopSlotModelFiles0` to `3`.
+- Wireless Trade: `sWirelessTradeSelectMon{Cursor,PartnerCursor,QuitCursor}Anims`, `DetailSpritePos(Y)`,
+  `SlotPos(Y)`. Spin Trade: `gSpinTradeBonusBerryRanges`, `gSpinTradeBonusBerryRangeEnds`.
+- Wi-Fi Plaza: `gWiFiPlazaInstrumentSignalSteps`, `gWiFiPlazaEventPhase4Steps`. Pal Pad:
+  `gPalPadRosterSlotRects`. Pokéwalker: `gPokewalkerAppCursorX`, `Y`, `Anims`.
+- Nintendo WFC (Battle Tower uploads): `gNintendoWfcHttp` is one object with its request and response
+  buffers on the port, like `gGtsServer`; `gNintendoWfcHttpRequestBuffer`, `ov72_0223B900`,
+  `gNintendoWfcHttpResponse`, `gNintendoWfcHttpShortResponse` and `gNintendoWfcHttpFriendKey` are views.
+
+The rest of the list was checked for the same problem: the label's object holds every byte the code
+reads (`gBattleHallRankIVs`, the Nintendo WFC pad keys, `gPokewalkerAppCursorPalettes`,
+`gBattleArcadeEventColorOdds`, `gSafariAreaCustomizerLabelColors`), the code copies the declared type
+and never looks past it (`gMimeJrTopRivalAnims`, `gGtsWantedBg1Template` and the other "holds N more
+bytes" templates), the definition is typed right and the mismatching declaration only passes it on as
+an opaque pointer (`gMovementCmdSteps_*`, `gWobbuffetPopCommands`, `sPokeathlonStateInfoFuncTable`),
+or the port does not build it (`gWifiSetup*`). The desktop lobby's (`gPPWLobby*`, `gLobbyMemReserve`)
+were not looked at.
+
 | Name | Declared as | Problem |
 |---|---|---|
 | `gBattleAnimObjWindowBgFiles` | `const BattleAnimObjWindowBgFiles gBattleAnimObjWindowBgFiles[]` | the label holds 12 more bytes of data after it |

@@ -65,17 +65,52 @@ const u8 gPokewalkerAppCursorPalettes[1][53] = {
 static u8 gEventLogCourseBgm_pad[8] = { 0 };
 #pragma explicit_zero_data reset
 
+#ifdef SDK_PORT
+// clang-format off
+const u8 gPokewalkerAppCursorAnims[53] = {
+    8, 1, 0x80, 0x5F, 8, 1, 0x80, 0x50, 8, 1, 0xE0, 0xB0, 0xA, 1, 0x98, 0xB0,
+    9, 1, 0x50, 0x10, 8, 9, 0x80, 0x10, 8, 1, 0x80, 0x30, 8, 1, 0x80, 0x50,
+    8, 1, 0x80, 0x70, 8, 1, 0x80, 0x90, 8, 1, 0x80, 0x20, 8, 1, 0x80, 0x48,
+    8, 1, 0x80, 0x70, 8,
+};
+// clang-format on
+#else
 // C declares this as `const u8 gPokewalkerAppCursorAnims[]`, but MWCC gives a char array a section of
 // its own, which the linker starts 4-aligned; to stay at offset 0xb682 next to its neighbours it is
 // written as the only row of a 2-D array, which shares their section.
 const u8 gPokewalkerAppCursorAnims[1][1] = { { 0x08 } };
+#endif
 
+#ifdef SDK_PORT
+// On the DS the four cursor labels are the columns of one table of {x, y, anim, palette} by
+// position (read at [position * 4]); the port has a complete copy for each.
+// clang-format off
+const u8 gPokewalkerAppCursorX[53] = {
+    0x80, 0x38, 8, 1, 0x80, 0x5F, 8, 1, 0x80, 0x50, 8, 1, 0xE0, 0xB0, 0xA, 1,
+    0x98, 0xB0, 9, 1, 0x50, 0x10, 8, 9, 0x80, 0x10, 8, 1, 0x80, 0x30, 8, 1,
+    0x80, 0x50, 8, 1, 0x80, 0x70, 8, 1, 0x80, 0x90, 8, 1, 0x80, 0x20, 8, 1,
+    0x80, 0x48, 8, 1, 0x80,
+};
+// clang-format on
+#else
 // C declares this as `const u8 gPokewalkerAppCursorX[]`, but MWCC gives a char array a section of its
 // own, which the linker starts 4-aligned; to stay at offset 0xb680 next to its neighbours it is
 // written as the only row of a 2-D array, which shares their section.
 const u8 gPokewalkerAppCursorX[1][1] = { { 0x80 } };
+#endif
 
+#ifdef SDK_PORT
+// clang-format off
+const u8 gPokewalkerAppCursorY[53] = {
+    0x38, 8, 1, 0x80, 0x5F, 8, 1, 0x80, 0x50, 8, 1, 0xE0, 0xB0, 0xA, 1, 0x98,
+    0xB0, 9, 1, 0x50, 0x10, 8, 9, 0x80, 0x10, 8, 1, 0x80, 0x30, 8, 1, 0x80,
+    0x50, 8, 1, 0x80, 0x70, 8, 1, 0x80, 0x90, 8, 1, 0x80, 0x20, 8, 1, 0x80,
+    0x48, 8, 1, 0x80, 0x70,
+};
+// clang-format on
+#else
 // C declares this as `const u8 gPokewalkerAppCursorY[]`, but MWCC gives a char array a section of its
 // own, which the linker starts 4-aligned; to stay at offset 0xb681 next to its neighbours it is
 // written as the only row of a 2-D array, which shares their section.
 const u8 gPokewalkerAppCursorY[1][1] = { { 0x38 } };
+#endif

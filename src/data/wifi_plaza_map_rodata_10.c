@@ -42,7 +42,15 @@ const u8 gWiFiPlazaEventPhase4HideSteps[1][15] = {
 };
 // clang-format on
 
+#ifdef SDK_PORT
+// On the DS this label is the first column of pairs read at [step * 2], the second
+// gWiFiPlazaEventPhase4HideSteps; the port has a complete copy.
+// clang-format off
+const u8 gWiFiPlazaEventPhase4Steps[16] = { 0, 5, 1, 6, 2, 0, 3, 1, 4, 2, 5, 3, 6, 4, 0, 0 };
+// clang-format on
+#else
 // C declares this as `const u8 gWiFiPlazaEventPhase4Steps[]`, but MWCC gives a char array a section of
 // its own, which the linker starts 4-aligned; to stay at offset 0x3ec next to its neighbours it is
 // written as the only row of a 2-D array, which shares their section.
 const u8 gWiFiPlazaEventPhase4Steps[1][1] = { { 0x00 } };
+#endif

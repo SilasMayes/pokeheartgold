@@ -37,6 +37,16 @@ const BgTemplate gWobbuffetPopMainBgTemplates[3] = {
     { 0, 0, 0x00001000, 0, 0x03, 0x00, 0x06, 0x04, 0x00, 0x02, 0x00, 0x00, 0 },
 };
 
+#ifdef SDK_PORT
+// clang-format off
+const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles3[4] = {
+    { { 0x2A, 0x21, 0x2F, 0x30, 0x31 } },
+    { { 0x32, 0x22, 0x33, 0x34, 0x35 } },
+    { { 0x36, 0x1F, 0x2B, 0x2C, 0x2D } },
+    { { 0x2E, 0, 0, 0x1000, 0 } },
+};
+// clang-format on
+#else
 // C declares this as `const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles3[]`, but the label
 // holds 4 more bytes of data after it.
 // clang-format off
@@ -47,19 +57,66 @@ const u8 gWobbuffetPopSlotModelFiles3[64] = {
     0x2B, 0x00, 0x00, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x2D, 0x00, 0x00, 0x00, 0x2E, 0x00, 0x00, 0x00,
 };
 // clang-format on
+#endif
 
+#ifdef SDK_PORT
+// clang-format off
+const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles1[4] = {
+    { { 0x28, 0x29, 0x2A, 0x21, 0x2F } },
+    { { 0x30, 0x31, 0x32, 0x22, 0x33 } },
+    { { 0x34, 0x35, 0x36, 0x1F, 0x2B } },
+    { { 0x2C, 0x2D, 0x2E, 0, 0 } },
+};
+// clang-format on
+#else
 // C declares this as `const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles1[]`, but one element of
 // that type is larger than the data under this label.
 const u8 gWobbuffetPopSlotModelFiles1[4] = { 0x28, 0x00, 0x00, 0x00 };
+#endif
 
+#ifdef SDK_PORT
+// clang-format off
+const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles0[4] = {
+    { { 0x27, 0x28, 0x29, 0x2A, 0x21 } },
+    { { 0x2F, 0x30, 0x31, 0x32, 0x22 } },
+    { { 0x33, 0x34, 0x35, 0x36, 0x1F } },
+    { { 0x2B, 0x2C, 0x2D, 0x2E, 0 } },
+};
+// clang-format on
+#else
 // C declares this as `const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles0[]`, but one element of
 // that type is larger than the data under this label.
 const u8 gWobbuffetPopSlotModelFiles0[4] = { 0x27, 0x00, 0x00, 0x00 };
+#endif
 
+#ifdef SDK_PORT
+// clang-format off
+const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles2[4] = {
+    { { 0x29, 0x2A, 0x21, 0x2F, 0x30 } },
+    { { 0x31, 0x32, 0x22, 0x33, 0x34 } },
+    { { 0x35, 0x36, 0x1F, 0x2B, 0x2C } },
+    { { 0x2D, 0x2E, 0, 0, 0x1000 } },
+};
+// clang-format on
+#else
 // C declares this as `const WobbuffetPopModelFiles gWobbuffetPopSlotModelFiles2[]`, but one element of
 // that type is larger than the data under this label.
 const u8 gWobbuffetPopSlotModelFiles2[4] = { 0x29, 0x00, 0x00, 0x00 };
+#endif
 
+#ifdef SDK_PORT
+// On the DS these five labels are the columns of one int[4][5] table (player, model); the port
+// has a complete copy for each, read as [player].files[0].
+// clang-format off
+const WobbuffetPopModelFiles gWobbuffetPopLocalModelFiles[4] = {
+    { { 0x20, 0x27, 0x28, 0x29, 0x2A } },
+    { { 0x21, 0x2F, 0x30, 0x31, 0x32 } },
+    { { 0x22, 0x33, 0x34, 0x35, 0x36 } },
+    { { 0x1F, 0x2B, 0x2C, 0x2D, 0x2E } },
+};
+// clang-format on
+#else
 // C declares this as `const WobbuffetPopModelFiles gWobbuffetPopLocalModelFiles[]`, but one element of
 // that type is larger than the data under this label.
 const u8 gWobbuffetPopLocalModelFiles[4] = { 0x20, 0x00, 0x00, 0x00 };
+#endif
