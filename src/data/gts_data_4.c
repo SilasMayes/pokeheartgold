@@ -6,7 +6,9 @@
 
 // The C declarations of these do not match the data (see the notes at each
 // definition): keep them out of the way of the definitions below.
+#ifndef SDK_PORT
 #define gGtsServerAnswer gGtsServerAnswer_header_decl
+#endif
 
 #include "global.h"
 
@@ -16,7 +18,9 @@
 
 #pragma force_active on
 
+#ifndef SDK_PORT
 #undef gGtsServerAnswer
+#endif
 
 const TouchscreenHitbox gGtsAvatarHitboxes[8] = {
     { 0x46, 0x66, 0x70, 0x90 },
@@ -41,6 +45,8 @@ const GtsAvatarPosition gGtsAvatarPositions[7] = {
 
 const u16 gGtsAvatarCharOffsets[7] = { 0x2400, 0x2600, 0x2800, 0x2A00, 0x2C00, 0x2E00, 0x3000 };
 
+#ifndef SDK_PORT // part of gGtsServer on the port (gts_internal.h)
 // C declares this as `volatile GtsServerAnswer gGtsServerAnswer`, but that type is 0x20 bytes and the
-// label covers only 0x1c (later labels overlap it).
+// label covers only 0x1c: the type describes it together with the label after it.
 u8 gGtsServerAnswer[28];
+#endif

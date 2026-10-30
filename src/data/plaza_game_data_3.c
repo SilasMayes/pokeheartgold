@@ -6,11 +6,13 @@
 
 // The C declarations of these do not match the data (see the notes at each
 // definition): keep them out of the way of the definitions below.
+#ifndef SDK_PORT
 #define gPlazaGameSeatRowsByCount   gPlazaGameSeatRowsByCount_header_decl
 #define gPlazaGameScreenRowsByCount gPlazaGameScreenRowsByCount_header_decl
 #define gPlazaGameSeatAnimsByCount  gPlazaGameSeatAnimsByCount_header_decl
 #define gPlazaGameSeatRows          gPlazaGameSeatRows_header_decl
 #define gPlazaGameSeatAnims         gPlazaGameSeatAnims_header_decl
+#endif
 
 #include "global.h"
 
@@ -18,11 +20,13 @@
 
 #pragma force_active on
 
+#ifndef SDK_PORT
 #undef gPlazaGameSeatRowsByCount
 #undef gPlazaGameScreenRowsByCount
 #undef gPlazaGameSeatAnimsByCount
 #undef gPlazaGameSeatRows
 #undef gPlazaGameSeatAnims
+#endif
 
 const PlazaGameBgTemplate gPlazaGameResultsBgTemplates[6] = {
     { 3, { 0, 0, 0x00000800, 0, 0x01, 0x00, 0x1D, 0x00, 0x00, 0x03, 0x00, 0x00, 0 } },
@@ -64,6 +68,17 @@ const u16 gPlazaGameAltMessages[20][2] = {
     { 0x0013, 0x0013 },
 };
 
+#ifdef SDK_PORT
+// The DS has this table as the labels below, the first 12 bytes shared with gPlazaGameResultsBanks
+// (see plaza_game.h).
+const PlazaGameSeatLayout gPlazaGameSeatLayouts[5] = {
+    { { 0 }, { 0 }, { 0 } },
+    { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
+    { { 14, 4, 0, 0 }, { 18, 0, 0, 0 }, { 0, 3, 0, 0 } },
+    { { 14, 8, 2, 0 }, { 18, 0, 6, 0 }, { 0, 2, 1, 0 } },
+    { { 18, 12, 0, 6 }, { 18, 0, 6, 12 }, { 0, 2, 3, 1 } },
+};
+#else
 // C declares this as `const u8 gPlazaGameSeatAnims[][12]`, but the label holds 4 more bytes of data
 // after it.
 // clang-format off
@@ -89,3 +104,4 @@ const u8 gPlazaGameSeatAnimsByCount[4] = { 0x00, 0x00, 0x00, 0x00 };
 // C declares this as `const u8 gPlazaGameSeatRowsByCount[][12]`, but one element of that type is
 // larger than the data under this label.
 const u8 gPlazaGameSeatRowsByCount[4] = { 0x00, 0x00, 0x00, 0x00 };
+#endif

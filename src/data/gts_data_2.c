@@ -162,6 +162,8 @@ const GtsCountryGroup gGtsCountryGroups[22] = {
     { 0x82, 0xFF },
 };
 
+#ifndef SDK_PORT // parts of gGtsServer on the port (gts_internal.h)
 GtsFriendKey gGtsServerFriendKey;
 
 u8 gGtsServerRequest[236];
+#endif

@@ -12,7 +12,9 @@
 #define gNintendoWfcPadKeysDownFromLeftButton  gNintendoWfcPadKeysDownFromLeftButton_header_decl
 #define gNintendoWfcPadKeysUpFromRightButton   gNintendoWfcPadKeysUpFromRightButton_header_decl
 #define gNintendoWfcPadKeysDownFromRightButton gNintendoWfcPadKeysDownFromRightButton_header_decl
-#define ov72_0223B900                          ov72_0223B900_header_decl
+#ifndef SDK_PORT
+#define ov72_0223B900 ov72_0223B900_header_decl
+#endif
 
 #include "global.h"
 
@@ -26,7 +28,9 @@
 #undef gNintendoWfcPadKeysDownFromLeftButton
 #undef gNintendoWfcPadKeysUpFromRightButton
 #undef gNintendoWfcPadKeysDownFromRightButton
+#ifndef SDK_PORT
 #undef ov72_0223B900
+#endif
 
 // C declares this const, but it lives in .data
 // clang-format off
@@ -159,4 +163,6 @@ const u8 gNintendoWfcPadKeysDownFromRightButton[1][2] = {
 // size and the linker starts every section 4-aligned, so no arrangement of separate objects puts
 // them where the asm has them; the code has to reach them through ov72_0223B900.
 // C declares this as `u8 ov72_0223B900[]`, but that type does not describe the data.
+#ifndef SDK_PORT // part of gNintendoWfcHttp on the port (nintendo_wfc_connect_internal.h)
 u8 ov72_0223B900[32];
+#endif

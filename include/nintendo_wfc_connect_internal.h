@@ -126,22 +126,35 @@ enum NintendoWfcHttpResult {
     NINTENDO_WFC_HTTP_RESULT_CROWDED,
 };
 
-// The HTTP request state of the Wi-Fi Battle Tower (gamestats) requests.
-typedef struct NintendoWfcHttp {
-    volatile s32 state; // enum NintendoWfcHttpState
-    s32 result; // enum NintendoWfcHttpResult
-    u32 profileId;
-    u64 friendKey;
-    u8 rank; // first byte of the request buffer gNintendoWfcHttpRequestBuffer
-    u8 room;
-} NintendoWfcHttp;
-
 typedef struct NintendoWfcHttpResponse {
     u8 unk_0[3];
     volatile u8 status; // first byte of the response buffer gNintendoWfcHttpShortResponse
     u32 unk_4;
     u8 *buffer;
 } NintendoWfcHttpResponse;
+
+// The HTTP request state of the Wi-Fi Battle Tower (gamestats) requests. On the DS the request and
+// response buffers are the labels after gNintendoWfcHttp (gNintendoWfcHttpFriendKey is its friendKey,
+// gNintendoWfcHttpRequestBuffer starts at rank); the port has them all in this one object.
+typedef struct NintendoWfcHttp {
+    volatile s32 state; // enum NintendoWfcHttpState
+    s32 result; // enum NintendoWfcHttpResult
+    u32 profileId;
+    u64 friendKey;
+#ifdef SDK_PORT
+    union {
+        struct {
+            u8 rank;
+            u8 room;
+        };
+        u8 requestBuffer[0xEF]; // the longest request: an upload record, rank, room, wins, friend key
+    };
+    NintendoWfcHttpResponse response;
+#else
+    u8 rank; // first byte of the request buffer gNintendoWfcHttpRequestBuffer
+    u8 room;
+#endif
+} NintendoWfcHttp;
 
 typedef struct NintendoWfcGlobal {
     NNSFndHeapHandle heap; // heap of the DWC allocator callbacks
@@ -170,14 +183,22 @@ typedef struct NintendoWfcCursorPos {
 } NintendoWfcCursorPos;
 
 extern NintendoWfcHttp gNintendoWfcHttp;
+#ifdef SDK_PORT
+#define gNintendoWfcHttpFriendKey     ((u8 *)&gNintendoWfcHttp.friendKey)
+#define gNintendoWfcHttpRequestBuffer (gNintendoWfcHttp.requestBuffer)
+#define ov72_0223B900                 (gNintendoWfcHttp.requestBuffer + 0xCC)
+#define gNintendoWfcHttpResponse      (gNintendoWfcHttp.response)
+#define gNintendoWfcHttpShortResponse ((u8 *)&gNintendoWfcHttp.response.status) // 2 bytes: status, unk_4
+#else
 extern u8 gNintendoWfcHttpFriendKey[];
 extern u8 gNintendoWfcHttpRequestBuffer[];
 extern u8 ov72_0223B900[];
+extern NintendoWfcHttpResponse gNintendoWfcHttpResponse; // 0xEC bytes into the request buffer
+extern u8 gNintendoWfcHttpShortResponse[];
+#endif
 // Inside ov72_0223B900 (src/data/nintendo_wfc_connect_data_3.c): MWCC cannot lay it out as an object of
 // its own where the ROM has it.
 #define gNintendoWfcHttpUploadFriendKey (ov72_0223B900 + 0x1B)
-extern NintendoWfcHttpResponse gNintendoWfcHttpResponse;
-extern u8 gNintendoWfcHttpShortResponse[];
 extern NintendoWfcGlobal gNintendoWfcGlobal;
 extern const char gNintendoWfcRoomNumUrl[];
 extern const char gNintendoWfcDownloadUrl[];

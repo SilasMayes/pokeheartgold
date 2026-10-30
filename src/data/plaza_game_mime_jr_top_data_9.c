@@ -22,6 +22,19 @@
 #undef gMimeJrTopRoutineSpeeds
 #undef gMimeJrTopRoutineTasks
 
+#ifdef SDK_PORT
+const MimeJrTopRoutineTask gMimeJrTopRoutineTasks[9] = {
+    { NULL },
+    { (SysTaskFunc)MimeJrTopDance_Routine1 },
+    { (SysTaskFunc)MimeJrTopDance_Routine2 },
+    { (SysTaskFunc)MimeJrTopDance_Routine2 },
+    { (SysTaskFunc)MimeJrTopDance_Routine3 },
+    { (SysTaskFunc)MimeJrTopDance_Routine3 },
+    { (SysTaskFunc)MimeJrTopDance_Routine4 },
+    { (SysTaskFunc)MimeJrTopDance_Routine5 },
+    { (SysTaskFunc)MimeJrTopDance_Routine5 },
+};
+#else
 // C declares this as `const MimeJrTopRoutineTask gMimeJrTopRoutineTasks[]`, but the label holds 4 more
 // bytes of data after it.
 const struct {
@@ -359,7 +372,21 @@ const struct {
      },
     (void (*)(void))MimeJrTopDance_Routine5,
 };
+#endif
 
+#ifdef SDK_PORT
+const MimeJrTopRoutineValue gMimeJrTopRoutineSpeeds[9] = {
+    { 0 },
+    { 1 },
+    { 2 },
+    { 2 },
+    { 3 },
+    { 4 },
+    { 5 },
+    { 5 },
+    { 5 },
+};
+#else
 // C declares this as `const MimeJrTopRoutineValue gMimeJrTopRoutineSpeeds[]`, but one element of that
 // type is larger than the data under this label.
 // clang-format off
@@ -368,11 +395,45 @@ const u8 gMimeJrTopRoutineSpeeds[28] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 // clang-format on
+#endif
 
+#ifdef SDK_PORT
+const MimeJrTopRoutineValue gMimeJrTopRoutineCounts[9] = {
+    { 0 },
+    { 2 },
+    { 3 },
+    { 3 },
+    { 3 },
+    { 3 },
+    { 3 },
+    { 3 },
+    { 3 },
+};
+#else
 // C declares this as `const MimeJrTopRoutineValue gMimeJrTopRoutineCounts[]`, but one element of that
 // type is larger than the data under this label.
 const u8 gMimeJrTopRoutineCounts[4] = { 0x00, 0x00, 0x00, 0x00 };
+#endif
 
+#ifdef SDK_PORT
+// One table by level: on the DS gMimeJrTopRoutineCounts, gMimeJrTopRoutineSpeeds and
+// gMimeJrTopRoutineTasks are views of its count, speed and func members with the DS stride (0x28),
+// which the function pointer changes on the port; so the port has its own copy of each column.
+// clang-format off
+const MimeJrTopRoutine gMimeJrTopRoutines[9] = {
+    { 150, 0, 0, { 0, 0, 0 }, { 0, 0, 0 }, NULL },
+    { 150, 2, 1, { 0, 0, 0 }, { 0, 0, 0 }, (SysTaskFunc)MimeJrTopDance_Routine1 },
+    { 150, 3, 2, { 0, 0, 0 }, { 0, 0, 0 }, (SysTaskFunc)MimeJrTopDance_Routine2 },
+    { 150, 3, 2, { 0, 1, 0 }, { 1, 0, 0 }, (SysTaskFunc)MimeJrTopDance_Routine2 },
+    { 150, 3, 3, { 0, 1, 2 }, { 2, 0, 0 }, (SysTaskFunc)MimeJrTopDance_Routine3 },
+    { 150, 3, 4, { 0, 1, 2 }, { 2, 0, 0 }, (SysTaskFunc)MimeJrTopDance_Routine3 },
+    { 150, 3, 5, { 2, 1, 0 }, { 1, 0, 0 }, (SysTaskFunc)MimeJrTopDance_Routine4 },
+    { 150, 3, 5, { 2, 1, 0 }, { 2, 0, 0 }, (SysTaskFunc)MimeJrTopDance_Routine5 },
+    { 150, 3, 5, { 2, 1, 0 }, { 2, 0, 0 }, (SysTaskFunc)MimeJrTopDance_Routine5 },
+};
+// clang-format on
+#else
 // C declares this as `const MimeJrTopRoutine gMimeJrTopRoutines[]`, but one element of that type is
 // larger than the data under this label.
 const u8 gMimeJrTopRoutines[4] = { 0x96, 0x00, 0x00, 0x00 };
+#endif

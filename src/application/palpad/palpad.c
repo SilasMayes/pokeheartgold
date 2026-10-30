@@ -540,9 +540,16 @@ static void PalPadGfx_CreateSprites(PalPadGfx *gfx, enum HeapID heapId) {
         arrowSlot = (PalPadGfx *)((u8 *)arrowSlot + sizeof(Sprite *));
         animSeq += 2;
     }
+#ifdef SDK_PORT
+    gPalPadCursorSpriteTemplate.spriteList = gfx->spriteList;
+    gPalPadCursorSpriteTemplate.header = &gfx->spriteHeader;
+    gPalPadCursorSpriteTemplate.heapID = heapId;
+#else
+    // The DS reaches the cursor template (right after the arrow templates) from inside them.
     ((SpriteTemplate *)(gPalPadArrowTemplateScale + 0x4C))->spriteList = gfx->spriteList;
     ((SpriteTemplate *)(gPalPadArrowTemplateScale + 0x4C))->header = &gfx->spriteHeader;
     ((SpriteTemplate *)(gPalPadArrowTemplateScale + 0x4C))->heapID = heapId;
+#endif
     gfx->cursor = Sprite_CreateAffine(&gPalPadCursorSpriteTemplate);
     Sprite_SetDrawFlag(gfx->cursor, FALSE);
     Sprite_SetAnimCtrlSeq(gfx->cursor, 1);

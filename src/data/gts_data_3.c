@@ -7,7 +7,9 @@
 // The C declarations of these do not match the data (see the notes at each
 // definition): keep them out of the way of the definitions below.
 #define gGtsConnectionStates gGtsConnectionStates_header_decl
-#define gGtsServerPending    gGtsServerPending_header_decl
+#ifndef SDK_PORT
+#define gGtsServerPending gGtsServerPending_header_decl
+#endif
 
 #include "global.h"
 
@@ -18,7 +20,9 @@
 #pragma force_active on
 
 #undef gGtsConnectionStates
+#ifndef SDK_PORT
 #undef gGtsServerPending
+#endif
 
 extern void GtsConnection_AskConnect(void);
 extern void GtsConnection_AskDisconnect(void);
@@ -113,6 +117,8 @@ const GraphicsModes gGtsTransactionGraphicsModes = {
 };
 // clang-format on
 
+#ifndef SDK_PORT // part of gGtsServer on the port (gts_internal.h)
 // C declares this as `GtsServerPending gGtsServerPending`, but that type is 0x44 bytes and the label
-// covers only 0x20 (later labels overlap it).
+// covers only 0x20: the type describes it together with the labels after it.
 u8 gGtsServerPending[32];
+#endif

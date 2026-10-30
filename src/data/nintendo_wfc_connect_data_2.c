@@ -54,6 +54,8 @@ const BgTemplate gNintendoWfcBgTemplate_Sub1 = {
 };
 // clang-format on
 
+#ifndef SDK_PORT // parts of gNintendoWfcHttp on the port (nintendo_wfc_connect_internal.h)
 u8 gNintendoWfcHttpFriendKey[8];
 
 u8 gNintendoWfcHttpRequestBuffer[204];
+#endif

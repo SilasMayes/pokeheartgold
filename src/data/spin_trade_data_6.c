@@ -167,6 +167,11 @@ const struct {
     { 2, gSpinTradeBonusRanges5P },
 };
 
+#ifdef SDK_PORT
+// clang-format off
+u32 gSpinTradeBonusBerryRangeEnds[6][2] = { { 0, 0 }, { 0, 0x9F }, { 0xA3, 0x9F }, { 0xA3, 0xA4 }, { 0xA8, 0xAF }, { 0xB7, 0 } };
+// clang-format on
+#else
 // 0x021EA72C
 // The label holds 4 more bytes of data after it.
 // clang-format off
@@ -176,7 +181,17 @@ const u8 gSpinTradeBonusBerryRangeEnds[44] = {
     0xA8, 0x00, 0x00, 0x00, 0xAF, 0x00, 0x00, 0x00, 0xB7, 0x00, 0x00, 0x00,
 };
 // clang-format on
+#endif
 
+#ifdef SDK_PORT
+// On the DS both labels are one u32[6][2] table ({first, last} berry by player count), the
+// second read from its last member; the port has a complete copy for each (non-const as
+// declared).
+// clang-format off
+u32 gSpinTradeBonusBerryRanges[6][2] = { { 0, 0 }, { 0, 0 }, { 0x9F, 0xA3 }, { 0x9F, 0xA3 }, { 0xA4, 0xA8 }, { 0xAF, 0xB7 } };
+// clang-format on
+#else
 // 0x021EA728
 // One element of that type is larger than the data under this label.
 const u8 gSpinTradeBonusBerryRanges[4] = { 0x00, 0x00, 0x00, 0x00 };
+#endif

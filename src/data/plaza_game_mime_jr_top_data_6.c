@@ -41,6 +41,14 @@ const int gMimeJrTopTierChangeModels[22][2] = {
     { 0,        255     },
 };
 
+#ifdef SDK_PORT
+// On the DS the tier models are pairs {model, change model}, this label the first column; the
+// port has a complete copy.
+// clang-format off
+const int gMimeJrTopTierModels[5][2] = { { 0x1F, 0x20 }, { 0x21, 0x22 }, { 0x23, 0x24 }, { 0x25, 0x26 }, { 0x25, 0x26 } };
+// clang-format on
+#else
 // C declares this as `const int gMimeJrTopTierModels[][2]`, but one element of that type is larger
 // than the data under this label.
 const u8 gMimeJrTopTierModels[4] = { 0x1F, 0x00, 0x00, 0x00 };
+#endif

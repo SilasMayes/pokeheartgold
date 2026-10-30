@@ -6,7 +6,9 @@
 
 // The C declarations of these do not match the data (see the notes at each
 // definition): keep them out of the way of the definitions below.
+#ifndef SDK_PORT
 #define gPlazaGameResultsBanks gPlazaGameResultsBanks_header_decl
+#endif
 
 #include "global.h"
 
@@ -14,7 +16,9 @@
 
 #pragma force_active on
 
+#ifndef SDK_PORT
 #undef gPlazaGameResultsBanks
+#endif
 
 // clang-format off
 const GraphicsBanks gPlazaGameEntryBanks = {
@@ -24,14 +28,25 @@ const GraphicsBanks gPlazaGameEntryBanks = {
 };
 // clang-format on
 
+#ifdef SDK_PORT
+// clang-format off
+const GraphicsBanks gPlazaGameResultsBanks = {
+    GX_VRAM_BG_256_AB, GX_VRAM_BGEXTPLTT_NONE, GX_VRAM_SUB_BG_32_H, GX_VRAM_SUB_BGEXTPLTT_NONE,
+    GX_VRAM_OBJ_16_G, GX_VRAM_OBJEXTPLTT_NONE, GX_VRAM_SUB_OBJ_16_I, GX_VRAM_SUB_OBJEXTPLTT_NONE,
+    GX_VRAM_TEX_NONE, GX_VRAM_TEXPLTT_NONE,
+};
+// clang-format on
+#else
 // C declares this as `const GraphicsBanks gPlazaGameResultsBanks`, but that type is 0x28 bytes and the
-// label covers only 0x1c (later labels overlap it).
+// label covers only 0x1c: its last three members (all zero) are the first labels of plaza_game_data_3.c
+// (see plaza_game.h). The port has the whole struct.
 // clang-format off
 const u8 gPlazaGameResultsBanks[28] = {
     0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
 };
 // clang-format on
+#endif
 
 const VecFx32 gPlazaGameSignWindowSpritePositions[2] = {
     { 524288, 393216, 0 },

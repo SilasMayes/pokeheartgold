@@ -402,7 +402,7 @@ typedef struct MimeJrTopWobbleIntervals {
 
 typedef struct MimeJrTopTouchData {
     TouchscreenHitbox hitboxes[2];
-    u8 unk08[8];
+    TouchscreenHitbox selectionHitboxes[2]; // gMimeJrTopSelectionHitboxes
     MimeJrTopTierPoints tierScores; // points per frame
     MimeJrTopTierPoints tierBonus;  // points for reaching a tier
     MimeJrTopWobbleIntervals wobbleIntervals;
@@ -469,7 +469,7 @@ extern const MimeJrTopRivalAnims gMimeJrTopRivalAnims;
 extern const MimeJrTopRivalAnims gMimeJrTopRivalSetAnims;
 extern const s16 gMimeJrTopRivalNamePositions[3][3][4];
 extern const MimeJrTopTouchData gMimeJrTopTouchData;
-extern const TouchscreenHitbox gMimeJrTopSelectionHitboxes[];
+#define gMimeJrTopSelectionHitboxes (gMimeJrTopTouchData.selectionHitboxes)
 extern const VecFx32 gMimeJrTopSpinTiltAxis;
 extern const VecFx32 gMimeJrTopTurnTiltAxis;
 extern const VecFx32 gMimeJrTopSettleTiltAxis;

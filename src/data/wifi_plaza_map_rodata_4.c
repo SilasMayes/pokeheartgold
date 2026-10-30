@@ -63,6 +63,57 @@ const WiFiPlazaInstrumentStep gWiFiPlazaInstrumentSignalNextSteps[3][12] = {
      },
 };
 
+#ifdef SDK_PORT
+// On the DS this label is one step before gWiFiPlazaInstrumentSignalNextSteps (the code reads
+// [kind][step] for the previous step); the port has a complete copy.
+// clang-format off
+const WiFiPlazaInstrumentStep gWiFiPlazaInstrumentSignalSteps[3][12] = {
+    {
+        { 0x5A9, 0 },
+        { 0, 1 },
+        { 0, 0 },
+        { 0, 2 },
+        { 0, 0 },
+        { 0, 1 },
+        { 0, 0 },
+        { 0, 2 },
+        { 0, 0 },
+        { 0, 1 },
+        { 0, 0 },
+        { 0, 2 },
+    },
+    {
+        { 0, 0 },
+        { 1, 1 },
+        { 1, 0 },
+        { 0, 2 },
+        { 0, 0 },
+        { 1, 1 },
+        { 1, 0 },
+        { 0, 2 },
+        { 0, 0 },
+        { 1, 1 },
+        { 1, 0 },
+        { 0, 2 },
+    },
+    {
+        { 0, 0 },
+        { 0, 1 },
+        { 0, 0 },
+        { 1, 2 },
+        { 1, 0 },
+        { 2, 1 },
+        { 2, 0 },
+        { 0, 2 },
+        { 1, 1 },
+        { 2, 2 },
+        { 0, 1 },
+        { 1, 2 },
+    },
+};
+// clang-format on
+#else
 // C declares this as `const WiFiPlazaInstrumentStep gWiFiPlazaInstrumentSignalSteps[][12]`, but one
 // element of that type is larger than the data under this label.
 const u8 gWiFiPlazaInstrumentSignalSteps[4] = { 0xA9, 0x05, 0x00, 0x00 };
+#endif

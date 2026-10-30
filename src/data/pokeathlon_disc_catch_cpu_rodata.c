@@ -33,7 +33,15 @@ const u8 gPokeathlonDiscCatchCpuHomeRowCounts[1][7] = {
     { 0x05, 0x07, 0x06, 0x0F, 0x06, 0x00, 0x00 }
 };
 
+#ifdef SDK_PORT
+// On the DS this label is the first column of {start, count} pairs read at [member * 2], the
+// second gPokeathlonDiscCatchCpuHomeRowCounts; the port has a complete copy.
+// clang-format off
+const u8 gPokeathlonDiscCatchCpuHomeRowStarts[8] = { 3, 5, 7, 6, 0xF, 6, 0, 0 };
+// clang-format on
+#else
 // C declares this as `const u8 gPokeathlonDiscCatchCpuHomeRowStarts[]`, but MWCC gives a char array a
 // section of its own, which the linker starts 4-aligned; to stay at offset 0x0 next to its neighbours
 // it is written as the only row of a 2-D array, which shares their section.
 const u8 gPokeathlonDiscCatchCpuHomeRowStarts[1][1] __attribute__((aligned(4))) = { { 0x03 } };
+#endif

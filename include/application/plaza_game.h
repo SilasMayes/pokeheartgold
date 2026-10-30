@@ -284,11 +284,33 @@ extern const GraphicsModes gPlazaGameEntryGraphicsModes;
 extern const VecFx32 gPlazaGameSignWindowSpritePositions[2];
 extern const GraphicsBanks gPlazaGameEntryBanks;
 extern const GraphicsBanks gPlazaGameResultsBanks;
+
+// Where each player sits, by player count.
+typedef struct PlazaGameSeatLayout {
+    u8 seatRows[4];   // BG row of each seat's panel
+    u8 screenRows[4]; // row of the panel screen each player's panel is copied from
+    u8 seatAnims[4];  // player sprite animation of each seat
+} PlazaGameSeatLayout;
+
+#ifdef SDK_PORT
+extern const PlazaGameSeatLayout gPlazaGameSeatLayouts[5]; // [player count], [0] unused
+
+// The names the code reads the table by: one column of it, in rows of 12 bytes.
+#define gPlazaGameSeatRowsByCount   (gPlazaGameSeatLayouts[0].seatRows)                  // [count * 12 + seat]
+#define gPlazaGameScreenRowsByCount (gPlazaGameSeatLayouts[0].screenRows)                // [count * 12 + seat]
+#define gPlazaGameSeatAnimsByCount  (gPlazaGameSeatLayouts[0].seatAnims)                 // [count * 12 + seat]
+#define gPlazaGameSeatRows          ((const u8(*)[12])gPlazaGameSeatLayouts[1].seatRows)  // [count - 1][seat]
+#define gPlazaGameSeatAnims         ((const u8(*)[12])gPlazaGameSeatLayouts[1].seatAnims) // [count - 1][seat]
+#else
+// On the DS the table (PlazaGameSeatLayout[5]) is these labels: the first three are 4 bytes each and
+// the code adds count * 12; they are also the last 12 bytes of gPlazaGameResultsBanks, right before
+// them. The code compiles differently from one symbol, so the port alone has the table as an object.
 extern const u8 gPlazaGameSeatRowsByCount[][12];
 extern const u8 gPlazaGameScreenRowsByCount[][12];
 extern const u8 gPlazaGameSeatAnimsByCount[][12];
 extern const u8 gPlazaGameSeatRows[][12];
 extern const u8 gPlazaGameSeatAnims[][12];
+#endif
 extern const u16 gPlazaGameAltMessages[20][2];
 extern const PlazaGameBgTemplate gPlazaGameEntryBgTemplates[];
 extern const PlazaGameBgTemplate gPlazaGameResultsBgTemplates[];

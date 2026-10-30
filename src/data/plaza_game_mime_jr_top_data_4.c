@@ -4,29 +4,24 @@
 // that makes the sort reproduce the asm layout, and the data is split across files where one sort
 // cannot. Keep that when editing, or rerun tools/s2c.py.
 
-// The C declarations of these do not match the data (see the notes at each
-// definition): keep them out of the way of the definitions below.
-#define gMimeJrTopTouchData gMimeJrTopTouchData_header_decl
-
 #include "global.h"
 
 #include "application/plaza_game_mime_jr_top.h"
 
 #pragma force_active on
 
-#undef gMimeJrTopTouchData
-
-const TouchscreenHitbox gMimeJrTopSelectionHitboxes[8] = {
-    { 0xFE, 0x80, 0x80, 0x40 },
-    { 0xFF, 0x00, 0x00, 0x00 },
-    { 0x01, 0x00, 0x02, 0x00 },
-    { 0x03, 0x00, 0x04, 0x00 },
-    { 0xBC, 0x02, 0x78, 0x05 },
-    { 0x34, 0x08, 0xF0, 0x0A },
-    { 0x78, 0x00, 0x5A, 0x00 },
-    { 0x3C, 0x00, 0x2D, 0x00 },
+// One object: in the asm gMimeJrTopTouchData labelled only its first 8 bytes and the rest was
+// gMimeJrTopSelectionHitboxes, now a macro for gMimeJrTopTouchData.selectionHitboxes.
+const MimeJrTopTouchData gMimeJrTopTouchData = {
+    .hitboxes = {
+        { .circle = { 0xFE, 0x80, 0x80, 0x30 } },
+        { .rect = { 0xFF, 0x00, 0x00, 0x00 } },
+    },
+    .selectionHitboxes = {
+        { .circle = { 0xFE, 0x80, 0x80, 0x40 } },
+        { .rect = { 0xFF, 0x00, 0x00, 0x00 } },
+    },
+    .tierScores = { { 1, 2, 3, 4 } },
+    .tierBonus = { { 700, 1400, 2100, 2800 } },
+    .wobbleIntervals = { { 120, 90, 60, 45 } },
 };
-
-// C declares this as `const MimeJrTopTouchData gMimeJrTopTouchData`, but that type is 0x28 bytes and
-// the label covers only 0x8 (later labels overlap it).
-const u8 gMimeJrTopTouchData[8] = { 0xFE, 0x80, 0x80, 0x30, 0xFF, 0x00, 0x00, 0x00 };

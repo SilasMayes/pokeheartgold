@@ -430,9 +430,9 @@ extern const BgTemplate gSwalotPlopSub0BgTemplate;
 extern const BgTemplate gSwalotPlopSub1BgTemplate;
 extern const BgTemplate gSwalotPlopSub2BgTemplate;
 extern const BgTemplate gSwalotPlopSub3BgTemplate;
-extern const u16 gSwalotPlopSeatAngles[][4];
-extern const u16 gSwalotPlopCameraAngles[][4];
-extern const u16 gSwalotPlopStageRotations[][4];
+extern const u16 gSwalotPlopSeatAngles[][4];     // [player count][seat]
+extern const u16 gSwalotPlopCameraAngles[][4];   // [player count][local player]
+extern const u16 gSwalotPlopStageRotations[][4]; // [player count - 1][local player]
 extern const GraphicsBanks gSwalotPlopBanks;
 extern const u32 gSwalotPlopIntroNamePositions[];
 extern const u8 gSwalotPlopPopupPosX[];

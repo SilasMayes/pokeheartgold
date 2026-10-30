@@ -39,10 +39,7 @@ enum PalPadRosterAction {
 #define ROSTER_CURSOR_RETURN 8
 #define ROSTER_CURSOR_HIDDEN 10
 
-extern const struct {
-    u32 nameColor;
-    TouchscreenListMenuTemplate template;
-} sPalPadRosterFriendMenuTemplate;
+extern const PalPadRosterFriendMenuTemplate sPalPadRosterFriendMenuTemplate;
 
 extern const NNSG2dViewRect gPalPadRenderSurfaceRect;
 

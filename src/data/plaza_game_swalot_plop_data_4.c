@@ -35,6 +35,18 @@ const u16 gSwalotPlopStageRotations[4][4] = {
     { 0x7FFF, 0,      0xBFFF, 0x3FFF },
 };
 
+#ifdef SDK_PORT
+const u16 gSwalotPlopCameraAngles[5][4] = {
+    { 0,      0x7FFF, 0x3FFF, 0xBFFF },
+    { 0,      0,      0,      0      },
+    { 0x7FFF, 0,      0,      0      },
+    { 0x7FFF, 0xD554, 0x2AAA, 0      },
+    { 0x7FFF, 0,      0xBFFF, 0x3FFF },
+};
+#else
+// [player count][local player]: rows 1-4 are gSwalotPlopStageRotations, which follows. The port has
+// all five rows.
 const u16 gSwalotPlopCameraAngles[1][4] = {
     { 0, 0x7FFF, 0x3FFF, 0xBFFF }
 };
+#endif

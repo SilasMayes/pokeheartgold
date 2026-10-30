@@ -87,6 +87,11 @@ const BgTemplate sWirelessTradeSelectMonBgTemplate_Main2 = {
 };
 // clang-format on
 
+#ifdef SDK_PORT
+// clang-format off
+const u32 sWirelessTradeSelectMonQuitCursorAnims[2][3] = { { 2, 0x11, 0x12 }, { 0x13, 0, 0 } };
+// clang-format on
+#else
 // C declares this as `const u32 sWirelessTradeSelectMonQuitCursorAnims[][3]`, but the label holds 4
 // more bytes of data after it.
 // clang-format off
@@ -94,11 +99,28 @@ const u8 sWirelessTradeSelectMonQuitCursorAnims[16] = {
     0x02, 0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00,
 };
 // clang-format on
+#endif
 
+#ifdef SDK_PORT
+// On the DS the three cursor tables are views into one u32[2][3] table ([side][cursor kind]);
+// the port has a complete copy for each.
+// clang-format off
+const u32 sWirelessTradeSelectMonCursorAnims[2][3] = { { 0, 1, 2 }, { 0x11, 0x12, 0x13 } };
+// clang-format on
+#else
 // C declares this as `const u32 sWirelessTradeSelectMonCursorAnims[][3]`, but one element of that type
 // is larger than the data under this label.
-const u8 sWirelessTradeSelectMonCursorAnims[4] __attribute__((aligned(4))) = { 0x00, 0x00, 0x00, 0x00 };
+const u8 sWirelessTradeSelectMonCursorAnims[4] __attribute__((aligned(4))) = {
+    0x00, 0x00, 0x00, 0x00,
+};
+#endif
 
+#ifdef SDK_PORT
+// clang-format off
+const u32 sWirelessTradeSelectMonPartnerCursorAnims[2][3] = { { 1, 2, 0x11 }, { 0x12, 0x13, 0 } };
+// clang-format on
+#else
 // C declares this as `const u32 sWirelessTradeSelectMonPartnerCursorAnims[][3]`, but one element of
 // that type is larger than the data under this label.
 const u8 sWirelessTradeSelectMonPartnerCursorAnims[4] = { 0x01, 0x00, 0x00, 0x00 };
+#endif

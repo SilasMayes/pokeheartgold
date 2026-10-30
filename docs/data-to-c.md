@@ -86,6 +86,7 @@ No arrangement of separate objects puts these where the asm has them (each would
 | `gDowsingMchnExitSpriteParams` | `gDowsingMchnLevelParams` | 0x16 |
 | `gDowsingMchnRunningShoesSprite2Params` | `gDowsingMchnLevelParams` | 0x12 |
 | `gDowsingMchnRunningShoesSpriteParams` | `gDowsingMchnLevelParams` | 0xe |
+| `gMimeJrTopSelectionHitboxes` (by hand, for the port: see below) | `gMimeJrTopTouchData` | 0x8 |
 | `gNintendoWfcHttpUploadFriendKey` | `ov72_0223B900` | 0x1b |
 
 ## Zero pad objects
@@ -217,27 +218,69 @@ The data file renames the header declaration away (`#define X X_header_decl`) so
 
 ## Declarations that overlap later labels
 
-The C type is larger than the label: the code treats several asm labels as one object. The DS build is exact (the labels stay contiguous), but a 64-bit build will size these objects differently, so they need one real struct before the port can rely on them.
+The C type is larger than the label: the code treats several asm labels as one object. On the DS the
+labels stay contiguous, so the build is exact. On the port each C object is laid out on its own (and
+pointers are 8 bytes), so the code would read or write past these: each now has a real object there.
 
-| Name | Declared as | Problem |
-|---|---|---|
-| `gGtsServerAnswer` | `volatile GtsServerAnswer gGtsServerAnswer` | that type is 0x20 bytes and the label covers only 0x1c (later labels overlap it) |
-| `gGtsServerPending` | `GtsServerPending gGtsServerPending` | that type is 0x44 bytes and the label covers only 0x20 (later labels overlap it) |
-| `gGtsServer` | `volatile GtsServer gGtsServer` | that type is 0x13c bytes and the label covers only 0xc (later labels overlap it) |
-| `gMimeJrTopTouchData` | `const MimeJrTopTouchData gMimeJrTopTouchData` | that type is 0x28 bytes and the label covers only 0x8 (later labels overlap it) |
-| `gPalPadArrowSpriteTemplates` | `SpriteTemplate gPalPadArrowSpriteTemplates[2]` | that type is 0x60 bytes and the label covers only 0x14 (later labels overlap it) |
-| `gPalPadRosterNameColors` | `const u32 gPalPadRosterNameColors[3]` | that type is 0xc bytes and the label covers only 0x8 (later labels overlap it) |
-| `gPlazaGameResultsBanks` | `const GraphicsBanks gPlazaGameResultsBanks` | that type is 0x28 bytes and the label covers only 0x1c (later labels overlap it) |
-| `gSwalotPlopSub3BgTemplate` | `const BgTemplate gSwalotPlopSub3BgTemplate` | that type is 0x1c bytes and the label covers only 0x14 (later labels overlap it) |
-| `gWifiSetupClientSettings` | `WifiSetupClientSettings gWifiSetupClientSettings` | that type is 0x34 bytes and the label covers only 0x14 (later labels overlap it) |
-| `gWifiSetupResult` | `WifiSetupResult gWifiSetupResult` | that type is 0xe8 bytes and the label covers only 0x14 (later labels overlap it) |
-| `gWifiSetupRuntime` | `WifiSetupRuntime gWifiSetupRuntime` | that type is 0x10 bytes and the label covers only 0xc (later labels overlap it) |
-| `gWifiSetupSecurityRecords` | `WifiSetupAossKeyRecords gWifiSetupSecurityRecords[2]` | that type is 0x6a0 bytes and the label covers only 0x8 (later labels overlap it) |
-| `gWifiSetupSocket` | `WifiSetupSocketState gWifiSetupSocket` | that type is 0x3c bytes and the label covers only 0x8 (later labels overlap it) |
-| `gWifiSetupState` | `WifiSetupState gWifiSetupState` | that type is 0x3c bytes and the label covers only 0x4 (later labels overlap it) |
-| `gWifiSetupWork` | `WifiSetupWork gWifiSetupWork` | that type is 0x80 bytes and the label covers only 0x50 (later labels overlap it) |
+- Where MWCC compiles the consumers to the same code either way, the labels became one object on both
+  builds and the other names are macros into it (`gMimeJrTopTouchData`).
+- Otherwise the DS keeps the labels and only the port has the one object (`#ifdef SDK_PORT` in the
+  header and the data file). The usual reason: the asm had a separate symbol for each part, and MWCC
+  addresses parts of one symbol from a shared base register, so the code changes.
+- Read-only labels that only overlap get complete copies on the port instead of one object.
+
+`tools/s2c.py` does not know about these edits: rerunning it would undo them.
+
+| Name | Declared as | Problem | Port |
+|---|---|---|---|
+| `gGtsServerAnswer` | `volatile GtsServerAnswer gGtsServerAnswer` | that type is 0x20 bytes and the label covers only 0x1c (later labels overlap it) | view into `gGtsServer` |
+| `gGtsServerPending` | `GtsServerPending gGtsServerPending` | that type is 0x44 bytes and the label covers only 0x20 (later labels overlap it) | view into `gGtsServer` |
+| `gGtsServer` | `volatile GtsServer gGtsServer` | that type is 0x13c bytes and the label covers only 0xc (later labels overlap it) | one `volatile GtsServer` holding the six labels (`gts_internal.h`, `gts_data_1.c`) |
+| `gMimeJrTopTouchData` | `const MimeJrTopTouchData gMimeJrTopTouchData` | that type is 0x28 bytes and the label covers only 0x8 (later labels overlap it) | one object on both; `gMimeJrTopSelectionHitboxes` is its `selectionHitboxes` |
+| `gPalPadArrowSpriteTemplates` | `SpriteTemplate gPalPadArrowSpriteTemplates[2]` | that type is 0x60 bytes and the label covers only 0x14 (later labels overlap it) | `SpriteTemplate[2]`; `palpad.c` sets the cursor template by name |
+| `gPalPadRosterNameColors` | `const u32 gPalPadRosterNameColors[3]` | that type is 0xc bytes and the label covers only 0x8 (later labels overlap it) | `u32[3]`; the third color is also kept in `sPalPadRosterFriendMenuTemplate` |
+| `gPlazaGameResultsBanks` | `const GraphicsBanks gPlazaGameResultsBanks` | that type is 0x28 bytes and the label covers only 0x1c (later labels overlap it) | `GraphicsBanks`; the labels after it are `gPlazaGameSeatLayouts[5]` (`plaza_game.h`) |
+| `gSwalotPlopSub3BgTemplate` | `const BgTemplate gSwalotPlopSub3BgTemplate` | that type is 0x1c bytes and the label covers only 0x14 (later labels overlap it) | `BgTemplate`; `gSwalotPlopSeatAngles` has its five rows |
+| `gWifiSetupClientSettings` | `WifiSetupClientSettings gWifiSetupClientSettings` | that type is 0x34 bytes and the label covers only 0x14 (later labels overlap it) | not built: the port leaves out `src/wifi_setup` |
+| `gWifiSetupResult` | `WifiSetupResult gWifiSetupResult` | that type is 0xe8 bytes and the label covers only 0x14 (later labels overlap it) | not built: the port leaves out `src/wifi_setup` |
+| `gWifiSetupRuntime` | `WifiSetupRuntime gWifiSetupRuntime` | that type is 0x10 bytes and the label covers only 0xc (later labels overlap it) | not built: the port leaves out `src/wifi_setup` |
+| `gWifiSetupSecurityRecords` | `WifiSetupAossKeyRecords gWifiSetupSecurityRecords[2]` | that type is 0x6a0 bytes and the label covers only 0x8 (later labels overlap it) | not built: the port leaves out `src/wifi_setup` |
+| `gWifiSetupSocket` | `WifiSetupSocketState gWifiSetupSocket` | that type is 0x3c bytes and the label covers only 0x8 (later labels overlap it) | not built: the port leaves out `src/wifi_setup` |
+| `gWifiSetupState` | `WifiSetupState gWifiSetupState` | that type is 0x3c bytes and the label covers only 0x4 (later labels overlap it) | not built: the port leaves out `src/wifi_setup` |
+| `gWifiSetupWork` | `WifiSetupWork gWifiSetupWork` | that type is 0x80 bytes and the label covers only 0x50 (later labels overlap it) | not built: the port leaves out `src/wifi_setup` |
 
 ## Other declarations that do not describe the data
+
+Many of these are a table that the code reads through a label holding only part of it: a column of a
+table of structs (`gPokewalkerAppCursorX[position * 4]`), or a decompiler base label before the table
+(`gSpinTradeBonusBerryRanges[playerCount]`, whose row 0 belongs to something else), or one element
+of a struct the code then indexes with the DS stride. The DS reads the right bytes through the
+neighbouring labels; on the port each label is an object of its own, so the port has a complete copy
+of what the code reads through each of these labels (`#ifdef SDK_PORT` in the data file, the bytes
+taken from the linked DS build), and for the two .bss blocks one object:
+
+- Mime Jr. Top: `gMimeJrTopRoutines` (+ the `RoutineCounts`/`Speeds`/`Tasks` columns: with the function
+  pointer the port's stride differs too), `gMimeJrTopTierModels`, `gMimeJrTopWobbleChoices`,
+  `gMimeJrTopWobbleWeights`; Plaza games and Swalot Plop: see the overlap section above.
+- Pokéathlon: `gPokeathlonGoalRollCpuGuardPoints` (+ `Y`, `1`, `2`; goal 3 reads past the table on the
+  DS too, and the copy keeps those bytes), `gPokeathlonDiscCatchCpuHomeRowStarts`.
+- Wobbuffet Pop: `gWobbuffetPopLocalModelFiles`, `gWobbuffetPopSlotModelFiles0` to `3`.
+- Wireless Trade: `sWirelessTradeSelectMon{Cursor,PartnerCursor,QuitCursor}Anims`, `DetailSpritePos(Y)`,
+  `SlotPos(Y)`. Spin Trade: `gSpinTradeBonusBerryRanges`, `gSpinTradeBonusBerryRangeEnds`.
+- Wi-Fi Plaza: `gWiFiPlazaInstrumentSignalSteps`, `gWiFiPlazaEventPhase4Steps`. Pal Pad:
+  `gPalPadRosterSlotRects`. Pokéwalker: `gPokewalkerAppCursorX`, `Y`, `Anims`.
+- Nintendo WFC (Battle Tower uploads): `gNintendoWfcHttp` is one object with its request and response
+  buffers on the port, like `gGtsServer`; `gNintendoWfcHttpRequestBuffer`, `ov72_0223B900`,
+  `gNintendoWfcHttpResponse`, `gNintendoWfcHttpShortResponse` and `gNintendoWfcHttpFriendKey` are views.
+
+The rest of the list was checked for the same problem: the label's object holds every byte the code
+reads (`gBattleHallRankIVs`, the Nintendo WFC pad keys, `gPokewalkerAppCursorPalettes`,
+`gBattleArcadeEventColorOdds`, `gSafariAreaCustomizerLabelColors`), the code copies the declared type
+and never looks past it (`gMimeJrTopRivalAnims`, `gGtsWantedBg1Template` and the other "holds N more
+bytes" templates), the definition is typed right and the mismatching declaration only passes it on as
+an opaque pointer (`gMovementCmdSteps_*`, `gWobbuffetPopCommands`, `sPokeathlonStateInfoFuncTable`),
+or the port does not build it (`gWifiSetup*`). The desktop lobby's (`gPPWLobby*`, `gLobbyMemReserve`)
+were not looked at.
 
 | Name | Declared as | Problem |
 |---|---|---|
@@ -438,6 +481,27 @@ The C type is larger than the label: the code treats several asm labels as one o
 | `sWirelessTradeSelectMonRosterListTemplate` | `const ListMenuTemplate sWirelessTradeSelectMonRosterListTemplate` | that type does not describe the data |
 | `sWirelessTradeSelectMonSlotPosY` | `const WirelessTradeSlotPos sWirelessTradeSelectMonSlotPosY[]` | the label holds 4 more bytes of data after it |
 | `sWirelessTradeSelectMonSlotPos` | `const WirelessTradeSlotPos sWirelessTradeSelectMonSlotPos[]` | one element of that type is larger than the data under this label |
+
+## Struct sizes written as numbers
+
+Templates that hold the DS size of a struct the code then allocates or clears. On the port the struct
+is usually larger (pointers), so the number is too small.
+
+| Table | Field | Port |
+|---|---|---|
+| `gRockDebrisTemplate`, `gRockDebrisWithFollowerTemplate` | `dataSize` 0xE9C (`RockDebris`, 0x16F8 on x86-64) | port copies in `src/field/field_move_effects.c` use `sizeof` |
+| `gCutEffectAt{Player,Follower}Template`, `gRockSmashEffectAt{Player,Follower}Template` | `dataSize` 0xF0 (`FieldMoveEffect`, 0x180) | same |
+| `gHeadbuttEffectAt{Player,Follower}Template` | `dataSize` 0x114 (`HeadbuttEffect`, 0x1A0) | same |
+| `gWhirlpoolEffectTemplate` | `dataSize` 0xF0 (`WhirlpoolEffect`, 0x180) | same |
+| `gRockClimbDebrisTemplate` | `dataSize` 0xD10 (`RockClimbDebris`, 0x1480) | same |
+| `gWaterfallEffectTemplate` | `dataSize` 0x1CC (`WaterfallEffect`, 0x2E0) | same |
+| field effect templates (`FieldEffectBasicTemplate`) | `stateSize` 0x40/0x44 | the port clears the whole 128-byte state (stream 1) |
+
+`Field3dObjectTask_Create` allocates `dataSize` bytes for the task's work, so on the port Cut, Rock
+Smash, Headbutt, Whirlpool, Rock Climb and Waterfall wrote past their allocation. The work structs are
+private to `field_move_effects.c`, so the port's templates are defined there (`#ifdef SDK_PORT`) and the
+data file keeps the DS ones. Found by listing the data tables whose struct has a size member and the
+allocations sized from a table; nothing else in `src/data/` matched.
 
 ## Declarations s2c could not read
 

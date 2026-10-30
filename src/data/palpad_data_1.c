@@ -8,17 +8,22 @@
 // definition): keep them out of the way of the definitions below.
 #define gPalPadDetailsPagePrinters   gPalPadDetailsPagePrinters_header_decl
 #define gPalPadRosterScrollCallbacks gPalPadRosterScrollCallbacks_header_decl
-#define gPalPadRosterNameColors      gPalPadRosterNameColors_header_decl
+#ifndef SDK_PORT
+#define gPalPadRosterNameColors gPalPadRosterNameColors_header_decl
+#endif
 
 #include "global.h"
 
 #include "application/palpad/palpad_internal.h"
+#include "text.h"
 
 #pragma force_active on
 
 #undef gPalPadDetailsPagePrinters
 #undef gPalPadRosterScrollCallbacks
+#ifndef SDK_PORT
 #undef gPalPadRosterNameColors
+#endif
 
 // not static: used in another part of asm/palpad_data.s
 const PalPadWindowSpec sPalPadDetailsPage2WindowSpecs[4] = {
@@ -28,11 +33,18 @@ const PalPadWindowSpec sPalPadDetailsPage2WindowSpecs[4] = {
     { 0x0A, 0x00, 0x09, 0x00 },
 };
 
+#ifdef SDK_PORT
+const PalPadRosterFriendMenuTemplate sPalPadRosterFriendMenuTemplate = {
+    MAKE_TEXT_COLOR(15, 1, 0),
+    { .wrapAround = TRUE, .centered = 1, .xOffset = 4, .bgId = 1, .plttOffset = 15, .baseTile = 0xC7, .charOffset = 0xAC, .unkA = 0x88 },
+};
+#else
 // clang-format off
 const u8 sPalPadRosterFriendMenuTemplate[16] = {
     0x00, 0x01, 0x0F, 0x00, 0x03, 0x04, 0x01, 0x0F, 0x00, 0x00, 0xC7, 0x00, 0xAC, 0x00, 0x88, 0x00,
 };
 // clang-format on
+#endif
 
 // C declares this const, but it lives in .data
 // clang-format off
@@ -61,13 +73,18 @@ const TouchscreenHitbox gPalPadFriendCodeHitboxes[2] = {
     { 0xFF, 0x00, 0x00, 0x00 },
 };
 
+#ifdef SDK_PORT
+// read-only, so the port keeps the third color twice instead of overlapping the two objects
+const u32 gPalPadRosterNameColors[3] = { MAKE_TEXT_COLOR(6, 5, 0), MAKE_TEXT_COLOR(4, 3, 0), MAKE_TEXT_COLOR(15, 1, 0) };
+#else
 // C declares this as `const u32 gPalPadRosterNameColors[3]`, but that type is 0xc bytes and the label
-// covers only 0x8 (later labels overlap it).
+// covers only 0x8: the third color is the first word of sPalPadRosterFriendMenuTemplate, after it.
 // clang-format off
 const u8 gPalPadRosterNameColors[8] __attribute__((aligned(4))) = {
     0x00, 0x05, 0x06, 0x00, 0x00, 0x03, 0x04, 0x00,
 };
 // clang-format on
+#endif
 
 const u16 gPalPadRosterPageBaseTiles[3] = { 1, 0x01BB, 0x01BB };
 

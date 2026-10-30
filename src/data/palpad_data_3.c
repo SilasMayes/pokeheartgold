@@ -7,7 +7,9 @@
 // The C declarations of these do not match the data (see the notes at each
 // definition): keep them out of the way of the definitions below.
 #define gPalPadRosterSlotRects      gPalPadRosterSlotRects_header_decl
+#ifndef SDK_PORT
 #define gPalPadArrowSpriteTemplates gPalPadArrowSpriteTemplates_header_decl
+#endif
 
 #include "global.h"
 
@@ -16,7 +18,9 @@
 #pragma force_active on
 
 #undef gPalPadRosterSlotRects
+#ifndef SDK_PORT
 #undef gPalPadArrowSpriteTemplates
+#endif
 
 const BgTemplate gPalPadBgTemplates[7] = {
     { 0, 0, 0x00000800, 0, 0x01, 0x00, 0x18, 0x00, 0x00, 0x03, 0x00, 0x00, 0 },
@@ -40,6 +44,30 @@ const PalPadSlotRectFromY gPalPadRosterSlotY[9] = {
     { 20, { 0x0E, 0x04, 0x00, 0x01, 0x09, 0x00, 0x00, 0x00 } },
 };
 
+#ifdef SDK_PORT
+SpriteTemplate gPalPadArrowSpriteTemplates[2] = {
+    {
+        NULL,
+        NULL,
+        { 0x8000, 0x62000, 0 },
+        { FX32_ONE, FX32_ONE, FX32_ONE },
+        0,
+        8,
+        NNS_G2D_VRAM_TYPE_2DMAIN,
+        HEAP_ID_DEFAULT,
+    },
+    {
+        NULL,
+        NULL,
+        { 0xF8000, 0x62000, 0 },
+        { FX32_ONE, FX32_ONE, FX32_ONE },
+        0,
+        8,
+        NNS_G2D_VRAM_TYPE_2DMAIN,
+        HEAP_ID_DEFAULT,
+    },
+};
+#else
 // clang-format off
 u8 gPalPadArrowTemplateScale[76] = {
     0x00, 0x10, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08,
@@ -51,13 +79,15 @@ u8 gPalPadArrowTemplateScale[76] = {
 // clang-format on
 
 // C declares this as `SpriteTemplate gPalPadArrowSpriteTemplates[2]`, but that type is 0x60 bytes and
-// the label covers only 0x14 (later labels overlap it).
+// the label covers only 0x14: on the DS the two templates are this and gPalPadArrowTemplateScale (the
+// code reaches the cursor template through the latter), on the port one array.
 // clang-format off
 u8 gPalPadArrowSpriteTemplates[20] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x20, 0x06, 0x00,
     0x00, 0x00, 0x00, 0x00,
 };
 // clang-format on
+#endif
 
 const u8 gPalPadDetailsPageWindowCounts[8] = { 0x04, 0x01, 0x02, 0x05, 0x01, 0x01, 0x01, 0x01 };
 
@@ -69,9 +99,27 @@ const u8 gPalPadScreenFileIds[2] = { 0x10, 0x11 };
 
 const u8 gPalPadDetailsTabSrcY[2] __attribute__((aligned(4))) = { 0x18, 0x10 };
 
+#ifdef SDK_PORT
+// On the DS this label is 2 bytes before gPalPadRosterSlotY, which reads the same table from its
+// y member; the port has the complete table here.
+// clang-format off
+const PalPadSlotRect gPalPadRosterSlotRects[9] = {
+    { 2, 4, 0xF, 4, 2, 2, 9 },
+    { 2, 8, 0xF, 4, 2, 2, 9 },
+    { 2, 0xC, 0xF, 4, 2, 2, 9 },
+    { 2, 0x10, 0xF, 4, 2, 2, 9 },
+    { 0x10, 4, 0xF, 4, 2, 2, 9 },
+    { 0x10, 8, 0xF, 4, 2, 2, 9 },
+    { 0x10, 0xC, 0xF, 4, 2, 2, 9 },
+    { 0x10, 0x10, 0xF, 4, 2, 2, 9 },
+    { 0x11, 0x14, 0xE, 4, 0, 1, 9 },
+};
+// clang-format on
+#else
 // C declares this as `const PalPadSlotRect gPalPadRosterSlotRects[9]`, but MWCC gives a char array a
 // section of its own, which the linker starts 4-aligned; to stay at offset 0x244 next to its
 // neighbours it is written as the only row of a 2-D array, which shares their section.
 const u8 gPalPadRosterSlotRects[1][2] = {
     { 0x02, 0x00 }
 };
+#endif
