@@ -113,7 +113,7 @@ typedef struct {
     /* 0x16 */ u8 unused;
     /* 0x17 */ u8 originGame;
 
-    /* 0x18 */ u64 ribbonsDS2;
+    /* 0x18 */ u64 ribbonsDS2 PORT_ALIGN4;
 } PokemonDataBlockC;
 
 /**

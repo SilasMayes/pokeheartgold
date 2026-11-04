@@ -26,8 +26,8 @@ typedef struct SafariZoneAreaSet {
 } SafariZoneAreaSet;
 
 typedef struct SAFARIZONE_LINKLEADER {
-    s64 received_timestamp;
-    s64 rtc_offset;
+    s64 received_timestamp PORT_ALIGN4;
+    s64 rtc_offset PORT_ALIGN4;
     u8 linked; // TODO: bool8
     u8 gender;
     u8 language;

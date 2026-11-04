@@ -163,5 +163,13 @@ u16 GF_CalcCRC16(const void *data, u32 size) {
 void GF_CRC16Init(enum HeapID heapID) {
     GF_ASSERT(sCRC16TablePtr == NULL);
     sCRC16TablePtr = Heap_Alloc(heapID, sizeof(MATHCRC16Table));
+#ifdef SDK_PORT
+    // The game's SDK makes MATH_CRC16InitTable the CCITT table (poly 0x1021), which GF_CalcCRC16's
+    // CCITT update expects; libntr's is the reflected 0xA001 table of later SDKs. With it the save's
+    // CRCs were neither the DS's nor any standard CRC, so DS saves failed their checks here and the
+    // port's saves failed them on a DS.
+    MATH_CRC16CCITTInitTable(sCRC16TablePtr);
+#else
     MATH_CRC16InitTable(sCRC16TablePtr);
+#endif
 }
