@@ -25,7 +25,7 @@ dependency files rebuild what changed).
 |---|---|---|
 | `ctrl-cheeb-del/pokeheartgold` master `2e0a4e0` | OK `4fcded0e…` | OK `f8dc38ea…` |
 | `SilasMayes/pokeheartgold` `thor-android` `6534a02` (port edits, asm data converted to C) | OK `4fcded0e…` | OK `f8dc38ea…` |
-| `SilasMayes/pokeheartgold` `thor-android` `00ef1f5`, then `0a57bbe` (incremental rebuilds of the `6534a02` tree) | OK `4fcded0e…` | OK `f8dc38ea…` |
+| `SilasMayes/pokeheartgold` `thor-android` `00ef1f5`, `0a57bbe`, then `8f3f827` (incremental rebuilds of the `6534a02` tree; `8f3f827` adds PR #4's data objects and the one-binary `GAME_VERSION`, both port-only) | OK `4fcded0e…` | OK `f8dc38ea…` |
 
 ## Inputs (proprietary, not in the repo)
 
