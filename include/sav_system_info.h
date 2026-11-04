@@ -10,13 +10,13 @@ typedef struct SysInfo_RTC {
     RTCDate date;
     RTCTime time;
     s32 days_since_nitro_epoch;
-    s64 seconds_since_nitro_epoch;
-    s64 seconds_at_game_clear;
+    s64 seconds_since_nitro_epoch PORT_ALIGN4;
+    s64 seconds_at_game_clear PORT_ALIGN4;
     u32 penaltyInMinutes;
 } SysInfo_RTC;
 
 typedef struct SysInfo {
-    s64 rtc_offset;
+    s64 rtc_offset PORT_ALIGN4;
     u8 mac_address[6];
     u8 birth_month;
     u8 birth_day;

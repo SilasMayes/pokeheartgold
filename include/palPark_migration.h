@@ -6,7 +6,7 @@
 typedef struct MigratedPokemon {
     Pokemon pokemon[PARTY_SIZE];
     u32 migrationIds[20];
-    s64 migrationTimes[20];
+    s64 migrationTimes[20] PORT_ALIGN4;
     u32 rtcOffsetLow;
     u32 rtcOffsetHigh;
     u8 macAddress[6];

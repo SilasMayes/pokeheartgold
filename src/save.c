@@ -64,6 +64,9 @@ static int Save_WritePCFooter(SaveData *saveData, struct SaveSlotSpec *spec, u8 
 static u32 Save_CalcPCBoxModifiedFlags(SaveData *saveData);
 static u32 PCModifiedFlags_CountModifiedBoxes(u32 flags);
 static u32 PCModifiedFlags_GetIndexOfNthModifiedBox(u32 flags, u8 last);
+#ifdef SDK_PORT
+void PortSave_MigrateV1(void); // lib/port/save_migrate_v1.c
+#endif
 
 SaveData *SaveData_New(void) {
     SaveData *ret;
@@ -84,6 +87,11 @@ SaveData *SaveData_New(void) {
     SaveData_InitSubstructs(ret->arrayHeaders);
     SaveData_InitSlotSpecs(ret->saveSlotSpecs, ret->arrayHeaders);
 
+#ifdef SDK_PORT
+    // A save from before the port's layout matched the DS's: rewritten in the DS layout first
+    // (lib/port/save_migrate_v1.c)
+    PortSave_MigrateV1();
+#endif
     status = Save_GetSaveFilesStatus(ret);
     ret->statusFlags = 0;
     switch (status) {
@@ -798,6 +806,12 @@ static void SaveData_InitSlotSpecs(struct SaveSlotSpec *slotSpecs, struct SaveAr
         }
     }
     GF_ASSERT(npage == slotSpecs[1].firstPage + slotSpecs[1].numPages);
+#ifdef SDK_PORT
+    // The DS's block sizes, the same in HeartGold and SoulSilver (PKHeX's GeneralSize and StorageSize).
+    // A save structure laid out differently here (a pointer, a 64-bit field's alignment) moves every
+    // chunk after it: cartridge saves stop loading and the port's saves stop loading on a DS
+    GF_ASSERT(slotSpecs[0].size == 0xF628 && slotSpecs[1].size == 0x12310);
+#endif
     GF_ASSERT(npage <= SAVE_PAGE_MAX);
 }
 
@@ -1106,6 +1120,17 @@ static BOOL SaveDetectFlash(void) {
     OS_ReleaseLockID(lockId);
     return flash_id != CARD_BACKUP_TYPE_NOT_USE;
 }
+
+#ifdef SDK_PORT
+// For lib/port/save_migrate_v1.c, which rewrites a save in the port's first layout before it is read
+BOOL PortSave_FlashLoad(u32 offset, void *data, u32 size) {
+    return FlashLoadChunk(offset, data, size);
+}
+
+s32 PortSave_FlashWrite(u32 offset, void *data, u32 size) {
+    return FlashWriteChunk(offset, data, size);
+}
+#endif
 
 static s32 FlashWriteChunk(u32 offset, void *data, u32 size) {
     int stat;

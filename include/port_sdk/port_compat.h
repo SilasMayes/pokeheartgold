@@ -31,6 +31,12 @@
 #define PORT_R0(arg)        arg
 #define PORT_R0_PARAM(decl) decl
 
+// A 64-bit member of a structure the save holds. The DS's compiler aligns 64-bit types to 4 bytes;
+// here they would be 8, which pads the structures that hold them (a party Pokémon is 236 bytes on the
+// DS) and so moves everything after them in the save. Keeping these members 4-aligned makes the port's
+// save file the DS's: a cartridge or emulator save loads, and the port's saves load on a DS.
+#define PORT_ALIGN4 __attribute__((packed, aligned(4)))
+
 // The particle library's work area (ParticleSystem_New): its structures hold pointers, so the port
 // gives it twice the DS size, as Platinum's port does
 #define PORT_PARTICLE_HEAP(dsSize) ((dsSize) * 2)

@@ -14,7 +14,7 @@ typedef struct BattleRecordHeader {
     LinkBattleRuleset rules;
     u16 magic;
     u8 unk_4A[14];
-    u64 videoNumber;
+    u64 videoNumber PORT_ALIGN4;
     u16 crc;
     u16 padding;
 } BattleRecordHeader;
