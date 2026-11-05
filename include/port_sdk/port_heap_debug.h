@@ -12,4 +12,10 @@ void Heap_PortCheck(const char *where);
 // GF_AssertFail on the port: prints the failing function's address (once per call site)
 void PortDebug_AssertFail(void *caller);
 
+// Whether gamePtr (from Heap_Alloc) is still allocated from heap heapID
+BOOL PortHeap_IsLive(const void *gamePtr, u32 heapID);
+
+// Prints "[port] <what> (from <caller>)" once per call site
+void PortDebug_ReportOnce(const char *what, void *caller);
+
 #endif // PORT_SDK_PORT_HEAP_DEBUG_H
