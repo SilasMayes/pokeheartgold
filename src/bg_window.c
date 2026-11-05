@@ -1991,7 +1991,13 @@ void CopyGlyphToWindow(Window *window, u8 *glyphPixels, u16 srcWidth, u16 srcHei
         }
     } else { // 8bpp
         u8 *convertedSrc;
+#ifdef SDK_PORT
+        // The DS passes the size as pixels * 4 * pixels * 8 (up to 8 KB) and converts that much from a 2x2-tile glyph
+        // of 128 bytes, reading past it; the copies below use only those four tiles. Platinum's fix, 7fcdc14e.
+        convertedSrc = Convert4bppTo8bpp(glyphPixels, 2 * 2 * TILE_SIZE_4BPP, window->paletteNum, window->bgConfig->heapID);
+#else
         convertedSrc = Convert4bppTo8bpp(glyphPixels, srcWidth * 4 * srcHeight * 8, window->paletteNum, window->bgConfig->heapID);
+#endif
         switch (glyphSizeParam) {
         case 0: // 1x1
             GLYPH_COPY_8BPP(convertedSrc, 0, 0, srcRight, srcBottom, windowPixels, destX, destY, ConvertPixelsToTiles(destWidth), table);
