@@ -1452,11 +1452,37 @@ static void BattleInput_FreeDefaultResources(BattleInput *battleInput) {
     }
 }
 
+#ifdef SDK_PORT
+// The callers pass the member of BattleInputMenu the menu uses (a BattleInputMainMenu on their stack for the
+// command menus), and the DS copies the whole union from it: up to 22 bytes past the caller's variable. The
+// port copies the member only; the menus read nothing else.
+static u32 BattleInput_MenuDataSize(int menuId) {
+    switch (menuId) {
+    case BATTLE_MENU_FIGHT:
+        return sizeof(BattleInputFightMenu);
+    case BATTLE_MENU_TARGET:
+        return sizeof(BattleInputTargetMenu);
+    case BATTLE_MENU_YES_NO:
+    case BATTLE_MENU_KEEP_FORGET_MOVE:
+    case BATTLE_MENU_GIVE_UP_ON_MOVE:
+    case BATTLE_MENU_SWITCH_OR_FLEE:
+    case BATTLE_MENU_SWITCH_OR_KEEP:
+        return sizeof(BattleInputTwoOptionMenu);
+    default:
+        return sizeof(BattleInputMainMenu);
+    }
+}
+#endif
+
 void BattleInput_ChangeMenu(NARC *narc0, NARC *narc1, BattleInput *battleInput, int menuId, int forceReload, int *menuData) {
     const BattleMenuTemplate *menuTemplate, *prevMenuTemplate;
 
     if (menuData != NULL) {
+#ifdef SDK_PORT
+        MI_CpuCopy8(menuData, &battleInput->menu, BattleInput_MenuDataSize(menuId));
+#else
         MI_CpuCopy8(menuData, &battleInput->menu, sizeof(BattleInputMenu));
+#endif
     }
 
     battleInput->isTouchDisabled = FALSE;

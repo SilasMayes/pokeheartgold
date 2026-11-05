@@ -303,9 +303,9 @@ BOOL BattleLink_PreparePalPad(BattleLinkWork *work) {
     }
     setup = work->setup;
     if (setup->battleType & BATTLE_TYPE_FRONTIER) {
-        index = Comm_GetLocalNetId() * 8;
+        index = Comm_GetLocalNetId() * PORT_SIZEOF(PlayerProfile *[2], 8); // byte offsets into setup->profile
     } else {
-        index = Comm_GetLocalNetId() * 4;
+        index = Comm_GetLocalNetId() * PORT_SIZEOF(PlayerProfile *, 4);
     }
     BattleLink_BuildPalPad(*(PlayerProfile **)((u8 *)setup->profile + index), setup->palPad, (SavePalPad *)&work->buffer);
     for (i = 0; i < 4; i++) {
