@@ -1,0 +1,4 @@
+# The desktop gate's UBSan suppressions (run with UBSAN_OPTIONS=suppressions=<this file>).
+# libntr's emulated registers are separate globals; its header inlines (compiled into game code)
+# write a register through a wider object than the global (OS timers): not game bugs
+object-size:*/nitro/os/common/timer.h

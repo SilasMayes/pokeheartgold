@@ -17,6 +17,15 @@
 #include "task.h"
 #include "union_room_talk.h"
 
+#ifdef SDK_PORT
+// TrainerCardAppArgs.card holds a TrainerCardData, and the trainer card overlay reads the args through
+// Ov50_021E5A3C: keep the three in step (the IGT pointer makes the card 4 bytes longer here than the DS's 0x66C).
+_Static_assert(sizeof(TrainerCardData) <= sizeof(((TrainerCardAppArgs *)0)->card), "the card holds a TrainerCardData");
+_Static_assert(offsetof(Ov50_021E5A3C, signature) == offsetof(TrainerCardData, signature), "the overlay's signature");
+_Static_assert(offsetof(Ov50_021E5A3C, saveData) == offsetof(TrainerCardAppArgs, settings.saveData), "the overlay's saveData");
+_Static_assert(offsetof(Ov50_021E5A3C, reqUpdateSignature) == offsetof(TrainerCardAppArgs, settings.showBack), "the overlay's showBack");
+#endif
+
 enum LinkTrainerCardState {
     LINK_TRAINER_CARD_SEND,
     LINK_TRAINER_CARD_WAIT_PARTNER,
