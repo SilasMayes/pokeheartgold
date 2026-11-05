@@ -19,7 +19,9 @@ tools/port/testrig/setup.sh            # links the scripts into ~/hgss_run, writ
 - **`hg/sim_config.ini`** (`setup.sh` copies `sim_config.ini` if there is none): `InternalResolutionScale=1`
   (~25 vblanks/s under Xvfb + llvmpipe on 2 cores; 10x gave ~15), A = `z`, B = `x`, Start = Return.
 - **Milestone saves** live on the Mac: `/Users/silasmayes/pokemon-port/saves/hgss/<milestone>.bin` (index in
-  `INDEX.txt` there). Copy one to `~/hgss_run/hg/save.bin` and `cont.sh`.
+  `INDEX.txt` there). Copy one to `~/hgss_run/hg/save.bin` and `cont.sh`. From a sandbox: `device_stage_files`
+  once that folder is connected to the chat, or Desktop Commander: `xz -9e -c <save> | base64` (a save is
+  ~3 KB that way) and `base64 -d | xz -d` here; the other way, `base64 -D -i <b64> -o <file>` on the Mac.
 
 ## Running
 - `run.sh LOG` / `run_asan.sh LOG` start the game (detached: `(setsid ~/hgss_run/run.sh LOG &)`), `cont.sh`
