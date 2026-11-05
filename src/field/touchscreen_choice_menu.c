@@ -58,6 +58,43 @@ extern const BgTemplate gTouchscreenChoiceMenuBgTemplate_Sub2;
 extern const u8 gTouchscreenChoiceMenuListCursorX[][24];
 extern const u8 gTouchscreenChoiceMenuListCursorY[][24];
 extern const u8 gTouchscreenChoiceMenuListCursorAnim[][24];
+
+#ifdef SDK_PORT
+// The DS lays ...YesNoCursorX and Y back to back, and ...ListCursorX, Y and Anim back to back, and the code reads
+// each table through the next: the YES/NO coords are interleaved u16s from X (X[i] = {x_i, y_i}, Y[i] = {y_i,
+// x_i+1}), the list cursor is one table of {x, y, anim} triples from X. src/data defines them as separate objects
+// (for the DS's layout), which the port's linker doesn't keep together, so the port reads them joined in the DS's
+// order.
+static const TouchscreenChoiceMenuCoord *TouchscreenChoiceMenu_PortYesNoCursor(void) {
+    static u16 coords[5]; // x YES, y YES, x NO, y NO, 0
+    static BOOL built;
+    if (!built) {
+        memcpy(&coords[0], gTouchscreenChoiceMenuYesNoCursorX, 2);
+        memcpy(&coords[1], gTouchscreenChoiceMenuYesNoCursorY, 6);
+        built = TRUE;
+    }
+    return (const TouchscreenChoiceMenuCoord *)coords;
+}
+
+static const u8 (*TouchscreenChoiceMenu_PortListCursor(void))[24] {
+    static u8 table[7][24]; // list sizes 2 to 8
+    static BOOL built;
+    if (!built) {
+        table[0][0] = gTouchscreenChoiceMenuListCursorX[0][0];
+        table[0][1] = gTouchscreenChoiceMenuListCursorY[0][0];
+        memcpy(&table[0][2], gTouchscreenChoiceMenuListCursorAnim, sizeof(table) - 2);
+        built = TRUE;
+    }
+    return (const u8 (*)[24])table;
+}
+
+#define gTouchscreenChoiceMenuYesNoCursorX   (TouchscreenChoiceMenu_PortYesNoCursor())
+#define gTouchscreenChoiceMenuYesNoCursorY   ((const TouchscreenChoiceMenuCoord *)((const u16 *)TouchscreenChoiceMenu_PortYesNoCursor() + 1))
+#define gTouchscreenChoiceMenuListCursorX    (TouchscreenChoiceMenu_PortListCursor())
+#define gTouchscreenChoiceMenuListCursorY    ((const u8 (*)[24])&TouchscreenChoiceMenu_PortListCursor()[0][1])
+#define gTouchscreenChoiceMenuListCursorAnim ((const u8 (*)[24])&TouchscreenChoiceMenu_PortListCursor()[0][2])
+#endif
+
 // [itemCount - 2]: per list size, the neighbour of each row for up / down / left / right (-1: none).
 extern const s8 *gTouchscreenChoiceMenuListNeighbors[];
 extern const TouchscreenHitbox *gTouchscreenChoiceMenuListHitboxes[];
