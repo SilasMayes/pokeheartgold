@@ -108,6 +108,31 @@ void PortHeapDebug_Check(NNSFndHeapHandle *handles, int count, const char *op, v
     }
 }
 
+// Whether gamePtr (as Heap_Alloc returned it) is still allocated from heap heapID: the expanded heap's
+// header before the game's 16-byte header says "used", and the game's header names that heap. For data
+// a vblank callback can still reach after its app freed it (the block may be free or another one now).
+BOOL PortHeap_IsLive(const void *gamePtr, u32 heapID) {
+    const u8 *gameHeader = (const u8 *)gamePtr - 16;
+    const NNSiFndExpHeapMBlockHead *b = (const NNSiFndExpHeapMBlockHead *)gameHeader - 1;
+    return b->signature == SIG_USED && gameHeader[12] == (u8)heapID;
+}
+
+// Prints "[port] <what> (from <caller>)" once per call site
+void PortDebug_ReportOnce(const char *what, void *caller) {
+    static void *seen[64];
+    static int numSeen;
+    for (int i = 0; i < numSeen; i++) {
+        if (seen[i] == caller) {
+            return;
+        }
+    }
+    if (numSeen < (int)(sizeof(seen) / sizeof(seen[0]))) {
+        seen[numSeen++] = caller;
+    }
+    printf("[port] %s (from %p)\n", what, caller);
+    fflush(stdout);
+}
+
 // GF_ASSERT is silent on the DS outside of communication (GF_AssertFail only resets when a link is
 // up); the port prints each failing call site once, so a bad state shows up where it starts.
 // Resolve an address with: gdb -batch -ex "info line *0x<addr minus the load base>" build_linux/main

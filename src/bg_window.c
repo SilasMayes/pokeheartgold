@@ -4,6 +4,10 @@
 
 #include "math_util.h"
 
+#ifdef SDK_PORT
+#include "port_heap_debug.h"
+#endif
+
 static u8 TranslateGFBgModePairToGXScreenSize(enum GFBgScreenSize size, enum GFBgType type);
 static void GetBgScreenDimensions(u32 screenSize, u8 *widthPtr, u8 *heightPtr);
 static void Bg_SetPosText(Background *bg, enum BgPosAdjustOp op, int value);
@@ -2177,6 +2181,15 @@ void SetWindowPaletteNum(Window *window, u8 paletteNum) {
 }
 
 void DoScheduledBgGpuUpdates(BgConfig *bgConfig) {
+#ifdef SDK_PORT
+    // Some apps free their BgConfig a frame before they stop the vblank callback that commits it (the
+    // Options menu frees it, then the sprite system's 1 KB scratch buffer for clearing OAM lands on the
+    // same block and fills it). The DS commits that garbage to VRAM unseen; here it is wild pointers.
+    if (!PortHeap_IsLive(bgConfig, bgConfig->heapID)) {
+        PortDebug_ReportOnce("vblank commit of a freed BgConfig skipped", __builtin_return_address(0));
+        return;
+    }
+#endif
     BgConfig_HandleScheduledScrolls(bgConfig);
     BgConfig_HandleScheduledBufferTransfers(bgConfig);
     bgConfig->scrollScheduled = 0;
