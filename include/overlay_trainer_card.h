@@ -15,10 +15,30 @@ typedef struct TrainerCardAppSettings {
 } TrainerCardAppSettings;
 
 typedef struct TrainerCardAppArgs {
+#ifdef SDK_PORT
+    u8 card[0x66c + 4]; // a TrainerCardData: its IGT pointer is 8 bytes here (checked in trainer_card_data.c)
+#else
     u8 card[0x66c];
+#endif
     TrainerCardAppSettings settings;
 } TrainerCardAppArgs;
 
+// The trainer card overlay's view of TrainerCardAppArgs
+#ifdef SDK_PORT
+// The same fields at the port's offsets: the card's signature after the 8-byte IGT pointer, then the settings
+// 8-aligned (checked in overlay_trainer_card.c).
+typedef struct {
+    u8 unk0[4];
+    u8 unk4a : 4;
+    u8 signatureExists : 1;
+    u8 unk5[0x67];
+    u8 signature[0x600];
+    u8 unk66c[4];
+    MenuInputStateMgr *menuInputStatePtr;
+    SaveData *saveData;
+    u32 reqUpdateSignature; // settings.showBack
+} Ov50_021E5A3C;
+#else
 typedef struct {
     u8 unk0[4];
     u8 unk4a : 4;
@@ -29,6 +49,7 @@ typedef struct {
     SaveData *saveData;
     u32 reqUpdateSignature;
 } Ov50_021E5A3C;
+#endif
 
 typedef struct {
     enum HeapID heapID;

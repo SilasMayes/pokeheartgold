@@ -406,11 +406,21 @@ static void TrainerCardSignature_InitStrings(TrainerCardSignature *signature) {
     int i;
     u32 countMask = 0xf0;
 
+#ifdef SDK_PORT
+    // The DS steps one byte pointer by 4 through both penNames (pointers, 8 bytes here) and penPos (4 bytes)
+    (void)pen;
+    for (i = 0, styleAndCount = signature->strokes[0].y + 8; i < TRAINER_CARD_SIGNATURE_PEN_COUNT; i++, styleAndCount += sizeof(TrainerCardSignatureStroke)) {
+        signature->penNames[i] = String_New(8, HEAP_ID_39);
+        *styleAndCount &= ~countMask;
+        signature->penPos[i].count = 0;
+    }
+#else
     for (i = 0, pen = (u8 *)signature, styleAndCount = signature->strokes[0].y + 8; i < TRAINER_CARD_SIGNATURE_PEN_COUNT; i++, pen += 4, styleAndCount += sizeof(TrainerCardSignatureStroke)) {
         ((TrainerCardSignature *)pen)->penNames[0] = String_New(8, HEAP_ID_39);
         *styleAndCount &= ~countMask;
         ((TrainerCardSignature *)pen)->penPos[0].count = 0;
     }
+#endif
     signature->doneString = String_New(20, HEAP_ID_39);
     signature->titleString = String_New(40, HEAP_ID_39);
     signature->messageString = String_New(80, HEAP_ID_39);
